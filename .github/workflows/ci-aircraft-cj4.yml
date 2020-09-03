@@ -1,0 +1,21 @@
+name: CI - aircraft-cj4
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Package
+        run: powershell.exe -noexit .\build.ps1 -Project workingtitle.xml -Package workingtitle-aircraft-cj4
+      - name: Upload Package
+        uses: actions/upload-artifact@v2.1.4
+        with:
+          name: workingtitle-aircraft-cj4
+          path: build/workingtitle-aircraft-cj4
+          if-no-files-found: error
