@@ -46,7 +46,10 @@ if ($packages.ContainsKey($Package)) {
     foreach($assetGroup in $packageDef.AssetGroups.AssetGroup) {
         $dest = Join-Path $packagePath $assetGroup.OutputDir
         foreach($assetSubFolder in Get-ChildItem -Path $assetGroup.AssetDir -Attributes Directory) {
-            Copy-Item -Path $assetSubFolder -Destination $dest -Recurse -Force
+            $fullAssetFolderName = $assetSubFolder.FullName
+            Write-Host "Copying $fullAssetFolderName to $dest..."
+
+            Copy-Item -Path $assetSubFolder.FullName -Destination $dest -Recurse -Force
         }      
     }
 
