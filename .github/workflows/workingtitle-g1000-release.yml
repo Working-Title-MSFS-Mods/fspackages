@@ -34,7 +34,7 @@ jobs:
         with:
           name: workingtitle-g1000
       - name: Display build directory
-        run: dir /s
+        run: dir
       - name: Upload zip to release
         uses: actions/upload-release-asset@v1
         env:
