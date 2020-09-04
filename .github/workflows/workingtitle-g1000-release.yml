@@ -22,7 +22,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: G1000 ${{steps.tag_name.output.tag }}
+          release_name: G1000 ${{ steps.tag_name.outputs.tag }}
           body: This is a test release.
           draft: true
           prerelease: true
@@ -33,6 +33,6 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: workingtitle-g1000.zip
-          asset_name: workingtitle-${{steps.tag-name.output.tag}}.zip
+          asset_name: workingtitle-${{ steps.tag_name.outputs.tag }}.zip
           asset_content_type: application/zip
         
