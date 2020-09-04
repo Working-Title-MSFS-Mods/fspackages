@@ -20,8 +20,11 @@ jobs:
           if-no-files-found: error
       - name: Create Release
         uses: actions/create-release@v1
-        release_name: G1000 ${{github.ref}}
-        body: This is a test release.
-        draft: true
-        prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_name: G1000 ${{github.ref}}
+          body: This is a test release.
+          draft: true
+          prerelease: true
         
