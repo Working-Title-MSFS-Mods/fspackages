@@ -19,6 +19,7 @@ jobs:
             build/workingtitle-vcockpits-instruments-navsystems
           if-no-files-found: error
       - name: Create Release
+        uses: actions/create-release@v1
         release_name: G1000 ${{github.ref}}
         body: This is a test release.
         draft: true
