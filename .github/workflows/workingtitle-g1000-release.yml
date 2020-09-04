@@ -1,0 +1,26 @@
+name: CI - G1000 Release
+on:
+  push:
+    tags: 
+      - g1000-v*
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Package
+        run: powershell.exe -noexit .\build.ps1 -Project workingtitle-project-g1000.xml
+      - name: Upload Package
+        uses: actions/upload-artifact@v2.1.4
+        with:
+          name: workingtitle-g1000
+          path: |
+            build/workingtitle-base-aircraft-common
+            build/workingtitle-vcockpits-instruments-navsystems
+          if-no-files-found: error
+      - name: Create Release
+        release_name: G1000 ${{github.ref}}
+        body: This is a test release.
+        draft: true
+        prerelease: true
+        
