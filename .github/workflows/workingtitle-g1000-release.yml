@@ -29,13 +29,19 @@ jobs:
           body: This is a test release.
           draft: true
           prerelease: true
+      - name: Download build artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: workingtitle-g1000
+      - name: Display build directory
+        run: dir /s
       - name: Upload zip to release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/workingtitle-g1000.zip
+          asset_path: workingtitle-g1000.zip
           asset_name: workingtitle-${{ github.ref}}.zip
           asset_content_type: application/zip
         
