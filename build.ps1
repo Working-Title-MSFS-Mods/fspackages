@@ -1,6 +1,6 @@
 param (
     [Parameter(Mandatory=$true)][string]$Project,
-    [Parameter(Mandatory=$true)][string]$Package,
+    [string]$Package,
     [string]$MinimumGameVersion = "1.7.14",
     [string]$OutputPath = ".\build\"
 )
@@ -10,11 +10,12 @@ $packages = @{}
 
 foreach($packageEntry in $projectFile.Project.Packages.Package) {
     [XML]$packageFile = Get-Content $packageEntry
-    $packages[$packageFile.AssetPackage.Name] = $packageFile
-}
-
-if ($packages.ContainsKey($Package)) {
-    $packageDef = $packages[$Package].AssetPackage
+    $packageName = $packageFile.AssetPackage.Name
+    if ($Package -and $packageName -ne $Package)  {
+        continue
+    }
+    
+    $packageDef = $packageFile.AssetPackage
 
     $manifest = New-Object -TypeName PSObject -Property @{
         dependencies = @()
@@ -32,7 +33,7 @@ if ($packages.ContainsKey($Package)) {
         }
     }
 
-    $packagePath = Join-Path $OutputPath $Package
+    $packagePath = Join-Path $OutputPath $packageName
     $manifestPath = Join-Path $packagePath "manifest.json"
 
     Write-Host "Cleaning $packagePath..."
@@ -74,7 +75,4 @@ if ($packages.ContainsKey($Package)) {
     $layoutFile | ConvertTo-Json | Out-File $layoutFilePath
 
     Write-Host "Build finished."
-}
-else {
-    Write-Host "Package $Package was not found in project $Project"
 }
