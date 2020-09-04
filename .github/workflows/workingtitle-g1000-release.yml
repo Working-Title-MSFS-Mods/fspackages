@@ -2,8 +2,8 @@ name: CI - G1000 Release
 on:
   push:
     tags: 
-      - g1000-v*
-      - !g1000-v*-pre*
+      - 'g1000-v*'
+      - '!g1000-v*-pre*'
 jobs:
   build:
     runs-on: windows-latest
