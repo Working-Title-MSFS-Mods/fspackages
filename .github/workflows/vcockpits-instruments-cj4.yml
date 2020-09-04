@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build Package
-        run: powershell.exe -noexit .\build.ps1 -Project workingtitle.xml -Package workingtitle-vcockpits-instruments-cj4
+        run: powershell.exe -noexit .\build.ps1 -Project workingtitle-project-cj4.xml -Package workingtitle-vcockpits-instruments-cj4
       - name: Upload Package
         uses: actions/upload-artifact@v2.1.4
         with:
