@@ -28,4 +28,13 @@ jobs:
           body: This is a test release.
           draft: true
           prerelease: true
+      - name: Upload zip to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/workingtitle-g1000.zip
+          asset_name: workingtitle-${{ github.ref}}.zip
+          asset_content_type: application/zip
         
