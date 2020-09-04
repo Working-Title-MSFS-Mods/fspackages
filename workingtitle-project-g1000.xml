@@ -1,0 +1,8 @@
+<Project Version="2" Name="workingtitle" FolderName="Packages">
+	<OutputDirectory>.</OutputDirectory>
+	<TemporaryOutputDirectory>_PackageInt</TemporaryOutputDirectory>
+	<Packages>
+		<Package>PackageDefinitions\workingtitle-base-aircraft-common.xml</Package>
+		<Package>PackageDefinitions\workingtitle-vcockpits-instruments-navsystems.xml</Package>
+	</Packages>
+</Project>
