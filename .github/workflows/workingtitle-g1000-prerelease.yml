@@ -24,7 +24,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: G1000 ${{ steps.tag_name.outputs.tag }}
+          release_name: ${{ steps.tag_name.outputs.tag }}
           body_path: docs\workingtitle-g1000\CHANGES.md
           draft: true
           prerelease: true

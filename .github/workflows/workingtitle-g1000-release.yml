@@ -11,6 +11,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build Package
         run: powershell.exe -noexit .\build.ps1 -Project workingtitle-project-g1000.xml
+      - name: Add documentation
+        run: Copy-Item -Path docs\workingtitle-g1000\* -Destination build -Recurse -Force        
       - name: Get clean tag name
         uses: olegtarasov/get-tag@v2
         id: tag_name        
@@ -23,7 +25,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: G1000 ${{ steps.tag_name.outputs.tag }}
+          release_name: ${{ steps.tag_name.outputs.tag }}
           body: This is a test release.
           draft: true
       - name: Upload zip to release
