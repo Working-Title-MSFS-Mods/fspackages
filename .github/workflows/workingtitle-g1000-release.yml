@@ -3,6 +3,7 @@ on:
   push:
     tags: 
       - g1000-v*
+      - !g1000-v*-pre*
 jobs:
   build:
     runs-on: windows-latest
@@ -25,7 +26,6 @@ jobs:
           release_name: G1000 ${{ steps.tag_name.outputs.tag }}
           body: This is a test release.
           draft: true
-          prerelease: true
       - name: Upload zip to release
         uses: actions/upload-release-asset@v1
         env:
