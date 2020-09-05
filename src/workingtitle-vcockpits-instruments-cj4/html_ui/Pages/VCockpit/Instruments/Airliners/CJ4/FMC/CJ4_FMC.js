@@ -12,6 +12,10 @@ class CJ4_FMC extends FMCMainDisplay {
         this._apHasDeactivated = false;
         this._hasReachedTopOfDescent = false;
         this._apCooldown = 500;
+        this.reserveFuel = 750;
+		this.paxNumber = 0;
+		this.cargoWeight = 0;
+		this.basicOperatingWeight = 10280;
     }
     get templateID() { return "CJ4_FMC"; }
     connectedCallback() {
