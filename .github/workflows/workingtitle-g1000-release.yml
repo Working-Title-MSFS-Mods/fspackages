@@ -10,9 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build Package
-        run: powershell.exe -noexit .\build.ps1 -Project workingtitle-project-g1000.xml
-      - name: Add documentation
-        run: Copy-Item -Path docs\workingtitle-g1000\* -Destination build -Recurse -Force        
+        run: powershell.exe -noexit .\build.ps1 -Project workingtitle-project-g1000.xml      
       - name: Get clean tag name
         uses: olegtarasov/get-tag@v2
         id: tag_name        
