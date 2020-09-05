@@ -2,7 +2,7 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
         fmc.setTemplate([
-            ["INDEX[color]blue", "1/2"],  //Page 1 ---- 2
+            ["INDEX[color]blue", "1", "2"],  //Page 1 ---- 2
             [""],
             ["<MCDU MENU", "GNSS1 POS>"], //Page 3, 4 ---- 9
             [""],
@@ -35,7 +35,7 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage2(fmc) { //Page 2 of INDEX
         fmc.clearDisplay();
         fmc.setTemplate([
-            ["INDEX[color]blue", "2/2"],
+            ["INDEX[color]blue", "2", "2"],
             [""],
             ["<ABOUT", "ROUTE MENU>"], //Page 27 ---- 17
             [""],
@@ -550,7 +550,7 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage22(fmc) { //DEFAULTS Page 1
         fmc.clearDisplay();
         fmc.setTemplate([
-            ["DEFAULTS[color]blue", "1/3[color]blue"],
+            ["DEFAULTS[color]blue", "1", "3"],
             ["BOW[color]blue"],
             ["10800 LB"],
             ["AVG PASS WT[color]blue"],
@@ -571,7 +571,7 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage23(fmc) { //DEFAULTS Page 2
         fmc.clearDisplay();
         fmc.setTemplate([
-            ["DEFAULTS[color]blue", "2/3[color]blue"],
+            ["DEFAULTS[color]blue", "2", "3"],
             ["CLIMB SPEED[color]blue"],
             ["240/.64"],
             ["DESCENT SPEED[color]blue"],
@@ -592,7 +592,7 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage24(fmc) { //DEFAULTS Page 3
         fmc.clearDisplay();
         fmc.setTemplate([
-            ["DEFAULTS[color]blue", "3/3[color]blue"],
+            ["DEFAULTS[color]blue", "3", "3"],
             ["REDUCED HALF BANK[color]blue"],
             ["12.5"],
             ["FPLN WINDS/TEMP PWR UP[color]blue"],
