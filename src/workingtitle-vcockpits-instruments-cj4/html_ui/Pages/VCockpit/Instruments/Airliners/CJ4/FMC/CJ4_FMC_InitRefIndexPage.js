@@ -103,31 +103,39 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onRightInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage3(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage5(fmc) { //STATUS
-        let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
-        let hours = new String(Math.trunc(simtime / 3600));
-        let minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
-        let hourspad = hours.padStart(2, "0");
-        let minutesspad = minutes.padStart(2, "0");
-        let month = SimVar.GetSimVarValue("E:ZULU MONTH OF YEAR", "number");
-        let day = SimVar.GetSimVarValue("E:ZULU DAY OF MONTH", "number");
-        let year = SimVar.GetSimVarValue("E:ZULU YEAR", "number");
+    static ShowPage5(fmc) { //STATUS       
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["STATUS[color]blue"],
-            ["NAV DATA[color]blue"],
-            ["WORLD"],
-            ["ACTIVE DATA BASE[color]blue"],
-            ["date"],
-            ["SEC DATA BASE[color]blue"],
-            ["placehold[color]yellow"],
-            ["UTC[color]blue", "DATE[color]blue"],
-            [[hourspad] + ":" + [minutesspad] + "z", [month] + "/" + [day] + "/" + [year]],
-            ["PROGRAM[color]blue"],
-            ["SCID 832-0883-000"],
-            ["----------------" + "[color]blue"],
-            ["<INDEX", "POS INIT>"]
-        ]);
+
+        fmc.registerPeriodicPageRefresh(() => {
+
+            let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+            let hours = new String(Math.trunc(simtime / 3600));
+            let minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
+
+            let hourspad = hours.padStart(2, "0");
+            let minutesspad = minutes.padStart(2, "0");
+
+            let month = SimVar.GetSimVarValue("E:ZULU MONTH OF YEAR", "number");
+            let day = SimVar.GetSimVarValue("E:ZULU DAY OF MONTH", "number");
+            let year = SimVar.GetSimVarValue("E:ZULU YEAR", "number");
+
+            fmc.setTemplate([
+                ["STATUS[color]blue"],
+                ["NAV DATA[color]blue"],
+                ["WORLD"],
+                ["ACTIVE DATA BASE[color]blue"],
+                ["date"],
+                ["SEC DATA BASE[color]blue"],
+                ["placehold[color]yellow"],
+                ["UTC[color]blue", "DATE[color]blue"],
+                [[hourspad] + ":" + [minutesspad] + "z", [month] + "/" + [day] + "/" + [year]],
+                ["PROGRAM[color]blue"],
+                ["SCID 832-0883-000"],
+                ["----------------" + "[color]blue"],
+                ["<INDEX", "POS INIT>"]
+            ]);
+        }, 1000, true);
+     
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PosInitPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
