@@ -21,6 +21,10 @@ G1000 units with synthetic vision are supposed to have a menu item that allows i
 
 This also has the nice side effect of adding synthetic vision to planes that do not have it by default.  But you don't have to turn it on if you don't want to.  :)
 
+## Other small tweaks
+
+Other fixes might accrue here.  Currently, the only notable one is that the logic that builds the string representing the current leg distance has been updated so that whole units (eg, 1 nm) have their decimal place recovered after being truncated by the core formatting logic.  This means it would now show as, for example, `1.0NM` instead of `1NM` to match  the real instrument.  Thanks to Burt Pieke at the [Avsim forum](https://www.avsim.com/forums/topic/583603-add-on-developers-screwed-until-major-patches/page/4/?tab=comments#comment-4335724) for flagging this.  This change is in a shared PFD/MFD component and will also fix other Garmin nav systems.
+
 ## Credits
 
 Thanks is due to:
