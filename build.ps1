@@ -46,12 +46,12 @@ foreach($packageEntry in $projectFile.Project.Packages.Package) {
     Write-Host "Copying source files..."
     foreach($assetGroup in $packageDef.AssetGroups.AssetGroup) {
         $dest = Join-Path $packagePath $assetGroup.OutputDir
-        foreach($assetSubFolder in Get-ChildItem -Path $assetGroup.AssetDir -Attributes Directory) {
+        foreach($assetSubFolder in Get-ChildItem -Path $assetGroup.AssetDir) {
             $fullAssetFolderName = $assetSubFolder.FullName
             Write-Host "Copying $fullAssetFolderName to $dest..."
-
             Copy-Item -Path $assetSubFolder.FullName -Destination $dest -Recurse -Force
-        }      
+        }
+
     }
 
     Write-Host "Building layout file..."
