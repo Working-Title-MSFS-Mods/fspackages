@@ -95,7 +95,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.onPrevPage = EmptyCallback.Void;
         this.onNextPage = EmptyCallback.Void;
 
-        this.unregisterPeriodPageRefresh();
+        this.unregisterPeriodicPageRefresh();
     }
     getOrSelectWaypointByIdent(ident, callback) {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
@@ -247,7 +247,7 @@ class CJ4_FMC extends FMCMainDisplay {
     /**
      * Unregisters a periodic page refresh with the FMC display.
      */
-    unregisterPeriodPageRefresh() {
+    unregisterPeriodicPageRefresh() {
         if (this._pageRefreshTimer) {
             clearInterval(this._pageRefreshTimer);
         }
