@@ -103,31 +103,39 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onRightInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage3(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage5(fmc) { //STATUS
-        let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
-        let hours = new String(Math.trunc(simtime / 3600));
-        let minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
-        let hourspad = hours.padStart(2, "0");
-        let minutesspad = minutes.padStart(2, "0");
-        let month = SimVar.GetSimVarValue("E:ZULU MONTH OF YEAR", "number");
-        let day = SimVar.GetSimVarValue("E:ZULU DAY OF MONTH", "number");
-        let year = SimVar.GetSimVarValue("E:ZULU YEAR", "number");
+    static ShowPage5(fmc) { //STATUS       
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["STATUS[color]blue"],
-            ["NAV DATA[color]blue"],
-            ["WORLD"],
-            ["ACTIVE DATA BASE[color]blue"],
-            ["date"],
-            ["SEC DATA BASE[color]blue"],
-            ["placehold[color]yellow"],
-            ["UTC[color]blue", "DATE[color]blue"],
-            [[hourspad] + ":" + [minutesspad] + "z", [month] + "/" + [day] + "/" + [year]],
-            ["PROGRAM[color]blue"],
-            ["SCID 832-0883-000"],
-            ["----------------" + "[color]blue"],
-            ["<INDEX", "POS INIT>"]
-        ]);
+
+        fmc.registerPeriodicPageRefresh(() => {
+
+            let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+            let hours = new String(Math.trunc(simtime / 3600));
+            let minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
+
+            let hourspad = hours.padStart(2, "0");
+            let minutesspad = minutes.padStart(2, "0");
+
+            let month = SimVar.GetSimVarValue("E:ZULU MONTH OF YEAR", "number");
+            let day = SimVar.GetSimVarValue("E:ZULU DAY OF MONTH", "number");
+            let year = SimVar.GetSimVarValue("E:ZULU YEAR", "number");
+
+            fmc.setTemplate([
+                ["STATUS[color]blue"],
+                ["NAV DATA[color]blue"],
+                ["WORLD"],
+                ["ACTIVE DATA BASE[color]blue"],
+                ["date"],
+                ["SEC DATA BASE[color]blue"],
+                ["placehold[color]yellow"],
+                ["UTC[color]blue", "DATE[color]blue"],
+                [[hourspad] + ":" + [minutesspad] + "z", [month] + "/" + [day] + "/" + [year]],
+                ["PROGRAM[color]blue"],
+                ["SCID 832-0883-000"],
+                ["----------------" + "[color]blue"],
+                ["<INDEX", "POS INIT>"]
+            ]);
+        }, 1000, true);
+     
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PosInitPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
@@ -194,38 +202,48 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage9(fmc) { //GNSS POS
         fmc.clearDisplay();
-        let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
-        let hours = new String(Math.trunc(simtime / 3600));
-        let minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
-        let hourspad = hours.padStart(2, "0");
-        let minutesspad = minutes.padStart(2, "0");
-        let month = SimVar.GetSimVarValue("E:ZULU MONTH OF YEAR", "number");
-        let day = SimVar.GetSimVarValue("E:ZULU DAY OF MONTH", "number");
-        let year = SimVar.GetSimVarValue("E:ZULU YEAR", "number");
-        let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")).toDegreeString();
-        let currLat = currPos.slice(0, 9)
-        let currLon = currPos.slice(9)
         function getRandomIntInclusive(min, max) {
             min = Math.ceil(min);
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive 
         }
-        let satnum = getRandomIntInclusive(5, 14)
-        fmc.setTemplate([
-            ["GPS 1[color]blue"],
-            [[hourspad] + ":" + [minutesspad] + "z" + "[color]green", [month] + "/" + [day] + "/" + [year] + "[color]green"],
-            ["LATITUDE", "LONGITUDE"],
-            [[currLat] + "[color]green", [currLon] + "[color]green"],
-            [""],
-            ["TRACK ANGLE", Math.trunc(SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degrees")) + "°" + "[color]green"],
-            ["GROUND SPEED", Math.trunc(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) + "[color]green"],
-            [""],
-            ["RAIM LIMIT", "0.10 NM[color]green"],
-            ["PROBABLE ERROR", "0.05 NM[color]green"],
-            [""],
-            ["GPS MODE:", "", "NAV[color]green"],
-            ["SATELLITES:", "", [satnum] + "[color]green"]
-        ]);
+        
+        let satnum = getRandomIntInclusive(5,14);
+
+        fmc.registerPeriodicPageRefresh(() => {
+
+            let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+            let hours = new String(Math.trunc(simtime / 3600));
+            let minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
+
+            let hourspad = hours.padStart(2, "0");
+            let minutesspad = minutes.padStart(2, "0");
+
+            let month = SimVar.GetSimVarValue("E:ZULU MONTH OF YEAR", "number");
+            let day = SimVar.GetSimVarValue("E:ZULU DAY OF MONTH", "number");
+            let year = SimVar.GetSimVarValue("E:ZULU YEAR", "number");
+
+            let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")).toDegreeString();
+            let currLat = currPos.slice(0,9)
+            let currLon = currPos.slice(9)
+           
+            fmc.setTemplate([
+                ["GPS 1[color]blue"],
+                [[hourspad] + ":" + [minutesspad] + "z" + "[color]green", [month] + "/" + [day] + "/" + [year] + "[color]green"],
+                ["LATITUDE", "LONGITUDE"],
+                [[currLat] + "[color]green", [currLon] + "[color]green"],
+                [""],
+                ["TRACK ANGLE", Math.round(SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degrees")) + "°" + "[color]green"],
+                ["GROUND SPEED", Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) + "[color]green"],
+                [""],
+                ["RAIM LIMIT", "0.10 NM[color]green"],
+                ["PROBABLE ERROR", "0.05 NM[color]green"],
+                [""],
+                ["GPS MODE:", "", "NAV[color]green"],
+                ["SATELLITES:", "", [satnum] + "[color]green"]
+            ]);
+        }, 1000, true);
+      
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage10(fmc) { //FREQUENCY
@@ -295,8 +313,8 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage13(fmc) { //PROG Pg 1
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["Progress[color]blue"],
+		fmc.setTemplate([
+            ["PROGRESS[color]blue", "1/2[color]blue"],
             ["LAST", "DIST[color]blue", "ETE[color]blue", "FUEL-LB[color]blue"],
             ["-----[color]blue", "----[color]blue", ""],
             ["TO[color]blue"],
