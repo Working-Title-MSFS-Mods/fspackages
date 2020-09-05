@@ -26,7 +26,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ steps.tag_name.outputs.tag }}
-          body: This is a test release.
+          body_path: docs\workingtitle-g1000\CHANGES.md
           draft: true
       - name: Upload zip to release
         uses: actions/upload-release-asset@v1
