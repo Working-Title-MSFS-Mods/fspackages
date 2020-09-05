@@ -2,6 +2,6 @@
 	<OutputDirectory>.</OutputDirectory>
 	<TemporaryOutputDirectory>_PackageInt</TemporaryOutputDirectory>
 	<Packages>
-		<Package>PackageDefinitions\workingtitle-g1000.xml</Package>
+		<Package>PackageDefinitions\workingtitle-g1000-metapackage.xml</Package>
 	</Packages>
 </Project>
