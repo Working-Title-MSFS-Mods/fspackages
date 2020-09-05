@@ -1,4 +1,4 @@
-name: CI - G1000
+name: CI - G1000 Build
 on:
   push:
     branches:
