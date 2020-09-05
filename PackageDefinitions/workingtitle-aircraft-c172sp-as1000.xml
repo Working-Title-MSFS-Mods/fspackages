@@ -1,0 +1,22 @@
+<AssetPackage Name="workingtitle-aircraft-c172sp-as1000" Version="0.1.0">
+	<ItemSettings>
+		<ContentType>CUSTOM</ContentType>
+		<Title>C172SP AS1000</Title>
+		<Manufacturer/>
+		<Creator>Working Title</Creator>
+	</ItemSettings>
+	<Flags>
+		<VisibleInStore>false</VisibleInStore>
+		<CanBeReferenced>false</CanBeReferenced>
+	</Flags>
+	<AssetGroups>
+		<AssetGroup Name="workingtitle-aircraft-c172sp-as1000">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-aircraft-c172sp-as1000</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>
+	</AssetGroups>
+</AssetPackage>
