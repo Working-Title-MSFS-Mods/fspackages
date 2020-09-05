@@ -30,14 +30,31 @@ class AS1000_PFD extends BaseAS1000 {
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "MENU_Push"));
         this.maxUpdateBudget = 12;
+        if (typeof g_modDebugMgr != "undefined") {
+            g_modDebugMgr.AddConsole(null);
+        }
+        let avionicsKnobIndex = 30;
+        let avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
+        console.log("INITIAL POT VALUE: " + avionicsKnobValue);
+    }
+    onUpdate(_deltaTime) {
+        let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
+        if (avionicsKnobValueNow != this.avionicsKnobValue) {
+            console.log("SETTING NEW POT VALUE ON " + this.avionicsKnobIndex +  " OLD " + this.avionicsKnobValue + " NEW " + avionicsKnobValueNow);
+            SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", avionicsKnobValueNow);
+            SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", avionicsKnobValueNow);
+        }
+        this.avionicsKnobValue = avionicsKnobValueNow
     }
     parseXMLConfig() {
         super.parseXMLConfig();
         let syntheticVision = null;
         let reversionaryMode = null;
+        let avionicsKnobIndex = null;
         if (this.instrumentXmlConfig) {
             syntheticVision = this.instrumentXmlConfig.getElementsByTagName("SyntheticVision")[0];
             reversionaryMode = this.instrumentXmlConfig.getElementsByTagName("ReversionaryMode")[0];
+            avionicsKnobIndex = this.instrumentXmlConfig.getElementsByTagName("AvionicsKnobIndex")[0];            
         }
         if (syntheticVision && syntheticVision.textContent == "True") {
             if (this.mainPage.attitude.svg) {
@@ -55,6 +72,9 @@ class AS1000_PFD extends BaseAS1000 {
         }
         if (reversionaryMode && reversionaryMode.textContent == "True") {
             this.handleReversionaryMode = true;
+        }
+        if (avionicsKnobIndex) {
+            this.avionicsKnobIndex = avionicsKnobIndex.textContent;
         }
     }
     disconnectedCallback() {
@@ -271,18 +291,6 @@ class AS1000_PFD_MainPage extends NavSystemPage {
             }
             this.gps.getChildById("SyntheticVision").style.display = "block";
             mainPage.syntheticVision = true;
-        }
-    }
-    increaseBrightness() {
-        var currentBrightness = SimVar.GetSimVarValue("L:XMLVAR_G1000_Brightness", "number");
-        if (currentBrightness < 10) {
-            SimVar.SetSimVarValue("L:XMLVAR_G1000_Brightness", "number", ++currentBrightness);
-        }
-    }
-    decreaseBrightness() {
-        var currentBrightness = SimVar.GetSimVarValue("L:XMLVAR_G1000_Brightness", "number");
-        if (currentBrightness > 0) {
-            SimVar.SetSimVarValue("L:XMLVAR_G1000_Brightness", "number", --currentBrightness);
         }
     }
     getKeyState(_keyName) {
@@ -572,6 +580,7 @@ class AS1000_PFD_ConfigMenu extends NavSystemElement {
     onEvent(_event) {
     }
     pfdBrightCallback(_event) {
+        console.log("CURRENT BRIGHTNESS POT: " + this.avionicsKnobIndex)
         if (_event == "FMS_Upper_INC" || _event == "NavigationSmallInc") {
             var brightLevel = SimVar.GetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number")
             if (brightLevel < 100) {
