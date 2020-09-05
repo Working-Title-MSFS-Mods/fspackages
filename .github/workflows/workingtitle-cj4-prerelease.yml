@@ -1,4 +1,5 @@
 name: CI - CJ4 Pre-Release
+on:
   push:
     tags: 
       - 'cj4-v*-pre*'
