@@ -32,8 +32,11 @@ class CJ4_FMC extends FMCMainDisplay {
         this.maxCruiseFL = 450;
         this.onFplan = () => { CJ4_FMC_RoutePage.ShowPage1(this); };
         this.onLegs = () => { CJ4_FMC_LegsPage.ShowPage1(this); };
+		this.onIdx = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(this); };
         this.onDepArr = () => { CJ4_FMC_DepArrPage.ShowPage1(this); };
-        this.onDsplMenu = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(this); };
+        this.onDsplMenu = () => { CJ4_FMC_DsplMenuPage.ShowPage1(this); };
+		this.onPerf = () => { CJ4_FMC_PerfInitPage.ShowPage1(this); };
+		this.onMfdAdv = () => { CJ4_FMC_MfdAdvPage.ShowPage1(this); };
         this.onTun = () => { CJ4_FMC_NavRadioPage.ShowPage1(this); };
         this.onExec = () => {
             if (this.getIsRouteActivated()) {
@@ -71,6 +74,24 @@ class CJ4_FMC extends FMCMainDisplay {
         if (input === "DSPL_MENU") {
             if (this.onDsplMenu) {
                 this.onDsplMenu();
+            }
+            return true;
+        }
+		if (input === "IDX") {
+            if (this.onIdx) {
+                this.onIdx();
+            }
+            return true;
+        }
+		if (input === "PERF") {
+            if (this.onPerf) {
+                this.onPerf();
+            }
+            return true;
+        }
+		if (input === "MFD_ADV") {
+            if (this.onMfdAdv) {
+                this.onMfdAdv();
             }
             return true;
         }
