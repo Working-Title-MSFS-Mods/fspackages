@@ -1,9 +1,10 @@
 # Documentation for the Working Title G1000
 
-This is a mod for the G1000 in the the new Microsoft Flight Simulator.  The stock instrument has a number of deficiencies, and this is an attempt to fix some of them.  Currently, the two main features are:
+This is a mod for the G1000 in the the new Microsoft Flight Simulator.  The stock instrument has a number of deficiencies, and this is an attempt to fix some of them.  Currently, the three main features are:
 
 * adding software control of brightness, for those planes that lack dedicated avionics brightness knobs
 * adding an accurate menu item for turning synthetic vision on and off
+* adding an accurate menu item for toggling altimeter between IN and HPA
 
 ## Brightness control
 
@@ -21,9 +22,17 @@ G1000 units with synthetic vision are supposed to have a menu item that allows i
 
 This also has the nice side effect of adding synthetic vision to planes that do not have it by default.  But you don't have to turn it on if you don't want to.  :)
 
+## Altimeter
+
+The stock G1000 is stuck with the barometer in inches.  It how has a toggle in the accurate place to switch between IN and HPA.
+
 ## Other small tweaks
 
 Other fixes might accrue here.  Currently, the only notable one is that the logic that builds the string representing the current leg distance has been updated so that whole units (eg, 1 nm) have their decimal place recovered after being truncated by the core formatting logic.  This means it would now show as, for example, `1.0NM` instead of `1NM` to match  the real instrument.  Thanks to Burt Pieke at the [Avsim forum](https://www.avsim.com/forums/topic/583603-add-on-developers-screwed-until-major-patches/page/4/?tab=comments#comment-4335724) for flagging this.  This change is in a shared PFD/MFD component and will also fix other Garmin nav systems.
+
+## Comments, issues, bug reports
+
+If you run any any trouble, want to make suggestions for further improvements, or just have something to say about this mod, you can reach the creators via the [Working Title MSFS Mods](https://github.com/Working-Title-MSFS-Mods) github org.  Bug reports or feature requests should go to the [fspackages issue board](https://github.com/Working-Title-MSFS-Mods/fspackages/issues).   We also generally hang out on Avsim.
 
 ## Credits
 
@@ -31,3 +40,7 @@ Thanks is due to:
 
 * [dga711](https://github.com/dga711), whose [devkit](https://github.com/dga711/msfs-webui-devkit) mod made working on this practical
 * the folks at the [A320 Neo project](https://github.com/wpine215/msfs-a320neo/) for a little help along the way
+* [Smirow](https://github.com/Smirow), from whom I adapted the barometer code
+
+---
+*A note on the Baron G58:  This plane has the G1000 and a number of flaws, but unfortunately it is one of the planes that Microsoft have encrypted, and I currently have no way of accessing the model definition to modify it.  If any way to do this becomes available, hopefully we'll be able to make some fixes to that, too.*

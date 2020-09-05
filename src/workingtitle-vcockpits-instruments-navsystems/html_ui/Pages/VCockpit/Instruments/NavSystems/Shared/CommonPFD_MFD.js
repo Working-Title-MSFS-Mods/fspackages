@@ -274,7 +274,16 @@ class PFD_Altimeter extends NavSystemElement {
             case "BARO_DEC":
                 SimVar.SetSimVarValue("K:KOHLSMAN_DEC", "number", this.altimeterIndex);
                 break;
+            case "SoftKeys_Baro_IN":
+                this.altimeterElement.setAttribute("baro-mode", "IN");
+                break;
+            case "SoftKeys_Baro_HPA":
+                this.altimeterElement.setAttribute("baro-mode", "HPA");
+                break;
         }
+    }
+    getCurrentBaroMode() {
+        return this.altimeterElement.baroMode;
     }
 }
 class PFD_Attitude extends NavSystemElement {

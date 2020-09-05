@@ -30,17 +30,12 @@ class AS1000_PFD extends BaseAS1000 {
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "MENU_Push"));
         this.maxUpdateBudget = 12;
-        if (typeof g_modDebugMgr != "undefined") {
-            g_modDebugMgr.AddConsole(null);
-        }
         let avionicsKnobIndex = 30;
         let avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
-        console.log("INITIAL POT VALUE: " + avionicsKnobValue);
     }
     onUpdate(_deltaTime) {
         let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
         if (avionicsKnobValueNow != this.avionicsKnobValue) {
-            console.log("SETTING NEW POT VALUE ON " + this.avionicsKnobIndex +  " OLD " + this.avionicsKnobValue + " NEW " + avionicsKnobValueNow);
             SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", avionicsKnobValueNow);
             SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", avionicsKnobValueNow);
         }
@@ -102,6 +97,7 @@ class AS1000_PFD_MainPage extends NavSystemPage {
         this.xpndrCodeMenu = new SoftKeysMenu();
         this.pfdMenu = new SoftKeysMenu();
         this.synVisMenu = new SoftKeysMenu();
+        this.altUnitMenu = new SoftKeysMenu();
         this.windMenu = new SoftKeysMenu();
         this.hsiFrmtMenu = new SoftKeysMenu();
         this.syntheticVision = false;
@@ -201,14 +197,14 @@ class AS1000_PFD_MainPage extends NavSystemPage {
             new SoftKeyElement("HSI FRMT", this.switchToMenu.bind(this, this.hsiFrmtMenu)),
             new SoftKeyElement("BRG2", this.gps.computeEvent.bind(this.gps, "SoftKeys_PFD_BRG2")),
             new SoftKeyElement(""),
-            new SoftKeyElement("ALT UNIT"),
+            new SoftKeyElement("ALT UNIT", this.switchToMenu.bind(this, this.altUnitMenu)),
             new SoftKeyElement("STD BARO"),
             new SoftKeyElement("BACK", this.switchToMenu.bind(this, this.rootMenu)),
             this.alertSoftkey
         ];
         this.synVisMenu.elements = [
             new SoftKeyElement(""),
-            new SoftKeyElement("SYN TERR", this.toggleSyntheticVision.bind(this)),
+            new SoftKeyElement("SYN TERR", this.toggleSyntheticVision.bind(this), this.softkeySynTerrStatus.bind(this)),
             new SoftKeyElement(""),
             new SoftKeyElement(""),
             new SoftKeyElement(""),
@@ -219,7 +215,21 @@ class AS1000_PFD_MainPage extends NavSystemPage {
             new SoftKeyElement(""),
             new SoftKeyElement("BACK", this.switchToMenu.bind(this, this.pfdMenu)),
             this.alertSoftkey,
-        ];        
+        ];
+        this.altUnitMenu.elements = [
+            new SoftKeyElement(""),
+            new SoftKeyElement(""),
+            new SoftKeyElement(""),
+            new SoftKeyElement(""),
+            new SoftKeyElement(""),
+            new SoftKeyElement("METERS"),
+            new SoftKeyElement(""),
+            new SoftKeyElement("IN", this.gps.computeEvent.bind(this.gps, "SoftKeys_Baro_IN"), this.softkeyBaroStatus.bind(this, "IN")),
+            new SoftKeyElement("HPA", this.gps.computeEvent.bind(this.gps, "SoftKeys_Baro_HPA"), this.softkeyBaroStatus.bind(this, "HPA")),
+            new SoftKeyElement(""),
+            new SoftKeyElement("BACK", this.switchToMenu.bind(this, this.pfdMenu)),
+            this.alertSoftkey,
+        ];           
         this.windMenu.elements = [
             new SoftKeyElement(""),
             new SoftKeyElement(""),
@@ -257,6 +267,12 @@ class AS1000_PFD_MainPage extends NavSystemPage {
     softkeyTransponderStatus(_state) {
         return SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number") == _state ? "White" : "None";
     }
+    softkeySynTerrStatus() {
+        return this.gps.mainPage.syntheticVision ? "White" : "None";
+    }
+    softkeyBaroStatus(_state) {
+        return this.gps.getElementOfType(PFD_Altimeter).getCurrentBaroMode() == _state ? "White" : "None";
+    }    
     softkeyHsiStatus(_arc) {
         return (SimVar.GetSimVarValue("L:Glasscockpit_HSI_Arc", "number") == 0) == _arc ? "None" : "White";
     }
@@ -580,7 +596,6 @@ class AS1000_PFD_ConfigMenu extends NavSystemElement {
     onEvent(_event) {
     }
     pfdBrightCallback(_event) {
-        console.log("CURRENT BRIGHTNESS POT: " + this.avionicsKnobIndex)
         if (_event == "FMS_Upper_INC" || _event == "NavigationSmallInc") {
             var brightLevel = SimVar.GetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number")
             if (brightLevel < 100) {
