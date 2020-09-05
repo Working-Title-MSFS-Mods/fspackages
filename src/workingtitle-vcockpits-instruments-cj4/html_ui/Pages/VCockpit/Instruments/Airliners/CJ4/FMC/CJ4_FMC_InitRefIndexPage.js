@@ -2,8 +2,8 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
         fmc.setTemplate([
-			["INDEX[color]blue", "1/2"],  //Page 1 ---- 2
-			[""],
+            ["INDEX[color]blue", "1/2"],  //Page 1 ---- 2
+            [""],
             ["<MCDU MENU", "GNSS1 POS>"], //Page 3, 4 ---- 9
             [""],
             ["<STATUS", "FREQUENCY>"], //Page 5 ---- 10
@@ -16,27 +16,27 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<FMS CTL", "SEC FPLN>"] //Page 8 ---- 15
         ]);
-		fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage3(fmc); };
+        fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage3(fmc); };
         fmc.onLeftInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage5(fmc); };
         fmc.onLeftInput[2] = () => { CJ4_FMC_PosInitPage.ShowPage1(fmc); };
         fmc.onLeftInput[3] = () => { CJ4_FMC_InitRefIndexPage.ShowPage6(fmc); };
         fmc.onLeftInput[4] = () => { CJ4_FMC_InitRefIndexPage.ShowPage7(fmc); };
-		fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage8(fmc); };
-		fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage9(fmc); };
-		fmc.onRightInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage10(fmc); };
-		fmc.onRightInput[2] = () => { CJ4_FMC_InitRefIndexPage.ShowPage11(fmc); };
-		fmc.onRightInput[3] = () => { CJ4_FMC_InitRefIndexPage.ShowPage12(fmc); };
-		fmc.onRightInput[4] = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
-		fmc.onRightInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
-		fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage8(fmc); };
+        fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage9(fmc); };
+        fmc.onRightInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage10(fmc); };
+        fmc.onRightInput[2] = () => { CJ4_FMC_InitRefIndexPage.ShowPage11(fmc); };
+        fmc.onRightInput[3] = () => { CJ4_FMC_InitRefIndexPage.ShowPage12(fmc); };
+        fmc.onRightInput[4] = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage2(fmc) { //Page 2 of INDEX
+    static ShowPage2(fmc) { //Page 2 of INDEX
         fmc.clearDisplay();
         fmc.setTemplate([
-			["INDEX[color]blue", "2/2"],
-			[""],
+            ["INDEX[color]blue", "2/2"],
+            [""],
             ["<ABOUT", "ROUTE MENU>"], //Page 27 ---- 17
             [""],
             ["<PERF INIT TEMP", "DATABASE>"], // Page 27 ---- 18, 19, 20, 21
@@ -49,19 +49,19 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["", "TEMP COMP>"] //Page 26
         ]);
-		fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage27(fmc); };
-		fmc.onLeftInput[1] = () => { CJ4_FMC_PerfInitPage.ShowPage1(fmc); };
-		fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage17(fmc); };
-		fmc.onRightInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc); };
-		//fmc.onRightInput[2] = () => { CJ4_FMC_InitRefIndexPage.ShowPage19(fmc); };
-		fmc.onRightInput[3] = () => { CJ4_FMC_InitRefIndexPage.ShowPage22(fmc); };
-		fmc.onRightInput[4] = () => { CJ4_FMC_InitRefIndexPage.ShowPage25(fmc); };
-		fmc.onRightInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage26(fmc); };
-     	fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage27(fmc); };
+        fmc.onLeftInput[1] = () => { CJ4_FMC_PerfInitPage.ShowPage1(fmc); };
+        fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage17(fmc); };
+        fmc.onRightInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc); };
+        //fmc.onRightInput[2] = () => { CJ4_FMC_InitRefIndexPage.ShowPage19(fmc); };
+        fmc.onRightInput[3] = () => { CJ4_FMC_InitRefIndexPage.ShowPage22(fmc); };
+        fmc.onRightInput[4] = () => { CJ4_FMC_InitRefIndexPage.ShowPage25(fmc); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage26(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage3(fmc) { //MCDU MENU
+    static ShowPage3(fmc) { //MCDU MENU
         fmc.clearDisplay();
         fmc.setTemplate([
             ["MCDU MENU[color]blue"],
@@ -74,15 +74,15 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             [""],
             [""],
-			[""],
+            [""],
             [""],
             ["", "LOGOFF>"]
         ]);
-		fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage4(fmc); };
+        fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage4(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
-	}
-	static ShowPage4(fmc) { //MCDU MENU PG2
+    }
+    static ShowPage4(fmc) { //MCDU MENU PG2
         fmc.clearDisplay();
         fmc.setTemplate([
             ["RESET CONTROL[color]blue"],
@@ -95,15 +95,15 @@ class CJ4_FMC_InitRefIndexPage {
             ["DO YOU WANT TO CONTINUE?[color]yellow"],
             [""],
             [""],
-			[""],
+            [""],
             ["YES", "NO"],
             ["<RESET", "CANCEL>"]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage5(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage3(fmc); };
         fmc.updateSideButtonActiveStatus();
-	}
-	static ShowPage5(fmc) { //STATUS
+    }
+    static ShowPage5(fmc) { //STATUS
         let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
         let hours = new String(Math.trunc(simtime / 3600));
         let minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
@@ -131,16 +131,16 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PosInitPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
-	}
-	static ShowPage6(fmc) { //VOR CTL
+    }
+    static ShowPage6(fmc) { //VOR CTL
         fmc.clearDisplay();
         fmc.setTemplate([
-			["FMS1 VOR CONTROL[color]blue"],
+            ["FMS1 VOR CONTROL[color]blue"],
             [""],
             ["---", "---"],
             ["", "", "NAVAID INHIBIT[color]blue"],
             ["---", "---"],
-			[""],
+            [""],
             ["---", "---"],
             [""],
             ["---", "---"],
@@ -151,8 +151,8 @@ class CJ4_FMC_InitRefIndexPage {
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
-	}
-	static ShowPage7(fmc) { //GNSS CTL
+    }
+    static ShowPage7(fmc) { //GNSS CTL
         fmc.clearDisplay();
         fmc.setTemplate([
             ["FMS1 GPS CONTROL[color]blue"],
@@ -164,7 +164,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["SAT DESELECT[color]blue"],
             ["--"],
-            ["DEST[color]blue" , "ETA[color]blue", "APPR RAIM[color]blue"],
+            ["DEST[color]blue", "ETA[color]blue", "APPR RAIM[color]blue"],
             ["dest", "ETA", "AVAILABLE"],
             ["----------------" + "[color]blue"],
             ["<INDEX"]
@@ -172,27 +172,27 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage8(fmc) { //FMS CONTROL
+    static ShowPage8(fmc) { //FMS CONTROL
         fmc.clearDisplay();
         fmc.setTemplate([
             ["FMS CONTROL[color]blue"],
             [""],
             [""],
             ["FMS COORD MODE[color]blue"],
-            ["ENABLE" +"[color]green" + "/INDEP"],
+            ["ENABLE" + "[color]green" + "/INDEP"],
             [""],
             [""],
             ["", "", "SELECT SYNC MASTER[color]blue"],
             ["<FMS1", "CANCEL>"],
             [""],
-			["<FMS2"],
+            ["<FMS2"],
             [""],
             ["<INDEX"]
         ]);
-     	fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage9(fmc) { //GNSS POS
+    static ShowPage9(fmc) { //GNSS POS
         fmc.clearDisplay();
         let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
         let hours = new String(Math.trunc(simtime / 3600));
@@ -203,14 +203,14 @@ class CJ4_FMC_InitRefIndexPage {
         let day = SimVar.GetSimVarValue("E:ZULU DAY OF MONTH", "number");
         let year = SimVar.GetSimVarValue("E:ZULU YEAR", "number");
         let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")).toDegreeString();
-        let currLat = currPos.slice(0,9)
+        let currLat = currPos.slice(0, 9)
         let currLon = currPos.slice(9)
         function getRandomIntInclusive(min, max) {
             min = Math.ceil(min);
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive 
-          }
-        let satnum = getRandomIntInclusive(5,14)
+        }
+        let satnum = getRandomIntInclusive(5, 14)
         fmc.setTemplate([
             ["GPS 1[color]blue"],
             [[hourspad] + ":" + [minutesspad] + "z" + "[color]green", [month] + "/" + [day] + "/" + [year] + "[color]green"],
@@ -228,7 +228,7 @@ class CJ4_FMC_InitRefIndexPage {
         ]);
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage10(fmc) { //FREQUENCY
+    static ShowPage10(fmc) { //FREQUENCY
         fmc.clearDisplay();
         fmc.setTemplate([
             ["FREQUENCY[color]blue"],
@@ -241,14 +241,14 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             [""],
             [""],
-			[""],
+            [""],
             [""],
             ["<INDEX"]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
-	}
-	static ShowPage11(fmc) { //FIX
+    }
+    static ShowPage11(fmc) { //FIX
         fmc.clearDisplay();
         fmc.setTemplate([
             ["FIX INFO [color]blue"],
@@ -267,9 +267,9 @@ class CJ4_FMC_InitRefIndexPage {
         ]);
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage12(fmc) { //HOLD
+    static ShowPage12(fmc) { //HOLD
         fmc.clearDisplay();
-		fmc.setTemplate([
+        fmc.setTemplate([
             ["ACT FPLN HOLD"],
             ["FIX   ENTRY[color]blue", "HOLD SPD[color]blue"],
             ["fix" + "   DIRECT", "FAA/ICAO"],
@@ -284,32 +284,38 @@ class CJ4_FMC_InitRefIndexPage {
             ["----------------" + "[color]blue"],
             [""]
         ]);
-		fmc.updateSideButtonActiveStatus();
-	}
-	static ShowPage13(fmc) { //PROG Pg 1
+        fmc.updateSideButtonActiveStatus();
+    }
+    static ShowPage13(fmc) { //PROG Pg 1
         fmc.clearDisplay();
-		fmc.setTemplate([
-            ["Progress[color]blue", "1/2[color]blue"],
+        let prevWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint();
+        let currentWaypoint = fmc.flightPlanManager.getActiveWaypointIdent();
+        let currentwptdist = fmc.flightPlanManager.getDistanceToActiveWaypoint();
+        let currentwptete = new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
+        let destination = fmc.flightPlanManager.getDestination();
+        let nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint();
+        fmc.setTemplate([
+            ["Progress[color]blue"],
             ["LAST", "DIST[color]blue", "ETE[color]blue", "FUEL-LB[color]blue"],
-            ["BUKYY[color]blue", "53.2[color]blue", "", "2280[color]blue"],
+            [[prevWaypoint.ident] + "[color]blue", "53.2[color]blue", ""],
             ["TO[color]blue"],
-            ["BUM[color]green", "83.4[color]green", "0:11[color]green", "1710[color]green"],
+            [[currentWaypoint] + "[color]green", Math.trunc([currentwptdist]) + "[color]green", [currentwptete] + "[color]green", "1100"],
             ["NEXT[color]blue"],
-            ["TRAKE", "214", "0:28", "1140"],
+            [[nextWaypoint.ident] + " ", "214", "0:28", "1140"],
             ["DEST[color]blue"],
-            ["KSTL", "299", "0:40", "730"],
+            [[destination.ident] + "", "299", "0:40", "730"],
             ["ALTN[color]blue"],
-            ["KBLV", "326", "0:42", "570"],
+            ["----", "----", "--:--", "570"],
             ["NAVIGATION[color]blue"],
             ["DME/DME GPS1[color]green"]
         ]);
-		fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage14(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage14(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage14(fmc); };
-		fmc.updateSideButtonActiveStatus();
-	}
-	static ShowPage14(fmc) { //PROG Pg 2
+        fmc.updateSideButtonActiveStatus();
+    }
+    static ShowPage14(fmc) { //PROG Pg 2
         fmc.clearDisplay();
-		fmc.setTemplate([
+        fmc.setTemplate([
             ["Progress[color]blue", "2/2[color]blue"],
             ["HEADWIND[color]blue", "CROSSWIND[color]blue"],
             ["35 KT", "R 29 KT"],
@@ -324,11 +330,11 @@ class CJ4_FMC_InitRefIndexPage {
             ["", "RNP[color]blue", "POS ACCURACY[color]blue"],
             ["", "----", "0.06"]
         ]);
-		fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
-		fmc.updateSideButtonActiveStatus();
-	}
-	static ShowPage15(fmc) { //SEC FPLN
+        fmc.updateSideButtonActiveStatus();
+    }
+    static ShowPage15(fmc) { //SEC FPLN
         fmc.clearDisplay();
         fmc.setTemplate([
             ["SEC FPLN[color]blue"],
@@ -341,14 +347,14 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             [""],
             [""],
-			[""],
+            [""],
             [""],
             ["<INDEX"]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
-	}
-	static ShowPage17(fmc) { //ROUTE MENU
+    }
+    static ShowPage17(fmc) { //ROUTE MENU
         fmc.clearDisplay();
         fmc.setTemplate([
             ["ROUTE MENU[color]blue"],
@@ -361,94 +367,94 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             [""],
             [""],
-			[""],
+            [""],
             ["-----------------------[color]blue"],
             ["<SEC FPLN"]
         ]);
-     	fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage18(fmc) { //DATABASE INITIAL
-		fmc.clearDisplay();
+    static ShowPage18(fmc) { //DATABASE INITIAL
+        fmc.clearDisplay();
         fmc.setTemplate([
             ["DATABASE[color]blue"],
             ["IDENT[color]blue"],
             ["-----"],
             [""],
-			[""],
             [""],
-			[""],
             [""],
-			[""],
+            [""],
+            [""],
+            [""],
             ["------------------[color]blue" + "PILOT"],
             ["", "WPT LIST>"],
-			[""],
+            [""],
             ["<INDEX", "DEFINE WPT>"]
         ]);
-     	fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
-	}
-	static ShowPage19(fmc) { //DATABASE AIRPORT
-		fmc.clearDisplay();
+    }
+    static ShowPage19(fmc) { //DATABASE AIRPORT
+        fmc.clearDisplay();
         fmc.setTemplate([
             ["DATABASE[color]blue"],
             ["IDENT[color]blue", "LONG RWY[color]blue"],
             [""],
             ["ARP LOCATION[color]blue", "MAG VAR[color]blue"],
-			[""],
+            [""],
             ["NAME[color]blue"],
-			[""],
-			["RUNWAY LENGTH[color]blue", "ELEV[color]blue"],
-			["<FEET/METERS"],
+            [""],
+            ["RUNWAY LENGTH[color]blue", "ELEV[color]blue"],
+            ["<FEET/METERS"],
             ["------------------------[color]blue"],
             ["<LOCALIZERS"],
-			[""],
+            [""],
             ["<RUNWAYS", "TERM WPTS>"]
         ]);
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage20(fmc) { //DATABASE NAVAID
-		fmc.clearDisplay();
+    static ShowPage20(fmc) { //DATABASE NAVAID
+        fmc.clearDisplay();
         fmc.setTemplate([
             ["DATABASE[color]blue"],
             ["IDENT[color]blue", "FREQ[color]blue"],
             [""],
             ["VOR[color]blue", "MAG VAR[color]blue"],
-			[""],
+            [""],
             ["DME[color]blue"],
-			[""],
-			["NAME[color]blue", "ELEV[color]blue"],
-			["<FEET/METERS"],
+            [""],
+            ["NAME[color]blue", "ELEV[color]blue"],
+            ["<FEET/METERS"],
             ["------------Pilot[color]blue"],
             ["", "WPT LIST>"],
-			[""],
+            [""],
             ["<INDEX", "DEFINE WPT>"]
         ]);
-		fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage21(fmc) { //DATABASE WAYPOINT
-		fmc.clearDisplay();
+    static ShowPage21(fmc) { //DATABASE WAYPOINT
+        fmc.clearDisplay();
         fmc.setTemplate([
             ["DATABASE[color]blue"],
             ["IDENT[color]blue", "FREQ[color]blue"],
             [""],
             ["LOCATION[color]blue", "MAG VAR[color]blue"],
-			[""],
             [""],
-			[""],
-			[""],
-			[""],
+            [""],
+            [""],
+            [""],
+            [""],
             ["------------Pilot[color]blue"],
             ["", "WPT LIST>"],
-			[""],
+            [""],
             ["<INDEX", "DEFINE WPT>"]
         ]);
-		fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage22(fmc) { //DEFAULTS Page 1
-		fmc.clearDisplay();
+    static ShowPage22(fmc) { //DEFAULTS Page 1
+        fmc.clearDisplay();
         fmc.setTemplate([
             ["DEFAULTS[color]blue", "1/3[color]blue"],
             ["BOW[color]blue"],
@@ -464,12 +470,12 @@ class CJ4_FMC_InitRefIndexPage {
             [" MAX MAP SYMB[color]blue"],
             ["40"]
         ]);
-		fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage24(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage24(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage23(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage23(fmc) { //DEFAULTS Page 2
-		fmc.clearDisplay();
+    static ShowPage23(fmc) { //DEFAULTS Page 2
+        fmc.clearDisplay();
         fmc.setTemplate([
             ["DEFAULTS[color]blue", "2/3[color]blue"],
             ["CLIMB SPEED[color]blue"],
@@ -485,12 +491,12 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             [""]
         ]);
-		fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage22(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage22(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage24(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage24(fmc) { //DEFAULTS Page 3
-		fmc.clearDisplay();
+    static ShowPage24(fmc) { //DEFAULTS Page 3
+        fmc.clearDisplay();
         fmc.setTemplate([
             ["DEFAULTS[color]blue", "3/3[color]blue"],
             ["REDUCED HALF BANK[color]blue"],
@@ -506,70 +512,70 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             [""]
         ]);
-		fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage23(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage23(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage22(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage25(fmc) { //ARR DATA
-		fmc.clearDisplay();
+    static ShowPage25(fmc) { //ARR DATA
+        fmc.clearDisplay();
         fmc.setTemplate([
             ["ACT ARRIVAL DATA[color]blue"],
             ["ARR AIRPORT[color]blue"],
             ["destination"],
             ["APPR[color]blue", "FREQ[color]blue"],
-			["appr", ""],
+            ["appr", ""],
             ["GS ANGLE[color]blue"],
-			["3.00"],
-			["LOC TRUE BRG[color]blue"],
-			[""],
+            ["3.00"],
+            ["LOC TRUE BRG[color]blue"],
+            [""],
             ["RWY THRESHOLD ALT[color]blue"],
             [""],
-			["------------------------[color]blue"],
+            ["------------------------[color]blue"],
             ["<INDEX", "LEGS>"]
         ]);
-		fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-		fmc.onRightInput[5] = () => { CJ4_FMC_LegsPage.ShowPage1(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_LegsPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage26(fmc) { //TEMP COMP
-		fmc.clearDisplay();
+    static ShowPage26(fmc) { //TEMP COMP
+        fmc.clearDisplay();
         fmc.setTemplate([
             ["dest" + "   TEMP COMP[color]blue"],
             ["APPROACH AIRPORT DATA[color]blue"],
             [""],
             ["SEL APT[color]blue", "OAT[color]blue"],
-			["departure" + "/" + "dest", "+10C"],
+            ["departure" + "/" + "dest", "+10C"],
             ["", "ISA DEV[color]blue"],
-			["", "-3C"],
-			["", "TEMP COMP[color]blue"],
-			["", "ON" + "/" + "OFF[color]green"],
+            ["", "-3C"],
+            ["", "TEMP COMP[color]blue"],
+            ["", "ON" + "/" + "OFF[color]green"],
             ["MSL ALT[color]blue", "COMP ALT[color]blue", "CORR[color]blue"],
             [""],
-			["------------------------[color]blue"],
+            ["------------------------[color]blue"],
             ["<INDEX"]
         ]);
-		fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
-	}
-	static ShowPage27(fmc) { //ABOUT
-		fmc.clearDisplay();
+    }
+    static ShowPage27(fmc) { //ABOUT
+        fmc.clearDisplay();
         fmc.setTemplate([
             [""],
             ["", "", "MODIFIED BY:"],
             [""],
-			[""],
-			[""],
-            [""],
-			[""],
-			["", "", "VERSION:"],
-			[""],
             [""],
             [""],
-			[""],
+            [""],
+            [""],
+            ["", "", "VERSION:"],
+            [""],
+            [""],
+            [""],
+            [""],
             ["<INDEX"]
         ]);
-		fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
-	}
+    }
 }
 //# sourceMappingURL=CJ4_FMC_InitRefIndexPage.js.map
