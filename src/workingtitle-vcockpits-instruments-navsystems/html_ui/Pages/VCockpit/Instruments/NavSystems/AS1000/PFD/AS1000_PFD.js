@@ -7,6 +7,9 @@ class AS1000_PFD extends BaseAS1000 {
     get templateID() { return "AS1000_PFD"; }
     connectedCallback() {
         super.connectedCallback();
+        if (typeof g_modDebugMgr != "undefined") {
+            g_modDebugMgr.AddConsole(null);
+        }
         this.mainPage = new AS1000_PFD_MainPage();
         this.pageGroups = [
             new NavSystemPageGroup("Main", this, [
