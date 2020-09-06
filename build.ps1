@@ -41,7 +41,7 @@ foreach($packageEntry in $projectFile.Project.Packages.Package) {
     New-Item -Path $packagePath -ItemType directory | Out-Null
 
     Write-Host "Writing $manifestPath..."  
-    $manifest | ConvertTo-Json | Out-File $manifestPath
+    $manifest | ConvertTo-Json | Out-File $manifestPath -Encoding ASCII
 
     Write-Host "Copying source files..."
     foreach($assetGroup in $packageDef.AssetGroups.AssetGroup) {
@@ -72,7 +72,7 @@ foreach($packageEntry in $projectFile.Project.Packages.Package) {
     Write-Host "Writing $layoutFilePath"
 
     $layoutFile = New-Object -Type PSObject -Property @{content = $layoutEntries}   
-    $layoutFile | ConvertTo-Json | Out-File $layoutFilePath
+    $layoutFile | ConvertTo-Json | Out-File $layoutFilePath -Encoding ASCII
 
     Write-Host "Build finished."
 }
