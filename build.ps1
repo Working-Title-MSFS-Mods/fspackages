@@ -60,7 +60,7 @@ foreach($packageEntry in $projectFile.Project.Packages.Package) {
         Push-Location $packagePath
 
         $layoutEntries += @{
-            path = ($file | Resolve-Path -Relative).Replace('\','/').Substring(1)
+            path = ($file | Resolve-Path -Relative).Replace('\','/').Substring(2)
             size = $file.Length
             date = $file.LastWriteTime.ToFileTime()
         }
