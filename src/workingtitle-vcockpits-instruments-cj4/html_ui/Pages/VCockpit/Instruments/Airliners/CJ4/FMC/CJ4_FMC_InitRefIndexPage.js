@@ -313,6 +313,9 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage13(fmc) { //PROG Pg 1
         fmc.clearDisplay();
+
+        fmc.registerPeriodicPageRefresh(() => {
+
 		fmc.setTemplate([
             ["PROGRESS[color]blue", "1/2[color]blue"],
             ["LAST", "DIST[color]blue", "ETE[color]blue", "FUEL-LB[color]blue"],
@@ -329,31 +332,30 @@ class CJ4_FMC_InitRefIndexPage {
             ["DME/DME GPS1[color]green"]
         ]);
         if (fmc.flightPlanManager.getDestination()) {     
+            
             let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
             let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
             let prevWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint();
             let activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
+            let destination = fmc.flightPlanManager.getDestination();
+
             let activewptdist = fmc.flightPlanManager.getDistanceToActiveWaypoint();
-            //let activewptete = new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
             let activewptete = groundSpeed < 50 ? "--:--"
                 : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
-            //let activewptete = "--:--";
-            //if (groundSpeed > 50) {
-            //    let activewptete = new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
-            //};          
-            let destination = fmc.flightPlanManager.getDestination();
+        
             let nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint();
+            let nextWaypointdist = this.calcDistance(activewptdist, activeWaypoint, nextWaypoint);
+            let nextwptete = groundSpeed < 50 ? "--:--"
+            : new Date(this.calcETEseconds(nextWaypointdist, groundSpeed) * 1000).toISOString().substr(11, 5);
+            
             let destinationDistance = fmc.flightPlanManager.getDestination().cumulativeDistanceInFP
                 - fmc.flightPlanManager.getPreviousActiveWaypoint().cumulativeDistanceInFP
                 - Avionics.Utils.computeDistance(currPos,prevWaypoint.infos.coordinates);
-            let prevWaypointdist = Avionics.Utils.computeDistance(currPos,prevWaypoint.infos.coordinates);
-            let nextWaypointdist = this.calcDistance(activewptdist, activeWaypoint, nextWaypoint);
-            //let nextwptete = new Date(this.calcETEseconds(nextWaypointdist, groundSpeed) * 1000).toISOString().substr(11, 5);
-            let nextwptete = groundSpeed < 50 ? "--:--"
-                : new Date(this.calcETEseconds(nextWaypointdist, groundSpeed) * 1000).toISOString().substr(11, 5);
-            //let destete = new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
             let destete = groundSpeed < 50 ? "--:--"
                 : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+            
+            let prevWaypointdist = Avionics.Utils.computeDistance(currPos,prevWaypoint.infos.coordinates);
+
             fmc.setTemplate([
                 ["PROGRESS[color]blue"],
                 ["LAST", "DIST[color]blue", "ETE[color]blue", "FUEL-LB[color]blue"],
@@ -370,46 +372,56 @@ class CJ4_FMC_InitRefIndexPage {
                 ["DME/DME GPS1[color]green"]
             ]);
         }
+
+        }, 1000, true);
+
         fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage14(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage14(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
+
     //ISA Temp = 15 - (2 x 37000/1000) PLANE ALTITUDE
     //Headwind component: Wind Speed x Cos (Wind Direction - Heading)
     //Crosswind component: Wind Speed x Sin (Wind Direction - Heading)
+
     static calcISADEV(currentSAT, currentALT) {
         let isaTemp = 15 - (2 * (currentALT / 1000));
         return currentSAT - isaTemp;
     }
+
     static ShowPage14(fmc) { //PROG Pg 2
         fmc.clearDisplay();
+
+        fmc.registerPeriodicPageRefresh(() => {
+
         let windDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
         let windSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
         let sat = Math.trunc(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius"));
-        let isaDev = Math.trunc(this.calcISADEV(sat, SimVar.GetSimVarValue("PLANE ALTITUDE", "feet")));
         let track = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees");
+        let tas = Math.trunc(SimVar.GetSimVarValue("AIRSPEED TRUE", "knots"));
+        let xtk = SimVar.GetSimVarValue("GPS WP CROSS TRK", "meters") * (0.000539957); //meters to NM conversion
+
+        let isaDev = Math.trunc(this.calcISADEV(sat, SimVar.GetSimVarValue("PLANE ALTITUDE", "feet")));
+
         let headwind = Math.trunc((Math.cos(windDirection - track))) * windSpeed;
         let crosswind = Math.trunc((Math.sin(windDirection - track))) * windSpeed;
+
         let crosswinddirection = crosswind > 0 ? "R"
             : crosswind < 0 ? "L"
             : "";
-        let tas = Math.trunc(SimVar.GetSimVarValue("AIRSPEED TRUE", "knots"));
-        let xtk = Math.trunc(SimVar.GetSimVarValue("GPS WP CROSS TRK", "nautical miles"));
+
         let xtkDirection = xtk > 0 ? "R"
-            : crosswind < 0 ? "L"
+            : xtk < 0 ? "L"
             : "";
-        //let crosswinddirection = "R";
-        //if (crosswind < 0) {
-        //    let crosswinddirection = "L";
-        //};
+
         fmc.setTemplate([
             ["PROGRESS[color]blue", "2/2[color]blue"],
             ["HEADWIND[color]blue", "CROSSWIND[color]blue"],
-            [[headwind] + " KT", [crosswinddirection] + " " + [crosswind] + " KT"],
+            [[headwind] + " KT", [crosswinddirection] + " " + [Math.abs(crosswind)] + " KT"],
             ["WIND[color]blue", "SAT/ISA DEV[color]blue"],
             [[windDirection] + "/" + [windSpeed] , [sat] + "\xB0" + "C/" + [isaDev] + "\xB0" + "C"],
             ["XTK[color]blue", "TAS[color]blue"],
-            [[xtkDirection] + " " + [xtk] + " NM", [tas] + " KT"],
+            [[xtkDirection] + " " + [Math.abs(xtk.toFixed(1))] + " NM", [tas] + " KT"],
             [""],
             [""],
             [""],
@@ -417,6 +429,9 @@ class CJ4_FMC_InitRefIndexPage {
             ["", "RNP[color]blue", "POS ACCURACY[color]blue"],
             ["", "----", "0.06"]
         ]);
+
+        }, 1000, true);
+        
         fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
         fmc.updateSideButtonActiveStatus();
@@ -463,13 +478,16 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage18(fmc) { //DATABASE INITIAL
         fmc.clearDisplay();
+
         let ident = "-----";
+
         if (fmc.flightPlanManager.getDestination()) {
             let identpos = fmc.flightPlanManager.getDestination();
             if (identpos) {
                 ident = identpos.ident;
             }
         };
+
         fmc.setTemplate([
             ["DATABASE[color]blue"],
             ["IDENT[color]blue"],
@@ -485,6 +503,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<INDEX", "DEFINE WPT>"]
         ]);
+        
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
