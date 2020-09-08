@@ -18,6 +18,5 @@ jobs:
         with:
           name: workingtitle-g1000
           path: |
-            build/workingtitle-base-aircraft-common
-            build/workingtitle-vcockpits-instruments-navsystems
+            build/workingtitle-g1000
           if-no-files-found: error

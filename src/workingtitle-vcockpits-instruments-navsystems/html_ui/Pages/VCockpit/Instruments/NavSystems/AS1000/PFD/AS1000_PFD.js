@@ -7,6 +7,9 @@ class AS1000_PFD extends BaseAS1000 {
     get templateID() { return "AS1000_PFD"; }
     connectedCallback() {
         super.connectedCallback();
+        if (typeof g_modDebugMgr != "undefined") {
+            g_modDebugMgr.AddConsole(null);
+        }
         this.mainPage = new AS1000_PFD_MainPage();
         this.pageGroups = [
             new NavSystemPageGroup("Main", this, [
@@ -30,14 +33,26 @@ class AS1000_PFD extends BaseAS1000 {
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "MENU_Push"));
         this.maxUpdateBudget = 12;
+        let avionicsKnobIndex = 30;
+        let avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
+    }
+    onUpdate(_deltaTime) {
+        let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
+        if (avionicsKnobValueNow != this.avionicsKnobValue) {
+            SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", avionicsKnobValueNow);
+            SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", avionicsKnobValueNow);
+        }
+        this.avionicsKnobValue = avionicsKnobValueNow
     }
     parseXMLConfig() {
         super.parseXMLConfig();
         let syntheticVision = null;
         let reversionaryMode = null;
+        let avionicsKnobIndex = null;
         if (this.instrumentXmlConfig) {
             syntheticVision = this.instrumentXmlConfig.getElementsByTagName("SyntheticVision")[0];
             reversionaryMode = this.instrumentXmlConfig.getElementsByTagName("ReversionaryMode")[0];
+            avionicsKnobIndex = this.instrumentXmlConfig.getElementsByTagName("AvionicsKnobIndex")[0];            
         }
         if (syntheticVision && syntheticVision.textContent == "True") {
             if (this.mainPage.attitude.svg) {
@@ -55,6 +70,9 @@ class AS1000_PFD extends BaseAS1000 {
         }
         if (reversionaryMode && reversionaryMode.textContent == "True") {
             this.handleReversionaryMode = true;
+        }
+        if (avionicsKnobIndex) {
+            this.avionicsKnobIndex = avionicsKnobIndex.textContent;
         }
     }
     disconnectedCallback() {
@@ -82,6 +100,7 @@ class AS1000_PFD_MainPage extends NavSystemPage {
         this.xpndrCodeMenu = new SoftKeysMenu();
         this.pfdMenu = new SoftKeysMenu();
         this.synVisMenu = new SoftKeysMenu();
+        this.altUnitMenu = new SoftKeysMenu();
         this.windMenu = new SoftKeysMenu();
         this.hsiFrmtMenu = new SoftKeysMenu();
         this.syntheticVision = false;
@@ -181,14 +200,14 @@ class AS1000_PFD_MainPage extends NavSystemPage {
             new SoftKeyElement("HSI FRMT", this.switchToMenu.bind(this, this.hsiFrmtMenu)),
             new SoftKeyElement("BRG2", this.gps.computeEvent.bind(this.gps, "SoftKeys_PFD_BRG2")),
             new SoftKeyElement(""),
-            new SoftKeyElement("ALT UNIT"),
+            new SoftKeyElement("ALT UNIT", this.switchToMenu.bind(this, this.altUnitMenu)),
             new SoftKeyElement("STD BARO"),
             new SoftKeyElement("BACK", this.switchToMenu.bind(this, this.rootMenu)),
             this.alertSoftkey
         ];
         this.synVisMenu.elements = [
             new SoftKeyElement(""),
-            new SoftKeyElement("SYN TERR", this.toggleSyntheticVision.bind(this)),
+            new SoftKeyElement("SYN TERR", this.toggleSyntheticVision.bind(this), this.softkeySynTerrStatus.bind(this)),
             new SoftKeyElement(""),
             new SoftKeyElement(""),
             new SoftKeyElement(""),
@@ -199,7 +218,21 @@ class AS1000_PFD_MainPage extends NavSystemPage {
             new SoftKeyElement(""),
             new SoftKeyElement("BACK", this.switchToMenu.bind(this, this.pfdMenu)),
             this.alertSoftkey,
-        ];        
+        ];
+        this.altUnitMenu.elements = [
+            new SoftKeyElement(""),
+            new SoftKeyElement(""),
+            new SoftKeyElement(""),
+            new SoftKeyElement(""),
+            new SoftKeyElement(""),
+            new SoftKeyElement("METERS"),
+            new SoftKeyElement(""),
+            new SoftKeyElement("IN", this.gps.computeEvent.bind(this.gps, "SoftKeys_Baro_IN"), this.softkeyBaroStatus.bind(this, "IN")),
+            new SoftKeyElement("HPA", this.gps.computeEvent.bind(this.gps, "SoftKeys_Baro_HPA"), this.softkeyBaroStatus.bind(this, "HPA")),
+            new SoftKeyElement(""),
+            new SoftKeyElement("BACK", this.switchToMenu.bind(this, this.pfdMenu)),
+            this.alertSoftkey,
+        ];           
         this.windMenu.elements = [
             new SoftKeyElement(""),
             new SoftKeyElement(""),
@@ -237,6 +270,12 @@ class AS1000_PFD_MainPage extends NavSystemPage {
     softkeyTransponderStatus(_state) {
         return SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number") == _state ? "White" : "None";
     }
+    softkeySynTerrStatus() {
+        return this.gps.mainPage.syntheticVision ? "White" : "None";
+    }
+    softkeyBaroStatus(_state) {
+        return this.gps.getElementOfType(PFD_Altimeter).getCurrentBaroMode() == _state ? "White" : "None";
+    }    
     softkeyHsiStatus(_arc) {
         return (SimVar.GetSimVarValue("L:Glasscockpit_HSI_Arc", "number") == 0) == _arc ? "None" : "White";
     }
@@ -271,18 +310,6 @@ class AS1000_PFD_MainPage extends NavSystemPage {
             }
             this.gps.getChildById("SyntheticVision").style.display = "block";
             mainPage.syntheticVision = true;
-        }
-    }
-    increaseBrightness() {
-        var currentBrightness = SimVar.GetSimVarValue("L:XMLVAR_G1000_Brightness", "number");
-        if (currentBrightness < 10) {
-            SimVar.SetSimVarValue("L:XMLVAR_G1000_Brightness", "number", ++currentBrightness);
-        }
-    }
-    decreaseBrightness() {
-        var currentBrightness = SimVar.GetSimVarValue("L:XMLVAR_G1000_Brightness", "number");
-        if (currentBrightness > 0) {
-            SimVar.SetSimVarValue("L:XMLVAR_G1000_Brightness", "number", --currentBrightness);
         }
     }
     getKeyState(_keyName) {
