@@ -29,7 +29,7 @@ class CJ4_FMC_PerfInitPage {
 		let grWtCell = "";
         let grossWeightValue = fmc.getWeight();
         if (isFinite(grossWeightValue)) {
-            grWtCell = (grossWeightValue * 2200).toFixed(0);
+            grWtCell = grossWeightValue.toFixed(2);
         }
         if (isFinite(fmc.zeroFuelWeight)) {
             fmc.onLeftInput[0] = () => {
@@ -55,20 +55,20 @@ class CJ4_FMC_PerfInitPage {
         };
         let fuelCell = "";
         if (fmc.blockFuel) {
-            fuelCell = (fmc.blockFuel * 2200).toFixed(0);
+            fuelCell = fmc.blockFuel.toFixed(2);
         }
-       // let zfwCell = "";
-        //if (fmc.zeroFuelWeight) {
-           // zfwCell = (fmc.zeroFuelWeight * 2200).toFixed(0);
-        //}  		
+        let zfwCell = "";
+        if (fmc.zeroFuelWeight) {
+            zfwCell = fmc.zeroFuelWeight.toFixed(2);
+        }
         fmc.setTemplate([
             ["ACT PERF INIT"+ "[color]blue"],
             ["BOW[color]blue", "CRZ ALT[color]blue"],
             ["(10280)LB", "FL" + crzAltCell],
             ["PASS/WT[color]blue"],
-            [fmc.paxNumber + "/170 LB"],
+            ["0/170 LB"],
             ["CARGO[color]blue", "= ZFW[color]blue"],
-            [fmc.cargoWeight + " LB", (fmc.zeroFuelWeight * 2200).toFixed(0).toString()],
+            ["0 LB", zfwCell],
             ["SENSED FUEL[color]blue", "= GWT[color]blue"],
             [fuelCell + " LB", grWtCell],
             ["--------------------------"],
@@ -76,18 +76,6 @@ class CJ4_FMC_PerfInitPage {
             ["", ""],
             ["", "VNAV SETUP>"]
         ]);
-		fmc.onLeftInput[1] = () => {
-            fmc.paxNumber = fmc.inOut;
-			fmc.zeroFuelWeight = ((fmc.inOut * 170) + fmc.cargoWeight + fmc.basicOperatingWeight) / 2200;
-			fmc.clearUserInput();
-			{ CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
-		}
-		fmc.onLeftInput[2] = () => {
-            fmc.cargoWeight = parseInt(fmc.inOut); //ParseInt changes from string to number
-			fmc.zeroFuelWeight = (fmc.cargoWeight + (fmc.paxNumber * 170) + fmc.basicOperatingWeight) / 2200;
-			fmc.clearUserInput();
-			{ CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
-		}
 		fmc.onRightInput[4] = () => { CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
         fmc.updateSideButtonActiveStatus();
@@ -95,7 +83,7 @@ class CJ4_FMC_PerfInitPage {
 	static ShowPage3(fmc) { //VNAV SETUP Page 1
 		fmc.clearDisplay();
         fmc.setTemplate([
-			["ACT VNAV CLIMB[color]blue", "1", "3"],
+			["ACT VNAV CLIMB[color]blue", "1/3[color]blue"],
             ["TGT SPEED[color]blue", "TRANS ALT"],
             ["240/.64", "FL180"],
             ["SPD/ALT LIMIT[color]blue"],
@@ -117,7 +105,7 @@ class CJ4_FMC_PerfInitPage {
 	static ShowPage4(fmc) { //VNAV SETUP Page 2
         fmc.clearDisplay();
         fmc.setTemplate([
-			["ACT VNAV CRUISE[color]blue", "2", "3"],
+			["ACT VNAV CRUISE[color]blue", "2/3[color]blue"],
             ["TGT SPEED[color]blue", "CRZ ALT"],
             ["240/.64", "crzAltCell"],
             [""],
@@ -139,7 +127,7 @@ class CJ4_FMC_PerfInitPage {
 	static ShowPage5(fmc) { //VNAV SETUP Page 3
         fmc.clearDisplay();
         fmc.setTemplate([
-			["ACT VNAV DESCENT[color]blue", "3", "3"],
+			["ACT VNAV DESCENT[color]blue", "3/3[color]blue"],
             ["TGT SPEED[color]blue", "TRANS FL"],
             [".77/280", "FL180"],
             ["SPD/ALT LIMIT[color]blue"],
@@ -161,7 +149,7 @@ class CJ4_FMC_PerfInitPage {
 	static ShowPage6(fmc) { //TAKEOFF REF Page 1
 		fmc.clearDisplay();
         fmc.setTemplate([
-            ["TAKEOFF REF[color]blue", "1", "3"],
+            ["TAKEOFF REF[color]blue", "1/3"],
 			["RWY ID[color]blue", "WIND[color]blue"],
             ["depRunway", "---\xB0/---"],
             ["RWY WIND[color]blue", "OAT[color]blue"],
@@ -181,80 +169,14 @@ class CJ4_FMC_PerfInitPage {
     }
 	static ShowPage7(fmc) { //TAKEOFF REF Page 2
 		fmc.clearDisplay();
-		let v1 = "---[color]blue";
-        if (fmc.v1Speed) {
-            v1 = fmc.v1Speed;
-        }
-        fmc.onRightInput[0] = () => {
-            let value = fmc.inOut;
-            fmc.clearUserInput();
-            if (value === FMCMainDisplay.clrValue) {
-                fmc.v1Speed = undefined;
-                SimVar.SetSimVarValue("L:AIRLINER_V1_SPEED", "Knots", -1);
-                CJ4_FMC_PerfInitPage.ShowPage7(fmc);
-            }
-            else if (value === "") {
-                fmc._computeV1Speed();
-                CJ4_FMC_PerfInitPage.ShowPage7(fmc);
-            }
-            else {
-                if (fmc.trySetV1Speed(value)) {
-                    CJ4_FMC_PerfInitPage.ShowPage7(fmc);
-                }
-            }
-        };
-        let vR = "---[color]blue";
-        if (fmc.vRSpeed) {
-            vR = fmc.vRSpeed;
-        }
-        fmc.onRightInput[1] = () => {
-            let value = fmc.inOut;
-            fmc.clearUserInput();
-            if (value === FMCMainDisplay.clrValue) {
-                fmc.vRSpeed = undefined;
-                SimVar.SetSimVarValue("L:AIRLINER_VR_SPEED", "Knots", -1);
-                CJ4_FMC_PerfInitPage.ShowPage7(fmc);
-            }
-            else if (value === "") {
-                fmc._computeVRSpeed();
-                CJ4_FMC_PerfInitPage.ShowPage7(fmc);
-            }
-            else {
-                if (fmc.trySetVRSpeed(value)) {
-                    CJ4_FMC_PerfInitPage.ShowPage7(fmc);
-                }
-            }
-        };
-        let v2 = "---[color]blue";
-        if (fmc.v2Speed) {
-            v2 = fmc.v2Speed;
-        }
-        fmc.onRightInput[2] = () => {
-            let value = fmc.inOut;
-            fmc.clearUserInput();
-            if (value === FMCMainDisplay.clrValue) {
-                fmc.v2Speed = undefined;
-                SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", -1);
-                CJ4_FMC_PerfInitPage.ShowPage7(fmc);
-            }
-            else if (value === "") {
-                fmc._computeV2Speed();
-                CJ4_FMC_PerfInitPage.ShowPage7(fmc);
-            }
-            else {
-                if (fmc.trySetV2Speed(value)) {
-                    CJ4_FMC_PerfInitPage.ShowPage7(fmc);
-                }
-            }
-        };
         fmc.setTemplate([
-            ["TAKEOFF REF[color]blue", "2", "3"],
+            ["TAKEOFF REF[color]blue", "2/3"],
 			[""],
-			["A/I[color]blue", "V1: " + v1],
+			["A/I[color]blue", "V1: 100"],
             ["OFF[color]green"],
-            ["T/O FLAPS[color]blue", "VR: " + vR],
+            ["T/O FLAPS[color]blue", "VR: 103"],
             ["0/15[color]green"],
-            ["TOW/ GWT/MTOW[color]blue", "V2: " + v2],
+            ["TOW/ GWT/MTOW[color]blue", "V2: 112"],
             ["gwt" + "/" + "gwt" + "/17110"],
             ["TOFL[color]blue" + "/" + "depRunway", "VT: 143"],
             ["length" + "  length"],
@@ -269,7 +191,7 @@ class CJ4_FMC_PerfInitPage {
 	static ShowPage8(fmc) { //TAKEOFF REF Page 3
 		fmc.clearDisplay();
         fmc.setTemplate([
-            ["TAKEOFF REF[color]blue", "3", "3"],
+            ["TAKEOFF REF[color]blue", "3/3"],
 			[""],
             [""],
             [""],
@@ -289,37 +211,21 @@ class CJ4_FMC_PerfInitPage {
     }
 	static ShowPage9(fmc) { //FUEL MGMT Page 1
         fmc.clearDisplay();
-		let fuelCell = "";
-        if (fmc.blockFuel) {
-            fuelCell = (fmc.blockFuel * 2200).toFixed(0);
-        }
-		let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
-			+ Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour"));
-		let hours = ((fmc.blockFuel * 2200).toFixed(0) - fmc.reserveFuel) / totalFuelFlow;
-		let minutes = (hours % 1) * 60;
-		let rngToResv = Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) * hours;
-		let spRng = (1 / totalFuelFlow) * Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"));
         fmc.setTemplate([
-			["FUEL MGMT[color]blue", "1", "3"],
+			["FUEL MGMT[color]blue", "1/3[color]blue"],
             ["FUEL[color]blue", "TIME TO RESV[color]blue"],
-            [fuelCell + " LB", hours.toFixed(0) + ":" + minutes.toFixed(0).toString().padStart(2,"0")],
+            ["fob" + "LB", "placehold"],
             ["FUEL FLOW[color]blue", "RNG TO RESV[color]blue"],
-            [totalFuelFlow.toString(), rngToResv.toFixed(0) + " NM"],
+            ["placehold", "placehold"],
             ["RESERVES[color]blue", "SP RNG[color]blue"],
-            [fmc.reserveFuel.toString(), spRng.toFixed(2).toString()],
+            ["placehold", "placehold"],
             ["GND SPD[color]blue"],
-            [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString()],
+            ["placehold"],
             [""],
             ["measured/" + "MANUAL[color]green"],
             ["------------------------[color]blue"],
             ["", "PERF MENU>"]
         ]);
-		fmc.onLeftInput[2] = () => {
-            fmc.reserveFuel = fmc.inOut + " LB";
-			fmc.clearUserInput();
-			console.log(fmc.reserve);
-			{ CJ4_FMC_PerfInitPage.ShowPage9(fmc); };
-        };
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage11(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage10(fmc); };
 		fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage1(fmc); };
@@ -327,15 +233,13 @@ class CJ4_FMC_PerfInitPage {
 	}
 	static ShowPage10(fmc) { //FUEL MGMT Page 2
         fmc.clearDisplay();
-		let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
-			+ Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour"));
         fmc.setTemplate([
-			["FUEL MGMT[color]blue", "2", "3"],
+			["FUEL MGMT[color]blue", "2/3[color]blue"],
             ["", "", "ENGINE FLOW - FUEL USED[color]blue"],
             ["", "LB", "LB/HR"],
-            ["1", "XXX", Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour")).toString()],
-            ["2", "XXX", Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour")).toString()],
-            ["TOTAL", "XXX", totalFuelFlow.toString()],
+            ["1", "XXX", "XXX"],
+            ["2", "XXX", "XXX"],
+            ["TOTAL", "XXX", "XXX"],
             [""],
             [""],
             [""],
@@ -351,10 +255,8 @@ class CJ4_FMC_PerfInitPage {
 	}
 	static ShowPage11(fmc) { //FUEL MGMT Page 3
         fmc.clearDisplay();
-		let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
-			+ Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour"));
         fmc.setTemplate([
-			["PERF TRIP[color]blue", "3", "3"],
+			["PERF TRIP[color]blue", "3/3[color]blue"],
             ["FROM[color]blue"],
             ["dep", "PPOS>"],
             ["TO[color]blue"],
@@ -362,9 +264,9 @@ class CJ4_FMC_PerfInitPage {
             ["DIST[color]blue"],
             ["---"],
             ["GND SPD[color]blue", "FUEL FLOW[color]blue"],
-            [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString(), totalFuelFlow + " LB/HR"],
+            ["---", "----" + " LB/HR"],
             ["ETE[color]blue", "FUEL REQ[color]blue"],
-            ["---" + " LB"],
+            ["---" + "---" + " LB"],
             ["------------------------[color]blue"],
             ["<CLEAR", "PERF MENU>"]
         ]);
@@ -396,7 +298,7 @@ class CJ4_FMC_PerfInitPage {
 	static ShowPage13(fmc) { //APPROACH REF Page 1
         fmc.clearDisplay();
         fmc.setTemplate([
-            ["APPROACH REF[color]blue", "1", "3"],
+            ["APPROACH REF[color]blue", "1/3"],
 			["SEL APT[color]blue", "WIND[color]blue"],
             ["depRunway", "---\xB0/---"],
             ["RWY ID[color]blue", "OAT[color]blue"],
@@ -417,7 +319,7 @@ class CJ4_FMC_PerfInitPage {
 	static ShowPage14(fmc) { //APPROACH REF Page 2
         fmc.clearDisplay();
         fmc.setTemplate([
-			["APPROACH REF[color]blue", "2", "3"],
+			["APPROACH REF[color]blue", "2/3"],
 			["A/I[color]blue"],
             ["OFF/ON[color]green"],
             ["", "VREF: 97"],
@@ -438,7 +340,7 @@ class CJ4_FMC_PerfInitPage {
 	static ShowPage15(fmc) { //APPROACH REF Page 3
         fmc.clearDisplay();
         fmc.setTemplate([
-            ["APPROACH REF[color]blue", "3", "3"],
+            ["APPROACH REF[color]blue", "3/3"],
 			[""],
             [""],
             [""],

@@ -1,0 +1,21 @@
+name: CI - vcockpits-instruments-cj4 aircraft-cj4
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Package
+        run: powershell.exe -noexit .\build.ps1 -Project workingtitle-project-cj4.xml -Package workingtitle-vcockpits-instruments-cj4
+      - name: Upload Package
+        uses: actions/upload-artifact@v2.1.4
+        with:
+          name: workingtitle-vcockpits-instruments-cj4
+          path: build/workingtitle-vcockpits-instruments-cj4
+          if-no-files-found: error
