@@ -1,5 +1,7 @@
 # Documentation for the Working Title G1000
 
+_Applies to version: v0.2.0_
+
 This is a mod for the G1000 in the the new Microsoft Flight Simulator.  The stock instrument has a number of deficiencies, and this is an attempt to fix some of them.  Currently, the three main features are:
 
 * adding software control of brightness, for those planes that lack dedicated avionics brightness knobs
