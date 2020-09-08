@@ -333,12 +333,12 @@ class CJ4_FMC_NavRadioPage {
 	static ShowPage3(fmc) {
         fmc.clearDisplay();
 		fmc.setTemplate([
-            ["TCAS CONTROLcolor]blue"],
+            ["TCAS CONTROL[color]blue"],
             ["MODE", "ALT TAG"],
-            ["TA/RA/STBY", "REl/ABS"],
+            ["TA/RA/STBY", "REL/ABS"],
             [""],
-            ["", "TEST"],
-            ["#x25C7[color]blue" + "TRAFFIC", "EXT TEST"],
+            ["", "TEST44"],
+            ["&#x25C7TRAFFIC", "EXT TEST"],
             ["ON/OFF", "ON/OFF"],
             ["", "ALT LIMITS"],
 			["", "ABOVE"],

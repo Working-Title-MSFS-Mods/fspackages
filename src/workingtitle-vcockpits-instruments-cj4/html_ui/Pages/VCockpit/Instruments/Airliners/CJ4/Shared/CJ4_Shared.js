@@ -1,0 +1,3360 @@
+var CJ4_SystemPage;
+(function (CJ4_SystemPage) {
+    CJ4_SystemPage[CJ4_SystemPage["NONE"] = 0] = "NONE";
+    CJ4_SystemPage[CJ4_SystemPage["ENGINES"] = 1] = "ENGINES";
+    CJ4_SystemPage[CJ4_SystemPage["ELECTRICS"] = 2] = "ELECTRICS";
+    CJ4_SystemPage[CJ4_SystemPage["FMS"] = 3] = "FMS";
+    CJ4_SystemPage[CJ4_SystemPage["ANNUNCIATIONS"] = 4] = "ANNUNCIATIONS";
+})(CJ4_SystemPage || (CJ4_SystemPage = {}));
+;
+class CJ4_SystemContainer extends NavSystemElementContainer {
+    constructor(_name, _root) {
+        super(_name, _root, null);
+        this.engines = new CJ4_SystemEngines();
+        this.electrics = new CJ4_SystemElectrics();
+        this.fms = new CJ4_SystemFMS();
+        this.annunciations = new CJ4_SystemAnnunciations();
+        this.warnings = new CJ4_SystemWarnings();
+        this.curPage = undefined;
+        this.element = new NavSystemElementGroup([this.engines, this.electrics, this.fms, this.annunciations, this.warnings]);
+    }
+    init() {
+        super.init();
+        this.root = this.gps.getChildById(this.htmlElemId);
+        if (!this.root) {
+            console.log("Root component expected!");
+        }
+    }
+    minimize(_value) {
+        switch (this.curPage) {
+            case CJ4_SystemPage.ENGINES:
+                this.engines.minimize(_value);
+                break;
+        }
+    }
+    show(_page) {
+        if (this.curPage != _page) {
+            this.curPage = _page;
+            switch (_page) {
+                case CJ4_SystemPage.ENGINES:
+                    this.root.setAttribute("page", "engines");
+                    this.root.setAttribute("visible", "true");
+                    break;
+                case CJ4_SystemPage.ELECTRICS:
+                    this.root.setAttribute("page", "electrics");
+                    this.root.setAttribute("visible", "true");
+                    break;
+                case CJ4_SystemPage.FMS:
+                    this.root.setAttribute("page", "fms");
+                    this.root.setAttribute("visible", "true");
+                    break;
+                case CJ4_SystemPage.ANNUNCIATIONS:
+                    this.root.setAttribute("page", "annunciations");
+                    this.root.setAttribute("visible", "true");
+                    break;
+                default:
+                    this.root.setAttribute("visible", "false");
+                    break;
+            }
+        }
+    }
+    hasAnnunciations() {
+        return this.annunciations.hasMessages();
+    }
+}
+class CJ4_SystemEngines extends NavSystemElement {
+    constructor() {
+        super(...arguments);
+        this.isMinimized = false;
+        this.N1_Table_Values = [0, 20, 80, 90, 100, 110];
+        this.N1_Table_Percents = [0, 6.5, 38, 59, 79.5, 100];
+        this.N1_Table_Values_Minimized = [0, 20, 60, 80, 100, 110];
+        this.N1_Table_Percents_Minimized = [0, 12, 38, 62, 87, 100];
+        this.ITT_Table_Values = [0, 200, 600, 700, 800, 900, 1000, 1050];
+        this.ITT_Table_Percents = [0, 4, 21.5, 42.5, 63.5, 81.5, 94.5, 100];
+        this.ITT_Table_Values_Minimized = [200, 600, 700, 800, 900, 1000];
+        this.ITT_Table_Percents_Minimized = [0, 24, 41, 57, 79, 100];
+        this.OilPSIMax = 125;
+        this.OilTempMax = 160;
+        this.Flaps_Table_Values = [0, 15, 35];
+        this.Flaps_Table_Angles = [0, 25, 60];
+    }
+    init(_root) {
+        this.root = _root.querySelector(".SystemEngines");
+        this.construct();
+    }
+    onEnter() {
+    }
+    minimize(_value) {
+        if (this.isMinimized != _value) {
+            this.isMinimized = _value;
+            this.construct();
+        }
+    }
+    construct() {
+        if (this.root) {
+            Utils.RemoveAllChildren(this.root);
+            if (this.isMinimized)
+                this.constructMinimized();
+            else
+                this.constructDefault();
+        }
+    }
+    constructMinimized() {
+        var rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
+        rootSVG.setAttribute("id", "Minimized");
+        rootSVG.setAttribute("viewBox", "0 0 1000 1000");
+        this.root.appendChild(rootSVG);
+        {
+            var n1Group = document.createElementNS(Avionics.SVG.NS, "g");
+            n1Group.setAttribute("id", "N1");
+            rootSVG.appendChild(n1Group);
+            var startPosX = 140;
+            var startPosY = 30;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "N1%";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "22");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            n1Group.appendChild(titleText);
+            var gradValues = [0, 0, 100, 0, 80, 0, 60, 0, 20];
+            var gradLength = [26, 20, 20, 12, 20, 12, 20, 20, 20];
+            var gradSpacing = [10, 10, 18, 18, 18, 18, 20, 20, 16];
+            startPosY += 5;
+            var posY = startPosY;
+            var halfWidth = 80;
+            for (var i = 0; i < gradValues.length; i++) {
+                if (gradValues[i] > 0) {
+                    var text = document.createElementNS(Avionics.SVG.NS, "text");
+                    text.textContent = gradValues[i].toString();
+                    text.setAttribute("x", startPosX.toString());
+                    text.setAttribute("y", posY.toString());
+                    text.setAttribute("fill", "white");
+                    text.setAttribute("font-size", "18");
+                    text.setAttribute("font-family", "Roboto-Light");
+                    text.setAttribute("text-anchor", "middle");
+                    text.setAttribute("alignment-baseline", "central");
+                    n1Group.appendChild(text);
+                }
+                var line = document.createElementNS(Avionics.SVG.NS, "line");
+                line.setAttribute("x1", (startPosX - halfWidth).toString());
+                line.setAttribute("y1", posY.toString());
+                line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
+                line.setAttribute("y2", posY.toString());
+                line.setAttribute("stroke", (i == 1) ? "red" : "white");
+                line.setAttribute("stroke-width", "2");
+                n1Group.appendChild(line);
+                var line = document.createElementNS(Avionics.SVG.NS, "line");
+                line.setAttribute("x1", (startPosX + halfWidth - gradLength[i]).toString());
+                line.setAttribute("y1", posY.toString());
+                line.setAttribute("x2", (startPosX + halfWidth).toString());
+                line.setAttribute("y2", posY.toString());
+                line.setAttribute("stroke", (i == 1) ? "red" : "white");
+                line.setAttribute("stroke-width", "2");
+                n1Group.appendChild(line);
+                posY += gradSpacing[i];
+            }
+            this.N1LeftZoneX = startPosX - halfWidth;
+            this.N1LeftZoneY2 = startPosY;
+            this.N1LeftZoneY1 = posY;
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", this.N1LeftZoneX.toString());
+            line.setAttribute("y1", this.N1LeftZoneY1.toString());
+            line.setAttribute("x2", this.N1LeftZoneX.toString());
+            line.setAttribute("y2", this.N1LeftZoneY2.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            n1Group.appendChild(line);
+            this.N1RightZoneX = startPosX + halfWidth;
+            this.N1RightZoneY2 = startPosY;
+            this.N1RightZoneY1 = posY;
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", this.N1RightZoneX.toString());
+            line.setAttribute("y1", this.N1RightZoneY1.toString());
+            line.setAttribute("x2", this.N1RightZoneX.toString());
+            line.setAttribute("y2", this.N1RightZoneY2.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            n1Group.appendChild(line);
+            this.N1LeftCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.N1LeftCursor.setAttribute("fill", "white");
+            n1Group.appendChild(this.N1LeftCursor);
+            this.N1RightCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.N1RightCursor.setAttribute("fill", "white");
+            n1Group.appendChild(this.N1RightCursor);
+            var rectOffsetX = 15;
+            var rectWidth = 95;
+            var rectHeight = 30;
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX - halfWidth - rectOffsetX).toString());
+            rect.setAttribute("y", posY.toString());
+            rect.setAttribute("width", rectWidth.toString());
+            rect.setAttribute("height", rectHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            n1Group.appendChild(rect);
+            this.N1LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.N1LeftValue.textContent = "0.0";
+            this.N1LeftValue.setAttribute("x", (startPosX - halfWidth - rectOffsetX + rectWidth * 0.95).toString());
+            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.5).toString());
+            this.N1LeftValue.setAttribute("fill", "green");
+            this.N1LeftValue.setAttribute("font-size", "28");
+            this.N1LeftValue.setAttribute("font-family", "Roboto-Bold");
+            this.N1LeftValue.setAttribute("text-anchor", "end");
+            this.N1LeftValue.setAttribute("alignment-baseline", "central");
+            n1Group.appendChild(this.N1LeftValue);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX + halfWidth + rectOffsetX - rectWidth).toString());
+            rect.setAttribute("y", posY.toString());
+            rect.setAttribute("width", rectWidth.toString());
+            rect.setAttribute("height", rectHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            n1Group.appendChild(rect);
+            this.N1RightValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.N1RightValue.textContent = "0.0";
+            this.N1RightValue.setAttribute("x", (startPosX + halfWidth + rectOffsetX - rectWidth * 0.05).toString());
+            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.5).toString());
+            this.N1RightValue.setAttribute("fill", "green");
+            this.N1RightValue.setAttribute("font-size", "28");
+            this.N1RightValue.setAttribute("font-family", "Roboto-Bold");
+            this.N1RightValue.setAttribute("text-anchor", "end");
+            this.N1RightValue.setAttribute("alignment-baseline", "central");
+            n1Group.appendChild(this.N1RightValue);
+        }
+        {
+            var ittGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            ittGroup.setAttribute("id", "ITT");
+            rootSVG.appendChild(ittGroup);
+            var startPosX = 350;
+            var startPosY = 30;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "ITT°C";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "22");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            ittGroup.appendChild(titleText);
+            var gradValues = [0, 0, 900, 0, 800, 700, 600, 0, 200];
+            var gradLength = [14, 26, 26, 18, 26, 26, 26, 26, 26];
+            var gradSpacing = [14, 18, 16, 16, 24, 24, 18, 18, 0];
+            startPosY += 5;
+            var posY = startPosY;
+            var halfWidth = 60;
+            for (var i = 0; i < gradValues.length; i++) {
+                if (gradValues[i] > 0) {
+                    var text = document.createElementNS(Avionics.SVG.NS, "text");
+                    text.textContent = gradValues[i].toString();
+                    text.setAttribute("x", startPosX.toString());
+                    text.setAttribute("y", posY.toString());
+                    text.setAttribute("fill", "white");
+                    text.setAttribute("font-size", "18");
+                    text.setAttribute("font-family", "Roboto-Light");
+                    text.setAttribute("text-anchor", "middle");
+                    text.setAttribute("alignment-baseline", "central");
+                    ittGroup.appendChild(text);
+                }
+                var line = document.createElementNS(Avionics.SVG.NS, "line");
+                line.setAttribute("x1", (startPosX - halfWidth).toString());
+                line.setAttribute("y1", posY.toString());
+                line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
+                line.setAttribute("y2", posY.toString());
+                line.setAttribute("stroke", (i == 3) ? "red" : "white");
+                line.setAttribute("stroke-width", "2");
+                ittGroup.appendChild(line);
+                var line = document.createElementNS(Avionics.SVG.NS, "line");
+                line.setAttribute("x1", (startPosX + halfWidth - gradLength[i]).toString());
+                line.setAttribute("y1", posY.toString());
+                line.setAttribute("x2", (startPosX + halfWidth).toString());
+                line.setAttribute("y2", posY.toString());
+                line.setAttribute("stroke", (i == 4) ? "red" : "white");
+                line.setAttribute("stroke-width", "2");
+                ittGroup.appendChild(line);
+                posY += gradSpacing[i];
+            }
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", (startPosX - halfWidth - 12).toString());
+            line.setAttribute("y1", posY.toString());
+            line.setAttribute("x2", (startPosX - halfWidth).toString());
+            line.setAttribute("y2", posY.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            ittGroup.appendChild(line);
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", (startPosX + halfWidth).toString());
+            line.setAttribute("y1", posY.toString());
+            line.setAttribute("x2", (startPosX + halfWidth + 12).toString());
+            line.setAttribute("y2", posY.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            ittGroup.appendChild(line);
+            this.ITTLeftZoneX = startPosX - halfWidth;
+            this.ITTLeftZoneY2 = startPosY;
+            this.ITTLeftZoneY1 = posY;
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", this.ITTLeftZoneX.toString());
+            line.setAttribute("y1", this.ITTLeftZoneY1.toString());
+            line.setAttribute("x2", this.ITTLeftZoneX.toString());
+            line.setAttribute("y2", this.ITTLeftZoneY2.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            ittGroup.appendChild(line);
+            this.ITTRightZoneX = startPosX + halfWidth;
+            this.ITTRightZoneY2 = startPosY;
+            this.ITTRightZoneY1 = posY;
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", this.ITTRightZoneX.toString());
+            line.setAttribute("y1", this.ITTRightZoneY1.toString());
+            line.setAttribute("x2", this.ITTRightZoneX.toString());
+            line.setAttribute("y2", this.ITTRightZoneY2.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            ittGroup.appendChild(line);
+            var cursorWidth = 10;
+            var cursorHeight = 10;
+            this.ITTLeftBeacon = document.createElementNS(Avionics.SVG.NS, "rect");
+            this.ITTLeftBeacon.setAttribute("x", this.ITTLeftZoneX.toString());
+            this.ITTLeftBeacon.setAttribute("y", this.ITTLeftZoneY1.toString());
+            this.ITTLeftBeacon.setAttribute("width", cursorWidth.toString());
+            this.ITTLeftBeacon.setAttribute("height", cursorHeight.toString());
+            this.ITTLeftBeacon.setAttribute("fill", "darkorange");
+            ittGroup.appendChild(this.ITTLeftBeacon);
+            this.ITTRightBeacon = document.createElementNS(Avionics.SVG.NS, "rect");
+            this.ITTRightBeacon.setAttribute("x", (this.ITTRightZoneX - cursorWidth).toString());
+            this.ITTRightBeacon.setAttribute("y", this.ITTRightZoneY1.toString());
+            this.ITTRightBeacon.setAttribute("width", cursorWidth.toString());
+            this.ITTRightBeacon.setAttribute("height", cursorHeight.toString());
+            this.ITTRightBeacon.setAttribute("fill", "darkorange");
+            ittGroup.appendChild(this.ITTRightBeacon);
+            this.ITTLeftCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.ITTLeftCursor.setAttribute("fill", "white");
+            ittGroup.appendChild(this.ITTLeftCursor);
+            this.ITTRightCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.ITTRightCursor.setAttribute("fill", "white");
+            ittGroup.appendChild(this.ITTRightCursor);
+        }
+        {
+            var n2Group = document.createElementNS(Avionics.SVG.NS, "g");
+            n2Group.setAttribute("id", "N2Group");
+            rootSVG.appendChild(n2Group);
+            var startPosX = 580;
+            var startPosY = 50;
+            var titleTextTop = document.createElementNS(Avionics.SVG.NS, "text");
+            titleTextTop.textContent = "N2 %";
+            titleTextTop.setAttribute("x", startPosX.toString());
+            titleTextTop.setAttribute("y", startPosY.toString());
+            titleTextTop.setAttribute("fill", "white");
+            titleTextTop.setAttribute("font-size", "18");
+            titleTextTop.setAttribute("font-family", "Roboto-Light");
+            titleTextTop.setAttribute("text-anchor", "middle");
+            titleTextTop.setAttribute("alignment-baseline", "central");
+            n2Group.appendChild(titleTextTop);
+            var rectMarginX = 40;
+            var rectWidth = 80;
+            var rectHeight = 30;
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX - rectMarginX - rectWidth).toString());
+            rect.setAttribute("y", (startPosY - rectHeight * 0.5).toString());
+            rect.setAttribute("width", rectWidth.toString());
+            rect.setAttribute("height", rectHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            n2Group.appendChild(rect);
+            this.N2LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.N2LeftValue.textContent = "0.0";
+            this.N2LeftValue.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.N2LeftValue.setAttribute("y", startPosY.toString());
+            this.N2LeftValue.setAttribute("fill", "green");
+            this.N2LeftValue.setAttribute("font-size", "25");
+            this.N2LeftValue.setAttribute("font-family", "Roboto-Bold");
+            this.N2LeftValue.setAttribute("text-anchor", "end");
+            this.N2LeftValue.setAttribute("alignment-baseline", "central");
+            n2Group.appendChild(this.N2LeftValue);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX + rectMarginX).toString());
+            rect.setAttribute("y", (startPosY - rectHeight * 0.5).toString());
+            rect.setAttribute("width", rectWidth.toString());
+            rect.setAttribute("height", rectHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            n2Group.appendChild(rect);
+            this.N2RightValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.N2RightValue.textContent = "0.0";
+            this.N2RightValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.N2RightValue.setAttribute("y", startPosY.toString());
+            this.N2RightValue.setAttribute("fill", "green");
+            this.N2RightValue.setAttribute("font-size", "25");
+            this.N2RightValue.setAttribute("font-family", "Roboto-Bold");
+            this.N2RightValue.setAttribute("text-anchor", "end");
+            this.N2RightValue.setAttribute("alignment-baseline", "central");
+            n2Group.appendChild(this.N2RightValue);
+        }
+        {
+            var oilGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            oilGroup.setAttribute("id", "OilGroup");
+            rootSVG.appendChild(oilGroup);
+            var startPosX = 580;
+            var startPosY = 90;
+            var rectMarginX = 40;
+            var rectWidth = 80;
+            var rectHeight = 30;
+            var titleTextLeft = document.createElementNS(Avionics.SVG.NS, "text");
+            titleTextLeft.textContent = "OIL °C";
+            titleTextLeft.setAttribute("x", startPosX.toString());
+            titleTextLeft.setAttribute("y", startPosY.toString());
+            titleTextLeft.setAttribute("fill", "white");
+            titleTextLeft.setAttribute("font-size", "18");
+            titleTextLeft.setAttribute("font-family", "Roboto-Light");
+            titleTextLeft.setAttribute("text-anchor", "middle");
+            titleTextLeft.setAttribute("alignment-baseline", "central");
+            oilGroup.appendChild(titleTextLeft);
+            this.OilTemp1Value = document.createElementNS(Avionics.SVG.NS, "text");
+            this.OilTemp1Value.textContent = "15";
+            this.OilTemp1Value.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.OilTemp1Value.setAttribute("y", startPosY.toString());
+            this.OilTemp1Value.setAttribute("fill", "green");
+            this.OilTemp1Value.setAttribute("font-size", "25");
+            this.OilTemp1Value.setAttribute("font-family", "Roboto-Bold");
+            this.OilTemp1Value.setAttribute("text-anchor", "end");
+            this.OilTemp1Value.setAttribute("alignment-baseline", "central");
+            oilGroup.appendChild(this.OilTemp1Value);
+            this.OilTemp2Value = document.createElementNS(Avionics.SVG.NS, "text");
+            this.OilTemp2Value.textContent = "15";
+            this.OilTemp2Value.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.OilTemp2Value.setAttribute("y", startPosY.toString());
+            this.OilTemp2Value.setAttribute("fill", "green");
+            this.OilTemp2Value.setAttribute("font-size", "25");
+            this.OilTemp2Value.setAttribute("font-family", "Roboto-Bold");
+            this.OilTemp2Value.setAttribute("text-anchor", "end");
+            this.OilTemp2Value.setAttribute("alignment-baseline", "central");
+            oilGroup.appendChild(this.OilTemp2Value);
+            startPosY += 35;
+            var titleTextLeft = document.createElementNS(Avionics.SVG.NS, "text");
+            titleTextLeft.textContent = "OIL PSI";
+            titleTextLeft.setAttribute("x", startPosX.toString());
+            titleTextLeft.setAttribute("y", startPosY.toString());
+            titleTextLeft.setAttribute("fill", "white");
+            titleTextLeft.setAttribute("font-size", "18");
+            titleTextLeft.setAttribute("font-family", "Roboto-Light");
+            titleTextLeft.setAttribute("text-anchor", "middle");
+            titleTextLeft.setAttribute("alignment-baseline", "central");
+            oilGroup.appendChild(titleTextLeft);
+            this.OilPSI1Value = document.createElementNS(Avionics.SVG.NS, "text");
+            this.OilPSI1Value.textContent = "0";
+            this.OilPSI1Value.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.OilPSI1Value.setAttribute("y", startPosY.toString());
+            this.OilPSI1Value.setAttribute("fill", "green");
+            this.OilPSI1Value.setAttribute("font-size", "25");
+            this.OilPSI1Value.setAttribute("font-family", "Roboto-Bold");
+            this.OilPSI1Value.setAttribute("text-anchor", "end");
+            this.OilPSI1Value.setAttribute("alignment-baseline", "central");
+            oilGroup.appendChild(this.OilPSI1Value);
+            this.OilPSI2Value = document.createElementNS(Avionics.SVG.NS, "text");
+            this.OilPSI2Value.textContent = "0";
+            this.OilPSI2Value.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.OilPSI2Value.setAttribute("y", startPosY.toString());
+            this.OilPSI2Value.setAttribute("fill", "green");
+            this.OilPSI2Value.setAttribute("font-size", "25");
+            this.OilPSI2Value.setAttribute("font-family", "Roboto-Bold");
+            this.OilPSI2Value.setAttribute("text-anchor", "end");
+            this.OilPSI2Value.setAttribute("alignment-baseline", "central");
+            oilGroup.appendChild(this.OilPSI2Value);
+        }
+        {
+            var fuelGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            fuelGroup.setAttribute("id", "FuelGroup");
+            rootSVG.appendChild(fuelGroup);
+            var startPosX = 580;
+            var startPosY = 165;
+            var rectMarginX = 40;
+            var rectWidth = 80;
+            var rectHeight = 30;
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "FUEL";
+            text.setAttribute("x", startPosX.toString());
+            text.setAttribute("y", (startPosY - 10).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(text);
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "LBS";
+            text.setAttribute("x", startPosX.toString());
+            text.setAttribute("y", (startPosY + 10).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(text);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX - rectMarginX - rectWidth).toString());
+            rect.setAttribute("y", (startPosY - rectHeight * 0.5).toString());
+            rect.setAttribute("width", rectWidth.toString());
+            rect.setAttribute("height", rectHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            fuelGroup.appendChild(rect);
+            this.FuelLBSLeftValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.FuelLBSLeftValue.textContent = "2910";
+            this.FuelLBSLeftValue.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.FuelLBSLeftValue.setAttribute("y", startPosY.toString());
+            this.FuelLBSLeftValue.setAttribute("fill", "green");
+            this.FuelLBSLeftValue.setAttribute("font-size", "25");
+            this.FuelLBSLeftValue.setAttribute("font-family", "Roboto-Bold");
+            this.FuelLBSLeftValue.setAttribute("text-anchor", "end");
+            this.FuelLBSLeftValue.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(this.FuelLBSLeftValue);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX + rectMarginX).toString());
+            rect.setAttribute("y", (startPosY - rectHeight * 0.5).toString());
+            rect.setAttribute("width", rectWidth.toString());
+            rect.setAttribute("height", rectHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            fuelGroup.appendChild(rect);
+            this.FuelLBSRightValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.FuelLBSRightValue.textContent = "2910";
+            this.FuelLBSRightValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.FuelLBSRightValue.setAttribute("y", startPosY.toString());
+            this.FuelLBSRightValue.setAttribute("fill", "green");
+            this.FuelLBSRightValue.setAttribute("font-size", "25");
+            this.FuelLBSRightValue.setAttribute("font-family", "Roboto-Bold");
+            this.FuelLBSRightValue.setAttribute("text-anchor", "end");
+            this.FuelLBSRightValue.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(this.FuelLBSRightValue);
+        }
+        {
+            var trimGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            trimGroup.setAttribute("id", "TrimGroup");
+            rootSVG.appendChild(trimGroup);
+            var startPosX = 760;
+            var startPosY = 30;
+            var blockPosX = startPosX;
+            var blockPosY = startPosY;
+            var lineSize = 15;
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", blockPosX.toString());
+            line.setAttribute("y1", blockPosY.toString());
+            line.setAttribute("x2", (blockPosX + lineSize).toString());
+            line.setAttribute("y2", blockPosY.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            trimGroup.appendChild(line);
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", blockPosX.toString());
+            line.setAttribute("y1", blockPosY.toString());
+            line.setAttribute("x2", blockPosX.toString());
+            line.setAttribute("y2", (blockPosY + lineSize).toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            trimGroup.appendChild(line);
+            var textStartY = blockPosY + lineSize + 15;
+            var textSpacingY = 18;
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "T";
+            text.setAttribute("x", blockPosX.toString());
+            text.setAttribute("y", (textStartY + textSpacingY * 0).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "R";
+            text.setAttribute("x", blockPosX.toString());
+            text.setAttribute("y", (textStartY + textSpacingY * 1).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "I";
+            text.setAttribute("x", blockPosX.toString());
+            text.setAttribute("y", (textStartY + textSpacingY * 2).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "M";
+            text.setAttribute("x", blockPosX.toString());
+            text.setAttribute("y", (textStartY + textSpacingY * 3).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            var lineStartY = (textStartY + textSpacingY * 3) + 15;
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", blockPosX.toString());
+            line.setAttribute("y1", lineStartY.toString());
+            line.setAttribute("x2", blockPosX.toString());
+            line.setAttribute("y2", (lineStartY + lineSize).toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            trimGroup.appendChild(line);
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", blockPosX.toString());
+            line.setAttribute("y1", (lineStartY + lineSize).toString());
+            line.setAttribute("x2", (blockPosX + lineSize).toString());
+            line.setAttribute("y2", (lineStartY + lineSize).toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            trimGroup.appendChild(line);
+            blockPosX = startPosX + 80;
+            blockPosY = startPosY + 25;
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "AIL";
+            text.setAttribute("x", blockPosX.toString());
+            text.setAttribute("y", blockPosY.toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            blockPosY += 30;
+            var gaugeWidth = 80;
+            var gaugeHeight = 11;
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (blockPosX - gaugeWidth * 0.5).toString());
+            rect.setAttribute("y", blockPosY.toString());
+            rect.setAttribute("width", gaugeWidth.toString());
+            rect.setAttribute("height", gaugeHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            trimGroup.appendChild(rect);
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "L";
+            text.setAttribute("x", (blockPosX - gaugeWidth * 0.5 - 10).toString());
+            text.setAttribute("y", (blockPosY + gaugeHeight * 0.5).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "end");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "R";
+            text.setAttribute("x", (blockPosX + gaugeWidth * 0.5 + 10).toString());
+            text.setAttribute("y", (blockPosY + gaugeHeight * 0.5).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "start");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (blockPosX - gaugeWidth * 0.15).toString());
+            rect.setAttribute("y", blockPosY.toString());
+            rect.setAttribute("width", (gaugeWidth * 0.15).toString());
+            rect.setAttribute("height", gaugeHeight.toString());
+            rect.setAttribute("fill", "green");
+            trimGroup.appendChild(rect);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", blockPosX.toString());
+            rect.setAttribute("y", blockPosY.toString());
+            rect.setAttribute("width", (gaugeWidth * 0.15).toString());
+            rect.setAttribute("height", gaugeHeight.toString());
+            rect.setAttribute("fill", "green");
+            trimGroup.appendChild(rect);
+            this.AileronCursorX1 = blockPosX - gaugeWidth * 0.5;
+            this.AileronCursorX2 = blockPosX + gaugeWidth * 0.5;
+            this.AileronCursorY = blockPosY;
+            this.AileronCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.AileronCursor.setAttribute("transform", "translate (" + this.AileronCursorX1 + " " + this.AileronCursorY + ")");
+            this.AileronCursor.setAttribute("fill", "white");
+            this.AileronCursor.setAttribute("d", "M0 0 l-5 -15 l10 0 l-5 15 Z");
+            trimGroup.appendChild(this.AileronCursor);
+            this.RudderCursorX1 = blockPosX - gaugeWidth * 0.5;
+            this.RudderCursorX2 = blockPosX + gaugeWidth * 0.5;
+            this.RudderCursorY = blockPosY + gaugeHeight;
+            this.RudderCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.RudderCursor.setAttribute("transform", "translate (" + this.RudderCursorX1 + " " + this.RudderCursorY + ")");
+            this.RudderCursor.setAttribute("fill", "white");
+            this.RudderCursor.setAttribute("d", "M0 0 l-5 15 l10 0 l-5 -15 Z");
+            trimGroup.appendChild(this.RudderCursor);
+            blockPosY += 30 + gaugeHeight;
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "RUD";
+            text.setAttribute("x", blockPosX.toString());
+            text.setAttribute("y", blockPosY.toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            blockPosX = startPosX + 180;
+            blockPosY = startPosY + 10;
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "ELEV";
+            text.setAttribute("x", blockPosX.toString());
+            text.setAttribute("y", blockPosY.toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            var gaugeStartX = blockPosX;
+            var gaugeStartY = blockPosY + 19;
+            var gaugeWidth = 11;
+            var gaugeHeight = 85;
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", gaugeStartX.toString());
+            rect.setAttribute("y", gaugeStartY.toString());
+            rect.setAttribute("width", gaugeWidth.toString());
+            rect.setAttribute("height", gaugeHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            trimGroup.appendChild(rect);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", gaugeStartX.toString());
+            rect.setAttribute("y", (gaugeStartY + gaugeHeight * 0.25).toString());
+            rect.setAttribute("width", gaugeWidth.toString());
+            rect.setAttribute("height", (gaugeHeight * 0.25).toString());
+            rect.setAttribute("fill", "green");
+            trimGroup.appendChild(rect);
+            this.ElevatorCursorX = gaugeStartX + gaugeWidth;
+            this.ElevatorCursorY1 = gaugeStartY + gaugeHeight;
+            this.ElevatorCursorY2 = gaugeStartY;
+            this.ElevatorCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + this.ElevatorCursorY2 + ")");
+            this.ElevatorCursor.setAttribute("fill", "white");
+            this.ElevatorCursor.setAttribute("d", "M0 0 l15 -5 l0 10 l-15 -5 Z");
+            trimGroup.appendChild(this.ElevatorCursor);
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "ND";
+            text.setAttribute("x", (gaugeStartX - 8).toString());
+            text.setAttribute("y", (gaugeStartY + 14).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "end");
+            text.setAttribute("alignment-baseline", "top");
+            trimGroup.appendChild(text);
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "NU";
+            text.setAttribute("x", (gaugeStartX - 8).toString());
+            text.setAttribute("y", (gaugeStartY + gaugeHeight).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "end");
+            text.setAttribute("alignment-baseline", "bottom");
+            trimGroup.appendChild(text);
+            blockPosX = startPosX + 75;
+            blockPosY = startPosY + 150;
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "FLAPS";
+            text.setAttribute("x", blockPosX.toString());
+            text.setAttribute("y", blockPosY.toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            var cursorCenterX = blockPosX + 42;
+            var cursorCenterY = blockPosY - 20;
+            this.flapsCursorTransform = "translate (" + cursorCenterX + " " + cursorCenterY + ") scale(0.65)";
+            this.FlapsCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.FlapsCursor.setAttribute("transform", this.flapsCursorTransform + " rotate(0)");
+            this.FlapsCursor.setAttribute("fill", "white");
+            this.FlapsCursor.setAttribute("d", "M0 0 M-10 10 q-10 -10 0 -20 l70 7 q3 3 0 6 l-70 7 Z");
+            trimGroup.appendChild(this.FlapsCursor);
+            for (var i = 0; i < this.Flaps_Table_Angles.length; i++) {
+                var radians = this.Flaps_Table_Angles[i] * Math.PI / 180;
+                var startX = cursorCenterX + Math.cos(radians) * 45;
+                var startY = cursorCenterY + Math.sin(radians) * 45;
+                var endX = cursorCenterX + Math.cos(radians) * 60;
+                var endY = cursorCenterY + Math.sin(radians) * 60;
+                var textX = cursorCenterX + Math.cos(radians) * 72;
+                var textY = cursorCenterY + Math.sin(radians) * 72;
+                var line = document.createElementNS(Avionics.SVG.NS, "line");
+                line.setAttribute("x1", startX.toString());
+                line.setAttribute("y1", startY.toString());
+                line.setAttribute("x2", endX.toString());
+                line.setAttribute("y2", endY.toString());
+                line.setAttribute("stroke", "white");
+                line.setAttribute("stroke-width", "2");
+                trimGroup.appendChild(line);
+                var text = document.createElementNS(Avionics.SVG.NS, "text");
+                text.textContent = this.Flaps_Table_Values[i].toString();
+                text.setAttribute("x", textX.toString());
+                text.setAttribute("y", textY.toString());
+                text.setAttribute("fill", "white");
+                text.setAttribute("font-size", "16");
+                text.setAttribute("font-family", "Roboto-Light");
+                text.setAttribute("text-anchor", "middle");
+                text.setAttribute("alignment-baseline", "central");
+                trimGroup.appendChild(text);
+            }
+        }
+    }
+    constructDefault() {
+        var rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
+        rootSVG.setAttribute("id", "Standard");
+        rootSVG.setAttribute("viewBox", "0 0 1000 1000");
+        this.root.appendChild(rootSVG);
+        {
+            var n1Group = document.createElementNS(Avionics.SVG.NS, "g");
+            n1Group.setAttribute("id", "N1");
+            rootSVG.appendChild(n1Group);
+            var startPosX = 140;
+            var startPosY = 30;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "N1%";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "22");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            n1Group.appendChild(titleText);
+            var gradValues = [0, 0, 100, 0, 90, 0, 80, 60, 40, 20];
+            var gradLength = [26, 20, 20, 12, 20, 12, 20, 20, 20, 20];
+            var gradSpacing = [25, 25, 25, 25, 25, 25, 25, 25, 25, 15];
+            startPosY += 20;
+            var posY = startPosY;
+            var halfWidth = 80;
+            for (var i = 0; i < gradValues.length; i++) {
+                if (gradValues[i] > 0) {
+                    var text = document.createElementNS(Avionics.SVG.NS, "text");
+                    text.textContent = gradValues[i].toString();
+                    text.setAttribute("x", startPosX.toString());
+                    text.setAttribute("y", posY.toString());
+                    text.setAttribute("fill", "white");
+                    text.setAttribute("font-size", "18");
+                    text.setAttribute("font-family", "Roboto-Light");
+                    text.setAttribute("text-anchor", "middle");
+                    text.setAttribute("alignment-baseline", "central");
+                    n1Group.appendChild(text);
+                }
+                var line = document.createElementNS(Avionics.SVG.NS, "line");
+                line.setAttribute("x1", (startPosX - halfWidth).toString());
+                line.setAttribute("y1", posY.toString());
+                line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
+                line.setAttribute("y2", posY.toString());
+                line.setAttribute("stroke", (i == 1) ? "red" : "white");
+                line.setAttribute("stroke-width", "2");
+                n1Group.appendChild(line);
+                var line = document.createElementNS(Avionics.SVG.NS, "line");
+                line.setAttribute("x1", (startPosX + halfWidth - gradLength[i]).toString());
+                line.setAttribute("y1", posY.toString());
+                line.setAttribute("x2", (startPosX + halfWidth).toString());
+                line.setAttribute("y2", posY.toString());
+                line.setAttribute("stroke", (i == 1) ? "red" : "white");
+                line.setAttribute("stroke-width", "2");
+                n1Group.appendChild(line);
+                posY += gradSpacing[i];
+            }
+            this.N1LeftZoneX = startPosX - halfWidth;
+            this.N1LeftZoneY2 = startPosY;
+            this.N1LeftZoneY1 = posY;
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", this.N1LeftZoneX.toString());
+            line.setAttribute("y1", this.N1LeftZoneY1.toString());
+            line.setAttribute("x2", this.N1LeftZoneX.toString());
+            line.setAttribute("y2", this.N1LeftZoneY2.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            n1Group.appendChild(line);
+            this.N1RightZoneX = startPosX + halfWidth;
+            this.N1RightZoneY2 = startPosY;
+            this.N1RightZoneY1 = posY;
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", this.N1RightZoneX.toString());
+            line.setAttribute("y1", this.N1RightZoneY1.toString());
+            line.setAttribute("x2", this.N1RightZoneX.toString());
+            line.setAttribute("y2", this.N1RightZoneY2.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            n1Group.appendChild(line);
+            this.N1LeftCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.N1LeftCursor.setAttribute("fill", "white");
+            n1Group.appendChild(this.N1LeftCursor);
+            this.N1RightCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.N1RightCursor.setAttribute("fill", "white");
+            n1Group.appendChild(this.N1RightCursor);
+            var rectOffsetX = 37;
+            var rectWidth = 110;
+            var rectHeight = 40;
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX - halfWidth - rectOffsetX).toString());
+            rect.setAttribute("y", posY.toString());
+            rect.setAttribute("width", rectWidth.toString());
+            rect.setAttribute("height", rectHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            n1Group.appendChild(rect);
+            this.N1LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.N1LeftValue.textContent = "0.0";
+            this.N1LeftValue.setAttribute("x", (startPosX - halfWidth - rectOffsetX + rectWidth * 0.95).toString());
+            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.5).toString());
+            this.N1LeftValue.setAttribute("fill", "green");
+            this.N1LeftValue.setAttribute("font-size", "28");
+            this.N1LeftValue.setAttribute("font-family", "Roboto-Bold");
+            this.N1LeftValue.setAttribute("text-anchor", "end");
+            this.N1LeftValue.setAttribute("alignment-baseline", "central");
+            n1Group.appendChild(this.N1LeftValue);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX + halfWidth + rectOffsetX - rectWidth).toString());
+            rect.setAttribute("y", posY.toString());
+            rect.setAttribute("width", rectWidth.toString());
+            rect.setAttribute("height", rectHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            n1Group.appendChild(rect);
+            this.N1RightValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.N1RightValue.textContent = "0.0";
+            this.N1RightValue.setAttribute("x", (startPosX + halfWidth + rectOffsetX - rectWidth * 0.05).toString());
+            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.5).toString());
+            this.N1RightValue.setAttribute("fill", "green");
+            this.N1RightValue.setAttribute("font-size", "28");
+            this.N1RightValue.setAttribute("font-family", "Roboto-Bold");
+            this.N1RightValue.setAttribute("text-anchor", "end");
+            this.N1RightValue.setAttribute("alignment-baseline", "central");
+            n1Group.appendChild(this.N1RightValue);
+        }
+        {
+            var ittGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            ittGroup.setAttribute("id", "ITT");
+            rootSVG.appendChild(ittGroup);
+            var startPosX = 390;
+            var startPosY = 30;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "ITT°C";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "22");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            ittGroup.appendChild(titleText);
+            var gradValues = [0, 1000, 0, 900, 0, 800, 0, 700, 0, 600, 400, 200];
+            var gradLength = [14, 26, 12, 26, 18, 26, 12, 26, 12, 26, 26, 26];
+            var gradSpacing = [18, 18, 18, 25, 25, 30, 30, 30, 30, 25, 25, 10];
+            startPosY += 5;
+            var posY = startPosY;
+            var halfWidth = 60;
+            for (var i = 0; i < gradValues.length; i++) {
+                if (gradValues[i] > 0) {
+                    var text = document.createElementNS(Avionics.SVG.NS, "text");
+                    text.textContent = gradValues[i].toString();
+                    text.setAttribute("x", startPosX.toString());
+                    text.setAttribute("y", posY.toString());
+                    text.setAttribute("fill", "white");
+                    text.setAttribute("font-size", "18");
+                    text.setAttribute("font-family", "Roboto-Light");
+                    text.setAttribute("text-anchor", "middle");
+                    text.setAttribute("alignment-baseline", "central");
+                    ittGroup.appendChild(text);
+                }
+                var line = document.createElementNS(Avionics.SVG.NS, "line");
+                line.setAttribute("x1", (startPosX - halfWidth).toString());
+                line.setAttribute("y1", posY.toString());
+                line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
+                line.setAttribute("y2", posY.toString());
+                line.setAttribute("stroke", (i == 4) ? "red" : "white");
+                line.setAttribute("stroke-width", "2");
+                ittGroup.appendChild(line);
+                var line = document.createElementNS(Avionics.SVG.NS, "line");
+                line.setAttribute("x1", (startPosX + halfWidth - gradLength[i]).toString());
+                line.setAttribute("y1", posY.toString());
+                line.setAttribute("x2", (startPosX + halfWidth).toString());
+                line.setAttribute("y2", posY.toString());
+                line.setAttribute("stroke", (i == 4) ? "red" : "white");
+                line.setAttribute("stroke-width", "2");
+                ittGroup.appendChild(line);
+                posY += gradSpacing[i];
+            }
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", (startPosX - halfWidth - 12).toString());
+            line.setAttribute("y1", posY.toString());
+            line.setAttribute("x2", (startPosX - halfWidth).toString());
+            line.setAttribute("y2", posY.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            ittGroup.appendChild(line);
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", (startPosX + halfWidth).toString());
+            line.setAttribute("y1", posY.toString());
+            line.setAttribute("x2", (startPosX + halfWidth + 12).toString());
+            line.setAttribute("y2", posY.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            ittGroup.appendChild(line);
+            this.ITTLeftZoneX = startPosX - halfWidth;
+            this.ITTLeftZoneY2 = startPosY;
+            this.ITTLeftZoneY1 = posY;
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", this.ITTLeftZoneX.toString());
+            line.setAttribute("y1", this.ITTLeftZoneY1.toString());
+            line.setAttribute("x2", this.ITTLeftZoneX.toString());
+            line.setAttribute("y2", this.ITTLeftZoneY2.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            ittGroup.appendChild(line);
+            this.ITTRightZoneX = startPosX + halfWidth;
+            this.ITTRightZoneY2 = startPosY;
+            this.ITTRightZoneY1 = posY;
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", this.ITTRightZoneX.toString());
+            line.setAttribute("y1", this.ITTRightZoneY1.toString());
+            line.setAttribute("x2", this.ITTRightZoneX.toString());
+            line.setAttribute("y2", this.ITTRightZoneY2.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            ittGroup.appendChild(line);
+            var cursorWidth = 10;
+            var cursorHeight = 10;
+            this.ITTLeftBeacon = document.createElementNS(Avionics.SVG.NS, "rect");
+            this.ITTLeftBeacon.setAttribute("x", this.ITTLeftZoneX.toString());
+            this.ITTLeftBeacon.setAttribute("y", this.ITTLeftZoneY1.toString());
+            this.ITTLeftBeacon.setAttribute("width", cursorWidth.toString());
+            this.ITTLeftBeacon.setAttribute("height", cursorHeight.toString());
+            this.ITTLeftBeacon.setAttribute("fill", "darkorange");
+            ittGroup.appendChild(this.ITTLeftBeacon);
+            this.ITTRightBeacon = document.createElementNS(Avionics.SVG.NS, "rect");
+            this.ITTRightBeacon.setAttribute("x", (this.ITTRightZoneX - cursorWidth).toString());
+            this.ITTRightBeacon.setAttribute("y", this.ITTRightZoneY1.toString());
+            this.ITTRightBeacon.setAttribute("width", cursorWidth.toString());
+            this.ITTRightBeacon.setAttribute("height", cursorHeight.toString());
+            this.ITTRightBeacon.setAttribute("fill", "darkorange");
+            ittGroup.appendChild(this.ITTRightBeacon);
+            this.ITTLeftCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.ITTLeftCursor.setAttribute("fill", "white");
+            ittGroup.appendChild(this.ITTLeftCursor);
+            this.ITTRightCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.ITTRightCursor.setAttribute("fill", "white");
+            ittGroup.appendChild(this.ITTRightCursor);
+        }
+        {
+            var n2Group = document.createElementNS(Avionics.SVG.NS, "g");
+            n2Group.setAttribute("id", "N2Group");
+            rootSVG.appendChild(n2Group);
+            var startPosX = 630;
+            var startPosY = 30;
+            var titleTextTop = document.createElementNS(Avionics.SVG.NS, "text");
+            titleTextTop.textContent = "N2";
+            titleTextTop.setAttribute("x", startPosX.toString());
+            titleTextTop.setAttribute("y", startPosY.toString());
+            titleTextTop.setAttribute("fill", "white");
+            titleTextTop.setAttribute("font-size", "22");
+            titleTextTop.setAttribute("font-family", "Roboto-Light");
+            titleTextTop.setAttribute("text-anchor", "middle");
+            titleTextTop.setAttribute("alignment-baseline", "central");
+            n2Group.appendChild(titleTextTop);
+            var titleTextBottom = document.createElementNS(Avionics.SVG.NS, "text");
+            titleTextBottom.textContent = "%";
+            titleTextBottom.setAttribute("x", startPosX.toString());
+            titleTextBottom.setAttribute("y", (startPosY + 20).toString());
+            titleTextBottom.setAttribute("fill", "white");
+            titleTextBottom.setAttribute("font-size", "22");
+            titleTextBottom.setAttribute("font-family", "Roboto-Light");
+            titleTextBottom.setAttribute("text-anchor", "middle");
+            titleTextBottom.setAttribute("alignment-baseline", "central");
+            n2Group.appendChild(titleTextBottom);
+            var rectMarginX = 22;
+            var rectMarginY = -3;
+            var rectWidth = 80;
+            var rectHeight = 30;
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX - rectMarginX - rectWidth).toString());
+            rect.setAttribute("y", (startPosY + rectMarginY).toString());
+            rect.setAttribute("width", rectWidth.toString());
+            rect.setAttribute("height", rectHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            n2Group.appendChild(rect);
+            this.N2LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.N2LeftValue.textContent = "0.0";
+            this.N2LeftValue.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.N2LeftValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.5).toString());
+            this.N2LeftValue.setAttribute("fill", "green");
+            this.N2LeftValue.setAttribute("font-size", "25");
+            this.N2LeftValue.setAttribute("font-family", "Roboto-Bold");
+            this.N2LeftValue.setAttribute("text-anchor", "end");
+            this.N2LeftValue.setAttribute("alignment-baseline", "central");
+            n2Group.appendChild(this.N2LeftValue);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX + rectMarginX).toString());
+            rect.setAttribute("y", (startPosY + rectMarginY).toString());
+            rect.setAttribute("width", rectWidth.toString());
+            rect.setAttribute("height", rectHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            n2Group.appendChild(rect);
+            this.N2RightValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.N2RightValue.textContent = "0.0";
+            this.N2RightValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.N2RightValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.5).toString());
+            this.N2RightValue.setAttribute("fill", "green");
+            this.N2RightValue.setAttribute("font-size", "25");
+            this.N2RightValue.setAttribute("font-family", "Roboto-Bold");
+            this.N2RightValue.setAttribute("text-anchor", "end");
+            this.N2RightValue.setAttribute("alignment-baseline", "central");
+            n2Group.appendChild(this.N2RightValue);
+        }
+        {
+            var oilGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            oilGroup.setAttribute("id", "OilGroup");
+            rootSVG.appendChild(oilGroup);
+            var startPosX = 630;
+            var startPosY = 75;
+            var halfWidth = 60;
+            var fullHeight = 120;
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", (startPosX - halfWidth * 1.8).toString());
+            line.setAttribute("y1", startPosY.toString());
+            line.setAttribute("x2", (startPosX + halfWidth * 1.8).toString());
+            line.setAttribute("y2", startPosY.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            oilGroup.appendChild(line);
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", (startPosX - halfWidth * 1.8).toString());
+            line.setAttribute("y1", (startPosY + fullHeight).toString());
+            line.setAttribute("x2", (startPosX + halfWidth * 1.8).toString());
+            line.setAttribute("y2", (startPosY + fullHeight).toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            oilGroup.appendChild(line);
+            var gaugeWidth = 8;
+            var gaugeHeight = fullHeight * 0.55;
+            var titleTextLeft = document.createElementNS(Avionics.SVG.NS, "text");
+            titleTextLeft.textContent = "OIL PSI";
+            titleTextLeft.setAttribute("x", (startPosX - halfWidth).toString());
+            titleTextLeft.setAttribute("y", (startPosY + 16).toString());
+            titleTextLeft.setAttribute("fill", "white");
+            titleTextLeft.setAttribute("font-size", "18");
+            titleTextLeft.setAttribute("font-family", "Roboto-Light");
+            titleTextLeft.setAttribute("text-anchor", "middle");
+            titleTextLeft.setAttribute("alignment-baseline", "central");
+            oilGroup.appendChild(titleTextLeft);
+            {
+                var psiRects = [0.1, 0.1, 0.6, 0.1, 0.1];
+                var psiColors = ["red", "yellow", "green", "yellow", "red"];
+                this.OilPSI1CursorX = startPosX - halfWidth * 1.4;
+                this.OilPSI1CursorY2 = startPosY + fullHeight * 0.25;
+                this.OilPSI1CursorY1 = this.OilPSI1CursorY2 + gaugeHeight;
+                var x = this.OilPSI1CursorX;
+                var y = this.OilPSI1CursorY2;
+                for (var i = 0; i < psiRects.length; i++) {
+                    var h = (this.OilPSI1CursorY1 - this.OilPSI1CursorY2) * psiRects[i];
+                    var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+                    rect.setAttribute("x", x.toString());
+                    rect.setAttribute("y", y.toString());
+                    rect.setAttribute("width", gaugeWidth.toString());
+                    rect.setAttribute("height", h.toString());
+                    rect.setAttribute("fill", psiColors[i]);
+                    oilGroup.appendChild(rect);
+                    y += h;
+                }
+                this.OilPSI1Value = document.createElementNS(Avionics.SVG.NS, "text");
+                this.OilPSI1Value.textContent = "0";
+                this.OilPSI1Value.setAttribute("x", (this.OilPSI1CursorX + gaugeWidth * 0.5).toString());
+                this.OilPSI1Value.setAttribute("y", (this.OilPSI1CursorY1 + 10).toString());
+                this.OilPSI1Value.setAttribute("fill", "green");
+                this.OilPSI1Value.setAttribute("font-size", "20");
+                this.OilPSI1Value.setAttribute("font-family", "Roboto-Bold");
+                this.OilPSI1Value.setAttribute("text-anchor", "middle");
+                this.OilPSI1Value.setAttribute("alignment-baseline", "central");
+                oilGroup.appendChild(this.OilPSI1Value);
+                this.OilPSI1Cursor = document.createElementNS(Avionics.SVG.NS, "path");
+                this.OilPSI1Cursor.setAttribute("transform", "translate (" + this.OilPSI1CursorX + " " + this.OilPSI1CursorY1 + ")");
+                this.OilPSI1Cursor.setAttribute("fill", "green");
+                this.OilPSI1Cursor.setAttribute("d", "M0 0 l-15 5 l0 -10 l15 5 Z");
+                oilGroup.appendChild(this.OilPSI1Cursor);
+                this.OilPSI2CursorX = startPosX - halfWidth * 0.7;
+                this.OilPSI2CursorY2 = startPosY + fullHeight * 0.25;
+                this.OilPSI2CursorY1 = this.OilPSI2CursorY2 + gaugeHeight;
+                var x = this.OilPSI2CursorX;
+                var y = this.OilPSI2CursorY2;
+                for (var i = 0; i < psiRects.length; i++) {
+                    var h = (this.OilPSI2CursorY1 - this.OilPSI2CursorY2) * psiRects[i];
+                    var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+                    rect.setAttribute("x", x.toString());
+                    rect.setAttribute("y", y.toString());
+                    rect.setAttribute("width", gaugeWidth.toString());
+                    rect.setAttribute("height", h.toString());
+                    rect.setAttribute("fill", psiColors[i]);
+                    oilGroup.appendChild(rect);
+                    y += h;
+                }
+                this.OilPSI2Value = document.createElementNS(Avionics.SVG.NS, "text");
+                this.OilPSI2Value.textContent = "0";
+                this.OilPSI2Value.setAttribute("x", (this.OilPSI2CursorX + gaugeWidth * 0.5).toString());
+                this.OilPSI2Value.setAttribute("y", (this.OilPSI2CursorY1 + 10).toString());
+                this.OilPSI2Value.setAttribute("fill", "green");
+                this.OilPSI2Value.setAttribute("font-size", "20");
+                this.OilPSI2Value.setAttribute("font-family", "Roboto-Bold");
+                this.OilPSI2Value.setAttribute("text-anchor", "middle");
+                this.OilPSI2Value.setAttribute("alignment-baseline", "central");
+                oilGroup.appendChild(this.OilPSI2Value);
+                this.OilPSI2Cursor = document.createElementNS(Avionics.SVG.NS, "path");
+                this.OilPSI2Cursor.setAttribute("transform", "translate (" + this.OilPSI2CursorX + " " + this.OilPSI2CursorY1 + ")");
+                this.OilPSI2Cursor.setAttribute("fill", "green");
+                this.OilPSI2Cursor.setAttribute("d", "M0 0 l-15 5 l0 -10 l15 5 Z");
+                oilGroup.appendChild(this.OilPSI2Cursor);
+            }
+            var titleTextRight = document.createElementNS(Avionics.SVG.NS, "text");
+            titleTextRight.textContent = "OIL °C";
+            titleTextRight.setAttribute("x", (startPosX + halfWidth).toString());
+            titleTextRight.setAttribute("y", (startPosY + 16).toString());
+            titleTextRight.setAttribute("fill", "white");
+            titleTextRight.setAttribute("font-size", "18");
+            titleTextRight.setAttribute("font-family", "Roboto-Light");
+            titleTextRight.setAttribute("text-anchor", "middle");
+            titleTextRight.setAttribute("alignment-baseline", "central");
+            oilGroup.appendChild(titleTextRight);
+            {
+                var tempRects = [0.1, 0.1, 0.6, 0.1, 0.1];
+                var tempColors = ["red", "yellow", "green", "yellow", "red"];
+                this.OilTemp1CursorX = startPosX + halfWidth * 0.7;
+                this.OilTemp1CursorY2 = startPosY + fullHeight * 0.25;
+                this.OilTemp1CursorY1 = this.OilTemp1CursorY2 + gaugeHeight;
+                var x = this.OilTemp1CursorX;
+                var y = this.OilTemp1CursorY2;
+                for (var i = 0; i < tempRects.length; i++) {
+                    var h = (this.OilTemp1CursorY1 - this.OilTemp1CursorY2) * tempRects[i];
+                    var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+                    rect.setAttribute("x", x.toString());
+                    rect.setAttribute("y", y.toString());
+                    rect.setAttribute("width", gaugeWidth.toString());
+                    rect.setAttribute("height", h.toString());
+                    rect.setAttribute("fill", tempColors[i]);
+                    oilGroup.appendChild(rect);
+                    y += h;
+                }
+                this.OilTemp1Value = document.createElementNS(Avionics.SVG.NS, "text");
+                this.OilTemp1Value.textContent = "0";
+                this.OilTemp1Value.setAttribute("x", (this.OilTemp1CursorX + gaugeWidth * 0.5).toString());
+                this.OilTemp1Value.setAttribute("y", (this.OilTemp1CursorY1 + 10).toString());
+                this.OilTemp1Value.setAttribute("fill", "green");
+                this.OilTemp1Value.setAttribute("font-size", "20");
+                this.OilTemp1Value.setAttribute("font-family", "Roboto-Bold");
+                this.OilTemp1Value.setAttribute("text-anchor", "middle");
+                this.OilTemp1Value.setAttribute("alignment-baseline", "central");
+                oilGroup.appendChild(this.OilTemp1Value);
+                this.OilTemp1Cursor = document.createElementNS(Avionics.SVG.NS, "path");
+                this.OilTemp1Cursor.setAttribute("transform", "translate (" + this.OilTemp1CursorX + " " + this.OilTemp1CursorY1 + ")");
+                this.OilTemp1Cursor.setAttribute("fill", "green");
+                this.OilTemp1Cursor.setAttribute("d", "M0 0 l-15 5 l0 -10 l15 5 Z");
+                oilGroup.appendChild(this.OilTemp1Cursor);
+                this.OilTemp2CursorX = startPosX + halfWidth * 1.4;
+                this.OilTemp2CursorY2 = startPosY + fullHeight * 0.25;
+                this.OilTemp2CursorY1 = this.OilTemp2CursorY2 + gaugeHeight;
+                var x = this.OilTemp2CursorX;
+                var y = this.OilTemp2CursorY2;
+                for (var i = 0; i < tempRects.length; i++) {
+                    var h = (this.OilTemp2CursorY1 - this.OilTemp2CursorY2) * tempRects[i];
+                    var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+                    rect.setAttribute("x", x.toString());
+                    rect.setAttribute("y", y.toString());
+                    rect.setAttribute("width", gaugeWidth.toString());
+                    rect.setAttribute("height", h.toString());
+                    rect.setAttribute("fill", tempColors[i]);
+                    oilGroup.appendChild(rect);
+                    y += h;
+                }
+                this.OilTemp2Value = document.createElementNS(Avionics.SVG.NS, "text");
+                this.OilTemp2Value.textContent = "0";
+                this.OilTemp2Value.setAttribute("x", (this.OilTemp2CursorX + gaugeWidth * 0.5).toString());
+                this.OilTemp2Value.setAttribute("y", (this.OilTemp2CursorY1 + 10).toString());
+                this.OilTemp2Value.setAttribute("fill", "green");
+                this.OilTemp2Value.setAttribute("font-size", "20");
+                this.OilTemp2Value.setAttribute("font-family", "Roboto-Bold");
+                this.OilTemp2Value.setAttribute("text-anchor", "middle");
+                this.OilTemp2Value.setAttribute("alignment-baseline", "central");
+                oilGroup.appendChild(this.OilTemp2Value);
+                this.OilTemp2Cursor = document.createElementNS(Avionics.SVG.NS, "path");
+                this.OilTemp2Cursor.setAttribute("transform", "translate (" + this.OilTemp2CursorX + " " + this.OilTemp2CursorY1 + ")");
+                this.OilTemp2Cursor.setAttribute("fill", "green");
+                this.OilTemp2Cursor.setAttribute("d", "M0 0 l-15 5 l0 -10 l15 5 Z");
+                oilGroup.appendChild(this.OilTemp2Cursor);
+            }
+        }
+        {
+            var fuelGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            fuelGroup.setAttribute("id", "FuelGroup");
+            rootSVG.appendChild(fuelGroup);
+            var startPosX = 630;
+            var startPosY = 220;
+            var spacingX = 35;
+            var spacingY = 30;
+            var rectWidth = 65;
+            var rectHeight = spacingX * 0.8;
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "FUEL";
+            text.setAttribute("x", startPosX.toString());
+            text.setAttribute("y", startPosY.toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(text);
+            startPosY += spacingY;
+            text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "PPH";
+            text.setAttribute("x", startPosX.toString());
+            text.setAttribute("y", startPosY.toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(text);
+            this.FuelPPHLeftValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.FuelPPHLeftValue.textContent = "2910";
+            this.FuelPPHLeftValue.setAttribute("x", (startPosX - spacingX - 5).toString());
+            this.FuelPPHLeftValue.setAttribute("y", startPosY.toString());
+            this.FuelPPHLeftValue.setAttribute("fill", "green");
+            this.FuelPPHLeftValue.setAttribute("font-size", "18");
+            this.FuelPPHLeftValue.setAttribute("font-family", "Roboto-Bold");
+            this.FuelPPHLeftValue.setAttribute("text-anchor", "end");
+            this.FuelPPHLeftValue.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(this.FuelPPHLeftValue);
+            this.FuelPPHRightValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.FuelPPHRightValue.textContent = "2910";
+            this.FuelPPHRightValue.setAttribute("x", (startPosX + spacingX + rectWidth - 5).toString());
+            this.FuelPPHRightValue.setAttribute("y", startPosY.toString());
+            this.FuelPPHRightValue.setAttribute("fill", "green");
+            this.FuelPPHRightValue.setAttribute("font-size", "18");
+            this.FuelPPHRightValue.setAttribute("font-family", "Roboto-Bold");
+            this.FuelPPHRightValue.setAttribute("text-anchor", "end");
+            this.FuelPPHRightValue.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(this.FuelPPHRightValue);
+            startPosY += spacingY;
+            text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "°C";
+            text.setAttribute("x", startPosX.toString());
+            text.setAttribute("y", startPosY.toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(text);
+            this.FuelTempLeftValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.FuelTempLeftValue.textContent = "2910";
+            this.FuelTempLeftValue.setAttribute("x", (startPosX - spacingX - 5).toString());
+            this.FuelTempLeftValue.setAttribute("y", startPosY.toString());
+            this.FuelTempLeftValue.setAttribute("fill", "green");
+            this.FuelTempLeftValue.setAttribute("font-size", "18");
+            this.FuelTempLeftValue.setAttribute("font-family", "Roboto-Bold");
+            this.FuelTempLeftValue.setAttribute("text-anchor", "end");
+            this.FuelTempLeftValue.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(this.FuelTempLeftValue);
+            this.FuelTempRightValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.FuelTempRightValue.textContent = "2910";
+            this.FuelTempRightValue.setAttribute("x", (startPosX + spacingX + rectWidth - 5).toString());
+            this.FuelTempRightValue.setAttribute("y", startPosY.toString());
+            this.FuelTempRightValue.setAttribute("fill", "green");
+            this.FuelTempRightValue.setAttribute("font-size", "18");
+            this.FuelTempRightValue.setAttribute("font-family", "Roboto-Bold");
+            this.FuelTempRightValue.setAttribute("text-anchor", "end");
+            this.FuelTempRightValue.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(this.FuelTempRightValue);
+            startPosY += spacingY;
+            text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "LBS";
+            text.setAttribute("x", startPosX.toString());
+            text.setAttribute("y", startPosY.toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(text);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX - spacingX - rectWidth).toString());
+            rect.setAttribute("y", (startPosY - rectHeight * 0.5).toString());
+            rect.setAttribute("width", rectWidth.toString());
+            rect.setAttribute("height", rectHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            fuelGroup.appendChild(rect);
+            this.FuelLBSLeftValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.FuelLBSLeftValue.textContent = "2910";
+            this.FuelLBSLeftValue.setAttribute("x", (startPosX - spacingX - 5).toString());
+            this.FuelLBSLeftValue.setAttribute("y", startPosY.toString());
+            this.FuelLBSLeftValue.setAttribute("fill", "green");
+            this.FuelLBSLeftValue.setAttribute("font-size", "18");
+            this.FuelLBSLeftValue.setAttribute("font-family", "Roboto-Bold");
+            this.FuelLBSLeftValue.setAttribute("text-anchor", "end");
+            this.FuelLBSLeftValue.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(this.FuelLBSLeftValue);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX + spacingX).toString());
+            rect.setAttribute("y", (startPosY - rectHeight * 0.5).toString());
+            rect.setAttribute("width", rectWidth.toString());
+            rect.setAttribute("height", rectHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            fuelGroup.appendChild(rect);
+            this.FuelLBSRightValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.FuelLBSRightValue.textContent = "2910";
+            this.FuelLBSRightValue.setAttribute("x", (startPosX + spacingX + rectWidth - 5).toString());
+            this.FuelLBSRightValue.setAttribute("y", startPosY.toString());
+            this.FuelLBSRightValue.setAttribute("fill", "green");
+            this.FuelLBSRightValue.setAttribute("font-size", "18");
+            this.FuelLBSRightValue.setAttribute("font-family", "Roboto-Bold");
+            this.FuelLBSRightValue.setAttribute("text-anchor", "end");
+            this.FuelLBSRightValue.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(this.FuelLBSRightValue);
+        }
+        {
+            var trimGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            trimGroup.setAttribute("id", "TrimGroup");
+            rootSVG.appendChild(trimGroup);
+            var startPosX = 875;
+            var startPosY = 30;
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "TRIM";
+            text.setAttribute("x", startPosX.toString());
+            text.setAttribute("y", startPosY.toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", (startPosX - 90).toString());
+            line.setAttribute("y1", startPosY.toString());
+            line.setAttribute("x2", (startPosX - 30).toString());
+            line.setAttribute("y2", startPosY.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            trimGroup.appendChild(line);
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", (startPosX + 30).toString());
+            line.setAttribute("y1", startPosY.toString());
+            line.setAttribute("x2", (startPosX + 90).toString());
+            line.setAttribute("y2", startPosY.toString());
+            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke-width", "2");
+            trimGroup.appendChild(line);
+            startPosY += 25;
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "AIL";
+            text.setAttribute("x", startPosX.toString());
+            text.setAttribute("y", startPosY.toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            startPosY += 25;
+            var gaugeWidth = 100;
+            var gaugeHeight = 11;
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX - gaugeWidth * 0.5).toString());
+            rect.setAttribute("y", startPosY.toString());
+            rect.setAttribute("width", gaugeWidth.toString());
+            rect.setAttribute("height", gaugeHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            trimGroup.appendChild(rect);
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "L";
+            text.setAttribute("x", (startPosX - gaugeWidth * 0.5 - 10).toString());
+            text.setAttribute("y", (startPosY + gaugeHeight * 0.5).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "end");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "R";
+            text.setAttribute("x", (startPosX + gaugeWidth * 0.5 + 10).toString());
+            text.setAttribute("y", (startPosY + gaugeHeight * 0.5).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "start");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", (startPosX - gaugeWidth * 0.15).toString());
+            rect.setAttribute("y", startPosY.toString());
+            rect.setAttribute("width", (gaugeWidth * 0.15).toString());
+            rect.setAttribute("height", gaugeHeight.toString());
+            rect.setAttribute("fill", "green");
+            trimGroup.appendChild(rect);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", startPosX.toString());
+            rect.setAttribute("y", startPosY.toString());
+            rect.setAttribute("width", (gaugeWidth * 0.15).toString());
+            rect.setAttribute("height", gaugeHeight.toString());
+            rect.setAttribute("fill", "green");
+            trimGroup.appendChild(rect);
+            this.AileronCursorX1 = startPosX - gaugeWidth * 0.5;
+            this.AileronCursorX2 = startPosX + gaugeWidth * 0.5;
+            this.AileronCursorY = startPosY;
+            this.AileronCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.AileronCursor.setAttribute("transform", "translate (" + this.AileronCursorX1 + " " + this.AileronCursorY + ")");
+            this.AileronCursor.setAttribute("fill", "white");
+            this.AileronCursor.setAttribute("d", "M0 0 l-5 -15 l10 0 l-5 15 Z");
+            trimGroup.appendChild(this.AileronCursor);
+            this.RudderCursorX1 = startPosX - gaugeWidth * 0.5;
+            this.RudderCursorX2 = startPosX + gaugeWidth * 0.5;
+            this.RudderCursorY = startPosY + gaugeHeight;
+            this.RudderCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.RudderCursor.setAttribute("transform", "translate (" + this.RudderCursorX1 + " " + this.RudderCursorY + ")");
+            this.RudderCursor.setAttribute("fill", "white");
+            this.RudderCursor.setAttribute("d", "M0 0 l-5 15 l10 0 l-5 -15 Z");
+            trimGroup.appendChild(this.RudderCursor);
+            startPosY += 25 + gaugeHeight;
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "RUD";
+            text.setAttribute("x", startPosX.toString());
+            text.setAttribute("y", startPosY.toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            startPosY += 62;
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "ELEV";
+            text.setAttribute("x", (startPosX - 50).toString());
+            text.setAttribute("y", startPosY.toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            var gaugeStartX = startPosX + 30;
+            var gaugeWidth = 11;
+            var gaugeHeight = 70;
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", gaugeStartX.toString());
+            rect.setAttribute("y", (startPosY - gaugeHeight * 0.5).toString());
+            rect.setAttribute("width", gaugeWidth.toString());
+            rect.setAttribute("height", gaugeHeight.toString());
+            rect.setAttribute("fill", "black");
+            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke-width", "2");
+            trimGroup.appendChild(rect);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", gaugeStartX.toString());
+            rect.setAttribute("y", (startPosY - gaugeHeight * 0.25).toString());
+            rect.setAttribute("width", gaugeWidth.toString());
+            rect.setAttribute("height", (gaugeHeight * 0.25).toString());
+            rect.setAttribute("fill", "green");
+            trimGroup.appendChild(rect);
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "ND";
+            text.setAttribute("x", (gaugeStartX - 8).toString());
+            text.setAttribute("y", (startPosY - gaugeHeight * 0.5 + 14).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "end");
+            text.setAttribute("alignment-baseline", "top");
+            trimGroup.appendChild(text);
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "NU";
+            text.setAttribute("x", (gaugeStartX - 8).toString());
+            text.setAttribute("y", (startPosY + gaugeHeight * 0.5).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "end");
+            text.setAttribute("alignment-baseline", "bottom");
+            trimGroup.appendChild(text);
+            this.ElevatorCursorX = gaugeStartX + gaugeWidth;
+            this.ElevatorCursorY1 = startPosY + gaugeHeight * 0.5;
+            this.ElevatorCursorY2 = startPosY - gaugeHeight * 0.5;
+            this.ElevatorCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + this.ElevatorCursorY1 + ")");
+            this.ElevatorCursor.setAttribute("fill", "white");
+            this.ElevatorCursor.setAttribute("d", "M0 0 l15 -5 l0 10 l-15 -5 Z");
+            trimGroup.appendChild(this.ElevatorCursor);
+            startPosY += 85;
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = "FLAPS";
+            text.setAttribute("x", (startPosX - 45).toString());
+            text.setAttribute("y", startPosY.toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "18");
+            text.setAttribute("font-family", "Roboto-Light");
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("alignment-baseline", "central");
+            trimGroup.appendChild(text);
+            var cursorCenterX = startPosX + 5;
+            var cursorCenterY = startPosY - 20;
+            this.flapsCursorTransform = "translate (" + cursorCenterX + " " + cursorCenterY + ") scale(0.65)";
+            this.FlapsCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.FlapsCursor.setAttribute("transform", this.flapsCursorTransform + " rotate(0)");
+            this.FlapsCursor.setAttribute("fill", "white");
+            this.FlapsCursor.setAttribute("d", "M0 0 M-10 10 q-10 -10 0 -20 l70 7 q3 3 0 6 l-70 7 Z");
+            trimGroup.appendChild(this.FlapsCursor);
+            var flapAngles = [0, 25, 60];
+            var flapTexts = ["0", "15", "35"];
+            for (var i = 0; i < flapAngles.length; i++) {
+                var radians = flapAngles[i] * Math.PI / 180;
+                var startX = cursorCenterX + Math.cos(radians) * 45;
+                var startY = cursorCenterY + Math.sin(radians) * 45;
+                var endX = cursorCenterX + Math.cos(radians) * 60;
+                var endY = cursorCenterY + Math.sin(radians) * 60;
+                var textX = cursorCenterX + Math.cos(radians) * 72;
+                var textY = cursorCenterY + Math.sin(radians) * 72;
+                var line = document.createElementNS(Avionics.SVG.NS, "line");
+                line.setAttribute("x1", startX.toString());
+                line.setAttribute("y1", startY.toString());
+                line.setAttribute("x2", endX.toString());
+                line.setAttribute("y2", endY.toString());
+                line.setAttribute("stroke", "white");
+                line.setAttribute("stroke-width", "2");
+                trimGroup.appendChild(line);
+                var text = document.createElementNS(Avionics.SVG.NS, "text");
+                text.textContent = flapTexts[i];
+                text.setAttribute("x", textX.toString());
+                text.setAttribute("y", textY.toString());
+                text.setAttribute("fill", "white");
+                text.setAttribute("font-size", "16");
+                text.setAttribute("font-family", "Roboto-Light");
+                text.setAttribute("text-anchor", "middle");
+                text.setAttribute("alignment-baseline", "central");
+                trimGroup.appendChild(text);
+            }
+        }
+    }
+    onUpdate(_deltaTime) {
+        if (!this.root)
+            return;
+        this.updateN1();
+        this.updateN2();
+        this.updateITT();
+        this.updateOil();
+        this.updateFuel();
+        this.updateFlaps();
+        this.updateTrims();
+    }
+    onExit() {
+    }
+    onEvent(_event) {
+    }
+    updateN1() {
+        {
+            let N1Eng1 = SimVar.GetSimVarValue("ENG N1 RPM:1", "percent");
+            let n1_y = this.N1ToPixels(N1Eng1);
+            if ((this.N1LeftZoneY1 - n1_y) > 10)
+                this.N1LeftCursor.setAttribute("d", "M" + (this.N1LeftZoneX - 1) + " " + n1_y + " l-10 0 l0 " + (this.N1LeftZoneY1 - n1_y) + " l5 0 l0 " + -(this.N1LeftZoneY1 - n1_y - 8) + " Z");
+            else
+                this.N1LeftCursor.setAttribute("d", "");
+            this.N1LeftValue.textContent = N1Eng1.toFixed(1);
+        }
+        {
+            let N1Eng2 = SimVar.GetSimVarValue("ENG N1 RPM:2", "percent");
+            let n1_y = this.N1ToPixels(N1Eng2);
+            if ((this.N1LeftZoneY1 - n1_y) > 10)
+                this.N1RightCursor.setAttribute("d", "M" + (this.N1RightZoneX + 1) + " " + n1_y + " l10 0 l0 " + (this.N1RightZoneY1 - n1_y) + " l-5 0 l0 " + -(this.N1RightZoneY1 - n1_y - 8) + " Z");
+            else
+                this.N1RightCursor.setAttribute("d", "");
+            this.N1RightValue.textContent = N1Eng2.toFixed(1);
+        }
+    }
+    updateITT() {
+        {
+            let ITTEng1 = SimVar.GetSimVarValue("TURB ENG1 ITT", "celsius");
+            let itt_y = this.ITTToPixels(ITTEng1);
+            if ((this.ITTLeftZoneY1 - itt_y) > 10)
+                this.ITTLeftCursor.setAttribute("d", "M" + (this.ITTLeftZoneX - 1) + " " + itt_y + " l-10 0 l0 " + (this.ITTLeftZoneY1 - itt_y) + " l5 0 l0 " + -(this.ITTLeftZoneY1 - itt_y - 8) + " Z");
+            else
+                this.ITTLeftCursor.setAttribute("d", "");
+            let startValue = 825;
+            let endValue = (ITTEng1 > 200) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1]) : 850;
+            let beacon_y1 = this.ITTToPixels(startValue);
+            let beacon_y2 = this.ITTToPixels(endValue);
+            this.ITTLeftBeacon.setAttribute("y", beacon_y2.toString());
+            this.ITTLeftBeacon.setAttribute("height", (beacon_y1 - beacon_y2).toString());
+        }
+        {
+            let ITTEng2 = SimVar.GetSimVarValue("TURB ENG2 ITT", "celsius");
+            let itt_y = this.ITTToPixels(ITTEng2);
+            if ((this.ITTLeftZoneY1 - itt_y) > 10)
+                this.ITTRightCursor.setAttribute("d", "M" + (this.ITTRightZoneX + 1) + " " + itt_y + " l10 0 l0 " + (this.ITTRightZoneY1 - itt_y) + " l-5 0 l0 " + -(this.ITTRightZoneY1 - itt_y - 8) + " Z");
+            else
+                this.ITTRightCursor.setAttribute("d", "");
+            let startValue = 825;
+            let endValue = (ITTEng2 > 200) ? (this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1] : 850;
+            let beacon_y1 = this.ITTToPixels(startValue);
+            let beacon_y2 = this.ITTToPixels(endValue);
+            this.ITTRightBeacon.setAttribute("y", beacon_y2.toString());
+            this.ITTRightBeacon.setAttribute("height", (beacon_y1 - beacon_y2).toString());
+        }
+    }
+    updateN2() {
+        {
+            let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
+            this.N2LeftValue.textContent = N2Eng1.toFixed(1);
+        }
+        {
+            let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
+            this.N2RightValue.textContent = N2Eng2.toFixed(1);
+        }
+    }
+    updateOil() {
+        {
+            let PSIEng1 = SimVar.GetSimVarValue("ENG OIL PRESSURE:1", "psi");
+            this.OilPSI1Value.textContent = Math.round(PSIEng1).toString();
+            let PSIPct1 = (PSIEng1 / this.OilPSIMax);
+            let psi_y = this.OilPSI1CursorY1 + (this.OilPSI1CursorY2 - this.OilPSI1CursorY1) * PSIPct1;
+            this.OilPSI1Cursor.setAttribute("transform", "translate (" + this.OilPSI1CursorX + " " + psi_y + ")");
+            let TempEng1 = SimVar.GetSimVarValue("ENG OIL TEMPERATURE:1", "celsius");
+            this.OilTemp1Value.textContent = Math.round(TempEng1).toString();
+            let TempPct1 = (TempEng1 / this.OilTempMax);
+            let temp_y = this.OilTemp1CursorY1 + (this.OilTemp1CursorY2 - this.OilTemp1CursorY1) * TempPct1;
+            this.OilTemp1Cursor.setAttribute("transform", "translate (" + this.OilTemp1CursorX + " " + temp_y + ")");
+        }
+        {
+            let PSIEng2 = SimVar.GetSimVarValue("ENG OIL PRESSURE:2", "psi");
+            this.OilPSI2Value.textContent = Math.round(PSIEng2).toString();
+            let PSIPct2 = (PSIEng2 / this.OilPSIMax);
+            let psi_y = this.OilPSI2CursorY1 + (this.OilPSI2CursorY2 - this.OilPSI2CursorY1) * PSIPct2;
+            this.OilPSI2Cursor.setAttribute("transform", "translate (" + this.OilPSI2CursorX + " " + psi_y + ")");
+            let TempEng2 = SimVar.GetSimVarValue("ENG OIL TEMPERATURE:2", "celsius");
+            this.OilTemp2Value.textContent = Math.round(TempEng2).toString();
+            let TempPct2 = (TempEng2 / this.OilTempMax);
+            let temp_y = this.OilTemp2CursorY1 + (this.OilTemp2CursorY2 - this.OilTemp2CursorY1) * TempPct2;
+            this.OilTemp2Cursor.setAttribute("transform", "translate (" + this.OilTemp2CursorX + " " + temp_y + ")");
+        }
+    }
+    updateFuel() {
+        let gallonToLBS = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "lbs");
+        {
+            let LBSEng1 = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * gallonToLBS;
+            this.FuelLBSLeftValue.textContent = Math.round(LBSEng1).toString();
+            let PPHEng1 = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour");
+            this.FuelPPHLeftValue.textContent = Math.round(PPHEng1).toString();
+            this.FuelTempLeftValue.textContent = "--";
+        }
+        {
+            let LBSEng2 = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * gallonToLBS;
+            this.FuelLBSRightValue.textContent = Math.round(LBSEng2).toString();
+            let PPHEng2 = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour");
+            this.FuelPPHRightValue.textContent = Math.round(PPHEng2).toString();
+            this.FuelTempRightValue.textContent = "--";
+        }
+    }
+    updateTrims() {
+        let AilPct = (SimVar.GetSimVarValue("AILERON TRIM PCT", "percent over 100") + 1.0) * 0.5;
+        let ail_x = this.AileronCursorX1 + (this.AileronCursorX2 - this.AileronCursorX1) * AilPct;
+        this.AileronCursor.setAttribute("transform", "translate (" + ail_x + " " + this.AileronCursorY + ")");
+        let RudPct = (SimVar.GetSimVarValue("RUDDER TRIM PCT", "percent over 100") + 1.0) * 0.5;
+        let rud_x = this.RudderCursorX1 + (this.RudderCursorX2 - this.RudderCursorX1) * RudPct;
+        this.RudderCursor.setAttribute("transform", "translate (" + rud_x + " " + this.RudderCursorY + ")");
+        let ElevPct = (SimVar.GetSimVarValue("ELEVATOR TRIM PCT", "percent over 100") + 1.0) * 0.5;
+        let elev_y = this.ElevatorCursorY1 + (this.ElevatorCursorY2 - this.ElevatorCursorY1) * ElevPct;
+        this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + elev_y + ")");
+    }
+    updateFlaps() {
+        let FlapsPct = SimVar.GetSimVarValue("TRAILING EDGE FLAPS LEFT ANGLE", "degrees");
+        var angle = this.SourceToTarget(FlapsPct, this.Flaps_Table_Values, this.Flaps_Table_Angles);
+        this.FlapsCursor.setAttribute("transform", this.flapsCursorTransform + " rotate(" + angle + ")");
+    }
+    N1ToPixels(_value) {
+        var percent;
+        if (this.isMinimized)
+            percent = this.SourceToTarget(_value, this.N1_Table_Values_Minimized, this.N1_Table_Percents_Minimized);
+        else
+            percent = this.SourceToTarget(_value, this.N1_Table_Values, this.N1_Table_Percents);
+        percent /= 100;
+        let pixels = this.N1LeftZoneY1 + (this.N1LeftZoneY2 - this.N1LeftZoneY1) * percent;
+        return pixels;
+    }
+    ITTToPixels(_value) {
+        var percent;
+        if (this.isMinimized)
+            percent = this.SourceToTarget(_value, this.ITT_Table_Values_Minimized, this.ITT_Table_Percents_Minimized);
+        else
+            percent = this.SourceToTarget(_value, this.ITT_Table_Values, this.ITT_Table_Percents);
+        percent /= 100;
+        let pixels = this.ITTLeftZoneY1 + (this.ITTLeftZoneY2 - this.ITTLeftZoneY1) * percent;
+        return pixels;
+    }
+    SourceToTarget(_value, _allSources, _allTargets) {
+        let target = 0.0;
+        if (_value <= _allSources[0])
+            target = _allTargets[0];
+        else if (_value >= _allSources[_allSources.length - 1])
+            target = _allTargets[_allTargets.length - 1];
+        else {
+            for (var i = 0; i < _allSources.length - 1; i++) {
+                if (_value >= _allSources[i] && _value < _allSources[i + 1]) {
+                    let percent = (_value - _allSources[i]) / (_allSources[i + 1] - _allSources[i]);
+                    target = _allTargets[i] + (_allTargets[i + 1] - _allTargets[i]) * percent;
+                    break;
+                }
+            }
+        }
+        return target;
+    }
+}
+class CJ4_SystemElectrics extends NavSystemElement {
+    init(_root) {
+        this.root = _root.querySelector(".SystemElectrics");
+        this.constructSVG();
+    }
+    onEnter() {
+    }
+    onUpdate(_deltaTime) {
+        if (!this.root)
+            return;
+        let GenAmp1 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS AMPS:1", "amperes");
+        this.DCAmpValueLeft.textContent = Math.round(GenAmp1).toString();
+        let GenAmp2 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS AMPS:2", "amperes");
+        this.DCAmpValueRight.textContent = Math.round(GenAmp2).toString();
+        let GenVolt1 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS VOLTAGE:1", "volts");
+        this.DCVoltValueLeft.textContent = Math.round(GenVolt1).toString();
+        let GenVolt2 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS VOLTAGE:2", "volts");
+        this.DCVoltValueRight.textContent = Math.round(GenVolt2).toString();
+        let BatAmp = SimVar.GetSimVarValue("ELECTRICAL BATTERY LOAD:1", "amperes");
+        this.BATAmpValue.textContent = Math.round(BatAmp).toString();
+        let BatVolt = SimVar.GetSimVarValue("ELECTRICAL BATTERY VOLTAGE:1", "volts");
+        this.BATVoltValue.textContent = Math.round(BatVolt).toString();
+        this.BATTempValue.textContent = "--";
+        let HydPSI1 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:1", "psi");
+        this.HYDPSIValueLeft.textContent = Math.round(HydPSI1).toString();
+        let HydPSI2 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:2", "psi");
+        this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
+        let PPHEng1 = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour");
+        this.FUELPPHValueLeft.textContent = Math.round(PPHEng1).toString();
+        let PPHEng2 = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour");
+        this.FUELPPHValueRight.textContent = Math.round(PPHEng2).toString();
+        this.FUELTempValueLeft.textContent = "--";
+        this.FUELTempValueRight.textContent = "--";
+    }
+    onExit() {
+    }
+    onEvent(_event) {
+    }
+    constructSVG() {
+        if (!this.root)
+            return;
+        var rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
+        rootSVG.setAttribute("id", "Standard");
+        rootSVG.setAttribute("viewBox", "0 0 1000 1000");
+        this.root.appendChild(rootSVG);
+        {
+            var dcGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            dcGroup.setAttribute("id", "dcGroup");
+            rootSVG.appendChild(dcGroup);
+            var startPosX = 155;
+            var startPosY = 30;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "DC ELEC";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            dcGroup.appendChild(titleText);
+            var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            lineLeft.setAttribute("x1", (startPosX - 110).toString());
+            lineLeft.setAttribute("y1", startPosY.toString());
+            lineLeft.setAttribute("x2", (startPosX - 50).toString());
+            lineLeft.setAttribute("y2", startPosY.toString());
+            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke-width", "2");
+            dcGroup.appendChild(lineLeft);
+            var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            lineLeft.setAttribute("x1", (startPosX + 50).toString());
+            lineLeft.setAttribute("y1", startPosY.toString());
+            lineLeft.setAttribute("x2", (startPosX + 110).toString());
+            lineLeft.setAttribute("y2", startPosY.toString());
+            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke-width", "2");
+            dcGroup.appendChild(lineLeft);
+            var rectMarginX = 40;
+            var rectWidth = 60;
+            var rectHeight = 30;
+            startPosY += rectHeight;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "AMP";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            dcGroup.appendChild(titleText);
+            this.DCAmpValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
+            this.DCAmpValueLeft.textContent = "0";
+            this.DCAmpValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.DCAmpValueLeft.setAttribute("y", startPosY.toString());
+            this.DCAmpValueLeft.setAttribute("fill", "green");
+            this.DCAmpValueLeft.setAttribute("font-size", "22");
+            this.DCAmpValueLeft.setAttribute("font-family", "Roboto-Bold");
+            this.DCAmpValueLeft.setAttribute("text-anchor", "end");
+            this.DCAmpValueLeft.setAttribute("alignment-baseline", "central");
+            dcGroup.appendChild(this.DCAmpValueLeft);
+            this.DCAmpValueRight = document.createElementNS(Avionics.SVG.NS, "text");
+            this.DCAmpValueRight.textContent = "0";
+            this.DCAmpValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.DCAmpValueRight.setAttribute("y", startPosY.toString());
+            this.DCAmpValueRight.setAttribute("fill", "green");
+            this.DCAmpValueRight.setAttribute("font-size", "22");
+            this.DCAmpValueRight.setAttribute("font-family", "Roboto-Bold");
+            this.DCAmpValueRight.setAttribute("text-anchor", "end");
+            this.DCAmpValueRight.setAttribute("alignment-baseline", "central");
+            dcGroup.appendChild(this.DCAmpValueRight);
+            startPosY += rectHeight;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "VOLT";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            dcGroup.appendChild(titleText);
+            this.DCVoltValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
+            this.DCVoltValueLeft.textContent = "0";
+            this.DCVoltValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.DCVoltValueLeft.setAttribute("y", startPosY.toString());
+            this.DCVoltValueLeft.setAttribute("fill", "green");
+            this.DCVoltValueLeft.setAttribute("font-size", "22");
+            this.DCVoltValueLeft.setAttribute("font-family", "Roboto-Bold");
+            this.DCVoltValueLeft.setAttribute("text-anchor", "end");
+            this.DCVoltValueLeft.setAttribute("alignment-baseline", "central");
+            dcGroup.appendChild(this.DCVoltValueLeft);
+            this.DCVoltValueRight = document.createElementNS(Avionics.SVG.NS, "text");
+            this.DCVoltValueRight.textContent = "0";
+            this.DCVoltValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.DCVoltValueRight.setAttribute("y", startPosY.toString());
+            this.DCVoltValueRight.setAttribute("fill", "green");
+            this.DCVoltValueRight.setAttribute("font-size", "22");
+            this.DCVoltValueRight.setAttribute("font-family", "Roboto-Bold");
+            this.DCVoltValueRight.setAttribute("text-anchor", "end");
+            this.DCVoltValueRight.setAttribute("alignment-baseline", "central");
+            dcGroup.appendChild(this.DCVoltValueRight);
+        }
+        {
+            var batteryGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            batteryGroup.setAttribute("id", "batteryGroup");
+            rootSVG.appendChild(batteryGroup);
+            var startPosX = 400;
+            var startPosY = 30;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "BATT";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            batteryGroup.appendChild(titleText);
+            var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            lineLeft.setAttribute("x1", (startPosX - 110).toString());
+            lineLeft.setAttribute("y1", startPosY.toString());
+            lineLeft.setAttribute("x2", (startPosX - 40).toString());
+            lineLeft.setAttribute("y2", startPosY.toString());
+            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke-width", "2");
+            batteryGroup.appendChild(lineLeft);
+            var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            lineLeft.setAttribute("x1", (startPosX + 40).toString());
+            lineLeft.setAttribute("y1", startPosY.toString());
+            lineLeft.setAttribute("x2", (startPosX + 110).toString());
+            lineLeft.setAttribute("y2", startPosY.toString());
+            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke-width", "2");
+            batteryGroup.appendChild(lineLeft);
+            var rectMarginX = 40;
+            var rectWidth = 60;
+            var rectHeight = 30;
+            startPosX -= 35;
+            startPosY += rectHeight;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "AMP";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            batteryGroup.appendChild(titleText);
+            this.BATAmpValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.BATAmpValue.textContent = "-7";
+            this.BATAmpValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.BATAmpValue.setAttribute("y", startPosY.toString());
+            this.BATAmpValue.setAttribute("fill", "green");
+            this.BATAmpValue.setAttribute("font-size", "22");
+            this.BATAmpValue.setAttribute("font-family", "Roboto-Bold");
+            this.BATAmpValue.setAttribute("text-anchor", "end");
+            this.BATAmpValue.setAttribute("alignment-baseline", "central");
+            batteryGroup.appendChild(this.BATAmpValue);
+            startPosY += rectHeight;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "VOLT";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            batteryGroup.appendChild(titleText);
+            this.BATVoltValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.BATVoltValue.textContent = "24";
+            this.BATVoltValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.BATVoltValue.setAttribute("y", startPosY.toString());
+            this.BATVoltValue.setAttribute("fill", "green");
+            this.BATVoltValue.setAttribute("font-size", "22");
+            this.BATVoltValue.setAttribute("font-family", "Roboto-Bold");
+            this.BATVoltValue.setAttribute("text-anchor", "end");
+            this.BATVoltValue.setAttribute("alignment-baseline", "central");
+            batteryGroup.appendChild(this.BATVoltValue);
+            startPosY += rectHeight;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "TEMP °C";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            batteryGroup.appendChild(titleText);
+            this.BATTempValue = document.createElementNS(Avionics.SVG.NS, "text");
+            this.BATTempValue.textContent = "0";
+            this.BATTempValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.BATTempValue.setAttribute("y", startPosY.toString());
+            this.BATTempValue.setAttribute("fill", "green");
+            this.BATTempValue.setAttribute("font-size", "22");
+            this.BATTempValue.setAttribute("font-family", "Roboto-Bold");
+            this.BATTempValue.setAttribute("text-anchor", "end");
+            this.BATTempValue.setAttribute("alignment-baseline", "central");
+            batteryGroup.appendChild(this.BATTempValue);
+        }
+        {
+            var oxyGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            oxyGroup.setAttribute("id", "oxyGroup");
+            rootSVG.appendChild(oxyGroup);
+            var startPosX = 620;
+            var startPosY = 30;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "OXY PSI";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            oxyGroup.appendChild(titleText);
+            var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            lineLeft.setAttribute("x1", (startPosX - 80).toString());
+            lineLeft.setAttribute("y1", startPosY.toString());
+            lineLeft.setAttribute("x2", (startPosX - 50).toString());
+            lineLeft.setAttribute("y2", startPosY.toString());
+            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke-width", "2");
+            oxyGroup.appendChild(lineLeft);
+            var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            lineLeft.setAttribute("x1", (startPosX + 50).toString());
+            lineLeft.setAttribute("y1", startPosY.toString());
+            lineLeft.setAttribute("x2", (startPosX + 80).toString());
+            lineLeft.setAttribute("y2", startPosY.toString());
+            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke-width", "2");
+            oxyGroup.appendChild(lineLeft);
+            var gaugeStartX = startPosX + 20;
+            var gaugeStartY = startPosY + 25;
+            var gaugeWidth = 12;
+            var gaugeHeight = 125;
+            this.OXYCursorX = gaugeStartX + gaugeWidth;
+            this.OXYCursorY1 = gaugeStartY + gaugeHeight;
+            this.OXYCursorY2 = gaugeStartY;
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", gaugeStartX.toString());
+            rect.setAttribute("y", gaugeStartY.toString());
+            rect.setAttribute("width", gaugeWidth.toString());
+            rect.setAttribute("height", (gaugeHeight * 0.75).toString());
+            rect.setAttribute("fill", "green");
+            oxyGroup.appendChild(rect);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            rect.setAttribute("x", gaugeStartX.toString());
+            rect.setAttribute("y", (gaugeStartY + gaugeHeight * 0.75).toString());
+            rect.setAttribute("width", gaugeWidth.toString());
+            rect.setAttribute("height", (gaugeHeight * 0.25).toString());
+            rect.setAttribute("fill", "darkorange");
+            oxyGroup.appendChild(rect);
+            var gradTexts = ["2400", "", "1200", "", "0"];
+            var gradPercents = [0.0, 0.25, 0.5, 0.75, 1.0];
+            var gradLength = [14, 10, 14, 10, 14];
+            for (var i = 0; i < gradPercents.length; i++) {
+                var line = document.createElementNS(Avionics.SVG.NS, "line");
+                line.setAttribute("x1", (gaugeStartX - gradLength[i]).toString());
+                line.setAttribute("y1", (gaugeStartY + gaugeHeight * gradPercents[i]).toString());
+                line.setAttribute("x2", gaugeStartX.toString());
+                line.setAttribute("y2", (gaugeStartY + gaugeHeight * gradPercents[i]).toString());
+                line.setAttribute("stroke", (i == 4) ? "darkorange" : "green");
+                line.setAttribute("stroke-width", "2");
+                oxyGroup.appendChild(line);
+                var text = document.createElementNS(Avionics.SVG.NS, "text");
+                text.textContent = gradTexts[i];
+                text.setAttribute("x", (gaugeStartX - gradLength[i] - 10).toString());
+                text.setAttribute("y", (gaugeStartY + gaugeHeight * gradPercents[i]).toString());
+                text.setAttribute("fill", "white");
+                text.setAttribute("font-size", "20");
+                text.setAttribute("font-family", "Roboto-Light");
+                text.setAttribute("text-anchor", "end");
+                text.setAttribute("alignment-baseline", "central");
+                oxyGroup.appendChild(text);
+            }
+            this.OXYCursor = document.createElementNS(Avionics.SVG.NS, "path");
+            this.OXYCursor.setAttribute("transform", "translate (" + this.OXYCursorX + " " + this.OXYCursorY1 + ")");
+            this.OXYCursor.setAttribute("fill", "green");
+            this.OXYCursor.setAttribute("d", "M0 0 l15 5 l0 -10 l-15 5 Z");
+            oxyGroup.appendChild(this.OXYCursor);
+        }
+        {
+            var hydroGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            hydroGroup.setAttribute("id", "HydroGroup");
+            rootSVG.appendChild(hydroGroup);
+            var startPosX = 840;
+            var startPosY = 30;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "HYD";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            hydroGroup.appendChild(titleText);
+            var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            lineLeft.setAttribute("x1", (startPosX - 110).toString());
+            lineLeft.setAttribute("y1", startPosY.toString());
+            lineLeft.setAttribute("x2", (startPosX - 40).toString());
+            lineLeft.setAttribute("y2", startPosY.toString());
+            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke-width", "2");
+            hydroGroup.appendChild(lineLeft);
+            var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            lineLeft.setAttribute("x1", (startPosX + 40).toString());
+            lineLeft.setAttribute("y1", startPosY.toString());
+            lineLeft.setAttribute("x2", (startPosX + 110).toString());
+            lineLeft.setAttribute("y2", startPosY.toString());
+            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke-width", "2");
+            hydroGroup.appendChild(lineLeft);
+            var rectMarginX = 40;
+            var rectWidth = 60;
+            var rectHeight = 30;
+            startPosY += rectHeight;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "PSI";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            hydroGroup.appendChild(titleText);
+            this.HYDPSIValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
+            this.HYDPSIValueLeft.textContent = "0";
+            this.HYDPSIValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.HYDPSIValueLeft.setAttribute("y", startPosY.toString());
+            this.HYDPSIValueLeft.setAttribute("fill", "green");
+            this.HYDPSIValueLeft.setAttribute("font-size", "22");
+            this.HYDPSIValueLeft.setAttribute("font-family", "Roboto-Bold");
+            this.HYDPSIValueLeft.setAttribute("text-anchor", "end");
+            this.HYDPSIValueLeft.setAttribute("alignment-baseline", "central");
+            hydroGroup.appendChild(this.HYDPSIValueLeft);
+            this.HYDPSIValueRight = document.createElementNS(Avionics.SVG.NS, "text");
+            this.HYDPSIValueRight.textContent = "0";
+            this.HYDPSIValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.HYDPSIValueRight.setAttribute("y", startPosY.toString());
+            this.HYDPSIValueRight.setAttribute("fill", "green");
+            this.HYDPSIValueRight.setAttribute("font-size", "22");
+            this.HYDPSIValueRight.setAttribute("font-family", "Roboto-Bold");
+            this.HYDPSIValueRight.setAttribute("text-anchor", "end");
+            this.HYDPSIValueRight.setAttribute("alignment-baseline", "central");
+            hydroGroup.appendChild(this.HYDPSIValueRight);
+        }
+        {
+            var fuelGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            fuelGroup.setAttribute("id", "FuelGroup");
+            rootSVG.appendChild(fuelGroup);
+            var startPosX = 840;
+            var startPosY = 110;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "FUEL";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(titleText);
+            var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            lineLeft.setAttribute("x1", (startPosX - 110).toString());
+            lineLeft.setAttribute("y1", startPosY.toString());
+            lineLeft.setAttribute("x2", (startPosX - 40).toString());
+            lineLeft.setAttribute("y2", startPosY.toString());
+            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke-width", "2");
+            fuelGroup.appendChild(lineLeft);
+            var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            lineLeft.setAttribute("x1", (startPosX + 40).toString());
+            lineLeft.setAttribute("y1", startPosY.toString());
+            lineLeft.setAttribute("x2", (startPosX + 110).toString());
+            lineLeft.setAttribute("y2", startPosY.toString());
+            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke-width", "2");
+            fuelGroup.appendChild(lineLeft);
+            var rectMarginX = 40;
+            var rectWidth = 60;
+            var rectHeight = 30;
+            startPosY += rectHeight;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "PPH";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(titleText);
+            this.FUELPPHValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
+            this.FUELPPHValueLeft.textContent = "0";
+            this.FUELPPHValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.FUELPPHValueLeft.setAttribute("y", startPosY.toString());
+            this.FUELPPHValueLeft.setAttribute("fill", "green");
+            this.FUELPPHValueLeft.setAttribute("font-size", "22");
+            this.FUELPPHValueLeft.setAttribute("font-family", "Roboto-Bold");
+            this.FUELPPHValueLeft.setAttribute("text-anchor", "end");
+            this.FUELPPHValueLeft.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(this.FUELPPHValueLeft);
+            this.FUELPPHValueRight = document.createElementNS(Avionics.SVG.NS, "text");
+            this.FUELPPHValueRight.textContent = "0";
+            this.FUELPPHValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.FUELPPHValueRight.setAttribute("y", startPosY.toString());
+            this.FUELPPHValueRight.setAttribute("fill", "green");
+            this.FUELPPHValueRight.setAttribute("font-size", "22");
+            this.FUELPPHValueRight.setAttribute("font-family", "Roboto-Bold");
+            this.FUELPPHValueRight.setAttribute("text-anchor", "end");
+            this.FUELPPHValueRight.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(this.FUELPPHValueRight);
+            startPosY += rectHeight;
+            var titleText = document.createElementNS(Avionics.SVG.NS, "text");
+            titleText.textContent = "°C";
+            titleText.setAttribute("x", startPosX.toString());
+            titleText.setAttribute("y", startPosY.toString());
+            titleText.setAttribute("fill", "white");
+            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-family", "Roboto-Light");
+            titleText.setAttribute("text-anchor", "middle");
+            titleText.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(titleText);
+            this.FUELTempValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
+            this.FUELTempValueLeft.textContent = "15";
+            this.FUELTempValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.FUELTempValueLeft.setAttribute("y", startPosY.toString());
+            this.FUELTempValueLeft.setAttribute("fill", "green");
+            this.FUELTempValueLeft.setAttribute("font-size", "22");
+            this.FUELTempValueLeft.setAttribute("font-family", "Roboto-Bold");
+            this.FUELTempValueLeft.setAttribute("text-anchor", "end");
+            this.FUELTempValueLeft.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(this.FUELTempValueLeft);
+            this.FUELTempValueRight = document.createElementNS(Avionics.SVG.NS, "text");
+            this.FUELTempValueRight.textContent = "15";
+            this.FUELTempValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.FUELTempValueRight.setAttribute("y", startPosY.toString());
+            this.FUELTempValueRight.setAttribute("fill", "green");
+            this.FUELTempValueRight.setAttribute("font-size", "22");
+            this.FUELTempValueRight.setAttribute("font-family", "Roboto-Bold");
+            this.FUELTempValueRight.setAttribute("text-anchor", "end");
+            this.FUELTempValueRight.setAttribute("alignment-baseline", "central");
+            fuelGroup.appendChild(this.FUELTempValueRight);
+        }
+    }
+}
+class CJ4_SystemFMS extends NavSystemElement {
+    init(_root) {
+        this.root = _root.querySelector(".SystemFMS");
+    }
+    onEnter() {
+    }
+    onUpdate(_deltaTime) {
+    }
+    onExit() {
+    }
+    onEvent(_event) {
+    }
+}
+class CJ4_SystemAnnunciations extends Cabin_Annunciations {
+    constructor() {
+        super();
+        this.rootElementName = "";
+    }
+    init(_root) {
+        super.init(_root);
+        this.annunciations = _root.querySelector(".SystemAnnunciations");
+    }
+    onUpdate(_dTime) {
+        if (!this.annunciations)
+            return;
+        super.onUpdate(_dTime);
+    }
+}
+class CJ4_SystemWarnings extends Cabin_Warnings {
+    init(_root) {
+        super.init(_root);
+        this.warningBox = _root.querySelector(".SystemWarnings");
+        if (this.warningBox)
+            this.warningContent = this.warningBox.querySelector("#Content");
+    }
+    onUpdate(_dTime) {
+        if (!this.warningBox)
+            return;
+        super.onUpdate(_dTime);
+    }
+}
+var CJ4_MapSymbol;
+(function (CJ4_MapSymbol) {
+    CJ4_MapSymbol[CJ4_MapSymbol["TRAFFIC"] = 0] = "TRAFFIC";
+    CJ4_MapSymbol[CJ4_MapSymbol["CONSTRAINTS"] = 1] = "CONSTRAINTS";
+    CJ4_MapSymbol[CJ4_MapSymbol["AIRSPACES"] = 2] = "AIRSPACES";
+    CJ4_MapSymbol[CJ4_MapSymbol["AIRWAYS"] = 3] = "AIRWAYS";
+    CJ4_MapSymbol[CJ4_MapSymbol["AIRPORTS"] = 4] = "AIRPORTS";
+    CJ4_MapSymbol[CJ4_MapSymbol["INTERSECTS"] = 5] = "INTERSECTS";
+    CJ4_MapSymbol[CJ4_MapSymbol["NAVAIDS"] = 6] = "NAVAIDS";
+})(CJ4_MapSymbol || (CJ4_MapSymbol = {}));
+class CJ4_MapContainer extends NavSystemElementContainer {
+    constructor(_name, _root) {
+        super(_name, _root, null);
+        this.map = new CJ4_Map();
+        this.isTerrainVisible = undefined;
+        this.isWeatherVisible = undefined;
+        this.isGwxVisible = undefined;
+        this.isExtended = undefined;
+        this.zoomRanges = [10, 20, 40, 80, 160, 320];
+        this.zoomFactor = 1.0;
+        this.symbols = -1;
+        this.symbolsToSimvar = false;
+        this.element = new NavSystemElementGroup([this.map]);
+    }
+    init() {
+        super.init();
+        this.root = this.gps.getChildById(this.htmlElemId);
+        if (!this.root) {
+            console.log("Root component expected!");
+        }
+        this.map.instrument.showRoads = false;
+        this.map.instrument.showObstacles = false;
+        this.map.instrument.showVORs = false;
+        this.map.instrument.showIntersections = false;
+        this.map.instrument.showNDBs = false;
+        this.map.instrument.showAirports = false;
+        this.map.instrument.showAirspaces = false;
+        this.map.instrument.intersectionMaxRange = Infinity;
+        this.map.instrument.vorMaxRange = Infinity;
+        this.map.instrument.ndbMaxRange = Infinity;
+        this.map.instrument.smallAirportMaxRange = Infinity;
+        this.map.instrument.medAirportMaxRange = Infinity;
+        this.map.instrument.largeAirportMaxRange = Infinity;
+        this.map.instrument.setZoom(0);
+    }
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
+        if (this.symbolsToSimvar) {
+            SimVar.SetSimVarValue("L:CJ4_MAP_SYMBOLS", "number", this.symbols);
+            this.syncSymbols();
+            this.symbolsToSimvar = false;
+        }
+        else {
+            let symbols = SimVar.GetSimVarValue("L:CJ4_MAP_SYMBOLS", "number");
+            if (symbols != this.symbols) {
+                this.symbols = symbols;
+                this.syncSymbols();
+            }
+        }
+        let zoom = SimVar.GetSimVarValue("L:CJ4_MAP_ZOOM", "number");
+        if (zoom >= 0) {
+            this.map.instrument.setZoom(zoom);
+        }
+    }
+    onEvent(_event) {
+        super.onEvent(_event);
+    }
+    setMode(_mode) {
+        this.map.setMode(_mode);
+        switch (_mode) {
+            case Jet_NDCompass_Display.ARC:
+                this.zoomFactor = 2.8;
+                break;
+            case Jet_NDCompass_Display.ROSE:
+                this.zoomFactor = 3.8;
+                break;
+            case Jet_NDCompass_Display.PLAN:
+                this.zoomFactor = 4.1;
+                break;
+            default:
+                this.zoomFactor = 1.0;
+                break;
+        }
+        this.map.instrument.zoomRanges = this.getAdaptiveRanges();
+    }
+    showTerrain(_value) {
+        if (this.isTerrainVisible != _value) {
+            this.isTerrainVisible = _value;
+            if (this.isTerrainVisible) {
+                this.showWeather(false);
+                this.showGwx(false);
+            }
+            this.refreshLayout();
+        }
+    }
+    showWeather(_value) {
+        if (this.isWeatherVisible != _value) {
+            this.isWeatherVisible = _value;
+            if (this.isWeatherVisible) {
+                this.showTerrain(false);
+                this.showGwx(false);
+                this.map.instrument.showWeatherWithGPS(EWeatherRadar.HORIZONTAL, Math.PI * 2.0);
+                this.map.instrument.setBingMapStyle("8%", "0%", "100%", "80%");
+            }
+            else {
+                this.map.instrument.showWeather(EWeatherRadar.OFF);
+            }
+            this.refreshLayout();
+        }
+    }
+    showGwx(_value) {
+        if (this.isGwxVisible != _value) {
+            this.isGwxVisible = _value;
+            if (this.isGwxVisible) {
+                this.showTerrain(false);
+                this.showWeather(false);
+                this.setMode(Jet_NDCompass_Display.NONE);
+            }
+            this.refreshLayout();
+        }
+    }
+    setExtended(_value) {
+        if (this.map.compassDisplayMode == Jet_NDCompass_Display.ARC) {
+            _value = false;
+        }
+        if (this.isExtended != _value) {
+            this.isExtended = _value;
+            if (this.isExtended)
+                this.root.setAttribute("extended", "on");
+            else
+                this.root.setAttribute("extended", "off");
+        }
+    }
+    rangeDec() {
+        let zoom = this.map.instrument.getZoom();
+        if (zoom > 0) {
+            zoom--;
+            SimVar.SetSimVarValue("L:CJ4_MAP_ZOOM", "number", zoom);
+        }
+    }
+    rangeInc() {
+        let zoom = this.map.instrument.getZoom();
+        if (zoom < this.zoomRanges.length - 1) {
+            zoom++;
+            SimVar.SetSimVarValue("L:CJ4_MAP_ZOOM", "number", zoom);
+        }
+    }
+    get range() { return this.zoomRanges[this.map.instrument.getZoom()]; }
+    set range(_val) {
+        for (let i = 0; i < this.zoomRanges.length; i++) {
+            if (this.zoomRanges[i] == _val) {
+                SimVar.SetSimVarValue("L:CJ4_MAP_ZOOM", "number", i);
+                break;
+            }
+        }
+    }
+    hasSymbol(_symbol) {
+        if (this.symbols == -1)
+            return false;
+        if (this.symbols & (1 << _symbol))
+            return true;
+        return false;
+    }
+    setSymbol(_symbol, _val) {
+        if (this.symbols == -1)
+            return;
+        if (_val)
+            this.symbols |= (1 << _symbol);
+        else
+            this.symbols &= ~(1 << _symbol);
+        this.symbolsToSimvar = true;
+    }
+    toggleSymbol(_symbol) {
+        if (this.symbols == -1)
+            return;
+        this.symbols ^= (1 << _symbol);
+        this.symbolsToSimvar = true;
+    }
+    syncSymbols() {
+        this.map.instrument.showTraffic = (this.symbols & (1 << CJ4_MapSymbol.TRAFFIC)) ? true : false;
+        this.map.instrument.showConstraints = (this.symbols & (1 << CJ4_MapSymbol.CONSTRAINTS)) ? true : false;
+        this.map.instrument.showAirspaces = (this.symbols & (1 << CJ4_MapSymbol.AIRSPACES)) ? true : false;
+        this.map.instrument.showAirways = (this.symbols & (1 << CJ4_MapSymbol.AIRWAYS)) ? true : false;
+        this.map.instrument.showVORs = (this.symbols & (1 << CJ4_MapSymbol.NAVAIDS)) ? true : false;
+        this.map.instrument.showNDBs = (this.symbols & (1 << CJ4_MapSymbol.NAVAIDS)) ? true : false;
+        this.map.instrument.showAirports = (this.symbols & (1 << CJ4_MapSymbol.AIRPORTS)) ? true : false;
+        this.map.instrument.showIntersections = (this.symbols & (1 << CJ4_MapSymbol.INTERSECTS)) ? true : false;
+    }
+    getAdaptiveRanges() {
+        let ranges = Array.from(this.zoomRanges);
+        for (let i = 0; i < ranges.length; i++)
+            ranges[i] *= this.zoomFactor;
+        return ranges;
+    }
+    refreshLayout() {
+        if (this.isTerrainVisible || this.isGwxVisible) {
+            this.map.instrument.mapConfigId = 1;
+            this.map.instrument.bingMapRef = EBingReference.SEA;
+        }
+        else {
+            this.map.instrument.mapConfigId = 0;
+            this.map.instrument.bingMapRef = EBingReference.SEA;
+        }
+    }
+}
+class CJ4_Map extends MapInstrumentElement {
+    constructor() {
+        super(...arguments);
+        this.compassDisplayMode = undefined;
+    }
+    setMode(_display) {
+        this.compassDisplayMode = _display;
+        switch (_display) {
+            case Jet_NDCompass_Display.ROSE:
+                {
+                    this.instrument.style.top = "0";
+                    this.instrument.rotateWithPlane(true);
+                    this.instrument.centerOnActiveWaypoint(true);
+                    this.instrument.setPlaneScale(2.5);
+                    break;
+                }
+            case Jet_NDCompass_Display.ARC:
+                {
+                    this.instrument.style.top = "6%";
+                    this.instrument.rotateWithPlane(true);
+                    this.instrument.centerOnActiveWaypoint(false);
+                    this.instrument.setPlaneScale(2.5);
+                    break;
+                }
+            case Jet_NDCompass_Display.PLAN:
+                {
+                    this.instrument.style.top = "0";
+                    this.instrument.rotateWithPlane(false);
+                    this.instrument.centerOnActiveWaypoint(true);
+                    this.instrument.setPlaneScale(2.5);
+                    break;
+                }
+            default:
+                {
+                    this.instrument.style.top = "0";
+                    this.instrument.rotateWithPlane(false);
+                    this.instrument.centerOnActiveWaypoint(false);
+                    this.instrument.setPlaneScale(1.0);
+                    break;
+                }
+        }
+    }
+    onTemplateLoaded() {
+        super.onTemplateLoaded();
+    }
+}
+var CJ4_MapOverlaySymbol;
+(function (CJ4_MapOverlaySymbol) {
+    CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["TERR"] = 0] = "TERR";
+    CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["WX"] = 1] = "WX";
+})(CJ4_MapOverlaySymbol || (CJ4_MapOverlaySymbol = {}));
+class CJ4_MapOverlayContainer extends NavSystemElementContainer {
+    constructor(_name, _root) {
+        super(_name, _root, null);
+        this.compass = new CJ4_MapCompass();
+        this.infos = new CJ4_MapInfo();
+        this.isExtended = undefined;
+        this.isTerrainVisible = undefined;
+        this.isWeatherVisible = undefined;
+        this.isGwxVisible = undefined;
+        this.element = new NavSystemElementGroup([this.compass, this.infos]);
+    }
+    init() {
+        super.init();
+        this.root = this.gps.getChildById(this.htmlElemId);
+        if (!this.root) {
+            console.log("Root component expected!");
+        }
+    }
+    onUpdate(_dTime) {
+        super.onUpdate(_dTime);
+        this.infos.showSymbol(CJ4_MapOverlaySymbol.WX, this.isWeatherVisible);
+        this.infos.showSymbol(CJ4_MapOverlaySymbol.TERR, this.isTerrainVisible);
+    }
+    onEvent(_event) {
+        super.onEvent(_event);
+    }
+    setExtended(_value) {
+        if (this.isExtended != _value) {
+            this.isExtended = _value;
+            this.refreshLayout();
+        }
+    }
+    showTerrain(_value) {
+        if (this.isTerrainVisible != _value) {
+            this.isTerrainVisible = _value;
+            this.refreshLayout();
+        }
+    }
+    showWeather(_value) {
+        if (this.isWeatherVisible != _value) {
+            this.isWeatherVisible = _value;
+            this.refreshLayout();
+        }
+    }
+    showGwx(_value) {
+        if (this.isGwxVisible != _value) {
+            this.isGwxVisible = _value;
+            this.refreshLayout();
+        }
+    }
+    setMode(_display, _navigation, _navigationSource) {
+        this.compass.setMode(_display, _navigation);
+        this.infos.setMode(_navigation, _navigationSource);
+        this.refreshLayout();
+    }
+    setRange(_range) {
+        this.compass.setRange(_range);
+    }
+    refreshLayout() {
+        if (this.isWeatherVisible)
+            this.isTerrainVisible = false;
+        else if (this.isTerrainVisible)
+            this.isWeatherVisible = false;
+        if (this.isGwxVisible) {
+            this.compass.show(false);
+            this.root.setAttribute("extended", "off");
+        }
+        else {
+            this.compass.show(true);
+            this.infos.root.setAttribute("masks", "on");
+            this.compass.root.showArcMask(!this.isExtended);
+            var compassMode = this.compass.getDisplayMode();
+            if (this.isExtended && compassMode != Jet_NDCompass_Display.ARC)
+                this.root.setAttribute("extended", "on");
+            else
+                this.root.setAttribute("extended", "off");
+        }
+    }
+}
+class CJ4_MapCompass extends NavSystemElement {
+    init(_root) {
+        this.root = _root.querySelector("#NDCompass");
+        this.root.aircraft = Aircraft.CJ4;
+        this.root.gps = this.gps;
+    }
+    onEnter() {
+    }
+    onUpdate(_deltaTime) {
+        this.root.update(_deltaTime);
+    }
+    onExit() {
+    }
+    onEvent(_event) {
+        this.root.onEvent(_event);
+    }
+    getDisplayMode() {
+        return this.root.displayMode;
+    }
+    getNavigationMode() {
+        return this.root.navigationMode;
+    }
+    setMode(_display, _navigation) {
+        this.root.setMode(_display, _navigation);
+    }
+    setRange(_range) {
+        this.root.mapRange = _range;
+    }
+    show(_value) {
+        this.root.classList.toggle("hide", !_value);
+    }
+}
+class CJ4_MapInfo extends NavSystemElement {
+    constructor() {
+        super(...arguments);
+        this.allSymbols = new Array();
+    }
+    init(_root) {
+        this.root = _root.querySelector("#NDInfo");
+        this.root.aircraft = Aircraft.CJ4;
+        this.root.gps = this.gps;
+        this.allSymbols.push(this.root.querySelector("#TERR"));
+        this.allSymbols.push(this.root.querySelector("#WX"));
+    }
+    onEnter() {
+    }
+    onUpdate(_deltaTime) {
+        this.root.update(_deltaTime);
+    }
+    onExit() {
+    }
+    onEvent(_event) {
+        this.root.onEvent(_event);
+    }
+    setMode(_navigation, _navigationSource) {
+        this.root.setMode(_navigation, _navigationSource);
+    }
+    showSymbol(_symbol, _show) {
+        if (this.allSymbols[_symbol])
+            this.allSymbols[_symbol].setAttribute("visibility", (_show) ? "visible" : "hidden");
+    }
+}
+class CJ4_NavBarContainer extends NavSystemElementContainer {
+    constructor(_name, _root) {
+        super(_name, _root, null);
+    }
+    init() {
+        super.init();
+        this.root = this.gps.getChildById(this.htmlElemId);
+        if (!this.root) {
+            console.log("Root component expected!");
+        }
+        this.comPage = this.root.querySelector("#Coms");
+        this.com1Element = this.root.querySelector("#Com1_Value");
+        this.com2Element = this.root.querySelector("#Com2_Value");
+        this.atc1Element = this.root.querySelector("#Atc1_Value");
+        this.ratElement = this.root.querySelector("#Rat_Value");
+        this.utcElement = this.root.querySelector("#Utc_Value");
+        this.cabPage = this.root.querySelector("#Cabs");
+        this.cabElement = this.root.querySelector("#Cab_Value");
+        this.elevElement = this.root.querySelector("#Elev_Value");
+        this.altElement = this.root.querySelector("#Alt_Value");
+        this.rateElement = this.root.querySelector("#Rate_Value");
+        this.gsElement = this.root.querySelector("#Gs_Value");
+        this.tasElement = this.root.querySelector("#Tas_Value");
+        this.satElement = this.root.querySelector("#Sat_Value");
+        this.isaElement = this.root.querySelector("#Isa_Value");
+
+    }
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
+        if (this.com1Element) {
+            var com1Active = SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz");
+            if (com1Active > 0)
+                this.com1Element.textContent = com1Active.toFixed(3);
+            else
+                this.com1Element.textContent = "---";
+        }
+        if (this.com2Element) {
+            var com2Active = SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:2", "MHz");
+            if (com2Active > 0)
+                this.com2Element.textContent = com2Active.toFixed(3);
+            else
+                this.com2Element.textContent = "---";
+        }
+        if (this.atc1Element != null) {
+            let code = SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number");
+            if (code)
+                this.atc1Element.textContent = code.toString().padStart(4, "0");
+        }
+        if (this.ratElement) {
+            var rat = Math.trunc(SimVar.GetSimVarValue("TOTAL AIR TEMPERATURE", "celsius"));
+            if (rat)
+                this.ratElement.textContent = rat.toFixed(0);
+            else
+                this.ratElement.textContent = "---";
+        }
+        if (this.utcElement) {
+            var simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+            var hours = new String(Math.trunc(simtime / 3600));
+            var minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
+            var hourspad = hours.padStart(2, "0");
+            var minutespad = minutes.padStart(2, "0");
+            var utc = new String(hourspad + ":" + minutespad);
+            if (utc)
+                this.utcElement.textContent = utc;
+        }
+        if (this.gsElement) {
+            var gs = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+            if (gs)
+                this.gsElement.textContent = gs.toFixed(0);
+        }
+        if (this.tasElement) {
+            var tas = SimVar.GetSimVarValue("AIRSPEED TRUE", "knots");
+            if (tas)
+                this.tasElement.textContent = tas.toFixed(0);
+        }
+        if (this.satElement) {
+            var sat = Math.trunc(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius"));
+            if (sat)
+                this.satElement.textContent = sat.toFixed(0);
+        }
+        if (this.isaElement) {
+            var altitude = Math.trunc(SimVar.GetSimVarValue("PLANE ALTITUDE", "feet"));
+            var isaTemp = 15 - Math.trunc(2 * (altitude / 1000));
+            var isa = sat - isaTemp;
+            if (isa)
+                this.isaElement.textContent = isa;
+        }
+    }
+}
+var CJ4_PopupMenu;
+(function (CJ4_PopupMenu) {
+    CJ4_PopupMenu[CJ4_PopupMenu["NONE"] = 0] = "NONE";
+    CJ4_PopupMenu[CJ4_PopupMenu["PFD"] = 1] = "PFD";
+    CJ4_PopupMenu[CJ4_PopupMenu["REFS"] = 2] = "REFS";
+    CJ4_PopupMenu[CJ4_PopupMenu["UPPER"] = 3] = "UPPER";
+    CJ4_PopupMenu[CJ4_PopupMenu["LOWER"] = 4] = "LOWER";
+})(CJ4_PopupMenu || (CJ4_PopupMenu = {}));
+class CJ4_PopupMenuContainer extends NavSystemElementContainer {
+    constructor(_name, _root) {
+        super(_name, _root, null);
+        this.mode = CJ4_PopupMenu.NONE;
+        this.dictionary = new Avionics.Dictionary();
+    }
+    init() {
+        super.init();
+        this.root = this.gps.getChildById(this.htmlElemId);
+        if (!this.root) {
+            console.log("Root component expected!");
+        }
+    }
+    onUpdate(_dTime) {
+        super.onUpdate(_dTime);
+        if (this.handler)
+            this.handler.onUpdate(_dTime);
+    }
+    onEvent(_event) {
+        super.onEvent(_event);
+        if (this.handler && this.handler.reactsOnEvent(_event)) {
+            switch (_event) {
+                case "Upr_DATA_PUSH":
+                case "Lwr_DATA_PUSH":
+                    this.handler.onActivate();
+                    break;
+                case "Upr_DATA_DEC":
+                case "Lwr_DATA_DEC":
+                    this.handler.onDataDec();
+                    break;
+                case "Upr_DATA_INC":
+                case "Lwr_DATA_INC":
+                    this.handler.onDataInc();
+                    break;
+                case "Upr_MENU_ADV_DEC":
+                case "Lwr_MENU_ADV_DEC":
+                    this.handler.onMenuDec();
+                    break;
+                case "Upr_MENU_ADV_INC":
+                case "Lwr_MENU_ADV_INC":
+                    this.handler.onMenuInc();
+                    break;
+                case "Upr_Push_ESC":
+                case "Lwr_Push_ESC":
+                    if (this.handler.isOnMainPage) {
+                        this.mode = CJ4_PopupMenu.NONE;
+                        Utils.RemoveAllChildren(this.root);
+                        this.handler = null;
+                    }
+                    else
+                        this.handler.onEscape();
+                    break;
+            }
+        }
+    }
+    setMode(_mode) {
+        if (this.mode != _mode) {
+            this.mode = _mode;
+            Utils.RemoveAllChildren(this.root);
+            switch (_mode) {
+                case CJ4_PopupMenu.PFD:
+                    this.handler = new CJ4_PopupMenu_PFD(this.root, this.dictionary);
+                    break;
+                case CJ4_PopupMenu.REFS:
+                    this.handler = new CJ4_PopupMenu_REF(this.root, this.dictionary);
+                    break;
+                case CJ4_PopupMenu.UPPER:
+                    this.handler = new CJ4_PopupMenu_UPPER(this.root, this.dictionary);
+                    break;
+                case CJ4_PopupMenu.LOWER:
+                    this.handler = new CJ4_PopupMenu_LOWER(this.root, this.dictionary);
+                    break;
+                default:
+                    this.handler = null;
+                    break;
+            }
+        }
+        else if (this.handler) {
+            if (this.handler.isOnMainPage) {
+                this.mode = CJ4_PopupMenu.NONE;
+                Utils.RemoveAllChildren(this.root);
+                this.handler = null;
+            }
+            else
+                this.handler.reset();
+        }
+    }
+}
+var CJ4_PopupMenu_Key;
+(function (CJ4_PopupMenu_Key) {
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_FORMAT"] = 0] = "MAP_FORMAT";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SRC"] = 1] = "MAP_SRC";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_RANGE"] = 2] = "MAP_RANGE";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_CONSTRAINTS"] = 3] = "MAP_SYMBOL_CONSTRAINTS";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_AIRSPACES"] = 4] = "MAP_SYMBOL_AIRSPACES";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_AIRWAYS"] = 5] = "MAP_SYMBOL_AIRWAYS";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_NAVAIDS"] = 6] = "MAP_SYMBOL_NAVAIDS";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_AIRPORTS"] = 7] = "MAP_SYMBOL_AIRPORTS";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_INTERSECTS"] = 8] = "MAP_SYMBOL_INTERSECTS";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["NAV_SRC"] = 9] = "NAV_SRC";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BRG_PTR1_SRC"] = 10] = "BRG_PTR1_SRC";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BRG_VOR1_FREQ"] = 11] = "BRG_VOR1_FREQ";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BRG_ADF1_FREQ"] = 12] = "BRG_ADF1_FREQ";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BRG_PTR2_SRC"] = 13] = "BRG_PTR2_SRC";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BRG_VOR2_FREQ"] = 14] = "BRG_VOR2_FREQ";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BRG_ADF2_FREQ"] = 15] = "BRG_ADF2_FREQ";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["UNITS_PRESS"] = 16] = "UNITS_PRESS";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["UNITS_MTR_ALT"] = 17] = "UNITS_MTR_ALT";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_V1"] = 18] = "VSPEED_V1";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VR"] = 19] = "VSPEED_VR";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_V2"] = 20] = "VSPEED_V2";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VT"] = 21] = "VSPEED_VT";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_SRC"] = 22] = "MIN_ALT_SRC";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_BARO_VAL"] = 23] = "MIN_ALT_BARO_VAL";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_RADIO_VAL"] = 24] = "MIN_ALT_RADIO_VAL";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 25] = "SYS_SRC";
+})(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
+class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
+    constructor() {
+        super(...arguments);
+        this._isOnMainPage = false;
+    }
+    get isOnMainPage() {
+        return this._isOnMainPage;
+    }
+    reactsOnEvent(_event) {
+        switch (_event) {
+            case "Upr_DATA_PUSH":
+            case "Upr_DATA_DEC":
+            case "Upr_DATA_INC":
+            case "Upr_MENU_ADV_DEC":
+            case "Upr_MENU_ADV_INC":
+            case "Upr_Push_ESC":
+                return true;
+            case "Lwr_DATA_PUSH":
+            case "Lwr_DATA_DEC":
+            case "Lwr_DATA_INC":
+            case "Lwr_MENU_ADV_DEC":
+            case "Lwr_MENU_ADV_INC":
+            case "Lwr_Push_ESC":
+                return true;
+        }
+        return false;
+    }
+}
+class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
+    constructor(_root, _dictionary) {
+        super();
+        this.titleSize = 15;
+        this.textSize = 13;
+        this.root = _root;
+        this.menuLeft = 5;
+        this.menuTop = 217;
+        this.menuWidth = 145;
+        this.dictionary = _dictionary;
+        this.showMainPage();
+    }
+    reset() {
+        this.showMainPage();
+    }
+    showMainPage(_highlight = 0) {
+        this._isOnMainPage = true;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("FORMAT", this.textSize, 0.4);
+                this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
+                this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
+                this.addRadio("PPOS", this.textSize, null);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("CONTROLS", this.textSize, 0.5);
+                this.addList("NAV-SRC", this.textSize, ["FMS1", "VOR1", "VOR2"], [CJ4_PopupMenu_Key.NAV_SRC]);
+                this.addList("MAP-SRC", this.textSize, ["FMS1"], [CJ4_PopupMenu_Key.MAP_SRC]);
+                this.addList("RANGE", this.textSize, ["10", "20", "40", "80", "160", "320"], [CJ4_PopupMenu_Key.MAP_RANGE]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addSubMenu("BRG SRC", this.textSize, this.showNavPage.bind(this));
+                this.addSubMenu("CONFIG", this.textSize, this.showConfigPage.bind(this));
+                this.addSubMenu("REFS", this.textSize, this.showRefPage.bind(this));
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.highlight(_highlight);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showNavPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("BRG SRC", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("BRG PTR 1", this.textSize, 0.5);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
+                this.addRadio("FMS1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
+                this.addRadioRange("VOR1", this.textSize, 108, 117.95, 0.005, [CJ4_PopupMenu_Key.BRG_PTR1_SRC, CJ4_PopupMenu_Key.BRG_VOR1_FREQ]);
+                this.addRadioRange("ADF1", this.textSize, 100, 1799, 1, [CJ4_PopupMenu_Key.BRG_PTR1_SRC, CJ4_PopupMenu_Key.BRG_ADF1_FREQ]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("BRG PTR 2", this.textSize, 0.5);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
+                this.addRadioRange("VOR2", this.textSize, 108, 117.95, 0.005, [CJ4_PopupMenu_Key.BRG_PTR2_SRC, CJ4_PopupMenu_Key.BRG_VOR2_FREQ]);
+                this.addRadioRange("ADF2", this.textSize, 100, 1799, 1, [CJ4_PopupMenu_Key.BRG_PTR2_SRC, CJ4_PopupMenu_Key.BRG_ADF2_FREQ]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 6);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showConfigPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("CONFIG", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("UNITS", this.textSize, 0.3);
+                this.addList("PRESS", this.textSize, ["INHG", "HPA"], [CJ4_PopupMenu_Key.UNITS_PRESS]);
+                this.addList("MTR ALT", this.textSize, ["OFF", "ON"], [CJ4_PopupMenu_Key.UNITS_MTR_ALT]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 7);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showRefPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("REFS", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("V SPEEDS", this.textSize, 0.45);
+                this.addRange("V1", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V1]);
+                this.addRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR]);
+                this.addRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2]);
+                this.addRange("VT", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VT]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("RA/BARO MIN", this.textSize, 0.6);
+                this.addRadioRange("RA", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
+                this.addRadioRange("BARO", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 8);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+}
+class CJ4_PopupMenu_REF extends CJ4_PopupMenu_Handler {
+    constructor(_root, _dictionary) {
+        super();
+        this.titleSize = 15;
+        this.textSize = 13;
+        this.root = _root;
+        this.menuLeft = 5;
+        this.menuTop = 217;
+        this.menuWidth = 145;
+        this.dictionary = _dictionary;
+        this.showMainPage();
+    }
+    reset() {
+        this.showMainPage();
+    }
+    showMainPage() {
+        this._isOnMainPage = true;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("REFS", this.titleSize, 1.0, "blue");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("V SPEEDS", this.textSize, 0.45);
+                this.addRange("V1", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V1]);
+                this.addRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR]);
+                this.addRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2]);
+                this.addRange("VT", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VT]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("RA/BARO MIN", this.textSize, 0.6);
+                this.addRadioRange("RA", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
+                this.addRadioRange("BARO", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+}
+class CJ4_PopupMenu_UPPER extends CJ4_PopupMenu_Handler {
+    constructor(_root, _dictionary) {
+        super();
+        this.titleSize = 15;
+        this.textSize = 13;
+        this.root = _root;
+        this.menuLeft = 5;
+        this.menuTop = 35;
+        this.menuWidth = 145;
+        this.dictionary = _dictionary;
+        this.showMainPage();
+    }
+    reset() {
+        this.showMainPage();
+    }
+    showMainPage() {
+        this._isOnMainPage = true;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("UPR MENU", this.titleSize, 1.0, "blue");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("FORMAT", this.textSize, 0.45);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
+                this.addRadio("FMS TEXT", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
+                this.addRadio("SYSTEMS", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+}
+class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
+    constructor(_root, _dictionary) {
+        super();
+        this.titleSize = 15;
+        this.textSize = 13;
+        this.root = _root;
+        this.menuLeft = 5;
+        this.menuTop = 245;
+        this.menuWidth = 145;
+        this.dictionary = _dictionary;
+        this.showMainPage();
+    }
+    reset() {
+        this.showMainPage();
+    }
+    showMainPage(_highlight = 0) {
+        this._isOnMainPage = true;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("LWR MENU", this.titleSize, 1.0, "blue");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("FORMAT", this.textSize, 0.45);
+                this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
+                this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
+                this.addRadio("PPOS", this.textSize, null);
+                this.addRadio("PLAN", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
+                this.addRadio("TCAS", this.textSize, null);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("CONTROLS", this.textSize, 0.5);
+                this.addList("NAV-SRC", this.textSize, ["FMS1", "VOR1", "VOR2"], [CJ4_PopupMenu_Key.NAV_SRC]);
+                this.addSubMenu("MAP SYMBOLS", this.textSize, this.showMapSymbolsPage.bind(this));
+                this.addSubMenu("SYS TEST", this.textSize, null);
+                this.addSubMenu("L PFD MENU", this.textSize, null);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.highlight(_highlight);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showMapSymbolsPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("LWR MENU", this.titleSize, 1.0, "blue");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("MAP SYMBOLS", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addCheckbox("CONSTRAINTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_CONSTRAINTS]);
+                this.addCheckbox("AIRSPACES", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRSPACES]);
+                this.addCheckbox("AIRWAYS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRWAYS]);
+                this.addCheckbox("NAVAIDS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_NAVAIDS]);
+                this.addCheckbox("AIRPORTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRPORTS]);
+                this.addCheckbox("INTERSECTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_INTERSECTS]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 7);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+}
+//# sourceMappingURL=CJ4_Shared.js.map

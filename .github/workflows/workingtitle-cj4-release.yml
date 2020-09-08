@@ -1,0 +1,40 @@
+name: CI - CJ4 Full Release
+on:
+  push:
+    tags: 
+      - 'cj4-v*'
+      - '!cj4-v*-pre*'
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Package
+        run: powershell.exe -noexit .\build.ps1 -Project workingtitle-project-cj4.xml
+      - name: Add documentation
+        run: Copy-Item -Path docs\workingtitle-cj4\* -Destination build -Recurse -Force        
+      - name: Get clean tag name
+        uses: olegtarasov/get-tag@v2
+        id: tag_name        
+      - name: Zip Release Files
+        run: Compress-Archive -Path build\* -DestinationPath workingtitle-cj4.zip
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ steps.tag_name.outputs.tag }}
+          body_path: docs\workingtitle-cj4\CHANGES.md
+          draft: true
+      - name: Upload zip to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: workingtitle-cj4.zip
+          asset_name: workingtitle-${{ steps.tag_name.outputs.tag }}.zip
+          asset_content_type: application/zip
+        
