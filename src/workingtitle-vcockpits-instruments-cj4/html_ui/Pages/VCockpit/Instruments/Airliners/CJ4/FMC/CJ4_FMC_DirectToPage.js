@@ -108,38 +108,9 @@ class CJ4_FMC_DirectToPage {
                     fmc.flightPlanManager.tryAutoActivateApproach();
                     CJ4_FMC_RoutePage.ShowPage2(fmc);
                 });
-
-
-                //adding this approach waypoint to the end of the current enroute flight plan
-                //fmc.insertWaypoint(directWaypoint.ident, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1);
-                
-                //fmc.flightPlanManager.addWaypoint(directWaypoint.icao, Infinity, () => { }, true);
-                
-                //fmc.activateRoute();
-                //temporary log to see flight plan after insert
-                //let waypointsNew = fmc.flightPlanManager.getWaypoints().map(waypoint => waypoint.ident);
-                //console.log("fpln after mod:" + JSON.stringify(waypointsNew, null, 2));
-                
-                //get new last enroute waypoint and activate DTO
-                //let newDirectWaypoint = fmc.flightPlanManager.getWaypoint(fmc.flightPlanManager.getEnRouteWaypointsLastIndex(), NaN, false);
-                
-                //activate approach callback
-                //fmc.activateDirectToWaypoint(newDirectWaypoint, () => {
-                //    fmc.flightPlanManager.activateApproach();
-                //});
-                //fmc.flightPlanManager.tryAutoActivateApproach();
-                //console.log("app active now?:" + fmc.flightPlanManager.isActiveApproach());
-                //console.log("idx:" + fmc.flightPlanManager.getActiveWaypointIndex());
-
-                //let dtoApproachIndex = getAppIndexByIdent(directWaypoint.ident); //get the approach index of the DTO wpt
-
-                //fmc.flightPlanManager.setApproachIndex(dtoApproachIndex); //set the approach index to the selected dto wpt
-                
-                //fmc.flightPlanManager.setActiveWaypointIndex(1);
-                //console.log("after setting index 1, app active now?:" + fmc.flightPlanManager.isActiveApproach());
-                //console.log("idx:" + fmc.flightPlanManager.getActiveWaypointIndex());
-
             }             
+
+
             //new method for direct to during an approach
             if (isApproachWaypoint == true && fmc.flightPlanManager.isActiveApproach() == true) {
 
@@ -158,64 +129,13 @@ class CJ4_FMC_DirectToPage {
                 let apprWaypoints = fmc.flightPlanManager.getApproachWaypoints().length;
                 console.log("apprWaypoints:" + apprWaypoints)
 
-                let removeWaypointInApproachMethod = (callback = EmptyCallback.Void) => {
-                    let i = 1;
-                    let directToApprIndex = fmc.flightPlanManager.getApproachWaypoints().findIndex(w => {
-                        return w.icao === directWaypoint.icao;
-                    });
-                    console.log("directToApprIndex:" + directToApprIndex);
-                    let directToinFplnIndex = fmc.flightPlanManager.getWaypoints().findIndex(w => {
-                        return w.icao === directWaypoint.icao;
-                    });
-                    console.log("directToinFplnIndex:" + directToinFplnIndex);
-                    if (i < directToinFplnIndex) {
-                        fmc.flightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
-                            //i++;
-                            removeWaypointInApproachMethod(callback);
-                        });
-                        fmc.flightPlanManager.setCurrentFlightPlanIndex(1);
-                    }
-                    else {
-                        callback();
-                    }
-                };
-                removeWaypointInApproachMethod(() => {
-                    fmc.flightPlanManager.tryAutoActivateApproach();
-                    CJ4_FMC_RoutePage.ShowPage2(fmc);
-                });
+                fmc.flightPlanManager.setCurrentFlightPlanIndex(fmc.flightPlanManager.getCurrentFlightPlanIndex() + 1);
 
-
-                //adding this approach waypoint to the end of the current enroute flight plan
-                //fmc.insertWaypoint(directWaypoint.ident, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1);
                 
-                //fmc.flightPlanManager.addWaypoint(directWaypoint.icao, Infinity, () => { }, true);
-                
-                //fmc.activateRoute();
-                //temporary log to see flight plan after insert
-                //let waypointsNew = fmc.flightPlanManager.getWaypoints().map(waypoint => waypoint.ident);
-                //console.log("fpln after mod:" + JSON.stringify(waypointsNew, null, 2));
-                
-                //get new last enroute waypoint and activate DTO
-                //let newDirectWaypoint = fmc.flightPlanManager.getWaypoint(fmc.flightPlanManager.getEnRouteWaypointsLastIndex(), NaN, false);
-                
-                //activate approach callback
-                //fmc.activateDirectToWaypoint(newDirectWaypoint, () => {
-                //    fmc.flightPlanManager.activateApproach();
-                //});
-                //fmc.flightPlanManager.tryAutoActivateApproach();
-                //console.log("app active now?:" + fmc.flightPlanManager.isActiveApproach());
-                //console.log("idx:" + fmc.flightPlanManager.getActiveWaypointIndex());
-
-                //let dtoApproachIndex = getAppIndexByIdent(directWaypoint.ident); //get the approach index of the DTO wpt
-
-                //fmc.flightPlanManager.setApproachIndex(dtoApproachIndex); //set the approach index to the selected dto wpt
-                
-                //fmc.flightPlanManager.setActiveWaypointIndex(1);
-                //console.log("after setting index 1, app active now?:" + fmc.flightPlanManager.isActiveApproach());
-                //console.log("idx:" + fmc.flightPlanManager.getActiveWaypointIndex());
-
-            }
-               else {
+            }   
+            
+            //what to do with a regluar enroute waypoint (default case)
+            else {
                 fmc.activateDirectToWaypoint(directWaypoint, () => {
                     CJ4_FMC_RoutePage.ShowPage2(fmc);
                 })
@@ -244,7 +164,7 @@ class CJ4_FMC_DirectToPage {
         ]);
         fmc.onNextPage = () => {
             wptsListIndex++;
-            wptsListIndex = Math.min(wptsListIndex, fmc.flightPlanManager.getWaypointsCount() - 4);
+            wptsListIndex = Math.min(wptsListIndex, (fmc.flightPlanManager.getWaypointsCount() + fmc.flightPlanManager.getApproachWaypoints().length) - 4);
             CJ4_FMC_DirectToPage.ShowPage(fmc, directWaypoint, wptsListIndex);
         };
         fmc.onPrevPage = () => {
