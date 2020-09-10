@@ -56,98 +56,50 @@ class CJ4_FMC_DirectToPage {
         }
         let activateLine = "";
 
-        //start of CWB edits for DTO approach waypoints
-
-        //determine the index of the DTO approach wpt
-        //const getAppIndexByIdent = (ident) => {
-        //    return fmc.flightPlanManager.getApproachWaypoints()
-        //      .reduce((indexSeen, waypoint, currentIndex) => waypoint.ident === ident ? currentIndex : indexSeen, -1);
-        //  };
-
         if (directWaypoint) {
             activateLine = "ACTIVATE>";
             fmc.onRightInput[5] = () => {
-                
+
+            //added functionality to enable the ability to go direct to the IAF of the loaded approach
+    
             let isApproachWaypoint = fmc.flightPlanManager.getApproachWaypoints().indexOf(directWaypoint) !== -1;
-            console.log("dto apr wpt?" + isApproachWaypoint);
 
-            //is this waypoint an approach waypoint? if so, perform these steps, otherwise proceed to regular DTO function.
-            //added isActiveApproach() condition
             if (isApproachWaypoint == true && fmc.flightPlanManager.isActiveApproach() != true) {
-
-                console.log("Running Approach Waypoint = True"); //log if we are running this code
-                console.log("idx:" + fmc.flightPlanManager.getActiveWaypointIndex()); //log active waypoint index
-                //temporary log to see current flight plan
-                let waypointslog = fmc.flightPlanManager.getWaypoints().map(waypoint => waypoint.ident);
-                console.log("fpln before mod:" + JSON.stringify(waypointslog, null, 2));
-                console.log("directWaypoint ICAO" + directWaypoint.icao);
-
-                //trying to build an alternate of fmc.activateDirectToWaypoint which deletes all enroute waypoints,
-                //then tries to activate the approach
-
-                let fplnWaypoints = fmc.flightPlanManager.getWaypoints().length;
-                console.log("fplnWaypints:" + fplnWaypoints)
 
                 let removeWaypointForApproachMethod = (callback = EmptyCallback.Void) => {
                     let i = 1;
                     let destinationIndex = fmc.flightPlanManager.getWaypoints().findIndex(w => {
                         return w.icao === fmc.flightPlanManager.getDestination().icao;
                     });
-                    console.log("destinationIndex:" + destinationIndex);
+
                     if (i < destinationIndex) {
                         fmc.flightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
                             //i++;
                             removeWaypointForApproachMethod(callback);
                         });
-                        fmc.flightPlanManager.setCurrentFlightPlanIndex(1);
                     }
                     else {
                         callback();
                     }
                 };
+
                 removeWaypointForApproachMethod(() => {
                     fmc.flightPlanManager.tryAutoActivateApproach();
                     CJ4_FMC_RoutePage.ShowPage2(fmc);
                 });
             }             
+          
+            //DEFAULT CASE - if you are not on an approach and you are not trying to go direct to an approach waypoint,
+            //execute the normal Direct To functionality
 
-
-            //new method for direct to during an approach
-            if (isApproachWaypoint == true && fmc.flightPlanManager.isActiveApproach() == true) {
-
-                console.log("Running Approach Waypoint With Active Approach = True"); //log if we are running this code
-                console.log("idx:" + fmc.flightPlanManager.getActiveWaypointIndex()); //log active waypoint index
-                //temporary log to see current flight plan
-                let waypointslog = fmc.flightPlanManager.getWaypoints().map(waypoint => waypoint.ident);
-                console.log("fpln before mod:" + JSON.stringify(waypointslog, null, 2));
-                console.log("directWaypoint ICAO" + directWaypoint.icao);
-                let apprwaypointslog = fmc.flightPlanManager.getApproachWaypoints().map(waypoint => waypoint.ident);
-                console.log("appr fpln before mod:" + JSON.stringify(apprwaypointslog, null, 2));
-
-                let fplnWaypoints = fmc.flightPlanManager.getWaypoints().length;
-                console.log("fplnWaypints:" + fplnWaypoints)
-
-                let apprWaypoints = fmc.flightPlanManager.getApproachWaypoints().length;
-                console.log("apprWaypoints:" + apprWaypoints)
-
-                fmc.flightPlanManager.setCurrentFlightPlanIndex(fmc.flightPlanManager.getCurrentFlightPlanIndex() + 1);
-
-                
-            }   
-            
-            //what to do with a regluar enroute waypoint (default case)
             else {
                 fmc.activateDirectToWaypoint(directWaypoint, () => {
                     CJ4_FMC_RoutePage.ShowPage2(fmc);
                 })
             }
             };
-
-            //end of CWB edits for DTO approach waypoints
-
         }
         
-
         fmc.setTemplate([
             ["DIR TO"],
             ["WAYPOINT", "DIST", "UTC"],
@@ -184,7 +136,8 @@ class CJ4_FMC_DirectToPage {
         let approachWaypoints = fmc.flightPlanManager.getApproachWaypoints();
 
         if (approachWaypoints.length > 0) {
-            return [...enrouteWaypoints.slice(0, -1), ...approachWaypoints.slice(0, -1), ...[enrouteWaypoints[enrouteWaypoints.length - 1]]]
+            let approachWaypointsSliced = [...approachWaypoints.slice(0,2).filter(w => w.ident !== 'USER')];
+            return [...enrouteWaypoints.slice(0, -1), ...approachWaypointsSliced.slice(0, 1), ...[enrouteWaypoints[enrouteWaypoints.length - 1]]]
                 .filter(w => w.ident !== 'USER' && w.ident !== 'USR');
         }
         else {
