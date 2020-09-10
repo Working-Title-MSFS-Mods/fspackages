@@ -70,7 +70,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         this.pfdMenu = new SoftKeysMenu();
         this.otherPfdMenu = new SoftKeysMenu();
         this.windMenu = new SoftKeysMenu();
-        this.altitudeunits = new SoftKeysMenu(); //ADDED GXMOD ADD new softkeymenu for change of BARO UNIT
+        this.altitudeunits = new SoftKeysMenu(); //ADDED G3000 MOD ADD new softkeymenu for change of BARO UNIT
         this.annunciations = new PFD_Annunciations();
         this.attitude = new PFD_Attitude();
         this.mapInstrument = new MapInstrumentElement();
@@ -144,7 +144,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         ];
 
 
-        //ADD START*** GXMOD ADD new softkeymenu for change of BARO UNIT
+        //ADD START*** G3000 MOD ADD new softkeymenu for change of BARO UNIT
         this.altitudeunits.elements = [
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement(""),
@@ -159,7 +159,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
             new AS3000_PFD_SoftKeyElement("Back", this.switchToMenu.bind(this, this.otherPfdMenu)),
             new AS3000_PFD_SoftKeyElement("")
         ];
-        //ADD END***  GXMOD ADD new softkeymenu for change of BARO UNIT
+        //ADD END***  G3000 MOD ADD new softkeymenu for change of BARO UNIT
 
 
 
@@ -220,11 +220,11 @@ class AS3000_PFD_MainPage extends NavSystemPage {
                 break;
         }
     }
-    //ADD START*** GXMOD ADD new softkeymenu for change of BARO UNIT
+    //ADD START*** G3000 MOD ADD new softkeymenu for change of BARO UNIT
     softkeyBaroStatus(_state) {
         return this.gps.getElementOfType(PFD_Altimeter).getCurrentBaroMode() == _state;
     }
-    //ADD END***  GXMOD ADD new softkeymenu for change of BARO UNIT
+    //ADD END***  G3000 MOD ADD new softkeymenu for change of BARO UNIT
 }
 class AS3000_PFD_MainElement extends NavSystemElement {
     init(root) {
