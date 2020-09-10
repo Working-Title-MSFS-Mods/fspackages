@@ -83,21 +83,21 @@ class CJ4_FMC_DirectToPage {
                 //trying to build an alternate of fmc.activateDirectToWaypoint which deletes all enroute waypoints,
                 //then tries to activate the approach
 
-                
-                let destinationIndex = fmc.flightPlanManager.getWaypoints().findIndex(w => {
-                    return w.icao === fmc.flightPlanManager.getDestination().icao;
-                });
-                console.log("destinationIndex:" + destinationIndex);
-
                 let fplnWaypoints = fmc.flightPlanManager.getWaypoints().length;
                 console.log("fplnWaypints:" + fplnWaypoints)
-                let i = 1;
+
                 let removeWaypointForApproachMethod = (callback = EmptyCallback.Void) => {
+                    let i = 1;
+                    let destinationIndex = fmc.flightPlanManager.getWaypoints().findIndex(w => {
+                        return w.icao === fmc.flightPlanManager.getDestination().icao;
+                    });
+                    console.log("destinationIndex:" + destinationIndex);
                     if (i < destinationIndex) {
-                        fmc.flightPlanManager.removeWaypoint(1, i === destinationIndex - 1, () => {
-                            i++;
+                        fmc.flightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
+                            //i++;
                             removeWaypointForApproachMethod(callback);
                         });
+                        fmc.flightPlanManager.setCurrentFlightPlanIndex(1);
                     }
                     else {
                         callback();
@@ -105,9 +105,9 @@ class CJ4_FMC_DirectToPage {
                 };
                 removeWaypointForApproachMethod(() => {
                     fmc.flightPlanManager.tryAutoActivateApproach();
+                    CJ4_FMC_RoutePage.ShowPage2(fmc);
                 });
 
-            
 
                 //adding this approach waypoint to the end of the current enroute flight plan
                 //fmc.insertWaypoint(directWaypoint.ident, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1);
@@ -116,8 +116,8 @@ class CJ4_FMC_DirectToPage {
                 
                 //fmc.activateRoute();
                 //temporary log to see flight plan after insert
-                let waypointsNew = fmc.flightPlanManager.getWaypoints().map(waypoint => waypoint.ident);
-                console.log("fpln after mod:" + JSON.stringify(waypointsNew, null, 2));
+                //let waypointsNew = fmc.flightPlanManager.getWaypoints().map(waypoint => waypoint.ident);
+                //console.log("fpln after mod:" + JSON.stringify(waypointsNew, null, 2));
                 
                 //get new last enroute waypoint and activate DTO
                 //let newDirectWaypoint = fmc.flightPlanManager.getWaypoint(fmc.flightPlanManager.getEnRouteWaypointsLastIndex(), NaN, false);
@@ -127,8 +127,8 @@ class CJ4_FMC_DirectToPage {
                 //    fmc.flightPlanManager.activateApproach();
                 //});
                 //fmc.flightPlanManager.tryAutoActivateApproach();
-                console.log("app active now?:" + fmc.flightPlanManager.isActiveApproach());
-                console.log("idx:" + fmc.flightPlanManager.getActiveWaypointIndex());
+                //console.log("app active now?:" + fmc.flightPlanManager.isActiveApproach());
+                //console.log("idx:" + fmc.flightPlanManager.getActiveWaypointIndex());
 
                 //let dtoApproachIndex = getAppIndexByIdent(directWaypoint.ident); //get the approach index of the DTO wpt
 
@@ -138,7 +138,7 @@ class CJ4_FMC_DirectToPage {
                 //console.log("after setting index 1, app active now?:" + fmc.flightPlanManager.isActiveApproach());
                 //console.log("idx:" + fmc.flightPlanManager.getActiveWaypointIndex());
 
-                }   else {
+            }   else {
                 fmc.activateDirectToWaypoint(directWaypoint, () => {
                     CJ4_FMC_RoutePage.ShowPage2(fmc);
                 })
