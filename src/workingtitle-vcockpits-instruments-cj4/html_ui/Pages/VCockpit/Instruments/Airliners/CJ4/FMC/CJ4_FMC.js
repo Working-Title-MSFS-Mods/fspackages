@@ -30,6 +30,9 @@ class CJ4_FMC extends FMCMainDisplay {
                 });
             });
         }
+        if (g_modDebugMgr) {
+            g_modDebugMgr.AddConsole(null);
+        }
     }
     Init() {
         super.Init();

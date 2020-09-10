@@ -1,6 +1,14 @@
 class CJ4_FMC_LegsPage {
     static ShowPage1(fmc, currentPage = 1, step = 0) {
         fmc.clearDisplay();
+
+        let waypoints = fmc.flightPlanManager.getWaypoints().map(waypoint => ({
+            ident: waypoint.ident,
+            inFP: waypoint.isInFlightPlan,
+            active: waypoint.isActiveInFlightPlan
+        }));
+        console.log(JSON.stringify(waypoints, null, 2));
+
         fmc.refreshPageCallback = () => {
             CJ4_FMC_LegsPage.ShowPage1(fmc, currentPage, step);
         };
