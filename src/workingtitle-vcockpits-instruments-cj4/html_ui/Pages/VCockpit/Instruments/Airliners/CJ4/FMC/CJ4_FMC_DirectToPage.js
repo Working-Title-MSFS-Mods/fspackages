@@ -71,7 +71,8 @@ class CJ4_FMC_DirectToPage {
             console.log("dto apr wpt?" + isApproachWaypoint);
 
             //is this waypoint an approach waypoint? if so, perform these steps, otherwise proceed to regular DTO function.
-            if (isApproachWaypoint = true) {
+            //added isActiveApproach() condition
+            if (isApproachWaypoint == true && fmc.flightPlanManager.isActiveApproach() != true) {
 
                 console.log("Running Approach Waypoint = True"); //log if we are running this code
                 console.log("idx:" + fmc.flightPlanManager.getActiveWaypointIndex()); //log active waypoint index
