@@ -35,8 +35,9 @@ class CJ4_FMC_DirectToPage {
         console.log("app loaded?:" + fmc.flightPlanManager.isLoadedApproach());
         console.log("app active?:" + fmc.flightPlanManager.isActiveApproach());        
 
-        while (i < waypointsCount && i + wptsListIndex < waypointsCount && i < iMax) {
-            let waypoint = fmc.flightPlanManager.getWaypoint(i + wptsListIndex, NaN, true);
+        let waypoints = CJ4_FMC_DirectToPage.getAvailableWaypoints(fmc);
+        while (i < waypoints.length && i + wptsListIndex < waypoints.length && i < iMax) {
+            let waypoint = waypoints[i + wptsListIndex];
             if (waypoint) {
                 waypointsCell[i] = "←" + waypoint.ident + "[color]blue";
                 if (waypointsCell[i]) {
@@ -164,7 +165,7 @@ class CJ4_FMC_DirectToPage {
         ]);
         fmc.onNextPage = () => {
             wptsListIndex++;
-            wptsListIndex = Math.min(wptsListIndex, (fmc.flightPlanManager.getWaypointsCount() + fmc.flightPlanManager.getApproachWaypoints().length) - 4);
+            wptsListIndex = Math.min(wptsListIndex, CJ4_FMC_DirectToPage.getAvailableWaypoints(fmc).length - 5);
             CJ4_FMC_DirectToPage.ShowPage(fmc, directWaypoint, wptsListIndex);
         };
         fmc.onPrevPage = () => {
@@ -172,6 +173,24 @@ class CJ4_FMC_DirectToPage {
             wptsListIndex = Math.max(wptsListIndex, 0);
             CJ4_FMC_DirectToPage.ShowPage(fmc, directWaypoint, wptsListIndex);
         };
+    }
+
+    /**
+     * Gets available direct-to waypoints from the flight plan manager.
+     * @param {CJ4_FMC} fmc 
+     */
+    static getAvailableWaypoints(fmc) {
+        let enrouteWaypoints = fmc.flightPlanManager.getWaypoints();
+        let approachWaypoints = fmc.flightPlanManager.getApproachWaypoints();
+
+        if (approachWaypoints.length > 0) {
+            return [...enrouteWaypoints.slice(0, -1), ...approachWaypoints.slice(0, -1), ...[enrouteWaypoints[enrouteWaypoints.length - 1]]]
+                .filter(w => w.ident !== 'USER' && w.ident !== 'USR');
+        }
+        else {
+            return [...enrouteWaypoints]
+                .filter(w => w.ident !== 'USER' && w.ident !== 'USR');
+        }  
     }
 }
 //# sourceMappingURL=CJ4_FMC_DirectToPage.js.map
