@@ -229,9 +229,9 @@ class CJ4_FMC_InitRefIndexPage {
            
             fmc.setTemplate([
                 ["GPS 1[color]blue"],
-                [[hourspad] + ":" + [minutesspad] + "z" + "[color]green", [month] + "/" + [day] + "/" + [year] + "[color]green"],
+                [hourspad + ":" + minutesspad + "z" + "[color]green", month + "/" + day + "/" + year + "[color]green"],
                 ["LATITUDE", "LONGITUDE"],
-                [[currLat] + "[color]green", [currLon] + "[color]green"],
+                [currLat + "[color]green", currLon + "[color]green"],
                 [""],
                 ["TRACK ANGLE", Math.round(SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degrees")) + "°" + "[color]green"],
                 ["GROUND SPEED", Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) + "[color]green"],
@@ -240,7 +240,7 @@ class CJ4_FMC_InitRefIndexPage {
                 ["PROBABLE ERROR", "0.05 NM[color]green"],
                 [""],
                 ["GPS MODE:", "", "NAV[color]green"],
-                ["SATELLITES:", "", [satnum] + "[color]green"]
+                ["SATELLITES:", "", satnum + "[color]green"]
             ]);
         }, 1000, true);
       
@@ -308,6 +308,7 @@ class CJ4_FMC_InitRefIndexPage {
         let waypointDistance = Avionics.Utils.computeDistance(currentWaypoint.infos.coordinates, newWaypoint.infos.coordinates);
         return currentDistance + waypointDistance;
     }
+
     static calcETEseconds(distance, currGS) {
         return (distance / currGS) * 3600;
     }
@@ -335,37 +336,51 @@ class CJ4_FMC_InitRefIndexPage {
             
             let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
             let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-            let prevWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint();
-            let activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
+            let prevWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint() == undefined ? "-----"
+                : fmc.flightPlanManager.getPreviousActiveWaypoint();
+            let activeWaypoint = fmc.flightPlanManager.getActiveWaypoint() == undefined ? "-----"
+                : fmc.flightPlanManager.getActiveWaypoint();
             let destination = fmc.flightPlanManager.getDestination();
 
-            let activewptdist = fmc.flightPlanManager.getDistanceToActiveWaypoint();
-            let activewptete = groundSpeed < 50 ? "--:--"
+            let activewptdist = fmc.flightPlanManager.getDistanceToActiveWaypoint() == undefined ? "----"
+                : fmc.flightPlanManager.getDistanceToActiveWaypoint();
+            let activewptete = (groundSpeed < 50 || fmc.flightPlanManager.getETEToActiveWaypoint() == undefined) ? "--:--"
                 : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
         
-            let nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint();
-            let nextWaypointdist = this.calcDistance(activewptdist, activeWaypoint, nextWaypoint);
-            let nextwptete = groundSpeed < 50 ? "--:--"
-            : new Date(this.calcETEseconds(nextWaypointdist, groundSpeed) * 1000).toISOString().substr(11, 5);
+            let nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint() == undefined ? "-----"
+                : fmc.flightPlanManager.getNextActiveWaypoint().ident;
             
-            let destinationDistance = fmc.flightPlanManager.getDestination().cumulativeDistanceInFP
+            let nextWaypointdist = "----";
+            if (activewptdist && activeWaypoint && fmc.flightPlanManager.getNextActiveWaypoint()) {
+                nextWaypointdist = this.calcDistance(activewptdist, activeWaypoint, nextWaypoint);
+            };
+            
+            let nextwptete = (groundSpeed < 50 || nextWaypointdist == "----") ? "--:--"
+                : new Date(this.calcETEseconds(nextWaypointdist, groundSpeed) * 1000).toISOString().substr(11, 5);
+            
+            let destinationDistance = Avionics.Utils.computeDistance(currPos,destination.infos.coordinates);
+            if (fmc.flightPlanManager.getPreviousActiveWaypoint()) {
+                destinationDistance = fmc.flightPlanManager.getDestination().cumulativeDistanceInFP
                 - fmc.flightPlanManager.getPreviousActiveWaypoint().cumulativeDistanceInFP
                 - Avionics.Utils.computeDistance(currPos,prevWaypoint.infos.coordinates);
-            let destete = groundSpeed < 50 ? "--:--"
+            };
+
+            let destete = groundSpeed < 50 || destinationDistance == "----" ? "--:--"
                 : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
             
-            let prevWaypointdist = Avionics.Utils.computeDistance(currPos,prevWaypoint.infos.coordinates);
+            let prevWaypointdist = prevWaypoint = "-----" ? "----"
+                : Avionics.Utils.computeDistance(currPos,prevWaypoint.infos.coordinates);
 
             fmc.setTemplate([
                 ["PROGRESS[color]blue"],
                 ["LAST", "DIST[color]blue", "ETE[color]blue", "FUEL-LB[color]blue"],
-                [[prevWaypoint.ident] + "[color]blue", Math.trunc([prevWaypointdist]) + "[color]blue", ""],
+                [prevWaypoint.ident + "[color]blue", Math.trunc(prevWaypointdist) + "[color]blue", ""],
                 ["TO[color]blue"],
-                [[activeWaypoint.ident] + "[color]green", Math.trunc([activewptdist]) + "[color]green", [activewptete] + "[color]green", "1100"],
+                [activeWaypoint.ident + "[color]green", Math.trunc(activewptdist) + "[color]green", activewptete + "[color]green", "1100"],
                 ["NEXT[color]blue"],
-                [[nextWaypoint.ident] + "", Math.trunc([nextWaypointdist]) + "", [nextwptete] + "", "1140"],
+                [nextWaypoint + "", Math.trunc(nextWaypointdist) + "", nextwptete + "", "1140"],
                 ["DEST[color]blue"],
-                [[destination.ident] + "", Math.trunc([destinationDistance]) + "", [destete] + "", "730"],
+                [destination.ident + "", Math.trunc(destinationDistance) + "", destete + "", "730"],
                 ["ALTN[color]blue"],
                 ["----", "----", "--:--", "570"],
                 ["NAVIGATION[color]blue"],
@@ -400,14 +415,19 @@ class CJ4_FMC_InitRefIndexPage {
         let track = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees");
         let tas = Math.trunc(SimVar.GetSimVarValue("AIRSPEED TRUE", "knots"));
         let xtk = SimVar.GetSimVarValue("GPS WP CROSS TRK", "meters") * (0.000539957); //meters to NM conversion
+        console.log("xtk:" + xtk)
 
         let isaDev = Math.trunc(this.calcISADEV(sat, SimVar.GetSimVarValue("PLANE ALTITUDE", "feet")));
 
-        let headwind = Math.trunc((Math.cos(windDirection - track))) * windSpeed;
-        let crosswind = Math.trunc((Math.sin(windDirection - track))) * windSpeed;
+        let headwind = Math.trunc(fmc.windSpeed * (Math.cos((track * Math.PI / 180) - (windDirection * Math.PI / 180))));
+        let crosswind = Math.trunc(fmc.windSpeed * (Math.sin((track * Math.PI / 180) - (windDirection * Math.PI / 180))));
 
         let crosswinddirection = crosswind > 0 ? "R"
             : crosswind < 0 ? "L"
+            : "";
+
+        let headwindDirection = headwind > 0 ? "H"
+            : headwind < 0 ? "T"
             : "";
 
         let xtkDirection = xtk > 0 ? "R"
@@ -417,11 +437,11 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.setTemplate([
             ["PROGRESS[color]blue", "2/2[color]blue"],
             ["HEADWIND[color]blue", "CROSSWIND[color]blue"],
-            [[headwind] + " KT", [crosswinddirection] + " " + [Math.abs(crosswind)] + " KT"],
+            [headwindDirection + " " + Math.abs(headwind) + " KT", crosswinddirection + " " + Math.abs(crosswind) + " KT"],
             ["WIND[color]blue", "SAT/ISA DEV[color]blue"],
-            [[windDirection] + "/" + [windSpeed] , [sat] + "\xB0" + "C/" + [isaDev] + "\xB0" + "C"],
+            [windDirection + "/" + windSpeed , sat + "\xB0" + "C/" + isaDev + "\xB0" + "C"],
             ["XTK[color]blue", "TAS[color]blue"],
-            [[xtkDirection] + " " + [Math.abs(xtk.toFixed(1))] + " NM", [tas] + " KT"],
+            [xtkDirection + " " + Math.abs(xtk.toFixed(1)) + " NM", tas + " KT"],
             [""],
             [""],
             [""],

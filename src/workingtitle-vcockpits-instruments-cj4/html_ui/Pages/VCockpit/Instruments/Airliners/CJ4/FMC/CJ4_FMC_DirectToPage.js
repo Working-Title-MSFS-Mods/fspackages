@@ -1,4 +1,5 @@
 class CJ4_FMC_DirectToPage {
+
     static ShowPage(fmc, directWaypoint, wptsListIndex = 0) {
         fmc.clearDisplay();
         let directWaypointCell = " ";
