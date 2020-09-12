@@ -16,6 +16,16 @@ class CJ4_FMC extends FMCMainDisplay {
 		this.paxNumber = 0;
 		this.cargoWeight = 0;
 		this.basicOperatingWeight = 10280;
+		this.takeoffOat = "□□□";
+		this.landingOat = "□□□";
+		this.takeoffQnh = "□□.□□";
+		this.landingQnh = "□□.□□";
+		this.takeoffWindDir = "---";
+		this.takeoffWindSpeed = "---";
+		this.landingWindDir = "---";
+		this.landingWindSpeed = "---";
+		this.takeoffPressAlt = "";
+		this.landingPressAlt = "";
     }
     get templateID() { return "CJ4_FMC"; }
     connectedCallback() {
@@ -52,7 +62,7 @@ class CJ4_FMC extends FMCMainDisplay {
                 }
             }
         };
-        CJ4_FMC_IdentPage.ShowPage1(this);
+        CJ4_FMC_InitRefIndexPage.ShowPage5(this);
         
         //Timer for periodic page refresh
         this._pageRefreshTimer = null;
