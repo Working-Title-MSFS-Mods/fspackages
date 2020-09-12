@@ -657,6 +657,10 @@ class MaxSinceStartXMLElement extends CompositeLogicXMLElement {
     }
     getValue(_context) {
         let value = this.childrens[0].getValueAsNumber(_context);
+        let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "boolean");
+        if (onGround) {
+            this.maxValue = undefined;
+        }
         if (this.maxValue == undefined || value > this.maxValue) {
             this.maxValue = value;
         }
