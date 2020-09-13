@@ -1,0 +1,38 @@
+<AssetPackage Name="workingtitle-gx" Version="0.2.0">
+	<ItemSettings>
+		<ContentType>CUSTOM</ContentType>
+		<Title>Working Title GX</Title>
+		<Manufacturer/>
+		<Creator>Working Title</Creator>
+	</ItemSettings>
+	<Flags>
+		<VisibleInStore>false</VisibleInStore>
+		<CanBeReferenced>false</CanBeReferenced>
+	</Flags>
+	<AssetGroups>
+        <AssetGroup Name="workingtitle-base-aircraft-common">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-base-aircraft-common</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>
+        <AssetGroup Name="workingtitle-vcockpits-instruments-navsystems">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-vcockpits-instruments-navsystems</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>
+        <AssetGroup Name="workingtitle-g1000-docs">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>docs\workingtitle-g1000</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>  		   
+	</AssetGroups>
+</AssetPackage>
