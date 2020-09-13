@@ -86,7 +86,7 @@ class CJ4_FMC_DirectToPage {
 
                 removeWaypointForApproachMethod(() => {
                     fmc.flightPlanManager.tryAutoActivateApproach();
-                    CJ4_FMC_RoutePage.ShowPage2(fmc);
+                    CJ4_FMC_RoutePage.ShowPage1(fmc);
                 });
             }             
           

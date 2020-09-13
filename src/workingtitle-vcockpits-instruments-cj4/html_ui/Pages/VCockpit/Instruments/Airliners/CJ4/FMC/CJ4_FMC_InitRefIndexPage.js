@@ -487,8 +487,8 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc.registerPeriodicPageRefresh(() => {
 
-        let windDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
-        let windSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
+        let currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
+        let currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
         let sat = Math.trunc(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius"));
         let track = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees");
         let tas = Math.trunc(SimVar.GetSimVarValue("AIRSPEED TRUE", "knots"));
@@ -497,15 +497,15 @@ class CJ4_FMC_InitRefIndexPage {
 
         let isaDev = Math.trunc(this.calcISADEV(sat, SimVar.GetSimVarValue("PLANE ALTITUDE", "feet")));
 
-        let headwind = Math.trunc(fmc.windSpeed * (Math.cos((track * Math.PI / 180) - (windDirection * Math.PI / 180))));
-        let crosswind = Math.trunc(fmc.windSpeed * (Math.sin((track * Math.PI / 180) - (windDirection * Math.PI / 180))));
+        let currHeadwind = Math.trunc(currWindSpeed * (Math.cos((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
+        let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
 
-        let crosswinddirection = crosswind > 0 ? "R"
-            : crosswind < 0 ? "L"
+        let crosswinddirection = currCrosswind > 0 ? "R"
+            : currCrosswind < 0 ? "L"
             : "";
 
-        let headwindDirection = headwind > 0 ? "H"
-            : headwind < 0 ? "T"
+        let headwindDirection = currHeadwind > 0 ? "H"
+            : currHeadwind < 0 ? "T"
             : "";
 
         let xtkDirection = xtk > 0 ? "R"
@@ -515,9 +515,9 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.setTemplate([
             ["PROGRESS[color]blue", "2/2[color]blue"],
             ["HEADWIND[color]blue", "CROSSWIND[color]blue"],
-            [headwindDirection + " " + Math.abs(headwind) + " KT", crosswinddirection + " " + Math.abs(crosswind) + " KT"],
+            [headwindDirection + " " + Math.abs(currHeadwind) + " KT", crosswinddirection + " " + Math.abs(currCrosswind) + " KT"],
             ["WIND[color]blue", "SAT/ISA DEV[color]blue"],
-            [windDirection + "/" + windSpeed , sat + "\xB0" + "C/" + isaDev + "\xB0" + "C"],
+            [currWindDirection + "/" + currWindSpeed , sat + "\xB0" + "C/" + isaDev + "\xB0" + "C"],
             ["XTK[color]blue", "TAS[color]blue"],
             [xtkDirection + " " + Math.abs(xtk.toFixed(1)) + " NM", tas + " KT"],
             [""],

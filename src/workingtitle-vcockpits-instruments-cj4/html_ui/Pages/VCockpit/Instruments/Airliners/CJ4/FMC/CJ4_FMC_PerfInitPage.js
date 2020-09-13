@@ -161,22 +161,29 @@ class CJ4_FMC_PerfInitPage {
         if (fmc.flightPlanManager.getDepartureRunway()) {
             let depRunway = fmc.flightPlanManager.getDepartureRunway();
             depRunwayDesignation = new String(depRunway.designation);
+            console.log("depRunwayDesignation: " + depRunwayDesignation);
             depRunwayMod = new String(depRunwayDesignation.slice(-1));
-            if (depRunwayMod == ("L" || "C" || "R")) {
+            console.log("depRunwayMod: " + depRunwayMod);
+            if (depRunwayMod == "L" || "C" || "R") {
                 console.log("depRunwayMod == L C R");
                 if (depRunwayDesignation.length == 2) {
+                    console.log("depRunwayDesignation length 2");
                     depRunwayOutput = "0" + depRunwayDesignation;
                 } else {
+                    console.log("depRunwayDesignation length NOT 2");
                     depRunwayOutput = depRunwayDesignation;
                 }
             } else {
                 console.log("depRunwayMod == not L C R");
                 if (depRunwayDesignation.length == 2) {
+                    console.log("depRunwayDesignation length 2");
                     depRunwayOutput = depRunwayDesignation;
                 } else {
+                    console.log("depRunwayDesignation length NOT 2");
                     depRunwayOutput = "0" + depRunwayDesignation;
                 }
             }
+            console.log("depRunwayOutput: " + depRunwayOutput);
            	depRunwayDirection = new Number(depRunway.direction);
             depRunwayElevation = new Number(depRunway.elevation * 3.28);
             depRunwayLength = new Number((depRunway.length) * 3.28);
@@ -192,7 +199,7 @@ class CJ4_FMC_PerfInitPage {
             : crosswind < 0 ? "R"
             : "";
 			headwindDirection = headwind > 0 ? "H"
-            : crosswind < 0 ? "T"
+            : headwind < 0 ? "T"
             : "";
 			headwind = Math.abs(headwind);
 			crosswind = Math.abs(crosswind);
@@ -551,12 +558,13 @@ class CJ4_FMC_PerfInitPage {
         let arrRunwayLength = "";
         let arrRunwayMod = "";
         let arrRunwayOutput = "";
+        let arrRunway = "";
 
         if (fmc.flightPlanManager.getApproachRunway()) {
             arrRunway = fmc.flightPlanManager.getApproachRunway();
             arrRunwayDesignation = new String(arrRunway.designation);
             arrRunwayMod = new String(arrRunwayDesignation.slice(-1));
-            if (arrRunwayMod == ("L" || "C" || "R")) {
+            if (arrRunwayMod == "L" || "C" || "R") {
                 console.log("depRunwayMod == L C R");
                 if (arrRunwayDesignation.length == 2) {
                     arrRunwayOutput = "0" + arrRunwayDesignation;

@@ -82,7 +82,9 @@ class CJ4_FMC_RoutePage {
             activateCell = "PERF INIT>";
             fmc.onRightInput[5] = () => {
                 fmc.activateRoute();
+                console.log("PERF INIT Activate Route")
                 CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+                console.log("PERF INIT Load Page 2")
             };
         }
         fmc.setTemplate([
