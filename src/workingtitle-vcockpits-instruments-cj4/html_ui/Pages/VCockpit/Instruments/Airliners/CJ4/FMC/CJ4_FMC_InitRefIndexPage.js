@@ -574,24 +574,43 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage18(fmc) { //DATABASE INITIAL
+    static ShowPage18(fmc, databaseWaypoint) { //DATABASE INITIAL
         fmc.clearDisplay();
 
-        let ident = "-----";
+        let databaseIdentCell = " ";
+        let databaseWaypointType = "";
 
-        if (fmc.flightPlanManager.getDestination()) {
-            let identpos = fmc.flightPlanManager.getDestination();
-            if (identpos) {
-                ident = identpos.ident;
-            }
+        if (databaseWaypoint) {
+            databaseIdentCell = databaseWaypoint.ident;
+            console.log("icao: " + databaseWaypoint.icao);
+            databaseWaypointType = databaseWaypoint.icao.slice(0,1);
+            console.log("databaseWaypointType: " + databaseWaypointType);
+        }
+
+        fmc.onLeftInput[0] = () => {
+            let value = fmc.inOut;
+            fmc.clearUserInput();
+            fmc.getOrSelectWaypointByIdent(value, (w) => {
+                if (w) {
+                    CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, w);
+                }
+            });
         };
+
+
+        //if (fmc.flightPlanManager.getDestination()) {
+        //    let identpos = fmc.flightPlanManager.getDestination();
+        //    if (identpos) {
+        //        ident = identpos.ident;
+        //    }
+        //};
 
         fmc.setTemplate([
             ["DATABASE[color]blue"],
             ["IDENT[color]blue"],
-            [[ident] + ""],
-            [""],
-            [""],
+            ["[-----]"],
+            ["SELECTED WAYPOINT[color]blue"],
+            ["<" + databaseIdentCell + ""],
             [""],
             [""],
             [""],
@@ -602,21 +621,82 @@ class CJ4_FMC_InitRefIndexPage {
             ["<INDEX", "DEFINE WPT>"]
         ]);
         
+        fmc.onLeftInput[1] = () => {
+            fmc.clearUserInput();
+            if (databaseWaypointType == "A") {
+                CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, databaseWaypoint)
+            }
+            
+
+
+        };
+
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage19(fmc) { //DATABASE AIRPORT
+    static ShowPage19(fmc, databaseWaypoint) { //DATABASE AIRPORT
         fmc.clearDisplay();
+        let airportIdent = databaseWaypoint.ident;
+        let runways = databaseWaypoint.infos.oneWayRunways;
+        let longestRunway = runways[0];
+        let longestRunwaySort = 0;
+        let longestRunwayLength = 0;
+        for (let i = 1; i < runways.length; i++) {
+                longestRunwayLength = runways[i].length
+                if (longestRunwayLength > longestRunwaySort) {
+                longestRunwaySort = longestRunwayLength;
+                longestRunway = runways[i];
+            }
+        }
+        let longestRunwayDesignation = new String(longestRunway.designation);
+        let longestRunwayOutput = "";
+        let longestRunwayMod = new String(longestRunwayDesignation.slice(-1));
+            if (longestRunwayMod == "L" || "C" || "R") {
+                if (longestRunwayDesignation.length == 2) {
+                    longestRunwayOutput = "0" + longestRunwayDesignation;
+                } else {
+                    longestRunwayOutput = longestRunwayDesignation;
+                }
+            } else {
+                if (depRunwayDesignation.length == 2) {
+                    longestRunwayOutput = longestRunwayDesignation;
+                } else {
+                    longestRunwayOutput = "0" + longestRunwayDesignation;
+                }
+            }
+        let longestRunwayNumberOnly = new Number(longestRunwayOutput.slice(0,2));
+        let longestRunwayOppositeNumber = longestRunwayNumberOnly < 19 ? longestRunwayNumberOnly + 18
+            : longestRunwayNumberOnly - 18;
+        let longestRunwayOppositeMod = "";
+        let longestRunwayOppositeDesignator = "";
+        if (longestRunwayMod == "L" || "C" || "R") {
+            longestRunwayOppositeMod = longestRunwayMod == "R" ? "L"
+                : longestRunwayMod == "C" ? "C"
+                : longestRunwayMod == "L" ? "R"
+                : "";
+            longestRunwayOppositeDesignator = longestRunwayOppositeNumber + longestRunwayOppositeMod;
+        } else {
+            longestRunwayOppositeDesignator = longestRunwayOppositeNumber;
+        }
+        //elevation needs to be changed to field elevation, need to determine infos.???
+        let longestRunwayElevation = new Number(longestRunway.elevation * 3.28);
+        let longestRunwayLengthFeet = new Number(longestRunwayLength * 3.28);
+
+
+
+
+
+        
         fmc.setTemplate([
             ["DATABASE[color]blue"],
             ["IDENT[color]blue", "LONG RWY[color]blue"],
-            [""],
+            [airportIdent + "", longestRunwayOutput + "/" + longestRunwayOppositeDesignator + " " + Math.trunc(longestRunwayLengthFeet) + " FT"],
             ["ARP LOCATION[color]blue", "MAG VAR[color]blue"],
             [""],
             ["NAME[color]blue"],
-            [""],
+            [databaseWaypoint.infos.name + ""],
             ["RUNWAY LENGTH[color]blue", "ELEV[color]blue"],
-            ["<FEET/METERS"],
+            ["<FEET/METERS", Math.trunc(longestRunwayElevation) + " FT"],
             ["------------------------[color]blue"],
             ["<LOCALIZERS"],
             [""],
@@ -624,7 +704,7 @@ class CJ4_FMC_InitRefIndexPage {
         ]);
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage20(fmc) { //DATABASE NAVAID
+    static ShowPage20(fmc) { //DATABASE VOR
         fmc.clearDisplay();
         fmc.setTemplate([
             ["DATABASE[color]blue"],
@@ -656,6 +736,26 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             [""],
             [""],
+            ["------------Pilot[color]blue"],
+            ["", "WPT LIST>"],
+            [""],
+            ["<INDEX", "DEFINE WPT>"]
+        ]);
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.updateSideButtonActiveStatus();
+    }
+    static ShowPage30(fmc) { //DATABASE NDB
+        fmc.clearDisplay();
+        fmc.setTemplate([
+            ["DATABASE[color]blue"],
+            ["IDENT[color]blue", "FREQ[color]blue"],
+            [""],
+            ["VOR[color]blue", "MAG VAR[color]blue"],
+            [""],
+            ["DME[color]blue"],
+            [""],
+            ["NAME[color]blue", "ELEV[color]blue"],
+            ["<FEET/METERS"],
             ["------------Pilot[color]blue"],
             ["", "WPT LIST>"],
             [""],
@@ -773,18 +873,43 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage25(fmc) { //ARR DATA
         fmc.clearDisplay();
+
+        //destination data
+        let destinationIdent = "";
+        let approachName = "";
+        let approachFrequency = "";
+        let destination = "";
+        let appRunway = "";
+        let approach = "";
+
+        if (fmc.flightPlanManager.getDestination()) {
+            destination = fmc.flightPlanManager.getDestination();
+            destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
+        }
+        if (fmc.flightPlanManager.getApproach()) {
+            approach = fmc.flightPlanManager.getApproach();
+            approachName = fmc.flightPlanManager.getApproach().name;
+            approachFrequency = fmc.flightPlanManager.getApproachNavFrequency();
+        }
+        if (fmc.flightPlanManager.getApproachRunway()) {
+            appRunway = fmc.flightPlanManager.getApproachRunway();
+        }
+
+        let appRunwayDirection = new Number(appRunway.direction);
+        let appRunwayElevation = new Number(appRunway.elevation * 3.28);
+
         fmc.setTemplate([
             ["ACT ARRIVAL DATA[color]blue"],
             ["ARR AIRPORT[color]blue"],
-            ["destination"],
+            [destinationIdent + " / " + destination.infos.name],
             ["APPR[color]blue", "FREQ[color]blue"],
-            ["appr", ""],
+            [approachName + "", approachFrequency.toFixed(2) + ""],
             ["GS ANGLE[color]blue"],
             ["3.00"],
             ["LOC TRUE BRG[color]blue"],
-            [""],
+            [Math.trunc(appRunwayDirection) + ""],
             ["RWY THRESHOLD ALT[color]blue"],
-            [""],
+            [Math.trunc(appRunwayElevation) + ""],
             ["------------------------[color]blue"],
             ["<INDEX", "LEGS>"]
         ]);
