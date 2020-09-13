@@ -361,10 +361,15 @@ class CJ4_FMC_InitRefIndexPage {
         ]);
         fmc.updateSideButtonActiveStatus();
     }
-    static calcDistance(currentDistance, currentWaypoint, newWaypoint) {
-        let waypointDistance = Avionics.Utils.computeDistance(currentWaypoint.infos.coordinates, newWaypoint.infos.coordinates);
-        return currentDistance + waypointDistance;
-    }
+    //static calcDistance(currentDistance, currentWaypoint, newWaypoint) {
+    //    let waypointDistance = new Number(0)
+    //    if (newWaypoint && currentDistance && currentWaypoint) {
+    //        let newWaypointLatLon = newWaypoint.infos.coordinates != undefined ? new LatLong(newWaypoint.infos.coordinates)
+    //            : new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+    //        waypointDistance = Avionics.Utils.computeDistance(currentWaypoint.infos.coordinates, newWaypointLatLon);
+    //        return currentDistance + waypointDistance;
+    //    }
+    //}
 
     static calcETEseconds(distance, currGS) {
         return (distance / currGS) * 3600;
@@ -393,63 +398,67 @@ class CJ4_FMC_InitRefIndexPage {
             
             let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
             let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-            let prevWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint() == undefined ? "-----"
-                : fmc.flightPlanManager.getPreviousActiveWaypoint();
-            let activeWaypoint = fmc.flightPlanManager.getActiveWaypoint() == undefined ? "-----"
-                : fmc.flightPlanManager.getActiveWaypoint();
-            let destination = fmc.flightPlanManager.getDestination();
 
-            let activewptdist = fmc.flightPlanManager.getDistanceToActiveWaypoint() == undefined ? "----"
-                : fmc.flightPlanManager.getDistanceToActiveWaypoint();
-            let activewptete = (groundSpeed < 50 || fmc.flightPlanManager.getETEToActiveWaypoint() == undefined) ? "--:--"
-                : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
-        
-            let nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint() == undefined ? "-----"
-                : fmc.flightPlanManager.getNextActiveWaypoint().ident;
-            
-            let nextWaypointdist = "----";
-            if (activewptdist && activeWaypoint && fmc.flightPlanManager.getNextActiveWaypoint()) {
-                nextWaypointdist = this.calcDistance(activewptdist, activeWaypoint, nextWaypoint);
-            };
-            
-            let nextwptete = (groundSpeed < 50 || nextWaypointdist == "----") ? "--:--"
-                : new Date(this.calcETEseconds(nextWaypointdist, groundSpeed) * 1000).toISOString().substr(11, 5);
-            
-            let directDestinationDistance = 0;
-            if (destination.infos.coordinates) {
-                directDestinationDistance = Avionics.Utils.computeDistance(currPos,destination.infos.coordinates);
-            };
+            //default values
+            let prevWaypointIdent = "-----";
+            let prevWaypointDist = "----";
+            let activeWaypointIdent = "-----";
+            let activeWaypointDist = "----";
+            let activeWaypointEte = "--:--";
+            let nextWaypointIdent = "-----";
+            let nextWaypointDist = "----";
+            let nextWaypointEte = "--:--";
+            let destinationIdent = "----";
+            let destinationDistance = "----";
+            let destinationEte = "--:--";
 
-            let FPdestinationDistance = 0
-            if (fmc.flightPlanManager.getPreviousActiveWaypoint() && fmc.flightPlanManager.getDestination().cumulativeDistanceInFP) {
-                FPdestinationDistance = fmc.flightPlanManager.getDestination().cumulativeDistanceInFP
-                - fmc.flightPlanManager.getPreviousActiveWaypoint().cumulativeDistanceInFP
-                - Avionics.Utils.computeDistance(currPos,prevWaypoint.infos.coordinates);
-            };
-
-            let destinationDistance = 0
-            if (directDestinationDistance > FPdestinationDistance) {
-                destinationDistance = directDestinationDistance;
-            } else {
-                destinationDistance = FPdestinationDistance;
+            //previous waypoint data
+            if (fmc.flightPlanManager.getPreviousActiveWaypoint()) {
+                let prevWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint();
+                prevWaypointIdent = new String(fmc.flightPlanManager.getPreviousActiveWaypoint().ident);
+                prevWaypointDist = new Number(Avionics.Utils.computeDistance(currPos,prevWaypoint.infos.coordinates));
+            }
+            
+            //current active waypoint data
+            if (fmc.flightPlanManager.getActiveWaypoint()) {
+                let activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
+                activeWaypointIdent = new String(fmc.flightPlanManager.getActiveWaypoint().ident);
+                activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
+                activeWaypointEte = groundSpeed < 50 ? new String("--:--")
+                    : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
             }
 
-            let destete = (groundSpeed < 50 || destinationDistance == 0) ? "--:--"
-                : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
-            
-            let prevWaypointdist = prevWaypoint = "-----" ? "----"
-                : Avionics.Utils.computeDistance(currPos,prevWaypoint.infos.coordinates);
+            //next waypoint data
+            if (fmc.flightPlanManager.getNextActiveWaypoint()) {
+                let nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint();
+                nextWaypointIdent = new String(fmc.flightPlanManager.getNextActiveWaypoint().ident);
+                nextWaypointDist = new Number(activeWaypointDist + Avionics.Utils.computeDistance(fmc.flightPlanManager.getActiveWaypoint().infos.coordinates, nextWaypoint.infos.coordinates));
+                nextWaypointEte = groundSpeed < 50 ? new String("--:--")
+                    : new Date(this.calcETEseconds(nextWaypointdist, groundSpeed) * 1000).toISOString().substr(11, 5);
+            }
+
+            //destination data
+            if (fmc.flightPlanManager.getDestination()) {
+                let destination = fmc.flightPlanManager.getDestination();
+                destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
+                let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
+                let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+                destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
+                    : destinationDistanceFlightplan;
+                destinationEte = groundSpeed < 50 ? new String("--:--")
+                    : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+            }
 
             fmc.setTemplate([
                 ["PROGRESS[color]blue"],
                 ["LAST", "DIST[color]blue", "ETE[color]blue", "FUEL-LB[color]blue"],
-                [prevWaypoint.ident + "[color]blue", Math.trunc(prevWaypointdist) + "[color]blue", ""],
+                [prevWaypointIdent + "[color]blue", Math.trunc(prevWaypointDist) + "[color]blue", ""],
                 ["TO[color]blue"],
-                [activeWaypoint.ident + "[color]green", Math.trunc(activewptdist) + "[color]green", activewptete + "[color]green", "1100"],
+                [activeWaypointIdent + "[color]green", Math.trunc(activeWaypointDist) + "[color]green", activeWaypointEte + "[color]green", "1100"],
                 ["NEXT[color]blue"],
-                [nextWaypoint + "", Math.trunc(nextWaypointdist) + "", nextwptete + "", "1140"],
+                [nextWaypointIdent + "", Math.trunc(nextWaypointDist) + "", nextWaypointEte + "", "1140"],
                 ["DEST[color]blue"],
-                [destination.ident + "", Math.trunc(destinationDistance) + "", destete + "", "730"],
+                [destinationIdent + "", Math.trunc(destinationDistance) + "", destinationEte + "", "730"],
                 ["ALTN[color]blue"],
                 ["----", "----", "--:--", "570"],
                 ["NAVIGATION[color]blue"],

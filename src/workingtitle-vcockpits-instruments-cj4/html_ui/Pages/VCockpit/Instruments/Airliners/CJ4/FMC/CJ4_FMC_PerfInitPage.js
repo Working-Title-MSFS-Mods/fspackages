@@ -150,15 +150,37 @@ class CJ4_FMC_PerfInitPage {
         if (origin) {
             originIdent = origin.ident;
         }
-		let depRunway = "";
+		let depRunwayDesignation = "";
 		let depRunwayDirection = "";
-		let depRunwayElevation = "";
-		let selectedRunway = fmc.flightPlanManager.getDepartureRunway();
-		if (selectedRunway) {
-			depRunway = "RW" + Avionics.Utils.formatRunway(selectedRunway.designation);
-			depRunwayDirection = selectedRunway.direction;
-			depRunwayElevation = selectedRunway.elevation * 3.28;
-		}
+        let depRunwayElevation = "";
+        let depRunwayLength = "";
+        let depRunwayMod = "";
+        //added CWB method for runway designation
+        //let selectedRunway = fmc.flightPlanManager.getDepartureRunway();
+        let depRunwayOutput = "";
+        if (fmc.flightPlanManager.getDepartureRunway()) {
+            let depRunway = fmc.flightPlanManager.getDepartureRunway();
+            depRunwayDesignation = new String(depRunway.designation);
+            depRunwayMod = new String(depRunwayDesignation.slice(-1));
+            if (depRunwayMod == ("L" || "C" || "R")) {
+                console.log("depRunwayMod == L C R");
+                if (depRunwayDesignation.length == 2) {
+                    depRunwayOutput = "0" + depRunwayDesignation;
+                } else {
+                    depRunwayOutput = depRunwayDesignation;
+                }
+            } else {
+                console.log("depRunwayMod == not L C R");
+                if (depRunwayDesignation.length == 2) {
+                    depRunwayOutput = depRunwayDesignation;
+                } else {
+                    depRunwayOutput = "0" + depRunwayDesignation;
+                }
+            }
+           	depRunwayDirection = new Number(depRunway.direction);
+            depRunwayElevation = new Number(depRunway.elevation * 3.28);
+            depRunwayLength = new Number((depRunway.length) * 3.28);
+        }
 		let headwind = "";
 		let crosswind = "";
 		let crosswindDirection = "";
@@ -166,8 +188,8 @@ class CJ4_FMC_PerfInitPage {
 		if (fmc.takeoffWindDir != "---"){
             headwind = Math.trunc(fmc.takeoffWindSpeed * (Math.cos((depRunwayDirection * Math.PI / 180) - (fmc.takeoffWindDir * Math.PI / 180))));
             crosswind = Math.trunc(fmc.takeoffWindSpeed * (Math.sin((depRunwayDirection * Math.PI / 180) - (fmc.takeoffWindDir * Math.PI / 180))));
-            crosswindDirection = crosswind > 0 ? "R"
-            : crosswind < 0 ? "L"
+            crosswindDirection = crosswind > 0 ? "L"
+            : crosswind < 0 ? "R"
             : "";
 			headwindDirection = headwind > 0 ? "H"
             : crosswind < 0 ? "T"
@@ -175,38 +197,77 @@ class CJ4_FMC_PerfInitPage {
 			headwind = Math.abs(headwind);
 			crosswind = Math.abs(crosswind);
         }
+        let depRunwayConditionActive = fmc.depRunwayCondition == 0 ? "DRY"
+            : "WET";
+        //let runwayConditionInactive = fmc.runwayCondition == 0 ? "WET"
+        //    : "DRY"
+
+        //FIND SLOPE - disabled for now
+        //let depRunwayNumberOnly = new Number(depRunwayOutput.slice(0,2));
+        //let depRunwayOppositeNumber = depRunwayNumberOnly < 19 ? depRunwayNumberOnly + 18
+        //    : depRunwayNumberOnly - 18;
+        //let depRunwayOppositeMod = "";
+        //let depRunwayOppositeDesignator = "";
+        //if (depRunwayMod == ("L" || "C" || "R")) {
+        //    depRunwayOppositeMod = depRunwayMod == "R" ? "L"
+        //        : depRunwayMod == "C" ? "C"
+        //        : depRunwayMod == "L" ? "R"
+        //        : "";
+        //    depRunwayOppositeDesignator = depRunwayOppositeNumber + depRunwayOppositeMod;
+        //} else {
+        //    depRunwayOppositeDesignator = depRunwayOppositeNumber;
+        //}
+        //let depRunwayOpposite = origin.infos.oneWayRunways.find(r => { return r.designation.indexOf(depRunwayOppositeDesignator) !== -1; });
+        //console.log("Opposite Runway Designator: " + depRunwayOppositeDesignator);
+        //console.log("Opposite Runway: " + depRunwayOpposite.designation);
+        //console.log("Opposite Runway Elevation: " + (3.28 * depRunwayOpposite.elevation));
+        //console.log("Current Runway: " + depRunwayDesignation);
+        //console.log("Current Runway Elevation: " + depRunwayElevation);
+        
         fmc.setTemplate([
             [originIdent + "   TAKEOFF REF[color]blue", "1", "3"],
 			["RWY ID[color]blue", "WIND[color]blue"],
-            [depRunway, fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
+            [depRunwayOutput, fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
             ["RWY WIND[color]blue", "OAT[color]blue"],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.takeoffOat + "\xB0C"],
             ["RWY LENGTH[color]blue", "QNH[color]blue"],
-            ["placehold", fmc.takeoffQnh],
+            [Math.round(depRunwayLength) + " FT", fmc.takeoffQnh + ""],
             ["WIND/SLOPE[color]blue", "P ALT[color]blue"],
-            ["placehold", fmc.takeoffPressAlt],
-            ["RW COND[color]blue", "POS"],
-            ["DRY[color]green/WET"],
+            ["0", fmc.takeoffPressAlt + " FT"],
+            ["RW COND[color]blue"],
+            [depRunwayConditionActive + "[color]green"],
             [""],
             [""]
         ]);
 		fmc.onRightInput[0] = () => {
-            fmc.takeoffWindDir = fmc.inOut.slice(0, 3);
-			fmc.takeoffWindSpeed = fmc.inOut.slice(4, 7);
+            fmc.takeoffWindDir = new Number(fmc.inOut.slice(0, 3));
+			fmc.takeoffWindSpeed = new Number(fmc.inOut.slice(4, 7));
 			fmc.clearUserInput();
 			{ CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
 		}
 		fmc.onRightInput[1] = () => {
-            fmc.takeoffOat = fmc.inOut;
+            fmc.takeoffOat = new Number(fmc.inOut);
 			fmc.clearUserInput();
 			{ CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
 		}
 		fmc.onRightInput[2] = () => {
-			fmc.takeoffQnh = fmc.inOut;
-			fmc.takeoffPressAlt = Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation));
+            fmc.takeoffQnh = new Number(fmc.inOut).toFixed(2);
+            fmc.takeoffPressAlt = new Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
 			fmc.clearUserInput();
 			{ CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
-		}
+        }
+        fmc.onLeftInput[4] = () => {
+            if (fmc.depRunwayCondition == 0) {
+                fmc.depRunwayCondition = 1;
+            } else if (fmc.depRunwayCondition == 1) {
+                fmc.depRunwayCondition = 0;
+            }
+            depRunwayConditionActive = fmc.depRunwayCondition == 0 ? "DRY"
+                : "WET";
+			fmc.clearUserInput();
+			{ CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
+        }
+        
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage8(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage7(fmc); };
         fmc.updateSideButtonActiveStatus();
@@ -214,32 +275,20 @@ class CJ4_FMC_PerfInitPage {
 	static ShowPage7(fmc) { //TAKEOFF REF Page 2
 		fmc.clearDisplay();
 		let grWtCell = "";
-        let grossWeightValue = fmc.getWeight();
+        let grossWeightValue = new Number(fmc.getWeight());
         if (isFinite(grossWeightValue)) {
-            grWtCell = (grossWeightValue * 2200).toFixed(0);
+            grWtCell = new Number((grossWeightValue * 2200).toFixed(0));
         }
 		let tow = (grWtCell - 100);
 		let depRunway = "";
+		let depRunwayLength = "";
 		let selectedRunway = fmc.flightPlanManager.getDepartureRunway();
 		if (selectedRunway) {
 			depRunway = "RW" + Avionics.Utils.formatRunway(selectedRunway.designation);
+			depRunwayLength = new Number((selectedRunway.length) * 3.28);
 		}
-		let altConvFactor = (fmc.takeoffPressAlt * .0000319) + .1684; //Gets a conversion factor for distance change rate based on pressure altitude
-		let wgtConvFactor = ((tow-11000) * .0000319) + .0647; //Gets a conversion factor for distance change rate based on aircraft weight
-		let startWeightDist = (fmc.takeoffPressAlt * altConvFactor) + 1715; //Gets the starting sea level distance value for the given aircraft altitude at base weight of 11,000
-		let endWeightDist = ((tow-11000) * wgtConvFactor) + startWeightDist; //The startWeight is then multiplied by the weight above 11,000lbs by the conversion factor to give the distance at the given aircraft weight and altitude
-
-		//let wgtTempFactor = ((tow-11000) * .000669) + 8.63; //Gets the number of feet per degree to add for a given weight
-		//let altTempFactor = (fmc.takeoffPressAlt * .0000053) + .0875; // Gets the number of feet per degree to add for a given altitude
-		
-		//if (fmc.takeoffOat > 15) {
-		//	endWeightDist = endWeightDist + (altTempFactor * (fmc.takeoffOat - 15));
-		//	endWeightDist = endWeightDist + (wgtTempFactor * (fmc.takeoffOat - 15));
-		//}
-		//if (fmc.takeoffOat < 15) {
-		//	endWeightDist = endWeightDist - (altTempFactor * (fmc.takeoffOat - 15));
-		//	endWeightDist = endWeightDist - (wgtTempFactor * (fmc.takeoffOat - 15));
-		//}
+		let seaLevelDist = new Number ((tow-11000) * .1512) + 1568; //Finds the sea level distance based on weight
+		fmc.endTakeoffDist = new Number ((((tow-11000) * .0000126) + .05775) * fmc.takeoffPressAlt) + seaLevelDist; //Finds the distance you would travel further than the sea level value for a given pressure altitude.  That value is then added to the previous line number to get the distance for a given weight and given altitude
 		
 		let v1 = ((tow - 11000) * .00229) + 85; //V Speeds based on weight
 		let vR = ((tow - 11000) * .00147) + 92;
@@ -248,21 +297,68 @@ class CJ4_FMC_PerfInitPage {
 			v1 = v1 + (fmc.takeoffOat - 35) * .368;	
 			vR = vR + (fmc.takeoffOat - 35) * .368;	
 		}
+		if (fmc.takeoffFlaps == 0) { //If takeoff flaps are set to 0
+			fmc.endTakeoffDist = fmc.endTakeoffDist * 1.33;
+			v1 = v1 + 9;
+			vR = vR + 14;
+			v2 = v2 + 14;
+		}
+		if (fmc.depRunwayCondition == 1) { // If the runway is wet
+			fmc.endTakeoffDist = fmc.endTakeoffDist * 1.1;
+		}
+		if (fmc.takeoffAntiIce == 1) { //If anti-ice is turned on
+			fmc.endTakeoffDist = fmc.endTakeoffDist * 1.03;
+		}
+		if (fmc.takeoffWindDir != "---"){
+			let depRunwayDirection = new Number(selectedRunway.direction);
+			let headwind = Math.trunc(fmc.takeoffWindSpeed * (Math.cos((depRunwayDirection * Math.PI / 180) - (fmc.takeoffWindDir * Math.PI / 180))));
+			if (headwind > 0){
+				fmc.endTakeoffDist = fmc.endTakeoffDist - (headwind * 22);
+		} else {
+			fmc.endTakeoffDist = fmc.endTakeoffDist - (headwind * 60);
+		}
+		}
+		let takeoffFlapsActive = fmc.takeoffFlaps == 15 ? "15"
+            : "0";
+		let takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF"
+			: "ON";
         fmc.setTemplate([
             ["TAKEOFF REF[color]blue", "2", "3"],
-			[""],
-			["A/I[color]blue", "V1: " + v1.toFixed(0)],
-            ["OFF/ON[color]green"],
-            ["T/O FLAPS[color]blue", "VR: " + vR.toFixed(0)],
-            ["0/15[color]green"],
-            ["TOW/ GWT/MTOW[color]blue", "V2: " + v2.toFixed(0)],
-            [tow  +  "/" + grWtCell + "/17110"],
-            ["TOFL / " + depRunway + "[color]blue", "VT: 140"],
-            [endWeightDist.toFixed(0) + " / " + "----- FT"],
+			["A/I[color]blue"],
+			[takeoffAntiIceActive + "[color]green", "V1: " + v1.toFixed(0)],
+            ["T/O FLAPS[color]blue"],
+            [takeoffFlapsActive + "[color]green", "VR: " + vR.toFixed(0)],
+            ["TOW/ GWT/MTOW[color]blue"],
+            [tow  +  "/" + grWtCell + "/17110", "V2: " + v2.toFixed(0)],
+            ["TOFL / " + depRunway + "[color]blue"],
+            [fmc.endTakeoffDist.toFixed(0) + " / " + Math.round(depRunwayLength) + " FT", "VT: 140"],
+            [""],
             [""],
             [""],
             ["", "SEND>"]
         ]);
+		fmc.onLeftInput[0] = () => {
+            if (fmc.takeoffAntiIce == 0) {
+                fmc.takeoffAntiIce = 1;
+            } else if (fmc.takeoffAntiIce == 1) {
+                fmc.takeoffAntiIce = 0;
+            }
+            takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF"
+                : "ON";
+				fmc.clearUserInput();
+			{ CJ4_FMC_PerfInitPage.ShowPage7(fmc); };
+        }
+		fmc.onLeftInput[1] = () => {
+            if (fmc.takeoffFlaps == 15) {
+                fmc.takeoffFlaps = 0;
+            } else if (fmc.takeoffFlaps == 0) {
+                fmc.takeoffFlaps = 15;
+            }
+            takeoffFlapsActive = fmc.takeoffFlaps == 0 ? "15"
+                : "0";
+				fmc.clearUserInput();
+			{ CJ4_FMC_PerfInitPage.ShowPage7(fmc); };
+        }
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage8(fmc); };
         fmc.updateSideButtonActiveStatus();
@@ -446,20 +542,41 @@ class CJ4_FMC_PerfInitPage {
         if (origin) {
             originIdent = origin.ident;
         }
+
+        //added CWB method for runway designation
+
 		let arrRunwayDesignation = "";
 		let arrRunwayDirection = "";
 		let arrRunwayElevation = "";
-		let arrRunway = fmc.flightPlanManager.getApproachRunway();
-		if (arrRunway) {
-			arrRunwayDesignation = "RW" + arrRunway.designation;
-			arrRunwayDirection = arrRunway.direction;
-			arrRunwayElevation = arrRunway.elevation * 3.28;
-		}
-		
-		let checkLength = arrRunwayDesignation.length; //Checks to see if runway is single digit.  Then it adds a zero to the front.
-		if (checkLength == 1) {
-			arrRunwayDesignation = "RW" + arrRunwayDesignation.padStart(2, "0");
-		}
+        let arrRunwayLength = "";
+        let arrRunwayMod = "";
+        let arrRunwayOutput = "";
+
+        if (fmc.flightPlanManager.getApproachRunway()) {
+            arrRunway = fmc.flightPlanManager.getApproachRunway();
+            arrRunwayDesignation = new String(arrRunway.designation);
+            arrRunwayMod = new String(arrRunwayDesignation.slice(-1));
+            if (arrRunwayMod == ("L" || "C" || "R")) {
+                console.log("depRunwayMod == L C R");
+                if (arrRunwayDesignation.length == 2) {
+                    arrRunwayOutput = "0" + arrRunwayDesignation;
+                } else {
+                    arrRunwayOutput = arrRunwayDesignation;
+                }
+            } else {
+                console.log("depRunwayMod == not L C R");
+                if (arrRunwayDesignation.length == 2) {
+                    arrRunwayOutput = arrRunwayDesignation;
+                } else {
+                    arrRunwayOutput = "0" + arrRunwayDesignation;
+                }
+            }
+            arrRunwayDirection = new Number(arrRunway.direction);
+            arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
+            arrRunwayLength = new Number((arrRunway.length) * 3.28);
+        }
+        // end of added CWB method
+
 		let headwind = "";
 		let crosswind = "";
 		let crosswindDirection = "";
@@ -467,8 +584,8 @@ class CJ4_FMC_PerfInitPage {
 		if (fmc.landingWindDir != "---"){
             headwind = Math.trunc(fmc.landingWindSpeed * (Math.cos((arrRunwayDirection * Math.PI / 180) - (fmc.landingWindDir * Math.PI / 180))));
             crosswind = Math.trunc(fmc.landingWindSpeed * (Math.sin((arrRunwayDirection * Math.PI / 180) - (fmc.landingWindDir * Math.PI / 180))));
-            crosswindDirection = crosswind > 0 ? "R"
-            : crosswind < 0 ? "L"
+            crosswindDirection = crosswind > 0 ? "L"
+            : crosswind < 0 ? "R"
             : "";
 			headwindDirection = headwind > 0 ? "H"
             : crosswind < 0 ? "T"
@@ -476,7 +593,8 @@ class CJ4_FMC_PerfInitPage {
 			headwind = Math.abs(headwind);
 			crosswind = Math.abs(crosswind);
         }
-
+        let arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY"
+        : "WET";
         fmc.setTemplate([
             [destinationIdent + "   APPROACH REF[color]blue", "1", "3"],
 			["SEL APT[color]blue", "WIND[color]blue"],
@@ -486,11 +604,11 @@ class CJ4_FMC_PerfInitPage {
             ["RWY WIND[color]blue", "QNH[color]blue"],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.landingQnh],
             ["RUNWAY LENGTH[color]blue", "P ALT[color]blue"],
-            ["5001 FT", fmc.landingPressAlt],
+            [Math.round(arrRunwayLength) + " FT", fmc.landingPressAlt + " FT"],
             ["RWY SLOPE[color]blue"],
             ["--.-%"],
             ["RWY COND[color]blue"],
-            ["DRY[color]green" + "/WET"]
+            [arrRunwayConditionActive + "[color]green"]
         ]);
 		fmc.onRightInput[0] = () => {
             fmc.landingWindDir = fmc.inOut.slice(0, 3);
@@ -499,16 +617,27 @@ class CJ4_FMC_PerfInitPage {
 			{ CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
 		}
 		fmc.onRightInput[1] = () => {
-            fmc.landingOat = fmc.inOut;
+            fmc.landingOat = new Number(fmc.inOut);
 			fmc.clearUserInput();
 			{ CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
 		}
 		fmc.onRightInput[2] = () => {
-			fmc.landingQnh = fmc.inOut;
+			fmc.landingQnh = new Number(fmc.inOut).toFixed(2);
 			fmc.landingPressAlt = Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)) + " FT";
 			fmc.clearUserInput();
 			{ CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
 		}
+        fmc.onLeftInput[5] = () => {
+            if (fmc.arrRunwayCondition == 0) {
+                fmc.arrRunwayCondition = 1;
+            } else if (fmc.arrRunwayCondition == 1) {
+                fmc.arrRunwayCondition = 0;
+            }
+            arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY"
+                : "WET";
+				fmc.clearUserInput();
+			{ CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
+        }
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage15(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage14(fmc); };
         fmc.updateSideButtonActiveStatus();
@@ -529,6 +658,11 @@ class CJ4_FMC_PerfInitPage {
 		if (fmc.landingOat < 0) {
 			ldgFieldLength = ldgFieldLength + (((grWtCell - 10500) * .000903) + 5.33) * (fmc.landingOat);
 		}
+		let arrRunwayLength = "";
+		let arrRunway = fmc.flightPlanManager.getApproachRunway();
+		if (arrRunway) {
+			arrRunwayLength = new Number((arrRunway.length) * 3.28);
+		}
         fmc.setTemplate([
 			["APPROACH REF[color]blue", "2", "3"],
 			["A/I[color]blue"],
@@ -538,7 +672,7 @@ class CJ4_FMC_PerfInitPage {
             ["LW / GWT/MLW[color]blue", "VAPP: " + vApp.toFixed(0)],
             [grWtCell + "/" + grWtCell + "/15660"],
             ["LFL / RWXX[color]blue"],
-            [ldgFieldLength.toFixed(0) + " / " + " ---- FT"],
+            [ldgFieldLength.toFixed(0) + " / " + Math.trunc(arrRunwayLength) + " FT"],
             ["LDG FACTOR[color]blue"],
             ["1.0" + "/1.25" + "/1.67" + "/1.92"],
             [""],
@@ -548,6 +682,7 @@ class CJ4_FMC_PerfInitPage {
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage15(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
+
 	static ShowPage15(fmc) { //APPROACH REF Page 3
         fmc.clearDisplay();
         fmc.setTemplate([

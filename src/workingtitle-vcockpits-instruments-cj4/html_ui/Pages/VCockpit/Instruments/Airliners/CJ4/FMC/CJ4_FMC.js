@@ -25,7 +25,12 @@ class CJ4_FMC extends FMCMainDisplay {
 		this.landingWindDir = "---";
 		this.landingWindSpeed = "---";
 		this.takeoffPressAlt = "";
-		this.landingPressAlt = "";
+        this.landingPressAlt = "";
+        this.depRunwayCondition = 0;
+		this.arrRunwayCondition = 0;
+		this.takeoffFlaps = 15;
+		this.takeoffAntiIce = 0;
+		this.endTakeoffDist = 0;
     }
     get templateID() { return "CJ4_FMC"; }
     connectedCallback() {
