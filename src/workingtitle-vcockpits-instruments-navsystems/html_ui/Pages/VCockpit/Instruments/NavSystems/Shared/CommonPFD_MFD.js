@@ -491,11 +491,7 @@ class PFD_NavStatus extends NavSystemElement {
                     this.legSymbol = 2;
                 }
             }
-            var rawCurrentLegDistance = fastToFixed(SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles"), 1)
-            if (rawCurrentLegDistance.indexOf(".") == -1) {
-                rawCurrentLegDistance = rawCurrentLegDistance + ".0"
-            }
-            var currentLegDistance = rawCurrentLegDistance + "NM";
+            var currentLegDistance = fastToFixed(SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles"), 1) + "NM";
             if (this.currentLegDistanceValue != currentLegDistance) {
                 if (this.currentLegDistance)
                     this.currentLegDistance.textContent = currentLegDistance;
@@ -3766,4 +3762,15 @@ class MFD_DepartureSelection extends NavSystemElement {
     onEvent(_event) {
     }
 }
+
+function fastToFixed(num, p) {
+    if (p <= 0)
+        return Math.round(num).toString();
+
+    r  = Math.round(num * Math.pow(10, p)).toString();
+    l = r.length;
+
+    return r.substring(0, l - p) + "." + r.substring(l - p, l);
+}
+
 //# sourceMappingURL=CommonPFD_MFD.js.map
