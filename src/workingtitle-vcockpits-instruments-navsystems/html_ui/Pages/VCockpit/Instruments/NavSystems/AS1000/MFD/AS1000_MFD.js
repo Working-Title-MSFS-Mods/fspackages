@@ -35,28 +35,28 @@ class AS1000_MFD extends BaseAS1000 {
         this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "CenterDisplay", new AS1000_MFD_NavStatus()));
         this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "CenterDisplay", new MapInstrumentElement()));
 
-        this.map = document.getElementById("MapInstrument");
-        if (this.map) {
-            let onBeforeMapRedraw = this.map.onBeforeMapRedraw.bind(this.map);
-            this.map.onBeforeMapRedraw = () => {
-                onBeforeMapRedraw();
+        // this.map = document.getElementById("MapInstrument");
+        // if (this.map) {
+        //     let onBeforeMapRedraw = this.map.onBeforeMapRedraw.bind(this.map);
+        //     this.map.onBeforeMapRedraw = () => {
+        //         onBeforeMapRedraw();
 
-                if (this.map.bingMap) {
-                    let transform = "";
-                    if (!this.map.isDisplayingWeatherRadar()) {
-                        if (this.map.bRotateWithAirplane) {
-                            var compass = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
-                            var roundedCompass = fastToFixed(compass, 3);
-                            transform = "rotate(" + -roundedCompass + "deg) scale(1.25)";
-                        }
-                        else {
-                            transform = "scale(1.25)";
-                        }
-                    }
-                    this.map.bingMap.style.transform = transform;
-                }
-            };
-        }
+        //         if (this.map.bingMap) {
+        //             let transform = "";
+        //             if (!this.map.isDisplayingWeatherRadar()) {
+        //                 if (this.map.bRotateWithAirplane) {
+        //                     var compass = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
+        //                     var roundedCompass = fastToFixed(compass, 3);
+        //                     transform = "rotate(" + -roundedCompass + "deg)"; // scale(1.25)";
+        //                 }
+        //                 else {
+        //                     transform = ""; //scale(1.25)";
+        //                 }
+        //             }
+        //             this.map.bingMap.style.transform = transform;
+        //         }
+        //     };
+        // }
     }
     parseXMLConfig() {
         super.parseXMLConfig();

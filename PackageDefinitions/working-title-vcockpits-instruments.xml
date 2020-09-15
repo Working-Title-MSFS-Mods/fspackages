@@ -1,0 +1,22 @@
+<AssetPackage Name="workingtitle-vcockpits-instruments" Version="0.1.0">
+	<ItemSettings>
+		<ContentType>CUSTOM</ContentType>
+		<Title>Working Title Instruments</Title>
+		<Manufacturer/>
+		<Creator>Working Title</Creator>
+	</ItemSettings>
+	<Flags>
+		<VisibleInStore>false</VisibleInStore>
+		<CanBeReferenced>false</CanBeReferenced>
+	</Flags>
+	<AssetGroups>
+		<AssetGroup Name="workingtitle-vcockpits-instruments">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-vcockpits-instruments</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>
+	</AssetGroups>
+</AssetPackage>
