@@ -8,6 +8,9 @@ class AS1000_MFD extends BaseAS1000 {
     get templateID() { return "AS1000_MFD"; }
     connectedCallback() {
         super.connectedCallback();
+        if (typeof g_modDebugMgr != "undefined") {
+            g_modDebugMgr.AddConsole(null);
+        }
         this.pagesContainer = this.getChildById("RightInfos");
         this.addIndependentElementContainer(new Engine("Engine", "LeftInfos"));
         this.pageGroups = [
@@ -126,15 +129,11 @@ class AS1000_MFD extends BaseAS1000 {
      * Toggles the map between north up and track up modes.
      */
     toggleMapOrientation() {
-        console.log("Toggling map orientation!2121");
-
         if (!this.map) {
-            console.log("Attempting to bind map");
             this.map = document.getElementById("MapInstrument");
         }
 
         if (this.map) {
-            console.log("Map found.");
             if (!this.trackUp) {
                 this.trackUp = true;
             }
@@ -142,11 +141,9 @@ class AS1000_MFD extends BaseAS1000 {
                 this.trackUp = false;
             }
             
-            console.log(`Setting track up to ${this.trackUp}`);
             this.map.rotateWithPlane(this.trackUp);
-
+            this.map.roadNetwork._lastRange = -1; // force canvas to redraw (SvgRoadNetworkElement.js:297)
             let orientationEl = document.querySelector("#MapOrientation");
-            console.log(JSON.stringify(orientationEl));
 
             if (orientationEl) {
                 orientationEl.innerText = this.trackUp ? "TRACK UP" : "NORTH UP";

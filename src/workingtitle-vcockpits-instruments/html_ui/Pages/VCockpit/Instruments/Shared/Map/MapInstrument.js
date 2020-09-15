@@ -98,7 +98,7 @@ class MapInstrument extends ISvgMapRootElement {
         this.weatherRanges = [10, 20, 30, 40, 50, 60, 80, 100];
         this.weatherHideGPS = false;
         this.isBushTrip = false;
-        this.mapScaleFactor = 2;  // overscan for hiding corners when we rotate
+        this.mapScaleFactor = 1.4;  // overscan for hiding corners when we rotate
     }
     get flightPlanManager() {
         if (this.gps) {
@@ -396,7 +396,6 @@ class MapInstrument extends ISvgMapRootElement {
             this.mapNearestVorList = new NearestVORList(this.instrument);
             this.testAirspaceList = new NearestAirspaceList(this.instrument);
             this.roadNetwork = new SvgRoadNetworkElement();
-            this.roadNetwork.svgMapSize = 2000;
             this.cityManager = new SvgCityManager(this.navMap);
             this.airwayIterator = 0;
             this.airspaceIterator = 0;
@@ -852,10 +851,6 @@ class MapInstrument extends ISvgMapRootElement {
                         transform = "rotate(" + -roundedCompass + "deg)";
                     }
                     this.bingMap.style.transform = transform;
-                    // this.bingMap.style.width = "1500px";
-                    // this.bingMap.style.height = "1500px";
-                    // this.bingMap.style.top = "-400px";
-                    // this.bingMap.style.left = "-400px";
                 }
             }
             else {
