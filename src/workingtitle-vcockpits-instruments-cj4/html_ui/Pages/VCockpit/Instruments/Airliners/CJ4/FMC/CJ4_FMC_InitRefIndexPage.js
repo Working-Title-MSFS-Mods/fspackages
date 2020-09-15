@@ -361,16 +361,7 @@ class CJ4_FMC_InitRefIndexPage {
         ]);
         fmc.updateSideButtonActiveStatus();
     }
-    //static calcDistance(currentDistance, currentWaypoint, newWaypoint) {
-    //    let waypointDistance = new Number(0)
-    //    if (newWaypoint && currentDistance && currentWaypoint) {
-    //        let newWaypointLatLon = newWaypoint.infos.coordinates != undefined ? new LatLong(newWaypoint.infos.coordinates)
-    //            : new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
-    //        waypointDistance = Avionics.Utils.computeDistance(currentWaypoint.infos.coordinates, newWaypointLatLon);
-    //        return currentDistance + waypointDistance;
-    //    }
-    //}
-
+    //method to calculate ETE
     static calcETEseconds(distance, currGS) {
         return (distance / currGS) * 3600;
     }
@@ -597,14 +588,6 @@ class CJ4_FMC_InitRefIndexPage {
             });
         };
 
-
-        //if (fmc.flightPlanManager.getDestination()) {
-        //    let identpos = fmc.flightPlanManager.getDestination();
-        //    if (identpos) {
-        //        ident = identpos.ident;
-        //    }
-        //};
-
         fmc.setTemplate([
             ["DATABASE[color]blue"],
             ["IDENT[color]blue"],
@@ -682,11 +665,6 @@ class CJ4_FMC_InitRefIndexPage {
         let longestRunwayElevation = new Number(longestRunway.elevation * 3.28);
         let longestRunwayLengthFeet = new Number(longestRunwayLength * 3.28);
 
-
-
-
-
-        
         fmc.setTemplate([
             ["DATABASE[color]blue"],
             ["IDENT[color]blue", "LONG RWY[color]blue"],
@@ -874,7 +852,6 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage25(fmc) { //ARR DATA
         fmc.clearDisplay();
 
-        //destination data
         let destinationIdent = "";
         let approachName = "";
         let approachFrequency = "";
@@ -942,12 +919,12 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.setTemplate([
             [""],
             ["", "", "MODIFIED BY:"],
+            ["", "", "Working Title MSFS Mods"],
+            ["", "", "github.com/Working-Title-MSFS-Mods"],
             [""],
             [""],
             [""],
-            [""],
-            [""],
-            ["", "", "VERSION:"],
+            ["", "", "VERSION: 0.2.0"],
             [""],
             [""],
             [""],

@@ -33,6 +33,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.endTakeoffDist = 0;
         this.initialFuelLeft = 0;
         this.initialFuelRight = 0;
+        this.selectedRunwayOutput = "";
     }
     get templateID() { return "CJ4_FMC"; }
     connectedCallback() {
@@ -264,6 +265,28 @@ class CJ4_FMC extends FMCMainDisplay {
             this.updateAutopilotCooldown = this._apCooldown;
         }
     }
+    //add new method to find correct runway designation (with leading 0)
+    getRunwayDesignation(selectedRunway) {
+        if (selectedRunway) {
+            let selectedRunwayDesignation = new String(selectedRunway.designation);
+            let selectedRunwayMod = new String(selectedRunwayDesignation.slice(-1));
+            if (selectedRunwayMod == "L" || "C" || "R") {
+                if (selectedRunwayDesignation.length == 2) {
+                    this.selectedRunwayOutput = "0" + selectedRunwayDesignation;
+                } else {
+                    this.selectedRunwayOutput = selectedRunwayDesignation;
+                }
+            } else {
+                if (selectedRunwayDesignation.length == 2) {
+                    this.selectedRunwayOutput = selectedRunwayDesignation;
+                } else {
+                    this.selectedRunwayOutput = "0" + selectedRunwayDesignation;
+                }
+            }
+        }
+        return this.selectedRunwayOutput;
+    }
+    //end of new method to find runway designation
 
     /**
      * Registers a periodic page refresh with the FMC display.

@@ -150,49 +150,27 @@ class CJ4_FMC_PerfInitPage {
         if (origin) {
             originIdent = origin.ident;
         }
-		let depRunwayDesignation = "";
 		let depRunwayDirection = "";
         let depRunwayElevation = "";
         let depRunwayLength = "";
-        let depRunwayMod = "";
-        //added CWB method for runway designation
-        //let selectedRunway = fmc.flightPlanManager.getDepartureRunway();
         let depRunwayOutput = "";
+        let depRunway = "";
+
         if (fmc.flightPlanManager.getDepartureRunway()) {
-            let depRunway = fmc.flightPlanManager.getDepartureRunway();
-            depRunwayDesignation = new String(depRunway.designation);
-            console.log("depRunwayDesignation: " + depRunwayDesignation);
-            depRunwayMod = new String(depRunwayDesignation.slice(-1));
-            console.log("depRunwayMod: " + depRunwayMod);
-            if (depRunwayMod == "L" || "C" || "R") {
-                console.log("depRunwayMod == L C R");
-                if (depRunwayDesignation.length == 2) {
-                    console.log("depRunwayDesignation length 2");
-                    depRunwayOutput = "0" + depRunwayDesignation;
-                } else {
-                    console.log("depRunwayDesignation length NOT 2");
-                    depRunwayOutput = depRunwayDesignation;
-                }
-            } else {
-                console.log("depRunwayMod == not L C R");
-                if (depRunwayDesignation.length == 2) {
-                    console.log("depRunwayDesignation length 2");
-                    depRunwayOutput = depRunwayDesignation;
-                } else {
-                    console.log("depRunwayDesignation length NOT 2");
-                    depRunwayOutput = "0" + depRunwayDesignation;
-                }
-            }
+            depRunway = fmc.flightPlanManager.getDepartureRunway();
+            depRunwayOutput = fmc.getRunwayDesignation(depRunway);
             console.log("depRunwayOutput: " + depRunwayOutput);
            	depRunwayDirection = new Number(depRunway.direction);
             depRunwayElevation = new Number(depRunway.elevation * 3.28);
             depRunwayLength = new Number((depRunway.length) * 3.28);
         }
+
 		let headwind = "";
 		let crosswind = "";
 		let crosswindDirection = "";
 		let headwindDirection = "";
-		if (fmc.takeoffWindDir != "---"){
+        
+        if (fmc.takeoffWindDir != "---"){
             headwind = Math.trunc(fmc.takeoffWindSpeed * (Math.cos((depRunwayDirection * Math.PI / 180) - (fmc.takeoffWindDir * Math.PI / 180))));
             crosswind = Math.trunc(fmc.takeoffWindSpeed * (Math.sin((depRunwayDirection * Math.PI / 180) - (fmc.takeoffWindDir * Math.PI / 180))));
             crosswindDirection = crosswind > 0 ? "L"
@@ -204,10 +182,9 @@ class CJ4_FMC_PerfInitPage {
 			headwind = Math.abs(headwind);
 			crosswind = Math.abs(crosswind);
         }
+        
         let depRunwayConditionActive = fmc.depRunwayCondition == 0 ? "DRY"
             : "WET";
-        //let runwayConditionInactive = fmc.runwayCondition == 0 ? "WET"
-        //    : "DRY"
 
         //FIND SLOPE - disabled for now
         //let depRunwayNumberOnly = new Number(depRunwayOutput.slice(0,2));
@@ -404,11 +381,6 @@ class CJ4_FMC_PerfInitPage {
     }
 	static ShowPage9(fmc) { //FUEL MGMT Page 1
         fmc.clearDisplay();
-		//let fuelCell = "";
-        //if (fmc.blockFuel) {
-        //    fuelCell = (fmc.blockFuel * 2200).toFixed(0);
-        //}
-
 		fmc.registerPeriodicPageRefresh(() => {
         
         //CWB added direct read of fuel quantity simvars
@@ -423,18 +395,19 @@ class CJ4_FMC_PerfInitPage {
 		let minutes = ((((fuelQuantityTotal - fmc.reserveFuel) / totalFuelFlow) % 1) * 60).toFixed(0).toString().padStart(2,"0");
 		let rngToResv = (Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) * hoursForResv).toFixed(0);
 		let spRng = ((1 / totalFuelFlow) * Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"))).toFixed(2).toString().substr(1);
-		if (totalFuelFlow == 0){
+
+        if (totalFuelFlow == 0){
 			hours = "-";
 			rngToResv = "----";
 			minutes = "--";
 			spRng = ".----";
 		}
-		if (Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) == 0){
+
+        if (Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) == 0){
 			spRng = ".----";
 			rngToResv = "----";
 		}
-		//console.log(hours);
-		//console.log(minutes);
+
         fmc.setTemplate([
 			["FUEL MGMT[color]blue", "1", "3"],
             ["FUEL[color]blue", "TIME TO RESV[color]blue"],
@@ -484,10 +457,6 @@ class CJ4_FMC_PerfInitPage {
         let fuelBurnedTotalDisplay = fuelBurnedTotal < 0 ? "XXXX"
             : fuelBurnedTotal;
 
-        //let fuelBurnedDisplay = fuelBurned < 0 ? "XXXX"
-        //    : fuelBurned;
-        //let fuelBurnedDisplayHalf = fuelBurned < 0 ? "XXXX"
-        //: (0.5 * fuelBurned);
         fmc.onLeftInput[4] = () => { 
             fmc.initialFuelLeft = fuelQuantityLeft;
             fmc.initialFuelRight = fuelQuantityRight; };
@@ -511,10 +480,6 @@ class CJ4_FMC_PerfInitPage {
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage9(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage11(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
-        //fmc.onLeftInput[5] = () => { 
-        //    fmc.initialFuelLeft = fuelQuantityLeft;
-        //    fmc.initialFuelRight = fuelQuantityRight;
-        //    CJ4_FMC_PerfInitPage.ShowPage10(fmc); };
         fmc.updateSideButtonActiveStatus();
 	}
 	static ShowPage11(fmc) { //FUEL MGMT Page 3
@@ -582,45 +547,25 @@ class CJ4_FMC_PerfInitPage {
             originIdent = origin.ident;
         }
 
-        //added CWB method for runway designation
-
-		let arrRunwayDesignation = "";
 		let arrRunwayDirection = "";
 		let arrRunwayElevation = "";
         let arrRunwayLength = "";
-        let arrRunwayMod = "";
         let arrRunwayOutput = "";
         let arrRunway = "";
 
         if (fmc.flightPlanManager.getApproachRunway()) {
             arrRunway = fmc.flightPlanManager.getApproachRunway();
-            arrRunwayDesignation = new String(arrRunway.designation);
-            arrRunwayMod = new String(arrRunwayDesignation.slice(-1));
-            if (arrRunwayMod == "L" || "C" || "R") {
-                console.log("depRunwayMod == L C R");
-                if (arrRunwayDesignation.length == 2) {
-                    arrRunwayOutput = "0" + arrRunwayDesignation;
-                } else {
-                    arrRunwayOutput = arrRunwayDesignation;
-                }
-            } else {
-                console.log("depRunwayMod == not L C R");
-                if (arrRunwayDesignation.length == 2) {
-                    arrRunwayOutput = arrRunwayDesignation;
-                } else {
-                    arrRunwayOutput = "0" + arrRunwayDesignation;
-                }
-            }
+            arrRunwayOutput = fmc.getRunwayDesignation(arrRunway);
             arrRunwayDirection = new Number(arrRunway.direction);
             arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
             arrRunwayLength = new Number((arrRunway.length) * 3.28);
         }
-        // end of added CWB method
 
 		let headwind = "";
 		let crosswind = "";
 		let crosswindDirection = "";
-		let headwindDirection = "";
+        let headwindDirection = "";
+        
 		if (fmc.landingWindDir != "---"){
             headwind = Math.trunc(fmc.landingWindSpeed * (Math.cos((arrRunwayDirection * Math.PI / 180) - (fmc.landingWindDir * Math.PI / 180))));
             crosswind = Math.trunc(fmc.landingWindSpeed * (Math.sin((arrRunwayDirection * Math.PI / 180) - (fmc.landingWindDir * Math.PI / 180))));
@@ -633,14 +578,16 @@ class CJ4_FMC_PerfInitPage {
 			headwind = Math.abs(headwind);
 			crosswind = Math.abs(crosswind);
         }
+
         let arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY"
         : "WET";
+        
         fmc.setTemplate([
             [destinationIdent + "   APPROACH REF[color]blue", "1", "3"],
 			["SEL APT[color]blue", "WIND[color]blue"],
             [destinationIdent + "/" + originIdent + "[color]green", fmc.landingWindDir + "\xB0/" + fmc.landingWindSpeed],
             ["RWY ID[color]blue", "OAT[color]blue"],
-            [arrRunwayDesignation, fmc.landingOat + "\xB0C"],
+            [arrRunwayOutput, fmc.landingOat + "\xB0C"],
             ["RWY WIND[color]blue", "QNH[color]blue"],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.landingQnh],
             ["RUNWAY LENGTH[color]blue", "P ALT[color]blue"],
@@ -650,6 +597,7 @@ class CJ4_FMC_PerfInitPage {
             ["RWY COND[color]blue"],
             [arrRunwayConditionActive + "[color]green"]
         ]);
+
 		fmc.onRightInput[0] = () => {
             fmc.landingWindDir = fmc.inOut.slice(0, 3);
 			fmc.landingWindSpeed = fmc.inOut.slice(4, 7);
