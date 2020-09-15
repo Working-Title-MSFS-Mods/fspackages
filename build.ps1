@@ -51,8 +51,7 @@ function Update-Packages {
             Remove-Item -Path $packagePath -Recurse -ErrorAction SilentlyContinue
         }
 
-        if((Test-Path -Path $packagePath) -eq $false)
-        {
+        if ((Test-Path -Path $packagePath) -eq $false) {
             Write-Host "Creating package path $packagePath..."  
             New-Item -Path $packagePath -ItemType directory | Out-Null
         }
@@ -64,12 +63,8 @@ function Update-Packages {
         foreach ($assetGroup in $packageDef.AssetGroups.AssetGroup) {
             $src = Join-Path "." $assetGroup.AssetDir
             $dest = Join-Path $packagePath $assetGroup.OutputDir
-            #foreach ($assetSubFolder in Get-ChildItem -Path $assetGroup.AssetDir) {
-            #    $fullAssetFolderName = $assetSubFolder.FullName
-                Write-Host "Copying $src.AssetDir to $dest..."
-                robocopy $src $dest /XO /e /njh /njs /nfl /nc /ndl
-                #Copy-Item -Path $assetSubFolder.FullName -Destination $dest -Recurse -Force
-            #}    
+            Write-Host "Copying $src.AssetDir to $dest..."
+            robocopy $src $dest /XO /e /njh /njs /nfl /nc /ndl
         }
     
         Write-Host "Building layout file..."
