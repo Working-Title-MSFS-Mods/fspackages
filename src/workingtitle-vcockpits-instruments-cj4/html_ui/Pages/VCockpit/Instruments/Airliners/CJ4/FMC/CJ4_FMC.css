@@ -29,6 +29,7 @@
 #Mainframe {
   width: 100%;
   height: 100%;
+  filter: blur(0.07rem) brightness(1.3) contrast(1.8); /* TODO: play around more with these filters for that fuzzy display look */
 }
 
 #Electricity {
@@ -154,7 +155,7 @@ fmc-b747-8-main-display::before {
 .label {
   height: 3.4%;
   margin: 0;
-  transform: scale(1, 0.93);
+  transform: scale(1, 0.97);
 }
 
 .label-left {
