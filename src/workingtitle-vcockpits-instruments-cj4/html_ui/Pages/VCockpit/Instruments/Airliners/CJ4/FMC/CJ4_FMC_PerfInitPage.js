@@ -376,6 +376,12 @@ class CJ4_FMC_PerfInitPage {
 				fmc.clearUserInput();
 			{ CJ4_FMC_PerfInitPage.ShowPage7(fmc); };
         }
+        fmc.onRightInput[5] = () => {
+			SimVar.SetSimVarValue("L:AIRLINER_V1_SPEED", "Knots", v1);
+			SimVar.SetSimVarValue("L:AIRLINER_VR_SPEED", "Knots", vR);
+			SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", v2);
+			SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", 140);
+        }
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage8(fmc); };
         fmc.updateSideButtonActiveStatus();
