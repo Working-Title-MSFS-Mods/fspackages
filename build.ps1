@@ -96,7 +96,7 @@ function Wait-FileChange {
 
     $global:FileChanged = $false
 
-    $Watcher = New-Object IO.FileSystemWatcher $Folder, "*.css" -Property @{ 
+    $Watcher = New-Object IO.FileSystemWatcher $Folder, "*.*" -Property @{ 
         IncludeSubdirectories = $true
         EnableRaisingEvents   = $true
         NotifyFilter          = [IO.NotifyFilters]'FileName, LastWrite'
