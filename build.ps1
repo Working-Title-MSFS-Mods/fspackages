@@ -3,7 +3,8 @@ param (
     [string]$Package,
     [string]$MinimumGameVersion = "1.7.14",
     [string]$OutputPath = ".\build\",
-    [bool]$WatchFiles = $false
+    [bool]$WatchFiles = $false,
+    [bool]$CleanBuild = $false
 )
 
 # global var and action for filewatcher
@@ -45,22 +46,30 @@ function Update-Packages {
         $packagePath = Join-Path $OutputPath $packageName
         $manifestPath = Join-Path $packagePath "manifest.json"
     
-        Write-Host "Cleaning $packagePath..."
-        Remove-Item -Path $packagePath -Recurse -ErrorAction SilentlyContinue
-        New-Item -Path $packagePath -ItemType directory | Out-Null
-    
+        if ($CleanBuild -eq $true) {
+            Write-Host "Cleaning $packagePath..."
+            Remove-Item -Path $packagePath -Recurse -ErrorAction SilentlyContinue
+        }
+
+        if((Test-Path -Path $packagePath) -eq $false)
+        {
+            Write-Host "Creating package path $packagePath..."  
+            New-Item -Path $packagePath -ItemType directory | Out-Null
+        }
+        
         Write-Host "Writing $manifestPath..."  
-        $manifest | ConvertTo-Json | Out-File $manifestPath -Encoding ASCII
+        $manifest | ConvertTo-Json | Out-File -FilePath $manifestPath -Encoding ASCII
     
         Write-Host "Copying source files..."
         foreach ($assetGroup in $packageDef.AssetGroups.AssetGroup) {
+            $src = Join-Path "." $assetGroup.AssetDir
             $dest = Join-Path $packagePath $assetGroup.OutputDir
-            foreach ($assetSubFolder in Get-ChildItem -Path $assetGroup.AssetDir) {
-                $fullAssetFolderName = $assetSubFolder.FullName
-                Write-Host "Copying $fullAssetFolderName to $dest..."
-                Copy-Item -Path $assetSubFolder.FullName -Destination $dest -Recurse -Force
-            }
-    
+            #foreach ($assetSubFolder in Get-ChildItem -Path $assetGroup.AssetDir) {
+            #    $fullAssetFolderName = $assetSubFolder.FullName
+                Write-Host "Copying $src.AssetDir to $dest..."
+                robocopy $src $dest /XO /e /njh /njs /nfl /nc /ndl
+                #Copy-Item -Path $assetSubFolder.FullName -Destination $dest -Recurse -Force
+            #}    
         }
     
         Write-Host "Building layout file..."
