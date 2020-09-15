@@ -2959,7 +2959,33 @@ class MFD_ApproachSelection extends NavSystemElement {
                         elem.updateWaypoints();
                     }
                 }, this.selectedTransition);
-                this.gps.currFlightPlanManager.activateApproach();
+                //CWB add removal of enroute waypoints
+
+                let removeWaypointForApproachMethod = (callback = EmptyCallback.Void) => {
+                    let i = 1;
+                    let destinationIndex = this.gps.currFlightPlanManager.getWaypoints().findIndex(w => {
+                        return w.icao === this.gps.currFlightPlanManager.getDestination().icao;
+                    });
+
+                    if (i < destinationIndex) {
+                        this.gps.currFlightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
+                            //i++;
+                            removeWaypointForApproachMethod(callback);
+                        });
+                    }
+                    else {
+                        callback();
+                    }
+                };
+
+                removeWaypointForApproachMethod(() => {
+                    this.gps.currFlightPlanManager.activateApproach();
+                });
+
+
+
+                //end of enroute waypoint deletion
+                //this.gps.currFlightPlanManager.activateApproach();
             }
             this.gps.closePopUpElement();
         }
