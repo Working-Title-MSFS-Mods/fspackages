@@ -13,23 +13,23 @@ class CJ4_FMC extends FMCMainDisplay {
         this._hasReachedTopOfDescent = false;
         this._apCooldown = 500;
         this.reserveFuel = 750;
-		this.paxNumber = 0;
-		this.cargoWeight = 0;
-		this.basicOperatingWeight = 10280;
-		this.takeoffOat = "□□□";
-		this.landingOat = "□□□";
-		this.takeoffQnh = "□□.□□";
-		this.landingQnh = "□□.□□";
-		this.takeoffWindDir = "---";
-		this.takeoffWindSpeed = "---";
-		this.landingWindDir = "---";
-		this.landingWindSpeed = "---";
-		this.takeoffPressAlt = "";
+        this.paxNumber = 0;
+        this.cargoWeight = 0;
+        this.basicOperatingWeight = 10280;
+        this.takeoffOat = "□□□";
+        this.landingOat = "□□□";
+        this.takeoffQnh = "□□.□□";
+        this.landingQnh = "□□.□□";
+        this.takeoffWindDir = "---";
+        this.takeoffWindSpeed = "---";
+        this.landingWindDir = "---";
+        this.landingWindSpeed = "---";
+        this.takeoffPressAlt = "";
         this.landingPressAlt = "";
         this.depRunwayCondition = 0;
-		this.arrRunwayCondition = 0;
-		this.takeoffFlaps = 15;
-		this.takeoffAntiIce = 0;
+        this.arrRunwayCondition = 0;
+        this.takeoffFlaps = 15;
+        this.takeoffAntiIce = 0;
         this.endTakeoffDist = 0;
         this.initialFuelLeft = 0;
         this.initialFuelRight = 0;
@@ -54,11 +54,11 @@ class CJ4_FMC extends FMCMainDisplay {
         this.maxCruiseFL = 450;
         this.onFplan = () => { CJ4_FMC_RoutePage.ShowPage1(this); };
         this.onLegs = () => { CJ4_FMC_LegsPage.ShowPage1(this); };
-		this.onIdx = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(this); };
+        this.onIdx = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(this); };
         this.onDepArr = () => { CJ4_FMC_DepArrPage.ShowPage1(this); };
         this.onDsplMenu = () => { CJ4_FMC_DsplMenuPage.ShowPage1(this); };
-		this.onPerf = () => { CJ4_FMC_PerfInitPage.ShowPage1(this); };
-		this.onMfdAdv = () => { CJ4_FMC_MfdAdvPage.ShowPage1(this); };
+        this.onPerf = () => { CJ4_FMC_PerfInitPage.ShowPage1(this); };
+        this.onMfdAdv = () => { CJ4_FMC_MfdAdvPage.ShowPage1(this); };
         this.onTun = () => { CJ4_FMC_NavRadioPage.ShowPage1(this); };
         this.onExec = () => {
             if (this.getIsRouteActivated()) {
@@ -70,8 +70,10 @@ class CJ4_FMC extends FMCMainDisplay {
                 }
             }
         };
+        this.renderScratchpad();
+
         CJ4_FMC_InitRefIndexPage.ShowPage5(this);
-        
+
         //Timer for periodic page refresh
         this._pageRefreshTimer = null;
     }
@@ -99,19 +101,19 @@ class CJ4_FMC extends FMCMainDisplay {
             }
             return true;
         }
-		if (input === "IDX") {
+        if (input === "IDX") {
             if (this.onIdx) {
                 this.onIdx();
             }
             return true;
         }
-		if (input === "PERF") {
+        if (input === "PERF") {
             if (this.onPerf) {
                 this.onPerf();
             }
             return true;
         }
-		if (input === "MFD_ADV") {
+        if (input === "MFD_ADV") {
             if (this.onMfdAdv) {
                 this.onMfdAdv();
             }
@@ -288,6 +290,19 @@ class CJ4_FMC extends FMCMainDisplay {
     }
     //end of new method to find runway designation
 
+    renderScratchpad() {
+        // make footer accesible from css
+        document.getElementById("in-out").parentElement.classList.add("footer");
+        let inoutelem = document.getElementById("in-out");
+        let brkOpen = document.createElement("span");
+        brkOpen.innerHTML = "[";
+        brkOpen.classList.add("blue", "line-left");
+        let brkClose = document.createElement("span");
+        brkClose.innerHTML = "]";
+        brkClose.classList.add("blue", "line-right");
+        inoutelem.parentElement.appendChild(brkOpen);
+        inoutelem.parentElement.appendChild(brkClose);
+    }
     /**
      * Registers a periodic page refresh with the FMC display.
      * @param {number} interval The interval, in ms, to run the supplied action.
