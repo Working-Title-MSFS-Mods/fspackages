@@ -16,6 +16,24 @@ class CJ4_FMC extends FMCMainDisplay {
 		this.paxNumber = 0;
 		this.cargoWeight = 0;
 		this.basicOperatingWeight = 10280;
+		this.takeoffOat = "□□□";
+		this.landingOat = "□□□";
+		this.takeoffQnh = "□□.□□";
+		this.landingQnh = "□□.□□";
+		this.takeoffWindDir = "---";
+		this.takeoffWindSpeed = "---";
+		this.landingWindDir = "---";
+		this.landingWindSpeed = "---";
+		this.takeoffPressAlt = "";
+        this.landingPressAlt = "";
+        this.depRunwayCondition = 0;
+		this.arrRunwayCondition = 0;
+		this.takeoffFlaps = 15;
+		this.takeoffAntiIce = 0;
+        this.endTakeoffDist = 0;
+        this.initialFuelLeft = 0;
+        this.initialFuelRight = 0;
+        this.selectedRunwayOutput = "";
     }
     get templateID() { return "CJ4_FMC"; }
     connectedCallback() {
@@ -52,7 +70,7 @@ class CJ4_FMC extends FMCMainDisplay {
                 }
             }
         };
-        CJ4_FMC_IdentPage.ShowPage1(this);
+        CJ4_FMC_InitRefIndexPage.ShowPage5(this);
         
         //Timer for periodic page refresh
         this._pageRefreshTimer = null;
@@ -247,6 +265,28 @@ class CJ4_FMC extends FMCMainDisplay {
             this.updateAutopilotCooldown = this._apCooldown;
         }
     }
+    //add new method to find correct runway designation (with leading 0)
+    getRunwayDesignation(selectedRunway) {
+        if (selectedRunway) {
+            let selectedRunwayDesignation = new String(selectedRunway.designation);
+            let selectedRunwayMod = new String(selectedRunwayDesignation.slice(-1));
+            if (selectedRunwayMod == "L" || "C" || "R") {
+                if (selectedRunwayDesignation.length == 2) {
+                    this.selectedRunwayOutput = "0" + selectedRunwayDesignation;
+                } else {
+                    this.selectedRunwayOutput = selectedRunwayDesignation;
+                }
+            } else {
+                if (selectedRunwayDesignation.length == 2) {
+                    this.selectedRunwayOutput = selectedRunwayDesignation;
+                } else {
+                    this.selectedRunwayOutput = "0" + selectedRunwayDesignation;
+                }
+            }
+        }
+        return this.selectedRunwayOutput;
+    }
+    //end of new method to find runway designation
 
     /**
      * Registers a periodic page refresh with the FMC display.
