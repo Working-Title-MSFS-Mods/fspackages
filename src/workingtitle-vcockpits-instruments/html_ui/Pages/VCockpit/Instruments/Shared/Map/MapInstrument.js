@@ -1373,6 +1373,14 @@ class MapInstrument extends ISvgMapRootElement {
     }
     scrollMap(_dispX, _dispY) {
         if (this.navMap.lastCenterCoordinates) {
+            if (this.bRotateWithAirplane) {
+                let hdg = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
+                let hdgRad = hdg * Avionics.Utils.DEG2RAD;
+                let newX = _dispX * Math.cos(hdgRad) - _dispY * Math.sin(hdgRad);
+                let newY = _dispY * Math.cos(hdgRad) + _dispX * Math.sin(hdgRad);
+                _dispX = newX;
+                _dispY = newY;
+            }
             var scaleFactor = parseInt(window.getComputedStyle(this).height) / 1000;
             let long = -_dispX * this.navMap.angularWidth / (1000 * scaleFactor);
             let lat = _dispY * this.navMap.angularHeight / (1000 * scaleFactor);
