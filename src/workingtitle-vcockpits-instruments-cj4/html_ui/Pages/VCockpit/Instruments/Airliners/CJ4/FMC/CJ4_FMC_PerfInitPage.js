@@ -211,7 +211,7 @@ class CJ4_FMC_PerfInitPage {
         fmc.setTemplate([
             [originIdent + "   TAKEOFF REF[color]blue", "1", "3"],
 			["RWY ID[color]blue", "WIND[color]blue"],
-            [depRunwayOutput, fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
+            ["RW" + depRunwayOutput, fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
             ["RWY WIND[color]blue", "OAT[color]blue"],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.takeoffOat + "\xB0C"],
             ["RWY LENGTH[color]blue", "QNH[color]blue"],
@@ -587,7 +587,7 @@ class CJ4_FMC_PerfInitPage {
 			["SEL APT[color]blue", "WIND[color]blue"],
             [destinationIdent + "/" + originIdent + "[color]green", fmc.landingWindDir + "\xB0/" + fmc.landingWindSpeed],
             ["RWY ID[color]blue", "OAT[color]blue"],
-            [arrRunwayOutput, fmc.landingOat + "\xB0C"],
+            ["RW" + arrRunwayOutput, fmc.landingOat + "\xB0C"],
             ["RWY WIND[color]blue", "QNH[color]blue"],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.landingQnh],
             ["RUNWAY LENGTH[color]blue", "P ALT[color]blue"],
