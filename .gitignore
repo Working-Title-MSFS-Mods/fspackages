@@ -2,3 +2,6 @@
 **/Packages
 **/build
 ref
+
+**/.vs
+**/MSFS
