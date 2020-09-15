@@ -274,18 +274,51 @@ class CJ4_FMC_PerfInitPage {
 		let seaLevelDist = new Number ((tow-11000) * .1512) + 1568; //Finds the sea level distance based on weight
 		fmc.endTakeoffDist = new Number ((((tow-11000) * .0000126) + .05775) * fmc.takeoffPressAlt) + seaLevelDist; //Finds the distance you would travel further than the sea level value for a given pressure altitude.  That value is then added to the previous line number to get the distance for a given weight and given altitude
 		
-		let v1 = ((tow - 11000) * .00229) + 85; //V Speeds based on weight
+		let takeoffWeightTempFactor = ((tow - 11000) * .000556) + 5.22; //Amount of feet per degree based on weight
+		let takeoffTempFactor = (((tow - 11000) * .0001702) + 1.04) + takeoffWeightTempFactor; //Amount of feet per degree based on altitude which is then added to the weight factor
+		
+		if (tow > 15000 && fmc.takeoffOat > 5 && fmc.takeoffPressAlt > 4000){ //This line is for the exception where you are hot, high, and heavy, the OAT effects really make a big difference hence the 120 feet per degree factor
+			fmc.endTakeoffDist = fmc.endTakeoffDist + (fmc.takeoffOat * 50);
+		} else {
+				if (fmc.takeoffOat > 0) { //Takeoff distance change by temp above 0
+					fmc.endTakeoffDist = fmc.endTakeoffDist + (fmc.takeoffOat * takeoffTempFactor);
+					console.log("A");
+				}
+				if (fmc.takeoffOat < 0) { //Takeoff distance change by temp below 0
+					fmc.endTakeoffDist = fmc.endTakeoffDist + (fmc.takeoffOat * takeoffTempFactor);
+				}
+			}
+		
+		let v1 = ((tow - 11000) * .00229) + 85; //Sea level V Speeds at 0C for a given weight
 		let vR = ((tow - 11000) * .00147) + 92;
-		let v2 = ((tow - 11000) * .0009819) + 108;
-		if (fmc.takeoffOat >= 35) { //V speeds based on temperature
-			v1 = v1 + (fmc.takeoffOat - 35) * .368;	
-			vR = vR + (fmc.takeoffOat - 35) * .368;	
+		let v2 = ((tow - 11000) * .0009819) + 109;
+		
+		v1 = v1 + ((tow - 11000) * .00229);//Vspeed change based on weight
+		vR = vR + ((tow - 11000) * .00147);
+		v2 = v2 + ((tow - 11000) * .000818);
+		
+		v1 = v1 - (fmc.takeoffPressAlt * .000375); // Vspeed changed for pressure altitude
+		vR = vR - (fmc.takeoffPressAlt * .000375);
+		v2 = v2 - (fmc.takeoffPressAlt * .000625);
+		
+		let v1WeightFactorAbove = .055 + ((tow - 11000) * .00002733);  //Changes in V Speeds by temp by weight.  Below 0 degrees, the change is negligible so it's not included
+		let vRWeightFactorAbove = .203 - ((tow - 11000) * .00001816);
+		let v2WeightFactorAbove  = .314 - ((tow - 11000) * .00005139);
+		
+		if (fmc.takeoffOat > 0) { //V speed adjustment based on temperature above zero
+			v1 = v1 - (fmc.takeoffOat * v1WeightFactorAbove);	
+			vR = vR - (fmc.takeoffOat * vRWeightFactorAbove);
+			v2 = v2 - (fmc.takeoffOat * v2WeightFactorAbove);
 		}
+		
 		if (fmc.takeoffFlaps == 0) { //If takeoff flaps are set to 0
 			fmc.endTakeoffDist = fmc.endTakeoffDist * 1.33;
 			v1 = v1 + 9;
 			vR = vR + 14;
 			v2 = v2 + 14;
+		}
+		if (vR < v1) {
+			vR = v1 + 2;
 		}
 		if (fmc.depRunwayCondition == 1) { // If the runway is wet
 			fmc.endTakeoffDist = fmc.endTakeoffDist * 1.1;
