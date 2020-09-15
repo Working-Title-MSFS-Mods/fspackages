@@ -235,10 +235,18 @@ class CJ4_FMC_PerfInitPage {
 			{ CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
 		}
 		fmc.onRightInput[2] = () => {
-            fmc.takeoffQnh = new Number(fmc.inOut).toFixed(2);
-            fmc.takeoffPressAlt = new Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
-			fmc.clearUserInput();
-			{ CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
+
+            let qnh = Number(fmc.inOut);
+            if (qnh !== NaN && qnh > 28 && qnh < 34) {
+                fmc.takeoffQnh = qnh.toFixed(2);
+                fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                fmc.clearUserInput();
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+
+            CJ4_FMC_PerfInitPage.ShowPage6(fmc);
         }
         fmc.onLeftInput[4] = () => {
             if (fmc.depRunwayCondition == 0) {
