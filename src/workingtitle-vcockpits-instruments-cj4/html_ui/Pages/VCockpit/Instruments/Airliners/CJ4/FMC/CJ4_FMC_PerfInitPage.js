@@ -657,10 +657,18 @@ class CJ4_FMC_PerfInitPage {
 			{ CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
 		}
 		fmc.onRightInput[2] = () => {
-			fmc.landingQnh = new Number(fmc.inOut).toFixed(2);
-			fmc.landingPressAlt = Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)) + " FT";
-			fmc.clearUserInput();
-			{ CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
+
+            let qnh = Number(fmc.inOut);
+            if (qnh !== NaN && qnh > 28 && qnh < 34) {
+                fmc.landingQnh = qnh.toFixed(2);
+                fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
+                fmc.clearUserInput();
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+
+			CJ4_FMC_PerfInitPage.ShowPage13(fmc);
 		}
         fmc.onLeftInput[5] = () => {
             if (fmc.arrRunwayCondition == 0) {
