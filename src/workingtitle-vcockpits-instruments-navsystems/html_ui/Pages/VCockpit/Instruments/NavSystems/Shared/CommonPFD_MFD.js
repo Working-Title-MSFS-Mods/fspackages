@@ -1258,7 +1258,29 @@ class PFD_MarkerBeacon extends NavSystemElement {
     onEvent(_event) {
     }
 }
-class PFD_InnerMap extends MapInstrumentElement {
+class MFD_MapElement extends MapInstrumentElement {
+    constructor() {
+        super(...arguments);
+    }
+    init(_root) {
+        super.init(_root);
+        this.trackUp = false;
+    }
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
+        if (SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean") != this.trackUp) {
+            this.trackUp = !this.trackUp;
+            this.instrument.rotateWithPlane(this.trackUp);
+            this.instrument.roadNetwork._lastRange = -1; // force canvas to redraw (SvgRoadNetworkElement.js:297)
+            let orientationEl = document.querySelector("#MapOrientation");
+            if (orientationEl) {
+                orientationEl.innerText = this.trackUp ? "TRACK UP" : "NORTH UP";
+            }
+        }
+    }
+}
+
+class PFD_InnerMap extends MFD_MapElement {
     constructor() {
         super(...arguments);
         this.gpsWasInReversionaryMode = false;
