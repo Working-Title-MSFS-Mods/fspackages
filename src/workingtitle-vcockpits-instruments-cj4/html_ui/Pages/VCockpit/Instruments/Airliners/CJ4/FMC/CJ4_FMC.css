@@ -29,7 +29,7 @@
 #Mainframe {
   width: 100%;
   height: 100%;
-  filter: brightness(1.3) contrast(1.8); /* TODO: play around more with these filters for that fuzzy display look */
+  filter: brightness(1.1) contrast(1.6); /* TODO: play around more with these filters for that fuzzy display look */
 }
 
 #Electricity {
@@ -145,6 +145,7 @@ fmc-b747-8-main-display::before {
   position: absolute;
   top: 5%;
   right: 5%;
+  color: #00afef;
 }
 
 .s-text {
@@ -217,13 +218,15 @@ fmc-b747-8-main-display::before {
 .footer {
   margin-top: -4.2%;
   transform: scale(1, 0.90);
-  height: 7.3vw;
+  height: 7.0vw;
 }
 
 /* Message line */
 
 #msg-line {
-  transform: scale(1.1, 0.90);
+  transform: scale(1.05, 0.90);
+  margin-left: 2.5%;
+  margin-right: 2.5%;
 }
 
 #exec-sign {
