@@ -11,11 +11,12 @@ class AS1000_MFD extends BaseAS1000 {
         if (typeof g_modDebugMgr != "undefined") {
             g_modDebugMgr.AddConsole(null);
         }
-        this.pagesContainer = this.getChildById("RightInfos");
-        this.addIndependentElementContainer(new Engine("Engine", "LeftInfos"));
+		this.pagesContainer = this.getChildById("RightInfos");
+		let engineDisplay = new Engine("Engine", "LeftInfos");
+        this.addIndependentElementContainer(engineDisplay);
         this.pageGroups = [
             new NavSystemPageGroup("MAP", this, [
-                new AS1000_MFD_MainMap()
+                new AS1000_MFD_MainMap(engineDisplay)
             ]),
             new NavSystemPageGroup("WPT", this, [
                 new AS1000_MFD_AirportInfos()
@@ -248,18 +249,19 @@ class AS1000_MFD_PageNavigation extends NavSystemElement {
     }
 }
 class AS1000_MFD_MainMap extends NavSystemPage {
-    constructor() {
+    constructor(engineDisplay) {
         super("NAVIGATION MAP", "Map", new NavSystemElementGroup([
             new AS1000_MFD_MainMapSlot(),
             new AS1000_MFD_WindData()
         ]));
-        this.mapMenu = new AS1000_MapMenu();
+		this.mapMenu = new AS1000_MapMenu();
+		this.engineDisplay = engineDisplay;
     }
     init() {
         this.mapMenu.init(this, this.gps);
         this.softKeys = new SoftKeysMenu();
         this.softKeys.elements = [
-            new SoftKeyElement("ENGINE", null),
+            new SoftKeyElement("ENGINE", this.cycleEnginePages.bind(this)),
             new SoftKeyElement("", null),
             new SoftKeyElement("MAP", this.mapMenu.open.bind(this.mapMenu)),
             new SoftKeyElement("", null),
@@ -280,7 +282,10 @@ class AS1000_MFD_MainMap extends NavSystemPage {
             new SoftKeyElement("SHW CHRT", null),
             new SoftKeyElement("", null)
         ];
-    }
+	}
+	cycleEnginePages() {
+		this.engineDisplay.cyclePages();
+	}
 }
 class AS1000_MFD_MainMapSlot extends NavSystemElement {
     init(root) {
