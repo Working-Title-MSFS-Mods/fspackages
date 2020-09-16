@@ -1562,7 +1562,7 @@
 				<NODE_ID>CDU_Push_0_2</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_2_2</NODE_ID>
+				<NODE_ID>CDU_Push_1_2</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 				<NODE_ID>CDU_Push_2_2</NODE_ID>
