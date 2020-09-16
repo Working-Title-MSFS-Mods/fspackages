@@ -1,55 +1,73 @@
 ﻿/** This mixin makes a single line element fit exactly on the Roboto font for easier integration. */
 :root {
-  --bodyHeightScale: 1; }
+  --bodyHeightScale: 1;
+}
 
 @keyframes TemporaryShow {
-  0%, 100% {
-    visibility: visible; } }
+
+  0%,
+  100% {
+    visibility: visible;
+  }
+}
 
 @keyframes TemporaryHide {
-  0%, 100% {
-    visibility: hidden; } }
+
+  0%,
+  100% {
+    visibility: hidden;
+  }
+}
 
 #highlight {
   position: absolute;
   height: 100%;
   width: 100%;
-  z-index: 10; }
+  z-index: 10;
+}
 
 #Mainframe {
   width: 100%;
-  height: 100%; }
+  height: 100%;
+  filter: brightness(1.1) contrast(1.6); /* TODO: play around more with these filters for that fuzzy display look */
+}
 
 #Electricity {
   width: 100%;
-  height: 100%; }
+  height: 100%;
+}
 
 #Electricity[state=off] {
-  display: none; }
+  display: none;
+}
 
 @font-face {
   font-family: "Roboto";
   src: url("/Fonts/RobotoMono-Medium.ttf") format("truetype");
   font-weight: normal;
-  font-style: normal; }
+  font-style: normal;
+}
 
 @font-face {
   font-family: "Roboto-Light";
   src: url("/Fonts/RobotoMono-Light.ttf") format("truetype");
   font-weight: normal;
-  font-style: normal; }
+  font-style: normal;
+}
 
 @font-face {
   font-family: "Roboto-Bold";
   src: url("/Fonts/RobotoMono-Bold.ttf") format("truetype");
   font-weight: normal;
-  font-style: normal; }
+  font-style: normal;
+}
 
 @font-face {
   font-family: "Consolas";
   src: url("/Fonts/consola.ttf") format("truetype");
   font-weight: normal;
-  font-style: normal; }
+  font-style: normal;
+}
 
 /*
 @font-face {
@@ -60,7 +78,8 @@
 }
 */
 span:empty:before {
-  content: " "; }
+  content: " ";
+}
 
 cj4-fmc {
   position: absolute;
@@ -70,25 +89,32 @@ cj4-fmc {
   color: white;
   font-family: "Not Courier Sans", "Consolas";
   font-size: 6.46vw;
-  color: white; }
+  color: white;
+}
 
 .white {
-  color: white; }
+  color: white;
+}
 
 .blue {
-  color: #00afef; }
+  color: #00afef;
+}
 
 .yellow {
-  color: #fff201; }
+  color: #fff201;
+}
 
 .green {
-  color: #00a54f; }
+  color: #00a54f;
+}
 
 .red {
-  color: #ff886d; }
-  
+  color: #ff886d;
+}
+
 .magenta {
-  color: #ff00ff; }
+  color: #ff00ff;
+}
 
 fmc-b747-8-main-display::before {
   content: " ";
@@ -101,70 +127,119 @@ fmc-b747-8-main-display::before {
   background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
   z-index: 2;
   background-size: 100% 2px, 3px 100%;
-  pointer-events: none; }
+  pointer-events: none;
+}
 
 #header {
   height: 11.5%;
   margin-top: 4%;
-  margin-bottom: 0%;
+  margin-bottom: 1%;
   display: block;
-  text-align: center; }
+  text-align: center;
+  transform: scale(1, 0.95);
+}
 
 #page-info {
   display: block;
   text-align: right;
   position: absolute;
   top: 5%;
-  right: 5%; }
+  right: 5%;
+  color: #00afef;
+}
 
 .s-text {
   font-size: 4.8vw;
-  letter-spacing: 0.9vw; }
+  letter-spacing: 0.95vw;
+}
 
 .label {
-  height: 4.4%;
-  margin: 0; }
+  height: 3.4%;
+  margin: 0;
+  transform: scale(1, 0.97);
+}
 
 .label-left {
   position: absolute;
-  left: 4.5%;
+  left: 5.5%;
   width: 100%;
-  text-align: left; }
+  text-align: left;
+}
 
 .label-right {
   position: absolute;
   right: 5.5%;
   width: 100%;
-  text-align: right; }
+  text-align: right;
+}
 
 .label-center {
   position: absolute;
   left: 0px;
   width: 100%;
-  text-align: center; }
+  text-align: center;
+}
 
 .line {
-  height: 8.1%;
-  margin: 0; }
+  height: 9.0%;
+  margin: 0;
+  transform: scale(1, 0.93);
+}
 
 .line-left {
   position: absolute;
-  left: 4%;
+  left: 2%;
   width: 100%;
-  text-align: left; }
+  text-align: left;
+}
 
 .line-right {
   position: absolute;
-  right: 6%;
+  right: 2%;
   width: 100%;
-  text-align: right; }
+  text-align: right;
+}
 
 .line-center {
   position: absolute;
   left: 0px;
   width: 100%;
-  text-align: center; }
+  text-align: center;
+}
+
+/* Scratch pad */
 
 #in-out {
-  padding-left: 4%; }
+  padding-left: 5.5%;
+  display: inline-block;
+  margin-top: 0.4%;
+}
 
+.footer {
+  margin-top: -4.2%;
+  transform: scale(1, 0.90);
+  height: 7.0vw;
+}
+
+/* Message line */
+
+#msg-line {
+  transform: scale(1.05, 0.90);
+  margin-left: 2.5%;
+  margin-right: 2.5%;
+}
+
+#exec-sign {
+  transform: scale(1.1, 0.90);
+  font-size: 6.0vw;
+}
+
+.blackwhite {
+  background-color: white;
+  color: #0e0d08;
+}
+
+.fitcontent {
+  width: auto;
+  height: auto;
+}
