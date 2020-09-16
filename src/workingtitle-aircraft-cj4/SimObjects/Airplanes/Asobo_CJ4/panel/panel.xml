@@ -635,31 +635,37 @@
 			<Type>SoundOnly</Type>
 			<SoundEvent>aural_landing_gear</SoundEvent>
 			<Condition>
-				<And>
-					<Simvar name="IS GEAR RETRACTABLE" unit="Boolean"/>
-					<Not>
-						<Simvar name="GEAR HANDLE POSITION" unit="Boolean"/>
-					</Not>
-					<Lower>
-						<Simvar name="GENERAL ENG THROTTLE LEVER POSITION:1" unit="percent"/>
-						<Constant>70</Constant>
-					</Lower>
-					<Lower>
-						<Simvar name="GENERAL ENG THROTTLE LEVER POSITION:2" unit="percent"/>
-						<Constant>70</Constant>
-					</Lower>
-					<Or>
-						<Greater>
-							<Simvar name="FLAPS HANDLE PERCENT" unit="percent"/>
-							<Constant>15</Constant>
-						</Greater>
-						<Lower>
-							<Simvar name="RADIO HEIGHT" unit="feet"/>
-							<Constant>500</Constant>
-						</Lower>
-					</Or>
-				</And>
-			</Condition>
+                <And>
+                    <Simvar name="IS GEAR RETRACTABLE" unit="Boolean"/>
+                    <Not>
+                        <Simvar name="GEAR HANDLE POSITION" unit="Boolean"/>
+                    </Not>
+                    <Lower>
+                        <Simvar name="GENERAL ENG THROTTLE LEVER POSITION:1" unit="percent"/>
+                        <Constant>70</Constant>
+                    </Lower>
+                    <Lower>
+                        <Simvar name="GENERAL ENG THROTTLE LEVER POSITION:2" unit="percent"/>
+                        <Constant>70</Constant>
+                    </Lower>
+                    <Or>
+                        <Equal>
+                            <Simvar name="FLAPS HANDLE INDEX" unit="number"/>
+                            <Constant>2</Constant>
+                        </Equal>
+                        <And>
+                            <Equal>
+                                <Simvar name="FLAPS HANDLE INDEX" unit="number"/>
+                                <Constant>1</Constant>
+                            </Equal>
+                            <Lower>
+                                <Simvar name="RADIO HEIGHT" unit="feet"/>
+                                <Constant>500</Constant>
+                            </Lower>
+                        </And>
+                    </Or>
+                </And>
+            </Condition>
 		</Alert>
 		
 		<Alert>
