@@ -93,9 +93,10 @@ class AS1000_MFD extends BaseAS1000 {
             case "SOFTKEYS_12":
                 this.acknowledgeInit();
                 break;
-            case "MENU_Push":
-                this.toggleMapOrientation();
-                break;
+            // disable for v0.3.0 integration
+            //case "MENU_Push":
+            //    this.toggleMapOrientation();
+            //    break;
         }
     }
     Update() {
