@@ -268,8 +268,8 @@ class Engine extends NavSystemElementContainer {
         this.allEnginesReady = false;
         this.widthSet = false;
         this.xmlEngineDisplay = null;
-		this.pageIndex = 0;
-		this.engineDisplayPages = null;
+        this.pageIndex = 0;
+        this.engineDisplayPages = null;
     }
     init() {
         super.init();
@@ -298,35 +298,36 @@ class Engine extends NavSystemElementContainer {
             }
             TemplateElement.call(ed, this.initEngines.bind(this));
         }
-		
-		let engineDisplayPages = this.gps.xmlConfig.getElementsByTagName("EngineDisplayPage");		
-		if (engineDisplayPages.length > 0) {
-			this.engineDisplayPages = [];
-			for (let i = 0; i < engineDisplayPages.length; i++) {
-				let engineDisplayPageRoot = engineDisplayPages[i];
-				let engineDisplayPage = {
-					title: engineDisplayPageRoot.getElementsByTagName("Title")[0].textContent,
-					node: engineDisplayPageRoot.getElementsByTagName("Node")[0].textContent,
-				};
-				this.engineDisplayPages.push(engineDisplayPage);
-			}
-		}
+        
+        let engineDisplayPages = this.gps.xmlConfig.getElementsByTagName("EngineDisplayPage");		
+        if (engineDisplayPages.length > 0) {
+            this.engineDisplayPages = [];
+            for (let i = 0; i < engineDisplayPages.length; i++) {
+                let engineDisplayPageRoot = engineDisplayPages[i];
+                let engineDisplayPage = {
+                    title: engineDisplayPageRoot.getElementsByTagName("Title")[0].textContent,
+                    node: engineDisplayPageRoot.getElementsByTagName("Node")[0].textContent,
+                };
+                this.engineDisplayPages.push(engineDisplayPage);
+            }
+        }
     }
-	cyclePages() {
-		if (this.engineDisplayPages != null) {
-			this.updateSelectedPage((this.pageIndex + 1) % this.engineDisplayPages.length);
-		}
-	}
-	updateSelectedPage(page) {		
-		console.log("Changed to page " + page);
-		this.pageIndex = page;
-		let engineDisplayPage = this.engineDisplayPages[this.pageIndex];
-		
-		let engineRoot = this.gps.xmlConfig.getElementsByTagName(engineDisplayPage.node);
-		if (engineRoot.length > 0) {			
-			this.xmlEngineDisplay.setConfiguration(this.gps, engineRoot[0]);
-		}
-	}
+    cyclePages() {
+        if (this.engineDisplayPages != null) {
+            this.updateSelectedPage((this.pageIndex + 1) % this.engineDisplayPages.length);
+            this.updateSelectedPage((this.pageIndex + 1) % this.engineDisplayPages.length);
+        }
+    }
+    updateSelectedPage(page) {		
+        console.log("Changed to page " + page);
+        this.pageIndex = page;
+        let engineDisplayPage = this.engineDisplayPages[this.pageIndex];
+        
+        let engineRoot = this.gps.xmlConfig.getElementsByTagName(engineDisplayPage.node);
+        if (engineRoot.length > 0) {			
+            this.xmlEngineDisplay.setConfiguration(this.gps, engineRoot[0]);
+        }
+    }
     initEngines() {
         this.initSettings();
         switch (this.engineType) {

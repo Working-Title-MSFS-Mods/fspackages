@@ -10,9 +10,9 @@ class AS1000_MFD extends BaseAS1000 {
         super.connectedCallback();
         if (typeof g_modDebugMgr != "undefined") {
             g_modDebugMgr.AddConsole(null);
-        }
+    	}
 		this.pagesContainer = this.getChildById("RightInfos");
-		let engineDisplay = new Engine("Engine", "LeftInfos");
+        let engineDisplay = new Engine("Engine", "LeftInfos");
         this.addIndependentElementContainer(engineDisplay);
         this.pageGroups = [
             new NavSystemPageGroup("MAP", this, [
@@ -283,9 +283,9 @@ class AS1000_MFD_MainMap extends NavSystemPage {
             new SoftKeyElement("", null)
         ];
 	}
-	cycleEnginePages() {
-		this.engineDisplay.cyclePages();
-	}
+    cycleEnginePages() {
+        this.engineDisplay.cyclePages();
+    }
 }
 class AS1000_MFD_MainMapSlot extends NavSystemElement {
     init(root) {

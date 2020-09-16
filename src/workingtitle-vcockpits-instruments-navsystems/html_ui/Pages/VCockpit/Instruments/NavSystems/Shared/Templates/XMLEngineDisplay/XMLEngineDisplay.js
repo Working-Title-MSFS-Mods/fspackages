@@ -9,7 +9,7 @@ class XMLEngineDisplay extends HTMLElement {
         this.configuration = _config;
         this.gauges = [];
         this.texts = [];
-		this.innerHTML = "";
+        this.innerHTML = "";
         this.parseElement(this.configuration, this);
     }
     parseElement(_configElement, _element) {
@@ -233,14 +233,14 @@ class XMLEngineDisplay extends HTMLElement {
                     }
                 }
             }
-			else if (gauges[i].tagName == "Header") {
+            else if (gauges[i].tagName == "Header") {
                 let textZone = document.createElement("glasscockpit-xmlheader");
                 textZone.setAttribute("class", gauges[i].getAttribute("id"));
                 _element.appendChild(textZone);
-				this.texts.push(textZone);
+                this.texts.push(textZone);
                 let textNode = gauges[i].getElementsByTagName("Text");
                 if (textNode.length > 0) {
-					textZone.setText(textNode[0].textContent);
+                    textZone.setText(textNode[0].textContent);
                 }
             }
             else if (gauges[i].tagName == "ColumnsGroup") {
@@ -418,26 +418,26 @@ customElements.define('glasscockpit-xmltextzone', XMLTextZone);
 class XMLHeader extends HTMLElement {
     constructor() {
         super(...arguments);
-		this.height = 15;
+        this.height = 15;
     }
     connectedCallback() {
-		let container = document.createElement("div");
-		container.setAttribute("style", "display:flex; width:100%; align-items: center; padding:5px;");
-		
-		let line = document.createElement("div");
-		line.setAttribute("style", "height:12px; background:#777; flex:1;");
-		container.appendChild(line);
-		
-		this.textElement = document.createElement("div");
-		this.textElement.setAttribute("style", "padding:5px; color:#fff; font-family:Roboto-Bold; font-size:14px;");
-		container.appendChild(this.textElement);
-		this.textElement.textContent = "Hello World";
-		
-		line = document.createElement("div");
-		line.setAttribute("style", "height:2px; background:#777; flex:1;");
-		container.appendChild(line);
-		
-		this.appendChild(container);
+        let container = document.createElement("div");
+        container.setAttribute("style", "display:flex; width:100%; align-items: center; padding:5px;");
+        
+        let line = document.createElement("div");
+        line.setAttribute("style", "height:12px; background:#777; flex:1;");
+        container.appendChild(line);
+        
+        this.textElement = document.createElement("div");
+        this.textElement.setAttribute("style", "padding:5px; color:#fff; font-family:Roboto-Bold; font-size:14px;");
+        container.appendChild(this.textElement);
+        this.textElement.textContent = "Hello World";
+        
+        line = document.createElement("div");
+        line.setAttribute("style", "height:2px; background:#777; flex:1;");
+        container.appendChild(line);
+        
+        this.appendChild(container);
     }    
     setText(_value) {
         if (this.textElement.textContent != _value) {
@@ -539,9 +539,9 @@ class XMLCircularGauge extends XMLGauge {
         this.height = 63;
         this.textIncrement = 1;
         this.forceTextColor = "";
-		this.textPrecision = 0;
-		this.graduations = null;
-		
+        this.textPrecision = 0;
+        this.graduations = null;
+        
     }
     setStyle(_styleElem) {
         if (_styleElem) {
@@ -553,7 +553,7 @@ class XMLCircularGauge extends XMLGauge {
             if (textIncrementElem.length > 0) {
                 this.textIncrement = parseFloat(textIncrementElem[0].textContent);
             }
-			let precisionElem = _styleElem.getElementsByTagName("ValuePrecision");
+            let precisionElem = _styleElem.getElementsByTagName("ValuePrecision");
             if (precisionElem.length > 0) {
                 this.textPrecision = parseInt(precisionElem[0].textContent);
             }
@@ -565,7 +565,7 @@ class XMLCircularGauge extends XMLGauge {
             if (startElem.length > 0) {
                 this.endAngle = parseFloat(endElem[0].textContent);
             }
-			let graduationsElem = _styleElem.getElementsByTagName("Graduations");
+            let graduationsElem = _styleElem.getElementsByTagName("Graduations");
             if (graduationsElem.length > 0) {
                 this.graduations = graduationsElem[0].textContent.split(',');
             }
@@ -597,7 +597,7 @@ class XMLCircularGauge extends XMLGauge {
         this.rootSvg.appendChild(this.decorationGroup);
         this.graduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
         this.rootSvg.appendChild(this.graduationGroup);
-		this.customGraduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
+        this.customGraduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
         this.rootSvg.appendChild(this.customGraduationGroup);
         let mainArc = document.createElementNS(Avionics.SVG.NS, "path");
         mainArc.setAttribute("d", "M" + (50 - 40 * Math.cos(this.startAngle * Math.PI / 180)) + " " + (40 - 40 * Math.sin(this.startAngle * Math.PI / 180)) + "A 40 40 0 " + (this.endAngle - this.startAngle > 180 ? "1" : "0") + " 1" + (50 - 40 * Math.cos(this.endAngle * Math.PI / 180)) + " " + (40 - 40 * Math.sin(this.endAngle * Math.PI / 180)));
@@ -621,7 +621,7 @@ class XMLCircularGauge extends XMLGauge {
         endLimit.setAttribute("fill", "white");
         endLimit.setAttribute("transform", "rotate(" + this.endAngle + " 50 40)");
         this.rootSvg.appendChild(endLimit);	
-		
+        
         this.cursor = document.createElementNS(Avionics.SVG.NS, "polygon");
         switch (this.cursorType) {
             case 0:
@@ -741,7 +741,7 @@ class XMLCircularGauge extends XMLGauge {
     updateValue(_value) {
         if (_value != this.lastValue) {
             this.cursor.setAttribute("transform", "rotate(" + this.valueToAngle(Math.max(Math.min(_value, this.maxValue), this.minValue)) + " 50 40)");
-			this.valueText.textContent = this.textIncrement != 1 ? (Math.round(_value / this.textIncrement) * this.textIncrement).toFixed(this.textPrecision) : _value.toFixed(this.textPrecision);
+            this.valueText.textContent = this.textIncrement != 1 ? (Math.round(_value / this.textIncrement) * this.textIncrement).toFixed(this.textPrecision) : _value.toFixed(this.textPrecision);
             this.lastValue = _value;
             if (this.forceTextColor == "") {
                 let colorFound = false;
@@ -779,21 +779,21 @@ class XMLCircularGauge extends XMLGauge {
         if (this.forcedEndText == null) {
             this.endText.textContent = _end.toString();
         }
-		
-		if (this.graduations != null) {
-			this.customGraduationGroup.innerHTML = "";
-			for (let i = 0; i < this.graduations.length; i++) {
-				let graduation = this.graduations[i];			
-				let el = document.createElementNS(Avionics.SVG.NS, "rect");
-				el.setAttribute("x", "10");
-				el.setAttribute("y", "39");
-				el.setAttribute("width", "8");
-				el.setAttribute("height", "1");
-				el.setAttribute("fill", "white");
-				el.setAttribute("transform", "rotate(" + this.valueToAngle(graduation) + " 50 40)");
-				this.customGraduationGroup.appendChild(el);
-			}	
-		}
+        
+        if (this.graduations != null) {
+            this.customGraduationGroup.innerHTML = "";
+            for (let i = 0; i < this.graduations.length; i++) {
+                let graduation = this.graduations[i];			
+                let el = document.createElementNS(Avionics.SVG.NS, "rect");
+                el.setAttribute("x", "10");
+                el.setAttribute("y", "39");
+                el.setAttribute("width", "8");
+                el.setAttribute("height", "1");
+                el.setAttribute("fill", "white");
+                el.setAttribute("transform", "rotate(" + this.valueToAngle(graduation) + " 50 40)");
+                this.customGraduationGroup.appendChild(el);
+            }	
+        }
     }
     setTitleAndUnit(_title, _unit) {
         this.titleText.textContent = _title;

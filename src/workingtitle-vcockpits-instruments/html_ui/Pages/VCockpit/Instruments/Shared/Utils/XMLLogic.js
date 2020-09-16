@@ -161,8 +161,8 @@ class CompositeLogicXMLElement extends LogicXMLElement {
                         break;
                     case "HeadingChangeFromDeparture":
                         this.childrens.push(new HeadingChangeFromDepartureXMLElement(this.gps, this.element.children[i]));
-						break;
-					case "Duration":
+                        break;
+                    case "Duration":
                         this.childrens.push(new DurationLogicXMLElement(this.gps, this.element.children[i]));
                         break;
                 }
@@ -767,92 +767,92 @@ class HeadingChangeFromDepartureXMLElement extends LogicXMLElement {
     }
 }
 class DurationLogicXMLElement extends CompositeLogicXMLElement {
-	constructor(_gps, _element) {
+    constructor(_gps, _element) {
         super(_gps, _element);
         this.format = "h:mm";
         let format = _element.getAttribute("format");
         if (format) {
             this.format = format;
         }
-		
-		let s = this.format;
-		this.tokens = [];
-		while (s.length > 0) {
-			let m = s.match(/^(h+|m+|s+|:)/);
-			if (m == null ) {
-				console.log("Invalid duration format");
-				return;
-			} else {
-				switch(m[0]) {
-					case ":": 
-						this.tokens.push({
-							type: "string",
-							value: m[0]
-						});
-						break;
-					default:
-						this.tokens.push({
-							type: "variable",
-							variable: m[0][0],
-							length: m[0].length							
-						});
-						break;
-				}
-			}
-			
-			s = s.substr(m[0].length);
-		}
-	}
-	
-	getHours(v) {
-		return v/3600;
-	}
+        
+        let s = this.format;
+        this.tokens = [];
+        while (s.length > 0) {
+            let m = s.match(/^(h+|m+|s+|:)/);
+            if (m == null ) {
+                console.log("Invalid duration format");
+                return;
+            } else {
+                switch(m[0]) {
+                    case ":": 
+                        this.tokens.push({
+                            type: "string",
+                            value: m[0]
+                        });
+                        break;
+                    default:
+                        this.tokens.push({
+                            type: "variable",
+                            variable: m[0][0],
+                            length: m[0].length							
+                        });
+                        break;
+                }
+            }
+            
+            s = s.substr(m[0].length);
+        }
+    }
+    
+    getHours(v) {
+        return v/3600;
+    }
 
-	getMinutes(v) {
-		return (v % 3600) / 60;
-	}
+    getMinutes(v) {
+        return (v % 3600) / 60;
+    }
 
-	getSeconds(v) {
-		return v % 60;
-	}
-	
+    getSeconds(v) {
+        return v % 60;
+    }
+    
     getValue(_context) {
-		let value = 0;
+        let value = 0;
         for (let i = 0; i < this.childrens.length; i++) {
             value = this.childrens[i].getValue(_context);
-		}
-		
-		let result = "";
-		for(let i = 0; i < this.tokens.length; i++) {
-			let token = this.tokens[i];
-			switch (token.type) {
-				case "string":
-					result += token.value;
-					break;
-				case "variable": 
-					result += this.getVariable(token.variable, token.length, value);
-					break;
-			}
-		}
-		
-		return result;
+        }
+        
+        let result = "";
+        for(let i = 0; i < this.tokens.length; i++) {
+            let token = this.tokens[i];
+            switch (token.type) {
+                case "string":
+                    result += token.value;
+                    break;
+                case "variable": 
+                    result += this.getVariable(token.variable, token.length, value);
+                    break;
+            }
+        }
+        
+        return result;
     }
-	
-	getVariable(variable, length, value) {
-		let v = 0;
-		switch(variable) {
-			case "h" : v = this.getHours(value); break;
-			case "m" : v = this.getMinutes(value); break;
-			case "s" : v = this.getSeconds(value); break;
-		}
-		v = Math.floor(v);
-		return this.pad(v, length);
-	}
-	
-	pad(num, size) {
-		var s = num+"";
-		while (s.length < size) s = "0" + s;
-		return s;
-	}
+    
+    getVariable(variable, length, value) {
+        let v = 0;
+        switch(variable) {
+            case "h" : v = this.getHours(value); break;
+            case "m" : v = this.getMinutes(value); break;
+            case "s" : v = this.getSeconds(value); break;
+        }
+        v = Math.floor(v);
+        return this.pad(v, length);
+    }
+    
+    pad(num, size) {
+        var s = num+"";
+        while (s.length < size) s = "0" + s;
+        return s;
+    }
 }
 //# sourceMappingURL=XMLLogic.js.map
