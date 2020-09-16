@@ -1106,6 +1106,15 @@
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 				<NODE_ID>LIGHTING_Knob_Master</NODE_ID>
 			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>LIGHTING_Knob_Flood</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>LIGHTING_Knob_Cabin_1</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>LIGHTING_Knob_Cabin_2</NODE_ID>
+			</UseTemplate>
 			<!-- push buttons -->
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 				<NODE_ID>FUEL_Push_Pump_1</NODE_ID>
@@ -1209,50 +1218,8 @@
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 				<NODE_ID>PRESSURIZATION_Push_Control</NODE_ID>
 			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_BRTDIM_1</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_NEXT_1</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_PREV_1</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_MFDDATA_1</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_MFDADV_1</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_DSPLMENU_1</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_DEPARR_1</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_BRTDIM_2</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_NEXT_2</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_PREV_2</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_MFDDATA_2</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_MFDADV_2</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_DSPLMENU_2</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_DEPARR_2</NODE_ID>
-			</UseTemplate>
-		
-			<!-- CHARACTERS LEFT -->
+
+			<!-- FMC LEFT -->
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 				<NODE_ID>CDU_Push_A_1</NODE_ID>
 			</UseTemplate>
@@ -1425,15 +1392,6 @@
 				<NODE_ID>CDU_Push_HD_1</NODE_ID>
 			</UseTemplate>			
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_MFD_DATA_1</NODE_ID>
-			</UseTemplate>			
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_MFD_ADV_1</NODE_ID>
-			</UseTemplate>			
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_DSPL_MENU_1</NODE_ID>
-			</UseTemplate>			
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 				<NODE_ID>CDU_Push_TUN_1</NODE_ID>
 			</UseTemplate>			
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
@@ -1499,8 +1457,29 @@
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 				<NODE_ID>CDU_Push_LEGS_1</NODE_ID>
 			</UseTemplate>	
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_BRTDIM_1</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_NEXT_1</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_PREV_1</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_MFDDATA_1</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_MFDADV_1</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_DSPLMENU_1</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_DEPARR_1</NODE_ID>
+			</UseTemplate>
 
-			<!-- CHARACTERS RIGHT -->
+			<!-- FMC RIGHT -->
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 				<NODE_ID>CDU_Push_A_2</NODE_ID>
 			</UseTemplate>
@@ -1673,15 +1652,6 @@
 				<NODE_ID>CDU_Push_HD_2</NODE_ID>
 			</UseTemplate>			
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_MFD_DATA_2</NODE_ID>
-			</UseTemplate>			
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_MFD_ADV_2</NODE_ID>
-			</UseTemplate>			
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-				<NODE_ID>CDU_Push_DSPL_MENU_2</NODE_ID>
-			</UseTemplate>			
-			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 				<NODE_ID>CDU_Push_TUN_2</NODE_ID>
 			</UseTemplate>			
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
@@ -1747,6 +1717,27 @@
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 				<NODE_ID>CDU_Push_LEGS_2</NODE_ID>
 			</UseTemplate>	
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_NEXT_2</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_PREV_2</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_MFDDATA_2</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_MFDADV_2</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_DSPLMENU_2</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_DEPARR_2</NODE_ID>
+			</UseTemplate>			
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_BRTDIM_2</NODE_ID>
+			</UseTemplate>
 
 		</Component>
 		<Component ID="MFC_Control">
