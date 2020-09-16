@@ -34,8 +34,26 @@ class CJ4_FMC extends FMCMainDisplay {
         this.initialFuelLeft = 0;
         this.initialFuelRight = 0;
         this.selectedRunwayOutput = "";
+        this._fpHasChanged = false;
     }
     get templateID() { return "CJ4_FMC"; }
+
+    // Property for EXEC handling
+    get fpHasChanged() { return this._fpHasChanged; }
+    set fpHasChanged(value) {
+        this._fpHasChanged = value;
+        if (this._fpHasChanged) {
+            let execEl = document.createElement("div");
+            execEl.id = "exec-sign";
+            execEl.innerHTML = "EXEC";
+            execEl.classList.add("blackwhite", "line-right", "fitcontent");
+            this.getChildById("Electricity").append(execEl);
+        } else {
+            let execEl = document.getElementById("exec-sign");
+            if (execEl) execEl.remove();
+        }
+    }
+
     connectedCallback() {
         super.connectedCallback();
         this.radioNav.init(NavMode.TWO_SLOTS);
@@ -71,6 +89,8 @@ class CJ4_FMC extends FMCMainDisplay {
             }
         };
         this.renderScratchpad();
+        // just to display exec as a test, remove later
+        this.fpHasChanged = true;
 
         CJ4_FMC_InitRefIndexPage.ShowPage5(this);
 
