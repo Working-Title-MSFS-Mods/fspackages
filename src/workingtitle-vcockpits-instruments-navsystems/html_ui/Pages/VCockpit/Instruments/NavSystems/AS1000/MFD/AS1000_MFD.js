@@ -33,33 +33,11 @@ class AS1000_MFD extends BaseAS1000 {
         this.addEventLinkedPageGroup("FPL_Push", new NavSystemPageGroup("FPL", this, [
             new AS1000_MFD_ActiveFlightPlan()
         ]));
+        this.mapElement = new MFD_MapElement()
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
         this.addIndependentElementContainer(new NavSystemElementContainer("Page Navigation", "CenterDisplay", new AS1000_MFD_PageNavigation()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "CenterDisplay", new AS1000_MFD_NavStatus()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "CenterDisplay", new MapInstrumentElement()));
-
-        // this.map = document.getElementById("MapInstrument");
-        // if (this.map) {
-        //     let onBeforeMapRedraw = this.map.onBeforeMapRedraw.bind(this.map);
-        //     this.map.onBeforeMapRedraw = () => {
-        //         onBeforeMapRedraw();
-
-        //         if (this.map.bingMap) {
-        //             let transform = "";
-        //             if (!this.map.isDisplayingWeatherRadar()) {
-        //                 if (this.map.bRotateWithAirplane) {
-        //                     var compass = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
-        //                     var roundedCompass = fastToFixed(compass, 3);
-        //                     transform = "rotate(" + -roundedCompass + "deg)"; // scale(1.25)";
-        //                 }
-        //                 else {
-        //                     transform = ""; //scale(1.25)";
-        //                 }
-        //             }
-        //             this.map.bingMap.style.transform = transform;
-        //         }
-        //     };
-        // }
+        this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "CenterDisplay", this.mapElement));
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -125,30 +103,9 @@ class AS1000_MFD extends BaseAS1000 {
         SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
     }
 
-    /**
-     * Toggles the map between north up and track up modes.
-     */
     toggleMapOrientation() {
-        if (!this.map) {
-            this.map = document.getElementById("MapInstrument");
-        }
-
-        if (this.map) {
-            if (!this.trackUp) {
-                this.trackUp = true;
-            }
-            else {
-                this.trackUp = false;
-            }
-            
-            this.map.rotateWithPlane(this.trackUp);
-            this.map.roadNetwork._lastRange = -1; // force canvas to redraw (SvgRoadNetworkElement.js:297)
-            let orientationEl = document.querySelector("#MapOrientation");
-
-            if (orientationEl) {
-                orientationEl.innerText = this.trackUp ? "TRACK UP" : "NORTH UP";
-            }
-        }
+        let current = SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean");
+        SimVar.SetSimVarValue("L:GPS_TRACK_UP", "boolean", !current);
     }
 }
 class AS1000_MFD_NavStatus extends NavSystemElement {
@@ -1036,7 +993,7 @@ class AS1000_MapMenu {
     init(_owner, _gps) {
         this.owner = _owner;
         this.gps = _gps;
-        this.mapElement = this.gps.getElementOfType(MapInstrumentElement);
+        this.mapElement = this.gps.mapElement;
         if (this.gps.hasWeatherRadar()) {
             this.modeMenu.elements = [
                 new SoftKeyElement("", null),
