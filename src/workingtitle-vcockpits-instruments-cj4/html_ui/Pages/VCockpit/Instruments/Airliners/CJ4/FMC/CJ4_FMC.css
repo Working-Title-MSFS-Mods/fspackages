@@ -29,7 +29,7 @@
 #Mainframe {
   width: 100%;
   height: 100%;
-  filter: blur(0.07rem) brightness(1.3) contrast(1.8); /* TODO: play around more with these filters for that fuzzy display look */
+  filter: blur(0.07rem) brightness(1.3) contrast(1.8);  /* TODO: play around more with these filters for that fuzzy display look */
 }
 
 #Electricity {
