@@ -47,7 +47,7 @@ class CJ4_FMC extends FMCMainDisplay {
             execEl.id = "exec-sign";
             execEl.innerHTML = "EXEC";
             execEl.classList.add("blackwhite", "line-right", "fitcontent");
-            this.getChildById("Electricity").append(execEl);
+            this.getChildById("msg-line").append(execEl);
         } else {
             let execEl = document.getElementById("exec-sign");
             if (execEl) execEl.remove();
@@ -89,6 +89,8 @@ class CJ4_FMC extends FMCMainDisplay {
             }
         };
         this.renderScratchpad();
+        this.renderMsgLine();
+
         // just to display exec as a test, remove later
         this.fpHasChanged = true;
 
@@ -309,7 +311,6 @@ class CJ4_FMC extends FMCMainDisplay {
         return this.selectedRunwayOutput;
     }
     //end of new method to find runway designation
-
     renderScratchpad() {
         // make footer accesible from css
         document.getElementById("in-out").parentElement.classList.add("footer");
@@ -323,6 +324,18 @@ class CJ4_FMC extends FMCMainDisplay {
         inoutelem.parentElement.appendChild(brkOpen);
         inoutelem.parentElement.appendChild(brkClose);
     }
+    renderMsgLine() {
+        let msgLineEl = document.createElement("div");
+        msgLineEl.id = "msg-line";
+        msgLineEl.classList.add("line");
+        this.getChildById("Electricity").append(msgLineEl);
+
+        let msgEl = document.createElement("div");
+        msgEl.innerHTML = "FMS INDEPENDENT OP";
+        msgEl.classList.add("fitcontent", "line-left");
+        msgLineEl.append(msgEl);
+    }
+
     /**
      * Registers a periodic page refresh with the FMC display.
      * @param {number} interval The interval, in ms, to run the supplied action.
