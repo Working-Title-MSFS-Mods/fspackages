@@ -636,24 +636,49 @@
 			<SoundEvent>aural_landing_gear</SoundEvent>
 			<Condition>
                 <And>
+					<Or> <!-- One of the following conditions is true: --> 
+						<And> <!-- a) both engines working, both throttles lower than CRU -->
+							<Not>
+								<Simvar name="GENERAL ENG FAILED:1" unit="Boolean"/>
+								<Simvar name="GENERAL ENG FAILED:2" unit="Boolean"/>
+							</Not>
+							<Lower>
+                        		<Simvar name="GENERAL ENG THROTTLE LEVER POSITION:1" unit="percent"/>
+                        		<Constant>70</Constant>
+                   			</Lower>
+                    		<Lower>
+                        		<Simvar name="GENERAL ENG THROTTLE LEVER POSITION:2" unit="percent"/>
+                        		<Constant>70</Constant>
+                    		</Lower>
+						</And>
+						<And> <!-- b) engine 1 failed, not set to STOP, and engine 2 throttle lower than CRU -->
+							<Simvar name="GENERAL ENG FAILED:1" unit="Boolean"/>
+							<Simvar name="GENERAL ENG STARTER:1" unit="Boolean"/> 	
+							<Lower>
+                        		<Simvar name="GENERAL ENG THROTTLE LEVER POSITION:2" unit="percent"/>
+                        		<Constant>70</Constant>
+                    		</Lower>
+						</And>
+						<And> <!-- c) engine 2 failed, not set to STOP, and engine 1 throttle lower than CRU -->
+							<Simvar name="GENERAL ENG FAILED:2" unit="Boolean"/>
+							<Simvar name="GENERAL ENG STARTER:2" unit="Boolean"/> 	
+							<Lower>
+                        		<Simvar name="GENERAL ENG THROTTLE LEVER POSITION:1" unit="percent"/>
+                        		<Constant>70</Constant>
+                    		</Lower>
+						</And>
+					</Or>
+					<!-- Gear can be retracted and isn't down --> 
                     <Simvar name="IS GEAR RETRACTABLE" unit="Boolean"/>
                     <Not>
                         <Simvar name="GEAR HANDLE POSITION" unit="Boolean"/>
                     </Not>
-                    <Lower>
-                        <Simvar name="GENERAL ENG THROTTLE LEVER POSITION:1" unit="percent"/>
-                        <Constant>70</Constant>
-                    </Lower>
-                    <Lower>
-                        <Simvar name="GENERAL ENG THROTTLE LEVER POSITION:2" unit="percent"/>
-                        <Constant>70</Constant>
-                    </Lower>
-                    <Or>
-                        <Equal>
+                    <Or> <!-- One of the following conditions is true: --> 
+                        <Equal>  <!-- a) Flaps greater than 15-degrees --> 
                             <Simvar name="FLAPS HANDLE INDEX" unit="number"/>
                             <Constant>2</Constant>
                         </Equal>
-                        <And>
+                        <And>  <!-- b) flaps at 15-degrees and RADALT lower than 500 ft --> 
                             <Equal>
                                 <Simvar name="FLAPS HANDLE INDEX" unit="number"/>
                                 <Constant>1</Constant>
