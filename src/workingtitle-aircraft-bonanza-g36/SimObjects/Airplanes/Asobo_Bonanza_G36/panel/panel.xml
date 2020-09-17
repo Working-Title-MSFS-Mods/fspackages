@@ -422,30 +422,80 @@
 				<Begin>15</Begin>
 				<End>30</End>
 			</ColorZone>
+		  </Gauge>
+
+		  <Gauge>
+			<Type>Circular</Type>
+			<ID>Piston_RPMGauge</ID>
+			<Title></Title>
+			<Unit>RPM</Unit>
+			<Minimum>0</Minimum>
+			<Maximum>3000</Maximum>
+			<Style>
+				<TextIncrement>10</TextIncrement>
+				<ForceTextColor>white</ForceTextColor>
+				<Graduations>1200,1800,2100,2300,2500,2700</Graduations>
+			</Style>
+			<Value>
+				<Simvar name="PROP RPM:1" unit="rpm"/>
+			</Value>
+			<ColorZone>
+				<Color>white</Color>
+				<Begin>0</Begin>
+				<End>3000</End>
+			</ColorZone>
+			<ColorZone>
+				<Color>green</Color>
+				<Begin>1800</Begin>
+				<End>2700</End>
+			</ColorZone>
+			<ColorZone>
+				<Color>red</Color>
+				<Begin>2700</Begin>
+				<End>3000</End>
+			</ColorZone>
+			<RedBlink>
+				<Greater>
+					<Simvar name="PROP RPM:1" unit="rpm"/>
+					<Constant>2701</Constant>
+				</Greater>
+			</RedBlink>
 		</Gauge>
+
+        <Text>
+			<Left fontsize="8">FFLOW GPH</Left>			
+			<Right fontsize="8">
+				<ToFixed precision="1">
+					<Simvar name="ENG FUEL FLOW GPH:1" unit="gallons per hour"/>
+				</ToFixed>
+			</Right>
+		</Text>
 
         <ColumnsGauge>
             <Minimum>0</Minimum>
 		    <Maximum>1000</Maximum>
             <Title>EGT °C</Title>
             <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
-            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.9</Constant></Multiply></Column>
-            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>1.1</Constant></Multiply></Column>
-            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>1.2</Constant></Multiply></Column>
-            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.8</Constant></Multiply></Column>
-            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>1.05</Constant></Multiply></Column>
+            <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
+            <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
+            <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
+            <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
+            <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
+            <Type>EGT</Type>
         </ColumnsGauge>
 
         <ColumnsGauge>
             <Minimum>0</Minimum>
 		    <Maximum>250</Maximum>
+            <RedLine>238</RedLine>
             <Title>CHT °C</Title>
             <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
-            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.9</Constant></Multiply></Column>
-            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>1.2</Constant></Multiply></Column>
-            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.8</Constant></Multiply></Column>
-            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>1.05</Constant></Multiply></Column>
-            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>1.1</Constant></Multiply></Column>
+            <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
+            <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
+            <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
+            <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
+            <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
+            <Type>CHT</Type>
         </ColumnsGauge>
 
 	</EngineDisplayLean>
