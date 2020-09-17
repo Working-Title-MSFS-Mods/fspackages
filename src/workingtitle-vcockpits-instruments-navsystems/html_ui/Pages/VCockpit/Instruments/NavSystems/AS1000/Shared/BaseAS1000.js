@@ -268,8 +268,8 @@ class Engine extends NavSystemElementContainer {
         this.allEnginesReady = false;
         this.widthSet = false;
         this.xmlEngineDisplay = null;
-        this.pageIndex = 0;
         this.engineDisplayPages = null;
+        this.selectedEnginePage = null;
     }
     init() {
         super.init();
@@ -304,29 +304,49 @@ class Engine extends NavSystemElementContainer {
             this.engineDisplayPages = [];
             for (let i = 0; i < engineDisplayPages.length; i++) {
                 let engineDisplayPageRoot = engineDisplayPages[i];
+                let id = engineDisplayPageRoot.getElementsByTagName("ID")[0].textContent;
                 let engineDisplayPage = {
                     title: engineDisplayPageRoot.getElementsByTagName("Title")[0].textContent,
                     node: engineDisplayPageRoot.getElementsByTagName("Node")[0].textContent,
+                    buttons: []
                 };
-                this.engineDisplayPages.push(engineDisplayPage);
+                let buttonNodes = engineDisplayPageRoot.getElementsByTagName("Button");
+                for(let buttonNode of buttonNodes) {
+                    engineDisplayPage.buttons.push({
+                        text: buttonNode.getElementsByTagName("Text")[0].textContent
+                    });
+                }
+                this.engineDisplayPages[id] = engineDisplayPage;
+                if (this.selectedEnginePage == null) {
+                    this.selectedEnginePage = id;
+                }
             }
+        } else {
+            let id = "DFLT";
+            let engineDisplayPage = {
+                title: "Default",
+                node: this.gps.xmlConfig.getElementsByTagName("EngineDisplay"),
+            };
+            this.engineDisplayPages[id] = engineDisplayPage;
+            this.selectedEnginePage = id;
         }
     }
-    cyclePages() {
-        if (this.engineDisplayPages != null) {
-            this.updateSelectedPage((this.pageIndex + 1) % this.engineDisplayPages.length);
-            this.updateSelectedPage((this.pageIndex + 1) % this.engineDisplayPages.length);
-        }
+    getEngineDisplayPages() {
+        return this.engineDisplayPages;
     }
-    updateSelectedPage(page) {		
-        console.log("Changed to page " + page);
-        this.pageIndex = page;
-        let engineDisplayPage = this.engineDisplayPages[this.pageIndex];
+    isEnginePageSelected(id) {        
+        return this.selectedEnginePage == id;
+    }
+    selectEnginePage(id) {		
+        console.log("Changed to page " + id);
+        this.selectedEnginePage = id;
+        let engineDisplayPage = this.engineDisplayPages[this.selectedEnginePage];
         
         let engineRoot = this.gps.xmlConfig.getElementsByTagName(engineDisplayPage.node);
         if (engineRoot.length > 0) {			
             this.xmlEngineDisplay.setConfiguration(this.gps, engineRoot[0]);
         }
+        return engineDisplayPage;
     }
     initEngines() {
         this.initSettings();

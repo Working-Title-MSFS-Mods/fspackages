@@ -140,6 +140,23 @@ class XMLEngineDisplay extends HTMLElement {
                     }
                 }
             }
+            else if (gauges[i].tagName == "ColumnsGauge") {
+                let gauge = document.createElement("glasscockpit-xmlcolumngauge");
+                _element.appendChild(gauge);
+                this.gauges.push(gauge);
+                let minElem = gauges[i].getElementsByTagName("Minimum");
+                let maxElem = gauges[i].getElementsByTagName("Maximum");
+                if (minElem.length > 0 && maxElem.length > 0) {
+                    gauge.setLimits(new CompositeLogicXMLElement(this.gps, minElem[0]), new CompositeLogicXMLElement(this.gps, maxElem[0]), this.context);
+                }                 
+                let columns = [];
+                let columnNodes = gauges[i].getElementsByTagName("Column"); 
+                for (let c = 0; c < columnNodes.length; c++) {
+                    let columnNode = columnNodes[c];
+                    columns.push(new CompositeLogicXMLElement(this.gps, columnNode));
+                }
+                gauge.addColumns(columns);
+            }
             else if (gauges[i].tagName == "Text") {
                 let textZone = document.createElement("glasscockpit-xmltextzone");
                 textZone.setAttribute("class", gauges[i].getAttribute("id"));
@@ -425,13 +442,12 @@ class XMLHeader extends HTMLElement {
         container.setAttribute("style", "display:flex; width:100%; align-items: center; padding:5px;");
         
         let line = document.createElement("div");
-        line.setAttribute("style", "height:12px; background:#777; flex:1;");
+        line.setAttribute("style", "height:2px; background:#777; flex:1;");
         container.appendChild(line);
         
         this.textElement = document.createElement("div");
         this.textElement.setAttribute("style", "padding:5px; color:#fff; font-family:Roboto-Bold; font-size:14px;");
         container.appendChild(this.textElement);
-        this.textElement.textContent = "Hello World";
         
         line = document.createElement("div");
         line.setAttribute("style", "height:2px; background:#777; flex:1;");
@@ -451,6 +467,99 @@ class XMLHeader extends HTMLElement {
     }
 }
 customElements.define('glasscockpit-xmlheader', XMLHeader);
+class XMLColumnGauge extends HTMLElement {
+    constructor() {
+        super(...arguments);
+
+        this.minValueCallback = null;
+        this.maxValueCallback = null;
+        this.peak = 0;
+        this.selectedColumn = null;
+        this.numberOfBars = 16;
+        this.columnsContainer = null;
+        this.height = 80;
+        this.sizePercent = 90;
+        this.columns = [];
+    }
+    setLimits(minValueCallback, maxValueCallback) {
+        this.minValueCallback = minValueCallback;
+        this.maxValueCallback = maxValueCallback;
+    }
+    addColumns(columns) {
+        let numColumns = columns.length;
+
+        for (let c = 0; c < numColumns; c++) {
+            let valueCallback = columns[c];
+
+            let g = document.createElementNS(Avionics.SVG.NS, "g");
+            g.setAttribute("fill", "white");
+            this.rootSvg.appendChild(g);
+
+            let horizontalSpacing = 4;
+            let verticalSpacing = 0.5;
+            let columnWidth = 100 / numColumns - (horizontalSpacing * (numColumns - 1)) / numColumns;
+            let columnHeight = this.height - 30;
+            let barHeight = columnHeight / this.numberOfBars - (verticalSpacing * (this.numberOfBars - 1)) / this.numberOfBars;
+
+            let bars = [];
+            for(let i = 0; i < this.numberOfBars; i++) {
+                let bar = document.createElementNS(Avionics.SVG.NS, "rect");
+                bar.setAttribute("width", columnWidth);
+                bar.setAttribute("height", barHeight);
+                bar.setAttribute("x", c * columnWidth + horizontalSpacing * c);
+                bar.setAttribute("y", i * barHeight + verticalSpacing * i);
+                g.appendChild(bar);
+                bars.push(bar);
+            }
+
+            let barText = document.createElementNS(Avionics.SVG.NS, "text");
+            barText.setAttribute("x", c * columnWidth + horizontalSpacing * c + columnWidth / 2);
+            barText.setAttribute("y", this.height - 30 + 15 / 2);
+            barText.setAttribute("fill", "white");
+            barText.setAttribute("font-size", "8");
+            barText.setAttribute("font-family", "Roboto-Bold");
+            barText.setAttribute("text-anchor", "middle");
+            barText.textContent = c + 1;
+            g.appendChild(barText);
+
+            this.columns.push({
+                valueCallback: valueCallback,
+                g:g,
+                bars:bars
+            });
+        }
+
+        this.selectColumn(2);
+    }
+    selectColumn(index) {
+        this.peak = 0;
+        if (this.selectedColumn != null) {
+            this.selectedColumn.g.setAttribute("fill", "white");
+        }
+        this.selectedColumn = this.columns[index];
+        this.selectedColumn.g.setAttribute("fill", "cyan");
+    }
+    update(_context) {
+        let min = this.minValueCallback.getValueAsNumber(_context);
+        let max = this.maxValueCallback.getValueAsNumber(_context);
+        for(let c = 0; c < this.columns.length; c++) {
+            let column = this.columns[c];
+            let value = column.valueCallback.getValueAsNumber(_context);
+            let ratio = (value - min) / (max - min);
+            for(let b = 0; b < column.bars.length; b++) {
+                let bar = column.bars[b];
+                bar.setAttribute("visibility",  (1 - b / column.bars.length > ratio) ? "hidden" : "visible");
+            }
+        }
+    }
+    connectedCallback() {
+        this.rootSvg = document.createElementNS(Avionics.SVG.NS, "svg");
+        this.rootSvg.setAttribute("width", this.sizePercent + "%");
+        this.rootSvg.setAttribute("viewBox", "0 0 100 " + this.height);
+        this.appendChild(this.rootSvg);
+    }
+}
+customElements.define('glasscockpit-xmlcolumngauge', XMLColumnGauge);
 class XMLGauge extends HTMLElement {
     constructor() {
         super(...arguments);

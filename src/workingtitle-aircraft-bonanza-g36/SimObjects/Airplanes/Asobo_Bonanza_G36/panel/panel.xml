@@ -374,14 +374,23 @@
   </VoicesAlerts>
 	
 	<EngineDisplayPage>
+        <ID>DFLT</ID>
 		<Title>Default</Title>
 		<Node>EngineDisplay</Node>
 	</EngineDisplayPage>
 	<EngineDisplayPage>
+        <ID>LEAN</ID>
 		<Title>Lean</Title>
 		<Node>EngineDisplayLean</Node>
+        <Button>
+            <Text>CYL SLCT</Text>
+        </Button>
+        <Button>
+            <Text>ASSIST</Text>
+        </Button>
 	</EngineDisplayPage>
 	<EngineDisplayPage>
+        <ID>SYSTEM</ID>
 		<Title>System</Title>
 		<Node>EngineDisplaySystem</Node>
 	</EngineDisplayPage>
@@ -414,6 +423,31 @@
 				<End>30</End>
 			</ColorZone>
 		</Gauge>
+
+        <ColumnsGauge>
+            <Minimum>0</Minimum>
+		    <Maximum>1000</Maximum>
+            <Title>EGT °C</Title>
+            <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.9</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>1.1</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>1.2</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.8</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>1.05</Constant></Multiply></Column>
+        </ColumnsGauge>
+
+        <ColumnsGauge>
+            <Minimum>0</Minimum>
+		    <Maximum>250</Maximum>
+            <Title>CHT °C</Title>
+            <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
+            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.9</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>1.2</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.8</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>1.05</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>1.1</Constant></Multiply></Column>
+        </ColumnsGauge>
+
 	</EngineDisplayLean>
 	
 	<EngineDisplaySystem>

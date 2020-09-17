@@ -8,9 +8,11 @@ class AS1000_MFD extends BaseAS1000 {
     get templateID() { return "AS1000_MFD"; }
     connectedCallback() {
         super.connectedCallback();
-        if (typeof g_modDebugMgr != "undefined") {
-            g_modDebugMgr.AddConsole(null);
-    	}
+        Include.addScript("/JS/debug.js", function () {
+            if (typeof g_modDebugMgr != "undefined") {
+                g_modDebugMgr.AddConsole(null);
+            }
+        });
 		this.pagesContainer = this.getChildById("RightInfos");
         let engineDisplay = new Engine("Engine", "LeftInfos");
         this.addIndependentElementContainer(engineDisplay);
@@ -254,14 +256,16 @@ class AS1000_MFD_MainMap extends NavSystemPage {
             new AS1000_MFD_MainMapSlot(),
             new AS1000_MFD_WindData()
         ]));
-		this.mapMenu = new AS1000_MapMenu();
-		this.engineDisplay = engineDisplay;
+        this.mapMenu = new AS1000_MapMenu();
+        this.engineMenu = new AS1000_EngineMenu(engineDisplay);
+        this.engineDisplay = engineDisplay;
     }
     init() {
         this.mapMenu.init(this, this.gps);
+        this.engineMenu.init(this, this.gps);
         this.softKeys = new SoftKeysMenu();
         this.softKeys.elements = [
-            new SoftKeyElement("ENGINE", this.cycleEnginePages.bind(this)),
+            new SoftKeyElement("ENGINE", this.engineMenu.open.bind(this.engineMenu)),
             new SoftKeyElement("", null),
             new SoftKeyElement("MAP", this.mapMenu.open.bind(this.mapMenu)),
             new SoftKeyElement("", null),
@@ -283,9 +287,6 @@ class AS1000_MFD_MainMap extends NavSystemPage {
             new SoftKeyElement("", null)
         ];
 	}
-    cycleEnginePages() {
-        this.engineDisplay.cyclePages();
-    }
 }
 class AS1000_MFD_MainMapSlot extends NavSystemElement {
     init(root) {
@@ -1109,6 +1110,68 @@ class AS1000_MapMenu {
                         return "White";
                     break;
                 }
+        }
+        return "None";
+    }
+}
+class AS1000_EngineMenu {
+    constructor(engineDisplay) {
+        this.engineDisplay = engineDisplay;
+    }
+    init(_owner, _gps) {
+        this.owner = _owner;
+        this.gps = _gps;
+    }
+    getSoftKeyMenu(extraElements) {
+        let elements = [];
+
+        for (let i = 0; i < 12; i++) {
+            elements.push(new SoftKeyElement("", null));
+        }
+
+        let engineDisplayPages = this.engineDisplay.getEngineDisplayPages();
+        let i = 0;
+        let numEngineDisplayPages = 0;
+        for(let id in engineDisplayPages) {
+            elements[i++] = new SoftKeyElement(id, this.selectEngineDisplayPage.bind(this, id), this.getKeyState.bind(this, id));
+            numEngineDisplayPages++;
+        }
+
+        for(let i = 0; i < extraElements.length; i++) {
+            elements[i + numEngineDisplayPages + 1] = extraElements[i];
+        }        
+
+        elements[10] = new SoftKeyElement("BACK", this.close.bind(this));
+
+        let menu = new SoftKeysMenu();
+        menu.elements = elements;
+        return menu;
+    }
+    selectEngineDisplayPage(id) {
+        let page = this.engineDisplay.selectEnginePage(id);
+        this.switchMenu(this.getSoftKeyMenu(page.buttons.map(button => new SoftKeyElement(button.text, this.performSubAction.bind(this,button)))));
+    }
+    performSubAction(button) {
+        
+    }
+    open() {
+        this.originalMenu = Object.assign({}, this.owner.softKeys);
+        this.switchMenu(this.getSoftKeyMenu([]));
+    }
+    close() {
+        this.owner.softKeys = this.originalMenu;
+    }
+    switchMenu(_menu) {
+        this.owner.softKeys = _menu;
+    }
+    getKeyState(_keyName) {
+        if (this.engineDisplay.isEnginePageSelected(_keyName)) {
+            return "White";
+        }
+        switch (_keyName) {
+            case "CYL SLCT":
+            case "ASSIST":
+              break;
         }
         return "None";
     }
