@@ -325,8 +325,8 @@ class CJ4_FMC_PerfInitPage {
 			vR = vR + 14;
 			v2 = v2 + 14;
 		}
-		if (vR < v1) {
-			vR = v1 + 2;
+		if (vR < v1) { //Ensures VR is never less than V1
+			vR = v1 + 1;
 		}
 		if (fmc.depRunwayCondition == 1) { // If the runway is wet
 			fmc.endTakeoffDist = fmc.endTakeoffDist * 1.1;
@@ -334,13 +334,16 @@ class CJ4_FMC_PerfInitPage {
 		if (fmc.takeoffAntiIce == 1) { //If anti-ice is turned on
 			fmc.endTakeoffDist = fmc.endTakeoffDist * 1.03;
 		}
+		
+		let tailWindFactor = (((((tow - 11000) * .00000159) + .00275)) * fmc.takeoffPressAlt) + (((tow - 11000) * .0065) + 60); // Number of feet per 1kt of tailwind to add based on weight and altitude
+		
 		if (fmc.takeoffWindDir != "---"){
 			let depRunwayDirection = new Number(selectedRunway.direction);
 			let headwind = Math.trunc(fmc.takeoffWindSpeed * (Math.cos((depRunwayDirection * Math.PI / 180) - (fmc.takeoffWindDir * Math.PI / 180))));
 			if (headwind > 0){
-				fmc.endTakeoffDist = fmc.endTakeoffDist - (headwind * 22);
+				fmc.endTakeoffDist = fmc.endTakeoffDist - (headwind * 23);
 		} else {
-			fmc.endTakeoffDist = fmc.endTakeoffDist - (headwind * 60);
+			fmc.endTakeoffDist = fmc.endTakeoffDist - (headwind * tailWindFactor);
 		}
 		}
 		let takeoffFlapsActive = fmc.takeoffFlaps == 15 ? "15"
@@ -694,18 +697,49 @@ class CJ4_FMC_PerfInitPage {
         }
 		let vRef = ((grWtCell - 10500) * .00393) + 92; //V Speeds based on weight at 0C
 		let vApp = ((grWtCell - 10500) * .00408) + 98;
-		let ldgFieldLength = ((grWtCell - 10500) * .137) + 2180;
+		let ldgFieldLength = ((grWtCell - 10500) * .126) + 2180; // Sea level base value for a given weight
+		if (grWtCell <= 13500){
+			let ldgFieldAltFactor = ((13500 - grWtCell) * .000005) + .0825; //Gets factor value for rate of change based on weight
+			ldgFieldLength = ldgFieldLength + (fmc.landingPressAlt * ldgFieldAltFactor);//Gets landing distance for a given altitude and added to the sea level value
+		}
+		if (grWtCell >= 14000 && grWtCell <= 14500){
+			let ldgFieldAltFactor = ((14500 - grWtCell) * .0000632) + .1175; 
+			ldgFieldLength = ldgFieldLength + (fmc.landingPressAlt * ldgFieldAltFactor);
+		}
+		if (grWtCell >= 15000 && grWtCell <= 15660){
+			let ldgFieldAltFactor = ((15660 - grWtCell) * .000205) + .1991; 
+			ldgFieldLength = ldgFieldLength + (fmc.landingPressAlt * ldgFieldAltFactor);
+		}
 		if (fmc.landingOat > 0) { //Takes the basic length and adds or subtracts distance based on weight and temperature difference from 15C.  Does not account for Pressure altitude yet
-			ldgFieldLength = ldgFieldLength + (((grWtCell - 10500) * .000903) + 5.33) * (fmc.landingOat); //This calculates how many feet to add per degree greater or lower than 0c based on weight.  0c is used because that is where the base weights come from
+			ldgFieldLength = ldgFieldLength + (((grWtCell - 10500) * .000903) + 5.33) * fmc.landingOat; //This calculates how many feet to add per degree greater or lower than 0c based on weight.  0c is used because that is where the base weights come from
 		}
 		if (fmc.landingOat < 0) {
-			ldgFieldLength = ldgFieldLength + (((grWtCell - 10500) * .000903) + 5.33) * (fmc.landingOat);
+			ldgFieldLength = ldgFieldLength + (((grWtCell - 10500) * .000903) + 5.33) * fmc.landingOat;
 		}
+		
+		if (fmc.landingWindDir != "---"){
+			let arrRunway = fmc.flightPlanManager.getApproachRunway();
+			let arrRunwayDirection = new Number(arrRunway.direction); 
+			let headwind = Math.trunc(fmc.landingWindSpeed * (Math.cos((arrRunwayDirection * Math.PI / 180) - (fmc.landingWindDir * Math.PI / 180))));
+			if (headwind > 0){
+				let headwindFactor = (fmc.landingPressAlt * .00683) + 15;
+				ldgFieldLength = ldgFieldLength - (headwind * headwindFactor);
+		} else {
+				let tailWindFactor = (fmc.landingPressAlt * .01608) + 55;
+				ldgFieldLength = ldgFieldLength - (headwind * tailWindFactor);
+		}
+		}
+		
 		let arrRunwayLength = "";
 		let arrRunway = fmc.flightPlanManager.getApproachRunway();
 		if (arrRunway) {
 			arrRunwayLength = new Number((arrRunway.length) * 3.28);
 		}
+		
+		if (fmc.arrRunwayCondition == 1) { // If the runway is wet
+			ldgFieldLength = ldgFieldLength * ((fmc.landingPressAlt * .0001025) + 1.21875); //Determines a factor to multiply with dependent on pressure altitude.  Sea level being 1.21x landing distance
+		}
+		
         fmc.setTemplate([
 			["APPROACH REF[color]blue", "2", "3"],
 			["A/I[color]blue"],
