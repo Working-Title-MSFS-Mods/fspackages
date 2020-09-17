@@ -2585,7 +2585,7 @@ class CJ4_Map extends MapInstrumentElement {
                 {
                     this.instrument.style.top = "0";
                     this.instrument.rotateWithPlane(true);
-                    this.instrument.centerOnActiveWaypoint(true);
+                    this.instrument.centerOnActiveWaypoint(false);
                     this.instrument.setPlaneScale(2.5);
                     break;
                 }
@@ -2786,6 +2786,7 @@ class CJ4_NavBarContainer extends NavSystemElementContainer {
         this.elevElement = this.root.querySelector("#Elev_Value");
         this.altElement = this.root.querySelector("#Alt_Value");
         this.rateElement = this.root.querySelector("#Rate_Value");
+        this.diffElement = this.root.querySelector("#Diff_Value");
         this.gsElement = this.root.querySelector("#Gs_Value");
         this.tasElement = this.root.querySelector("#Tas_Value");
         this.satElement = this.root.querySelector("#Sat_Value");
