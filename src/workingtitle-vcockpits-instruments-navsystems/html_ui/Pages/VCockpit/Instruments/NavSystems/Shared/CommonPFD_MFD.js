@@ -350,6 +350,8 @@ class PFD_Compass extends NavSystemElement {
     constructor(_hsiElemId = null, _arcHsiElemId = null) {
         super();
         this.displayArc = true;
+        this.hasLocBeenEntered = false;
+        this.hasLocBeenActivated = false;
         this.hsiElemId = _hsiElemId;
         this.arcHsiElemId = _arcHsiElemId;
     }
@@ -384,6 +386,27 @@ class PFD_Compass extends NavSystemElement {
         }
         else {
             SimVar.SetSimVarValue("L:GPS_Current_Phase", "number", 3);
+        }
+        if (this.gps.currFlightPlanManager.isActiveApproach() && this.gps.currFlightPlanManager.getActiveWaypointIndex() != -1 && Simplane.getAutoPilotApproachType() == 4) {
+            if (this.gps.currFlightPlanManager.getActiveWaypointIndex() >= this.gps.currFlightPlanManager.getApproachWaypoints().length - 2 && !this.hasLocBeenEntered) {
+                let frequency = this.gps.currFlightPlanManager.getApproachNavFrequency();
+                if (isFinite(frequency)) {
+                    SimVar.SetSimVarValue("K:NAV1_RADIO_SWAP", "number", 0);
+                    SimVar.SetSimVarValue("K:NAV1_RADIO_SET_HZ", "hertz", frequency * 1000000);
+                    this.hasLocBeenEntered = true;
+                }
+            }
+            else if (this.gps.currFlightPlanManager.getActiveWaypointIndex() == this.gps.currFlightPlanManager.getApproachWaypoints().length - 1 && !this.hasLocBeenActivated) {
+                if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "boolean")) {
+                    SimVar.SetSimVarValue("K:TOGGLE_GPS_DRIVES_NAV1", "number", 0);
+                }
+                SimVar.SetSimVarValue("K:AP_NAV_SELECT_SET", "number", 1);
+                this.hasLocBeenActivated = true;
+            }
+        }
+        else {
+            this.hasLocBeenEntered = false;
+            this.hasLocBeenActivated = false;
         }
     }
     onExit() {
@@ -491,7 +514,8 @@ class PFD_NavStatus extends NavSystemElement {
                     this.legSymbol = 2;
                 }
             }
-            var rawCurrentLegDistance = fastToFixed(SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles"), 1)
+
+            var rawCurrentLegDistance = fastToFixed(SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles"), 1);
             if (rawCurrentLegDistance.indexOf(".") == -1) {
                 rawCurrentLegDistance = rawCurrentLegDistance + ".0"
             }
@@ -1055,15 +1079,20 @@ class PFD_WindData extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        this.svg.setAttribute("wind-mode", this.mode.toString());
-        switch (this.mode) {
-            case 3:
-                this.svg.setAttribute("wind-true-direction", SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree").toString());
-            case 2:
-            case 1:
-                this.svg.setAttribute("wind-direction", ((SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180) % 360 - SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree")).toString());
-                this.svg.setAttribute("wind-strength", SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
-                break;
+        if (SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots") >= 1) {
+            this.svg.setAttribute("wind-mode", this.mode.toString());
+            switch (this.mode) {
+                case 3:
+                    this.svg.setAttribute("wind-true-direction", SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree").toString());
+                case 2:
+                case 1:
+                    this.svg.setAttribute("wind-direction", ((SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180) % 360 - SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree")).toString());
+                    this.svg.setAttribute("wind-strength", SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
+                    break;
+            }
+        }
+        else {
+            this.svg.setAttribute("wind-mode", "4");
         }
     }
     onExit() {
@@ -1088,6 +1117,35 @@ class PFD_WindData extends NavSystemElement {
                 break;
         }
         SimVar.SetSimVarValue("L:Glasscockpit_Wind_Mode", "number", this.mode);
+    }
+}
+class MFD_WindData extends NavSystemElement {
+    constructor() {
+        super(...arguments);
+        this.windValue = "";
+        this.strengthValue = "";
+    }
+    init(root) {
+        this.svg = this.gps.getChildById("WindData");
+    }
+    onEnter() {
+    }
+    onUpdate(_deltaTime) {
+        var wind = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree"), 0);
+        if (wind != this.windValue) {
+            this.svg.setAttribute("wind-direction", wind);
+            this.windValue = wind;
+        }
+        var strength = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), 0);
+        if (strength != this.strengthValue) {
+            this.svg.setAttribute("wind-strength", strength);
+            this.strengthValue = strength;
+        }
+        this.svg.setAttribute("wind-mode", "2");
+    }
+    onExit() {
+    }
+    onEvent(_event) {
     }
 }
 class PFD_Warnings extends Cabin_Warnings {
@@ -1275,11 +1333,11 @@ class PFD_InnerMap extends MapInstrumentElement {
         super.onUpdate(_deltaTime);
         if (this.gps.isInReversionaryMode() != this.gpsWasInReversionaryMode) {
             this.gpsWasInReversionaryMode = this.gps.isInReversionaryMode();
-            requestAnimationFrame(function () {
+            this.gps.requestCall(() => {
                 this.mapContainer.style.display = "Block";
-                if (this.mapInstrument)
-                    this.mapInstrument.resize();
-            }.bind(this));
+                if (this.instrument)
+                    this.instrument.resize();
+            });
         }
     }
     onEvent(_event) {
@@ -1328,7 +1386,7 @@ class PFD_AutopilotDisplay extends NavSystemElement {
         else if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean")) {
             Avionics.Utils.diffAndSet(this.AP_VerticalActive, "FLC");
             if (SimVar.GetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "Boolean")) {
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "mach"), 3));
+                Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 3));
             }
             else {
                 Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0) + "KT");
@@ -1960,6 +2018,7 @@ class MFD_ActiveFlightPlan_Element extends NavSystemElement {
         this.gps.SwitchToInteractionState(1);
     }
     activateLeg(_index) {
+        console.log("CommonPFD_MFD.ts > Activate leg for index " + _index);
         this.gps.currFlightPlanManager.setActiveWaypointIndex(_index);
     }
     isCurrentlySelectedNotALeg() {
@@ -2021,7 +2080,7 @@ class MFD_Waypoints extends NavSystemElement {
             else {
                 Avionics.Utils.diffAndSetAttribute(this.symbolElement, "src", '' + logo);
             }
-            if (infos.coordinates) {
+            if (infos.coordinates && infos.coordinates.lat && infos.coordinates.long) {
                 this.geoCalc.SetParams(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"), infos.coordinates.lat, infos.coordinates.long, true);
                 this.geoCalc.Compute(function () {
                     this.bearingElement.textContent = fastToFixed(this.geoCalc.bearing, 0);
@@ -2029,6 +2088,12 @@ class MFD_Waypoints extends NavSystemElement {
                 }.bind(this));
                 this.longitudeElement.textContent = this.gps.longitudeFormat(infos.coordinates.long);
                 this.latitudeElement.textContent = this.gps.latitudeFormat(infos.coordinates.lat);
+            }
+            else {
+                this.longitudeElement.textContent = "";
+                this.latitudeElement.textContent = "";
+                this.bearingElement.textContent = "___";
+                this.distanceElement.textContent = "____";
             }
         }
         else {
@@ -2046,7 +2111,7 @@ class MFD_Waypoints extends NavSystemElement {
     onEvent(_event) {
         switch (_event) {
             case "CLR":
-                requestAnimationFrame(() => {
+                this.gps.requestCall(() => {
                     this.gps.closePopUpElement();
                 });
                 break;
@@ -2125,11 +2190,13 @@ class MFD_DuplicateWaypoint extends NavSystemElement {
             if (info.coordinates) {
                 Avionics.Utils.diffAndSet(this.lat, this.gps.latitudeFormat(info.coordinates.lat));
                 Avionics.Utils.diffAndSet(this.long, this.gps.longitudeFormat(info.coordinates.long));
-                this.geoCalc.SetParams(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"), info.coordinates.lat, info.coordinates.long, true);
-                this.geoCalc.Compute(function () {
-                    Avionics.Utils.diffAndSet(this.bearing, fastToFixed(this.geoCalc.bearing, 0) + "°");
-                    Avionics.Utils.diffAndSet(this.distance, fastToFixed(this.geoCalc.distance, 0) + "NM");
-                }.bind(this));
+                if (info.coordinates.lat && info.coordinates.long) {
+                    this.geoCalc.SetParams(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"), info.coordinates.lat, info.coordinates.long, true);
+                    this.geoCalc.Compute(function () {
+                        Avionics.Utils.diffAndSet(this.bearing, fastToFixed(this.geoCalc.bearing, 0) + "°");
+                        Avionics.Utils.diffAndSet(this.distance, fastToFixed(this.geoCalc.distance, 0) + "NM");
+                    }.bind(this));
+                }
             }
         }
     }
@@ -2318,7 +2385,7 @@ class GlassCockpit_DirectTo extends NavSystemElement {
                     if (this.symbolElement)
                         this.symbolElement.innerHTML = "";
                 }
-                if (infos.coordinates) {
+                if (infos.coordinates && infos.coordinates.lat && infos.coordinates.long) {
                     this.bearingElement.textContent = fastToFixed(Avionics.Utils.computeGreatCircleHeading(new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")), infos.coordinates) - SimVar.GetSimVarValue("MAGVAR", "degrees"), 0) + "°";
                     this.distanceElement.innerHTML = fastToFixed(Avionics.Utils.computeGreatCircleDistance(new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")), infos.coordinates), 1) + '<span class="unit">NM</span>';
                 }
@@ -2459,7 +2526,7 @@ class MFD_NearestAirport_Element extends NavSystemElement {
             let currentNearest = this.nearestAirportList.airports[this.airportList.getIndex()];
             if (currentNearest != undefined) {
                 this.currentWaypoint.SetIdent(currentNearest.ident);
-                this.currentWaypoint.SetICAO(currentNearest.icao);
+                this.currentWaypoint.SetICAO(currentNearest.icao, undefined, false);
             }
         }
         let infos = this.currentWaypoint.GetInfos();
@@ -2601,18 +2668,23 @@ class MFD_NearestVOR_Element extends NavSystemElement {
             Avionics.Utils.diffAndSet(this.city, infos.city);
             Avionics.Utils.diffAndSet(this.class, infos.getClassName());
             let magVar = "";
-            if (infos.magneticVariation > 0) {
-                magVar = 'W' + fastToFixed(infos.magneticVariation, 0) + "°";
+            if (isNaN(infos.magneticVariation)) {
+                magVar = "____°";
             }
             else {
-                magVar = "E" + fastToFixed((0 - infos.magneticVariation), 0) + "°";
+                if (infos.magneticVariation > 0) {
+                    magVar = 'W' + fastToFixed(infos.magneticVariation, 0) + "°";
+                }
+                else {
+                    magVar = "E" + fastToFixed((0 - infos.magneticVariation), 0) + "°";
+                }
             }
             Avionics.Utils.diffAndSet(this.magvar, magVar);
             if (infos.coordinates) {
                 Avionics.Utils.diffAndSet(this.latitude, this.gps.latitudeFormat(infos.coordinates.lat));
                 Avionics.Utils.diffAndSet(this.longitude, this.gps.longitudeFormat(infos.coordinates.long));
             }
-            Avionics.Utils.diffAndSet(this.frequency, infos.frequencyMHz.toFixed(2));
+            Avionics.Utils.diffAndSet(this.frequency, infos.frequencyMHz ? infos.frequencyMHz.toFixed(2) : "___.__");
             this.gps.lastRelevantICAOType = this.currentWaypoint.type;
             this.gps.lastRelevantICAO = infos.icao;
         }
@@ -2684,7 +2756,6 @@ class MFD_NearestNDB_Element extends NavSystemElement {
             if (currentNearest != undefined && currentNearest.icao != this.currentWaypoint.icao) {
                 this.currentWaypoint.SetIdent(currentNearest.ident);
                 this.currentWaypoint.SetICAO(currentNearest.icao);
-                this.currentWaypoint.UpdateInfos();
             }
         }
         let infos = this.currentWaypoint.GetInfos();
@@ -3158,6 +3229,10 @@ class MFD_ApproachSelection extends NavSystemElement {
         this.gps.SwitchToInteractionState(0);
     }
     onEvent(_event) {
+        if (_event == "NavigationPush") {
+            this.approachList.setAttribute("state", "Inactive");
+            this.transitionList.setAttribute("state", "Inactive");
+        }
     }
 }
 class MFD_ArrivalSelection extends NavSystemElement {
@@ -3460,6 +3535,11 @@ class MFD_ArrivalSelection extends NavSystemElement {
         this.gps.SwitchToInteractionState(0);
     }
     onEvent(_event) {
+        if (_event == "NavigationPush") {
+            this.arrivalList.setAttribute("state", "Inactive");
+            this.transitionList.setAttribute("state", "Inactive");
+            this.runwayList.setAttribute("state", "Inactive");
+        }
     }
 }
 class MFD_DepartureSelection extends NavSystemElement {
@@ -3764,6 +3844,11 @@ class MFD_DepartureSelection extends NavSystemElement {
         this.gps.SwitchToInteractionState(0);
     }
     onEvent(_event) {
+        if (_event == "NavigationPush") {
+            this.departureList.setAttribute("state", "Inactive");
+            this.transitionList.setAttribute("state", "Inactive");
+            this.runwayList.setAttribute("state", "Inactive");
+        }
     }
 }
 //# sourceMappingURL=CommonPFD_MFD.js.map
