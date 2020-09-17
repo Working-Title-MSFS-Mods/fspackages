@@ -38,6 +38,7 @@
 				<Simvar name="CIRCUIT ON:48" unit="Boolean"/>
 			</Or>
 		</Electric>
+		<AlwaysUpdate>True</AlwaysUpdate>
 	</Instrument>
 	
 	<!-- Annunciations -->
