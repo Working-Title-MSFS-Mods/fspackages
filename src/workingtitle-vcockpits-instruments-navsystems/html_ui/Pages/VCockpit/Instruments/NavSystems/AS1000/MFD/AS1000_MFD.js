@@ -44,6 +44,7 @@ class AS1000_MFD extends BaseAS1000 {
     }
     parseXMLConfig() {
         super.parseXMLConfig();
+        this._alwaysUpdate = true;
         if (this.instrumentXmlConfig) {
             let altimeterIndexElems = this.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
             if (altimeterIndexElems.length > 0) {
