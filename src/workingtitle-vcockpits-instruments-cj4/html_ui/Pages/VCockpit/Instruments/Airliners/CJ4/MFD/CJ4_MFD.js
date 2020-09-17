@@ -266,6 +266,7 @@ class CJ4_MFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.SYS_SRC, "FMS TEXT");
         else
             _dict.set(CJ4_PopupMenu_Key.SYS_SRC, "SYSTEMS");
+            _dict.changed = false;
     }
 }
 class CJ4_FMSContainer extends NavSystemElementContainer {

@@ -209,7 +209,7 @@
 				<NODE_ID_TERR_WX>CCP_Push_terrWX</NODE_ID_TERR_WX>
 				<NODE_ID_TFC>CCP_Push_tfc</NODE_ID_TFC>
 				<NODE_ID_SYS>CCP_Push_sys</NODE_ID_SYS>
-				<NODE_ID_ZOOM>CCP_Push_zoom</NODE_ID_ZOOM>
+				<NODE_ID_ZOOM>CCP_Switch_zoom</NODE_ID_ZOOM>
 				<NODE_ID_CAS_PAGE>CCP_Push_casPage</NODE_ID_CAS_PAGE>
 				<NODE_ID_KNOB_MENU_ADV>CCP_Knob_Outer</NODE_ID_KNOB_MENU_ADV>
 				<NODE_ID_KNOB_DATA>CCP_Knob_Inner</NODE_ID_KNOB_DATA>
@@ -248,7 +248,7 @@
 				<NODE_ID_TERR_WX>CCP_Push_terrWX</NODE_ID_TERR_WX>
 				<NODE_ID_TFC>CCP_Push_tfc</NODE_ID_TFC>
 				<NODE_ID_SYS>CCP_Push_sys</NODE_ID_SYS>
-				<NODE_ID_ZOOM>CCP_Push_zoom</NODE_ID_ZOOM>
+				<NODE_ID_ZOOM>CCP_Switch_zoom</NODE_ID_ZOOM>
 				<NODE_ID_CAS_PAGE>CCP_Push_casPage</NODE_ID_CAS_PAGE>
 				<NODE_ID_KNOB_MENU_ADV>CCP_Knob_Inner</NODE_ID_KNOB_MENU_ADV>
 				<NODE_ID_KNOB_DATA>CCP_Knob_Outer</NODE_ID_KNOB_DATA>
@@ -958,47 +958,47 @@
 			<NODE_ID>push_oxygenMask</NODE_ID>
 		</UseTemplate>
 		<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-            <NODE_ID>push_pilot_CCP_uprMenu_054</NODE_ID>
+            <NODE_ID>CCP_PUSH_UPRMENU</NODE_ID>
             <CONTAINER_COUNT>2</CONTAINER_COUNT>
         </UseTemplate>
 		<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-            <NODE_ID>push_pilot_CCP_cursr_040</NODE_ID>
+            <NODE_ID>CCP_PUSH_CURSR</NODE_ID>
             <CONTAINER_COUNT>2</CONTAINER_COUNT>
         </UseTemplate>
 		<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-            <NODE_ID>push_pilot_CCP_eng_042</NODE_ID>
+            <NODE_ID>CCP_PUSH_ENG</NODE_ID>
             <CONTAINER_COUNT>2</CONTAINER_COUNT>
         </UseTemplate>
 		<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-            <NODE_ID>push_pilot_CCP_mem3_047</NODE_ID>
+            <NODE_ID>CCP_PUSH_MEM3</NODE_ID>
             <CONTAINER_COUNT>2</CONTAINER_COUNT>
         </UseTemplate>
 		<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-            <NODE_ID>push_pilot_CCP_cklst_039</NODE_ID>
+            <NODE_ID>CCP_PUSH_CKLST</NODE_ID>
             <CONTAINER_COUNT>2</CONTAINER_COUNT>
         </UseTemplate>
 		<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-            <NODE_ID>push_pilot_CCP_passBrief_049</NODE_ID>
+            <NODE_ID>CCP_PUSH_PASSBRIEF</NODE_ID>
             <CONTAINER_COUNT>2</CONTAINER_COUNT>
         </UseTemplate>
 		<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-            <NODE_ID>push_pilot_CCP_dataBase_041</NODE_ID>
+            <NODE_ID>CCP_PUSH_DATABASE</NODE_ID>
             <CONTAINER_COUNT>2</CONTAINER_COUNT>
         </UseTemplate>
 		<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-            <NODE_ID>push_pilot_CCP_chart_038</NODE_ID>
+            <NODE_ID>CCP_PUSH_CHART</NODE_ID>
             <CONTAINER_COUNT>2</CONTAINER_COUNT>
         </UseTemplate>
 		<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-            <NODE_ID>push_pilot_CCP_mem1_045</NODE_ID>
+            <NODE_ID>CCP_PUSH_MEM1</NODE_ID>
             <CONTAINER_COUNT>2</CONTAINER_COUNT>
         </UseTemplate>
 		<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-            <NODE_ID>push_pilot_CCP_unknown_053</NODE_ID>
+            <NODE_ID>CCP_PUSH_UNKNOWN</NODE_ID>
             <CONTAINER_COUNT>2</CONTAINER_COUNT>
         </UseTemplate>
 		<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-            <NODE_ID>push_pilot_CCP_mem2_046</NODE_ID>
+            <NODE_ID>CCP_PUSH_MEM2</NODE_ID>
             <CONTAINER_COUNT>2</CONTAINER_COUNT>
         </UseTemplate>
 	</Component>
@@ -1747,7 +1747,7 @@
 				<MAX_ID>9</MAX_ID>
 				<!-- VV Recursive parameters VV -->
 				<PARAM1_PREFIX>DECAL_00</PARAM1_PREFIX>
-				<PARAM1_SUFFIX>_2</PARAM1_SUFFIX>
+				<PARAM1_SUFFIX>_1</PARAM1_SUFFIX>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Helper_Recursive_ID">
 				<FIRST_ID>10</FIRST_ID>

@@ -157,8 +157,8 @@ class CJ4_FMC_LegsPage {
             }
         }
         fmc.currentFlightPlanWaypointIndex = offset + step + 1;
-        let isMapModeRose = SimVar.GetSimVarValue("L:CJ4_MAP_MODE", "number") === 1;
-        if (isMapModeRose) {
+        let isMapModePlan = SimVar.GetSimVarValue("L:CJ4_MAP_MODE", "number") === 3;
+        if (isMapModePlan) {
             if (rows[2 * step + 1][0] != "") {
                 if (!rows[2 * step + 1][1]) {
                     rows[2 * step + 1][1] = "";
@@ -184,8 +184,8 @@ class CJ4_FMC_LegsPage {
         fmc.setTemplate([
             ["ACT RTE 1 LEGS", currentPage.toFixed(0), pageCount.toFixed(0)],
             ...rows,
-            ["--------------------------"],
-            ["<RTE 2 LEGS", isMapModeRose ? "STEP>" : "RTE DATA>"]
+            ["-------------------------"],
+            ["<RTE 2 LEGS", isMapModePlan ? "STEP>" : "RTE DATA>"]
         ]);
         fmc.onPrevPage = () => {
             if (currentPage > 1) {

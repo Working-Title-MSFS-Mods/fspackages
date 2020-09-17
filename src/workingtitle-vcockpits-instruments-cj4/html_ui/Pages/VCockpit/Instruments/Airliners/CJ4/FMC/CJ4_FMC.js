@@ -261,6 +261,10 @@ class CJ4_FMC extends FMCMainDisplay {
                     SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
                 }
             }
+            else {
+                SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 0);
+                SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
+            }
             if (!this.flightPlanManager.isActiveApproach()) {
                 let activeWaypoint = this.flightPlanManager.getActiveWaypoint();
                 let nextActiveWaypoint = this.flightPlanManager.getNextActiveWaypoint();

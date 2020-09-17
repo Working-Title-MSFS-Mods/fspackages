@@ -14,7 +14,7 @@ class CJ4_FMC_NavRadioPage {
                 fmc.vhf1Frequency = numValue;
                 fmc.radioNav.setVHFStandbyFrequency(fmc.instrumentIndex, 1, numValue).then(() => {
                     fmc.radioNav.swapVHFFrequencies(fmc.instrumentIndex, 1);
-                    requestAnimationFrame(() => {
+                    fmc.requestCall(() => {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
                 });
@@ -24,7 +24,7 @@ class CJ4_FMC_NavRadioPage {
                 CJ4_FMC_NavRadioPage.ShowPage1(fmc);
             }
             else {
-                fmc.showErrorMessage("INVALID ENTRY");
+                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
         let vhf2FrequencyCell = "[]";
@@ -39,7 +39,7 @@ class CJ4_FMC_NavRadioPage {
                 fmc.vhf2Frequency = numValue;
                 fmc.radioNav.setVHFStandbyFrequency(fmc.instrumentIndex, 2, numValue).then(() => {
                     fmc.radioNav.swapVHFFrequencies(fmc.instrumentIndex, 2);
-                    requestAnimationFrame(() => {
+                    fmc.requestCall(() => {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
                 });
@@ -49,7 +49,7 @@ class CJ4_FMC_NavRadioPage {
                 CJ4_FMC_NavRadioPage.ShowPage1(fmc);
             }
             else {
-                fmc.showErrorMessage("INVALID ENTRY");
+                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
         let rcl1FrequencyCell = "121.900";
@@ -62,7 +62,7 @@ class CJ4_FMC_NavRadioPage {
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
                 fmc.rcl1Frequency = numValue;
-                requestAnimationFrame(() => {
+                fmc.requestCall(() => {
                     CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                 });
             }
@@ -71,7 +71,7 @@ class CJ4_FMC_NavRadioPage {
                 CJ4_FMC_NavRadioPage.ShowPage1(fmc);
             }
             else {
-                fmc.showErrorMessage("INVALID ENTRY");
+                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
         let pre2FrequencyCell = "121.500";
@@ -84,7 +84,7 @@ class CJ4_FMC_NavRadioPage {
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
                 fmc.pre2Frequency = numValue;
-                requestAnimationFrame(() => {
+                fmc.requestCall(() => {
                     CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                 });
             }
@@ -93,7 +93,7 @@ class CJ4_FMC_NavRadioPage {
                 CJ4_FMC_NavRadioPage.ShowPage1(fmc);
             }
             else {
-                fmc.showErrorMessage("INVALID ENTRY");
+                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
         let vor1FrequencyCell = "110.40";
@@ -107,14 +107,14 @@ class CJ4_FMC_NavRadioPage {
             if (isFinite(numValue) && numValue >= 108 && numValue <= 117.95 && RadioNav.isHz50Compliant(numValue)) {
                 fmc.vor1Frequency = numValue;
                 if (fmc.isRadioNavActive()) {
-                    requestAnimationFrame(() => {
+                    fmc.requestCall(() => {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
                 }
                 else {
                     fmc.radioNav.setVORStandbyFrequency(1, numValue).then(() => {
                         fmc.radioNav.swapVORFrequencies(1);
-                        requestAnimationFrame(() => {
+                        fmc.requestCall(() => {
                             CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                         });
                     });
@@ -125,7 +125,7 @@ class CJ4_FMC_NavRadioPage {
                 CJ4_FMC_NavRadioPage.ShowPage1(fmc);
             }
             else {
-                fmc.showErrorMessage("INVALID ENTRY");
+                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
         let vor2FrequencyCell = "111.10";
@@ -139,14 +139,14 @@ class CJ4_FMC_NavRadioPage {
             if (isFinite(numValue) && numValue >= 108 && numValue <= 117.95 && RadioNav.isHz50Compliant(numValue)) {
                 fmc.vor2Frequency = numValue;
                 if (fmc.isRadioNavActive()) {
-                    requestAnimationFrame(() => {
+                    fmc.requestCall(() => {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
                 }
                 else {
                     fmc.radioNav.setVORStandbyFrequency(2, numValue).then(() => {
                         fmc.radioNav.swapVORFrequencies(2);
-                        requestAnimationFrame(() => {
+                        fmc.requestCall(() => {
                             CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                         });
                     });
@@ -157,7 +157,7 @@ class CJ4_FMC_NavRadioPage {
                 CJ4_FMC_NavRadioPage.ShowPage1(fmc);
             }
             else {
-                fmc.showErrorMessage("INVALID ENTRY");
+                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
         let adfFrequencyCell = "[]";
@@ -171,13 +171,13 @@ class CJ4_FMC_NavRadioPage {
             if (isFinite(numValue) && numValue >= 100 && numValue <= 1799) {
                 fmc.adf1Frequency = numValue;
                 if (fmc.isRadioNavActive()) {
-                    requestAnimationFrame(() => {
+                    fmc.requestCall(() => {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
                 }
                 else {
                     fmc.radioNav.setADFActiveFrequency(1, numValue).then(() => {
-                        requestAnimationFrame(() => {
+                        fmc.requestCall(() => {
                             CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                         });
                     });
@@ -188,7 +188,7 @@ class CJ4_FMC_NavRadioPage {
                 CJ4_FMC_NavRadioPage.ShowPage1(fmc);
             }
             else {
-                fmc.showErrorMessage("INVALID ENTRY");
+                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
         let atc1FrequencyCell = "[]";
@@ -202,13 +202,13 @@ class CJ4_FMC_NavRadioPage {
             if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
                 fmc.atc1Frequency = numValue;
                 if (fmc.isRadioNavActive()) {
-                    requestAnimationFrame(() => {
+                    fmc.requestCall(() => {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
                 }
                 else {
                     SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", Avionics.Utils.make_xpndr_bcd16(numValue)).then(() => {
-                        requestAnimationFrame(() => {
+                        fmc.requestCall(() => {
                             CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                         });
                     });
@@ -219,7 +219,7 @@ class CJ4_FMC_NavRadioPage {
                 CJ4_FMC_NavRadioPage.ShowPage1(fmc);
             }
             else {
-                fmc.showErrorMessage("INVALID ENTRY");
+                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
         fmc.setTemplate([
@@ -255,13 +255,13 @@ class CJ4_FMC_NavRadioPage {
             if (isFinite(numValue) && numValue >= 100 && numValue <= 1799) {
                 fmc.adf1Frequency = numValue;
                 if (fmc.isRadioNavActive()) {
-                    requestAnimationFrame(() => {
+                    fmc.requestCall(() => {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
                 }
                 else {
                     fmc.radioNav.setADFActiveFrequency(1, numValue).then(() => {
-                        requestAnimationFrame(() => {
+                        fmc.requestCall(() => {
                             CJ4_FMC_NavRadioPage.ShowPage2(fmc);
                         });
                     });
@@ -272,7 +272,7 @@ class CJ4_FMC_NavRadioPage {
                 CJ4_FMC_NavRadioPage.ShowPage2(fmc);
             }
             else {
-                fmc.showErrorMessage("INVALID ENTRY");
+                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
         let adf2FrequencyCell = "[]";
@@ -286,13 +286,13 @@ class CJ4_FMC_NavRadioPage {
             if (isFinite(numValue) && numValue >= 100 && numValue <= 1799) {
                 fmc.adf2Frequency = numValue;
                 if (fmc.isRadioNavActive()) {
-                    requestAnimationFrame(() => {
+                    fmc.requestCall(() => {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
                 }
                 else {
                     fmc.radioNav.setADFActiveFrequency(2, numValue).then(() => {
-                        requestAnimationFrame(() => {
+                        fmc.requestCall(() => {
                             CJ4_FMC_NavRadioPage.ShowPage2(fmc);
                         });
                     });
@@ -303,7 +303,7 @@ class CJ4_FMC_NavRadioPage {
                 CJ4_FMC_NavRadioPage.ShowPage2(fmc);
             }
             else {
-                fmc.showErrorMessage("INVALID ENTRY");
+                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
         fmc.setTemplate([
