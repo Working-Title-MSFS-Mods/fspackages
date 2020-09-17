@@ -33,8 +33,8 @@ class AS1000_PFD extends BaseAS1000 {
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "MENU_Push"));
         this.maxUpdateBudget = 12;
-        let avionicsKnobIndex = 30;
-        let avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
+        this.avionicsKnobIndex = 30;
+        this.avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
     }
     onUpdate(_deltaTime) {
         let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
@@ -71,7 +71,7 @@ class AS1000_PFD extends BaseAS1000 {
         if (reversionaryMode && reversionaryMode.textContent == "True") {
             this.handleReversionaryMode = true;
         }
-        if (avionicsKnobIndex) {
+        if (avionicsKnobIndex && avionicsKnobIndex.textContent) {
             this.avionicsKnobIndex = avionicsKnobIndex.textContent;
         }
     }
