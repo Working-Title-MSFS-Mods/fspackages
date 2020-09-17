@@ -653,7 +653,7 @@
 						</And>
 						<And> <!-- b) engine 1 failed, not set to STOP, and engine 2 throttle lower than CRU -->
 							<Simvar name="GENERAL ENG FAILED:1" unit="Boolean"/>
-							<Simvar name="GENERAL ENG STARTER:1" unit="Boolean"/> 	
+							<Simvar name="GENERAL ENG FUEL VALVE:1" unit="Boolean"/> 	
 							<Lower>
                         		<Simvar name="GENERAL ENG THROTTLE LEVER POSITION:2" unit="percent"/>
                         		<Constant>70</Constant>
@@ -661,7 +661,7 @@
 						</And>
 						<And> <!-- c) engine 2 failed, not set to STOP, and engine 1 throttle lower than CRU -->
 							<Simvar name="GENERAL ENG FAILED:2" unit="Boolean"/>
-							<Simvar name="GENERAL ENG STARTER:2" unit="Boolean"/> 	
+							<Simvar name="GENERAL ENG FUEL VALVE:2" unit="Boolean"/> 	
 							<Lower>
                         		<Simvar name="GENERAL ENG THROTTLE LEVER POSITION:1" unit="percent"/>
                         		<Constant>70</Constant>
