@@ -678,11 +678,11 @@
 							<Simvar name="FLAPS HANDLE INDEX" unit="number"/>
 							<Constant>2</Constant>
 						</Equal>
-						<And>  <!-- b) flaps at 15-degrees and RADALT lower than 500 ft --> 
-							<Equal>
+						<And>  <!-- b) flaps less than/equal to 15-degrees and RADALT lower than 500 ft --> 
+							<Lower>
 								<Simvar name="FLAPS HANDLE INDEX" unit="number"/>
-								<Constant>1</Constant>
-							</Equal>
+								<Constant>2</Constant>
+							</Lower>
 							<Lower>
 								<Simvar name="RADIO HEIGHT" unit="feet"/>
 								<Constant>500</Constant>
