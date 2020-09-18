@@ -51,6 +51,12 @@
   font-weight: normal;
   font-style: normal; }
 
+@font-face {
+  font-family: "Collins ProLine";
+  src: url("/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/CollinsProLine-Condensed.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
 /*
 @font-face {
     font-family: "Not Courier Sans";
@@ -68,7 +74,7 @@ cj4-fmc {
   height: 100%;
   background-color: #0e0d08;
   color: white;
-  font-family: "Not Courier Sans", "Consolas";
+  font-family: "Collins ProLine";
   font-size: 6.46vw;
   color: white; }
 
