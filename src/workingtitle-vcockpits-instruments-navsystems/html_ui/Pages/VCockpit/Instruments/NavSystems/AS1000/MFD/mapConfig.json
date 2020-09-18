@@ -3,14 +3,14 @@
   "waypointLabelFontFamily": "Consolas",
   "waypointLabelColor": "#FFFFFF",
   "waypointLabelStrokeColor": "#3f3f3f",
-  "waypointLabelStrokeWidth": 0,
-  "waypointLabelUseBackground": true,
+  "waypointLabelStrokeWidth": 10,
+  "waypointLabelUseBackground": false,
   "waypointLabelBackgroundColor": "#3f4851",
   "waypointLabelBackgroundStrokeColor": "black",
   "waypointLabelBackgroundStrokeWidth": 0,
   "waypointLabelBackgroundPadding": "5 5 5 5",
   "waypointLabelDistance": 12,
-  "waypointIconSize": 100,
+  "waypointIconSize": 70,
 
   "cityLabelFontSize": 24,
   "cityLabelFontFamily": "Consolas",
@@ -72,39 +72,43 @@
   "netBingHeightColor1": [
     {
       "alt": 0,
-      "color": "#6DA36C"
+      "color": "#64a676"
     },
     {
-      "alt": 1500,
-      "color": "#9CAF57"
+      "alt": 1000,
+      "color": "#8f9942"
     },
     {
-      "alt": 6000,
-      "color": "#c8b46e"
+      "alt": 2000,
+      "color": "#fbd45b"
     },
     {
-      "alt": 8000,
-      "color": "#b0975b"
+      "alt": 3000,
+      "color": "#fab858"
     },
     {
-      "alt": 10000,
-      "color": "#9a7c48"
+      "alt": 5000,
+      "color": "#d68b48"
     },
     {
-      "alt": 13000,
-      "color": "#906a3b"
+      "alt": 7000,
+      "color": "#c47034"
     },
     {
-      "alt": 16000,
-      "color": "#7b5936"
+      "alt": 9000,
+      "color": "#b85d2e"
     },
     {
-      "alt": 24000,
-      "color": "#5a462e"
+      "alt": 12000,
+      "color": "#a14d28"
     },
     {
-      "alt": 32000,
-      "color": "#abb0b5"
+      "alt": 20000,
+      "color": "#7e4124"
+    },
+    {
+      "alt": 28000,
+      "color": "#b8b9bb"
     }
   ]
 }
