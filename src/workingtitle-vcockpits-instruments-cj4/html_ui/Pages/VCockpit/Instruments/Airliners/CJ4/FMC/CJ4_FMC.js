@@ -78,21 +78,23 @@ class CJ4_FMC extends FMCMainDisplay {
         this.onPerf = () => { CJ4_FMC_PerfInitPage.ShowPage1(this); };
         this.onMfdAdv = () => { CJ4_FMC_MfdAdvPage.ShowPage1(this); };
         this.onTun = () => { CJ4_FMC_NavRadioPage.ShowPage1(this); };
-        this.onExec = () => {
-            if (this.getIsRouteActivated()) {
-                this.insertTemporaryFlightPlan();
-                this._isRouteActivated = false;
-                SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
-                if (this.refreshPageCallback) {
-                    this.refreshPageCallback();
-                }
-            }
-        };
+        this.onExecPage = undefined;
+        //this.onExec = () => {
+        //    if (this.getIsRouteActivated()) {
+        //        this.insertTemporaryFlightPlan();
+        //        this._isRouteActivated = false;
+        //        SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
+        //    }
+        //    this.fpHasChanged = false;
+        //    if (this.refreshPageCallback) {
+        //        this.refreshPageCallback();
+        //    }
+        //};
         this.renderScratchpad();
         this.renderMsgLine();
 
         // just to display exec as a test, remove later
-        this.fpHasChanged = true;
+        //this.fpHasChanged = true;
 
         CJ4_FMC_InitRefIndexPage.ShowPage5(this);
 
@@ -151,9 +153,12 @@ class CJ4_FMC extends FMCMainDisplay {
             CJ4_FMC_DirectToPage.ShowPage(this);
         }
         if (input === "EXEC") {
-            if (this.onExec) {
-                this.onExec();
+            if (this.onExecPage) {
+                this.onExecPage();
             }
+            //if (this.onExec) {
+            //    this.onExec();
+            //}
         }
         return false;
     }

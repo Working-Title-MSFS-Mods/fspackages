@@ -181,12 +181,28 @@ class CJ4_FMC_LegsPage {
                 CJ4_FMC_LegsPage.ShowPage1(fmc, newPage, newStep);
             };
         }
-        fmc.setTemplate([
-            ["ACT RTE 1 LEGS", currentPage.toFixed(0), pageCount.toFixed(0)],
-            ...rows,
-            ["-------------------------"],
-            ["<RTE 2 LEGS", isMapModePlan ? "STEP>" : "RTE DATA>"]
-        ]);
+        
+        //adding MOD vs ACT in title and changing color with separate templates
+        if (fmc.fpHasChanged == true) {
+            fmc.setTemplate([
+                ["MOD RTE 1 LEGS", currentPage.toFixed(0), pageCount.toFixed(0)],
+                ...rows,
+                ["-------------------------"],
+                ["<RTE 2 LEGS", isMapModePlan ? "STEP>" : "RTE DATA>"]
+            ]);
+        }
+        else {
+            fmc.setTemplate([
+                ["ACT RTE 1 LEGS[color]blue", currentPage.toFixed(0), pageCount.toFixed(0)],
+                ...rows,
+                ["-------------------------"],
+                ["<RTE 2 LEGS", isMapModePlan ? "STEP>" : "RTE DATA>"]
+            ]);
+        }
+        fmc.refreshPageCallback = () => {
+            console.log("fmc.pageUpdate");
+            CJ4_FMC_LegsPage.ShowPage1(fmc);
+        }
         fmc.onPrevPage = () => {
             if (currentPage > 1) {
                 CJ4_FMC_LegsPage.ShowPage1(fmc, currentPage - 1);

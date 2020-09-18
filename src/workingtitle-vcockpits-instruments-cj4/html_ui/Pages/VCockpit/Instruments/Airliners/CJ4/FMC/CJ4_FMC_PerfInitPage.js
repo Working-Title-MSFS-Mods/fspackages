@@ -158,7 +158,7 @@ class CJ4_FMC_PerfInitPage {
 
         if (fmc.flightPlanManager.getDepartureRunway()) {
             depRunway = fmc.flightPlanManager.getDepartureRunway();
-            depRunwayOutput = fmc.getRunwayDesignation(depRunway);
+            depRunwayOutput = "RW" + fmc.getRunwayDesignation(depRunway);
             console.log("depRunwayOutput: " + depRunwayOutput);
            	depRunwayDirection = new Number(depRunway.direction);
             depRunwayElevation = new Number(depRunway.elevation * 3.28);
@@ -211,7 +211,7 @@ class CJ4_FMC_PerfInitPage {
         fmc.setTemplate([
             [originIdent + "   TAKEOFF REF[color]blue", "1", "3"],
 			["RWY ID[color]blue", "WIND[color]blue"],
-            ["RW" + depRunwayOutput, fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
+            [depRunwayOutput + "", fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
             ["RWY WIND[color]blue", "OAT[color]blue"],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.takeoffOat + "\xB0C"],
             ["RWY LENGTH[color]blue", "QNH[color]blue"],
@@ -611,7 +611,7 @@ class CJ4_FMC_PerfInitPage {
 
         if (fmc.flightPlanManager.getApproachRunway()) {
             arrRunway = fmc.flightPlanManager.getApproachRunway();
-            arrRunwayOutput = fmc.getRunwayDesignation(arrRunway);
+            arrRunwayOutput = "RW" + fmc.getRunwayDesignation(arrRunway);
             arrRunwayDirection = new Number(arrRunway.direction);
             arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
             arrRunwayLength = new Number((arrRunway.length) * 3.28);
@@ -643,7 +643,7 @@ class CJ4_FMC_PerfInitPage {
 			["SEL APT[color]blue", "WIND[color]blue"],
             [destinationIdent + "/" + originIdent + "[color]green", fmc.landingWindDir + "\xB0/" + fmc.landingWindSpeed],
             ["RWY ID[color]blue", "OAT[color]blue"],
-            ["RW" + arrRunwayOutput, fmc.landingOat + "\xB0C"],
+            [arrRunwayOutput + "", fmc.landingOat + "\xB0C"],
             ["RWY WIND[color]blue", "QNH[color]blue"],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.landingQnh],
             ["RUNWAY LENGTH[color]blue", "P ALT[color]blue"],

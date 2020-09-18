@@ -39,6 +39,10 @@ class CJ4_FMC_RoutePage {
                 }
             });
         };
+        let distanceCell = "----"
+        if (fmc.flightPlanManager.getDestination() && fmc.flightPlanManager.getOrigin()) {
+            distanceCell = Avionics.Utils.computeGreatCircleDistance(fmc.flightPlanManager.getOrigin().infos.coordinates, fmc.flightPlanManager.getDestination().infos.coordinates).toFixed(0);
+        }
         let flightNoCell = "--------";
         let flightNoValue = SimVar.GetSimVarValue("ATC FLIGHT NUMBER", "string");
         if (flightNoValue) {
@@ -90,7 +94,7 @@ class CJ4_FMC_RoutePage {
         fmc.setTemplate([
             ["ACT FPLN" + "[color]blue", "1", pageCount.toFixed(0)],
             ["ORIGIN" + "[color]blue", "DEST" + "[color]blue", "DIST" + "[color]blue"],
-            [originCell, destinationCell],
+            [originCell, destinationCell, distanceCell],
             ["ROUTE" + "[color]blue", "ALTN" + "[color]blue"],
             ["----------", "----"],
 			["", "ORIG RWY" + "[color]blue"],
