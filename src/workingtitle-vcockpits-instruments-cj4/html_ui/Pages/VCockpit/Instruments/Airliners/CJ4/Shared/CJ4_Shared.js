@@ -2585,7 +2585,7 @@ class CJ4_Map extends MapInstrumentElement {
                 {
                     this.instrument.style.top = "0";
                     this.instrument.rotateWithPlane(true);
-                    this.instrument.centerOnActiveWaypoint(true);
+                    this.instrument.centerOnActiveWaypoint(false);
                     this.instrument.setPlaneScale(2.5);
                     break;
                 }
@@ -2786,6 +2786,7 @@ class CJ4_NavBarContainer extends NavSystemElementContainer {
         this.elevElement = this.root.querySelector("#Elev_Value");
         this.altElement = this.root.querySelector("#Alt_Value");
         this.rateElement = this.root.querySelector("#Rate_Value");
+        this.diffElement = this.root.querySelector("#Diff_Value");
         this.gsElement = this.root.querySelector("#Gs_Value");
         this.tasElement = this.root.querySelector("#Tas_Value");
         this.satElement = this.root.querySelector("#Sat_Value");
@@ -2974,10 +2975,12 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VR"] = 19] = "VSPEED_VR";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_V2"] = 20] = "VSPEED_V2";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VT"] = 21] = "VSPEED_VT";
-    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_SRC"] = 22] = "MIN_ALT_SRC";
-    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_BARO_VAL"] = 23] = "MIN_ALT_BARO_VAL";
-    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_RADIO_VAL"] = 24] = "MIN_ALT_RADIO_VAL";
-    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 25] = "SYS_SRC";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VRF"] = 22] = "VSPEED_VRF";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VAP"] = 23] = "VSPEED_VAP";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_SRC"] = 24] = "MIN_ALT_SRC";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_BARO_VAL"] = 25] = "MIN_ALT_BARO_VAL";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_RADIO_VAL"] = 26] = "MIN_ALT_RADIO_VAL";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 27] = "SYS_SRC";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
     constructor() {
@@ -3160,6 +3163,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR]);
                 this.addRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2]);
                 this.addRange("VT", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VT]);
+                this.addRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF]);
+                this.addRange("VAP", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VAP]);
             }
             this.endSection();
             this.beginSection();
@@ -3211,6 +3216,12 @@ class CJ4_PopupMenu_REF extends CJ4_PopupMenu_Handler {
                 this.addRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR]);
                 this.addRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2]);
                 this.addRange("VT", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VT]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF]);
+                this.addRange("VAP", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VAP]);
             }
             this.endSection();
             this.beginSection();

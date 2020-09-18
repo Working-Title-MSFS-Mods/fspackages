@@ -20,16 +20,20 @@ class CJ4_FMC_LegsPage {
         let offset = Math.floor((currentPage - 1) * 5);
         let flightPlanManagerWaypoints = fmc.flightPlanManager.getWaypoints();
         if (flightPlanManagerWaypoints) {
+            console.log("flightPlanManagerWaypoints = true");
             let waypoints = [...fmc.flightPlanManager.getWaypoints()];
-            if (waypoints.length > 2) {
+            let firstApproachWaypointIndex = waypoints.length;
+            let approachWaypoints = fmc.flightPlanManager.getApproachWaypoints();
+            if (waypoints.length > 2 || approachWaypoints) {
+                console.log("waypoints.length > 2");
                 waypoints.splice(0, 1);
                 waypoints.pop();
-                let firstApproachWaypointIndex = waypoints.length;
-                let approachWaypoints = fmc.flightPlanManager.getApproachWaypoints();
+                //let firstApproachWaypointIndex = waypoints.length;
+                //let approachWaypoints = fmc.flightPlanManager.getApproachWaypoints();
                 for (let i = 0; i < approachWaypoints.length; i++) {
                     let approachWaypoint = approachWaypoints[i];
                     let lastWaypoint = waypoints[waypoints.length - 1];
-                    if (lastWaypoint.icao != approachWaypoint.icao) {
+                    if (lastWaypoint === undefined || lastWaypoint.icao != approachWaypoint.icao) {
                         waypoints.push(approachWaypoints[i]);
                     }
                 }
@@ -70,6 +74,11 @@ class CJ4_FMC_LegsPage {
                         }
                         let bearing = isFinite(waypoint.bearingInFP) ? waypoint.bearingInFP.toFixed(0) + "°" : "";
                         let distance = isFinite(waypoint.cumulativeDistanceInFP) ? waypoint.cumulativeDistanceInFP.toFixed(0) + "NM" : "";
+                        
+                        //temporary log to see current flight plan
+                        let waypointsLog = waypoints.map(waypoint => waypoint.ident);
+			            console.log("fpln:" + JSON.stringify(waypointsLog, null, 2));
+                        
                         rows[2 * i] = [bearing, distance];
                         rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident : "USR"];
                         if (CJ4_FMC_LegsPage.DEBUG_SHOW_WAYPOINT_PHASE) {
@@ -148,8 +157,8 @@ class CJ4_FMC_LegsPage {
             }
         }
         fmc.currentFlightPlanWaypointIndex = offset + step + 1;
-        let isMapModeRose = SimVar.GetSimVarValue("L:CJ4_MAP_MODE", "number") === 1;
-        if (isMapModeRose) {
+        let isMapModePlan = SimVar.GetSimVarValue("L:CJ4_MAP_MODE", "number") === 3;
+        if (isMapModePlan) {
             if (rows[2 * step + 1][0] != "") {
                 if (!rows[2 * step + 1][1]) {
                     rows[2 * step + 1][1] = "";
@@ -175,8 +184,8 @@ class CJ4_FMC_LegsPage {
         fmc.setTemplate([
             ["ACT RTE 1 LEGS", currentPage.toFixed(0), pageCount.toFixed(0)],
             ...rows,
-            ["--------------------------"],
-            ["<RTE 2 LEGS", isMapModeRose ? "STEP>" : "RTE DATA>"]
+            ["-------------------------"],
+            ["<RTE 2 LEGS", isMapModePlan ? "STEP>" : "RTE DATA>"]
         ]);
         fmc.onPrevPage = () => {
             if (currentPage > 1) {

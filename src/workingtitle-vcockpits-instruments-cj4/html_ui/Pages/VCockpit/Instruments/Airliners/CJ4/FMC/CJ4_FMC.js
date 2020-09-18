@@ -13,11 +13,47 @@ class CJ4_FMC extends FMCMainDisplay {
         this._hasReachedTopOfDescent = false;
         this._apCooldown = 500;
         this.reserveFuel = 750;
-		this.paxNumber = 0;
-		this.cargoWeight = 0;
-		this.basicOperatingWeight = 10280;
+        this.paxNumber = 0;
+        this.cargoWeight = 0;
+        this.basicOperatingWeight = 10280;
+        this.takeoffOat = "□□□";
+        this.landingOat = "□□□";
+        this.takeoffQnh = "□□.□□";
+        this.landingQnh = "□□.□□";
+        this.takeoffWindDir = "---";
+        this.takeoffWindSpeed = "---";
+        this.landingWindDir = "---";
+        this.landingWindSpeed = "---";
+        this.takeoffPressAlt = "";
+        this.landingPressAlt = "";
+        this.depRunwayCondition = 0;
+        this.arrRunwayCondition = 0;
+        this.takeoffFlaps = 15;
+        this.takeoffAntiIce = 0;
+        this.endTakeoffDist = 0;
+        this.initialFuelLeft = 0;
+        this.initialFuelRight = 0;
+        this.selectedRunwayOutput = "";
+        this._fpHasChanged = false;
     }
     get templateID() { return "CJ4_FMC"; }
+
+    // Property for EXEC handling
+    get fpHasChanged() { return this._fpHasChanged; }
+    set fpHasChanged(value) {
+        this._fpHasChanged = value;
+        if (this._fpHasChanged) {
+            let execEl = document.createElement("div");
+            execEl.id = "exec-sign";
+            execEl.innerHTML = "EXEC";
+            execEl.classList.add("blackwhite", "line-right", "fitcontent");
+            this.getChildById("msg-line").append(execEl);
+        } else {
+            let execEl = document.getElementById("exec-sign");
+            if (execEl) execEl.remove();
+        }
+    }
+
     connectedCallback() {
         super.connectedCallback();
         this.radioNav.init(NavMode.TWO_SLOTS);
@@ -36,11 +72,11 @@ class CJ4_FMC extends FMCMainDisplay {
         this.maxCruiseFL = 450;
         this.onFplan = () => { CJ4_FMC_RoutePage.ShowPage1(this); };
         this.onLegs = () => { CJ4_FMC_LegsPage.ShowPage1(this); };
-		this.onIdx = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(this); };
+        this.onIdx = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(this); };
         this.onDepArr = () => { CJ4_FMC_DepArrPage.ShowPage1(this); };
         this.onDsplMenu = () => { CJ4_FMC_DsplMenuPage.ShowPage1(this); };
-		this.onPerf = () => { CJ4_FMC_PerfInitPage.ShowPage1(this); };
-		this.onMfdAdv = () => { CJ4_FMC_MfdAdvPage.ShowPage1(this); };
+        this.onPerf = () => { CJ4_FMC_PerfInitPage.ShowPage1(this); };
+        this.onMfdAdv = () => { CJ4_FMC_MfdAdvPage.ShowPage1(this); };
         this.onTun = () => { CJ4_FMC_NavRadioPage.ShowPage1(this); };
         this.onExec = () => {
             if (this.getIsRouteActivated()) {
@@ -52,8 +88,14 @@ class CJ4_FMC extends FMCMainDisplay {
                 }
             }
         };
-        CJ4_FMC_IdentPage.ShowPage1(this);
-        
+        this.renderScratchpad();
+        this.renderMsgLine();
+
+        // just to display exec as a test, remove later
+        this.fpHasChanged = true;
+
+        CJ4_FMC_InitRefIndexPage.ShowPage5(this);
+
         //Timer for periodic page refresh
         this._pageRefreshTimer = null;
     }
@@ -81,19 +123,19 @@ class CJ4_FMC extends FMCMainDisplay {
             }
             return true;
         }
-		if (input === "IDX") {
+        if (input === "IDX") {
             if (this.onIdx) {
                 this.onIdx();
             }
             return true;
         }
-		if (input === "PERF") {
+        if (input === "PERF") {
             if (this.onPerf) {
                 this.onPerf();
             }
             return true;
         }
-		if (input === "MFD_ADV") {
+        if (input === "MFD_ADV") {
             if (this.onMfdAdv) {
                 this.onMfdAdv();
             }
@@ -219,6 +261,10 @@ class CJ4_FMC extends FMCMainDisplay {
                     SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
                 }
             }
+            else {
+                SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 0);
+                SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
+            }
             if (!this.flightPlanManager.isActiveApproach()) {
                 let activeWaypoint = this.flightPlanManager.getActiveWaypoint();
                 let nextActiveWaypoint = this.flightPlanManager.getNextActiveWaypoint();
@@ -246,6 +292,52 @@ class CJ4_FMC extends FMCMainDisplay {
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MAX_CALCULATED", "knots", Simplane.getMaxSpeed(Aircraft.CJ4));
             this.updateAutopilotCooldown = this._apCooldown;
         }
+    }
+    //add new method to find correct runway designation (with leading 0)
+    getRunwayDesignation(selectedRunway) {
+        if (selectedRunway) {
+            let selectedRunwayDesignation = new String(selectedRunway.designation);
+            let selectedRunwayMod = new String(selectedRunwayDesignation.slice(-1));
+            if (selectedRunwayMod == "L" || "C" || "R") {
+                if (selectedRunwayDesignation.length == 2) {
+                    this.selectedRunwayOutput = "0" + selectedRunwayDesignation;
+                } else {
+                    this.selectedRunwayOutput = selectedRunwayDesignation;
+                }
+            } else {
+                if (selectedRunwayDesignation.length == 2) {
+                    this.selectedRunwayOutput = selectedRunwayDesignation;
+                } else {
+                    this.selectedRunwayOutput = "0" + selectedRunwayDesignation;
+                }
+            }
+        }
+        return this.selectedRunwayOutput;
+    }
+    //end of new method to find runway designation
+    renderScratchpad() {
+        // make footer accesible from css
+        document.getElementById("in-out").parentElement.classList.add("footer");
+        let inoutelem = document.getElementById("in-out");
+        let brkOpen = document.createElement("span");
+        brkOpen.innerHTML = "[";
+        brkOpen.classList.add("blue", "line-left");
+        let brkClose = document.createElement("span");
+        brkClose.innerHTML = "]";
+        brkClose.classList.add("blue", "line-right");
+        inoutelem.parentElement.appendChild(brkOpen);
+        inoutelem.parentElement.appendChild(brkClose);
+    }
+    renderMsgLine() {
+        let msgLineEl = document.createElement("div");
+        msgLineEl.id = "msg-line";
+        msgLineEl.classList.add("line");
+        this.getChildById("Electricity").append(msgLineEl);
+
+        let msgEl = document.createElement("div");
+        msgEl.innerHTML = "FMS INDEPENDENT OP";
+        msgEl.classList.add("fitcontent", "line-left");
+        msgLineEl.append(msgEl);
     }
 
     /**
