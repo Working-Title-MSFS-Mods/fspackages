@@ -8,9 +8,9 @@ class AS1000_MFD extends BaseAS1000 {
     get templateID() { return "AS1000_MFD"; }
     connectedCallback() {
         super.connectedCallback();
-        if (typeof g_modDebugMgr != "undefined") {
+        Include.addScript("/JS/debug.js", function () {
             g_modDebugMgr.AddConsole(null);
-        }
+        });
         this.pagesContainer = this.getChildById("RightInfos");
         this.addIndependentElementContainer(new Engine("Engine", "LeftInfos"));
         this.pageGroups = [
