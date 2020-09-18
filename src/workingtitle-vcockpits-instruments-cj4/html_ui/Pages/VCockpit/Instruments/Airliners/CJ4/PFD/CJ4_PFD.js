@@ -224,10 +224,32 @@ class CJ4_PFD extends BaseAirliners {
         let vR = _dict.get(CJ4_PopupMenu_Key.VSPEED_VR);
         let v2 = _dict.get(CJ4_PopupMenu_Key.VSPEED_V2);
         let vT = _dict.get(CJ4_PopupMenu_Key.VSPEED_VT);
-        SimVar.SetSimVarValue("L:AIRLINER_V1_SPEED", "Knots", parseInt(v1));
-        SimVar.SetSimVarValue("L:AIRLINER_VR_SPEED", "Knots", parseInt(vR));
-        SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", parseInt(v2));
-        SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", parseInt(vT));
+        let vRef = _dict.get(CJ4_PopupMenu_Key.VSPEED_VRF);
+        let vApp = _dict.get(CJ4_PopupMenu_Key.VSPEED_VAP);
+        if (parseInt(v1) != parseInt(SimVar.GetSimVarValue("L:AIRLINER_V1_SPEED", "Knots"))) {
+            SimVar.SetSimVarValue("L:AIRLINER_V1_SPEED", "Knots", parseInt(v1));
+            SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", false);
+        }
+        if (parseInt(vR) != parseInt(SimVar.GetSimVarValue("L:AIRLINER_VR_SPEED", "Knots"))) {
+            SimVar.SetSimVarValue("L:AIRLINER_VR_SPEED", "Knots", parseInt(vR));
+            SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", false);
+        }
+        if (parseInt(v2) != parseInt(SimVar.GetSimVarValue("L:AIRLINER_V2_SPEED", "Knots"))) {
+            SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", parseInt(v2));
+            SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", false);
+        }
+        if (parseInt(vT) != parseInt(SimVar.GetSimVarValue("L:AIRLINER_VX_SPEED", "Knots"))) {
+            SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", parseInt(vT));
+            SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", false);
+        }
+        if (parseInt(vRef) != parseInt(SimVar.GetSimVarValue("L:AIRLINER_VREF_SPEED", "Knots"))) {
+            SimVar.SetSimVarValue("L:AIRLINER_VREF_SPEED", "Knots", parseInt(vRef));
+            SimVar.SetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool", false);
+        }
+        if (parseInt(vApp) != parseInt(SimVar.GetSimVarValue("L:AIRLINER_MANAGED_APPROACH_SPEED", "Knots"))) {
+            SimVar.SetSimVarValue("L:AIRLINER_MANAGED_APPROACH_SPEED", "Knots", parseInt(vApp));
+            SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", false);
+        }
         this.radioSrc1 = _dict.get(CJ4_PopupMenu_Key.BRG_PTR1_SRC);
         this.radioSrc2 = _dict.get(CJ4_PopupMenu_Key.BRG_PTR2_SRC);
         if (this.radioSrc1 != "OFF") {
@@ -282,10 +304,14 @@ class CJ4_PFD extends BaseAirliners {
         let vR = Simplane.getVRAirspeed().toFixed(0);
         let v2 = Simplane.getV2Airspeed().toFixed(0);
         let vT = Simplane.getVXAirspeed().toFixed(0);
+        let vRef = Simplane.getREFAirspeed().toFixed(0);
+        let vApp = SimVar.GetSimVarValue("L:AIRLINER_MANAGED_APPROACH_SPEED", "Knots").toFixed(0);
         _dict.set(CJ4_PopupMenu_Key.VSPEED_V1, v1);
         _dict.set(CJ4_PopupMenu_Key.VSPEED_VR, vR);
         _dict.set(CJ4_PopupMenu_Key.VSPEED_V2, v2);
         _dict.set(CJ4_PopupMenu_Key.VSPEED_VT, vT);
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_VRF, vRef);
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_VAP, vApp);
         _dict.set(CJ4_PopupMenu_Key.BRG_PTR1_SRC, this.radioSrc1);
         _dict.set(CJ4_PopupMenu_Key.BRG_VOR1_FREQ, this.radioNav.getVORActiveFrequency(1).toFixed(3));
         _dict.set(CJ4_PopupMenu_Key.BRG_ADF1_FREQ, this.radioNav.getADFActiveFrequency(1).toFixed(0));
@@ -340,16 +366,14 @@ class CJ4_AOA extends NavSystemElement {
     }
     onUpdate(_deltaTime) {
         var angle = fastToFixed(Simplane.getAngleOfAttack(), 1);
+        //AoA only visible when flaps 35
         this.aoa.setAttribute("angle", angle);
-        let gearActive = SimVar.GetSimVarValue("GEAR HANDLE POSITION", "Bool");
-        console.log("gear active? " + gearActive);
-        if (gearActive && this.aoa.style == "display: none") { //&& this.aoa.style == "display: none"
+        let flap35Active = SimVar.GetSimVarValue("TRAILING EDGE FLAPS LEFT PERCENT", "Percent");
+        if (flap35Active == 100) {
             this.aoa.style = "";
-            console.log("if? yes");
         }
-        else if (!gearActive) { //&& this.aoa.style == ""
+        else {
             this.aoa.style = "display: none";
-            console.log("if else? yes");
         }
     }
     onExit() {

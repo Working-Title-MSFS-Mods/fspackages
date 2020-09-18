@@ -391,7 +391,11 @@ class CJ4_FMC_PerfInitPage {
 			SimVar.SetSimVarValue("L:AIRLINER_V1_SPEED", "Knots", v1);
 			SimVar.SetSimVarValue("L:AIRLINER_VR_SPEED", "Knots", vR);
 			SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", v2);
-			SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", 140);
+            SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", 140);
+            SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
         }
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage8(fmc); };
@@ -739,7 +743,12 @@ class CJ4_FMC_PerfInitPage {
 		if (fmc.arrRunwayCondition == 1) { // If the runway is wet
 			ldgFieldLength = ldgFieldLength * ((fmc.landingPressAlt * .0001025) + 1.21875); //Determines a factor to multiply with dependent on pressure altitude.  Sea level being 1.21x landing distance
 		}
-		
+        //let vRefSet = new Number(vRef.toFixed(0));
+        //let vAppSet = new Number(vApp.toFixed(0));
+        console.log("AIRLINER_VREF_SPEED: " + SimVar.GetSimVarValue("L:AIRLINER_VREF_SPEED", "Knots"));
+        console.log("AIRLINER_MANAGED_APPROACH_SPEED: " + SimVar.GetSimVarValue("L:AIRLINER_MANAGED_APPROACH_SPEED", "Knots"));
+        console.log("vRefSet: " + vRef);
+        console.log("vAppSet: " + vApp);
         fmc.setTemplate([
 			["APPROACH REF[color]blue", "2", "3"],
 			["A/I[color]blue"],
@@ -755,6 +764,18 @@ class CJ4_FMC_PerfInitPage {
             [""],
 			["", "SEND>"]
         ]);
+        fmc.onRightInput[5] = () => {
+            SimVar.SetSimVarValue("L:AIRLINER_VREF_SPEED", "Knots", vRef); 
+            SimVar.SetSimVarValue("L:AIRLINER_MANAGED_APPROACH_SPEED", "Knots", vApp);
+            SimVar.SetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", true);
+            //console.log("AIRLINER_VREF_SPEED after R5: " + SimVar.GetSimVarValue("L:AIRLINER_VREF_SPEED", "Knots"));
+            //console.log("AIRLINER_MANAGED_APPROACH_SPEED after R5: " + SimVar.GetSimVarValue("L:AIRLINER_MANAGED_APPROACH_SPEED", "Knots"));
+            //console.log("vRefSet after R5: " + vRef);
+            //console.log("vAppSet after R5: " + vApp);
+            console.log("L:WT_CJ4_VREF_FMCSET after R5: " + SimVar.GetSimVarValue("L:WT_CJ4_VREF_FMCSET", "Bool"));
+            console.log("L:WT_CJ4_VAPP_FMCSET after R5: " + SimVar.GetSimVarValue("L:WT_CJ4_VAPP_FMCSET", "Bool"));
+        }
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage15(fmc); };
         fmc.updateSideButtonActiveStatus();
