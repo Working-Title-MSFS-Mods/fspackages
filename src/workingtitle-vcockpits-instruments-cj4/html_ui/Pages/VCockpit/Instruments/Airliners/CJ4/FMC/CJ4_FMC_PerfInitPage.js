@@ -390,8 +390,14 @@ class CJ4_FMC_PerfInitPage {
         fmc.onRightInput[5] = () => {
 			SimVar.SetSimVarValue("L:AIRLINER_V1_SPEED", "Knots", v1);
 			SimVar.SetSimVarValue("L:AIRLINER_VR_SPEED", "Knots", vR);
-			SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", v2);
-			SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", 140);
+            SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", v2);
+            //use VX for VT in CJ4
+            SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", 140);
+            //new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
+            SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
         }
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage8(fmc); };
@@ -739,7 +745,6 @@ class CJ4_FMC_PerfInitPage {
 		if (fmc.arrRunwayCondition == 1) { // If the runway is wet
 			ldgFieldLength = ldgFieldLength * ((fmc.landingPressAlt * .0001025) + 1.21875); //Determines a factor to multiply with dependent on pressure altitude.  Sea level being 1.21x landing distance
 		}
-		
         fmc.setTemplate([
 			["APPROACH REF[color]blue", "2", "3"],
 			["A/I[color]blue"],
@@ -755,6 +760,14 @@ class CJ4_FMC_PerfInitPage {
             [""],
 			["", "SEND>"]
         ]);
+        fmc.onRightInput[5] = () => {
+            SimVar.SetSimVarValue("L:AIRLINER_VREF_SPEED", "Knots", vRef); 
+            //use AIRLINER_MANAGED_APPROACH_SPEED for Vapp in CJ4
+            SimVar.SetSimVarValue("L:AIRLINER_MANAGED_APPROACH_SPEED", "Knots", vApp);
+            //new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
+            SimVar.SetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", true);
+        }
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage15(fmc); };
         fmc.updateSideButtonActiveStatus();
