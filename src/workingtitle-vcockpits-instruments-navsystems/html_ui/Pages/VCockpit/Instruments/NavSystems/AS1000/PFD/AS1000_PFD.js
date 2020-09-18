@@ -46,7 +46,6 @@ class AS1000_PFD extends BaseAS1000 {
     }
     parseXMLConfig() {
         super.parseXMLConfig();
-        this._alwaysUpdate = true;
         let syntheticVision = null;
         let reversionaryMode = null;
         let avionicsKnobIndex = null;
