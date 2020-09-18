@@ -157,7 +157,7 @@ class CJ4_FMC_LegsPage {
             }
         }
         fmc.currentFlightPlanWaypointIndex = offset + step + 1;
-        let isMapModePlan = SimVar.GetSimVarValue("L:CJ4_MAP_MODE", "number") === 3;
+        let isMapModePlan = SimVar.GetSimVarValue("L:CJ4_MFD_MAP_MODE", "number") === 3;
         if (isMapModePlan) {
             if (rows[2 * step + 1][0] != "") {
                 if (!rows[2 * step + 1][1]) {

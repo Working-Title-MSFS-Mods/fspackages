@@ -171,6 +171,8 @@ class CJ4_MFD extends BaseAirliners {
         return true;
     }
     onModeChanged() {
+        SimVar.SetSimVarValue("L:CJ4_MFD_MAP_MODE", "number", this.mapDisplayMode);
+        SimVar.SetSimVarValue("L:FMC_UPDATE_CURRENT_PAGE", "number", 1);
         if (this.modeChangeMask) {
             this.modeChangeMask.style.display = "block";
             this.modeChangeTimer = 0.15;
