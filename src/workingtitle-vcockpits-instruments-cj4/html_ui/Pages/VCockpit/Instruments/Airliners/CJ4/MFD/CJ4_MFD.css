@@ -39,11 +39,21 @@
   font-weight: normal;
   font-style: normal; }
 
+@font-face {
+  font-family: "Collins ProLine";
+  src: url("/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/CollinsProLine-LightCondensed.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+svg text {
+  font-family: 'Collins ProLine';
+}
+
 cj4-mfd-element {
   width: 100%;
   height: 100%;
   background-color: black;
-  font-family: Roboto-Bold;
+  font-family: 'Collins ProLine';
   position: relative;
   overflow: hidden;
   z-index: -10; }
@@ -338,7 +348,7 @@ cj4-mfd-element {
             cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox text {
               width: 100%;
               height: 100%;
-              font-family: Roboto-Bold; }
+              font-family: 'Collins ProLine'; }
             cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox text.Value {
               font-size: 18px;
               fill: green;
@@ -371,7 +381,7 @@ cj4-mfd-element {
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Right {
             right: 2.5%; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids text {
-            font-family: Roboto-Light;
+            font-family: 'Collins ProLine';
             text-align: center;
             text-anchor: middle; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids #State {
@@ -406,7 +416,7 @@ cj4-mfd-element {
             cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #Symbols text {
               width: 100%;
               height: 100%;
-              font-family: Roboto-Bold;
+              font-family: 'Collins ProLine';
               font-size: 18px;
               fill: cyan;
               text-anchor: end; }
@@ -422,7 +432,7 @@ cj4-mfd-element {
             cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #ElapsedTime text {
               width: 100%;
               height: 100%;
-              font-family: Roboto-Bold; }
+              font-family: 'Collins ProLine'; }
             cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #ElapsedTime text.Title {
               font-size: 18px;
               fill: white; }
