@@ -12,6 +12,7 @@ class AttitudeIndicator extends HTMLElement {
         this.horizonTopColorHorizon = "#4664e7";
         this.horizonBottomColor = "#54350a";
         this.strokeWidth = 3;
+        this.syntheticVision = false;
     }
     static get observedAttributes() {
         return [
@@ -470,10 +471,7 @@ class AttitudeIndicator extends HTMLElement {
                 break;
             case "actual-pitch":
                 this.actualPitch = parseFloat(newValue);
-                break;
-            case "synthetic-vision":
-                this.syntheticVision = newValue == "true";
-                break;                
+                break;               
             case "ground-speed":
                 this.groundSpeed = parseFloat(newValue);
                 break;
@@ -482,11 +480,9 @@ class AttitudeIndicator extends HTMLElement {
                 break;
             case "track":
                 this.track = parseFloat(newValue);
-                console.log("track:" + this.track);
                 break;
             case "heading":
                 this.heading = parseFloat(newValue);
-                console.log("heading:" + this.heading);
                 break;
             case "slip_skid":
                 this.slipSkidValue = parseFloat(newValue);
@@ -514,6 +510,17 @@ class AttitudeIndicator extends HTMLElement {
                 return;
         }
         this.applyAttributes();
+    }
+    getSyntheticVisionEnabled() {
+        return this.syntheticVision;
+    }
+    setSytheticVisionEnabled(enabled) {
+        this.syntheticVision = enabled;
+        if (this.syntheticVision) {
+            this.setAttribute("background", "false");
+        } else {
+            this.setAttribute("background", "true");
+        }
     }
     applyAttributes() {
         if (this.bottomPart)

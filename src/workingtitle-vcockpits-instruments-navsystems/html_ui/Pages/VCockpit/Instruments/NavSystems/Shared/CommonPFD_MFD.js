@@ -295,10 +295,10 @@ class PFD_Attitude extends NavSystemElement {
     init(root) {
         this.svg = this.gps.getChildById("Horizon");
     }
-    setSyntheticVisionEnabled(enabled) {
-        this.syntheticVisionEnabled = enabled;
-    }
     onEnter() {
+    }
+    setSytheticVisionEnabled(enabled) {
+        this.syntheticVisionEnabled = enabled;
     }
     onUpdate(_deltaTime) {
         var xyz = Simplane.getOrientationAxis();
@@ -306,7 +306,7 @@ class PFD_Attitude extends NavSystemElement {
             let gs = Simplane.getGroundSpeed() * 101.269;
             let vs = Simplane.getVerticalSpeed();
             let angle = Math.atan(vs/gs);
-            this.svg.setAttribute("synthetic-vision", this.syntheticVisionEnabled ? "true" : "false");
+            this.svg.setSytheticVisionEnabled(this.syntheticVisionEnabled);
             this.svg.setAttribute("ground-speed", Simplane.getGroundSpeed().toString());
             this.svg.setAttribute("actual-pitch", (angle / Math.PI * 180).toString());
             this.svg.setAttribute("pitch", (xyz.pitch / Math.PI * 180).toString());
