@@ -23,28 +23,36 @@ as1000-pfd-element #Mainframe #Electricity #NavBox #Center {
 
 as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top {
     border-bottom: 0.2vh solid;
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top #right {
     padding-left:1vh;
     padding-right:1vh;
     align-items: baseline;
-    height:60%;
+    display: flex;
+    border-left: 0.2vh solid;
 }
 
-as1000-pfd-element #Mainframe #Electricity #NavBox #Center #bottom {
-    height:40%;
-    font-size: calc( 2.0 * 1vh * var(--bodyHeightScale));
-}
-
-as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top div {
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top #right div {
     width: auto;
     margin:0 1vh;
     flex:none;
     font-size: calc( 2.0 * 1vh * var(--bodyHeightScale)); 
 }
 
-as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top div#GroundSpeed, as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top div#DesiredTrack, as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top div#CurrentTrack, as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top div#ETE {
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top #right div#CurrentLegDistance, as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top #right div#CurrentLegBearing {
     color: magenta; 
     flex:1;
-    font-size: calc( 3.0* 1vh * var(--bodyHeightScale)); 
+    font-size: calc( 2.5* 1vh * var(--bodyHeightScale)); 
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center #bottom {
+    font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
+}
+
+as1000-pfd-element #Mainframe #InstrumentsContainer #NavBox #Center #bottom #AP_Center {
+    border-left: 0.2vh solid;
+    border-right: 0.2vh solid; 
 }
 
 as1000-pfd-element #Mainframe #Electricity #NavBox #Left #Nav1,
@@ -91,55 +99,18 @@ as1000-pfd-element #Mainframe #Electricity #SoftKeys .SoftKey[state=White] {
     border-left-color:rgba(0,0,0,0.6);
 }
 
-as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel {
-    border-left:0.3vh solid white;
-    font-size: calc( 2 * 1vh * var(--bodyHeightScale));
+as1000-pfd-element #Mainframe #InstrumentsContainer #NavBox #Center #bottom #AP_Left #AP_Lateral_Active {
+    color: #00ff00;
 }
 
-as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel .top {
-    display:flex;
-    align-items: flex-end;
-    color:#fff;
-    border-bottom:1px solid #aaa;
-    padding:0;
-    margin:0 2vh;
-    width:auto;
-    line-height:2.0em;
+as1000-pfd-element #Mainframe #InstrumentsContainer #NavBox #Center #bottom #AP_Center #AP_Status {
+    color: #00ff00; 
 }
 
-as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel .top:before,
-as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel .top:after {
-    content:" ";
-    display:block;
-    height:10px; 
-    background:#000;
-    border-top:1px solid #aaa;
-    position:relative;
-    top:1px;
-    border-right:1px solid #aaa;
-    border-left:1px solid #aaa;
+as1000-pfd-element #Mainframe #InstrumentsContainer #NavBox #Center #bottom #AP_Right #AP_Vertical_Active {
+    color: #00ff00; 
 }
 
-as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel .top:before {
-    margin-right:10px;
-    width:3vh;
-}
-as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel .top:after {
-    margin-left:10px;
-    flex:1;
-}
-
-as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel .bottom {
-    text-align: left;
-    background-color: #000; 
-    margin:0 2vh;
-    border:1.5px solid #aaa;
-    border-top:none;
-    padding:1vh;
-}
-
-as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel #Airport,
-as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel #Runways,
-as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel #Frequencies {
-    /*margin:0;*/
+as1000-pfd-element #Mainframe #InstrumentsContainer #NavBox #Center #bottom #AP_Right #AP_Vertical_Reference {
+    color: #00ff00;
 }

@@ -290,9 +290,13 @@ class PFD_Attitude extends NavSystemElement {
     constructor() {
         super(...arguments);
         this.vDir = new Vec2();
+        this.syntheticVisionEnabled = false;
     }
     init(root) {
         this.svg = this.gps.getChildById("Horizon");
+    }
+    setSyntheticVisionEnabled(enabled) {
+        this.syntheticVisionEnabled = enabled;
     }
     onEnter() {
     }
@@ -302,6 +306,8 @@ class PFD_Attitude extends NavSystemElement {
             let gs = Simplane.getGroundSpeed() * 101.269;
             let vs = Simplane.getVerticalSpeed();
             let angle = Math.atan(vs/gs);
+            this.svg.setAttribute("synthetic-vision", this.syntheticVisionEnabled ? "true" : "false");
+            this.svg.setAttribute("ground-speed", Simplane.getGroundSpeed().toString());
             this.svg.setAttribute("actual-pitch", (angle / Math.PI * 180).toString());
             this.svg.setAttribute("pitch", (xyz.pitch / Math.PI * 180).toString());
             this.svg.setAttribute("bank", (xyz.bank / Math.PI * 180).toString());

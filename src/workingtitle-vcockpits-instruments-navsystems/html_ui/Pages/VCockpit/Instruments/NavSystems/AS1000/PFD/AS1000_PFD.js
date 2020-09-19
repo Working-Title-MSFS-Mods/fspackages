@@ -323,6 +323,7 @@ class AS1000_PFD_MainPage extends NavSystemPage {
             this.gps.getChildById("SyntheticVision").style.display = "block";
             mainPage.syntheticVision = true;
         }
+        this.attitude.setSyntheticVisionEnabled(mainPage.syntheticVision);
     }
     getKeyState(_keyName) {
         switch (_keyName) {

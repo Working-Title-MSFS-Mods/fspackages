@@ -16,6 +16,8 @@ class AttitudeIndicator extends HTMLElement {
     static get observedAttributes() {
         return [
             "actual-pitch",
+            "ground-speed",
+            "synthetic-vision",
             "track",
             "heading",
             "pitch",
@@ -469,6 +471,12 @@ class AttitudeIndicator extends HTMLElement {
             case "actual-pitch":
                 this.actualPitch = parseFloat(newValue);
                 break;
+            case "synthetic-vision":
+                this.syntheticVision = newValue == "true";
+                break;                
+            case "ground-speed":
+                this.groundSpeed = parseFloat(newValue);
+                break;
             case "bank":
                 this.bank = parseFloat(newValue);
                 break;
@@ -526,6 +534,7 @@ class AttitudeIndicator extends HTMLElement {
             let screenX = (ax * (focalLength / az)) * screenWidth;
             let screenY = (ay * (focalLength / az)) * screenHeight;
             this.actualDirectionMarker.setAttribute("transform", "translate(" + screenX.toString() + "," + screenY.toString() + ")");
+            this.actualDirectionMarker.style.visibility = (this.groundSpeed > 30 && this.syntheticVision) ? "visible" : "hidden";
         }
         if (this.attitude_bank)
             this.attitude_bank.setAttribute("transform", "rotate(" + this.bank + ", 0, 0)");
