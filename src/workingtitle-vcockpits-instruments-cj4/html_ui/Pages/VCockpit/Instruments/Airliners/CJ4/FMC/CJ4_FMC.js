@@ -79,17 +79,18 @@ class CJ4_FMC extends FMCMainDisplay {
         this.onMfdAdv = () => { CJ4_FMC_MfdAdvPage.ShowPage1(this); };
         this.onTun = () => { CJ4_FMC_NavRadioPage.ShowPage1(this); };
         this.onExecPage = undefined;
-        //this.onExec = () => {
-        //    if (this.getIsRouteActivated()) {
-        //        this.insertTemporaryFlightPlan();
-        //        this._isRouteActivated = false;
-        //        SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
-        //    }
-        //    this.fpHasChanged = false;
-        //    if (this.refreshPageCallback) {
-        //        this.refreshPageCallback();
-        //    }
-        //};
+        this.onExec = () => {
+            if (this.getIsRouteActivated()) {
+                this.insertTemporaryFlightPlan();
+                this._isRouteActivated = false;
+                SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
+            }
+            this.fpHasChanged = false;
+            this.messageBox.innerHTML = "";
+            if (this.refreshPageCallback) {
+                this.refreshPageCallback();
+            }
+        };
         this.renderScratchpad();
         //this.renderMsgLine();
         this.messageBox = this.renderMsgLine();
@@ -157,9 +158,10 @@ class CJ4_FMC extends FMCMainDisplay {
             if (this.onExecPage) {
                 this.onExecPage();
             }
-            //if (this.onExec) {
-            //    this.onExec();
-            //}
+            if (this.onExec) {
+                this.onExec();
+            }
+            return true;
         }
         return false;
     }
@@ -188,6 +190,7 @@ class CJ4_FMC extends FMCMainDisplay {
     }
     activateRoute() {
         this._isRouteActivated = true;
+        this.fpHasChanged = true;
         SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 1);
     }
     updateAutopilot() {
