@@ -300,8 +300,8 @@ class Engine extends NavSystemElementContainer {
         }
         
         let engineDisplayPages = this.gps.xmlConfig.getElementsByTagName("EngineDisplayPage");		
+        this.engineDisplayPages = [];
         if (engineDisplayPages.length > 0) {
-            this.engineDisplayPages = [];
             for (let i = 0; i < engineDisplayPages.length; i++) {
                 let engineDisplayPageRoot = engineDisplayPages[i];
                 let id = engineDisplayPageRoot.getElementsByTagName("ID")[0].textContent;
@@ -326,6 +326,7 @@ class Engine extends NavSystemElementContainer {
             let engineDisplayPage = {
                 title: "Default",
                 node: this.gps.xmlConfig.getElementsByTagName("EngineDisplay"),
+                buttons: []
             };
             this.engineDisplayPages[id] = engineDisplayPage;
             this.selectedEnginePage = id;
