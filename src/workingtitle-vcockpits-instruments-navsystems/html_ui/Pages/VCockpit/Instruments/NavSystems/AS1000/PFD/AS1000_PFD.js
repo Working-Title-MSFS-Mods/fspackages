@@ -66,20 +66,7 @@ class AS1000_PFD extends BaseAS1000 {
             reversionaryMode = this.instrumentXmlConfig.getElementsByTagName("ReversionaryMode")[0];
             avionicsKnobIndex = this.instrumentXmlConfig.getElementsByTagName("AvionicsKnobIndex")[0];            
         }
-        if (syntheticVision && syntheticVision.textContent == "True") {
-            if (this.mainPage.attitude.svg) {
-                this.mainPage.attitude.svg.setAttribute("background", "false");
-            }
-            this.getChildById("SyntheticVision").style.display = "block";
-            this.mainPage.syntheticVision = true;
-        }
-        else {
-            if (this.mainPage.attitude.svg) {
-                this.mainPage.attitude.svg.setAttribute("background", "true");
-            }
-            this.getChildById("SyntheticVision").style.display = "none";
-            this.mainPage.syntheticVision = false;
-        }
+        this.mainPage.setSyntheticVision(syntheticVision && syntheticVision.textContent == "True");
         if (reversionaryMode && reversionaryMode.textContent == "True") {
             this.handleReversionaryMode = true;
         }
@@ -309,20 +296,13 @@ class AS1000_PFD_MainPage extends NavSystemPage {
         this.gps.getElementOfType(PFD_InnerMap).toggleIsolines();
     }
     toggleSyntheticVision() {
-        var mainPage = this.gps.mainPage
-        if (mainPage.syntheticVision) {
-            if (mainPage.attitude.svg) {
-                mainPage.attitude.svg.setAttribute("background", "true");
-            }
-            this.gps.getChildById("SyntheticVision").style.display = "none";
-            mainPage.syntheticVision = false;
-        } else {
-            if (mainPage.attitude.svg) {
-                mainPage.attitude.svg.setAttribute("background", "false");
-            }
-            this.gps.getChildById("SyntheticVision").style.display = "block";
-            mainPage.syntheticVision = true;
-        }
+        this.setSyntheticVision(!this.syntheticVision);
+    }
+    setSyntheticVision(enabled) { 
+        this.syntheticVision = enabled;
+        this.attitude.setSytheticVisionEnabled(this.syntheticVision);        
+        this.gps.getChildById("SyntheticVision").setAttribute("show-bing-map", this.syntheticVision ? "true" : "false");
+        this.gps.getChildById("SyntheticVision").style.display = this.syntheticVision ? "block" : "none";
     }
     getKeyState(_keyName) {
         switch (_keyName) {

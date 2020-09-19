@@ -290,21 +290,33 @@ class PFD_Attitude extends NavSystemElement {
     constructor() {
         super(...arguments);
         this.vDir = new Vec2();
+        this.syntheticVisionEnabled = false;
     }
     init(root) {
         this.svg = this.gps.getChildById("Horizon");
     }
     onEnter() {
     }
+    setSytheticVisionEnabled(enabled) {
+        this.syntheticVisionEnabled = enabled;
+    }
     onUpdate(_deltaTime) {
         var xyz = Simplane.getOrientationAxis();
         if (xyz) {
+            let gs = Simplane.getGroundSpeed() * 101.269;
+            let vs = Simplane.getVerticalSpeed();
+            let angle = Math.atan(vs/gs);
+            this.svg.setSytheticVisionEnabled(this.syntheticVisionEnabled);
+            this.svg.setAttribute("ground-speed", Simplane.getGroundSpeed().toString());
+            this.svg.setAttribute("actual-pitch", (angle / Math.PI * 180).toString());
             this.svg.setAttribute("pitch", (xyz.pitch / Math.PI * 180).toString());
             this.svg.setAttribute("bank", (xyz.bank / Math.PI * 180).toString());
             this.svg.setAttribute("slip_skid", Simplane.getInclinometer().toString());
             this.svg.setAttribute("flight_director-active", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") ? "true" : "false");
             this.svg.setAttribute("flight_director-pitch", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR PITCH", "degree"));
             this.svg.setAttribute("flight_director-bank", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degree"));
+            this.svg.setAttribute("track", SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees"));
+            this.svg.setAttribute("heading", SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree"));
         }
     }
     onExit() {

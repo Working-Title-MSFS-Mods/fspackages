@@ -373,31 +373,366 @@
 
   </VoicesAlerts>
 	
+	<EngineDisplayPage>
+        <ID>DFLT</ID>
+		<Title>Default</Title>
+		<Node>EngineDisplay</Node>
+	</EngineDisplayPage>
+	<EngineDisplayPage>
+        <ID>LEAN</ID>
+		<Title>Lean</Title>
+		<Node>EngineDisplayLean</Node>
+        <Button>
+            <Text>CYL SLCT</Text>
+        </Button>
+        <Button>
+            <Text>ASSIST</Text>
+        </Button>
+	</EngineDisplayPage>
+	<EngineDisplayPage>
+        <ID>SYSTEM</ID>
+		<Title>System</Title>
+		<Node>EngineDisplaySystem</Node>
+	</EngineDisplayPage>
+	
+	<EngineDisplayLean>
+		<Gauge>
+			<Type>Circular</Type>
+			<ID>MANIN_Gauge</ID>
+			<Title></Title>
+			<Unit>MAN IN HG</Unit>
+			<Minimum>10</Minimum>
+			<Maximum>35</Maximum>
+			<Style>
+				<TextIncrement>0.1</TextIncrement>
+				<ForceTextColor>white</ForceTextColor>
+				<ValuePrecision>1</ValuePrecision>
+				<Graduations>15,20,25,30</Graduations>
+			</Style>
+			<Value>
+				<Simvar name="RECIP ENG MANIFOLD PRESSURE:1" unit="inHG"/>
+			</Value>
+			<ColorZone>
+				<Color>white</Color>
+				<Begin>10</Begin>
+				<End>35</End>
+			</ColorZone>
+			<ColorZone>
+				<Color>green</Color>
+				<Begin>15</Begin>
+				<End>30</End>
+			</ColorZone>
+		  </Gauge>
+
+		  <Gauge>
+			<Type>Circular</Type>
+			<ID>Piston_RPMGauge</ID>
+			<Title></Title>
+			<Unit>RPM</Unit>
+			<Minimum>0</Minimum>
+			<Maximum>3000</Maximum>
+			<Style>
+				<TextIncrement>10</TextIncrement>
+				<ForceTextColor>white</ForceTextColor>
+				<Graduations>1200,1800,2100,2300,2500,2700</Graduations>
+			</Style>
+			<Value>
+				<Simvar name="PROP RPM:1" unit="rpm"/>
+			</Value>
+			<ColorZone>
+				<Color>white</Color>
+				<Begin>0</Begin>
+				<End>3000</End>
+			</ColorZone>
+			<ColorZone>
+				<Color>green</Color>
+				<Begin>1800</Begin>
+				<End>2700</End>
+			</ColorZone>
+			<ColorZone>
+				<Color>red</Color>
+				<Begin>2700</Begin>
+				<End>3000</End>
+			</ColorZone>
+			<RedBlink>
+				<Greater>
+					<Simvar name="PROP RPM:1" unit="rpm"/>
+					<Constant>2701</Constant>
+				</Greater>
+			</RedBlink>
+		</Gauge>
+
+        <Text>
+			<Left fontsize="8">FFLOW GPH</Left>			
+			<Right fontsize="8">
+				<ToFixed precision="1">
+					<Simvar name="ENG FUEL FLOW GPH:1" unit="gallons per hour"/>
+				</ToFixed>
+			</Right>
+		</Text>
+
+        <ColumnsGauge>
+            <Minimum>0</Minimum>
+		    <Maximum>1000</Maximum>
+            <Title>EGT °C</Title>
+            <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.95</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.9</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.98</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.92</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.9</Constant></Multiply></Column>
+            <Type>EGT</Type>
+        </ColumnsGauge>
+
+        <ColumnsGauge>
+            <Minimum>0</Minimum>
+		    <Maximum>250</Maximum>
+            <RedLine>238</RedLine>
+            <Title>CHT °C</Title>
+            <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
+             <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.95</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.9</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.98</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.92</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.9</Constant></Multiply></Column>
+            <Type>CHT</Type>
+        </ColumnsGauge>
+
+	</EngineDisplayLean>
+	
+	<EngineDisplaySystem>
+		<Gauge>
+			<Type>Circular</Type>
+			<ID>MANIN_Gauge</ID>
+			<Title></Title>
+			<Unit>MAN IN HG</Unit>
+			<Minimum>10</Minimum>
+			<Maximum>35</Maximum>
+			<Style>
+				<TextIncrement>0.1</TextIncrement>
+				<ForceTextColor>white</ForceTextColor>
+				<ValuePrecision>1</ValuePrecision>
+				<Graduations>15,20,25,30</Graduations>
+			</Style>
+			<Value>
+				<Simvar name="RECIP ENG MANIFOLD PRESSURE:1" unit="inHG"/>
+			</Value>
+			<ColorZone>
+				<Color>white</Color>
+				<Begin>10</Begin>
+				<End>35</End>
+			</ColorZone>
+			<ColorZone>
+				<Color>green</Color>
+				<Begin>15</Begin>
+				<End>30</End>
+			</ColorZone>
+		  </Gauge>
+
+		  <Gauge>
+			<Type>Circular</Type>
+			<ID>Piston_RPMGauge</ID>
+			<Title></Title>
+			<Unit>RPM</Unit>
+			<Minimum>0</Minimum>
+			<Maximum>3000</Maximum>
+			<Style>
+				<TextIncrement>10</TextIncrement>
+				<ForceTextColor>white</ForceTextColor>
+				<Graduations>1200,1800,2100,2300,2500,2700</Graduations>
+			</Style>
+			<Value>
+				<Simvar name="PROP RPM:1" unit="rpm"/>
+			</Value>
+			<ColorZone>
+				<Color>white</Color>
+				<Begin>0</Begin>
+				<End>3000</End>
+			</ColorZone>
+			<ColorZone>
+				<Color>green</Color>
+				<Begin>1800</Begin>
+				<End>2700</End>
+			</ColorZone>
+			<ColorZone>
+				<Color>red</Color>
+				<Begin>2700</Begin>
+				<End>3000</End>
+			</ColorZone>
+			<RedBlink>
+				<Greater>
+					<Simvar name="PROP RPM:1" unit="rpm"/>
+					<Constant>2701</Constant>
+				</Greater>
+			</RedBlink>
+		</Gauge>
+		
+		<Header>
+			<Text>SYSTEM</Text>
+		</Header>
+		
+		<Text>
+			<Left fontsize="8">OIL °C</Left>			
+			<Right fontsize="8">
+				<ToFixed precision="0">
+					<Simvar name="ENG OIL TEMPERATURE:1" unit="celsius"/>
+				</ToFixed>
+			</Right>
+		</Text>
+		
+		<Text>
+			<Left fontsize="8">OIL PSI</Left>			
+			<Right fontsize="8">
+				<ToFixed precision="1">
+					<Simvar name="ENG OIL PRESSURE:1" unit="psi"/>
+				</ToFixed>
+			</Right>
+		</Text>
+		
+		<Header>
+			<Text>FUEL CALC</Text>
+		</Header>
+		
+		<Text>
+			<Left fontsize="8">FFLOW GPH</Left>			
+			<Right fontsize="8">
+				<ToFixed precision="1">
+					<Simvar name="ENG FUEL FLOW GPH:1" unit="gallons per hour"/>
+				</ToFixed>
+			</Right>
+		</Text>
+		
+		<Text>
+			<Left fontsize="8">GAL REM</Left>			
+			<Right fontsize="8">
+				<ToFixed precision="1">
+					<Simvar name="FUEL TOTAL QUANTITY:1" unit="gallon"/>
+				</ToFixed>
+			</Right>
+		</Text>
+		
+		<Text>
+			<Left fontsize="8">GAL USED</Left>			
+			<Right fontsize="8">
+				<ToFixed precision="1">
+					<Substract>
+						<MaxSinceStart>
+							<Simvar name="FUEL TOTAL QUANTITY:1" unit="gallon"/>
+						</MaxSinceStart>
+						<Simvar name="FUEL TOTAL QUANTITY:1" unit="gallon"/>
+					</Substract>
+				</ToFixed>
+			</Right>
+		</Text>
+		
+		<Text>
+			<Left fontsize="8">ENDUR</Left>			
+			<Right fontsize="8">
+				<Duration>
+					<Multiply>					
+						<Divide>
+							<Simvar name="FUEL TOTAL QUANTITY:1" unit="gallon"/>
+							<Simvar name="ENG FUEL FLOW GPH:1" unit="gallons per hour"/>
+						</Divide>
+						<Constant>3600</Constant>						
+					</Multiply>
+				</Duration>
+			</Right>
+		</Text>
+		
+		<Text>
+			<Left fontsize="8">RANGE NM</Left>			
+			<Right fontsize="8">
+				<ToFixed precision="0">
+					<Multiply>
+						<Simvar name="GROUND VELOCITY:1" unit="knots"/>
+						<Divide>
+							<Simvar name="FUEL TOTAL QUANTITY:1" unit="gallon"/>
+							<Simvar name="ENG FUEL FLOW GPH:1" unit="gallons per hour"/>
+						</Divide>
+					</Multiply>
+				</ToFixed>
+			</Right>
+		</Text>
+		
+		<Header>
+			<Text>ELECTRICAL</Text>
+		</Header>
+		
+		<Text>
+			<Left fontsize="8">1</Left>	
+			<Center fontsize="8">ALT LOAD %</Center>	
+			<Right fontsize="8">2</Right>	
+		</Text>
+		
+		<Text>
+			<Left fontsize="8">
+				<ToFixed precision="0">
+					<Simvar name="ELECTRICAL GENALT BUS AMPS:1" unit="amp"/>
+				</ToFixed>
+			</Left>	
+			<Right fontsize="8">
+				<ToFixed precision="0">
+					<Multiply>
+						<Simvar name="ELECTRICAL GENALT BUS AMPS:2" unit="amp"/>
+						<Constant>5</Constant>
+					</Multiply>
+				</ToFixed>
+			</Right>	
+		</Text>
+		
+		<Text>
+			<Left fontsize="8">1</Left>	
+			<Center fontsize="8">BUS VOLTS</Center>	
+			<Right fontsize="8">2</Right>	
+		</Text>
+		
+		<Text>
+			<Left fontsize="8">
+				<ToFixed precision="1">
+					<Simvar name="ELECTRICAL MAIN BUS VOLTAGE:1" unit="volts"/>
+				</ToFixed>
+			</Left>	
+			<Right fontsize="8">
+				<ToFixed precision="1">
+					<Simvar name="ELECTRICAL MAIN BUS VOLTAGE:2" unit="volts"/>
+				</ToFixed>
+			</Right>	
+		</Text>
+	</EngineDisplaySystem>
+
 	<!-- Engine Display -->
 
   <EngineDisplay>
-  
+
 	  <Gauge>
 		<Type>Circular</Type>
 		<ID>MANIN_Gauge</ID>
-		<Title>MAN IN</Title>
-		<Minimum>0</Minimum>
-		<Maximum>40</Maximum>
+		<Title></Title>
+		<Unit>MAN IN HG</Unit>
+		<Minimum>10</Minimum>
+		<Maximum>35</Maximum>
+		<Style>
+			<TextIncrement>0.1</TextIncrement>
+			<ForceTextColor>white</ForceTextColor>
+			<ValuePrecision>1</ValuePrecision>
+			<Graduations>15,20,25,30</Graduations>
+		</Style>
 		<Value>
 			<Simvar name="RECIP ENG MANIFOLD PRESSURE:1" unit="inHG"/>
 		</Value>
 		<ColorZone>
 			<Color>white</Color>
-			<Begin>0</Begin>
-			<End>40</End>
+			<Begin>10</Begin>
+			<End>35</End>
 		</ColorZone>
 		<ColorZone>
 			<Color>green</Color>
 			<Begin>15</Begin>
-			<End>29.6</End>
+			<End>30</End>
 		</ColorZone>
 	  </Gauge>
-	  
+
 	  <Gauge>
 		<Type>Circular</Type>
 		<ID>Piston_RPMGauge</ID>
@@ -407,6 +742,8 @@
 		<Maximum>3000</Maximum>
 		<Style>
 			<TextIncrement>10</TextIncrement>
+			<ForceTextColor>white</ForceTextColor>
+			<Graduations>1200,1800,2100,2300,2500,2700</Graduations>
 		</Style>
 		<Value>
 			<Simvar name="PROP RPM:1" unit="rpm"/>
@@ -429,13 +766,19 @@
 		<RedBlink>
 			<Greater>
 				<Simvar name="PROP RPM:1" unit="rpm"/>
-				<Constant>2700</Constant>
+				<Constant>2701</Constant>
 			</Greater>
 		</RedBlink>
 	  </Gauge>
-	  
+
 	  <Gauge>
 		<Type>Horizontal</Type>
+		<Style>
+			<ValuePos>End</ValuePos>
+			<TextIncrement>0.1</TextIncrement>
+			<ValuePrecision>1</ValuePrecision>
+			<ForceTextColor>white</ForceTextColor>
+		</Style>		
 		<ID>Piston_FFlowGauge</ID>
 		<Title>FFLOW</Title>
 		<Unit>GPH</Unit>
@@ -454,10 +797,10 @@
 			<Begin>27.4</Begin>
 			<End>30</End>
 		</ColorZone>
-		<GraduationLength>2</GraduationLength>
-		<GraduationTextLength>30</GraduationTextLength>
+		<GraduationLength></GraduationLength>
+		<GraduationTextLength></GraduationTextLength>
 	  </Gauge>
-	  
+
 	  <Gauge>
 		<Type>Horizontal</Type>
 		<ID>Piston_ChtGauge</ID>
@@ -482,7 +825,7 @@
 			<End>250</End>
 		</ColorZone>
 	  </Gauge>
-	  
+
 	  <Gauge>
 		<Type>Horizontal</Type>
 		<ID>Piston_OilTempGauge</ID>
@@ -517,7 +860,7 @@
 			</Greater>
 		</RedBlink>
 	  </Gauge>
-	  
+
 	  <Gauge>
 		<Type>Horizontal</Type>
 		<ID>Piston_OilPressGauge</ID>
@@ -563,7 +906,7 @@
 			</Or>
 		</RedBlink>
 	  </Gauge>
-	  
+
 	  <Gauge>
 		<Type>DoubleHorizontal</Type>
 		<ID>Piston_AltLoad</ID>
@@ -592,7 +935,7 @@
 		<BeginText></BeginText>
 		<EndText></EndText>
 	  </Gauge>
-	  
+
 	  <Gauge>
 		<Type>DoubleHorizontal</Type>
 		<ID>Piston_VoltsGauge</ID>
@@ -626,7 +969,7 @@
 		<BeginText></BeginText>
 		<EndText></EndText>
 	  </Gauge>
-	  
+
 	  <Gauge>
 		<Type>DoubleHorizontal</Type>
 		<ID>Piston_FuelGauge</ID>
@@ -635,7 +978,7 @@
 		<CursorText>R</CursorText>
 		<CursorText2>L</CursorText2>
 		<Minimum>0</Minimum>
-		<Maximum>30</Maximum>
+		<Maximum>40</Maximum>
 		<Value>
 			<Simvar name="FUEL RIGHT QUANTITY" unit="gallons"/>
 		</Value>
@@ -645,22 +988,22 @@
 		<ColorZone>
 			<Color>red</Color>
 			<Begin>0</Begin>
-			<End>1.5</End>
+			<End>3</End>
 		</ColorZone>
 		<ColorZone>
 			<Color>yellow</Color>
-			<Begin>1.5</Begin>
-			<End>5</End>
+			<Begin>3</Begin>
+			<End>13</End>
 		</ColorZone>
 		<ColorZone>
 			<Color>green</Color>
-			<Begin>5</Begin>
-			<End>24</End>
+			<Begin>13</Begin>
+			<End>40</End>
 		</ColorZone>
 		<GraduationLength text="True">10</GraduationLength>
 		<EndText>F</EndText>
 	  </Gauge>
-	 
+
   </EngineDisplay>
 
 </PlaneHTMLConfig>

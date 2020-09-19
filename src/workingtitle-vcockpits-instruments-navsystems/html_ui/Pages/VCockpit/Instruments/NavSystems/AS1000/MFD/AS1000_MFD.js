@@ -13,10 +13,11 @@ class AS1000_MFD extends BaseAS1000 {
         });
         this.trackup = false;
         this.pagesContainer = this.getChildById("RightInfos");
-        this.addIndependentElementContainer(new Engine("Engine", "LeftInfos"));
+        this.engineDisplay = new Engine("Engine", "LeftInfos");
+        this.addIndependentElementContainer(this.engineDisplay);
         this.pageGroups = [
             new NavSystemPageGroup("MAP", this, [
-                new AS1000_MFD_MainMap()
+                new AS1000_MFD_MainMap(this.engineDisplay)
             ]),
             new NavSystemPageGroup("WPT", this, [
                 new AS1000_MFD_AirportInfos()
@@ -54,7 +55,7 @@ class AS1000_MFD extends BaseAS1000 {
         // go back and recreate the entire map page group if there's radar.  This is dumb.
         if (this.hasWeatherRadar()) {
             this.pageGroups[0] = new NavSystemPageGroup("MAP", this, [
-                new AS1000_MFD_MainMap(),
+                new AS1000_MFD_MainMap(this.engineDisplay),
                 new AS1000_MFD_Radar()
             ]);
         } 
@@ -256,18 +257,21 @@ class AS1000_MFD_PageNavigation extends NavSystemElement {
     }
 }
 class AS1000_MFD_MainMap extends NavSystemPage {
-    constructor() {
+    constructor(engineDisplay) {
         super("NAVIGATION MAP", "Map", new NavSystemElementGroup([
             new AS1000_MFD_MainMapSlot(),
             new AS1000_MFD_WindData()
         ]));
         this.mapMenu = new AS1000_MapMenu();
+        this.engineMenu = new AS1000_EngineMenu(engineDisplay);
+        this.engineDisplay = engineDisplay;
     }
     init() {
         this.mapMenu.init(this, this.gps);
+        this.engineMenu.init(this, this.gps);
         this.softKeys = new SoftKeysMenu();
         this.softKeys.elements = [
-            new SoftKeyElement("ENGINE", null),
+            new SoftKeyElement("ENGINE", this.engineMenu.open.bind(this.engineMenu)),
             new SoftKeyElement("", null),
             new SoftKeyElement("MAP", this.mapMenu.open.bind(this.mapMenu)),
             new SoftKeyElement("", null),
@@ -288,7 +292,7 @@ class AS1000_MFD_MainMap extends NavSystemPage {
             new SoftKeyElement("SHW CHRT", null),
             new SoftKeyElement("", null)
         ];
-    }
+	}
 }
 class AS1000_MFD_MainMapSlot extends NavSystemElement {
     init(root) {
@@ -1110,6 +1114,68 @@ class AS1000_MapMenu {
                 }
         }
                 return "None";    
+    }
+}
+class AS1000_EngineMenu {
+    constructor(engineDisplay) {
+        this.engineDisplay = engineDisplay;
+    }
+    init(_owner, _gps) {
+        this.owner = _owner;
+        this.gps = _gps;
+    }
+    getSoftKeyMenu(extraElements) {
+        let elements = [];
+
+        for (let i = 0; i < 12; i++) {
+            elements.push(new SoftKeyElement("", null));
+        }
+
+        let engineDisplayPages = this.engineDisplay.getEngineDisplayPages();
+        let i = 0;
+        let numEngineDisplayPages = 0;
+        for(let id in engineDisplayPages) {
+            elements[i++] = new SoftKeyElement(id, this.selectEngineDisplayPage.bind(this, id), this.getKeyState.bind(this, id));
+            numEngineDisplayPages++;
+        }
+
+        for(let i = 0; i < extraElements.length; i++) {
+            elements[i + numEngineDisplayPages + 1] = extraElements[i];
+        }        
+
+        elements[10] = new SoftKeyElement("BACK", this.close.bind(this));
+
+        let menu = new SoftKeysMenu();
+        menu.elements = elements;
+        return menu;
+    }
+    selectEngineDisplayPage(id) {
+        let page = this.engineDisplay.selectEnginePage(id);
+        this.switchMenu(this.getSoftKeyMenu(page.buttons.map(button => new SoftKeyElement(button.text, this.performSubAction.bind(this,button)))));
+    }
+    performSubAction(button) {
+        
+    }
+    open() {
+        this.originalMenu = Object.assign({}, this.owner.softKeys);
+        this.switchMenu(this.getSoftKeyMenu([]));
+    }
+    close() {
+        this.owner.softKeys = this.originalMenu;
+    }
+    switchMenu(_menu) {
+        this.owner.softKeys = _menu;
+    }
+    getKeyState(_keyName) {
+        if (this.engineDisplay.isEnginePageSelected(_keyName)) {
+            return "White";
+        }
+        switch (_keyName) {
+            case "CYL SLCT":
+            case "ASSIST":
+              break;
+        }
+        return "None";
     }
 }
 registerInstrument("as1000-mfd-element", AS1000_MFD);

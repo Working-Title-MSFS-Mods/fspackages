@@ -1,0 +1,116 @@
+@font-face {
+    font-family: "Roboto-Regular";
+    src: url("/Fonts/RobotoMono-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal; }
+
+as1000-pfd-element {
+    /*font-family: "Roboto-Regular";*/
+}
+
+as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #LeftInfos {
+    border-right:0.3vh solid white;
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox { 
+    border-bottom:0.3vh solid white;
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center {
+    border-left: 0.2vh solid;
+    border-right: 0.2vh solid; 
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top {
+    border-bottom: 0.2vh solid;
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top #right {
+    padding-left:1vh;
+    padding-right:1vh;
+    align-items: baseline;
+    display: flex;
+    border-left: 0.2vh solid;
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top #right div {
+    width: auto;
+    margin:0 1vh;
+    flex:none;
+    font-size: calc( 2.0 * 1vh * var(--bodyHeightScale)); 
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top #right div#CurrentLegDistance, as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top #right div#CurrentLegBearing {
+    color: magenta; 
+    flex:1;
+    font-size: calc( 2.5* 1vh * var(--bodyHeightScale)); 
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center #bottom {
+    font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
+}
+
+as1000-pfd-element #Mainframe #InstrumentsContainer #NavBox #Center #bottom #AP_Center {
+    border-left: 0.2vh solid;
+    border-right: 0.2vh solid; 
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Left #Nav1,
+as1000-pfd-element #Mainframe #Electricity #NavBox #Left #Nav2,
+as1000-pfd-element #Mainframe #Electricity #NavBox #Right #Com1,
+as1000-pfd-element #Mainframe #Electricity #NavBox #Right #Com2 {
+    align-items: baseline;
+    font-size: calc( 2.5* 1vh * var(--bodyHeightScale)); 
+    font-family: "Roboto-Bold";
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Left #Nav1 div:first-child,
+as1000-pfd-element #Mainframe #Electricity #NavBox #Left #Nav2 div:first-child,
+as1000-pfd-element #Mainframe #Electricity #NavBox #Right #Com1 div:last-child,
+as1000-pfd-element #Mainframe #Electricity #NavBox #Right #Com2 div:last-child {
+    font-size: calc( 2.0 * 1vh * var(--bodyHeightScale));
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox .Selectable {
+    border:0.2vh solid transparent
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox .Selectable[state="selected"] {
+    border:0.2vh solid cyan;
+    background:none;
+    color: #fff; 
+}
+
+as1000-pfd-element #Mainframe #Electricity #SoftKeys {
+    background-color: #333;
+}
+
+as1000-pfd-element #Mainframe #Electricity #SoftKeys .SoftKey {
+    border-right:0.2vh solid #000;
+    border-left:0.2vh solid #ddd;
+    border-top:0.3vh solid #fff;
+}
+
+as1000-pfd-element #Mainframe #Electricity #SoftKeys .SoftKey[state=White] {
+    color: #1a1d21;
+    background-color: #b0bacd; 
+
+    border-right-color:transparent;
+    border-left-color:rgba(0,0,0,0.6);
+}
+
+as1000-pfd-element #Mainframe #InstrumentsContainer #NavBox #Center #bottom #AP_Left #AP_Lateral_Active {
+    color: #00ff00;
+}
+
+as1000-pfd-element #Mainframe #InstrumentsContainer #NavBox #Center #bottom #AP_Center #AP_Status {
+    color: #00ff00; 
+}
+
+as1000-pfd-element #Mainframe #InstrumentsContainer #NavBox #Center #bottom #AP_Right #AP_Vertical_Active {
+    color: #00ff00; 
+}
+
+as1000-pfd-element #Mainframe #InstrumentsContainer #NavBox #Center #bottom #AP_Right #AP_Vertical_Reference {
+    color: #00ff00;
+}
