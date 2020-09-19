@@ -63,7 +63,7 @@ function Update-Packages {
         foreach ($assetGroup in $packageDef.AssetGroups.AssetGroup) {
             $src = Join-Path "." $assetGroup.AssetDir
             $dest = Join-Path $packagePath $assetGroup.OutputDir
-            Write-Host "Copying $src.AssetDir to $dest..."
+            Write-Host "Copying $src to $dest..."
             robocopy $src $dest /XO /e /njh /njs /nfl /nc /ndl
         }
     
@@ -123,7 +123,7 @@ Update-Packages
 if ($WatchFiles -eq $true) {
     while (1 -eq 1) {
         Write-Host "Waiting for file changes... (CTRL+C to quit)"
-        Wait-FileChange -Folder ".\src" -Action $Action
+        Wait-FileChange -Folder (Join-Path "." "src") -Action $Action
         Start-Sleep -Milliseconds 100
     }
 }

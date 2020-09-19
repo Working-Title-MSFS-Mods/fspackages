@@ -9,11 +9,10 @@ class AS1000_MFD extends BaseAS1000 {
     connectedCallback() {
         super.connectedCallback();
         Include.addScript("/JS/debug.js", function () {
-            if (typeof g_modDebugMgr != "undefined") {
-                g_modDebugMgr.AddConsole(null);
-            }
+            g_modDebugMgr.AddConsole(null);
         });
-		this.pagesContainer = this.getChildById("RightInfos");
+        this.trackup = false;
+        this.pagesContainer = this.getChildById("RightInfos");
         let engineDisplay = new Engine("Engine", "LeftInfos");
         this.addIndependentElementContainer(engineDisplay);
         this.pageGroups = [
@@ -44,13 +43,22 @@ class AS1000_MFD extends BaseAS1000 {
     }
     parseXMLConfig() {
         super.parseXMLConfig();
-        this._alwaysUpdate = true;
         if (this.instrumentXmlConfig) {
             let altimeterIndexElems = this.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
             if (altimeterIndexElems.length > 0) {
                 this.altimeterIndex = parseInt(altimeterIndexElems[0].textContent) + 1;
             }
         }
+
+        // Weather radar is on by default, and has to be explicitly turned OFF in a plane's
+        // configuration.   Which isn't loaded when the MFD initializes.  So here I need to
+        // go back and recreate the entire map page group if there's radar.  This is dumb.
+        if (this.hasWeatherRadar()) {
+            this.pageGroups[0] = new NavSystemPageGroup("MAP", this, [
+                new AS1000_MFD_MainMap(),
+                new AS1000_MFD_Radar()
+            ]);
+        } 
     }
     disconnectedCallback() {
     }
@@ -97,10 +105,6 @@ class AS1000_MFD extends BaseAS1000 {
             case "SOFTKEYS_12":
                 this.acknowledgeInit();
                 break;
-            // disable for v0.3.0 integration
-            //case "MENU_Push":
-            //    this.toggleMapOrientation();
-            //    break;
         }
     }
     Update() {
@@ -109,8 +113,9 @@ class AS1000_MFD extends BaseAS1000 {
     }
 
     toggleMapOrientation() {
-        let current = SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean");
-        SimVar.SetSimVarValue("L:GPS_TRACK_UP", "boolean", !current);
+        let newValue = !SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean");
+        SimVar.SetSimVarValue("L:GPS_TRACK_UP", "boolean", newValue);
+        this.trackup = newValue;
     }
 }
 class AS1000_MFD_NavStatus extends NavSystemElement {
@@ -297,6 +302,7 @@ class AS1000_MFD_MainMapSlot extends NavSystemElement {
     onEnter() {
         this.mapContainer.insertBefore(this.map, this.mapContainer.firstChild);
         this.map.setCenteredOnPlane();
+        this.gps.mapElement.setDisplayMode(EMapDisplayMode.GPS);
     }
     onUpdate(_deltaTime) {
     }
@@ -327,6 +333,66 @@ class AS1000_MFD_WaypointLine extends MFD_WaypointLine {
         this.mapMenu.init(this, this.element.gps);
     }
 }
+
+class AS1000_MFD_Radar extends NavSystemPage {
+    constructor() {
+        super("WEATHER RADAR", "Map", new AS1000_MFD_RadarElement());
+        this.mapMenu = new AS1000_MapMenu();
+    }
+    init() {
+        this.mapMenu.init(this, this.gps);
+        this.softKeys = new SoftKeysMenu();
+        this.softKeys.elements = [
+            new SoftKeyElement("", null),
+            new SoftKeyElement("MODE", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("HORIZON", this.gps.mapElement.setRadar.bind(this.gps.mapElement, ERadarMode.HORIZON), this.getKeyState.bind(this, "HORIZON")),
+            new SoftKeyElement("VERTICAL", this.gps.mapElement.setRadar.bind(this.gps.mapElement, ERadarMode.VERTICAL), this.getKeyState.bind(this, "VERTICAL")),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("GAIN", null),
+            new SoftKeyElement("WATCH", null),
+            new SoftKeyElement("BRG", null),
+            new SoftKeyElement("WX ALERT", null),
+            new SoftKeyElement("", null)
+        ];
+    }
+    getKeyState(_keyName) {
+        switch (_keyName) {
+            case "HORIZON":
+                {
+                    if (this.gps.mapElement.getRadarMode() == ERadarMode.HORIZON)
+                        return "White";
+                    break;
+                }
+            case "VERTICAL":
+                {
+                    if (this.gps.mapElement.getRadarMode() == ERadarMode.VERTICAL)
+                        return "White";
+                    break;
+                }
+        }
+        return "None";
+    }
+}
+
+class AS1000_MFD_RadarElement extends NavSystemElement {
+    init(root) {
+        this.mapContainer = root;
+        this.map = this.gps.getChildById("MapInstrument");
+    }
+    onEnter() {
+        this.mapContainer.insertBefore(this.map, this.mapContainer.firstChild);
+        this.gps.mapElement.setDisplayMode(EMapDisplayMode.RADAR);
+    }
+    onUpdate(_deltaTime) {
+    }
+    onExit() {
+    }
+    onEvent(_event) {
+    }
+}
+
 class AS1000_MFD_ApproachWaypointLine extends MFD_ApproachWaypointLine {
     constructor(waypoint, index, _element) {
         super(waypoint, index, _element);
@@ -996,70 +1062,23 @@ class AS1000_MapMenu {
     constructor() {
         this.modeMenu = new SoftKeysMenu();
         this.gpsMenu = new SoftKeysMenu();
-        this.weatherMenu = new SoftKeysMenu();
     }
     init(_owner, _gps) {
         this.owner = _owner;
         this.gps = _gps;
         this.mapElement = this.gps.mapElement;
-        if (this.gps.hasWeatherRadar()) {
-            this.modeMenu.elements = [
-                new SoftKeyElement("", null),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("DISPLAY", this.mapElement.toggleDisplayMode.bind(this.mapElement)),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("GPS", this.switchMenu.bind(this, this.gpsMenu), this.getKeyState.bind(this, "GPS")),
-                new SoftKeyElement("WEATHER", this.switchMenu.bind(this, this.weatherMenu), this.getKeyState.bind(this, "WEATHER")),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("BACK", this.close.bind(this)),
-                new SoftKeyElement("", null)
-            ];
-        }
-        else {
-            this.modeMenu.elements = [
-                new SoftKeyElement("", null),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("GPS", this.switchMenu.bind(this, this.gpsMenu), this.getKeyState.bind(this, "GPS")),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("", null),
-                new SoftKeyElement("BACK", this.close.bind(this)),
-                new SoftKeyElement("", null)
-            ];
-        }
-        this.gpsMenu.elements = [
+        this.modeMenu.elements = [
             new SoftKeyElement("TRAFFIC", null),
-            new SoftKeyElement("", null),
+            new SoftKeyElement("PROFILE", null),
             new SoftKeyElement("TOPO", this.mapElement.toggleIsolines.bind(this.mapElement), this.getKeyState.bind(this, "TOPO")),
-            new SoftKeyElement("TERRAIN", null),
-            new SoftKeyElement("", null),
-            new SoftKeyElement("", null),
+            new SoftKeyElement("TERRAIN", null, () => { return "White" }),
+            new SoftKeyElement("AIRWAYS", null),
+            new SoftKeyElement("TRCK UP", this.gps.toggleMapOrientation.bind(this.gps), this.getKeyState.bind(this, "TRCK UP")),
             new SoftKeyElement("NEXRAD", this.mapElement.toggleNexrad.bind(this.mapElement), this.getKeyState.bind(this, "NEXRAD")),
             new SoftKeyElement("", null),
             new SoftKeyElement("", null),
             new SoftKeyElement("", null),
-            new SoftKeyElement("BACK", this.switchMenu.bind(this, this.modeMenu)),
-            new SoftKeyElement("", null)
-        ];
-        this.weatherMenu.elements = [
-            new SoftKeyElement("", null),
-            new SoftKeyElement("MODE", null),
-            new SoftKeyElement("", null),
-            new SoftKeyElement("", null),
-            new SoftKeyElement("HORIZON", this.mapElement.setRadar.bind(this.mapElement, ERadarMode.HORIZON), this.getKeyState.bind(this, "HORIZON")),
-            new SoftKeyElement("VERTICAL", this.mapElement.setRadar.bind(this.mapElement, ERadarMode.VERTICAL), this.getKeyState.bind(this, "VERTICAL")),
-            new SoftKeyElement("", null),
-            new SoftKeyElement("", null),
-            new SoftKeyElement("", null),
-            new SoftKeyElement("", null),
-            new SoftKeyElement("BACK", this.switchMenu.bind(this, this.modeMenu)),
+            new SoftKeyElement("BACK", this.close.bind(this)),
             new SoftKeyElement("", null)
         ];
     }
@@ -1075,18 +1094,6 @@ class AS1000_MapMenu {
     }
     getKeyState(_keyName) {
         switch (_keyName) {
-            case "GPS":
-                {
-                    if (this.mapElement.getDisplayMode() == EMapDisplayMode.GPS)
-                        return "White";
-                    break;
-                }
-            case "WEATHER":
-                {
-                    if (this.mapElement.getDisplayMode() == EMapDisplayMode.RADAR)
-                        return "White";
-                    break;
-                }
             case "TOPO":
                 {
                     if (this.mapElement.getIsolines())
@@ -1099,20 +1106,14 @@ class AS1000_MapMenu {
                         return "White";
                     break;
                 }
-            case "HORIZON":
+            case "TRCK UP":
                 {
-                    if (this.mapElement.getRadarMode() == ERadarMode.HORIZON)
-                        return "White";
-                    break;
-                }
-            case "VERTICAL":
-                {
-                    if (this.mapElement.getRadarMode() == ERadarMode.VERTICAL)
+                    if (this.gps.trackup)
                         return "White";
                     break;
                 }
         }
-        return "None";
+                return "None";    
     }
 }
 class AS1000_EngineMenu {

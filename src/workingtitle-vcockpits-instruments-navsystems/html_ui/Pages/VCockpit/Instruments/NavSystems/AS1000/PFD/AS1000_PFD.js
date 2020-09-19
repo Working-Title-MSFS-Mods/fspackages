@@ -31,7 +31,7 @@ class AS1000_PFD extends BaseAS1000 {
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("TMR/REF", "TmrRefWindow", timerRef, "Softkey_TMR_REF"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("AFPL", "ActiveFlightPlan", new AS1000_PFD_ActiveFlightPlan_Element(5), "FPL_Push"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
-        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "MENU_Push"));
+        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "CONF_MENU_Push"));
         this.maxUpdateBudget = 12;
         let avionicsKnobIndex = 30;
         let avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
@@ -44,9 +44,20 @@ class AS1000_PFD extends BaseAS1000 {
         }
         this.avionicsKnobValue = avionicsKnobValueNow
     }
+    onEvent(_event) {
+        if (_event == "MENU_Push") {
+            if (this.popUpElement) {
+                if (this.popUpElement.popUpEvent == "CONF_MENU_Push") {
+                    this.computeEvent("CONF_MENU_Push")
+                }
+            } else {
+                this.computeEvent("CONF_MENU_Push");
+            }
+        }
+    }
+
     parseXMLConfig() {
         super.parseXMLConfig();
-        this._alwaysUpdate = true;
         let syntheticVision = null;
         let reversionaryMode = null;
         let avionicsKnobIndex = null;

@@ -986,7 +986,7 @@ class MapInstrument extends ISvgMapRootElement {
                 this.roadNetwork.setVisible(false);
             return;
         }
-        if (this.quality == Quality.high) {
+        if (this.quality == Quality.ultra || this.quality == Quality.high) {
             if (this.navMap && this.navMap.svgHtmlElement)
                 this.navMap.svgHtmlElement.style.display = "block";
             if (this.lineCanvas)
