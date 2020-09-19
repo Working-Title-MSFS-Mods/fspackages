@@ -13,11 +13,11 @@ class AS1000_MFD extends BaseAS1000 {
         });
         this.trackup = false;
         this.pagesContainer = this.getChildById("RightInfos");
-        let engineDisplay = new Engine("Engine", "LeftInfos");
-        this.addIndependentElementContainer(engineDisplay);
+        this.engineDisplay = new Engine("Engine", "LeftInfos");
+        this.addIndependentElementContainer(this.engineDisplay);
         this.pageGroups = [
             new NavSystemPageGroup("MAP", this, [
-                new AS1000_MFD_MainMap(engineDisplay)
+                new AS1000_MFD_MainMap(this.engineDisplay)
             ]),
             new NavSystemPageGroup("WPT", this, [
                 new AS1000_MFD_AirportInfos()
@@ -55,7 +55,7 @@ class AS1000_MFD extends BaseAS1000 {
         // go back and recreate the entire map page group if there's radar.  This is dumb.
         if (this.hasWeatherRadar()) {
             this.pageGroups[0] = new NavSystemPageGroup("MAP", this, [
-                new AS1000_MFD_MainMap(),
+                new AS1000_MFD_MainMap(this.engineDisplay),
                 new AS1000_MFD_Radar()
             ]);
         } 
