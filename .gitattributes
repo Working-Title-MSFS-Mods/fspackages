@@ -1,0 +1,4 @@
+# keep linguist from detecting our JS as generated due to the
+# sourceMappingURL comments present in the originals.
+*.js -linguist-generated
+
