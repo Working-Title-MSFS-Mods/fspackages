@@ -408,6 +408,7 @@ class AttitudeIndicator extends HTMLElement {
             let strokeWidth = 2;
             let barbThickness = 3;
             let barbLength = 10;
+            let color = "#00ff00";
             function createBarb(rotation, outline) {
                 let barb = document.createElementNS(Avionics.SVG.NS, "rect");
                 barb.setAttribute("x",-radius - barbLength);
@@ -419,7 +420,7 @@ class AttitudeIndicator extends HTMLElement {
                     barb.setAttribute("stroke","black");
                     barb.setAttribute("stroke-width",strokeWidth);
                 } else {
-                    barb.setAttribute("fill","green");
+                    barb.setAttribute("fill",color);
                 }
                 barb.setAttribute("transform",`rotate(${rotation})`);
                 return barb;
@@ -447,7 +448,7 @@ class AttitudeIndicator extends HTMLElement {
             fill.setAttribute("cy",0);
             fill.setAttribute("r",radius);
             fill.setAttribute("fill","transparent");
-            fill.setAttribute("stroke","green");
+            fill.setAttribute("stroke",color);
             fill.setAttribute("stroke-width",barbThickness);
             actualDirectionMarker.appendChild(fill);
             this.actualDirectionMarker = actualDirectionMarker;

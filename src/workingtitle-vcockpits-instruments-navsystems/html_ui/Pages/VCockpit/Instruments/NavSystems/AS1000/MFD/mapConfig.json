@@ -10,7 +10,7 @@
   "waypointLabelBackgroundStrokeWidth": 0,
   "waypointLabelBackgroundPadding": "5 5 5 5",
   "waypointLabelDistance": 12,
-  "waypointIconSize": 70,
+  "waypointIconSize": 100,
 
   "cityLabelFontSize": 24,
   "cityLabelFontFamily": "Consolas",
