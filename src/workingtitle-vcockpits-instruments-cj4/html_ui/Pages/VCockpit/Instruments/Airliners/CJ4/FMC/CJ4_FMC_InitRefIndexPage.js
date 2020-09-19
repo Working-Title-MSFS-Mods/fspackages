@@ -425,7 +425,7 @@ class CJ4_FMC_InitRefIndexPage {
                 nextWaypointIdent = new String(fmc.flightPlanManager.getNextActiveWaypoint().ident);
                 nextWaypointDist = new Number(activeWaypointDist + Avionics.Utils.computeDistance(fmc.flightPlanManager.getActiveWaypoint().infos.coordinates, nextWaypoint.infos.coordinates));
                 nextWaypointEte = groundSpeed < 50 ? new String("--:--")
-                    : new Date(this.calcETEseconds(nextWaypointdist, groundSpeed) * 1000).toISOString().substr(11, 5);
+                    : new Date(this.calcETEseconds(nextWaypointDist, groundSpeed) * 1000).toISOString().substr(11, 5);
             }
 
             //destination data

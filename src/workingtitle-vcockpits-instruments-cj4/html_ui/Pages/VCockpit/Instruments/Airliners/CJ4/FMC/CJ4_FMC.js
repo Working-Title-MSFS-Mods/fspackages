@@ -91,7 +91,8 @@ class CJ4_FMC extends FMCMainDisplay {
         //    }
         //};
         this.renderScratchpad();
-        this.renderMsgLine();
+        //this.renderMsgLine();
+        this.messageBox = this.renderMsgLine();
 
         // just to display exec as a test, remove later
         //this.fpHasChanged = true;
@@ -340,10 +341,13 @@ class CJ4_FMC extends FMCMainDisplay {
         this.getChildById("Electricity").append(msgLineEl);
 
         let msgEl = document.createElement("div");
-        msgEl.innerHTML = "FMS INDEPENDENT OP";
+        msgEl.innerHTML = " ";
         msgEl.classList.add("fitcontent", "line-left");
         msgLineEl.append(msgEl);
+
+        return msgEl;
     }
+
 
     /**
      * Registers a periodic page refresh with the FMC display.

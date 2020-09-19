@@ -63,7 +63,7 @@ class CJ4_FMC_DirectToPage {
             if (directWaypoint) {
                 //activateLine = "ACTIVATE>";
                 //fmc.onRightInput[5] = () => {
-                
+                fmc.messageBox.innerHTML = "Working...";
 
                 //added functionality to enable the ability to go direct to the IAF of the loaded approach
 
@@ -86,12 +86,17 @@ class CJ4_FMC_DirectToPage {
                         else {
                             callback();
                         }
+                        fmc.activateRoute();
                     };
-
-                    fmc.fpHasChanged = false;
-
                     removeWaypointForApproachMethod(() => {
                         fmc.flightPlanManager.tryAutoActivateApproach();
+                        if (fmc.getIsRouteActivated()) {
+                            fmc.insertTemporaryFlightPlan();
+                            fmc._isRouteActivated = false;
+                            SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
+                        }
+                        fmc.fpHasChanged = false;
+                        fmc.messageBox.innerHTML = "";
                         CJ4_FMC_LegsPage.ShowPage1(fmc);
                     });
                 }             
@@ -100,8 +105,11 @@ class CJ4_FMC_DirectToPage {
                 //execute the normal Direct To functionality
 
                 else {
-                    fmc.fpHasChanged = false;
+                    fmc.messageBox.innerHTML = "Working...";
                     fmc.activateDirectToWaypoint(directWaypoint, () => {
+                        fmc.activateRoute();
+                        fmc.messageBox.innerHTML = "";
+                        fmc.fpHasChanged = false;
                         CJ4_FMC_LegsPage.ShowPage1(fmc);
                     })
                 }
