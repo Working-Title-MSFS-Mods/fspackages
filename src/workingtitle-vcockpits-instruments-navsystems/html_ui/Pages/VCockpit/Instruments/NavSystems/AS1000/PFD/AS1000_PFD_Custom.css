@@ -1,0 +1,145 @@
+@font-face {
+    font-family: "Roboto-Regular";
+    src: url("/Fonts/RobotoMono-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal; }
+
+as1000-pfd-element {
+    /*font-family: "Roboto-Regular";*/
+}
+
+as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #LeftInfos {
+    border-right:0.3vh solid white;
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox { 
+    border-bottom:0.3vh solid white;
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center {
+    border-left: 0.2vh solid;
+    border-right: 0.2vh solid; 
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top {
+    border-bottom: 0.2vh solid;
+    padding-left:1vh;
+    padding-right:1vh;
+    align-items: baseline;
+    height:60%;
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center #bottom {
+    height:40%;
+    font-size: calc( 2.0 * 1vh * var(--bodyHeightScale));
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top div {
+    width: auto;
+    margin:0 1vh;
+    flex:none;
+    font-size: calc( 2.0 * 1vh * var(--bodyHeightScale)); 
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top div#GroundSpeed, as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top div#DesiredTrack, as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top div#CurrentTrack, as1000-pfd-element #Mainframe #Electricity #NavBox #Center #top div#ETE {
+    color: magenta; 
+    flex:1;
+    font-size: calc( 3.0* 1vh * var(--bodyHeightScale)); 
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Left #Nav1,
+as1000-pfd-element #Mainframe #Electricity #NavBox #Left #Nav2,
+as1000-pfd-element #Mainframe #Electricity #NavBox #Right #Com1,
+as1000-pfd-element #Mainframe #Electricity #NavBox #Right #Com2 {
+    align-items: baseline;
+    font-size: calc( 2.5* 1vh * var(--bodyHeightScale)); 
+    font-family: "Roboto-Bold";
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox #Left #Nav1 div:first-child,
+as1000-pfd-element #Mainframe #Electricity #NavBox #Left #Nav2 div:first-child,
+as1000-pfd-element #Mainframe #Electricity #NavBox #Right #Com1 div:last-child,
+as1000-pfd-element #Mainframe #Electricity #NavBox #Right #Com2 div:last-child {
+    font-size: calc( 2.0 * 1vh * var(--bodyHeightScale));
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox .Selectable {
+    border:0.2vh solid transparent
+}
+
+as1000-pfd-element #Mainframe #Electricity #NavBox .Selectable[state="selected"] {
+    border:0.2vh solid cyan;
+    background:none;
+    color: #fff; 
+}
+
+as1000-pfd-element #Mainframe #Electricity #SoftKeys {
+    background-color: #333;
+}
+
+as1000-pfd-element #Mainframe #Electricity #SoftKeys .SoftKey {
+    border-right:0.2vh solid #000;
+    border-left:0.2vh solid #ddd;
+    border-top:0.3vh solid #fff;
+}
+
+as1000-pfd-element #Mainframe #Electricity #SoftKeys .SoftKey[state=White] {
+    color: #1a1d21;
+    background-color: #b0bacd; 
+
+    border-right-color:transparent;
+    border-left-color:rgba(0,0,0,0.6);
+}
+
+as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel {
+    border-left:0.3vh solid white;
+    font-size: calc( 2 * 1vh * var(--bodyHeightScale));
+}
+
+as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel .top {
+    display:flex;
+    align-items: flex-end;
+    color:#fff;
+    border-bottom:1px solid #aaa;
+    padding:0;
+    margin:0 2vh;
+    width:auto;
+    line-height:2.0em;
+}
+
+as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel .top:before,
+as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel .top:after {
+    content:" ";
+    display:block;
+    height:10px; 
+    background:#000;
+    border-top:1px solid #aaa;
+    position:relative;
+    top:1px;
+    border-right:1px solid #aaa;
+    border-left:1px solid #aaa;
+}
+
+as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel .top:before {
+    margin-right:10px;
+    width:3vh;
+}
+as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel .top:after {
+    margin-left:10px;
+    flex:1;
+}
+
+as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel .bottom {
+    text-align: left;
+    background-color: #000; 
+    margin:0 2vh;
+    border:1.5px solid #aaa;
+    border-top:none;
+    padding:1vh;
+}
+
+as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel #Airport,
+as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel #Runways,
+as1000-pfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #AirportInfos #Infos1 #rightPanel #Frequencies {
+    /*margin:0;*/
+}

@@ -476,11 +476,11 @@
 		    <Maximum>1000</Maximum>
             <Title>EGT °C</Title>
             <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
-            <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
-            <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
-            <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
-            <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
-            <Column><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.95</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.9</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.98</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.92</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG EXHAUST GAS TEMPERATURE:1" unit="celsius"/><Constant>0.9</Constant></Multiply></Column>
             <Type>EGT</Type>
         </ColumnsGauge>
 
@@ -490,11 +490,11 @@
             <RedLine>238</RedLine>
             <Title>CHT °C</Title>
             <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
-            <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
-            <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
-            <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
-            <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
-            <Column><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/></Column>
+             <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.95</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.9</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.98</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.92</Constant></Multiply></Column>
+            <Column><Multiply><Simvar name="ENG CYLINDER HEAD TEMPERATURE:1" unit="celsius"/><Constant>0.9</Constant></Multiply></Column>
             <Type>CHT</Type>
         </ColumnsGauge>
 
