@@ -399,23 +399,53 @@ class AttitudeIndicator extends HTMLElement {
             this.slipSkid.setAttribute("fill", "white");
             this.root.appendChild(this.slipSkid);
         }
+        
         {
+            let radius = 10;
+            let strokeWidth = 2;
+            let barbThickness = 3;
+            let barbLength = 10;
+            function createBarb(rotation, outline) {
+                let barb = document.createElementNS(Avionics.SVG.NS, "rect");
+                barb.setAttribute("x",-radius - barbLength);
+                barb.setAttribute("y",-barbThickness / 2);
+                barb.setAttribute("width",barbLength);
+                barb.setAttribute("height",barbThickness);
+                if (outline) {
+                    barb.setAttribute("fill","transparent");
+                    barb.setAttribute("stroke","black");
+                    barb.setAttribute("stroke-width",strokeWidth);
+                } else {
+                    barb.setAttribute("fill","green");
+                }
+                barb.setAttribute("transform",`rotate(${rotation})`);
+                return barb;
+            }
             let actualDirectionMarker = document.createElementNS(Avionics.SVG.NS, "g");
-            let outline = document.createElementNS(Avionics.SVG.NS, "circle");
-            outline.setAttribute("cx",0);
-            outline.setAttribute("cy",0);
-            outline.setAttribute("r",20);
-            outline.setAttribute("fill","transparent");
-            outline.setAttribute("stroke","black");
-            outline.setAttribute("stroke-width","6");
-            actualDirectionMarker.appendChild(outline);
+            {
+                let outline = document.createElementNS(Avionics.SVG.NS, "circle");
+                outline.setAttribute("cx",0);
+                outline.setAttribute("cy",0);
+                outline.setAttribute("r",radius);
+                outline.setAttribute("fill","transparent");
+                outline.setAttribute("stroke","black");
+                outline.setAttribute("stroke-width",strokeWidth + barbThickness);
+                actualDirectionMarker.appendChild(outline);
+            }
+            actualDirectionMarker.appendChild(createBarb(0, true));
+            actualDirectionMarker.appendChild(createBarb(90, true));
+            actualDirectionMarker.appendChild(createBarb(180, true));
+            actualDirectionMarker.appendChild(createBarb(0, false));
+            actualDirectionMarker.appendChild(createBarb(90, false));
+            actualDirectionMarker.appendChild(createBarb(180, false));
+            
             let fill = document.createElementNS(Avionics.SVG.NS, "circle");
             fill.setAttribute("cx",0);
             fill.setAttribute("cy",0);
-            fill.setAttribute("r",20);
+            fill.setAttribute("r",radius);
             fill.setAttribute("fill","transparent");
             fill.setAttribute("stroke","green");
-            fill.setAttribute("stroke-width","4");
+            fill.setAttribute("stroke-width",barbThickness);
             actualDirectionMarker.appendChild(fill);
             this.actualDirectionMarker = actualDirectionMarker;
             this.attitude_pitch.appendChild(actualDirectionMarker);
@@ -486,8 +516,16 @@ class AttitudeIndicator extends HTMLElement {
             let a = this.track - this.heading;
             a = (a + 180) % 360 - 180;
             a = a * Math.PI / 180;
-            let x = a * 700;
-            this.actualDirectionMarker.setAttribute("transform", "translate(" + x.toString() + "," + y.toString() + ")");
+            let ax = Math.sin(a);
+            let ay = Math.sin(-this.actualPitch * Math.PI / 180);
+            let az = Math.cos(a);
+            let screenWidth = 400 * 100/47.0; //From the css setting the width
+            let screenHeight = screenWidth * 3/4;
+            let fov = (80/2) * Math.PI / 180.0; 
+            let focalLength = 1 / Math.tan(fov);
+            let screenX = (ax * (focalLength / az)) * screenWidth;
+            let screenY = (ay * (focalLength / az)) * screenHeight;
+            this.actualDirectionMarker.setAttribute("transform", "translate(" + screenX.toString() + "," + screenY.toString() + ")");
         }
         if (this.attitude_bank)
             this.attitude_bank.setAttribute("transform", "rotate(" + this.bank + ", 0, 0)");
