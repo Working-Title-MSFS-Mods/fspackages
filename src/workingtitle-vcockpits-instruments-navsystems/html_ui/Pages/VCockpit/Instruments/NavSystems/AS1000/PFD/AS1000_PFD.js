@@ -35,6 +35,8 @@ class AS1000_PFD extends BaseAS1000 {
         this.maxUpdateBudget = 12;
         let avionicsKnobIndex = 30;
         let avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
+        this._cfgHandler = new ConfigLoader();
+        this._cfgHandler.load(this._xmlConfigPath, "avionics.cfg", (cfg) => { this.processConfig(cfg) });
     }
     onUpdate(_deltaTime) {
         let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
@@ -53,6 +55,20 @@ class AS1000_PFD extends BaseAS1000 {
             } else {
                 this.computeEvent("CONF_MENU_Push");
             }
+        }
+    }
+    processConfig(cfg) {
+        if ("g1000" in cfg) {
+            cfg = cfg.g1000;
+            if ("pfd_brightness" in cfg) {
+                SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", cfg.pfd_brightness * 10);
+            }
+            if ("mfd_brightness" in cfg) {
+                SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", cfg.mfd_brightness * 10);
+            }
+            this.avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
+        } else {
+            console.log("avionics.cfg missing or lacking g1000 section")
         }
     }
 

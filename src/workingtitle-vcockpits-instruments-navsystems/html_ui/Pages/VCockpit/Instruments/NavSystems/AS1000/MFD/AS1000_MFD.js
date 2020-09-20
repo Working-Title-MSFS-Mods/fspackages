@@ -40,6 +40,8 @@ class AS1000_MFD extends BaseAS1000 {
         this.addIndependentElementContainer(new NavSystemElementContainer("Page Navigation", "CenterDisplay", new AS1000_MFD_PageNavigation()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "CenterDisplay", new AS1000_MFD_NavStatus()));
         this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "CenterDisplay", this.mapElement));
+        this._cfgHandler = new ConfigLoader();
+        this._cfgHandler.load(this._xmlConfigPath, "avionics.cfg", (cfg) => { this.processConfig(cfg) });        
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -61,6 +63,16 @@ class AS1000_MFD extends BaseAS1000 {
         } 
     }
     disconnectedCallback() {
+    }
+    processConfig(cfg) {
+        if ("g1000" in cfg) {
+            cfg = cfg.g1000;
+            if ("trackup" in cfg && (cfg.trackup === true || cfg.trackup === false)) {
+                this.setMapOrientation(cfg.trackup);
+            }
+        } else {
+            console.log("avionics.cfg missing or lacking g1000 section")
+        }
     }
     onEvent(_event) {
         super.onEvent(_event);
@@ -116,6 +128,11 @@ class AS1000_MFD extends BaseAS1000 {
         let newValue = !SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean");
         SimVar.SetSimVarValue("L:GPS_TRACK_UP", "boolean", newValue);
         this.trackup = newValue;
+    }
+
+    setMapOrientation(enabled) {
+        SimVar.SetSimVarValue("L:GPS_TRACK_UP", "boolean", enabled);
+        this.trackup = enabled;
     }
 }
 class AS1000_MFD_NavStatus extends NavSystemElement {
@@ -1108,7 +1125,7 @@ class AS1000_MapMenu {
                 }
             case "TRCK UP":
                 {
-                    if (this.gps.trackup)
+                    if (this.trackup)
                         return "White";
                     break;
                 }
