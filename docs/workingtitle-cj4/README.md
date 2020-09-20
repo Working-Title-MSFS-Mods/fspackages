@@ -3,6 +3,9 @@
 BETA
 This is a beta, you will surely encounter bugs and problems with the aircraft and functions. Please log these bugs in under Issues at the Working Title Github Repo and please TAG THEM AS CJ4 issues. https://github.com/Working-Title-MSFS-Mods/fspackages/issues
 
+OTHER MODS
+Because of how the Community folder works, this mod will conflict with any other mod that includes one or more of the same files in the package. We have not included aircraft.cfg or any exterior textures so that the livery mods should work along side this mod. We have incorporated mods, such as the lighting mod from Uwajimaya. You can see where we've included these in the release notes.
+
 INTRO
 This mod aims to modify the default CJ4 to genuinely represent the true capabilities, functions and features of the real aircraft. This mod will continue to be developed over time to add further functionality.
 
