@@ -17,4 +17,3 @@ With the added functions of the PERF menu, the FMC will calculate takeoff and la
 
 You can use the "SEND" soft key on the FMS pages to transmit your automatically calculated VSpeeds to the PFD and they'll appear there in magenta. If you modify them directly on the PFD, they will be set to cyan to indicate they are not FMC values.
 
--
