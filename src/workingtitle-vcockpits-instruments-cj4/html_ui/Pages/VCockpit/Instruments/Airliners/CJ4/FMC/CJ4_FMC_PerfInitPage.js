@@ -42,10 +42,11 @@ class CJ4_FMC_PerfInitPage {
                 CJ4_FMC_PerfInitPage.ShowPage2(fmc);
             }
         };
-        let fuelCell = "";
-        if (fmc.blockFuel) {
-            fuelCell = (fmc.blockFuel * 2200).toFixed(0);
-        }		
+        let fuelQuantityLeft = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
+        let fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
+        let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft;
+        let fuelCell = Math.trunc(fuelQuantityTotal);
+
         fmc.setTemplate([
             ["ACT PERF INIT"+ "[color]blue"],
             ["BOW[color]blue", "CRZ ALT[color]blue"],
@@ -158,7 +159,7 @@ class CJ4_FMC_PerfInitPage {
 
         if (fmc.flightPlanManager.getDepartureRunway()) {
             depRunway = fmc.flightPlanManager.getDepartureRunway();
-            depRunwayOutput = fmc.getRunwayDesignation(depRunway);
+            depRunwayOutput = "RW" + fmc.getRunwayDesignation(depRunway);
             console.log("depRunwayOutput: " + depRunwayOutput);
            	depRunwayDirection = new Number(depRunway.direction);
             depRunwayElevation = new Number(depRunway.elevation * 3.28);
@@ -211,7 +212,7 @@ class CJ4_FMC_PerfInitPage {
         fmc.setTemplate([
             [originIdent + "   TAKEOFF REF[color]blue", "1", "3"],
 			["RWY ID[color]blue", "WIND[color]blue"],
-            ["RW" + depRunwayOutput, fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
+            [depRunwayOutput + "", fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
             ["RWY WIND[color]blue", "OAT[color]blue"],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.takeoffOat + "\xB0C"],
             ["RWY LENGTH[color]blue", "QNH[color]blue"],
@@ -605,7 +606,7 @@ class CJ4_FMC_PerfInitPage {
 
         if (fmc.flightPlanManager.getApproachRunway()) {
             arrRunway = fmc.flightPlanManager.getApproachRunway();
-            arrRunwayOutput = fmc.getRunwayDesignation(arrRunway);
+            arrRunwayOutput = "RW" + fmc.getRunwayDesignation(arrRunway);
             arrRunwayDirection = new Number(arrRunway.direction);
             arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
             arrRunwayLength = new Number((arrRunway.length) * 3.28);
@@ -637,7 +638,7 @@ class CJ4_FMC_PerfInitPage {
 			["SEL APT[color]blue", "WIND[color]blue"],
             [destinationIdent + "/" + originIdent + "[color]green", fmc.landingWindDir + "\xB0/" + fmc.landingWindSpeed],
             ["RWY ID[color]blue", "OAT[color]blue"],
-            ["RW" + arrRunwayOutput, fmc.landingOat + "\xB0C"],
+            [arrRunwayOutput + "", fmc.landingOat + "\xB0C"],
             ["RWY WIND[color]blue", "QNH[color]blue"],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.landingQnh],
             ["RUNWAY LENGTH[color]blue", "P ALT[color]blue"],
@@ -755,6 +756,17 @@ class CJ4_FMC_PerfInitPage {
             [""],
 			["", "SEND>"]
         ]);
+
+        fmc.onRightInput[5] = () => {
+            SimVar.SetSimVarValue("L:AIRLINER_VREF_SPEED", "Knots", vRef); 
+            //new L:WT_CJ4_VAP for Vapp in CJ4
+            SimVar.SetSimVarValue("L:WT_CJ4_VAP", "Knots", vApp);
+            //new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
+            SimVar.SetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", true);
+        }
+
+
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage15(fmc); };
         fmc.updateSideButtonActiveStatus();

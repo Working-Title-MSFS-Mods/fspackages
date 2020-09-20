@@ -1,5 +1,11 @@
 class CJ4_FMC_DirectToPage {
 
+    /**
+     * 
+     * @param {CJ4_FMC} fmc 
+     * @param {*} directWaypoint 
+     * @param {Number} wptsListIndex 
+     */
     static ShowPage(fmc, directWaypoint, wptsListIndex = 0) {
         fmc.clearDisplay();
         let directWaypointCell = " ";
@@ -13,6 +19,7 @@ class CJ4_FMC_DirectToPage {
         let iMax = 5;
         fmc.onLeftInput[0] = () => {
             let value = fmc.inOut;
+            fmc.fpHasChanged = true;
             fmc.clearUserInput();
             fmc.getOrSelectWaypointByIdent(value, (w) => {
                 if (w) {
@@ -43,6 +50,7 @@ class CJ4_FMC_DirectToPage {
                 waypointsCell[i] = "←" + waypoint.ident + "[color]blue";
                 if (waypointsCell[i]) {
                     fmc.onLeftInput[i + 1] = () => {
+                        fmc.fpHasChanged = true;
                         CJ4_FMC_DirectToPage.ShowPage(fmc, waypoint, wptsListIndex);
                     };
                 }
@@ -57,52 +65,78 @@ class CJ4_FMC_DirectToPage {
         }
         let activateLine = "";
 
+        
         if (directWaypoint) {
-            activateLine = "ACTIVATE>";
-            fmc.onRightInput[5] = () => {
+            activateLine = "CANCEL DTO>";
+            //fmc.onRightInput[5] = () => {
+            //fmc.messageBox.innerHTML = "Working...";
 
             //added functionality to enable the ability to go direct to the IAF of the loaded approach
-    
+
             let isApproachWaypoint = fmc.flightPlanManager.getApproachWaypoints().indexOf(directWaypoint) !== -1;
 
-            if (isApproachWaypoint == true && fmc.flightPlanManager.isActiveApproach() != true) {
-
-                let removeWaypointForApproachMethod = (callback = EmptyCallback.Void) => {
-                    let i = 1;
-                    let destinationIndex = fmc.flightPlanManager.getWaypoints().findIndex(w => {
-                        return w.icao === fmc.flightPlanManager.getDestination().icao;
-                    });
-
-                    if (i < destinationIndex) {
-                        fmc.flightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
-                            //i++;
-                            removeWaypointForApproachMethod(callback);
-                        });
-                    }
-                    else {
-                        callback();
-                    }
+            fmc.onExecPage = () => {
+                fmc.refreshPageCallback = () => {
+                    fmc.messageBox.innerHTML = "";
+                    fmc.fpHasChanged = false;
+                    console.log("refreshcallback running -> legs page");
+                    fmc.onFplan();
                 };
+                fmc.messageBox.innerHTML = "Working . . .";
+                fmc._activatingDirectTo = true;
+                console.log("_activatingDirectTo = true: " + fmc._activatingDirectTo);
 
-                removeWaypointForApproachMethod(() => {
-                    fmc.flightPlanManager.tryAutoActivateApproach();
-                    CJ4_FMC_RoutePage.ShowPage1(fmc);
-                });
-            }             
-          
-            //DEFAULT CASE - if you are not on an approach and you are not trying to go direct to an approach waypoint,
-            //execute the normal Direct To functionality
-
-            else {
-                fmc.activateDirectToWaypoint(directWaypoint, () => {
-                    CJ4_FMC_RoutePage.ShowPage2(fmc);
-                })
-            }
+                if (isApproachWaypoint && !fmc.flightPlanManager.isActiveApproach()) {
+                    let removeWaypointForApproachMethod = (callback = EmptyCallback.Void) => {
+                        let i = 1;
+                        let destinationIndex = fmc.flightPlanManager.getWaypoints().findIndex(w => {
+                            return w.icao === fmc.flightPlanManager.getDestination().icao;
+                        });
+    
+                        if (i < destinationIndex) {
+                            fmc.activateRoute();
+                            fmc.flightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
+                                removeWaypointForApproachMethod(callback);
+                            });
+                        }
+                        else {
+                            callback();
+                        }        
+                    };
+                    console.log("starting removeWaypointForApproachMethod")
+                    removeWaypointForApproachMethod(() => {
+                        console.log("removeWaypointForApproachMethod done");
+                        fmc.flightPlanManager.tryAutoActivateApproach()
+                        console.log("tryAutoActivateApproach done");
+                        fmc.onExecDefault();
+                    });                     
+                }
+                //DEFAULT CASE - if you are not on an approach and you are not trying to go direct to an approach waypoint,
+                //execute the normal Direct To functionality
+                else {
+                    fmc.activateDirectToWaypoint(directWaypoint, () => {
+                        fmc.activateRoute(() => {
+                            fmc.onExecDefault();
+                        });
+                        
+                    });
+                }
             };
         }
+        fmc.onRightInput[5] = () => {
+            if (activateLine == "CANCEL DTO>") {
+                if (directWaypoint) {
+                    directWaypointCell = " ";
+                    fmc.fpHasChanged = false;
+                    fmc.messageBox.innerHTML = "";
+                    CJ4_FMC_DirectToPage.ShowPage(fmc);
+                }
+            }
+        };
+
         
         fmc.setTemplate([
-            ["DIR TO"],
+            ["DIR TO[color]blue"],
             ["WAYPOINT", "DIST", "UTC"],
             ["[" + directWaypointCell + "][color]blue", "---", "----"],
             ["F-PLN WPTS"],

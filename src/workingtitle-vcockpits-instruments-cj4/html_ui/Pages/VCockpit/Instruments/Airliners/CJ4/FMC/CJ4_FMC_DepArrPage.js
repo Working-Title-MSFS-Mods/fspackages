@@ -163,15 +163,55 @@ class CJ4_FMC_DepArrPage {
         }
         let rowsCount = Math.max(displayableRunwaysCount, displayableDeparturesCount);
         let pageCount = Math.floor(rowsCount / 5) + 1;
+
+                
+        //start of CWB EXEC handling
+        let rsk6Field = "";
+        if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
+            fmc.fpHasChanged = true;
+            rsk6Field = "CANCEL MOD>"
+        }
+        else if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 0) {
+            rsk6Field = "LEGS>";
+            fmc.fpHasChanged = false;
+        }
+        fmc.onExecPage = () => {
+            if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
+                if (!fmc.getIsRouteActivated()) {
+                    fmc.activateRoute();
+                }
+                fmc.onExecDefault();
+            }
+            fmc.refreshPageCallback = () => fmc.onFplan();
+        };
+        //end of CWB EXEC handling
+
         fmc.setTemplate([
             [originIdent + " DEPARTURES", currentPage.toFixed(0), pageCount.toFixed(0)],
             ["DEPARTURES" + "[color]blue", "RUNWAYS" + "[color]blue"],
             ...rows,
             ["----------------" + "[color]blue"],
-            ["<DEP/ARR IDX", "LEGS>"]
+            ["<DEP/ARR IDX", rsk6Field]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowPage1(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_RoutePage.ShowPage1(fmc); };
+
+        //start of CWB CANCEL MOD handling
+        fmc.onRightInput[5] = () => {
+            if (rsk6Field == "CANCEL MOD>") {
+                if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
+                    fmc.eraseTemporaryFlightPlan(() => {
+                        fmc.fpHasChanged = false;
+                        fmc.onFplan();
+                    });
+                }
+            }
+            else {
+                CJ4_FMC_LegsPage.ShowPage1(fmc);
+            }
+        };
+        //end of CWB CANCEL MOD handling
+
+           
         fmc.onPrevPage = () => {
             if (currentPage > 0) {
                 CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, currentPage - 1);
@@ -336,15 +376,55 @@ class CJ4_FMC_DepArrPage {
         }
         let rowsCount = Math.max(displayableApproachesCount, displayableArrivalsCount);
         let pageCount = Math.floor(rowsCount / 5) + 1;
+
+        //start of CWB EXEC handling
+        let rsk6Field = "";
+        if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
+            fmc.fpHasChanged = true;
+            rsk6Field = "CANCEL MOD>"
+        }
+        else if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 0) {
+            rsk6Field = "LEGS>";
+            fmc.fpHasChanged = false;
+        }
+        fmc.onExecPage = () => {
+            if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
+                if (!fmc.getIsRouteActivated()) {
+                    fmc.activateRoute();
+                }
+                fmc.onExecDefault();
+            }
+            fmc.refreshPageCallback = () => fmc.onFplan();
+        };
+        //end of CWB EXEC handling
+
+
         fmc.setTemplate([
             [destinationIdent + " ARRIVALS", currentPage.toFixed(0), pageCount.toFixed(0)],
             ["STARS" + "[color]blue", "APPROACHES" + "[color]blue"],
             ...rows,
             ["----------------" + "[color]blue"],
-            ["<DEP/ARR IDX", "LEGS>"]
+            ["<DEP/ARR IDX", rsk6Field]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowPage1(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_RoutePage.ShowPage1(fmc); };
+
+        //start of CWB CANCEL MOD handling
+        fmc.onRightInput[5] = () => {
+            if (rsk6Field == "CANCEL MOD>") {
+                if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
+                    fmc.eraseTemporaryFlightPlan(() => {
+                        fmc.fpHasChanged = false;
+                        fmc.onFplan();
+                    });
+                }
+            }
+            else {
+                CJ4_FMC_LegsPage.ShowPage1(fmc);
+            }
+        };
+        //end of CWB CANCEL MOD handling
+
+
         fmc.onPrevPage = () => {
             if (currentPage > 0) {
                 CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage - 1);
