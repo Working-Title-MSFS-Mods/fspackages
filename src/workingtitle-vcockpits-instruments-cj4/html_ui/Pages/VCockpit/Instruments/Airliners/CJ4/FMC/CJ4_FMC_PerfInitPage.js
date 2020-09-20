@@ -762,8 +762,8 @@ class CJ4_FMC_PerfInitPage {
         ]);
         fmc.onRightInput[5] = () => {
             SimVar.SetSimVarValue("L:AIRLINER_VREF_SPEED", "Knots", vRef); 
-            //use AIRLINER_MANAGED_APPROACH_SPEED for Vapp in CJ4
-            SimVar.SetSimVarValue("L:AIRLINER_MANAGED_APPROACH_SPEED", "Knots", vApp);
+            //new L:WT_CJ4_VAP for Vapp in CJ4
+            SimVar.SetSimVarValue("L:WT_CJ4_VAP", "Knots", vApp);
             //new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
             SimVar.SetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool", true);
             SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", true);

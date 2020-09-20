@@ -1790,7 +1790,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 else {
                     this.vRefSpeed.setAttribute("fill", "cyan");
                 }
-                this.vAppSpeed.textContent = SimVar.GetSimVarValue("L:AIRLINER_MANAGED_APPROACH_SPEED", "Knots").toFixed(0);
+                this.vAppSpeed.textContent = SimVar.GetSimVarValue("L:WT_CJ4_VAP", "Knots").toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool")) {
                     this.vAppSpeed.setAttribute("fill", "magenta");
                 }
@@ -2406,7 +2406,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         }
     }
     updateMarkerVApp(_marker, currentAirspeed) {
-        let vAppSpeed = SimVar.GetSimVarValue("L:AIRLINER_MANAGED_APPROACH_SPEED", "Knots");
+        let vAppSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VAP", "Knots");
         if (vAppSpeed > 0 && this.aircraft == Aircraft.CJ4) {
             var posY = this.valueToSvg(currentAirspeed, vAppSpeed);
             _marker.setOffscreen(false);
