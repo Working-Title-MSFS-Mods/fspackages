@@ -81,6 +81,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Added YD functionality (**credit: musurca**)
 * Added/fixed many gear-related warnings (**credit: musurca**)
 * Improved exterior lighting (Landing/taxi light visibility) (**credit: Uwajimaya**)
+* Overhead light knobs and other cockput buttons are now lit.
 
 ## Known Issues
 * The autopilot will disconnect LNAV mode and go to ROLL mode upon reaching an enroute Direct-To waypoint. The workaround is re-engaging NAV mode and the flight plan will resume.
