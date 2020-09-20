@@ -3,8 +3,8 @@ param (
     [string]$Package,
     [string]$MinimumGameVersion = "1.7.14",
     [string]$OutputPath = ".\build\",
-    [bool]$WatchFiles = $false,
-    [bool]$CleanBuild = $false
+    [switch]$WatchFiles = $false,
+    [switch]$CleanBuild = $false
 )
 
 # global var and action for filewatcher
