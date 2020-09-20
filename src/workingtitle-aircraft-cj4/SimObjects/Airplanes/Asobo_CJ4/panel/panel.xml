@@ -110,7 +110,7 @@
 		  <Condition>
 			<Greater>
 			  <Simvar name="PRESSURIZATION CABIN ALTITUDE" unit="feet"/>
-			  <Constant>10000</Constant>
+			  <Constant>45000</Constant>
 			</Greater>
 		  </Condition>
 		</Annunciation>
@@ -317,6 +317,7 @@
 		  </Condition>
 		</Annunciation>
 
+		<!--
 		<Annunciation>
 		  <Type>Caution</Type>
 		  <Text>PITOT NO HT </Text>
@@ -403,6 +404,7 @@
 			</Or>
 		  </Condition>
 		</Annunciation>
+		-->
 
 		<Annunciation>
 		  <Type>Caution</Type>
@@ -421,6 +423,7 @@
 		  </Condition>
 		</Annunciation>
 
+		<!--
 		<Annunciation>
 		  <Type>Caution</Type>
 		  <Text>PROP DEICE ON</Text>
@@ -443,6 +446,7 @@
 			</Or>
 		  </Condition>
 		</Annunciation>
+		-->
 
 		<Annunciation>
 		  <Type>Advisory</Type>

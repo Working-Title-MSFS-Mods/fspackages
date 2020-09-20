@@ -57,7 +57,7 @@ class CJ4_FMC_PerfInitPage {
             [fmc.cargoWeight + " LB", (fmc.zeroFuelWeight * 2200).toFixed(0).toString() + " LB"],
             ["SENSED FUEL[color]blue", "= GWT[color]blue"],
             [fuelCell + " LB", grWtCell + " LB"],
-            ["--------------------------"],
+            ["-----------------------"],
             ["", "TAKEOFF>"],
             ["", ""],
             ["", "VNAV SETUP>"]
@@ -92,7 +92,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             [""],
-            ["------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["", "PERF INIT>"]
         ]);
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
@@ -114,7 +114,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             [""],
-            ["------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["", "PERF INIT>"]
         ]);
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
@@ -136,7 +136,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             [""],
-            ["------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["", "PERF INIT>"]
         ]);
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage4(fmc); };
@@ -353,14 +353,14 @@ class CJ4_FMC_PerfInitPage {
 			: "ON";
         fmc.setTemplate([
             ["TAKEOFF REF[color]blue", "2", "3"],
-			["A/I[color]blue"],
-			[takeoffAntiIceActive + "[color]green", "V1: " + v1.toFixed(0)],
-            ["T/O FLAPS[color]blue"],
-            [takeoffFlapsActive + "[color]green", "VR: " + vR.toFixed(0)],
-            ["TOW/ GWT/MTOW[color]blue"],
-            [tow  +  "/" + grWtCell + "/17110", "V2: " + v2.toFixed(0)],
-            ["TOFL / " + depRunway + "[color]blue"],
-            [fmc.endTakeoffDist.toFixed(0) + " / " + Math.round(depRunwayLength) + " FT", "VT: 140"],
+			["A/I[color]blue", "V1: " + v1.toFixed(0)],
+			[takeoffAntiIceActive + "[color]green"],
+            ["T/O FLAPS[color]blue", "VR: " + vR.toFixed(0)]],
+            [takeoffFlapsActive + "[color]green",
+            ["TOW/ GWT/MTOW[color]blue", "V2: " + v2.toFixed(0)]],
+            [tow  +  "/" + grWtCell + "/17110",
+            ["TOFL / " + depRunway + "[color]blue", "VT: 140"],
+            [fmc.endTakeoffDist.toFixed(0) + " / " + Math.round(depRunwayLength) + " FT"],
             [""],
             [""],
             [""],
@@ -391,8 +391,14 @@ class CJ4_FMC_PerfInitPage {
         fmc.onRightInput[5] = () => {
 			SimVar.SetSimVarValue("L:AIRLINER_V1_SPEED", "Knots", v1);
 			SimVar.SetSimVarValue("L:AIRLINER_VR_SPEED", "Knots", vR);
-			SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", v2);
-			SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", 140);
+            SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", v2);
+            //use VX for VT in CJ4
+            SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", 140);
+            //new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
+            SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
         }
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage8(fmc); };
@@ -471,7 +477,7 @@ class CJ4_FMC_PerfInitPage {
             [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString()],
             [""],
             ["measured/" + "MANUAL[color]green"],
-            ["------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["", "PERF MENU>"]
         ]);
 		}, 1000, true);
@@ -524,7 +530,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             ["<RESET FUEL USED"],
-            ["------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["", "PERF INIT>"]
         ]);
 		}, 1000, true);
@@ -549,7 +555,7 @@ class CJ4_FMC_PerfInitPage {
             [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString(), totalFuelFlow + " LB/HR"],
             ["ETE[color]blue", "FUEL REQ[color]blue"],
             ["---" + " LB"],
-            ["------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["<CLEAR", "PERF MENU>"]
         ]);
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage10(fmc); };
@@ -579,7 +585,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             [""],
-            ["--------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["", "PERF MENU>"]
         ]);
 		fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage1(fmc); };
@@ -696,10 +702,34 @@ class CJ4_FMC_PerfInitPage {
         if (isFinite(grossWeightValue)) {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
         }
+
+        let ldgWtCell = "";
+        let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
+        + Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour")); 
+
+        //destination data
+        if (fmc.flightPlanManager.getDestination()) {
+            let destination = fmc.flightPlanManager.getDestination();
+            destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
+            let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
+            let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+            destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
+                : destinationDistanceFlightplan;
+            let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+            let destinationEteHrs = groundSpeed < 50 ? 0
+                : (destinationDistance / groundSpeed);
+            let fuelToDest = (totalFuelFlow * destinationEteHrs);
+            let ldgWtValue = grWtCell - fuelToDest;
+        }
+
+        ldgWtCell = (ldgWtValue) ? ldgWtValue
+            : grWtCell;
+        
 		let vRef = ((grWtCell - 10500) * .00393) + 92; //V Speeds based on weight at 0C
 		let vApp = ((grWtCell - 10500) * .00408) + 98;
 		let ldgFieldLength = ((grWtCell - 10500) * .126) + 2180; // Sea level base value for a given weight
-		if (grWtCell <= 13500){
+        
+        if (grWtCell <= 13500){
 			let ldgFieldAltFactor = ((13500 - grWtCell) * .000005) + .0825; //Gets factor value for rate of change based on weight
 			ldgFieldLength = ldgFieldLength + (fmc.landingPressAlt * ldgFieldAltFactor);//Gets landing distance for a given altitude and added to the sea level value
 		}
@@ -748,7 +778,7 @@ class CJ4_FMC_PerfInitPage {
             ["", "VREF: " + vRef.toFixed(0)],
             [""],
             ["LW / GWT/MLW[color]blue", "VAPP: " + vApp.toFixed(0)],
-            [grWtCell + "/" + grWtCell + "/15660"],
+            [ldgWtValue + "/" + grWtCell + "/15660"],
             ["LFL / RWXX[color]blue"],
             [ldgFieldLength.toFixed(0) + " / " + Math.trunc(arrRunwayLength) + " FT"],
             ["LDG FACTOR[color]blue"],
