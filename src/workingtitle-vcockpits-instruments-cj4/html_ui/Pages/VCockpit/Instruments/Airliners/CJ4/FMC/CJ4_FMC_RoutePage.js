@@ -345,7 +345,7 @@ class CJ4_FMC_RoutePage {
                 }
                 fmc.onExecDefault();
             }
-            fmc.refreshPageCallback = () => CJ4_FMC_RoutePage.ShowPage1(fmc);
+            fmc.refreshPageCallback = () => CJ4_FMC_RoutePage.ShowPage2(fmc);
         };
 
         fmc.onRightInput[5] = () => {
@@ -360,7 +360,7 @@ class CJ4_FMC_RoutePage {
             if (lsk6Field == "<CANCEL MOD") {
                 if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     fmc.fpHasChanged = false;
-                    fmc.eraseTemporaryFlightPlan(() => {CJ4_FMC_RoutePage.ShowPage1(fmc)});
+                    fmc.eraseTemporaryFlightPlan(() => {CJ4_FMC_RoutePage.ShowPage2(fmc, offset)});
                 }
             }
         };
