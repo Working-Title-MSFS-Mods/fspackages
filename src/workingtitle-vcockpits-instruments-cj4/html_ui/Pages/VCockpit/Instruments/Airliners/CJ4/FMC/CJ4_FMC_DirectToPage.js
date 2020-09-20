@@ -80,7 +80,7 @@ class CJ4_FMC_DirectToPage {
                     fmc.messageBox.innerHTML = "";
                     fmc.fpHasChanged = false;
                     console.log("refreshcallback running -> legs page");
-                    fmc.onFplan();
+                    fmc.onLegs();
                 };
                 fmc.messageBox.innerHTML = "Working . . .";
                 fmc._activatingDirectTo = true;

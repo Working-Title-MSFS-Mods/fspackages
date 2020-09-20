@@ -57,7 +57,7 @@ class CJ4_FMC_PerfInitPage {
             [fmc.cargoWeight + " LB", (fmc.zeroFuelWeight * 2200).toFixed(0).toString() + " LB"],
             ["SENSED FUEL[color]blue", "= GWT[color]blue"],
             [fuelCell + " LB", grWtCell + " LB"],
-            ["--------------------------"],
+            ["-----------------------"],
             ["", "TAKEOFF>"],
             ["", ""],
             ["", "VNAV SETUP>"]
@@ -92,7 +92,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             [""],
-            ["------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["", "PERF INIT>"]
         ]);
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
@@ -114,7 +114,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             [""],
-            ["------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["", "PERF INIT>"]
         ]);
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
@@ -136,7 +136,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             [""],
-            ["------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["", "PERF INIT>"]
         ]);
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage4(fmc); };
@@ -391,8 +391,14 @@ class CJ4_FMC_PerfInitPage {
         fmc.onRightInput[5] = () => {
 			SimVar.SetSimVarValue("L:AIRLINER_V1_SPEED", "Knots", v1);
 			SimVar.SetSimVarValue("L:AIRLINER_VR_SPEED", "Knots", vR);
-			SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", v2);
-			SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", 140);
+            SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", v2);
+            //use VX for VT in CJ4
+            SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", 140);
+            //new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
+            SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
+            SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
         }
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage8(fmc); };
@@ -471,7 +477,7 @@ class CJ4_FMC_PerfInitPage {
             [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString()],
             [""],
             ["measured/" + "MANUAL[color]green"],
-            ["------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["", "PERF MENU>"]
         ]);
 		}, 1000, true);
@@ -524,7 +530,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             ["<RESET FUEL USED"],
-            ["------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["", "PERF INIT>"]
         ]);
 		}, 1000, true);
@@ -549,7 +555,7 @@ class CJ4_FMC_PerfInitPage {
             [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString(), totalFuelFlow + " LB/HR"],
             ["ETE[color]blue", "FUEL REQ[color]blue"],
             ["---" + " LB"],
-            ["------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["<CLEAR", "PERF MENU>"]
         ]);
 		fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage10(fmc); };
@@ -579,7 +585,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             [""],
-            ["--------------------------[color]blue"],
+            ["-----------------------[color]blue"],
             ["", "PERF MENU>"]
         ]);
 		fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage1(fmc); };
