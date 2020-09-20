@@ -103,7 +103,7 @@ cj4-fmc {
 }
 
 .blue {
-  color: #00afef;
+  color: #4580a7;
 }
 
 .yellow {
@@ -148,9 +148,9 @@ fmc-b747-8-main-display::before {
   display: block;
   text-align: right;
   position: absolute;
-  top: 5%;
-  right: 5%;
-  color: #00afef;
+  top: 4.25%;
+  right: 6.0%;
+  color: #4580a7;
 }
 
 .s-text {
@@ -244,4 +244,9 @@ fmc-b747-8-main-display::before {
 .fitcontent {
   width: auto;
   height: auto;
+}
+
+#page-info.s-text {
+  font-size: 6vw;
+  letter-spacing: normal;
 }
