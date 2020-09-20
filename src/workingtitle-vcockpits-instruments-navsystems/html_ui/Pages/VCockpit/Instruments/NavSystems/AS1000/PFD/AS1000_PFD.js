@@ -3,6 +3,14 @@ class AS1000_PFD extends BaseAS1000 {
         super();
         this.handleReversionaryMode = false;
         this.initDuration = 7000;
+        // For planes with protected contents it may not be possible for a user
+        // to modify a panel configuration to set the avionics knob index.  It's
+        // kinda ugly, but at least for popular models we can set a value here 
+        // to use when we detect them.   We'll base this on the plane's ATC model,
+        // since that is fairly static and consistent across liveries.
+        this.hardcodeKnobIndex = {
+            "CT182T": 4             // Carenado C182
+        }
     }
     get templateID() { return "AS1000_PFD"; }
     connectedCallback() {
@@ -33,8 +41,8 @@ class AS1000_PFD extends BaseAS1000 {
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "CONF_MENU_Push"));
         this.maxUpdateBudget = 12;
-        let avionicsKnobIndex = 30;
-        let avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
+        this.avionicsKnobValue = 100;
+        this.avionicsKnobIndex = null;
     }
     onUpdate(_deltaTime) {
         let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
@@ -72,6 +80,11 @@ class AS1000_PFD extends BaseAS1000 {
         }
         if (avionicsKnobIndex) {
             this.avionicsKnobIndex = avionicsKnobIndex.textContent;
+        } else {
+            let atc_model = SimVar.GetSimVarValue("ATC MODEL", "string");
+            if (atc_model in this.hardcodeKnobIndex) {
+                this.avionicsKnobIndex = this.hardcodeKnobIndex[atc_model]
+            }
         }
     }
     disconnectedCallback() {
