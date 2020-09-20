@@ -703,28 +703,8 @@ class CJ4_FMC_PerfInitPage {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
         }
 
-        let ldgWtCell = "";
-        let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
-        + Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour")); 
-
-        //destination data
-        if (fmc.flightPlanManager.getDestination()) {
-            let destination = fmc.flightPlanManager.getDestination();
-            destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
-            let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
-            let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
-            destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
-                : destinationDistanceFlightplan;
-            let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-            let destinationEteHrs = groundSpeed < 50 ? 0
-                : (destinationDistance / groundSpeed);
-            let fuelToDest = (totalFuelFlow * destinationEteHrs);
-            let ldgWtValue = grWtCell - fuelToDest;
-        }
-
-        ldgWtCell = (ldgWtValue) ? ldgWtValue
-            : grWtCell;
-        
+        let ldgWtCell = grWtCell;
+                
 		let vRef = ((grWtCell - 10500) * .00393) + 92; //V Speeds based on weight at 0C
 		let vApp = ((grWtCell - 10500) * .00408) + 98;
 		let ldgFieldLength = ((grWtCell - 10500) * .126) + 2180; // Sea level base value for a given weight
@@ -778,7 +758,7 @@ class CJ4_FMC_PerfInitPage {
             ["", "VREF: " + vRef.toFixed(0)],
             [""],
             ["LW / GWT/MLW[color]blue", "VAPP: " + vApp.toFixed(0)],
-            [ldgWtValue + "/" + grWtCell + "/15660"],
+            [ldgWtCell + "/" + grWtCell + "/15660"],
             ["LFL / RWXX[color]blue"],
             [ldgFieldLength.toFixed(0) + " / " + Math.trunc(arrRunwayLength) + " FT"],
             ["LDG FACTOR[color]blue"],
