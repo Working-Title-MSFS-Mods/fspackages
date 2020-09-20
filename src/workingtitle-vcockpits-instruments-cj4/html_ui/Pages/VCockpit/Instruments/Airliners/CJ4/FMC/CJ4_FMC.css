@@ -94,7 +94,7 @@ cj4-fmc {
   background-color: #0e0d08;
   color: white;
   font-family: "Collins ProLine";
-  font-size: 6.46vw;
+  font-size: 6vw;
   color: white;
 }
 
@@ -142,7 +142,6 @@ fmc-b747-8-main-display::before {
   margin-bottom: 1%;
   display: block;
   text-align: center;
-  transform: scale(1, 0.95);
 }
 
 #page-info {
@@ -155,19 +154,18 @@ fmc-b747-8-main-display::before {
 }
 
 .s-text {
-  font-size: 4.8vw;
-  letter-spacing: 0.95vw;
+  font-size: 5vw;
+  letter-spacing: 0.7vw;
 }
 
 .label {
-  height: 3.4%;
+  height: 1em;
   margin: 0;
-  transform: scale(1, 0.97);
 }
 
 .label-left {
   position: absolute;
-  left: 5.5%;
+  left: 6.35%;
   width: 100%;
   text-align: left;
 }
@@ -187,9 +185,8 @@ fmc-b747-8-main-display::before {
 }
 
 .line {
-  height: 9.0%;
+  height: 1.15em;
   margin: 0;
-  transform: scale(1, 0.93);
 }
 
 .line-left {
@@ -197,6 +194,7 @@ fmc-b747-8-main-display::before {
   left: 2%;
   width: 100%;
   text-align: left;
+  margin-top: 0.4%;
 }
 
 .line-right {
@@ -204,6 +202,7 @@ fmc-b747-8-main-display::before {
   right: 2%;
   width: 100%;
   text-align: right;
+  margin-top: 0.4%;
 }
 
 .line-center {
@@ -216,27 +215,24 @@ fmc-b747-8-main-display::before {
 /* Scratch pad */
 
 #in-out {
-  padding-left: 5.5%;
+  padding-left: 6%;
   display: inline-block;
   margin-top: 0.4%;
 }
 
 .footer {
-  margin-top: -4.2%;
-  transform: scale(1, 0.90);
+  margin-top: -0.5%;
   height: 7.0vw;
 }
 
 /* Message line */
 
 #msg-line {
-  transform: scale(1.05, 0.90);
   margin-left: 2.5%;
   margin-right: 2.5%;
 }
 
 #exec-sign {
-  transform: scale(1.1, 0.90);
   font-size: 6.0vw;
 }
 
