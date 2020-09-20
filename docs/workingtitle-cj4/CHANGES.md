@@ -3,7 +3,7 @@
 Welcome to the initial and very much beta release of the Working Title CJ4. Thank you to everyone who contributed to this release. We are all very excited to get this release in your hands, which offers a ton of improvement over the stock MSFS CJ4, focusing heavily on the FMC functionality, but with a number of other changes and improvements. There is a lot that has been added and a lot more to do still!
 
 ## Installation
-Installation is easy, simply copy the folders inside the zip file to your MSFS Community folder. We have opted to make our packages hedge as closely to the Asobo package structure as possible, so you will see multiple folders to copy. _All the folders must be copied to Community._
+Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder.
 
 ## Key Features
 * Fixed Direct To routing when attempting to go direct to IAF or enroute waypoints
