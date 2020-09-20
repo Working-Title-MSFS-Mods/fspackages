@@ -22,11 +22,11 @@ You can use the "SEND" soft key on the FMS pages to transmit your automatically 
 
 ### CREDITS
 This list is incomplete, but thanks to everyone that contributed from inside and outside the Working Title team.
-mattnischan
-K20017
-cwburnett
-kaosfere
-dga711
-musurca
-uwajimaya
-AND others!
+-mattnischan
+-K20017
+-cwburnett
+-kaosfere
+-dga711
+-musurca
+-uwajimaya
+-AND others!
