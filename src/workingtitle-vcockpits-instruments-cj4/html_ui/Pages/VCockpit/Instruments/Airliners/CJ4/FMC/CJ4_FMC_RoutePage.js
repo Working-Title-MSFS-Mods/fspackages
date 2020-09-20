@@ -10,6 +10,7 @@ class CJ4_FMC_RoutePage {
                 console.log("GET_CURRENT_FLIGHTPLAN_INDEX_COHERENT: " + value);
                 console.log("fmc.flightPlanManager._currentFlightPlanIndex: " + fmc.flightPlanManager._currentFlightPlanIndex);
                 console.log("fmc.fpHasChanged: " + fmc.fpHasChanged);
+                console.log("this._activatingDirectTo: " + fmc._activatingDirectTo)
             });
         };
         
@@ -175,15 +176,26 @@ class CJ4_FMC_RoutePage {
         }
 
         fmc.onExecPage = () => {
-            fmc.messageBox.innerHTML = "Working . . .";
             if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                 if (!fmc.getIsRouteActivated()) {
                     fmc.activateRoute();
                     activateCell = "";
                 }
+                fmc.onExecDefault();
+                fmc.refreshPageCallback = () => CJ4_FMC_RoutePage.ShowPage1(fmc);
+            } else {
+                console.log("onExec Else");
+                fmc._isRouteActivated = false;
+                console.log("onExec else this._isRouteActivated = false");
+                fmc.fpHasChanged = false;
+                console.log("onExec else this.fpHasChanged = false");
+                fmc.messageBox.innerHTML = " ";
+                console.log("onExec else this.messageBox.innerHTML");
+                fmc._activatingDirectTo = false;
+                console.log("onExec else this._activatingDirectTo = false");
             }
-            fmc.refreshPageCallback = () => {CJ4_FMC_RoutePage.ShowPage1(fmc)};
         };
+
         fmc.onRightInput[5] = () => {
             if (activateCell == "PERF INIT>") {
                 if (!fmc.getIsRouteActivated()) {
@@ -220,11 +232,7 @@ class CJ4_FMC_RoutePage {
             [""],
             [lsk6Field, activateCell]
         ]);
-        //fmc.onRightInput[5] = () => {
-        //    fmc.insertTemporaryFlightPlan(() => {
-        //        CJ4_FMC_RoutePage.ShowPage1(fmc);
-        //    });
-        //};
+
         fmc.onNextPage = () => {
             CJ4_FMC_RoutePage.ShowPage2(fmc);
         };
@@ -233,14 +241,17 @@ class CJ4_FMC_RoutePage {
         fmc.clearDisplay();
         let rows = [["----"], [""], [""], [""], [""]];
         let allRows = CJ4_FMC_RoutePage._GetAllRows(fmc);
+        allRows.rows.shift();
+        allRows.waypoints.shift();
+        allRows.fpIndexes.shift();
         let page = (2 + (Math.floor(offset / 4)));
         let pageCount = (Math.floor(allRows.rows.length / 4) + 2);
         console.log(fmc.flightPlanManager.getEnRouteWaypoints());
         let showInput = false;
         for (let i = 0; i < rows.length; i++) {
             if (allRows.rows[i + offset]) {
-                rows[i] = allRows.rows[i + 1 + offset];
-                let fpIndex = allRows.fpIndexes[i + offset - 1];
+                rows[i] = allRows.rows[i + offset];
+                let fpIndex = allRows.fpIndexes[i + offset];
                 fmc.onRightInput[i] = () => {
                     fmc.messageBox.innerHTML = "Working...";
                     let value = fmc.inOut;
@@ -312,48 +323,54 @@ class CJ4_FMC_RoutePage {
                 }
             }
         }
-        fmc.onRightInput[5] = () => {
-            fmc.messageBox.innerHTML = "Working...";
-            fmc.insertTemporaryFlightPlan(() => {
-                fmc.messageBox.innerHTML = " ";
-                CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
-            });
-        };
+
+        //start of CWB edited activation and exec handling
         let activateCell = "";
+        let lsk6Field = "";
         if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
-            if (!fmc.getIsRouteActivated()) {
-                fmc.fpHasChanged = true;
-                fmc.onExecPage = () => {
-                    fmc.messageBox.innerHTML = "Working...";
-                    fmc.activateRoute();
-                    fmc.fpHasChanged = false;
-                    if (fmc.getIsRouteActivated()) {
-                        fmc.insertTemporaryFlightPlan();
-                        fmc._isRouteActivated = false;
-                        SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
-                    }
-                    if (this.refreshPageCallback) {
-                        this.refreshPageCallback();
-                    }
-                    fmc.messageBox.innerHTML = " ";
-                    CJ4_FMC_RoutePage.ShowPage1(fmc);
-                };
-            }
+            fmc.fpHasChanged = true;
+            lsk6Field = "<CANCEL MOD"
         }
-
-
-
-
-        else {
+        else if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 0) {
             activateCell = "PERF INIT>";
-            fmc.onRightInput[5] = () => {
-                fmc.activateRoute();
-                CJ4_FMC_PerfInitPage.ShowPage2(fmc);
-            };
+            fmc.fpHasChanged = false;
+            lsk6Field = " ";
         }
+
+        fmc.onExecPage = () => {
+            if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
+                if (!fmc.getIsRouteActivated()) {
+                    fmc.activateRoute();
+                    activateCell = "";
+                }
+                fmc.onExecDefault();
+            }
+            fmc.refreshPageCallback = () => CJ4_FMC_RoutePage.ShowPage1(fmc);
+        };
+
+        fmc.onRightInput[5] = () => {
+            if (activateCell == "PERF INIT>") {
+                if (!fmc.getIsRouteActivated()) {
+                    fmc.activateRoute();
+                }
+                CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            }
+        };
+        fmc.onLeftInput[5] = () => {
+            if (lsk6Field == "<CANCEL MOD") {
+                if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
+                    fmc.fpHasChanged = false;
+                    fmc.eraseTemporaryFlightPlan(() => {CJ4_FMC_RoutePage.ShowPage1(fmc)});
+                }
+            }
+        };
+
+        //end of CWB edited activation and exec handling
+
+
         fmc.setTemplate([
-            ["RTE 1", page.toFixed(0), pageCount.toFixed(0)],
-            ["VIA", "TO"],
+            ["RTE 1" + "[color]blue", page.toFixed(0), pageCount.toFixed(0)],
+            ["VIA" + "[color]blue", "TO" + "[color]blue"],
             rows[0],
             [""],
             rows[1],
@@ -364,7 +381,7 @@ class CJ4_FMC_RoutePage {
             [""],
             rows[4],
             [""],
-            ["", activateCell]
+            [lsk6Field, activateCell]
         ]);
         fmc.onPrevPage = () => {
             if (offset === 0) {

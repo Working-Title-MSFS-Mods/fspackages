@@ -59,67 +59,82 @@ class CJ4_FMC_DirectToPage {
         }
         let activateLine = "";
 
-        fmc.onExecPage = () => {
-            if (directWaypoint) {
-                //activateLine = "ACTIVATE>";
-                //fmc.onRightInput[5] = () => {
-                fmc.messageBox.innerHTML = "Working...";
+        
+        if (directWaypoint) {
+            activateLine = "CANCEL DTO>";
+            //fmc.onRightInput[5] = () => {
+            //fmc.messageBox.innerHTML = "Working...";
 
-                //added functionality to enable the ability to go direct to the IAF of the loaded approach
+            //added functionality to enable the ability to go direct to the IAF of the loaded approach
 
-                let isApproachWaypoint = fmc.flightPlanManager.getApproachWaypoints().indexOf(directWaypoint) !== -1;
+            let isApproachWaypoint = fmc.flightPlanManager.getApproachWaypoints().indexOf(directWaypoint) !== -1;
 
-                if (isApproachWaypoint == true && fmc.flightPlanManager.isActiveApproach() != true) {
+            fmc.onExecPage = () => {
+                fmc.refreshPageCallback = () => {
+                    fmc.messageBox.innerHTML = "";
+                    fmc.fpHasChanged = false;
+                    console.log("refreshcallback running -> legs page");
+                    fmc.onFplan();
+                };
+                fmc.messageBox.innerHTML = "Working . . .";
+                fmc._activatingDirectTo = true;
+                console.log("_activatingDirectTo = true: " + fmc._activatingDirectTo);
 
+                if (isApproachWaypoint && !fmc.flightPlanManager.isActiveApproach()) {
                     let removeWaypointForApproachMethod = (callback = EmptyCallback.Void) => {
                         let i = 1;
                         let destinationIndex = fmc.flightPlanManager.getWaypoints().findIndex(w => {
                             return w.icao === fmc.flightPlanManager.getDestination().icao;
                         });
-
+    
                         if (i < destinationIndex) {
                             fmc.flightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
-                                //i++;
                                 removeWaypointForApproachMethod(callback);
                             });
                         }
                         else {
                             callback();
                         }
-                        fmc.activateRoute();
+                        fmc.activateRoute(() => {
+
+                        });
                     };
+                    console.log("starting removeWaypointForApproachMethod")
                     removeWaypointForApproachMethod(() => {
-                        fmc.flightPlanManager.tryAutoActivateApproach();
-                        if (fmc.getIsRouteActivated()) {
-                            fmc.insertTemporaryFlightPlan();
-                            fmc._isRouteActivated = false;
-                            SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
-                        }
-                        fmc.fpHasChanged = false;
-                        fmc.messageBox.innerHTML = "";
-                        CJ4_FMC_LegsPage.ShowPage1(fmc);
+                        console.log("removeWaypointForApproachMethod done");
+                        fmc.flightPlanManager.tryAutoActivateApproach()
+                        console.log("tryAutoActivateApproach done");
+                        fmc.onExecDefault();
                     });
-                }             
-                
+                    
+                                       
+                }
                 //DEFAULT CASE - if you are not on an approach and you are not trying to go direct to an approach waypoint,
                 //execute the normal Direct To functionality
-
                 else {
-                    fmc.messageBox.innerHTML = "Working...";
                     fmc.activateDirectToWaypoint(directWaypoint, () => {
-                        fmc.activateRoute();
-                        fmc.messageBox.innerHTML = "";
-                        fmc.fpHasChanged = false;
-                        CJ4_FMC_LegsPage.ShowPage1(fmc);
-                    })
+                        fmc.activateRoute(() => {
+                            fmc.onExecDefault();
+                        });
+                        
+                    });
                 }
-
-            //}
+            };
+        }
+        fmc.onRightInput[5] = () => {
+            if (activateLine == "CANCEL DTO>") {
+                if (directWaypoint) {
+                    directWaypointCell = " ";
+                    fmc.fpHasChanged = false;
+                    fmc.messageBox.innerHTML = "";
+                    CJ4_FMC_DirectToPage.ShowPage(fmc);
+                }
             }
         };
+
         
         fmc.setTemplate([
-            ["DIR TO"],
+            ["DIR TO[color]blue"],
             ["WAYPOINT", "DIST", "UTC"],
             ["[" + directWaypointCell + "][color]blue", "---", "----"],
             ["F-PLN WPTS"],

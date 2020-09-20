@@ -35,6 +35,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.initialFuelRight = 0;
         this.selectedRunwayOutput = "";
         this._fpHasChanged = false;
+        this._activatingDirectTo = false;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -78,19 +79,54 @@ class CJ4_FMC extends FMCMainDisplay {
         this.onPerf = () => { CJ4_FMC_PerfInitPage.ShowPage1(this); };
         this.onMfdAdv = () => { CJ4_FMC_MfdAdvPage.ShowPage1(this); };
         this.onTun = () => { CJ4_FMC_NavRadioPage.ShowPage1(this); };
-        this.onExecPage = undefined;
         this.onExec = () => {
-            if (this.getIsRouteActivated()) {
-                this.insertTemporaryFlightPlan();
-                this._isRouteActivated = false;
-                SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
+            this.messageBox.innerHTML = "Working . . .";
+            if (this.onExecPage) {
+                console.log("if this.onExecPage");
+                this.onExecPage();
             }
-            this.fpHasChanged = false;
-            this.messageBox.innerHTML = "";
-            if (this.refreshPageCallback) {
-                this.refreshPageCallback();
+            else {
+                console.log("onExec Else");
+                this._isRouteActivated = false;
+                console.log("onExec else this._isRouteActivated = false");
+                this.fpHasChanged = false;
+                console.log("onExec else this.fpHasChanged = false");
+                this.messageBox.innerHTML = " ";
+                console.log("onExec else this.messageBox.innerHTML");
+                this._activatingDirectTo = false;
+                console.log("onExec else this._activatingDirectTo = false");
             }
         };
+        this.onExecPage = undefined;
+        this.onExecDefault = () => {
+            if (this.getIsRouteActivated() && !this._activatingDirectTo) {
+                console.log("running this.getIsRouteActivated() && !this._activatingDirectTo");
+                this.insertTemporaryFlightPlan(() => {
+                    this._isRouteActivated = false;
+                    SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
+                    console.log("done with onExec insert temp");
+                    this.fpHasChanged = false;
+                    console.log("this.fpHasChanged = false");
+                    this.messageBox.innerHTML = " ";
+                    this.refreshPageCallback();
+                });
+            }
+            else {
+                console.log("running onExecDefault else");
+                this.fpHasChanged = false;
+                console.log("fpHasChanged = false");
+                this.messageBox.innerHTML = " ";
+                this._isRouteActivated = false;
+                SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
+                if (this.refreshPageCallback) {
+                    this._activatingDirectTo = false;
+                    this.fpHasChanged = false;
+                    console.log("Else refreshPageCallback");
+                    this.refreshPageCallback();
+                }
+            }
+        };
+
         this.renderScratchpad();
         //this.renderMsgLine();
         this.messageBox = this.renderMsgLine();
@@ -155,9 +191,6 @@ class CJ4_FMC extends FMCMainDisplay {
             CJ4_FMC_DirectToPage.ShowPage(this);
         }
         if (input === "EXEC") {
-            if (this.onExecPage) {
-                this.onExecPage();
-            }
             if (this.onExec) {
                 this.onExec();
             }
@@ -188,10 +221,11 @@ class CJ4_FMC extends FMCMainDisplay {
     getIsRouteActivated() {
         return this._isRouteActivated;
     }
-    activateRoute() {
+    activateRoute(callback = EmptyCallback.Void) {
         this._isRouteActivated = true;
         this.fpHasChanged = true;
         SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 1);
+        callback();
     }
     updateAutopilot() {
         let now = performance.now();

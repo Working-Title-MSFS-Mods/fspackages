@@ -20,12 +20,12 @@ class CJ4_FMC_LegsPage {
         let offset = Math.floor((currentPage - 1) * 5);
         let flightPlanManagerWaypoints = fmc.flightPlanManager.getWaypoints();
         if (flightPlanManagerWaypoints) {
-            console.log("flightPlanManagerWaypoints = true");
+            //console.log("flightPlanManagerWaypoints = true");
             let waypoints = [...fmc.flightPlanManager.getWaypoints()];
             let firstApproachWaypointIndex = waypoints.length;
             let approachWaypoints = fmc.flightPlanManager.getApproachWaypoints();
             if (waypoints.length > 2 || approachWaypoints) {
-                console.log("waypoints.length > 2");
+                //console.log("waypoints.length > 2");
                 waypoints.splice(0, 1);
                 waypoints.pop();
                 //let firstApproachWaypointIndex = waypoints.length;
@@ -76,8 +76,8 @@ class CJ4_FMC_LegsPage {
                         let distance = isFinite(waypoint.cumulativeDistanceInFP) ? waypoint.cumulativeDistanceInFP.toFixed(0) + "NM" : "";
                         
                         //temporary log to see current flight plan
-                        let waypointsLog = waypoints.map(waypoint => waypoint.ident);
-			            console.log("fpln:" + JSON.stringify(waypointsLog, null, 2));
+                        //let waypointsLog = waypoints.map(waypoint => waypoint.ident);
+			            //console.log("fpln:" + JSON.stringify(waypointsLog, null, 2));
                         
                         rows[2 * i] = [bearing, distance];
                         rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident : "USR"];
