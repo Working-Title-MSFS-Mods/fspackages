@@ -355,10 +355,10 @@ class CJ4_FMC_PerfInitPage {
             ["TAKEOFF REF[color]blue", "2", "3"],
 			["A/I[color]blue", "V1: " + v1.toFixed(0)],
 			[takeoffAntiIceActive + "[color]green"],
-            ["T/O FLAPS[color]blue", "VR: " + vR.toFixed(0)]],
-            [takeoffFlapsActive + "[color]green",
-            ["TOW/ GWT/MTOW[color]blue", "V2: " + v2.toFixed(0)]],
-            [tow  +  "/" + grWtCell + "/17110",
+            ["T/O FLAPS[color]blue", "VR: " + vR.toFixed(0)],
+            [takeoffFlapsActive + "[color]green"],
+            ["TOW/ GWT/MTOW[color]blue", "V2: " + v2.toFixed(0)],
+            [tow  +  "/" + grWtCell + "/17110"],
             ["TOFL / " + depRunway + "[color]blue", "VT: 140"],
             [fmc.endTakeoffDist.toFixed(0) + " / " + Math.round(depRunwayLength) + " FT"],
             [""],
@@ -703,9 +703,23 @@ class CJ4_FMC_PerfInitPage {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
         }
 
-        let ldgWtCell = "";
+        //ADDED FUEL FLOW
         let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
-        + Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour")); 
+            + Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour"));
+
+        //ADDED CODE FROM PROG
+        let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+        let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+
+        //default values
+        let activeWaypointDist = 0;
+        let destinationIdent = "";
+        let destinationDistance = 0;
+       
+        //current active waypoint data
+        if (fmc.flightPlanManager.getActiveWaypoint()) {
+            activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
+        }
 
         //destination data
         if (fmc.flightPlanManager.getDestination()) {
@@ -715,16 +729,17 @@ class CJ4_FMC_PerfInitPage {
             let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
             destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
                 : destinationDistanceFlightplan;
-            let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-            let destinationEteHrs = groundSpeed < 50 ? 0
-                : (destinationDistance / groundSpeed);
-            let fuelToDest = (totalFuelFlow * destinationEteHrs);
-            let ldgWtValue = grWtCell - fuelToDest;
         }
 
-        ldgWtCell = (ldgWtValue) ? ldgWtValue
-            : grWtCell;
-        
+        //END OF ADDED PROG CODE
+
+        let eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
+            : 0;
+        let fuelBurn = eteToDestination * totalFuelFlow;
+        let ldgWt = grWtCell - fuelBurn;
+        let ldgWtCell = fuelBurn == 0 ? "-----"
+            : Math.trunc(ldgWt);
+                
 		let vRef = ((grWtCell - 10500) * .00393) + 92; //V Speeds based on weight at 0C
 		let vApp = ((grWtCell - 10500) * .00408) + 98;
 		let ldgFieldLength = ((grWtCell - 10500) * .126) + 2180; // Sea level base value for a given weight
@@ -778,7 +793,7 @@ class CJ4_FMC_PerfInitPage {
             ["", "VREF: " + vRef.toFixed(0)],
             [""],
             ["LW / GWT/MLW[color]blue", "VAPP: " + vApp.toFixed(0)],
-            [ldgWtValue + "/" + grWtCell + "/15660"],
+            [ldgWtCell + "/" + grWtCell + "/15660"],
             ["LFL / RWXX[color]blue"],
             [ldgFieldLength.toFixed(0) + " / " + Math.trunc(arrRunwayLength) + " FT"],
             ["LDG FACTOR[color]blue"],

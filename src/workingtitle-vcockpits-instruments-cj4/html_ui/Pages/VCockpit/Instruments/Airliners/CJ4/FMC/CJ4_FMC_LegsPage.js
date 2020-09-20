@@ -76,8 +76,8 @@ class CJ4_FMC_LegsPage {
                         let distance = isFinite(waypoint.cumulativeDistanceInFP) ? waypoint.cumulativeDistanceInFP.toFixed(0) + "NM" : "";
                         
                         //temporary log to see current flight plan
-                        //let waypointsLog = waypoints.map(waypoint => waypoint.ident);
-			            //console.log("fpln:" + JSON.stringify(waypointsLog, null, 2));
+                        let waypointsLog = waypoints.map(waypoint => waypoint.ident);
+			            console.log("fpln:" + JSON.stringify(waypointsLog, null, 2));
                         
                         rows[2 * i] = [bearing, distance];
                         rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident : "USR"];
