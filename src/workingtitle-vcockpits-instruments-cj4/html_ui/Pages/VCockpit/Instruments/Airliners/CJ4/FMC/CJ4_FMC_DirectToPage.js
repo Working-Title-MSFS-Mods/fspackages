@@ -1,5 +1,11 @@
 class CJ4_FMC_DirectToPage {
 
+    /**
+     * 
+     * @param {CJ4_FMC} fmc 
+     * @param {*} directWaypoint 
+     * @param {Number} wptsListIndex 
+     */
     static ShowPage(fmc, directWaypoint, wptsListIndex = 0) {
         fmc.clearDisplay();
         let directWaypointCell = " ";
@@ -88,16 +94,14 @@ class CJ4_FMC_DirectToPage {
                         });
     
                         if (i < destinationIndex) {
+                            fmc.activateRoute();
                             fmc.flightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
                                 removeWaypointForApproachMethod(callback);
                             });
                         }
                         else {
                             callback();
-                        }
-                        fmc.activateRoute(() => {
-
-                        });
+                        }        
                     };
                     console.log("starting removeWaypointForApproachMethod")
                     removeWaypointForApproachMethod(() => {
@@ -105,9 +109,7 @@ class CJ4_FMC_DirectToPage {
                         fmc.flightPlanManager.tryAutoActivateApproach()
                         console.log("tryAutoActivateApproach done");
                         fmc.onExecDefault();
-                    });
-                    
-                                       
+                    });                     
                 }
                 //DEFAULT CASE - if you are not on an approach and you are not trying to go direct to an approach waypoint,
                 //execute the normal Direct To functionality

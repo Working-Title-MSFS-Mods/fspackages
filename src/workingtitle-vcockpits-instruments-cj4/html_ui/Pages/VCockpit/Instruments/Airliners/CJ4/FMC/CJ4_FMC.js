@@ -43,15 +43,20 @@ class CJ4_FMC extends FMCMainDisplay {
     get fpHasChanged() { return this._fpHasChanged; }
     set fpHasChanged(value) {
         this._fpHasChanged = value;
+        let execEl = document.getElementById("exec-sign");
+
         if (this._fpHasChanged) {
-            let execEl = document.createElement("div");
-            execEl.id = "exec-sign";
-            execEl.innerHTML = "EXEC";
-            execEl.classList.add("blackwhite", "line-right", "fitcontent");
-            this.getChildById("msg-line").append(execEl);
+            if (!execEl) {
+                execEl = document.createElement("div");
+                execEl.id = "exec-sign";
+                execEl.innerHTML = "EXEC";
+                execEl.classList.add("blackwhite", "line-right", "fitcontent");
+                this.getChildById("msg-line").append(execEl);
+            }      
         } else {
-            let execEl = document.getElementById("exec-sign");
-            if (execEl) execEl.remove();
+            if (execEl) {
+                execEl.remove();
+            }
         }
     }
 
