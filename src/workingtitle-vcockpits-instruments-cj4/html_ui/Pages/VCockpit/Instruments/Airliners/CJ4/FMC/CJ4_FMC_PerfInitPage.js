@@ -42,10 +42,11 @@ class CJ4_FMC_PerfInitPage {
                 CJ4_FMC_PerfInitPage.ShowPage2(fmc);
             }
         };
-        let fuelCell = "";
-        if (fmc.blockFuel) {
-            fuelCell = (fmc.blockFuel * 2200).toFixed(0);
-        }		
+        let fuelQuantityLeft = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
+        let fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
+        let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft;
+        let fuelCell = Math.trunc(fuelQuantityTotal);
+
         fmc.setTemplate([
             ["ACT PERF INIT"+ "[color]blue"],
             ["BOW[color]blue", "CRZ ALT[color]blue"],
