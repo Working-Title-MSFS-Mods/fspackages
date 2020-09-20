@@ -355,10 +355,10 @@ class CJ4_FMC_PerfInitPage {
             ["TAKEOFF REF[color]blue", "2", "3"],
 			["A/I[color]blue", "V1: " + v1.toFixed(0)],
 			[takeoffAntiIceActive + "[color]green"],
-            ["T/O FLAPS[color]blue", "VR: " + vR.toFixed(0)]],
-            [takeoffFlapsActive + "[color]green",
-            ["TOW/ GWT/MTOW[color]blue", "V2: " + v2.toFixed(0)]],
-            [tow  +  "/" + grWtCell + "/17110",
+            ["T/O FLAPS[color]blue", "VR: " + vR.toFixed(0)],
+            [takeoffFlapsActive + "[color]green"],
+            ["TOW/ GWT/MTOW[color]blue", "V2: " + v2.toFixed(0)],
+            [tow  +  "/" + grWtCell + "/17110"],
             ["TOFL / " + depRunway + "[color]blue", "VT: 140"],
             [fmc.endTakeoffDist.toFixed(0) + " / " + Math.round(depRunwayLength) + " FT"],
             [""],
@@ -703,7 +703,41 @@ class CJ4_FMC_PerfInitPage {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
         }
 
-        let ldgWtCell = grWtCell;
+        //ADDED FUEL FLOW
+        let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
+            + Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour"));
+
+        //ADDED CODE FROM PROG
+        let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+        let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+
+        //default values
+        let activeWaypointDist = 0;
+        let destinationIdent = "";
+        let destinationDistance = 0;
+       
+        //current active waypoint data
+        if (fmc.flightPlanManager.getActiveWaypoint()) {
+            activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
+        }
+
+        //destination data
+        if (fmc.flightPlanManager.getDestination()) {
+            let destination = fmc.flightPlanManager.getDestination();
+            destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
+            let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
+            let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+            destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
+                : destinationDistanceFlightplan;
+        }
+
+        //END OF ADDED PROG CODE
+
+        let eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
+            : 0;
+        let ldgWt = eteToDestination * totalFuelFlow;
+        let ldgWtCell = ldgWt == 0 ? "-----"
+            : Math.trunc(ldgWt);
                 
 		let vRef = ((grWtCell - 10500) * .00393) + 92; //V Speeds based on weight at 0C
 		let vApp = ((grWtCell - 10500) * .00408) + 98;
