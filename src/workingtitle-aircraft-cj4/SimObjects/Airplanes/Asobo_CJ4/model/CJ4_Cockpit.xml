@@ -1478,6 +1478,9 @@
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 				<NODE_ID>CDU_Push_DEPARR_1</NODE_ID>
 			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_EXEC_1</NODE_ID>
+			</UseTemplate>
 
 			<!-- FMC RIGHT -->
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
@@ -1737,6 +1740,9 @@
 			</UseTemplate>			
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 				<NODE_ID>CDU_Push_BRTDIM_2</NODE_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CDU_Push_EXEC_2</NODE_ID>
 			</UseTemplate>
 
 		</Component>

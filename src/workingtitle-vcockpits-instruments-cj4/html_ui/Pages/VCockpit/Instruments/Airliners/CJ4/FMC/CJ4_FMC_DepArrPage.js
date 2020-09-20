@@ -182,7 +182,7 @@ class CJ4_FMC_DepArrPage {
                 }
                 fmc.onExecDefault();
             }
-            fmc.refreshPageCallback = () => fmc.onFplan();
+            fmc.refreshPageCallback = () => fmc.onDepArr();
         };
         //end of CWB EXEC handling
 
@@ -201,7 +201,7 @@ class CJ4_FMC_DepArrPage {
                 if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     fmc.eraseTemporaryFlightPlan(() => {
                         fmc.fpHasChanged = false;
-                        fmc.onFplan();
+                        fmc.onDepArr();
                     });
                 }
             }
@@ -394,7 +394,7 @@ class CJ4_FMC_DepArrPage {
                 }
                 fmc.onExecDefault();
             }
-            fmc.refreshPageCallback = () => fmc.onFplan();
+            fmc.refreshPageCallback = () => fmc.onDepArr();
         };
         //end of CWB EXEC handling
 
@@ -414,7 +414,7 @@ class CJ4_FMC_DepArrPage {
                 if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     fmc.eraseTemporaryFlightPlan(() => {
                         fmc.fpHasChanged = false;
-                        fmc.onFplan();
+                        fmc.onDepArr();
                     });
                 }
             }
