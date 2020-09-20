@@ -83,6 +83,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Improved exterior lighting (Landing/taxi light visibility) (**credit: Uwajimaya**)
 
 ## Known Issues
+* The autopilot will disconnect LNAV mode and go to ROLL mode upon reaching an enroute Direct-To waypoint. The workaround is re-engaging NAV mode and the flight plan will resume.
 * You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are investigating solutions to this issue.
 * There are cosmetic issues regarding the PFD and MFD (shapes, text, alignments). The PFD and MFD have not gotten a full layout overhaul as of this time.
 * The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the engine performance changes.
