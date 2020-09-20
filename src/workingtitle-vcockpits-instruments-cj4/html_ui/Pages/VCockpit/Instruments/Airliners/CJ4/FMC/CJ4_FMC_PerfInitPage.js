@@ -735,8 +735,9 @@ class CJ4_FMC_PerfInitPage {
 
         let eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
             : 0;
-        let ldgWt = eteToDestination * totalFuelFlow;
-        let ldgWtCell = ldgWt == 0 ? "-----"
+        let fuelBurn = eteToDestination * totalFuelFlow;
+        let ldgWt = grWtCell - fuelBurn;
+        let ldgWtCell = fuelBurn == 0 ? "-----"
             : Math.trunc(ldgWt);
                 
 		let vRef = ((grWtCell - 10500) * .00393) + 92; //V Speeds based on weight at 0C
