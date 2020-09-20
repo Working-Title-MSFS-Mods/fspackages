@@ -115,10 +115,10 @@ class CJ4_FMC_DirectToPage {
                 //execute the normal Direct To functionality
                 else {
                     fmc.activateDirectToWaypoint(directWaypoint, () => {
-                        fmc.activateRoute(() => {
-                            fmc.onExecDefault();
+                        fmc.flightPlanManager.setActiveWaypointIndex(1, () => {
+                            fmc.activateRoute(() => {
+                                fmc.onExecDefault();})
                         });
-                        
                     });
                 }
             };
