@@ -86,3 +86,4 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are investigating solutions to this issue.
 * There are cosmetic issues regarding the PFD and MFD (shapes, text, alignments). The PFD and MFD have not gotten a full layout overhaul as of this time.
 * The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the engine performance changes.
+* Landing Weight Calculation has not been smoothed and will show erronious values when in takeoff and on the ground, and will show "-----" when on the ground or in situations where the distance to the destination is unavailable.
