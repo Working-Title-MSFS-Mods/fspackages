@@ -218,6 +218,7 @@
     </Sound>
 
 	  <Sound WwiseData="true" WwiseEvent="seatbelt_light" ViewPoint="Inside" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
+		  <Range LowerBound="1" />
 		  <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
 			  <Range LowerBound="1" />
 		  </Requires>
