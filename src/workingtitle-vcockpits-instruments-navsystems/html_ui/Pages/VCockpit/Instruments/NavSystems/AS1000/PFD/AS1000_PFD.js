@@ -35,8 +35,8 @@ class AS1000_PFD extends BaseAS1000 {
         this.maxUpdateBudget = 12;
         let avionicsKnobIndex = 30;
         let avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
-        this._cfgHandler = new ConfigLoader();
-        this._cfgHandler.load(this._xmlConfigPath, "avionics.cfg", (cfg) => { this.processConfig(cfg) });
+        this._cfgHandler = new ConfigLoader(this._xmlConfigPath);
+        this._cfgHandler.loadCfg("panel/avionics.cfg", (cfg) => { this.processConfig(cfg) });
     }
     onUpdate(_deltaTime) {
         let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
@@ -48,6 +48,20 @@ class AS1000_PFD extends BaseAS1000 {
     }
     onEvent(_event) {
         if (_event == "MENU_Push") {
+            this._cfgHandler.loadXml("model/Cessna172SP_AS1000_interior.xml", (dom) => {
+                console.log(dom);
+                console.log(dom.childNodes);
+                console.log(dom.childNodes[0].childNodes[0].nodeName);
+                console.log(dom.childNodes[0].childNodes[1].nodeName);
+                console.log(dom.childNodes[0].childNodes[2].nodeName);
+                console.log(dom.childNodes[0].childNodes[3].nodeName);
+                console.log(dom.childNodes[0].childNodes[4].nodeName);
+                console.log(dom.childNodes[0].childNodes[5].nodeName);
+                console.log(dom.childNodes[0].childNodes[6].nodeName);
+                console.log(dom.childNodes[0].childNodes[7].nodeName);
+                console.log(dom.childNodes[1].length);
+            })                
+
             if (this.popUpElement) {
                 if (this.popUpElement.popUpEvent == "CONF_MENU_Push") {
                     this.computeEvent("CONF_MENU_Push")

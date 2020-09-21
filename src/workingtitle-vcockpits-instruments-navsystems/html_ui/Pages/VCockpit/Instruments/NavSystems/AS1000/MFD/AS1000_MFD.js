@@ -40,8 +40,8 @@ class AS1000_MFD extends BaseAS1000 {
         this.addIndependentElementContainer(new NavSystemElementContainer("Page Navigation", "CenterDisplay", new AS1000_MFD_PageNavigation()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "CenterDisplay", new AS1000_MFD_NavStatus()));
         this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "CenterDisplay", this.mapElement));
-        this._cfgHandler = new ConfigLoader();
-        this._cfgHandler.load(this._xmlConfigPath, "avionics.cfg", (cfg) => { this.processConfig(cfg) });        
+        this._cfgHandler = new ConfigLoader(this._xmlConfigPath);
+        this._cfgHandler.loadCfg("panel/avionics.cfg", (cfg) => { this.processConfig(cfg) });        
     }
     parseXMLConfig() {
         super.parseXMLConfig();
