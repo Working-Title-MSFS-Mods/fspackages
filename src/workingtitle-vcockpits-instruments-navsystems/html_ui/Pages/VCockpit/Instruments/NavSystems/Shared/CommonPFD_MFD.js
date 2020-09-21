@@ -13,6 +13,40 @@ class PFD_VSpeed extends NavSystemElement {
     onEvent(_event) {
     }
 }
+class PersistVar {
+    static get(key, defaultValue, prefix) {
+        var storeKey = `${SimVar.GetSimVarValue("ATC MODEL", "string")}.${key}`;
+        try {
+            var stringValue = GetStoredData(storeKey);
+            if (stringValue == null || stringValue == "")
+                return defaultValue;
+        } catch (e) {
+            return defaultValue;
+        }
+        switch (typeof defaultValue) {
+            case "string":
+                return stringValue;
+            case "number":
+                return Number(stringValue);
+            case "boolean":
+                return Boolean(stringValue);
+        }
+        return defaultValue;
+    }
+    static set(key, value) {
+        var storeKey = `${SimVar.GetSimVarValue("ATC MODEL", "string")}.${key}`;
+        switch (typeof value) {
+            case "string":
+            case "number":
+            case "boolean":
+                try {
+                    SetStoredData(storeKey, value.toString());
+                } catch (e) {
+                }
+        }
+        return value;
+    }
+};
 class PFD_Airspeed extends NavSystemElement {
     constructor() {
         super();
@@ -1079,7 +1113,7 @@ class AS1000_Alerts extends NavSystemElement {
 class PFD_WindData extends NavSystemElement {
     constructor() {
         super(...arguments);
-        this.mode = 0;
+        this.mode = PersistVar.get("WindData.Mode", 0);
     }
     init(root) {
         this.svg = root;
@@ -1130,6 +1164,7 @@ class PFD_WindData extends NavSystemElement {
                 break;
         }
         SimVar.SetSimVarValue("L:Glasscockpit_Wind_Mode", "number", this.mode);
+        PersistVar.set("WindData.Mode", this.mode);
     }
 }
 class MFD_WindData extends NavSystemElement {
