@@ -1,4 +1,6 @@
 class ConfigLoader {
+    // This class kind of became callback hell without me meaning for it to.
+    // TODO:  make it less of a callback hell
     constructor(basepath) {
         let vfspath = "/VFS/" + basepath.replace(/\\/g, "/");
         let vfspathParts = vfspath.split("/");
@@ -16,17 +18,51 @@ class ConfigLoader {
     loadXml(filename, cb) {
         Utils.loadFile(`${this._vfspath}/${filename}`, (text) => {
             let parser = new DOMParser();
-            console.log(text)
             let out = parser.parseFromString(text, "text/xml");
             cb(out);
         })
+    }
 
+    // The model xml files aren't properly formed because they have multiple root
+    // nodes. (Seriously?)   We'll wrap them in a fake root node so that we can
+    // parse them properly.  Hopefully that's actually a consistent format.
+    loadFrenchXml(filename, cb) {
+        Utils.loadFile(`${this._vfspath}/${filename}`, (text) => {
+            text = text.replace(/\<\?.*\?\>/, '');
+            text = `<FAKEROOT>${text}</FAKEROOT>`;
+            let parser = new DOMParser();
+            let out = parser.parseFromString(text, "text/xml");
+            cb(out);
+        })  
+    }
+
+    loadRawFile(filename, cb) {
+        Utils.loadFile(`${this._vfspath}/${filename}`, (text) => {cb(text)})
+    }
+
+    loadModelFile(where, cb) {
+        this.loadCfg("model/model.cfg", (cfg) => {
+            if ("models" in cfg && where in cfg.models) {
+                console.log(`Reading ${where} xml at ${cfg.models[where]}.`)
+                this.loadFrenchXml(`model/${cfg.models[where]}`, cb)
+            }
+        })
+
+    }
+
+    loadExteriorModel(cb) {
+        this.loadModelFile("exterior", cb);
+    }
+
+    loadInteriorModel(cb) {
+        this.loadModelFile("interior", cb)
     }
 };
 
 class CfgParser {
     parse(cfgString) {
         var out = {};
+
         var ptr = out;
         var section = null;
 
@@ -64,3 +100,4 @@ class CfgParser {
         return out;
     }
 };
+

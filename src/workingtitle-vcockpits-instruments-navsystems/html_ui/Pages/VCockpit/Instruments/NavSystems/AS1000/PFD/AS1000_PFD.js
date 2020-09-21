@@ -33,35 +33,30 @@ class AS1000_PFD extends BaseAS1000 {
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "CONF_MENU_Push"));
         this.maxUpdateBudget = 12;
-        let avionicsKnobIndex = 30;
-        let avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
+        this.avionicsKnobIndex = 30;
+        this.avionicsKnobValue = 0; // SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
+        this._interiorCfgLoaded = false;
+        this._avionicsCfgLoaded = false;
+        this._pfdConfigComplete = false;
         this._cfgHandler = new ConfigLoader(this._xmlConfigPath);
-        this._cfgHandler.loadCfg("panel/avionics.cfg", (cfg) => { this.processConfig(cfg) });
+        this._cfgHandler.loadInteriorModel((dom) => this.processInteriorConfig(dom));
+        this._cfgHandler.loadCfg("panel/avionics.cfg", (cfg) => this.processAvionicsConfig(cfg));
     }
     onUpdate(_deltaTime) {
-        let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
-        if (avionicsKnobValueNow != this.avionicsKnobValue) {
-            SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", avionicsKnobValueNow);
-            SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", avionicsKnobValueNow);
+        if (this._pfdConfigComplete) {
+            let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
+            if (avionicsKnobValueNow != this.avionicsKnobValue) {
+                SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", avionicsKnobValueNow);
+                SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", avionicsKnobValueNow);
+            }
+            this.avionicsKnobValue = avionicsKnobValueNow
+        } else if (this._avionicsCfgLoaded && this._interiorCfgLoaded) {
+            this.avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
+            this._pfdConfigComplete = true;
         }
-        this.avionicsKnobValue = avionicsKnobValueNow
     }
     onEvent(_event) {
         if (_event == "MENU_Push") {
-            this._cfgHandler.loadXml("model/Cessna172SP_AS1000_interior.xml", (dom) => {
-                console.log(dom);
-                console.log(dom.childNodes);
-                console.log(dom.childNodes[0].childNodes[0].nodeName);
-                console.log(dom.childNodes[0].childNodes[1].nodeName);
-                console.log(dom.childNodes[0].childNodes[2].nodeName);
-                console.log(dom.childNodes[0].childNodes[3].nodeName);
-                console.log(dom.childNodes[0].childNodes[4].nodeName);
-                console.log(dom.childNodes[0].childNodes[5].nodeName);
-                console.log(dom.childNodes[0].childNodes[6].nodeName);
-                console.log(dom.childNodes[0].childNodes[7].nodeName);
-                console.log(dom.childNodes[1].length);
-            })                
-
             if (this.popUpElement) {
                 if (this.popUpElement.popUpEvent == "CONF_MENU_Push") {
                     this.computeEvent("CONF_MENU_Push")
@@ -71,7 +66,8 @@ class AS1000_PFD extends BaseAS1000 {
             }
         }
     }
-    processConfig(cfg) {
+
+    processAvionicsConfig(cfg) {
         if ("g1000" in cfg) {
             cfg = cfg.g1000;
             if ("pfd_brightness" in cfg) {
@@ -80,12 +76,27 @@ class AS1000_PFD extends BaseAS1000 {
             if ("mfd_brightness" in cfg) {
                 SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", cfg.mfd_brightness * 10);
             }
-            this.avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
         } else {
             console.log("avionics.cfg missing or lacking g1000 section")
         }
+        this._avionicsCfgLoaded = true;
     }
 
+    processInteriorConfig(dom) {
+        let templates = dom.getElementsByTagName("UseTemplate");
+        for (const item of templates) {
+            if (item.getAttribute("Name").toLowerCase() != "asobo_as1000_pfd_template")
+                continue;
+            let children = item.childNodes;
+            for (const item of children) {
+                if (item.nodeName.toLowerCase() != "potentiometer")
+                    continue;
+                this.avionicsKnobIndex = item.textContent
+            }
+        }
+        this._interiorCfgLoaded = true;
+    }
+    
     parseXMLConfig() {
         super.parseXMLConfig();
         let syntheticVision = null;
