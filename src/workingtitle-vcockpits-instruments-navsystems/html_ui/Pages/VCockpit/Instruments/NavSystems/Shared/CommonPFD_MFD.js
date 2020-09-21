@@ -1091,7 +1091,8 @@ class PFD_WindData extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        if (SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots") >= 1) {
+        if (SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots") >= 1 &&
+            !SimVar.GetSimVarValue("SIM ON GROUND", "boolean")) {
             this.svg.setAttribute("wind-mode", this.mode.toString());
             switch (this.mode) {
                 case 3:
@@ -1104,7 +1105,7 @@ class PFD_WindData extends NavSystemElement {
             }
         }
         else {
-            this.svg.setAttribute("wind-mode", "4");
+            this.svg.setAttribute("wind-mode", (this.mode ? 4 : 0).toString());
         }
     }
     onExit() {
