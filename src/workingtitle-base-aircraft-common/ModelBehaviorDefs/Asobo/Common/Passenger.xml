@@ -34,3 +34,26 @@
 		</UseTemplate>
 	</Component>
 </Template>
+
+<Template Name="ASOBO_PASSENGER_Switch_PRESSOURCE_Template">
+<Component ID="#NODE_ID#" Node="#NODE_ID#">
+	<UseTemplate Name="ASOBO_GT_Switch_5States">
+		<COUNT>3</COUNT>
+		<CODE_POS_0>
+			(* OFF *)
+		</CODE_POS_0>
+		<CODE_POS_1>
+			(* LEFT *)
+		</CODE_POS_1>
+		<CODE_POS_2>
+			(* NORM *)
+		</CODE_POS_2>
+		<CODE_POS_3>
+			(* RIGHT *)
+		</CODE_POS_3>
+		<CODE_POS_4>
+			(* FRESH *)
+		</CODE_POS_4>
+	</UseTemplate>
+</Component>
+</Template>

@@ -473,8 +473,8 @@
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 			<NODE_ID>PASSENGER_Knob_Air_1</NODE_ID>
 		</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-			<NODE_ID>PASSENGER_Knob_ClimateControl_1</NODE_ID>
+		<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
+			<NODE_ID>KNOB_PRESSOURCE</NODE_ID>
 		</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 			<NODE_ID>PRESSURIZATION_Push_Control</NODE_ID>
@@ -740,6 +740,26 @@
 			<ANIMTIP_1>Set Climate Control to NORM</ANIMTIP_1>
 			<ANIMTIP_2>Set Climate Control to COMP ON</ANIMTIP_2>
 		</UseTemplate>
+		<UseTemplate Name="ASOBO_PASSENGER_Switch_PRESSOURCE_Template">
+			<ANIM_NAME>KNOB_PRESSOURCE</ANIM_NAME>
+			<NODE_ID>knob_pressSource</NODE_ID>
+			<PART_ID>knob_pressSource</PART_ID>
+			<WWISE_EVENT>fuel_crossfeed_switch</WWISE_EVENT>
+			<SWITCH_DIRECTION>Horizontal</SWITCH_DIRECTION>
+			<LEFTARROW>TurnLeft</LEFTARROW>
+			<RIGHTARROW>TurnRight</RIGHTARROW>
+			<ANIMREF_ID>0</ANIMREF_ID>
+			<ANIMTIP_0_ON_PERCENT>0</ANIMTIP_0_ON_PERCENT>
+			<ANIMTIP_1_ON_PERCENT>0.25</ANIMTIP_1_ON_PERCENT>
+			<ANIMTIP_2_ON_PERCENT>0.5</ANIMTIP_2_ON_PERCENT>
+			<ANIMTIP_3_ON_PERCENT>0.75</ANIMTIP_3_ON_PERCENT>
+			<ANIMTIP_4_ON_PERCENT>1</ANIMTIP_4_ON_PERCENT>
+			<ANIMTIP_0>Set Source to OFF</ANIMTIP_0>
+			<ANIMTIP_1>Set Source to LEFT</ANIMTIP_1>
+			<ANIMTIP_2>Set Source to NORM</ANIMTIP_2>
+			<ANIMTIP_3>Set Source to RIGHT</ANIMTIP_3>
+			<ANIMTIP_4>Set Source to FRESH</ANIMTIP_4>
+		</UseTemplate>
 
 		<!--HEAT KNOBS-->
 		<UseTemplate Name="ASOBO_PASSENGER_Switch_Cabin_Heat_Template">
@@ -888,10 +908,6 @@
 	<Component ID="ANIM_SETUP">
 		<UseTemplate Name="ASOBO_GT_Anim_Setup">
 			<ANIM_NAME>SAFETY_KNOB_OXYGEN</ANIM_NAME>
-			<PERCENT>50</PERCENT>
-		</UseTemplate>
-		<UseTemplate Name="ASOBO_GT_Anim_Setup">
-			<ANIM_NAME>KNOB_PRESSOURCE</ANIM_NAME>
 			<PERCENT>50</PERCENT>
 		</UseTemplate>
 	</Component>
