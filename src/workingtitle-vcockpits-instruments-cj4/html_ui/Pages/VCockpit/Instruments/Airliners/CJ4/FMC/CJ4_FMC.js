@@ -135,6 +135,26 @@ class CJ4_FMC extends FMCMainDisplay {
 
         //Timer for periodic page refresh
         this._pageRefreshTimer = null;
+
+        //Hijaack and amend the standard FMC logic to work with the PL21 TUNE page
+        let initRadioNav = super.initRadioNav.bind(this);
+        this.initRadioNav = (_boot) => {
+            initRadioNav(_boot);
+            if (this.isPrimary) {
+                if (_boot) {
+                    this.rcl1Frequency = this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 1);
+                    this.pre2Frequency = this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 2);
+                }
+                else {
+                    if (Math.abs(this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 1) - this.rcl1Frequency) > 0.005) {
+                        this.radioNav.setVHFStandbyFrequency(this.instrumentIndex, 1, this.rcl1Frequency);
+                    }
+                    if (Math.abs(this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 2) - this.pre2Frequency) > 0.005) {
+                        this.radioNav.setVHFStandbyFrequency(this.instrumentIndex, 2, this.pre2Frequency);
+                    }
+                }
+            }
+        };
     }
     Update() {
         super.Update();
