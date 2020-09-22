@@ -287,20 +287,23 @@ class CJ4_FMC_InitRefIndexPage {
             let currLat = currPos.slice(0,9)
             let currLon = currPos.slice(9)
            
+            // TODO: the left/right alignment (distance to border) for time/date in RW doesnt fit the usual header template, so we need a special case here 
+            // TODO: the center labels would need to be text-align:right but they are center because of the enclosing span with text-align center, find a solution (same for values)
+            //       so the labels are on the left now for better looks
             fmc.setTemplate([
-                ["GPS 1[color]blue"],
-                [hourspad + ":" + minutesspad + "z" + "[color]green", month + "/" + day + "/" + year + "[color]green"],
-                ["LATITUDE", "LONGITUDE"],
+                [hourspad + ":" + minutesspad + "z[green s-text]", month + "/" + day + "/" + year + "[green s-text]", "GPS 1[color]blue", 0, 0],
+                [""],
+                ["LATITUDE[s-text]", "LONGITUDE[s-text]"],
                 [currLat + "[color]green", currLon + "[color]green"],
                 [""],
-                ["TRACK ANGLE", Math.round(SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degrees")) + "°" + "[color]green"],
-                ["GROUND SPEED", Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) + "[color]green"],
+                ["TRACK ANGLE[s-text text-right]", Math.round(SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degrees")) + "°" + "[s-text text-left green]"],
+                ["GROUND SPEED[s-text text-right]", Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) + "[s-text text-left green]"],
                 [""],
-                ["RAIM LIMIT", "0.10 NM[color]green"],
-                ["PROBABLE ERROR", "0.05 NM[color]green"],
+                ["RAIM LIMIT[s-text text-right]", "0.10 NM[s-text text-left green]"],
+                ["PROBABLE ERROR[s-text text-right]", "0.05 NM[s-text text-left green]"],
                 [""],
-                ["GPS MODE:", "", "NAV[color]green"],
-                ["SATELLITES:", "", satnum + "[color]green"]
+                ["GPS MODE:[s-text text-right]", "NAV[s-text text-left green]"],
+                ["SATELLITES:[s-text text-right]", satnum + "[s-text text-left green]"]
             ]);
         }, 1000, true);
       
