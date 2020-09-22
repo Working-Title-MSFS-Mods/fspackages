@@ -14,6 +14,7 @@
 <ModelBehaviors>
 
 	<Include Path="Asobo\Common.xml"/>
+	<Include Path="CJ4_Extended\Index.xml"/>
 	<Include Path="Asobo\NAVCOM\NavComSystem.xml"/>
 	<Include Path="Asobo\NAVCOM\NavComSystem.xml"/>
 	<Include Path="Asobo\Airliner\FMC.xml"/>
