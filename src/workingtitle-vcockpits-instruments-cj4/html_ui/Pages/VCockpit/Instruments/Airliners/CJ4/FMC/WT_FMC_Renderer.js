@@ -217,40 +217,6 @@ class WT_FMC_Renderer {
         this._titleElement[2].textContent = this._title;;
     }
 
-    setLabel(label, row, col = -1) {
-        if (col >= this._labelElements[row].length) {
-            return;
-        }
-        if (!this._labels[row]) {
-            this._labels[row] = [];
-        }
-        if (!label) {
-            label = "";
-        }
-        if (col === -1) {
-            for (let i = 0; i < this._labelElements[row].length; i++) {
-                this._labels[row][i] = "";
-                this._labelElements[row][i].textContent = "";
-            }
-            col = 0;
-        }
-        if (label === "__FMCSEPARATOR") {
-            label = "------------------------";
-        }
-        if (label !== "") {
-            let color = label.split("[color]")[1];
-            if (!color) {
-                color = "white";
-            }
-            let e = this._labelElements[row][col];
-            e.classList.remove("white", "blue", "yellow", "green", "red");
-            e.classList.add(color);
-            label = label.split("[color]")[0];
-        }
-        this._labels[row][col] = label;
-        this._labelElements[row][col].textContent = label;
-    }
-
     // METHODS
 
     setMsg(text) {
