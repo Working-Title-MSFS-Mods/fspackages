@@ -262,7 +262,7 @@ class CJ4_FMC_NavRadioPage {
             ["DME1", "DME2"],
             ["HOLD", "HOLD"],
             ["ATC1", "TCAS MODE"],
-            [atc1FrequencyCell + "[color]green", "TA/RA/STBY"],
+            [atc1FrequencyCell + "[color]green", "TA[blue]/RA[blue]/STBY[white s-text]"],
             ["ADF", "REL[color]blue"],
             [adfFrequencyCell + "[color]green", "TCAS>"],
         ]);

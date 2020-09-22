@@ -9,10 +9,13 @@ class WT_FMC_Renderer {
         // overrides
         this._fmc.setTemplate = this.setTemplate.bind(fmc);
         this._fmc.setTitle = this.setTitle.bind(fmc);
+        this._fmc.setLabel = this.setLabel.bind(fmc);
+        this._fmc.setLine = this.setLine.bind(fmc);
 
-        // bind methods to fmc
+        // bind own methods to fmc
         this._fmc.setTitle3Head = this.setTitle3Head.bind(fmc);
         this._fmc.renderHeader = this.renderHeader.bind(fmc);
+        this._fmc.parseContent = this.parseContent.bind(fmc);
 
         // init layout
         this._fmc.renderHeader();
@@ -21,7 +24,8 @@ class WT_FMC_Renderer {
         this._execEl = this.renderExec();
     }
 
-    // PUBLIC
+    // FMCMainDisplay overrides
+
     setTemplate(template) {
         if (template[0]) {
             if (template[0].length > 3) {
@@ -66,11 +70,114 @@ class WT_FMC_Renderer {
         if (template[13]) {
             this.setInOut(template[13][0]);
         }
+
+        // wtf, why is this in this method? :D
         SimVar.SetSimVarValue("L:AIRLINER_MCDU_CURRENT_FPLN_WAYPOINT", "number", this.currentFlightPlanWaypointIndex);
+    }
+
+    setLine(content, row, col = -1) {
+        if (col >= this._lineElements[row].length) {
+            return;
+        }
+        if (!content) {
+            content = "";
+        }
+        if (!this._lines[row]) {
+            this._lines[row] = [];
+        }
+        if (col === -1) {
+            for (let i = 0; i < this._lineElements[row].length; i++) {
+                this._lines[row][i] = "";
+                this._lineElements[row][i].textContent = "";
+            }
+            col = 0;
+        }
+        if (content === "__FMCSEPARATOR") {
+            content = "------------------------";
+        }
+
+        let resultElems = [];
+
+        // TODO: think of a better way to reset classes from the default behavior
+        this._lineElements[row][col].classList.remove("white", "blue", "yellow", "green", "red");
+
+        if (content !== "") {
+            if (content.includes("[color]")) {
+                let color = content.split("[color]")[1];
+                if (!color) {
+                    color = "white";
+                }
+                this._lineElements[row][col].classList.add(color);
+                content = content.split("[color]")[0];
+
+                let el = document.createElement("span");
+                el.innerHTML = content;
+                resultElems.push(el);
+            } else {
+                resultElems.push(...this.parseContent(content));
+            }
+        }
+
+        // clear it (fastest)
+        this._lineElements[row][col].textContent = "";
+        resultElems.forEach(el => { this._lineElements[row][col].appendChild(el) });
+        this._lines[row][col] = this._lineElements[row][col].textContent;
+    }
+
+    setLabel(label, row, col = -1) {
+        if (col >= this._labelElements[row].length) {
+            return;
+        }
+        if (!this._labels[row]) {
+            this._labels[row] = [];
+        }
+        if (!label) {
+            label = "";
+        }
+        if (col === -1) {
+            for (let i = 0; i < this._labelElements[row].length; i++) {
+                this._labels[row][i] = "";
+                this._labelElements[row][i].textContent = "";
+            }
+            col = 0;
+        }
+        if (label === "__FMCSEPARATOR") {
+            label = "------------------------";
+        }
+
+        let resultElems = [];
+
+        // TODO: think of a better way to reset classes from the default behavior
+        this._labelElements[row][col].classList.remove("white", "blue", "yellow", "green", "red");
+
+        if (label !== "") {
+            if (label.includes("[color]")) {
+                let color = label.split("[color]")[1];
+                if (!color) {
+                    color = "white";
+                }
+                this._labelElements[row][col].classList.add(color);
+                label = label.split("[color]")[0];
+
+                let el = document.createElement("span");
+                el.innerHTML = label;
+                resultElems.push(el);
+            } else {
+                resultElems.push(...this.parseContent(label));
+            }
+        }
+
+        // clear it (fastest)
+        this._labelElements[row][col].textContent = "";
+        resultElems.forEach(el => { this._labelElements[row][col].appendChild(el) });
+        this._labels[row][col] = this._labelElements[row][col].textContent;
     }
 
     setTitle3Head(content, col) {
         let resultElems = [];
+
+        // TODO: think of a better way to reset classes from the default behavior
+        this._titleElement[col].classList.remove("white", "blue", "yellow", "green", "red");
 
         if (content !== "") {
             if (content.includes("[color]")) {
@@ -80,28 +187,12 @@ class WT_FMC_Renderer {
                     color = "white";
                 }
                 this._title = content.split("[color]")[0];
-                this._titleElement[col].classList.remove("white", "blue", "yellow", "green", "red");
                 this._titleElement[col].classList.add(color);
                 let el = document.createElement("span");
                 el.innerHTML = this._title;
                 resultElems.push(el);
             } else {
-                const rx = /([^\[\]\n]+)(\[[^\[\]\n]+\])*/g;
-                let match = rx.exec(content);
-                if (match) {
-                    while (match != null) {
-                        let el = document.createElement("span");
-                        el.innerHTML = match[1];
-
-                        if (match.length == 3) {
-                            // do css
-                            let classes = match[2].match(/\w+/g);
-                            classes.forEach(c => { el.classList.add(c) });
-                        }
-                        resultElems.push(el);
-                        match = rx.exec(content);
-                    }
-                }
+                resultElems.push(...this.parseContent(content));
             }
         }
 
@@ -126,6 +217,42 @@ class WT_FMC_Renderer {
         this._titleElement[2].textContent = this._title;;
     }
 
+    setLabel(label, row, col = -1) {
+        if (col >= this._labelElements[row].length) {
+            return;
+        }
+        if (!this._labels[row]) {
+            this._labels[row] = [];
+        }
+        if (!label) {
+            label = "";
+        }
+        if (col === -1) {
+            for (let i = 0; i < this._labelElements[row].length; i++) {
+                this._labels[row][i] = "";
+                this._labelElements[row][i].textContent = "";
+            }
+            col = 0;
+        }
+        if (label === "__FMCSEPARATOR") {
+            label = "------------------------";
+        }
+        if (label !== "") {
+            let color = label.split("[color]")[1];
+            if (!color) {
+                color = "white";
+            }
+            let e = this._labelElements[row][col];
+            e.classList.remove("white", "blue", "yellow", "green", "red");
+            e.classList.add(color);
+            label = label.split("[color]")[0];
+        }
+        this._labels[row][col] = label;
+        this._labelElements[row][col].textContent = label;
+    }
+
+    // METHODS
+
     setMsg(text) {
         this._messageBox.innerHTML = text;
     }
@@ -143,6 +270,29 @@ class WT_FMC_Renderer {
     }
 
     // "PRIVATE"
+
+    // parses a template string and returns the elements array
+    parseContent(content) {
+        let resultElems = [];
+        const rx = /([^\[\]\n]+)(\[[^\[\]\n]+\])*/g;
+        let match = rx.exec(content);
+        if (match) {
+            while (match != null) {
+                let el = document.createElement("span");
+                el.innerHTML = match[1];
+
+                if (match[2]) {
+                    // do css
+                    let classes = match[2].match(/[^\s\[\]]+/g);
+                    classes.forEach(c => { el.classList.add(c) });
+                }
+                resultElems.push(el);
+                match = rx.exec(content);
+            }
+        }
+        return resultElems;
+    }
+
     renderHeader() {
         // triple header
         let headerEl = document.getElementById("header");
