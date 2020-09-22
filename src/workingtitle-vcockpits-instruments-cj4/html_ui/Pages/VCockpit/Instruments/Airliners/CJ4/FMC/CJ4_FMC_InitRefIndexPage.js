@@ -50,7 +50,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["", "TEMP COMP>"] //Page 26
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage8(fmc); };
-		fmc.onLeftInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage27(fmc); };
+        fmc.onLeftInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage27(fmc); };
         fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage17(fmc); };
         fmc.onRightInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc); };
         //fmc.onRightInput[2] = () => { CJ4_FMC_InitRefIndexPage.ShowPage19(fmc); };
@@ -112,71 +112,71 @@ class CJ4_FMC_InitRefIndexPage {
             let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
             let hours = new String(Math.trunc(simtime / 3600));
             let minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
-			let month = SimVar.GetSimVarValue("E:ZULU MONTH OF YEAR", "number");
-			let day = SimVar.GetSimVarValue("E:ZULU DAY OF MONTH", "number");
-			let year = SimVar.GetSimVarValue("E:ZULU YEAR", "number");
+            let month = SimVar.GetSimVarValue("E:ZULU MONTH OF YEAR", "number");
+            let day = SimVar.GetSimVarValue("E:ZULU DAY OF MONTH", "number");
+            let year = SimVar.GetSimVarValue("E:ZULU YEAR", "number");
 
             let hourspad = hours.padStart(2, "0");
             let minutesspad = minutes.padStart(2, "0");
-			
-			let zuluDate = new Date(year, month - 1, day);  //This whole thing is so we can set the database dates to be 1 day before current date and 28 days after to simulate having a current databse.
-			let startDate = new Date(year, month - 1, day);
-			startDate.setDate(zuluDate.getDate() - 1);
-			let endDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-			endDate.setDate(startDate.getDate() + 28);
-			
-			let secStartDate = new Date(year, month - 1, day);
-			secStartDate.setDate(zuluDate.getDate() - 2);
-			let secEndDate = new Date(secStartDate.getFullYear(), secStartDate.getMonth(), secStartDate.getDate());
-			secEndDate.setDate(secStartDate.getDate() - 27);
-			
-			
-			const formatDate = (date) => {
-				let year = date.getFullYear().toString().substr(2);
-				let day = date.getDate().toString().padStart(2, "0");
 
-				let month = "";
-				switch (date.getMonth()) {
-					case 0:
-					  month = "JAN";
-					  break;
-					case 1:
-					  month = "FEB";
-					  break;
-					case 2:
-					  month = "MAR";
-					  break;
-					case 3:
-					  month = "APR";
-					  break;
-					case 4:
-					  month = "MAY";
-					  break;
-					case 5:
-					  month = "JUN";
-					  break;
-					case 6:
-					  month = "JUL";
-					  break;
-					case 7:
-					  month = "AUG";
-					  break;
-					case 8:
-					  month = "SEP";
-					  break;
-					case 9:
-					  month = "OCT";
-					  break;
-					case 10:
-					  month = "NOV";
-					  break;
-					case 11:
-					  month = "DEC";
-					  break;
-				}
-  
-				return day + month + year;
-			};
+            let zuluDate = new Date(year, month - 1, day);  //This whole thing is so we can set the database dates to be 1 day before current date and 28 days after to simulate having a current databse.
+            let startDate = new Date(year, month - 1, day);
+            startDate.setDate(zuluDate.getDate() - 1);
+            let endDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+            endDate.setDate(startDate.getDate() + 28);
+
+            let secStartDate = new Date(year, month - 1, day);
+            secStartDate.setDate(zuluDate.getDate() - 2);
+            let secEndDate = new Date(secStartDate.getFullYear(), secStartDate.getMonth(), secStartDate.getDate());
+            secEndDate.setDate(secStartDate.getDate() - 27);
+
+
+            const formatDate = (date) => {
+                let year = date.getFullYear().toString().substr(2);
+                let day = date.getDate().toString().padStart(2, "0");
+
+                let month = "";
+                switch (date.getMonth()) {
+                    case 0:
+                        month = "JAN";
+                        break;
+                    case 1:
+                        month = "FEB";
+                        break;
+                    case 2:
+                        month = "MAR";
+                        break;
+                    case 3:
+                        month = "APR";
+                        break;
+                    case 4:
+                        month = "MAY";
+                        break;
+                    case 5:
+                        month = "JUN";
+                        break;
+                    case 6:
+                        month = "JUL";
+                        break;
+                    case 7:
+                        month = "AUG";
+                        break;
+                    case 8:
+                        month = "SEP";
+                        break;
+                    case 9:
+                        month = "OCT";
+                        break;
+                    case 10:
+                        month = "NOV";
+                        break;
+                    case 11:
+                        month = "DEC";
+                        break;
+                }
+
+                return day + month + year;
+            };
             fmc.setTemplate([
                 ["STATUS[color]blue"],
                 ["NAV DATA[color]blue"],
@@ -193,7 +193,7 @@ class CJ4_FMC_InitRefIndexPage {
                 ["<INDEX", "POS INIT>"]
             ]);
         }, 1000, true);
-     
+
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PosInitPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
@@ -236,16 +236,16 @@ class CJ4_FMC_InitRefIndexPage {
             ["<INDEX"]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-		fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage9(fmc); };
-		fmc.onRightInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage9(fmc); };
+        fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage9(fmc); };
+        fmc.onRightInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage9(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage8(fmc) { //FMS CONTROL
         fmc.clearDisplay();
         fmc.setTemplate([
-            ["FMS CONTROL[color]blue"],
-            ["FMS COORD MODE[color]blue"],
-            ["SYNC/INDEP[color]green"],
+            ["", "", "FMS CONTROL[blue]", 0, 0],
+            ["FMS COORD MODE[blue]"],
+            ["SYNC[white s-text]/[white]INDEP[green]"],
             [""],
             [""],
             [""],
@@ -267,8 +267,8 @@ class CJ4_FMC_InitRefIndexPage {
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive 
         }
-        
-        let satnum = getRandomIntInclusive(7,14);
+
+        let satnum = getRandomIntInclusive(7, 14);
 
         fmc.registerPeriodicPageRefresh(() => {
 
@@ -284,9 +284,9 @@ class CJ4_FMC_InitRefIndexPage {
             let year = SimVar.GetSimVarValue("E:ZULU YEAR", "number");
 
             let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")).toDegreeString();
-            let currLat = currPos.slice(0,9)
+            let currLat = currPos.slice(0, 9)
             let currLon = currPos.slice(9)
-           
+
             // TODO: the left/right alignment (distance to border) for time/date in RW doesnt fit the usual header template, so we need a special case here 
             // TODO: the center labels would need to be text-align:right but they are center because of the enclosing span with text-align center, find a solution (same for values)
             //       so the labels are on the left now for better looks
@@ -306,7 +306,7 @@ class CJ4_FMC_InitRefIndexPage {
                 ["SATELLITES:[s-text text-right]", satnum + "[s-text text-left green]"]
             ]);
         }, 1000, true);
-      
+
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage10(fmc) { //FREQUENCY
@@ -376,92 +376,92 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc.registerPeriodicPageRefresh(() => {
 
-		fmc.setTemplate([
-            ["PROGRESS[color]blue", "1", "2"],
-            ["LAST", "DIST[color]blue", "ETE[color]blue", "FUEL-LB[color]blue"],
-            ["-----[color]blue", "----[color]blue", ""],
-            ["TO[color]blue"],
-            ["-----[color]green", "----[color]green", "--:--[color]green", "1100"],
-            ["NEXT[color]blue"],
-            ["-----", "----", "--:--", "1140"],
-            ["DEST[color]blue"],
-            ["-----", "----", "--:--", "730"],
-            ["ALTN[color]blue"],
-            ["----", "----", "--:--", "570"],
-            ["NAVIGATION[color]blue"],
-            ["DME/DME GPS1[color]green"]
-        ]);
-        if (fmc.flightPlanManager.getDestination()) {     
-            
-            let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
-            let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-
-            //default values
-            let prevWaypointIdent = "-----";
-            let prevWaypointDist = "----";
-            let activeWaypointIdent = "-----";
-            let activeWaypointDist = "----";
-            let activeWaypointEte = "--:--";
-            let nextWaypointIdent = "-----";
-            let nextWaypointDist = "----";
-            let nextWaypointEte = "--:--";
-            let destinationIdent = "----";
-            let destinationDistance = "----";
-            let destinationEte = "--:--";
-
-            //previous waypoint data
-            if (fmc.flightPlanManager.getPreviousActiveWaypoint()) {
-                let prevWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint();
-                prevWaypointIdent = new String(fmc.flightPlanManager.getPreviousActiveWaypoint().ident);
-                prevWaypointDist = new Number(Avionics.Utils.computeDistance(currPos,prevWaypoint.infos.coordinates));
-            }
-            
-            //current active waypoint data
-            if (fmc.flightPlanManager.getActiveWaypoint()) {
-                let activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
-                activeWaypointIdent = new String(fmc.flightPlanManager.getActiveWaypoint().ident);
-                activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
-                activeWaypointEte = groundSpeed < 50 ? new String("--:--")
-                    : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
-            }
-
-            //next waypoint data
-            if (fmc.flightPlanManager.getNextActiveWaypoint()) {
-                let nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint();
-                nextWaypointIdent = new String(fmc.flightPlanManager.getNextActiveWaypoint().ident);
-                nextWaypointDist = new Number(activeWaypointDist + Avionics.Utils.computeDistance(fmc.flightPlanManager.getActiveWaypoint().infos.coordinates, nextWaypoint.infos.coordinates));
-                nextWaypointEte = groundSpeed < 50 ? new String("--:--")
-                    : new Date(this.calcETEseconds(nextWaypointDist, groundSpeed) * 1000).toISOString().substr(11, 5);
-            }
-
-            //destination data
-            if (fmc.flightPlanManager.getDestination()) {
-                let destination = fmc.flightPlanManager.getDestination();
-                destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
-                let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
-                let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
-                destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
-                    : destinationDistanceFlightplan;
-                destinationEte = groundSpeed < 50 ? new String("--:--")
-                    : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
-            }
-
             fmc.setTemplate([
-                ["PROGRESS[color]blue", "2", "2"],
+                ["PROGRESS[color]blue", "1", "2"],
                 ["LAST", "DIST[color]blue", "ETE[color]blue", "FUEL-LB[color]blue"],
-                [prevWaypointIdent + "[color]blue", Math.trunc(prevWaypointDist) + "[color]blue", ""],
+                ["-----[color]blue", "----[color]blue", ""],
                 ["TO[color]blue"],
-                [activeWaypointIdent + "[color]green", Math.trunc(activeWaypointDist) + "[color]green", activeWaypointEte + "[color]green", "1100"],
+                ["-----[color]green", "----[color]green", "--:--[color]green", "1100"],
                 ["NEXT[color]blue"],
-                [nextWaypointIdent + "", Math.trunc(nextWaypointDist) + "", nextWaypointEte + "", "1140"],
+                ["-----", "----", "--:--", "1140"],
                 ["DEST[color]blue"],
-                [destinationIdent + "", Math.trunc(destinationDistance) + "", destinationEte + "", "730"],
+                ["-----", "----", "--:--", "730"],
                 ["ALTN[color]blue"],
                 ["----", "----", "--:--", "570"],
                 ["NAVIGATION[color]blue"],
                 ["DME/DME GPS1[color]green"]
             ]);
-        }
+            if (fmc.flightPlanManager.getDestination()) {
+
+                let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+                let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+
+                //default values
+                let prevWaypointIdent = "-----";
+                let prevWaypointDist = "----";
+                let activeWaypointIdent = "-----";
+                let activeWaypointDist = "----";
+                let activeWaypointEte = "--:--";
+                let nextWaypointIdent = "-----";
+                let nextWaypointDist = "----";
+                let nextWaypointEte = "--:--";
+                let destinationIdent = "----";
+                let destinationDistance = "----";
+                let destinationEte = "--:--";
+
+                //previous waypoint data
+                if (fmc.flightPlanManager.getPreviousActiveWaypoint()) {
+                    let prevWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint();
+                    prevWaypointIdent = new String(fmc.flightPlanManager.getPreviousActiveWaypoint().ident);
+                    prevWaypointDist = new Number(Avionics.Utils.computeDistance(currPos, prevWaypoint.infos.coordinates));
+                }
+
+                //current active waypoint data
+                if (fmc.flightPlanManager.getActiveWaypoint()) {
+                    let activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
+                    activeWaypointIdent = new String(fmc.flightPlanManager.getActiveWaypoint().ident);
+                    activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
+                    activeWaypointEte = groundSpeed < 50 ? new String("--:--")
+                        : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
+                }
+
+                //next waypoint data
+                if (fmc.flightPlanManager.getNextActiveWaypoint()) {
+                    let nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint();
+                    nextWaypointIdent = new String(fmc.flightPlanManager.getNextActiveWaypoint().ident);
+                    nextWaypointDist = new Number(activeWaypointDist + Avionics.Utils.computeDistance(fmc.flightPlanManager.getActiveWaypoint().infos.coordinates, nextWaypoint.infos.coordinates));
+                    nextWaypointEte = groundSpeed < 50 ? new String("--:--")
+                        : new Date(this.calcETEseconds(nextWaypointDist, groundSpeed) * 1000).toISOString().substr(11, 5);
+                }
+
+                //destination data
+                if (fmc.flightPlanManager.getDestination()) {
+                    let destination = fmc.flightPlanManager.getDestination();
+                    destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
+                    let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
+                    let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+                    destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
+                        : destinationDistanceFlightplan;
+                    destinationEte = groundSpeed < 50 ? new String("--:--")
+                        : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                }
+
+                fmc.setTemplate([
+                    ["PROGRESS[color]blue", "2", "2"],
+                    ["LAST", "DIST[color]blue", "ETE[color]blue", "FUEL-LB[color]blue"],
+                    [prevWaypointIdent + "[color]blue", Math.trunc(prevWaypointDist) + "[color]blue", ""],
+                    ["TO[color]blue"],
+                    [activeWaypointIdent + "[color]green", Math.trunc(activeWaypointDist) + "[color]green", activeWaypointEte + "[color]green", "1100"],
+                    ["NEXT[color]blue"],
+                    [nextWaypointIdent + "", Math.trunc(nextWaypointDist) + "", nextWaypointEte + "", "1140"],
+                    ["DEST[color]blue"],
+                    [destinationIdent + "", Math.trunc(destinationDistance) + "", destinationEte + "", "730"],
+                    ["ALTN[color]blue"],
+                    ["----", "----", "--:--", "570"],
+                    ["NAVIGATION[color]blue"],
+                    ["DME/DME GPS1[color]green"]
+                ]);
+            }
 
         }, 1000, true);
 
@@ -484,49 +484,49 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc.registerPeriodicPageRefresh(() => {
 
-        let currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
-        let currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
-        let sat = Math.trunc(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius"));
-        let track = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees");
-        let tas = Math.trunc(SimVar.GetSimVarValue("AIRSPEED TRUE", "knots"));
-        let xtk = SimVar.GetSimVarValue("GPS WP CROSS TRK", "meters") * (0.000539957); //meters to NM conversion
-        console.log("xtk:" + xtk)
+            let currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
+            let currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
+            let sat = Math.trunc(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius"));
+            let track = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees");
+            let tas = Math.trunc(SimVar.GetSimVarValue("AIRSPEED TRUE", "knots"));
+            let xtk = SimVar.GetSimVarValue("GPS WP CROSS TRK", "meters") * (0.000539957); //meters to NM conversion
+            console.log("xtk:" + xtk)
 
-        let isaDev = Math.trunc(this.calcISADEV(sat, SimVar.GetSimVarValue("PLANE ALTITUDE", "feet")));
+            let isaDev = Math.trunc(this.calcISADEV(sat, SimVar.GetSimVarValue("PLANE ALTITUDE", "feet")));
 
-        let currHeadwind = Math.trunc(currWindSpeed * (Math.cos((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
-        let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
+            let currHeadwind = Math.trunc(currWindSpeed * (Math.cos((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
+            let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
 
-        let crosswinddirection = currCrosswind > 0 ? "R"
-            : currCrosswind < 0 ? "L"
-            : "";
+            let crosswinddirection = currCrosswind > 0 ? "R"
+                : currCrosswind < 0 ? "L"
+                    : "";
 
-        let headwindDirection = currHeadwind > 0 ? "H"
-            : currHeadwind < 0 ? "T"
-            : "";
+            let headwindDirection = currHeadwind > 0 ? "H"
+                : currHeadwind < 0 ? "T"
+                    : "";
 
-        let xtkDirection = xtk > 0 ? "R"
-            : xtk < 0 ? "L"
-            : "";
+            let xtkDirection = xtk > 0 ? "R"
+                : xtk < 0 ? "L"
+                    : "";
 
-        fmc.setTemplate([
-            ["PROGRESS[color]blue", "2/2[color]blue"],
-            ["HEADWIND[color]blue", "CROSSWIND[color]blue"],
-            [headwindDirection + " " + Math.abs(currHeadwind) + " KT", crosswinddirection + " " + Math.abs(currCrosswind) + " KT"],
-            ["WIND[color]blue", "SAT/ISA DEV[color]blue"],
-            [currWindDirection + "/" + currWindSpeed , sat + "\xB0" + "C/" + isaDev + "\xB0" + "C"],
-            ["XTK[color]blue", "TAS[color]blue"],
-            [xtkDirection + " " + Math.abs(xtk.toFixed(1)) + " NM", tas + " KT"],
-            [""],
-            [""],
-            [""],
-            [""],
-            ["", "RNP[color]blue", "POS ACCURACY[color]blue"],
-            ["", "----", "0.06"]
-        ]);
+            fmc.setTemplate([
+                ["PROGRESS[color]blue", "2/2[color]blue"],
+                ["HEADWIND[color]blue", "CROSSWIND[color]blue"],
+                [headwindDirection + " " + Math.abs(currHeadwind) + " KT", crosswinddirection + " " + Math.abs(currCrosswind) + " KT"],
+                ["WIND[color]blue", "SAT/ISA DEV[color]blue"],
+                [currWindDirection + "/" + currWindSpeed, sat + "\xB0" + "C/" + isaDev + "\xB0" + "C"],
+                ["XTK[color]blue", "TAS[color]blue"],
+                [xtkDirection + " " + Math.abs(xtk.toFixed(1)) + " NM", tas + " KT"],
+                [""],
+                [""],
+                [""],
+                [""],
+                ["", "RNP[color]blue", "POS ACCURACY[color]blue"],
+                ["", "----", "0.06"]
+            ]);
 
         }, 1000, true);
-        
+
         fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
         fmc.updateSideButtonActiveStatus();
@@ -539,7 +539,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["", ""],
             ["ROUTE" + "[color]blue", "ALTN" + "[color]blue"],
             ["----------", "----"],
-			["FLT NO[color]blue", "ORIG RWY[color]blue"],
+            ["FLT NO[color]blue", "ORIG RWY[color]blue"],
             ["--------"],
             ["VIA" + "[color]blue", "TO" + "[color]blue"],
             ["-----", "-----"],
@@ -580,7 +580,7 @@ class CJ4_FMC_InitRefIndexPage {
         if (databaseWaypoint) {
             databaseIdentCell = databaseWaypoint.ident;
             console.log("icao: " + databaseWaypoint.icao);
-            databaseWaypointType = databaseWaypoint.icao.slice(0,1);
+            databaseWaypointType = databaseWaypoint.icao.slice(0, 1);
             console.log("databaseWaypointType: " + databaseWaypointType);
         }
 
@@ -609,13 +609,13 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<INDEX", "DEFINE WPT>"]
         ]);
-        
+
         fmc.onLeftInput[1] = () => {
             fmc.clearUserInput();
             if (databaseWaypointType == "A") {
                 CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, databaseWaypoint)
             }
-            
+
 
 
         };
@@ -631,8 +631,8 @@ class CJ4_FMC_InitRefIndexPage {
         let longestRunwaySort = 0;
         let longestRunwayLength = 0;
         for (let i = 1; i < runways.length; i++) {
-                longestRunwayLength = runways[i].length
-                if (longestRunwayLength > longestRunwaySort) {
+            longestRunwayLength = runways[i].length
+            if (longestRunwayLength > longestRunwaySort) {
                 longestRunwaySort = longestRunwayLength;
                 longestRunway = runways[i];
             }
@@ -640,20 +640,20 @@ class CJ4_FMC_InitRefIndexPage {
         let longestRunwayDesignation = new String(longestRunway.designation);
         let longestRunwayOutput = "";
         let longestRunwayMod = new String(longestRunwayDesignation.slice(-1));
-            if (longestRunwayMod == "L" || "C" || "R") {
-                if (longestRunwayDesignation.length == 2) {
-                    longestRunwayOutput = "0" + longestRunwayDesignation;
-                } else {
-                    longestRunwayOutput = longestRunwayDesignation;
-                }
+        if (longestRunwayMod == "L" || "C" || "R") {
+            if (longestRunwayDesignation.length == 2) {
+                longestRunwayOutput = "0" + longestRunwayDesignation;
             } else {
-                if (depRunwayDesignation.length == 2) {
-                    longestRunwayOutput = longestRunwayDesignation;
-                } else {
-                    longestRunwayOutput = "0" + longestRunwayDesignation;
-                }
+                longestRunwayOutput = longestRunwayDesignation;
             }
-        let longestRunwayNumberOnly = new Number(longestRunwayOutput.slice(0,2));
+        } else {
+            if (depRunwayDesignation.length == 2) {
+                longestRunwayOutput = longestRunwayDesignation;
+            } else {
+                longestRunwayOutput = "0" + longestRunwayDesignation;
+            }
+        }
+        let longestRunwayNumberOnly = new Number(longestRunwayOutput.slice(0, 2));
         let longestRunwayOppositeNumber = longestRunwayNumberOnly < 19 ? longestRunwayNumberOnly + 18
             : longestRunwayNumberOnly - 18;
         let longestRunwayOppositeMod = "";
@@ -661,8 +661,8 @@ class CJ4_FMC_InitRefIndexPage {
         if (longestRunwayMod == "L" || "C" || "R") {
             longestRunwayOppositeMod = longestRunwayMod == "R" ? "L"
                 : longestRunwayMod == "C" ? "C"
-                : longestRunwayMod == "L" ? "R"
-                : "";
+                    : longestRunwayMod == "L" ? "R"
+                        : "";
             longestRunwayOppositeDesignator = longestRunwayOppositeNumber + longestRunwayOppositeMod;
         } else {
             longestRunwayOppositeDesignator = longestRunwayOppositeNumber;
@@ -760,7 +760,7 @@ class CJ4_FMC_InitRefIndexPage {
             [" 750 LB"],
             [""],
             [""],
-			[""],
+            [""],
             [""],
             [" MAX MAP SYMB[color]blue"],
             ["40"]
@@ -775,7 +775,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["DEFAULTS[color]blue", "2", "5"],
             ["CLIMB SPEED[color]blue"],
             ["240/.64"],
-			["CRUISE SPEED[color]blue"],
+            ["CRUISE SPEED[color]blue"],
             ["300/.74"],
             ["DESCENT SPEED[color]blue"],
             [".74/290"],
@@ -812,8 +812,8 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage23(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage28(fmc); };
         fmc.updateSideButtonActiveStatus();
-	}
-		static ShowPage28(fmc) { //DEFAULTS Page 4
+    }
+    static ShowPage28(fmc) { //DEFAULTS Page 4
         fmc.clearDisplay();
         fmc.setTemplate([
             ["DEFAULTS[color]blue", "4", "5"],
@@ -834,7 +834,7 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage29(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage29(fmc) { //DEFAULTS Page 5
+    static ShowPage29(fmc) { //DEFAULTS Page 5
         fmc.clearDisplay();
         fmc.setTemplate([
             ["DEFAULTS[color]blue", "5", "5"],
