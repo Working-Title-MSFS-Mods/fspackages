@@ -245,7 +245,10 @@ class WT_FMC_Renderer {
         if (match) {
             while (match != null) {
                 let el = document.createElement("span");
-                el.innerHTML = match[1];
+                var encodedStr = match[1].replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+                    return '&#' + i.charCodeAt(0) + ';';
+                  });
+                el.innerHTML = encodedStr;
 
                 if (match[2]) {
                     // do css
