@@ -201,18 +201,18 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage6(fmc) { //VOR CTL
         fmc.clearDisplay();
         fmc.setTemplate([
-            ["FMS1 VOR CONTROL[color]blue"],
+            ["", "", "FMS1 VOR/DME CONTROL[blue]", 0, 0],
             [""],
             ["---", "---"],
-            ["", "", "NAVAID INHIBIT[color]blue"],
+            ["", "", "NAVAID INHIBIT[blue]"],
             ["---", "---"],
             [""],
             ["---", "---"],
             [""],
             ["---", "---"],
             ["VOR USAGE[color]blue", "DME USAGE[color]blue"],
-            ["YES/NO[color]green", "YES/NO[color]green"],
-            ["-----------------------" + "[color]blue"],
+            ["YES/[white]NO[green]", "YES[green]/NO"],
+            ["-----------------------" + "[blue]"],
             ["<INDEX"]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };

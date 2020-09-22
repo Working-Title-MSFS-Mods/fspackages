@@ -205,6 +205,7 @@ class WT_FMC_Renderer {
     setTitle(content) {
         if (arguments.length > 1) {
             this.setTitle3Head(...arguments);
+            return;
         }
 
         let color = content.split("[color]")[1];
