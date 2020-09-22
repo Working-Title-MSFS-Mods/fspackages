@@ -470,6 +470,9 @@
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 			<NODE_ID>PASSENGER_Knob_Heat_1</NODE_ID>
 		</UseTemplate>
+		<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
+			<NODE_ID>PASSENGER_Knob_Heat_2</NODE_ID>
+		</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 			<NODE_ID>PASSENGER_Knob_Air_1</NODE_ID>
 		</UseTemplate>
