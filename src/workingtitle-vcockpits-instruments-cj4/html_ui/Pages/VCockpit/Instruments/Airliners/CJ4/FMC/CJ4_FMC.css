@@ -212,40 +212,6 @@ fmc-b747-8-main-display::before {
   text-align: center;
 }
 
-/* Scratch pad */
-
-#in-out {
-  padding-left: 6%;
-  display: inline-block;
-  margin-top: 0.4%;
-}
-
-.footer {
-  margin-top: -0.5%;
-  height: 7.0vw;
-}
-
-/* Message line */
-
-#msg-line {
-  margin-left: 2.5%;
-  margin-right: 2.5%;
-}
-
-#exec-sign {
-  font-size: 6.0vw;
-}
-
-.blackwhite {
-  background-color: white;
-  color: #0e0d08;
-}
-
-.fitcontent {
-  width: auto;
-  height: auto;
-}
-
 #page-info.s-text {
   font-size: 6vw;
   letter-spacing: normal;
