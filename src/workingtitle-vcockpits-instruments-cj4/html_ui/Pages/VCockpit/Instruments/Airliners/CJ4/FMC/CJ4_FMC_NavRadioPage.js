@@ -7,7 +7,7 @@ class CJ4_FMC_NavRadioPage {
         }
         fmc.onLeftInput[0] = () => {
             let value = fmc.inOut;
-            let numValue = parseFloat(value);
+            let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
             console.log(numValue);
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
@@ -23,6 +23,19 @@ class CJ4_FMC_NavRadioPage {
                 fmc.vhf1Frequency = 0;
                 CJ4_FMC_NavRadioPage.ShowPage1(fmc);
             }
+            else if (value.length === 0) {
+
+                let current = fmc.vhf1Frequency;
+                let recall = fmc.rcl1Frequency;
+
+                fmc.vhf1Frequency = recall;
+                fmc.rcl1Frequency = current;
+
+                fmc.radioNav.swapVHFFrequencies(fmc.instrumentIndex, 1);
+                fmc.requestCall(() => {
+                    CJ4_FMC_NavRadioPage.ShowPage1(fmc);
+                });
+            }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
@@ -33,7 +46,7 @@ class CJ4_FMC_NavRadioPage {
         }
         fmc.onRightInput[0] = () => {
             let value = fmc.inOut;
-            let numValue = parseFloat(value);
+            let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
                 fmc.vhf2Frequency = numValue;
@@ -48,6 +61,18 @@ class CJ4_FMC_NavRadioPage {
                 fmc.vhf2Frequency = 0;
                 CJ4_FMC_NavRadioPage.ShowPage1(fmc);
             }
+            else if (value.length === 0) {
+                let current = fmc.vhf2Frequency;
+                let recall = fmc.pre2Frequency;
+
+                fmc.vhf2Frequency = recall;
+                fmc.pre2Frequency = current;
+
+                fmc.radioNav.swapVHFFrequencies(fmc.instrumentIndex, 2);
+                fmc.requestCall(() => {
+                    CJ4_FMC_NavRadioPage.ShowPage1(fmc);
+                });
+            }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
@@ -58,12 +83,14 @@ class CJ4_FMC_NavRadioPage {
         }
         fmc.onLeftInput[1] = () => {
             let value = fmc.inOut;
-            let numValue = parseFloat(value);
+            let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
                 fmc.rcl1Frequency = numValue;
-                fmc.requestCall(() => {
-                    CJ4_FMC_NavRadioPage.ShowPage1(fmc);
+                fmc.radioNav.setVHFStandbyFrequency(fmc.instrumentIndex, 1, numValue).then(() => {
+                    fmc.requestCall(() => {
+                        CJ4_FMC_NavRadioPage.ShowPage1(fmc);
+                    });
                 });
             }
             else if (value === FMCMainDisplay.clrValue) {
@@ -80,12 +107,14 @@ class CJ4_FMC_NavRadioPage {
         }
         fmc.onRightInput[1] = () => {
             let value = fmc.inOut;
-            let numValue = parseFloat(value);
+            let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
                 fmc.pre2Frequency = numValue;
-                fmc.requestCall(() => {
-                    CJ4_FMC_NavRadioPage.ShowPage1(fmc);
+                fmc.radioNav.setVHFStandbyFrequency(fmc.instrumentIndex, 2, numValue).then(() => {
+                    fmc.requestCall(() => {
+                        CJ4_FMC_NavRadioPage.ShowPage1(fmc);
+                    });
                 });
             }
             else if (value === FMCMainDisplay.clrValue) {
@@ -102,7 +131,7 @@ class CJ4_FMC_NavRadioPage {
         }
         fmc.onLeftInput[2] = () => {
             let value = fmc.inOut;
-            let numValue = parseFloat(value);
+            let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 108 && numValue <= 117.95 && RadioNav.isHz50Compliant(numValue)) {
                 fmc.vor1Frequency = numValue;
@@ -134,7 +163,7 @@ class CJ4_FMC_NavRadioPage {
         }
         fmc.onRightInput[2] = () => {
             let value = fmc.inOut;
-            let numValue = parseFloat(value);
+            let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 108 && numValue <= 117.95 && RadioNav.isHz50Compliant(numValue)) {
                 fmc.vor2Frequency = numValue;
@@ -348,6 +377,32 @@ class CJ4_FMC_NavRadioPage {
             ["", "BELOW"]
         ]);
 		fmc.updateSideButtonActiveStatus();
-	}
+    }
+    
+    /**
+     * Parses a radio input string and returns a float number.
+     * @param {String} input The radio string input.
+     * @returns {Number} The parsed float number.
+     */
+    static parseRadioInput(input) {
+        const normalizeToHundreds = (freq) => freq > 100 ? freq : freq + 100;
+
+        if (input.indexOf('.') !== -1) {
+            return normalizeToHundreds(parseFloat(input));
+        }
+        else {
+            switch (input.length) {
+                case 3:
+                    return normalizeToHundreds(parseFloat(input) / 10);
+                case 4:
+                case 5:
+                    return normalizeToHundreds(parseFloat(input) / 100);
+                case 6:
+                    return normalizeToHundreds(parseFloat(input) / 1000);
+            }
+        }
+
+        return -1;
+    }
 }
 //# sourceMappingURL=CJ4_FMC_NavRadioPage.js.map
