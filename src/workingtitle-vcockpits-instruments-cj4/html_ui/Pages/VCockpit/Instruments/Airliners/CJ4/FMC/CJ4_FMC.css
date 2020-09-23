@@ -155,7 +155,7 @@ fmc-b747-8-main-display::before {
 
 .s-text {
   font-size: 5vw;
-  letter-spacing: 0.7vw;
+  /* letter-spacing: 0.7vw; */
 }
 
 .label {

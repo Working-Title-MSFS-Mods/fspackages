@@ -11,8 +11,13 @@ class WT_FMC_Renderer {
         this._fmc.setTitle = this.setTitle.bind(fmc);
         this._fmc.setLabel = this.setLabel.bind(fmc);
         this._fmc.setLine = this.setLine.bind(fmc);
+        this._fmc.onLetterInput = this.onLetterInput.bind(fmc);
+        // this._fmc.clearDisplay = this.clearDisplay.bind(fmc); // only for prototype
 
         // bind own methods to fmc
+        // this._fmc.setTemplateRaw = this.setTemplateRaw; // just a prototype
+        // this._fmc.renderLetters = this.renderLetters.bind(fmc); // just a prototype
+        // this._fmc.renderScratchpadRaw = this.renderScratchpadRaw.bind(fmc); // just a prototype
         this._fmc.setTitle3Head = this.setTitle3Head.bind(fmc);
         this._fmc.renderHeader = this.renderHeader.bind(fmc);
         this._fmc.parseContent = this.parseContent.bind(fmc);
@@ -23,6 +28,140 @@ class WT_FMC_Renderer {
         this._messageBox = this.renderMsgLine();
         this._execEl = this.renderExec();
     }
+
+    // -----------------------------
+    // !!! PROTOTYPE for char grid
+    // -----------------------------
+    setTemplateRaw(template) {
+        let mainFrame = document.getElementById("Electricity");
+        // clear         
+        // mainFrame.textContent = "TEST";
+        var container = document.createElement("div");
+        container.id = "wt_container";
+
+        for (let r = 0; r < 15; r++) {
+            // rows
+            var row = document.createElement("div");
+            if (r > 0) {
+                row.classList.add("fmc-row");
+            } else {
+                row.classList.add("fmc-header");
+            }
+
+            if (r % 2 == 1) row.classList.add("s-text"); // i guess we remove this and the template does it
+            // else if (r % 3 == 1) row.classList.add("small-text");
+
+            // create spans
+            var ltrContainer = document.createElement("div");
+            ltrContainer.classList.add("ltrContainer");
+            for (let c = 0; c < 24; c++) {
+                var colContainer = document.createElement("div");
+                colContainer.classList.add("ltrContainer");
+                var col = document.createElement("div");
+                col.classList.add("letter");
+                colContainer.appendChild(col);
+                row.appendChild(colContainer);
+            }
+
+            // only content
+            if (r < 13) {
+                if (template[r][0] !== "") {
+                    // LEFT
+                    this.renderLetters(template[r][0], row);
+                }
+
+                if (template[r][1] && template[r][1] !== "") {
+                    // RIGHT
+                    this.renderLetters(template[r][1], row, "right");
+                }
+
+                if (template[r][2] && template[r][2] !== "") {
+                    // CENTER
+                    this.renderLetters(template[r][2], row, "center");
+                }
+            } else if (r === 13) {
+                // scratchpad
+                this.renderScratchpadRaw(row);
+            } else if (r === 14) {
+                // msg
+                this.renderMsgLineRaw(row);
+            }
+
+            container.appendChild(row);
+        }
+
+        mainFrame.appendChild(container);
+    }
+
+    // DIR = left, right, center
+    renderLetters(template, row, dir = "left") {
+        let cnt = this._fmc.parseContent(template); // TODO remove from fmc scope later
+        let charCount = 0;
+        // count all letters
+        cnt.forEach(x => { charCount += x.textContent.length });
+
+        // set start pos
+        let ci = 0;
+        if (dir === "right")
+            ci = 24 - (charCount);
+        else if (dir == "center")
+            ci = Math.round(((23 / 2) - (charCount / 2)), 0);
+
+        // render
+        cnt.forEach(x => {
+            let letters = x.textContent.split("");
+            (letters).forEach(c => {
+                row.childNodes[ci].childNodes[0].classList.add(...x.classList);
+                row.childNodes[ci].childNodes[0].textContent = c;
+                ci++;
+            });
+        });
+    }
+
+    onLetterInput(l) {
+        if (this.inOut === FMCMainDisplay.clrValue) {
+            this.inOut = "";
+        }
+        if (this.isDisplayingErrorMessage) {
+            this.inOut = this.lastUserInput;
+            this.isDisplayingErrorMessage = false;
+        }
+        this.inOut += l;
+
+        if (document.getElementById("wt_container"))
+            this._templateRenderer.renderScratchpadRaw(document.getElementById("wt_container").childNodes[13]);
+    }
+
+    onInput() {
+    }
+
+    renderScratchpadRaw(row) {
+        row.classList.remove("s-text");
+        row.style.marginTop = "-1%";
+
+        // clear everything (TODO: could be better)
+        row.childNodes.forEach(n => {
+            n.childNodes[0].textContent = "";
+        });
+
+        // get inout
+        let inout = this._fmc.inOut;
+        this.renderLetters(" " + inout, row);
+
+        row.childNodes[0].childNodes[0].classList.add("blue");
+        row.childNodes[0].childNodes[0].textContent = "[";
+        row.childNodes[23].childNodes[0].classList.add("blue");
+        row.childNodes[23].childNodes[0].textContent = "]";
+    }
+
+    renderMsgLineRaw(row) {
+        row.style.marginTop = "-1%";
+        this.renderLetters("FUEL FLOW NOT AVAIL", row);
+    }
+
+    // -----------------------------
+    // Old style rendering
+    // -----------------------------
 
     // FMCMainDisplay overrides
 
@@ -246,10 +385,14 @@ class WT_FMC_Renderer {
         if (match) {
             while (match != null) {
                 let el = document.createElement("span");
-                var encodedStr = match[1].replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
-                    return '&#' + i.charCodeAt(0) + ';';
-                  });
-                el.innerHTML = encodedStr;
+                // var encodedStr = match[1].replace(/[\u00A0-\u9999<>\&]/gim, function (i) {
+                //     return '&#' + i.charCodeAt(0) + ';';
+                // });
+                // var spanned = encodedStr.replace(/./g, function (i) {
+                //     return '<span class="letter">' + i + '</span>';
+                // });
+
+                el.textContent = match[1];
 
                 if (match[2]) {
                     let classes = match[2].match(/[^\s\[\]]+/g);
@@ -323,6 +466,11 @@ class WT_FMC_Renderer {
     }
 
     clearDisplay() {
+        // let mainFrame = this.getChildById("Electricity");
+        // // clear         
+        // this.generateHTMLLayout(mainFrame);
+        let container = document.getElementById("wt_container");
+        if (container) container.remove();
         this.setTitle("", 0);
         this.setTitle("", 1);
         this.setTitle("", 2);

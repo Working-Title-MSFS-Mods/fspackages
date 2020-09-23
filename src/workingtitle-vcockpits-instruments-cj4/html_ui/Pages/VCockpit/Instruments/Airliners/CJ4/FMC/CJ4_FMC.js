@@ -213,8 +213,16 @@ class CJ4_FMC extends FMCMainDisplay {
             }
             return true;
         }
+
         return false;
     }
+
+    onLetterInput(input){
+      
+
+        this._templateRenderer.onInput();
+    }
+
     clearDisplay() {
         super.clearDisplay();
         this._templateRenderer.clearDisplay.apply(this);
