@@ -11,9 +11,9 @@ class CJ4_FMC_PerfInitPage {
             ["<TAKEOFF", "APPROACH>"], //Page 6, 7, 8 ---13, 14, 15
             [""],
             [""],
-            ["ADVISORY VNAV[color]blue"],
-            ["ENABLE/DISABLE[color]green"],
-            ["VNAV PLAN SPD[color]blue"],
+            ["ADVISORY VNAV[blue]"],
+            ["ENABLE[s-text]/[white]DISABLE[green]"],
+            ["VNAV PLAN SPD[blue]"],
             ["", "", "--- KT"]
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
