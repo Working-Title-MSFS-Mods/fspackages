@@ -795,15 +795,15 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage24(fmc) { //DEFAULTS Page 3
         fmc.clearDisplay();
         fmc.setTemplate([
-            ["DEFAULTS[color]blue", "3", "5"],
-            ["DME USAGE[color]blue"],
-            ["YES/NO[color]green"],
-            ["VOR USAGE[color]blue"],
-            ["YES/NO[color]green"],
+            ["", "", "DEFAULTS[blue]", 3, 5],
+            ["DME USAGE[blue]"],
+            ["YES[green]/[white]NO[white s-text]"],
+            ["VOR USAGE[blue]"],
+            ["YES[s-text]/[white]NO[green]"],
             ["NEAREST APTS MIN RWY[color]blue"],
             ["4000 FT"],
-            ["FLIGHT LOG ON LDG[color]blue"],
-            ["YES/NO[color]green"],
+            ["FLIGHT LOG ON LDG[blue]"],
+            ["YES[green]/[white]NO[white s-text]"],
             [""],
             [""],
             [""],
@@ -816,11 +816,11 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage28(fmc) { //DEFAULTS Page 4
         fmc.clearDisplay();
         fmc.setTemplate([
-            ["DEFAULTS[color]blue", "4", "5"],
-            ["ON/OFF[color]green"],
-            ["DSPL TMP@ FINAL VPA"],
-            ["UNCOMP/COMP"],
-            [""],
+            ["", "", "DEFAULTS[blue]", 4, 5],
+            ["TEMP COMP[blue]"],
+            ["ON[s-text]/[white]OFF[green]"],
+            ["DSPL TMP@ FINAL VPA[blue]"],
+            ["UNCOMP[s-text]/[white]COMP[green]"],
             [""],
             [""],
             [""],
@@ -837,13 +837,13 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage29(fmc) { //DEFAULTS Page 5
         fmc.clearDisplay();
         fmc.setTemplate([
-            ["DEFAULTS[color]blue", "5", "5"],
-            ["", "", "TAKEOFF & APPROACH REF[color]blue"],
+            ["", "", "DEFAULTS[blue]", 5, 5],
+            ["", "", "TAKEOFF & APPROACH REF[blue]"],
             [""],
-            ["T/O FLAPS"],
-            ["0/15[color]green"],
-            ["A/I[color]blue"],
-            ["OFF/ON[color]green"],
+            ["T/O FLAPS[blue]"],
+            ["0[s-text]/[white]15[green]"],
+            ["A/I[blue]"],
+            ["OFF[green]/[white]ON[green]"],
             [""],
             [""],
             [""],
