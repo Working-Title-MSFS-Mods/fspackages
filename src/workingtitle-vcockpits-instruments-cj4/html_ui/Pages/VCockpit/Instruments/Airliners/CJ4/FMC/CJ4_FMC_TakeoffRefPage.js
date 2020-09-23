@@ -24,7 +24,7 @@ class CJ4_FMC_TakeoffRefPage {
         let headwind = "";
         let crosswind = "";
         let crosswindDirection = "";
-        let headwindDirection = "";
+        let headwindDirection = "---";
 
         if (fmc.takeoffWindDir != "---") {
             headwind = Math.trunc(fmc.takeoffWindSpeed * (Math.cos((depRunwayDirection * Math.PI / 180) - (fmc.takeoffWindDir * Math.PI / 180))));
@@ -122,6 +122,11 @@ class CJ4_FMC_TakeoffRefPage {
     }
     static ShowPage2(fmc) { //TAKEOFF REF Page 2
         fmc.clearDisplay();
+        let originIdent = "";
+        let origin = fmc.flightPlanManager.getOrigin();
+        if (origin) {
+            originIdent = origin.ident;
+        }
         let grWtCell = "";
         let grossWeightValue = new Number(fmc.getWeight());
         if (isFinite(grossWeightValue)) {
@@ -206,20 +211,21 @@ class CJ4_FMC_TakeoffRefPage {
             : "0";
         let takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
             : "OFF[s-text]/[white]ON[green]";
-        fmc.setTemplate([
-            ["TAKEOFF REF[color]blue", "2", "3"],
-            ["A/I[blue]", "V[blue]1:[s-text blue] " + v1.toFixed(0).toString().padStart(3, "&nbsp;")],
+
+        fmc._templateRenderer.setTemplateRaw([
+            [originIdent, "2/3[blue]", "TAKEOFF REF[blue]"],
+            ["A/I[blue]", "V[d-text blue]1:[s-text blue] " + v1.toFixed(0).padStart(3, " ") + "[s-text]"],
             [takeoffAntiIceActive],
-            ["T/O FLAPS[color]blue", "V[blue]R:[s-text blue] " + vR.toFixed(0).toString().padStart(3, "&nbsp;")],
+            ["T/O FLAPS[blue]", "V[d-text blue]R:[s-text blue] " + vR.toFixed(0).padStart(3, " ") + "[s-text]"],
             [takeoffFlapsActive],
-            ["TOW/ GWT/MTOW[color]blue", "V[blue]2:[s-text blue] " + v2.toFixed(0).toString().padStart(3, "&nbsp;")],
+            ["TOW/ GWT/MTOW[blue]", "V[d-text blue]2:[s-text blue] " + v2.toFixed(0).padStart(3, " ") + "[s-text]"],
             [tow + "/" + grWtCell + "/17110"],
-            ["TOFL / " + depRunway + "[color]blue", "V[blue]T:[s-text blue] 140"],
+            ["TOFL / " + depRunway + "[blue]", "V[d-text blue]T:[s-text blue] 140[s-text]"],
             [fmc.endTakeoffDist.toFixed(0) + " / " + Math.round(depRunwayLength) + " FT"],
             [""],
             [""],
             [""],
-            ["", "SEND>"]
+            ["", "SEND>[s-text]"]
         ]);
         fmc.onLeftInput[0] = () => {
             if (fmc.takeoffAntiIce == 0) {
@@ -272,16 +278,16 @@ class CJ4_FMC_TakeoffRefPage {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
         }
         let tow = (grWtCell - 100);
-        fmc.setTemplate([
-            [originIdent + " TAKEOFF REF[color]blue", "3", "3"],
-            ["TOW/MTOW[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            [originIdent, "3/3[blue]", "TAKEOFF REF[blue]"],
+            ["TOW/MTOW[blue]"],
             [tow + "/17110"],
-            ["", "STRUCTURAL LIMIT[color]blue"],
-            ["", "17110"],
-            ["", "PERFORMANCE LIMIT[color]blue"],
-            ["", "17110"],
-            ["", "RUNWAY LENGTH LIMIT[color]blue"],
-            ["", "17110"],
+            ["", "STRUCTURAL LIMIT[blue]"],
+            ["", "17110[s-text]"],
+            ["", "PERFORMANCE LIMIT[blue]"],
+            ["", "17110[s-text]"],
+            ["", "RUNWAY LENGTH LIMIT[blue]"],
+            ["", "17110[s-text]"],
             [""],
             [""],
             [""],

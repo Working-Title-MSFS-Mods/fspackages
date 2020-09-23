@@ -1,4 +1,4 @@
-/* FOR PROTOTYPE */
+/* FOR PROTOTYPE Char grid */
 #wt_container {
     margin: 0;
     width: 100%;
@@ -62,6 +62,12 @@
     width: 40px;
     min-height: 22px;
     white-space: pre;
+}
+
+/* Text */
+
+.d-text { /* default text size for templates */
+    font-size: 6vw;
 }
 
 /* General */
