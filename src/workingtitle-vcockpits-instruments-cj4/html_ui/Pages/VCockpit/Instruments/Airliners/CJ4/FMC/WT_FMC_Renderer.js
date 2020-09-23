@@ -6,12 +6,15 @@ class WT_FMC_Renderer {
     constructor(fmc) {
         this._fmc = fmc;
 
+        this._msg = "";
+
         // overrides
-        this._fmc.setTemplate = this.setTemplate.bind(fmc);
-        this._fmc.setTitle = this.setTitle.bind(fmc);
-        this._fmc.setLabel = this.setLabel.bind(fmc);
-        this._fmc.setLine = this.setLine.bind(fmc);
-        this._fmc.onLetterInput = this.onLetterInput.bind(fmc);
+        this._fmc.setTemplate = this.setTemplate;
+        this._fmc.setTitle = this.setTitle;
+        this._fmc.setLabel = this.setLabel;
+        this._fmc.setLine = this.setLine;
+        this._fmc.legacyOnEvent = fmc.onEvent;
+        this._fmc.onEvent = this.onEvent;
         // this._fmc.clearDisplay = this.clearDisplay.bind(fmc); // only for prototype
 
         // bind own methods to fmc
@@ -32,10 +35,14 @@ class WT_FMC_Renderer {
     // -----------------------------
     // !!! PROTOTYPE for char grid
     // -----------------------------
-    setTemplateRaw(template) {
-        let mainFrame = document.getElementById("Electricity");
-        // clear         
-        // mainFrame.textContent = "TEST";
+    setTemplateRaw(template) {     
+        console.log("setTemplateRaw()");
+        
+        // clear just to be sure
+        let existingContainer = document.getElementById("wt_container");
+        if(existingContainer) existingContainer.remove();
+
+        // create container
         var container = document.createElement("div");
         container.id = "wt_container";
 
@@ -90,11 +97,13 @@ class WT_FMC_Renderer {
             container.appendChild(row);
         }
 
+        let mainFrame = document.getElementById("Electricity");
         mainFrame.appendChild(container);
     }
 
     // DIR = left, right, center
     renderLetters(template, row, dir = "left") {
+        if (!row) return;
         let cnt = this._fmc.parseContent(template); // TODO remove from fmc scope later
         let charCount = 0;
         // count all letters
@@ -118,21 +127,21 @@ class WT_FMC_Renderer {
         });
     }
 
-    onLetterInput(l) {
-        if (this.inOut === FMCMainDisplay.clrValue) {
-            this.inOut = "";
-        }
-        if (this.isDisplayingErrorMessage) {
-            this.inOut = this.lastUserInput;
-            this.isDisplayingErrorMessage = false;
-        }
-        this.inOut += l;
+    onEvent(e) {
+        this.legacyOnEvent(e);
 
         if (document.getElementById("wt_container"))
-            this._templateRenderer.renderScratchpadRaw(document.getElementById("wt_container").childNodes[13]);
+            this._templateRenderer.renderScratchpadRaw(this._templateRenderer.getTRow(13));
     }
 
-    onInput() {
+    getTRow(index) {
+        let container = document.getElementById("wt_container");
+        if (!container){
+            console.warn("Warning: Row " + index + " not found");
+            return undefined;
+        } 
+
+        return container.childNodes[index];
     }
 
     renderScratchpadRaw(row) {
@@ -148,6 +157,7 @@ class WT_FMC_Renderer {
         let inout = this._fmc.inOut;
         this.renderLetters(" " + inout, row);
 
+        // render hacky brackets        
         row.childNodes[0].childNodes[0].classList.add("blue");
         row.childNodes[0].childNodes[0].textContent = "[";
         row.childNodes[23].childNodes[0].classList.add("blue");
@@ -156,7 +166,29 @@ class WT_FMC_Renderer {
 
     renderMsgLineRaw(row) {
         row.style.marginTop = "-1%";
-        this.renderLetters("FUEL FLOW NOT AVAIL", row);
+        this.renderLetters(this._msg, row);
+
+        // i don't really like to "bind" this here, but its ok for now
+        if (this._fmc.fpHasChanged) {
+            this.showExec(row);
+        } else {
+            this.hideExec(row);
+        }
+    }
+
+    setMsg(text) {
+        this._msg = text;
+        this.renderMsgLineRaw(this.getTRow(14));
+    }
+
+    showExec(row = this.getTRow(14)) {
+        console.log("Show EXEC");
+        this.renderLetters("EXEC[blackwhite]", row, "right");
+    }
+
+    hideExec(row = this.getTRow(14)) {
+        console.log("Hide EXEC");
+        this.renderLetters("    ", row, "right");
     }
 
     // -----------------------------
@@ -357,23 +389,19 @@ class WT_FMC_Renderer {
         this._titleElement[2].textContent = this._title;;
     }
 
-    // METHODS
-
-    setMsg(text) {
-        this._messageBox.innerHTML = text;
-    }
-
-    showExec() {
-        if (this._execEl) {
-            this._execEl.classList.remove("hidden");
+    renderExec() {
+        let execEl = document.getElementById("exec-sign");
+        if (!execEl) {
+            execEl = document.createElement("div");
+            execEl.id = "exec-sign";
+            execEl.innerHTML = "EXEC";
+            execEl.classList.add("blackwhite", "line-right", "fitcontent", "hidden");
+            document.getElementById("msg-line").append(execEl);
         }
+
+        return execEl;
     }
 
-    hideExec() {
-        if (this._execEl) {
-            this._execEl.classList.add("hidden");
-        }
-    }
 
     // "PRIVATE"
 
@@ -450,19 +478,6 @@ class WT_FMC_Renderer {
         lineEl.append(msgEl);
 
         return msgEl;
-    }
-
-    renderExec() {
-        let execEl = document.getElementById("exec-sign");
-        if (!execEl) {
-            execEl = document.createElement("div");
-            execEl.id = "exec-sign";
-            execEl.innerHTML = "EXEC";
-            execEl.classList.add("blackwhite", "line-right", "fitcontent", "hidden");
-            document.getElementById("msg-line").append(execEl);
-        }
-
-        return execEl;
     }
 
     clearDisplay() {

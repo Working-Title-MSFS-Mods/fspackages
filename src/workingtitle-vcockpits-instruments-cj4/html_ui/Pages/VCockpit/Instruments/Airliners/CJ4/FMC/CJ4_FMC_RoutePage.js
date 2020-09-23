@@ -217,17 +217,17 @@ class CJ4_FMC_RoutePage {
 
         let modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
-        fmc.setTemplate([
-            [modStr + " FPLN[blue]", "", "", "1", pageCount.toFixed(0)],
-            ["ORIGIN" + "[color]blue", "DEST" + "[color]blue", "DIST" + "[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" " + modStr + " FPLN[blue]", "1/" + pageCount.toFixed(0) + "[blue]", ""],
+            [" ORIGIN[blue]", "DEST[blue] ", "DIST[blue]"],
             [originCell, destinationCell, distanceCell],
-            ["ROUTE" + "[color]blue", "ALTN" + "[color]blue"],
+            [" ROUTE[blue]", "ALTN[blue] "],
             ["----------", "----"],
-			["", "ORIG RWY" + "[color]blue"],
+			["", "ORIG RWY[blue] "],
             [""],
-            ["VIA" + "[color]blue", "TO" + "[color]blue"],
+            [" VIA[blue]", "TO[blue] "],
             rows[0],
-            ["----------------" + "[color]blue", "FLT NO" + "[color]blue"],
+            ["----------------[blue]", "FLT NO[blue] "],
             ["<COPY ACTIVE", flightNoCell],
             [""],
             [lsk6Field, activateCell]
