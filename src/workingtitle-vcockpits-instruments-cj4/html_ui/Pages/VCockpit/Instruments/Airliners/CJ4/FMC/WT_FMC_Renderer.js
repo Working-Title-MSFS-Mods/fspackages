@@ -252,7 +252,6 @@ class WT_FMC_Renderer {
                 el.innerHTML = encodedStr;
 
                 if (match[2]) {
-                    // do css
                     let classes = match[2].match(/[^\s\[\]]+/g);
                     classes.forEach(c => { el.classList.add(c) });
                 }

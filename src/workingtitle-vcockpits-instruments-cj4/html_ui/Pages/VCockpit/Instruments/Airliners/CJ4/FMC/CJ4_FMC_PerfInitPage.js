@@ -640,16 +640,18 @@ class CJ4_FMC_PerfInitPage {
         let arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY[green]/[white]WET[s-text]"
             : "DRY[s-text]/[white]WET[green]";
 
+        let selAptValue = destinationIdent ? destinationIdent + "[green]/[white]" + originIdent + "[s-text]" : "----"
+
         fmc.setTemplate([
-            [destinationIdent + "   APPROACH REF[color]blue", "1", "3"],
+            [destinationIdent, "", "APPROACH REF[blue]", 1, 3],
             ["SEL APT[blue]", "WIND[blue]"],
-            [destinationIdent + "/" + originIdent + "[color]green", fmc.landingWindDir + "\xB0/" + fmc.landingWindSpeed],
+            [selAptValue, fmc.landingWindDir + "\xB0/" + fmc.landingWindSpeed],
             ["RWY ID[blue]", "OAT[blue]"],
-            [arrRunwayOutput + "", fmc.landingOat + "\xB0C"],
+            [arrRunwayOutput + " [s-text]", fmc.landingOat + "\xB0C"],
             ["RWY WIND[blue]", "QNH[blue]"],
-            [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.landingQnh],
+            [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", fmc.landingQnh + "[s-text]"],
             ["RUNWAY LENGTH[blue]", "P ALT[blue]"],
-            [Math.round(arrRunwayLength) + " FT", fmc.landingPressAlt + " FT"],
+            [Math.round(arrRunwayLength) + " FT[s-text]", fmc.landingPressAlt + " FT[s-text]"],
             ["RWY SLOPE[blue]"],
             ["--.-%"],
             ["RWY COND[blue]"],
