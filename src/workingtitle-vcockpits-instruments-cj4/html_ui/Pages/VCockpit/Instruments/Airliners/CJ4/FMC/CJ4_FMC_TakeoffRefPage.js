@@ -64,10 +64,10 @@ class CJ4_FMC_TakeoffRefPage {
         //console.log("Current Runway: " + depRunwayDesignation);
         //console.log("Current Runway Elevation: " + depRunwayElevation);
 
-        fmc.setTemplate([
-            [originIdent + "   TAKEOFF REF[color]blue", "1", "3"],
+        fmc._templateRenderer.setTemplateRaw([
+            [originIdent, "1/3[blue]", "TAKEOFF REF[blue]"],
             ["RWY ID[blue]", "WIND[blue]"],
-            [depRunwayOutput + "", fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
+            [depRunwayOutput + "[s-text]", fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
             ["RWY WIND[blue]", "OAT[blue]"],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.takeoffOat + "\xB0C"],
             ["RWY LENGTH[blue]", "QNH[blue]"],
