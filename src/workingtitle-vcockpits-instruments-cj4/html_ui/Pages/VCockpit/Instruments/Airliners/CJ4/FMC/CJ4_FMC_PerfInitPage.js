@@ -1,8 +1,8 @@
 class CJ4_FMC_PerfInitPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["PERF MENU[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "PERF MENU[blue]"],
             [""],
             ["<PERF INIT", "FUEL MGMT>"], //Page 2 ----9, 10, 11
             [""],
@@ -11,9 +11,9 @@ class CJ4_FMC_PerfInitPage {
             ["<TAKEOFF", "APPROACH>"], //Page 6, 7, 8 ---13, 14, 15
             [""],
             [""],
-            ["ADVISORY VNAV[blue]"],
+            [" ADVISORY VNAV[blue]"],
             ["ENABLE[s-text]/[white]DISABLE[green]"],
-            ["VNAV PLAN SPD[blue]"],
+            [" VNAV PLAN SPD[blue]"],
             ["", "", "--- KT"]
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
@@ -47,15 +47,15 @@ class CJ4_FMC_PerfInitPage {
         let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft;
         let fuelCell = Math.trunc(fuelQuantityTotal);
 
-        fmc.setTemplate([
-            ["ACT PERF INIT" + "[color]blue"],
-            ["BOW[color]blue", "CRZ ALT[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["",""," ACT PERF INIT[blue]"],
+            [" BOW[blue]", "CRZ ALT[blue] "],
             ["(10280)LB", "FL" + crzAltCell],
-            ["PASS/WT[color]blue"],
-            [fmc.paxNumber + "/170 LB"],
-            ["CARGO[color]blue", "= ZFW[color]blue"],
+            [" PASS/WT[blue]"],
+            [fmc.paxNumber + "/190 LB"],
+            [" CARGO[blue]", "= ZFW[blue] "],
             [fmc.cargoWeight + " LB", (fmc.zeroFuelWeight * 2200).toFixed(0).toString() + " LB"],
-            ["SENSED FUEL[color]blue", "= GWT[color]blue"],
+            [" SENSED FUEL[blue]", "= GWT[blue] "],
             [fuelCell + " LB", grWtCell + " LB"],
             ["-----------------------"],
             ["", "TAKEOFF>"],
