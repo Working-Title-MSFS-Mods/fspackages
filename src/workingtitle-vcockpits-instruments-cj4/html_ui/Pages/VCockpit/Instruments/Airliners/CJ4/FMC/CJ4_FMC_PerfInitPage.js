@@ -48,16 +48,16 @@ class CJ4_FMC_PerfInitPage {
         let fuelCell = Math.trunc(fuelQuantityTotal);
 
         fmc._templateRenderer.setTemplateRaw([
-            ["",""," ACT PERF INIT[blue]"],
+            [" ACT PERF INIT[blue]","",""],
             [" BOW[blue]", "CRZ ALT[blue] "],
-            ["(10280)LB", "FL" + crzAltCell],
+            ["(10280)[d-text]LB[s-text]", "FL" + crzAltCell],
             [" PASS/WT[blue]"],
-            [fmc.paxNumber + "/190 LB"],
+            [" " + fmc.paxNumber + "/190[d-text]LB[s-text]"],
             [" CARGO[blue]", "= ZFW[blue] "],
-            [fmc.cargoWeight + " LB", (fmc.zeroFuelWeight * 2200).toFixed(0).toString() + " LB"],
+            [" " + fmc.cargoWeight.toFixed(0).padStart(4, " ") + "[d-text] LB[s-text]", (fmc.zeroFuelWeight * 2200).toFixed(0).toString() + " LB[s-text]"],
             [" SENSED FUEL[blue]", "= GWT[blue] "],
-            [fuelCell + " LB", grWtCell + " LB"],
-            ["-----------------------"],
+            [" " + fuelCell + "[d-text] LB[s-text]", grWtCell + " LB[s-text]"],
+            ["------------------------[blue]"],
             ["", "TAKEOFF>"],
             ["", ""],
             ["", "VNAV SETUP>"]
