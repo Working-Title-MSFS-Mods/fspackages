@@ -6,35 +6,48 @@
     position: absolute;
     top: 0;
     left: 0;
-    padding-left:20px; /* quick fix for better visibility */
+    padding-left: 20px;
+    /* quick fix for better visibility */
     /* margin-top: -5px; */
-    /* z-index: 99999; */
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(50, 0, 0, 1), rgba(0, 50, 0, 1), rgba(0, 0, 50, 1));    
-  background-size: 100% 2px, 3px 100%;
+    z-index: 99999;
+    background-color: #0e0d08;
+}
+
+#wt_container::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
 }
 
 
 .fmc-header {
-    border:solid 0px red;
+    border: solid 0px red;
     vertical-align: middle;
     height: 0em;
     margin-top: 5%;
     margin-bottom: 12%;
     padding: 0;
-    font-size:6.5vw;
+    font-size: 6.5vw;
 }
 
 .fmc-row {
-    border:solid 0px red;
+    border: solid 0px red;
     vertical-align: middle;
     height: 1.1em;
     margin: auto auto;
     padding: 0;
 }
 
-.ltrContainer{
+.ltrContainer {
     display: inline-block;
-    border:solid 0px green;
+    border: solid 0px green;
     height: auto;
     margin: auto auto;
     vertical-align: middle;
