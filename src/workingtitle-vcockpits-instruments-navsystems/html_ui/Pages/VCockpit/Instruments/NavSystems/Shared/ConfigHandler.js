@@ -1,63 +1,79 @@
 class ConfigLoader {
-    // This class kind of became callback hell without me meaning for it to.
-    // TODO:  make it less of a callback hell
     constructor(basepath) {
         let vfspath = "/VFS/" + basepath.replace(/\\/g, "/");
         let vfspathParts = vfspath.split("/");
         this._vfspath = vfspathParts.slice(0, -2).join("/")
     }
 
-    loadCfg(filename, cb) {
-        Utils.loadFile(`${this._vfspath}/${filename}`, (text) => {
-            let parser = new CfgParser()
-            let out = parser.parse(text);
-            cb(out);
-        })
+    loadIni(filename) {
+        return new Promise((resolve) => {
+            Utils.loadFile(`${this._vfspath}/${filename}`, (text) => {
+                let parser = new CfgParser();
+                let out = parser.parse(text);
+                resolve(out);
+            });
+        });
     }
 
-    loadXml(filename, cb) {
-        Utils.loadFile(`${this._vfspath}/${filename}`, (text) => {
-            let parser = new DOMParser();
-            let out = parser.parseFromString(text, "text/xml");
-            cb(out);
-        })
+    loadXml(filename) {
+        return new Promise((resolve) => {
+            Utils.loadFile(`${this._vfspath}/${filename}`, (text) => {
+                let parser = new DOMParser();
+                let out = parser.parseFromString(text, "text/xml");
+                resolve(out);
+            });
+        });
     }
 
     // The model xml files aren't properly formed because they have multiple root
     // nodes. (Seriously?)   We'll wrap them in a fake root node so that we can
     // parse them properly.  Hopefully that's actually a consistent format.
-    loadFrenchXml(filename, cb) {
-        Utils.loadFile(`${this._vfspath}/${filename}`, (text) => {
-            text = text.replace(/\<\?.*\?\>/, '');
-            text = `<FAKEROOT>${text}</FAKEROOT>`;
-            let parser = new DOMParser();
-            let out = parser.parseFromString(text, "text/xml");
-            cb(out);
-        })  
+    loadFrenchXml(filename) {
+        return new Promise((resolve) => {
+            Utils.loadFile(`${this._vfspath}/${filename}`, (text) => {
+                // This ugly regex is to remove the XML DTD
+                text = text.replace(/\<\?.*\?\>/, '');
+                text = `<FAKEROOT>${text}</FAKEROOT>`;
+                let parser = new DOMParser();
+                let out = parser.parseFromString(text, "text/xml");
+                resolve(out);
+            });
+        });
     }
 
-    loadRawFile(filename, cb) {
-        Utils.loadFile(`${this._vfspath}/${filename}`, (text) => {cb(text)})
+    loadRawFile(filename) {
+        return new Promise((resolve) => {
+            Utils.loadFile(`${this._vfspath}/${filename}`, (text) => {
+                resolve(text);
+            });
+        });        
     }
 
-    loadModelFile(where, cb) {
-        this.loadCfg("model/model.cfg", (cfg) => {
-            if ("models" in cfg && where in cfg.models) {
-                console.log(`Reading ${where} xml at ${cfg.models[where]}.`)
-                this.loadFrenchXml(`model/${cfg.models[where]}`, cb)
-            }
-        })
-
+    loadModelFile(where) {
+        return new Promise((resolve, reject) => {
+            this.loadIni("model/model.cfg")
+                .then((cfg) => {
+                    if ("models" in cfg && where in cfg.models) {
+                        console.log(`Reading ${where} xml at ${cfg.models[where]}.`);
+                        this.loadFrenchXml(`model/${cfg.models[where]}`).then((dom) => resolve(dom));
+                    } else {
+                        reject("Could not find models in model.cfg.")
+                    }
+                })
+            .catch(() => reject("Could not load model configuration."))
+        });
     }
 
-    loadExteriorModel(cb) {
-        this.loadModelFile("exterior", cb);
+
+    loadExteriorModel(where) {
+        return this.loadModelFile("exterior");
     }
 
-    loadInteriorModel(cb) {
-        this.loadModelFile("interior", cb)
+    loadInteriorModel(where) {
+        return this.loadModelFile("interior")
     }
-};
+}
+
 
 class CfgParser {
     parse(cfgString) {
@@ -87,10 +103,10 @@ class CfgParser {
             }
             
             let key = match[2];
-            let value = match[3];
+            let value = match[3].toLowerCase();
             if (["true", "yes", "on", "1"].includes(value)) {
                 value = true
-            } else if (["false", "no", "off", "1"].includes(value)) {
+            } else if (["false", "no", "off", "0"].includes(value)) {
                 value = false
             }
 

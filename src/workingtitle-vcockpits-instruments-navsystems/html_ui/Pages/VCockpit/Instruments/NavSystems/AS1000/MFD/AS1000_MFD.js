@@ -41,7 +41,7 @@ class AS1000_MFD extends BaseAS1000 {
         this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "CenterDisplay", new AS1000_MFD_NavStatus()));
         this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "CenterDisplay", this.mapElement));
         this._cfgHandler = new ConfigLoader(this._xmlConfigPath);
-        this._cfgHandler.loadCfg("panel/avionics.cfg", (cfg) => { this.processConfig(cfg) });        
+        this._cfgHandler.loadIni("panel/avionics.cfg").then((cfg) => { this.processAvionicsConfig(cfg) });
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -64,10 +64,11 @@ class AS1000_MFD extends BaseAS1000 {
     }
     disconnectedCallback() {
     }
-    processConfig(cfg) {
+    processAvionicsConfig(cfg) {
         if ("g1000" in cfg) {
             cfg = cfg.g1000;
             if ("trackup" in cfg && (cfg.trackup === true || cfg.trackup === false)) {
+                console.log("Setting track up");
                 this.setMapOrientation(cfg.trackup);
             }
         } else {
@@ -1125,7 +1126,7 @@ class AS1000_MapMenu {
                 }
             case "TRCK UP":
                 {
-                    if (this.trackup)
+                    if (this.gps.trackup)
                         return "White";
                     break;
                 }
