@@ -35,12 +35,12 @@ class WT_FMC_Renderer {
     // -----------------------------
     // !!! PROTOTYPE for char grid
     // -----------------------------
-    setTemplateRaw(template) {     
+    setTemplateRaw(template, defaultAlternatingLayout = true) {
         console.log("setTemplateRaw()");
-        
+
         // clear just to be sure
         let existingContainer = document.getElementById("wt_container");
-        if(existingContainer) existingContainer.remove();
+        if (existingContainer) existingContainer.remove();
 
         // create container
         var container = document.createElement("div");
@@ -55,8 +55,7 @@ class WT_FMC_Renderer {
                 row.classList.add("fmc-header");
             }
 
-            if (r % 2 == 1) row.classList.add("s-text"); // i guess we remove this and the template does it
-            // else if (r % 3 == 1) row.classList.add("small-text");
+            if (defaultAlternatingLayout && r % 2 == 1) row.classList.add("s-text"); // i guess we remove this and the template does it
 
             // create spans
             var ltrContainer = document.createElement("div");
@@ -136,10 +135,10 @@ class WT_FMC_Renderer {
 
     getTRow(index) {
         let container = document.getElementById("wt_container");
-        if (!container){
+        if (!container) {
             console.warn("Warning: Row " + index + " not found");
             return undefined;
-        } 
+        }
 
         return container.childNodes[index];
     }

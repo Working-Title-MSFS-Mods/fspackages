@@ -1,8 +1,8 @@
 class CJ4_FMC_InitRefIndexPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["INDEX[color]blue", "1", "2"],  //Page 1 ---- 2
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "1/2[blue]", "INDEX[blue]"],  //Page 1 ---- 2
             [""],
             ["<MCDU MENU", "GNSS1 POS>"], //Page 3, 4 ---- 9
             [""],
@@ -11,9 +11,9 @@ class CJ4_FMC_InitRefIndexPage {
             ["<STATUS", "FIX>"], //Page 2 ---- 11
             [""],
             ["<POS INIT", "HOLD>"], //N/A ---- 12
-            [" FMS1"],
+            [" FMS1[s-text]"],
             ["<VORDME CTL", "PROG>"], //Page 6 ---- 13, 14
-            [" FMS1"],
+            [" FMS1[s-text]"],
             ["<GNSS CTL", "SEC FPLN>"] //Page 7 ---- 15
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage3(fmc); };
@@ -34,8 +34,8 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage2(fmc) { //Page 2 of INDEX
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["INDEX[color]blue", "2", "2"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "2/2[blue]", "INDEX[blue]"],
             [""],
             ["<FMS CTL", "ROUTE MENU>"], //Page 27 ---- 17
             [""],

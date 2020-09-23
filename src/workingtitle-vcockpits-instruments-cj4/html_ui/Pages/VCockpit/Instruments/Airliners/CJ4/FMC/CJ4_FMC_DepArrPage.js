@@ -17,9 +17,9 @@ class CJ4_FMC_DepArrPage {
                 CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
             };
         }
-        fmc.setTemplate([
-            ["DEP/ARR INDEX" + "[color]blue"],
-            ["", "", "ACT FPLN" + "[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "DEP/ARR INDEX[blue]"],
+            ["", "", "ACT FPLN[blue]"],
             rowOrigin,
             [""],
             rowDestination,
@@ -31,7 +31,7 @@ class CJ4_FMC_DepArrPage {
             [""],
             [""],
             [""]
-        ]);
+        ], false);
     }
     static ShowDeparturePage(fmc, currentPage = 1) {
         fmc.clearDisplay();
@@ -164,7 +164,7 @@ class CJ4_FMC_DepArrPage {
         let rowsCount = Math.max(displayableRunwaysCount, displayableDeparturesCount);
         let pageCount = Math.floor(rowsCount / 5) + 1;
 
-                
+
         //start of CWB EXEC handling
         let rsk6Field = "";
         if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
@@ -211,7 +211,7 @@ class CJ4_FMC_DepArrPage {
         };
         //end of CWB CANCEL MOD handling
 
-           
+
         fmc.onPrevPage = () => {
             if (currentPage > 0) {
                 CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, currentPage - 1);
