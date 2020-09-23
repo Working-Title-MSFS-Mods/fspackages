@@ -412,14 +412,8 @@ class WT_FMC_Renderer {
         if (match) {
             while (match != null) {
                 let el = document.createElement("span");
-                // var encodedStr = match[1].replace(/[\u00A0-\u9999<>\&]/gim, function (i) {
-                //     return '&#' + i.charCodeAt(0) + ';';
-                // });
-                // var spanned = encodedStr.replace(/./g, function (i) {
-                //     return '<span class="letter">' + i + '</span>';
-                // });
 
-                el.textContent = match[1];
+                el.textContent = match[1].replace("__LSB", "[").replace("__RSB","]");
 
                 if (match[2]) {
                     let classes = match[2].match(/[^\s\[\]]+/g);

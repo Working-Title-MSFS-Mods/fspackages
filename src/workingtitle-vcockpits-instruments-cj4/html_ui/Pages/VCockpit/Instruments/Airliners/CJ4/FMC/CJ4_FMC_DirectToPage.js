@@ -32,7 +32,7 @@ class CJ4_FMC_DirectToPage {
         //Get total count of waypoints, including arrival and approach waypoints
         let approachWaypointsCount = fmc.flightPlanManager.getApproachWaypoints().length;
         let waypointsCount = fmc.flightPlanManager.getWaypointsCount() + approachWaypointsCount;
-        
+
         //temporary
         console.log("idx:" + fmc.flightPlanManager.getActiveWaypointIndex());
         console.log("wpts:" + fmc.flightPlanManager.getWaypointsCount());
@@ -41,7 +41,7 @@ class CJ4_FMC_DirectToPage {
         console.log("tot:" + waypointsCount);
         console.log("appidx:" + fmc.flightPlanManager.getApproachIndex());
         console.log("app loaded?:" + fmc.flightPlanManager.isLoadedApproach());
-        console.log("app active?:" + fmc.flightPlanManager.isActiveApproach());        
+        console.log("app active?:" + fmc.flightPlanManager.isActiveApproach());
 
         let waypoints = CJ4_FMC_DirectToPage.getAvailableWaypoints(fmc);
         while (i < waypoints.length && i + wptsListIndex < waypoints.length && i < iMax) {
@@ -65,7 +65,7 @@ class CJ4_FMC_DirectToPage {
         }
         let activateLine = "";
 
-        
+
         if (directWaypoint) {
             activateLine = "CANCEL DTO>";
             //fmc.onRightInput[5] = () => {
@@ -92,7 +92,7 @@ class CJ4_FMC_DirectToPage {
                         let destinationIndex = fmc.flightPlanManager.getWaypoints().findIndex(w => {
                             return w.icao === fmc.flightPlanManager.getDestination().icao;
                         });
-    
+
                         if (i < destinationIndex) {
                             fmc.activateRoute();
                             fmc.flightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
@@ -101,7 +101,7 @@ class CJ4_FMC_DirectToPage {
                         }
                         else {
                             callback();
-                        }        
+                        }
                     };
                     console.log("starting removeWaypointForApproachMethod")
                     removeWaypointForApproachMethod(() => {
@@ -109,7 +109,7 @@ class CJ4_FMC_DirectToPage {
                         fmc.flightPlanManager.tryAutoActivateApproach()
                         console.log("tryAutoActivateApproach done");
                         fmc.onExecDefault();
-                    });                     
+                    });
                 }
                 //DEFAULT CASE - if you are not on an approach and you are not trying to go direct to an approach waypoint,
                 //execute the normal Direct To functionality
@@ -117,7 +117,8 @@ class CJ4_FMC_DirectToPage {
                     fmc.activateDirectToWaypoint(directWaypoint, () => {
                         fmc.flightPlanManager.setActiveWaypointIndex(1, () => {
                             fmc.activateRoute(() => {
-                                fmc.onExecDefault();})
+                                fmc.onExecDefault();
+                            })
                         });
                     });
                 }
@@ -134,19 +135,19 @@ class CJ4_FMC_DirectToPage {
             }
         };
 
-        
-        fmc.setTemplate([
-            ["DIR TO[color]blue"],
+        // __LSB = leftsquarebracket // __RSB = rightsquarebrackt
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "DIR TO[blue]"],
             ["WAYPOINT", "DIST", "UTC"],
-            ["[" + directWaypointCell + "][color]blue", "---", "----"],
+            ["__LSB" + directWaypointCell + "__RSB[blue]", "---", "----"],
             ["F-PLN WPTS"],
-            [waypointsCell[0], "DIRECT TO[color]blue"],
+            [waypointsCell[0], "DIRECT TO[blue]"],
             ["", "WITH"],
-            [waypointsCell[1], "ABEAM PTS[color]blue"],
+            [waypointsCell[1], "ABEAM PTS[blue]"],
             ["", "RADIAL IN"],
-            [waypointsCell[2], "[ ]°[color]blue"],
+            [waypointsCell[2], "__LSB __RSB°[blue]"],
             ["", "RADIAL OUT"],
-            [waypointsCell[3], "[ ]°[color]blue"],
+            [waypointsCell[3], "__LSB __RSB°[blue]"],
             [""],
             [waypointsCell[4], activateLine]
         ]);
@@ -171,14 +172,14 @@ class CJ4_FMC_DirectToPage {
         let approachWaypoints = fmc.flightPlanManager.getApproachWaypoints();
 
         if (approachWaypoints.length > 0) {
-            let approachWaypointsSliced = [...approachWaypoints.slice(0,2).filter(w => w.ident !== 'USER')];
+            let approachWaypointsSliced = [...approachWaypoints.slice(0, 2).filter(w => w.ident !== 'USER')];
             return [...enrouteWaypoints.slice(0, -1), ...approachWaypointsSliced.slice(0, 1), ...[enrouteWaypoints[enrouteWaypoints.length - 1]]]
                 .filter(w => w.ident !== 'USER' && w.ident !== 'USR');
         }
         else {
             return [...enrouteWaypoints]
                 .filter(w => w.ident !== 'USER' && w.ident !== 'USR');
-        }  
+        }
     }
 }
 //# sourceMappingURL=CJ4_FMC_DirectToPage.js.map
