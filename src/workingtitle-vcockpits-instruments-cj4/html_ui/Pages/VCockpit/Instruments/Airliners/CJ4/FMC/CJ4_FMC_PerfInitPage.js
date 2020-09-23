@@ -790,17 +790,17 @@ class CJ4_FMC_PerfInitPage {
         }
 
         fmc.setTemplate([
-            ["APPROACH REF[color]blue", "2", "3"],
-            ["A/I[color]blue"],
-            ["OFF/ON[color]green"],
-            ["", "VREF: " + vRef.toFixed(0)],
+            ["", "", "APPROACH REF[blue]", 2, 3],
+            ["A/I[blue]"],
+            ["OFF[green]/[white]ON[s-text]"],
+            ["", "V[blue]REF:[s-text] " + vRef.toFixed(0)],
             [""],
-            ["LW / GWT/MLW[color]blue", "VAPP: " + vApp.toFixed(0)],
+            ["LW / GWT/MLW[blue]", "V[blue]APP:[s-text] " + vApp.toFixed(0)],
             [ldgWtCell + "/" + grWtCell + "/15660"],
-            ["LFL / RWXX[color]blue"],
+            ["LFL / RWXX[blue]"],
             [ldgFieldLength.toFixed(0) + " / " + Math.trunc(arrRunwayLength) + " FT"],
-            ["LDG FACTOR[color]blue"],
-            ["1.0" + "/1.25" + "/1.67" + "/1.92"],
+            ["LDG FACTOR[blue]"],
+            ["1.0[green]" + "/[white]1.25[s-text]" + "/[white]1.67[s-text]" + "/[white]1.92[s-text]"],
             [""],
             ["", "SEND>"]
         ]);
