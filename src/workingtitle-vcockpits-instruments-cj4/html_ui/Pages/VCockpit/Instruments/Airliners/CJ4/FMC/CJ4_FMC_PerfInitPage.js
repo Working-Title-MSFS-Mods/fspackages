@@ -14,7 +14,7 @@ class CJ4_FMC_PerfInitPage {
             [" ADVISORY VNAV[blue]"],
             ["ENABLE[s-text]/[white]DISABLE[green]"],
             [" VNAV PLAN SPD[blue]"],
-            ["", "", "--- KT"]
+            ["", "", "--- KT[s-text]"]
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
         fmc.onLeftInput[1] = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
