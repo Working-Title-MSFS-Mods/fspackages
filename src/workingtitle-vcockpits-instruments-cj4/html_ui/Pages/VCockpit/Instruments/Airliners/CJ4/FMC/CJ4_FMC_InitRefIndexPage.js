@@ -612,8 +612,15 @@ class CJ4_FMC_InitRefIndexPage {
             if (databaseWaypointType == "A") {
                 CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, databaseWaypoint)
             }
-            
-
+            else if (databaseWaypointType == "V") {
+                CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, databaseWaypoint)
+            }
+            else if (databaseWaypointType == "W") {
+                CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, databaseWaypoint)
+            }
+            else if (databaseWaypointType == "N") {
+                CJ4_FMC_InitRefIndexPage.ShowPage30(fmc, databaseWaypoint)
+            }
 
         };
 
@@ -668,6 +675,12 @@ class CJ4_FMC_InitRefIndexPage {
         let longestRunwayElevation = new Number(longestRunway.elevation * 3.28);
         let longestRunwayLengthFeet = new Number(longestRunwayLength * 3.28);
 
+        //let nearestVorIcao = databaseWaypoint.data.nearestVorICAO;
+        //let magneticVariation = databaseWaypoint.infos.data.magneticVariation;
+        //console.log("nearestVorIcao: " + nearestVorIcao);
+        console.table(databaseWaypoint.infos);
+
+
         fmc.setTemplate([
             ["DATABASE[color]blue"],
             ["IDENT[color]blue", "LONG RWY[color]blue"],
@@ -685,27 +698,51 @@ class CJ4_FMC_InitRefIndexPage {
         ]);
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage20(fmc) { //DATABASE VOR
+    static ShowPage20(fmc, databaseWaypoint) { //DATABASE VOR
         fmc.clearDisplay();
+        let simMagVar = databaseWaypoint.infos.magneticVariation.toFixed(0)
+        let magVar = (simMagVar > 180) ? simMagVar - 360 + "E" : (simMagVar < 180) ? simMagVar + "W" : 0;
+        let vorType = databaseWaypoint.infos.type == 1 ? "VOR"
+            :databaseWaypoint.infos.type == 2 ? "VOR-DME"
+            :databaseWaypoint.infos.type == 3 ? "VOR-DME"
+            :databaseWaypoint.infos.type == 4 ? "VORTAC"
+            :databaseWaypoint.infos.type == 5 ? "VORTAC"
+            :databaseWaypoint.infos.type == 6 ? "VOR"
+            : "VOR";
+        let vorClass = databaseWaypoint.infos.vorClass == 1 ? "Terminal"
+            :databaseWaypoint.infos.vorClass == 2 ? "Low Alt"
+            :databaseWaypoint.infos.vorClass == 3 ? "High Alt"
+            :databaseWaypoint.infos.vorClass == 4 ? "ILS"
+            :databaseWaypoint.infos.vorClass == 5 ? "VOT"
+            : "Unknown";
+        let vorWeather = databaseWaypoint.infos.weatherBroadcast == 0 ? "No"
+            :"Yes"
+        let vorCoordinatesAlt = new String(databaseWaypoint.infos.coordinates);
+        let vorIndex = vorCoordinatesAlt.indexOf("alt");
+        let vorCoordinates = vorCoordinatesAlt.substring(0, vorIndex);
+        console.log("vorIndex:" + vorIndex);
+        console.log("vorCoordinatesAlt:" + vorCoordinatesAlt);
+
+        
         fmc.setTemplate([
             ["DATABASE[color]blue"],
             ["IDENT[color]blue", "FREQ[color]blue"],
+            [databaseWaypoint.infos.ident + "", databaseWaypoint.infos.frequencyMHz.toFixed(2) + ""],
+            ["TYPE[color]blue", "MAG VAR[color]blue"],
+            [vorType + "", magVar + ""],
+            ["CLASS[color]blue", "WEATHER[color]blue"],
+            [vorClass + "", vorWeather + ""],
+            ["COORDINATES[color]blue"],
+            [vorCoordinates + ""],
             [""],
-            ["VOR[color]blue", "MAG VAR[color]blue"],
-            [""],
-            ["DME[color]blue"],
-            [""],
-            ["NAME[color]blue", "ELEV[color]blue"],
-            ["<FEET/METERS"],
-            ["------------Pilot[color]blue"],
-            ["", "WPT LIST>"],
+            ["", ""],
             [""],
             ["<INDEX", "DEFINE WPT>"]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage21(fmc) { //DATABASE WAYPOINT
+    static ShowPage21(fmc, databaseWaypoint) { //DATABASE WAYPOINT
         fmc.clearDisplay();
         fmc.setTemplate([
             ["DATABASE[color]blue"],
@@ -725,7 +762,7 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage30(fmc) { //DATABASE NDB
+    static ShowPage30(fmc, databaseWaypoint) { //DATABASE NDB
         fmc.clearDisplay();
         fmc.setTemplate([
             ["DATABASE[color]blue"],
@@ -939,21 +976,101 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage30(fmc) { //DATALINK
         fmc.clearDisplay();
+
+
+
+        fmc.registerPeriodicPageRefresh(() => {
+        
+        let currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
+        let currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
+        //let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+        let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+        //let fromWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint();
+        let toWaypoint = fmc.flightPlanManager.getActiveWaypoint();
+        let apCurrentHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "Degrees");	
+        let currTrack = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees");
+        let xtk = SimVar.GetSimVarValue("GPS WP CROSS TRK", "meters") * (0.000539957); //meters to NM conversion
+        let dtk = toWaypoint.bearingInFP.toFixed(0);
+        //let distanceToWaypoint = Avionics.Utils.computeDistance(currPos, toWaypoint.infos.coordinates);
+        //let bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(currPos, toWaypoint.infos.coordinates);
+        let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
+
+        let windCorrection = 180 * Math.asin(currCrosswind / groundSpeed) / Math.PI;
+        
+        let setHeading = dtk;
+
+        if (xtk >= 1) {
+            setHeading = dtk + windCorrection - 30 < 0 ? dtk + windCorrection - 330
+                : dtk + windCorrection - 30;
+        }
+        else if (xtk <= -1) {
+            setHeading = dtk + windCorrection + 30 > 360 ? dtk + windCorrection - 330
+                : dtk + windCorrection + 30;
+        }
+        else if (1 > xtk && xtk > 0.5) {
+            setHeading = dtk + windCorrection - 20 < 0 ? dtk + windCorrection - 340
+                : dtk + windCorrection - 20;
+        }
+        else if (-1 < xtk && xtk < -0.5) {
+            setHeading = dtk + windCorrection + 20 > 360 ? dtk + windCorrection - 340
+                : dtk + windCorrection + 20;
+        }
+        else if (0.5 >= xtk && xtk > 0.2) {
+            setHeading = dtk + windCorrection - 10 < 0 ? dtk + windCorrection - 350
+                : dtk + windCorrection - 10;
+        }
+        else if (-0.5 <= xtk && xtk < -0.2) {
+            setHeading = dtk + windCorrection + 10 > 360 ? dtk + windCorrection - 350
+                : dtk + windCorrection + 10;
+        }
+        else if (0.2 >= xtk && xtk > 0) {
+            setHeading = dtk + windCorrection - 5 < 0 ? dtk + windCorrection - 355
+                : dtk + windCorrection - 5;
+        }
+        else if (-0.2 <= xtk && xtk < 0) {
+            setHeading = dtk + windCorrection + 5 > 360 ? dtk + windCorrection - 355
+                : dtk + windCorrection + 5;
+        }
+        else if (xtk = 0) {
+            setHeading = dtk + windCorrection;
+        }
+        console.log(setHeading.toFixed(0));
+        SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading.toFixed(0));
+        
         fmc.setTemplate([
-            ["DL    DATALINK MENU" + "[color]blue"],
+            ["CWB MANUAL AUTOPILOT" + "[color]blue"],
             [""],
-            ["<RCVD MSGS", "ATS LOG>"],
+            ["currCrosswind", "groundSpeed"],
+            [currCrosswind.toFixed(0) + "", groundSpeed.toFixed(0) + ""],
+            ["xtk", "dtk"],
+            [xtk.toFixed(2) + "", dtk.toFixed(0) + ""],
+            ["windCorrection", "setHeading"],
+            [windCorrection.toFixed(0) + "", setHeading.toFixed(0) + ""],
+            ["currTrack", "apCurrentHeading"],
+            [currTrack.toFixed(0) + "", apCurrentHeading.toFixed(0) + ""],
             [""],
-            ["<SEND MSGS", "DEPART CLX>"],
-            [""],
-            ["<WEATHER", "OCEANIC CLX>"],
-            [""],
-            ["<TWIP"],
-            [""],
-            ["<ATIS"],
             [""],
             ["<RETURN"]
         ]);
+        //fmc.setTemplate([
+        //    ["DL    DATALINK MENU" + "[color]blue"],
+        //    [""],
+        //    ["<RCVD MSGS", "ATS LOG>"],
+        //    [""],
+        //    ["<SEND MSGS", "DEPART CLX>"],
+        //    [""],
+        //    ["<WEATHER", "OCEANIC CLX>"],
+        //    [""],
+        //    ["<TWIP"],
+        //    [""],
+        //    ["<ATIS"],
+        //    [""],
+        //    ["<RETURN"]
+        //]);
+
+        }, 1000, true);
+
+
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
