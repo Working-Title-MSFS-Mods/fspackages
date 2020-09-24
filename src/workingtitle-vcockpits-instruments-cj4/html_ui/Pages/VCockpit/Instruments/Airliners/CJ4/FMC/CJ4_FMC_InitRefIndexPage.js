@@ -2,7 +2,7 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
         fmc._templateRenderer.setTemplateRaw([
-            ["", "1/2[blue]", "INDEX[blue]"],  //Page 1 ---- 2
+            ["", "1/2[blue] ", "INDEX[blue]"],  //Page 1 ---- 2
             [""],
             ["<MCDU MENU", "GNSS1 POS>"], //Page 3, 4 ---- 9
             [""],
@@ -35,7 +35,7 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage2(fmc) { //Page 2 of INDEX
         fmc.clearDisplay();
         fmc._templateRenderer.setTemplateRaw([
-            ["", "2/2[blue]", "INDEX[blue]"],
+            ["", "2/2[blue] ", "INDEX[blue]"],
             [""],
             ["<FMS CTL", "ROUTE MENU>"], //Page 27 ---- 17
             [""],
@@ -63,8 +63,8 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage3(fmc) { //MCDU MENU
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["MCDU MENU[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["MCDU MENU[blue]"],
             [""],
             ["<FMS 1", "GPS 1 POS>"],
             [""],
@@ -85,15 +85,15 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage4(fmc) { //MCDU MENU PG2
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["RESET CONTROL[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["RESET CONTROL[blue]"],
             [""],
-            ["", "", "THIS WILL RESET YOUR[color]yellow"],
-            ["", "", "ON-SIDE FMC (FMC 1)[color]yellow"],
+            ["", "", "THIS WILL RESET YOUR[yellow]"],
+            ["", "", "ON-SIDE FMC (FMC 1)[yellow]"],
             [""],
-            ["", "", "SOME DATA MAY BE LOST[color]yellow"],
+            ["", "", "SOME DATA MAY BE LOST[yellow]"],
             [""],
-            ["DO YOU WANT TO CONTINUE?[color]yellow"],
+            ["DO YOU WANT TO CONTINUE?[yellow]"],
             [""],
             [""],
             [""],
@@ -177,19 +177,19 @@ class CJ4_FMC_InitRefIndexPage {
 
                 return day + month + year;
             };
-            fmc.setTemplate([
-                ["STATUS[color]blue"],
-                ["NAV DATA[color]blue"],
+            fmc._templateRenderer.setTemplateRaw([
+                ["", "1/2[blue] ", "STATUS[blue]"],
+                [" NAV DATA[blue]"],
                 ["WORLD"],
-                ["ACTIVE DATA BASE[color]blue"],
-                [formatDate(startDate) + " " + formatDate(endDate)],
-                ["SEC DATA BASE[color]blue"],
+                [" ACTIVE DATA BASE[blue]"],
+                [formatDate(startDate) + "[yellow]" + " " + formatDate(endDate) + "[yellow]"],
+                [" SEC DATA BASE[blue]"],
                 [formatDate(secEndDate) + " " + formatDate(secStartDate)],
-                ["UTC[color]blue", "DATE[color]blue"],
-                [hourspad + ":" + minutesspad + "z", formatDate(zuluDate)],
-                ["PROGRAM[color]blue"],
+                [" UTC[blue]", "DATE[blue] "],
+                [hourspad + ":" + minutesspad, formatDate(zuluDate) + ""],
+                [" PROGRAM[blue]"],
                 ["SCID 832-0883-000"],
-                ["-----------------------" + "[color]blue"],
+                ["-----------------------[blue]"],
                 ["<INDEX", "POS INIT>"]
             ]);
         }, 1000, true);
@@ -200,8 +200,8 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage6(fmc) { //VOR CTL
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["", "", "FMS1 VOR/DME CONTROL[blue]", 0, 0],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "FMS1 VOR/DME CONTROL[blue]"],
             [""],
             ["---", "---"],
             ["", "", "NAVAID INHIBIT[blue]"],
@@ -210,7 +210,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["---", "---"],
             [""],
             ["---", "---"],
-            ["VOR USAGE[color]blue", "DME USAGE[color]blue"],
+            [" VOR USAGE[blue]", "DME USAGE[blue] "],
             ["YES/[white]NO[green]", "YES[green]/NO"],
             ["-----------------------" + "[blue]"],
             ["<INDEX"]
@@ -220,17 +220,17 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage7(fmc) { //GNSS CTL
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["FMS1 GPS CONTROL[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "FMS1 GPS CONTROL[blue]"],
             [""],
-            ["<ENABLED> GNSS1[color]green", "STATUS>"],
+            [" <ENABLED> GNSS1[green]", "STATUS> "],
             [""],
-            ["<ENABLED> GNSS2[color]green", "STATUS>"],
-            [""],
-            [""],
+            [" <ENABLED> GNSS2[green]", "STATUS> "],
             [""],
             [""],
-            ["", "4/4  ENABLED[color]green"],
+            [""],
+            [""],
+            ["", "4/4  ENABLED[green] "],
             ["<NPA RAIM", "SELECT SBAS>"],
             [""],
             ["<INDEX"]
@@ -242,9 +242,9 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage8(fmc) { //FMS CONTROL
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["", "", "FMS CONTROL[blue]", 0, 0],
-            ["FMS COORD MODE[blue]"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "FMS CONTROL[blue]"],
+            [" FMS COORD MODE[blue]"],
             ["SYNC[white s-text]/[white]INDEP[green]"],
             [""],
             [""],
@@ -290,20 +290,26 @@ class CJ4_FMC_InitRefIndexPage {
             // TODO: the left/right alignment (distance to border) for time/date in RW doesnt fit the usual header template, so we need a special case here 
             // TODO: the center labels would need to be text-align:right but they are center because of the enclosing span with text-align center, find a solution (same for values)
             //       so the labels are on the left now for better looks
-            fmc.setTemplate([
-                [hourspad + ":" + minutesspad + "z[green s-text]", month + "/" + day + "/" + year + "[green s-text]", "GPS 1[color]blue", 0, 0],
+            fmc._templateRenderer.setTemplateRaw([
+                [hourspad + ":" + minutesspad + "[s-text]", month + "/" + day + "/" + year + "[s-text]", "GPS 1[blue]"],
                 [""],
-                ["LATITUDE[s-text]", "LONGITUDE[s-text]"],
+                [" LATITUDE[s-text]", "LONGITUDE[s-text] "],
                 [currLat + "[color]green", currLon + "[color]green"],
                 [""],
-                ["TRACK ANGLE[s-text text-right]", Math.round(SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degrees")) + "°" + "[s-text text-left green]"],
-                ["GROUND SPEED[s-text text-right]", Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) + "[s-text text-left green]"],
+                //["   TRACK ANGLE[s-text text-right]", Math.round(SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degrees")) + "°" + "[s-text text-left green]"],
+                //["  GROUND SPEED[s-text text-right]", Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) + "[s-text text-left green]"],
+                ["   TRACK ANGLE[s-text]", Math.round(SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degrees")) + "°TRUE [s-text green]"],
+                ["  GROUND SPEED[s-text]", Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) + "[s-text green]    "],
                 [""],
-                ["RAIM LIMIT[s-text text-right]", "0.10 NM[s-text text-left green]"],
-                ["PROBABLE ERROR[s-text text-right]", "0.05 NM[s-text text-left green]"],
+                ["    RAIM LIMIT[s-text]", "0.10 NM  [s-text green]"],
+                ["PROBABLE ERROR[s-text]", "0.05 NM  [s-text green]"],
+                //["RAIM LIMIT[s-text text-right]", "0.10 NM[s-text text-left green]"],
+                //["PROBABLE ERROR[s-text text-right]", "0.05 NM[s-text text-left green]"],
                 [""],
-                ["GPS MODE:[s-text text-right]", "NAV[s-text text-left green]"],
-                ["SATELLITES:[s-text text-right]", satnum + "[s-text text-left green]"]
+                ["  GPS MODE:[s-text text-right]", " NAV[s-text text-left green]"],
+                ["SATELLITES:[s-text text-right]", " " + satnum + "[s-text text-left green]"]
+                //["GPS MODE:[s-text text-right]", "NAV[s-text text-left green]"],
+                //["SATELLITES:[s-text text-right]", satnum + "[s-text text-left green]"]
             ]);
         }, 1000, true);
 
@@ -311,8 +317,8 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage10(fmc) { //FREQUENCY
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["FREQUENCY[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "FREQUENCY[blue]"],
             [""],
             [""],
             [""],
@@ -331,27 +337,27 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage11(fmc) { //FIX
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["FIX INFO [color]blue"],
-            ["REF[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "FIX INFO[blue]"],
+            [" REF[blue]"],
             ["fix name"],
-            ["RAD CROSS[color]blue", "LAT CROSS[color]blue"],
+            [" RAD CROSS[blue]", "LAT CROSS[blue] "],
             ["degree", "---\xB0--.--"],
-            ["DIST CROSS[color]blue", "LON CROSS[color]blue"],
+            [" DIST CROSS[blue]", "LON CROSS[blue] "],
             ["dist", "---\xB0--.--"],
             [""],
             ["<ABEAM REF"],
             [""],
             ["", "", "ABEAM REF"],
-            ["CRS[color]blue", "DIST[color]blue", "ETE[color]blue", "FUEL[color]blue"],
+            [" CRS[blue]  DIST[blue]", "ETE[blue]  FUEL[blue] "],
             [""]
         ]);
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage12(fmc) { //HOLD
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["ACT FPLN HOLD"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" ACT LEGS[blue]", "1/1[blue] "],
             ["FIX   ENTRY[color]blue", "HOLD SPD[color]blue"],
             ["fix" + "   DIRECT", "FAA/ICAO"],
             ["QUAD/RADIAL[color]blue", "MAX KIAS[color]blue"],
@@ -362,8 +368,8 @@ class CJ4_FMC_InitRefIndexPage {
             ["2.2 MIN", "18:35"],
             ["LEG DIST[color]blue"],
             ["15.0 NM", "NEW HOLD>"],
-            ["-----------------------" + "[color]blue"],
-            [""]
+            ["-------- HOLD AT -------[blue]"],
+            ["□□□□□", "LEG WIND>"]
         ]);
         fmc.updateSideButtonActiveStatus();
     }
@@ -376,20 +382,20 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc.registerPeriodicPageRefresh(() => {
 
-            fmc.setTemplate([
-                ["PROGRESS[color]blue", "1", "2"],
-                ["LAST", "DIST[color]blue", "ETE[color]blue", "FUEL-LB[color]blue"],
-                ["-----[color]blue", "----[color]blue", ""],
-                ["TO[color]blue"],
-                ["-----[color]green", "----[color]green", "--:--[color]green", "1100"],
-                ["NEXT[color]blue"],
-                ["-----", "----", "--:--", "1140"],
-                ["DEST[color]blue"],
-                ["-----", "----", "--:--", "730"],
-                ["ALTN[color]blue"],
-                ["----", "----", "--:--", "570"],
-                ["NAVIGATION[color]blue"],
-                ["DME/DME GPS1[color]green"]
+            fmc._templateRenderer.setTemplateRaw([
+                [" PROGRESS[blue]", "1/2[blue] "],
+                [" LAST[s-text blue]", "DIST ETE FUEL-LB[s-text blue]"],
+                ["----", "---      ----- [s-text blue]"],
+                [" TO[s-text blue]",],
+                ["-----[s-text]", "--- -:-- ----- [s-text]"],
+                [" NEXT[s-text blue]"],
+                ["-----[s-text]", "--- -:-- ----- [s-text]"],
+                [" DEST[s-text blue]"],
+                ["-----[s-text]", "--- -:-- ----- [s-text]"],
+                [" ALTN[s-text blue]"],
+                ["-----[s-text]", "--- -:-- ----- [s-text]"],
+                [" NAVIGATION[s-text blue]"],
+                ["FMS DR[yellow]"]
             ]);
             if (fmc.flightPlanManager.getDestination()) {
 
@@ -446,20 +452,20 @@ class CJ4_FMC_InitRefIndexPage {
                         : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
                 }
 
-                fmc.setTemplate([
-                    ["PROGRESS[color]blue", "2", "2"],
-                    ["LAST", "DIST[color]blue", "ETE[color]blue", "FUEL-LB[color]blue"],
-                    [prevWaypointIdent + "[color]blue", Math.trunc(prevWaypointDist) + "[color]blue", ""],
-                    ["TO[color]blue"],
-                    [activeWaypointIdent + "[color]green", Math.trunc(activeWaypointDist) + "[color]green", activeWaypointEte + "[color]green", "1100"],
-                    ["NEXT[color]blue"],
-                    [nextWaypointIdent + "", Math.trunc(nextWaypointDist) + "", nextWaypointEte + "", "1140"],
-                    ["DEST[color]blue"],
-                    [destinationIdent + "", Math.trunc(destinationDistance) + "", destinationEte + "", "730"],
-                    ["ALTN[color]blue"],
-                    ["----", "----", "--:--", "570"],
-                    ["NAVIGATION[color]blue"],
-                    ["DME/DME GPS1[color]green"]
+                fmc._templateRenderer.setTemplateRaw([
+                    [" PROGRESS[blue]", "1/2[blue] "],
+                    [" LAST[s-text blue]", "DIST ETE FUEL-LB[s-text blue]"],
+                    [prevWaypointIdent + "[blue]", Math.trunc(prevWaypointDist) + "      ----- [s-text blue]"],
+                    [" TO[s-text blue]",],
+                    [activeWaypointIdent + "[s-text]", Math.trunc(activeWaypointDist) + " " + activeWaypointEte + " ----- [s-text]"],
+                    [" NEXT[s-text blue]"],
+                    [nextWaypointIdent + "[s-text]", Math.trunc(nextWaypointDist) + " " + nextWaypointEte + " ----- [s-text]"],
+                    [" DEST[s-text blue]"],
+                    [destinationIdent + "[s-text]", Math.trunc(destinationDistance) + " " + destinationEte + " ----- [s-text]"],
+                    [" ALTN[s-text blue]"],
+                    ["-----[s-text]", "--- -:-- ----- [s-text]"],
+                    [" NAVIGATION[s-text blue]"],
+                    ["FMS DR[yellow]"]
                 ]);
             }
 
@@ -487,12 +493,14 @@ class CJ4_FMC_InitRefIndexPage {
             let currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
             let currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
             let sat = Math.trunc(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius"));
+            let satDisp = sat >= 0 ? "+" + sat :sat;
             let track = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees");
             let tas = Math.trunc(SimVar.GetSimVarValue("AIRSPEED TRUE", "knots"));
             let xtk = SimVar.GetSimVarValue("GPS WP CROSS TRK", "meters") * (0.000539957); //meters to NM conversion
             console.log("xtk:" + xtk)
 
             let isaDev = Math.trunc(this.calcISADEV(sat, SimVar.GetSimVarValue("PLANE ALTITUDE", "feet")));
+            let isaDevDisp = isaDev >= 0 ? "+" + isaDev :isaDev;
 
             let currHeadwind = Math.trunc(currWindSpeed * (Math.cos((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
             let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
@@ -501,27 +509,27 @@ class CJ4_FMC_InitRefIndexPage {
                 : currCrosswind < 0 ? "L"
                     : "";
 
-            let headwindDirection = currHeadwind > 0 ? "H"
-                : currHeadwind < 0 ? "T"
-                    : "";
+            let headwindDirection = currHeadwind > 0 ? "HEADWIND"
+                : currHeadwind < 0 ? "TAILWIND"
+                    : "TAILWIND";
 
             let xtkDirection = xtk > 0 ? "R"
                 : xtk < 0 ? "L"
                     : "";
 
-            fmc.setTemplate([
-                ["PROGRESS[color]blue", "2/2[color]blue"],
-                ["HEADWIND[color]blue", "CROSSWIND[color]blue"],
-                [headwindDirection + " " + Math.abs(currHeadwind) + " KT", crosswinddirection + " " + Math.abs(currCrosswind) + " KT"],
-                ["WIND[color]blue", "SAT/ISA DEV[color]blue"],
-                [currWindDirection + "/" + currWindSpeed, sat + "\xB0" + "C/" + isaDev + "\xB0" + "C"],
-                ["XTK[color]blue", "TAS[color]blue"],
-                [xtkDirection + " " + Math.abs(xtk.toFixed(1)) + " NM", tas + " KT"],
+            fmc._templateRenderer.setTemplateRaw([
+                [" PROGRESS[blue]", "2/2 [blue]"],
+                [" " + headwindDirection + "[s-text blue]", "CROSSWIND [s-text blue]"],
+                [Math.abs(currHeadwind) + " KT", crosswinddirection + " " + Math.abs(currCrosswind) + " KT"],
+                [" WIND[blue]", "SAT/ISA DEV [blue]"],
+                [currWindDirection + "M/" + currWindSpeed + " KT", satDisp + "\xB0" + "C/" + isaDevDisp + "\xB0" + "C"],
+                [" XTK[blue]", "TAS [blue]"],
+                [xtkDirection + " " + Math.abs(xtk.toFixed(2)) + " NM", tas + " KT"],
                 [""],
                 [""],
                 [""],
                 [""],
-                ["", "RNP[color]blue", "POS ACCURACY[color]blue"],
+                ["", "", "POS ACCURACY[s-text blue]"],
                 ["", "----", "0.06"]
             ]);
 
@@ -534,7 +542,7 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage15(fmc) { //SEC FPLN
         fmc.clearDisplay();
         fmc.setTemplate([
-            ["SEC FPLN" + "[color]blue", "1", "2"],
+            ["SEC FPLN[blue]", "1/2 [blue]"],
             ["ORIGIN" + "[color]blue", "DEST" + "[color]blue", "DIST" + "[color]blue"],
             ["", ""],
             ["ROUTE" + "[color]blue", "ALTN" + "[color]blue"],
