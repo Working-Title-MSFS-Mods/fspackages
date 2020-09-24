@@ -2,18 +2,11 @@
 <Include File="Subtemplates\\Passenger_Subtemplates.xml"/>
 <!-- Passenger ############################################## -->
 <Template Name="ASOBO_PASSENGER_Switch_Cabin_Heat_Template">
-	<DefaultTemplateParameters>
-		<ID>1</ID>
-	</DefaultTemplateParameters>
 	<UseTemplate Name="ASOBO_PASSENGER_Switch_Cabin_Heat_SubTemplate">
 	</UseTemplate>
 </Template>
 
 <Template Name="ASOBO_PASSENGER_Switch_Cabin_Air_Template">
-	<DefaultTemplateParameters>
-		<ID>1</ID>
-		<TOOLTIPID>TT:COCKPIT.TOOLTIPS.SWITCH_CABIN_AIR</TOOLTIPID>
-	</DefaultTemplateParameters>
 	<UseTemplate Name="ASOBO_PASSENGER_Switch_Cabin_Air_SubTemplate">
 	</UseTemplate>
 </Template>
@@ -24,12 +17,15 @@
 			<COUNT>3</COUNT>
 			<CODE_POS_0>
 				(* OFF *)
+				0 (&gt;L:CLIMATE_CONTROL)
 			</CODE_POS_0>
 			<CODE_POS_1>
 				(* NORM *)
+				1 (&gt;L:CLIMATE_CONTROL)
 			</CODE_POS_1>
 			<CODE_POS_2>
 				(* COMP ON *)
+				2 (&gt;L:CLIMATE_CONTROL)
 			</CODE_POS_2>
 		</UseTemplate>
 	</Component>
@@ -41,18 +37,23 @@
 		<COUNT>3</COUNT>
 		<CODE_POS_0>
 			(* OFF *)
+			0 (&gt;L:PRESSOURCE)
 		</CODE_POS_0>
 		<CODE_POS_1>
 			(* LEFT *)
+			1 (&gt;L:PRESSOURCE)
 		</CODE_POS_1>
 		<CODE_POS_2>
 			(* NORM *)
+			2 (&gt;L:PRESSOURCE)
 		</CODE_POS_2>
 		<CODE_POS_3>
 			(* RIGHT *)
+			3 (&gt;L:PRESSOURCE)
 		</CODE_POS_3>
 		<CODE_POS_4>
 			(* FRESH *)
+			4 (&gt;L:PRESSOURCE)
 		</CODE_POS_4>
 	</UseTemplate>
 </Component>

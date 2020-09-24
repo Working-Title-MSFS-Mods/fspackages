@@ -1147,6 +1147,10 @@
 				<NODE_ID>PASSENGER_Knob_Air_2</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+				<NODE_ID>CCP_PUSH_CHART</NODE_ID>
+				<CONTAINER_COUNT>2</CONTAINER_COUNT>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 				<NODE_ID>PASSENGER_Knob_Air_3</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
