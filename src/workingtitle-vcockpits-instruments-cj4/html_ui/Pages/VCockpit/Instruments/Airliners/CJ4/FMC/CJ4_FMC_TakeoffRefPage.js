@@ -65,7 +65,7 @@ class CJ4_FMC_TakeoffRefPage {
         //console.log("Current Runway Elevation: " + depRunwayElevation);
 
         fmc._templateRenderer.setTemplateRaw([
-            [originIdent, "1/3[blue]", "TAKEOFF REF[blue]"],
+            [originIdent, "1/3[blue] ", "TAKEOFF REF[blue]"],
             ["RWY ID[blue]", "WIND[blue]"],
             [depRunwayOutput + "[s-text]", fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
             ["RWY WIND[blue]", "OAT[blue]"],
@@ -213,7 +213,7 @@ class CJ4_FMC_TakeoffRefPage {
             : "OFF[s-text]/[white]ON[green]";
 
         fmc._templateRenderer.setTemplateRaw([
-            [originIdent, "2/3[blue]", "TAKEOFF REF[blue]"],
+            [originIdent, "2/3[blue] ", "TAKEOFF REF[blue]"],
             ["A/I[blue]", "V[d-text blue]1:[s-text blue] " + v1.toFixed(0).padStart(3, " ") + "[s-text]"],
             [takeoffAntiIceActive],
             ["T/O FLAPS[blue]", "V[d-text blue]R:[s-text blue] " + vR.toFixed(0).padStart(3, " ") + "[s-text]"],
@@ -279,7 +279,7 @@ class CJ4_FMC_TakeoffRefPage {
         }
         let tow = (grWtCell - 100);
         fmc._templateRenderer.setTemplateRaw([
-            [originIdent, "3/3[blue]", "TAKEOFF REF[blue]"],
+            [originIdent, "3/3[blue] ", "TAKEOFF REF[blue]"],
             ["TOW/MTOW[blue]"],
             [tow + "/17110"],
             ["", "STRUCTURAL LIMIT[blue]"],

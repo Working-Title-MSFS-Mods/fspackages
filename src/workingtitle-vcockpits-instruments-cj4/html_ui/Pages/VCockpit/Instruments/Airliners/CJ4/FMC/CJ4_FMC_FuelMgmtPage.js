@@ -29,7 +29,7 @@ class CJ4_FMC_FuelMgmtPage {
             }
 
             fmc._templateRenderer.setTemplateRaw([
-                ["", "1/3[blue]", "FUEL MGMT[blue]"],
+                ["", "1/3[blue] ", "FUEL MGMT[blue]"],
                 [" FUEL[blue]", "TIME TO RESV[blue] "],
                 [" " + fuelQuantityTotal.toFixed(0).padStart(4, " ") + "[d-text] LB[s-text]", hours + ":" + minutes],
                 [" FUEL FLOW[blue]", "RNG TO RESV[blue] "],
@@ -83,7 +83,7 @@ class CJ4_FMC_FuelMgmtPage {
             };
 
             fmc._templateRenderer.setTemplateRaw([
-                ["", "2/3[blue]", "FUEL MGMT[blue]"],
+                ["", "2/3[blue] ", "FUEL MGMT[blue]"],
                 [" ENGINE[blue s-text]", "FLOW-FUEL-USED[blue s-text] ", ""],
                 ["", "LB  [s-text]", "LB/HR[s-text]"],
                 ["   1[d-text]", fuelBurnedLeftDisplay.toString().padStart(4, " ") + " [d-text]", Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour")).toString().padStart(4, " ") + "[d-text]"],
