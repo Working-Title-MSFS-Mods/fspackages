@@ -107,19 +107,19 @@ class CJ4_FMC_FuelMgmtPage {
         fmc.clearDisplay();
         let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
             + Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour"));
-        fmc.setTemplate([
-            ["PERF TRIP[color]blue", "3", "3"],
-            ["FROM[color]blue"],
-            ["dep", "PPOS>"],
-            ["TO[color]blue"],
-            ["dest"],
-            ["DIST[color]blue"],
-            ["---"],
-            ["GND SPD[color]blue", "FUEL FLOW[color]blue"],
-            [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString(), totalFuelFlow + " LB/HR"],
-            ["ETE[color]blue", "FUEL REQ[color]blue"],
-            ["---" + " LB"],
-            ["-----------------------[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "3/3[blue]", "PERF TRIP[blue]"],
+            [" FROM[blue s-text]"],
+            ["-----", "PPOS>"],
+            [" TO[blue s-text]"],
+            ["-----"],
+            [" DIST[blue s-text]"],
+            ["----[d-text] NM[s-text]"],
+            [" GND SPD[blue s-text]", "FUEL FLOW[blue s-text] "],
+            [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString() + "[d-text] KTS[s-text]", totalFuelFlow + "[d-text] LB/HR[s-text]"],
+            [" ETE[blue s-text]", "FUEL REQ[blue s-text] "],
+            ["", "---[d-text] LB[s-text]"],
+            ["------------------------[blue]"],
             ["<CLEAR", "PERF MENU>"]
         ]);
         fmc.onPrevPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage2(fmc); };
