@@ -124,6 +124,18 @@ class WT_FMC_Renderer {
         });
     }
 
+    renderSwitch(itemsArr, selectedIndex, onClass = "green", offClass = "white s-text") {
+        let result = "";
+        for (let i = 0; i < itemsArr.length; i++) {
+            const item = itemsArr[i];
+            const format = (i == selectedIndex) ? "[" + onClass + "]" : "[" + offClass + "]";
+            result += item + format;
+            if (i < (itemsArr.length - 1))
+                result += "/[white]";
+        }
+        return result;
+    }
+
     onEvent(e) {
         this.legacyOnEvent(e);
 

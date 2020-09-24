@@ -1,6 +1,7 @@
 class CJ4_FMC_PerfInitPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
+        const advSwitch = fmc._templateRenderer.renderSwitch(["ENABLE", "DISABLE"], 1);
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "PERF MENU[blue]"],
             [""],
