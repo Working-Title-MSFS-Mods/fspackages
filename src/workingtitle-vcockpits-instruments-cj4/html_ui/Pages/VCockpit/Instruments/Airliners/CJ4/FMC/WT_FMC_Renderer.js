@@ -164,7 +164,7 @@ class WT_FMC_Renderer {
     }
 
     renderMsgLineRaw(row) {
-        row.style.marginTop = "-1%";
+        // row.style.marginTop = "-1%";
         this.renderLetters(this._msg, row);
 
         // i don't really like to "bind" this here, but its ok for now
