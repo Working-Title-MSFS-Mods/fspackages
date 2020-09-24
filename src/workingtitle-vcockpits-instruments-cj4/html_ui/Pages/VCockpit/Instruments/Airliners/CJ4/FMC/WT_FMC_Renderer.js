@@ -164,7 +164,7 @@ class WT_FMC_Renderer {
     }
 
     renderMsgLineRaw(row) {
-        row.style.marginTop = "-1%";
+        // row.style.marginTop = "-1%";
         this.renderLetters(this._msg, row);
 
         // i don't really like to "bind" this here, but its ok for now
@@ -407,13 +407,18 @@ class WT_FMC_Renderer {
     // parses a template string and returns the elements array
     parseContent(content) {
         let resultElems = [];
+
+        // if it starts with a bracket its probably empty
+        if (content.startsWith("["))
+            return resultElems;
+
         const rx = /([^\[\]\n]+)(\[[^\[\]\n]+\])*/g;
         let match = rx.exec(content);
         if (match) {
             while (match != null) {
                 let el = document.createElement("span");
 
-                el.textContent = match[1].replace("__LSB", "[").replace("__RSB","]");
+                el.textContent = match[1].replace("__LSB", "[").replace("__RSB", "]");
 
                 if (match[2]) {
                     let classes = match[2].match(/[^\s\[\]]+/g);

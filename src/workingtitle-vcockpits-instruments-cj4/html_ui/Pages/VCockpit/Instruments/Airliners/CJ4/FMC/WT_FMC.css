@@ -1,4 +1,4 @@
-/* FOR PROTOTYPE */
+/* FOR PROTOTYPE Char grid */
 #wt_container {
     margin: 0;
     width: 100%;
@@ -31,9 +31,8 @@
 .fmc-header {
     border: solid 0px red;
     vertical-align: middle;
-    height: 0em;
     margin-top: 5%;
-    margin-bottom: 12%;
+    margin-bottom: 5%;
     padding: 0;
     font-size: 6.5vw;
 }
@@ -41,7 +40,7 @@
 .fmc-row {
     border: solid 0px red;
     vertical-align: middle;
-    height: 1.1em;
+    height: 61px;
     margin: auto auto;
     padding: 0;
 }
@@ -62,6 +61,12 @@
     width: 40px;
     min-height: 22px;
     white-space: pre;
+}
+
+/* Text */
+
+.d-text { /* default text size for templates */
+    font-size: 6vw;
 }
 
 /* General */
