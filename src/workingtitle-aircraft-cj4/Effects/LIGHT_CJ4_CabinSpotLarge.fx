@@ -66,11 +66,11 @@ Extrude Pitch Max=0.00
 Extrude Heading Max=0.00
 
 [LightAttributes.0]
-Type=spot
+Type=omni
 Size=0.1
-Range=4.2
-Intensity=12
-Softness=0.4
+Range=1.05
+Intensity=6
+Softness=0.5
 SpotInner=11.0
 SpotOuter=19.0
 Volumetric=0
