@@ -4,7 +4,7 @@ class CJ4_FMC_PerfInitPage {
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "PERF MENU[blue]"],
             [""],
-            ["<PERF INIT", "FUEL MGMT>"], //Page 2 ----9, 10, 11
+            ["<PERF INIT", "FUEL MGMT>"],
             [""],
             ["<VNAV SETUP", "FLT LOG>"], //Page 3, 4, 5 ----12
             [""],
@@ -19,7 +19,7 @@ class CJ4_FMC_PerfInitPage {
         fmc.onLeftInput[0] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
         fmc.onLeftInput[1] = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
         fmc.onLeftInput[2] = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
-        fmc.onRightInput[0] = () => { CJ4_FMC_PerfInitPage.ShowPage9(fmc); };
+        fmc.onRightInput[0] = () => { CJ4_FMC_FuelMgmtPage.ShowPage1(fmc); };
         fmc.onRightInput[1] = () => { CJ4_FMC_PerfInitPage.ShowPage12(fmc); };
         fmc.onRightInput[2] = () => { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
         fmc.updateSideButtonActiveStatus();
@@ -145,134 +145,6 @@ class CJ4_FMC_PerfInitPage {
         fmc.updateSideButtonActiveStatus();
     }
 
-    static ShowPage9(fmc) { //FUEL MGMT Page 1
-        fmc.clearDisplay();
-        fmc.registerPeriodicPageRefresh(() => {
-
-            //CWB added direct read of fuel quantity simvars
-            let fuelQuantityLeft = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
-            let fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
-            let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft
-
-            let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
-                + Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour"));
-            let hours = Math.trunc((fuelQuantityTotal - fmc.reserveFuel) / totalFuelFlow).toFixed(0);
-            let hoursForResv = ((fuelQuantityTotal - fmc.reserveFuel) / totalFuelFlow);
-            let minutes = ((((fuelQuantityTotal - fmc.reserveFuel) / totalFuelFlow) % 1) * 60).toFixed(0).toString().padStart(2, "0");
-            let rngToResv = (Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) * hoursForResv).toFixed(0);
-            let spRng = ((1 / totalFuelFlow) * Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"))).toFixed(2).toString().substr(1);
-
-            if (totalFuelFlow == 0) {
-                hours = "-";
-                rngToResv = "----";
-                minutes = "--";
-                spRng = ".----";
-            }
-
-            if (Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) == 0) {
-                spRng = ".----";
-                rngToResv = "----";
-            }
-
-            fmc.setTemplate([
-                ["FUEL MGMT[color]blue", "1", "3"],
-                ["FUEL[color]blue", "TIME TO RESV[color]blue"],
-                [fuelQuantityTotal + " LB", hours + ":" + minutes],
-                ["FUEL FLOW[color]blue", "RNG TO RESV[color]blue"],
-                [totalFuelFlow.toString() + " LB HR", rngToResv + " NM"],
-                ["RESERVES[color]blue", "SP RNG[color]blue"],
-                [fmc.reserveFuel.toString() + " LB", spRng + "NM/LB"],
-                ["GND SPD[color]blue"],
-                [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString()],
-                [""],
-                ["measured/" + "MANUAL[color]green"],
-                ["-----------------------[color]blue"],
-                ["", "PERF MENU>"]
-            ]);
-        }, 1000, true);
-
-        fmc.onLeftInput[2] = () => {
-            fmc.reserveFuel = fmc.inOut;
-            fmc.clearUserInput();
-            console.log(fmc.reserve);
-            { CJ4_FMC_PerfInitPage.ShowPage9(fmc); };
-        };
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage11(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage10(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage1(fmc); };
-        fmc.updateSideButtonActiveStatus();
-    }
-    static ShowPage10(fmc) { //FUEL MGMT Page 2
-        fmc.clearDisplay();
-        fmc.registerPeriodicPageRefresh(() => {
-
-            let fuelQuantityLeft = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
-            let fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
-
-            let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
-                + Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour"));
-
-            let fuelBurnedLeft = fmc.initialFuelLeft - fuelQuantityLeft;
-            let fuelBurnedRight = fmc.initialFuelRight - fuelQuantityRight;
-            let fuelBurnedTotal = fuelBurnedRight + fuelBurnedLeft;
-
-            let fuelBurnedLeftDisplay = fuelBurnedLeft < 0 ? "XXXX"
-                : fuelBurnedLeft;
-            let fuelBurnedRightDisplay = fuelBurnedRight < 0 ? "XXXX"
-                : fuelBurnedRight;
-            let fuelBurnedTotalDisplay = fuelBurnedTotal < 0 ? "XXXX"
-                : fuelBurnedTotal;
-
-            fmc.onLeftInput[4] = () => {
-                fmc.initialFuelLeft = fuelQuantityLeft;
-                fmc.initialFuelRight = fuelQuantityRight;
-            };
-
-            fmc.setTemplate([
-                ["FUEL MGMT[color]blue", "2", "3"],
-                ["", "", "ENGINE FLOW - FUEL USED[color]blue"],
-                ["", "LB", "LB/HR"],
-                ["1", fuelBurnedLeftDisplay + "", Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour")).toString()],
-                [""],
-                ["2", fuelBurnedRightDisplay + "", Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour")).toString()],
-                [""],
-                ["TOTAL", fuelBurnedTotalDisplay + "", totalFuelFlow.toString()],
-                [""],
-                [""],
-                ["<RESET FUEL USED"],
-                ["-----------------------[color]blue"],
-                ["", "PERF INIT>"]
-            ]);
-        }, 1000, true);
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage9(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage11(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
-        fmc.updateSideButtonActiveStatus();
-    }
-    static ShowPage11(fmc) { //FUEL MGMT Page 3
-        fmc.clearDisplay();
-        let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
-            + Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour"));
-        fmc.setTemplate([
-            ["PERF TRIP[color]blue", "3", "3"],
-            ["FROM[color]blue"],
-            ["dep", "PPOS>"],
-            ["TO[color]blue"],
-            ["dest"],
-            ["DIST[color]blue"],
-            ["---"],
-            ["GND SPD[color]blue", "FUEL FLOW[color]blue"],
-            [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString(), totalFuelFlow + " LB/HR"],
-            ["ETE[color]blue", "FUEL REQ[color]blue"],
-            ["---" + " LB"],
-            ["-----------------------[color]blue"],
-            ["<CLEAR", "PERF MENU>"]
-        ]);
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage10(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage9(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage1(fmc); };
-        fmc.updateSideButtonActiveStatus();
-    }
     static ShowPage12(fmc) { //FLIGHT LOG
         fmc.clearDisplay();
         let toTime = "---";
