@@ -6,8 +6,6 @@ class WT_FMC_Renderer {
     constructor(fmc) {
         this._fmc = fmc;
 
-        this._msg = "";
-
         // overrides
         this._fmc.setTemplate = this.setTemplate;
         this._fmc.setTitle = this.setTitle;
@@ -36,7 +34,7 @@ class WT_FMC_Renderer {
     // !!! PROTOTYPE for char grid
     // -----------------------------
     setTemplateRaw(template, defaultAlternatingLayout = true) {
-        console.log("setTemplateRaw()");
+        console.log("Rendering page");
 
         // clear just to be sure
         let existingContainer = document.getElementById("wt_container");
@@ -165,7 +163,7 @@ class WT_FMC_Renderer {
 
     renderMsgLineRaw(row) {
         // row.style.marginTop = "-1%";
-        this.renderLetters(this._msg, row);
+        this.renderLetters(this._fmc._msg, row);
 
         // i don't really like to "bind" this here, but its ok for now
         if (this._fmc.fpHasChanged) {
@@ -175,8 +173,7 @@ class WT_FMC_Renderer {
         }
     }
 
-    setMsg(text) {
-        this._msg = text;
+    setMsg() {
         this.renderMsgLineRaw(this.getTRow(14));
     }
 

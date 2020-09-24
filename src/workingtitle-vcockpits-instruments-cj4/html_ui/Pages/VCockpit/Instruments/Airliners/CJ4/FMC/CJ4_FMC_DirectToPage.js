@@ -77,12 +77,12 @@ class CJ4_FMC_DirectToPage {
 
             fmc.onExecPage = () => {
                 fmc.refreshPageCallback = () => {
-                    fmc.messageBox.innerHTML = "";
+                    fmc.setMsg();
                     fmc.fpHasChanged = false;
                     console.log("refreshcallback running -> legs page");
                     fmc.onLegs();
                 };
-                fmc.messageBox.innerHTML = "Working . . .";
+                fmc.setMsg("Working . . .");
                 fmc._activatingDirectTo = true;
                 console.log("_activatingDirectTo = true: " + fmc._activatingDirectTo);
 
@@ -129,7 +129,7 @@ class CJ4_FMC_DirectToPage {
                 if (directWaypoint) {
                     directWaypointCell = " ";
                     fmc.fpHasChanged = false;
-                    fmc.messageBox.innerHTML = "";
+                    fmc.setMsg();
                     CJ4_FMC_DirectToPage.ShowPage(fmc);
                 }
             }
