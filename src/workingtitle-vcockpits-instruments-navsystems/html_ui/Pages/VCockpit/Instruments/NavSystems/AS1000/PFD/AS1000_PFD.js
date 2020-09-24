@@ -33,37 +33,22 @@ class AS1000_PFD extends BaseAS1000 {
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "CONF_MENU_Push"));
         this.maxUpdateBudget = 12;
-        this.avionicsKnobIndex = 30;
-        this._cfgHandler = new ConfigLoader(this._xmlConfigPath);
         this._pfdConfigDone = false;
-        this.pfdConfig();
     }
 
     async pfdConfig() {
         this.loadSavedBrightness("PFD");
         this.loadSavedBrightness("MFD");
-        // It seems to be the case that in some planes the avionics brightness knob value changes
-        // as the plane is in the process of intializing -- the stock Bonanza seems to be one of
-        // these.  This causes the code in onUpdate that determines if the knob has moved from its
-        // prior value to trigger, meaning that the brightness that we set is immediately
-        // overridden by the new position of the knob.  The only way I have found to set this is,
-        // unfortunately, to stick a little pause in here to let the systems load a bit before
-        // completing the initialization of our current settings.  It's kinda gross, but since this
-        // is an async function it's not *too* bad, and the worst it means it that the hardware
-        // knob, if present, won't function for a few seconds.
-        //
-        // The 10000ms value here was experimentally derived by testing to see what caused loads in
-        // troublesome planes to succeed on my system.  It may need adjustment if other folks find
-        // themselves having that issue. 
-        await new Promise(resolve => setTimeout(resolve, 10000));
+        let loader = new ConfigLoader(this._xmlConfigPath);
         // We need to wait for this to finish before we can do the initial set of the light pot
         // in the line below because this can set a custom value for the avionics knob.
-        await this._cfgHandler.loadModelFile("interior").then((dom) => { this.processInteriorConfig(dom) });
+        await loader.loadModelFile("interior").then((dom) => { this.processInteriorConfig(dom) });
         this.avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
-        this._pfdConfigDone = true;
+        return Promise.resolve();
     }
 
     processInteriorConfig(dom) {
+        this.avionicsKnobIndex = 30;
         let templates = dom.getElementsByTagName("UseTemplate");
         for (const item of templates) {
             if (item.getAttribute("Name").toLowerCase() != "asobo_as1000_pfd_template")
@@ -75,6 +60,13 @@ class AS1000_PFD extends BaseAS1000 {
                 this.avionicsKnobIndex = item.textContent
             }
         }
+    }
+
+    onFlightStart() {
+        this.pfdConfig().then(() => {
+            console.log("PFD fully configured.");
+            this._pfdConfigDone = true;
+        });
     }
 
     onUpdate(_deltaTime) {
@@ -90,8 +82,6 @@ class AS1000_PFD extends BaseAS1000 {
 
     onEvent(_event) {
         if (_event == "MENU_Push") {
-            // Uncomment this for easy debugging of config issues.
-            // this.pfdConfig();
             if (this.popUpElement) {
                 if (this.popUpElement.popUpEvent == "CONF_MENU_Push") {
                     this.computeEvent("CONF_MENU_Push")
