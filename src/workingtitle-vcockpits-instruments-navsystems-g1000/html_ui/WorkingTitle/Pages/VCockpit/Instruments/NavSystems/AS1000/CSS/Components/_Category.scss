@@ -1,0 +1,151 @@
+@if $theme == "nxi" {
+    .category {
+        font-size: $font_size_regular;
+        margin: 1.5vh 0;
+        color: $category_text_color;
+
+        h1 {
+            display: flex;
+            align-items: flex-end;
+            color: #fff;
+            padding: 0;
+            width: auto;
+            line-height: 1.5em;
+            font-size: 1em;
+
+            &:before,
+            &:after {
+                content: " ";
+                display: block;
+                height: 10px;
+                background: $category_box_background_color;
+                border-top: 1px solid $category_box_outline_color;
+                position: relative;
+                top: 1px;
+            }
+
+            &:before {
+                margin-right: 1vh;
+                width: 2vh;
+                border-top-left-radius: 1vh;
+                border-left: 1px solid $category_box_outline_color;
+            }
+            &:after {
+                margin-left: 1vh;
+                flex: 1;
+                border-top-right-radius: 1vh;
+                border-right: 1px solid $category_box_outline_color;
+            }
+        }
+
+        .content {
+            text-align: left;
+            background-color: $category_box_background_color;
+            border: 1.5px solid $category_box_outline_color;
+            border-top: none;
+            padding: 1vh;
+            line-height: 1.8em;
+            border-bottom-left-radius: 1vh;
+            border-bottom-right-radius: 1vh;
+        }
+
+        .element {
+            display: flex;
+
+            .name {
+                flex: 1;
+            }
+
+            .value {
+                color: $input_color;
+                text-align: right;
+                font-size: 1.1em;
+            }
+
+            &.highlighted {
+                color: $input_color;
+            }
+        }
+    }
+} @else {
+    .category {
+        font-size: $font_size_regular;
+        margin: 1.5vh 0;
+
+        *[state="Selected"] {
+            animation: SelectionBlink 0.5s infinite !important;
+        }
+
+        h1 {
+            display: flex;
+            align-items: flex-end;
+            color: #fff;
+            border-bottom: 1px solid $category_box_outline_color;
+            padding: 0;
+            width: auto;
+            line-height: 1.5em;
+            font-size: 1em;
+            text-transform: uppercase;
+
+            &:before,
+            &:after {
+                content: " ";
+                display: block;
+                height: 10px;
+                background: $category_box_background_color;
+                border-top: 1px solid $category_box_outline_color;
+                position: relative;
+                top: 1px;
+                border-right: 1px solid $category_box_outline_color;
+                border-left: 1px solid $category_box_outline_color;
+            }
+
+            &:before {
+                margin-right: 1vh;
+                width: 2vh;
+            }
+            &:after {
+                margin-left: 1vh;
+                flex: 1;
+            }
+        }
+
+        .content {
+            text-align: left;
+            background-color: $category_box_background_color;
+            border: 1.5px solid $category_box_outline_color;
+            border-top: none;
+            padding: 1vh;
+            line-height: 1.8em;
+        }
+
+        .element {
+            display: flex;
+
+            .name {
+                flex: 1;
+            }
+
+            .value {
+                text-align: right;
+                font-size: 1.1em;
+                color: $input_color;
+            }
+
+            &.highlighted {
+                color: $input_color;
+            }
+        }
+    }
+
+    .category-fill-container {
+        display: grid;
+        height: 100%;
+        grid-template-rows: auto minmax(0, 1fr);
+
+        .content {
+            height: 100%;
+            overflow: auto;
+        }
+    }
+}

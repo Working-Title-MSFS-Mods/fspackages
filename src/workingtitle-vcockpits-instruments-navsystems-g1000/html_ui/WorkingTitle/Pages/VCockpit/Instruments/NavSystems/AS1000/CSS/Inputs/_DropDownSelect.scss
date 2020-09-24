@@ -1,0 +1,44 @@
+drop-down-selector {
+    position: relative;
+    display: block;
+
+    .popup {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        width: 15em;
+        background: $page_background_color;
+        border: 1vh outset #111;
+        outline: $border_width_thin solid #fff;
+        z-index: 1000;
+        max-height: 20vh;
+        overflow-y: scroll;
+
+        drop-down-selector-option {
+            color: $input_color;
+            display: block;
+            padding: 0 1vh;
+
+            &[state="Selected"] {
+                animation: SelectionBlink 0.5s infinite !important;
+            }
+        }
+    }
+
+    .value {
+        color: $input_color;
+    }
+
+    &[ACTIVE] {
+        .popup {
+            display: block;
+        }
+    }
+
+    &[state="Selected"] {
+        .value {
+            animation: SelectionBlink 0.5s infinite !important;
+        }
+    }
+}

@@ -1,0 +1,12 @@
+selectable-button {
+    display: block;
+    color: $input_color;
+
+    &[disabled] {
+        color: #666;
+    }
+
+    &[state="Selected"] {
+        animation: SelectionBlink 0.5s infinite !important;
+    }
+}

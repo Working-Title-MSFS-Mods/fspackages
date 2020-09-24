@@ -3,17 +3,17 @@ class BaseAS1000 extends NavSystem {
     connectedCallback() {
         super.connectedCallback();
         this.preserveAspectRatio("Mainframe");
-        this.addIndependentElementContainer(new NavSystemElementContainer("Frequencies", "NavBox", new NavSystemElementGroup([
+        /*this.addIndependentElementContainer(new NavSystemElementContainer("Frequencies", "NavBox", new NavSystemElementGroup([
             new AS1000.NavFrequencies(),
             new AS1000.ComFrequencies()
         ])));
-        this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys()));
+        //this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys()));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("DRCT", "DRCT", new GlassCockpit_DirectTo(), "DIRECTTO"));
         this.addEventAlias("FMS_Upper_INC", "NavigationSmallInc");
         this.addEventAlias("FMS_Upper_DEC", "NavigationSmallDec");
         this.addEventAlias("FMS_Lower_INC", "NavigationLargeInc");
         this.addEventAlias("FMS_Lower_DEC", "NavigationLargeDec");
-        this.addEventAlias("FMS_Upper_PUSH", "NavigationPush");
+        this.addEventAlias("FMS_Upper_PUSH", "NavigationPush");*/
     }
 }
 var AS1000;
@@ -1148,5 +1148,91 @@ class AS1000_PFD_BackgroundTimer extends NavSystemElement {
     getWillReset() {
         return this.willReset;
     }
+}
+
+class AS1000_Model
+{
+    constructor() {
+    }
+    update(dt) {
+    }
+}
+
+class AS1000_HTML_View extends HTMLElement
+{
+    constructor() {
+        super();
+        this.elements = {};
+        DOMUtilities.AddScopedEventListener(this, "[data-click]", "selected", this.onButtonClick.bind(this));
+        DOMUtilities.AddScopedEventListener(this, "[data-change]", "change", this.onChange.bind(this));
+    }
+    bindElements() {
+        let elements = this.querySelectorAll("[data-element]");
+        for(let element of elements) {
+            this.elements[element.getAttribute("data-element")] = element;
+            //element.removeAttribute("data-element");
+        }
+    }
+    connectedCallback() {
+        this.bindElements();
+    }
+    onButtonClick(e, node) {
+        if (node.dataset.click) {
+            let click = node.dataset.click;
+            this[click]();
+        }
+    }
+    onChange(e, node) {
+        if (node.dataset.change) {
+            let change = node.dataset.change;
+            this[change](e.target.value);
+        }
+    }
+    update(dt) {
+    }
+    enter(inputStack) {
+        return false;
+    }
+    activate() {
+    }
+    deactivate() {
+    }
+}
+
+class Base_Input_Layer extends Input_Layer {
+    constructor(navSystem) {
+        super();
+        this.navSystem = navSystem;
+        this.navFrequenciesModel = navSystem.navFrequenciesModel;
+        this.comFrequenciesModel = navSystem.comFrequenciesModel;
+    }
+
+    processEvent(_event, inputStack) {
+        if (this.navSystem.mapElement2)
+            this.navSystem.mapElement2.onEvent(_event);
+        return super.processEvent(_event, inputStack);
+    }
+
+    onProceduresPush(inputStack) { this.navSystem.showProcedures(); }
+    onFlightPlan(inputStack) { this.navSystem.showFlightPlan(); }
+
+    onNavPush(inputStack) { this.navFrequenciesModel.toggleActive(); }
+    onNavSwitch(inputStack) { this.navFrequenciesModel.transferActive(); }
+    onNavLargeInc(inputStack) { this.navFrequenciesModel.incrementWhole(); }
+    onNavLargeDec(inputStack) { this.navFrequenciesModel.decrementWhole(); }
+    onNavSmallInc(inputStack) { this.navFrequenciesModel.incrementFractional(); }
+    onNavSmallDec(inputStack) { this.navFrequenciesModel.decrementFractional(); }
+    onVolume1Inc(inputStack) { this.navFrequenciesModel.increaseVolume(); }
+    onVolume1Dec(inputStack) { this.navFrequenciesModel.decreaseVolume(); }
+
+    onComPush(inputStack) { this.comFrequenciesModel.toggleActive(); }
+    onComSwitch(inputStack) { this.comFrequenciesModel.transferActive(); }
+    onComSwitchLong(inputStack) { this.comFrequenciesModel.setEmergencyFrequency(); }
+    onComLargeInc(inputStack) { this.comFrequenciesModel.incrementWhole(); }
+    onComLargeDec(inputStack) { this.comFrequenciesModel.decrementWhole(); }
+    onComSmallInc(inputStack) { this.comFrequenciesModel.incrementFractional(); }
+    onComSmallDec(inputStack) { this.comFrequenciesModel.decrementFractional(); }
+    onVolume2Inc(inputStack) { this.comFrequenciesModel.increaseVolume(); }
+    onVolume2Dec(inputStack) { this.comFrequenciesModel.decreaseVolume(); }
 }
 //# sourceMappingURL=BaseAS1000.js.map

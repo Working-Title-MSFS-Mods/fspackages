@@ -1,3 +1,9 @@
+class Attitude_Indicator_Model {
+    constructor(syntheticVision) {
+        this.syntheticVision = syntheticVision;
+    }
+}
+
 class AttitudeIndicator extends HTMLElement {
     constructor() {
         super();
@@ -12,7 +18,6 @@ class AttitudeIndicator extends HTMLElement {
         this.horizonTopColorHorizon = "#4664e7";
         this.horizonBottomColor = "#54350a";
         this.strokeWidth = 3;
-        this.syntheticVision = false;
     }
     static get observedAttributes() {
         return [
@@ -35,6 +40,27 @@ class AttitudeIndicator extends HTMLElement {
     }
     connectedCallback() {
         this.construct();
+    }
+    /**
+     * @param {Attitude_Indicator_Model} model 
+     */
+    setModel(model) {
+        this.model = model;
+        this.model.syntheticVision.subscribe(enabled => {
+            this.horizonTop.style.display = enabled ? "none" : "block";
+            this.horizonBottom.style.display = enabled ? "none" : "block";
+            this.horizonTopGradient.style.display = enabled ? "none" : "block";
+            this.actualDirectionMarker.style.visibility = (this.groundSpeed > 30 && enabled) ? "visible" : "hidden";
+        });
+    }
+    getRectSegments(x, y, w, h) {
+        let i = 0;
+        return [
+            [x, y],
+            [x + w, y],
+            [x + w, y + h],
+            [x, y + h]
+        ].map(point => `${(i++ == 0) ? "M" : "L"}${point[0]} ${point[1]}`);
     }
     buildGraduations() {
         if (!this.attitude_pitch)
@@ -59,6 +85,8 @@ class AttitudeIndicator extends HTMLElement {
         let width;
         let height;
         let text;
+        let centerSegments = [];
+        let unusualAttitudeSegments = [];
         while (angle <= maxDash) {
             if (angle % 10 == 0) {
                 width = bigWidth;
@@ -94,56 +122,63 @@ class AttitudeIndicator extends HTMLElement {
                 }
             }
             if (angle != 0) {
-                let rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                rect.setAttribute("fill", "white");
-                rect.setAttribute("x", (-width / 2).toString());
-                rect.setAttribute("y", (this.bankSizeRatio * angle - height / 2).toString());
-                rect.setAttribute("width", width.toString());
-                rect.setAttribute("height", height.toString());
-                this.attitude_pitch.appendChild(rect);
-                if (text) {
-                    let leftText = document.createElementNS(Avionics.SVG.NS, "text");
-                    leftText.textContent = Math.abs(angle).toString();
-                    leftText.setAttribute("x", ((-width / 2) - 5).toString());
-                    leftText.setAttribute("y", (this.bankSizeRatio * angle - height / 2 + fontSize / 2).toString());
-                    leftText.setAttribute("text-anchor", "end");
-                    leftText.setAttribute("font-size", fontSize.toString());
-                    leftText.setAttribute("font-family", "Roboto-Bold");
-                    leftText.setAttribute("fill", "white");
-                    this.attitude_pitch.appendChild(leftText);
-                    let rightText = document.createElementNS(Avionics.SVG.NS, "text");
-                    rightText.textContent = Math.abs(angle).toString();
-                    rightText.setAttribute("x", ((width / 2) + 5).toString());
-                    rightText.setAttribute("y", (this.bankSizeRatio * angle - height / 2 + fontSize / 2).toString());
-                    rightText.setAttribute("text-anchor", "start");
-                    rightText.setAttribute("font-size", fontSize.toString());
-                    rightText.setAttribute("font-family", "Roboto-Bold");
-                    rightText.setAttribute("fill", "white");
-                    this.attitude_pitch.appendChild(rightText);
-                }
+                centerSegments.push(...this.getRectSegments(-width / 2, this.bankSizeRatio * angle - height / 2, width, height));
                 if (angle < unusualAttitudeLowerLimit) {
-                    let chevron = document.createElementNS(Avionics.SVG.NS, "path");
                     let path = "M" + -smallWidth / 2 + " " + (this.bankSizeRatio * nextAngle - bigHeight / 2) + " l" + smallWidth + "  0 ";
                     path += "L" + bigWidth / 2 + " " + (this.bankSizeRatio * angle - bigHeight / 2) + " l" + -smallWidth + " 0 ";
                     path += "L0 " + (this.bankSizeRatio * nextAngle + 20) + " ";
                     path += "L" + (-bigWidth / 2 + smallWidth) + " " + (this.bankSizeRatio * angle - bigHeight / 2) + " l" + -smallWidth + " 0 Z";
-                    chevron.setAttribute("d", path);
-                    chevron.setAttribute("fill", "red");
-                    this.attitude_pitch.appendChild(chevron);
+                    unusualAttitudeSegments.push(path);
                 }
                 if (angle >= unusualAttitudeUpperLimit && nextAngle <= maxDash) {
-                    let chevron = document.createElementNS(Avionics.SVG.NS, "path");
                     let path = "M" + -smallWidth / 2 + " " + (this.bankSizeRatio * angle - bigHeight / 2) + " l" + smallWidth + "  0 ";
                     path += "L" + (bigWidth / 2) + " " + (this.bankSizeRatio * nextAngle + bigHeight / 2) + " l" + -smallWidth + " 0 ";
                     path += "L0 " + (this.bankSizeRatio * angle - 20) + " ";
                     path += "L" + (-bigWidth / 2 + smallWidth) + " " + (this.bankSizeRatio * nextAngle + bigHeight / 2) + " l" + -smallWidth + " 0 Z";
-                    chevron.setAttribute("d", path);
-                    chevron.setAttribute("fill", "red");
-                    this.attitude_pitch.appendChild(chevron);
+                    unusualAttitudeSegments.push(path);
                 }
             }
             angle = nextAngle;
         }
+
+        let centerLines = document.createElementNS(Avionics.SVG.NS, "path");
+        centerLines.setAttribute("d", centerSegments.join(" "));
+        centerLines.setAttribute("fill", "white");
+        this.attitude_pitch.appendChild(centerLines);
+
+        let unusualAttitudeChevrons = document.createElementNS(Avionics.SVG.NS, "path");
+        unusualAttitudeChevrons.setAttribute("d", unusualAttitudeSegments.join(" "));
+        unusualAttitudeChevrons.setAttribute("fill", "red");
+        this.attitude_pitch.appendChild(unusualAttitudeChevrons);
+
+        let textElements = [];
+        this.angleGroup = document.createElementNS(Avionics.SVG.NS, "g");
+        this.angleGroup.setAttribute("fill", "white");
+        for (let i = -2; i <= 2; i++) {
+            let angle = i * 5;
+
+            let left = document.createElementNS(Avionics.SVG.NS, "text");
+            left.textContent = angle;
+            left.setAttribute("x", ((-width / 2) - 5).toString());
+            left.setAttribute("y", (this.bankSizeRatio * angle - height / 2 + fontSize / 2).toString());
+            left.setAttribute("text-anchor", "end");
+            left.setAttribute("font-size", fontSize.toString());
+            left.setAttribute("font-family", "Roboto-Bold");
+            this.angleGroup.appendChild(left);
+
+            let right = document.createElementNS(Avionics.SVG.NS, "text");
+            right.textContent = angle;
+            right.setAttribute("x", ((width / 2) + 5).toString());
+            right.setAttribute("y", (this.bankSizeRatio * angle - height / 2 + fontSize / 2).toString());
+            right.setAttribute("text-anchor", "start");
+            right.setAttribute("font-size", fontSize.toString());
+            right.setAttribute("font-family", "Roboto-Bold");
+            this.angleGroup.appendChild(right);
+
+            textElements.push({ position: -i, left: left, right: right })
+        }
+        this.angleTextElements = textElements;
+        this.attitude_pitch.appendChild(this.angleGroup);
     }
     construct() {
         Utils.RemoveAllChildren(this);
@@ -172,7 +207,7 @@ class AttitudeIndicator extends HTMLElement {
             this.horizonTop.setAttribute("height", "2000");
             this.horizon.appendChild(this.horizonTop);
             this.bottomPart = document.createElementNS(Avionics.SVG.NS, "g");
-            this.horizon.appendChild(this.bottomPart);            
+            this.horizon.appendChild(this.bottomPart);
             this.horizonTopGradient = document.createElementNS(Avionics.SVG.NS, "rect");
             this.horizonTopGradient.setAttribute("fill", (this.backgroundVisible) ? "url(#sky)" : "transparent");
             this.horizonTopGradient.setAttribute("x", "-1000");
@@ -230,7 +265,7 @@ class AttitudeIndicator extends HTMLElement {
         triangleOuterRight.setAttribute("d", "M140 30 l-50 0 L0 0 Z");
         triangleOuterRight.setAttribute("fill", "#d12bc7");
         //this.flightDirector.appendChild(triangleOuterRight);
- 
+
         let triangleHeight = 16;
         let triangleHalfHeight = triangleHeight / 2;
         let triangleWidth = 110;
@@ -285,6 +320,13 @@ class AttitudeIndicator extends HTMLElement {
             this.flightDirector.appendChild(triangle);
         }
 
+        function rotate2d(x, y, radians) {
+            return [
+                x * Math.cos(radians) + y * Math.sin(radians),
+                -x * Math.sin(radians) + y * Math.cos(radians),
+            ]
+        }
+
         {
             this.attitude_bank = document.createElementNS(Avionics.SVG.NS, "g");
             this.root.appendChild(this.attitude_bank);
@@ -297,28 +339,37 @@ class AttitudeIndicator extends HTMLElement {
             let radius = 170;
             let width = 4;
             let height = 30;
+            let segments = [];
             for (let i = 0; i < bigDashes.length; i++) {
-                let dash = document.createElementNS(Avionics.SVG.NS, "rect");
-                dash.setAttribute("x", (-width / 2).toString());
-                dash.setAttribute("y", (-radius - height).toString());
-                dash.setAttribute("height", height.toString());
-                dash.setAttribute("width", width.toString());
-                dash.setAttribute("fill", "white");
-                dash.setAttribute("transform", "rotate(" + bigDashes[i] + ",0,0)");
-                this.attitude_bank.appendChild(dash);
+                let points = [];
+                points.push(rotate2d(-width / 2, -radius - height, bigDashes[i] * Math.PI / 180.0));
+                points.push(rotate2d(+width / 2, -radius - height, bigDashes[i] * Math.PI / 180.0));
+                points.push(rotate2d(+width / 2, -radius, bigDashes[i] * Math.PI / 180.0));
+                points.push(rotate2d(-width / 2, -radius, bigDashes[i] * Math.PI / 180.0));
+                let j = 0;
+                segments.push(...points.map(point => {
+                    return `${(j++ == 0) ? "M" : "L"}${point[0]} ${point[1]}`;
+                }));
             }
             width = 4;
             height = 20;
             for (let i = 0; i < smallDashes.length; i++) {
-                let dash = document.createElementNS(Avionics.SVG.NS, "rect");
-                dash.setAttribute("x", (-width / 2).toString());
-                dash.setAttribute("y", (-radius - height).toString());
-                dash.setAttribute("height", height.toString());
-                dash.setAttribute("width", width.toString());
-                dash.setAttribute("fill", "white");
-                dash.setAttribute("transform", "rotate(" + smallDashes[i] + ",0,0)");
-                this.attitude_bank.appendChild(dash);
+                let points = [];
+                points.push(rotate2d(-width / 2, -radius - height, smallDashes[i] * Math.PI / 180.0));
+                points.push(rotate2d(+width / 2, -radius - height, smallDashes[i] * Math.PI / 180.0));
+                points.push(rotate2d(+width / 2, -radius, smallDashes[i] * Math.PI / 180.0));
+                points.push(rotate2d(-width / 2, -radius, smallDashes[i] * Math.PI / 180.0));
+                let j = 0;
+                segments.push(...points.map(point => {
+                    return `${(j++ == 0) ? "M" : "L"}${point[0]} ${point[1]}`;
+                }));
             }
+
+            let dashes = document.createElementNS(Avionics.SVG.NS, "path");
+            dashes.setAttribute("d", segments.join(" "));
+            dashes.setAttribute("fill", "white");
+            this.attitude_bank.appendChild(dashes);
+
         }
         {
             let cursors = document.createElementNS(Avionics.SVG.NS, "g");
@@ -402,7 +453,7 @@ class AttitudeIndicator extends HTMLElement {
             this.slipSkid.setAttribute("fill", "white");
             this.root.appendChild(this.slipSkid);
         }
-        
+
         {
             let radius = 10;
             let strokeWidth = 2;
@@ -411,29 +462,29 @@ class AttitudeIndicator extends HTMLElement {
             let color = "#00ff00";
             function createBarb(rotation, outline) {
                 let barb = document.createElementNS(Avionics.SVG.NS, "rect");
-                barb.setAttribute("x",-radius - barbLength);
-                barb.setAttribute("y",-barbThickness / 2);
-                barb.setAttribute("width",barbLength);
-                barb.setAttribute("height",barbThickness);
+                barb.setAttribute("x", -radius - barbLength);
+                barb.setAttribute("y", -barbThickness / 2);
+                barb.setAttribute("width", barbLength);
+                barb.setAttribute("height", barbThickness);
                 if (outline) {
-                    barb.setAttribute("fill","transparent");
-                    barb.setAttribute("stroke","black");
-                    barb.setAttribute("stroke-width",strokeWidth);
+                    barb.setAttribute("fill", "transparent");
+                    barb.setAttribute("stroke", "black");
+                    barb.setAttribute("stroke-width", strokeWidth);
                 } else {
-                    barb.setAttribute("fill",color);
+                    barb.setAttribute("fill", color);
                 }
-                barb.setAttribute("transform",`rotate(${rotation})`);
+                barb.setAttribute("transform", `rotate(${rotation})`);
                 return barb;
             }
             let actualDirectionMarker = document.createElementNS(Avionics.SVG.NS, "g");
             {
                 let outline = document.createElementNS(Avionics.SVG.NS, "circle");
-                outline.setAttribute("cx",0);
-                outline.setAttribute("cy",0);
-                outline.setAttribute("r",radius);
-                outline.setAttribute("fill","transparent");
-                outline.setAttribute("stroke","black");
-                outline.setAttribute("stroke-width",strokeWidth + barbThickness);
+                outline.setAttribute("cx", 0);
+                outline.setAttribute("cy", 0);
+                outline.setAttribute("r", radius);
+                outline.setAttribute("fill", "transparent");
+                outline.setAttribute("stroke", "black");
+                outline.setAttribute("stroke-width", strokeWidth + barbThickness);
                 actualDirectionMarker.appendChild(outline);
             }
             actualDirectionMarker.appendChild(createBarb(0, true));
@@ -442,14 +493,14 @@ class AttitudeIndicator extends HTMLElement {
             actualDirectionMarker.appendChild(createBarb(0, false));
             actualDirectionMarker.appendChild(createBarb(90, false));
             actualDirectionMarker.appendChild(createBarb(180, false));
-            
+
             let fill = document.createElementNS(Avionics.SVG.NS, "circle");
-            fill.setAttribute("cx",0);
-            fill.setAttribute("cy",0);
-            fill.setAttribute("r",radius);
-            fill.setAttribute("fill","transparent");
-            fill.setAttribute("stroke",color);
-            fill.setAttribute("stroke-width",barbThickness);
+            fill.setAttribute("cx", 0);
+            fill.setAttribute("cy", 0);
+            fill.setAttribute("r", radius);
+            fill.setAttribute("fill", "transparent");
+            fill.setAttribute("stroke", color);
+            fill.setAttribute("stroke-width", barbThickness);
             actualDirectionMarker.appendChild(fill);
             this.actualDirectionMarker = actualDirectionMarker;
             this.attitude_pitch.appendChild(actualDirectionMarker);
@@ -472,7 +523,7 @@ class AttitudeIndicator extends HTMLElement {
                 break;
             case "actual-pitch":
                 this.actualPitch = parseFloat(newValue);
-                break;               
+                break;
             case "ground-speed":
                 this.groundSpeed = parseFloat(newValue);
                 break;
@@ -487,12 +538,6 @@ class AttitudeIndicator extends HTMLElement {
                 break;
             case "slip_skid":
                 this.slipSkidValue = parseFloat(newValue);
-                break;
-            case "background":
-                if (newValue == "false")
-                    this.backgroundVisible = false;
-                else
-                    this.backgroundVisible = true;
                 break;
             case "flight_director-active":
                 this.flightDirectorActive = newValue == "true";
@@ -512,17 +557,6 @@ class AttitudeIndicator extends HTMLElement {
         }
         this.applyAttributes();
     }
-    getSyntheticVisionEnabled() {
-        return this.syntheticVision;
-    }
-    setSytheticVisionEnabled(enabled) {
-        this.syntheticVision = enabled;
-        if (this.syntheticVision) {
-            this.setAttribute("background", "false");
-        } else {
-            this.setAttribute("background", "true");
-        }
-    }
     applyAttributes() {
         if (this.bottomPart)
             this.bottomPart.setAttribute("transform", "rotate(" + this.bank + ", 0, 0) translate(0," + (this.pitch * this.bankSizeRatio) + ")");
@@ -535,31 +569,32 @@ class AttitudeIndicator extends HTMLElement {
             let ax = Math.sin(a);
             let ay = Math.sin(-this.actualPitch * Math.PI / 180);
             let az = Math.cos(a);
-            let screenWidth = 400 * 100/47.0; //From the css setting the width
-            let screenHeight = screenWidth * 3/4;
-            let fov = (80/2) * Math.PI / 180.0; 
+            let screenWidth = 400 * 100 / 47.0; //From the css setting the width
+            let screenHeight = screenWidth * 3 / 4;
+            let fov = (80 / 2) * Math.PI / 180.0;
             let focalLength = 1 / Math.tan(fov);
             let screenX = (ax * (focalLength / az)) * screenWidth;
             let screenY = (ay * (focalLength / az)) * screenHeight;
-            this.actualDirectionMarker.setAttribute("transform", "translate(" + screenX.toString() + "," + screenY.toString() + ")");
-            this.actualDirectionMarker.style.visibility = (this.groundSpeed > 30 && this.syntheticVision) ? "visible" : "hidden";
+            this.actualDirectionMarker.setAttribute("transform", "translate(" + screenX.toString() + "," + screenY.toString() + ")");            
+
+            // We quantize the angle to 5 degree increments and move the text group by that amount so we always see 5 sets of text at once
+            // Then we update the text values to correspond to the correct angle
+            let quantizedAngle = Math.floor(this.pitch / 5) * 5;
+            if (quantizedAngle !== this.lastQuantizedAngle) {
+                this.angleGroup.setAttribute("transform", `translate(0,${-quantizedAngle * this.bankSizeRatio})`);
+                for (let angleTextElement of this.angleTextElements) {
+                    let angle = -(quantizedAngle + angleTextElement.position * 5);
+                    angle = angle == 0 ? "" : angle;
+                    angleTextElement.left.textContent = angle;
+                    angleTextElement.right.textContent = angle;
+                }
+                this.lastQuantizedAngle = quantizedAngle;
+            }
         }
         if (this.attitude_bank)
             this.attitude_bank.setAttribute("transform", "rotate(" + this.bank + ", 0, 0)");
         if (this.slipSkid)
             this.slipSkid.setAttribute("transform", "translate(" + (this.slipSkidValue * 40) + ", 0)");
-        if (this.horizonTop) {
-            if (this.backgroundVisible) {
-                this.horizonTop.setAttribute("fill", this.horizonTopColor);
-                this.horizonBottom.setAttribute("fill", this.horizonBottomColor);
-                this.horizonTopGradient.setAttribute("fill", "url(#sky)");
-            }
-            else {
-                this.horizonTop.setAttribute("fill", "transparent");
-                this.horizonBottom.setAttribute("fill", "transparent");
-                this.horizonTopGradient.setAttribute("fill", "transparent");
-            }
-        }
         if (this.flightDirector) {
             if (this.flightDirectorActive) {
                 this.flightDirector.setAttribute("transform", "rotate(" + (this.bank - this.flightDirectorBank) + ") translate(0 " + ((this.pitch - this.flightDirectorPitch) * this.bankSizeRatio) + ")");

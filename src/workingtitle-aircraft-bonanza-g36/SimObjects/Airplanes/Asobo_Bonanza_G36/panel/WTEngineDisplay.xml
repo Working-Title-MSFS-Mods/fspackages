@@ -241,12 +241,7 @@
 			<Left fontsize="8">GAL USED</Left>			
 			<Right fontsize="8">
 				<ToFixed precision="1">
-					<Substract>
-						<MaxSinceStart>
-							<Simvar name="FUEL TOTAL QUANTITY:1" unit="gallon"/>
-						</MaxSinceStart>
-						<Simvar name="FUEL TOTAL QUANTITY:1" unit="gallon"/>
-					</Substract>
+                    <Simvar name="L:WT TOTAL FUEL USED" unit="gallon"/>
 				</ToFixed>
 			</Right>
 		</Text>

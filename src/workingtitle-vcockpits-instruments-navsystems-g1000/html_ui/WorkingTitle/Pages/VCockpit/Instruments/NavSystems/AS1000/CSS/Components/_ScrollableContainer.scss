@@ -1,0 +1,16 @@
+.scrollable-container {
+    &::-webkit-scrollbar {
+        width: 0.5vh;
+        display: block;
+    }
+
+    &::-webkit-scrollbar-track {
+        display: block;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        display: block;
+        border-radius: 0;
+        background: #fff;
+    }
+}

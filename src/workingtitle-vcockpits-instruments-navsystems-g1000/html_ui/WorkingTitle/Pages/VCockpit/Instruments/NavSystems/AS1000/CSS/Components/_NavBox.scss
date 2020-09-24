@@ -1,0 +1,166 @@
+g1000-nav-box {
+    transform: rotateX(0);
+    grid-area: nav;
+    display: grid;
+    grid-template-columns: 27% 1fr 25%;
+    grid-template-rows: 100%;
+    border-bottom: 0.3vh solid $border_color;
+    background: $page_background_color;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    line-height: 1;
+    font-weight: normal;
+    font-family: "Roboto-Regular";
+    font-size: $font_size_regular;
+
+    > .center {
+        height: 100%;
+        display: grid;
+        grid-template-rows: 50% 50%;
+        border-left: $border_width_thin solid $border_color;
+        border-right: $border_width_thin solid $border_color;
+
+        .mfd-status {
+            border-bottom: $border_width_thin solid $border_color;
+            padding: 0 1vh;
+            align-items: baseline;
+            display: flex;
+            overflow: hidden;
+            font-family: "Roboto-Mono";
+
+            div {
+                width: auto;
+                margin: 0 1vh;
+                flex: none;
+                line-height: 3.5vh;
+                font-size:0.9em;
+                font-weight:bold;
+
+                &.value {
+                    font-weight: bold;
+                    color: $color_gps;
+                    flex: 1;
+                    font-size: 1.2em;
+                }
+            }
+
+            .small {
+                font-size: 0.7em;
+            }
+        }
+
+        .page-title {
+            display: grid;
+            align-items: center;
+            justify-content: center;
+            padding: 0 2vh;
+            color: $input_color;
+            font-size: 1.2em;
+            line-height: 1;
+            font-family: "Roboto-Mono";
+        }
+    }
+}
+
+g1000-nav-frequencies,
+g1000-com-frequencies {
+    display: grid;
+    grid-template-rows: 50% 50%;
+    height: 100%;
+    padding: 0 1vh;
+    font-family: "Roboto-Mono";
+
+    .radio-1,
+    .radio-2 {
+        display: grid;
+        grid-gap: 1vh;
+        align-items: center;
+        grid-template-columns: 3.5ch 6ch 1.5ch 6ch 4ch;
+        grid-template-areas: "name standby arrow active ident";
+        font-size: $font_size_large;
+
+        div:first-child {
+            font-size: $font_size_regular;
+        }
+
+        .active {
+            grid-area: active;
+            font-weight: bold;
+        }
+
+        .standby {
+            grid-area: standby;
+            font-weight: bold;
+        }
+
+        .name {
+            grid-area: name;
+        }
+
+        .arrow {
+            grid-area: arrow;
+            visibility: hidden;
+            width: 1.5ch;
+        }
+
+        .volume {
+            grid-area: volume;
+            display: none;
+            color: $input_color;
+            font-weight: bold;
+        }
+
+        &[mode="volume"] {
+            grid-template-columns: 3.5ch 6ch 1.5ch 6ch 4ch;
+            grid-template-areas: "name volume arrow active ident";
+
+            .standby {
+                display: none;
+            }
+
+            .arrow {
+                visibility: hidden !important;
+            }
+
+            .volume {
+                display: block;
+            }
+        }
+    }
+
+    &[selected="1"] {
+        .radio-1 {
+            .arrow {
+                visibility: visible;
+            }
+            .standby {
+                outline: $border_width_thin solid cyan;
+            }
+        }
+    }
+
+    &[selected="2"] {
+        .radio-2 {
+            .arrow {
+                visibility: visible;
+            }
+            .standby {
+                outline: $border_width_thin solid cyan;
+            }
+        }
+    }
+}
+
+g1000-com-frequencies {
+    .radio-1,
+    .radio-2 {
+        grid-template-columns: 7ch 1.5ch 7ch 3.5ch;
+        grid-template-areas: "active arrow standby name";
+
+        &[mode="volume"] {
+            grid-template-columns: 7ch 1.5ch 7ch 3.5ch;
+            grid-template-areas: "active arrow volume name";
+        }
+    }
+}

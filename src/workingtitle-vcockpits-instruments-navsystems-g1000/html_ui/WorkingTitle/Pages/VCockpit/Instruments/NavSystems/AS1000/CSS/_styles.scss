@@ -1,0 +1,114 @@
+$theme: "1000";
+
+$page_background_color: #111;
+
+$border_width_thick: 0.4vh;
+$border_width_thin: 0.2vh;
+$border_color: #ccc;
+
+$color_gps: #ff00ff;
+$color_ap_active: #00ff00;
+
+$category_box_outline_color: #888;
+$category_box_background_color: #000;
+$category_border_width: $border_width_thin;
+$category_text_color: #fff;
+
+$input_color: #00ffff;
+
+$font_size_small: 0.8rem;
+$font_size_regular: 1.0rem;
+$font_size_large: 1.2rem;
+$font_size_extra_large: 1.4rem;
+
+$font_family_normal: "Roboto-Mono";
+
+html {
+    font-size: calc(2 * 1vh * var(--bodyHeightScale));
+    font-family: $font_family_normal;
+}
+
+@keyframes SelectionBlink {
+    0% {
+        background: $input_color;
+        color: #000;
+    }
+    45% {
+        background: $input_color;
+        color: #000;
+    }
+    50% {
+        background: none;
+        color: $input_color;
+    }
+    95% {
+        background: none;
+        color: $input_color;
+    }
+    100% {
+        background: $input_color;
+        color: #000;
+    }
+}
+
+@if ($theme == "nxi") {
+    $page_background_color: #0c1015;
+
+    $border_color: lighten($page_background_color, 50%);
+
+    $category_box_outline_color: lighten($page_background_color, 10%);
+    $category_border_width: $border_width_thin;
+    $category_box_background_color: #040608;
+    $category_text_color: #9ba9be;
+
+    @font-face {
+        font-family: "Roboto-Mono";
+        src: url("/Fonts/RobotoMono-Regular.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: "Roboto-Mono";
+        src: url("/Fonts/RobotoMono-Bold.ttf") format("truetype");
+        font-weight: bold;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: "Roboto-Regular";
+        src: url("/Fonts/Roboto-Regular.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: "Roboto-Regular";
+        src: url("/Fonts/Roboto-Bold.ttf") format("truetype");
+        font-weight: bold;
+        font-style: normal;
+    }
+    $font_family_normal: "Roboto-Regular";
+} @else {
+    @font-face {
+        font-family: "Roboto-Mono";
+        src: url("/Fonts/RobotoMono-Regular.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: "Roboto-Mono";
+        src: url("/Fonts/RobotoMono-Bold.ttf") format("truetype");
+        font-weight: bold;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: "Roboto-Regular";
+        src: url("/Fonts/Roboto-Regular.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: "Roboto-Regular";
+        src: url("/Fonts/Roboto-Bold.ttf") format("truetype");
+        font-weight: bold;
+        font-style: normal;
+    }
+}

@@ -1,0 +1,174 @@
+@import "styles";
+
+@import "Components/Category";
+@import "Components/ConfirmDialog";
+@import "Components/NavBox";
+@import "Components/ScrollableContainer";
+@import "Components/SoftKeys";
+
+@import "Inputs/Button";
+@import "Inputs/DropDownSelect";
+@import "Inputs/Numeric";
+@import "Inputs/String";
+@import "Inputs/Switch";
+
+as1000-pfd-element #Mainframe #HorizonContainer {
+    -webkit-transform: rotateX(0deg);
+}
+
+as1000-pfd-element #Mainframe #InstrumentsContainer #Altimeter {
+    -webkit-transform: rotateX(0deg);
+}
+
+glasscockpit-altimeter {
+    -webkit-transform: rotateX(0deg);
+}
+
+as1000-pfd-element #Mainframe #InstrumentsContainer {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 8% 1fr 4%;
+    grid-template-areas:
+        "nav"
+        "main"
+        "softkeys";
+
+    > .center {
+        grid-area: main;
+    }
+
+    g1000-soft-key-menu {
+        grid-area: softkeys;
+    }
+
+    g1000-nav-box {
+        grid-area: nav;
+    }
+}
+
+glasscockpit-hsi {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 100%;
+    grid-template-areas: "main";
+
+    .compass-background-circle,
+    .compass-overlay {
+    }
+
+    .compass-background,
+    .compass-background-circle,
+    .compass-overlay,
+    .compass-static-overlay {
+        grid-area: main;
+        -webkit-transform: rotateX(0deg);
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+}
+
+as1000-pfd-element #Mainframe #InstrumentsContainer #Compass,
+as1000-pfd-element #Mainframe #InstrumentsContainer #ArcCompass {
+    transform: rotateX(0);
+    position: absolute;
+    border: none;
+    $middle: 46.6%;
+    $width: 50%;
+    left: $middle - $width/2;
+    bottom: 4%;
+    width: $width;
+    height: 50%;
+    z-index: 0;
+}
+
+g1000-nav-box {
+    > .center {
+        .ap-status {
+            align-items: center;
+            font-size: $font_size_extra_large;
+            display: grid;
+            grid-gap: 2vh;
+            grid-template-columns: 25% $border_width_thin 15% $border_width_thin 1fr;
+            font-weight: bold;
+
+            .active {
+                color: #00ff00;
+            }
+
+            .armed {
+            }
+        }
+
+        .nav-status {
+            border-bottom: $border_width_thin solid $border_color;
+            align-items: center;
+            font-size: $font_size_extra_large;
+            display: grid;
+            grid-gap: 2vh;
+            grid-template-columns: 40% $border_width_thin 60%;
+        }
+    }
+
+    .nav-left {
+        padding: 0 2vh;
+        display: grid;
+        width: 100%;
+        grid-gap: 2vh;
+        grid-template-columns: 40% 1fr 40%;
+        color: $color_gps;
+        font-weight: bold;
+
+        .leg-symbol {
+            text-align: center;
+        }
+
+        .leg-to {
+            text-align: right;
+        }
+
+        .leg-from {
+            text-align: left;
+        }
+    }
+
+    .nav-right {
+        align-items: baseline;
+        display: flex;
+
+        div {
+            width: auto;
+            margin: 0 1vh;
+            flex: none;
+            font-size: $font_size_large;
+            line-height: 0.7;
+
+            &.value {
+                font-weight: bold;
+                color: $color_gps;
+                flex: 1;
+                font-size: $font_size_extra_large;
+            }
+        }
+    }
+
+    .ap-left {
+        display: grid;
+        grid-template-columns: 50% 50%;
+    }
+
+    .ap-divider,
+    .nav-divider {
+        background: $border_color;
+        height: 100%;
+        display: block;
+    }
+
+    .ap-right {
+        display: grid;
+        grid-template-columns: 15% 10% 40% 30%;
+    }
+}

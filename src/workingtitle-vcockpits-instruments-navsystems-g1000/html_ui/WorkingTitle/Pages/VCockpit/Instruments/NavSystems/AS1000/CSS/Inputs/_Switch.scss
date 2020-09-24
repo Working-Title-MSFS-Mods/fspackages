@@ -1,0 +1,52 @@
+toggle-switch {
+    display: flex;
+    align-items: center;
+    color: $input_color;
+    padding: 0.3vh 0;
+
+    $off_color: #666;
+    $on_color: #00ff00;
+    $size: 0.8vh;
+
+    div {
+        flex: 1;
+        margin: 0 0.8vh;
+        line-height: 1;
+    }
+
+    &[state="Selected"] {
+        div {
+            animation: SelectionBlink 0.5s infinite !important;
+        }
+    }
+
+    &:before,
+    &:after {
+        border-top: $size solid transparent;
+        border-bottom: $size solid transparent;
+        width: 0;
+        height: 0;
+        content: " ";
+        display: block;
+    }
+
+    &:before {
+        border-right: $size solid $off_color;
+    }
+
+    &:after {
+        border-left: $size solid $off_color;
+    }
+
+    &[value="1"] {
+        &:before {
+            border-right-color: $on_color;
+        }
+    }
+
+    &:not([value="1"]) {
+        &:after {
+            border-left-color: $on_color;
+        }
+    }
+}

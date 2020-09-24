@@ -4,18 +4,26 @@ class AS1000_MFD extends BaseAS1000 {
         this.altimeterIndex = 0;
         this.initDuration = 5500;
         this.needValidationAfterInit = true;
+        this.useUpdateBudget = false;
     }
     get templateID() { return "AS1000_MFD"; }
     connectedCallback() {
         super.connectedCallback();
-        Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });
+
+        this.settings = new AS1000_Settings("g36", AS1000_Default_Settings.base);
+        this.unitChooser = new UnitChooser(this.settings);
+        this.procedures = new Procedures(this.currFlightPlanManager);
+        this.inputStack = new Input_Stack();
         this.loadSavedMapOrientation();
-        this.pagesContainer = this.getChildById("RightInfos");
         this.engineDisplay = new WTEngine("Engine", "LeftInfos", this._xmlConfigPath);
+
+        this.pageContainer = this.getChildById("PageContainer");
+        this.paneContainer = this.getChildById("PaneContainer");
+
+        this.pageTitle = new Subject("MAP - NAVIGATION MAP");
+
         this.addIndependentElementContainer(this.engineDisplay);
-        this.pageGroups = [
+        /*this.pageGroups = [
             new NavSystemPageGroup("MAP", this, [
                 new AS1000_MFD_MainMap(this.engineDisplay)
             ]),
@@ -24,6 +32,7 @@ class AS1000_MFD extends BaseAS1000 {
             ]),
             new NavSystemPageGroup("AUX", this, [
                 new AS1000_MFD_SystemSetup(),
+                new AS1000_MFD_Page("System Settings", new AS1000_MFD_SystemSettings(this.pageContainer, this.inputStack)),
             ]),
             new NavSystemPageGroup("NRST", this, [
                 new AS1000_MFD_NearestAirport(),
@@ -31,15 +40,126 @@ class AS1000_MFD extends BaseAS1000 {
                 new AS1000_MFD_NearestNDB(),
                 new AS1000_MFD_NearestIntersection(),
             ])
-        ];
-        this.addEventLinkedPageGroup("FPL_Push", new NavSystemPageGroup("FPL", this, [
-            new AS1000_MFD_ActiveFlightPlan()
-        ]));
-        this.mapElement = new MFD_MapElement()
-        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
-        this.addIndependentElementContainer(new NavSystemElementContainer("Page Navigation", "CenterDisplay", new AS1000_MFD_PageNavigation()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "CenterDisplay", new AS1000_MFD_NavStatus()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "CenterDisplay", this.mapElement));
+        ];*/
+        this.mapElement2 = document.querySelector("#MapInstrument");
+        this.pageController = new AS1000_Page_Controller([
+            {
+                name: "MAP",
+                pages: [
+                    new AS1000_Page("Map", () => new AS1000_Map_Model(this.mapElement2), AS1000_Map_View),
+                ]
+            },
+            {
+                name: "AUX",
+                pages: [
+                    new AS1000_Page("Credits", () => new AS1000_Credits_Model(), AS1000_Credits_View),
+                    new AS1000_Page("System Settings", () => new AS1000_System_Settings_Model(this.settings, this.softKeyMenu), AS1000_System_Settings_View),
+                ]
+            },
+            {
+                name: "FPL",
+                pages: [
+                    new AS1000_Page("Flight Plan", () => new AS1000_Flight_Plan_Page_Model(this.currFlightPlanManager, this.procedures, this, this.softKeyMenu, this.mapElement2), AS1000_Flight_Plan_Page_View),
+                ]
+            },
+            {
+                name: "NRST",
+                pages: [
+                    new AS1000_Page("Nearest Airports", () => new AS1000_Nearest_Airports_Model(this, this.unitChooser, this.mapElement2, this.softKeyMenu), AS1000_Nearest_Airports_View),
+                ]
+            }
+        ], this.pageTitle);
+        this.pageController.handleInput(this.inputStack);
+        this.mapElement = new MFD_MapElement();
+        this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "RightInfos", this.mapElement));
+
+        this.electricityAvailable = new Subject(this.isElectricityAvailable());
+        this.fuelUsed = new Fuel_Used(["FUEL LEFT QUANTITY", "FUEL RIGHT QUANTITY"]);
+        this.electricityAvailable.subscribe((electricity) => { if (electricity) this.fuelUsed.reset(); });
+
+        this.navBoxModel = new AS1000_MFD_Nav_Box_Model(this.pageTitle, this.unitChooser, this.settings);
+        this.navBoxView = this.querySelector("g1000-nav-box");
+        this.navBoxView.setModel(this.navBoxModel);
+
+        this.navFrequenciesModel = new AS1000_Nav_Frequencies_Model();
+        this.navFrequenciesView = this.querySelector("g1000-nav-frequencies");
+        this.navFrequenciesView.setModel(this.navFrequenciesModel);
+
+        this.comFrequenciesModel = new AS1000_Com_Frequencies_Model();
+        this.comFrequenciesView = this.querySelector("g1000-com-frequencies");
+        this.comFrequenciesView.setModel(this.comFrequenciesModel);
+
+        this.querySelector("g1000-page-selector").setController(this.pageController);
+
+        this.initDefaultSoftKeys();
+        this.softKeyMenus = {
+            engine: new AS1000_Engine_Menu(this.engineDisplay, () => this.showMainMenu()),
+            main: new AS1000_Soft_Key_Menu(true)
+        };
+
+        this.softKeyMenu = this.getChildById("SoftKeyMenu");
+        this.softKeyMenu.setDefaultButtons(this.defaultSoftKeys.engine, this.defaultSoftKeys.map, this.defaultSoftKeys.checklist);
+        this.softKeyMenu.handleInput(this.inputStack);
+        this.showMainMenu();
+
+        this.inputStack.push(new Base_Input_Layer(this));
+    }
+    initDefaultSoftKeys() {
+        let engine = new AS1000_Soft_Key("ENGINE", this.showEngineMenu.bind(this));
+        let map = new AS1000_Soft_Key("MAP", null);
+        let checklist = new AS1000_Soft_Key("CHKLIST", null);
+        this.defaultSoftKeys = {
+            engine: engine,
+            map: map,
+            checklist: checklist
+        };
+    }
+    showMainMenu() {
+        this.softKeyMenu.setMenu(this.softKeyMenus.main);
+    }
+    showEngineMenu() {
+        this.softKeyMenu.setMenu(this.softKeyMenus.engine);
+    }
+    showConfirmDialog(message) {
+        let confirm = new AS1000_Confirm_Dialog();
+        this.getChildById("DialogContainer").appendChild(confirm);
+        return confirm.show(message, this.inputStack).then((result) => {
+            this.getChildById("DialogContainer").removeChild(confirm);
+            return result;
+        }, (e) => {
+            this.getChildById("DialogContainer").removeChild(confirm);
+            throw e;
+        });
+    }
+    showApproaches() {
+        let model = new AS1000_Approach_Page_Model(this, this.currFlightPlanManager, this.facilityLoader);
+        model.setICAO("A      EGLL ");
+        let view = document.createElement("g1000-approach-page");
+        this.pageContainer.appendChild(view);
+        view.setModel(model);
+        view.enter(this, this.inputStack);
+    }
+    showWaypointSelector(icaoType = null) {
+        let model = new AS1000_Waypoint_Selector_Model(icaoType);
+        let view = new AS1000_Waypoint_Selector_View();
+        this.paneContainer.appendChild(view);
+        view.setModel(model);
+        return view.enter(this.inputStack).catch(e => {
+            this.paneContainer.removeChild(view);
+        }).then(icao => {
+            this.paneContainer.removeChild(view);
+            return icao;
+        });
+    }
+    showFlightPlan() {
+        this.pageController.goTo("FPL", "Flight Plan");
+    }
+    showProcedures() {
+        let element = document.createElement("g1000-procedures-pane");
+        this.paneContainer.appendChild(element);
+        element.setProcedures(this.procedures);
+        element.enter(this, this.inputStack);
+        this.pageTitle.value = "PROC - PROCEDURES";
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -54,13 +174,37 @@ class AS1000_MFD extends BaseAS1000 {
         // configuration.   Which isn't loaded when the MFD initializes.  So here I need to
         // go back and recreate the entire map page group if there's radar.  This is dumb.
         if (this.hasWeatherRadar()) {
-            this.pageGroups[0] = new NavSystemPageGroup("MAP", this, [
+            /*this.pageGroups[0] = new NavSystemPageGroup("MAP", this, [
                 new AS1000_MFD_MainMap(this.engineDisplay),
                 new AS1000_MFD_Radar()
-            ]);
-        } 
+            ]);*/
+        }
+    }
+    onUpdate(dt) {
+        this.navBoxModel.update(dt);
+        this.navFrequenciesModel.update(dt);
+        this.comFrequenciesModel.update(dt);
+        this.settings.update(dt);
+        this.procedures.update(dt);
+        this.electricityAvailable.value = this.isElectricityAvailable();
+        this.fuelUsed.update(dt);
+        this.pageController.update(dt);
     }
     disconnectedCallback() {
+    }
+    computeEvent(_event) {
+        if (this.isBootProcedureComplete()) {
+            for (let i = 0; i < this.IndependentsElements.length; i++) {
+                this.IndependentsElements[i].onEvent(_event);
+            }
+            switch (_event) {
+                case "ActiveFPL_Modified":
+                    console.log("Did a thing");
+                    this.currFlightPlan.FillWithCurrentFP();
+            }
+
+            let r = this.inputStack.processEvent(_event);
+        }
     }
     onEvent(_event) {
         super.onEvent(_event);
@@ -129,12 +273,16 @@ class AS1000_MFD extends BaseAS1000 {
     }
 }
 class AS1000_MFD_NavStatus extends NavSystemElement {
-    constructor() {
+    /**
+     * @param {UnitChooser} unitChooser 
+     */
+    constructor(unitChooser) {
         super(...arguments);
         this.lastEte = undefined;
         this.groundSpeedValue = "";
         this.desiredTrackValue = "";
         this.currentTrackValue = "";
+        this.unitChooser = unitChooser;
     }
     init(root) {
         this.groundSpeed = this.gps.getChildById("GroundSpeed");
@@ -146,7 +294,7 @@ class AS1000_MFD_NavStatus extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        var groundSpeedValue = fastToFixed(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), 0) + "kt";
+        var groundSpeedValue = this.unitChooser.chooseSpeed(fastToFixed(SimVar.GetSimVarValue("GPS GROUND SPEED", "kilometers per hours"), 0) + "kph", fastToFixed(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), 0) + "kt");
         if (this.groundSpeedValue != groundSpeedValue) {
             this.groundSpeed.textContent = groundSpeedValue;
             this.groundSpeedValue = groundSpeedValue;
@@ -273,15 +421,13 @@ class AS1000_MFD_MainMap extends NavSystemPage {
             new MFD_WindData()
         ]));
         this.mapMenu = new AS1000_MapMenu();
-        this.engineMenu = new AS1000_EngineMenu(engineDisplay);
         this.engineDisplay = engineDisplay;
     }
     init() {
         this.mapMenu.init(this, this.gps);
-        this.engineMenu.init(this, this.gps);
         this.softKeys = new SoftKeysMenu();
         this.softKeys.elements = [
-            new SoftKeyElement("ENGINE", this.engineMenu.open.bind(this.engineMenu)),
+            new SoftKeyElement("ENGINE", null),
             new SoftKeyElement("", null),
             new SoftKeyElement("MAP", this.mapMenu.open.bind(this.mapMenu)),
             new SoftKeyElement("", null),
@@ -302,7 +448,7 @@ class AS1000_MFD_MainMap extends NavSystemPage {
             new SoftKeyElement("SHW CHRT", null),
             new SoftKeyElement("", null)
         ];
-	}
+    }
 }
 class AS1000_MFD_MainMapSlot extends NavSystemElement {
     init(root) {
@@ -422,7 +568,7 @@ class AS1000_MFD_ApproachWaypointLine extends MFD_ApproachWaypointLine {
             new SoftKeyElement("ACT LEG", this.element.activateLeg.bind(this.element, this.index, true)),
             new SoftKeyElement(""),
             new SoftKeyElement(""),
-        ];        
+        ];
         this.mapMenu.init(this, this.element.gps);
     }
 }
@@ -1137,69 +1283,42 @@ class AS1000_MapMenu {
                     break;
                 }
         }
-                return "None";    
+        return "None";
     }
 }
-class AS1000_EngineMenu {
-    constructor(engineDisplay) {
+class AS1000_Engine_Menu extends AS1000_Soft_Key_Menu {
+    constructor(engineDisplay, back) {
+        super(false);
         this.engineDisplay = engineDisplay;
+        this.back = back;
+        this.pageButtons = [];
+        this.selectedPage = new Subject("");
+
+        this.selectedPage.value = this.engineDisplay.selectedEnginePage;
+        this.engineDisplay.engineDisplayPages.subscribe(this.initPageButtons.bind(this));
+        this.selectedPage.subscribe((pageId) => {
+            for (let button of this.pageButtons) {
+                button.selected = button.textContent == pageId;
+            }
+        });
     }
-    init(_owner, _gps) {
-        this.owner = _owner;
-        this.gps = _gps;
-    }
-    getSoftKeyMenu(extraElements) {
-        let elements = [];
-
-        for (let i = 0; i < 12; i++) {
-            elements.push(new SoftKeyElement("", null));
+    initPageButtons(enginePages) {
+        this.clearSoftKeys();
+        let i = 1;
+        this.pageButtons = [];
+        for (let id in enginePages) {
+            let button = new AS1000_Soft_Key(id, this.selectEngineDisplayPage.bind(this, id));
+            this.pageButtons.push(button);
+            this.addSoftKey(i++, button);
         }
-
-        let engineDisplayPages = this.engineDisplay.getEngineDisplayPages();
-        let i = 0;
-        let numEngineDisplayPages = 0;
-        for(let id in engineDisplayPages) {
-            elements[i++] = new SoftKeyElement(id, this.selectEngineDisplayPage.bind(this, id), this.getKeyState.bind(this, id));
-            numEngineDisplayPages++;
-        }
-
-        for(let i = 0; i < extraElements.length; i++) {
-            elements[i + numEngineDisplayPages + 1] = extraElements[i];
-        }        
-
-        elements[10] = new SoftKeyElement("BACK", this.close.bind(this));
-
-        let menu = new SoftKeysMenu();
-        menu.elements = elements;
-        return menu;
+        this.addSoftKey(11, new AS1000_Soft_Key("BACK", this.back.bind(this)));
     }
     selectEngineDisplayPage(id) {
-        let page = this.engineDisplay.selectEnginePage(id);
-        this.switchMenu(this.getSoftKeyMenu(page.buttons.map(button => new SoftKeyElement(button.text, this.performSubAction.bind(this,button)))));
+        this.selectedPage.value = id;
+        this.engineDisplay.selectEnginePage(id);
     }
-    performSubAction(button) {
-        
-    }
-    open() {
-        this.originalMenu = Object.assign({}, this.owner.softKeys);
-        this.switchMenu(this.getSoftKeyMenu([]));
-    }
-    close() {
-        this.owner.softKeys = this.originalMenu;
-    }
-    switchMenu(_menu) {
-        this.owner.softKeys = _menu;
-    }
-    getKeyState(_keyName) {
-        if (this.engineDisplay.isEnginePageSelected(_keyName)) {
-            return "White";
-        }
-        switch (_keyName) {
-            case "CYL SLCT":
-            case "ASSIST":
-              break;
-        }
-        return "None";
+    back() {
+        this.back();
     }
 }
 registerInstrument("as1000-mfd-element", AS1000_MFD);

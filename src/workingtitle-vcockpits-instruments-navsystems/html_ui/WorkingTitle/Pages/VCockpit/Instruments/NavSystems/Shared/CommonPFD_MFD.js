@@ -293,18 +293,11 @@ class PFD_Attitude extends NavSystemElement {
     constructor() {
         super(...arguments);
         this.vDir = new Vec2();
-        this.syntheticVisionEnabled = false;
-        Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });
     }
     init(root) {
         this.svg = this.gps.getChildById("Horizon");
     }
     onEnter() {
-    }
-    setSyntheticVisionEnabled(enabled) {
-        this.syntheticVisionEnabled = enabled;
     }
     onUpdate(_deltaTime) {
         var xyz = Simplane.getOrientationAxis();
@@ -312,7 +305,6 @@ class PFD_Attitude extends NavSystemElement {
             let gs = Simplane.getGroundSpeed() * 101.269;
             let vs = Simplane.getVerticalSpeed();
             let angle = Math.atan(vs/gs);
-            this.svg.setSytheticVisionEnabled(this.syntheticVisionEnabled);
             this.svg.setAttribute("ground-speed", Simplane.getGroundSpeed().toString());
             this.svg.setAttribute("actual-pitch", (angle / Math.PI * 180).toString());
             this.svg.setAttribute("pitch", (xyz.pitch / Math.PI * 180).toString());
@@ -545,11 +537,13 @@ class PFD_NavStatus extends NavSystemElement {
                 }
             }
 
-            var rawCurrentLegDistance = fastToFixed(SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles"), 1);
+            let distanceUnits = this.gps.settings.getValue("dis_spd");
+
+            var rawCurrentLegDistance = fastToFixed(SimVar.GetSimVarValue("GPS WP DISTANCE", distanceUnits == "nautical" ? "nautical miles" : "kilometers"), 1);
             if (rawCurrentLegDistance.indexOf(".") == -1) {
                 rawCurrentLegDistance = rawCurrentLegDistance + ".0"
             }
-            var currentLegDistance = rawCurrentLegDistance + "NM";
+            var currentLegDistance = rawCurrentLegDistance + ( distanceUnits == "nautical" ? "NM" : "KM" );
             if (this.currentLegDistanceValue != currentLegDistance) {
                 if (this.currentLegDistance)
                     this.currentLegDistance.textContent = currentLegDistance;
@@ -768,9 +762,13 @@ class PFD_XPDR extends NavSystemElement {
     }
 }
 class PFD_OAT extends NavSystemElement {
-    constructor() {
+    /**
+     * @param {UnitChooser} unitChooser 
+     */
+    constructor(unitChooser) {
         super(...arguments);
-        this.celsiusValue = "";
+        this.tempValue = "";
+        this.unitChooser = unitChooser;
     }
     init(root) {
         this.valueElement = this.gps.getChildById("OAT_Value");
@@ -778,24 +776,18 @@ class PFD_OAT extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        var celsius = this.getATMTemperatureC();
-        if (this.celsiusValue != celsius) {
-            this.valueElement.textContent = celsius;
-            this.celsiusValue = celsius;
+        var temp = this.getATMTemperature();
+        if (this.tempValue != temp) {
+            this.valueElement.textContent = temp;
+            this.tempValue = temp;
         }
     }
     onExit() {
     }
     onEvent(_event) {
     }
-    getATMTemperatureC() {
-        var value = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius");
-        if (value) {
-            var degrees = Number.parseInt(value);
-            var temperature = degrees.toString() + "° C";
-            return temperature.toString();
-        }
-        return "";
+    getATMTemperature() {
+        return this.unitChooser.chooseTemperature(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius").toFixed(0) + "° C", SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "farenheit").toFixed(0) + "° F");
     }
 }
 class PFD_Annunciations extends Annunciations {

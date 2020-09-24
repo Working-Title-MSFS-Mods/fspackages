@@ -1,0 +1,47 @@
+g1000-approach-page {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: $page_background_color;
+    grid-gap: 2vh;
+    padding: 0 2vh;
+
+    .sequence {
+        max-height: 20vh;
+        overflow-y: scroll;
+    }
+
+    .sequence-entry {
+        color: $input_color;
+        display: grid;
+        grid-template-columns: 50% 25% 25%;
+
+        .bearing,
+        .distance {
+            text-align: right;
+        }
+
+        &[state="Selected"] {
+            animation: SelectionBlink 0.5s infinite !important;
+        }
+    }
+
+    .load-or-activate {
+        display: grid;
+        margin: 0 4vh;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+
+        span {
+            text-align: center;
+        }
+
+        selectable-button {
+            text-align: center;
+            display: inline-block;
+            font-size: $font_size_extra_large;
+        }
+    }
+}

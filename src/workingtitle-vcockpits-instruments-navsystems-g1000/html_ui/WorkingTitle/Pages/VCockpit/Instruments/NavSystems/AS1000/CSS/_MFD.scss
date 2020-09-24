@@ -1,0 +1,248 @@
+@import "styles";
+
+@import "Components/Category";
+@import "Components/ConfirmDialog";
+@import "Components/NavBox";
+@import "Components/ScrollableContainer";
+@import "Components/SoftKeys";
+
+@import "Inputs/Button";
+@import "Inputs/DropDownSelect";
+@import "Inputs/Numeric";
+@import "Inputs/String";
+@import "Inputs/Switch";
+
+@import "Pages/Approach";
+@import "Pages/FlightPlan";
+@import "Pages/NearestAirports";
+@import "Pages/Settings";
+
+as1000-mfd-element #Mainframe #Electricity {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 16.66666% 83.3333%;
+    grid-template-rows: 8% 88% 4%;
+    grid-template-areas:
+        "nav nav"
+        "engine main"
+        "softkeys softkeys";
+    //font-size: calc(2 * 1vh * var(--bodyHeightScale));
+    background: $page_background_color;
+
+    #MapSVG,
+    #road-network-canvas {
+        transform: rotateX(0);
+    }
+    #WindData {
+        position: absolute;
+        top: 0%;
+        width: 7%;
+        right: 10%;
+    }
+    #Map bing-map {
+        transform: rotateX(0);
+    }
+    #MapInstrument {
+        transform: rotateX(0);
+    }
+
+    g1000-soft-key-menu {
+        grid-area: softkeys;
+    }
+
+    #RightInfos {
+        transform: rotateX(0);
+        grid-area: main;
+        position: relative;
+        display: none;
+    }
+
+    .page-container,
+    .pane-container,
+    .dialog-container,
+    .page-selector {
+        grid-area: main;
+    }
+
+    #LeftInfos {
+        background: $page_background_color;
+        grid-area: engine;
+        border-right: $border_width_thick solid $border_color;
+        position: relative;
+
+        #ED {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: block;
+        }
+
+        &[state="piston"] #TurboEngine {
+            display: none;
+        }
+        &[state="piston"] #XMLEngineDisplay {
+            display: none;
+        }
+        &[state="turbo"] {
+            width: 35%;
+        }
+        &[state="turbo"] #PistonEngine {
+            display: none;
+        }
+        &[state="turbo"] #XMLEngineDisplay {
+            display: none;
+        }
+        &[state="XML"] #TurboEngine {
+            display: none;
+        }
+        &[state="XML"] #PistonEngine {
+            display: none;
+        }
+    }
+
+    glasscockpit-xmlcirculargauge,
+    glasscockpit-xmlcolumngauge,
+    glasscockpit-xmlhorizontalgauge,
+    glasscockpit-xmlhorizontaldoublegauge {
+        svg {
+            -webkit-transform: rotateX(0deg);
+        }
+    }
+}
+
+.page-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.pane-container {
+    position: absolute;
+    height: 100%;
+    width: 33%;
+    right: 0;
+    top: 0;
+    background: $page_background_color;
+    //border: 1vh outset #111;
+    //box-shadow: -$border_width_thick 0px 0px #fff;
+    border-left: $border_width_thick solid $border_color;
+
+    .title {
+        margin: 1vh 0;
+        font-size: calc(2.5 * 1vh * var(--bodyHeightScale));
+    }
+
+    &:empty {
+        display: none;
+    }
+
+    > * {
+        display: none;
+
+        &:last-child {
+            display: block;
+        }
+    }
+}
+
+.dialog-container {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+g1000-procedures-pane,
+g1000-waypoint-selector-pane {
+    display: block;
+    padding: 0 1.5vh;
+}
+
+airport-icon {
+    display: inline-block;
+}
+
+.article {
+    font-family: "Roboto-Regular";
+    font-size: $font_size_large;
+    line-height: 1.5em;
+    margin: 0 1.5em;
+
+    h1 {
+        font-size: 2em;
+        line-height: 1.4em;
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+    }
+    h2 {
+        font-size: 1.5em;
+        line-height: 1.4em;
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+    }
+    p,
+    ul {
+        margin: 1em 0;
+        font-size: 1em;
+        line-height: 1.5em;
+    }
+    ul {
+        margin-left: 1.5em;
+    }
+}
+
+g1000-map-page {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.page-selector {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 25vh;
+    font-weight: bold;
+    font-size: $font_size_large;
+    color: #666;
+    text-transform: uppercase;
+    display: none;
+
+    &[visible] {
+        display: block;
+    }
+
+    .group-list {
+        background: $category_box_background_color;
+        display: flex;
+        border-left: $border_width_thin solid $border_color;
+        padding: 0.5vh;
+
+        li {
+            display: block;
+            margin: 0 0.5vh;
+
+            &.selected {
+                color: $input_color;
+            }
+        }
+    }
+
+    .page-list {
+        background: $category_box_background_color;
+        display: block;
+        border: $border_width_thin solid $border_color;
+        border-right: none;
+        padding: 0 1vh;
+
+        li {
+            display: block;
+            margin: 0.5vh 0;
+
+            &.selected {
+                color: $input_color;
+            }
+        }
+    }
+}

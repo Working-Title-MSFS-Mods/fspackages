@@ -1,0 +1,38 @@
+g1000-confirm-dialog {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+
+    .dialog {
+        width: 45vh;
+        background: $category_box_background_color;
+        border-top: 0.8vh solid #808080;
+        border-left: 0.8vh solid #808080;
+        border-right: 0.8vh solid #202020;
+        border-bottom: 0.8vh solid #202020;
+        outline: $border_width_thin solid #fff;
+        box-shadow: 0px 0px 0px 3px #404040 inset, 0px 0px 0px 4px #fff inset;
+        padding: 4vh;
+
+        .message {
+            text-align: center;
+            color: #fff;
+            font-size: $font_size_large;
+        }
+
+        .buttons {
+            margin-top: 2vh;
+            padding-top: 2vh;
+            border-top: $border_width_thin solid #777;
+            display: grid;
+            grid-template-columns: 50% 50%;
+
+            selectable-button {
+                text-align: center;
+            }
+        }
+    }
+}

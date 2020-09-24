@@ -66,6 +66,22 @@ function Update-Packages {
             Write-Host "Copying $src to $dest..."
             robocopy $src $dest /XO /e /njh /njs /nfl /nc /ndl
         }
+
+        Write-Host "Building css from scss..."
+        $stylesheetPath = $packagePath
+        $files = Get-ChildItem $stylesheetPath -Recurse -Include *.scss 
+        for ($i=0; $i -lt $files.Count; $i++) {
+            $file = $files[$i]
+            $fileName = $file.BaseName
+            $filePath = $file.FullName
+            if (-not $fileName.StartsWith("_")) {
+                $directory = $file.DirectoryName
+                $newFilePath =  "$directory\$fileName.css"
+                Write-Host "Compiling $fileName.scss..."
+                build-tools\dart-sass\sass.bat --no-source-map $filePath $newFilePath                
+            }
+        }
+        Remove-Item -Path $packagePath -recurse -Include *.scss
     
         Write-Host "Building layout file..."
         $layoutEntries = @()
