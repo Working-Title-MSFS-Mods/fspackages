@@ -254,7 +254,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             [""],
             [""],
-            ["-----------------------[color]blue"],
+            ["-----------------------[blue]"],
             ["<INDEX"]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
@@ -358,15 +358,15 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.clearDisplay();
         fmc._templateRenderer.setTemplateRaw([
             [" ACT LEGS[blue]", "1/1[blue] "],
-            ["FIX   ENTRY[color]blue", "HOLD SPD[color]blue"],
+            ["FIX   ENTRY[blue]", "HOLD SPD[blue]"],
             ["fix" + "   DIRECT", "FAA/ICAO"],
-            ["QUAD/RADIAL[color]blue", "MAX KIAS[color]blue"],
+            ["QUAD/RADIAL[blue]", "MAX KIAS[blue]"],
             ["NW/290\xB0", "265"],
-            ["INBD CRS/DIR[color]blue", "FIX ETA[color]blue"],
+            ["INBD CRS/DIR[blue]", "FIX ETA[blue]"],
             ["110\xB0 / R TURN", "time"],
-            ["LEG TIME[color]blue", "EFC TIME[color]blue"],
+            ["LEG TIME[blue]", "EFC TIME[blue]"],
             ["2.2 MIN", "18:35"],
-            ["LEG DIST[color]blue"],
+            ["LEG DIST[blue]"],
             ["15.0 NM", "NEW HOLD>"],
             ["-------- HOLD AT -------[blue]"],
             ["□□□□□", "LEG WIND>"]
@@ -612,7 +612,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             [""],
             [""],
-            ["-----------------------[color]blue", "PILOT "],
+            ["-----------------------[blue]", "PILOT "],
             ["", "WPT LIST>"],
             [""],
             ["<INDEX", "DEFINE WPT>"]
@@ -693,13 +693,13 @@ class CJ4_FMC_InitRefIndexPage {
             ["", "", "DATA BASE[blue]"],
             [" IDENT[blue]", "LONG RWY [blue]"],
             [airportIdent + " AIRPORT", Math.trunc(longestRunwayLengthFeet) + " FT"],
-            [" ARP LOCATION[blue]", "MAG VAR[color]blue"],
+            [" ARP LOCATION[blue]", "MAG VAR[blue]"],
             [wptCoordinates + "", "MV"],
             [" NAME[blue]"],
             [databaseWaypoint.infos.name + ""],
-            ["RUNWAY LENGTH[color]blue", "ELEV[color]blue"],
+            ["RUNWAY LENGTH[blue]", "ELEV[blue]"],
             ["<[white]" + "FEET[green]" + "/METERS[white]", Math.trunc(longestRunwayElevation) + " FT"],
-            ["-----------------------[color]blue"],
+            ["-----------------------[blue]"],
             ["<LOCALIZERS"],
             [""],
             ["<RUNWAYS", "TERM WPTS>"]
@@ -735,18 +735,18 @@ class CJ4_FMC_InitRefIndexPage {
         
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "DATA BASE[blue]"],
-            ["IDENT[color]blue", "FREQ[color]blue"],
+            [" IDENT[blue]", "FREQ[blue] "],
             [databaseWaypoint.infos.ident + "", databaseWaypoint.infos.frequencyMHz.toFixed(2) + ""],
-            ["TYPE[color]blue", "MAG VAR[color]blue"],
-            [vorType + "", magVar + ""],
-            ["CLASS[color]blue", "WEATHER[color]blue"],
-            [vorClass + "", vorWeather + ""],
-            ["COORDINATES[color]blue"],
-            [vorCoordinates + ""],
+            [" LOCATION[blue]", "MAG VAR [blue]"],
+            [vorCoordinates + "", magVar + ""],
+            [" CLASS[blue]", "TYPE [blue]"],
+            [vorClass + "", vorType + ""],
+            [" WEATHER[blue]"],
+            [vorWeather + ""],
             [""],
             ["", ""],
             [""],
-            ["<INDEX", "DEFINE WPT>"]
+            ["<INDEX", ""]
         ]);
 
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
@@ -770,15 +770,15 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "DATA BASE[blue]"],
-            ["IDENT[color]blue", "REGION[color]blue"],
+            [" IDENT[blue]", "REGION [blue]"],
             [databaseWaypoint.infos.ident + "", wptRegion + ""],
-            ["LOCATION[color]blue"],
+            [" LOCATION[blue]"],
             [wptCoordinates + ""],
             [""],
-            [databaseWaypoint.infos.name + ""],
             [""],
             [""],
-            ["------------Pilot[color]blue"],
+            [""],
+            ["------------Pilot[blue]"],
             ["", "WPT LIST>"],
             [""],
             ["<INDEX", "DEFINE WPT>"]
@@ -806,18 +806,18 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "DATA BASE[blue]"],
-            ["IDENT[color]blue", "FREQ[color]blue"],
+            [" IDENT[blue]", "FREQ [blue]"],
             [databaseWaypoint.infos.ident + "", databaseWaypoint.infos.frequencyMHz.toFixed(3) + ""],
-            ["TYPE[color]blue"],
-            [ndbType + "", ""],
-            ["CLASS[color]blue", "WEATHER[color]blue"],
-            ["N/A", ndbWeather + ""],
-            ["COORDINATES[color]blue"],
+            [" LOCATION[blue]"],
             [ndbCoordinates + ""],
-            [databaseWaypoint.infos.name + ""],
+            [" TYPE[blue]", "WEATHER [blue]"],
+            [ndbType + "", ndbWeather + ""],
+            ["", ""],
             ["", ""],
             [""],
-            ["<INDEX", "DEFINE WPT>"]
+            ["", ""],
+            [""],
+            ["<INDEX", ""]
         ]);
 
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
@@ -827,19 +827,19 @@ class CJ4_FMC_InitRefIndexPage {
 
     static ShowPage22(fmc) { //DEFAULTS Page 1
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["DEFAULTS[color]blue", "1", "5"],
-            ["BOW[color]blue"],
-            ["10280 LB"],
-            ["AVG PASS WT[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "1/5[blue]", "DEFAULTS[blue]"],
+            [" BOW[blue]"],
+            ["10280" + "LB[s-text]"],
+            [" AVG PASS WT[blue]"],
             ["  170 LB"],
-            ["RESERVE FUEL[color]blue"],
-            [" 750 LB"],
+            [" RESERVE FUEL[blue]"],
+            ["  750 LB"],
             [""],
             [""],
             [""],
             [""],
-            [" MAX MAP SYMB[color]blue"],
+            [" MAX MAP SYMB[blue]"],
             ["40"]
         ]);
         fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage24(fmc); };
@@ -848,19 +848,19 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage23(fmc) { //DEFAULTS Page 2
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["DEFAULTS[color]blue", "2", "5"],
-            ["CLIMB SPEED[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "2/5[blue]", "DEFAULTS[blue]"],
+            [" CLIMB SPEED[blue]"],
             ["240/.64"],
-            ["CRUISE SPEED[color]blue"],
+            [" CRUISE SPEED[blue]"],
             ["300/.74"],
-            ["DESCENT SPEED[color]blue"],
+            [" DESCENT SPEED[blue]"],
             [".74/290"],
-            ["DESCENT ANGLE[color]blue"],
+            [" DESCENT ANGLE[blue]"],
             ["3.0\xB0"],
-            ["SPD/ALT LIMIT[color]blue"],
+            [" SPD/ALT LIMIT[blue]"],
             ["250/10000"],
-            ["FL/TRANS ALT[color]blue"],
+            [" FL/TRANS ALT[blue]"],
             ["FL180"],
             [""],
             [""]
@@ -871,16 +871,16 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage24(fmc) { //DEFAULTS Page 3
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["", "", "DEFAULTS[blue]", 3, 5],
-            ["DME USAGE[blue]"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "3/5[blue]", "DEFAULTS[blue]"],
+            [" DME USAGE[blue]"],
             ["YES[green]/[white]NO[white s-text]"],
-            ["VOR USAGE[blue]"],
-            ["YES[s-text]/[white]NO[green]"],
-            ["NEAREST APTS MIN RWY[color]blue"],
-            ["4000 FT"],
-            ["FLIGHT LOG ON LDG[blue]"],
+            [" VOR USAGE[blue]"],
             ["YES[green]/[white]NO[white s-text]"],
+            [" NEAREST APTS MIN RWY[blue]"],
+            [" 4000 FT"],
+            [" FLIGHT LOG ON LDG[blue]"],
+            ["YES[white s-text]/[white]NO[green]"],
             [""],
             [""],
             [""],
@@ -892,11 +892,11 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage28(fmc) { //DEFAULTS Page 4
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["", "", "DEFAULTS[blue]", 4, 5],
-            ["TEMP COMP[blue]"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "4/5[blue]", "DEFAULTS[blue]"],
+            [" TEMP COMP[blue]"],
             ["ON[s-text]/[white]OFF[green]"],
-            ["DSPL TMP@ FINAL VPA[blue]"],
+            ["D SPL TMP@ FINAL VPA[blue]"],
             ["UNCOMP[s-text]/[white]COMP[green]"],
             [""],
             [""],
@@ -913,13 +913,13 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage29(fmc) { //DEFAULTS Page 5
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["", "", "DEFAULTS[blue]", 5, 5],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "5/5[blue]", "DEFAULTS[blue]"],
             ["", "", "TAKEOFF & APPROACH REF[blue]"],
             [""],
-            ["T/O FLAPS[blue]"],
+            [" T/O FLAPS[blue]"],
             ["0[s-text]/[white]15[green]"],
-            ["A/I[blue]"],
+            [" A/I[blue]"],
             ["OFF[green]/[white]ON[green]"],
             [""],
             [""],
@@ -958,19 +958,19 @@ class CJ4_FMC_InitRefIndexPage {
         let appRunwayDirection = new Number(appRunway.direction);
         let appRunwayElevation = new Number(appRunway.elevation * 3.28);
 
-        fmc.setTemplate([
-            ["ACT ARRIVAL DATA[color]blue"],
-            ["ARR AIRPORT[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" ACT", "ARRIVAL DATA  [blue]"],
+            [" ARR AIRPORT[blue]"],
             [destinationIdent + " / " + destination.infos.name],
-            ["APPR[color]blue", "FREQ[color]blue"],
+            [" APPR[blue]", "FREQ [blue]"],
             [approachName + "", approachFrequency.toFixed(2) + ""],
-            ["GS ANGLE[color]blue"],
+            [" GS ANGLE[blue]"],
             ["3.00"],
-            ["LOC TRUE BRG[color]blue"],
+            [" LOC TRUE BRG[blue]"],
             [Math.trunc(appRunwayDirection) + ""],
-            ["RWY THRESHOLD ALT[color]blue"],
+            [" RWY THRESHOLD ALT[blue]"],
             [Math.trunc(appRunwayElevation) + ""],
-            ["-----------------------[color]blue"],
+            ["-----------------------[blue]"],
             ["<INDEX", "LEGS>"]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
@@ -979,35 +979,65 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage26(fmc) { //TEMP COMP
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["dest" + "   TEMP COMP[color]blue"],
-            ["APPROACH AIRPORT DATA[color]blue"],
+
+        let destinationIdent = "";
+        let approachName = "";
+        let approachFrequency = "";
+        let destination = "";
+        let appRunway = "";
+        let approach = "";
+        let originIdent = "";
+
+        if (fmc.flightPlanManager.getDestination()) {
+            destination = fmc.flightPlanManager.getDestination();
+            destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
+        }
+        if (fmc.flightPlanManager.getOrigin()) {
+            origin = fmc.flightPlanManager.getOrigin();
+            originIdent = new String(fmc.flightPlanManager.getOrigin().ident);
+        }
+        if (fmc.flightPlanManager.getApproach()) {
+            approach = fmc.flightPlanManager.getApproach();
+            approachName = fmc.flightPlanManager.getApproach().name;
+            approachFrequency = fmc.flightPlanManager.getApproachNavFrequency();
+        }
+        if (fmc.flightPlanManager.getApproachRunway()) {
+            appRunway = fmc.flightPlanManager.getApproachRunway();
+        }
+
+        let appRunwayDirection = new Number(appRunway.direction);
+        let appRunwayElevation = new Number(appRunway.elevation * 3.28);
+
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "ACT TEMP COMP[blue]"],
+            ["", "", "APPROACH AIRPORT DATA[blue]"],
             [""],
-            ["SEL APT[color]blue", "OAT[color]blue"],
-            ["departure" + "/" + "dest", "+10C"],
-            ["", "ISA DEV[color]blue"],
+            [" SEL APT[blue]", "OAT [blue]"],
+            [originIdent + "/" + destinationIdent, " +10C"],
+            ["", "ISA DEV [blue]"],
             ["", "-3C"],
-            ["", "TEMP COMP[color]blue"],
-            ["", "ON" + "/" + "OFF[color]green"],
-            ["MSL ALT[color]blue", "COMP ALT[color]blue", "CORR[color]blue"],
-            [""],
-            ["-----------------------[color]blue"],
-            ["<INDEX"]
+            ["", "TEMP COMP [blue]"],
+            ["", "ON[s-text]" + "/[white]" + "OFF[green]"],
+            [" MSL ALT[blue]", "CORR COMP ALT [blue]"],
+            [appRunwayElevation + " FT", "FT"],
+            ["-----------------------[blue]"],
+            ["<INDEX", "APPR REF>"]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage27(fmc) { //ABOUT
         fmc.clearDisplay();
-        fmc.setTemplate([
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "MODIFIED BY:[blue]"],
+            ["", "", "Working Title MSFS Mods[green]"],
             [""],
-            ["", "", "MODIFIED BY:"],
-            ["", "", "Working Title MSFS Mods"],
-            ["", "", "github.com/Working-Title-MSFS-Mods"],
+            ["github.com/Working-Title-MSFS-Mods[white s-text]"],
             [""],
             [""],
-            [""],
-            ["", "", "VERSION: 0.2.0"],
+            [" VERSION[blue]"],
+            ["0.2.1[s-text white]"],
             [""],
             [""],
             [""],
@@ -1019,23 +1049,33 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage30(fmc) { //DATALINK
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["DL    DATALINK MENU" + "[color]blue"],
-            [""],
-            ["<RCVD MSGS", "ATS LOG>"],
-            [""],
-            ["<SEND MSGS", "DEPART CLX>"],
-            [""],
-            ["<WEATHER", "OCEANIC CLX>"],
-            [""],
-            ["<TWIP"],
-            [""],
-            ["<ATIS"],
-            [""],
-            ["<RETURN"]
-        ]);
-        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-        fmc.updateSideButtonActiveStatus();
+
+        fmc.registerPeriodicPageRefresh(() => {
+
+            let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+            let hours = new String(Math.trunc(simtime / 3600));
+            let minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
+            let hourspad = hours.padStart(2, "0");
+            let minutesspad = minutes.padStart(2, "0");
+
+            fmc._templateRenderer.setTemplateRaw([
+                ["DL[blue]", "1/2[blue]", "DATALINK MENU[blue]"],
+                [""],
+                ["<RCVD MSGS", "ATS LOG>"],
+                [""],
+                ["<SEND MSGS", "DEPART CLX>"],
+                [""],
+                ["<WEATHER", "OCEANIC CLX>"],
+                [""],
+                ["<TWIP"],
+                [""],
+                ["<ATIS"],
+                ["        NO COMM[green s-text]"],
+                ["<RETURN [white]" + hourspad + "[blue s-text]" + ":[blue s-text]" + minutesspad + "[blue s-text]"]
+            ]);
+            fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+            fmc.updateSideButtonActiveStatus();
+        }, 1000, true);
     }
 }
 //# sourceMappingURL=CJ4_FMC_InitRefIndexPage.js.map
