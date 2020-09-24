@@ -34,7 +34,6 @@ class AS1000_PFD extends BaseAS1000 {
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "CONF_MENU_Push"));
         this.maxUpdateBudget = 12;
         this.avionicsKnobIndex = 30;
-        this.avionicsKnobValue = 0; // SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
         this._cfgHandler = new ConfigLoader(this._xmlConfigPath);
         this._pfdConfigDone = false;
         this.pfdConfig();
@@ -42,7 +41,7 @@ class AS1000_PFD extends BaseAS1000 {
 
     async pfdConfig() {
         await this._cfgHandler.loadModelFile("interior").then((dom) => { this.processInteriorConfig(dom) });
-        await this._cfgHandler.loadIni("panel/avionics.cfg").then((cfg) => { this.processAvionicsConfig(cfg) });
+        //await this._cfgHandler.loadIni("panel/avionics.cfg").then((cfg) => { this.processAvionicsConfig(cfg) });
         // It seems to be the case that in some planes the avionics brightness knob value changes
         // as the plane is in the process of intializing -- the stock Bonanza seems to be one of
         // these.  This causes the code in onUpdate that determines if the knob has moved from its
@@ -55,7 +54,9 @@ class AS1000_PFD extends BaseAS1000 {
         // The 1000ms value here was experimentally derived by testing to see what caused loads in
         // troublesome planes to succeed on my system.  It may need adjustment if other folks find
         // themselves having that issue.
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        this.setBrightness("PFD", this.getBrightness("PFD"))
+        this.setBrightness("MFD", this.getBrightness("MFD"))
         this.avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
         this._pfdConfigDone = true;
     }
@@ -64,8 +65,8 @@ class AS1000_PFD extends BaseAS1000 {
         if (this._pfdConfigDone) {
             let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
             if (avionicsKnobValueNow != this.avionicsKnobValue) {
-                SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", avionicsKnobValueNow);
-                SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", avionicsKnobValueNow);
+                this.setBrightness("PFD", avionicsKnobValueNow);
+                this.setBrightness("MFD", avionicsKnobValueNow);
                 this.avionicsKnobValue = avionicsKnobValueNow;
             }
         } 
@@ -98,20 +99,20 @@ class AS1000_PFD extends BaseAS1000 {
         }
     }
 
-    processAvionicsConfig(cfg) {
-        if ("g1000" in cfg) {
-            cfg = cfg.g1000;
-            this.avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
-            if ("pfd_brightness" in cfg) {
-                SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", cfg.pfd_brightness * 10);
-            }
-            if ("mfd_brightness" in cfg) {
-                SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", cfg.mfd_brightness * 10);
-            }
-            this.avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
-        } else {
-            console.log("avionics.cfg missing or lacking g1000 section")
+    setBrightness(display, value, relative) {
+        let lvar = `L:XMLVAR_AS1000_${display}_Brightness`;
+        if (relative) {
+            let current = SimVar.GetSimVarValue(lvar, "number")
+            value = current + value;
         }
+        // clamp value 0-100
+        value = Math.max(Math.min(value, 100), 0);
+        PersistVar.set(`${display}.Brightness`, value);
+        SimVar.SetSimVarValue(lvar, "number", value);
+    }
+
+    getBrightness(display) {
+        return PersistVar.get(`${display}.Brightness`, 100);
     }
 
     parseXMLConfig() {
@@ -639,8 +640,8 @@ class AS1000_PFD_ConfigMenu extends NavSystemElement {
         this.gps.ActiveSelection(this.defaultSelectables)
     }
     onUpdate(_deltaTime) {
-        this.pfdBrightLevel.textContent = SimVar.GetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number") + "%";
-        this.mfdBrightLevel.textContent = SimVar.GetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number") + "%";        
+        this.pfdBrightLevel.textContent = this.gps.getBrightness("PFD") + "%";
+        this.mfdBrightLevel.textContent = this.gps.getBrightness("MFD") + "%";        
     }
     onExit() {
         this.pfdConfWindow.setAttribute("state", "Inactive");
@@ -649,31 +650,18 @@ class AS1000_PFD_ConfigMenu extends NavSystemElement {
     onEvent(_event) {
     }
     pfdBrightCallback(_event) {
-        if (_event == "FMS_Upper_INC" || _event == "NavigationSmallInc") {
-            var brightLevel = SimVar.GetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number")
-            if (brightLevel < 100) {
-                SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", brightLevel + 10)
-            }
-        } else if (_event == "FMS_Upper_DEC" || _event == "NavigationSmallDec") {
-            var brightLevel = SimVar.GetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number")
-            if (brightLevel > 0) {
-                SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", brightLevel - 10)
-            }
-
-        }
+        this.setBrightCallback(_event, "PFD")
     }
     mfdBrightCallback(_event) {
+        this.setBrightCallback(_event, "MFD")
+    }
+
+    setBrightCallback(_event, display) {
         if (_event == "FMS_Upper_INC" || _event == "NavigationSmallInc") {
-            var brightLevel = SimVar.GetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number")
-            if (brightLevel < 100) {
-                SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", brightLevel + 10)
-            }
+            this.gps.setBrightness(display, 10, true)
         } else if (_event == "FMS_Upper_DEC" || _event == "NavigationSmallDec") {
-            var brightLevel = SimVar.GetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number")
-            if (brightLevel > 0) {
-                SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", brightLevel - 10)
-            }
-        }        
+            this.gps.setBrightness(display, -10, true)
+        }
     }
 }
 registerInstrument("as1000-pfd-element", AS1000_PFD);
