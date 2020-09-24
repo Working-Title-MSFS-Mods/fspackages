@@ -541,17 +541,17 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage15(fmc) { //SEC FPLN
         fmc.clearDisplay();
-        fmc.setTemplate([
+        fmc._templateRenderer.setTemplateRaw([
             ["SEC FPLN[blue]", "1/2 [blue]"],
-            ["ORIGIN" + "[color]blue", "DEST" + "[color]blue", "DIST" + "[color]blue"],
-            ["", ""],
-            ["ROUTE" + "[color]blue", "ALTN" + "[color]blue"],
+            [" ORIGIN[blue]", "DEST [blue]", "DIST[blue]"],
+            ["□□□□", "□□□□", "----"],
+            [" ROUTE[blue]", "ALTN [blue]"],
             ["----------", "----"],
-            ["FLT NO[color]blue", "ORIG RWY[color]blue"],
+            [" FLT NO[blue]", "ORIG RWY [blue]"],
             ["--------"],
-            ["VIA" + "[color]blue", "TO" + "[color]blue"],
+            [" VIA[blue]", "TO [blue]"],
             ["-----", "-----"],
-            ["-----------------------" + "[color]blue", "FLT NO" + "[color]blue"],
+            ["-----------------------[blue]"],
             ["<ROUTE MENU"],
             [""],
             ["<SEC LEGS"]
@@ -561,8 +561,8 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage17(fmc) { //ROUTE MENU
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["ROUTE MENU[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "ROUTE MENU[blue]"],
             [""],
             ["<PILOT ROUTE LIST"],
             [""],
@@ -573,7 +573,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["<FPLN WIND"],
             [""],
             [""],
-            ["-----------------------[color]blue"],
+            ["-----------------------[blue]"],
             ["<SEC FPLN"]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
@@ -602,17 +602,17 @@ class CJ4_FMC_InitRefIndexPage {
             });
         };
 
-        fmc.setTemplate([
-            ["DATABASE[color]blue"],
-            ["IDENT[color]blue"],
-            ["[-----]"],
-            ["SELECTED WAYPOINT[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "DATA BASE[blue]"],
+            [" IDENT[blue]"],
+            ["□□□□□"],
+            [" LOCATION[blue]"],
             ["<" + databaseIdentCell + ""],
             [""],
             [""],
             [""],
             [""],
-            ["-----------------------[color]blue" + "PILOT"],
+            ["-----------------------[color]blue", "PILOT "],
             ["", "WPT LIST>"],
             [""],
             ["<INDEX", "DEFINE WPT>"]
@@ -623,11 +623,17 @@ class CJ4_FMC_InitRefIndexPage {
             if (databaseWaypointType == "A") {
                 CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, databaseWaypoint)
             }
-
-
+            else if (databaseWaypointType == "V") {
+                CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, databaseWaypoint)
+            }
+            else if (databaseWaypointType == "W") {
+                CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, databaseWaypoint)
+            }
+            else if (databaseWaypointType == "N") {
+                CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, databaseWaypoint)
+            }
 
         };
-
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
@@ -679,83 +685,146 @@ class CJ4_FMC_InitRefIndexPage {
         let longestRunwayElevation = new Number(longestRunway.elevation * 3.28);
         let longestRunwayLengthFeet = new Number(longestRunwayLength * 3.28);
 
-        fmc.setTemplate([
-            ["DATABASE[color]blue"],
-            ["IDENT[color]blue", "LONG RWY[color]blue"],
-            [airportIdent + "", longestRunwayOutput + "/" + longestRunwayOppositeDesignator + " " + Math.trunc(longestRunwayLengthFeet) + " FT"],
-            ["ARP LOCATION[color]blue", "MAG VAR[color]blue"],
-            [""],
-            ["NAME[color]blue"],
+        let wptCoordinatesAlt = new String(databaseWaypoint.infos.coordinates);
+        let wptIndex = wptCoordinatesAlt.indexOf("alt");
+        let wptCoordinates = wptCoordinatesAlt.substring(0, wptIndex);
+
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "DATA BASE[blue]"],
+            [" IDENT[blue]", "LONG RWY [blue]"],
+            [airportIdent + " AIRPORT", Math.trunc(longestRunwayLengthFeet) + " FT"],
+            [" ARP LOCATION[blue]", "MAG VAR[color]blue"],
+            [wptCoordinates + "", "MV"],
+            [" NAME[blue]"],
             [databaseWaypoint.infos.name + ""],
             ["RUNWAY LENGTH[color]blue", "ELEV[color]blue"],
-            ["<FEET/METERS", Math.trunc(longestRunwayElevation) + " FT"],
+            ["<[white]" + "FEET[green]" + "/METERS[white]", Math.trunc(longestRunwayElevation) + " FT"],
             ["-----------------------[color]blue"],
             ["<LOCALIZERS"],
             [""],
             ["<RUNWAYS", "TERM WPTS>"]
         ]);
+        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage20(fmc) { //DATABASE VOR
+    static ShowPage20(fmc, databaseWaypoint) { //DATABASE VOR
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["DATABASE[color]blue"],
+
+        let simMagVar = databaseWaypoint.infos.magneticVariation.toFixed(0)
+        let magVar = (simMagVar > 180) ? simMagVar - 360 + "E" : (simMagVar < 180) ? simMagVar + "W" : 0;
+        let vorType = databaseWaypoint.infos.type == 1 ? "VOR"
+            :databaseWaypoint.infos.type == 2 ? "VOR-DME"
+            :databaseWaypoint.infos.type == 3 ? "VOR-DME"
+            :databaseWaypoint.infos.type == 4 ? "VORTAC"
+            :databaseWaypoint.infos.type == 5 ? "VORTAC"
+            :databaseWaypoint.infos.type == 6 ? "VOR"
+            : "VOR";
+        let vorClass = databaseWaypoint.infos.vorClass == 1 ? "Terminal"
+            :databaseWaypoint.infos.vorClass == 2 ? "Low Alt"
+            :databaseWaypoint.infos.vorClass == 3 ? "High Alt"
+            :databaseWaypoint.infos.vorClass == 4 ? "ILS"
+            :databaseWaypoint.infos.vorClass == 5 ? "VOT"
+            : "Unknown";
+        let vorWeather = databaseWaypoint.infos.weatherBroadcast == 0 ? "No"
+            :"Yes"
+        let vorCoordinatesAlt = new String(databaseWaypoint.infos.coordinates);
+        let vorIndex = vorCoordinatesAlt.indexOf("alt");
+        let vorCoordinates = vorCoordinatesAlt.substring(0, vorIndex);
+        console.log("vorIndex:" + vorIndex);
+        console.log("vorCoordinatesAlt:" + vorCoordinatesAlt);
+        
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "DATA BASE[blue]"],
             ["IDENT[color]blue", "FREQ[color]blue"],
+            [databaseWaypoint.infos.ident + "", databaseWaypoint.infos.frequencyMHz.toFixed(2) + ""],
+            ["TYPE[color]blue", "MAG VAR[color]blue"],
+            [vorType + "", magVar + ""],
+            ["CLASS[color]blue", "WEATHER[color]blue"],
+            [vorClass + "", vorWeather + ""],
+            ["COORDINATES[color]blue"],
+            [vorCoordinates + ""],
             [""],
-            ["VOR[color]blue", "MAG VAR[color]blue"],
+            ["", ""],
             [""],
-            ["DME[color]blue"],
+            ["<INDEX", "DEFINE WPT>"]
+        ]);
+
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
+        fmc.updateSideButtonActiveStatus();
+    }
+    static ShowPage21(fmc, databaseWaypoint) { //DATABASE WAYPOINT
+        fmc.clearDisplay();
+
+        let wptRegion = databaseWaypoint.infos.region;// == 1 ? "VOR"
+        //    :databaseWaypoint.infos.type == 2 ? "VOR-DME"
+        //    :databaseWaypoint.infos.type == 3 ? "VOR-DME"
+        //    :databaseWaypoint.infos.type == 4 ? "VORTAC"
+        //    :databaseWaypoint.infos.type == 5 ? "VORTAC"
+        //    :databaseWaypoint.infos.type == 6 ? "VOR"
+        //    : "VOR";
+        let wptCoordinatesAlt = new String(databaseWaypoint.infos.coordinates);
+        let wptIndex = wptCoordinatesAlt.indexOf("alt");
+        let wptCoordinates = wptCoordinatesAlt.substring(0, wptIndex);
+        console.log("region: " + databaseWaypoint.infos.region);
+
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "DATA BASE[blue]"],
+            ["IDENT[color]blue", "REGION[color]blue"],
+            [databaseWaypoint.infos.ident + "", wptRegion + ""],
+            ["LOCATION[color]blue"],
+            [wptCoordinates + ""],
             [""],
-            ["NAME[color]blue", "ELEV[color]blue"],
-            ["<FEET/METERS"],
+            [databaseWaypoint.infos.name + ""],
+            [""],
+            [""],
             ["------------Pilot[color]blue"],
             ["", "WPT LIST>"],
             [""],
             ["<INDEX", "DEFINE WPT>"]
         ]);
+
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage21(fmc) { //DATABASE WAYPOINT
+    static ShowPage31(fmc, databaseWaypoint) { //DATABASE NDB
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["DATABASE[color]blue"],
+
+        //let simMagVar = databaseWaypoint.infos.magneticVariation.toFixed(0)
+        //let magVar = (simMagVar > 180) ? simMagVar - 360 + "E" : (simMagVar < 180) ? simMagVar + "W" : 0;
+        let ndbType = databaseWaypoint.infos.type == 1 ? "Compass Point"
+            :databaseWaypoint.infos.type == 2 ? "MH"
+            :databaseWaypoint.infos.type == 3 ? "H"
+            :databaseWaypoint.infos.type == 4 ? "HH"
+            : "Unknown";
+        let ndbWeather = databaseWaypoint.infos.weatherBroadcast == 0 ? "No"
+            :"Yes"
+        let ndbCoordinatesAlt = new String(databaseWaypoint.infos.coordinates);
+        let ndbIndex = ndbCoordinatesAlt.indexOf("alt");
+        let ndbCoordinates = ndbCoordinatesAlt.substring(0, ndbIndex);
+
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "DATA BASE[blue]"],
             ["IDENT[color]blue", "FREQ[color]blue"],
-            [""],
-            ["LOCATION[color]blue", "MAG VAR[color]blue"],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
-            ["------------Pilot[color]blue"],
-            ["", "WPT LIST>"],
+            [databaseWaypoint.infos.ident + "", databaseWaypoint.infos.frequencyMHz.toFixed(3) + ""],
+            ["TYPE[color]blue"],
+            [ndbType + "", ""],
+            ["CLASS[color]blue", "WEATHER[color]blue"],
+            ["N/A", ndbWeather + ""],
+            ["COORDINATES[color]blue"],
+            [ndbCoordinates + ""],
+            [databaseWaypoint.infos.name + ""],
+            ["", ""],
             [""],
             ["<INDEX", "DEFINE WPT>"]
         ]);
+
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage30(fmc) { //DATABASE NDB
-        fmc.clearDisplay();
-        fmc.setTemplate([
-            ["DATABASE[color]blue"],
-            ["IDENT[color]blue", "FREQ[color]blue"],
-            [""],
-            ["VOR[color]blue", "MAG VAR[color]blue"],
-            [""],
-            ["DME[color]blue"],
-            [""],
-            ["NAME[color]blue", "ELEV[color]blue"],
-            ["<FEET/METERS"],
-            ["------------Pilot[color]blue"],
-            ["", "WPT LIST>"],
-            [""],
-            ["<INDEX", "DEFINE WPT>"]
-        ]);
-        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-        fmc.updateSideButtonActiveStatus();
-    }
+
     static ShowPage22(fmc) { //DEFAULTS Page 1
         fmc.clearDisplay();
         fmc.setTemplate([
