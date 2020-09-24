@@ -11,7 +11,7 @@ class AS1000_MFD extends BaseAS1000 {
         Include.addScript("/JS/debug.js", function () {
             g_modDebugMgr.AddConsole(null);
         });
-        this.trackup = false;
+        this.loadSavedMapOrientation();
         this.pagesContainer = this.getChildById("RightInfos");
         this.engineDisplay = new Engine("Engine", "LeftInfos");
         this.addIndependentElementContainer(this.engineDisplay);
@@ -40,8 +40,6 @@ class AS1000_MFD extends BaseAS1000 {
         this.addIndependentElementContainer(new NavSystemElementContainer("Page Navigation", "CenterDisplay", new AS1000_MFD_PageNavigation()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "CenterDisplay", new AS1000_MFD_NavStatus()));
         this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "CenterDisplay", this.mapElement));
-        this._cfgHandler = new ConfigLoader(this._xmlConfigPath);
-        this._cfgHandler.loadIni("panel/avionics.cfg").then((cfg) => { this.processAvionicsConfig(cfg) });
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -63,17 +61,6 @@ class AS1000_MFD extends BaseAS1000 {
         } 
     }
     disconnectedCallback() {
-    }
-    processAvionicsConfig(cfg) {
-        if ("g1000" in cfg) {
-            cfg = cfg.g1000;
-            if ("trackup" in cfg && (cfg.trackup === true || cfg.trackup === false)) {
-                console.log("Setting track up");
-                this.setMapOrientation(cfg.trackup);
-            }
-        } else {
-            console.log("avionics.cfg missing or lacking g1000 section")
-        }
     }
     onEvent(_event) {
         super.onEvent(_event);
@@ -125,15 +112,20 @@ class AS1000_MFD extends BaseAS1000 {
         SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
     }
 
-    toggleMapOrientation() {
-        let newValue = !SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean");
-        SimVar.SetSimVarValue("L:GPS_TRACK_UP", "boolean", newValue);
-        this.trackup = newValue;
+    loadSavedMapOrientation() {
+        let state = PersistVar.get("MFD.TrackUp", false);
+        this.setMapOrientation(state);
     }
 
-    setMapOrientation(enabled) {
-        SimVar.SetSimVarValue("L:GPS_TRACK_UP", "boolean", enabled);
-        this.trackup = enabled;
+    toggleMapOrientation() {
+        let newValue = !SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean");
+        this.setMapOrientation(newValue)
+    }
+
+    setMapOrientation(state) {
+        PersistVar.set("MFD.TrackUp", state);
+        SimVar.SetSimVarValue("L:GPS_TRACK_UP", "boolean", state);
+        this.trackup = state;
     }
 }
 class AS1000_MFD_NavStatus extends NavSystemElement {

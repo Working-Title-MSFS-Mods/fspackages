@@ -40,8 +40,8 @@ class AS1000_PFD extends BaseAS1000 {
     }
 
     async pfdConfig() {
-        await this._cfgHandler.loadModelFile("interior").then((dom) => { this.processInteriorConfig(dom) });
-        //await this._cfgHandler.loadIni("panel/avionics.cfg").then((cfg) => { this.processAvionicsConfig(cfg) });
+        this.loadSavedBrightness("PFD");
+        this.loadSavedBrightness("MFD");
         // It seems to be the case that in some planes the avionics brightness knob value changes
         // as the plane is in the process of intializing -- the stock Bonanza seems to be one of
         // these.  This causes the code in onUpdate that determines if the knob has moved from its
@@ -49,40 +49,18 @@ class AS1000_PFD extends BaseAS1000 {
         // overridden by the new position of the knob.  The only way I have found to set this is,
         // unfortunately, to stick a little pause in here to let the systems load a bit before
         // completing the initialization of our current settings.  It's kinda gross, but since this
-        // is an async function it's not *too* bad.  
+        // is an async function it's not *too* bad, and the worst it means it that the hardware
+        // knob, if present, won't function for a few seconds.
         //
-        // The 1000ms value here was experimentally derived by testing to see what caused loads in
+        // The 10000ms value here was experimentally derived by testing to see what caused loads in
         // troublesome planes to succeed on my system.  It may need adjustment if other folks find
-        // themselves having that issue.
+        // themselves having that issue. 
         await new Promise(resolve => setTimeout(resolve, 10000));
-        this.setBrightness("PFD", this.getBrightness("PFD"))
-        this.setBrightness("MFD", this.getBrightness("MFD"))
+        // We need to wait for this to finish before we can do the initial set of the light pot
+        // in the line below because this can set a custom value for the avionics knob.
+        await this._cfgHandler.loadModelFile("interior").then((dom) => { this.processInteriorConfig(dom) });
         this.avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
         this._pfdConfigDone = true;
-    }
-
-    onUpdate(_deltaTime) {
-        if (this._pfdConfigDone) {
-            let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
-            if (avionicsKnobValueNow != this.avionicsKnobValue) {
-                this.setBrightness("PFD", avionicsKnobValueNow);
-                this.setBrightness("MFD", avionicsKnobValueNow);
-                this.avionicsKnobValue = avionicsKnobValueNow;
-            }
-        } 
-    }
-    onEvent(_event) {
-        if (_event == "MENU_Push") {
-            // Uncomment this for easy debugging of config issues.
-            // this.pfdConfig();
-            if (this.popUpElement) {
-                if (this.popUpElement.popUpEvent == "CONF_MENU_Push") {
-                    this.computeEvent("CONF_MENU_Push")
-                }
-            } else {
-                this.computeEvent("CONF_MENU_Push");
-            }
-        }
     }
 
     processInteriorConfig(dom) {
@@ -99,6 +77,36 @@ class AS1000_PFD extends BaseAS1000 {
         }
     }
 
+    onUpdate(_deltaTime) {
+        if (this._pfdConfigDone) {
+            let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
+            if (avionicsKnobValueNow != this.avionicsKnobValue) {
+                this.setBrightness("PFD", avionicsKnobValueNow);
+                this.setBrightness("MFD", avionicsKnobValueNow);
+                this.avionicsKnobValue = avionicsKnobValueNow;
+            }
+        } 
+    }
+
+    onEvent(_event) {
+        if (_event == "MENU_Push") {
+            // Uncomment this for easy debugging of config issues.
+            // this.pfdConfig();
+            if (this.popUpElement) {
+                if (this.popUpElement.popUpEvent == "CONF_MENU_Push") {
+                    this.computeEvent("CONF_MENU_Push")
+                }
+            } else {
+                this.computeEvent("CONF_MENU_Push");
+            }
+        }
+    }
+
+    loadSavedBrightness(display) {
+        let brightness = PersistVar.get(`${display}.Brightness`, 100);
+        this.setBrightness(display, brightness);
+    }
+
     setBrightness(display, value, relative) {
         let lvar = `L:XMLVAR_AS1000_${display}_Brightness`;
         if (relative) {
@@ -112,30 +120,27 @@ class AS1000_PFD extends BaseAS1000 {
     }
 
     getBrightness(display) {
-        return PersistVar.get(`${display}.Brightness`, 100);
+        return SimVar.GetSimVarValue(`L:XMLVAR_AS1000_${display}_Brightness`, "number");
     }
 
     parseXMLConfig() {
         super.parseXMLConfig();
         let syntheticVision = null;
         let reversionaryMode = null;
-        let avionicsKnobIndex = null;
         if (this.instrumentXmlConfig) {
             syntheticVision = this.instrumentXmlConfig.getElementsByTagName("SyntheticVision")[0];
             reversionaryMode = this.instrumentXmlConfig.getElementsByTagName("ReversionaryMode")[0];
-            avionicsKnobIndex = this.instrumentXmlConfig.getElementsByTagName("AvionicsKnobIndex")[0];            
         }
         this.mainPage.setSyntheticVision(syntheticVision && syntheticVision.textContent == "True");
         if (reversionaryMode && reversionaryMode.textContent == "True") {
             this.handleReversionaryMode = true;
         }
-        if (avionicsKnobIndex) {
-            this.avionicsKnobIndex = avionicsKnobIndex.textContent;
-        }
     }
+
     disconnectedCallback() {
         super.disconnectedCallback();
     }
+
     Update() {
         super.Update();
         if (this.handleReversionaryMode) {
