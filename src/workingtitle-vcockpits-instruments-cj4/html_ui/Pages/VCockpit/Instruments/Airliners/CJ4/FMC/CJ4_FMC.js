@@ -37,6 +37,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._fpHasChanged = false;
         this._activatingDirectTo = false;
         this._templateRenderer = undefined;
+        this._msg = "";
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -49,10 +50,6 @@ class CJ4_FMC extends FMCMainDisplay {
         } else {
             this._templateRenderer.hideExec();
         }
-    }
-
-    set messageBox(value) {
-        this._templateRenderer.setMsg(value);
     }
 
     connectedCallback() {
@@ -215,6 +212,11 @@ class CJ4_FMC extends FMCMainDisplay {
         }
 
         return false;
+    }
+
+    setMsg(value = ""){
+        this._msg = value;
+        this._templateRenderer.setMsg();
     }
 
     clearDisplay() {

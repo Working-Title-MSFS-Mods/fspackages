@@ -251,6 +251,9 @@ class CJ4_FMC_NavRadioPage {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
+
+        const tcasModeSwitch = fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], 0, "blue");
+
         fmc._templateRenderer.setTemplateRaw([
             ["", "1/2[blue]", "TUNE[blue]"],
             [" COM1", "COM2 "],
@@ -262,7 +265,7 @@ class CJ4_FMC_NavRadioPage {
             [" DME1", "DME2 "],
             ["HOLD[s-text]", "HOLD[s-text]"],
             [" ATC1", "TCAS MODE "],
-            [atc1FrequencyCell + "[green]", "TA[blue]/RA[blue]/STBY[white s-text]"],
+            [atc1FrequencyCell + "[green]", tcasModeSwitch],
             [" ADF", "REL [blue]"],
             [adfFrequencyCell + "[green]", "TCAS>"],
         ]);

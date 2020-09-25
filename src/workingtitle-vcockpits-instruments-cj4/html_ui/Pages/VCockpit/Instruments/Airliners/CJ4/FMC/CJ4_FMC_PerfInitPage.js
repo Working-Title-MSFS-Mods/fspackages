@@ -1,6 +1,7 @@
 class CJ4_FMC_PerfInitPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
+        const advSwitch = fmc._templateRenderer.renderSwitch(["ENABLE", "DISABLE"], 1);
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "PERF MENU[blue]"],
             [""],
@@ -12,7 +13,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             [" ADVISORY VNAV[blue]"],
-            ["ENABLE[s-text]/[white]DISABLE[green]"],
+            [advSwitch],
             [" VNAV PLAN SPD[blue]"],
             ["", "", "--- KT[s-text]"]
         ]);
