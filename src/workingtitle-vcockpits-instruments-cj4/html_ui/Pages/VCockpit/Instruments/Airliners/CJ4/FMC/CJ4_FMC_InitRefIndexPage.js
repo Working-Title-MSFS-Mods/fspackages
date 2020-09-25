@@ -783,13 +783,7 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage21(fmc, databaseWaypoint) { //DATABASE WAYPOINT
         fmc.clearDisplay();
 
-        let wptRegion = databaseWaypoint.infos.region;// == 1 ? "VOR"
-        //    :databaseWaypoint.infos.type == 2 ? "VOR-DME"
-        //    :databaseWaypoint.infos.type == 3 ? "VOR-DME"
-        //    :databaseWaypoint.infos.type == 4 ? "VORTAC"
-        //    :databaseWaypoint.infos.type == 5 ? "VORTAC"
-        //    :databaseWaypoint.infos.type == 6 ? "VOR"
-        //    : "VOR";
+        let wptRegion = databaseWaypoint.infos.region;
         let wptCoordinatesAlt = new String(databaseWaypoint.infos.coordinates);
         let wptIndex = wptCoordinatesAlt.indexOf("alt");
         let wptCoordinates = wptCoordinatesAlt.substring(0, wptIndex);
