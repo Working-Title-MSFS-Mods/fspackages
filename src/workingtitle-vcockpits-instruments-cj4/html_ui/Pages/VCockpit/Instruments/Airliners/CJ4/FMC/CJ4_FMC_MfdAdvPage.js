@@ -1,28 +1,28 @@
 class CJ4_FMC_MfdAdvPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["LEFT DISPLAY ADVANCE[color]blue"],
-            ["", "", "ACT PLAN MAP CENTER"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" LEFT DISPLAY ADVANCE[blue]"],
+            [" ACT PLAN MAP CENTER[s-text blue]"],
             ["<PREV WPT"],
             [""],
             ["<NEXT WPT"],
             [""],
             ["<TO WPT"],
-            ["CTR WPT[color]blue"],
+            [" CTR WPT[s-text blue]"],
             ["<-----"],
             [""],
             [""],
-            ["", "SIDE[color]blue"],
-            ["", "L/R>"]
+            ["", "SIDE [s-text blue]"],
+            ["", "L[green]/[white]R[s-text]>"]
         ]);
         fmc.updateSideButtonActiveStatus();
     }
 	static ShowPage2(fmc) {
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["LEFT DISPLAY ADVANCE[color]blue"],
-            ["", "", "TEXT DISPLAY"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" LEFT DISPLAY ADVANCE[blue]"],
+            ["    TEXT DISPLAY[s-text blue]"],
             ["<PREV PAGE"],
             [""],
             ["<NEXT PAGE"],
@@ -32,8 +32,8 @@ class CJ4_FMC_MfdAdvPage {
             [""],
             [""],
             [""],
-            ["", "SIDE[color]blue"],
-            ["", "L/R>"]
+            ["", "SIDE [s-text blue]"],
+            ["", "L[green]/[white]R[s-text]>"]
         ]);
         fmc.updateSideButtonActiveStatus();
     }
