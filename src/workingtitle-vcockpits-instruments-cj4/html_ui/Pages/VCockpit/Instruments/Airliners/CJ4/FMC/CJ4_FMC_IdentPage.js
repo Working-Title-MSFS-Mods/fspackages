@@ -5,19 +5,19 @@ class CJ4_FMC_IdentPage {
         if (!model) {
             model = "unkn.";
         }
-        fmc.setTemplate([
-            ["IDENT"],
-            ["MODEL", "ENGINES"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "IDENT[blue]"],
+            [" MODEL[blue]", "ENGINES [blue]"],
             ["CJ4", "FJ44-4A"],
-            ["NAV DATA", "ACTIVE"],
+            [" NAV DATA[blue]", "ACTIVE [blue]"],
             ["N4VD4T4-42", "MAY4JUL4/20"],
-            ["DRAG/FF"],
+            [" DRAG/FF[blue]"],
             [""],
-            ["OP PROGRAM", "CO DATA"],
+            [" OP PROGRAM[blue]", "CO DATA [blue]"],
             ["AW-P010-0-0", "VS1001"],
-            ["OPC"],
+            [" OPC[blue]"],
             ["AW-C010-0-0", ""],
-            ["--------------------------"],
+            ["--------------------------[blue]"],
             ["<INDEX", "POS INIT>"]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
