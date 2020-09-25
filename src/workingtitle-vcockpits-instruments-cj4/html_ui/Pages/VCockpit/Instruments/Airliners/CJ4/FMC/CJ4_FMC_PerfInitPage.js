@@ -15,7 +15,7 @@ class CJ4_FMC_PerfInitPage {
             [" ADVISORY VNAV[blue]"],
             [advSwitch],
             [" VNAV PLAN SPD[blue]"],
-            ["", "", "--- KT[s-text]"]
+            ["        --- KT[s-text white]"]
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
         fmc.onLeftInput[1] = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
@@ -81,11 +81,11 @@ class CJ4_FMC_PerfInitPage {
     }
     static ShowPage3(fmc) { //VNAV SETUP Page 1
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["ACT VNAV CLIMB[color]blue", "1", "3"],
-            ["TGT SPEED[color]blue", "TRANS ALT[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" ACT VNAV CLIMB[blue]", "1/3[blue]"],
+            [" TGT SPEED[blue]", "TRANS ALT [blue]"],
             ["240/.64", "18000"],
-            ["SPD/ALT LIMIT[color]blue"],
+            [" SPD/ALT LIMIT[blue]"],
             ["250/10000"],
             [""],
             ["---/-----"],
@@ -93,7 +93,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             [""],
-            ["-----------------------[color]blue"],
+            ["-----------------------[blue]"],
             ["", "PERF INIT>"]
         ]);
         fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
@@ -103,9 +103,9 @@ class CJ4_FMC_PerfInitPage {
     }
     static ShowPage4(fmc) { //VNAV SETUP Page 2
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["ACT VNAV CRUISE[color]blue", "2", "3"],
-            ["TGT SPEED[color]blue", "CRZ ALT[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" ACT VNAV CRUISE[blue]", "2/3[blue]"],
+            [" TGT SPEED[blue]", "CRZ ALT [blue]"],
             ["300/.74", "crzAltCell"],
             [""],
             [""],
@@ -115,7 +115,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             [""],
-            ["-----------------------[color]blue"],
+            ["-----------------------[blue]"],
             ["", "PERF INIT>"]
         ]);
         fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
@@ -125,20 +125,20 @@ class CJ4_FMC_PerfInitPage {
     }
     static ShowPage5(fmc) { //VNAV SETUP Page 3
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["ACT VNAV DESCENT[color]blue", "3", "3"],
-            ["TGT SPEED[color]blue", "TRANS FL[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" ACT VNAV DESCENT[blue]", "3/3[blue]"],
+            [" TGT SPEED[blue]", "TRANS FL [blue]"],
             [".74/290", "FL180"],
-            ["SPD/ALT LIMIT[color]blue"],
-            ["250/10000", "VPA[color]blue"],
+            [" SPD/ALT LIMIT[blue]"],
+            ["250/10000"],
+            ["", , "VPA [blue]"],
             ["---/-----", "3.0\xB0"],
             [""],
             [""],
             [""],
             [""],
-            [""],
-            ["-----------------------[color]blue"],
-            ["", "PERF INIT>"]
+            ["-----------------------[blue]"],
+            ["<DESC INFO", "PERF INIT>"]
         ]);
         fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage4(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
@@ -156,19 +156,19 @@ class CJ4_FMC_PerfInitPage {
         let avgGs = "---";
         let airDis = "---";
         let gndDis = "---";
-        fmc.setTemplate([
-            ["FLIGHT LOG[color]blue"],
-            ["T/O[color]blue", "LDG[color]blue", "EN ROUTE[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "FLIGHT LOG[blue]"],
+            [" T/O[s-text blue]", "LDG [s-text blue]", "EN ROUTE[s-text blue]"],
             [toTime, ldgTime, enrouteTime],
-            ["FUEL USED[color]blue", "AVG TAS/GS[color]blue"],
+            [" FUEL USED[blue]", "AVG TAS/GS [blue]"],
             [fuelUsed, avgTas + "/" + avgGs],
-            ["AIR DIST[color]blue", "GND DIST[color]blue"],
+            [" AIR DIST[blue]", "GND DIST [blue]"],
             [airDis, gndDis],
+            ["     NM[s-text]", "NM[s-text]"],
             [""],
             [""],
             [""],
-            [""],
-            ["-----------------------[color]blue"],
+            ["-----------------------[blue]"],
             ["", "PERF MENU>"]
         ]);
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage1(fmc); };
@@ -224,19 +224,19 @@ class CJ4_FMC_PerfInitPage {
 
         let selAptValue = destinationIdent ? destinationIdent + "[green]/[white]" + originIdent + "[s-text]" : "----"
 
-        fmc.setTemplate([
-            [destinationIdent, "", "APPROACH REF[blue]", 1, 3],
-            ["SEL APT[blue]", "WIND[blue]"],
+        fmc._templateRenderer.setTemplateRaw([
+            [destinationIdent, "1/3 [blue]", "APPROACH REF[blue]"],
+            [" SEL APT[blue]", "WIND [blue]"],
             [selAptValue, fmc.landingWindDir + "\xB0/" + fmc.landingWindSpeed],
-            ["RWY ID[blue]", "OAT[blue]"],
+            [" RWY ID[blue]", "OAT [blue]"],
             [arrRunwayOutput + " [s-text]", fmc.landingOat + "\xB0C"],
-            ["RWY WIND[blue]", "QNH[blue]"],
+            [" RWY WIND[blue]", "QNH [blue]"],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", fmc.landingQnh + "[s-text]"],
-            ["RUNWAY LENGTH[blue]", "P ALT[blue]"],
+            [" RUNWAY LENGTH[blue]", "P ALT [blue]"],
             [Math.round(arrRunwayLength) + " FT[s-text]", fmc.landingPressAlt + " FT[s-text]"],
-            ["RWY SLOPE[blue]"],
+            [" RWY SLOPE[blue]"],
             ["--.-%"],
-            ["RWY COND[blue]"],
+            [" RWY COND[blue]"],
             [arrRunwayConditionActive]
         ]);
 
@@ -271,8 +271,8 @@ class CJ4_FMC_PerfInitPage {
             } else if (fmc.arrRunwayCondition == 1) {
                 fmc.arrRunwayCondition = 0;
             }
-            arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY"
-                : "WET";
+            arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY[green]/[white]WET[s-text]"
+            : "DRY[s-text]/[white]WET[green]";
             fmc.clearUserInput();
             { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
         }
@@ -371,17 +371,17 @@ class CJ4_FMC_PerfInitPage {
             ldgFieldLength = ldgFieldLength * ((fmc.landingPressAlt * .0001025) + 1.21875); //Determines a factor to multiply with dependent on pressure altitude.  Sea level being 1.21x landing distance
         }
 
-        fmc.setTemplate([
-            ["", "", "APPROACH REF[blue]", 2, 3],
-            ["A/I[blue]"],
+        fmc._templateRenderer.setTemplateRaw([
+            [destinationIdent, "2/3 [blue]", "APPROACH REF[blue]"],
+            [" A/I[blue]"],
             ["OFF[green]/[white]ON[s-text]"],
-            ["", "V[blue]REF:[s-text] " + vRef.toFixed(0)],
+            ["", "V[blue]REF:[s-text blue] " + vRef.toFixed(0)],
             [""],
-            ["LW / GWT/MLW[blue]", "V[blue]APP:[s-text] " + vApp.toFixed(0)],
+            [" LW / GWT/MLW[blue]", "V[blue]APP:[s-text blue] " + vApp.toFixed(0)],
             [ldgWtCell + "/" + grWtCell + "/15660"],
-            ["LFL / RWXX[blue]"],
+            [" LFL / RWXX[blue]"],
             [ldgFieldLength.toFixed(0) + " / " + Math.trunc(arrRunwayLength) + " FT"],
-            ["LDG FACTOR[blue]"],
+            [" LDG FACTOR[blue]"],
             ["1.0[green]" + "/[white]1.25[s-text]" + "/[white]1.67[s-text]" + "/[white]1.92[s-text]"],
             [""],
             ["", "SEND>"]
@@ -404,16 +404,16 @@ class CJ4_FMC_PerfInitPage {
 
     static ShowPage15(fmc) { //APPROACH REF Page 3
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["APPROACH REF[color]blue", "3", "3"],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
-            ["", "", "UNDER CONSTRUCTION"],
-            [""],
-            [""],
+        fmc._templateRenderer.setTemplateRaw([
+            [destinationIdent, "3/3 [blue]", "APPROACH REF[blue]"],
+            [" LW /MLW[blue]"],
+            ["13026/15563"],
+            ["", "STRUCTURAL LIMIT [blue]"],
+            ["", "15660"],
+            ["", "PERFORMANCE LIMIT [blue]"],
+            ["", "15563"],
+            ["", "RUNWAY LENGTH LIMIT [blue]"],
+            ["", "17110"],
             [""],
             [""],
             [""],
