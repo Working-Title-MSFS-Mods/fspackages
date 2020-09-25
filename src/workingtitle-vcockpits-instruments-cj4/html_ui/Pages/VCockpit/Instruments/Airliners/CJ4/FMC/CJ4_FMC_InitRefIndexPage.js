@@ -731,7 +731,32 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<RUNWAYS", "TERM WPTS>"]
         ]);
-        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
+
+        fmc.onLeftInput[1] = () => {
+            let value = fmc.inOut;
+            fmc.clearUserInput();
+            fmc.getOrSelectWaypointByIdent(value, (w) => {
+                if (w) {
+                    if (w.icao.slice(0, 1) == "A") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "V") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "W") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "N") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
+                    } 
+                }
+                else {
+                    CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
+                }
+            });
+        };
+
+        //fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage20(fmc, databaseWaypoint) { //DATABASE VOR
@@ -776,8 +801,32 @@ class CJ4_FMC_InitRefIndexPage {
             ["<INDEX", ""]
         ]);
 
+        fmc.onLeftInput[1] = () => {
+            let value = fmc.inOut;
+            fmc.clearUserInput();
+            fmc.getOrSelectWaypointByIdent(value, (w) => {
+                if (w) {
+                    if (w.icao.slice(0, 1) == "A") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "V") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "W") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "N") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
+                    } 
+                }
+                else {
+                    CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
+                }
+            });
+        };
+
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
+        //fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage21(fmc, databaseWaypoint) { //DATABASE WAYPOINT
@@ -805,8 +854,32 @@ class CJ4_FMC_InitRefIndexPage {
             ["<INDEX", "DEFINE WPT>"]
         ]);
 
+        fmc.onLeftInput[1] = () => {
+            let value = fmc.inOut;
+            fmc.clearUserInput();
+            fmc.getOrSelectWaypointByIdent(value, (w) => {
+                if (w) {
+                    if (w.icao.slice(0, 1) == "A") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "V") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "W") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "N") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
+                    } 
+                }
+                else {
+                    CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
+                }
+            });
+        };
+
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
+        //fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage31(fmc, databaseWaypoint) { //DATABASE NDB
@@ -841,8 +914,32 @@ class CJ4_FMC_InitRefIndexPage {
             ["<INDEX", ""]
         ]);
 
+        fmc.onLeftInput[1] = () => {
+            let value = fmc.inOut;
+            fmc.clearUserInput();
+            fmc.getOrSelectWaypointByIdent(value, (w) => {
+                if (w) {
+                    if (w.icao.slice(0, 1) == "A") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "V") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "W") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "N") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
+                    } 
+                }
+                else {
+                    CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
+                }
+            });
+        };
+
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
+        //fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
         fmc.updateSideButtonActiveStatus();
     }
 
@@ -1054,8 +1151,8 @@ class CJ4_FMC_InitRefIndexPage {
             ["", "", "MODIFIED BY:[blue]"],
             ["", "", "Working Title MSFS Mods[green]"],
             [""],
-            ["github.com/Working-Title-MSFS-Mods[white s-text]"],
-            [""],
+            ["github.com/[white s-text]"],
+            ["Working-Title-MSFS-Mods[white s-text]"],
             [""],
             [" VERSION[blue]"],
             ["0.2.1[s-text white]"],
