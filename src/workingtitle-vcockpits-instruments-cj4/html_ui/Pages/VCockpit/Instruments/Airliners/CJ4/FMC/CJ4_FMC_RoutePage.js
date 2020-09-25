@@ -218,7 +218,7 @@ class CJ4_FMC_RoutePage {
         let modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
         fmc._templateRenderer.setTemplateRaw([
-            [" " + modStr + " FPLN[blue]", "1/" + pageCount.toFixed(0) + "[blue]", ""],
+            [" " + modStr + " FPLN[blue]", "1/2 [blue]"],
             [" ORIGIN[blue]", "DEST[blue] ", "DIST[blue]"],
             [originCell, destinationCell, distanceCell],
             [" ROUTE[blue]", "ALTN[blue] "],
@@ -228,7 +228,7 @@ class CJ4_FMC_RoutePage {
             [" VIA[blue]", "TO[blue] "],
             rows[0],
             ["----------------[blue]", "FLT NO[blue] "],
-            ["<COPY ACTIVE", flightNoCell],
+            ["", flightNoCell],
             [""],
             [lsk6Field, activateCell]
         ]);
@@ -239,7 +239,7 @@ class CJ4_FMC_RoutePage {
     }
     static ShowPage2(fmc, offset = 0, pendingAirway) {
         fmc.clearDisplay();
-        let rows = [["----"], [""], [""], [""], [""]];
+        let rows = [["-----"], [""], [""], [""], [""]];
         let allRows = CJ4_FMC_RoutePage._GetAllRows(fmc);
         allRows.rows.shift();
         allRows.waypoints.shift();
@@ -367,10 +367,11 @@ class CJ4_FMC_RoutePage {
 
         //end of CWB edited activation and exec handling
 
+        let modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
-        fmc.setTemplate([
-            ["RTE 1" + "[color]blue", page.toFixed(0), pageCount.toFixed(0)],
-            ["VIA" + "[color]blue", "TO" + "[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" " + modStr + " FPLN[blue]", "2/2 [blue]"],
+            [""],
             rows[0],
             [""],
             rows[1],
@@ -380,7 +381,7 @@ class CJ4_FMC_RoutePage {
             rows[3],
             [""],
             rows[4],
-            [""],
+            ["-----------------------[blue]"],
             [lsk6Field, activateCell]
         ]);
         fmc.onPrevPage = () => {
