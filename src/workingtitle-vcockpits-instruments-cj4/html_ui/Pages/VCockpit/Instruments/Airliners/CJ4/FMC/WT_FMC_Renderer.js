@@ -13,6 +13,7 @@ class WT_FMC_Renderer {
         this._fmc.setLine = this.setLine;
         this._fmc.legacyOnEvent = fmc.onEvent;
         this._fmc.onEvent = this.onEvent;
+        this._fmc.showErrorMessage = this.showErrorMessage;
         // this._fmc.clearDisplay = this.clearDisplay.bind(fmc); // only for prototype
 
         // bind own methods to fmc
@@ -184,6 +185,11 @@ class WT_FMC_Renderer {
         } else {
             this.hideExec(row);
         }
+    }
+
+    showErrorMessage(message) {
+        this.isDisplayingErrorMessage = true;
+        this.inOut = message;
     }
 
     setMsg() {
