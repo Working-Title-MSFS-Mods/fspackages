@@ -57,6 +57,14 @@
 			</Flags>
 			<AssetDir>docs\workingtitle-g1000</AssetDir>
 			<OutputDir>.\</OutputDir>
-		</AssetGroup>  		   
+		</AssetGroup>
+        <AssetGroup Name="workingtitle-base-ui-pages">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-base-ui-pages</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>
 	</AssetGroups>
 </AssetPackage>

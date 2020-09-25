@@ -122,22 +122,26 @@ class AircraftATCOptionsElement extends TemplateElement {
             this.m_gameFlightListener.requestGameFlight(this.onGameFlightUpdated);
         };
         this.onGameFlightUpdated = (flight) => {
-            this.m_tailNumber.value = flight.aircraftData.tailNumber;
-            this.m_flightNumber.value = flight.aircraftData.flightNumber;
-            this.m_callSign.value = flight.aircraftData.callSign;
+            this.aircraftName = flight.aircraftData.name;
+            this.m_tailNumber.value = this.getStored(flight.aircraftData, 'tailNumber');
+            this.m_flightNumber.value = this.getStored(flight.aircraftData, 'flightNumber');
+            this.m_callSign.value = this.getStored(flight.aircraftData, 'callSign');
             this.m_heavyCall.setCurrentValue(flight.aircraftData.appendHeavy ? 1 : 0);
             this.m_showTailNumber.setCurrentValue(flight.aircraftData.showTailNumber ? 1 : 0);
         };
         this.onTailNumberChange = () => {
             let value = this.m_tailNumber.inputValue;
+            SetStoredData(`${this.aircraftName}.tailNumber`, value);
             this.m_gameFlightListener.setAircraftTailNumber(value);
         };
         this.onCallSignChange = () => {
             let value = this.m_callSign.inputValue;
+            SetStoredData(`${this.aircraftName}.callSign`, value);
             this.m_gameFlightListener.setAircraftCallSign(value);
         };
         this.onFlightNumberChange = () => {
             let value = this.m_flightNumber.inputValue;
+            SetStoredData(`${this.aircraftName}.flightNumber`, value);
             this.m_gameFlightListener.setAircraftFlightNumber(value);
         };
         this.onAppendHeavyChange = () => {
@@ -166,6 +170,27 @@ class AircraftATCOptionsElement extends TemplateElement {
         if (!this.m_gameFlightListener)
             this.m_gameFlightListener = RegisterGameFlightListener(this.onListenerRegistered);
         this.m_gameFlightListener.onGameFlightUpdated(this.onGameFlightUpdated);
+    }
+    getStored(aircraftData, field) {
+        if (aircraftData[field] == "") {
+            let tmp = GetStoredData(`${this.aircraftName}.${field}`);
+            if (tmp != null && tmp != "") {
+                switch (field) {
+                    case 'tailNumber':
+                        this.m_gameFlightListener.setAircraftTailNumber(tmp);
+                        break;
+                    case 'callSign':
+                        this.m_gameFlightListener.setAircraftCallSign(tmp);
+                        break;
+                    case 'flightNumber':
+                        this.m_gameFlightListener.setAircraftFlightNumber(tmp);
+                        break;
+                }
+                return tmp;
+            }
+            return "";
+        }
+        return aircraftData[field];
     }
 }
 window.customElements.define("aircraft-atc", AircraftATCOptionsElement);
