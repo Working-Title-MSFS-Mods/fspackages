@@ -323,7 +323,7 @@ class CJ4_FMC_InitRefIndexPage {
                 [hourspad + ":" + minutesspad + "[s-text]", month + "/" + day + "/" + year + "[s-text]", "GPS 1[blue]"],
                 [""],
                 [" LATITUDE[s-text]", "LONGITUDE[s-text] "],
-                [currLat + "[color]green", currLon + "[color]green"],
+                [currLat + "[green]", currLon + "[green]"],
                 [""],
                 //["   TRACK ANGLE[s-text text-right]", Math.round(SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degrees")) + "°" + "[s-text text-left green]"],
                 //["  GROUND SPEED[s-text text-right]", Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")) + "[s-text text-left green]"],
