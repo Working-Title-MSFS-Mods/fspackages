@@ -777,10 +777,13 @@ class AS1000_MFD_WindData extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        var wind = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree"), 0);
-        if (wind != this.windValue) {
-            this.svg.setAttribute("wind-direction", wind);
-            this.windValue = wind;
+        let wind = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree");
+        let heading = this.gps.trackup ? SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree") : 0;
+        let adjusted = ((wind + 180) % 360 - heading).toString();
+        if (adjusted != this.windValue) {
+            console.log(`R: ${wind} TU: ${this.gps.trackup} HDG: ${heading} ADJ: ${adjusted}`)
+            this.svg.setAttribute("wind-direction", adjusted);
+            this.windValue = adjusted;
         }
         var strength = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), 0);
         if (strength != this.strengthValue) {
