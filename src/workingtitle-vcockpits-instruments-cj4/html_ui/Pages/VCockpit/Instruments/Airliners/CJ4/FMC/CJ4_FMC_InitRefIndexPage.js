@@ -196,6 +196,35 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PosInitPage.ShowPage1(fmc); };
+        fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage32(fmc); };
+        fmc.updateSideButtonActiveStatus();
+    }
+    static ShowPage32(fmc) { //STATUS 2
+        fmc.clearDisplay();
+        let model = SimVar.GetSimVarValue("ATC MODEL", "string", "FMC");
+        if (!model) {
+            model = "unkn.";
+        }
+        [" MODEL[blue]", "ENGINES [blue]"],
+        ["525C-001", "FJ44-4A"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "IDENT[blue]"],
+            [" MODEL[blue]", "VARIANT [blue]"],
+            ["525C-001", "CJ4"],
+            [" MTOW[blue]", "ENGINES [blue]"],
+            ["17110 LB", "FJ44-4A"],
+            [""],
+            [""],
+            [" VSPD DATA BASE[blue]"],
+            ["096-0891-003"],
+            [""],
+            [""],
+            ["--------------------------[blue]"],
+            ["<INDEX", "POS INIT>"]
+        ]);
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_PosInitPage.ShowPage1(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage5(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage6(fmc) { //VOR CTL
