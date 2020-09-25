@@ -11,7 +11,7 @@ class AS1000_MFD extends BaseAS1000 {
         Include.addScript("/JS/debug.js", function () {
             g_modDebugMgr.AddConsole(null);
         });
-        this.trackup = false;
+        this.loadSavedMapOrientation();
         this.pagesContainer = this.getChildById("RightInfos");
         this.engineDisplay = new Engine("Engine", "LeftInfos");
         this.addIndependentElementContainer(this.engineDisplay);
@@ -112,10 +112,20 @@ class AS1000_MFD extends BaseAS1000 {
         SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
     }
 
+    loadSavedMapOrientation() {
+        let state = PersistVar.get("MFD.TrackUp", false);
+        this.setMapOrientation(state);
+    }
+
     toggleMapOrientation() {
         let newValue = !SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean");
-        SimVar.SetSimVarValue("L:GPS_TRACK_UP", "boolean", newValue);
-        this.trackup = newValue;
+        this.setMapOrientation(newValue)
+    }
+
+    setMapOrientation(state) {
+        PersistVar.set("MFD.TrackUp", state);
+        SimVar.SetSimVarValue("L:GPS_TRACK_UP", "boolean", state);
+        this.trackup = state;
     }
 }
 class AS1000_MFD_NavStatus extends NavSystemElement {

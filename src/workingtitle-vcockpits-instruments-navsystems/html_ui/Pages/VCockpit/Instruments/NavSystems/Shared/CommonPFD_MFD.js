@@ -18,8 +18,9 @@ class PersistVar {
         var storeKey = `${SimVar.GetSimVarValue("ATC MODEL", "string")}.${key}`;
         try {
             var stringValue = GetStoredData(storeKey);
-            if (stringValue == null || stringValue == "")
+            if (stringValue == null || stringValue == "") {
                 return defaultValue;
+            }
         } catch (e) {
             return defaultValue;
         }
@@ -29,7 +30,11 @@ class PersistVar {
             case "number":
                 return Number(stringValue);
             case "boolean":
-                return Boolean(stringValue);
+                // Unfortunately, Boolean("false") is true.
+                if (stringValue == "false") {
+                    return false
+                }
+                return true;
         }
         return defaultValue;
     }
