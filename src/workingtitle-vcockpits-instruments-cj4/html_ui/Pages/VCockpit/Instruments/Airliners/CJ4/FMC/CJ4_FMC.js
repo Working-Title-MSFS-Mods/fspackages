@@ -216,7 +216,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
     setMsg(value = ""){
         this._msg = value;
-        this._templateRenderer.setMsg();
+        this._templateRenderer.setMsg(value);
     }
 
     clearDisplay() {
