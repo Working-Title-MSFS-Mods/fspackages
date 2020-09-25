@@ -117,6 +117,7 @@ class WT_FMC_Renderer {
         cnt.forEach(x => {
             let letters = x.textContent.split("");
             (letters).forEach(c => {
+                if (ci > 23) return; // no break in js, wtf
                 row.childNodes[ci].childNodes[0].classList.add(...x.classList);
                 row.childNodes[ci].childNodes[0].textContent = c;
                 ci++;
