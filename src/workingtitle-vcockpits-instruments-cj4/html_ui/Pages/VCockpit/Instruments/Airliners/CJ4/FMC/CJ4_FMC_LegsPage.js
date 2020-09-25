@@ -184,11 +184,11 @@ class CJ4_FMC_LegsPage {
 
         let modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
-        fmc.setTemplate([
-            [modStr + " LEGS[blue]", "", "", currentPage.toFixed(0), Math.max(1, pageCount.toFixed(0))],
+        fmc._templateRenderer.setTemplateRaw([
+            [" " + modStr + " LEGS[blue]", currentPage.toFixed(0) + "/" + Math.max(1, pageCount.toFixed(0)) + " [blue]"],
             ...rows,
             ["-------------------------"],
-            ["<RTE 2 LEGS", isMapModePlan ? "STEP>" : "RTE DATA>"]
+            ["", isMapModePlan ? "STEP>" : "RTE DATA>"]
         ]);
 
         fmc.refreshPageCallback = () => {
