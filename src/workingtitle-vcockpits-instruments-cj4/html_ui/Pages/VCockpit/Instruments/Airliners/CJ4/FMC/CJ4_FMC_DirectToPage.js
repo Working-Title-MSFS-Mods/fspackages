@@ -8,7 +8,8 @@ class CJ4_FMC_DirectToPage {
      */
     static ShowPage(fmc, directWaypoint, wptsListIndex = 0) {
         fmc.clearDisplay();
-        let directWaypointCell = " ";
+        let directWaypointCell = "-----";
+        let modStr = "ACT[blue]";
         if (directWaypoint) {
             directWaypointCell = directWaypoint.ident;
         }
@@ -32,7 +33,7 @@ class CJ4_FMC_DirectToPage {
         //Get total count of waypoints, including arrival and approach waypoints
         let approachWaypointsCount = fmc.flightPlanManager.getApproachWaypoints().length;
         let waypointsCount = fmc.flightPlanManager.getWaypointsCount() + approachWaypointsCount;
-
+        
         //temporary
         console.log("idx:" + fmc.flightPlanManager.getActiveWaypointIndex());
         console.log("wpts:" + fmc.flightPlanManager.getWaypointsCount());
@@ -47,7 +48,7 @@ class CJ4_FMC_DirectToPage {
         while (i < waypoints.length && i + wptsListIndex < waypoints.length && i < iMax) {
             let waypoint = waypoints[i + wptsListIndex];
             if (waypoint) {
-                waypointsCell[i] = "←" + waypoint.ident + "[color]blue";
+                waypointsCell[i] = "<" + waypoint.ident + "[color]blue";
                 if (waypointsCell[i]) {
                     fmc.onLeftInput[i + 1] = () => {
                         fmc.fpHasChanged = true;
@@ -56,7 +57,7 @@ class CJ4_FMC_DirectToPage {
                 }
             }
             else {
-                waypointsCell[i] = "----";
+                waypointsCell[i] = "-----";
             }
             i++;
         }
@@ -77,12 +78,12 @@ class CJ4_FMC_DirectToPage {
 
             fmc.onExecPage = () => {
                 fmc.refreshPageCallback = () => {
-                    fmc.messageBox.innerHTML = "";
+                    fmc.setMsg("");
                     fmc.fpHasChanged = false;
                     console.log("refreshcallback running -> legs page");
                     fmc.onLegs();
                 };
-                fmc.messageBox.innerHTML = "Working . . .";
+                fmc.setMsg("Working . . .");
                 fmc._activatingDirectTo = true;
                 console.log("_activatingDirectTo = true: " + fmc._activatingDirectTo);
 
@@ -127,27 +128,28 @@ class CJ4_FMC_DirectToPage {
         fmc.onRightInput[5] = () => {
             if (activateLine == "CANCEL DTO>") {
                 if (directWaypoint) {
-                    directWaypointCell = " ";
+                    directWaypointCell = "-----";
                     fmc.fpHasChanged = false;
-                    fmc.messageBox.innerHTML = "";
+                    fmc.setMsg("");
                     CJ4_FMC_DirectToPage.ShowPage(fmc);
                 }
             }
         };
 
         // __LSB = leftsquarebracket // __RSB = rightsquarebrackt
+        modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
         fmc._templateRenderer.setTemplateRaw([
-            ["", "", "DIR TO[blue]"],
-            ["WAYPOINT", "DIST", "UTC"],
-            ["__LSB" + directWaypointCell + "__RSB[blue]", "---", "----"],
-            ["F-PLN WPTS"],
-            [waypointsCell[0], "DIRECT TO[blue]"],
-            ["", "WITH"],
-            [waypointsCell[1], "ABEAM PTS[blue]"],
-            ["", "RADIAL IN"],
-            [waypointsCell[2], "__LSB __RSB°[blue]"],
-            ["", "RADIAL OUT"],
-            [waypointsCell[3], "__LSB __RSB°[blue]"],
+            [" " + modStr + " DIRECT-TO[blue]", "1/1[blue]", ""],
+            [""],
+            ["<" + directWaypointCell, "NEAREST APTS>",],
+            [""],
+            [waypointsCell[0]],
+            [""],
+            [waypointsCell[1]],
+            [""],
+            [waypointsCell[2]],
+            [""],
+            [waypointsCell[3]],
             [""],
             [waypointsCell[4], activateLine]
         ]);
