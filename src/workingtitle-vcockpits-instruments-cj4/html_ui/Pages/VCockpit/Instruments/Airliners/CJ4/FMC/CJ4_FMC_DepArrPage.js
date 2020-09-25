@@ -23,7 +23,7 @@ class CJ4_FMC_DepArrPage {
             rowOrigin,
             [""],
             rowDestination,
-            [""],
+            ["", "", "SEC FPLN[blue s-text]"],
             [""],
             [""],
             [""],
@@ -185,12 +185,13 @@ class CJ4_FMC_DepArrPage {
             fmc.refreshPageCallback = () => fmc.onDepArr();
         };
         //end of CWB EXEC handling
+        modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
-        fmc.setTemplate([
-            [originIdent + " DEPARTURES", currentPage.toFixed(0), pageCount.toFixed(0)],
-            ["DEPARTURES" + "[color]blue", "RUNWAYS" + "[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" " + modStr + originIdent + " DEPART", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
+            [" DEPARTURES[blue]", "RUNWAYS [blue]"],
             ...rows,
-            ["----------------" + "[color]blue"],
+            ["-----------------------[blue]"],
             ["<DEP/ARR IDX", rsk6Field]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowPage1(fmc); };
@@ -397,13 +398,13 @@ class CJ4_FMC_DepArrPage {
             fmc.refreshPageCallback = () => fmc.onDepArr();
         };
         //end of CWB EXEC handling
+        modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
-
-        fmc.setTemplate([
-            [destinationIdent + " ARRIVALS", currentPage.toFixed(0), pageCount.toFixed(0)],
-            ["STARS" + "[color]blue", "APPROACHES" + "[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" " + modStr + destinationIdent + " ARRIVAL", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
+            [" STARS[blue]", "APPROACHES [blue]"],
             ...rows,
-            ["----------------" + "[color]blue"],
+            ["-----------------------[blue]"],
             ["<DEP/ARR IDX", rsk6Field]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowPage1(fmc); };
