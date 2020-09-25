@@ -91,7 +91,6 @@ class CJ4_FMC_TakeoffRefPage {
             { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         }
         fmc.onRightInput[2] = () => {
-
             let qnh = Number(fmc.inOut);
             if (qnh !== NaN && qnh > 28 && qnh < 34) {
                 fmc.takeoffQnh = qnh.toFixed(2);
@@ -101,7 +100,6 @@ class CJ4_FMC_TakeoffRefPage {
             else {
                 fmc.showErrorMessage("INVALID");
             }
-
             CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);
         }
         fmc.onLeftInput[4] = () => {
@@ -113,7 +111,7 @@ class CJ4_FMC_TakeoffRefPage {
             depRunwayConditionActive = fmc.depRunwayCondition == 0 ? "DRY"
                 : "WET";
             fmc.clearUserInput();
-            { CJ4_FMC_PerfInitPage.ShowPage6(fmc); };
+            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         }
 
         fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage3(fmc); };
