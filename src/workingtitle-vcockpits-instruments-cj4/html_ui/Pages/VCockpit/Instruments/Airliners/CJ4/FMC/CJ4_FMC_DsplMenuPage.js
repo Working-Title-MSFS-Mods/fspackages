@@ -1,10 +1,10 @@
 class CJ4_FMC_DsplMenuPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["", "", "LEFT DISPLAY MENU[blue]", 1, 2],
-            ["", "", "MAP DISPLAY[blue]"],
-            ["NEAREST APTS", "ETA"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" LEFT DISPLAY MENU[blue]", "1/2 [blue]"],
+            ["", "", "MFD MAP DISPLAY[blue]"],
+            ["NEAREST APTS[s-text]", "ETA[s-text]"],
             [""],
             ["HI NAVAIDS[green]", "SPEED"],
             [""],
@@ -22,19 +22,19 @@ class CJ4_FMC_DsplMenuPage {
     }
     static ShowPage2(fmc) {
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["", "", "LEFT DISPLAY MENU[blue]", 2, 2],
-            ["", "", "MAP DISPLAY[blue]"],
-            ["NDBS"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" LEFT DISPLAY MENU[blue]", "2/2 [blue]"],
+            ["", "", "MFD MAP DISPLAY[blue s-text]"],
+            ["MISS APPR[s-text]"],
+            [""],
+            ["NDBS[s-text]"],
             [""],
             ["RNG: ALT SEL[green]"],
             [""],
             ["GNSS POS[green]"],
-            [""],
-            ["ALTN FPLN"],
-            [""],
-            [""],
-            ["", "SIDE[blue]"],
+            ["", "DISPLAY [blue s-text]"],
+            ["ALTN FPLN[s-text]", "MFD[green]/[white]PFD>[s-text white]"],
+            ["", "SIDE [blue s-text]"],
             ["", "L[green]/[white]R[s-text]>"]
         ]);
         fmc.onPrevPage = () => { CJ4_FMC_DsplMenuPage.ShowPage1(fmc); };
