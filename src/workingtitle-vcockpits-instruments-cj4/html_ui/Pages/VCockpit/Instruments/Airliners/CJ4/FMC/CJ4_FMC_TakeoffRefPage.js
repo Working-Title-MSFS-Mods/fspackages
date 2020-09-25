@@ -73,7 +73,7 @@ class CJ4_FMC_TakeoffRefPage {
             ["RWY LENGTH[blue]", "QNH[blue]"],
             [Math.round(depRunwayLength) + " FT", fmc.takeoffQnh + ""],
             ["RWY SLOPE[blue]", "P ALT[blue]"],
-            ["0", fmc.takeoffPressAlt + " FT"],
+            ["--.-%", fmc.takeoffPressAlt + " FT"],
             ["RWY COND[blue]"],
             [depRunwayConditionActive],
             [""],
@@ -206,7 +206,7 @@ class CJ4_FMC_TakeoffRefPage {
             }
         }
         let takeoffFlapsActive = fmc.takeoffFlaps == 15 ? "0[s-text]/[white]15[green]"
-            : "0";
+            : "0[green]/[white]15[s-text]";
         let takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
             : "OFF[s-text]/[white]ON[green]";
 

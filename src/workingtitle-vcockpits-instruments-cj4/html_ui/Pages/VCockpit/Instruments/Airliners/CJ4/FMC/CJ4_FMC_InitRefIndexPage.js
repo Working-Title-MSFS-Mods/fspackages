@@ -79,7 +79,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""]
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-        fmc.onLeftInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage28(fmc); };
+        fmc.onLeftInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage30(fmc); };
         fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage9(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
@@ -611,7 +611,7 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage18(fmc, databaseWaypoint) { //DATABASE INITIAL
         fmc.clearDisplay();
 
-        let databaseIdentCell = " ";
+        let databaseIdentCell = "□□□□□";
         let databaseWaypointType = "";
 
         if (databaseWaypoint) {
@@ -626,7 +626,21 @@ class CJ4_FMC_InitRefIndexPage {
             fmc.clearUserInput();
             fmc.getOrSelectWaypointByIdent(value, (w) => {
                 if (w) {
-                    CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, w);
+                    if (w.icao.slice(0, 1) == "A") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "V") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "W") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
+                    }
+                    else if (w.icao.slice(0, 1) == "N") {
+                        CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
+                    } 
+                }
+                else {
+                    CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
                 }
             });
         };
@@ -634,35 +648,19 @@ class CJ4_FMC_InitRefIndexPage {
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "DATA BASE[blue]"],
             [" IDENT[blue]"],
-            ["□□□□□"],
+            [databaseIdentCell],
             [" LOCATION[blue]"],
-            ["<" + databaseIdentCell + ""],
             [""],
             [""],
             [""],
             [""],
-            ["-----------------------[blue]", "PILOT "],
+            [""],
+            ["-----------------------[blue]", "PILOT[s-text] "],
             ["", "WPT LIST>"],
             [""],
             ["<INDEX", "DEFINE WPT>"]
         ]);
 
-        fmc.onLeftInput[1] = () => {
-            fmc.clearUserInput();
-            if (databaseWaypointType == "A") {
-                CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, databaseWaypoint)
-            }
-            else if (databaseWaypointType == "V") {
-                CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, databaseWaypoint)
-            }
-            else if (databaseWaypointType == "W") {
-                CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, databaseWaypoint)
-            }
-            else if (databaseWaypointType == "N") {
-                CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, databaseWaypoint)
-            }
-
-        };
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
