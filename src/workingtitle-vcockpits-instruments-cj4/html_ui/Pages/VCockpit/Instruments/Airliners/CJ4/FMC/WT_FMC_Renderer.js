@@ -176,7 +176,12 @@ class WT_FMC_Renderer {
     }
 
     renderMsgLineRaw(row) {
-        // row.style.marginTop = "-1%";
+        // clear everything (TODO: could be better)
+        row.childNodes.forEach(n => {
+            n.childNodes[0].textContent = "";
+        });
+
+        // render
         this.renderLetters(this._fmc._msg, row);
 
         // i don't really like to "bind" this here, but its ok for now
@@ -189,10 +194,11 @@ class WT_FMC_Renderer {
 
     showErrorMessage(message) {
         this.isDisplayingErrorMessage = true;
-        this.inOut = message;
+        this._templateRenderer.setMsg(message);
     }
 
-    setMsg() {
+    setMsg(msg) {
+        this._fmc._msg = msg;
         this.renderMsgLineRaw(this.getTRow(14));
     }
 
