@@ -233,8 +233,8 @@ class CJ4_FMC_TakeoffRefPage {
             } else if (fmc.takeoffAntiIce == 1) {
                 fmc.takeoffAntiIce = 0;
             }
-            takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF"
-                : "ON";
+            takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
+            : "OFF[s-text]/[white]ON[green]";
             fmc.clearUserInput();
             { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
         }
