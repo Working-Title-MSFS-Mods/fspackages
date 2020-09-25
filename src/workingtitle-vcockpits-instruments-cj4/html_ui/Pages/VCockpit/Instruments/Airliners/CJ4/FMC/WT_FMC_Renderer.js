@@ -68,7 +68,7 @@ class WT_FMC_Renderer {
             }
 
             // only content
-            if (r < 13) {
+            if (r < 13 && template[r]) {
                 if (template[r][0] !== "") {
                     // LEFT
                     this.renderLetters(template[r][0], row);
