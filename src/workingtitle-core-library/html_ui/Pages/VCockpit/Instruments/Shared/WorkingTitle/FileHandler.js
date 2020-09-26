@@ -19,7 +19,7 @@ class WTConfigLoader {
     loadIni(filename) {
         return new Promise((resolve) => {
             Utils.loadFile(`${this._vfspath}/${filename}`, (text) => {
-                let parser = new IniParser();
+                let parser = new WTIniParser();
                 let out = parser.parse(text);
                 resolve(out);
             });
