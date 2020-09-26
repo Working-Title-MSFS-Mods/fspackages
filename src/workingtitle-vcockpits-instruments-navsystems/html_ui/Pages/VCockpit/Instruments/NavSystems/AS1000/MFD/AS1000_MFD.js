@@ -113,7 +113,7 @@ class AS1000_MFD extends BaseAS1000 {
     }
 
     loadSavedMapOrientation() {
-        let state = PersistVar.get("MFD.TrackUp", false);
+        let state = WTDataStore.get("MFD.TrackUp", false);
         this.setMapOrientation(state);
     }
 
@@ -123,7 +123,7 @@ class AS1000_MFD extends BaseAS1000 {
     }
 
     setMapOrientation(state) {
-        PersistVar.set("MFD.TrackUp", state);
+        WTDataStore.set("MFD.TrackUp", state);
         SimVar.SetSimVarValue("L:GPS_TRACK_UP", "boolean", state);
         this.trackup = state;
     }

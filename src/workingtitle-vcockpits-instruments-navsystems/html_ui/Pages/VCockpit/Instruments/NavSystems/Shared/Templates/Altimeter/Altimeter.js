@@ -1,10 +1,12 @@
+Include.addScript("/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStorage.js")
+
 class Altimeter extends HTMLElement {
     constructor() {
         super();
         this.currentCenterGrad = -10000;
         this.minimumAltitude = NaN;
         this.compactVs = false;
-        this.baroMode = PersistVar.get("Alt.BaroMode", "IN");
+        this.baroMode = WTDataStore.get("Alt.BaroMode", "IN");
         this.lastPressure = "29.92";
     }
     static get observedAttributes() {
@@ -652,7 +654,7 @@ class Altimeter extends HTMLElement {
                     this.baroMode = "IN";
                     this.baroText.textContent = fastToFixed(parseFloat(this.lastPressure), 2) + "IN";
                 }
-                PersistVar.set("Alt.BaroMode", this.baroMode);
+                WTDataStore.set("Alt.BaroMode", this.baroMode);
             case "vspeed":
                 let vSpeed = parseFloat(newValue);
                 if (this.compactVs) {

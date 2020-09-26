@@ -1,3 +1,6 @@
+Include.addScript("/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStorage.js")
+
+
 var HSIndicatorDisplayType;
 (function (HSIndicatorDisplayType) {
     HSIndicatorDisplayType[HSIndicatorDisplayType["GlassCockpit"] = 0] = "GlassCockpit";
@@ -17,13 +20,13 @@ class HSIndicator extends HTMLElement {
         this.sourceIsGps = true;
         this.displayStyle = HSIndicatorDisplayType.GlassCockpit;
         this.fmsAlias = "FMS";
-        this.logic_dmeDisplayed = PersistVar.get("HSI.ShowDme", false);
+        this.logic_dmeDisplayed = WTDataStore.get("HSI.ShowDme", false);
         SimVar.SetSimVarValue("L:PFD_DME_Displayed", "number", this.logic_dmeDisplayed ? 1 : 0);
         this.logic_dmeSource = 1;
         this.logic_cdiSource = 3;
-        this.logic_brg1Source = PersistVar.get("HSI.Brg1Src", 0);
+        this.logic_brg1Source = WTDataStore.get("HSI.Brg1Src", 0);
         SimVar.SetSimVarValue("L:PFD_BRG1_Source", "number", this.logic_brg1Source);
-        this.logic_brg2Source = PersistVar.get("HSI.Brg2Src", 0);
+        this.logic_brg2Source = WTDataStore.get("HSI.Brg2Src", 0);
         SimVar.SetSimVarValue("L:PFD_BRG2_Source", "number", this.logic_brg2Source);
     }
     static get observedAttributes() {
@@ -1192,7 +1195,7 @@ class HSIndicator extends HTMLElement {
             case "SoftKeys_PFD_DME":
                 this.logic_dmeDisplayed = !this.logic_dmeDisplayed;
                 SimVar.SetSimVarValue("L:PFD_DME_Displayed", "number", this.logic_dmeDisplayed ? 1 : 0);
-                PersistVar.set("HSI.ShowDme", this.logic_dmeDisplayed);
+                WTDataStore.set("HSI.ShowDme", this.logic_dmeDisplayed);
                 if (this.logic_dmeDisplayed) {
                     this.setAttribute("show_dme", "true");
                 }
@@ -1204,7 +1207,7 @@ class HSIndicator extends HTMLElement {
             case "BRG1Switch":
                 this.logic_brg1Source = (this.logic_brg1Source + 1) % 5;
                 SimVar.SetSimVarValue("L:PFD_BRG1_Source", "number", this.logic_brg1Source);
-                PersistVar.set("HSI.Brg1Src", this.logic_brg1Source);
+                WTDataStore.set("HSI.Brg1Src", this.logic_brg1Source);
                 if (this.logic_brg1Source == 0) {
                     this.setAttribute("show_bearing1", "false");
                 }
@@ -1216,7 +1219,7 @@ class HSIndicator extends HTMLElement {
             case "BRG2Switch":
                 this.logic_brg2Source = (this.logic_brg2Source + 1) % 5;
                 SimVar.SetSimVarValue("L:PFD_BRG2_Source", "number", this.logic_brg2Source);
-                PersistVar.set("HSI.Brg2Src", this.logic_brg2Source);
+                WTDataStore.set("HSI.Brg2Src", this.logic_brg2Source);
                 if (this.logic_brg2Source == 0) {
                     this.setAttribute("show_bearing2", "false");
                 }

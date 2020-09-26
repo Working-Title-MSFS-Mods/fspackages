@@ -93,7 +93,7 @@ class AS1000_PFD extends BaseAS1000 {
     }
 
     loadSavedBrightness(display) {
-        let brightness = PersistVar.get(`${display}.Brightness`, 100);
+        let brightness = WTDataStore.get(`${display}.Brightness`, 100);
         this.setBrightness(display, brightness);
     }
 
@@ -105,7 +105,7 @@ class AS1000_PFD extends BaseAS1000 {
         }
         // clamp value 0-100
         value = Math.max(Math.min(value, 100), 0);
-        PersistVar.set(`${display}.Brightness`, value);
+        WTDataStore.set(`${display}.Brightness`, value);
         SimVar.SetSimVarValue(lvar, "number", value);
     }
 
