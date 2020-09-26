@@ -37,7 +37,7 @@ class CJ4_FMC_SelectWptPage {
             }
         }
         fmc._templateRenderer.setTemplateRaw([
-            [" WPT SELECT[blue]", (page + 1).toFixed(0) + "/" + (waypoints.length / 5).toFixed(0)] + "[blue] ",
+            [" WPT SELECT[blue]", (page + 1).toFixed(0) + "/" + (waypoints.length / 5).toFixed(0) + "[blue] "],
             ...rows,
             [""]
         ]);
