@@ -36,6 +36,7 @@ class CJ4_FMC_DepArrPage {
     static ShowDeparturePage(fmc, currentPage = 1) {
         fmc.clearDisplay();
         let originIdent = "";
+        let modStr = "ACT[blue]";
         let origin = fmc.flightPlanManager.getOrigin();
         if (origin) {
             originIdent = origin.ident;
