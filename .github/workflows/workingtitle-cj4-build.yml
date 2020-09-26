@@ -18,6 +18,7 @@ jobs:
         with:
           name: workingtitle-cj4
           path: |
-            build/workingtitle-base-aircraft-cj4
+            build/workingtitle-aircraft-cj4
             build/workingtitle-vcockpits-instruments-cj4
+            build/workingtitle-vcockpits-instruments-airliners
           if-no-files-found: error

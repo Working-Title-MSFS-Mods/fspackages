@@ -40,6 +40,7 @@ class CJ4_PFD extends BaseAirliners {
     Init() {
         super.Init();
         this.radioNav.setRADIONAVSource(NavSource.GPS);
+        SimVar.SetSimVarValue("L:WT_CJ4_VAP", "knots", 0);
     }
     Update() {
         super.Update();
@@ -246,8 +247,8 @@ class CJ4_PFD extends BaseAirliners {
             SimVar.SetSimVarValue("L:AIRLINER_VREF_SPEED", "Knots", parseInt(vRef));
             SimVar.SetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool", false);
         }
-        if (parseInt(vApp) != parseInt(SimVar.GetSimVarValue("L:AIRLINER_MANAGED_APPROACH_SPEED", "Knots"))) {
-            SimVar.SetSimVarValue("L:AIRLINER_MANAGED_APPROACH_SPEED", "Knots", parseInt(vApp));
+        if (parseInt(vApp) != parseInt(SimVar.GetSimVarValue("L:WT_CJ4_VAP", "Knots"))) {
+            SimVar.SetSimVarValue("L:WT_CJ4_VAP", "Knots", parseInt(vApp));
             SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", false);
         }
         this.radioSrc1 = _dict.get(CJ4_PopupMenu_Key.BRG_PTR1_SRC);
@@ -305,7 +306,7 @@ class CJ4_PFD extends BaseAirliners {
         let v2 = Simplane.getV2Airspeed().toFixed(0);
         let vT = Simplane.getVXAirspeed().toFixed(0);
         let vRef = Simplane.getREFAirspeed().toFixed(0);
-        let vApp = SimVar.GetSimVarValue("L:AIRLINER_MANAGED_APPROACH_SPEED", "Knots").toFixed(0);
+        let vApp = SimVar.GetSimVarValue("L:WT_CJ4_VAP", "Knots").toFixed(0);
         _dict.set(CJ4_PopupMenu_Key.VSPEED_V1, v1);
         _dict.set(CJ4_PopupMenu_Key.VSPEED_VR, vR);
         _dict.set(CJ4_PopupMenu_Key.VSPEED_V2, v2);

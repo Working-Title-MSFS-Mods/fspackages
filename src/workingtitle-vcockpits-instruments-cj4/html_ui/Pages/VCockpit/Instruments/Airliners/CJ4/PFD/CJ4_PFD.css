@@ -1,0 +1,555 @@
+﻿:root {
+  --bodyHeightScale: 1; }
+
+@keyframes TemporaryShow {
+  0%, 100% {
+    visibility: visible; } }
+
+@keyframes TemporaryHide {
+  0%, 100% {
+    visibility: hidden; } }
+
+#highlight {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 10; }
+
+#Electricity {
+  width: 100%;
+  height: 100%; }
+  #Electricity[state=off] {
+    display: none; }
+
+@font-face {
+  font-family: "Roboto";
+  src: url("/Fonts/RobotoMono-Medium.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Roboto-Light";
+  src: url("/Fonts/RobotoMono-Light.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Roboto-Bold";
+  src: url("/Fonts/RobotoMono-Bold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Collins ProLine";
+  src: url("/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/CollinsProLine-LightCondensed.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+svg text {
+  font-family: 'Collins ProLine';
+}
+
+cj4-pfd-element {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  font-family: 'Collins ProLine';
+  position: relative;
+  overflow: hidden;
+  z-index: -10; }
+  cj4-pfd-element #Electricity {
+    width: 100%;
+    height: 100%; }
+    cj4-pfd-element #Electricity[state=off] {
+      display: none; }
+  cj4-pfd-element #Mainframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative; }
+    cj4-pfd-element #Mainframe #PFD {
+      position: absolute;
+      top: 0%;
+      left: 0%;
+      width: 100%;
+      height: 45%; }
+      cj4-pfd-element #Mainframe #PFD #HorizonContainer {
+        transform: rotateX(0);
+        position: absolute;
+        top: 0%;
+        width: 100%;
+        height: 100%;
+        border: none;
+        overflow: hidden; }
+        cj4-pfd-element #Mainframe #PFD #HorizonContainer #Horizon {
+          position: absolute;
+          left: 24%;
+          top: 28%;
+          width: 50%;
+          height: 41%;
+          border: none; }
+      cj4-pfd-element #Mainframe #PFD #InstrumentsContainer {
+        transform: rotateX(0);
+        width: 100%;
+        height: 100%; }
+        cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #Altimeter {
+          transform: rotateX(0);
+          position: absolute;
+          top: 8%;
+          left: 76.4%;
+          width: 28%;
+          height: 100%; }
+        cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #Airspeed {
+          transform: rotateX(0);
+          position: absolute;
+          top: 8%;
+          left: 7.95%;
+          width: 28%;
+          height: 100%; }
+        cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #VSpeed {
+          transform: rotateX(0);
+          position: absolute;
+          border: none;
+          top: 8%;
+          left: 92%;
+          width: 28%;
+          height: 100%; }
+        cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AOA {
+          transform: rotateX(0);
+          position: absolute;
+          border: none;
+          top: 8%;
+          left: 0%;
+          width: 28%;
+          height: 100%; }
+        cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #ILS {
+          transform: rotateX(0);
+          position: absolute;
+          border: none;
+          top: 0%;
+          left: 0%;
+          width: 100%;
+          height: 100%; }
+        cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos {
+          position: absolute;
+          width: 40vh;
+          height: 8%;
+          top: 0%;
+          left: calc(50% - 20vh); }
+          cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos #AutopilotBg {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: black;
+            opacity: 0.5; }
+          cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left {
+            position: absolute;
+            width: 24%;
+            height: 100%;
+            left: 0%;
+            top: 0%; }
+            cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #AP_LateralActive {
+              position: absolute;
+              width: 100%;
+              color: green;
+              font-size: 1.5vh;
+              top: 1%;
+              text-align: center; }
+            cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #AP_LateralArmed {
+              position: absolute;
+              width: 100%;
+              color: white;
+              font-size: 1.25vh;
+              bottom: 8%;
+              text-align: center; }
+          cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center {
+            width: 24%;
+            height: 100%;
+            position: absolute;
+            left: 25%;
+            top: 0%; }
+            cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_Status {
+              position: absolute;
+              width: 50%;
+              color: green;
+              font-size: 1.5vh;
+              top: 1%;
+              left: 0%;
+              text-align: center; }
+            cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_YDStatus {
+              position: absolute;
+              width: 50%;
+              color: green;
+              font-size: 1.5vh;
+              top: 1%;
+              right: 0%;
+              text-align: center; }
+            cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow {
+              position: absolute;
+              width: 30%;
+              left: 35%;
+              bottom: 5%; }
+              cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow[state=Inactive] {
+                display: none; }
+          cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right {
+            width: 52%;
+            height: 100%;
+            position: absolute;
+            right: 0%;
+            top: 0%; }
+            cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_VerticalActive {
+              position: absolute;
+              width: 50%;
+              color: green;
+              font-size: 1.5vh;
+              top: 1%;
+              left: 0%;
+              text-align: center; }
+            cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference {
+              position: absolute;
+              width: 50%;
+              color: green;
+              font-size: 1.25vh;
+              top: 1%;
+              right: 0%;
+              text-align: center; }
+            cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_Armed {
+              position: absolute;
+              width: 50%;
+              color: white;
+              font-size: 1.25vh;
+              bottom: 8%;
+              left: 0%;
+              text-align: center; }
+            cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ArmedReference {
+              position: absolute;
+              width: 50%;
+              color: white;
+              font-size: 1.25vh;
+              bottom: 8%;
+              right: 0%;
+              text-align: center; }
+      cj4-pfd-element #Mainframe #PFD[visible=false] {
+        display: none; }
+    cj4-pfd-element #Mainframe #SystemInfos {
+      left: 0%;
+      top: 0%;
+      width: 100%;
+      height: 22.5%;
+      position: absolute;
+      background-color: black; }
+      cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations {
+        top: 5%;
+        left: 4%;
+        width: 95%;
+        height: 95%;
+        position: relative;
+        display: none; }
+        cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations div {
+          font-size: 1.8vh;
+          text-align: left;
+          margin-right: 15px;
+          margin-bottom: 1px; }
+        cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations .Warning, cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations .Warning_Blink {
+          color: red; }
+        cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations .Caution, cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations .Caution_Blink {
+          color: yellow; }
+        cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations[state=Blink] .Warning_Blink {
+          color: white;
+          background-color: red; }
+        cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations[state=Blink] .Caution_Blink {
+          color: black;
+          background-color: yellow; }
+      cj4-pfd-element #Mainframe #SystemInfos[page=electrics] #SystemElectrics {
+        display: block; }
+      cj4-pfd-element #Mainframe #SystemInfos[page=electrics] #SystemFMS,
+      cj4-pfd-element #Mainframe #SystemInfos[page=electrics] #SystemAnnunciations {
+        display: none; }
+      cj4-pfd-element #Mainframe #SystemInfos[page=fms] #SystemFMS {
+        display: block; }
+      cj4-pfd-element #Mainframe #SystemInfos[page=fms] #SystemElectrics,
+      cj4-pfd-element #Mainframe #SystemInfos[page=fms] #SystemAnnunciations {
+        display: none; }
+      cj4-pfd-element #Mainframe #SystemInfos[page=annunciations] #SystemAnnunciations {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap; }
+      cj4-pfd-element #Mainframe #SystemInfos[page=annunciations] #SystemElectrics,
+      cj4-pfd-element #Mainframe #SystemInfos[page=annunciations] #SystemFMS {
+        display: none; }
+      cj4-pfd-element #Mainframe #SystemInfos[visible=false] {
+        display: none; }
+    cj4-pfd-element #Mainframe #NDMap {
+      position: absolute;
+      top: 23%;
+      left: 0%;
+      width: 100%;
+      height: 100%;
+      display: block;
+      background-color: black;
+      z-index: -2;
+      /* Map position (left and top) is set in mapConfig.json file (see SvgMapConfig.ts) (makes it editable at runtime) */
+      /* Map position (left and top) is set in mapConfig.json file (see SvgMapConfig.ts) (makes it editable at runtime) */ }
+      cj4-pfd-element #Mainframe #NDMap #MapOrientation {
+        position: absolute;
+        top: 0%;
+        right: 0%;
+        width: 10%;
+        height: calc( 3 * 1vh * var(--bodyHeightScale));
+        background-color: #1a1d21;
+        color: white; }
+      cj4-pfd-element #Mainframe #NDMap #WindData {
+        position: absolute;
+        top: 0%;
+        width: 7%;
+        right: 10%; }
+      cj4-pfd-element #Mainframe #NDMap #MapRange {
+        position: absolute;
+        bottom: 0%;
+        right: 0%;
+        width: 7%;
+        height: calc( 3 * 1vh * var(--bodyHeightScale));
+        background-color: #1a1d21;
+        color: #36c8d2; }
+      cj4-pfd-element #Mainframe #NDMap #MapSVG, cj4-pfd-element #Mainframe #NDMap #road-network-canvas {
+        transform: rotateX(0);
+        position: absolute; }
+      cj4-pfd-element #Mainframe #NDMap bing-map {
+        transform: rotateX(0);
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%; }
+      cj4-pfd-element #Mainframe #NDMap[extended=on] {
+        top: 13%; }
+    cj4-pfd-element #Mainframe #NDMapOverlay {
+      position: absolute;
+      top: 45%;
+      left: 0;
+      width: 100%;
+      height: 55%;
+      z-index: -1; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDCompass {
+        transform: rotateX(0);
+        position: absolute;
+        border: none;
+        left: 0%;
+        top: 0%;
+        width: 100%;
+        height: 100%; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #ModeChangeMask {
+        top: 0%;
+        left: 0%;
+        width: 100%;
+        height: 100%;
+        display: none;
+        position: absolute;
+        background-color: black; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #LeftMask {
+        position: absolute;
+        background-color: black;
+        top: -40%;
+        left: 0%;
+        width: 15%;
+        height: 160%; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #RightMask {
+        position: absolute;
+        background-color: black;
+        top: -40%;
+        right: 0%;
+        width: 15%;
+        height: 160%; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo[masks=off] #LeftMask,
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo[masks=off] #RightMask {
+        display: none; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox {
+        top: 2%;
+        left: 2%;
+        width: 96%;
+        height: 96%;
+        position: absolute; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox #Speed {
+          top: 75%;
+          left: 0%;
+          width: 11%;
+          height: 25%;
+          position: absolute; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox #Approach {
+          top: 0%;
+          left: 0%;
+          width: 12%;
+          height: 25%;
+          position: absolute; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox #Waypoint {
+          top: 0%;
+          left: 0%;
+          width: 12%;
+          height: 25%;
+          position: absolute; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox svg {
+          width: 100%;
+          height: 100%;
+          overflow: visible; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text {
+          width: 100%;
+          height: 100%;
+          font-family: 'Collins ProLine'; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Value {
+          font-size: 18px;
+          fill: green;
+          text-anchor: end; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Units {
+          font-size: 18px;
+          fill: green;
+          text-anchor: end; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Small {
+          font-size: 18px;
+          fill: green; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Large {
+          font-size: 26px;
+          fill: green; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
+          font-size: 18px;
+          fill: magenta;
+          text-anchor: end; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids div {
+        top: 87%;
+        width: 25%;
+        height: 13%;
+        position: absolute;
+        background-color: black; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids svg {
+        width: 100%;
+        height: 100%; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Left {
+        left: 2.5%; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Right {
+        right: 2.5%; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids text {
+        font-family: 'Collins ProLine';
+        text-align: center;
+        text-anchor: middle; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #State {
+        font-size: calc( 3 * 1vh * var(--bodyHeightScale));
+        fill: white; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #ID {
+        font-size: calc( 3 * 1vh * var(--bodyHeightScale));
+        fill: white; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Mode {
+        font-size: calc( 3 * 1vh * var(--bodyHeightScale));
+        fill: white;
+        text-decoration: underline; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Distance {
+        font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
+        fill: green; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Unit {
+        font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
+        fill: cyan; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Arrow {
+        fill: none;
+        stroke: white;
+        stroke-width: 6px; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Symbols {
+        top: 85%;
+        left: 87%;
+        width: 11%;
+        height: 5%;
+        position: absolute; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Symbols svg {
+          width: 100%;
+          height: 100%; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Symbols text {
+          width: 100%;
+          height: 100%;
+          font-family: 'Collins ProLine';
+          font-size: 18px;
+          fill: cyan;
+          text-anchor: end; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime {
+        top: 76%;
+        left: 87%;
+        width: 11%;
+        height: 5%;
+        position: absolute; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime svg {
+          width: 100%;
+          height: 100%; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime text {
+          width: 100%;
+          height: 100%;
+          font-family: 'Collins ProLine'; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime text.Title {
+          font-size: 18px;
+          fill: white; }
+        cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime text.Value {
+          font-size: 18px;
+          fill: green;
+          text-anchor: end; }
+      cj4-pfd-element #Mainframe #NDMapOverlay[extended=on] {
+        top: 35%; }
+    cj4-pfd-element #Mainframe #NavBar {
+      transform: rotateX(0);
+      position: absolute;
+      background-color: black;
+      width: 100%;
+      height: 3%;
+      bottom: 0%; }
+      cj4-pfd-element #Mainframe #NavBar #Coms {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+        height: 100%; }
+        cj4-pfd-element #Mainframe #NavBar #Coms #Com1,
+        cj4-pfd-element #Mainframe #NavBar #Coms #Com2,
+        cj4-pfd-element #Mainframe #NavBar #Coms #Atc1,
+        cj4-pfd-element #Mainframe #NavBar #Coms #Rat,
+        cj4-pfd-element #Mainframe #NavBar #Coms #Utc {
+          display: flex;
+          justify-content: center;
+          font-size: calc( 1.95 * 1vh * var(--bodyHeightScale)); }
+      cj4-pfd-element #Mainframe #NavBar #Cabs {
+        display: none;
+        justify-content: space-around;
+        width: 95%;
+        height: 100%;
+        margin-left: 2.5%; }
+        cj4-pfd-element #Mainframe #NavBar #Cabs #Cab {
+          margin-right: 10px;
+          display: flex;
+          justify-content: center;
+          font-size: calc( 1.95 * 1vh * var(--bodyHeightScale)); }
+        cj4-pfd-element #Mainframe #NavBar #Cabs #Elev {
+          display: flex;
+          justify-content: center;
+          font-size: calc( 1.95 * 1vh * var(--bodyHeightScale)); }
+        cj4-pfd-element #Mainframe #NavBar #Cabs #Alt, cj4-pfd-element #Mainframe #NavBar #Cabs #Rate, cj4-pfd-element #Mainframe #NavBar #Cabs #Diff {
+          display: flex;
+          min-width: 25%;
+          font-size: calc( 1.95 * 1vh * var(--bodyHeightScale));
+          justify-content: space-around; }
+      cj4-pfd-element #Mainframe #NavBar .Modifiable {
+        color: green;
+        margin-left: 8px; }
+      cj4-pfd-element #Mainframe #NavBar .Borders {
+        border: 2px solid white; }
+      cj4-pfd-element #Mainframe #NavBar .SubValue {
+        display: flex; }
+      cj4-pfd-element #Mainframe #NavBar[state=Cabs] #Coms {
+        display: none; }
+      cj4-pfd-element #Mainframe #NavBar[state=Cabs] #Cabs {
+        display: flex; }
+    cj4-pfd-element #Mainframe #PopupMenu {
+      transform: rotateX(0);
+      position: absolute;
+      top: 0%;
+      left: 0%;
+      width: 100%;
+      height: 100%;
+      z-index: 1; }
+      cj4-pfd-element #Mainframe #PopupMenu svg {
+        width: 100%;
+        height: 100%; }
+
