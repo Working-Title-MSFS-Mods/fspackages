@@ -310,7 +310,6 @@ class AS1000_MFD_MainMapSlot extends NavSystemElement {
         this.map = this.gps.getChildById("MapInstrument");
         console.log(`existing zoom ranges ${this.map.zoomRanges}`)
         this.map.zoomRanges = [0.5, 1, 1.5, 2, 3, 5, 8, 10, 15, 20, 30, 50, 80, 100, 150, 200, 300, 500, 800, 1000, 1500, 2000];
-
     }
     onEnter() {
         this.mapContainer.insertBefore(this.map, this.mapContainer.firstChild);
