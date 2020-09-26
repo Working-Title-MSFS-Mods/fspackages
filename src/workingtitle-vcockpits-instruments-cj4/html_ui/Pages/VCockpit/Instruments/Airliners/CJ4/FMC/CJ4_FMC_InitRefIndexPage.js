@@ -1025,7 +1025,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             [""]
         ]);
-        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage28(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage24(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage29(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
