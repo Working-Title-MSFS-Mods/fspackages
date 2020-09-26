@@ -251,22 +251,25 @@ class CJ4_FMC_NavRadioPage {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
-        fmc.setTemplate([
-            ["TUNE[color]blue", "1" + "[color]blue", "2" + "[color]blue"],
-            ["COM1", "COM2"],
-            [vhf1FrequencyCell + "[color]green", vhf2FrequencyCell + "[color]green"],
-            ["RECALL", "RECALL"],
+
+        const tcasModeSwitch = fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], 0, "blue");
+
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "1/2[blue]", "TUNE[blue]"],
+            [" COM1", "COM2 "],
+            [vhf1FrequencyCell + "[green]", vhf2FrequencyCell + "[green]"],
+            [" RECALL", "RECALL "],
             [rcl1FrequencyCell + "", pre2FrequencyCell + ""],
-            ["NAV 1", "NAV 2"],
-            [vor1FrequencyCell + "[color]green", vor2FrequencyCell + "[color]green"],
-            ["DME1", "DME2"],
-            ["HOLD", "HOLD"],
-            ["ATC1", "TCAS MODE"],
-            [atc1FrequencyCell + "[color]green", "TA/RA/STBY"],
-            ["ADF", "REL[color]blue"],
-            [adfFrequencyCell + "[color]green", "TCAS>"],
+            [" NAV 1", "NAV 2 "],
+            [vor1FrequencyCell + "[green]", vor2FrequencyCell + "[green]"],
+            [" DME1", "DME2 "],
+            ["HOLD[s-text]", "HOLD[s-text]"],
+            [" ATC1", "TCAS MODE "],
+            [atc1FrequencyCell + "[green]", tcasModeSwitch],
+            [" ADF", "REL [blue]"],
+            [adfFrequencyCell + "[green]", "TCAS>"],
         ]);
-		fmc.onRightInput[5] = () => { CJ4_FMC_NavRadioPage.ShowPage3(fmc); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_NavRadioPage.ShowPage3(fmc); };
         fmc.onPrevPage = () => { CJ4_FMC_NavRadioPage.ShowPage2(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_NavRadioPage.ShowPage2(fmc); };
         fmc.updateSideButtonActiveStatus();
@@ -335,14 +338,14 @@ class CJ4_FMC_NavRadioPage {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
-        fmc.setTemplate([
-            ["TUNE", "2", "2"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "2/2[blue]", "TUNE[blue]"],
             ["", "FLIGHT ID"],
             ["", "N5DX29"],
             [""],
             [""],
             ["ADF 1", "ADF 2"],
-            [adf1FrequencyCell + "[color]green", adf2FrequencyCell + "[color]green"],
+            [adf1FrequencyCell + "[green]", adf2FrequencyCell + "[green]"],
             [""],
             [""],
             [""],
@@ -359,10 +362,10 @@ class CJ4_FMC_NavRadioPage {
         };
         fmc.updateSideButtonActiveStatus();
     }
-	static ShowPage3(fmc) {
+    static ShowPage3(fmc) {
         fmc.clearDisplay();
-		fmc.setTemplate([
-            ["TCAS CONTROL[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "TCAS CONTROL[blue]"],
             ["MODE", "ALT TAG"],
             ["TA/RA/STBY", "REL/ABS"],
             [""],
@@ -370,15 +373,15 @@ class CJ4_FMC_NavRadioPage {
             ["&#x25C7TRAFFIC", "EXT TEST"],
             ["ON/OFF", "ON/OFF"],
             ["", "ALT LIMITS"],
-			["", "ABOVE"],
+            ["", "ABOVE"],
             [""],
             ["", "NORM"],
             [""],
             ["", "BELOW"]
         ]);
-		fmc.updateSideButtonActiveStatus();
+        fmc.updateSideButtonActiveStatus();
     }
-    
+
     /**
      * Parses a radio input string and returns a float number.
      * @param {String} input The radio string input.
