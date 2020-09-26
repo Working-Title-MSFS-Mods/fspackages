@@ -137,20 +137,7 @@ class CJ4_FMC extends FMCMainDisplay {
         let initRadioNav = super.initRadioNav.bind(this);
         this.initRadioNav = (_boot) => {
             initRadioNav(_boot);
-            if (this.isPrimary) {
-                if (_boot) {
-                    this.rcl1Frequency = this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 1);
-                    this.pre2Frequency = this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 2);
-                }
-                else {
-                    if (Math.abs(this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 1) - this.rcl1Frequency) > 0.005) {
-                        this.radioNav.setVHFStandbyFrequency(this.instrumentIndex, 1, this.rcl1Frequency);
-                    }
-                    if (Math.abs(this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 2) - this.pre2Frequency) > 0.005) {
-                        this.radioNav.setVHFStandbyFrequency(this.instrumentIndex, 2, this.pre2Frequency);
-                    }
-                }
-            }
+            this.initializeStandbyRadios(_boot);
         };
     }
     Update() {
@@ -408,6 +395,27 @@ class CJ4_FMC extends FMCMainDisplay {
     unregisterPeriodicPageRefresh() {
         if (this._pageRefreshTimer) {
             clearInterval(this._pageRefreshTimer);
+        }
+    }
+
+    /**
+     * Initializes the standby radios in the FMC.
+     * @param {Boolean} isFirstBoot 
+     */
+    initializeStandbyRadios(isFirstBoot) {
+        if (this.isPrimary) {
+            if (isFirstBoot) {
+                this.rcl1Frequency = this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 1);
+                this.pre2Frequency = this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 2);
+            }
+            else {
+                if (Math.abs(this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 1) - this.rcl1Frequency) > 0.005) {
+                    this.radioNav.setVHFStandbyFrequency(this.instrumentIndex, 1, this.rcl1Frequency);
+                }
+                if (Math.abs(this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 2) - this.pre2Frequency) > 0.005) {
+                    this.radioNav.setVHFStandbyFrequency(this.instrumentIndex, 2, this.pre2Frequency);
+                }
+            }
         }
     }
 }

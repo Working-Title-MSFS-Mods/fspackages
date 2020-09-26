@@ -1,6 +1,8 @@
 class CJ4_FMC_NavRadioPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
+        fmc.registerPeriodicPageRefresh(() => CJ4_FMC_NavRadioPage.ShowPage1(fmc), 1000);
+
         let vhf1FrequencyCell = "[]";
         if (fmc.vhf1Frequency > 0) {
             vhf1FrequencyCell = fmc.vhf1Frequency.toFixed(3);
@@ -276,6 +278,8 @@ class CJ4_FMC_NavRadioPage {
     }
     static ShowPage2(fmc) {
         fmc.clearDisplay();
+        fmc.registerPeriodicPageRefresh(() => CJ4_FMC_NavRadioPage.ShowPage2(fmc), 1000);
+
         let adf1FrequencyCell = "[]";
         if (fmc.adf1Frequency > 0) {
             adf1FrequencyCell = fmc.adf1Frequency.toFixed(0);
@@ -364,7 +368,9 @@ class CJ4_FMC_NavRadioPage {
     }
     static ShowPage3(fmc) {
         fmc.clearDisplay();
-        fmc._templateRenderer.setTemplateRaw([
+        fmc.registerPeriodicPageRefresh(() => CJ4_FMC_NavRadioPage.ShowPage3(fmc), 1000);
+
+		fmc._templateRenderer.setTemplateRaw([
             ["", "", "TCAS CONTROL[blue]"],
             ["MODE", "ALT TAG"],
             ["TA/RA/STBY", "REL/ABS"],
