@@ -735,7 +735,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["<RUNWAYS", "TERM WPTS>"]
         ]);
 
-        fmc.onLeftInput[1] = () => {
+        fmc.onLeftInput[0] = () => {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
@@ -806,7 +806,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["<INDEX", ""]
         ]);
 
-        fmc.onLeftInput[1] = () => {
+        fmc.onLeftInput[0] = () => {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
@@ -861,7 +861,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["<INDEX", "DEFINE WPT>"]
         ]);
 
-        fmc.onLeftInput[1] = () => {
+        fmc.onLeftInput[0] = () => {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
@@ -923,7 +923,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["<INDEX", ""]
         ]);
 
-        fmc.onLeftInput[1] = () => {
+        fmc.onLeftInput[0] = () => {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
