@@ -1,4 +1,4 @@
-Include.addScript("/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStorage.js")
+Include.addScript("/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js")
 
 class Altimeter extends HTMLElement {
     constructor() {
