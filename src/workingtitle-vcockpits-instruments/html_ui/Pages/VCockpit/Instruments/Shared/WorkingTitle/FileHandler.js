@@ -1,5 +1,5 @@
-/** class ConfigLoader loads game data in several text formats. */
-class ConfigLoader {
+/** class WTConfigLoader loads game data in several text formats. */
+class WTConfigLoader {
     /**
      * Creates an instance of ConfigLoader
      * @constructor
@@ -112,8 +112,8 @@ class ConfigLoader {
 }
 
 
-/** class IniParser processes an ini-style configuration text */
-class IniParser {
+/** class WTIniParser processes an ini-style configuration text */
+class WTIniParser {
     /**
      * Parses an ini-style text block into a map
      * @param {string} iniString The ini content as text 
