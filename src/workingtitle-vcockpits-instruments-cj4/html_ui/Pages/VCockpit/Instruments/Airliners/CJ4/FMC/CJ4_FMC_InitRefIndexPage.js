@@ -182,7 +182,7 @@ class CJ4_FMC_InitRefIndexPage {
                 [" NAV DATA[blue]"],
                 ["WORLD"],
                 [" ACTIVE DATA BASE[blue]"],
-                [formatDate(startDate) + "[yellow]" + " " + formatDate(endDate) + "[yellow]"],
+                [formatDate(startDate) + " " + formatDate(endDate)],
                 [" SEC DATA BASE[blue]"],
                 [formatDate(secEndDate) + " " + formatDate(secStartDate)],
                 [" UTC[blue]", "DATE[blue] "],
