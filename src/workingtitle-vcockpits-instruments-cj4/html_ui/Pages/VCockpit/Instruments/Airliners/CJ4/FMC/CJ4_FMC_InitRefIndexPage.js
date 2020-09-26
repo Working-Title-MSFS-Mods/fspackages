@@ -623,26 +623,28 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc.onLeftInput[0] = () => {
             let value = fmc.inOut;
-            fmc.clearUserInput();
-            fmc.getOrSelectWaypointByIdent(value, (w) => {
-                if (w) {
-                    if (w.icao.slice(0, 1) == "A") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+            if (value && value !== "") {
+                fmc.clearUserInput();
+                fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    if (w) {
+                        if (w.icao.slice(0, 1) == "A") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "V") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "W") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "N") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
+                        } 
                     }
-                    else if (w.icao.slice(0, 1) == "V") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                    else {
+                        CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
                     }
-                    else if (w.icao.slice(0, 1) == "W") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
-                    }
-                    else if (w.icao.slice(0, 1) == "N") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
-                    } 
-                }
-                else {
-                    CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
-                }
-            });
+                });
+            }
         };
 
         fmc._templateRenderer.setTemplateRaw([
@@ -734,26 +736,28 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc.onLeftInput[1] = () => {
             let value = fmc.inOut;
-            fmc.clearUserInput();
-            fmc.getOrSelectWaypointByIdent(value, (w) => {
-                if (w) {
-                    if (w.icao.slice(0, 1) == "A") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+            if (value && value !== "") {
+                fmc.clearUserInput();
+                fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    if (w) {
+                        if (w.icao.slice(0, 1) == "A") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "V") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "W") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "N") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
+                        } 
                     }
-                    else if (w.icao.slice(0, 1) == "V") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                    else {
+                        CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
                     }
-                    else if (w.icao.slice(0, 1) == "W") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
-                    }
-                    else if (w.icao.slice(0, 1) == "N") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
-                    } 
-                }
-                else {
-                    CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
-                }
-            });
+                });
+            }
         };
 
         //fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
@@ -803,26 +807,28 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc.onLeftInput[1] = () => {
             let value = fmc.inOut;
-            fmc.clearUserInput();
-            fmc.getOrSelectWaypointByIdent(value, (w) => {
-                if (w) {
-                    if (w.icao.slice(0, 1) == "A") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+            if (value && value !== "") {
+                fmc.clearUserInput();
+                fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    if (w) {
+                        if (w.icao.slice(0, 1) == "A") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "V") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "W") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "N") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
+                        } 
                     }
-                    else if (w.icao.slice(0, 1) == "V") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                    else {
+                        CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
                     }
-                    else if (w.icao.slice(0, 1) == "W") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
-                    }
-                    else if (w.icao.slice(0, 1) == "N") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
-                    } 
-                }
-                else {
-                    CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
-                }
-            });
+                });
+            }
         };
 
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
@@ -856,26 +862,28 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc.onLeftInput[1] = () => {
             let value = fmc.inOut;
-            fmc.clearUserInput();
-            fmc.getOrSelectWaypointByIdent(value, (w) => {
-                if (w) {
-                    if (w.icao.slice(0, 1) == "A") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+            if (value && value !== "") {
+                fmc.clearUserInput();
+                fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    if (w) {
+                        if (w.icao.slice(0, 1) == "A") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "V") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "W") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "N") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
+                        } 
                     }
-                    else if (w.icao.slice(0, 1) == "V") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                    else {
+                        CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
                     }
-                    else if (w.icao.slice(0, 1) == "W") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
-                    }
-                    else if (w.icao.slice(0, 1) == "N") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
-                    } 
-                }
-                else {
-                    CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
-                }
-            });
+                });
+            }
         };
 
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
@@ -916,26 +924,28 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc.onLeftInput[1] = () => {
             let value = fmc.inOut;
-            fmc.clearUserInput();
-            fmc.getOrSelectWaypointByIdent(value, (w) => {
-                if (w) {
-                    if (w.icao.slice(0, 1) == "A") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+            if (value && value !== "") {
+                fmc.clearUserInput();
+                fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    if (w) {
+                        if (w.icao.slice(0, 1) == "A") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "V") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "W") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
+                        }
+                        else if (w.icao.slice(0, 1) == "N") {
+                            CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
+                        } 
                     }
-                    else if (w.icao.slice(0, 1) == "V") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
+                    else {
+                        CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
                     }
-                    else if (w.icao.slice(0, 1) == "W") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage21(fmc, w);
-                    }
-                    else if (w.icao.slice(0, 1) == "N") {
-                        CJ4_FMC_InitRefIndexPage.ShowPage31(fmc, w);
-                    } 
-                }
-                else {
-                    CJ4_FMC_InitRefIndexPage.ShowPage18(fmc);
-                }
-            });
+                });
+            }
         };
 
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };

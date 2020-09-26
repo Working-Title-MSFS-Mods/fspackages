@@ -20,13 +20,16 @@ class CJ4_FMC_DirectToPage {
         let iMax = 5;
         fmc.onLeftInput[0] = () => {
             let value = fmc.inOut;
-            fmc.fpHasChanged = true;
-            fmc.clearUserInput();
-            fmc.getOrSelectWaypointByIdent(value, (w) => {
-                if (w) {
-                    CJ4_FMC_DirectToPage.ShowPage(fmc, w, wptsListIndex);
-                }
-            });
+            if (value !== "") {
+                fmc.fpHasChanged = true;
+                fmc.clearUserInput();
+                fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    if (w) {
+                        CJ4_FMC_DirectToPage.ShowPage(fmc, w, wptsListIndex);
+                    }
+                });
+            }
+
         };
         let i = 0;
 
