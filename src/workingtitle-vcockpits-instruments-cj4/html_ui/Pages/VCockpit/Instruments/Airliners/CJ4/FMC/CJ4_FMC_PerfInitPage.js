@@ -322,30 +322,30 @@ class CJ4_FMC_PerfInitPage {
             : 0;
         let fuelBurn = eteToDestination * totalFuelFlow;
         let ldgWt = grWtCell - fuelBurn;
-        let ldgWtCell = fuelBurn == 0 ? "-----"
+        let ldgWtCell = (grWtCell - fuelBurn) == 0 ? "-----"
             : Math.trunc(ldgWt);
+		
+        let vRef = ((ldgWt - 10500) * .00393) + 92; //V Speeds based on weight at 0C
+        let vApp = ((ldgWt - 10500) * .00408) + 98;
+        let ldgFieldLength = ((ldgWt - 10500) * .126) + 2180; // Sea level base value for a given weight
 
-        let vRef = ((grWtCell - 10500) * .00393) + 92; //V Speeds based on weight at 0C
-        let vApp = ((grWtCell - 10500) * .00408) + 98;
-        let ldgFieldLength = ((grWtCell - 10500) * .126) + 2180; // Sea level base value for a given weight
-
-        if (grWtCell <= 13500) {
-            let ldgFieldAltFactor = ((13500 - grWtCell) * .000005) + .0825; //Gets factor value for rate of change based on weight
+        if (ldgWt <= 13500) {
+            let ldgFieldAltFactor = ((13500 - ldgWt) * .000005) + .0825; //Gets factor value for rate of change based on weight
             ldgFieldLength = ldgFieldLength + (fmc.landingPressAlt * ldgFieldAltFactor);//Gets landing distance for a given altitude and added to the sea level value
         }
-        if (grWtCell >= 14000 && grWtCell <= 14500) {
-            let ldgFieldAltFactor = ((14500 - grWtCell) * .0000632) + .1175;
+        if (ldgWt >= 14000 && ldgWt <= 14500) {
+            let ldgFieldAltFactor = ((14500 - ldgWt) * .0000632) + .1175;
             ldgFieldLength = ldgFieldLength + (fmc.landingPressAlt * ldgFieldAltFactor);
         }
-        if (grWtCell >= 15000 && grWtCell <= 15660) {
-            let ldgFieldAltFactor = ((15660 - grWtCell) * .000205) + .1991;
+        if (ldgWt >= 15000 && ldgWt <= 15660) {
+            let ldgFieldAltFactor = ((15660 - ldgWt) * .000205) + .1991;
             ldgFieldLength = ldgFieldLength + (fmc.landingPressAlt * ldgFieldAltFactor);
         }
         if (fmc.landingOat > 0) { //Takes the basic length and adds or subtracts distance based on weight and temperature difference from 15C.  Does not account for Pressure altitude yet
-            ldgFieldLength = ldgFieldLength + (((grWtCell - 10500) * .000903) + 5.33) * fmc.landingOat; //This calculates how many feet to add per degree greater or lower than 0c based on weight.  0c is used because that is where the base weights come from
+            ldgFieldLength = ldgFieldLength + (((ldgWt - 10500) * .000903) + 5.33) * fmc.landingOat; //This calculates how many feet to add per degree greater or lower than 0c based on weight.  0c is used because that is where the base weights come from
         }
         if (fmc.landingOat < 0) {
-            ldgFieldLength = ldgFieldLength + (((grWtCell - 10500) * .000903) + 5.33) * fmc.landingOat;
+            ldgFieldLength = ldgFieldLength + (((ldgWt - 10500) * .000903) + 5.33) * fmc.landingOat;
         }
 
         if (fmc.landingWindDir != "---") {
@@ -370,7 +370,11 @@ class CJ4_FMC_PerfInitPage {
         if (fmc.arrRunwayCondition == 1) { // If the runway is wet
             ldgFieldLength = ldgFieldLength * ((fmc.landingPressAlt * .0001025) + 1.21875); //Determines a factor to multiply with dependent on pressure altitude.  Sea level being 1.21x landing distance
         }
-
+		
+		if (ldgWtCell > 15660) { //Turn the landing weight yellow if it exceeds the maximum landing weight
+			ldgWtCell = ldgWtCell + "[yellow]";
+		}
+		
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "2/3 [blue]", "APPROACH REF[blue]"],
             [" A/I[blue]"],
