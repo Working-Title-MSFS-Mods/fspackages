@@ -370,8 +370,8 @@ class CJ4_FMC_NavRadioPage {
         fmc.clearDisplay();
         fmc.registerPeriodicPageRefresh(() => CJ4_FMC_NavRadioPage.ShowPage3(fmc), 1000);
 
-		fmc.setTemplate([
-            ["TCAS CONTROL[color]blue"],
+		fmc._templateRenderer.setTemplateRaw([
+            ["", "", "TCAS CONTROL[blue]"],
             ["MODE", "ALT TAG"],
             ["TA/RA/STBY", "REL/ABS"],
             [""],
