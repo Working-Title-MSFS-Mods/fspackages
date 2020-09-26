@@ -927,24 +927,24 @@ class AS1000_PFD_AirportInfos extends NavSystemElement {
 }
 class AS1000_PFD_AirspeedReference {
     constructor(_valueElem, _statusElem, _refSpeed, _displayName) {
-        this._isDisplayed = PersistVar.get(`VSRef.${_displayName}.IsDisplayed`, false);
+        this._isDisplayed = WTDataStore.get(`VSRef.${_displayName}.IsDisplayed`, false);
         this.valueElement = _valueElem;
         this.statusElement = _statusElem;
         this.refSpeed = _refSpeed;
-        this._displayedSpeed = PersistVar.get(`VSRef.${_displayName}.DisplayedSpeed`, _refSpeed);
+        this._displayedSpeed = WTDataStore.get(`VSRef.${_displayName}.DisplayedSpeed`, _refSpeed);
         this.displayName = _displayName;
     }
     get displayedSpeed() {
         return this._displayedSpeed;
     }
     set displayedSpeed(val) {
-        this._displayedSpeed = PersistVar.set(`VSRef.${this.displayName}.DisplayedSpeed`, val);
+        this._displayedSpeed = WTDataStore.set(`VSRef.${this.displayName}.DisplayedSpeed`, val);
     }
     get isDisplayed() {
         return this._isDisplayed;
     }
     set isDisplayed(val) {
-        this._isDisplayed = PersistVar.set(`VSRef.${this.displayName}.IsDisplayed`, val);
+        this._isDisplayed = WTDataStore.set(`VSRef.${this.displayName}.IsDisplayed`, val);
     }
 }
 class AS1000_PFD_TMRREF extends NavSystemElement {
