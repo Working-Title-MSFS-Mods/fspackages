@@ -338,14 +338,14 @@ class CJ4_FMC_NavRadioPage {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
-        fmc.setTemplate([
-            ["TUNE", "2", "2"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "2/2[blue]", "TUNE[blue]"],
             ["", "FLIGHT ID"],
             ["", "N5DX29"],
             [""],
             [""],
             ["ADF 1", "ADF 2"],
-            [adf1FrequencyCell + "[color]green", adf2FrequencyCell + "[color]green"],
+            [adf1FrequencyCell + "[green]", adf2FrequencyCell + "[green]"],
             [""],
             [""],
             [""],
@@ -364,8 +364,8 @@ class CJ4_FMC_NavRadioPage {
     }
     static ShowPage3(fmc) {
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["TCAS CONTROL[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "TCAS CONTROL[blue]"],
             ["MODE", "ALT TAG"],
             ["TA/RA/STBY", "REL/ABS"],
             [""],
