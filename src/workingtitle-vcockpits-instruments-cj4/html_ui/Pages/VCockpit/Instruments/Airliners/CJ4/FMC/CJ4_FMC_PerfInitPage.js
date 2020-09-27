@@ -307,13 +307,17 @@ class CJ4_FMC_PerfInitPage {
         }
 
         //destination data
-        if (fmc.flightPlanManager.getDestination()) {
+        if (fmc.flightPlanManager.getDestination() && fmc.flightPlanManager.getActiveWaypoint() && fmc.flightPlanManager.getNextActiveWaypoint()) {
             let destination = fmc.flightPlanManager.getDestination();
             destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
             let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
             let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
             destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
                 : destinationDistanceFlightplan;
+        }
+        else if (fmc.flightPlanManager.getDestination()) {
+            let destinationDistanceDirect = new Number(Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
+            destinationDistance = destinationDistanceDirect;
         }
 
         //END OF ADDED PROG CODE
