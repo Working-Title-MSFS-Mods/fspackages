@@ -26,14 +26,6 @@
 			<AssetDir>src\workingtitle-aircraft-bonanza-g36</AssetDir>
 			<OutputDir>.\</OutputDir>
 		</AssetGroup>
-        <AssetGroup Name="workingtitle-aircraft-c172sp-as1000">
-			<Type>Copy</Type>
-			<Flags>
-				<FSXCompatibility>false</FSXCompatibility>
-			</Flags>
-			<AssetDir>src\workingtitle-aircraft-c172sp-as1000</AssetDir>
-			<OutputDir>.\</OutputDir>
-		</AssetGroup>
         <AssetGroup Name="workingtitle-base-aircraft-common">
 			<Type>Copy</Type>
 			<Flags>
