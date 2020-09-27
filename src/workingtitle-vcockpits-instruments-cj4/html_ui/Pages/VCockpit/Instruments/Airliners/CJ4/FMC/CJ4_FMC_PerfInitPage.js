@@ -408,10 +408,51 @@ class CJ4_FMC_PerfInitPage {
 
     static ShowPage15(fmc) { //APPROACH REF Page 3
         fmc.clearDisplay();
+		
+		let grWtCell = "";
+        let grossWeightValue = fmc.getWeight();
+        if (isFinite(grossWeightValue)) {
+            grWtCell = (grossWeightValue * 2200).toFixed(0);
+        }
+		
+		let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
+            + Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour"));
+		
+		let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+		let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+
+        let activeWaypointDist = 0;
+        let destinationIdent = "";
+        let destinationDistance = 0;
+
+        if (fmc.flightPlanManager.getActiveWaypoint()) {
+            activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
+        }
+		
+		if (fmc.flightPlanManager.getDestination()) {
+            let destination = fmc.flightPlanManager.getDestination();
+            destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
+            let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
+            let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+            destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
+                : destinationDistanceFlightplan;
+        }
+		
+		let eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
+            : 0;
+        let fuelBurn = eteToDestination * totalFuelFlow;
+        let ldgWt = grWtCell - fuelBurn;
+        let ldgWtCell = (grWtCell - fuelBurn) == 0 ? "-----"
+            : Math.trunc(ldgWt);
+		
+		if (ldgWtCell > 15660) { //Turn the landing weight yellow if it exceeds the maximum landing weight
+			ldgWtCell = ldgWtCell + "[yellow]";
+		}
+		
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "3/3 [blue]", "APPROACH REF[blue]"],
             [" LW /MLW[blue]"],
-            ["13026/15563"],
+            [ldgWtCell + "/15660"],
             ["", "STRUCTURAL LIMIT [blue]"],
             ["", "15660"],
             ["", "PERFORMANCE LIMIT [blue]"],
