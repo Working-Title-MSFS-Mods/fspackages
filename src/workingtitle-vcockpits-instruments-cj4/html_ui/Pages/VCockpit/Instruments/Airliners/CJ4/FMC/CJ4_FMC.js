@@ -37,13 +37,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._fpHasChanged = false;
         this._activatingDirectTo = false;
         this._templateRenderer = undefined;
-        this._msg = "";
-		this.DSPLMENUcounter = 0;
-		this.DSPLMENUloNavaids = 0;
-		this.DSPLMENUairports = 0;
-		this.DSPLMENUintersections = 0;
-		this.DSPLMENUaltitude = 0;
-		
+        this._msg = "";		
     }
     get templateID() { return "CJ4_FMC"; }
 
