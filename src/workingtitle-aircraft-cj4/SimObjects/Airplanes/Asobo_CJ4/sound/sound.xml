@@ -161,7 +161,7 @@
     
     <Sound WwiseData="true" WwiseEvent="pedal_movement" ViewPoint="Inside" NodeName="HANDLING_YOKE_HIDER_1_ADD_2" ContinuousStopDelay="1.0" SimVar="RUDDER PEDAL POSITION" Units="PERCENT" Index="0">
       <WwiseRTPC SimVar="RUDDER PEDAL POSITION" Units="PERCENT" Index="0" Derived="true" RTPCName="SIMVAR_RUDDER_PEDAL_POSITION_DERIVED" />
-    </Sound>   
+    </Sound>
 
 	<Sound WwiseData="true" WwiseEvent="brake_movement" ViewPoint="Inside" NodeName="HANDLING_YOKE_HIDER_1_ADD_2" ContinuousStopDelay="0.3" SimVar="BRAKE LEFT POSITION" Units="PERCENT" Index="0">
       <WwiseRTPC SimVar="BRAKE LEFT POSITION" Units="PERCENT" Index="0" Derived="true" RTPCName="SIMVAR_BRAKE_LEFT_POSITION_DERIVED" />
@@ -223,6 +223,21 @@
 			  <Range LowerBound="1" />
 		  </Requires>
 	  </Sound>
+
+	    <Sound WwiseData="true" WwiseEvent="air_fan" ViewPoint="Inside" NodeName="PASSENGER_KNOB_AIR_1" LocalVar="PASSENGER_KNOB_AIR_1" Units="PERCENT" Index="1" Continuous="false">
+		  <WwiseRTPC LocalVar="PASSENGER_KNOB_AIR_1" Units="PERCENT" Index="0" RTPCName="SIMVAR_AC" />
+		   <Requires LocalVar="CLIMATE_CONTROL" Units="number" Index="0">
+		   		<Range LowerBound="1" />
+		   </Requires>
+	  </Sound>
+
+	  <Sound WwiseData="true" WwiseEvent="air_fan" ViewPoint="Inside" NodeName="PASSENGER_KNOB_AIR_2" LocalVar="PASSENGER_KNOB_AIR_2" Units="PERCENT" Index="1" Continuous="false">
+		  <WwiseRTPC LocalVar="PASSENGER_KNOB_AIR_2" Units="PERCENT" Index="0" RTPCName="SIMVAR_AC" />
+		  <Requires LocalVar="CLIMATE_CONTROL" Units="number" Index="0">
+		   		<Range LowerBound="1" />
+		   </Requires>
+	  </Sound>
+
 
   </SimVarSounds>
   
