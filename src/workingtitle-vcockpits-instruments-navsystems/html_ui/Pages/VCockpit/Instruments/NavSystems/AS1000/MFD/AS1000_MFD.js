@@ -270,7 +270,7 @@ class AS1000_MFD_MainMap extends NavSystemPage {
     constructor(engineDisplay) {
         super("NAVIGATION MAP", "Map", new NavSystemElementGroup([
             new AS1000_MFD_MainMapSlot(),
-            new AS1000_MFD_WindData()
+            new MFD_WindData()
         ]));
         this.mapMenu = new AS1000_MapMenu();
         this.engineMenu = new AS1000_EngineMenu(engineDisplay);
@@ -308,7 +308,6 @@ class AS1000_MFD_MainMapSlot extends NavSystemElement {
     init(root) {
         this.mapContainer = root;
         this.map = this.gps.getChildById("MapInstrument");
-        console.log(`existing zoom ranges ${this.map.zoomRanges}`)
         this.map.zoomRanges = [0.5, 1, 1.5, 2, 3, 5, 8, 10, 15, 20, 30, 50, 80, 100, 150, 200, 300, 500, 800, 1000, 1500, 2000];
     }
     onEnter() {
@@ -777,37 +776,7 @@ class AS1000_MFD_AirportInfos2 extends NavSystemElement {
         }
     }
 }
-class AS1000_MFD_WindData extends NavSystemElement {
-    constructor() {
-        super(...arguments);
-        this.windValue = "";
-        this.strengthValue = "";
-    }
-    init(root) {
-        this.svg = this.gps.getChildById("WindData");
-    }
-    onEnter() {
-    }
-    onUpdate(_deltaTime) {
-        let wind = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree");
-        let heading = this.gps.trackup ? SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree") : 0;
-        let adjusted = ((wind + 180) % 360 - heading).toString();
-        if (adjusted != this.windValue) {
-            this.svg.setAttribute("wind-direction", adjusted);
-            this.windValue = adjusted;
-        }
-        var strength = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), 0);
-        if (strength != this.strengthValue) {
-            this.svg.setAttribute("wind-strength", strength);
-            this.strengthValue = strength;
-        }
-        this.svg.setAttribute("wind-mode", "2");
-    }
-    onExit() {
-    }
-    onEvent(_event) {
-    }
-}
+
 class AS1000_MFD_NearestAirport extends NavSystemPage {
     constructor() {
         super("NEAREST AIRPORTS", "Nrst_Airport", new AS1000_MFD_NearestAirport_Element());

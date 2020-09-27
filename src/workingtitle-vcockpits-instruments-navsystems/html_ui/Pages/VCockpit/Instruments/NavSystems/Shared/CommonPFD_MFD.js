@@ -1094,22 +1094,25 @@ class PFD_WindData extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        if (SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots") >= 1 &&
-            !SimVar.GetSimVarValue("SIM ON GROUND", "boolean")) {
+        let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "boolean");
+        if (onGround) {
+            this.svg.setAttribute("wind-mode", (this.mode ? 4 : 0).toString());
+        } else {
+            let windSpd = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
+            let windDir = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree");
+            let planeHdg = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
             this.svg.setAttribute("wind-mode", this.mode.toString());
             switch (this.mode) {
                 case 3:
-                    this.svg.setAttribute("wind-true-direction", SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree").toString());
+                    this.svg.setAttribute("wind-true-direction", (windSpd >= 1 ? windDir : 0).toString());
                 case 2:
                 case 1:
-                    this.svg.setAttribute("wind-direction", ((SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180) % 360 - SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree")).toString());
-                    this.svg.setAttribute("wind-strength", SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
+                    this.svg.setAttribute("wind-direction",
+                        (windSpd >= 1 ? ((windDir + 180) % 360 - planeHdg) : 0).toString());
+                    this.svg.setAttribute("wind-strength", windSpd);
                     break;
             }
-        }
-        else {
-            this.svg.setAttribute("wind-mode", (this.mode ? 4 : 0).toString());
-        }
+        }   
     }
     onExit() {
     }
@@ -1148,17 +1151,25 @@ class MFD_WindData extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        var wind = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree"), 0);
-        if (wind != this.windValue) {
-            this.svg.setAttribute("wind-direction", wind);
-            this.windValue = wind;
+        let windSpd = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
+        if (SimVar.GetSimVarValue("SIM ON GROUND", "boolean") || windSpd < 1) {
+            this.svg.setAttribute("wind-mode", "0");
+        } else {
+            let windDir = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree");
+            let planeHdg = this.gps.trackup ? SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree") : 0;
+            let adjustedDir = ((windDir + 180) % 360 - planeHdg).toString();
+
+            if (adjustedDir != this.windValue) {
+                this.svg.setAttribute("wind-direction", adjustedDir);
+                this.windValue = adjustedDir;
+            }
+            var strength = fastToFixed(windSpd, 0);
+            if (strength != this.strengthValue) {
+                this.svg.setAttribute("wind-strength", strength);
+                this.strengthValue = strength;
+            }
+            this.svg.setAttribute("wind-mode", "2");
         }
-        var strength = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), 0);
-        if (strength != this.strengthValue) {
-            this.svg.setAttribute("wind-strength", strength);
-            this.strengthValue = strength;
-        }
-        this.svg.setAttribute("wind-mode", "2");
     }
     onExit() {
     }
