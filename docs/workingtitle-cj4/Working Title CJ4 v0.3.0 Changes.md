@@ -8,19 +8,19 @@ Demo Video: https://youtu.be/xO29LNrNY-8
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder.
 
 ## Key Features
-* Complete rebuild of templating system to accomodate PL21 specific formatting 'quirks' including inconsistent page numbering, inconsistent indenting, etc.
+* Complete rebuild of templating system to accommodate FMS3000 specific formatting 'quirks' including inconsistent page numbering, inconsistent indenting, etc.
 * Enhanced EXEC, ACT/MOD and Message handling and resolved several EXEC related bugs.
 * Added AoA ON/OFF/AUTO PFD Menu Line and adjusted AoA Show/Hide logic.
 * Updated LEGS page Layout
 * Built new FPLN pages
-* Further enhances PERF pages, added temporary landing weight calculation (to be further refined with actual performance prediction)
+* Further enhanced PERF pages, added temporary landing weight calculation (to be further refined with actual performance prediction)
 * Added additional IDX pages, including DATABASE pages allowing lookup of any navaid in the database
 * Improved autopilot handling with special attention to FLC mode (works much better for managing climb and descent speed, but still is flaky if enabled shortly after takeoff)
 * Added functionality to several in-cockpit knobs and switches
 * Added aircon/fan sounds as well as seatbelt announcement
 * Improved cockpit lighting
-* Added externally visable cabin lighting
-* Added DSPL MENU & MFD ADV pages and funcitonality, including the ability to turn on/off supported map features and step through flight plan waypoints on PLAN view
+* Added externally visible cabin lighting
+* Added DSPL MENU & MFD ADV pages and functionality, including the ability to turn on/off supported map features and step through flight plan waypoints on PLAN view
 * Improved TUN page handling of frequencies, including parsing 8.33/25khz spacing properly
 
 ### Direct To Page
@@ -40,6 +40,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Updated takeoff and landing calculations
 * Added further error protection on all PERF pages
 * Updated landing weight to a calculated field (to be enhanced further)
+* Takeoff and landing weights will turn yellow when they have exceeded the maximum values
 
 ### TUN Page
 * Updated layout and fields
@@ -80,4 +81,4 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are investigating solutions to this issue.
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
 * There are cosmetic issues regarding the PFD and MFD (shapes, text, alignments). The PFD and MFD have not gotten a full layout overhaul as of this time.
-* The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the varios enhancements applied.
+* The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the various enhancements applied.
