@@ -1,4 +1,12 @@
+/** class WTEngine provides Engine with fancier display pages */
 class WTEngine extends Engine {
+    /**
+     * Creates a WTEngine and initializes early configuration
+     * @constructor
+     * @param {string} _name As per Engine
+     * @param {string} _root As per Engine
+     * @param {string} xmlConfigPath The _xmlConfigPath of the parent instrument
+     */
     constructor(_name, _root, xmlConfigPath) {
         super(_name, _root);
         this._configLoader = new WTConfigLoader(xmlConfigPath); 
@@ -6,6 +14,7 @@ class WTEngine extends Engine {
         this.selectedEnginePage = null;
         this.config = null;
     }
+    /** Initializes the engine instrument through its superclass */
     init() {
         super.init();
         // set the default engine page
@@ -48,12 +57,26 @@ class WTEngine extends Engine {
             console.log("WT engine display config load complete.")
         });
     }
+    /**
+     *  Returns all the configured engine display pages
+     *  @returns {Array} A list of display pages
+     */
     getEngineDisplayPages() {
         return this.engineDisplayPages;
     }
+    /**
+     * Tests whether a given page ID is selected
+     * @param {string} id The ID of the page to test
+     * @returns {Boolean} Whether or not the provided page ID is selected
+     */
     isEnginePageSelected(id) {
         return this.selectedEnginePage == id;
     }
+    /**
+     * Activates a newly selected engine page
+     * @param {string} id The ID of the page to select
+     * @returns {Map} The configuration for the selected page 
+     */
     selectEnginePage(id) {
         console.log("Changed to page " + id);
         this.selectedEnginePage = id;
