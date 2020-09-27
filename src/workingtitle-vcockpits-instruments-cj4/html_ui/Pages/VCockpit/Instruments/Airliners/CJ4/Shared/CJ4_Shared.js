@@ -2822,14 +2822,14 @@ class CJ4_NavBarContainer extends NavSystemElementContainer {
                 this.ratElement.textContent = "---";
         }
         if (this.utcElement) {
-            var simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
-            var hours = new String(Math.trunc(simtime / 3600));
-            var minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
-            var hourspad = hours.padStart(2, "0");
-            var minutespad = minutes.padStart(2, "0");
-            var utc = new String(hourspad + ":" + minutespad);
-            if (utc)
-                this.utcElement.textContent = utc;
+            let utcTime = "";
+            const value = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
+            if (value) {
+                const seconds = Number.parseInt(value);
+                const time = Utils.SecondsToDisplayTime(seconds, true, true, false);
+                utcTime = time.toString();
+            }
+            this.utcElement.textContent = utcTime;
         }
         if (this.gsElement) {
             var gs = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
