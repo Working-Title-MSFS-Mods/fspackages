@@ -75,7 +75,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * COCKPIT TEMP knob works (**credit: J-Hoskin**)
 * SOURCE knob works (**credit: J-Hoskin**)
 * Seatbelt button works with accompanying sound (**credit: J-Hoskin**)
-* Improved cockpit and cabin lighting (**credit: dga711**)
+* Improved cockpit and cabin lighting
 
 ## Known Issues
 * You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are investigating solutions to this issue.
