@@ -280,6 +280,10 @@ class CJ4_FMC_TakeoffRefPage {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
         }
         let tow = (grWtCell - 100);
+		
+		if (tow > 17110) { //Turn the takeoff weight yellow if it exceeds the maximum takeoff weight
+			tow = tow + "[yellow]";
+		}
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "3/3[blue] ", "TAKEOFF REF[blue]"],
             ["TOW/MTOW[blue]"],
