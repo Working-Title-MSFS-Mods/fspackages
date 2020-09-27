@@ -1,7 +1,6 @@
 class CJ4_FMC_NavRadioPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
-        fmc.registerPeriodicPageRefresh(() => CJ4_FMC_NavRadioPage.ShowPage1(fmc), 1000);
 
         let vhf1FrequencyCell = "[]";
         if (fmc.vhf1Frequency > 0) {
@@ -20,10 +19,6 @@ class CJ4_FMC_NavRadioPage {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
                 });
-            }
-            else if (value === FMCMainDisplay.clrValue) {
-                fmc.vhf1Frequency = 0;
-                CJ4_FMC_NavRadioPage.ShowPage1(fmc);
             }
             else if (value.length === 0) {
 
@@ -59,10 +54,6 @@ class CJ4_FMC_NavRadioPage {
                     });
                 });
             }
-            else if (value === FMCMainDisplay.clrValue) {
-                fmc.vhf2Frequency = 0;
-                CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-            }
             else if (value.length === 0) {
                 let current = fmc.vhf2Frequency;
                 let recall = fmc.pre2Frequency;
@@ -95,10 +86,6 @@ class CJ4_FMC_NavRadioPage {
                     });
                 });
             }
-            else if (value === FMCMainDisplay.clrValue) {
-                fmc.rcl1Frequency = 0;
-                CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-            }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
@@ -118,10 +105,6 @@ class CJ4_FMC_NavRadioPage {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
                 });
-            }
-            else if (value === FMCMainDisplay.clrValue) {
-                fmc.pre2Frequency = 0;
-                CJ4_FMC_NavRadioPage.ShowPage1(fmc);
             }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
@@ -151,10 +134,6 @@ class CJ4_FMC_NavRadioPage {
                     });
                 }
             }
-            else if (value === FMCMainDisplay.clrValue) {
-                fmc.vor1Frequency = 0;
-                CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-            }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
@@ -183,10 +162,6 @@ class CJ4_FMC_NavRadioPage {
                     });
                 }
             }
-            else if (value === FMCMainDisplay.clrValue) {
-                fmc.vor2Frequency = 0;
-                CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-            }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
@@ -214,10 +189,6 @@ class CJ4_FMC_NavRadioPage {
                     });
                 }
             }
-            else if (value === FMCMainDisplay.clrValue) {
-                fmc.adf1Frequency = 0;
-                CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-            }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
@@ -244,10 +215,6 @@ class CJ4_FMC_NavRadioPage {
                         });
                     });
                 }
-            }
-            else if (value === FMCMainDisplay.clrValue) {
-                fmc.atc1Frequency = 0;
-                CJ4_FMC_NavRadioPage.ShowPage1(fmc);
             }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
@@ -278,7 +245,6 @@ class CJ4_FMC_NavRadioPage {
     }
     static ShowPage2(fmc) {
         fmc.clearDisplay();
-        fmc.registerPeriodicPageRefresh(() => CJ4_FMC_NavRadioPage.ShowPage2(fmc), 1000);
 
         let adf1FrequencyCell = "[]";
         if (fmc.adf1Frequency > 0) {
@@ -302,10 +268,6 @@ class CJ4_FMC_NavRadioPage {
                         });
                     });
                 }
-            }
-            else if (value === FMCMainDisplay.clrValue) {
-                fmc.adf1Frequency = 0;
-                CJ4_FMC_NavRadioPage.ShowPage2(fmc);
             }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
@@ -333,10 +295,6 @@ class CJ4_FMC_NavRadioPage {
                         });
                     });
                 }
-            }
-            else if (value === FMCMainDisplay.clrValue) {
-                fmc.adf2Frequency = 0;
-                CJ4_FMC_NavRadioPage.ShowPage2(fmc);
             }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
@@ -368,7 +326,6 @@ class CJ4_FMC_NavRadioPage {
     }
     static ShowPage3(fmc) {
         fmc.clearDisplay();
-        fmc.registerPeriodicPageRefresh(() => CJ4_FMC_NavRadioPage.ShowPage3(fmc), 1000);
 
 		fmc._templateRenderer.setTemplateRaw([
             ["", "", "TCAS CONTROL[blue]"],
@@ -394,20 +351,30 @@ class CJ4_FMC_NavRadioPage {
      * @returns {Number} The parsed float number.
      */
     static parseRadioInput(input) {
-        const normalizeToHundreds = (freq) => freq > 100 ? freq : freq + 100;
+        const normalizeInput = (channel) => {
+            let normalized = channel > 100 ? channel : channel + 100;
+            let normalizedAsString = normalized.toFixed(3);
+
+            let channelEnd = normalizedAsString.substring(5);
+            if (channelEnd === "20" || channelEnd === "70") {
+                normalized += .005;
+            }
+
+            return normalized;
+        };
 
         if (input.indexOf('.') !== -1) {
-            return normalizeToHundreds(parseFloat(input));
+            return normalizeInput(parseFloat(input));
         }
         else {
             switch (input.length) {
                 case 3:
-                    return normalizeToHundreds(parseFloat(input) / 10);
+                    return normalizeInput(parseFloat(input) / 10);
                 case 4:
                 case 5:
-                    return normalizeToHundreds(parseFloat(input) / 100);
+                    return normalizeInput(parseFloat(input) / 100);
                 case 6:
-                    return normalizeToHundreds(parseFloat(input) / 1000);
+                    return normalizeInput(parseFloat(input) / 1000);
             }
         }
 
