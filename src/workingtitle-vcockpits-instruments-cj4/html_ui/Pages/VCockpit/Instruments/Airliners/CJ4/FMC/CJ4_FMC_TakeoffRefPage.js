@@ -67,7 +67,7 @@ class CJ4_FMC_TakeoffRefPage {
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "1/3[blue] ", "TAKEOFF REF[blue]"],
             [" RWY ID[blue]", "WIND[blue] "],
-            [depRunwayOutput + "[s-text]", fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
+            [depRunwayOutput + "[s-text]", fmc.takeoffWindDir.toString().padStart(3,"0") + "\xB0/" + fmc.takeoffWindSpeed.toString().padStart(3, " ")],
             [" RWY WIND[blue]", "OAT[blue] "],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.takeoffOat + "\xB0C"],
             [" RWY LENGTH[blue]", "QNH[blue] "],
@@ -80,9 +80,15 @@ class CJ4_FMC_TakeoffRefPage {
             [""]
         ]);
         fmc.onRightInput[0] = () => {
-            fmc.takeoffWindDir = new Number(fmc.inOut.slice(0, 3));
-            fmc.takeoffWindSpeed = new Number(fmc.inOut.slice(4, 7));
-            fmc.clearUserInput();
+            let windIn = fmc.inOut.split("/");
+            if(windIn.length == 2){
+                fmc.takeoffWindDir = new Number(windIn[0]);
+                fmc.takeoffWindSpeed = new Number(windIn[1]);
+                fmc.clearUserInput();
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
             { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         }
         fmc.onRightInput[1] = () => {
@@ -280,6 +286,10 @@ class CJ4_FMC_TakeoffRefPage {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
         }
         let tow = (grWtCell - 100);
+		
+		if (tow > 17110) { //Turn the takeoff weight yellow if it exceeds the maximum takeoff weight
+			tow = tow + "[yellow]";
+		}
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "3/3[blue] ", "TAKEOFF REF[blue]"],
             ["TOW/MTOW[blue]"],
