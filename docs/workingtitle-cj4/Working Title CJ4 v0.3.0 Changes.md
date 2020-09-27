@@ -2,15 +2,15 @@
 
 Welcome to the second installment of the Working Title CRJ (v0.3.0). This is still very much a beta. Thank you to everyone who contributed to this release. This update focuses on a number of fixes to the prior version, but also includes quite a number of new features.
 
-Demo Video: https://youtu.be/xO29LNrNY-8
+Demo Video: 9new link pending)
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder.
 
 ## Key Features
-* Complete rebuild of templating system to accommodate FMS3000 specific formatting 'quirks' including inconsistent page numbering, inconsistent indenting, etc.
-* Enhanced EXEC, ACT/MOD and Message handling and resolved several EXEC related bugs.
-* Added AoA ON/OFF/AUTO PFD Menu Line and adjusted AoA Show/Hide logic.
+* Complete rebuild of templating system to accommodate FMS3000 specific formatting 'quirks' including inconsistent page numbering, inconsistent indenting, proper color formatting, etc
+* Enhanced EXEC, ACT/MOD and Message handling and resolved several EXEC related bugs
+* Added AoA ON/OFF/AUTO PFD Menu Line and adjusted AoA Show/Hide logic
 * Updated LEGS page Layout
 * Built new FPLN pages
 * Further enhanced PERF pages, added temporary landing weight calculation (to be further refined with actual performance prediction)
@@ -82,3 +82,4 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
 * There are cosmetic issues regarding the PFD and MFD (shapes, text, alignments). The PFD and MFD have not gotten a full layout overhaul as of this time.
 * The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the various enhancements applied.
+* TUN page doesn't update automatically when radios are updated externally - reopening the TUN page will reflect these changes.
