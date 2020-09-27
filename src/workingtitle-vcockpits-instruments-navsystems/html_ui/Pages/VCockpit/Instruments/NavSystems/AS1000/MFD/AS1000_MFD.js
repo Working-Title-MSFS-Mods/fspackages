@@ -13,7 +13,7 @@ class AS1000_MFD extends BaseAS1000 {
         });
         this.loadSavedMapOrientation();
         this.pagesContainer = this.getChildById("RightInfos");
-        this.engineDisplay = new Engine("Engine", "LeftInfos");
+        this.engineDisplay = new WTEngine("Engine", "LeftInfos", this._xmlConfigPath);
         this.addIndependentElementContainer(this.engineDisplay);
         this.pageGroups = [
             new NavSystemPageGroup("MAP", this, [
@@ -793,7 +793,6 @@ class AS1000_MFD_WindData extends NavSystemElement {
         let heading = this.gps.trackup ? SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree") : 0;
         let adjusted = ((wind + 180) % 360 - heading).toString();
         if (adjusted != this.windValue) {
-            console.log(`R: ${wind} TU: ${this.gps.trackup} HDG: ${heading} ADJ: ${adjusted}`)
             this.svg.setAttribute("wind-direction", adjusted);
             this.windValue = adjusted;
         }
