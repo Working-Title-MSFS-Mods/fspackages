@@ -1101,18 +1101,16 @@ class PFD_WindData extends NavSystemElement {
             let windSpd = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
             let windDir = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree");
             let planeHdg = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
-            if (!onGround) {
-                this.svg.setAttribute("wind-mode", this.mode.toString());
-                switch (this.mode) {
-                    case 3:
-                        this.svg.setAttribute("wind-true-direction", (windSpd >= 1 ? windDir : 0).toString());
-                    case 2:
-                    case 1:
-                        this.svg.setAttribute("wind-direction",
-                            (windSpd >= 1 ? ((windDir + 180) % 360 - planeHdg) : 0).toString());
-                        this.svg.setAttribute("wind-strength", windSpd);
-                        break;
-                }
+            this.svg.setAttribute("wind-mode", this.mode.toString());
+            switch (this.mode) {
+                case 3:
+                    this.svg.setAttribute("wind-true-direction", (windSpd >= 1 ? windDir : 0).toString());
+                case 2:
+                case 1:
+                    this.svg.setAttribute("wind-direction",
+                        (windSpd >= 1 ? ((windDir + 180) % 360 - planeHdg) : 0).toString());
+                    this.svg.setAttribute("wind-strength", windSpd);
+                    break;
             }
         }   
     }
