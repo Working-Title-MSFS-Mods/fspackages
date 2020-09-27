@@ -41,6 +41,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Added further error protection on all PERF pages
 * Updated landing weight to a calculated field (to be enhanced further)
 * Takeoff and landing weights will turn yellow when they have exceeded the maximum values
+* Fuel used page updated with reset button working
 
 ### TUN Page
 * Updated layout and fields
@@ -83,3 +84,4 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * There are cosmetic issues regarding the PFD and MFD (shapes, text, alignments). The PFD and MFD have not gotten a full layout overhaul as of this time.
 * The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the various enhancements applied.
 * TUN page doesn't update automatically when radios are updated externally - reopening the TUN page will reflect these changes.
+* Performance pages don't currently have input error handling for wind, temp or QNH. These values must be entered correctly and completly in the proper format for the page to work. Note that valid wind directions are 001 through 360 as of now. 
