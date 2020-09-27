@@ -66,15 +66,15 @@ class CJ4_FMC_TakeoffRefPage {
 
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "1/3[blue] ", "TAKEOFF REF[blue]"],
-            ["RWY ID[blue]", "WIND[blue]"],
+            [" RWY ID[blue]", "WIND[blue] "],
             [depRunwayOutput + "[s-text]", fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
-            ["RWY WIND[blue]", "OAT[blue]"],
+            [" RWY WIND[blue]", "OAT[blue] "],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.takeoffOat + "\xB0C"],
-            ["RWY LENGTH[blue]", "QNH[blue]"],
+            [" RWY LENGTH[blue]", "QNH[blue] "],
             [Math.round(depRunwayLength) + " FT", fmc.takeoffQnh + ""],
-            ["RWY SLOPE[blue]", "P ALT[blue]"],
+            [" RWY SLOPE[blue]", "P ALT[blue] "],
             ["--.-%", fmc.takeoffPressAlt + " FT"],
-            ["RWY COND[blue]"],
+            [" RWY COND[blue]"],
             [depRunwayConditionActive],
             [""],
             [""]
@@ -210,15 +210,19 @@ class CJ4_FMC_TakeoffRefPage {
         let takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
             : "OFF[s-text]/[white]ON[green]";
 
+		if (tow > 17110) { //Turn the takeoff weight yellow if it exceeds the maximum takeoff weight
+			tow = tow + "[yellow]";
+		}
+
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "2/3[blue] ", "TAKEOFF REF[blue]"],
-            ["A/I[blue]", "V[d-text blue]1:[s-text blue] " + v1.toFixed(0).padStart(3, " ") + "[s-text]"],
+            [" A/I[blue]", "V[d-text blue]1:[s-text blue] " + v1.toFixed(0).padStart(3, " ") + "[s-text]"],
             [takeoffAntiIceActive],
-            ["T/O FLAPS[blue]", "V[d-text blue]R:[s-text blue] " + vR.toFixed(0).padStart(3, " ") + "[s-text]"],
+            [" T/O FLAPS[blue]", "V[d-text blue]R:[s-text blue] " + vR.toFixed(0).padStart(3, " ") + "[s-text]"],
             [takeoffFlapsActive],
-            ["TOW/ GWT/MTOW[blue]", "V[d-text blue]2:[s-text blue] " + v2.toFixed(0).padStart(3, " ") + "[s-text]"],
+            [" TOW/ GWT/MTOW[blue]", "V[d-text blue]2:[s-text blue] " + v2.toFixed(0).padStart(3, " ") + "[s-text]"],
             [tow + "/" + grWtCell + "/17110"],
-            ["TOFL / " + depRunway + "[blue]", "V[d-text blue]T:[s-text blue] 140[s-text]"],
+            [" TOFL / " + depRunway + "[blue]", "V[d-text blue]T:[s-text blue] 140[s-text]"],
             [fmc.endTakeoffDist.toFixed(0) + " / " + Math.round(depRunwayLength) + " FT"],
             [""],
             [""],
