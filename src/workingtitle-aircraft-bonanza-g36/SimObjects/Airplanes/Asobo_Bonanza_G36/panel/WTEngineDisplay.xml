@@ -269,15 +269,28 @@
 		<Text>
 			<Left fontsize="8">RANGE NM</Left>			
 			<Right fontsize="8">
-				<ToFixed precision="0">
-					<Multiply>
-						<Simvar name="GROUND VELOCITY:1" unit="knots"/>
-						<Divide>
-							<Simvar name="FUEL TOTAL QUANTITY:1" unit="gallon"/>
-							<Simvar name="ENG FUEL FLOW GPH:1" unit="gallons per hour"/>
-						</Divide>
-					</Multiply>
-				</ToFixed>
+                <If>
+                    <Condition>
+                        <Greater>
+                            <Simvar name="ENG FUEL FLOW GPH:1" unit="gallons per hour"/>
+                            <Constant>0.1</Constant>
+                        </Greater>
+                    </Condition>
+                    <Then>
+                        <ToFixed precision="0">
+                            <Multiply>
+                                <Simvar name="GROUND VELOCITY:1" unit="knots"/>
+                                <Divide>
+                                    <Simvar name="FUEL TOTAL QUANTITY:1" unit="gallon"/>
+                                    <Simvar name="ENG FUEL FLOW GPH:1" unit="gallons per hour"/>
+                                </Divide>
+                            </Multiply>
+                        </ToFixed>
+                    </Then>
+                    <Else>
+                        <Constant>X</Constant>
+                    </Else>
+                </If>
 			</Right>
 		</Text>
 		
