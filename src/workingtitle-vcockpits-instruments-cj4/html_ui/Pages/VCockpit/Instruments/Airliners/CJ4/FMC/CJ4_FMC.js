@@ -37,7 +37,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._fpHasChanged = false;
         this._activatingDirectTo = false;
         this._templateRenderer = undefined;
-        this._msg = "";		
+        this._msg = "";
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -109,7 +109,9 @@ class CJ4_FMC extends FMCMainDisplay {
                     this.fpHasChanged = false;
                     console.log("this.fpHasChanged = false");
                     this.messageBox = "";
-                    this.refreshPageCallback();
+                    if (this.refreshPageCallback) {
+                        this.refreshPageCallback();
+                    }
                 });
             }
             else {
@@ -201,7 +203,7 @@ class CJ4_FMC extends FMCMainDisplay {
         return false;
     }
 
-    setMsg(value = ""){
+    setMsg(value = "") {
         this._msg = value;
         this._templateRenderer.setMsg(value);
     }
