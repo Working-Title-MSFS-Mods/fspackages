@@ -1,7 +1,7 @@
-<AssetPackage Name="workingtitle-aircraft-bonanza-g36" Version="0.1.0">
+<AssetPackage Name="workingtitle-experimental-ui" Version="0.1.0">
 	<ItemSettings>
 		<ContentType>CUSTOM</ContentType>
-		<Title>Bonanza G36</Title>
+		<Title>Experimental UI</Title>
 		<Manufacturer/>
 		<Creator>Working Title</Creator>
 	</ItemSettings>
@@ -10,12 +10,12 @@
 		<CanBeReferenced>false</CanBeReferenced>
 	</Flags>
 	<AssetGroups>
-		<AssetGroup Name="workingtitle-bonanza-g36">
+		<AssetGroup Name="workingtitle-experimental-ui">
 			<Type>Copy</Type>
 			<Flags>
 				<FSXCompatibility>false</FSXCompatibility>
 			</Flags>
-			<AssetDir>src\workingtitle-aircraft-bonanza-g36</AssetDir>
+			<AssetDir>src\workingtitle-experimental-ui</AssetDir>
 			<OutputDir>.\</OutputDir>
 		</AssetGroup>
 	</AssetGroups>
