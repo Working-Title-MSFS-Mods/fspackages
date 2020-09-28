@@ -823,6 +823,7 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
         }
         
         let result = "";
+        let isValidValue = !isNaN(value) && value < 86400; // A day is probably more than worth showing...
         for(let i = 0; i < this.tokens.length; i++) {
             let token = this.tokens[i];
             switch (token.type) {
@@ -830,7 +831,11 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
                     result += token.value;
                     break;
                 case "variable": 
-                    result += this.getVariable(token.variable, token.length, value);
+                    if (isValidValue) {
+                        result += this.getVariable(token.variable, token.length, value);
+                    } else {
+                        result += "_________".slice(0, token.length);
+                    }
                     break;
             }
         }
@@ -838,7 +843,7 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
         return result;
     }
     
-    getVariable(variable, length, value) {
+    getVariable(variable, length, value) {        
         let v = 0;
         switch(variable) {
             case "h" : v = this.getHours(value); break;
