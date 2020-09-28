@@ -33,31 +33,23 @@
                         <div id="TopBox">
                             <div id="Speed">
                                 <svg>
-                                    <text id="Wind_Strength" class="Wind" x="168%" y="-284%" alignment-baseline="baseline">--</text>
-                                    <polygon id="Wind_Arrow" points="-5 20, 5 20, 5 -20, 15 -20, 0 -40, -15 -20, -5 -20" transform="translate(125 -360) scale(0.35) rotate(0)" fill="magenta" display="none" />
+                                    <text id="Wind_Strength" class="Wind" x="130px" y="-40px" alignment-baseline="baseline">--</text>
+                                    <polygon id="Wind_Arrow" points="-5 20, 5 20, 5 -20, 15 -20, 0 -40, -15 -20, -5 -20" transform="translate(125 -15) scale(0.40) rotate(0)" fill="magenta" display="none" />
                                 </svg>
                             </div>
 
                             <div id="Approach">
-                                <svg>
-                                    <text id="APP_Type" class="Large" x="0%" y="20%" alignment-baseline="baseline"></text>
-                                    <text id="APP_Freq" class="Small" x="0%" y="35%" alignment-baseline="baseline">---</text>
-                                    <text id="APP_Course" class="Small" x="0%" y="50%" alignment-baseline="baseline">CRS</text>
-                                    <text id="APP_Course_Value" class="Value" x="100%" y="50%" alignment-baseline="baseline"></text>
-                                    <text id="APP_Info" class="Small" x="0%" y="65%" alignment-baseline="baseline">---</text>
-                                </svg>
+                                <div><span id="APP_Type" class="Large"></span> <span id="APP_Freq" class="Small">----</span></div>
+                                <div><span id="APP_Course" class="Small">CRS</span> <span id="APP_Course_Value" class="Large">---</span></div>
+                                <div id="APP_Info" class="Small">&nbsp</div>
+                                <div><span id="APP_Distance_Value" class="Large">----</span> <span id="APP_Distance_Units" class="Small">NM</span></div>
                             </div>
-
+    
                             <div id="Waypoint">
-                                <svg>
-                                    <text id="WP_Type" class="Large" x="0%" y="20%" alignment-baseline="baseline">FMS1</text>
-                                    <text id="WP_Track" class="Small" x="0%" y="35%" alignment-baseline="baseline">TRK</text>
-                                    <text id="WP_Track_Value" class="Value" x="100%" y="35%" alignment-baseline="baseline">---&deg</text>
-                                    <text id="WP_Name" class="Small" x="0%" y="50%" alignment-baseline="baseline"></text>
-                                    <text id="WP_Distance_Value" class="Small" x="0%" y="65%" alignment-baseline="baseline">-.-</text>
-                                    <text id="WP_Distance_Units" class="Units" x="100%" y="65%" alignment-baseline="baseline">NM</text>
-                                    <text id="WP_Time" class="Small" x="0%" y="80%" alignment-baseline="baseline">--:--</text>
-                                </svg>
+                                <div id="WP_Type" class="Large">FMS1</div>
+                                <div id="WP_Track" class="Small">DTK <span id="WP_Track_Value" class="Large">---</span></div>
+                                <div id="WP_Name" class="Small">&nbsp</div>
+                                <div><span id="WP_Distance_Value" class="Large">----</span> <span id="WP_Distance_Units" class="Small">NM</span></div>
                             </div>
                         </div>
 
@@ -414,7 +406,7 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/BaseNDCompass.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/MFD/NDCompass.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/MFD/NDInfo.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/NDInfo.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/CJ4_Shared.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/MFD/CJ4_MFD.js"></script>
