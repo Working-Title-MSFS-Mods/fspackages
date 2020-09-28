@@ -183,13 +183,17 @@ class CJ4_FMC_DepArrPage {
                 }
                 fmc.onExecDefault();
             }
-            CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
         };
+
+        fmc.refreshPageCallback = () => {
+            CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
+        }
+
         //end of CWB EXEC handling
         modStr = fmc.fpHasChanged ? "MOD[white] " : "ACT[blue] ";
 
         fmc._templateRenderer.setTemplateRaw([
-            [" " + modStr + originIdent + " DEPART", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
+            [" " + modStr + originIdent + " DEPART[blue]", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
             [" DEPARTURES[blue]", "RUNWAYS [blue]"],
             ...rows,
             ["-----------------------[blue]"],
