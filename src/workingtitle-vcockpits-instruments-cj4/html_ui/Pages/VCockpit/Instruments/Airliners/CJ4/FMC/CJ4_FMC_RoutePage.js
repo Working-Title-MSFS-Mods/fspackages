@@ -342,7 +342,7 @@ class CJ4_FMC_RoutePage {
                 }
                 fmc.onExecDefault();
             }
-            fmc.refreshPageCallback = () => CJ4_FMC_RoutePage.ShowPage2(fmc);
+            fmc.refreshPageCallback = () => CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
         };
 
         fmc.onRightInput[5] = () => {
