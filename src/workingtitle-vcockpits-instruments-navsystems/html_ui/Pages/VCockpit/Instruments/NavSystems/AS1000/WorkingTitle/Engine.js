@@ -49,8 +49,8 @@ class WTEngine extends Engine {
                         });
                     }
                     this.engineDisplayPages[id] = engineDisplayPage;
-                    if (this.selectedEnginePage == null) {
-                        this.selectedEnginePage = id;
+                    if (i == 0) {
+                        this.selectEnginePage(id);
                     }
                 }
             }
