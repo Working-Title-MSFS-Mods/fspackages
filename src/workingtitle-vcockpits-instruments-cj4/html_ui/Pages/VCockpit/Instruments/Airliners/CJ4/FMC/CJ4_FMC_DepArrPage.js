@@ -183,7 +183,7 @@ class CJ4_FMC_DepArrPage {
                 }
                 fmc.onExecDefault();
             }
-            fmc.refreshPageCallback = () => fmc.onDepArr();
+            CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
         };
         //end of CWB EXEC handling
         modStr = fmc.fpHasChanged ? "MOD[white] " : "ACT[blue] ";
