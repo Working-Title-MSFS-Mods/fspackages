@@ -215,7 +215,7 @@ class CJ4_FMC_RoutePage {
         let modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
         fmc._templateRenderer.setTemplateRaw([
-            [" " + modStr + " FPLN[blue]", "1/2 [blue]"],
+            [" " + modStr + " FPLN[blue]", "1/" + pageCount + " [blue]"],
             [" ORIGIN[blue]", "DEST[blue] ", "DIST[blue]"],
             [originCell, destinationCell, distanceCell],
             [" ROUTE[blue]", "ALTN[blue] "],
@@ -364,7 +364,7 @@ class CJ4_FMC_RoutePage {
         let modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
         fmc._templateRenderer.setTemplateRaw([
-            [" " + modStr + " FPLN[blue]", "2/2 [blue]"],
+            [" " + modStr + " FPLN[blue]", page + "/" + pageCount +" [blue]"],
             [""],
             rows[0],
             [""],
