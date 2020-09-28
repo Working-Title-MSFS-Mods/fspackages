@@ -249,6 +249,7 @@ class CJ4_FMC_RoutePage {
             if (allRows.rows[i + offset]) {
                 rows[i] = allRows.rows[i + offset];
                 let fpIndex = allRows.fpIndexes[i + offset];
+                // DELETE WAYPOINT
                 fmc.onRightInput[i] = () => {
                     fmc.setMsg("Working...");
                     let value = fmc.inOut;
@@ -258,8 +259,13 @@ class CJ4_FMC_RoutePage {
                             fmc.setMsg();
                             CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
                         });
+                    } else if (value.length > 0) {
+                        fmc.clearUserInput();
+                        fmc.insertWaypoint(value, fpIndex, () => {
+                            fmc.setMsg();
+                            CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
+                        });
                     }
-                    fmc.setMsg();
                 };
             }
             else if (!showInput) {
@@ -350,6 +356,7 @@ class CJ4_FMC_RoutePage {
                 CJ4_FMC_PerfInitPage.ShowPage2(fmc);
             }
         };
+
         fmc.onLeftInput[5] = () => {
             if (lsk6Field == "<CANCEL MOD") {
                 if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
@@ -364,7 +371,7 @@ class CJ4_FMC_RoutePage {
         let modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
         fmc._templateRenderer.setTemplateRaw([
-            [" " + modStr + " FPLN[blue]", page + "/" + pageCount +" [blue]"],
+            [" " + modStr + " FPLN[blue]", page + "/" + pageCount + " [blue]"],
             [""],
             rows[0],
             [""],
