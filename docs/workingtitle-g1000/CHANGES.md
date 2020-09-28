@@ -6,7 +6,8 @@
 * Fixed unwanted U-turn on ACTIVATE APPROACH
 * Fixed reversed behavior of NOSE UP/DN buttons in FLC mode
 * Added HPa mode to altimeter
-* Added a preference saving system tied to plane model which preserves the following settings:
+* Added a preference saving system tied to plane model
+* Configured it to currently preserve the following settings:
   * PFD and MFD brightness
   * V Speeds
   * Track up mode
