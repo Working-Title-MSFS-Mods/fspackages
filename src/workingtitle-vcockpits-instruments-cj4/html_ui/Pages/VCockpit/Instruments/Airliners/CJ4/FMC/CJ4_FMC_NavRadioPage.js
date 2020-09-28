@@ -120,19 +120,12 @@ class CJ4_FMC_NavRadioPage {
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 108 && numValue <= 117.95 && RadioNav.isHz50Compliant(numValue)) {
                 fmc.vor1Frequency = numValue;
-                if (fmc.isRadioNavActive()) {
+                fmc.radioNav.setVORStandbyFrequency(1, numValue).then(() => {
+                    fmc.radioNav.swapVORFrequencies(1);
                     fmc.requestCall(() => {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
-                }
-                else {
-                    fmc.radioNav.setVORStandbyFrequency(1, numValue).then(() => {
-                        fmc.radioNav.swapVORFrequencies(1);
-                        fmc.requestCall(() => {
-                            CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                        });
-                    });
-                }
+                });
             }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
@@ -148,19 +141,12 @@ class CJ4_FMC_NavRadioPage {
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 108 && numValue <= 117.95 && RadioNav.isHz50Compliant(numValue)) {
                 fmc.vor2Frequency = numValue;
-                if (fmc.isRadioNavActive()) {
+                fmc.radioNav.setVORStandbyFrequency(2, numValue).then(() => {
+                    fmc.radioNav.swapVORFrequencies(2);
                     fmc.requestCall(() => {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
-                }
-                else {
-                    fmc.radioNav.setVORStandbyFrequency(2, numValue).then(() => {
-                        fmc.radioNav.swapVORFrequencies(2);
-                        fmc.requestCall(() => {
-                            CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                        });
-                    });
-                }
+                });
             }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
@@ -176,18 +162,11 @@ class CJ4_FMC_NavRadioPage {
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 100 && numValue <= 1799) {
                 fmc.adf1Frequency = numValue;
-                if (fmc.isRadioNavActive()) {
+                fmc.radioNav.setADFActiveFrequency(1, numValue).then(() => {
                     fmc.requestCall(() => {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
-                }
-                else {
-                    fmc.radioNav.setADFActiveFrequency(1, numValue).then(() => {
-                        fmc.requestCall(() => {
-                            CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                        });
-                    });
-                }
+                });
             }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
@@ -203,18 +182,11 @@ class CJ4_FMC_NavRadioPage {
             fmc.clearUserInput();
             if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
                 fmc.atc1Frequency = numValue;
-                if (fmc.isRadioNavActive()) {
+                SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", Avionics.Utils.make_xpndr_bcd16(numValue)).then(() => {
                     fmc.requestCall(() => {
                         CJ4_FMC_NavRadioPage.ShowPage1(fmc);
                     });
-                }
-                else {
-                    SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", Avionics.Utils.make_xpndr_bcd16(numValue)).then(() => {
-                        fmc.requestCall(() => {
-                            CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                        });
-                    });
-                }
+                });
             }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
@@ -256,18 +228,11 @@ class CJ4_FMC_NavRadioPage {
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 100 && numValue <= 1799) {
                 fmc.adf1Frequency = numValue;
-                if (fmc.isRadioNavActive()) {
+                fmc.radioNav.setADFActiveFrequency(1, numValue).then(() => {
                     fmc.requestCall(() => {
-                        CJ4_FMC_NavRadioPage.ShowPage1(fmc);
+                        CJ4_FMC_NavRadioPage.ShowPage2(fmc);
                     });
-                }
-                else {
-                    fmc.radioNav.setADFActiveFrequency(1, numValue).then(() => {
-                        fmc.requestCall(() => {
-                            CJ4_FMC_NavRadioPage.ShowPage2(fmc);
-                        });
-                    });
-                }
+                });
             }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
@@ -283,18 +248,11 @@ class CJ4_FMC_NavRadioPage {
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 100 && numValue <= 1799) {
                 fmc.adf2Frequency = numValue;
-                if (fmc.isRadioNavActive()) {
+                fmc.radioNav.setADFActiveFrequency(2, numValue).then(() => {
                     fmc.requestCall(() => {
-                        CJ4_FMC_NavRadioPage.ShowPage1(fmc);
+                        CJ4_FMC_NavRadioPage.ShowPage2(fmc);
                     });
-                }
-                else {
-                    fmc.radioNav.setADFActiveFrequency(2, numValue).then(() => {
-                        fmc.requestCall(() => {
-                            CJ4_FMC_NavRadioPage.ShowPage2(fmc);
-                        });
-                    });
-                }
+                });
             }
             else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);

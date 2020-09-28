@@ -553,3 +553,106 @@ cj4-pfd-element {
         width: 100%;
         height: 100%; }
 
+#GraduationsGroup {
+  transform: translateX(4px);
+}
+
+#GraduationsGroup text {
+  font-size: 24px;
+}
+
+.Large {
+  font-size: 32px;
+  line-height: 28px
+}
+
+.Small {
+  font-size: 22px;
+}
+
+#Waypoint {
+  color: magenta;
+}
+
+#Approach,
+#AutopilotInfos,
+#Coms div.Modifiable {
+  color: #11d011 !important;
+}
+
+cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox {
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  margin: 54px 8px
+}
+
+#TopBox div {
+  margin: 0;
+  padding: 0;
+}
+
+cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox #Speed {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#currentRefGroup text {
+  font-size: 34px;
+  fill: #11d011;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #AP_LateralActive,
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_VerticalActive,
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference {
+  color: #11d011 !important;
+  font-size: 22px
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #AP_LateralArmed,
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_Armed,
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ArmedReference {
+  font-size: 22px;
+  margin-bottom: -6px;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos {
+  height: 10%;
+}
+
+#Airspeed #Graduations text {
+  font-size: 24px;
+}
+
+cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
+  font-size: 20px;
+}
+
+#NDMapOverlay #selectedRefGroup text:first-child {
+  font-size: 28px;
+}
+
+#NDMapOverlay #selectedRefGroup text:last-child {
+  font-size: 40px;
+}
+
+#NDMapOverlay g#selectedRefGroup {
+  transform: translateY(18px);
+}
+
+#VerticalSpeed #CenterGroup > text {
+  fill: #11d011;
+  font-size: 22px;
+}
+
+#Airspeed #CenterGroup #CursorGroup text,
+#Altimeter #CenterGroup #CursorGroup text {
+  fill: #11d011;
+}
+
+#Airspeed > text:last-child {
+  fill: #11d011;
+  font-size: 30px;
+}
