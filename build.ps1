@@ -1,7 +1,7 @@
 param (
     [Parameter(Mandatory = $true)][string]$Project,
     [string]$Package,
-    [string]$MinimumGameVersion = "1.7.14",
+    [string]$MinimumGameVersion = "1.9.2",
     [string]$OutputPath = ".\build\",
     [switch]$WatchFiles = $false,
     [switch]$CleanBuild = $false,
@@ -22,8 +22,10 @@ function Update-Packages {
     if ($Merge -and ($CleanBuild -eq $true)) {
         $cleanPath = Join-Path $OutputPath $Merge
 
-        Write-Host "Cleaning $cleanPath..."
-        Remove-Item -Path $cleanPath -Recurse -ErrorAction SilentlyContinue
+        if ((Test-Path -Path $cleanPath) -eq $true) {
+            Write-Host "Cleaning $cleanPath.."
+            Remove-Item -Path $cleanPath -Recurse -ErrorAction SilentlyContinue
+        }
     }
 
     foreach ($packageEntry in $projectFile.Project.Packages.Package) {
