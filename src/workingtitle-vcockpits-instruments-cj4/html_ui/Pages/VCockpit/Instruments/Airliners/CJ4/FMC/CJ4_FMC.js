@@ -145,6 +145,7 @@ class CJ4_FMC extends FMCMainDisplay {
     Update() {
         super.Update();
         this.updateAutopilot();
+        this.adjustFuelConsumption();
     }
     onInputAircraftSpecific(input) {
         console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
@@ -418,6 +419,61 @@ class CJ4_FMC extends FMCMainDisplay {
                     this.radioNav.setVHFStandbyFrequency(this.instrumentIndex, 2, this.pre2Frequency);
                 }
             }
+        }
+    }
+
+    /**
+     * Adjusts fuel consumption by returning fuel to the tanks and updates the
+     * local fuel consumption lvar.
+     */
+    adjustFuelConsumption() {
+
+        const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
+
+        const leftFuelQtyGals = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons");
+        const rightFuelQtyGals = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons");
+
+        const leftFuelQty = leftFuelQtyGals * fuelWeight;
+        const rightFuelQty = rightFuelQtyGals * fuelWeight;
+        
+        if (!this.previousTime) {
+            this.previousTime = performance.now();
+            this.previousLeftFuelQty = leftFuelQty;
+            this.previousRightFuelQty = rightFuelQty;
+        }
+        else {
+            const currentTime = performance.now();
+            const deltaTimeHours = (currentTime - this.previousTime) / (1000 * 60 * 60);
+
+            const thrustLeft = SimVar.GetSimVarValue("TURB ENG JET THRUST:1", "pounds");
+            const thrustRight = SimVar.GetSimVarValue("TURB ENG JET THRUST:2", "pounds");
+
+            const fuelUsed = (this.previousLeftFuelQty + this.previousRightFuelQty) - (leftFuelQty + rightFuelQty);
+            const estFuelFlow = fuelUsed / deltaTimeHours;
+            if (fuelUsed !== 0) {
+                const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
+                const tsfc = (1 + (.5 * mach)) * 0.56;
+
+                const targetFuelFlow = (thrustLeft + thrustRight) * tsfc;
+                const correctionFactor = targetFuelFlow / estFuelFlow;
+                
+                const leftCorrectedFuelUsed = (this.previousLeftFuelQty - leftFuelQty) * correctionFactor;
+                const rightCorrectedFuelUsed = (this.previousRightFuelQty - rightFuelQty) * correctionFactor;
+
+                const leftAdjustment = ((this.previousLeftFuelQty - leftFuelQty) - leftCorrectedFuelUsed) / fuelWeight;
+                const rightAdjustment = ((this.previousRightFuelQty- rightFuelQty) - rightCorrectedFuelUsed) / fuelWeight;
+
+                SimVar.SetSimVarValue("FUEL TANK LEFT MAIN QUANTITY", "gallons", leftFuelQtyGals + leftAdjustment);
+                SimVar.SetSimVarValue("FUEL TANK RIGHT MAIN QUANTITY", "gallons", rightFuelQtyGals + rightAdjustment);
+
+                SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", thrustLeft * tsfc);
+                SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", thrustRight * tsfc);
+
+                this.previousLeftFuelQty = (leftFuelQtyGals + leftAdjustment) * fuelWeight;
+                this.previousRightFuelQty = (rightFuelQtyGals + rightAdjustment) * fuelWeight;
+            }
+        
+            this.previousTime = currentTime;
         }
     }
 }
