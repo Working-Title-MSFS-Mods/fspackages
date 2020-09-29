@@ -4,7 +4,8 @@ param (
     [string]$MinimumGameVersion = "1.7.14",
     [string]$OutputPath = ".\build\",
     [switch]$WatchFiles = $false,
-    [switch]$CleanBuild = $false
+    [switch]$CleanBuild = $false,
+    [string]$Merge
 )
 
 # global var and action for filewatcher
@@ -17,6 +18,13 @@ function Update-Packages {
     )
     [XML]$projectFile = Get-Content $Project
     $packages = @{}
+
+    if ($Merge -and ($CleanBuild -eq $true)) {
+        $cleanPath = Join-Path $OutputPath $Merge
+
+        Write-Host "Cleaning $cleanPath..."
+        Remove-Item -Path $cleanPath -Recurse -ErrorAction SilentlyContinue
+    }
 
     foreach ($packageEntry in $projectFile.Project.Packages.Package) {
         [XML]$packageFile = Get-Content $packageEntry
@@ -44,9 +52,13 @@ function Update-Packages {
         }
     
         $packagePath = Join-Path $OutputPath $packageName
+        if ($Merge) {
+            $packagePath = Join-Path $OutputPath $Merge
+        }
+
         $manifestPath = Join-Path $packagePath "manifest.json"
     
-        if ($CleanBuild -eq $true) {
+        if (($CleanBuild -eq $true) -and !$Merge) {
             Write-Host "Cleaning $packagePath..."
             Remove-Item -Path $packagePath -Recurse -ErrorAction SilentlyContinue
         }
