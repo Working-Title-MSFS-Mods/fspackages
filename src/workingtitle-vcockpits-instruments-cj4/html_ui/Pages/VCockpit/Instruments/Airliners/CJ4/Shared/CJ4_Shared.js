@@ -2822,14 +2822,14 @@ class CJ4_NavBarContainer extends NavSystemElementContainer {
                 this.ratElement.textContent = "---";
         }
         if (this.utcElement) {
-            var simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
-            var hours = new String(Math.trunc(simtime / 3600));
-            var minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
-            var hourspad = hours.padStart(2, "0");
-            var minutespad = minutes.padStart(2, "0");
-            var utc = new String(hourspad + ":" + minutespad);
-            if (utc)
-                this.utcElement.textContent = utc;
+            let utcTime = "";
+            const value = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
+            if (value) {
+                const seconds = Number.parseInt(value);
+                const time = Utils.SecondsToDisplayTime(seconds, true, true, false);
+                utcTime = time.toString();
+            }
+            this.utcElement.textContent = utcTime;
         }
         if (this.gsElement) {
             var gs = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
@@ -2981,6 +2981,7 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_BARO_VAL"] = 25] = "MIN_ALT_BARO_VAL";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_RADIO_VAL"] = 26] = "MIN_ALT_RADIO_VAL";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 27] = "SYS_SRC";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["AOA"] = 28] = "AOA";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
     constructor() {
@@ -3127,9 +3128,14 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("UNITS", this.textSize, 0.3);
-                this.addList("PRESS", this.textSize, ["INHG", "HPA"], [CJ4_PopupMenu_Key.UNITS_PRESS]);
+                //this.addTitle("UNITS", this.textSize, 0.3);
+                this.addList("PRESS", this.textSize, ["IN", "HPA"], [CJ4_PopupMenu_Key.UNITS_PRESS]);
                 this.addList("MTR ALT", this.textSize, ["OFF", "ON"], [CJ4_PopupMenu_Key.UNITS_MTR_ALT]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addList("AOA DISP", this.textSize, ["AUTO", "ON", "OFF"], [CJ4_PopupMenu_Key.AOA]);
             }
             this.endSection();
         }

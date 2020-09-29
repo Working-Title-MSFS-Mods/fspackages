@@ -37,7 +37,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._fpHasChanged = false;
         this._activatingDirectTo = false;
         this._templateRenderer = undefined;
-        this._msg = "";
+        this._msg = "";		
     }
     get templateID() { return "CJ4_FMC"; }
 
