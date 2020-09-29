@@ -1,60 +1,61 @@
+<ModelBehaviors>
+	<Include RelativeFile="Subtemplates\\Passenger_Subtemplates.xml"/>
+	<!-- Passenger ############################################## -->
+	<Template Name="ASOBO_PASSENGER_Switch_Cabin_Heat_Template">
+		<UseTemplate Name="ASOBO_PASSENGER_Switch_Cabin_Heat_SubTemplate">
+		</UseTemplate>
+	</Template>
 
-<Include File="Subtemplates\\Passenger_Subtemplates.xml"/>
-<!-- Passenger ############################################## -->
-<Template Name="ASOBO_PASSENGER_Switch_Cabin_Heat_Template">
-	<UseTemplate Name="ASOBO_PASSENGER_Switch_Cabin_Heat_SubTemplate">
-	</UseTemplate>
-</Template>
+	<Template Name="ASOBO_PASSENGER_Switch_Cabin_Air_Template">
+		<UseTemplate Name="ASOBO_PASSENGER_Switch_Cabin_Air_SubTemplate">
+		</UseTemplate>
+	</Template>
 
-<Template Name="ASOBO_PASSENGER_Switch_Cabin_Air_Template">
-	<UseTemplate Name="ASOBO_PASSENGER_Switch_Cabin_Air_SubTemplate">
-	</UseTemplate>
-</Template>
+	<Template Name="ASOBO_PASSENGER_Switch_Climate_Template">
+		<Component ID="#NODE_ID#" Node="#NODE_ID#">
+			<UseTemplate Name="ASOBO_GT_Switch_3States">
+				<COUNT>3</COUNT>
+				<CODE_POS_0>
+					(* OFF *)
+					0 (&gt;L:CLIMATE_CONTROL)
+				</CODE_POS_0>
+				<CODE_POS_1>
+					(* NORM *)
+					1 (&gt;L:CLIMATE_CONTROL)
+				</CODE_POS_1>
+				<CODE_POS_2>
+					(* COMP ON *)
+					2 (&gt;L:CLIMATE_CONTROL)
+				</CODE_POS_2>
+			</UseTemplate>
+		</Component>
+	</Template>
 
-<Template Name="ASOBO_PASSENGER_Switch_Climate_Template">
+	<Template Name="ASOBO_PASSENGER_Switch_PRESSOURCE_Template">
 	<Component ID="#NODE_ID#" Node="#NODE_ID#">
-		<UseTemplate Name="ASOBO_GT_Switch_3States">
+		<UseTemplate Name="ASOBO_GT_Switch_5States">
 			<COUNT>3</COUNT>
 			<CODE_POS_0>
 				(* OFF *)
-				0 (&gt;L:CLIMATE_CONTROL)
+				0 (&gt;L:PRESSOURCE)
 			</CODE_POS_0>
 			<CODE_POS_1>
-				(* NORM *)
-				1 (&gt;L:CLIMATE_CONTROL)
+				(* LEFT *)
+				1 (&gt;L:PRESSOURCE)
 			</CODE_POS_1>
 			<CODE_POS_2>
-				(* COMP ON *)
-				2 (&gt;L:CLIMATE_CONTROL)
+				(* NORM *)
+				2 (&gt;L:PRESSOURCE)
 			</CODE_POS_2>
+			<CODE_POS_3>
+				(* RIGHT *)
+				3 (&gt;L:PRESSOURCE)
+			</CODE_POS_3>
+			<CODE_POS_4>
+				(* FRESH *)
+				4 (&gt;L:PRESSOURCE)
+			</CODE_POS_4>
 		</UseTemplate>
 	</Component>
-</Template>
-
-<Template Name="ASOBO_PASSENGER_Switch_PRESSOURCE_Template">
-<Component ID="#NODE_ID#" Node="#NODE_ID#">
-	<UseTemplate Name="ASOBO_GT_Switch_5States">
-		<COUNT>3</COUNT>
-		<CODE_POS_0>
-			(* OFF *)
-			0 (&gt;L:PRESSOURCE)
-		</CODE_POS_0>
-		<CODE_POS_1>
-			(* LEFT *)
-			1 (&gt;L:PRESSOURCE)
-		</CODE_POS_1>
-		<CODE_POS_2>
-			(* NORM *)
-			2 (&gt;L:PRESSOURCE)
-		</CODE_POS_2>
-		<CODE_POS_3>
-			(* RIGHT *)
-			3 (&gt;L:PRESSOURCE)
-		</CODE_POS_3>
-		<CODE_POS_4>
-			(* FRESH *)
-			4 (&gt;L:PRESSOURCE)
-		</CODE_POS_4>
-	</UseTemplate>
-</Component>
-</Template>
+	</Template>
+</ModelBehaviors>

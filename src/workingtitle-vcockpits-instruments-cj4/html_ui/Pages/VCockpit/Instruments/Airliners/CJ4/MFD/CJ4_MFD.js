@@ -359,7 +359,7 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
             else {
                 this._previousWaypointContainer.style.display = "none";
             }
-            let activeWaypoint = flightPlanManager.getActiveWaypoint();
+            let activeWaypoint = flightPlanManager.getActiveWaypoint(false, true);
             if (activeWaypoint) {
                 this._activeWaypointContainer.style.display = "block";
                 this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-ident").textContent = activeWaypoint.ident;

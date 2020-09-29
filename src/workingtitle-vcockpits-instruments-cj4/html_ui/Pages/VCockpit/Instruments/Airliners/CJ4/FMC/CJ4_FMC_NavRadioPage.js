@@ -9,7 +9,7 @@ class CJ4_FMC_NavRadioPage {
         fmc.onLeftInput[0] = () => {
             let value = fmc.inOut;
             let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
-            console.log(numValue);
+            // console.log(numValue);
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
                 fmc.vhf1Frequency = numValue;

@@ -87,27 +87,27 @@ class CJ4_FMC extends FMCMainDisplay {
                 this.onExecPage();
             }
             else {
-                console.log("onExec Else");
+                // console.log("onExec Else");
                 this._isRouteActivated = false;
-                console.log("onExec else this._isRouteActivated = false");
+                // console.log("onExec else this._isRouteActivated = false");
                 this.fpHasChanged = false;
-                console.log("onExec else this.fpHasChanged = false");
+                // console.log("onExec else this.fpHasChanged = false");
                 this.messageBox = "";
-                console.log("onExec else this.messageBox.innerHTML");
+                // console.log("onExec else this.messageBox.innerHTML");
                 this._activatingDirectTo = false;
-                console.log("onExec else this._activatingDirectTo = false");
+                // console.log("onExec else this._activatingDirectTo = false");
             }
         };
         this.onExecPage = undefined;
         this.onExecDefault = () => {
             if (this.getIsRouteActivated() && !this._activatingDirectTo) {
-                console.log("running this.getIsRouteActivated() && !this._activatingDirectTo");
+                // console.log("running this.getIsRouteActivated() && !this._activatingDirectTo");
                 this.insertTemporaryFlightPlan(() => {
                     this._isRouteActivated = false;
                     SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
-                    console.log("done with onExec insert temp");
+                    // console.log("done with onExec insert temp");
                     this.fpHasChanged = false;
-                    console.log("this.fpHasChanged = false");
+                    // console.log("this.fpHasChanged = false");
                     this.messageBox = "";
                     if (this.refreshPageCallback) {
                         this.refreshPageCallback();
@@ -115,16 +115,16 @@ class CJ4_FMC extends FMCMainDisplay {
                 });
             }
             else {
-                console.log("running onExecDefault else");
+                // console.log("running onExecDefault else");
                 this.fpHasChanged = false;
-                console.log("fpHasChanged = false");
+                // console.log("fpHasChanged = false");
                 this.messageBox = "";
                 this._isRouteActivated = false;
                 SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
                 if (this.refreshPageCallback) {
                     this._activatingDirectTo = false;
                     this.fpHasChanged = false;
-                    console.log("Else refreshPageCallback");
+                    // console.log("Else refreshPageCallback");
                     this.refreshPageCallback();
                 }
             }

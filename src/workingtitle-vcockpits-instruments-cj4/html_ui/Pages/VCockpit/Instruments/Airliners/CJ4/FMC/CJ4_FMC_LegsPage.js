@@ -72,15 +72,21 @@ class CJ4_FMC_LegsPage {
                             }
                             isDepartureWaypoint = true;
                         }
-                        let bearing = isFinite(waypoint.bearingInFP) ? waypoint.bearingInFP.toFixed(0) + "°" : "";
-                        let distance = isFinite(waypoint.cumulativeDistanceInFP) ? waypoint.cumulativeDistanceInFP.toFixed(0) + "NM" : "";
+                        let bearing = isFinite(waypoint.bearingInFP) ? waypoint.bearingInFP.toFixed(0).padStart(3, "0") + "°" : "";
+                        let distance = isFinite(waypoint.cumulativeDistanceInFP) ? waypoint.cumulativeDistanceInFP : "";
+						distance = distance.toFixed(distance > 100 ? 0 : 1);
 
                         //temporary log to see current flight plan
                         let waypointsLog = waypoints.map(waypoint => waypoint.ident);
                         console.log("fpln:" + JSON.stringify(waypointsLog, null, 2));
-
-                        rows[2 * i] = [bearing, distance];
-                        rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident : "USR"];
+						
+						if (i == 0 && currentPage == 1){
+							rows[2 * i] = [bearing.padStart(5, " ") + distance.padStart(6, " ") + "NM" + "[magenta]"];
+							rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident + "[magenta]" : "USR"];
+						} else {
+							rows[2 * i] = [bearing.padStart(5, " ") + distance.padStart(6, " ") + "NM"];
+							rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident : "USR"];
+						}
                         if (CJ4_FMC_LegsPage.DEBUG_SHOW_WAYPOINT_PHASE) {
                             if (isDepartureWaypoint) {
                                 rows[2 * i + 1][0] += " [DP]";
@@ -103,7 +109,7 @@ class CJ4_FMC_LegsPage {
                         }
                         //edit to remove fmc.getCrzManagedSpeed() for enroute waypoints and show only cruise flight level
                         if (isEnRouteWaypoint) {
-                            rows[2 * i + 1][1] = "/ FL" + fmc.cruiseFlightLevel;
+						rows[2 * i + 1][1] = "/FL" + fmc.cruiseFlightLevel + "[green]";
                         }
                         else {
                             //edit to remove calculated speed constraints and only show published constraints above 100 kts
@@ -112,7 +118,7 @@ class CJ4_FMC_LegsPage {
                                 speedConstraint = waypoint.speedConstraint.toFixed(0);
                             }
                             else {
-                                speedConstraint = " ";
+                                speedConstraint = "---";
                             }
                             let altitudeConstraint = "-----";
                             if (waypoint.legAltitudeDescription !== 0) {
@@ -132,7 +138,7 @@ class CJ4_FMC_LegsPage {
                             }
                             else if (isDepartureWaypoint) {
                                 if (isLastDepartureWaypoint) {
-                                    altitudeConstraint = "FL" + fmc.cruiseFlightLevel;
+                                    altitudeConstraint = "FL" + fmc.cruiseFlightLevel + "[green]";
                                 }
                                 //else {
                                 //    altitudeConstraint = Math.floor(waypoint.cumulativeDistanceInFP * 0.14 * 6076.118 / 10).toFixed(0) + "0";
@@ -140,7 +146,7 @@ class CJ4_FMC_LegsPage {
                             }
                             //added to make cruise altitude default constraint
                             else {
-                                altitudeConstraint = "FL" + fmc.cruiseFlightLevel;
+                                altitudeConstraint = "FL" + fmc.cruiseFlightLevel + "[green]";
                                 //else {
                                 //    altitudeConstraint = Math.floor(waypoint.cumulativeDistanceInFP * 0.14 * 6076.118 / 10).toFixed(0) + "0";
                                 //}
@@ -150,7 +156,7 @@ class CJ4_FMC_LegsPage {
                             //        altitudeConstraint = "FL" + fmc.cruiseFlightLevel;
                             //    }
                             //}
-                            rows[2 * i + 1][1] = speedConstraint + "/ " + altitudeConstraint;
+                            rows[2 * i + 1][1] = speedConstraint + "/" + altitudeConstraint + "[green]";
                         }
                     }
                 }
@@ -188,7 +194,7 @@ class CJ4_FMC_LegsPage {
             [" " + modStr + " LEGS[blue]", currentPage.toFixed(0) + "/" + Math.max(1, pageCount.toFixed(0)) + " [blue]"],
             ...rows,
             ["-------------------------"],
-            ["", isMapModePlan ? "STEP>" : "RTE DATA>"]
+            ["", isMapModePlan ? "STEP>" : "LEG WIND>"]
         ]);
 
         fmc.refreshPageCallback = () => {
