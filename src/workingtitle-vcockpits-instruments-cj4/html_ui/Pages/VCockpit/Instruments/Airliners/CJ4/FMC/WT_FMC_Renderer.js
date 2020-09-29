@@ -35,7 +35,7 @@ class WT_FMC_Renderer {
     // !!! PROTOTYPE for char grid
     // -----------------------------
     setTemplateRaw(template, defaultAlternatingLayout = true) {
-        console.log("Rendering page");
+        // console.log("Rendering page");
 
         // clear just to be sure
         let existingContainer = document.getElementById("wt_container");
@@ -209,12 +209,12 @@ class WT_FMC_Renderer {
     }
 
     showExec(row = this.getTRow(14)) {
-        console.log("Show EXEC");
+        // console.log("Show EXEC");
         this.renderLetters("EXEC[blackwhite]", row, "right");
     }
 
     hideExec(row = this.getTRow(14)) {
-        console.log("Hide EXEC");
+        // console.log("Hide EXEC");
         this.renderLetters("    ", row, "right");
     }
 
