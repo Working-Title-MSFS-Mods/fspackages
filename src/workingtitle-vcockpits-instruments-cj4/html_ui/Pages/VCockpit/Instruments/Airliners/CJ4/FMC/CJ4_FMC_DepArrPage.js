@@ -71,7 +71,7 @@ class CJ4_FMC_DepArrPage {
             }
         }
         if (selectedRunway) {
-            rows[0] = ["", "<SEL> " + Avionics.Utils.formatRunway(selectedRunway.designation)];
+            rows[0] = ["", Avionics.Utils.formatRunway(selectedRunway.designation) + "[d-text green]"];
             fmc.onRightInput[0] = () => {
                 fmc.setRunwayIndex(-1, (success) => {
                     CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
@@ -101,7 +101,7 @@ class CJ4_FMC_DepArrPage {
                 }
                 if (appendRow) {
                     if (rowIndex >= 0 && rowIndex < 5) {
-                        rows[2 * rowIndex] = ["", Avionics.Utils.formatRunway(runway.designation)];
+                        rows[2 * rowIndex] = ["", Avionics.Utils.formatRunway(runway.designation) + "[s-text]"];
                         fmc.onRightInput[rowIndex] = () => {
                             if (fmc.flightPlanManager.getDepartureProcIndex() === -1) {
                                 fmc.setOriginRunwayIndex(index, () => {
@@ -121,7 +121,7 @@ class CJ4_FMC_DepArrPage {
             }
         }
         if (selectedDeparture) {
-            rows[0][0] = selectedDeparture.name + " <SEL>";
+            rows[0][0] = selectedDeparture.name + "[d-text green]";
             fmc.onLeftInput[0] = () => {
                 fmc.setDepartureIndex(-1, () => {
                     CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
@@ -150,7 +150,7 @@ class CJ4_FMC_DepArrPage {
                 if (appendRow) {
                     if (rowIndex >= 0 && rowIndex < 5) {
                         let ii = i;
-                        rows[2 * rowIndex][0] = departure.name;
+                        rows[2 * rowIndex][0] = departure.name + "[s-text]";
                         fmc.onLeftInput[rowIndex] = () => {
                             fmc.setDepartureIndex(ii, () => {
                                 CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
@@ -183,13 +183,17 @@ class CJ4_FMC_DepArrPage {
                 }
                 fmc.onExecDefault();
             }
-            fmc.refreshPageCallback = () => fmc.onDepArr();
         };
+
+        fmc.refreshPageCallback = () => {
+            CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
+        }
+
         //end of CWB EXEC handling
-        modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
+        modStr = fmc.fpHasChanged ? "MOD[white] " : "ACT[blue] ";
 
         fmc._templateRenderer.setTemplateRaw([
-            [" " + modStr + originIdent + " DEPART", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
+            [" " + modStr + originIdent + " DEPART[blue]", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
             [" DEPARTURES[blue]", "RUNWAYS [blue]"],
             ...rows,
             ["-----------------------[blue]"],
