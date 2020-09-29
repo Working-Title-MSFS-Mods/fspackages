@@ -53,7 +53,7 @@
     <Sound WwiseEvent="GROUND_ROLL" WwiseData="true" FadeOutType="2" FadeOutTime="0.2"/>
     <Sound WwiseEvent="LEFT_WING_SCRAPE" ContinuousStopDelay="0.25" FadeOutType="2" FadeOutTime="0.25"   WwiseData="true" NodeName="AILERON_L"/>
     <Sound WwiseEvent="RIGHT_WING_SCRAPE" ContinuousStopDelay="0.25" FadeOutType="2" FadeOutTime="0.25"  WwiseData="true" NodeName="AILERON_R"/>
-    <Sound WwiseEvent="FUSELAGE_SCRAPE" ContinuousStopDelay="0.5" FadeOutType="1" FadeOutTime="0.1" FadeOutTime="0.25" WwiseData="true" />
+    <Sound WwiseEvent="FUSELAGE_SCRAPE" ContinuousStopDelay="0.5" FadeOutType="1" FadeOutTime="0.1" FadeOutTime="0.1" WwiseData="true" />
   </GroundSounds>
   
   <MiscellaneousSounds>
@@ -96,10 +96,16 @@
     </Sound>
     
     <Sound WwiseData="true" WwiseEvent="flaps_left" NodeName="FLAP_L" ContinuousStopDelay="1.0" SimVar="TRAILING EDGE FLAPS LEFT PERCENT" Units="PERCENT" Index="0">
+	  <Requires SimVar="FLAP DAMAGE BY SPEED" Units="BOOL" Index="0">
+        <Range UpperBound="0" />
+      </Requires>	
       <WwiseRTPC SimVar="TRAILING EDGE FLAPS LEFT PERCENT" Units="PERCENT" Derived="true" Index="0" RTPCName="SIMVAR_TRAILING_EDGE_FLAPS_LEFT_PERCENT_DERIVED" />
     </Sound>
     
     <Sound WwiseData="true" WwiseEvent="flaps_right" NodeName="FLAP_R" ContinuousStopDelay="1.0" SimVar="TRAILING EDGE FLAPS RIGHT PERCENT" Units="PERCENT" Index="0">
+      <Requires SimVar="FLAP DAMAGE BY SPEED" Units="BOOL" Index="0">
+        <Range UpperBound="0" />
+      </Requires>
       <WwiseRTPC SimVar="TRAILING EDGE FLAPS RIGHT PERCENT" Units="PERCENT" Derived="true" Index="0" RTPCName="SIMVAR_TRAILING_EDGE_FLAPS_RIGHT_PERCENT_DERIVED" />
     </Sound>
     

@@ -1,7 +1,11 @@
 param (
     [Parameter(Mandatory = $true)][string]$Project,
     [string]$Package,
+<<<<<<< HEAD
     [string]$MinimumGameVersion = "1.9.3",
+=======
+    [string]$MinimumGameVersion = "1.9.2",
+>>>>>>> 1.9.3 changes
     [string]$OutputPath = ".\build\",
     [switch]$WatchFiles = $false,
     [switch]$CleanBuild = $false
