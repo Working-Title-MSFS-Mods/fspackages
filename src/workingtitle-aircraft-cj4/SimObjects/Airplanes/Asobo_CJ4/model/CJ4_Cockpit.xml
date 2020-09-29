@@ -16,6 +16,7 @@
 		<Include ModelBehaviorFile="Asobo\NAVCOM\NavComSystem.xml"/>
 		<Include ModelBehaviorFile="Asobo\Airliner\FMC.xml"/>
 		<Include ModelBehaviorFile="Asobo\GlassCockpit\AS3000.xml"/>
+		<Include ModelBehaviorFile="Asobo_CJ4\Index.xml"/>
 
 		<!-- ELECTRICAL #############################################################################################################-->
 		<Component ID="ELECTRICAL">
