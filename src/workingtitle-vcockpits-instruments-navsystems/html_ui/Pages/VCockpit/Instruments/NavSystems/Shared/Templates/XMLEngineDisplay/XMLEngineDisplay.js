@@ -133,6 +133,10 @@ class XMLEngineDisplay extends HTMLElement {
                             gauge.rootSvg.setAttribute("class", gaugeIdElem[0].textContent);
                         }
                         this.gauges.push(gauge);
+                        let yellowBlinkElem = gauges[i].getElementsByTagName("YellowBlink");
+                        if (yellowBlinkElem.length > 0) {
+                            gauge.yellowBlinkCallback = new CompositeLogicXMLElement(this.gps, yellowBlinkElem[0]);
+                        }
                         let redBlinkElem = gauges[i].getElementsByTagName("RedBlink");
                         if (redBlinkElem.length > 0) {
                             gauge.redBlinkCallback = new CompositeLogicXMLElement(this.gps, redBlinkElem[0]);
@@ -619,6 +623,7 @@ class XMLGauge extends HTMLElement {
         this.forcedBeginText = null;
         this.forcedEndText = null;
         this.isAlerting = false;
+        this.isCaution = false;
         this.sizePercent = 100;
         this.colorZones = [];
         this.colorLines = [];
@@ -661,17 +666,28 @@ class XMLGauge extends HTMLElement {
                 this.colorLines[i].lastPos = pos;
             }
         }
-        if (this.redBlinkCallback) {
-            let newValue = this.redBlinkCallback.getValue(_context);
-            if (newValue != 0 && !this.isAlerting) {
+        let newValueCaution = this.yellowBlinkCallback ? this.yellowBlinkCallback.getValue(_context) : null;
+        let newValueAlert = this.redBlinkCallback ? this.redBlinkCallback.getValue(_context) : null;
+
+        if (newValueAlert && newValueAlert != 0) {
+            if (!this.isAlerting) {
+                console.log("Switching to alert mode")
                 this.isAlerting = true;
+                this.isCaution = false;
                 this.computeAlertBackgrounds();
                 this.setAttribute("State", "Alert");
             }
-            else if (this.isAlerting && newValue == 0) {
+        } else if (newValueCaution && newValueCaution != 0) {
+            if (!this.isCaution) {
+                console.log("Switching to caution mode")
                 this.isAlerting = false;
-                this.setAttribute("State", "");
+                this.isCaution = true;
+                this.computeCautionBackgrounds();
+                this.setAttribute("State", "Caution");
             }
+        } else {
+            this.isAlerting = this.isCaution = false;
+            this.setAttribute("State", "");
         }
     }
 }
@@ -813,6 +829,18 @@ class XMLCircularGauge extends XMLGauge {
         this.endText.setAttribute("font-family", "Roboto-Bold");
         this.endText.setAttribute("text-anchor", "middle");
         this.rootSvg.appendChild(this.endText);
+        this.titleText_cautionbg = document.createElementNS(Avionics.SVG.NS, "rect");
+        this.titleText_cautionbg.setAttribute("fill-opacity", "0");
+        this.titleText_cautionbg.setAttribute("CautionBlink", "Background");
+        this.rootSvg.appendChild(this.titleText_cautionbg);
+        this.unitText_cautionbg = document.createElementNS(Avionics.SVG.NS, "rect");
+        this.unitText_cautionbg.setAttribute("fill-opacity", "0");
+        this.unitText_cautionbg.setAttribute("CautionBlink", "Background");
+        this.rootSvg.appendChild(this.unitText_cautionbg);
+        this.valueText_cautionbg = document.createElementNS(Avionics.SVG.NS, "rect");
+        this.valueText_cautionbg.setAttribute("fill-opacity", "0");
+        this.valueText_cautionbg.setAttribute("CautionBlink", "Background");
+        this.rootSvg.appendChild(this.valueText_cautionbg);        
         this.titleText_alertbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.titleText_alertbg.setAttribute("fill-opacity", "0");
         this.titleText_alertbg.setAttribute("AlertBlink", "Background");
@@ -833,6 +861,7 @@ class XMLCircularGauge extends XMLGauge {
         this.titleText.setAttribute("font-family", "Roboto-Bold");
         this.titleText.setAttribute("text-anchor", "middle");
         this.titleText.setAttribute("AlertBlink", "Text");
+        this.titleText.setAttribute("CautionBlink", "Text");
         this.rootSvg.appendChild(this.titleText);
         this.unitText = document.createElementNS(Avionics.SVG.NS, "text");
         this.unitText.setAttribute("x", "50");
@@ -842,6 +871,7 @@ class XMLCircularGauge extends XMLGauge {
         this.unitText.setAttribute("font-family", "Roboto-Bold");
         this.unitText.setAttribute("text-anchor", "middle");
         this.unitText.setAttribute("AlertBlink", "Text");
+        this.unitText.setAttribute("CautionBlink", "Text");
         this.rootSvg.appendChild(this.unitText);
         this.valueText = document.createElementNS(Avionics.SVG.NS, "text");
         switch (this.valuePos) {
@@ -860,6 +890,7 @@ class XMLCircularGauge extends XMLGauge {
         }
         this.valueText.setAttribute("fill", "white");
         this.valueText.setAttribute("font-family", "Roboto-Bold");
+        this.valueText.setAttribute("CautionBlink", "Text");
         this.valueText.setAttribute("AlertBlink", "Text");
         this.rootSvg.appendChild(this.valueText);
     }
@@ -927,6 +958,10 @@ class XMLCircularGauge extends XMLGauge {
                 this.valueText_alertbg.setAttribute("y", (valueBbox.y - 1).toString());
                 this.valueText_alertbg.setAttribute("width", (valueBbox.width + 2).toString());
                 this.valueText_alertbg.setAttribute("height", (valueBbox.height + 2).toString());
+                this.valueText_cautionbg.setAttribute("x", (valueBbox.x - 1).toString());
+                this.valueText_cautionbg.setAttribute("y", (valueBbox.y - 1).toString());
+                this.valueText_cautionbg.setAttribute("width", (valueBbox.width + 2).toString());
+                this.valueText_cautionbg.setAttribute("height", (valueBbox.height + 2).toString());                
             }
         }
     }
@@ -961,6 +996,18 @@ class XMLCircularGauge extends XMLGauge {
         this.titleText.textContent = _title;
         this.unitText.textContent = _unit;
     }
+    computeCautionBackgrounds() {
+        let titleBbox = this.titleText.getBBox();
+        this.titleText_cautionbg.setAttribute("x", (titleBbox.x - 1).toString());
+        this.titleText_cautionbg.setAttribute("y", (titleBbox.y - 1).toString());
+        this.titleText_cautionbg.setAttribute("width", (titleBbox.width + 2).toString());
+        this.titleText_cautionbg.setAttribute("height", (titleBbox.height + 2).toString());
+        let unitBbox = this.unitText.getBBox();
+        this.unitText_cautionbg.setAttribute("x", (unitBbox.x - 1).toString());
+        this.unitText_cautionbg.setAttribute("y", (unitBbox.y - 1).toString());
+        this.unitText_cautionbg.setAttribute("width", (unitBbox.width + 2).toString());
+        this.unitText_cautionbg.setAttribute("height", (unitBbox.height + 2).toString());
+    }    
     computeAlertBackgrounds() {
         let titleBbox = this.titleText.getBBox();
         this.titleText_alertbg.setAttribute("x", (titleBbox.x - 1).toString());
@@ -1089,6 +1136,7 @@ class XMLHorizontalGauge extends XMLGauge {
             this.cursor.setAttribute("points", this.beginX + ",20 " + (this.beginX - 3) + ",17 " + (this.beginX - 3) + ",12 " + (this.beginX + 3) + ",12 " + (this.beginX + 3) + ",17");
         }
         this.cursor.setAttribute("fill", this.cursorColor);
+        this.cursor.setAttribute("CautionBlink", "Yellow");
         this.cursor.setAttribute("AlertBlink", "Red");
         this.rootSvg.appendChild(this.cursor);
         this.beginText = document.createElementNS(Avionics.SVG.NS, "text");
@@ -1107,6 +1155,10 @@ class XMLHorizontalGauge extends XMLGauge {
         this.endText.setAttribute("font-family", "Roboto-Bold");
         this.endText.setAttribute("text-anchor", "middle");
         this.rootSvg.appendChild(this.endText);
+        this.titleText_cautionbg = document.createElementNS(Avionics.SVG.NS, "rect");
+        this.titleText_cautionbg.setAttribute("fill-opacity", "0");
+        this.titleText_cautionbg.setAttribute("CautionBlink", "Background");
+        this.rootSvg.appendChild(this.titleText_cautionbg);        
         this.titleText_alertbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.titleText_alertbg.setAttribute("fill-opacity", "0");
         this.titleText_alertbg.setAttribute("AlertBlink", "Background");
@@ -1124,8 +1176,13 @@ class XMLHorizontalGauge extends XMLGauge {
         this.titleText.setAttribute("fill", "white");
         this.titleText.setAttribute("font-size", "10");
         this.titleText.setAttribute("font-family", "Roboto-Bold");
+        this.titleText.setAttribute("CautionBlink", "Text");
         this.titleText.setAttribute("AlertBlink", "Text");
         this.rootSvg.appendChild(this.titleText);
+        this.valueText_cautionbg = document.createElementNS(Avionics.SVG.NS, "rect");
+        this.valueText_cautionbg.setAttribute("fill-opacity", "0");
+        this.valueText_cautionbg.setAttribute("CautionBlink", "Background");
+        this.rootSvg.appendChild(this.valueText_cautionbg);        
         this.valueText_alertbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.valueText_alertbg.setAttribute("fill-opacity", "0");
         this.valueText_alertbg.setAttribute("AlertBlink", "Background");
@@ -1139,6 +1196,7 @@ class XMLHorizontalGauge extends XMLGauge {
                 this.valueText.setAttribute("font-size", "12");
                 this.valueText.setAttribute("font-family", "Roboto-Bold");
                 this.valueText.setAttribute("text-anchor", "end");
+                this.valueText.setAttribute("CautionBlink", "Text");
                 this.valueText.setAttribute("AlertBlink", "Text");
                 this.rootSvg.appendChild(this.valueText);
                 break;
@@ -1150,6 +1208,7 @@ class XMLHorizontalGauge extends XMLGauge {
                 this.valueText.setAttribute("font-size", "12");
                 this.valueText.setAttribute("font-family", "Roboto-Bold");
                 this.valueText.setAttribute("text-anchor", "start");
+                this.valueText.setAttribute("CautionBlink", "Text");
                 this.valueText.setAttribute("AlertBlink", "Text");
                 this.rootSvg.appendChild(this.valueText);
                 break;
@@ -1225,6 +1284,10 @@ class XMLHorizontalGauge extends XMLGauge {
             }
             if (this.valueText) {
                 let valueBbox = this.valueText.getBBox();
+                this.valueText_cautionbg.setAttribute("x", (valueBbox.x - 1).toString());
+                this.valueText_cautionbg.setAttribute("y", (valueBbox.y - 1).toString());
+                this.valueText_cautionbg.setAttribute("width", (valueBbox.width + 2).toString());
+                this.valueText_cautionbg.setAttribute("height", (valueBbox.height + 2).toString());
                 this.valueText_alertbg.setAttribute("x", (valueBbox.x - 1).toString());
                 this.valueText_alertbg.setAttribute("y", (valueBbox.y - 1).toString());
                 this.valueText_alertbg.setAttribute("width", (valueBbox.width + 2).toString());
@@ -1234,6 +1297,13 @@ class XMLHorizontalGauge extends XMLGauge {
     }
     setTitleAndUnit(_title, _unit) {
         this.titleText.textContent = _title + " " + _unit;
+    }
+    computeCautionBackgrounds() {
+        let titleBbox = this.titleText.getBBox();
+        this.titleText_cautionbg.setAttribute("x", (titleBbox.x - 1).toString());
+        this.titleText_cautionbg.setAttribute("y", (titleBbox.y - 1).toString());
+        this.titleText_cautionbg.setAttribute("width", (titleBbox.width + 2).toString());
+        this.titleText_cautionbg.setAttribute("height", (titleBbox.height + 2).toString());
     }
     computeAlertBackgrounds() {
         let titleBbox = this.titleText.getBBox();
@@ -1365,6 +1435,14 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
         this.titleText.setAttribute("font-family", "Roboto-Bold");
         this.titleText.setAttribute("text-anchor", "middle");
         this.rootSvg.appendChild(this.titleText);
+        this.valueText_cautionbg = document.createElementNS(Avionics.SVG.NS, "rect");
+        this.valueText_cautionbg.setAttribute("fill-opacity", "0");
+        this.valueText_cautionbg.setAttribute("CautionBlink", "Background");
+        this.rootSvg.appendChild(this.valueText_cautionbg);
+        this.valueText2_cautionbg = document.createElementNS(Avionics.SVG.NS, "rect");
+        this.valueText2_cautionbg.setAttribute("fill-opacity", "0");
+        this.valueText2_cautionbg.setAttribute("CautionBlink", "Background");
+        this.rootSvg.appendChild(this.valueText2_cautionbg);
         this.valueText_alertbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.valueText_alertbg.setAttribute("fill-opacity", "0");
         this.valueText_alertbg.setAttribute("AlertBlink", "Background");
@@ -1382,6 +1460,7 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
                 this.valueText.setAttribute("font-size", "12");
                 this.valueText.setAttribute("font-family", "Roboto-Bold");
                 this.valueText.setAttribute("text-anchor", "start");
+                this.valueText.setAttribute("CautionBlink", "Text");
                 this.valueText.setAttribute("AlertBlink", "Text");
                 this.rootSvg.appendChild(this.valueText);
                 this.valueText2 = document.createElementNS(Avionics.SVG.NS, "text");
@@ -1391,6 +1470,7 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
                 this.valueText2.setAttribute("font-size", "12");
                 this.valueText2.setAttribute("font-family", "Roboto-Bold");
                 this.valueText2.setAttribute("text-anchor", "start");
+                this.valueText2.setAttribute("CautionBlink", "Text");
                 this.valueText2.setAttribute("AlertBlink", "Text");
                 this.rootSvg.appendChild(this.valueText2);
         }
@@ -1488,11 +1568,19 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
                     this.valueText2.setAttribute("fill", "white");
                 }
                 let valueBbox = this.valueText.getBBox();
+                this.valueText_cautionbg.setAttribute("x", (valueBbox.x - 1).toString());
+                this.valueText_cautionbg.setAttribute("y", (valueBbox.y - 1).toString());
+                this.valueText_cautionbg.setAttribute("width", (valueBbox.width + 2).toString());
+                this.valueText_cautionbg.setAttribute("height", (valueBbox.height + 2).toString());
                 this.valueText_alertbg.setAttribute("x", (valueBbox.x - 1).toString());
                 this.valueText_alertbg.setAttribute("y", (valueBbox.y - 1).toString());
                 this.valueText_alertbg.setAttribute("width", (valueBbox.width + 2).toString());
                 this.valueText_alertbg.setAttribute("height", (valueBbox.height + 2).toString());
                 let value2Bbox = this.valueText2.getBBox();
+                this.valueText2_cautionbg.setAttribute("x", (value2Bbox.x - 1).toString());
+                this.valueText2_cautionbg.setAttribute("y", (value2Bbox.y - 1).toString());
+                this.valueText2_cautionbg.setAttribute("width", (value2Bbox.width + 2).toString());
+                this.valueText2_cautionbg.setAttribute("height", (value2Bbox.height + 2).toString());
                 this.valueText2_alertbg.setAttribute("x", (value2Bbox.x - 1).toString());
                 this.valueText2_alertbg.setAttribute("y", (value2Bbox.y - 1).toString());
                 this.valueText2_alertbg.setAttribute("width", (value2Bbox.width + 2).toString());
@@ -1502,6 +1590,8 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
     }
     setTitleAndUnit(_title, _unit) {
         this.titleText.textContent = _title + " " + _unit;
+    }
+    computeCautionBackgrounds() {
     }
     computeAlertBackgrounds() {
     }
@@ -1618,6 +1708,10 @@ class XMLVerticalGauge extends XMLGauge {
         this.cursor.setAttribute("points", "35," + this.beginY + " 32," + (this.beginY - 3) + " 27," + (this.beginY - 3) + " 27," + (this.beginY + 3) + " 32," + (this.beginY + 3));
         this.cursor.setAttribute("fill", this.cursorColor);
         this.rootSvg.appendChild(this.cursor);
+        this.titleText_cautionbg = document.createElementNS(Avionics.SVG.NS, "rect");
+        this.titleText_cautionbg.setAttribute("fill-opacity", "0");
+        this.titleText_cautionbg.setAttribute("CautionBlink", "Background");
+        this.rootSvg.appendChild(this.titleText_cautionbg);
         this.titleText_alertbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.titleText_alertbg.setAttribute("fill-opacity", "0");
         this.titleText_alertbg.setAttribute("AlertBlink", "Background");
@@ -1629,8 +1723,13 @@ class XMLVerticalGauge extends XMLGauge {
         this.titleText.setAttribute("font-size", "9");
         this.titleText.setAttribute("font-family", "Roboto-Bold");
         this.titleText.setAttribute("text-anchor", "middle");
+        this.titleText.setAttribute("CautionBlink", "Text");
         this.titleText.setAttribute("AlertBlink", "Text");
         this.rootSvg.appendChild(this.titleText);
+        this.valueText_cautionbg = document.createElementNS(Avionics.SVG.NS, "rect");
+        this.valueText_cautionbg.setAttribute("fill-opacity", "0");
+        this.valueText_cautionbg.setAttribute("CautionBlink", "Background");
+        this.rootSvg.appendChild(this.valueText_cautionbg);        
         this.valueText_alertbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.valueText_alertbg.setAttribute("fill-opacity", "0");
         this.valueText_alertbg.setAttribute("AlertBlink", "Background");
@@ -1643,6 +1742,7 @@ class XMLVerticalGauge extends XMLGauge {
             this.valueText.setAttribute("font-size", "12");
             this.valueText.setAttribute("font-family", "Roboto-Bold");
             this.valueText.setAttribute("text-anchor", "middle");
+            this.valueText.setAttribute("CautionBlink", "Text");
             this.valueText.setAttribute("AlertBlink", "Text");
             this.rootSvg.appendChild(this.valueText);
         }
@@ -1715,6 +1815,10 @@ class XMLVerticalGauge extends XMLGauge {
             }
             if (this.valueText) {
                 let valueBbox = this.valueText.getBBox();
+                this.valueText_cautionbg.setAttribute("x", (valueBbox.x - 1).toString());
+                this.valueText_cautionbg.setAttribute("y", (valueBbox.y + 1).toString());
+                this.valueText_cautionbg.setAttribute("width", (valueBbox.width + 2).toString());
+                this.valueText_cautionbg.setAttribute("height", (valueBbox.height).toString());
                 this.valueText_alertbg.setAttribute("x", (valueBbox.x - 1).toString());
                 this.valueText_alertbg.setAttribute("y", (valueBbox.y + 1).toString());
                 this.valueText_alertbg.setAttribute("width", (valueBbox.width + 2).toString());
@@ -1724,6 +1828,13 @@ class XMLVerticalGauge extends XMLGauge {
     }
     setTitleAndUnit(_title, _unit) {
         this.titleText.textContent = _title + " " + _unit;
+    }
+    computeCautionBackgrounds() {
+        let titleBbox = this.titleText.getBBox();
+        this.titleText_cautionbg.setAttribute("x", (titleBbox.x - 1).toString());
+        this.titleText_cautionbg.setAttribute("y", (titleBbox.y + 1).toString());
+        this.titleText_cautionbg.setAttribute("width", (titleBbox.width + 2).toString());
+        this.titleText_cautionbg.setAttribute("height", (titleBbox.height - 0.5).toString());
     }
     computeAlertBackgrounds() {
         let titleBbox = this.titleText.getBBox();
@@ -1954,6 +2065,8 @@ class XMLVerticalDoubleGauge extends XMLGauge {
     setTitleAndUnit(_title, _unit) {
         this.titleText.textContent = _title + " " + _unit;
     }
+    computeCautionBackgrounds() {
+    }
     computeAlertBackgrounds() {
     }
     setGraduations(_spaceBetween, _withText) {
@@ -2037,6 +2150,8 @@ class XMLFlapsGauge extends XMLGauge {
     }
     setTitleAndUnit(_title, _unit) {
         this.titleText.textContent = _title;
+    }
+    computeCautionBackgrounds() {
     }
     computeAlertBackgrounds() {
     }
@@ -2181,6 +2296,8 @@ class XMLLongitudeFuelGauge extends XMLGauge {
     }
     setTitleAndUnit(_title, _unit) {
     }
+    computeCautionBackgrounds() {
+    }
     computeAlertBackgrounds() {
     }
     setGraduations(_spaceBetween, _withText) {
@@ -2230,6 +2347,8 @@ class XMLFlapsSpeedbrakesGauge extends XMLGauge {
         this.speedbrakes.setAttribute("transform", "rotate(" + _value2 + " 48 12.4)");
     }
     setTitleAndUnit(_title, _unit) {
+    }
+    computeCautionBackgrounds() {
     }
     computeAlertBackgrounds() {
     }
