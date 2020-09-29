@@ -51,7 +51,7 @@ class CJ4_FMC_DirectToPage {
         while (i < waypoints.length && i + wptsListIndex < waypoints.length && i < iMax) {
             let waypoint = waypoints[i + wptsListIndex];
             if (waypoint) {
-                waypointsCell[i] = "<" + waypoint.ident + "[color]blue";
+                waypointsCell[i] = "<" + waypoint.ident + "[blue]";
                 if (waypointsCell[i]) {
                     fmc.onLeftInput[i + 1] = () => {
                         fmc.fpHasChanged = true;

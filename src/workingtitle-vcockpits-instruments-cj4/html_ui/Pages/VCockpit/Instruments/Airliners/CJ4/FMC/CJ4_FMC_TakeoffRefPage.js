@@ -66,23 +66,29 @@ class CJ4_FMC_TakeoffRefPage {
 
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "1/3[blue] ", "TAKEOFF REF[blue]"],
-            ["RWY ID[blue]", "WIND[blue]"],
-            [depRunwayOutput + "[s-text]", fmc.takeoffWindDir + "\xB0/" + fmc.takeoffWindSpeed],
-            ["RWY WIND[blue]", "OAT[blue]"],
+            [" RWY ID[blue]", "WIND[blue] "],
+            [depRunwayOutput + "[s-text]", fmc.takeoffWindDir.toString().padStart(3,"0") + "\xB0/" + fmc.takeoffWindSpeed.toString().padStart(3, " ")],
+            [" RWY WIND[blue]", "OAT[blue] "],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.takeoffOat + "\xB0C"],
-            ["RWY LENGTH[blue]", "QNH[blue]"],
+            [" RWY LENGTH[blue]", "QNH[blue] "],
             [Math.round(depRunwayLength) + " FT", fmc.takeoffQnh + ""],
-            ["RWY SLOPE[blue]", "P ALT[blue]"],
+            [" RWY SLOPE[blue]", "P ALT[blue] "],
             ["--.-%", fmc.takeoffPressAlt + " FT"],
-            ["RWY COND[blue]"],
+            [" RWY COND[blue]"],
             [depRunwayConditionActive],
             [""],
             [""]
         ]);
         fmc.onRightInput[0] = () => {
-            fmc.takeoffWindDir = new Number(fmc.inOut.slice(0, 3));
-            fmc.takeoffWindSpeed = new Number(fmc.inOut.slice(4, 7));
-            fmc.clearUserInput();
+            let windIn = fmc.inOut.split("/");
+            if(windIn.length == 2){
+                fmc.takeoffWindDir = new Number(windIn[0]);
+                fmc.takeoffWindSpeed = new Number(windIn[1]);
+                fmc.clearUserInput();
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
             { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         }
         fmc.onRightInput[1] = () => {
@@ -210,15 +216,19 @@ class CJ4_FMC_TakeoffRefPage {
         let takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
             : "OFF[s-text]/[white]ON[green]";
 
+		if (tow > 17110) { //Turn the takeoff weight yellow if it exceeds the maximum takeoff weight
+			tow = tow + "[yellow]";
+		}
+
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "2/3[blue] ", "TAKEOFF REF[blue]"],
-            ["A/I[blue]", "V[d-text blue]1:[s-text blue] " + v1.toFixed(0).padStart(3, " ") + "[s-text]"],
+            [" A/I[blue]", "V[d-text blue]1:[s-text blue] " + v1.toFixed(0).padStart(3, " ") + "[s-text]"],
             [takeoffAntiIceActive],
-            ["T/O FLAPS[blue]", "V[d-text blue]R:[s-text blue] " + vR.toFixed(0).padStart(3, " ") + "[s-text]"],
+            [" T/O FLAPS[blue]", "V[d-text blue]R:[s-text blue] " + vR.toFixed(0).padStart(3, " ") + "[s-text]"],
             [takeoffFlapsActive],
-            ["TOW/ GWT/MTOW[blue]", "V[d-text blue]2:[s-text blue] " + v2.toFixed(0).padStart(3, " ") + "[s-text]"],
+            [" TOW/ GWT/MTOW[blue]", "V[d-text blue]2:[s-text blue] " + v2.toFixed(0).padStart(3, " ") + "[s-text]"],
             [tow + "/" + grWtCell + "/17110"],
-            ["TOFL / " + depRunway + "[blue]", "V[d-text blue]T:[s-text blue] 140[s-text]"],
+            [" TOFL / " + depRunway + "[blue]", "V[d-text blue]T:[s-text blue] 140[s-text]"],
             [fmc.endTakeoffDist.toFixed(0) + " / " + Math.round(depRunwayLength) + " FT"],
             [""],
             [""],
@@ -276,6 +286,10 @@ class CJ4_FMC_TakeoffRefPage {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
         }
         let tow = (grWtCell - 100);
+		
+		if (tow > 17110) { //Turn the takeoff weight yellow if it exceeds the maximum takeoff weight
+			tow = tow + "[yellow]";
+		}
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "3/3[blue] ", "TAKEOFF REF[blue]"],
             ["TOW/MTOW[blue]"],
