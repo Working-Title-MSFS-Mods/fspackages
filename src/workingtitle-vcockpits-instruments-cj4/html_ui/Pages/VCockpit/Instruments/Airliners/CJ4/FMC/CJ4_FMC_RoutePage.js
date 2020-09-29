@@ -4,15 +4,15 @@ class CJ4_FMC_RoutePage {
 
         //temporary to check flight plan index
 
-        fmc.onLeftInput[1] = () => {
-            let value = "";
-            Coherent.call("GET_CURRENT_FLIGHTPLAN_INDEX").then((value) => {
-                console.log("GET_CURRENT_FLIGHTPLAN_INDEX_COHERENT: " + value);
-                console.log("fmc.flightPlanManager._currentFlightPlanIndex: " + fmc.flightPlanManager._currentFlightPlanIndex);
-                console.log("fmc.fpHasChanged: " + fmc.fpHasChanged);
-                console.log("this._activatingDirectTo: " + fmc._activatingDirectTo)
-            });
-        };
+        // fmc.onLeftInput[1] = () => {
+        //     let value = "";
+        //     Coherent.call("GET_CURRENT_FLIGHTPLAN_INDEX").then((value) => {
+        //         console.log("GET_CURRENT_FLIGHTPLAN_INDEX_COHERENT: " + value);
+        //         console.log("fmc.flightPlanManager._currentFlightPlanIndex: " + fmc.flightPlanManager._currentFlightPlanIndex);
+        //         console.log("fmc.fpHasChanged: " + fmc.fpHasChanged);
+        //         console.log("this._activatingDirectTo: " + fmc._activatingDirectTo)
+        //     });
+        // };
 
         //end temp
         let lsk6Field = "<SEC FPLN";

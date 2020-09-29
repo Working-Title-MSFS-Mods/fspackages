@@ -1,7 +1,7 @@
 class CJ4_FMC_PosInitPage {
     static ShowPage1(fmc) {
         let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")).toDegreeString();
-        console.log(currPos);
+        // console.log(currPos);
         let originCell = "----";
 		let originPos = "";
         if (fmc && fmc.flightPlanManager) {
