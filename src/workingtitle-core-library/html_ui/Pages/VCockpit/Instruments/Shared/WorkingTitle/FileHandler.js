@@ -86,7 +86,7 @@ class WTConfigLoader {
                 .then((cfg) => {
                     if ("models" in cfg && where in cfg.models) {
                         console.log(`Reading ${where} xml at ${cfg.models[where]}.`);
-                        this.loadFrenchXml(`model/${cfg.models[where]}`).then((dom) => resolve(dom));
+                        this.loadXml(`model/${cfg.models[where]}`).then((dom) => resolve(dom));
                     } else {
                         reject("Could not find models in model.cfg.")
                     }

@@ -114,3 +114,34 @@ as1000-pfd-element #Mainframe #InstrumentsContainer #NavBox #Center #bottom #AP_
 as1000-pfd-element #Mainframe #InstrumentsContainer #NavBox #Center #bottom #AP_Right #AP_Vertical_Reference {
     color: #00ff00;
 }
+
+as1000-pfd-element #Mainframe #InstrumentsContainer #PfdConfWindow {
+position: absolute;
+right: 0%;
+height: 30%;
+bottom: 7%;
+width: 20%;
+background-color: #1a1d21;
+font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
+color: white;
+padding-left: 1%;
+padding-right: 1%; }
+as1000-pfd-element #Mainframe #InstrumentsContainer #PfdConfWindow #pfdTitle {
+    text-align: center;
+    color: aqua;
+    width: 100%;
+    border-bottom: 0.4vh solid white; }
+as1000-pfd-element #Mainframe #InstrumentsContainer #PfdConfWindow #pfdElementList {
+    height: 85%;
+    width: 100%;
+    margin-top: 3%;
+    position: relative; }
+    as1000-pfd-element #Mainframe #InstrumentsContainer #PfdConfWindow .pfdLine {
+    margin-top: 2%; }
+    as1000-pfd-element #Mainframe #InstrumentsContainer #PfdConfWindow .pfdBrightLevel {
+        color: white;
+        float: right; }
+    as1000-pfd-element #Mainframe #InstrumentsContainer #PfdConfWindow .pfdBrightLevel[state="Selected"] {
+        color: black;
+        background-color: aquamarine;
+        float: right; }

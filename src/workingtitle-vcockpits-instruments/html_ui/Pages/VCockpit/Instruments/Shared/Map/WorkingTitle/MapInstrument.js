@@ -109,7 +109,6 @@ class MapInstrument extends ISvgMapRootElement {
     setNPCAirplaneManagerTCASMode(mode) {
         this.npcAirplaneManager.useTCAS = mode;
     }
-    ;
     getHideReachedWaypoints() {
         return this.flightPlanElement ? this.flightPlanElement.hideReachedWaypoints : false;
     }
@@ -350,14 +349,14 @@ class MapInstrument extends ISvgMapRootElement {
         }
         if (this.gps) {
             if (!this.gps.currFlightPlanManager) {
-                this.gps.currFlightPlanManager = new FlightPlanManager();
+                this.gps.currFlightPlanManager = new FlightPlanManager(this.instrument);
                 this.gps.currFlightPlanManager.registerListener();
             }
             this.gps.addEventListener("FlightStart", this.onFlightStart.bind(this));
         }
         else {
             if (!this._flightPlanManager) {
-                this._flightPlanManager = new FlightPlanManager();
+                this._flightPlanManager = new FlightPlanManager(this.instrument);
                 this._flightPlanManager.registerListener();
             }
         }
@@ -406,7 +405,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.intersectionLoader = new IntersectionLoader(this.instrument);
             this.vorLoader = new VORLoader(this.instrument);
             this.ndbLoader = new NDBLoader(this.instrument);
-            this.nearestAirspacesLoader = new NearestAirspacesLoader();
+            this.nearestAirspacesLoader = new NearestAirspacesLoader(this.instrument);
             this.nearestAirspacesLoader.onNewAirspaceAddedCallback = (airspace) => {
                 if (airspace) {
                     this.roadsBuffer.push({
@@ -437,7 +436,6 @@ class MapInstrument extends ISvgMapRootElement {
             this.tmpFlightPlanElement.flightPlanIndex = 1;
             this.directToElement = new SvgBackOnTrackElement();
             Coherent.call("RESET_ROAD_ITERATOR");
-            FacilityLoader.Instance.registerListener();
             this.addEventListener("mousedown", this.OnMouseDown.bind(this));
             this.addEventListener("mousemove", this.OnMouseMove.bind(this));
             this.addEventListener("mouseup", this.OnMouseUp.bind(this));
@@ -466,8 +464,10 @@ class MapInstrument extends ISvgMapRootElement {
                 this.isBushTrip = v;
                 if (this.isBushTrip)
                     console.log("Bushtrip Detected");
-                if (this.flightPlanElement)
+                if (this.flightPlanElement) {
                     this.flightPlanElement.highlightActiveLeg = !this.isBushTrip;
+                    this.flightPlanElement.hideReachedWaypoints = !this.isBushTrip;
+                }
                 this.updateFlightPlanVisibility();
             });
         }
@@ -894,7 +894,7 @@ class MapInstrument extends ISvgMapRootElement {
                     });
                 }
                 else {
-                    window.requestAnimationFrame(loadSVGConfig);
+                    setTimeout(loadSVGConfig, 200);
                 }
             };
             loadSVGConfig();
@@ -920,7 +920,7 @@ class MapInstrument extends ISvgMapRootElement {
         this.updateVisibility();
         this.updateSize(true);
         if (this.selfManagedInstrument) {
-            this.instrument.dataMetaManager.UpdateAll();
+            this.instrument.doUpdate();
         }
         if (this.wpt) {
             var wpId = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
@@ -1086,10 +1086,14 @@ class MapInstrument extends ISvgMapRootElement {
             }
         }
         if (_event === "ActivateMapCursor") {
-            this.activateCursor();
+            if (this.eBingMode === EBingMode.PLANE || this.eBingMode === EBingMode.VFR) {
+                this.activateCursor();
+            }
         }
         if (_event === "DeactivateMapCursor") {
-            this.deactivateCursor();
+            if (this.eBingMode === EBingMode.CURSOR) {
+                this.deactivateCursor();
+            }
         }
         if (this.eBingMode === EBingMode.CURSOR) {
             let cursorSpeed = 2;
