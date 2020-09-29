@@ -5,9 +5,8 @@
 * Added track-up mode for both PFD and MFD
 * Fixed unwanted U-turn on ACTIVATE APPROACH
 * Fixed reversed behavior of NOSE UP/DN buttons in FLC mode
-* Added HPa mode to altimeter
 * Added a preference saving system tied to plane model
-* Configured it to currently preserve the following settings:
+* Configured it to currently preserve the following across sessions:
   * PFD and MFD brightness
   * V Speeds
   * Track up mode
@@ -20,9 +19,10 @@
 
 ## PFD and MFD enhancements
 
-* Added new vertical column tape gauge for engine display
-* Updated circular gauge to support custom gradations and rounding
 * Added a flight path marker on the PFD when in Syn Vis mode above 30kts
+* Added new vertical column type gauge for engine display
+* Updated circular gauge to support custom gradations and rounding
+* Added a new blinking yellow status for engine gauges
 * Correctly handle wind data when on ground or wind speed <1 knot
 * Fixed reversed wind arrow at all times on MFD
 * Improve MFD soft key menus, including new switch for TRACK UP
