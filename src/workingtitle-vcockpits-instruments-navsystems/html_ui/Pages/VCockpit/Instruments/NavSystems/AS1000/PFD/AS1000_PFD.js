@@ -7,9 +7,9 @@ class AS1000_PFD extends BaseAS1000 {
     get templateID() { return "AS1000_PFD"; }
     connectedCallback() {
         super.connectedCallback();
-        if (typeof g_modDebugMgr != "undefined") {
+        Include.addScript("/JS/debug.js", function () {
             g_modDebugMgr.AddConsole(null);
-        }
+        });
         this.mainPage = new AS1000_PFD_MainPage();
         this.pageGroups = [
             new NavSystemPageGroup("Main", this, [
@@ -31,53 +31,106 @@ class AS1000_PFD extends BaseAS1000 {
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("TMR/REF", "TmrRefWindow", timerRef, "Softkey_TMR_REF"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("AFPL", "ActiveFlightPlan", new AS1000_PFD_ActiveFlightPlan_Element(5), "FPL_Push"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
-        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "MENU_Push"));
+        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "CONF_MENU_Push"));
         this.maxUpdateBudget = 12;
-        let avionicsKnobIndex = 30;
-        let avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
+        this._pfdConfigDone = false;
     }
-    onUpdate(_deltaTime) {
-        let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
-        if (avionicsKnobValueNow != this.avionicsKnobValue) {
-            SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", avionicsKnobValueNow);
-            SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", avionicsKnobValueNow);
+
+    async pfdConfig() {
+        this.loadSavedBrightness("PFD");
+        this.loadSavedBrightness("MFD");
+        let loader = new WTConfigLoader(this._xmlConfigPath);
+        // We need to wait for this to finish before we can do the initial set of the light pot
+        // in the line below because this can set a custom value for the avionics knob.
+        await loader.loadModelFile("interior").then((dom) => { this.processInteriorConfig(dom) });
+        this.avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
+        return Promise.resolve();
+    }
+
+    processInteriorConfig(dom) {
+        this.avionicsKnobIndex = 30;
+        let templates = dom.getElementsByTagName("UseTemplate");
+        for (const item of templates) {
+            if (item.getAttribute("Name").toLowerCase() != "asobo_as1000_pfd_template")
+                continue;
+            let children = item.childNodes;
+            for (const item of children) {
+                if (item.nodeName.toLowerCase() != "potentiometer")
+                    continue;
+                this.avionicsKnobIndex = item.textContent
+            }
         }
-        this.avionicsKnobValue = avionicsKnobValueNow
     }
+
+    onFlightStart() {
+        this.pfdConfig().then(() => {
+            console.log("PFD fully configured.");
+            this._pfdConfigDone = true;
+        });
+    }
+
+    onUpdate(_deltaTime) {
+        if (this._pfdConfigDone) {
+            let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
+            if (avionicsKnobValueNow != this.avionicsKnobValue) {
+                this.setBrightness("PFD", avionicsKnobValueNow);
+                this.setBrightness("MFD", avionicsKnobValueNow);
+                this.avionicsKnobValue = avionicsKnobValueNow;
+            }
+        } 
+    }
+
+    onEvent(_event) {
+        if (_event == "MENU_Push") {
+            if (this.popUpElement) {
+                if (this.popUpElement.popUpEvent == "CONF_MENU_Push") {
+                    this.computeEvent("CONF_MENU_Push")
+                }
+            } else {
+                this.computeEvent("CONF_MENU_Push");
+            }
+        }
+    }
+
+    loadSavedBrightness(display) {
+        let brightness = WTDataStore.get(`${display}.Brightness`, 100);
+        this.setBrightness(display, brightness);
+    }
+
+    setBrightness(display, value, relative) {
+        let lvar = `L:XMLVAR_AS1000_${display}_Brightness`;
+        if (relative) {
+            let current = SimVar.GetSimVarValue(lvar, "number")
+            value = current + value;
+        }
+        // clamp value 0-100
+        value = Math.max(Math.min(value, 100), 0);
+        WTDataStore.set(`${display}.Brightness`, value);
+        SimVar.SetSimVarValue(lvar, "number", value);
+    }
+
+    getBrightness(display) {
+        return SimVar.GetSimVarValue(`L:XMLVAR_AS1000_${display}_Brightness`, "number");
+    }
+
     parseXMLConfig() {
         super.parseXMLConfig();
         let syntheticVision = null;
         let reversionaryMode = null;
-        let avionicsKnobIndex = null;
         if (this.instrumentXmlConfig) {
             syntheticVision = this.instrumentXmlConfig.getElementsByTagName("SyntheticVision")[0];
             reversionaryMode = this.instrumentXmlConfig.getElementsByTagName("ReversionaryMode")[0];
-            avionicsKnobIndex = this.instrumentXmlConfig.getElementsByTagName("AvionicsKnobIndex")[0];            
         }
-        if (syntheticVision && syntheticVision.textContent == "True") {
-            if (this.mainPage.attitude.svg) {
-                this.mainPage.attitude.svg.setAttribute("background", "false");
-            }
-            this.getChildById("SyntheticVision").style.display = "block";
-            this.mainPage.syntheticVision = true;
-        }
-        else {
-            if (this.mainPage.attitude.svg) {
-                this.mainPage.attitude.svg.setAttribute("background", "true");
-            }
-            this.getChildById("SyntheticVision").style.display = "none";
-            this.mainPage.syntheticVision = false;
-        }
+        this.mainPage.setSyntheticVision(syntheticVision && syntheticVision.textContent == "True");
         if (reversionaryMode && reversionaryMode.textContent == "True") {
             this.handleReversionaryMode = true;
         }
-        if (avionicsKnobIndex) {
-            this.avionicsKnobIndex = avionicsKnobIndex.textContent;
-        }
     }
+
     disconnectedCallback() {
         super.disconnectedCallback();
     }
+
     Update() {
         super.Update();
         if (this.handleReversionaryMode) {
@@ -297,20 +350,13 @@ class AS1000_PFD_MainPage extends NavSystemPage {
         this.gps.getElementOfType(PFD_InnerMap).toggleIsolines();
     }
     toggleSyntheticVision() {
-        var mainPage = this.gps.mainPage
-        if (mainPage.syntheticVision) {
-            if (mainPage.attitude.svg) {
-                mainPage.attitude.svg.setAttribute("background", "true");
-            }
-            this.gps.getChildById("SyntheticVision").style.display = "none";
-            mainPage.syntheticVision = false;
-        } else {
-            if (mainPage.attitude.svg) {
-                mainPage.attitude.svg.setAttribute("background", "false");
-            }
-            this.gps.getChildById("SyntheticVision").style.display = "block";
-            mainPage.syntheticVision = true;
-        }
+        this.setSyntheticVision(!this.syntheticVision);
+    }
+    setSyntheticVision(enabled) { 
+        this.syntheticVision = enabled;
+        this.attitude.setSytheticVisionEnabled(this.syntheticVision);        
+        this.gps.getChildById("SyntheticVision").setAttribute("show-bing-map", this.syntheticVision ? "true" : "false");
+        this.gps.getChildById("SyntheticVision").style.display = this.syntheticVision ? "block" : "none";
     }
     getKeyState(_keyName) {
         switch (_keyName) {
@@ -589,8 +635,8 @@ class AS1000_PFD_ConfigMenu extends NavSystemElement {
         this.gps.ActiveSelection(this.defaultSelectables)
     }
     onUpdate(_deltaTime) {
-        this.pfdBrightLevel.textContent = SimVar.GetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number") + "%";
-        this.mfdBrightLevel.textContent = SimVar.GetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number") + "%";        
+        this.pfdBrightLevel.textContent = this.gps.getBrightness("PFD") + "%";
+        this.mfdBrightLevel.textContent = this.gps.getBrightness("MFD") + "%";        
     }
     onExit() {
         this.pfdConfWindow.setAttribute("state", "Inactive");
@@ -599,31 +645,18 @@ class AS1000_PFD_ConfigMenu extends NavSystemElement {
     onEvent(_event) {
     }
     pfdBrightCallback(_event) {
-        if (_event == "FMS_Upper_INC" || _event == "NavigationSmallInc") {
-            var brightLevel = SimVar.GetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number")
-            if (brightLevel < 100) {
-                SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", brightLevel + 10)
-            }
-        } else if (_event == "FMS_Upper_DEC" || _event == "NavigationSmallDec") {
-            var brightLevel = SimVar.GetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number")
-            if (brightLevel > 0) {
-                SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", brightLevel - 10)
-            }
-
-        }
+        this.setBrightCallback(_event, "PFD")
     }
     mfdBrightCallback(_event) {
+        this.setBrightCallback(_event, "MFD")
+    }
+
+    setBrightCallback(_event, display) {
         if (_event == "FMS_Upper_INC" || _event == "NavigationSmallInc") {
-            var brightLevel = SimVar.GetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number")
-            if (brightLevel < 100) {
-                SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", brightLevel + 10)
-            }
+            this.gps.setBrightness(display, 10, true)
         } else if (_event == "FMS_Upper_DEC" || _event == "NavigationSmallDec") {
-            var brightLevel = SimVar.GetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number")
-            if (brightLevel > 0) {
-                SimVar.SetSimVarValue("L:XMLVAR_AS1000_MFD_Brightness", "number", brightLevel - 10)
-            }
-        }        
+            this.gps.setBrightness(display, -10, true)
+        }
     }
 }
 registerInstrument("as1000-pfd-element", AS1000_PFD);

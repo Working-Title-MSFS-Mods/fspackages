@@ -1,10 +1,12 @@
+Include.addScript("/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js")
+
 class Altimeter extends HTMLElement {
     constructor() {
         super();
         this.currentCenterGrad = -10000;
         this.minimumAltitude = NaN;
         this.compactVs = false;
-        this.baroMode = "IN";
+        this.baroMode = WTDataStore.get("Alt.BaroMode", "IN");
         this.lastPressure = "29.92";
     }
     static get observedAttributes() {
@@ -641,14 +643,9 @@ class Altimeter extends HTMLElement {
                 }
                 break;
             case "pressure":
-                if (this.baroMode == "HPA") {
-                    this.baroText.textContent = fastToFixed(parseFloat(newValue) * 33.8639, 0) + "HPA";
-                    //this.baroText.textContent = (parseFloat(newValue) * 33.8639).toFixed(0) + "HPA";
-                } else {
-                    this.baroText.textContent = fastToFixed(parseFloat(newValue), 2) + "IN";
-                    //this.baroText.textContent = parseFloat(newValue).toFixed(2) + "IN";
-                }
-                break;
+                this.lastPressure = newValue;
+                newValue = this.baroMode;
+                /* fall through to update the HTML text */
             case "baro-mode":
                 if (newValue == "HPA") {
                     this.baroMode = "HPA";
@@ -657,6 +654,7 @@ class Altimeter extends HTMLElement {
                     this.baroMode = "IN";
                     this.baroText.textContent = fastToFixed(parseFloat(this.lastPressure), 2) + "IN";
                 }
+                WTDataStore.set("Alt.BaroMode", this.baroMode);
             case "vspeed":
                 let vSpeed = parseFloat(newValue);
                 if (this.compactVs) {
