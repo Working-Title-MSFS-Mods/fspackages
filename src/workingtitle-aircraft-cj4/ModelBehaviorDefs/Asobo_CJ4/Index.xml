@@ -1,3 +1,5 @@
-<!-- CJ4 templates -->
-<Include File="Lighting.xml"/>
-<Include File="Passenger.xml"/>
+<ModelBehaviors>
+    <!-- CJ4 templates -->
+    <Include RelativeFile="Lighting.xml"/>
+    <Include RelativeFile="Passenger.xml"/>
+</ModelBehaviors>
