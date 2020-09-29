@@ -13,13 +13,14 @@ class WTEngine extends Engine {
         this.engineDisplayPages = [];
         this.selectedEnginePage = null;
         this.config = null;
+        this._defaultPanelID = "ENGINE";
     }
     /** Initializes the engine instrument through its superclass */
     init() {
         super.init();
         // set the default engine page
         this.xmlConfig = this.gps.xmlConfig
-        let id = "DFLT";
+        let id = this._defaultPanelID;
         this.engineDisplayPages[id] = {
             title: "Default",
             node: this.xmlConfig.getElementsByTagName("EngineDisplay"),
@@ -34,6 +35,7 @@ class WTEngine extends Engine {
             this.xmlConfig = xmlConfig;
             let engineDisplayPages = xmlConfig.getElementsByTagName("EngineDisplayPage");
             if (engineDisplayPages.length > 0) {
+                delete this.engineDisplayPages[this._defaultPanelID];
                 for (let i = 0; i < engineDisplayPages.length; i++) {
                     let engineDisplayPageRoot = engineDisplayPages[i];
                     let id = engineDisplayPageRoot.getElementsByTagName("ID")[0].textContent;

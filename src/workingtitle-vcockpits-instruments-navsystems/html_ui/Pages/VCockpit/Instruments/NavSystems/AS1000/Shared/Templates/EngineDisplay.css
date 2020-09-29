@@ -249,6 +249,22 @@ engine-display #TurboEngine {
 engine-display #XMLEngineDisplay {
   width: 100%; }
 
+@keyframes CautionBlink {
+  0%, 49% {
+    background-color: black;
+    color: yellow;
+    fill: yellow; }
+  51%, 100% {
+    background-color: yellow;
+    color: black;
+    fill: black; } }
+
+@keyframes CautionBlinkBackground {
+  0%, 49% {
+    fill: black; }
+  51%, 100% {
+    fill: yellow; } }
+
 @keyframes AlertBlink {
   0%, 49% {
     background-color: white;
@@ -276,6 +292,14 @@ engine-display #XMLEngineDisplay {
       transform: rotateX(0);
       display: block;
       width: 100%; }
+  engine-display #XMLEngineDisplay *[state=Caution] *[CautionBlink=Text], engine-display #XMLEngineDisplay .Column *[state=Caution] *[CautionBlink=Text] {
+    animation: CautionBlink 1s infinite; }
+  engine-display #XMLEngineDisplay *[state=Caution] *[CautionBlink=Background], engine-display #XMLEngineDisplay .Column *[state=Caution] *[CautionBlink=Background] {
+    animation: CautionBlinkBackground 1s infinite;
+    fill-opacity: 1; }
+  engine-display #XMLEngineDisplay *[state=Caution] *[CautionBlink=Yellow], engine-display #XMLEngineDisplay .Column *[state=Caution] *[CautionBlink=Yellow] {
+    fill: yellow; }
+
   engine-display #XMLEngineDisplay *[state=Alert] *[AlertBlink=Text], engine-display #XMLEngineDisplay .Column *[state=Alert] *[AlertBlink=Text] {
     animation: AlertBlink 1s infinite; }
   engine-display #XMLEngineDisplay *[state=Alert] *[AlertBlink=Background], engine-display #XMLEngineDisplay .Column *[state=Alert] *[AlertBlink=Background] {

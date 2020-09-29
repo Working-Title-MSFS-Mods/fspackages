@@ -1,7 +1,7 @@
 <WTEngineDisplay>
 	<EngineDisplayPage>
-        <ID>DFLT</ID>
-		<Title>Default</Title>
+        <ID>ENGINE</ID>
+		<Title>Engine</Title>
 		<Node>EngineDisplay</Node>
 	</EngineDisplayPage>
 	<EngineDisplayPage>
