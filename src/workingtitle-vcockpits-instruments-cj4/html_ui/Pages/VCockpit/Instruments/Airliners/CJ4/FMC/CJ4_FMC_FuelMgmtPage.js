@@ -93,7 +93,7 @@ class CJ4_FMC_FuelMgmtPage {
                 [""],
                 [""],
                 [""],
-                ["<RESET FUEL USED"],
+                [""],
                 ["------------------------[blue]"],
                 ["", "PERF MENU>"]
             ]);

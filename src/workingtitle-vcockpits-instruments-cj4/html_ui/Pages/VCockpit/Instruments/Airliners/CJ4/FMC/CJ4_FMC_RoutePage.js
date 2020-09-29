@@ -198,6 +198,9 @@ class CJ4_FMC_RoutePage {
 
         fmc.onRightInput[5] = () => {
             if (activateCell == "PERF INIT>") {
+                if (!fmc.getIsRouteActivated()) {
+                    fmc.activateRoute();
+                }
                 CJ4_FMC_PerfInitPage.ShowPage2(fmc);
             }
         };
@@ -347,6 +350,9 @@ class CJ4_FMC_RoutePage {
 
         fmc.onRightInput[5] = () => {
             if (activateCell == "PERF INIT>") {
+                if (!fmc.getIsRouteActivated()) {
+                    fmc.activateRoute();
+                }
                 CJ4_FMC_PerfInitPage.ShowPage2(fmc);
             }
         };
