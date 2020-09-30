@@ -75,18 +75,10 @@ class CJ4_FMC_LegsPage {
                         let bearing = isFinite(waypoint.bearingInFP) ? waypoint.bearingInFP.toFixed(0).padStart(3, "0") + "°" : "";
                         let distance = isFinite(waypoint.cumulativeDistanceInFP) ? waypoint.cumulativeDistanceInFP : "";
 						distance = distance.toFixed(distance > 100 ? 0 : 1);
-
-                        //temporary log to see current flight plan
-                        let waypointsLog = waypoints.map(waypoint => waypoint.ident);
-                        console.log("fpln:" + JSON.stringify(waypointsLog, null, 2));
 						
-						if (i == 0 && currentPage == 1){
-							rows[2 * i] = [bearing.padStart(5, " ") + distance.padStart(6, " ") + "NM" + "[magenta]"];
-							rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident + "[magenta]" : "USR"];
-						} else {
-							rows[2 * i] = [bearing.padStart(5, " ") + distance.padStart(6, " ") + "NM"];
-							rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident : "USR"];
-						}
+                        rows[2 * i] = [bearing.padStart(5, " ") + distance.padStart(6, " ") + "NM"];
+                        rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident : "USR"];
+
                         if (CJ4_FMC_LegsPage.DEBUG_SHOW_WAYPOINT_PHASE) {
                             if (isDepartureWaypoint) {
                                 rows[2 * i + 1][0] += " [DP]";
