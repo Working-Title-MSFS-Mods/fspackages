@@ -605,6 +605,8 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox #Speed {
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #AP_LateralActive,
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_Status,
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_YDStatus,
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_VerticalActive,
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference {
   color: #11d011 !important;
