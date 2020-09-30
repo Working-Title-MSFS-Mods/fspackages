@@ -428,28 +428,24 @@ class CJ4_FMC extends FMCMainDisplay {
      */
     adjustFuelConsumption() {
 
-        const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
-
-        const leftFuelQtyGals = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons");
-        const rightFuelQtyGals = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons");
-
-        const leftFuelQty = leftFuelQtyGals * fuelWeight;
-        const rightFuelQty = rightFuelQtyGals * fuelWeight;
+        const leftFuelQty = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons");
+        const rightFuelQty = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons");
         
         if (!this.previousTime) {
-            this.previousTime = performance.now();
             this.previousLeftFuelQty = leftFuelQty;
             this.previousRightFuelQty = rightFuelQty;
         }
         else {
-            const currentTime = performance.now();
-            const deltaTimeHours = (currentTime - this.previousTime) / (1000 * 60 * 60);
-
+            
             const thrustLeft = SimVar.GetSimVarValue("TURB ENG JET THRUST:1", "pounds");
             const thrustRight = SimVar.GetSimVarValue("TURB ENG JET THRUST:2", "pounds");
 
-            const fuelUsed = (this.previousLeftFuelQty + this.previousRightFuelQty) - (leftFuelQty + rightFuelQty);
-            const estFuelFlow = fuelUsed / deltaTimeHours;
+            const pphLeft = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "pounds per hour");
+            const pphRight = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "pounds per hour");
+            const pphTotal = pphLeft + pphRight;
+
+            const leftFuelUsed = this.previousLeftFuelQty - leftFuelQty;
+            const rightFuelUsed = this.previousRightFuelQty - rightFuelQty;
 
             const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
             const tsfc = (1 + (.56 * mach)) * 0.58;
@@ -457,28 +453,23 @@ class CJ4_FMC extends FMCMainDisplay {
             SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", thrustLeft * tsfc);
             SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", thrustRight * tsfc);
 
-            if (fuelUsed > 0 && fuelUsed < 1) {
+            if ((rightFuelUsed > 0.005 && rightFuelUsed < 1) || (leftFuelUsed > 0.005 && rightFuelUsed < 1)) {
                 const targetFuelFlow = (thrustLeft + thrustRight) * tsfc;
-                const correctionFactor = targetFuelFlow / estFuelFlow;
-                
-                const leftCorrectedFuelUsed = (this.previousLeftFuelQty - leftFuelQty) * correctionFactor;
-                const rightCorrectedFuelUsed = (this.previousRightFuelQty - rightFuelQty) * correctionFactor;
+                const correctionFactor = targetFuelFlow / pphTotal;
 
-                const leftAdjustment = ((this.previousLeftFuelQty - leftFuelQty) - leftCorrectedFuelUsed) / fuelWeight;
-                const rightAdjustment = ((this.previousRightFuelQty- rightFuelQty) - rightCorrectedFuelUsed) / fuelWeight;
+                const newLeftFuelQty = this.previousLeftFuelQty - (leftFuelUsed * correctionFactor);
+                const newRightFuelQty = this.previousRightFuelQty - (rightFuelUsed * correctionFactor);
 
-                SimVar.SetSimVarValue("FUEL TANK LEFT MAIN QUANTITY", "gallons", leftFuelQtyGals + leftAdjustment);
-                SimVar.SetSimVarValue("FUEL TANK RIGHT MAIN QUANTITY", "gallons", rightFuelQtyGals + rightAdjustment);
+                SimVar.SetSimVarValue("FUEL TANK LEFT MAIN QUANTITY", "gallons", newLeftFuelQty);
+                SimVar.SetSimVarValue("FUEL TANK RIGHT MAIN QUANTITY", "gallons", newRightFuelQty);
 
-                this.previousLeftFuelQty = (leftFuelQtyGals + leftAdjustment) * fuelWeight;
-                this.previousRightFuelQty = (rightFuelQtyGals + rightAdjustment) * fuelWeight;
+                this.previousLeftFuelQty = newLeftFuelQty;
+                this.previousRightFuelQty = newRightFuelQty;
             }
             else {
                 this.previousLeftFuelQty = leftFuelQty;
                 this.previousRightFuelQty = rightFuelQty;
             }
-        
-            this.previousTime = currentTime;
         }
     }
 }
