@@ -74,7 +74,9 @@ class CJ4_FMC_DepArrPage {
             rows[0] = ["", Avionics.Utils.formatRunway(selectedRunway.designation) + "[d-text green]"];
             fmc.onRightInput[0] = () => {
                 fmc.setRunwayIndex(-1, (success) => {
-                    CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
+                    fmc.setDepartureIndex(-1, () => {
+                        CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
+                    });
                 });
             };
         }
@@ -123,8 +125,10 @@ class CJ4_FMC_DepArrPage {
         if (selectedDeparture) {
             rows[0][0] = selectedDeparture.name + "[d-text green]";
             fmc.onLeftInput[0] = () => {
-                fmc.setDepartureIndex(-1, () => {
-                    CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
+                fmc.setRunwayIndex(-1, (success) => {
+                    fmc.setDepartureIndex(-1, () => {
+                        CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
+                    });
                 });
             };
         }
@@ -407,7 +411,7 @@ class CJ4_FMC_DepArrPage {
         modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
         fmc._templateRenderer.setTemplateRaw([
-            [" " + modStr + destinationIdent + " ARRIVAL", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
+            [" " + modStr + " " + destinationIdent + " ARRIVAL", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
             [" STARS[blue]", "APPROACHES [blue]"],
             ...rows,
             ["-----------------------[blue]"],
