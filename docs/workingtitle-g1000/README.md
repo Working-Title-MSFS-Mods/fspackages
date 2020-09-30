@@ -1,48 +1,60 @@
 # Documentation for the Working Title G1000
 
-_Applies to version: v0.2.0_
+_Applies to version: v0.3.0_
 
-This is a mod for the G1000 in the the new Microsoft Flight Simulator.  The stock instrument has a number of deficiencies, and this is an attempt to fix some of them.  Currently, the three main features are:
+Welcome to the latest version of the Working Title G1000 for Microsoft Flight Simulator.  This mod provides a raft of bug-fixes and enhancements to the stock G1000 used in many of the sim's general aviation planes.   Version 0.3.0 is developed for version 1.9.3.0 of the base sim, the version released on 29 September 2020.  Previous versions of the G1000 mod will not work with this version of the sim.
 
-* adding software control of brightness, for those planes that lack dedicated avionics brightness knobs
-* adding an accurate menu item for turning synthetic vision on and off
-* adding an accurate menu item for toggling altimeter between IN and HPA
+This mod can be installed just like any other MSFS mod:  simply drag the `workingtitle-g1000` folder from the zip file into your flight simulator's `Community` directory.
 
-## Brightness control
+**Note:  Due to some changes in file structure it is important that you do not install v0.3.0 of this mod over an earlier version.**  If you had v0.2.0 or v0.2.1 installed please delete them completely before installing this version to avoid any potential problems.
 
-The stock G1000 did not implement the real-world PFD configuration menu which allows changing the brightness of the display.  This meant that the planes that lacked a hardware avionics brightness knob did not have any ability to dim the displays, which makes night-time flying painful.  This mod fixes that.
+## Key Changes
 
-We have added a new PFD configuration menu, accessed through the menu button, which is inspired by, but not a complete replica of, the real-world menu.  We left out the AUTO/MANUAL brightness switch because that makes no sense in the sim, and the UI isn't exactly right because it was created within the confines of the existing panel styles in the G1000, but it's close enough.
+There are a lot of changes in this version.  For a full list check out the [change log](CHANGES.md).  This section summarizes some of the ones we think you'll be most excited about.
 
-The original version of this mod broke control of brightness for those aircraft that *did* have dedicated knobs for it, but that has now been fixed.  The PFD logic will read from the sim's default variable for the avionics brightness knob and allow that to override the setting in the PFD.  
+### Track-up mode
 
-Unfortunately, we have not yet found a way to do this completely within the logic of the G1000 itself.  Planes that do not use the default index number for the avionics knob will need a small tweak to their `panel.xml` to tell the PFD which knob to listen to.  This mod includes pre-tweaked files for the default C172 and G36 G1000 setups.  If you need to modify your own plane, full details are in `AvionicsKnobIndex.md`.
+Everyone's long-awaited favorite, the track-up map mode, has arrived.  For simplicity's sake we have not implemented the full drill-down into the configuration menu that you normally need to make to toggle map orientation.  Instead, just hit the MAP soft key on the MFD and you'll find a toggle for it next up to the NEXRAD button.
 
-## Synthetic Vision
+### Better brightness control
 
-G1000 units with synthetic vision are supposed to have a menu item that allows it to be turned off and configured.  This menu was not implemented in the default G1000.  With this mod, there is now a `SYN VIS` option inside the `PFD` menu on the PFD.  Pressing this will load a new menu page for synthetic vision.  Detailed configuration is not yet available, but the system can be turned on and off by pressing the `SYN TERR` button in this meny.
+The previous version of the mod offered software brightness control but ran into some issues with planes which had hardware knobs for controlling avionics brightness.  Those required, in some cases, modifying the plane's `panel.xml`, which was both annoying and posed problems for the premium and third-party planes.
 
-This also has the nice side effect of adding synthetic vision to planes that do not have it by default.  But you don't have to turn it on if you don't want to.  :)
+That is no longer an issue.  This version of the mod has new logic to read the configuration of the plane's interior model and use that to automatically determine which knob to listen to for control of avionics brightness.  Since this is done within the sim itself it works even with encrypted planes.
 
-## Altimeter
+### Autopilot fixes!
 
-The stock G1000 is stuck with the barometer in inches.  It how has a toggle in the accurate place to switch between IN and HPA.
+This version fixes what was perhaps the single most loathed behavior of the stock MSFS G1000:  its tendency to flip an unwanted U-turn back to the previous waypoint when activating an approach.  By careful application of our patented Unsuckotron(tm) we have managed to fix that.  You should no longer find yourself doing a Crazy Ivan when you activate an approach.  We also fixed a bug in which reversed the NOSE UP/DN buttons worked in FLC mode; they'll now behave as a sensible person would expect.
 
-## Other small tweaks
+### Persistent settings
 
-Other fixes might accrue here.  Currently, the only notable one is that the logic that builds the string representing the current leg distance has been updated so that whole units (eg, 1 nm) have their decimal place recovered after being truncated by the core formatting logic.  This means it would now show as, for example, `1.0NM` instead of `1NM` to match  the real instrument.  Thanks to Burt Pieke at the [Avsim forum](https://www.avsim.com/forums/topic/583603-add-on-developers-screwed-until-major-patches/page/4/?tab=comments#comment-4335724) for flagging this.  This change is in a shared PFD/MFD component and will also fix other Garmin nav systems.
+We had a breakthrough during the development of this version when [@tavip](https://github.com/tavip) sent us a PR which demonstrated how to use a new in-sim data store that we had not yet had time to play with.  By using this we have been able to finally answer peoples' wish for a way to save their G1000 settings.  With this version numerous settings, including map orientation and brightness, will be saved between sessions.  No more changing the same thing every time you load a plane.   Amazing. 
+
+### Extensible engine pages
+
+We have enhanced the logic that drives the engine pages on the left side of the MFD.   No longer are you stuck with one simple page that is the same across all planes.  Now each plane is able to define its own set of pages and use an expanded selection of XML logic to enable it to better model real-world systems.  On top of that, we have taken the same functionality we added to allow us to detect hardware avionics knobs and applied it to loading these configurations from a standalone XML file.  This means it will be extremely simple to add custom panels to any plane without having to touch stock files -- even the commercial ones.
+
+This is a somewhat complicated feature.  If you want to read more about it, checkout the accompanying [EnginePanels.md](EnginePanels.md).  If you don't feel up to reading that, don't worry:   we have already configured the G36 Bonanza with a custom panel so you can try out the functionality right away.
+
+### Graphical updates
+
+Our UI experts have put a lot of effort into redoing a large chunk of the interface to bring it closer to reality.  You will find colors that are much more authentic along with adjustments to fonts and layout in a number of places that make your G1000 feel a little bit more like a real one.
+
+### And more...
+
+That's just the big ticket items.  There is plenty we have tweaked.  For full details, check out [CHANGES.md](CHANGES.md).
+
+## What's next?
+
+This release hits most of the things what we have wanted to do to the G1000 *right this moment*.  From here we are going to take a little time to dig deeper into the dirty guts of the MSFS flight plan and FMC logic and see if we can fix some more of the issues that people have found really troubling in flight.
+
+We are also already underway with a revamp of the entire G1000 UI which will allow us to more rapidly develop additional panels, pages, and menus to continue to bring the in-game interface closer to reality.   Could the next version utilize that, along with the persistent data storage introduced in this version, to give you a realistic settings page with lots of knobs to tweak?  We'll see!
+
 
 ## Comments, issues, bug reports
 
-If you run any any trouble, want to make suggestions for further improvements, or just have something to say about this mod, you can reach the creators via the [Working Title MSFS Mods](https://github.com/Working-Title-MSFS-Mods) github org.  Bug reports or feature requests should go to the [fspackages issue board](https://github.com/Working-Title-MSFS-Mods/fspackages/issues).   We also generally hang out on Avsim.
+If you run any any trouble, want to make suggestions for further improvements, or just have something to say about this mod, you can reach the creators via the [Working Title MSFS Mods](https://github.com/Working-Title-MSFS-Mods) github org.  Bug reports or feature requests should go to the [fspackages issue board](https://github.com/Working-Title-MSFS-Mods/fspackages/issues).   We also generally hang out on Avsim and the official MSFS forum.
 
 ## Credits
 
-Thanks is due to:
-
-* [dga711](https://github.com/dga711), whose [devkit](https://github.com/dga711/msfs-webui-devkit) mod made working on this practical
-* the folks at the [A320 Neo project](https://github.com/wpine215/msfs-a320neo/) for a little help along the way
-* [Smirow](https://github.com/Smirow), from whom I adapted the barometer code
-
----
-*A note on the Baron G58:  This plane has the G1000 and a number of flaws, but unfortunately it is one of the planes that Microsoft have encrypted, and I currently have no way of accessing the model definition to modify it.  If any way to do this becomes available, hopefully we'll be able to make some fixes to that, too.*
+We have received help from many people in the community, in the form of bug reports, information on real-word behavior, or actual contributions of code.  Of particular help have been [@tavip](https://github.com/tavip) (Octavian Purdila) and [@jonasbeaver](https://github.com/jonasbeaver) -- the former for numerous contributions of code, the latter for being a font of wisdom and offering to help tame our backlog of issues.  Great thanks goes to them, and to everyone else who has helped the Working Title team with this and our other projects.
