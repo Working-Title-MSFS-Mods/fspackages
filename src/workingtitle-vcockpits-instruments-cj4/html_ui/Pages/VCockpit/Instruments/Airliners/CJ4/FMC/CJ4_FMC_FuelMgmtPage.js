@@ -8,8 +8,8 @@ class CJ4_FMC_FuelMgmtPage {
             let fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
             let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft
 
-            let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
-                + Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour"));
+            let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
+                + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
             let hours = Math.trunc((fuelQuantityTotal - fmc.reserveFuel) / totalFuelFlow).toFixed(0);
             let hoursForResv = ((fuelQuantityTotal - fmc.reserveFuel) / totalFuelFlow);
             let minutes = ((((fuelQuantityTotal - fmc.reserveFuel) / totalFuelFlow) % 1) * 60).toFixed(0).toString().padStart(2, "0");
@@ -63,8 +63,8 @@ class CJ4_FMC_FuelMgmtPage {
             let fuelQuantityLeft = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
             let fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
 
-            let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
-                + Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour"));
+            let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
+                + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
 
             let fuelBurnedLeft = fmc.initialFuelLeft - fuelQuantityLeft;
             let fuelBurnedRight = fmc.initialFuelRight - fuelQuantityRight;
@@ -105,8 +105,8 @@ class CJ4_FMC_FuelMgmtPage {
     }
     static ShowPage3(fmc) { //FUEL MGMT Page 3
         fmc.clearDisplay();
-        let totalFuelFlow = Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour"))
-            + Math.round(SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour"));
+        let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
+            + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
         fmc._templateRenderer.setTemplateRaw([
             ["", "3/3[blue]", "PERF TRIP[blue]"],
             [" FROM[blue s-text]"],

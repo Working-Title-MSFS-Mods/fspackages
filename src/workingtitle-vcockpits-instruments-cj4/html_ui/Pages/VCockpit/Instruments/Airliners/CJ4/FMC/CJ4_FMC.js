@@ -450,10 +450,14 @@ class CJ4_FMC extends FMCMainDisplay {
 
             const fuelUsed = (this.previousLeftFuelQty + this.previousRightFuelQty) - (leftFuelQty + rightFuelQty);
             const estFuelFlow = fuelUsed / deltaTimeHours;
-            if (fuelUsed !== 0) {
-                const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
-                const tsfc = (1 + (.5 * mach)) * 0.56;
 
+            const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
+            const tsfc = (1 + (.56 * mach)) * 0.58;
+
+            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", thrustLeft * tsfc);
+            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", thrustRight * tsfc);
+
+            if (fuelUsed > 0 && fuelUsed < 1) {
                 const targetFuelFlow = (thrustLeft + thrustRight) * tsfc;
                 const correctionFactor = targetFuelFlow / estFuelFlow;
                 
@@ -466,11 +470,12 @@ class CJ4_FMC extends FMCMainDisplay {
                 SimVar.SetSimVarValue("FUEL TANK LEFT MAIN QUANTITY", "gallons", leftFuelQtyGals + leftAdjustment);
                 SimVar.SetSimVarValue("FUEL TANK RIGHT MAIN QUANTITY", "gallons", rightFuelQtyGals + rightAdjustment);
 
-                SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", thrustLeft * tsfc);
-                SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", thrustRight * tsfc);
-
                 this.previousLeftFuelQty = (leftFuelQtyGals + leftAdjustment) * fuelWeight;
                 this.previousRightFuelQty = (rightFuelQtyGals + rightAdjustment) * fuelWeight;
+            }
+            else {
+                this.previousLeftFuelQty = leftFuelQty;
+                this.previousRightFuelQty = rightFuelQty;
             }
         
             this.previousTime = currentTime;
