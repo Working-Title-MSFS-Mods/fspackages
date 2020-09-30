@@ -407,7 +407,7 @@ class CJ4_FMC_DepArrPage {
         modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
         fmc._templateRenderer.setTemplateRaw([
-            [" " + modStr + destinationIdent + " ARRIVAL", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
+            [" " + modStr + " " + destinationIdent + " ARRIVAL", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
             [" STARS[blue]", "APPROACHES [blue]"],
             ...rows,
             ["-----------------------[blue]"],
