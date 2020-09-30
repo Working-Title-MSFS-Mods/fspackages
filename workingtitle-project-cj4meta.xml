@@ -1,0 +1,7 @@
+<Project Version="2" Name="workingtitle" FolderName="Packages">
+	<OutputDirectory>.</OutputDirectory>
+	<TemporaryOutputDirectory>_PackageInt</TemporaryOutputDirectory>
+	<Packages>
+		<Package>PackageDefinitions\workingtitle-aircraft-cj4-metapackage.xml</Package>
+	</Packages>
+</Project>
