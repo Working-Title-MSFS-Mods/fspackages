@@ -531,3 +531,68 @@ cj4-mfd-element {
             width: 100%;
             height: 100%; }
 
+.Large {
+  font-size: 32px;
+  line-height: 28px
+}
+
+.Small {
+  font-size: 22px;
+}
+
+#Waypoint {
+  color: magenta;
+}
+
+#Approach,
+#AutopilotInfos,
+#Coms div.Modifiable {
+  color: #11d011 !important;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox {
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  margin: 54px 8px
+}
+
+#TopBox div {
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+#TopBox {
+  position: absolute;
+  width: 200%;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox #Speed {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+cj4-mfd-element #Mainframe #MapOverlay #NDInfo #TopBox text.Wind {
+  font-size: 20px;
+}
+
+#MapOverlay #selectedRefGroup text:first-child {
+  font-size: 28px;
+}
+
+#MapOverlay #selectedRefGroup text:last-child {
+  font-size: 40px;
+}
+
+#MapOverlay g#selectedRefGroup {
+  transform: translateY(18px);
+}
+
+#MapOverlay #NDCompass #currentRefGroup text {
+  font-size: 34px;
+  fill: #11d011;
+}
+            

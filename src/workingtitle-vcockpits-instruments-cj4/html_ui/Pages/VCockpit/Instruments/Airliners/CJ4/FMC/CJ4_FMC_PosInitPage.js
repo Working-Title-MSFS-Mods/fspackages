@@ -1,7 +1,7 @@
 class CJ4_FMC_PosInitPage {
     static ShowPage1(fmc) {
         let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")).toDegreeString();
-        console.log(currPos);
+        // console.log(currPos);
         let originCell = "----";
 		let originPos = "";
         if (fmc && fmc.flightPlanManager) {
@@ -27,19 +27,19 @@ class CJ4_FMC_PosInitPage {
             irsPos = fmc.initCoordinates;
         }
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["POS INIT[color]blue", "1", "2"],
-            ["FMS POS" + "[color]blue"],
-            [currPos],
-            ["AIRPORT" + "[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "1/2 [blue]", "POS INIT[blue]"],
+            [" FMS POS[blue]"],
+            [currPos + ""],
+            [" AIRPORT[blue]"],
             [originCell, originPos],
-            ["PILOT/REF WPT" + "[color]blue"],
+            [" PILOT/REF WPT[blue]"],
             [refAirport, refAirportCoordinates],
-            ["", "SET POS TO GNSS" + "[color]blue"],
+            ["", "SET POS TO GNSS [blue]"],
             ["", currPos],
-            ["", "SET POS" + "[color]blue"],
+            ["", "SET POS      [blue]"],
             ["", irsPos],
-            ["--------------------------" + "[color]blue"],
+            ["--------------------------[blue]"],
             ["<INDEX", "FPLN>"]
         ]);
         fmc.onLeftInput[0] = () => {
@@ -78,48 +78,29 @@ class CJ4_FMC_PosInitPage {
     }
     static ShowPage2(fmc) {
         fmc.clearDisplay();
-        fmc.setTemplate([
-            ["POS REF", "2", "3"],
-            ["FMC POS (GPS L)", "GS"],
-            [""],
-            ["IRS(3)"],
-            [""],
-            ["RNP/ACTUAL", "DME DME"],
-            [""],
-            [""],
-            [""],
-            ["-----------------", "GPS NAV"],
-            ["<PURGE", "INHIBIT>"],
-            [""],
-            ["<INDEX", "BRG/DIST>"]
-        ]);
+        fmc.registerPeriodicPageRefresh(() => {
+            let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")).toDegreeString();
+            let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+            fmc._templateRenderer.setTemplateRaw([
+                ["", "2/2 [blue]", "POS INIT[blue]"],
+                [" FMC POS[blue]", "GS [blue]"],
+                [currPos + "", groundSpeed + ""],
+                [" GNSS1 POS[blue]"],
+                [currPos + "", groundSpeed + ""],
+                [" GNSS2 POS[blue]"],
+                [currPos + "", groundSpeed + ""],
+                [""],
+                [""],
+                [""],
+                [""],
+                ["-----------------------[blue]"],
+                ["<INDEX", "FPLN>"]
+            ]);
+        }, 1000, true);
+
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_RoutePage.ShowPage1(fmc); };
         fmc.onPrevPage = () => { CJ4_FMC_PosInitPage.ShowPage1(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PosInitPage.ShowPage3(fmc); };
-        fmc.updateSideButtonActiveStatus();
-    }
-    static ShowPage3(fmc) {
-        fmc.clearDisplay();
-        fmc.setTemplate([
-            ["POS REF", "2", "3"],
-            ["IRS L", "GS"],
-            ["000°/0.0NM", "290KT"],
-            ["IRS C", "GS"],
-            ["000°/0.0NM", "290KT"],
-            ["IRS R", "GS"],
-            ["000°/0.0NM", "290KT"],
-            ["GPS L", "GS"],
-            ["000°/0.0NM", "290KT"],
-            ["GPS R", "GS"],
-            ["000°/0.0NM", "290KT"],
-            ["__FMCSEPARATOR"],
-            ["<INDEX", "LAT/LON>"]
-        ]);
-        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_RoutePage.ShowPage1(fmc); };
-        fmc.onPrevPage = () => { CJ4_FMC_PosInitPage.ShowPage2(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PosInitPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
 }

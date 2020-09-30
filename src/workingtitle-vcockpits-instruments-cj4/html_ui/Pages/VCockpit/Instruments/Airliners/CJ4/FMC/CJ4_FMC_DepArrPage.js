@@ -17,13 +17,13 @@ class CJ4_FMC_DepArrPage {
                 CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
             };
         }
-        fmc.setTemplate([
-            ["DEP/ARR INDEX" + "[color]blue"],
-            ["", "", "ACT FPLN" + "[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "DEP/ARR INDEX[blue]"],
+            ["", "", "ACT FPLN[blue]"],
             rowOrigin,
             [""],
             rowDestination,
-            [""],
+            ["", "", "SEC FPLN[blue s-text]"],
             [""],
             [""],
             [""],
@@ -31,11 +31,12 @@ class CJ4_FMC_DepArrPage {
             [""],
             [""],
             [""]
-        ]);
+        ], false);
     }
     static ShowDeparturePage(fmc, currentPage = 1) {
         fmc.clearDisplay();
         let originIdent = "";
+        let modStr = "ACT[blue]";
         let origin = fmc.flightPlanManager.getOrigin();
         if (origin) {
             originIdent = origin.ident;
@@ -70,7 +71,7 @@ class CJ4_FMC_DepArrPage {
             }
         }
         if (selectedRunway) {
-            rows[0] = ["", "<SEL> " + Avionics.Utils.formatRunway(selectedRunway.designation)];
+            rows[0] = ["", Avionics.Utils.formatRunway(selectedRunway.designation) + "[d-text green]"];
             fmc.onRightInput[0] = () => {
                 fmc.setRunwayIndex(-1, (success) => {
                     CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
@@ -100,7 +101,7 @@ class CJ4_FMC_DepArrPage {
                 }
                 if (appendRow) {
                     if (rowIndex >= 0 && rowIndex < 5) {
-                        rows[2 * rowIndex] = ["", Avionics.Utils.formatRunway(runway.designation)];
+                        rows[2 * rowIndex] = ["", Avionics.Utils.formatRunway(runway.designation) + "[s-text]"];
                         fmc.onRightInput[rowIndex] = () => {
                             if (fmc.flightPlanManager.getDepartureProcIndex() === -1) {
                                 fmc.setOriginRunwayIndex(index, () => {
@@ -120,7 +121,7 @@ class CJ4_FMC_DepArrPage {
             }
         }
         if (selectedDeparture) {
-            rows[0][0] = selectedDeparture.name + " <SEL>";
+            rows[0][0] = selectedDeparture.name + "[d-text green]";
             fmc.onLeftInput[0] = () => {
                 fmc.setDepartureIndex(-1, () => {
                     CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
@@ -149,7 +150,7 @@ class CJ4_FMC_DepArrPage {
                 if (appendRow) {
                     if (rowIndex >= 0 && rowIndex < 5) {
                         let ii = i;
-                        rows[2 * rowIndex][0] = departure.name;
+                        rows[2 * rowIndex][0] = departure.name + "[s-text]";
                         fmc.onLeftInput[rowIndex] = () => {
                             fmc.setDepartureIndex(ii, () => {
                                 CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
@@ -164,7 +165,7 @@ class CJ4_FMC_DepArrPage {
         let rowsCount = Math.max(displayableRunwaysCount, displayableDeparturesCount);
         let pageCount = Math.floor(rowsCount / 5) + 1;
 
-                
+
         //start of CWB EXEC handling
         let rsk6Field = "";
         if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
@@ -182,15 +183,20 @@ class CJ4_FMC_DepArrPage {
                 }
                 fmc.onExecDefault();
             }
-            fmc.refreshPageCallback = () => fmc.onDepArr();
         };
-        //end of CWB EXEC handling
 
-        fmc.setTemplate([
-            [originIdent + " DEPARTURES", currentPage.toFixed(0), pageCount.toFixed(0)],
-            ["DEPARTURES" + "[color]blue", "RUNWAYS" + "[color]blue"],
+        fmc.refreshPageCallback = () => {
+            CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
+        }
+
+        //end of CWB EXEC handling
+        modStr = fmc.fpHasChanged ? "MOD[white] " : "ACT[blue] ";
+
+        fmc._templateRenderer.setTemplateRaw([
+            [" " + modStr + originIdent + " DEPART[blue]", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
+            [" DEPARTURES[blue]", "RUNWAYS [blue]"],
             ...rows,
-            ["----------------" + "[color]blue"],
+            ["-----------------------[blue]"],
             ["<DEP/ARR IDX", rsk6Field]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowPage1(fmc); };
@@ -211,7 +217,7 @@ class CJ4_FMC_DepArrPage {
         };
         //end of CWB CANCEL MOD handling
 
-           
+
         fmc.onPrevPage = () => {
             if (currentPage > 0) {
                 CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, currentPage - 1);
@@ -226,6 +232,7 @@ class CJ4_FMC_DepArrPage {
     static ShowArrivalPage(fmc, currentPage = 1) {
         fmc.clearDisplay();
         let destinationIdent = "";
+        let modStr = "ACT[blue]";
         let destination = fmc.flightPlanManager.getDestination();
         if (destination) {
             destinationIdent = destination.ident;
@@ -397,13 +404,13 @@ class CJ4_FMC_DepArrPage {
             fmc.refreshPageCallback = () => fmc.onDepArr();
         };
         //end of CWB EXEC handling
+        modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
-
-        fmc.setTemplate([
-            [destinationIdent + " ARRIVALS", currentPage.toFixed(0), pageCount.toFixed(0)],
-            ["STARS" + "[color]blue", "APPROACHES" + "[color]blue"],
+        fmc._templateRenderer.setTemplateRaw([
+            [" " + modStr + destinationIdent + " ARRIVAL", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
+            [" STARS[blue]", "APPROACHES [blue]"],
             ...rows,
-            ["----------------" + "[color]blue"],
+            ["-----------------------[blue]"],
             ["<DEP/ARR IDX", rsk6Field]
         ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowPage1(fmc); };

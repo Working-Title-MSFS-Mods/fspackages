@@ -36,8 +36,8 @@ class CJ4_FMC_SelectWptPage {
                 };
             }
         }
-        fmc.setTemplate([
-            ["SELECT DESIRED WPT", (page + 1).toFixed(0), (waypoints.length / 5).toFixed(0)],
+        fmc._templateRenderer.setTemplateRaw([
+            [" WPT SELECT[blue]", (page + 1).toFixed(0) + "/" + Math.ceil((waypoints.length / 5)).toFixed(0) + "[blue] "],
             ...rows,
             [""]
         ]);

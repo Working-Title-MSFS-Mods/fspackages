@@ -36,6 +36,8 @@ class CJ4_FMC extends FMCMainDisplay {
         this.selectedRunwayOutput = "";
         this._fpHasChanged = false;
         this._activatingDirectTo = false;
+        this._templateRenderer = undefined;
+        this._msg = "";
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -43,20 +45,10 @@ class CJ4_FMC extends FMCMainDisplay {
     get fpHasChanged() { return this._fpHasChanged; }
     set fpHasChanged(value) {
         this._fpHasChanged = value;
-        let execEl = document.getElementById("exec-sign");
-
         if (this._fpHasChanged) {
-            if (!execEl) {
-                execEl = document.createElement("div");
-                execEl.id = "exec-sign";
-                execEl.innerHTML = "EXEC";
-                execEl.classList.add("blackwhite", "line-right", "fitcontent");
-                this.getChildById("msg-line").append(execEl);
-            }      
+            this._templateRenderer.showExec();
         } else {
-            if (execEl) {
-                execEl.remove();
-            }
+            this._templateRenderer.hideExec();
         }
     }
 
@@ -75,6 +67,10 @@ class CJ4_FMC extends FMCMainDisplay {
     }
     Init() {
         super.Init();
+
+        // init WT_FMC_Renderer.js
+        this._templateRenderer = new WT_FMC_Renderer(this);
+
         this.maxCruiseFL = 450;
         this.onFplan = () => { CJ4_FMC_RoutePage.ShowPage1(this); };
         this.onLegs = () => { CJ4_FMC_LegsPage.ShowPage1(this); };
@@ -85,64 +81,66 @@ class CJ4_FMC extends FMCMainDisplay {
         this.onMfdAdv = () => { CJ4_FMC_MfdAdvPage.ShowPage1(this); };
         this.onTun = () => { CJ4_FMC_NavRadioPage.ShowPage1(this); };
         this.onExec = () => {
-            this.messageBox.innerHTML = "Working . . .";
+            this.messageBox = "Working . . .";
             if (this.onExecPage) {
                 console.log("if this.onExecPage");
                 this.onExecPage();
             }
             else {
-                console.log("onExec Else");
+                // console.log("onExec Else");
                 this._isRouteActivated = false;
-                console.log("onExec else this._isRouteActivated = false");
+                // console.log("onExec else this._isRouteActivated = false");
                 this.fpHasChanged = false;
-                console.log("onExec else this.fpHasChanged = false");
-                this.messageBox.innerHTML = " ";
-                console.log("onExec else this.messageBox.innerHTML");
+                // console.log("onExec else this.fpHasChanged = false");
+                this.messageBox = "";
+                // console.log("onExec else this.messageBox.innerHTML");
                 this._activatingDirectTo = false;
-                console.log("onExec else this._activatingDirectTo = false");
+                // console.log("onExec else this._activatingDirectTo = false");
             }
         };
         this.onExecPage = undefined;
         this.onExecDefault = () => {
             if (this.getIsRouteActivated() && !this._activatingDirectTo) {
-                console.log("running this.getIsRouteActivated() && !this._activatingDirectTo");
+                // console.log("running this.getIsRouteActivated() && !this._activatingDirectTo");
                 this.insertTemporaryFlightPlan(() => {
                     this._isRouteActivated = false;
                     SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
-                    console.log("done with onExec insert temp");
+                    // console.log("done with onExec insert temp");
                     this.fpHasChanged = false;
-                    console.log("this.fpHasChanged = false");
-                    this.messageBox.innerHTML = " ";
-                    this.refreshPageCallback();
+                    // console.log("this.fpHasChanged = false");
+                    this.messageBox = "";
+                    if (this.refreshPageCallback) {
+                        this.refreshPageCallback();
+                    }
                 });
             }
             else {
-                console.log("running onExecDefault else");
+                // console.log("running onExecDefault else");
                 this.fpHasChanged = false;
-                console.log("fpHasChanged = false");
-                this.messageBox.innerHTML = " ";
+                // console.log("fpHasChanged = false");
+                this.messageBox = "";
                 this._isRouteActivated = false;
                 SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
                 if (this.refreshPageCallback) {
                     this._activatingDirectTo = false;
                     this.fpHasChanged = false;
-                    console.log("Else refreshPageCallback");
+                    // console.log("Else refreshPageCallback");
                     this.refreshPageCallback();
                 }
             }
         };
 
-        this.renderScratchpad();
-        //this.renderMsgLine();
-        this.messageBox = this.renderMsgLine();
-
-        // just to display exec as a test, remove later
-        //this.fpHasChanged = true;
-
         CJ4_FMC_InitRefIndexPage.ShowPage5(this);
 
         //Timer for periodic page refresh
         this._pageRefreshTimer = null;
+
+        //Hijaack and amend the standard FMC logic to work with the PL21 TUNE page
+        let initRadioNav = super.initRadioNav.bind(this);
+        this.initRadioNav = (_boot) => {
+            initRadioNav(_boot);
+            this.initializeStandbyRadios(_boot);
+        };
     }
     Update() {
         super.Update();
@@ -201,10 +199,18 @@ class CJ4_FMC extends FMCMainDisplay {
             }
             return true;
         }
+
         return false;
     }
+
+    setMsg(value = "") {
+        this._msg = value;
+        this._templateRenderer.setMsg(value);
+    }
+
     clearDisplay() {
         super.clearDisplay();
+        this._templateRenderer.clearDisplay.apply(this);
         this.onPrevPage = EmptyCallback.Void;
         this.onNextPage = EmptyCallback.Void;
 
@@ -363,33 +369,6 @@ class CJ4_FMC extends FMCMainDisplay {
         return this.selectedRunwayOutput;
     }
     //end of new method to find runway designation
-    renderScratchpad() {
-        // make footer accesible from css
-        document.getElementById("in-out").parentElement.classList.add("footer");
-        let inoutelem = document.getElementById("in-out");
-        let brkOpen = document.createElement("span");
-        brkOpen.innerHTML = "[";
-        brkOpen.classList.add("blue", "line-left");
-        let brkClose = document.createElement("span");
-        brkClose.innerHTML = "]";
-        brkClose.classList.add("blue", "line-right");
-        inoutelem.parentElement.appendChild(brkOpen);
-        inoutelem.parentElement.appendChild(brkClose);
-    }
-    renderMsgLine() {
-        let msgLineEl = document.createElement("div");
-        msgLineEl.id = "msg-line";
-        msgLineEl.classList.add("line");
-        this.getChildById("Electricity").append(msgLineEl);
-
-        let msgEl = document.createElement("div");
-        msgEl.innerHTML = " ";
-        msgEl.classList.add("fitcontent", "line-left");
-        msgLineEl.append(msgEl);
-
-        return msgEl;
-    }
-
 
     /**
      * Registers a periodic page refresh with the FMC display.
@@ -418,6 +397,27 @@ class CJ4_FMC extends FMCMainDisplay {
     unregisterPeriodicPageRefresh() {
         if (this._pageRefreshTimer) {
             clearInterval(this._pageRefreshTimer);
+        }
+    }
+
+    /**
+     * Initializes the standby radios in the FMC.
+     * @param {Boolean} isFirstBoot 
+     */
+    initializeStandbyRadios(isFirstBoot) {
+        if (this.isPrimary) {
+            if (isFirstBoot) {
+                this.rcl1Frequency = this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 1);
+                this.pre2Frequency = this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 2);
+            }
+            else {
+                if (Math.abs(this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 1) - this.rcl1Frequency) > 0.005) {
+                    this.radioNav.setVHFStandbyFrequency(this.instrumentIndex, 1, this.rcl1Frequency);
+                }
+                if (Math.abs(this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 2) - this.pre2Frequency) > 0.005) {
+                    this.radioNav.setVHFStandbyFrequency(this.instrumentIndex, 2, this.pre2Frequency);
+                }
+            }
         }
     }
 }

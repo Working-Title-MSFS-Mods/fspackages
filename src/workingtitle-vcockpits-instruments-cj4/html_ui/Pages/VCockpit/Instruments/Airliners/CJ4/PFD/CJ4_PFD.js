@@ -41,6 +41,7 @@ class CJ4_PFD extends BaseAirliners {
         super.Init();
         this.radioNav.setRADIONAVSource(NavSource.GPS);
         SimVar.SetSimVarValue("L:WT_CJ4_VAP", "knots", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 0);
     }
     Update() {
         super.Update();
@@ -221,6 +222,18 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool", (baroUnits == "HPA") ? 1 : 0);
         let mtrsOn = _dict.get(CJ4_PopupMenu_Key.UNITS_MTR_ALT);
         this.horizon.showMTRS((mtrsOn == "ON") ? true : false);
+        let aoaSetting = _dict.get(CJ4_PopupMenu_Key.AOA)
+        if (aoaSetting) {
+            if (aoaSetting == "AUTO") {
+                SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 0);
+            }
+            else if (aoaSetting == "ON") {
+                SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 1);
+            }
+            else if (aoaSetting == "OFF") {
+                SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 2);
+            }
+        }
         let v1 = _dict.get(CJ4_PopupMenu_Key.VSPEED_V1);
         let vR = _dict.get(CJ4_PopupMenu_Key.VSPEED_VR);
         let v2 = _dict.get(CJ4_PopupMenu_Key.VSPEED_V2);
@@ -299,8 +312,20 @@ class CJ4_PFD extends BaseAirliners {
         else if (this.mapNavigationMode == Jet_NDCompass_Navigation.NAV)
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "FMS1");
         let baroHPA = SimVar.GetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool");
-        _dict.set(CJ4_PopupMenu_Key.UNITS_PRESS, (baroHPA) ? "HPA" : "INHG");
+        _dict.set(CJ4_PopupMenu_Key.UNITS_PRESS, (baroHPA) ? "HPA" : "IN");
         _dict.set(CJ4_PopupMenu_Key.UNITS_MTR_ALT, (this.horizon.isMTRSVisible()) ? "ON" : "OFF");
+        let aoaSettingFill = SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number").toFixed(0);
+        if (aoaSettingFill) {
+            if (aoaSettingFill == 0) {
+                _dict.set(CJ4_PopupMenu_Key.AOA, "AUTO");
+            }
+            else if (aoaSetting == 1) {
+                _dict.set(CJ4_PopupMenu_Key.AOA, "ON");
+            }
+            else if (aoaSetting == 2) {
+                _dict.set(CJ4_PopupMenu_Key.AOA, "OFF");
+            }
+        }
         let v1 = Simplane.getV1Airspeed().toFixed(0);
         let vR = Simplane.getVRAirspeed().toFixed(0);
         let v2 = Simplane.getV2Airspeed().toFixed(0);
@@ -370,7 +395,9 @@ class CJ4_AOA extends NavSystemElement {
         //AoA only visible when flaps 35
         this.aoa.setAttribute("angle", angle);
         let flap35Active = SimVar.GetSimVarValue("TRAILING EDGE FLAPS LEFT PERCENT", "Percent");
-        if (flap35Active == 100) {
+        let aoaActive = SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number");
+        console.log("AOA: " + SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number"));
+        if ((flap35Active == 100 && aoaActive !== 2) || aoaActive == 1) {
             this.aoa.style = "";
         }
         else {
