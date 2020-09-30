@@ -551,7 +551,7 @@ class XMLColumnGauge extends HTMLElement {
             redLine.setAttribute("width", 100 - horizontalMargin * 2);
             redLine.setAttribute("height", "2");
             redLine.setAttribute("x", horizontalMargin);
-            redLine.setAttribute("y", topMargin + i * (barHeight + verticalSpacing));
+            redLine.setAttribute("y", topMargin);
             this.rootSvg.appendChild(redLine);
             this.redLineElement = redLine;
 
@@ -563,7 +563,7 @@ class XMLColumnGauge extends HTMLElement {
             });
         }
 
-        this.selectColumn(2);
+        this.selectColumn(0);
     }
     selectColumn(index) {
         this.peak = 0;
