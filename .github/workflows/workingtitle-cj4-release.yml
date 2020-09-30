@@ -10,14 +10,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build Package
-        run: powershell.exe -noexit .\build.ps1 -OutputPath ''.\build' -Project 'workingtitle-project-cj4.xml' -CleanBuild -Merge '\deploy\'
+        run: powershell.exe -noexit .\build.ps1 -OutputPath ''.\build' -Project 'workingtitle-project-cj4meta.xml' -CleanBuild
       - name: Add documentation
         run: Copy-Item -Path docs\workingtitle-cj4\* -Destination build\deploy -Recurse -Force        
       - name: Get clean tag name
         uses: olegtarasov/get-tag@v2
         id: tag_name        
       - name: Zip Release Files
-        run: Compress-Archive -Path build\deploy\* -DestinationPath workingtitle-cj4.zip
+        run: Compress-Archive -Path build\* -DestinationPath workingtitle-cj4.zip
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
