@@ -1769,14 +1769,14 @@ class CJ4_SystemEngines extends NavSystemElement {
         {
             let LBSEng1 = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * gallonToLBS;
             this.FuelLBSLeftValue.textContent = Math.round(LBSEng1).toString();
-            let PPHEng1 = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour");
+            let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
             this.FuelPPHLeftValue.textContent = Math.round(PPHEng1).toString();
             this.FuelTempLeftValue.textContent = "--";
         }
         {
             let LBSEng2 = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * gallonToLBS;
             this.FuelLBSRightValue.textContent = Math.round(LBSEng2).toString();
-            let PPHEng2 = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour");
+            let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
             this.FuelPPHRightValue.textContent = Math.round(PPHEng2).toString();
             this.FuelTempRightValue.textContent = "--";
         }
@@ -1862,9 +1862,9 @@ class CJ4_SystemElectrics extends NavSystemElement {
         this.HYDPSIValueLeft.textContent = Math.round(HydPSI1).toString();
         let HydPSI2 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:2", "psi");
         this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
-        let PPHEng1 = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour");
+        let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
         this.FUELPPHValueLeft.textContent = Math.round(PPHEng1).toString();
-        let PPHEng2 = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour");
+        let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
         this.FUELPPHValueRight.textContent = Math.round(PPHEng2).toString();
         this.FUELTempValueLeft.textContent = "--";
         this.FUELTempValueRight.textContent = "--";
