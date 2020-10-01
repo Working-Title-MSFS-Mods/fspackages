@@ -431,34 +431,32 @@ class CJ4_FMC extends FMCMainDisplay {
         const leftFuelQty = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons");
         const rightFuelQty = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons");
         
-        if (!this.previousTime) {
+        if (this.previousRightFuelQty === undefined && this.previousLeftFuelQty === undefined) {
             this.previousLeftFuelQty = leftFuelQty;
             this.previousRightFuelQty = rightFuelQty;
         }
         else {
-            
             const thrustLeft = SimVar.GetSimVarValue("TURB ENG JET THRUST:1", "pounds");
             const thrustRight = SimVar.GetSimVarValue("TURB ENG JET THRUST:2", "pounds");
 
             const pphLeft = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "pounds per hour");
             const pphRight = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "pounds per hour");
-            const pphTotal = pphLeft + pphRight;
 
             const leftFuelUsed = this.previousLeftFuelQty - leftFuelQty;
             const rightFuelUsed = this.previousRightFuelQty - rightFuelQty;
 
             const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
-            const tsfc = (1 + (.56 * mach)) * 0.58;
+            const tsfc = Math.pow(1 + (.82 * mach), mach) * 0.58; //Inspiration: https://onlinelibrary.wiley.com/doi/pdf/10.1002/9780470117859.app4
 
             SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", thrustLeft * tsfc);
             SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", thrustRight * tsfc);
 
             if ((rightFuelUsed > 0.005 && rightFuelUsed < 1) || (leftFuelUsed > 0.005 && rightFuelUsed < 1)) {
-                const targetFuelFlow = (thrustLeft + thrustRight) * tsfc;
-                const correctionFactor = targetFuelFlow / pphTotal;
+                const leftCorrectionFactor = (thrustLeft * tsfc) / pphLeft;
+                const rightCorrectionFactor = (thrustRight * tsfc) / pphRight;
 
-                const newLeftFuelQty = this.previousLeftFuelQty - (leftFuelUsed * correctionFactor);
-                const newRightFuelQty = this.previousRightFuelQty - (rightFuelUsed * correctionFactor);
+                const newLeftFuelQty = this.previousLeftFuelQty - (leftFuelUsed * leftCorrectionFactor);
+                const newRightFuelQty = this.previousRightFuelQty - (rightFuelUsed * rightCorrectionFactor);
 
                 SimVar.SetSimVarValue("FUEL TANK LEFT MAIN QUANTITY", "gallons", newLeftFuelQty);
                 SimVar.SetSimVarValue("FUEL TANK RIGHT MAIN QUANTITY", "gallons", newRightFuelQty);
