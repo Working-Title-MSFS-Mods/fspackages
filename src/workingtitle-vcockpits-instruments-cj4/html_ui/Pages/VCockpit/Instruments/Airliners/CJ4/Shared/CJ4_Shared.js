@@ -3527,6 +3527,17 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
     showMainPage(_highlight = 0) {
         this._isOnMainPage = true;
         this.onChecklistItemPage = false;
+
+        // let line = document.createElementNS(Avionics.SVG.NS, "line");
+        // line.setAttribute("x1", "75");
+        // line.setAttribute("x2", "425");
+        // line.setAttribute("y1", "500");
+        // line.setAttribute("y2", "100");
+        // line.setAttribute("fill", "cyan");
+        // line.setAttribute("stroke-width", "2");
+        // line.setAttribute("stroke-dashoffset", "5");
+        // line.setAttribute("stroke-dasharray", "10 5");
+
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
         page.setAttribute("id", "ViewBox");
         page.setAttribute("viewBox", "0 0 500 500");
@@ -3534,15 +3545,16 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("CHECKLIST", this.titleSize, 1.0, "blue");
+                this.addCheckTitle("CHECKLIST INDEX", this.titleSize, 1.0, "blue");
+                this.addCheckTitle("", this.titleSize, 1.0, "blue");
             }
-            this.endSection();
+            this.endCheckSection();
             this.beginSection();
             {
-                this.addSubMenu("NORMAL CHECKLIST MENU", this.textSize, this.showNormalChecklistPage.bind(this));
-                this.addRadio("CHECKLIST/PASS BRIEF CONFIG MENU", this.textSize, null);
+                this.addCheckSubMenu("NORMAL CHECKLIST MENU", this.textSize, this.showNormalChecklistPage.bind(this));
+                this.addCheckSubMenu("CHECKLIST/PASS BRIEF CONFIG MENU", this.textSize, null);
             }
-            this.endSection();
+            this.endCheckSection();
         }
         this.closeMenu();
         this.highlight(_highlight);
@@ -3560,21 +3572,17 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("CHECKLIST", this.titleSize, 1.0, "blue");
+                this.addCheckTitle("NORMAL CHECKLIST", this.titleSize, 1.0, "blue", true);
+                this.addCheckTitle("", this.titleSize, 1.0, "blue");
             }
-            this.endSection();
+            this.endCheckSection();
             this.beginSection();
             {
-                this.addTitle("NORMAL CHECKLIST MENU", this.titleSize, 1.0, "blue", true);
+                this.addCheckSubMenu("BEFORE STARTING ENGINES", this.textSize, this.showBeforeEngineStartPage.bind(this));
+                this.addCheckSubMenu("STARTING ENGINES", this.textSize, null);
+                this.addCheckSubMenu("AFTER STARTING ENGINES", this.textSize, null);
             }
-            this.endSection();
-            this.beginSection();
-            {
-                this.addSubMenu("BEFORE STARTING ENGINES", this.textSize, this.showBeforeEngineStartPage.bind(this));
-                this.addSubMenu("STARTING ENGINES", this.textSize, null);
-                this.addSubMenu("AFTER STARTING ENGINES", this.textSize, null);
-            }
-            this.endSection();
+            this.endCheckSection();
         }
         this.closeMenu();
         this.escapeCbk = this.showMainPage.bind(this, 0);
@@ -3592,21 +3600,21 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("CHECKLIST", this.titleSize, 1.0, "blue");
+                this.addCheckTitle("NORMAL CHECKLIST", this.titleSize, 1.0, "blue");
+                this.addCheckTitle("BEFORE STARTING ENGINES", this.titleSize, 1.0, "blue", true);
             }
-            this.endSection();
+            this.endCheckSection();
             this.beginSection();
             {
-                this.addTitle("BEFORE STARTING ENGINES", this.titleSize, 1.0, "blue", true);
+                this.addCheckCheckbox("BATTERY Switch ON", this.textSize, [CJ4_Checklist_Key.SEATBELTS]);
+                this.addCheckCheckbox("EMER LIGHTS Switch On", this.textSize, [CJ4_Checklist_Key.EMER_LIGHTS]);
+                this.addCheckCheckbox("PARK BRAKE SET", this.textSize, [CJ4_Checklist_Key.PARK_BRAKE]);
+                this.addCheckCheckbox("THING ON", this.textSize, [CJ4_Checklist_Key.PARK_BRAKE]);
+                this.addCheckCheckbox("FIRE LIGHT OFF", this.textSize, [CJ4_Checklist_Key.PARK_BRAKE]);
+                this.addCheckCheckbox("PARK BRAKE SET", this.textSize, [CJ4_Checklist_Key.PARK_BRAKE]);
+                this.addCheckCheckbox("PARK BRAKE OFF", this.textSize, [CJ4_Checklist_Key.PARK_BRAKE]);
             }
-            this.endSection();
-            this.beginSection();
-            {
-                this.addCheckbox("BATTERY Switch ON", this.textSize, [CJ4_Checklist_Key.SEATBELTS]);
-                this.addCheckbox("EMER LIGHTS Switch On", this.textSize, [CJ4_Checklist_Key.EMER_LIGHTS]);
-                this.addCheckbox("PARK BRAKE SET", this.textSize, [CJ4_Checklist_Key.PARK_BRAKE]);
-            }
-            this.endSection();
+            this.endCheckSection();
         }
         this.closeMenu();
         this.escapeCbk = this.showNormalChecklistPage.bind(this, 0);
