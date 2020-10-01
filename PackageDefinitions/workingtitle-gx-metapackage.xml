@@ -26,6 +26,14 @@
 			<AssetDir>src\workingtitle-vcockpits-instruments-navsystems</AssetDir>
 			<OutputDir>.\</OutputDir>
 		</AssetGroup>
+        <AssetGroup Name="workingtitle-vcockpits-instruments-navsystems-gx">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-vcockpits-instruments-navsystems-gx</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>		
         <AssetGroup Name="workingtitle-g1000-docs">
 			<Type>Copy</Type>
 			<Flags>
