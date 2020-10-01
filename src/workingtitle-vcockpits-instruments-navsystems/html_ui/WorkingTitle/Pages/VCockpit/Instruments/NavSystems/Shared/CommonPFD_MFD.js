@@ -294,13 +294,16 @@ class PFD_Attitude extends NavSystemElement {
         super(...arguments);
         this.vDir = new Vec2();
         this.syntheticVisionEnabled = false;
+        Include.addScript("/JS/debug.js", function () {
+            g_modDebugMgr.AddConsole(null);
+        });
     }
     init(root) {
         this.svg = this.gps.getChildById("Horizon");
     }
     onEnter() {
     }
-    setSytheticVisionEnabled(enabled) {
+    setSyntheticVisionEnabled(enabled) {
         this.syntheticVisionEnabled = enabled;
     }
     onUpdate(_deltaTime) {
