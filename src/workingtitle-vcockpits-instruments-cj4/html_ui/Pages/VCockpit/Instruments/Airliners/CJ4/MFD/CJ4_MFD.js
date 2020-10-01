@@ -88,12 +88,14 @@ class CJ4_MFD extends BaseAirliners {
                 this.systems2.show(CJ4_SystemPage.NONE);
                 this.fms.show(true);
                 this.checklist.show(false);
+                this.mapOverlay.setExtended(false);
             }
             else if (this.showChecklist) {
                 this.systems1.minimize(true);
                 this.systems2.show(CJ4_SystemPage.NONE);
                 this.fms.show(false);
                 this.checklist.show(true);
+                this.mapOverlay.setExtended(false);
             }
             else {
                 this.fms.show(false);
