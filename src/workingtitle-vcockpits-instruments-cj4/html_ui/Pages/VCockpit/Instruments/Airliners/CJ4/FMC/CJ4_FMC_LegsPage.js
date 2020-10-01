@@ -1,11 +1,11 @@
 class CJ4_FMC_LegsPage {
-    static ShowPage1(fmc, currentPage = 1, directWaypoint) {
+    static ShowPage1(fmc, currentPage = 1, directWaypoint, targetWaypointIndex) {
         fmc.clearDisplay();
         fmc.refreshPageCallback = () => {
             CJ4_FMC_LegsPage.ShowPage1(fmc, currentPage);
         };
         let pageCount = 1;
-        if (directWaypoint) {
+        if (directWaypoint && fmc.fpHasChanged == false) {
             fmc.inOut = directWaypoint.ident;
         }
         let rows = [
@@ -102,45 +102,82 @@ class CJ4_FMC_LegsPage {
                     let fpIndex = currentPage == 1 ? fmc.flightPlanManager.getActiveWaypointIndex() + i - 1
                         : (currentPage - 1) * 5 + fmc.flightPlanManager.getActiveWaypointIndex() + i - 1;
                     console.log("index " + fpIndex);
-                    if (value == "" && ((i > 1 && currentPage == 1) || (currentPage > 1))) {
-                        directWaypoint = waypoint;
-                        fmc.inOut = waypoint.ident;
-                        CJ4_FMC_LegsPage.ShowPage1(fmc, 1, directWaypoint);
+                    console.log("_activatingDirectToExisting: " + fmc._activatingDirectToExisting);
+                    console.log("directWaypoint: " + directWaypoint);
+                    console.log("i: " + i);
+                    console.log("currentPage: " + currentPage);
+                    console.log("targetWaypointIndex: " + targetWaypointIndex);
+                    if (i == 0 && currentPage == 1) {
+                        fmc.showErrorMessage("UNABLE MOD FROM WPT");
+                        CJ4_FMC_LegsPage.ShowPage1(fmc);
                     }
-                    //what I need to do is remove this direct to nonsense from the onLeftInput and just insert the waypoints, 
-                    //but when inserted into i=1 on currentpage=1 I need to also flag activatingdirecto and then on exec
-                    //activate the direct to. Should be simple but I need sleep.
-                    else if (directWaypoint && i == 1 && currentPage == 1) {
+                    else if (value == "" && ((i > 1 && currentPage == 1) || (currentPage > 1))) { //IF: CASE FOR SELECTING AN EXISTING WAYPOINT TO INSERT AS A DIRECT TO
+                        console.log("if");
+                        directWaypoint = waypoint;
                         fmc._activatingDirectTo = true;
                         fmc._activatingDirectToExisting = true;
-                        fmc.activateDirectToWaypoint(directWaypoint, () => {
+                        fmc.inOut = waypoint.ident;
+                        CJ4_FMC_LegsPage.ShowPage1(fmc, 1, directWaypoint, fpIndex);
+                    }
+                    else if (fmc._activatingDirectToExisting == true && i == 1 && currentPage == 1) { //ELSE IF 1: CASE FOR DELETING WAYPOINTS PRIOR TO THE SELECTED EXISTING WAYPOINT 
+                        console.log("else if 1 _activatingDirectToExisting");
+                        let removeWaypointForLegsMethod = (callback = EmptyCallback.Void) => {
+                            i = 1;
+                            if (i < targetWaypointIndex) {
+                                //console.log("targetWaypointIndex: " + targetWaypointIndex)
+                                fmc.flightPlanManager.removeWaypoint(1, i === targetWaypointIndex - 1, () => {
+                                    i++;
+                                    targetWaypointIndex = targetWaypointIndex - 1
+                                    removeWaypointForLegsMethod(callback);
+                                });
+                            }
+                            else {
+                                console.log("removeWaypointForLegsMethod callback");
+                                callback();
+                            }
+                        };
+                        fmc.clearUserInput();
+                        removeWaypointForLegsMethod(() => {
+                            console.log("setActiveWaypointIndex");
                             fmc.flightPlanManager.setActiveWaypointIndex(1, () => {
+                                console.log("getactivewaypointindex: " + fmc.flightPlanManager.getActiveWaypointIndex());
                                 fmc.activateRoute(() => {
-                                    CJ4_FMC_LegsPage.ShowPage1(fmc)
+                                    console.log("activateRoute");
+                                    fmc._activatingDirectToExisting = false;
+                                    targetWaypointIndex = undefined;
+                                    //directWaypoint = undefined;
+                                    CJ4_FMC_LegsPage.ShowPage1(fmc, 1, directWaypoint);
                                 });
                             });
                         });
                     }
-                    else if (!fmc.flightPlanManager.isActiveApproach() && i == 1 && currentPage == 1) {
-                        if (value !== "") {
-                            fmc.fpHasChanged = true;
-                            fmc._activatingDirectTo = true;
+                    else if (!fmc.flightPlanManager.isActiveApproach() && i == 1 && currentPage == 1 && value != FMCMainDisplay.clrValue) { //ELSE IF 2: CASE FOR INSERTING A DIRECT TO WAYPOINT FROM THE SCRATCHPAD
+                        console.log("else if 2");
+                        console.log("value " + value);
+                        if (value.length > 0) {
                             fmc.clearUserInput();
-                            fmc.insertWaypoint(value, fpIndex, () => {
-                                CJ4_FMC_LegsPage.ShowPage1(fmc);
+                            fmc.insertWaypoint(value, fpIndex + 1, () => {
+                                fmc.flightPlanManager.removeWaypoint(1, true, () => {
+                                    fmc.flightPlanManager.setActiveWaypointIndex(1, () => {
+                                        fmc.activateRoute(() => {
+                                            fmc._activatingDirectTo = true;
+                                            fmc.setMsg();
+                                            CJ4_FMC_LegsPage.ShowPage1(fmc, 1);
+                                        });
+                                    });
+                                });
                             });
                         }
                     }
-                    else if (!fmc.flightPlanManager.isActiveApproach()) {
+                    else if (!fmc.flightPlanManager.isActiveApproach()) { //ELSE IF 3: CASE FOR DELETING OR ADDING A WAYPOINT OTHER THAN INDEX 1
+                        console.log("else if 3");
                         if (value === FMCMainDisplay.clrValue) {
-                            console.log("delete");
                             fmc.clearUserInput();
                             fmc.removeWaypoint(fpIndex, () => {
                                 fmc.setMsg();
                                 CJ4_FMC_LegsPage.ShowPage1(fmc, currentPage);
                             });
                         } else if (value.length > 0) {
-                            console.log("insert");
                             fmc.clearUserInput();
                             fmc.insertWaypoint(value, fpIndex, () => {
                                 fmc.setMsg();
@@ -148,7 +185,8 @@ class CJ4_FMC_LegsPage {
                             });
                         }
                     }
-                    else {
+                    else { //ELSE
+                        console.log("else");
                         fmc.setMsg("Unable del appr wpt");
                         console.log("unable");
                         CJ4_FMC_LegsPage.ShowPage1(fmc, currentPage);
@@ -159,21 +197,18 @@ class CJ4_FMC_LegsPage {
                         fmc.refreshPageCallback = () => {
                             fmc.setMsg("");
                             fmc.fpHasChanged = false;
-                            fmc.onLegs();
+                            fmc._activatingDirectTo = false;
+                            fmc._activatingDirectToExisting = false;
+                            CJ4_FMC_LegsPage.ShowPage1(fmc);
                         };
-                        if (fmc._activatingDirectToExisting = false) {
-                            directWaypoint = fmc.flightPlanManager.getActiveWaypoint();
-                            fmc.activateDirectToWaypoint(directWaypoint, () => {
-                                fmc.flightPlanManager.setActiveWaypointIndex(1, () => {
-                                    fmc.activateRoute(() => {
-                                        fmc.onExecDefault();
-                                    });
-                                });
+                        let toWaypoint = fmc.flightPlanManager.getWaypoint(1);
+                        fmc.activateDirectToWaypoint(toWaypoint, () => {
+                            fmc.flightPlanManager.setActiveWaypointIndex(1, () => {
+                                fmc.activateRoute(() => {
+                                    fmc.onExecDefault();
+                                })
                             });
-                        }
-                        else if (fmc._activatingDirectToExisting = true) {
-                            fmc.onExecDefault();
-                        }
+                        });
                     }
                 }
                 else {
@@ -181,7 +216,6 @@ class CJ4_FMC_LegsPage {
                         if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                             if (!fmc.getIsRouteActivated()) {
                                 fmc.activateRoute();
-                                activateCell = "";
                             }
                             fmc.onExecDefault();
                             fmc.refreshPageCallback = () => CJ4_FMC_RoutePage.ShowPage1(fmc);
@@ -190,6 +224,7 @@ class CJ4_FMC_LegsPage {
                             fmc.fpHasChanged = false;
                             fmc.setMsg();
                             fmc._activatingDirectTo = false;
+                            fmc._activatingDirectToExisting = false;
                         }
                     };
                 }
