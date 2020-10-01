@@ -1783,8 +1783,8 @@ as3x-touch-element {
       top: 71%;
       height: 20%;
       left: 5%;
-      right: 35%;
-      width: auto; }
+      /*right: 35%; */
+      width: 65%;}
       as3x-touch-element #MFD #PFD_Menu #timer #timer_startStop_button {
         left: 2%;
         width: 55%; }
@@ -1803,6 +1803,18 @@ as3x-touch-element {
       as3x-touch-element #MFD #PFD_Menu #timer #timer_reset_button {
         right: 2%;
         width: 35%; }
+    as3x-touch-element #MFD #PFD_Menu #wind {
+      top: 71%;
+      height: 20%;
+      right: 5%;
+      width: 24%;
+    }
+      as3x-touch-element #MFD #PFD_Menu #wind #wind_mode_button {
+        left: 5%;
+        right: 5%;
+        width: auto;
+      }
+
     as3x-touch-element #MFD #PFD_Menu #minimums {
       top: 71%;
       height: 20%;

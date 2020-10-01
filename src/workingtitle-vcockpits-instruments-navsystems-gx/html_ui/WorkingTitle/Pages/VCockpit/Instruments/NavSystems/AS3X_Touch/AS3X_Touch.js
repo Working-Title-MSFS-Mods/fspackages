@@ -131,7 +131,8 @@ class AS3X_Touch extends NavSystemTouch {
         switch (this.displayMode) {
             case "PFD":
                 this.mainMfd.style.display = "None";
-                this.addIndependentElementContainer(new AS3X_Touch_PFD());
+                this.pfdContainer = new AS3X_Touch_PFD();
+                this.addIndependentElementContainer(this.pfdContainer);
                 this.addIndependentElementContainer(new NavSystemElementContainer("EngineInfos", "EngineInfos", new GlassCockpit_XMLEngine()));
                 this.getChildById("EngineInfos").style.display = "None";
                 this.mainDisplay.setAttribute("state", "FullNoEngine");
@@ -145,6 +146,7 @@ class AS3X_Touch extends NavSystemTouch {
                 break;
             case "MFD":
                 this.pfd.style.display = "None";
+                this.pfdContainer = null;
                 this.mainMap = new AS3X_Touch_MFD_Main();
                 this.addIndependentElementContainer(this.mainMap);
                 this.addIndependentElementContainer(new NavSystemElementContainer("EngineInfos", "EngineInfos", new GlassCockpit_XMLEngine()));
@@ -159,7 +161,8 @@ class AS3X_Touch extends NavSystemTouch {
                 break;
             case "Splitted":
                 this.mainMfd.style.display = "None";
-                this.addIndependentElementContainer(new AS3X_Touch_PFD());
+                this.pfdContainer = new AS3X_Touch_PFD();
+                this.addIndependentElementContainer(this.pfdContainer);
                 this.addIndependentElementContainer(new NavSystemElementContainer("EngineInfos", "EngineInfos", new GlassCockpit_XMLEngine()));
                 this.engineDisplayed = true;
                 this.m_isSplit = true;
@@ -864,6 +867,7 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
     }
     init(root) {
         this.window = root;
+        this.windData = this.gps.pfdContainer.windData;
         this.cdiSource = this.gps.getChildById("cdi_source_Button");
         this.leftBearing = this.gps.getChildById("left_bearing_button");
         this.rightBearing = this.gps.getChildById("right_bearing_button");
@@ -875,12 +879,17 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         this.timerStartStop_value = this.timerStartStop.getElementsByClassName("value")[0];
         this.timerStartStop_action = this.timerStartStop.getElementsByClassName("topTitle")[0];
         this.timerReset_value = this.timerReset.getElementsByClassName("mainText")[0];
+        this.windMode = this.gps.getChildById("wind_mode_button");
+        this.windMode_value = this.windMode.getElementsByClassName("value")[0];
         this.hsi = this.gps.getChildById("Compass");
         this.gps.makeButton(this.cdiSource, this.gps.computeEvent.bind(this.gps, "SoftKey_CDI"));
         this.gps.makeButton(this.leftBearing, this.gps.computeEvent.bind(this.gps, "SoftKeys_PFD_BRG1"));
         this.gps.makeButton(this.rightBearing, this.gps.computeEvent.bind(this.gps, "SoftKeys_PFD_BRG2"));
         this.gps.makeButton(this.timerStartStop, this.timer_Toggle.bind(this));
         this.gps.makeButton(this.timerReset, this.timer_Reset.bind(this));
+        this.gps.makeButton(this.comActiveButton, SimVar.SetSimVarValue.bind(this, "K:COM_STBY_RADIO_SWAP", "number", 1));
+        this.gps.makeButton(this.windMode, this.setWindMode.bind(this));
+
     }
     onEnter() {
         this.window.setAttribute("state", "Active");
@@ -942,10 +951,17 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         }
     }
     timer_Reset() {
-        this.timerStartTime = -1;
+        this.timerStartTime = -1; 
         this.pauseTime = 0;
         this.isTimerOn = false;
         this.timerStartStop_action.textContent = "Start";
+    }
+    setWindMode() {
+        let events = ["SoftKeys_Wind_O1", "SoftKeys_Wind_O2", "SoftKeys_Wind_O3", "SoftKeys_Wind_Off"];
+        let event = events[this.windData.mode];
+        console.log(`sending event ${event}`)
+        this.windData.onEvent(event);
+        Avionics.Utils.diffAndSet(this.windMode_value, this.windData.mode);
     }
 }
 class AS3X_Touch_NRST_Airport extends NavSystemTouch_NRST_Airport {
