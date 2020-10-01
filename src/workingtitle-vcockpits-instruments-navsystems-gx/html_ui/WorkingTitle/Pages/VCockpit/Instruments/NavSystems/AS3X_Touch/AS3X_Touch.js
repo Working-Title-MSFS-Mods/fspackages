@@ -496,10 +496,12 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
         this.attitude = new PFD_Attitude();
         this.attitude.setSyntheticVisionEnabled(true);
         this.mapInstrument = new MapInstrumentElement();
+        this.windData = new PFD_WindData();
         this.element = new NavSystemElementGroup([
             new PFD_Altimeter(),
             new PFD_Airspeed(),
             new PFD_Compass(),
+            this.windData,
             this.attitude,
             this.mapInstrument,
             new AS3X_Touch_elevatorTrim(),
@@ -511,6 +513,7 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
     init() {
         super.init();
         this.attitude.svg.setAttribute("background", "false");
+        this.windData.mode = 1;
     }
 }
 class AS3X_Touch_MFD_Main extends NavSystemElementContainer {

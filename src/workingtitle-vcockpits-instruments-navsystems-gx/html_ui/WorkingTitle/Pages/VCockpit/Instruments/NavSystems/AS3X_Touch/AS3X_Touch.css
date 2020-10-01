@@ -2348,3 +2348,10 @@ as3x-touch-element {
   as3x-touch-element[instrumentstyle=e330] #MainDisplay #PFD #HorizonContainer #SyntheticVision {
     left: -54vh; }
 
+  as3x-touch-element #PFD #WindData {
+        position: absolute;
+        top: 63%;
+        right: calc(50% + 15vh);
+        height: 10vh;
+        width: 9vh;
+  };

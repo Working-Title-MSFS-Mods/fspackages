@@ -11,7 +11,6 @@
   "waypointLabelBackgroundPadding": "5 5 5 5",
   "waypointLabelDistance": 12,
   "waypointIconSize": 100,
-
   "cityLabelFontSize": 24,
   "cityLabelFontFamily": "Consolas",
   "cityLabelColor": "#black",
@@ -24,20 +23,16 @@
   "cityLabelBackgroundPadding": "7 12 0 12",
   "cityLabelDistance": 0.45,
   "cityIconSize": 90,
-
   "airplaneIconSize": 120,
   "airplaneIcon1": "ICON_MAP_PLANE",
   "airplaneIcon2": "ICON_MAP_PLANE",
-
   "imagesDir": "/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/",
   "delay": 1,
-
   "runwayFillColor": "white",
   "runwayStrokeColor": "gray",
   "runwayStrokeWidth": 3,
   "runwayCornerRadius": 8,
   "runwayMinimalWidth": 16,
-
   "latLonStrokeColor": "gray",
   "latLonStrokeWidth": 1,
   "latLonLabelFontFamily": "Consolas",
@@ -45,7 +40,6 @@
   "latLonLabelColor": "white",
   "latLonLabelStrokeColor": "none",
   "latLonLabelStrokeWidth": 0,
-
   "flightPlanActiveLegColor": "#ed008c",
   "flightPlanActiveLegWidth": 6,
   "flightPlanActiveLegStrokeColor": "#3f3f3f",
@@ -54,57 +48,106 @@
   "flightPlanNonActiveLegWidth": 6,
   "flightPlanNonActiveLegStrokeColor": "#3f3f3f",
   "flightPlanNonActiveLegStrokeWidth": 7,
-
   "roadMotorWayColor": "#7a7a7a",
   "roadMotorWayWidth": 2,
   "roadTrunkColor": "#7a7a7a",
   "roadTrunkWidth": 1,
   "roadPrimaryColor": "#7a7a7a",
   "roadPrimaryWidth": 1,
-
   "railwayStrokeColor": "gray",
   "railwayWidth": 2,
   "railwayDashLength": 6,
-
   "netBingTextureResolution": 1024,
   "netBingAltitudeColors1": [],
-  "netBingWaterColor1": "#184b77",
+  "netBingWaterColor1": "#4599e3",
   "netBingHeightColor1": [
     {
-      "alt": 0,
-      "color": "#6DA36C"
+      "alt": -500,
+      "color": "#0000FF"
     },
     {
-      "alt": 1500,
-      "color": "#9CAF57"
+      "alt": 0,
+      "color": "#477B30"
+    },
+    {
+      "alt": 500,
+      "color": "#679132"
+    },
+    {
+      "alt": 1000,
+      "color": "#86A734"
+    },
+    {
+      "alt": 2000,
+      "color": "#B1D31A"
+    },
+    {
+      "alt": 3000,
+      "color": "#DBFF00"
+    },
+    {
+      "alt": 4000,
+      "color": "#EDF600"
+    },
+    {
+      "alt": 5000,
+      "color": "#FFED00"
     },
     {
       "alt": 6000,
-      "color": "#c8b46e"
+      "color": "#FFD200"
+    },
+    {
+      "alt": 7000,
+      "color": "#FFB600"
     },
     {
       "alt": 8000,
-      "color": "#b0975b"
+      "color": "#E89B00"
+    },
+    {
+      "alt": 9000,
+      "color": "#D08000"
     },
     {
       "alt": 10000,
-      "color": "#9a7c48"
+      "color": "#E05500"
+    },
+    {
+      "alt": 11000,
+      "color": "#EF2B00"
+    },
+    {
+      "alt": 12000,
+      "color": "#FF1717"
     },
     {
       "alt": 13000,
-      "color": "#906a3b"
+      "color": "#FF2E2E"
     },
     {
-      "alt": 16000,
-      "color": "#7b5936"
+      "alt": 14000,
+      "color": "#FF4444"
     },
     {
-      "alt": 24000,
-      "color": "#5a462e"
+      "alt": 15000,
+      "color": "#FF5B5B"
+    },
+    {
+      "alt": 18000,
+      "color": "#FF9292"
+    },
+    {
+      "alt": 21000,
+      "color": "#FFC8C8"
+    },
+    {
+      "alt": 25000,
+      "color": "#F7DBDB"
     },
     {
       "alt": 32000,
-      "color": "#abb0b5"
+      "color": "#eeeeee"
     }
   ]
 }

@@ -57,12 +57,13 @@
             <div id="MainDisplay" state="Half" Mode="PFD">
                 <div id="PFD">
                     <div id="HorizonContainer">
-                        <map-instrument class="PFDMap SplitMap" show-bing-map="false" id="SyntheticVision" bing-mode="horizon" bing-id="PFD_SyntheticVision" show-overlay="false" config-path="/Pages/VCockpit/Instruments/NavSystems/AS3000/PFD/"></map-instrument>
+                        <map-instrument class="PFDMap SplitMap" show-bing-map="false" id="SyntheticVision" bing-mode="horizon" bing-id="PFD_SyntheticVision" show-overlay="false" config-path="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3X_Touch/PFD/"></map-instrument>
                         <glasscockpit-attitude-indicator id="Horizon" bank_size_ratio="-37" background="false"></glasscockpit-attitude-indicator>
                     </div>
                     <glasscockpit-altimeter id="Altimeter"></glasscockpit-altimeter>
                     <glasscockpit-airspeed-indicator id="Airspeed"></glasscockpit-airspeed-indicator>
                     <glasscockpit-hsi id="Compass"></glasscockpit-hsi>
+                    <glasscockpit-wind-data id="WindData"></glasscockpit-wind-data>
                     <glasscockpit-elevator-trim id="ElevatorTrim"></glasscockpit-elevator-trim>
 
                     <div id="RadarAltitude" state="Inactive">
@@ -99,7 +100,7 @@
                 </div>
                 <div id="MainMFD">
                     <div id="MainMFD_MapElements">
-                        <map-instrument class="MFDMap" show-bing-map="false" id="MainMFD_Map" bing-id="MFD_Main" config-path="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3X_Touch/" show-flightplan="true" hide-flightplan-if-bushtrip="true"></map-instrument>
+                        <map-instrument class="MFDMap" show-bing-map="false" id="MainMFD_Map" bing-id="MFD_Main" config-path="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3X_Touch/MFD/" show-flightplan="true" hide-flightplan-if-bushtrip="true"></map-instrument>
                         <svg class="mapLess" viewBox="-2 -2 54 54">
                             <circle r="25" cx="25" cy="25" fill="#bbbbbb" stroke="#444444" stroke-width="2" />
                             <polygon points="45,22 45,28 5,28 5,22" fill="white" stroke="black" />
@@ -118,7 +119,7 @@
                 <div id="PagesContainer" state="XPDR">
                     <div id="Map" class="page">
                         <div id="Map_Elements">
-                            <map-instrument id="MapInstrument" bing-id="MFD" config-path="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3X_Touch/" show-flightplan="true" hide-flightplan-if-bushtrip="true"></map-instrument>
+                            <map-instrument id="MapInstrument" bing-id="MFD" config-path="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3X_Touch/MFD/" show-flightplan="true" hide-flightplan-if-bushtrip="true"></map-instrument>
                             <svg class="mapLess" viewBox="-2 -2 54 54">
                                 <circle r="25" cx="25" cy="25" fill="#bbbbbb" stroke="#444444" stroke-width="2" />
                                 <polygon points="45,22 45,28 5,28 5,22" fill="white" stroke="black" />
@@ -1460,7 +1461,7 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/ContextualMenu.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js?cachebust=arssstrst"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3X_Touch/AS3X_Touch.js"></script>
