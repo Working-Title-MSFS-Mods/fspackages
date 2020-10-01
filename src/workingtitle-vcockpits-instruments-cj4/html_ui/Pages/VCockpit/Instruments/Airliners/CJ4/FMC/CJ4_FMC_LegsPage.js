@@ -107,6 +107,9 @@ class CJ4_FMC_LegsPage {
                         fmc.inOut = waypoint.ident;
                         CJ4_FMC_LegsPage.ShowPage1(fmc, 1, directWaypoint);
                     }
+                    //what I need to do is remove this direct to nonsense from the onLeftInput and just insert the waypoints, 
+                    //but when inserted into i=1 on currentpage=1 I need to also flag activatingdirecto and then on exec
+                    //activate the direct to. Should be simple but I need sleep.
                     else if (directWaypoint && i == 1 && currentPage == 1) {
                         fmc._activatingDirectTo = true;
                         fmc._activatingDirectToExisting = true;
