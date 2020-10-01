@@ -354,7 +354,7 @@ class AS1000_PFD_MainPage extends NavSystemPage {
     }
     setSyntheticVision(enabled) { 
         this.syntheticVision = enabled;
-        this.attitude.setSytheticVisionEnabled(this.syntheticVision);        
+        this.attitude.setSyntheticVisionEnabled(this.syntheticVision);        
         this.gps.getChildById("SyntheticVision").setAttribute("show-bing-map", this.syntheticVision ? "true" : "false");
         this.gps.getChildById("SyntheticVision").style.display = this.syntheticVision ? "block" : "none";
     }
