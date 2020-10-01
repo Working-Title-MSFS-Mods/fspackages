@@ -1,0 +1,16 @@
+as3x-touch-element .gradientButton {
+border: 0.2vh solid #666666;
+border-radius: 1vh;
+background: linear-gradient(#333333, rgba(0, 0, 254, 0) 60%);
+}
+
+as3x-touch-element .roundButton {
+border-radius: 50%;
+border: 0.2vh solid #666666;
+background: linear-gradient(#333333, rgba(0, 0, 254, 0) 60%);
+}
+
+as3x-touch-element #TopBar .Button {
+    border: 0.2vh solid #666666;
+    background: linear-gradient(#333333, rgba(0, 0, 254, 0) 60%);
+}
