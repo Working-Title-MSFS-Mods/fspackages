@@ -10,6 +10,14 @@
 		<CanBeReferenced>false</CanBeReferenced>
 	</Flags>
 	<AssetGroups>
+		<AssetGroup Name="workingtitle-core-library">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-core-library</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>
         <AssetGroup Name="workingtitle-base-aircraft-common">
 			<Type>Copy</Type>
 			<Flags>
@@ -33,14 +41,14 @@
 			</Flags>
 			<AssetDir>src\workingtitle-vcockpits-instruments-navsystems-gx</AssetDir>
 			<OutputDir>.\</OutputDir>
-		</AssetGroup>		
-        <AssetGroup Name="workingtitle-g1000-docs">
+		</AssetGroup>			
+        <AssetGroup Name="workingtitle-vcockpits-instruments">
 			<Type>Copy</Type>
 			<Flags>
 				<FSXCompatibility>false</FSXCompatibility>
 			</Flags>
-			<AssetDir>docs\workingtitle-g1000</AssetDir>
+			<AssetDir>src\workingtitle-vcockpits-instruments</AssetDir>
 			<OutputDir>.\</OutputDir>
-		</AssetGroup>  		   
+		</AssetGroup>				   
 	</AssetGroups>
 </AssetPackage>

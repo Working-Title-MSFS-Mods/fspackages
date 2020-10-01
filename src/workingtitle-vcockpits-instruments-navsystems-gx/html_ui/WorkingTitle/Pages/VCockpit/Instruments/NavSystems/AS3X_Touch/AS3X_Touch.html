@@ -99,7 +99,7 @@
                 </div>
                 <div id="MainMFD">
                     <div id="MainMFD_MapElements">
-                        <map-instrument class="MFDMap" show-bing-map="false" id="MainMFD_Map" bing-id="MFD_Main" config-path="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/" show-flightplan="true" hide-flightplan-if-bushtrip="true"></map-instrument>
+                        <map-instrument class="MFDMap" show-bing-map="false" id="MainMFD_Map" bing-id="MFD_Main" config-path="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3X_Touch/" show-flightplan="true" hide-flightplan-if-bushtrip="true"></map-instrument>
                         <svg class="mapLess" viewBox="-2 -2 54 54">
                             <circle r="25" cx="25" cy="25" fill="#bbbbbb" stroke="#444444" stroke-width="2" />
                             <polygon points="45,22 45,28 5,28 5,22" fill="white" stroke="black" />
@@ -118,7 +118,7 @@
                 <div id="PagesContainer" state="XPDR">
                     <div id="Map" class="page">
                         <div id="Map_Elements">
-                            <map-instrument id="MapInstrument" bing-id="MFD" config-path="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/" show-flightplan="true" hide-flightplan-if-bushtrip="true"></map-instrument>
+                            <map-instrument id="MapInstrument" bing-id="MFD" config-path="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3X_Touch/" show-flightplan="true" hide-flightplan-if-bushtrip="true"></map-instrument>
                             <svg class="mapLess" viewBox="-2 -2 54 54">
                                 <circle r="25" cx="25" cy="25" fill="#bbbbbb" stroke="#444444" stroke-width="2" />
                                 <polygon points="45,22 45,28 5,28 5,22" fill="white" stroke="black" />
@@ -1439,16 +1439,18 @@
 <link rel="stylesheet" href="AS3X_Touch.css" />
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
+<script type="text/html" import-script="/JS/dataStorage.js"></script>
 
-<script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.html"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/XMLEngineDisplay/XMLEngineDisplay.js"></script>
 
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/HSIndicator/HSIndicator.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Altimeter/Altimeter.js"></script>
+<script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/MapInstrument.html"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/XMLEngineDisplay/XMLEngineDisplay.js"></script>
+
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/HSIndicator/HSIndicator.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Altimeter/Altimeter.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AngleOfAttackIndicator/AngleOfAttackIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AirspeedIndicator/AirspeedIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/WindDataDisplay/WindDataDisplay.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AttitudeIndicator/AttitudeIndicator.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AttitudeIndicator/AttitudeIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/VerticalSpeedIndicator/VerticalSpeedIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/ElevatorTrim/ElevatorTrim.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
@@ -1458,7 +1460,7 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/ContextualMenu.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js?cachebust=arssstrst"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
 
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS3X_Touch/AS3X_Touch.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3X_Touch/AS3X_Touch.js"></script>

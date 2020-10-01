@@ -494,6 +494,7 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
     constructor() {
         super("PFD", "PFD", null);
         this.attitude = new PFD_Attitude();
+        this.attitude.setSyntheticVisionEnabled(true);
         this.mapInstrument = new MapInstrumentElement();
         this.element = new NavSystemElementGroup([
             new PFD_Altimeter(),
