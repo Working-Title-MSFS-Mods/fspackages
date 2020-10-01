@@ -3276,6 +3276,8 @@ class CJ4_PopupMenu_UPPER extends CJ4_PopupMenu_Handler {
                 this.addTitle("FORMAT", this.textSize, 0.45);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
                 this.addRadio("FMS TEXT", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
+                this.addRadio("CHECKLIST", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
+                this.addRadio("PASS BRIEF", this.textSize, null);
                 this.addRadio("SYSTEMS", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
             }
             this.endSection();
@@ -3374,4 +3376,244 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
         this.root.appendChild(page);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class CJ4_ChecklistContainer extends NavSystemElementContainer {
+    constructor(_name, _root) {
+        super(_name, _root, null);
+        this.isVisible = undefined;
+        this.dictionary = new Avionics.Dictionary();
+        this.otherMenusOpen = false;
+    }
+    init() {
+        super.init();
+        this.root = this.gps.getChildById(this.htmlElemId);
+        if (!this.root) {
+            console.log("Root component expected!");
+        }
+    }
+    onUpdate(_dTime) {
+        super.onUpdate(_dTime);
+        if (this.handler)
+            this.handler.onUpdate(_dTime);
+    }
+    show(_value) {
+        if (this.isVisible != _value) {
+            this.isVisible = _value;
+            this.root.setAttribute("visible", (_value) ? "true" : "false");
+
+            if(this.isVisible == true){
+                this.handler = new CJ4_MainChecklist(this.root, this.dictionary);
+            }
+            else if(this.isVisible == false){
+                Utils.RemoveAllChildren(this.root);
+                this.handler = null;
+            }
+        }
+    }
+    onEvent(_event) {
+        super.onEvent(_event);
+        if (this.handler && this.handler.reactsOnEvent(_event)) {
+            switch (_event) {
+                case "Upr_DATA_PUSH":
+                case "Lwr_DATA_PUSH":
+                    this.handler.onActivate();
+                    if(this.handler.onChecklistItemPage){
+                        this.handler.highlight(this.handler.highlightId + 1);
+                    }
+                    break;
+                case "Upr_DATA_DEC":
+                case "Lwr_DATA_DEC":
+                    if(!this.otherMenusOpen)
+                        this.handler.onDataDec();
+                    break;
+                case "Upr_DATA_INC":
+                case "Lwr_DATA_INC":
+                    if(!this.otherMenusOpen)
+                        this.handler.onDataInc();
+                    break;
+                case "Upr_MENU_ADV_DEC":
+                case "Lwr_MENU_ADV_DEC":
+                    if(!this.otherMenusOpen)
+                        this.handler.onMenuDec();
+                    break;
+                case "Upr_MENU_ADV_INC":
+                case "Lwr_MENU_ADV_INC":
+                    if(!this.otherMenusOpen)
+                        this.handler.onMenuInc();
+                    break;
+                case "Upr_Push_ESC":
+                case "Lwr_Push_ESC":
+                    if (!this.handler.isOnMainPage) {
+                        this.handler.escapeCbk();
+                    }
+                    break;
+            }
+        }
+    }
+}
+var CJ4_Checklist_Key;
+(function (CJ4_Checklist_Key) {
+    CJ4_Checklist_Key[CJ4_Checklist_Key["SEATBELTS"] = 0] = "SEATBELTS";
+    CJ4_Checklist_Key[CJ4_Checklist_Key["AIRCON"] = 1] = "AIRCON";
+    CJ4_Checklist_Key[CJ4_Checklist_Key["SAFETY"] = 2] = "SAFTEY";
+    CJ4_Checklist_Key[CJ4_Checklist_Key["EMER_LIGHTS"] = 3] = "EMER_LIGHTS";
+    CJ4_Checklist_Key[CJ4_Checklist_Key["PARK_BRAKE"] = 4] = "PARK_BRAKE";
+})(CJ4_Checklist_Key || (CJ4_Checklist_Key = {}));
+
+class CJ4_Checklist_Handler extends Airliners.PopupMenu_Handler {
+    constructor() {
+        super(...arguments);
+        this._isOnMainPage = false;
+    }
+    get isOnMainPage() {
+        return this._isOnMainPage;
+    }
+    reactsOnEvent(_event) {
+        switch (_event) {
+            case "Upr_DATA_PUSH":
+            case "Upr_DATA_DEC":
+            case "Upr_DATA_INC":
+            case "Upr_MENU_ADV_DEC":
+            case "Upr_MENU_ADV_INC":
+            case "Upr_Push_ESC":
+                return true;
+            case "Lwr_DATA_PUSH":
+            case "Lwr_DATA_DEC":
+            case "Lwr_DATA_INC":
+            case "Lwr_MENU_ADV_DEC":
+            case "Lwr_MENU_ADV_INC":
+            case "Lwr_Push_ESC":
+                return true;
+        }
+        return false;
+    }
+}
+class CJ4_MainChecklist extends CJ4_Checklist_Handler {
+    constructor(_root, _dictionary) {
+        super();
+        this.titleSize = 15;
+        this.textSize = 13;
+        this.root = _root;
+        this.menuLeft = 75;
+        this.menuWidth = 350;
+        this.dictionary = _dictionary;
+        this.showMainPage();
+        this.onChecklistItemPage = false;
+    }
+    reset() {
+        this.showMainPage();
+    }
+    showMainPage(_highlight = 0) {
+        this._isOnMainPage = true;
+        this.onChecklistItemPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("CHECKLIST", this.titleSize, 1.0, "blue");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addSubMenu("NORMAL CHECKLIST MENU", this.textSize, this.showNormalChecklistPage.bind(this));
+                this.addRadio("CHECKLIST/PASS BRIEF CONFIG MENU", this.textSize, null);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.highlight(_highlight);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showNormalChecklistPage() {
+        this._isOnMainPage = false;
+        this.onChecklistItemPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("CHECKLIST", this.titleSize, 1.0, "blue");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("NORMAL CHECKLIST MENU", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addSubMenu("BEFORE STARTING ENGINES", this.textSize, this.showBeforeEngineStartPage.bind(this));
+                this.addSubMenu("STARTING ENGINES", this.textSize, null);
+                this.addSubMenu("AFTER STARTING ENGINES", this.textSize, null);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 0);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showBeforeEngineStartPage() {
+        this._isOnMainPage = false;
+        this.onChecklistItemPage = true;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("CHECKLIST", this.titleSize, 1.0, "blue");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("BEFORE STARTING ENGINES", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addCheckbox("BATTERY Switch ON", this.textSize, [CJ4_Checklist_Key.SEATBELTS]);
+                this.addCheckbox("EMER LIGHTS Switch On", this.textSize, [CJ4_Checklist_Key.EMER_LIGHTS]);
+                this.addCheckbox("PARK BRAKE SET", this.textSize, [CJ4_Checklist_Key.PARK_BRAKE]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showNormalChecklistPage.bind(this, 0);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+}
+
 //# sourceMappingURL=CJ4_Shared.js.map

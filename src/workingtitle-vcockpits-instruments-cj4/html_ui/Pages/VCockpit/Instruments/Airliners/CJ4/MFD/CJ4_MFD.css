@@ -602,4 +602,14 @@ cj4-mfd-element #Mainframe #MapOverlay #NDInfo #TopBox text.Wind {
   font-size: 34px;
   fill: #11d011;
 }
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #Checklist {
+  position: absolute;
+  top: 22.5%;
+  left: 0;
+  width: 100%;
+  height: 22.5%;
+  background-color: black;
+  color: white;
+}
             
