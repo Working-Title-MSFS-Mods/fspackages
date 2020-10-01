@@ -6,6 +6,7 @@ class CJ4_MFD extends BaseAirliners {
         this.showWeather = false;
         this.showFms = false;
         this.showGwx = false;
+        this.showChecklist = false;
         this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
         this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
         this.mapNavigationSource = 0;
@@ -24,6 +25,7 @@ class CJ4_MFD extends BaseAirliners {
         this.map = new CJ4_MapContainer("Map", "Map");
         this.mapOverlay = new CJ4_MapOverlayContainer("MapInfos", "MapOverlay");
         this.fms = new CJ4_FMSContainer("Fms", "FMSInfos");
+        this.checklist = new CJ4_ChecklistContainer("Checklist", "Checklist");
         this.navBar = new CJ4_NavBarContainer("Nav", "NavBar");
         this.popup = new CJ4_PopupMenuContainer("Menu", "PopupMenu");
         this.addIndependentElementContainer(this.systems1);
@@ -32,6 +34,7 @@ class CJ4_MFD extends BaseAirliners {
         this.addIndependentElementContainer(this.mapOverlay);
         this.addIndependentElementContainer(this.navBar);
         this.addIndependentElementContainer(this.fms);
+        this.addIndependentElementContainer(this.checklist);
         this.addIndependentElementContainer(this.popup);
         this.modeChangeMask = this.getChildById("ModeChangeMask");
         this.maxUpdateBudget = 12;
@@ -84,9 +87,17 @@ class CJ4_MFD extends BaseAirliners {
                 this.systems1.minimize(true);
                 this.systems2.show(CJ4_SystemPage.NONE);
                 this.fms.show(true);
+                this.checklist.show(false);
+            }
+            else if (this.showChecklist) {
+                this.systems1.minimize(true);
+                this.systems2.show(CJ4_SystemPage.NONE);
+                this.fms.show(false);
+                this.checklist.show(true);
             }
             else {
                 this.fms.show(false);
+                this.checklist.show(false);
                 this.systems1.show(this.systemPage1);
                 if (this.systemPage1 == CJ4_SystemPage.ENGINES) {
                     if (this.isExtended && !this.systems2.hasAnnunciations()) {
@@ -155,10 +166,22 @@ class CJ4_MFD extends BaseAirliners {
             case "Lwr_Push_UPR_MENU":
                 this.fillDictionary(this.popup.dictionary);
                 this.popup.setMode(CJ4_PopupMenu.UPPER);
+                if(this.popup.mode == CJ4_PopupMenu.UPPER){
+                    this.checklist.otherMenusOpen = true;
+                }
+                else{
+                    this.checklist.otherMenusOpen = false
+                }
                 break;
             case "Lwr_Push_LWR_MENU":
                 this.fillDictionary(this.popup.dictionary);
                 this.popup.setMode(CJ4_PopupMenu.LOWER);
+                if(this.popup.mode == CJ4_PopupMenu.LOWER){
+                    this.checklist.otherMenusOpen = true;
+                }
+                else{
+                    this.checklist.otherMenusOpen = false
+                }
                 break;
         }
     }
@@ -229,14 +252,22 @@ class CJ4_MFD extends BaseAirliners {
         if (sysMode == "OFF") {
             this.isExtended = true;
             this.showFms = false;
+            this.showChecklist = false;
         }
         else if (sysMode == "FMS TEXT") {
             this.isExtended = false;
             this.showFms = true;
+            this.showChecklist = false;
         }
         else if (sysMode == "SYSTEMS") {
             this.isExtended = false;
             this.showFms = false;
+            this.showChecklist = false;
+        }
+        else if (sysMode == "CHECKLIST") {
+            this.isExtended = false;
+            this.showFms = false;
+            this.showChecklist = true;
         }
         if (modeChanged)
             this.onModeChanged();
@@ -264,6 +295,8 @@ class CJ4_MFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.SYS_SRC, "OFF");
         else if (this.showFms)
             _dict.set(CJ4_PopupMenu_Key.SYS_SRC, "FMS TEXT");
+        else if (this.showChecklist)
+            _dict.set(CJ4_PopupMenu_Key.SYS_SRC, "CHECKLIST");
         else
             _dict.set(CJ4_PopupMenu_Key.SYS_SRC, "SYSTEMS");
             _dict.changed = false;
