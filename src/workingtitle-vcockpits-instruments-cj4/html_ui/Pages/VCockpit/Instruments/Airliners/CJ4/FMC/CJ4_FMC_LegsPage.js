@@ -186,9 +186,7 @@ class CJ4_FMC_LegsPage {
                         }
                     }
                     else { //ELSE
-                        console.log("else");
-                        fmc.setMsg("Unable del appr wpt");
-                        console.log("unable");
+                        fmc.showErrorMessage("UNABLE");
                         CJ4_FMC_LegsPage.ShowPage1(fmc, currentPage);
                     }
                 };
@@ -300,42 +298,7 @@ class CJ4_FMC_LegsPage {
                     rows[2 * i + 1][1] = speedConstraint + "/" + altitudeConstraint;
                 }
                 fmc.onLeftInput[i] = () => {
-                    fmc.setMsg("Working...");
-                    let value = fmc.inOut;
-                    let fpIndex = currentPage == 1 ? fmc.flightPlanManager.getActiveWaypointIndex() + i - 1
-                        : (currentPage - 1) * 5 + fmc.flightPlanManager.getActiveWaypointIndex() + i - 1;
-                    console.log("index " + fpIndex);
-                    if (!fmc.flightPlanManager.isActiveApproach() && i == 1 && currentPage == 1) {
-                        if (value !== "") {
-                            fmc.fpHasChanged = true;
-                            fmc.clearUserInput();
-                            fmc.getOrSelectWaypointByIdent(value, (w) => {
-                                if (w) {
-                                    CJ4_FMC_LegsPage.ShowPage2(fmc, w);
-                                }
-                            });
-                        }
-                    }
-                    else if (!fmc.flightPlanManager.isActiveApproach()) {
-                        if (value === FMCMainDisplay.clrValue) {
-                            fmc.clearUserInput();
-                            fmc.removeWaypoint(fpIndex, () => {
-                                fmc.setMsg();
-                                CJ4_FMC_LegsPage.ShowPage1(fmc, currentPage);
-                            });
-                        } else if (value.length > 0) {
-                            fmc.clearUserInput();
-                            fmc.insertWaypoint(value, fpIndex, () => {
-                                fmc.setMsg();
-                                CJ4_FMC_LegsPage.ShowPage1(fmc, currentPage);
-                            });
-                        }
-                    }
-                    else {
-                        fmc.setMsg("Unable del appr wpt");
-                        console.log("unable");
-                        CJ4_FMC_LegsPage.ShowPage1(fmc, currentPage);
-                    }
+                    fmc.showErrorMessage("UNABLE IN APPROACH MODE");
                 };
             }          
         }
