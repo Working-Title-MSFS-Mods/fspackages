@@ -1,14 +1,14 @@
-let PopupMenu_ItemType;
-(function (PopupMenu_ItemType) {
-    PopupMenu_ItemType[PopupMenu_ItemType["TITLE"] = 0] = "TITLE";
-    PopupMenu_ItemType[PopupMenu_ItemType["LIST"] = 1] = "LIST";
-    PopupMenu_ItemType[PopupMenu_ItemType["RANGE"] = 2] = "RANGE";
-    PopupMenu_ItemType[PopupMenu_ItemType["RADIO"] = 3] = "RADIO";
-    PopupMenu_ItemType[PopupMenu_ItemType["RADIO_LIST"] = 4] = "RADIO_LIST";
-    PopupMenu_ItemType[PopupMenu_ItemType["RADIO_RANGE"] = 5] = "RADIO_RANGE";
-    PopupMenu_ItemType[PopupMenu_ItemType["SUBMENU"] = 6] = "SUBMENU";
-    PopupMenu_ItemType[PopupMenu_ItemType["CHECKBOX"] = 7] = "CHECKBOX";
-})(PopupMenu_ItemType || (PopupMenu_ItemType = {}));
+let Menu_ItemType;
+(function (Menu_ItemType) {
+    Menu_ItemType[Menu_ItemType["TITLE"] = 0] = "TITLE";
+    Menu_ItemType[Menu_ItemType["LIST"] = 1] = "LIST";
+    Menu_ItemType[Menu_ItemType["RANGE"] = 2] = "RANGE";
+    Menu_ItemType[Menu_ItemType["RADIO"] = 3] = "RADIO";
+    Menu_ItemType[Menu_ItemType["RADIO_LIST"] = 4] = "RADIO_LIST";
+    Menu_ItemType[Menu_ItemType["RADIO_RANGE"] = 5] = "RADIO_RANGE";
+    Menu_ItemType[Menu_ItemType["SUBMENU"] = 6] = "SUBMENU";
+    Menu_ItemType[Menu_ItemType["CHECKBOX"] = 7] = "CHECKBOX";
+})(Menu_ItemType || (Menu_ItemType = {}));
 class Menu_Item {
     constructor(_type, _section, _y, _height) {
         this.y = 0;
@@ -27,7 +27,7 @@ class Menu_Item {
         this.height = _height;
     }
     get interactive() {
-        if (this.type != PopupMenu_ItemType.TITLE)
+        if (this.type != Menu_ItemType.TITLE)
             return true;
         return false;
     }
@@ -93,9 +93,9 @@ class Menu_Handler {
     onActivate() {
         if (this.highlightItem && this.highlightItem.enabled) {
             switch (this.highlightItem.type) {
-                case PopupMenu_ItemType.RADIO:
-                case PopupMenu_ItemType.RADIO_LIST:
-                case PopupMenu_ItemType.RADIO_RANGE:
+                case Menu_ItemType.RADIO:
+                case Menu_ItemType.RADIO_LIST:
+                case Menu_ItemType.RADIO_RANGE:
                     let changed = false;
                     let section = this.highlightItem.section;
                     for (let i = 0; i < section.items.length; i++) {
@@ -119,10 +119,10 @@ class Menu_Handler {
                     if (changed)
                         this.onChanged(this.highlightItem);
                     break;
-                case PopupMenu_ItemType.SUBMENU:
+                case Menu_ItemType.SUBMENU:
                     this.highlightItem.subMenu();
                     break;
-                case PopupMenu_ItemType.CHECKBOX:
+                case Menu_ItemType.CHECKBOX:
                     if (!this.highlightItem.checkboxVal) {
                         this.activateItem(this.highlightItem, true);
                     }
@@ -138,16 +138,16 @@ class Menu_Handler {
     onDataDec() {
         if (this.highlightItem && this.highlightItem.enabled) {
             switch (this.highlightItem.type) {
-                case PopupMenu_ItemType.LIST:
-                case PopupMenu_ItemType.RADIO_LIST:
+                case Menu_ItemType.LIST:
+                case Menu_ItemType.RADIO_LIST:
                     if (this.highlightItem.listVal > 0) {
                         this.highlightItem.listVal--;
                         this.highlightItem.listElem.textContent = this.highlightItem.listValues[this.highlightItem.listVal];
                         this.onChanged(this.highlightItem);
                     }
                     break;
-                case PopupMenu_ItemType.RANGE:
-                case PopupMenu_ItemType.RADIO_RANGE:
+                case Menu_ItemType.RANGE:
+                case Menu_ItemType.RADIO_RANGE:
                     if (this.highlightItem.rangeVal > this.highlightItem.rangeMin) {
                         this.highlightItem.rangeVal -= this.highlightItem.rangeStep * this.getSpeedAccel();
                         this.highlightItem.rangeVal = Math.max(this.highlightItem.rangeVal, this.highlightItem.rangeMin);
@@ -162,16 +162,16 @@ class Menu_Handler {
     onDataInc() {
         if (this.highlightItem && this.highlightItem.enabled) {
             switch (this.highlightItem.type) {
-                case PopupMenu_ItemType.LIST:
-                case PopupMenu_ItemType.RADIO_LIST:
+                case Menu_ItemType.LIST:
+                case Menu_ItemType.RADIO_LIST:
                     if (this.highlightItem.listVal < this.highlightItem.listValues.length - 1) {
                         this.highlightItem.listVal++;
                         this.highlightItem.listElem.textContent = this.highlightItem.listValues[this.highlightItem.listVal];
                         this.onChanged(this.highlightItem);
                     }
                     break;
-                case PopupMenu_ItemType.RANGE:
-                case PopupMenu_ItemType.RADIO_RANGE:
+                case Menu_ItemType.RANGE:
+                case Menu_ItemType.RADIO_RANGE:
                     if (this.highlightItem.rangeVal < this.highlightItem.rangeMax) {
                         this.highlightItem.rangeVal += this.highlightItem.rangeStep * this.getSpeedAccel();
                         this.highlightItem.rangeVal = Math.min(this.highlightItem.rangeVal, this.highlightItem.rangeMax);
@@ -333,7 +333,7 @@ class Menu_Handler {
         text.setAttribute("font-family", this.textStyle);
         text.setAttribute("alignment-baseline", "central");
         this.sectionRoot.appendChild(text);
-        let item = new Menu_Item(PopupMenu_ItemType.TITLE, this.section, this.section.endY, this.lineHeight);
+        let item = new Menu_Item(Menu_ItemType.TITLE, this.section, this.section.endY, this.lineHeight);
         this.section.items.push(item);
         this.section.endY += this.lineHeight;
     }
@@ -365,7 +365,7 @@ class Menu_Handler {
         choice.setAttribute("font-family", this.textStyle);
         choice.setAttribute("alignment-baseline", "central");
         this.sectionRoot.appendChild(choice);
-        let item = new Menu_Item(PopupMenu_ItemType.LIST, this.section, this.section.endY, this.lineHeight);
+        let item = new Menu_Item(Menu_ItemType.LIST, this.section, this.section.endY, this.lineHeight);
         item.dictKeys = _dictKeys;
         item.listElem = choice;
         item.listValues = _values;
@@ -400,7 +400,7 @@ class Menu_Handler {
         range.setAttribute("font-family", this.textStyle);
         range.setAttribute("alignment-baseline", "central");
         this.sectionRoot.appendChild(range);
-        let item = new Menu_Item(PopupMenu_ItemType.RANGE, this.section, this.section.endY, this.lineHeight);
+        let item = new Menu_Item(Menu_ItemType.RANGE, this.section, this.section.endY, this.lineHeight);
         item.dictKeys = _dictKeys;
         item.rangeElem = range;
         item.rangeHLElem = hl;
@@ -460,7 +460,7 @@ class Menu_Handler {
         text.setAttribute("font-family", this.textStyle);
         text.setAttribute("alignment-baseline", "central");
         this.sectionRoot.appendChild(text);
-        let item = new Menu_Item(PopupMenu_ItemType.RADIO, this.section, this.section.endY, this.lineHeight);
+        let item = new Menu_Item(Menu_ItemType.RADIO, this.section, this.section.endY, this.lineHeight);
         item.dictKeys = _dictKeys;
         item.radioElem = shape;
         item.radioName = _text;
@@ -533,7 +533,7 @@ class Menu_Handler {
         choice.setAttribute("font-family", this.textStyle);
         choice.setAttribute("alignment-baseline", "central");
         this.sectionRoot.appendChild(choice);
-        let item = new Menu_Item(PopupMenu_ItemType.RADIO_LIST, this.section, this.section.endY, this.lineHeight);
+        let item = new Menu_Item(Menu_ItemType.RADIO_LIST, this.section, this.section.endY, this.lineHeight);
         item.dictKeys = _dictKeys;
         item.radioElem = shape;
         item.radioName = _text;
@@ -608,7 +608,7 @@ class Menu_Handler {
         range.setAttribute("font-family", this.textStyle);
         range.setAttribute("alignment-baseline", "central");
         this.sectionRoot.appendChild(range);
-        let item = new Menu_Item(PopupMenu_ItemType.RADIO_RANGE, this.section, this.section.endY, this.lineHeight);
+        let item = new Menu_Item(Menu_ItemType.RADIO_RANGE, this.section, this.section.endY, this.lineHeight);
         item.dictKeys = _dictKeys;
         item.radioElem = shape;
         item.radioName = _text;
@@ -673,7 +673,7 @@ class Menu_Handler {
         text.setAttribute("font-family", this.textStyle);
         text.setAttribute("alignment-baseline", "central");
         this.sectionRoot.appendChild(text);
-        let item = new Menu_Item(PopupMenu_ItemType.CHECKBOX, this.section, this.section.endY, this.lineHeight);
+        let item = new Menu_Item(Menu_ItemType.CHECKBOX, this.section, this.section.endY, this.lineHeight);
         item.dictKeys = _dictKeys;
         item.checkboxElem = shape;
         item.checkboxTickElem = tick;
@@ -699,7 +699,7 @@ class Menu_Handler {
         text.setAttribute("font-family", this.textStyle);
         text.setAttribute("alignment-baseline", "central");
         this.sectionRoot.appendChild(text);
-        let item = new Menu_Item(PopupMenu_ItemType.SUBMENU, this.section, this.section.endY, this.lineHeight);
+        let item = new Menu_Item(Menu_ItemType.SUBMENU, this.section, this.section.endY, this.lineHeight);
         item.subMenu = _callback;
         this.section.items.push(item);
         this.registerWithMouse(item);
@@ -751,7 +751,7 @@ class Menu_Handler {
         text.setAttribute("text-anchor", "middle");
         text.setAttribute("alignment-baseline", "central");
         this.sectionRoot.appendChild(text);
-        let item = new Menu_Item(PopupMenu_ItemType.SUBMENU, this.section, this.section.endY, this.lineHeight);
+        let item = new Menu_Item(Menu_ItemType.SUBMENU, this.section, this.section.endY, this.lineHeight);
         item.subMenu = _callback;
         this.section.items.push(item);
         this.registerWithMouse(item);
@@ -792,9 +792,9 @@ class Menu_Handler {
         if (!_item.enabled)
             return;
         switch (_item.type) {
-            case PopupMenu_ItemType.RADIO:
-            case PopupMenu_ItemType.RADIO_LIST:
-            case PopupMenu_ItemType.RADIO_RANGE:
+            case Menu_ItemType.RADIO:
+            case Menu_ItemType.RADIO_LIST:
+            case Menu_ItemType.RADIO_RANGE:
                 if (_val) {
                     _item.radioVal = true;
                     _item.radioElem.setAttribute("fill", this.interactionColor);
@@ -804,7 +804,7 @@ class Menu_Handler {
                     _item.radioElem.setAttribute("fill", this.shapeFillColor);
                 }
                 break;
-            case PopupMenu_ItemType.CHECKBOX:
+            case Menu_ItemType.CHECKBOX:
                 if (_val) {
                     _item.checkboxVal = true;
                     _item.checkboxTickElem.setAttribute("visibility", "visible");
@@ -836,9 +836,9 @@ class Menu_Handler {
     onChanged(_item) {
         if (this.dictionary && _item.enabled) {
             switch (_item.type) {
-                case PopupMenu_ItemType.RADIO:
-                case PopupMenu_ItemType.RADIO_LIST:
-                case PopupMenu_ItemType.RADIO_RANGE:
+                case Menu_ItemType.RADIO:
+                case Menu_ItemType.RADIO_LIST:
+                case Menu_ItemType.RADIO_RANGE:
                     let found = false;
                     for (let i = 0; i < _item.section.items.length; i++) {
                         if (_item.section.items[i].radioVal) {
@@ -850,21 +850,21 @@ class Menu_Handler {
                     if (!found)
                         this.dictionary.remove(_item.dictKeys[0]);
                     break;
-                case PopupMenu_ItemType.LIST:
+                case Menu_ItemType.LIST:
                     this.dictionary.set(_item.dictKeys[0], _item.listValues[_item.listVal]);
                     break;
-                case PopupMenu_ItemType.RANGE:
+                case Menu_ItemType.RANGE:
                     this.dictionary.set(_item.dictKeys[0], _item.rangeVal.toString());
                     break;
-                case PopupMenu_ItemType.CHECKBOX:
+                case Menu_ItemType.CHECKBOX:
                     this.dictionary.set(_item.dictKeys[0], (_item.checkboxVal) ? "ON" : "OFF");
                     break;
             }
             switch (_item.type) {
-                case PopupMenu_ItemType.RADIO_LIST:
+                case Menu_ItemType.RADIO_LIST:
                     this.dictionary.set(_item.dictKeys[1], _item.listValues[_item.listVal]);
                     break;
-                case PopupMenu_ItemType.RADIO_RANGE:
+                case Menu_ItemType.RADIO_RANGE:
                     this.dictionary.set(_item.dictKeys[1], _item.rangeVal.toString());
                     break;
             }
