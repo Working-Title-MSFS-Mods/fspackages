@@ -38,6 +38,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._activatingDirectTo = false;
         this._templateRenderer = undefined;
         this._msg = "";
+        this._activatingDirectToExisting = false;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -128,6 +129,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     this.refreshPageCallback();
                 }
             }
+            this._activatingDirectToExisting = false;
         };
 
         CJ4_FMC_InitRefIndexPage.ShowPage5(this);
