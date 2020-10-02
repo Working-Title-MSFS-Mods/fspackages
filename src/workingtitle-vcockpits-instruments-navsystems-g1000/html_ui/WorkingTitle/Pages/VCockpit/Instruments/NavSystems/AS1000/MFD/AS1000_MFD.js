@@ -785,7 +785,7 @@ class AS1000_MFD_AirportInfos2 extends NavSystemElement {
         }
     }
     onExit() {
-        this.gps.mapElement.instrument.setTrackUpDisabled(true);
+        this.gps.mapElement.instrument.setTrackUpDisabled(false);
     }
     onEvent(_event) {
     }
