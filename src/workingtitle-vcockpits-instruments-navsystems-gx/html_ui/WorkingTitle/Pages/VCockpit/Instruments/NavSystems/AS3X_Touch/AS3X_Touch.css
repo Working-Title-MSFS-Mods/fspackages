@@ -2343,10 +2343,19 @@ as3x-touch-element {
         font-size: 4vh; }
       as3x-touch-element #SelectionList .content .gradientButton[state=Inactive] {
         display: none; }
-  as3x-touch-element #Annunciations div {
+  as3x-touch-element #Annunciations {
+    position: absolute;
+    top: 67%;
+    left: 77%;
+    height: auto%;
+    width: auto;
     font-size: 1.6vh;
     text-align: left;
-    margin-bottom: 1px; }
+    margin-bottom: 1px;
+
+  }
+  as3x-touch-element #Annunciations div {
+    background-color: black; }
   as3x-touch-element #Annunciations .Warning, as3x-touch-element #Annunciations .Warning_Blink {
     color: red; }
   as3x-touch-element #Annunciations .Caution, as3x-touch-element #Annunciations .Caution_Blink {
