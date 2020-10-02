@@ -800,7 +800,7 @@ var Airliners;
             this.section.items.push(item);
             this.section.endY += this.lineHeight;
         }
-        addCheckTitle(_text, _textSize, _bgFactor, _bgColor = "blue", _showEscapeIcon = false) {
+        addCheckTitle(_text, _textSize, _bgFactor, _pageNumber = undefined, _totalPages = undefined) {
             let bg = document.createElementNS(Avionics.SVG.NS, "rect");
             bg.setAttribute("x", "0");
             bg.setAttribute("y", this.section.endY.toString());
@@ -816,13 +816,27 @@ var Airliners;
             text.setAttribute("font-family", this.textStyle);
             text.setAttribute("alignment-baseline", "central");
             text.setAttribute("text-anchor", "middle");
-
             this.sectionRoot.appendChild(text);
+
+            if(_pageNumber && _totalPages && _totalPages > 1){
+                let pageNumber = document.createElementNS(Avionics.SVG.NS, "text");
+                pageNumber.textContent = _pageNumber.toString() + "/" + _totalPages.toString();
+                pageNumber.setAttribute("x", "350");
+                pageNumber.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
+                pageNumber.setAttribute("fill", "white");
+                pageNumber.setAttribute("font-size", _textSize.toString());
+                pageNumber.setAttribute("font-family", this.textStyle);
+                pageNumber.setAttribute("alignment-baseline", "central");
+                pageNumber.setAttribute("text-anchor", "right");
+                this.sectionRoot.appendChild(pageNumber);
+            }
+
+
             let item = new PopupMenu_Item(PopupMenu_ItemType.TITLE, this.section, this.section.endY, this.lineHeight);
             this.section.items.push(item);
             this.section.endY += this.lineHeight;
         }
-        addCheckCheckbox(_text, _textSize, _dictKeys) {
+        addCheckCheckbox(_text, _value = "", _textSize, _dictKeys) {
             let enabled = (_dictKeys != null) ? true : false;
             let size = Math.min(this.lineHeight, this.columnLeft2) * 0.66;
             let cx = this.columnLeft1 + (this.columnLeft2 - this.columnLeft1) * 0.5;
@@ -856,12 +870,13 @@ var Airliners;
                 this.sectionRoot.appendChild(shape);
             }
             let tick = document.createElementNS(Avionics.SVG.NS, "path");
-            tick.setAttribute("d", "M" + (cx - size * 0.5) + " " + (cy) + " l" + (size * 0.4) + " " + (size * 0.5) + " l" + (size * 0.6) + " " + (-size));
+            tick.setAttribute("d", "M" + (cx - size * 0.1) + " " + (cy - 0.6) + " l" + (size * 0.1) + " " + (size * 0.5) + " l" + (size * 0.4) + " " + (-size));
             tick.setAttribute("fill", "none");
-            tick.setAttribute("stroke", "green");
+            tick.setAttribute("stroke", "#11d011");
             tick.setAttribute("stroke-width", "2");
             tick.setAttribute("visibility", "hidden");
             this.sectionRoot.appendChild(tick);
+
             let text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = _text;
             text.setAttribute("x", (this.columnLeft2 + this.textMarginX).toString());
@@ -871,10 +886,42 @@ var Airliners;
             text.setAttribute("font-family", this.textStyle);
             text.setAttribute("alignment-baseline", "central");
             this.sectionRoot.appendChild(text);
+
+            let value = document.createElementNS(Avionics.SVG.NS, "text");
+            value.textContent = _value;
+            value.setAttribute("x", "300");
+            value.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
+            value.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
+            value.setAttribute("font-size", _textSize.toString());
+            value.setAttribute("font-family", this.textStyle);
+            value.setAttribute("alignment-baseline", "central");
+            value.setAttribute("text-anchor", "right");
+            this.sectionRoot.appendChild(value);
+
             let item = new PopupMenu_Item(PopupMenu_ItemType.CHECKBOX, this.section, this.section.endY, this.lineHeight);
             item.dictKeys = _dictKeys;
             item.checkboxElem = shape;
             item.checkboxTickElem = tick;
+            item.text = text;
+            item.value = value;
+            this.section.items.push(item);
+            this.registerWithMouse(item);
+            this.section.endY += this.lineHeight;
+        }
+        addNormalItem(_text, _textSize, _dictKeys) {
+            let enabled = (_dictKeys != null) ? true : false;
+            let text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = _text;
+            text.setAttribute("x", (this.columnLeft2 + this.textMarginX).toString());
+            text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
+            text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
+            text.setAttribute("font-size", _textSize.toString());
+            text.setAttribute("font-family", this.textStyle);
+            text.setAttribute("alignment-baseline", "central");
+            this.sectionRoot.appendChild(text);
+
+            let item = new PopupMenu_Item(PopupMenu_ItemType.CHECKBOX, this.section, this.section.endY, this.lineHeight);
+            item.dictKeys = _dictKeys;
             item.text = text;
             this.section.items.push(item);
             this.registerWithMouse(item);
@@ -1369,11 +1416,13 @@ var Airliners;
                         _item.checkboxVal = true;
                         _item.checkboxTickElem.setAttribute("visibility", "visible");
                         _item.text.setAttribute("fill", "#11d011");
+                        _item.value.setAttribute("fill", "#11d011");
                     }
                     else {
                         _item.checkboxVal = false;
                         _item.checkboxTickElem.setAttribute("visibility", "hidden");
                         _item.text.setAttribute("fill", "white");
+                        _item.value.setAttribute("fill", "white");
                     }
                     break;
             }
