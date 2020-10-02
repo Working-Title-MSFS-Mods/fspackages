@@ -962,6 +962,11 @@ class AS1000_MFD_NearestAirport_Element extends MFD_NearestAirport_Element {
         super.onEnter();
         this.mapContainer.appendChild(this.mapElement);
         this.mapElement.setAttribute("bing-mode", "vfr");
+        this.gps.mapElement.instrument.setTrackUpDisabled(true);
+    }
+    onExit() {
+        super.onExit();
+        this.gps.mapElement.instrument.setTrackUpDisabled(false);
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -979,6 +984,11 @@ class AS1000_MFD_NearestVOR_Element extends MFD_NearestVOR_Element {
         super.onEnter();
         this.mapContainer.appendChild(this.mapElement);
         this.mapElement.setAttribute("bing-mode", "vfr");
+        this.gps.mapElement.instrument.setTrackUpDisabled(true);
+    }
+    onExit() {
+        super.onExit();
+        this.gps.mapElement.instrument.setTrackUpDisabled(false);
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -1006,6 +1016,11 @@ class AS1000_MFD_NearestNDB_Element extends MFD_NearestNDB_Element {
         super.onEnter();
         this.mapContainer.appendChild(this.mapElement);
         this.mapElement.setAttribute("bing-mode", "vfr");
+        this.gps.mapElement.instrument.setTrackUpDisabled(true);
+    }
+    onExit() {
+        super.onExit();
+        this.gps.mapElement.instrument.setTrackUpDisabled(false);
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -1023,6 +1038,11 @@ class AS1000_MFD_NearestIntersection_Element extends MFD_NearestIntersection_Ele
         super.onEnter();
         this.mapContainer.appendChild(this.mapElement);
         this.mapElement.setAttribute("bing-mode", "vfr");
+        this.gps.mapElement.instrument.setTrackUpDisabled(true);
+    }
+    onExit() {
+        super.onExit();
+        this.gps.mapElement.instrument.setTrackUpDisabled(false);
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
