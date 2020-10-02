@@ -547,6 +547,7 @@ class AS1000_MFD_AirportInfos1 extends NavSystemElement {
         this.rootElement.setAttribute("state", "Infos1");
         this.mapContainer.appendChild(this.mapElement);
         this.mapElement.setAttribute("bing-mode", "vfr");
+        this.gps.mapElement.instrument.setTrackUpDisabled(true);
     }
     onUpdate(_deltaTime) {
         this.icaoSearchField.Update();
@@ -578,7 +579,9 @@ class AS1000_MFD_AirportInfos1 extends NavSystemElement {
             if (this.gps.currentInteractionState == 3) {
                 this.selectedRunway = 0;
             }
-            this.runwayNameElement.textContent = infos.runways[this.selectedRunway].designation;
+            if ("designation" in infos.runways[this.selectedRunway]) {
+                this.runwayNameElement.textContent = infos.runways[this.selectedRunway].designation;
+            } 
             this.runwaySizeElement.textContent = Math.round(infos.runways[this.selectedRunway].length * 3.28084) + "FT x " + Math.round(infos.runways[this.selectedRunway].width * 3.28084) + "FT";
             switch (infos.runways[this.selectedRunway].surface) {
                 case 0:
@@ -686,6 +689,7 @@ class AS1000_MFD_AirportInfos1 extends NavSystemElement {
         }
     }
     onExit() {
+        this.gps.mapElement.instrument.setTrackUpDisabled(false);
     }
     onEvent(_event) {
     }
@@ -748,6 +752,7 @@ class AS1000_MFD_AirportInfos2 extends NavSystemElement {
         this.rootElement.setAttribute("state", "Infos2");
         this.mapContainer.appendChild(this.mapElement);
         this.mapElement.setAttribute("bing-mode", "vfr");
+        this.gps.mapElement.instrument.setTrackUpDisabled(true);        
     }
     onUpdate(_deltaTime) {
         this.icaoSearchField.Update();
@@ -780,6 +785,7 @@ class AS1000_MFD_AirportInfos2 extends NavSystemElement {
         }
     }
     onExit() {
+        this.gps.mapElement.instrument.setTrackUpDisabled(false);
     }
     onEvent(_event) {
     }

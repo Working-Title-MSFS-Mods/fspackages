@@ -98,6 +98,7 @@ class MapInstrument extends ISvgMapRootElement {
         this.weatherRanges = [10, 20, 30, 40, 50, 60, 80, 100];
         this.weatherHideGPS = false;
         this.isBushTrip = false;
+        this.bTrackUpDisabled = false;
         this.mapScaleFactor = 1.4;  // overscan for hiding corners when we rotate
     }
     get flightPlanManager() {
@@ -845,7 +846,7 @@ class MapInstrument extends ISvgMapRootElement {
                 this.navMap.mapElements = this.navMap.mapElements.sort((a, b) => { return b.sortIndex - a.sortIndex; });
                 if (this.bingMap) {
                     let transform = "";
-                    if (this.bRotateWithAirplane && !this.isDisplayingWeatherRadar()) {
+                    if (this.bRotateWithAirplane && !this.isDisplayingWeatherRadar() && !this.bTrackUpDisabled) {
                         var compass = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
                         var roundedCompass = fastToFixed(compass, 3);
                         transform = "rotate(" + -roundedCompass + "deg)";
@@ -1267,6 +1268,19 @@ class MapInstrument extends ISvgMapRootElement {
     getIsolines() {
         return this.bingMap.getIsolines();
     }
+    setTrackUpDisabled(_bool) {
+        this.bTrackUpDisabled = _bool;
+        if (this.navMap) {
+            if (_bool) {
+                this.navMap.rotateWithPlane = false
+            } else {
+                this.navMap.rotateWithPlane = this.bRotateWithAirplane;
+            }
+        }
+    }
+    getTrackUpDisabled() {
+        return this.bTrackUpDisabled;
+    }
     showWeather(_mode) {
         let cone = 0;
         if (_mode == EWeatherRadar.HORIZONTAL)
@@ -1301,6 +1315,9 @@ class MapInstrument extends ISvgMapRootElement {
     }
     getWeather() {
         return this.bingMap.getWeather();
+    }
+    setShowingWpt(_bool) {
+        this._showingWpt = _bool
     }
     isDisplayingWeather() {
         if (this.bingMap && (this.bingMap.getWeather() != undefined && this.bingMap.getWeather() != EWeatherRadar.OFF))
@@ -1377,7 +1394,7 @@ class MapInstrument extends ISvgMapRootElement {
     }
     scrollMap(_dispX, _dispY) {
         if (this.navMap.lastCenterCoordinates) {
-            if (this.bRotateWithAirplane) {
+            if (this.bRotateWithAirplane && !this.bTrackUpDisabled) {
                 let hdg = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
                 let hdgRad = hdg * Avionics.Utils.DEG2RAD;
                 let newX = _dispX * Math.cos(hdgRad) - _dispY * Math.sin(hdgRad);
