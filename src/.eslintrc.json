@@ -1,0 +1,19 @@
+{
+    "env": {
+        "browser": true,
+        "es2017": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 6
+    },
+    "rules": {
+    },
+    "globals": {
+        "Avionics": "readonly",
+        "FMCMainDisplay": "writable",
+        "CJ4_FMC_RoutePage": "readonly",
+        "CJ4_FMC_DirectToPage": "readonly",
+        "EmptyCallback": "readonly"
+    }
+}
