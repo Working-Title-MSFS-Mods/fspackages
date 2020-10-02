@@ -13,6 +13,8 @@ class CJ4_FMC_PosInitPage {
         this.refAirport = "-----";
         this.refAirportCoordinates = "";
         this.irsPos = "□□□°□□.□ □□□□°□□.□";
+
+        this.prepare();
     }
 
     prepare() {
@@ -40,12 +42,6 @@ class CJ4_FMC_PosInitPage {
         if (this._fmc.refAirport && this._fmc.refAirport.infos && this._fmc.refAirport.infos.coordinates) {
             this.refAirportCoordinates = this._fmc.refAirport.infos.coordinates.toDegreeString();
         }
-    }
-
-    start() {
-        this.prepare();
-        this.render();
-        this.bindEvents(); // TODO maybe just call invalidate, but care about the dirtyflag
     }
 
     bindEvents() {
@@ -139,7 +135,7 @@ class CJ4_FMC_PosInitPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
         PosInitPage1Instance = new CJ4_FMC_PosInitPage(fmc);
-        PosInitPage1Instance.start();
+        PosInitPage1Instance.invalidate();
     }
 
 
