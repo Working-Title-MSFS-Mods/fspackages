@@ -288,8 +288,6 @@ class CJ4_FMC_LegsPage {
     }
 
     start() {
-        // TODO on a non refreshing page we would just call render once
-        // in this case we initiate the periodic refresh
         this._fmc.clearDisplay();
         this.bindEvents();
         this.prepare();
