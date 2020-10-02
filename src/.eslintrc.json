@@ -14,6 +14,6 @@
         "FMCMainDisplay": "writable",
         "CJ4_FMC_RoutePage": "readonly",
         "CJ4_FMC_DirectToPage": "readonly",
-        "CJ4_FMC_InitRefIndexPage": "readonly",
+        "CJ4_FMC_InitRefIndexPage": "readonly"
     }
 }

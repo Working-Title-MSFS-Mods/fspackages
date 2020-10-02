@@ -24,14 +24,25 @@ class CJ4_FMC_LegsPage {
     }
 
     prepare() {
-        console.log("PREPARE LEGS");      
+        // Noop as there is no preparation with this
+    }
 
-        // return if nothing changed
-        if (!this._isDirty) return;
+    update() {
+        // check if active wpt changed
+        const actWptIndex = this._fmc.flightPlanManager.getActiveWaypointIndex()
+        if (this._activeWptIndex != actWptIndex) {
+            this._activeWptIndex = actWptIndex;
+            this._isDirty = true;
+        }
 
-        // TODO not sure if this should be after render or here :thinking:
-        this._isDirty = false;
+        // TODO notice when approach gets activated and render dirty
+        if (this._isDirty) {
+            this.invalidate();
+        }
+    }
 
+    // TODO not sure if this should just be prepare, i think this fits more to update/invalidate
+    updateLegs() {
         // TODO what is this
         // if (_directWaypoint && this._fmc.fpHasChanged == false) {
         //     this._fmc.inOut = _directWaypoint.ident;
@@ -106,7 +117,7 @@ class CJ4_FMC_LegsPage {
                     console.log("this._directWaypoint: " + this._directWaypoint);
                     console.log("i: " + i);
                     console.log("this._currentPage: " + this._currentPage);
-                    console.log(" this._targetWaypointIndex: " +  this._targetWaypointIndex);
+                    console.log(" this._targetWaypointIndex: " + this._targetWaypointIndex);
 
                     // Can't mod first blue line
                     if (i == 0 && this._currentPage == 1) {
@@ -126,11 +137,11 @@ class CJ4_FMC_LegsPage {
                         console.log("else if 1 _activatingDirectToExisting");
                         let removeWaypointForLegsMethod = (callback = EmptyCallback.Void) => {
                             i = 1;
-                            if (i <  this._targetWaypointIndex) {
+                            if (i < this._targetWaypointIndex) {
                                 //console.log(" this._targetWaypointIndex: " +  this._targetWaypointIndex)
-                                this._fmc.flightPlanManager.removeWaypoint(1, i ===  this._targetWaypointIndex - 1, () => {
+                                this._fmc.flightPlanManager.removeWaypoint(1, i === this._targetWaypointIndex - 1, () => {
                                     i++;
-                                     this._targetWaypointIndex =  this._targetWaypointIndex - 1
+                                    this._targetWaypointIndex = this._targetWaypointIndex - 1
                                     removeWaypointForLegsMethod(callback);
                                 });
                             }
@@ -147,7 +158,7 @@ class CJ4_FMC_LegsPage {
                                 this._fmc.activateRoute(() => {
                                     console.log("activateRoute");
                                     this._fmc._activatingDirectToExisting = false;
-                                     this._targetWaypointIndex = undefined;
+                                    this._targetWaypointIndex = undefined;
                                     //directWaypoint = undefined;
                                     this.invalidate(); // TODO do we need to refresh?
                                 });
@@ -200,7 +211,7 @@ class CJ4_FMC_LegsPage {
                             this._fmc.fpHasChanged = false;
                             this._fmc._activatingDirectTo = false;
                             this._fmc._activatingDirectToExisting = false;
-                            // CJ4_FMC_LegsPage.ShowPage1(fmc); // TODO need refresh?
+                            this.invalidate(); // TODO need refresh?
                         };
                         let toWaypoint = this._fmc.flightPlanManager.getWaypoint(1);
                         this._fmc.activateDirectToWaypoint(toWaypoint, () => {
@@ -219,7 +230,7 @@ class CJ4_FMC_LegsPage {
                                 this._fmc.activateRoute();
                             }
                             this._fmc.onExecDefault();
-                            this._fmc.refreshPageCallback = () => CJ4_FMC_RoutePage.ShowPage1(this._fmc);
+                            this._fmc.refreshPageCallback = () => this.invalidate();
                         } else {
                             this._fmc._isRouteActivated = false;
                             this._fmc.fpHasChanged = false;
@@ -287,31 +298,6 @@ class CJ4_FMC_LegsPage {
         }
     }
 
-    start() {
-        this._fmc.clearDisplay();
-        this.bindEvents();
-        this.prepare();
-        this.render();
-    }
-
-    update() {
-        // check if active wpt changed
-        const actWptIndex = this._fmc.flightPlanManager.getActiveWaypointIndex()
-        if (this._activeWptIndex != actWptIndex) {
-            this._activeWptIndex = actWptIndex;
-            this._isDirty = true;
-        }
-
-        // TODO notice when approach gets activated and render dirty
-
-        if (this._isDirty) {
-            this._fmc.clearDisplay();
-            this.bindEvents(); // TODO this and cleardisplay i don't wanna do everytime, but i need to figure out the loss of events
-            this.prepare();
-            this.render();
-        }
-    }
-
     render() {
         console.log("RENDER LEGS");
 
@@ -336,7 +322,7 @@ class CJ4_FMC_LegsPage {
             if (this._lsk6Field == "<CANCEL MOD") {
                 if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     this._fmc.fpHasChanged = false;
-                    this._fmc.eraseTemporaryFlightPlan(() => { this.prepare() });
+                    this._fmc.eraseTemporaryFlightPlan(() => { this.invalidate() });
                 }
             }
         };
@@ -358,10 +344,13 @@ class CJ4_FMC_LegsPage {
     // TODO, later this could be in the base class
     invalidate() {
         this._isDirty = true;
-        this.prepare();
+        this._fmc.clearDisplay();
+        this.updateLegs();
         this.render();
+        this.bindEvents();
+        this._isDirty = false;
     }
-    
+
     getAltSpeedRestriction(waypoint) {
         let speedConstraint = "";
         let altitudeConstraint = "FL";
@@ -402,7 +391,7 @@ class CJ4_FMC_LegsPage {
 
         // create page instance and init 
         LegsPageInstance = new CJ4_FMC_LegsPage(fmc);
-        LegsPageInstance.start();
+        LegsPageInstance.invalidate();
 
         // register refresh and bind to update which will only render on changes
         fmc.registerPeriodicPageRefresh(() => {
