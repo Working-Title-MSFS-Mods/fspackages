@@ -35,12 +35,16 @@ class CJ4_FMC_PosInitPage {
             }
         }
 
-        if (this._fmc.refAirport && this._fmc.refAirport.ident) {
-            this.refAirport = this._fmc.refAirport.ident;
+        if (this._fmc.initCoordinates) {
+            this.irsPos = this._fmc.initCoordinates;
         }
 
-        if (this._fmc.refAirport && this._fmc.refAirport.infos && this._fmc.refAirport.infos.coordinates) {
-            this.refAirportCoordinates = this._fmc.refAirport.infos.coordinates.toDegreeString();
+        if (this._fmc.refAirport && this._fmc.refAirport.ident) {
+            this.refAirport = this._fmc.refAirport.ident;
+
+            if (this._fmc.refAirport.infos && this._fmc.refAirport.infos.coordinates) {
+                this.refAirportCoordinates = this._fmc.refAirport.infos.coordinates.toDegreeString();
+            }
         }
     }
 
@@ -90,11 +94,6 @@ class CJ4_FMC_PosInitPage {
             this._isDirty = true;
         }
 
-        // TODO check if it was changed, but we invalidate from input event anyway
-        if (this._fmc.initCoordinates) {
-            this.irsPos = this._fmc.initCoordinates;
-        }
-
         if (this._isDirty) {
             this.invalidate();
         }
@@ -121,7 +120,7 @@ class CJ4_FMC_PosInitPage {
 
     invalidate() {
         this._isDirty = true;
-        //this.prepare(); // in this case i will not always call prepare as data doesn't change
+        this.prepare(); // in this case i will not always call prepare as data doesn't change
         this.render();
         this.bindEvents(); // TODO i would love to only call it once, but fmc.clearDisplay()
     }
