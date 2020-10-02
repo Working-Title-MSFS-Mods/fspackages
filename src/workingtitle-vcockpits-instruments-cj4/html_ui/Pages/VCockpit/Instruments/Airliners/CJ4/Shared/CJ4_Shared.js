@@ -3437,10 +3437,11 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":
-                    this.handler.onActivate();
                     if(this.handler.onChecklistItemPage){
                         this.handler.highlight(this.handler.highlightId + 1);
+                        this.handler.changeCurrentItemIndex(1);
                     }
+                    this.handler.onActivate();
                     break;
                 case "Upr_DATA_DEC":
                 case "Lwr_DATA_DEC":
@@ -3454,13 +3455,19 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
                     break;
                 case "Upr_MENU_ADV_DEC":
                 case "Lwr_MENU_ADV_DEC":
-                    if(!this.otherMenusOpen)
+                    if(!this.otherMenusOpen){
                         this.handler.onMenuDec();
+                        if(this.handler.onChecklistItemPage) this.handler.changeCurrentItemIndex(-1);
+                    }
+                    console.log("item num: " + this.handler.currentItemIndex);
                     break;
                 case "Upr_MENU_ADV_INC":
                 case "Lwr_MENU_ADV_INC":
-                    if(!this.otherMenusOpen)
+                    if(!this.otherMenusOpen){
                         this.handler.onMenuInc();
+                        if(this.handler.onChecklistItemPage) this.handler.changeCurrentItemIndex(1);
+                    }
+                    console.log("item num: " + this.handler.currentItemIndex);
                     break;
                 case "Upr_Push_ESC":
                 case "Lwr_Push_ESC":
@@ -3478,7 +3485,14 @@ var CJ4_Checklist_Key;
     CJ4_Checklist_Key[CJ4_Checklist_Key["AIRCON"] = 1] = "AIRCON";
     CJ4_Checklist_Key[CJ4_Checklist_Key["SAFETY"] = 2] = "SAFTEY";
     CJ4_Checklist_Key[CJ4_Checklist_Key["EMER_LIGHTS"] = 3] = "EMER_LIGHTS";
-    CJ4_Checklist_Key[CJ4_Checklist_Key["PARK_BRAKE"] = 4] = "PARK_BRAKE";
+    CJ4_Checklist_Key[CJ4_Checklist_Key["HOSKY"] = 4] = "HOSKY";
+    CJ4_Checklist_Key[CJ4_Checklist_Key["POLY"] = 5] = "POLY";
+    CJ4_Checklist_Key[CJ4_Checklist_Key["FUEL_SELECTOR"] = 6] = "FUEL_SELECTOR";
+    CJ4_Checklist_Key[CJ4_Checklist_Key["BATTERY_SWITCH"] = 7] = "BATTERY_SWITCH";
+    CJ4_Checklist_Key[CJ4_Checklist_Key["BATTERY_SWITCH1"] = 7] = "BATTERY_SWITCH1";
+    CJ4_Checklist_Key[CJ4_Checklist_Key["BATTERY_SWITCH2"] = 7] = "BATTERY_SWITCH2";
+    CJ4_Checklist_Key[CJ4_Checklist_Key["BATTERY_SWITCH3"] = 7] = "BATTERY_SWITCH3";
+    CJ4_Checklist_Key[CJ4_Checklist_Key["END"] = 7] = "END";
 })(CJ4_Checklist_Key || (CJ4_Checklist_Key = {}));
 
 class CJ4_Checklist_Handler extends Airliners.PopupMenu_Handler {
@@ -3512,21 +3526,203 @@ class CJ4_Checklist_Handler extends Airliners.PopupMenu_Handler {
 class CJ4_MainChecklist extends CJ4_Checklist_Handler {
     constructor(_root, _dictionary) {
         super();
+        // Styling
         this.titleSize = 15;
         this.textSize = 13;
         this.root = _root;
         this.menuLeft = 75;
         this.menuWidth = 350;
         this.dictionary = _dictionary;
-        this.showMainPage();
+        this.maximumItemsPerPage = 7;
+
+        // Logic
         this.onChecklistItemPage = false;
-    }
-    reset() {
+        this.checklists = this.GenerateChecklists();
+
+        this.currentMenu = this.showMainPage.bind(this);
+        this.currentPage = 1;
+        this.totalPages = 1;
+        this.currentItemIndex = 0;
+        this.totalPageItems = this.checklists.length;
+
         this.showMainPage();
+    }
+    GenerateChecklists(){
+        let checklists = [
+            new Checklist("NORMAL CHECKLIST MENU"),
+            new Checklist("CHECKLIST/PASS BRIEF CONFIG MENU")
+        ];
+        checklists[0].pages = [
+            {
+                name: "TAKEOFF",
+                checklistItems: [
+                    {
+                        name: "BATTERY SWITCH",
+                        value: "ON",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH],
+                        complete: false
+                    },
+                    {
+                        name: "SEATBELT LIGHTS",
+                        value: "GREEN",
+                        key: [CJ4_Checklist_Key.SEATBELTS],
+                        complete: false
+                    },
+                    {
+                        name: "EMER LIGHTS",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS],
+                        complete: false
+                    },
+                    {
+                        name: "HOSKY",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.HOSKY],
+                        complete: false
+                    },
+                    {
+                        name: "FUEL SELECTOR",
+                        value: "LEFT",
+                        key: [CJ4_Checklist_Key.FUEL_SELECTOR],
+                        complete: false
+                    },
+                    {
+                        name: "POLY",
+                        value: "IN",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH1],
+                        complete: false
+                    },
+                    {
+                        name: "SEVEN LIGHTS",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2],
+                        complete: false
+                    },
+                    {
+                        name: "EIGHT LIGHTS",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2],
+                        complete: false
+                    },
+                    {
+                        name: "END BOUI",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.END],
+                        complete: false
+                    }
+                ]
+            },
+            {
+                name: "CLIMB",
+                checklistItems: [
+                    {
+                        name: "BATTERY SWITCH",
+                        value: "ON",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH],
+                        complete: false
+                    },
+                    {
+                        name: "SEATBELT LIGHTS",
+                        value: "GREEN",
+                        key: [CJ4_Checklist_Key.SEATBELTS],
+                        complete: false
+                    },
+                    {
+                        name: "EMER LIGHTS",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS],
+                        complete: false
+                    },
+                    {
+                        name: "HOSKY",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.HOSKY],
+                        complete: false
+                    },
+                    {
+                        name: "FUEL SELECTOR",
+                        value: "LEFT",
+                        key: [CJ4_Checklist_Key.FUEL_SELECTOR],
+                        complete: false
+                    },
+                    {
+                        name: "POLY",
+                        value: "IN",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH1],
+                        complete: false
+                    },
+                    {
+                        name: "SEVEN LIGHTS",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2],
+                        complete: false
+                    },
+                    {
+                        name: "EIGHT LIGHTS",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2],
+                        complete: false
+                    },
+                    {
+                        name: "END BOUI",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.END],
+                        complete: false
+                    }
+                ]
+            }
+        ]
+        checklists[1].pages = [
+            {
+                name: "BEFORE TAKEOFF",
+                checklistItems: [
+                    {
+                        name: "SEATBELT LIGHTS",
+                        value: "GREEN",
+                        key: [CJ4_Checklist_Key.SEATBELTS],
+                        complete: false
+                    },
+                    {
+                        name: "ANNOUNCEMENTS",
+                        value: "PLAYED",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS],
+                        complete: false
+                    }
+                ]
+            }
+        ]
+        return checklists;
+    }
+    refreshPage() {
+        console.log("refresh");
+        if(this.currentMenu){
+            this.currentMenu();
+        }
+    }
+    changeCurrentItemIndex(_delta){
+        if((this.currentItemIndex + _delta) >= 0 && (this.currentItemIndex + _delta < this.totalPageItems)){
+            this.currentItemIndex += _delta;
+            let bool = false;
+
+            const newPage = Math.ceil(this.currentItemIndex / 6);
+            if(newPage != this.currentPage && newPage >= 1){
+                if(newPage < this.currentPage) bool = true;
+                this.currentPage = newPage;
+                this.refreshPage();
+                if(bool) this.highlight(6);
+            }
+
+        }
     }
     showMainPage(_highlight = 0) {
-        this._isOnMainPage = true;
+        this._isOnMainPage = true; //TODO IS THIS USED?
         this.onChecklistItemPage = false;
+        this.currentItemIndex = 0;
+
+        this.currentMenu = this.showMainPage.bind(this, _highlight);
+        this.currentPage = 1;
+        this.totalPages = Math.ceil(this.checklists.length / this.maximumItemsPerPage);
+        this.totalPageItems = this.checklists.length;
 
         // let line = document.createElementNS(Avionics.SVG.NS, "line");
         // line.setAttribute("x1", "75");
@@ -3545,14 +3741,15 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         {
             this.beginSection();
             {
-                this.addCheckTitle("CHECKLIST INDEX", this.titleSize, 1.0, "blue");
-                this.addCheckTitle("", this.titleSize, 1.0, "blue");
+                this.addCheckTitle("CHECKLIST INDEX", this.titleSize, 1.0, this.currentPage, this.totalPages);
+                this.addCheckTitle("", this.titleSize, 1.0);
             }
             this.endCheckSection();
             this.beginSection();
             {
-                this.addCheckSubMenu("NORMAL CHECKLIST MENU", this.textSize, this.showNormalChecklistPage.bind(this));
-                this.addCheckSubMenu("CHECKLIST/PASS BRIEF CONFIG MENU", this.textSize, null);
+                for(let i = 0; i < this.checklists.length; i++){
+                    this.addCheckSubMenu(this.checklists[i].name, this.textSize, this.showChecklist.bind(this, this.checklists[i]));
+                }
             }
             this.endCheckSection();
         }
@@ -3562,25 +3759,33 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
-    showNormalChecklistPage() {
+    showChecklist(_checklist) {
         this._isOnMainPage = false;
         this.onChecklistItemPage = false;
+        this.currentItemIndex = 0;
+
+        this.currentMenu = this.showChecklist.bind(this, _checklist);
+        this.currentPage = 1;
+        this.totalPages = Math.ceil(_checklist.pages.length / this.maximumItemsPerPage);
+        this.totalPageItems = _checklist.pages.length;
+
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
         page.setAttribute("id", "ViewBox");
         page.setAttribute("viewBox", "0 0 500 500");
+
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
             {
-                this.addCheckTitle("NORMAL CHECKLIST", this.titleSize, 1.0, "blue", true);
-                this.addCheckTitle("", this.titleSize, 1.0, "blue");
+                this.addCheckTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
+                this.addCheckTitle("", this.titleSize, 1.0);
             }
             this.endCheckSection();
             this.beginSection();
             {
-                this.addCheckSubMenu("BEFORE STARTING ENGINES", this.textSize, this.showBeforeEngineStartPage.bind(this));
-                this.addCheckSubMenu("STARTING ENGINES", this.textSize, null);
-                this.addCheckSubMenu("AFTER STARTING ENGINES", this.textSize, null);
+                for(let i = 0; i < _checklist.pages.length; i++) {
+                    this.addCheckSubMenu(_checklist.pages[i].name, this.textSize, this.showChecklistSection.bind(this, _checklist, i));
+                }
             }
             this.endCheckSection();
         }
@@ -3590,37 +3795,53 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
-    showBeforeEngineStartPage() {
+    showChecklistSection(_checklist, _page_id) {
         this._isOnMainPage = false;
         this.onChecklistItemPage = true;
+
+        this.currentMenu = this.showChecklistSection.bind(this, _checklist, _page_id);
+        this.totalPages = Math.ceil(_checklist.pages[_page_id].checklistItems.length / this.maximumItemsPerPage);
+        this.totalPageItems = _checklist.pages[_page_id].checklistItems.length;
+
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
         page.setAttribute("id", "ViewBox");
         page.setAttribute("viewBox", "0 0 500 500");
+
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
             {
-                this.addCheckTitle("NORMAL CHECKLIST", this.titleSize, 1.0, "blue");
-                this.addCheckTitle("BEFORE STARTING ENGINES", this.titleSize, 1.0, "blue", true);
+                this.addCheckTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
+                this.addCheckTitle(_checklist.pages[_page_id].name, this.titleSize, 1.0);
             }
             this.endCheckSection();
             this.beginSection();
             {
-                this.addCheckCheckbox("BATTERY Switch ON", this.textSize, [CJ4_Checklist_Key.SEATBELTS]);
-                this.addCheckCheckbox("EMER LIGHTS Switch On", this.textSize, [CJ4_Checklist_Key.EMER_LIGHTS]);
-                this.addCheckCheckbox("PARK BRAKE SET", this.textSize, [CJ4_Checklist_Key.PARK_BRAKE]);
-                this.addCheckCheckbox("THING ON", this.textSize, [CJ4_Checklist_Key.PARK_BRAKE]);
-                this.addCheckCheckbox("FIRE LIGHT OFF", this.textSize, [CJ4_Checklist_Key.PARK_BRAKE]);
-                this.addCheckCheckbox("PARK BRAKE SET", this.textSize, [CJ4_Checklist_Key.PARK_BRAKE]);
-                this.addCheckCheckbox("PARK BRAKE OFF", this.textSize, [CJ4_Checklist_Key.PARK_BRAKE]);
+                let checklistItems = _checklist.pages[_page_id].checklistItems;
+                let startingItem = (this.currentPage * 7) - 7;
+                let endItem = Math.min(checklistItems.length, startingItem + 7);
+                for(let i = startingItem; i < endItem; i++){
+                    if(checklistItems[i]){
+                        this.addCheckCheckbox(checklistItems[i].name, checklistItems[i].value, this.textSize, checklistItems[i].key);
+                    }
+                }
+                // if(endItem < (this.currentPage * 7)){
+                //     this.addNormalItem("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, this.showChecklistSection.bind(this, _checklist, _page_id + 1));
+                // }
             }
             this.endCheckSection();
         }
         this.closeMenu();
-        this.escapeCbk = this.showNormalChecklistPage.bind(this, 0);
+        this.escapeCbk = this.showChecklist.bind(this, _checklist);
         page.appendChild(sectionRoot);
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
+    }
+}
+class Checklist{
+    constructor(_name) {
+        this.name = _name; // NORMAL CHECKLIST
+        this.sections = []; // TAKEOFF, DESCENT
     }
 }
 

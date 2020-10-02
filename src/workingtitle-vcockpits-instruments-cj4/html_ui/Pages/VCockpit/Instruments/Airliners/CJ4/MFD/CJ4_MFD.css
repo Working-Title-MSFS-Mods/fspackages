@@ -611,6 +611,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #Checklist {
   height: 22.5%;
   background-color: black;
   color: white;
+  border-bottom: #36c8d2 dashed 2px;
 }
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #Checklist[visible=false] {
   display: none; }
