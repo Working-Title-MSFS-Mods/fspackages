@@ -107,6 +107,8 @@ class AS3X_Touch extends NavSystemTouch {
             }
         }.bind(this));
         this.maxUpdateBudget = 12;
+        this.pitotOnTime = null;
+        this.pitotHeating = false;
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -180,6 +182,23 @@ class AS3X_Touch extends NavSystemTouch {
     }
     Update() {
         super.Update();
+        let temp = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius");
+        let pitotHeat = SimVar.GetSimVarValue("PITOT HEAT", "bool");
+        let rpm = SimVar.GetSimVarValue("GENERAL ENG RPM:1", "rpm");
+        if (temp <= 7 && rpm > 0) {
+            if (!pitotHeat) {
+                SimVar.SetSimVarValue("K:PITOT_HEAT_ON", "bool", true);
+                SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", true);
+                this.pitotOnTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
+            } else {
+                let now = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
+                if (now - this.pitotOnTime > 10 + (7 - temp) / 3) {
+                    SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", false);
+                };
+            }
+        } else if (pitotHeat && (temp > 7 || rpm <= 0)) {
+            SimVar.SetSimVarValue("K:PITOT_HEAT_OFF", "bool", true);
+        }
         if (this.handleReversionaryMode && this.displayMode == "PFD") {
             let reversionary = false;
             if (document.body.hasAttribute("reversionary")) {
@@ -374,7 +393,10 @@ class AS3X_Touch extends NavSystemTouch {
                     this.closePopUpElement();
                 }
                 else {
+                    console.log("Computing back push");
                     this.SwitchToMenuName("MFD");
+                    this.computeEvent("Master_Caution_Push");
+                    this.computeEvent("Master_Warning_Push");
                 }
                 break;
             case "NRST_Push":
@@ -500,6 +522,7 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
         this.attitude.setSyntheticVisionEnabled(true);
         this.mapInstrument = new MapInstrumentElement();
         this.windData = new PFD_WindData();
+        this.annunciations = new Cabin_Annunciations();
         this.element = new NavSystemElementGroup([
             new PFD_Altimeter(),
             new PFD_Airspeed(),
@@ -507,6 +530,7 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
             this.windData,
             this.attitude,
             this.mapInstrument,
+            this.annunciations,
             new AS3X_Touch_elevatorTrim(),
             new PFD_RadarAltitude(),
             new PFD_AutopilotDisplay()
@@ -517,6 +541,10 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
         super.init();
         this.attitude.svg.setAttribute("background", "false");
         this.windData.mode = 1;
+        this.gps.makeButton(this.gps.getChildById("Annunciations"), () => {
+            this.gps.computeEvent("Master_Caution_Push");
+            this.gps.computeEvent("Master Warning Push");
+        })
     }
 }
 class AS3X_Touch_MFD_Main extends NavSystemElementContainer {

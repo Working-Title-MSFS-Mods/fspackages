@@ -2345,14 +2345,16 @@ as3x-touch-element {
         display: none; }
   as3x-touch-element #Annunciations {
     position: absolute;
+    background-color: black;
     top: 67%;
-    left: 77%;
-    height: auto%;
+    right: 1%;
+    height: auto;
     width: auto;
     font-size: 1.6vh;
     text-align: left;
-    margin-bottom: 1px;
-
+    padding: 0.5vh;
+    border: 0.3vh solid white;
+    border-radius: 5%;
   }
   as3x-touch-element #Annunciations div {
     background-color: black; }
