@@ -1,8 +1,6 @@
 class CJ4_FMC_LegsPage {
     static ShowPage1(fmc, currentPage = 1, directWaypoint, targetWaypointIndex) {
         fmc.clearDisplay();
-        fmc.registerPeriodicPageRefresh(() => {
-
             fmc.refreshPageCallback = () => {
                 CJ4_FMC_LegsPage.ShowPage1(fmc, currentPage);
             };
@@ -342,7 +340,6 @@ class CJ4_FMC_LegsPage {
                     CJ4_FMC_LegsPage.ShowPage1(fmc, currentPage + 1);
                 }
             };
-        });
     }
 }
     
