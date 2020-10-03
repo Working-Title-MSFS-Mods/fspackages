@@ -3437,7 +3437,7 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":
-                    if(this.handler.onChecklistItemPage){
+                    if(this.handler.onChecklistItemPage && !this.handler.highlightItem.checkboxVal){
                         this.handler.highlight(this.handler.highlightId + 1);
                         this.handler.changeCurrentItemIndex(1);
                     }
