@@ -1,10 +1,20 @@
 {
     "env": {
         "browser": true,
-        "es2017": true
+        "es6": true
     },
     "extends": "eslint:recommended",
     "rules": {
+        "no-redeclare": [
+            "error", {
+              "builtinGlobals": false
+            }
+          ],
+          "no-unused-vars": [
+            "error", {
+              "vars": "local"
+            }
+          ]
     },
     "globals": {
         "Avionics": "readonly",
@@ -14,6 +24,7 @@
         "FMCMainDisplay": "writable",
         "CJ4_FMC_RoutePage": "readonly",
         "CJ4_FMC_DirectToPage": "readonly",
-        "CJ4_FMC_InitRefIndexPage": "readonly"
+        "CJ4_FMC_InitRefIndexPage": "readonly",
+        "CJ4_FMC_PosInitPage": "readonly"
     }
 }

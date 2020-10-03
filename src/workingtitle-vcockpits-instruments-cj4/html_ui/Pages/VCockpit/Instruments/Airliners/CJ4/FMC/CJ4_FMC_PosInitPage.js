@@ -57,10 +57,10 @@ class CJ4_FMC_PosInitPage {
                 this._fmc.inOut = this._currPos;
             }
         };
-        this._fmc.onLeftInput[2] = async () => {
+        this._fmc.onLeftInput[2] = () => {
             let value = this._fmc.inOut;
             this._fmc.inOut = "";
-            if (await this._fmc.tryUpdateRefAirport(value)) {
+            if (this._fmc.tryUpdateRefAirport(value)) {
                 this._isDirty = true;
                 this.update(); // TODO hmm, i think invalidate() would be the more right thing to call but...
             }
@@ -71,10 +71,10 @@ class CJ4_FMC_PosInitPage {
         this._fmc.onRightInput[3] = () => {
             this._fmc.inOut = this._currPos;
         };
-        this._fmc.onRightInput[4] = async () => {
+        this._fmc.onRightInput[4] = () => {
             let value = this._fmc.inOut;
             this._fmc.inOut = "";
-            if (await this._fmc.tryUpdateIrsCoordinatesDisplay(value)) {
+            if (this._fmc.tryUpdateIrsCoordinatesDisplay(value)) {
                 this._isDirty = true;
                 this.update();
             }
