@@ -3543,7 +3543,7 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         this.currentPage = 1;
         this.totalPages = 1;
         this.currentItemIndex = 0;
-        this.totalPageItems = this.checklists.length;
+        this.totalSectionItems = this.checklists.length;
 
         this.showMainPage();
     }
@@ -3552,7 +3552,7 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
             new Checklist("NORMAL CHECKLIST MENU"),
             new Checklist("CHECKLIST/PASS BRIEF CONFIG MENU")
         ];
-        checklists[0].pages = [
+        checklists[0].sections = [
             {
                 name: "TAKEOFF",
                 checklistItems: [
@@ -3605,6 +3605,36 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
                         complete: false
                     },
                     {
+                        name: "END BOUI",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.END],
+                        complete: false
+                    },
+                    {
+                        name: "END BOUI",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.END],
+                        complete: false
+                    },
+                    {
+                        name: "END BOUI",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.END],
+                        complete: false
+                    },
+                    {
+                        name: "END BOUI",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.END],
+                        complete: false
+                    },
+                    {
+                        name: "END BOUI",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.END],
+                        complete: false
+                    }
+                    ,{
                         name: "END BOUI",
                         value: "OFF",
                         key: [CJ4_Checklist_Key.END],
@@ -3670,9 +3700,68 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
                         complete: false
                     }
                 ]
+            },
+            {
+                name: "DESCENT",
+                checklistItems: [
+                    {
+                        name: "BATTERY SWITCH",
+                        value: "ON",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH],
+                        complete: false
+                    },
+                    {
+                        name: "SEATBELT LIGHTS",
+                        value: "GREEN",
+                        key: [CJ4_Checklist_Key.SEATBELTS],
+                        complete: false
+                    },
+                    {
+                        name: "EMER LIGHTS",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS],
+                        complete: false
+                    },
+                    {
+                        name: "HOSKY",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.HOSKY],
+                        complete: false
+                    },
+                    {
+                        name: "FUEL SELECTOR",
+                        value: "LEFT",
+                        key: [CJ4_Checklist_Key.FUEL_SELECTOR],
+                        complete: false
+                    },
+                    {
+                        name: "POLY",
+                        value: "IN",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH1],
+                        complete: false
+                    },
+                    {
+                        name: "SEVEN LIGHTS",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2],
+                        complete: false
+                    },
+                    {
+                        name: "EIGHT LIGHTS",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2],
+                        complete: false
+                    },
+                    {
+                        name: "END BOUI",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.END],
+                        complete: false
+                    }
+                ]
             }
         ]
-        checklists[1].pages = [
+        checklists[1].sections = [
             {
                 name: "BEFORE TAKEOFF",
                 checklistItems: [
@@ -3700,11 +3789,11 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         }
     }
     changeCurrentItemIndex(_delta){
-        if((this.currentItemIndex + _delta) >= 0 && (this.currentItemIndex + _delta < this.totalPageItems)){
+        if((this.currentItemIndex + _delta) >= 0 && (this.currentItemIndex + _delta < this.totalSectionItems)){
             this.currentItemIndex += _delta;
             let bool = false;
 
-            const newPage = Math.ceil(this.currentItemIndex / 6);
+            const newPage = Math.ceil((this.currentItemIndex + 1) / this.maximumItemsPerPage);
             if(newPage != this.currentPage && newPage >= 1){
                 if(newPage < this.currentPage) bool = true;
                 this.currentPage = newPage;
@@ -3722,7 +3811,7 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         this.currentMenu = this.showMainPage.bind(this, _highlight);
         this.currentPage = 1;
         this.totalPages = Math.ceil(this.checklists.length / this.maximumItemsPerPage);
-        this.totalPageItems = this.checklists.length;
+        this.totalSectionItems = this.checklists.length;
 
         // let line = document.createElementNS(Avionics.SVG.NS, "line");
         // line.setAttribute("x1", "75");
@@ -3766,8 +3855,8 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
 
         this.currentMenu = this.showChecklist.bind(this, _checklist);
         this.currentPage = 1;
-        this.totalPages = Math.ceil(_checklist.pages.length / this.maximumItemsPerPage);
-        this.totalPageItems = _checklist.pages.length;
+        this.totalPages = Math.ceil(_checklist.sections.length / this.maximumItemsPerPage);
+        this.totalSectionItems = _checklist.sections.length;
 
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
         page.setAttribute("id", "ViewBox");
@@ -3783,8 +3872,8 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
             this.endCheckSection();
             this.beginSection();
             {
-                for(let i = 0; i < _checklist.pages.length; i++) {
-                    this.addCheckSubMenu(_checklist.pages[i].name, this.textSize, this.showChecklistSection.bind(this, _checklist, i));
+                for(let i = 0; i < _checklist.sections.length; i++) {
+                    this.addCheckSubMenu(_checklist.sections[i].name, this.textSize, this.showChecklistSection.bind(this, _checklist, i));
                 }
             }
             this.endCheckSection();
@@ -3795,13 +3884,17 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
-    showChecklistSection(_checklist, _page_id) {
+    showChecklistSection(_checklist, _section_id) {
         this._isOnMainPage = false;
         this.onChecklistItemPage = true;
 
-        this.currentMenu = this.showChecklistSection.bind(this, _checklist, _page_id);
-        this.totalPages = Math.ceil(_checklist.pages[_page_id].checklistItems.length / this.maximumItemsPerPage);
-        this.totalPageItems = _checklist.pages[_page_id].checklistItems.length;
+        this.currentMenu = this.showChecklistSection.bind(this, _checklist, _section_id);
+        this.totalPages = Math.ceil(_checklist.sections[_section_id].checklistItems.length / this.maximumItemsPerPage);
+        this.totalSectionItems = _checklist.sections[_section_id].checklistItems.length;
+        if(_checklist.sections[_section_id].checklistItems.length % 7 == 0){
+            this.totalPages += 1;
+            this.totalSectionItems += 1;
+        }
 
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
         page.setAttribute("id", "ViewBox");
@@ -3812,22 +3905,31 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
             this.beginSection();
             {
                 this.addCheckTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
-                this.addCheckTitle(_checklist.pages[_page_id].name, this.titleSize, 1.0);
+                this.addCheckTitle(_checklist.sections[_section_id].name, this.titleSize, 1.0);
             }
             this.endCheckSection();
             this.beginSection();
             {
-                let checklistItems = _checklist.pages[_page_id].checklistItems;
-                let startingItem = (this.currentPage * 7) - 7;
-                let endItem = Math.min(checklistItems.length, startingItem + 7);
+                let checklistItems = _checklist.sections[_section_id].checklistItems;
+                let startingItem = (this.currentPage * this.maximumItemsPerPage) - this.maximumItemsPerPage;
+                let endItem = Math.min(checklistItems.length, startingItem + this.maximumItemsPerPage);
                 for(let i = startingItem; i < endItem; i++){
                     if(checklistItems[i]){
                         this.addCheckCheckbox(checklistItems[i].name, checklistItems[i].value, this.textSize, checklistItems[i].key);
                     }
                 }
-                // if(endItem < (this.currentPage * 7)){
-                //     this.addNormalItem("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, this.showChecklistSection.bind(this, _checklist, _page_id + 1));
-                // }
+
+                if(endItem == checklistItems.length && _section_id < _checklist.sections.length - 1){
+                    if(checklistItems.length % 7 != 0){
+                        this.addCheckTitle("", this.titleSize, 1.0);
+                        this.addCheckSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1);}).bind(this));
+                    }
+                    else{
+                        if(this.currentPage == this.totalPages){
+                            this.addCheckSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1);}).bind(this));
+                        }
+                    }
+                }
             }
             this.endCheckSection();
         }
@@ -3837,6 +3939,26 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
+    // nextSection(_checklist, _section_id){
+    //     this.currentItemIndex = 0;
+    //     this.currentPage = 1;
+    //     this.showChecklistSection(_checklist, _section_id + 1);
+    // }
+
+//     for(let i = 0; i < checklists.length; i++){
+//     let checklist = checklists[i];
+//     for(let x = 0; x < checklist.sections.length; x++){
+//     if(x != checklist.sections.length - 1){
+//     checklist.sections[x].checklistItems.push(
+//         {
+//             name: "CKLST COMPLETE: NEXT " + checklist.name,
+//     value: "",
+//     key: (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(checklist, x + 1);}).bind(this)
+// }
+// )
+// }
+// }
+// }
 }
 class Checklist{
     constructor(_name) {
