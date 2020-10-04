@@ -3585,16 +3585,6 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         this.totalPages = Math.ceil(this.checklists.length / this.maximumItemsPerPage);
         this.totalSectionItems = this.checklists.length;
 
-        // let line = document.createElementNS(Avionics.SVG.NS, "line");
-        // line.setAttribute("x1", "75");
-        // line.setAttribute("x2", "425");
-        // line.setAttribute("y1", "500");
-        // line.setAttribute("y2", "100");
-        // line.setAttribute("fill", "cyan");
-        // line.setAttribute("stroke-width", "2");
-        // line.setAttribute("stroke-dashoffset", "5");
-        // line.setAttribute("stroke-dasharray", "10 5");
-
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
         page.setAttribute("id", "ViewBox");
         page.setAttribute("viewBox", "0 0 500 500");
@@ -3617,6 +3607,7 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         this.closeMenu();
         this.highlight(_highlight);
         page.appendChild(sectionRoot);
+        page.appendChild(this.createEndDividerLine());
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
@@ -3647,7 +3638,13 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
                 let endItem = Math.min(checklistSections.length, startingItem + this.maximumItemsPerPage);
                 for(let i = startingItem; i < endItem; i++){
                     if(checklistSections[i]){
-                        this.addSubMenu(_checklist.sections[i].name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, i)}).bind(this));
+                        let sectionComplete = true;
+                        for(let x = 0; x < checklistSections[i].checklistItems.length; x++){
+                            if(checklistSections[i].checklistItems[x] != "ON"){
+                                sectionComplete = false;
+                            }
+                        }
+                        this.addSubMenu(_checklist.sections[i].name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, i)}).bind(this), sectionComplete ? "#11d011" : "white");
                     }
                 }
             }
@@ -3656,6 +3653,7 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         this.closeMenu();
         this.escapeCbk = this.showMainPage.bind(this, 0);
         page.appendChild(sectionRoot);
+        page.appendChild(this.createEndDividerLine());
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
@@ -3711,8 +3709,20 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         this.closeMenu();
         this.escapeCbk = this.showChecklist.bind(this, _checklist);
         page.appendChild(sectionRoot);
+        page.appendChild(this.createEndDividerLine());
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
+    }
+    createEndDividerLine(){
+        let highlightElem1 = document.createElementNS(Avionics.SVG.NS, "line");
+        highlightElem1.setAttribute("x1", "75");
+        highlightElem1.setAttribute("y1", "140");
+        highlightElem1.setAttribute("x2", "427");
+        highlightElem1.setAttribute("y2", "140");
+        highlightElem1.setAttribute("stroke", "cyan");
+        highlightElem1.setAttribute("stroke-width", "2");
+        highlightElem1.setAttribute("stroke-dasharray", "4.95 3.1");
+        return highlightElem1;
     }
 }
 
