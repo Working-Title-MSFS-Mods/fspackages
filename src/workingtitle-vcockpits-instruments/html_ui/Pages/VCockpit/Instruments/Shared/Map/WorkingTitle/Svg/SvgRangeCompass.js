@@ -14,8 +14,6 @@ class SvgRangeCompass extends SvgMapElement {
         container.setAttribute("height", 1000);
         container.setAttribute("overflow", "hidden");
 		
-		this.rangeRing = document.createElementNS(Avionics.SVG.NS, "svg");
-		
 		return container;
 	}
 	

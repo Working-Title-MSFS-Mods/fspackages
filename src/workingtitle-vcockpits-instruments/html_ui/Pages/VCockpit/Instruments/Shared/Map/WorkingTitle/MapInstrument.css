@@ -34,11 +34,12 @@ map-instrument {
   map-instrument #MapOrientation {
     position: absolute;
     top: 0%;
-    right: 0%;
+    left: 0%;
     width: 13%;
     height: calc( 2.5 * 1vh * var(--bodyHeightScale));
     background-color: #1a1d21;
-    color: white; }
+    color: #8ed0d5; 
+	border: solid 1px white; }
   map-instrument #MapRange {
     position: absolute;
     bottom: 0%;
@@ -46,8 +47,12 @@ map-instrument {
     width: 5%;
     height: calc( 6 * 1vh * var(--bodyHeightScale));
     background-color: #1a1d21;
-    color: aquamarine;
-    text-align: center; }
+    color: #8ed0d5;
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-end;
+    text-align: center; 
+	border: solid 1px white; }
   map-instrument #MapSVG, map-instrument #road-network-canvas {
     position: absolute; }
   map-instrument bing-map {
