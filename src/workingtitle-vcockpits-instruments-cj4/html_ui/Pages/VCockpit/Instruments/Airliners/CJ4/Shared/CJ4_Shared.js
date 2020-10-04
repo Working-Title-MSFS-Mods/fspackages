@@ -3439,7 +3439,7 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
                 case "Lwr_DATA_PUSH":
                     if(this.handler.onChecklistItemPage && !this.handler.highlightItem.checkboxVal){
                         this.handler.highlight(this.handler.highlightId + 1);
-                        this.handler.changeCurrentItemIndex(1);
+                        this.handler.changeCurrentSelectionIndex(1);
                     }
 
                     this.handler.onActivate();
@@ -3458,7 +3458,7 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
                 case "Lwr_MENU_ADV_DEC":
                     if(!this.otherMenusOpen){
                         this.handler.onMenuDec();
-                        if(this.handler.onChecklistItemPage) this.handler.changeCurrentItemIndex(-1);
+                        this.handler.changeCurrentSelectionIndex(-1);
                     }
                     console.log("item num: " + this.handler.currentItemIndex);
                     break;
@@ -3466,7 +3466,7 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
                 case "Lwr_MENU_ADV_INC":
                     if(!this.otherMenusOpen){
                         this.handler.onMenuInc();
-                        if(this.handler.onChecklistItemPage) this.handler.changeCurrentItemIndex(1);
+                        this.handler.changeCurrentSelectionIndex(1);
                     }
                     console.log("item num: " + this.handler.currentItemIndex);
                     break;
@@ -3550,237 +3550,8 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
     }
     GenerateChecklists(){
         let checklists = [
-            new Checklist("NORMAL CHECKLIST MENU"),
-            new Checklist("CHECKLIST/PASS BRIEF CONFIG MENU")
+            new NormalChecklist
         ];
-        checklists[0].sections = [
-            {
-                name: "TAKEOFF",
-                checklistItems: [
-                    {
-                        name: "BATTERY SWITCH",
-                        value: "ON",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH],
-                        complete: false
-                    },
-                    {
-                        name: "SEATBELT LIGHTS",
-                        value: "GREEN",
-                        key: [CJ4_Checklist_Key.SEATBELTS],
-                        complete: false
-                    },
-                    {
-                        name: "EMER LIGHTS",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS],
-                        complete: false
-                    },
-                    {
-                        name: "HOSKY",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.HOSKY],
-                        complete: false
-                    },
-                    {
-                        name: "FUEL SELECTOR",
-                        value: "LEFT",
-                        key: [CJ4_Checklist_Key.FUEL_SELECTOR],
-                        complete: false
-                    },
-                    {
-                        name: "POLY",
-                        value: "IN",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH1],
-                        complete: false
-                    },
-                    {
-                        name: "SEVEN LIGHTS",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2],
-                        complete: false
-                    },
-                    {
-                        name: "EIGHT LIGHTS",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2],
-                        complete: false
-                    },
-                    {
-                        name: "END BOUI",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.END],
-                        complete: false
-                    },
-                    {
-                        name: "END BOUI",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.END],
-                        complete: false
-                    },
-                    {
-                        name: "END BOUI",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.END],
-                        complete: false
-                    },
-                    {
-                        name: "END BOUI",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.END],
-                        complete: false
-                    },
-                    {
-                        name: "END BOUI",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.END],
-                        complete: false
-                    }
-                    ,{
-                        name: "END BOUI",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.END],
-                        complete: false
-                    }
-                ]
-            },
-            {
-                name: "CLIMB",
-                checklistItems: [
-                    {
-                        name: "BATTERY SWITCH",
-                        value: "ON",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH],
-                        complete: false
-                    },
-                    {
-                        name: "SEATBELT LIGHTS",
-                        value: "GREEN",
-                        key: [CJ4_Checklist_Key.SEATBELTS],
-                        complete: false
-                    },
-                    {
-                        name: "EMER LIGHTS",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS],
-                        complete: false
-                    },
-                    {
-                        name: "HOSKY",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.HOSKY],
-                        complete: false
-                    },
-                    {
-                        name: "FUEL SELECTOR",
-                        value: "LEFT",
-                        key: [CJ4_Checklist_Key.FUEL_SELECTOR],
-                        complete: false
-                    },
-                    {
-                        name: "POLY",
-                        value: "IN",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH1],
-                        complete: false
-                    },
-                    {
-                        name: "SEVEN LIGHTS",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2],
-                        complete: false
-                    },
-                    {
-                        name: "EIGHT LIGHTS",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2],
-                        complete: false
-                    },
-                    {
-                        name: "END BOUI",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.END],
-                        complete: false
-                    }
-                ]
-            },
-            {
-                name: "DESCENT",
-                checklistItems: [
-                    {
-                        name: "BATTERY SWITCH",
-                        value: "ON",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH],
-                        complete: false
-                    },
-                    {
-                        name: "SEATBELT LIGHTS",
-                        value: "GREEN",
-                        key: [CJ4_Checklist_Key.SEATBELTS],
-                        complete: false
-                    },
-                    {
-                        name: "EMER LIGHTS",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS],
-                        complete: false
-                    },
-                    {
-                        name: "HOSKY",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.HOSKY],
-                        complete: false
-                    },
-                    {
-                        name: "FUEL SELECTOR",
-                        value: "LEFT",
-                        key: [CJ4_Checklist_Key.FUEL_SELECTOR],
-                        complete: false
-                    },
-                    {
-                        name: "POLY",
-                        value: "IN",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH1],
-                        complete: false
-                    },
-                    {
-                        name: "SEVEN LIGHTS",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2],
-                        complete: false
-                    },
-                    {
-                        name: "EIGHT LIGHTS",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2],
-                        complete: false
-                    },
-                    {
-                        name: "END BOUI",
-                        value: "OFF",
-                        key: [CJ4_Checklist_Key.END],
-                        complete: false
-                    }
-                ]
-            }
-        ]
-        checklists[1].sections = [
-            {
-                name: "BEFORE TAKEOFF",
-                checklistItems: [
-                    {
-                        name: "SEATBELT LIGHTS",
-                        value: "GREEN",
-                        key: [CJ4_Checklist_Key.SEATBELTS],
-                        complete: false
-                    },
-                    {
-                        name: "ANNOUNCEMENTS",
-                        value: "PLAYED",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS],
-                        complete: false
-                    }
-                ]
-            }
-        ]
         return checklists;
     }
     refreshPage() {
@@ -3789,7 +3560,7 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
             this.currentMenu();
         }
     }
-    changeCurrentItemIndex(_delta){
+    changeCurrentSelectionIndex(_delta){
         if((this.currentItemIndex + _delta) >= 0 && (this.currentItemIndex + _delta < this.totalSectionItems)){
             this.currentItemIndex += _delta;
             let bool = false;
@@ -3852,10 +3623,8 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
     showChecklist(_checklist) {
         this._isOnMainPage = false;
         this.onChecklistItemPage = false;
-        this.currentItemIndex = 0;
 
         this.currentMenu = this.showChecklist.bind(this, _checklist);
-        this.currentPage = 1;
         this.totalPages = Math.ceil(_checklist.sections.length / this.maximumItemsPerPage);
         this.totalSectionItems = _checklist.sections.length;
 
@@ -3873,8 +3642,13 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
             this.endSection();
             this.beginSection();
             {
-                for(let i = 0; i < _checklist.sections.length; i++) {
-                    this.addSubMenu(_checklist.sections[i].name, this.textSize, this.showChecklistSection.bind(this, _checklist, i));
+                let checklistSections = _checklist.sections;
+                let startingItem = (this.currentPage * this.maximumItemsPerPage) - this.maximumItemsPerPage;
+                let endItem = Math.min(checklistSections.length, startingItem + this.maximumItemsPerPage);
+                for(let i = startingItem; i < endItem; i++){
+                    if(checklistSections[i]){
+                        this.addSubMenu(_checklist.sections[i].name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, i)}).bind(this));
+                    }
                 }
             }
             this.endSection();
@@ -3940,31 +3714,470 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
-    // nextSection(_checklist, _section_id){
-    //     this.currentItemIndex = 0;
-    //     this.currentPage = 1;
-    //     this.showChecklistSection(_checklist, _section_id + 1);
-    // }
-
-//     for(let i = 0; i < checklists.length; i++){
-//     let checklist = checklists[i];
-//     for(let x = 0; x < checklist.sections.length; x++){
-//     if(x != checklist.sections.length - 1){
-//     checklist.sections[x].checklistItems.push(
-//         {
-//             name: "CKLST COMPLETE: NEXT " + checklist.name,
-//     value: "",
-//     key: (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(checklist, x + 1);}).bind(this)
-// }
-// )
-// }
-// }
-// }
 }
+
 class Checklist{
     constructor(_name) {
         this.name = _name; // NORMAL CHECKLIST
         this.sections = []; // TAKEOFF, DESCENT
+    }
+}
+
+class NormalChecklist extends Checklist {
+    constructor() {
+        super("NORMAL CHECKLIST MENU");
+        this.sections = [
+            {
+                name: "COCKPIT PREPARATION",
+                checklistItems: [
+                    {
+                        name: "AVIONICS SWITCH",
+                        value: "ON",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                    },
+                    {
+                        name: "PARKING BRAKE",
+                        value: "SET",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "FUEL TRANSFER SELECTOR",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "PRESSURIZATION SOURCE SELECTOR",
+                        value: "NORM",
+                        key: [CJ4_Checklist_Key.HOSKY]
+                    },
+                    {
+                        name: "CABIN DUMP PRESSURE BUTTON",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.FUEL_SELECTOR]
+                    },
+                    {
+                        name: "BATTERY SWITCH",
+                        value: "ON",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH1]
+                    },
+                    {
+                        name: "EXTERIOR LIGHTS",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2]
+                    },
+                    {
+                        name: "LANDING GEAR HANDLE",
+                        value: "GEAR DOWN (3 GREEN)",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2]
+                    }
+                ]
+            },
+            {
+                name: "BEFORE STARTING ENGINES",
+                checklistItems: [
+                    {
+                        name: "BATTERY SWITCH",
+                        value: "ON",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                    },
+                    {
+                        name: "EMER LIGHTS SWITCH",
+                        value: "ARMED",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "AVIONICS SWITCH",
+                        value: "DISPATCH",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "PARKING BRAKE",
+                        value: "SET",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "PASSENGER BRIEFING",
+                        value: "COMPLETE",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "EXTERIOR LIGHTS",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "CLIMATE CONTROL SELECTOR",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    }
+                ]
+            },
+            {
+                name: "BEFORE TAXI",
+                checklistItems: [
+                    {
+                        name: "CLIMATE CONTROL SELECTOR",
+                        value: "NORM",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "PASS LIGHTS SAFTEY",
+                        value: "ON",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                    },
+                    {
+                        name: "TRIMS",
+                        value: "CHECK/SET",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "FLIGHT CONTROLS",
+                        value: "FREE/CORRECT",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "SPEEDBRAKES/GROUND SPOILERS",
+                        value: "CHECK",
+                        key: [CJ4_Checklist_Key.HOSKY]
+                    },
+                    {
+                        name: "FLAPS",
+                        value: "CHECK/SET",
+                        key: [CJ4_Checklist_Key.FUEL_SELECTOR]
+                    },
+                    {
+                        name: "HYDRAULIC PRESSURE",
+                        value: "CHECK",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH1]
+                    },
+                    {
+                        name: "ENG ONLY ANTI-ICE BUTTONS",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2]
+                    },
+                    {
+                        name: "TAKEOFF DATA (V1,VR,V2)",
+                        value: "CONFIRM/SET",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2]
+                    },
+                    {
+                        name: "AVIONICS",
+                        value: "CHECK/SET",
+                        key: [CJ4_Checklist_Key.END]
+                    },
+                    {
+                        name: "AUTOPILOT",
+                        value: "ENGAGE/DISCONNECT",
+                        key: [CJ4_Checklist_Key.END]
+                    },
+                    {
+                        name: "ALTIMETERS",
+                        value: "SET/CHECK",
+                        key: [CJ4_Checklist_Key.END]
+                    }
+                ]
+            },
+            {
+                name: "TAXI",
+                checklistItems: [
+                    {
+                        name: "EXTERIOR LIGHTS",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "BRAKES",
+                        value: "APPLY/HOLD",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                    },
+                    {
+                        name: "PARKING BRAKE",
+                        value: "RELEASE",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "BRAKES",
+                        value: "CHECK",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    }
+                ]
+            },
+            {
+                name: "BEFORE TAKEOFF",
+                checklistItems: [
+                    {
+                        name: "ICE PROTECTION SYSTEM (IF REQUIRED)",
+                        value: "CHECK/AS REQUIRED",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "FLAPS",
+                        value: "CHECK/SET",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "SPEED BRAKES",
+                        value: "0%",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                    },
+                    {
+                        name: "TRIMS",
+                        value: "SET FOR TAKEOFF",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "CREW BRIEFING",
+                        value: "COMPLETE",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "RADAR",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "BATTERY AMPS",
+                        value: "VERIFY 20 OR LESS",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "PITOT/STATIC HEAT BUTTONS",
+                        value: "ON",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "EXTERIOR LIGHTS",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    }
+                ]
+            },
+            {
+                name: "AFTER TAKEOFF/CLIMB",
+                checklistItems: [
+                    {
+                        name: "LANDING GEAR",
+                        value: "UP",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "FLAPS",
+                        value: "0\xB0",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "THROTTLES",
+                        value: "CLB",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                    },
+                    {
+                        name: "YAW DAMPER",
+                        value: "ON",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "AUTOPILOT",
+                        value: "AS DESIRED",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "ICE PROTECTION SYSTEMS",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "PASS LIGHTS BUTTONS",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "LNDG LIGHTS BUTTON",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "PRESSURIZATION",
+                        value: "CHECK",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "ALTIMETERS (TRANSITION ALTITUDE)",
+                        value: "STD/CROSSCHECK",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    }
+                ]
+            },
+            {
+                name: "CRUISE",
+                checklistItems: [
+                    {
+                        name: "THROTTLES",
+                        value: "CRU OR AS REQUIRED",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "PRESSURIZATION",
+                        value: "CHECK",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "ICE PROTECTION SYSTEMS",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                    }
+                ]
+            },
+            {
+                name: "DESCENT",
+                checklistItems: [
+                    {
+                        name: "PRESSURIZATION",
+                        value: "VERIFY/SET",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "ICE PROTECTION SYSTEMS",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "ALTIMETERS (TRANSITION FLIGHT LEVEL)",
+                        value: "SET/CROSSCHECK",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                    },
+                    {
+                        name: "EXTERIOR LIGHTS",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    }
+                ]
+            },
+            {
+                name: "APPROACH",
+                checklistItems: [
+                    {
+                        name: "CREW BRIEFING",
+                        value: "COMPLETE",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "AVIONICS/FLIGHT INSTRUMENTS",
+                        value: "CHECK",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "MINIMUMS",
+                        value: "SET",
+                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                    },
+                    {
+                        name: "FUEL TRANSFER SELECTOR",
+                        value: "OFF",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "EXTERIOR LIGHTS",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "ICE PROTECTION SYSTEMS",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "FLAPS",
+                        value: "15\xB0",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "PASSENGER BRIEFING",
+                        value: "COMPLETE",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "PASS LIGHTS SAFETY BUTTON",
+                        value: "ON",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    }
+                ]
+            },
+            {
+                name: "BEFORE LANDING",
+                checklistItems: [
+                    {
+                        name: "LANDING GEAR",
+                        value: "DOWN (3 GREEN)",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "FLAPS",
+                        value: "35\xB0",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "SPEED BRAKES",
+                        value: "0%",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "AIRSPEED",
+                        value: "V" + "REF",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "AUTOPILOT AND YAW DAMPER",
+                        value: "DISENGAGE",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    }
+                ]
+            },
+            {
+                name: "LANDING",
+                checklistItems: [
+                    {
+                        name: "THROTTLES",
+                        value: "IDLE",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "BRAKES",
+                        value: "APPLY",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "GROUND SPOILERS",
+                        value: "EXTEND",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    }
+                ]
+            },
+            {
+                name: "AFTER LANDING",
+                checklistItems: [
+                    {
+                        name: "SPEEDBRAKES",
+                        value: "0%",
+                        key: [CJ4_Checklist_Key.SEATBELTS]
+                    },
+                    {
+                        name: "FLAPS",
+                        value: "0\xB0",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "ICE PROTECTION SYSTEMS",
+                        value: "-",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    },
+                    {
+                        name: "EXTERIOR LIGHTS",
+                        value: "AS REQUIRED",
+                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                    }
+                ]
+            },
+        ];
     }
 }
 
