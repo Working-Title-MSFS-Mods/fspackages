@@ -1220,10 +1220,13 @@ class MapInstrument extends ISvgMapRootElement {
 	
     centerOnPlane() {
         if (this.orientation == "north") {
-			super.centerOnPlane();
+			this.setNavMapCenter(this.navMap.planeCoordinates);
+			if (this.eBingMode == EBingMode.PLANE) {
+				this.airplaneIconElement.forceCoordinates(this.navMap.centerCoordinates.lat, this.navMap.centerCoordinates.long);
+			}
 		} else {
 			// MOD: if orientation is heading or track up, we want to place the plane 33% from the bottom of the map,
-			// but vector needs to be adjusted for overdraw factor of sqrt(2), which is where the magic number of 382 comes from
+			// but vector needs to be adjusted for overdraw factor of sqrt(2), which is where the magic number of 382 comes from (500-500/sqrt(2)+0.33*1000/sqrt(2))
 			let target = this.navMap.XYToCoordinatesFromPlaneWithRotation(new Vec2(500, 382));
 			this.setNavMapCenter(target);
 		}
