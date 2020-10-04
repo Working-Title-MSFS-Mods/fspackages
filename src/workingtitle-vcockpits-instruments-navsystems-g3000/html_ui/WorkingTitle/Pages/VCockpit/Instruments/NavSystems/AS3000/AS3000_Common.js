@@ -37,7 +37,7 @@ class AS3000_MapElement extends MapInstrumentElement {
     }
 	
 	init(root) {
-        this.instrument = root.querySelector("map-instrument-enhanced");
+        this.instrument = root.querySelector("map-instrument");
         if (this.instrument) {
             TemplateElement.callNoBinding(this.instrument, () => {
                 this.onTemplateLoaded();
