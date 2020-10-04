@@ -10,3 +10,5 @@ Changes:
 * Button added for controlling wind data mode
 * Annunciations positions and styled
 * Automatic pitot heat simulated w/warning light.
+
+This later is hidden behind a feature flag.  To enable it, add `<AutoPitotHeat>True</AutoPitotHeat>` to the PFD block of your plane's panel.mxl.
