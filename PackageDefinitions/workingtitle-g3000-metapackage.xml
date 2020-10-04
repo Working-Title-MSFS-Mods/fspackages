@@ -49,6 +49,14 @@
 			</Flags>
 			<AssetDir>src\workingtitle-vcockpits-instruments</AssetDir>
 			<OutputDir>.\</OutputDir>
-		</AssetGroup>		
+		</AssetGroup>
+		<AssetGroup Name="workingtitle-g3000-docs">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>docs\workingtitle-g3000</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>  	
 	</AssetGroups>
 </AssetPackage>
