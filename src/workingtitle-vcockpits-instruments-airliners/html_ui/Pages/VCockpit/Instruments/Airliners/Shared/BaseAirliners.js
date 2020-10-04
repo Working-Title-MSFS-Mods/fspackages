@@ -705,70 +705,6 @@ var Airliners;
             this.allSections.push(this.section);
             this.section = null;
         }
-        endCheckSection() {
-            let defaultRadio = null;
-            for (let i = 0; i < this.section.items.length; i++) {
-                let item = this.section.items[i];
-                if (item.radioElem) {
-                    if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[0])) {
-                        if (this.dictionary.get(item.dictKeys[0]) == item.radioName) {
-                            defaultRadio = item;
-                            break;
-                        }
-                    }
-                    else if (!defaultRadio && this.section.defaultRadio) {
-                        defaultRadio = item;
-                    }
-                }
-            }
-            for (let i = 0; i < this.section.items.length; i++) {
-                let item = this.section.items[i];
-                let dictIndex = 0;
-                let changed = false;
-                if (item.radioElem) {
-                    if (item == defaultRadio) {
-                        this.activateItem(item, true);
-                        changed = true;
-                    }
-                    dictIndex++;
-                }
-                if (item.listElem) {
-                    item.listVal = 0;
-                    if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[dictIndex])) {
-                        let value = this.dictionary.get(item.dictKeys[dictIndex]);
-                        for (let j = 0; j < item.listValues.length; j++) {
-                            if (item.listValues[j] == value) {
-                                item.listVal = j;
-                                break;
-                            }
-                        }
-                    }
-                    item.listElem.textContent = item.listValues[item.listVal];
-                    changed = true;
-                }
-                if (item.rangeElem) {
-                    item.rangeVal = item.rangeMin;
-                    if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[dictIndex])) {
-                        item.rangeVal = parseFloat(this.dictionary.get(item.dictKeys[dictIndex]));
-                        item.rangeVal = Math.max(item.rangeMin, Math.min(item.rangeVal, item.rangeMax));
-                    }
-                    item.rangeElem.textContent = item.rangeVal.toFixed(item.rangeDecimals);
-                    changed = true;
-                }
-                if (item.checkboxElem) {
-                    if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[dictIndex])) {
-                        if (this.dictionary.get(item.dictKeys[0]) == "ON") {
-                            this.activateItem(item, true);
-                            changed = true;
-                        }
-                    }
-                }
-                if (changed)
-                    this.onChanged(item);
-            }
-            this.allSections.push(this.section);
-            this.section = null;
-        }
         addTitle(_text, _textSize, _bgFactor, _bgColor = "blue", _showEscapeIcon = false) {
             let bg = document.createElementNS(Avionics.SVG.NS, "rect");
             bg.setAttribute("x", "0");
@@ -798,150 +734,6 @@ var Airliners;
             this.sectionRoot.appendChild(text);
             let item = new PopupMenu_Item(PopupMenu_ItemType.TITLE, this.section, this.section.endY, this.lineHeight);
             this.section.items.push(item);
-            this.section.endY += this.lineHeight;
-        }
-        addCheckTitle(_text, _textSize, _bgFactor, _pageNumber = undefined, _totalPages = undefined) {
-            let bg = document.createElementNS(Avionics.SVG.NS, "rect");
-            bg.setAttribute("x", "0");
-            bg.setAttribute("y", this.section.endY.toString());
-            bg.setAttribute("width", (this.menuWidth * _bgFactor).toString());
-            bg.setAttribute("height", this.lineHeight.toString());
-            this.sectionRoot.appendChild(bg);
-            let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _text;
-            text.setAttribute("x", "175");
-            text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", _textSize.toString());
-            text.setAttribute("font-family", this.textStyle);
-            text.setAttribute("alignment-baseline", "central");
-            text.setAttribute("text-anchor", "middle");
-            this.sectionRoot.appendChild(text);
-
-            if(_pageNumber && _totalPages && _totalPages > 1){
-                let pageNumber = document.createElementNS(Avionics.SVG.NS, "text");
-                pageNumber.textContent = _pageNumber.toString() + "/" + _totalPages.toString();
-                pageNumber.setAttribute("x", "350");
-                pageNumber.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-                pageNumber.setAttribute("fill", "white");
-                pageNumber.setAttribute("font-size", _textSize.toString());
-                pageNumber.setAttribute("font-family", this.textStyle);
-                pageNumber.setAttribute("alignment-baseline", "central");
-                pageNumber.setAttribute("text-anchor", "right");
-                this.sectionRoot.appendChild(pageNumber);
-            }
-
-
-            let item = new PopupMenu_Item(PopupMenu_ItemType.TITLE, this.section, this.section.endY, this.lineHeight);
-            this.section.items.push(item);
-            this.section.endY += this.lineHeight;
-        }
-        addCheckCheckbox(_text, _value = "", _textSize, _dictKeys) {
-            let enabled = (_dictKeys != null) ? true : false;
-            let size = Math.min(this.lineHeight, this.columnLeft2) * 0.66;
-            let cx = this.columnLeft1 + (this.columnLeft2 - this.columnLeft1) * 0.5;
-            let cy = this.section.endY + this.lineHeight * 0.5;
-            let shape;
-            if (this.shape3D && enabled) {
-                let b = this.shape3DBorderSize;
-                let topLeftBorder = document.createElementNS(Avionics.SVG.NS, "path");
-                topLeftBorder.setAttribute("d", "M" + (cx - size * 0.5) + " " + (cy - size * 0.5) + " l" + (size) + " 0 l" + (-b) + " " + (b) + " l" + (-(size - b * 2)) + " 0 l0 " + (size - b * 2) + " l" + (-b) + " " + (b) + " Z");
-                topLeftBorder.setAttribute("fill", this.shape3DBorderLeft);
-                this.sectionRoot.appendChild(topLeftBorder);
-                let bottomRightBorder = document.createElementNS(Avionics.SVG.NS, "path");
-                bottomRightBorder.setAttribute("d", "M" + (cx + size * 0.5) + " " + (cy + size * 0.5) + " l" + (-size) + " 0 l" + (b) + " " + (-b) + " l" + (size - b * 2) + " 0 l0 " + (-(size - b * 2)) + " l" + (b) + " " + (-b) + " Z");
-                bottomRightBorder.setAttribute("fill", this.shape3DBorderRight);
-                this.sectionRoot.appendChild(bottomRightBorder);
-                shape = document.createElementNS(Avionics.SVG.NS, "rect");
-                shape.setAttribute("x", (cx - size * 0.5 + b).toString());
-                shape.setAttribute("y", (cy - size * 0.5 + b).toString());
-                shape.setAttribute("width", (size - b * 2).toString());
-                shape.setAttribute("height", (size - b * 2).toString());
-                shape.setAttribute("fill", this.shapeFillColor);
-                this.sectionRoot.appendChild(shape);
-            }
-            else {
-                shape = document.createElementNS(Avionics.SVG.NS, "rect");
-                shape.setAttribute("x", (cx - size * 0.5).toString());
-                shape.setAttribute("y", (cy - size * 0.5).toString());
-                shape.setAttribute("width", size.toString());
-                shape.setAttribute("height", size.toString());
-                shape.setAttribute("fill", (enabled) ? this.shapeFillColor : ((this.shapeFillIfDisabled) ? this.disabledColor : "none"));
-                this.sectionRoot.appendChild(shape);
-            }
-            let tick = document.createElementNS(Avionics.SVG.NS, "path");
-            tick.setAttribute("d", "M" + (cx - size * 0.1) + " " + (cy - 0.6) + " l" + (size * 0.1) + " " + (size * 0.5) + " l" + (size * 0.4) + " " + (-size));
-            tick.setAttribute("fill", "none");
-            tick.setAttribute("stroke", "#11d011");
-            tick.setAttribute("stroke-width", "2");
-            tick.setAttribute("visibility", "hidden");
-            this.sectionRoot.appendChild(tick);
-
-            let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _text;
-            text.setAttribute("x", (this.columnLeft2 + this.textMarginX).toString());
-            text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
-            text.setAttribute("font-size", _textSize.toString());
-            text.setAttribute("font-family", this.textStyle);
-            text.setAttribute("alignment-baseline", "central");
-            this.sectionRoot.appendChild(text);
-
-            let value = document.createElementNS(Avionics.SVG.NS, "text");
-            value.textContent = _value;
-            value.setAttribute("x", "300");
-            value.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            value.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
-            value.setAttribute("font-size", _textSize.toString());
-            value.setAttribute("font-family", this.textStyle);
-            value.setAttribute("alignment-baseline", "central");
-            value.setAttribute("text-anchor", "right");
-            this.sectionRoot.appendChild(value);
-
-            let item = new PopupMenu_Item(PopupMenu_ItemType.CHECKBOX, this.section, this.section.endY, this.lineHeight);
-            item.dictKeys = _dictKeys;
-            item.checkboxElem = shape;
-            item.checkboxTickElem = tick;
-            item.text = text;
-            item.value = value;
-            this.section.items.push(item);
-            this.registerWithMouse(item);
-            this.section.endY += this.lineHeight;
-        }
-        addNormalItem(_text, _textSize, _dictKeys) {
-            let enabled = (_dictKeys != null) ? true : false;
-            let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _text;
-            text.setAttribute("x", (this.columnLeft2 + this.textMarginX).toString());
-            text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
-            text.setAttribute("font-size", _textSize.toString());
-            text.setAttribute("font-family", this.textStyle);
-            text.setAttribute("alignment-baseline", "central");
-            this.sectionRoot.appendChild(text);
-
-            let item = new PopupMenu_Item(PopupMenu_ItemType.CHECKBOX, this.section, this.section.endY, this.lineHeight);
-            item.dictKeys = _dictKeys;
-            item.text = text;
-            this.section.items.push(item);
-            this.registerWithMouse(item);
-            this.section.endY += this.lineHeight;
-        }
-        addCheckSubMenu(_text, _textSize, _callback) {
-            let enabled = (_callback != null) ? true : false;
-            let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _text;
-            text.setAttribute("x", (this.columnLeft2 + this.textMarginX).toString());
-            text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
-            text.setAttribute("font-size", _textSize.toString());
-            text.setAttribute("font-family", this.textStyle);
-            text.setAttribute("alignment-baseline", "central");
-            this.sectionRoot.appendChild(text);
-            let item = new PopupMenu_Item(PopupMenu_ItemType.SUBMENU, this.section, this.section.endY, this.lineHeight);
-            item.subMenu = _callback;
-            this.section.items.push(item);
-            this.registerWithMouse(item);
             this.section.endY += this.lineHeight;
         }
         addList(_text, _textSize, _values, _dictKeys) {
@@ -1517,5 +1309,404 @@ var Airliners;
         }
     }
     Airliners.PopupMenu_Handler = PopupMenu_Handler;
+
+
+
+
+
+
+
+
+
+
+    let Menu_ItemType;
+    (function (Menu_ItemType) {
+        Menu_ItemType[Menu_ItemType["TITLE"] = 0] = "TITLE";
+        Menu_ItemType[Menu_ItemType["LIST"] = 1] = "LIST";
+        Menu_ItemType[Menu_ItemType["RANGE"] = 2] = "RANGE";
+        Menu_ItemType[Menu_ItemType["RADIO"] = 3] = "RADIO";
+        Menu_ItemType[Menu_ItemType["RADIO_LIST"] = 4] = "RADIO_LIST";
+        Menu_ItemType[Menu_ItemType["RADIO_RANGE"] = 5] = "RADIO_RANGE";
+        Menu_ItemType[Menu_ItemType["SUBMENU"] = 6] = "SUBMENU";
+        Menu_ItemType[Menu_ItemType["CHECKBOX"] = 7] = "CHECKBOX";
+    })(Menu_ItemType || (Menu_ItemType = {}));
+    class Menu_Item {
+        constructor(_type, _section, _y, _height) {
+            this.y = 0;
+            this.height = 0;
+            this.listVal = 0;
+            this.rangeMin = 0;
+            this.rangeMax = 0;
+            this.rangeStep = 0;
+            this.rangeDecimals = 0;
+            this.rangeVal = 0;
+            this.radioVal = false;
+            this.checkboxVal = false;
+            this.type = _type;
+            this.section = _section;
+            this.y = _y;
+            this.height = _height;
+        }
+        get interactive() {
+            if (this.type != Menu_ItemType.TITLE)
+                return true;
+            return false;
+        }
+        get enabled() {
+            if (this.dictKeys != null || this.subMenu)
+                return true;
+            return false;
+        }
+    }
+    class Menu_Section {
+        constructor() {
+            this.items = new Array();
+            this.startY = 0;
+            this.endY = 0;
+            this.interactionColor = "";
+            this.defaultRadio = true;
+        }
+    }
+    class Menu_Handler {
+        constructor() {
+            this.menuLeft = 0;
+            this.menuTop = 0;
+            this.menuWidth = 0;
+            this.columnLeft1 = 3;
+            this.columnLeft2 = 20;
+            this.columnLeft3 = 90;
+            this.lineHeight = 15;
+            this.sectionBorderSize = 1;
+            this.textStyle = "Roboto-Regular";
+            this.textMarginX = 3;
+            this.highlightColor = "cyan";
+            this.interactionColor = "cyan";
+            this.disabledColor = "grey";
+            this.shapeFillColor = "none";
+            this.shapeFillIfDisabled = true;
+            this.shape3D = false;
+            this.shape3DBorderSize = 3;
+            this.shape3DBorderLeft = "rgb(100, 100, 100)";
+            this.shape3DBorderRight = "rgb(30, 30, 30)";
+            this.highlightId = 0;
+            this.speedInc = 1.0;
+            this.speedInc_UpFactor = 0.25;
+            this.speedInc_DownFactor = 0.075;
+            this.speedInc_PowFactor = 0.9;
+        }
+        get height() {
+            let height = 0;
+            for (let i = 0; i < this.allSections.length; i++) {
+                height += this.allSections[i].endY - this.allSections[i].startY;
+            }
+            return height;
+        }
+        highlight(_index) {
+            if (_index >= 0)
+                this.highlightId = _index;
+        }
+        reset() {
+        }
+        onUpdate(_dTime) {
+            this.updateHighlight();
+            this.updateSpeedInc();
+        }
+        onActivate() {
+            if (this.highlightItem && this.highlightItem.enabled) {
+                switch (this.highlightItem.type) {
+                    case Menu_ItemType.SUBMENU:
+                        this.highlightItem.subMenu();
+                        break;
+                    case Menu_ItemType.CHECKBOX:
+                        if (!this.highlightItem.checkboxVal) {
+                            this.activateItem(this.highlightItem, true);
+                        }
+                        else {
+                            this.activateItem(this.highlightItem, false);
+                            this.highlightItem.checkboxVal = false;
+                        }
+                        this.onChanged(this.highlightItem);
+                        break;
+                }
+            }
+        }
+        onDataDec() {
+        }
+        onDataInc() {
+        }
+        onMenuDec() {
+            if (this.highlightId > 0)
+                this.highlightId--;
+        }
+        onMenuInc() {
+            this.highlightId++;
+        }
+        onEscape() {
+            if (this.escapeCbk)
+                this.escapeCbk();
+        }
+        openMenu() {
+            this.allSections = [];
+            this.sectionRoot = null;
+            this.highlightItem = null;
+            this.highlightId = 0;
+            this.escapeCbk = null;
+            this.sectionRoot = document.createElementNS(Avionics.SVG.NS, "g");
+            this.sectionRoot.setAttribute("transform", "translate(" + this.menuLeft + " " + this.menuTop + ")");
+            return this.sectionRoot;
+        }
+        closeMenu() {
+            let bg = document.createElementNS(Avionics.SVG.NS, "rect");
+            bg.setAttribute("x", "0");
+            bg.setAttribute("y", "0");
+            bg.setAttribute("width", this.menuWidth.toString());
+            bg.setAttribute("height", this.height.toString());
+            bg.setAttribute("fill", "black");
+            this.sectionRoot.insertBefore(bg, this.sectionRoot.firstChild);
+            this.highlightElem = document.createElementNS(Avionics.SVG.NS, "rect");
+            this.highlightElem.setAttribute("x", "0");
+            this.highlightElem.setAttribute("y", "30");
+            this.highlightElem.setAttribute("width", this.menuWidth.toString());
+            this.highlightElem.setAttribute("height", this.lineHeight.toString() - 2);
+            this.highlightElem.setAttribute("fill", "none");
+            this.highlightElem.setAttribute("stroke", this.highlightColor);
+            this.highlightElem.setAttribute("stroke-width", (this.sectionBorderSize + 1).toString());
+            this.sectionRoot.appendChild(this.highlightElem);
+            if (this.dictionary)
+                this.dictionary.changed = false;
+        }
+        beginSection(_defaultRadio = true) {
+            this.section = new Menu_Section();
+            this.section.interactionColor = this.interactionColor;
+            this.section.defaultRadio = _defaultRadio;
+            if (this.allSections.length > 0) {
+                this.section.startY = this.allSections[this.allSections.length - 1].endY;
+                this.section.endY = this.section.startY;
+            }
+        }
+        endSection() {
+            for (let i = 0; i < this.section.items.length; i++) {
+                let item = this.section.items[i];
+                let dictIndex = 0;
+                let changed = false;
+                if (item.checkboxElem) {
+                    if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[dictIndex])) {
+                        if (this.dictionary.get(item.dictKeys[0]) == "ON") {
+                            this.activateItem(item, true);
+                            changed = true;
+                        }
+                    }
+                }
+                if (changed)
+                    this.onChanged(item);
+            }
+            this.allSections.push(this.section);
+            this.section = null;
+        }
+        addCheckTitle(_text, _textSize, _bgFactor, _pageNumber = undefined, _totalPages = undefined) {
+            let bg = document.createElementNS(Avionics.SVG.NS, "rect");
+            bg.setAttribute("x", "0");
+            bg.setAttribute("y", this.section.endY.toString());
+            bg.setAttribute("width", (this.menuWidth * _bgFactor).toString());
+            bg.setAttribute("height", this.lineHeight.toString());
+            this.sectionRoot.appendChild(bg);
+            let text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = _text;
+            text.setAttribute("x", "175");
+            text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", _textSize.toString());
+            text.setAttribute("font-family", this.textStyle);
+            text.setAttribute("alignment-baseline", "central");
+            text.setAttribute("text-anchor", "middle");
+            this.sectionRoot.appendChild(text);
+
+            if(_pageNumber && _totalPages && _totalPages > 1){
+                let pageNumber = document.createElementNS(Avionics.SVG.NS, "text");
+                pageNumber.textContent = _pageNumber.toString() + "/" + _totalPages.toString();
+                pageNumber.setAttribute("x", "310");
+                pageNumber.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
+                pageNumber.setAttribute("fill", "white");
+                pageNumber.setAttribute("font-size", _textSize.toString());
+                pageNumber.setAttribute("font-family", this.textStyle);
+                pageNumber.setAttribute("alignment-baseline", "central");
+                pageNumber.setAttribute("text-anchor", "right");
+                this.sectionRoot.appendChild(pageNumber);
+            }
+
+
+            let item = new Menu_Item(Menu_ItemType.TITLE, this.section, this.section.endY, this.lineHeight);
+            this.section.items.push(item);
+            this.section.endY += this.lineHeight;
+        }
+        addCheckItem(_text, _value = "", _textSize, _dictKeys) {
+            let enabled = (_dictKeys != null) ? true : false;
+            let size = Math.min(this.lineHeight, this.columnLeft2) * 0.66;
+            let cx = this.columnLeft1 + (this.columnLeft2 - this.columnLeft1) * 0.5;
+            let cy = this.section.endY + this.lineHeight * 0.5;
+
+            let tick = document.createElementNS(Avionics.SVG.NS, "path");
+            tick.setAttribute("d", "M" + (cx - size * 0.1) + " " + (cy - 0.6) + " l" + (size * 0.1) + " " + (size * 0.5) + " l" + (size * 0.4) + " " + (-size));
+            tick.setAttribute("fill", "none");
+            tick.setAttribute("stroke", "#11d011");
+            tick.setAttribute("stroke-width", "2");
+            tick.setAttribute("visibility", "hidden");
+            this.sectionRoot.appendChild(tick);
+
+            let text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = _text;
+            text.setAttribute("x", (this.columnLeft2).toString());
+            text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
+            text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
+            text.setAttribute("font-size", _textSize.toString());
+            text.setAttribute("font-family", this.textStyle);
+            text.setAttribute("alignment-baseline", "central");
+            this.sectionRoot.appendChild(text);
+
+            let value = document.createElementNS(Avionics.SVG.NS, "text");
+            value.textContent = _value;
+            value.setAttribute("x", "310");
+            value.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
+            value.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
+            value.setAttribute("font-size", _textSize.toString());
+            value.setAttribute("font-family", this.textStyle);
+            value.setAttribute("alignment-baseline", "central");
+            value.setAttribute("text-anchor", "right");
+            this.sectionRoot.appendChild(value);
+
+            let item = new Menu_Item(Menu_ItemType.CHECKBOX, this.section, this.section.endY, this.lineHeight);
+            item.dictKeys = _dictKeys;
+            item.checkboxTickElem = tick;
+            item.text = text;
+            item.value = value;
+            this.section.items.push(item);
+            this.registerWithMouse(item);
+            this.section.endY += this.lineHeight;
+        }
+        addSubMenu(_text, _textSize, _callback) {
+            let enabled = (_callback != null) ? true : false;
+            let text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.textContent = _text;
+            text.setAttribute("x", (this.columnLeft2 + this.textMarginX).toString());
+            text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
+            text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
+            text.setAttribute("font-size", _textSize.toString());
+            text.setAttribute("font-family", this.textStyle);
+            text.setAttribute("alignment-baseline", "central");
+            this.sectionRoot.appendChild(text);
+            let item = new Menu_Item(Menu_ItemType.SUBMENU, this.section, this.section.endY, this.lineHeight);
+            item.subMenu = _callback;
+            this.section.items.push(item);
+            this.registerWithMouse(item);
+            this.section.endY += this.lineHeight;
+        }
+        updateHighlight() {
+            if (this.highlightElem) {
+                let itemId = 0;
+                let lastItem;
+                for (let i = 0; i < this.allSections.length; i++) {
+                    let section = this.allSections[i];
+                    for (let j = 0; j < section.items.length; j++) {
+                        let item = section.items[j];
+                        if (item.interactive) {
+                            if (itemId == this.highlightId) {
+                                this.setHighlightedItem(item);
+                                return true;
+                            }
+                            lastItem = item;
+                            itemId++;
+                        }
+                    }
+                }
+                if (lastItem) {
+                    this.highlightId = itemId - 1;
+                    this.setHighlightedItem(lastItem);
+                }
+            }
+        }
+        setHighlightedItem(_item) {
+            if (_item != this.highlightItem) {
+                this.highlightItem = _item;
+                this.highlightElem.setAttribute("y", _item.y.toString());
+                this.speedInc = 1.0;
+            }
+        }
+        activateItem(_item, _val) {
+            if (!_item.enabled)
+                return;
+            switch (_item.type) {
+                case Menu_ItemType.CHECKBOX:
+                    if (_val) {
+                        _item.checkboxVal = true;
+                        _item.checkboxTickElem.setAttribute("visibility", "visible");
+                        _item.text.setAttribute("fill", "#11d011");
+                        _item.value.setAttribute("fill", "#11d011");
+                    }
+                    else {
+                        _item.checkboxVal = false;
+                        _item.checkboxTickElem.setAttribute("visibility", "hidden");
+                        _item.text.setAttribute("fill", "white");
+                        _item.value.setAttribute("fill", "white");
+                    }
+                    break;
+            }
+        }
+        updateSpeedInc() {
+            if (this.highlightItem) {
+                if (this.speedInc > 1) {
+                    this.speedInc -= this.speedInc_DownFactor;
+                    if (this.speedInc < 1)
+                        this.speedInc = 1;
+                }
+            }
+            else {
+                this.speedInc = 1.0;
+            }
+        }
+        onChanged(_item) {
+            if (this.dictionary && _item.enabled) {
+                switch (_item.type) {
+                    case Menu_ItemType.CHECKBOX:
+                        this.dictionary.set(_item.dictKeys[0], (_item.checkboxVal) ? "ON" : "OFF");
+                        break;
+                }
+            }
+        }
+        registerWithMouse(_item) {
+            let mouseFrame = document.createElementNS(Avionics.SVG.NS, "rect");
+            mouseFrame.setAttribute("x", this.menuLeft.toString());
+            mouseFrame.setAttribute("y", this.section.endY.toString());
+            mouseFrame.setAttribute("width", this.menuWidth.toString());
+            mouseFrame.setAttribute("height", this.lineHeight.toString());
+            mouseFrame.setAttribute("fill", "none");
+            mouseFrame.setAttribute("pointer-events", "visible");
+            this.sectionRoot.appendChild(mouseFrame);
+            mouseFrame.addEventListener("mouseover", this.onMouseOver.bind(this, _item));
+            mouseFrame.addEventListener("mouseup", this.onMousePress.bind(this, _item));
+        }
+        onMouseOver(_item) {
+            if (_item.enabled) {
+                let itemId = 0;
+                for (let i = 0; i < this.allSections.length; i++) {
+                    let section = this.allSections[i];
+                    for (let j = 0; j < section.items.length; j++) {
+                        let item = section.items[j];
+                        if (item.interactive) {
+                            if (item == _item) {
+                                this.highlightId = itemId;
+                                return;
+                            }
+                            itemId++;
+                        }
+                    }
+                }
+            }
+        }
+        onMousePress(_item) {
+            if (_item.enabled)
+                this.onActivate();
+        }
+    }
+    Airliners.Menu_Handler = Menu_Handler;
 })(Airliners || (Airliners = {}));
 //# sourceMappingURL=BaseAirliners.js.map
