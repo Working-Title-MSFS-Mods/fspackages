@@ -1565,13 +1565,13 @@ var Airliners;
 
             let value = document.createElementNS(Avionics.SVG.NS, "text");
             value.textContent = _value;
-            value.setAttribute("x", "310");
+            value.setAttribute("x", "350");
             value.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             value.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
             value.setAttribute("font-size", _textSize.toString());
             value.setAttribute("font-family", this.textStyle);
             value.setAttribute("alignment-baseline", "central");
-            value.setAttribute("text-anchor", "right");
+            value.setAttribute("text-anchor", "end");
             this.sectionRoot.appendChild(value);
 
             let item = new Menu_Item(Menu_ItemType.CHECKBOX, this.section, this.section.endY, this.lineHeight);
@@ -1583,13 +1583,13 @@ var Airliners;
             this.registerWithMouse(item);
             this.section.endY += this.lineHeight;
         }
-        addSubMenu(_text, _textSize, _callback) {
+        addSubMenu(_text, _textSize, _callback, _textColour = "white") {
             let enabled = (_callback != null) ? true : false;
             let text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = _text;
             text.setAttribute("x", (this.columnLeft2 + this.textMarginX).toString());
             text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
+            text.setAttribute("fill", (enabled) ? _textColour : this.disabledColor);
             text.setAttribute("font-size", _textSize.toString());
             text.setAttribute("font-family", this.textStyle);
             text.setAttribute("alignment-baseline", "central");
