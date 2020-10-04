@@ -107,8 +107,7 @@ class AS3X_Touch extends NavSystemTouch {
             }
         }.bind(this));
         this.maxUpdateBudget = 12;
-        this.pitotOnTime = null;
-        this.pitotHeating = false;
+        this.autoPitotHeat = false;
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -128,6 +127,12 @@ class AS3X_Touch extends NavSystemTouch {
                 this.tactileOnly = true;
                 this.getChildById("LeftKnobInfos").style.display = "None";
                 this.getChildById("RightKnobInfos").style.display = "None";
+            }
+            let autoPitotHeat = this.instrumentXmlConfig.getElementsByTagName("AutoPitotHeat")[0];
+            if (autoPitotHeat && autoPitotHeat.textContent == "True") {
+                this.autoPitotHeat = true;
+                this.pitotOnTime = null;
+                this.pitotHeating = false;
             }
         }
         switch (this.displayMode) {
@@ -182,22 +187,24 @@ class AS3X_Touch extends NavSystemTouch {
     }
     Update() {
         super.Update();
-        let temp = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius");
-        let pitotHeat = SimVar.GetSimVarValue("PITOT HEAT", "bool");
-        let rpm = SimVar.GetSimVarValue("GENERAL ENG RPM:1", "rpm");
-        if (temp <= 7 && rpm > 0) {
-            if (!pitotHeat) {
-                SimVar.SetSimVarValue("K:PITOT_HEAT_ON", "bool", true);
-                SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", true);
-                this.pitotOnTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
-            } else {
-                let now = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
-                if (now - this.pitotOnTime > 10 + (7 - temp) / 3) {
-                    SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", false);
-                };
+        if (this.autoPitotHeat) {
+            let temp = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius");
+            let pitotHeat = SimVar.GetSimVarValue("PITOT HEAT", "bool");
+            let rpm = SimVar.GetSimVarValue("GENERAL ENG RPM:1", "rpm");
+            if (temp <= 7 && rpm > 0) {
+                if (!pitotHeat) {
+                    SimVar.SetSimVarValue("K:PITOT_HEAT_ON", "bool", true);
+                    SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", true);
+                    this.pitotOnTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
+                } else {
+                    let now = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
+                    if (now - this.pitotOnTime > 10 + (7 - temp) / 3) {
+                        SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", false);
+                    };
+                }
+            } else if (pitotHeat && (temp > 7 || rpm <= 0)) {
+                SimVar.SetSimVarValue("K:PITOT_HEAT_OFF", "bool", true);
             }
-        } else if (pitotHeat && (temp > 7 || rpm <= 0)) {
-            SimVar.SetSimVarValue("K:PITOT_HEAT_OFF", "bool", true);
         }
         if (this.handleReversionaryMode && this.displayMode == "PFD") {
             let reversionary = false;
