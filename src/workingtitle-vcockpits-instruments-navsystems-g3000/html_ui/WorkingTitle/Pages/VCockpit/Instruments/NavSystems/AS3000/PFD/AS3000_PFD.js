@@ -115,10 +115,11 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         this.attitude = new PFD_Attitude();
         this.mapInstrument = new MapInstrumentElement();
         this.aoaIndicator = new AS3000_PFD_AngleOfAttackIndicator();
+		this.altimeter = new PFD_Altimeter();
         this.element = new NavSystemElementGroup([
             this.attitude,
             new PFD_Airspeed(),
-            new PFD_Altimeter(),
+            this.altimeter,
             this.annunciations,
             new PFD_Compass(),
             new PFD_NavStatus(),
@@ -200,7 +201,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         this.otherPfdMenu.elements = [
             new AS3000_PFD_SoftKeyElement("Wind", this.switchToMenu.bind(this, this.windMenu)),
             new AS3000_PFD_SoftKeyElement("AOA", this.gps.computeEvent.bind(this.gps, "SoftKey_PFD_AoAMode"), null, this.aoaStatus.bind(this)),
-            new AS3000_PFD_SoftKeyElement("Altitude Units", this.switchToMenu.bind(this, this.altUnits)),
+            new AS3000_PFD_SoftKeyElement("Altitude Units", this.switchToMenu.bind(this, this.altUnitsMenu)),
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement(""),
@@ -343,7 +344,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 	
 	//ADD START*** G3000 MOD ADD new softkeymenu for change of BARO UNIT	
     softkeyBaroStatus(_state) {	
-        return this.gps.getElementOfType(PFD_Altimeter).getCurrentBaroMode() == _state;
+        return this.altimeter.baroMode == _state;
     }
     //ADD END***  G3000 MOD ADD new softkeymenu for change of BARO UNIT
 }
