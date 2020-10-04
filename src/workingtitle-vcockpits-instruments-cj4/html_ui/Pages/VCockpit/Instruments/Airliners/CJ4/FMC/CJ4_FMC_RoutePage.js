@@ -30,11 +30,13 @@ class CJ4_FMC_RoutePage {
         fmc.onLeftInput[0] = () => {
             let value = fmc.inOut;
             fmc.clearUserInput();
-            fmc.updateRouteOrigin(value, (result) => {
-                if (result) {
-                    fmc.fpHasChanged = true;
-                    CJ4_FMC_RoutePage.ShowPage1(fmc);
-                }
+            fmc.flightPlanManager.clearFlightPlan(() => {
+                fmc.updateRouteOrigin(value, (result) => {
+                    if (result) {
+                        fmc.fpHasChanged = true;
+                        CJ4_FMC_RoutePage.ShowPage1(fmc);
+                    }
+                });
             });
         };
         let destinationCell = "□□□□";
