@@ -64,7 +64,7 @@ class ManagedFlightPlan {
   get approach() { return new FlightPlanSegment(this.approachStart, this._waypoints.slice(this.approachStart, this._waypoints.length)); }
 
   /** The waypoints of the flight plan. */
-  get waypoints() { [...this._waypoints]; }
+  get waypoints() { return [...this._waypoints]; }
 
   /** Whether the flight plan has an origin airfield. */
   get hasOrigin() { return this._hasOrigin; }
@@ -88,7 +88,9 @@ class ManagedFlightPlan {
    */
   clearPlan() {
     this._waypoints = [];
-    this._hasOrigin = undefined;
+    this._hasOrigin = false;
+    this._hasDestination = false;
+
     this._destination = undefined;
 
     this.arrivalStart = 0;
@@ -100,6 +102,7 @@ class ManagedFlightPlan {
     this.activeWaypointIndex = 0;
     
     this.procedureDetails = new ProcedureDetails();
+    this.directTo = new DirectTo();
   }
 
   /**
@@ -111,13 +114,14 @@ class ManagedFlightPlan {
   addWaypoint(waypoint, index) {
     if (index === undefined || index >= this._waypoints.length) {
       index = this._waypoints.length;
-      this._waypoints.push()
+      this._waypoints.push(waypoint);
     }
     else {
       this._waypoints.splice(index, 0, waypoint);
     }
     
     this._shiftSegmentIndexes(waypoint, index);
+    this._reflowDistances();
   }
 
   /**
@@ -154,7 +158,7 @@ class ManagedFlightPlan {
       if (index < this.enrouteStart) this.enrouteStart++;
     }
 
-    if (index <= this.activeWaypointIndex) this.activeWaypointIndex++;
+    if (index < this.activeWaypointIndex) this.activeWaypointIndex++;
     if (this.directTo.isActive && this.directTo.waypointIsInFlightPlan && index < this.directTo.waypointIndex) {
       this.directTo.waypointIndex++;
     }
@@ -185,6 +189,27 @@ class ManagedFlightPlan {
     if (index <= this.activeWaypointIndex) this.activeWaypointIndex--;
     if (this.directTo.isActive && this.directTo.waypointIsInFlightPlan && index < this.directTo.waypointIndex) {
       this.directTo.waypointIndex--;
+    }
+  }
+
+  /**
+   * Recalculates all waypoint bearings and distances in the flight plan.
+   */
+  _reflowDistances() {
+    let cumulativeDistance = 0;
+
+    for (var i = 0; i < this._waypoints.length; i++) {
+      if (i > 0) {
+
+        const waypoint = this._waypoints[i];
+        const prevWaypoint = this._waypoints[i - 1];
+
+        waypoint.bearingInFP = Avionics.Utils.computeGreatCircleHeading(prevWaypoint.infos.coordinates, waypoint.infos.coordinates);
+        waypoint.distanceInFP = Avionics.Utils.computeGreatCircleDistance(prevWaypoint.infos.coordinates, waypoint.infos.coordinates);
+        
+        cumulativeDistance += waypoint.distanceInFP;
+        waypoint.cumulativeDistanceInFP = cumulativeDistance;
+      }
     }
   }
 
@@ -290,15 +315,19 @@ class ManagedFlightPlan {
    * @param {Number} index The index of the waypoint to remove.
    */
   removeWaypoint(index) {
+    let waypoint;
+
     if (index === undefined || index >= this._waypoints.length) {
       index = this._waypoints.length;
-      this._waypoints.pop()
+      waypoint = this._waypoints.pop()
     }
     else {
+      waypoint = this._waypoints[index];
       this._waypoints.splice(index, 1);
     }
     
     this._unshiftSegmentIndexes(waypoint, index);
+    this._reflowDistances();
   }
 
   /**
@@ -314,11 +343,27 @@ class ManagedFlightPlan {
       let clone = Object.assign({}, waypoint);
       clone.infos = Object.assign({}, clone.infos);
 
-      delete clone._svgElements;
+      const visitObject = (obj) => {
+
+        obj = Object.assign({}, obj);
+
+        delete obj.instrument;
+        delete obj._svgElements;
+
+        for(var key in obj) {
+          if (typeof obj[key] === 'object') {
+            obj[key] = visitObject(obj[key]);
+          }
+        }
+
+        return obj;
+      };
+
+      clone = visitObject(clone);
       return clone;
     });
 
-    sanitized;
+    return sanitized;
   }
 
   /**
@@ -344,15 +389,33 @@ class ManagedFlightPlan {
    * Sets the departure from an index in the origin airport departure information.
    * @param {Number} index The index of the departure in the origin departures information.
    */
-  setDepartureFromIndex(index) {
+  async setDepartureFromIndex(index) {
     if (this.hasOrigin) {
       const origin = this._waypoints[0];
-      if (index >= 0 && index < origin.infos.departures.length) {
-        this._waypoints.splice(1, this.enrouteStart - 1, origin.infos.departures[index]);
+      if (index >= 0 && index < origin.infos.departures.length && this.procedureDetails.departureRunwayIndex !== -1) {
+
+        const legs = [];
+        const runwayTransition = origin.infos.departures[index].runwayTransitions[this.procedureDetails.departureRunwayIndex];
+
+        for (var i = 0; i < runwayTransition.legs.length; i++) {
+          if (runwayTransition.legs[i].fixIcao.trim() !== "") {
+            const legWaypoint = await this._parentInstrument.facilityLoader.getFacility(runwayTransition.legs[i].fixIcao);
+            legs.push(legWaypoint);
+          }
+        }
+
+        this._waypoints.splice(1, this.enrouteStart - 1, ...legs);
+        const numWaypointsDiff = legs.length - (this.enrouteStart - this.departureStart)
+
+        this.enrouteStart += numWaypointsDiff;
+        this.arrivalStart += numWaypointsDiff;
+        this.approachStart += numWaypointsDiff;
         
         this.procedureDetails.departureSelected = true;
         this.procedureDetails.departureFromOriginData = true;
         this.procedureDetails.departureIndex = index;
+
+        this._reflowDistances();
       }
     }
   }
@@ -366,8 +429,9 @@ class ManagedFlightPlan {
 
       this.procedureDetails.departureSelected = false;
       this.procedureDetails.departureFromOriginData = false;
-      this.procedureDetails.departureIndex = 0;
-      this.procedureDetails.departureTransitionIndex = 0;
+      this.procedureDetails.departureIndex = -1;
+      this.procedureDetails.departureTransitionIndex = -1;
+      this.procedureDetails.departureRunwayIndex = -1;
     }
   }
 
@@ -397,8 +461,8 @@ class ManagedFlightPlan {
 
       this.procedureDetails.arrivalSelected = false;
       this.procedureDetails.arrivalFromDestinationData = false;
-      this.procedureDetails.arrivalIndex = 0;
-      this.procedureDetails.arrivalTransitionIndex = 0;
+      this.procedureDetails.arrivalIndex = -1;
+      this.procedureDetails.arrivalTransitionIndex = -1;
     }
   }
 
@@ -428,9 +492,183 @@ class ManagedFlightPlan {
 
       this.procedureDetails.approachSelected = false;
       this.procedureDetails.approachFromDestinationData = false;
-      this.procedureDetails.approachIndex = 0;
-      this.procedureDetails.approachTransitionIndex = 0;
+      this.procedureDetails.approachIndex = -1;
+      this.procedureDetails.approachTransitionIndex = -1;
+      this.procedureDetails.arrivalRunwayIndex = -1;
     }
+  }
+}
+ManagedFlightPlan.fromObject = (flightPlanObject, parentInstrument) => {
+  let plan = Object.assign(new ManagedFlightPlan(), flightPlanObject);
+  plan.setParentInstrument(parentInstrument);
+
+  plan.directTo = Object.assign(new DirectTo(), plan.directTo);
+
+  const visitObject = (obj) => {
+    for(var key in obj) {
+      if (typeof obj[key] === 'object' && obj[key].scroll === undefined) {    
+        visitObject(obj[key]);
+
+        if (obj[key] && obj[key].infos) {
+          obj[key] = Object.assign(new WayPoint(parentInstrument), obj[key]);          
+        }
+
+        if(obj[key] && obj[key].coordinates) {
+          obj[key] = Object.assign(new WayPointInfo(parentInstrument), obj[key]);
+          obj[key].coordinates = Object.assign(new LatLongAlt(), obj[key].coordinates);
+        }
+      }
+
+      if (Array.isArray(obj[key])) {
+        visitArray(obj[key]);
+      }
+    }
+  };
+
+  const visitArray = (array) => {
+    array.forEach(item => {
+      if (typeof item === 'object') {
+        visitObject(item);
+      }
+
+      if (Array.isArray(item)) {
+        visitArray(item);
+      }
+    });
+  };
+
+  visitObject(plan);
+  return plan;
+}
+
+/**
+ * The details of procedures selected in the flight plan.
+ */
+class ProcedureDetails {
+
+  constructor() {
+    /** Whether or not a departure has been selected for the flight plan. */
+    this.departureSelected = false;
+
+    /** Whether or not the departure has been taken from origin airport information. */
+    this.departureFromOriginData = false;
+
+    /** The index of the departure in the origin airport information. */
+    this.departureIndex = -1;
+
+    /** The index of the departure transition in the origin airport departure information. */
+    this.departureTransitionIndex = -1;
+
+    /** The index of the selected runway in the original airport departure information. */
+    this.departureRunwayIndex = -1;
+
+    /** Whether or not an arrival has been selected for the flight plan. */
+    this.arrivalSelected = false;
+
+    /** Whether or not the arrival has been taken from destination airport information. */
+    this.arrivalFromDestinationData = false;
+
+    /** The index of the arrival in the destination airport information. */
+    this.arrivalIndex = -1;
+
+    /** The index of the arrival transition in the destination airport arrival information. */
+    this.arrivalTransitionIndex = -1;
+
+    /** The index of the selected runway at the destination airport. */
+    this.arrivalRunwayIndex = -1;
+
+    /** Whether or not an approach has been selected for the flight plan. */
+    this.approachSelected = false;
+
+    /** Whether or not the approach has been taken from destination airport information. */
+    this.approachFromDestinationData = false;
+
+    /** The index of the apporach in the destination airport information.*/
+    this.approachIndex = -1;
+
+    /** The index of the approach transition in the destination airport approach information.*/
+    this.approachTransitionIndex = -1;
+  }
+}
+
+/**
+ * Information about the current direct-to procedures in the flight plan.
+ */
+class DirectTo {
+  constructor() {
+
+    /** Whether or not the current direct-to is in the flight plan. */
+    this.waypointIsInFlightPlan = false;
+
+    /** Whether or not direct-to is active. */
+    this.isActive = false;
+
+    /**
+     * The current direct-to waypoint, if not part of the flight plan.
+     * @type {WayPoint}
+     */
+    this.waypoint = {};
+
+    /** The current direct-to waypoint index, if part of the flight plan. */
+    this.waypointIndex = 0;
+
+    /**
+     * The origin created when direct-to is activated.
+     * @type {WayPoint}
+     */
+    this.origin = {}
+  }
+
+  /**
+   * Activates direct-to with an external waypoint.
+   * @param {WayPoint} waypoint The waypoint to fly direct-to.
+   */
+  activateFromWaypoint(waypoint) {
+    this.isActive = true;
+    this.waypoint = waypoint;
+    this.waypointIsInFlightPlan = false;
+  }
+
+  /**
+   * Cancels direct-to. 
+   */
+  cancel() {
+    this.isActive = false;
+    this.waypointIsInFlightPlan = false;
+
+    this.waypoint = {};
+    this.origin = {};
+  }
+
+  /**
+   * Activates direct-to a waypoint already in the flight plan.
+   * @param {Number} index The index of the waypoint in the flight plan.
+   */
+  activateFromIndex(index) {
+    this.isActive = true;
+    this.waypointIsInFlightPlan = true;
+    this.waypointIndex = index;
+  }
+}
+
+/**
+ * A segment of a flight plan.
+ */
+class FlightPlanSegment {
+
+  /**
+   * Creates a new FlightPlanSegment.
+   * @param {Number} offset The offset within the original flight plan that
+   * the segment starts at.
+   * @param {WayPoint[]} waypoints The waypoints in the flight plan segment. 
+   */
+  constructor(offset, waypoints) {
+
+    /** The offset within the original flight plan that the segments starts at. */
+    this.offset = offset;
+
+    /** The waypoints in the flight plan segment. */
+    this.waypoints = waypoints;
   }
 }
 
@@ -524,134 +762,3 @@ class VectorsWayPointInfo extends WayPointInfo {
 
 }
 VectorsWayPointInfo.WayPointType = "VEC";
-
-/**
- * A segment of a flight plan.
- */
-class FlightPlanSegment {
-
-  /**
-   * Creates a new FlightPlanSegment.
-   * @param {Number} offset The offset within the original flight plan that
-   * the segment starts at.
-   * @param {WayPoint[]} waypoints The waypoints in the flight plan segment. 
-   */
-  constructor(offset, waypoints) {
-
-    /** The offset within the original flight plan that the segments starts at. */
-    this.offset = offset;
-
-    /** The waypoints in the flight plan segment. */
-    this.waypoints = waypoints;
-  }
-}
-
-/**
- * The details of procedures selected in the flight plan.
- */
-class ProcedureDetails {
-
-  constructor() {
-    /** Whether or not a departure has been selected for the flight plan. */
-    this.departureSelected = false;
-
-    /** Whether or not the departure has been taken from origin airport information. */
-    this.departureFromOriginData = false;
-
-    /** The index of the departure in the origin airport information. */
-    this.departureIndex = 0;
-
-    /** The index of the departure transition in the origin airport departure information. */
-    this.departureTransitionIndex = 0;
-
-    /** The index of the selected runway in the original airport departure information. */
-    this.departureRunwayIndex = 0;
-
-    /** Whether or not an arrival has been selected for the flight plan. */
-    this.arrivalSelected = false;
-
-    /** Whether or not the arrival has been taken from destination airport information. */
-    this.arrivalFromDestinationData = false;
-
-    /** The index of the arrival in the destination airport information. */
-    this.arrivalIndex = 0;
-
-    /** The index of the arrival transition in the destination airport arrival information. */
-    this.arrivalTransitionIndex = 0;
-
-    /** The index of the selected runway at the destination airport. */
-    this.arrivalRunwayIndex = 0;
-
-    /** Whether or not an approach has been selected for the flight plan. */
-    this.approachSelected = false;
-
-    /** Whether or not the approach has been taken from destination airport information. */
-    this.approachFromDestinationData = false;
-
-    /** The index of the apporach in the destination airport information.*/
-    this.approachIndex = 0;
-
-    /** The index of the approach transition in the destination airport approach information.*/
-    this.approachTransitionIndex = 0;
-  }
-}
-
-/**
- * Information about the current direct-to procedures in the flight plan.
- */
-class DirectTo {
-  constructor() {
-
-    /** Whether or not the current direct-to is in the flight plan. */
-    this.waypointIsInFlightPlan = false;
-
-    /** Whether or not direct-to is active. */
-    this.isActive = false;
-
-    /**
-     * The current direct-to waypoint, if not part of the flight plan.
-     * @type {WayPoint}
-     */
-    this.waypoint = {};
-
-    /** The current direct-to waypoint index, if part of the flight plan. */
-    this.waypointIndex = 0;
-
-    /**
-     * The origin created when direct-to is activated.
-     * @type {WayPoint}
-     */
-    this.origin = {}
-  }
-
-  /**
-   * Activates direct-to with an external waypoint.
-   * @param {WayPoint} waypoint The waypoint to fly direct-to.
-   */
-  activateFromWaypoint(waypoint) {
-    this.isActive = true;
-    this.waypoint = waypoint;
-    this.waypointIsInFlightPlan = false;
-  }
-
-  /**
-   * Cancels direct-to. 
-   */
-  cancel() {
-    this.isActive = false;
-    this.waypointIsInFlightPlan = false;
-
-    this.waypoint = {};
-    this.origin = {};
-  }
-
-  /**
-   * Activates direct-to a waypoint already in the flight plan.
-   * @param {Number} index The index of the waypoint in the flight plan.
-   */
-  activateFromIndex(index) {
-    this.isActive = true;
-    this.waypointIsInFlightPlan = true;
-    this.waypointIndex = index;
-  }
-}

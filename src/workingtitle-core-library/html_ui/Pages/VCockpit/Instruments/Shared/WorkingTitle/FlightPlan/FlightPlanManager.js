@@ -12,15 +12,23 @@ class FlightPlanManager {
     this._parentInstrument = parentInstrument;
     this._isRegistered = false;
     this._currentFlightPlanVersion = 0;
-    this._currentFlightPlanIndex = 0;
+    this.__currentFlightPlanIndex = 0;
 
     /**
      * The current stored flight plan data.
      * @type ManagedFlightPlan[]
      */
-    this._flightPlans = JSON.parse(WTDataStore.get("WT.FlightPlan", "[]"));
+    this._flightPlans;
+    this._loadFlightPlans();
 
+    FlightPlanManager.DEBUG_INSTANCE = this;
+  }
 
+  get _currentFlightPlanIndex() { 
+    return this.__currentFlightPlanIndex; 
+  }
+  set _currentFlightPlanIndex(value) {
+    this.__currentFlightPlanIndex = value;
   }
 
   addHardCodedConstraints(wp) {
@@ -58,9 +66,28 @@ class FlightPlanManager {
   updateFlightPlan(callback = () => { }, log = false) {
     const flightPlanVersion = SimVar.GetSimVarValue("L:WT.FlightPlan.Version", "number");
     if (flightPlanVersion !== this._currentFlightPlanVersion) {
-      this._flightPlans = JSON.parse(WTDataStore.get("WT.FlightPlan", "[]"));
+      this._loadFlightPlans();
+      this._currentFlightPlanVersion = flightPlanVersion;
     }
 
+    callback();
+  }
+
+  /**
+   * Loads the flight plans from data storage.
+   */
+  _loadFlightPlans() {
+    this._flightPlans = JSON.parse(WTDataStore.get("WT.FlightPlan", "[]"));
+
+    if (this._flightPlans.length === 0) {
+      this._flightPlans.push(new ManagedFlightPlan());
+    }
+    else {
+      this._flightPlans = this._flightPlans.map(fp => ManagedFlightPlan.fromObject(fp, this._parentInstrument));
+    }
+  }
+
+  updateCurrentApproach(callback = () => { }, log = false) {
     callback();
   }
 
@@ -161,6 +188,10 @@ class FlightPlanManager {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     const airport = await this._parentInstrument.facilityLoader.getAirport(icao);
 
+    if (currentFlightPlan.hasOrigin) {
+      currentFlightPlan.removeWaypoint(0);
+    }
+
     currentFlightPlan.addWaypoint(airport, 0);
     this._updateFlightPlanVersion();
 
@@ -213,7 +244,11 @@ class FlightPlanManager {
    */
   getActiveWaypointIdent(forceSimVarCall = false) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    return currentFlightPlan.activeWaypoint.ident;
+    if (currentFlightPlan.activeWaypoint) {
+      return currentFlightPlan.activeWaypoint.ident;
+    }
+
+    return "";
   }
 
   /**
@@ -320,8 +355,8 @@ class FlightPlanManager {
 
     if (origin) {
       let originInfos = origin.infos;
-      if (originInfos instanceof AirportInfo && currentFlightPlan.departureIndex !== undefined) {
-          return originInfos.departures[currentFlightPlan.departureIndex];
+      if (originInfos.departures !== undefined && currentFlightPlan.procedureDetails.departureSelected) {
+          return originInfos.departures[currentFlightPlan.procedureDetails.departureIndex];
       }
     }
 
@@ -337,7 +372,7 @@ class FlightPlanManager {
 
     if (destination) {
       let originInfos = destination.infos;
-      if (originInfos instanceof AirportInfo && currentFlightPlan.arrivalIndex !== undefined) {
+      if (originInfos.arrivals !== undefined && currentFlightPlan.arrivalIndex !== undefined) {
           return originInfos.arrivals[currentFlightPlan.arrivalIndex];
       }
     }
@@ -354,7 +389,7 @@ class FlightPlanManager {
 
     if (destination) {
       let originInfos = destination.infos;
-      if (originInfos instanceof AirportInfo && currentFlightPlan.approachIndex !== undefined) {
+      if (originInfos.approaches !== undefined && currentFlightPlan.approachIndex !== undefined) {
           return originInfos.approaches[currentFlightPlan.approachIndex];
       }
     }
@@ -384,8 +419,10 @@ class FlightPlanManager {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     const enrouteSegment = currentFlightPlan.enroute;
 
-    for (var i = 0; i < enrouteSegment.waypoints.length; i++) {
-      outFPIndex.push(enrouteSegment.offset + i);
+    if (outFPIndex) {
+      for (var i = 0; i < enrouteSegment.waypoints.length; i++) {
+        outFPIndex.push(enrouteSegment.offset + i);
+      }
     }
 
     return enrouteSegment.waypoints;
@@ -448,7 +485,7 @@ class FlightPlanManager {
     
     currentFlightPlan.addWaypoint(waypoint, index);
     if (setActive) {
-      currentFlightPlan.activeWaypointIndex = index;
+      //currentFlightPlan.activeWaypointIndex = index;
     }
 
     this._updateFlightPlanVersion();
@@ -572,7 +609,7 @@ class FlightPlanManager {
    * @param {Number} flightPlanIndex The index of the flight plan. If omitted, will get the current flight plan.
    */
   getWaypointsCount(flightPlanIndex = NaN) {
-    if (flightPlanIndex === NaN) {
+    if (isNaN(flightPlanIndex)) {
       flightPlanIndex = this._currentFlightPlanIndex;
     }
 
@@ -600,7 +637,7 @@ class FlightPlanManager {
    * @param {Boolean} considerApproachWaypoints Whether or not to consider approach waypoints.
    */
   getWaypoint(index, flightPlanIndex = NaN, considerApproachWaypoints) {
-    if (flightPlanIndex === NaN) {
+    if (isNaN(flightPlanIndex)) {
       flightPlanIndex = this._currentFlightPlanIndex;
     }
 
@@ -612,7 +649,7 @@ class FlightPlanManager {
    * @param {Number} flightPlanIndex The index of the flight plan to get the waypoint from. If omitted, will get from the current flight plan.
    */
   getWaypoints(flightPlanIndex = NaN) {
-    if (flightPlanIndex === NaN) {
+    if (isNaN(flightPlanIndex)) {
       flightPlanIndex = this._currentFlightPlanIndex;
     }
 
@@ -637,7 +674,7 @@ class FlightPlanManager {
   getDepartureRunway() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (currentFlightPlan.hasOrigin) {
-      return currentFlightPlan.waypoints[0].oneWayRunways[currentFlightPlan.procedureDetails.departureRunwayIndex];
+      return currentFlightPlan.waypoints[0].infos.oneWayRunways[currentFlightPlan.procedureDetails.departureRunwayIndex];
     }
 
     return undefined;
@@ -688,8 +725,13 @@ class FlightPlanManager {
    * @param {Number} index The index of the departure procedure in the origin airport departures information.
    * @param {() => void} callback A callback to call when the operation completes.
    */
-  setDepartureProcIndex(index, callback = () => { }) {
-    this._flightPlans[this._currentFlightPlanIndex].setApproachFromIndex(index);
+  async setDepartureProcIndex(index, callback = () => { }) {
+    if (index === -1) {
+      this._flightPlans[this._currentFlightPlanIndex].clearDeparture();
+    }
+    else {
+      await this._flightPlans[this._currentFlightPlanIndex].setDepartureFromIndex(index);    
+    }
 
     this._updateFlightPlanVersion();
     callback();
@@ -701,7 +743,7 @@ class FlightPlanManager {
    * @param {() => void} callback A callback to call when the operation completes.
    */
   setDepartureRunwayIndex(index, callback = EmptyCallback.Void) {
-    this._flightPlans[this._currentFlightPlanIndex].departureRunwayIndex = index;
+    this._flightPlans[this._currentFlightPlanIndex].procedureDetails.departureRunwayIndex = index;
 
     this._updateFlightPlanVersion();
     callback();
@@ -764,7 +806,7 @@ class FlightPlanManager {
   removeDeparture(callback = () => { }) {
     this._flightPlans[this._currentFlightPlanIndex].clearDeparture();
 
-    this._currentFlightPlanIndex();
+    this._updateFlightPlanVersion();
     callback();
   }
 
@@ -947,7 +989,7 @@ class FlightPlanManager {
    */
   getLastIndexBeforeApproach() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    return currentFlightPlan.approachStart - 1;
+    return currentFlightPlan.length;
   }
 
   /**
@@ -1056,7 +1098,7 @@ class FlightPlanManager {
    * Updates the synchronized flight plan version and saves it to shared storage.
    */
   _updateFlightPlanVersion() {
-    SimVar.SetSimVarValue(FlightPlanManager.FlightPlanVersionKey, 'number', ++this._currentFlightPlanIndex);
+    SimVar.SetSimVarValue(FlightPlanManager.FlightPlanVersionKey, 'number', ++this._currentFlightPlanVersion);
     WTDataStore.set(FlightPlanManager.FlightPlanKey, JSON.stringify(this._flightPlans.map(fp => fp.copySanitized())));
   }
 }
