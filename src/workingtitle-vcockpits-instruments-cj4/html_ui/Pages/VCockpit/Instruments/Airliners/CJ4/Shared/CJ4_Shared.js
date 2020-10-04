@@ -3441,6 +3441,7 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
                         this.handler.highlight(this.handler.highlightId + 1);
                         this.handler.changeCurrentItemIndex(1);
                     }
+
                     this.handler.onActivate();
                     break;
                 case "Upr_DATA_DEC":
@@ -3495,7 +3496,7 @@ var CJ4_Checklist_Key;
     CJ4_Checklist_Key[CJ4_Checklist_Key["END"] = 7] = "END";
 })(CJ4_Checklist_Key || (CJ4_Checklist_Key = {}));
 
-class CJ4_Checklist_Handler extends Airliners.PopupMenu_Handler {
+class CJ4_Checklist_Handler extends Airliners.Menu_Handler {
     constructor() {
         super(...arguments);
         this._isOnMainPage = false;
@@ -3833,14 +3834,14 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
                 this.addCheckTitle("CHECKLIST INDEX", this.titleSize, 1.0, this.currentPage, this.totalPages);
                 this.addCheckTitle("", this.titleSize, 1.0);
             }
-            this.endCheckSection();
+            this.endSection();
             this.beginSection();
             {
                 for(let i = 0; i < this.checklists.length; i++){
-                    this.addCheckSubMenu(this.checklists[i].name, this.textSize, this.showChecklist.bind(this, this.checklists[i]));
+                    this.addSubMenu(this.checklists[i].name, this.textSize, this.showChecklist.bind(this, this.checklists[i]));
                 }
             }
-            this.endCheckSection();
+            this.endSection();
         }
         this.closeMenu();
         this.highlight(_highlight);
@@ -3869,14 +3870,14 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
                 this.addCheckTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
                 this.addCheckTitle("", this.titleSize, 1.0);
             }
-            this.endCheckSection();
+            this.endSection();
             this.beginSection();
             {
                 for(let i = 0; i < _checklist.sections.length; i++) {
-                    this.addCheckSubMenu(_checklist.sections[i].name, this.textSize, this.showChecklistSection.bind(this, _checklist, i));
+                    this.addSubMenu(_checklist.sections[i].name, this.textSize, this.showChecklistSection.bind(this, _checklist, i));
                 }
             }
-            this.endCheckSection();
+            this.endSection();
         }
         this.closeMenu();
         this.escapeCbk = this.showMainPage.bind(this, 0);
@@ -3907,7 +3908,7 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
                 this.addCheckTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
                 this.addCheckTitle(_checklist.sections[_section_id].name, this.titleSize, 1.0);
             }
-            this.endCheckSection();
+            this.endSection();
             this.beginSection();
             {
                 let checklistItems = _checklist.sections[_section_id].checklistItems;
@@ -3915,23 +3916,23 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
                 let endItem = Math.min(checklistItems.length, startingItem + this.maximumItemsPerPage);
                 for(let i = startingItem; i < endItem; i++){
                     if(checklistItems[i]){
-                        this.addCheckCheckbox(checklistItems[i].name, checklistItems[i].value, this.textSize, checklistItems[i].key);
+                        this.addCheckItem(checklistItems[i].name, checklistItems[i].value, this.textSize, checklistItems[i].key);
                     }
                 }
 
                 if(endItem == checklistItems.length && _section_id < _checklist.sections.length - 1){
                     if(checklistItems.length % 7 != 0){
                         this.addCheckTitle("", this.titleSize, 1.0);
-                        this.addCheckSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1);}).bind(this));
+                        this.addSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1);}).bind(this));
                     }
                     else{
                         if(this.currentPage == this.totalPages){
-                            this.addCheckSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1);}).bind(this));
+                            this.addSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1);}).bind(this));
                         }
                     }
                 }
             }
-            this.endCheckSection();
+            this.endSection();
         }
         this.closeMenu();
         this.escapeCbk = this.showChecklist.bind(this, _checklist);
