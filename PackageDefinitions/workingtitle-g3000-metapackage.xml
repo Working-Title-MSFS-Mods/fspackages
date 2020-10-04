@@ -1,0 +1,54 @@
+<AssetPackage Name="workingtitle-g3000" Version="0.1.0">
+	<ItemSettings>
+		<ContentType>CUSTOM</ContentType>
+		<Title>Working Title G3000</Title>
+		<Manufacturer/>
+		<Creator>Working Title</Creator>
+	</ItemSettings>
+	<Flags>
+		<VisibleInStore>false</VisibleInStore>
+		<CanBeReferenced>false</CanBeReferenced>
+	</Flags>
+	<AssetGroups>
+		<AssetGroup Name="workingtitle-core-library">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-core-library</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>
+        <AssetGroup Name="workingtitle-base-aircraft-common">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-base-aircraft-common</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>
+        <AssetGroup Name="workingtitle-vcockpits-instruments-navsystems">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-vcockpits-instruments-navsystems</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>
+        <AssetGroup Name="workingtitle-vcockpits-instruments-navsystems-g3000">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-vcockpits-instruments-navsystems-g3000</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>			
+        <AssetGroup Name="workingtitle-vcockpits-instruments">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-vcockpits-instruments</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>		
+	</AssetGroups>
+</AssetPackage>
