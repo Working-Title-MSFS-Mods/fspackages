@@ -108,6 +108,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         this.pfdMenu = new SoftKeysMenu();
 		this.pfdMapMenu = new SoftKeysMenu();
 		this.pfdMapLayoutMenu = new SoftKeysMenu();
+		this.attitudeMenu = new SoftKeysMenu();
         this.otherPfdMenu = new SoftKeysMenu();
         this.windMenu = new SoftKeysMenu();
 		this.altUnitsMenu = new SoftKeysMenu(); //ADDED G3000 MOD ADD new softkeymenu for change of BARO UNIT
@@ -157,7 +158,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
             new AS3000_PFD_SoftKeyElement("")
         ];
         this.pfdMenu.elements = [
-            new AS3000_PFD_SoftKeyElement("Attitude Overlays"),
+            new AS3000_PFD_SoftKeyElement("Attitude Overlays", this.switchToMenu.bind(this, this.attitudeMenu)),
             new AS3000_PFD_SoftKeyElement("PFD Mode", null, null, this.constElement.bind(this, "FULL")),
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement(""),
@@ -198,6 +199,20 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 			new AS3000_PFD_SoftKeyElement("Back", this.switchToMenu.bind(this, this.pfdMapMenu)),
 			new AS3000_PFD_SoftKeyElement("")
 		];
+		this.attitudeMenu.elements = [
+            new AS3000_PFD_SoftKeyElement("Pathways"),
+            new AS3000_PFD_SoftKeyElement("Synthetic Terrain", this.toggleSyntheticVision.bind(this), this.syntheticVisionCompare.bind(this, true)),
+            new AS3000_PFD_SoftKeyElement("Horizon Heading"),
+            new AS3000_PFD_SoftKeyElement("Airport Signs"),
+            new AS3000_PFD_SoftKeyElement(""),
+            new AS3000_PFD_SoftKeyElement(""),
+            new AS3000_PFD_SoftKeyElement(""),
+            new AS3000_PFD_SoftKeyElement(""),
+            new AS3000_PFD_SoftKeyElement(""),
+            new AS3000_PFD_SoftKeyElement(""),
+            new AS3000_PFD_SoftKeyElement("Back", this.switchToMenu.bind(this, this.pfdMenu)),
+            new AS3000_PFD_SoftKeyElement("")
+        ];
         this.otherPfdMenu.elements = [
             new AS3000_PFD_SoftKeyElement("Wind", this.switchToMenu.bind(this, this.windMenu)),
             new AS3000_PFD_SoftKeyElement("AOA", this.gps.computeEvent.bind(this.gps, "SoftKey_PFD_AoAMode"), null, this.aoaStatus.bind(this)),
@@ -304,6 +319,14 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 		} else {
 			return "OFF";
 		}
+	}
+	
+	toggleSyntheticVision() {
+		this.attitude.syntheticVisionEnabled = this.attitude.syntheticVisionEnabled ^ 1;
+	}
+	
+	syntheticVisionCompare(_val) {
+		return this.attitude.syntheticVisionEnabled == _val;
 	}
 	
     bearing1Status() {
