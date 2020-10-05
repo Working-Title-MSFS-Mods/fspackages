@@ -91,8 +91,6 @@ class ManagedFlightPlan {
     this._hasOrigin = false;
     this._hasDestination = false;
 
-    this._destination = undefined;
-
     this.arrivalStart = 0;
     this.enrouteStart = 0;
     this.approachStart = 0;
@@ -201,14 +199,17 @@ class ManagedFlightPlan {
     for (var i = 0; i < this._waypoints.length; i++) {
       if (i > 0) {
 
-        const waypoint = this._waypoints[i];
-        const prevWaypoint = this._waypoints[i - 1];
+        //If there's an approach selected and this is the last approach waypoint, use the destination waypoint for coordinates
+        //Runway waypoints do not have coordinates
+        const referenceWaypoint = this._waypoints[i];
+        const waypoint = (this.procedureDetails.approachSelected && i === this._waypoints.length - 2) ? this._waypoints[i + 1] : this._waypoints[i];
+        const prevWaypoint = (this.procedureDetails.approachSelected && i === this._waypoints.length - 1) ? this._waypoints[i - 2] : this._waypoints[i - 1];
 
-        waypoint.bearingInFP = Avionics.Utils.computeGreatCircleHeading(prevWaypoint.infos.coordinates, waypoint.infos.coordinates);
-        waypoint.distanceInFP = Avionics.Utils.computeGreatCircleDistance(prevWaypoint.infos.coordinates, waypoint.infos.coordinates);
+        referenceWaypoint.bearingInFP = Avionics.Utils.computeGreatCircleHeading(prevWaypoint.infos.coordinates, waypoint.infos.coordinates);
+        referenceWaypoint.distanceInFP = Avionics.Utils.computeGreatCircleDistance(prevWaypoint.infos.coordinates, waypoint.infos.coordinates);
         
-        cumulativeDistance += waypoint.distanceInFP;
-        waypoint.cumulativeDistanceInFP = cumulativeDistance;
+        cumulativeDistance += referenceWaypoint.distanceInFP;
+        referenceWaypoint.cumulativeDistanceInFP = cumulativeDistance;
       }
     }
   }
@@ -425,6 +426,7 @@ class ManagedFlightPlan {
    */
   async _insertDepartureFromIndexes() {
       const legs = [];
+      const origin = this._waypoints[0];
 
       const departureIndex = this.procedureDetails.departureIndex;
       const runwayIndex = this.procedureDetails.departureRunwayIndex;
@@ -440,7 +442,7 @@ class ManagedFlightPlan {
       }
 
       this._waypoints.splice(1, this.enrouteStart - 1, ...legs);
-      const numWaypointsDiff = legs.length - (this.enrouteStart - this.departureStart)
+      const numWaypointsDiff = legs.length - (this.enrouteStart - this.departureStart);
 
       this.enrouteStart += numWaypointsDiff;
       this.arrivalStart += numWaypointsDiff;
@@ -506,11 +508,13 @@ class ManagedFlightPlan {
     if (this.hasDestination) {
       const destination = this._waypoints[this._waypoints.length - 1];
       if (index >= 0 && index < destination.infos.approaches.length) {
-        this._waypoints.splice(this.approachStart, this._waypoints.length - this.approachStart - 2, destination.infos.approaches[index]);
+        this._waypoints.splice(this.approachStart, this._waypoints.length - this.approachStart - 2, ...destination.infos.approaches[index].wayPoints);
 
         this.procedureDetails.approachSelected = true;
         this.procedureDetails.approachFromDestinationData = true;
         this.procedureDetails.approachIndex = index;
+
+        this._reflowDistances();
       }
     }
   }
@@ -538,7 +542,7 @@ ManagedFlightPlan.fromObject = (flightPlanObject, parentInstrument) => {
 
   const visitObject = (obj) => {
     for(var key in obj) {
-      if (typeof obj[key] === 'object' && obj[key].scroll === undefined) {    
+      if (typeof obj[key] === 'object' && obj[key] && obj[key].scroll === undefined) {    
         visitObject(obj[key]);
 
         if (obj[key] && obj[key].infos) {
