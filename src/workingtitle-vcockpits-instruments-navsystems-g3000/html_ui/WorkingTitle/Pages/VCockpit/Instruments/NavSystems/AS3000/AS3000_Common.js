@@ -43,6 +43,10 @@ class AS3000_MapElement extends MapInstrumentElement {
                 this.onTemplateLoaded();
             });
         }
+		this.instrument.setOrientation("hdg");
+		this.instrument.zoomRanges = AS3000_MapElement.ZOOM_RANGES_DEFAULT;
+		this.instrument.offsetPlaneInHdgTrk = true;
+		
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number", 0);	// set default map orientation (0 = hdg, 1 = trk, 2 = north)
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID, "number", 0);		// set default declutter (0 = none, 1 = DCLTR1, 2 = DCLTR2, 3 = least)
 		
@@ -227,6 +231,8 @@ class AS3000_MapElement extends MapInstrumentElement {
 		}
 	}
 }
+AS3000_MapElement.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 25, 35, 50, 100, 150, 200, 250, 400, 500, 750, 1000];
+
 AS3000_MapElement.VARNAME_ORIENTATION_ROOT = "L:AS3000_Map_Orientation";
 AS3000_MapElement.VARNAME_SYNC = "L:AS3000_Map_Sync";
 AS3000_MapElement.VARNAME_SYNC_INITID = "L:AS3000_Map_Sync_InitID";

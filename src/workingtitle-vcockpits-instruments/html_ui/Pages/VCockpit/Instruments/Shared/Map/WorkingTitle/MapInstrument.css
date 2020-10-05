@@ -34,7 +34,7 @@ map-instrument {
   map-instrument #MapOrientation {
     position: absolute;
     top: 0%;
-    left: 0%;
+    right: 0%;
     width: 13%;
     height: calc( 2.5 * 1vh * var(--bodyHeightScale));
     background-color: #1a1d21;
@@ -44,8 +44,8 @@ map-instrument {
     position: absolute;
     bottom: 0%;
     right: 0%;
-    width: 5%;
-    height: calc( 6 * 1vh * var(--bodyHeightScale));
+    width: 10%;
+    height: calc( 4 * 1vh * var(--bodyHeightScale));
     background-color: #1a1d21;
     color: #8ed0d5;
 	display: flex;
@@ -53,6 +53,13 @@ map-instrument {
 	align-items: flex-end;
     text-align: center; 
 	border: solid 1px white; }
+	map-instrument #MapRange .range {
+	  font-size: calc( 3 * 1vh * var(--bodyHeightScale));
+	  text-align: right; }
+    map-instrument #MapRange .unit {
+	  margin: 0 5% 2.5%;
+	  font-size: calc( 2.3 * 1vh * var(--bodyHeightScale));
+	  text-align: left; }
   map-instrument #MapSVG, map-instrument #road-network-canvas {
     position: absolute; }
   map-instrument bing-map {
