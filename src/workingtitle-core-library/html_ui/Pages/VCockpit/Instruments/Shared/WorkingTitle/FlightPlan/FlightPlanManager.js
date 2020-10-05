@@ -466,6 +466,11 @@ class FlightPlanManager {
    */
   async setDestination(icao, callback = () => { }) {
     const waypoint = await this._parentInstrument.facilityLoader.getAirport(icao);
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+
+    if (currentFlightPlan.hasDestination) {
+      currentFlightPlan.removeWaypoint(currentFlightPlan.length - 1);
+    }
     this._flightPlans[this._currentFlightPlanIndex].addWaypoint(waypoint);
 
     this._updateFlightPlanVersion();
@@ -892,8 +897,8 @@ class FlightPlanManager {
    */
   getApproachIndex() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    if (currentFlightPlan.procedureDetails.arrivalSelected) {
-      return currentFlightPlan.procedureDetails.arrivalTransitionIndex;
+    if (currentFlightPlan.procedureDetails.approachSelected) {
+      return currentFlightPlan.procedureDetails.approachIndex;
     }
 
     return -1;
