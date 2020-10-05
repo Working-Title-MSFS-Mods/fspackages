@@ -1,0 +1,46 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+        "no-redeclare": [
+            "error", {
+              "builtinGlobals": false
+            }
+          ],
+          "no-unused-vars": [
+            "error", {
+              "vars": "all",
+              "varsIgnorePattern": "^CJ4_FMC"
+            }
+          ],
+          "semi": [2, "always"]
+    },
+    "globals": {
+        "Avionics": "readonly",
+        "EmptyCallback": "readonly",
+        "LatLong": "writable",
+        "Coherent": "writable",
+        "SimVar": "writable",
+        "Simplane": "writable",
+        "Aircraft": "writable",
+        "FMCMainDisplay": "writable",
+        "NavMode": "writable",
+        "RegisterViewListener": "writable",
+        "registerInstrument": "writable",
+        "WT_FMC_Renderer": "readonly",
+        "CJ4_FMC_LegsPage": "readonly",
+        "CJ4_FMC_DepArrPage": "readonly",
+        "CJ4_FMC_DsplMenuPage": "readonly",
+        "CJ4_FMC_PerfInitPage": "readonly",
+        "CJ4_FMC_MfdAdvPage": "readonly",
+        "CJ4_FMC_NavRadioPage": "readonly",
+        "CJ4_FMC_SelectWptPage": "readonly",
+        "CJ4_FMC_RoutePage": "readonly",
+        "CJ4_FMC_DirectToPage": "readonly",
+        "CJ4_FMC_InitRefIndexPage": "readonly",
+        "CJ4_FMC_PosInitPage": "readonly"
+    }
+}

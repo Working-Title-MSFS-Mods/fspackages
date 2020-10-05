@@ -141,12 +141,13 @@ class WT_FMC_Renderer {
     }
 
     onEvent(e) {
+        if (this.isDisplayingErrorMessage) {
+            this.setMsg("");
+        }
+
         this.legacyOnEvent(e);
 
         if (document.getElementById("wt_container")) {
-            if (!this.isDisplayingErrorMessage) {
-                this.setMsg("");
-            }
             this._templateRenderer.renderScratchpadRaw(this._templateRenderer.getTRow(13));
         }
     }

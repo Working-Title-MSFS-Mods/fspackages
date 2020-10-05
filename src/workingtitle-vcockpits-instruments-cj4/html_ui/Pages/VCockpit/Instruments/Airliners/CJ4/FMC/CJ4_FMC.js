@@ -38,6 +38,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._activatingDirectTo = false;
         this._templateRenderer = undefined;
         this._msg = "";
+        this._activatingDirectToExisting = false;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -67,6 +68,9 @@ class CJ4_FMC extends FMCMainDisplay {
     }
     Init() {
         super.Init();
+
+        // Maybe this gets rid of slowdown on first fpln mod
+        this.flightPlanManager.copyCurrentFlightPlanInto(1);
 
         // init WT_FMC_Renderer.js
         this._templateRenderer = new WT_FMC_Renderer(this);
@@ -128,6 +132,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     this.refreshPageCallback();
                 }
             }
+            this._activatingDirectToExisting = false;
         };
 
         CJ4_FMC_InitRefIndexPage.ShowPage5(this);
@@ -260,8 +265,6 @@ class CJ4_FMC extends FMCMainDisplay {
             let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean");
             let currentAltitude = Simplane.getAltitude();
             let groundSpeed = Simplane.getGroundSpeed();
-            let apTargetAltitude = Simplane.getAutoPilotAltitudeLockValue("feet");
-            let planeHeading = Simplane.getHeadingMagnetic();
             let planeCoordinates = new LatLong(SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude"), SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude"));
             if (isVNAVActivate) {
                 let prevWaypoint = this.flightPlanManager.getPreviousActiveWaypoint();
@@ -353,7 +356,7 @@ class CJ4_FMC extends FMCMainDisplay {
         if (selectedRunway) {
             let selectedRunwayDesignation = new String(selectedRunway.designation);
             let selectedRunwayMod = new String(selectedRunwayDesignation.slice(-1));
-            if (selectedRunwayMod == "L" || "C" || "R") {
+            if (selectedRunwayMod == "L" || selectedRunwayMod == "C" || selectedRunwayMod == "R") {
                 if (selectedRunwayDesignation.length == 2) {
                     this.selectedRunwayOutput = "0" + selectedRunwayDesignation;
                 } else {
@@ -382,7 +385,7 @@ class CJ4_FMC extends FMCMainDisplay {
         let refreshHandler = () => {
             action();
             this._pageRefreshTimer = setTimeout(refreshHandler, interval);
-        }
+        };
 
         if (runImmediately) {
             refreshHandler();
