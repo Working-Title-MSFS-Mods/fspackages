@@ -14,8 +14,8 @@
 	<Behaviors>
 		<!-- Includes ###################################### -->
 		<Include ModelBehaviorFile="Asobo\Common.xml"/>
-		<Include ModelBehaviorFile="Asobo\GlassCockpit\AS3000_enhanced.xml"/>
-		<Include ModelBehaviorFile="Asobo\GlassCockpit\AS580_enhanced.xml"/>
+		<Include ModelBehaviorFile="Asobo\GlassCockpit\AS3000.xml"/>
+		<Include ModelBehaviorFile="Asobo\GlassCockpit\AS580.xml"/>
 		<!-- ############################################### -->
 
 		<!-- INSTRUMENT ################################# -->
