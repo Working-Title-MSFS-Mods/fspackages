@@ -1100,7 +1100,7 @@ class PFD_WindData extends NavSystemElement {
         this.mode = WTDataStore.get("WindData.Mode", 0);
     }
     init(root) {
-        this.svg = this.gps.getChildById("WindData");
+        this.svg = root;
         SimVar.SetSimVarValue("L:Glasscockpit_AOA_Mode", "number", this.mode);
     }
     getCurrentMode() {
