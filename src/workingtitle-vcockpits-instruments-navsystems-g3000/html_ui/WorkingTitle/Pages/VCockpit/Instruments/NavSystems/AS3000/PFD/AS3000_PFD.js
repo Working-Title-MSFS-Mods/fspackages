@@ -344,7 +344,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 	
 	//ADD START*** G3000 MOD ADD new softkeymenu for change of BARO UNIT	
     softkeyBaroStatus(_state) {	
-        return this.altimeter.baroMode == _state;
+        return this.altimeter.getCurrentBaroMode() == _state;
     }
     //ADD END***  G3000 MOD ADD new softkeymenu for change of BARO UNIT
 }
