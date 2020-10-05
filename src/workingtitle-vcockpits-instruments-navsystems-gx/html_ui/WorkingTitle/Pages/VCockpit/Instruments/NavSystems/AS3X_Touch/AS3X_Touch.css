@@ -1783,8 +1783,8 @@ as3x-touch-element {
       top: 71%;
       height: 20%;
       left: 5%;
-      right: 35%;
-      width: auto; }
+      /*right: 35%; */
+      width: 65%;}
       as3x-touch-element #MFD #PFD_Menu #timer #timer_startStop_button {
         left: 2%;
         width: 55%; }
@@ -1803,6 +1803,18 @@ as3x-touch-element {
       as3x-touch-element #MFD #PFD_Menu #timer #timer_reset_button {
         right: 2%;
         width: 35%; }
+    as3x-touch-element #MFD #PFD_Menu #wind {
+      top: 71%;
+      height: 20%;
+      right: 5%;
+      width: 24%;
+    }
+      as3x-touch-element #MFD #PFD_Menu #wind #wind_mode_button {
+        left: 5%;
+        right: 5%;
+        width: auto;
+      }
+
     as3x-touch-element #MFD #PFD_Menu #minimums {
       top: 71%;
       height: 20%;
@@ -2331,10 +2343,21 @@ as3x-touch-element {
         font-size: 4vh; }
       as3x-touch-element #SelectionList .content .gradientButton[state=Inactive] {
         display: none; }
-  as3x-touch-element #Annunciations div {
+  as3x-touch-element #Annunciations {
+    position: absolute;
+    background-color: black;
+    top: 67%;
+    right: 1%;
+    height: auto;
+    width: auto;
     font-size: 1.6vh;
     text-align: left;
-    margin-bottom: 1px; }
+    padding: 0.5vh;
+    border: 0.3vh solid white;
+    border-radius: 5%;
+  }
+  as3x-touch-element #Annunciations div {
+    background-color: black; }
   as3x-touch-element #Annunciations .Warning, as3x-touch-element #Annunciations .Warning_Blink {
     color: red; }
   as3x-touch-element #Annunciations .Caution, as3x-touch-element #Annunciations .Caution_Blink {
@@ -2348,3 +2371,10 @@ as3x-touch-element {
   as3x-touch-element[instrumentstyle=e330] #MainDisplay #PFD #HorizonContainer #SyntheticVision {
     left: -54vh; }
 
+  as3x-touch-element #PFD #WindData {
+        position: absolute;
+        top: 63%;
+        right: calc(50% + 15vh);
+        height: 10vh;
+        width: 9vh;
+  };
