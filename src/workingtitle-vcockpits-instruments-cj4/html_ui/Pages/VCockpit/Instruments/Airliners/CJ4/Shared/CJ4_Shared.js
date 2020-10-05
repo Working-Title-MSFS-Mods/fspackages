@@ -2983,7 +2983,7 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 27] = "SYS_SRC";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["AOA"] = 28] = "AOA";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
-class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
+class CJ4_PopupMenu_Handler extends Airliners2.PopupMenu_Handler {
     constructor() {
         super(...arguments);
         this._isOnMainPage = false;
@@ -3483,20 +3483,9 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
 var CJ4_Checklist_Key;
 (function (CJ4_Checklist_Key) {
     CJ4_Checklist_Key[CJ4_Checklist_Key["SEATBELTS"] = 0] = "SEATBELTS";
-    CJ4_Checklist_Key[CJ4_Checklist_Key["AIRCON"] = 1] = "AIRCON";
-    CJ4_Checklist_Key[CJ4_Checklist_Key["SAFETY"] = 2] = "SAFTEY";
-    CJ4_Checklist_Key[CJ4_Checklist_Key["EMER_LIGHTS"] = 3] = "EMER_LIGHTS";
-    CJ4_Checklist_Key[CJ4_Checklist_Key["HOSKY"] = 4] = "HOSKY";
-    CJ4_Checklist_Key[CJ4_Checklist_Key["POLY"] = 5] = "POLY";
-    CJ4_Checklist_Key[CJ4_Checklist_Key["FUEL_SELECTOR"] = 6] = "FUEL_SELECTOR";
-    CJ4_Checklist_Key[CJ4_Checklist_Key["BATTERY_SWITCH"] = 7] = "BATTERY_SWITCH";
-    CJ4_Checklist_Key[CJ4_Checklist_Key["BATTERY_SWITCH1"] = 7] = "BATTERY_SWITCH1";
-    CJ4_Checklist_Key[CJ4_Checklist_Key["BATTERY_SWITCH2"] = 7] = "BATTERY_SWITCH2";
-    CJ4_Checklist_Key[CJ4_Checklist_Key["BATTERY_SWITCH3"] = 7] = "BATTERY_SWITCH3";
-    CJ4_Checklist_Key[CJ4_Checklist_Key["END"] = 7] = "END";
 })(CJ4_Checklist_Key || (CJ4_Checklist_Key = {}));
 
-class CJ4_Checklist_Handler extends Airliners.Menu_Handler {
+class CJ4_Checklist_Handler extends ChecklistMenu.Menu_Handler {
     constructor() {
         super(...arguments);
         this._isOnMainPage = false;
@@ -3743,7 +3732,7 @@ class NormalChecklist extends Checklist {
                     {
                         name: "AVIONICS SWITCH",
                         value: "ON",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                        key: [CJ4_Checklist_Key.SEATBELTS]
                     },
                     {
                         name: "PARKING BRAKE",

@@ -84,7 +84,7 @@ class BaseAirliners extends NavSystem {
     }
 }
 BaseAirliners.isMetric = false;
-var Airliners;
+var Airliners2;
 (function (Airliners) {
     class BaseEICAS extends BaseAirliners {
         constructor() {
@@ -1309,24 +1309,13 @@ var Airliners;
         }
     }
     Airliners.PopupMenu_Handler = PopupMenu_Handler;
+})(Airliners2 || (Airliners2 = {}));
 
-
-
-
-
-
-
-
-
-
+var ChecklistMenu;
+(function (Checklists) {
     let Menu_ItemType;
     (function (Menu_ItemType) {
         Menu_ItemType[Menu_ItemType["TITLE"] = 0] = "TITLE";
-        Menu_ItemType[Menu_ItemType["LIST"] = 1] = "LIST";
-        Menu_ItemType[Menu_ItemType["RANGE"] = 2] = "RANGE";
-        Menu_ItemType[Menu_ItemType["RADIO"] = 3] = "RADIO";
-        Menu_ItemType[Menu_ItemType["RADIO_LIST"] = 4] = "RADIO_LIST";
-        Menu_ItemType[Menu_ItemType["RADIO_RANGE"] = 5] = "RADIO_RANGE";
         Menu_ItemType[Menu_ItemType["SUBMENU"] = 6] = "SUBMENU";
         Menu_ItemType[Menu_ItemType["CHECKBOX"] = 7] = "CHECKBOX";
     })(Menu_ItemType || (Menu_ItemType = {}));
@@ -1489,12 +1478,10 @@ var Airliners;
                 let item = this.section.items[i];
                 let dictIndex = 0;
                 let changed = false;
-                if (item.checkboxElem) {
-                    if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[dictIndex])) {
-                        if (this.dictionary.get(item.dictKeys[0]) == "ON") {
-                            this.activateItem(item, true);
-                            changed = true;
-                        }
+                if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[dictIndex])) {
+                    if (this.dictionary.get(item.dictKeys[0]) == "ON") {
+                        this.activateItem(item, true);
+                        changed = true;
                     }
                 }
                 if (changed)
@@ -1632,8 +1619,6 @@ var Airliners;
             }
         }
         activateItem(_item, _val) {
-            if (!_item.enabled)
-                return;
             switch (_item.type) {
                 case Menu_ItemType.CHECKBOX:
                     if (_val) {
@@ -1664,7 +1649,7 @@ var Airliners;
             }
         }
         onChanged(_item) {
-            if (this.dictionary && _item.enabled) {
+            if (this.dictionary) {
                 switch (_item.type) {
                     case Menu_ItemType.CHECKBOX:
                         this.dictionary.set(_item.dictKeys[0], (_item.checkboxVal) ? "ON" : "OFF");
@@ -1707,6 +1692,8 @@ var Airliners;
                 this.onActivate();
         }
     }
-    Airliners.Menu_Handler = Menu_Handler;
-})(Airliners || (Airliners = {}));
+    Checklists.Menu_Handler = Menu_Handler;
+})(ChecklistMenu || (ChecklistMenu = {}));
+
+
 //# sourceMappingURL=BaseAirliners.js.map
