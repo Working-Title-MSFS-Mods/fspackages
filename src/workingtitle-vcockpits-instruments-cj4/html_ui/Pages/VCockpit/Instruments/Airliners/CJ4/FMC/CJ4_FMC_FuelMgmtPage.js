@@ -6,6 +6,7 @@ let FuelMgmtPage3Instance = undefined;
 class CJ4_FMC_FuelMgmtPageOne {
     constructor(fmc) {
         this._fmc = fmc;
+        this._isDirty = true;
 
         this._fuelQuantityTotal = 0;
 
@@ -223,7 +224,7 @@ class CJ4_FMC_FuelMgmtPage {
             FuelMgmtPage2Instance.update();
         }, 1000, true);
     }
-    
+
     static ShowPage3(fmc) { //FUEL MGMT Page 3
         fmc.clearDisplay();
         let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
