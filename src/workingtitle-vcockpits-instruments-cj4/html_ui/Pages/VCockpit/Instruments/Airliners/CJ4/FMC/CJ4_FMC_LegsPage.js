@@ -30,6 +30,7 @@ class CJ4_FMC_LegsPage {
 
     update() {
         // check if active wpt changed
+        // TODO: possible that i renders twice as we change index while editing, could cut that out too
         const actWptIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
         if (this._activeWptIndex != actWptIndex) {
             this._activeWptIndex = actWptIndex;
