@@ -1,220 +1,202 @@
+// prototype singleton, this needs to be different ofc
+let NavRadioPage1Instance = undefined;
+
+class CJ4_FMC_NavRadioPageOne {
+    constructor(fmc) {
+        this._fmc = fmc;
+        this._isDirty = true;
+
+        this._freqMap = {
+            vhf1: "[]",
+            vhf2: "[]",
+            rcl1: "[]",
+            pre2: "[]",
+            vor1: "[]",
+            vor2: "[]",
+            atc1: "[]",
+            adf1: "[]",
+        };
+
+        this._freqProxy = new Proxy(this._freqMap, {
+            set: function (target, key, value) {
+                if (target[key] !== value) {
+                    this._isDirty = true;
+                    target[key] = value;
+                    console.log("FREQ CHANGED! " + key + " = " + value);
+                }
+                return true;
+            }.bind(this)
+        });
+
+    }
+
+    prepare() {
+        // NOOP
+    }
+
+    update() {
+        this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
+        this._freqProxy.vhf2 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 2);
+        this._freqProxy.rcl1 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 1);
+        this._freqProxy.pre2 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 2);
+
+        this._freqProxy.vor1 = this._fmc.radioNav.getVORActiveFrequency(1);
+        this._freqProxy.vor2 = this._fmc.radioNav.getVORActiveFrequency(2);
+
+        this._freqProxy.atc1 = SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number");
+        this._freqProxy.adf1 = this._fmc.radioNav.getADFActiveFrequency(1);
+
+        if (this._isDirty) {
+            this.invalidate();
+        }
+    }
+
+    render() {
+        console.log("Render Nav");
+        const tcasModeSwitch = this._fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], 0, "blue");
+
+        this._fmc._templateRenderer.setTemplateRaw([
+            ["", "1/2[blue]", "TUNE[blue]"],
+            [" COM1", "COM2 "],
+            [this._freqMap.vhf1.toFixed(3) + "[green]", this._freqMap.vhf2.toFixed(3) + "[green]"],
+            [" RECALL", "RECALL "],
+            [this._freqMap.rcl1.toFixed(3) + "", this._freqMap.pre2.toFixed(3) + ""],
+            [" NAV 1", "NAV 2 "],
+            [(this._freqMap.vor1 == 0 ? "__LSB__RSB" : this._freqMap.vor1.toFixed(2)) + "[green]", (this._freqMap.vor2 == 0 ? "__LSB__RSB" : this._freqMap.vor2.toFixed(2)) + "[green]"],
+            [" DME1", "DME2 "],
+            ["HOLD[s-text]", "HOLD[s-text]"],
+            [" ATC1", "TCAS MODE "],
+            [this._freqMap.atc1.toFixed(0).padStart(4, "0") + "[green]", tcasModeSwitch],
+            [" ADF", "REL [blue]"],
+            [this._freqMap.adf1.toFixed(0) + "[green]", "TCAS>"],
+        ]);
+    }
+
+    enterVhfFreq(value, index, isStandby = false) {
+        let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
+        this._fmc.clearUserInput();
+        if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
+            this._fmc.radioNav.setVHFStandbyFrequency(this._fmc.instrumentIndex, index, numValue).then(() => {
+                if (!isStandby)
+                    this._fmc.radioNav.swapVHFFrequencies(this._fmc.instrumentIndex, index);
+                this._fmc.requestCall(() => {
+                    this.update();
+                });
+            });
+        }
+        else if (value.length === 0) {
+            this._fmc.radioNav.swapVHFFrequencies(this._fmc.instrumentIndex, 1);
+            this._fmc.requestCall(() => {
+                this.update();
+            });
+        }
+        else {
+            this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
+        }
+    }
+
+    enterVorFreq(value, index) {
+        let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
+        this._fmc.clearUserInput();
+        if (isFinite(numValue) && numValue >= 108 && numValue <= 117.95 && RadioNav.isHz50Compliant(numValue)) {
+            this._fmc.radioNav.setVORStandbyFrequency(index, numValue).then(() => {
+                this._fmc.radioNav.swapVORFrequencies(index);
+                this._fmc.requestCall(() => {
+                    this.update();
+                });
+            });
+        }
+        else {
+            this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
+        }
+    }
+
+    bindEvents() {
+        this._fmc.onLeftInput[0] = () => {
+            this.enterVhfFreq(this._fmc.inOut, 1);
+        };
+
+        this._fmc.onRightInput[0] = () => {
+            this.enterVhfFreq(this._fmc.inOut, 2);
+        };
+
+        this._fmc.onLeftInput[1] = () => {
+            this.enterVhfFreq(this._fmc.inOut, 1, true);
+        };
+
+        this._fmc.onRightInput[1] = () => {
+            this.enterVhfFreq(this._fmc.inOut, 2, true);
+        };
+
+        this._fmc.onLeftInput[2] = () => {
+            this.enterVorFreq(this._fmc.inOut, 1);
+        };
+
+        this._fmc.onRightInput[2] = () => {
+            this.enterVorFreq(this._fmc.inOut, 2);
+        };
+
+        this._fmc.onLeftInput[5] = () => {
+            let value = this._fmc.inOut;
+            let numValue = parseFloat(value);
+            this._fmc.clearUserInput();
+            if (isFinite(numValue) && numValue >= 100 && numValue <= 1799) {
+                this._fmc.radioNav.setADFActiveFrequency(1, numValue).then(() => {
+                    this._fmc.requestCall(() => {
+                        this.update();
+                    });
+                });
+            }
+            else {
+                this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
+            }
+        };
+        this._fmc.onLeftInput[4] = () => {
+            let value = this._fmc.inOut;
+            let numValue = parseFloat(value);
+            this._fmc.clearUserInput();
+            if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
+                this._fmc.atc1Frequency = numValue;
+                SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", Avionics.Utils.make_xpndr_bcd16(numValue)).then(() => {
+                    this._fmc.requestCall(() => {
+                        this.update();
+                    });
+                });
+            }
+            else {
+                this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
+            }
+        };
+
+        this._fmc.onRightInput[5] = () => { CJ4_FMC_NavRadioPage.ShowPage3(this._fmc); };
+        this._fmc.onPrevPage = () => { CJ4_FMC_NavRadioPage.ShowPage2(this._fmc); };
+        this._fmc.onNextPage = () => { CJ4_FMC_NavRadioPage.ShowPage2(this._fmc); };
+        this._fmc.updateSideButtonActiveStatus();
+    }
+
+    invalidate() {
+        this._isDirty = true;
+        this._fmc.clearDisplay();
+        this.render();
+        this.bindEvents(); // TODO could only call this once on init, but fmc.clearDisplay() clears events
+        this._isDirty = false;
+    }
+
+}
+
 class CJ4_FMC_NavRadioPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
 
-        let vhf1FrequencyCell = "[]";
-        if (fmc.vhf1Frequency > 0) {
-            vhf1FrequencyCell = fmc.vhf1Frequency.toFixed(3);
-        }
-        fmc.onLeftInput[0] = () => {
-            let value = fmc.inOut;
-            let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
-            // console.log(numValue);
-            fmc.clearUserInput();
-            if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
-                fmc.vhf1Frequency = numValue;
-                fmc.radioNav.setVHFStandbyFrequency(fmc.instrumentIndex, 1, numValue).then(() => {
-                    fmc.radioNav.swapVHFFrequencies(fmc.instrumentIndex, 1);
-                    fmc.requestCall(() => {
-                        CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                    });
-                });
-            }
-            else if (value.length === 0) {
+        // create page instance and init 
+        NavRadioPage1Instance = new CJ4_FMC_NavRadioPageOne(fmc);
 
-                let current = fmc.vhf1Frequency;
-                let recall = fmc.rcl1Frequency;
-
-                fmc.vhf1Frequency = recall;
-                fmc.rcl1Frequency = current;
-
-                fmc.radioNav.swapVHFFrequencies(fmc.instrumentIndex, 1);
-                fmc.requestCall(() => {
-                    CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                });
-            }
-            else {
-                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
-            }
-        };
-        let vhf2FrequencyCell = "[]";
-        if (fmc.vhf2Frequency > 0) {
-            vhf2FrequencyCell = fmc.vhf2Frequency.toFixed(3);
-        }
-        fmc.onRightInput[0] = () => {
-            let value = fmc.inOut;
-            let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
-            fmc.clearUserInput();
-            if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
-                fmc.vhf2Frequency = numValue;
-                fmc.radioNav.setVHFStandbyFrequency(fmc.instrumentIndex, 2, numValue).then(() => {
-                    fmc.radioNav.swapVHFFrequencies(fmc.instrumentIndex, 2);
-                    fmc.requestCall(() => {
-                        CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                    });
-                });
-            }
-            else if (value.length === 0) {
-                let current = fmc.vhf2Frequency;
-                let recall = fmc.pre2Frequency;
-
-                fmc.vhf2Frequency = recall;
-                fmc.pre2Frequency = current;
-
-                fmc.radioNav.swapVHFFrequencies(fmc.instrumentIndex, 2);
-                fmc.requestCall(() => {
-                    CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                });
-            }
-            else {
-                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
-            }
-        };
-        let rcl1FrequencyCell = "121.900";
-        if (fmc.rcl1Frequency > 0) {
-            rcl1FrequencyCell = fmc.rcl1Frequency.toFixed(3);
-        }
-        fmc.onLeftInput[1] = () => {
-            let value = fmc.inOut;
-            let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
-            fmc.clearUserInput();
-            if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
-                fmc.rcl1Frequency = numValue;
-                fmc.radioNav.setVHFStandbyFrequency(fmc.instrumentIndex, 1, numValue).then(() => {
-                    fmc.requestCall(() => {
-                        CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                    });
-                });
-            }
-            else {
-                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
-            }
-        };
-        let pre2FrequencyCell = "121.500";
-        if (fmc.pre2Frequency > 0) {
-            pre2FrequencyCell = fmc.pre2Frequency.toFixed(3);
-        }
-        fmc.onRightInput[1] = () => {
-            let value = fmc.inOut;
-            let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
-            fmc.clearUserInput();
-            if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
-                fmc.pre2Frequency = numValue;
-                fmc.radioNav.setVHFStandbyFrequency(fmc.instrumentIndex, 2, numValue).then(() => {
-                    fmc.requestCall(() => {
-                        CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                    });
-                });
-            }
-            else {
-                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
-            }
-        };
-        let vor1FrequencyCell = "110.40";
-        if (fmc.vor1Frequency > 0) {
-            vor1FrequencyCell = fmc.vor1Frequency.toFixed(2);
-        }
-        fmc.onLeftInput[2] = () => {
-            let value = fmc.inOut;
-            let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
-            fmc.clearUserInput();
-            if (isFinite(numValue) && numValue >= 108 && numValue <= 117.95 && RadioNav.isHz50Compliant(numValue)) {
-                fmc.vor1Frequency = numValue;
-                fmc.radioNav.setVORStandbyFrequency(1, numValue).then(() => {
-                    fmc.radioNav.swapVORFrequencies(1);
-                    fmc.requestCall(() => {
-                        CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                    });
-                });
-            }
-            else {
-                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
-            }
-        };
-        let vor2FrequencyCell = "111.10";
-        if (fmc.vor2Frequency > 0) {
-            vor2FrequencyCell = fmc.vor2Frequency.toFixed(2);
-        }
-        fmc.onRightInput[2] = () => {
-            let value = fmc.inOut;
-            let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
-            fmc.clearUserInput();
-            if (isFinite(numValue) && numValue >= 108 && numValue <= 117.95 && RadioNav.isHz50Compliant(numValue)) {
-                fmc.vor2Frequency = numValue;
-                fmc.radioNav.setVORStandbyFrequency(2, numValue).then(() => {
-                    fmc.radioNav.swapVORFrequencies(2);
-                    fmc.requestCall(() => {
-                        CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                    });
-                });
-            }
-            else {
-                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
-            }
-        };
-        let adfFrequencyCell = "[]";
-        if (fmc.adf1Frequency > 0) {
-            adfFrequencyCell = fmc.adf1Frequency.toFixed(0);
-        }
-        fmc.onLeftInput[5] = () => {
-            let value = fmc.inOut;
-            let numValue = parseFloat(value);
-            fmc.clearUserInput();
-            if (isFinite(numValue) && numValue >= 100 && numValue <= 1799) {
-                fmc.adf1Frequency = numValue;
-                fmc.radioNav.setADFActiveFrequency(1, numValue).then(() => {
-                    fmc.requestCall(() => {
-                        CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                    });
-                });
-            }
-            else {
-                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
-            }
-        };
-        let atc1FrequencyCell = "[]";
-        if (fmc.atc1Frequency > 0) {
-            atc1FrequencyCell = fmc.atc1Frequency.toFixed(0).padStart(4, "0");
-        }
-        fmc.onLeftInput[4] = () => {
-            let value = fmc.inOut;
-            let numValue = parseFloat(value);
-            fmc.clearUserInput();
-            if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
-                fmc.atc1Frequency = numValue;
-                SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", Avionics.Utils.make_xpndr_bcd16(numValue)).then(() => {
-                    fmc.requestCall(() => {
-                        CJ4_FMC_NavRadioPage.ShowPage1(fmc);
-                    });
-                });
-            }
-            else {
-                fmc.showErrorMessage(fmc.defaultInputErrorMessage);
-            }
-        };
-
-        const tcasModeSwitch = fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], 0, "blue");
-
-        fmc._templateRenderer.setTemplateRaw([
-            ["", "1/2[blue]", "TUNE[blue]"],
-            [" COM1", "COM2 "],
-            [vhf1FrequencyCell + "[green]", vhf2FrequencyCell + "[green]"],
-            [" RECALL", "RECALL "],
-            [rcl1FrequencyCell + "", pre2FrequencyCell + ""],
-            [" NAV 1", "NAV 2 "],
-            [vor1FrequencyCell + "[green]", vor2FrequencyCell + "[green]"],
-            [" DME1", "DME2 "],
-            ["HOLD[s-text]", "HOLD[s-text]"],
-            [" ATC1", "TCAS MODE "],
-            [atc1FrequencyCell + "[green]", tcasModeSwitch],
-            [" ADF", "REL [blue]"],
-            [adfFrequencyCell + "[green]", "TCAS>"],
-        ]);
-        fmc.onRightInput[5] = () => { CJ4_FMC_NavRadioPage.ShowPage3(fmc); };
-        fmc.onPrevPage = () => { CJ4_FMC_NavRadioPage.ShowPage2(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_NavRadioPage.ShowPage2(fmc); };
-        fmc.updateSideButtonActiveStatus();
+        // register refresh and bind to update which will only render on changes
+        fmc.registerPeriodicPageRefresh(() => {
+            NavRadioPage1Instance.update();
+        }, 1000, true);
     }
+
     static ShowPage2(fmc) {
         fmc.clearDisplay();
 
@@ -285,7 +267,7 @@ class CJ4_FMC_NavRadioPage {
     static ShowPage3(fmc) {
         fmc.clearDisplay();
 
-		fmc._templateRenderer.setTemplateRaw([
+        fmc._templateRenderer.setTemplateRaw([
             ["", "", "TCAS CONTROL[blue]"],
             ["MODE", "ALT TAG"],
             ["TA/RA/STBY", "REL/ABS"],
