@@ -16,6 +16,7 @@ class CJ4_FMC_LegsPage {
 
         this._selectedWaypoint = undefined;
         this._activeWptIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
+        this._distanceToActiveWpt = "0";
 
         this._lsk6Field = "";
 
@@ -29,11 +30,18 @@ class CJ4_FMC_LegsPage {
     }
 
     update() {
+
         // check if active wpt changed
         // TODO: possible that i renders twice as we change index while editing, could cut that out too
         const actWptIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
         if (this._activeWptIndex != actWptIndex) {
             this._activeWptIndex = actWptIndex;
+            this._isDirty = true;
+        }
+
+        const distanceToActWpt = this._fmc.flightPlanManager.getDistanceToActiveWaypoint().toFixed(1);
+        if (distanceToActWpt !== this._distanceToActiveWpt) {
+            this._distanceToActiveWpt = distanceToActWpt;
             this._isDirty = true;
         }
 
@@ -109,9 +117,13 @@ class CJ4_FMC_LegsPage {
                 let bearing = isFinite(waypoint.bearingInFP) ? waypoint.bearingInFP.toFixed(0).padStart(3, "0") + "°" : "";
                 let prevWaypoint = this._wayPointsToRender[i + offset - 1];
                 let distance = "0";
-                if (prevWaypoint) {
-                    distance = "" + Math.trunc(Avionics.Utils.computeDistance(prevWaypoint.infos.coordinates, waypoint.infos.coordinates));
+                if (i == 1 && this._currentPage == 1) {
+                    distance = this._distanceToActiveWpt;
                 }
+                else if (prevWaypoint) {
+                    distance = Math.trunc(Avionics.Utils.computeDistance(prevWaypoint.infos.coordinates, waypoint.infos.coordinates)).toFixed(0);
+                }
+
                 if (i == 0 && this._currentPage == 1) {
                     //this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM"];
                     if (this._fmc.flightPlanManager.getIsDirectTo()) {
@@ -372,12 +384,11 @@ class CJ4_FMC_LegsPage {
 
         // create page instance and init 
         LegsPageInstance = new CJ4_FMC_LegsPage(fmc);
-        LegsPageInstance.invalidate();
 
         // register refresh and bind to update which will only render on changes
         fmc.registerPeriodicPageRefresh(() => {
             LegsPageInstance.update();
-        }, 1000, false);
+        }, 1000, true);
     }
 
 }
