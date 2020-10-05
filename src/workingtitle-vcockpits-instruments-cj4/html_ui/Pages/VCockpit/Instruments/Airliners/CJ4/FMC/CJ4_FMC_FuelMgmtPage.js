@@ -97,7 +97,7 @@ class CJ4_FMC_FuelMgmtPageOne {
 
     invalidate() {
         this._isDirty = true;
-        this._fmc.clearDisplay();
+        this._fmc.clearDisplay(false);
         // this.prepare();
         this.render();
         this.bindEvents(); // TODO could only call this once on init, but fmc.clearDisplay() clears events
@@ -191,7 +191,7 @@ class CJ4_FMC_FuelMgmtPageTwo {
 
     invalidate() {
         this._isDirty = true;
-        this._fmc.clearDisplay();
+        this._fmc.clearDisplay(false);
         // this.prepare();
         this.render();
         this.bindEvents(); // TODO could only call this once on init, but fmc.clearDisplay() clears events

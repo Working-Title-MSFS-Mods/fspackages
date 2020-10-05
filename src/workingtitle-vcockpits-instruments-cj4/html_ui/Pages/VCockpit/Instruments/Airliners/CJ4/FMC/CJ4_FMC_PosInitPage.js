@@ -100,7 +100,6 @@ class CJ4_FMC_PosInitPage {
     }
 
     render() {
-        this._fmc.clearDisplay();
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/2 [blue]", "POS INIT[blue]"],
             [" FMS POS[blue]"],
@@ -120,6 +119,7 @@ class CJ4_FMC_PosInitPage {
 
     invalidate() {
         this._isDirty = true;
+        this._fmc.clearDisplay(false);
         this.prepare(); // in this case i will not always call prepare as data doesn't change
         this.render();
         this.bindEvents(); // TODO i would love to only call it once, but fmc.clearDisplay()

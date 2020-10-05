@@ -28,6 +28,7 @@
         "Aircraft": "writable",
         "FMCMainDisplay": "writable",
         "NavMode": "writable",
+        "RadioNav": "writable",
         "RegisterViewListener": "writable",
         "registerInstrument": "writable",
         "WT_FMC_Renderer": "readonly",

@@ -214,13 +214,14 @@ class CJ4_FMC extends FMCMainDisplay {
         this._templateRenderer.setMsg(value);
     }
 
-    clearDisplay() {
+    clearDisplay(cleartimer = true) {
         super.clearDisplay();
         this._templateRenderer.clearDisplay.apply(this);
         this.onPrevPage = EmptyCallback.Void;
         this.onNextPage = EmptyCallback.Void;
 
-        this.unregisterPeriodicPageRefresh();
+        if (cleartimer)
+            this.unregisterPeriodicPageRefresh();
     }
     getOrSelectWaypointByIdent(ident, callback) {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
@@ -400,6 +401,7 @@ class CJ4_FMC extends FMCMainDisplay {
      */
     unregisterPeriodicPageRefresh() {
         if (this._pageRefreshTimer) {
+            console.log("clear interval for timer " + this._pageRefreshTimer);
             clearInterval(this._pageRefreshTimer);
         }
     }
@@ -433,7 +435,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
         const leftFuelQty = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons");
         const rightFuelQty = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons");
-        
+
         if (this.previousRightFuelQty === undefined && this.previousLeftFuelQty === undefined) {
             this.previousLeftFuelQty = leftFuelQty;
             this.previousRightFuelQty = rightFuelQty;

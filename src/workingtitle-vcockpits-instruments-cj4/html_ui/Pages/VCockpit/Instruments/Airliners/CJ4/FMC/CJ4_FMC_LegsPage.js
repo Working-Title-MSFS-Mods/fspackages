@@ -336,7 +336,7 @@ class CJ4_FMC_LegsPage {
     // TODO, later this could be in the base class
     invalidate() {
         this._isDirty = true;
-        this._fmc.clearDisplay();
+        this._fmc.clearDisplay(false);
         this.updateLegs();
         this.render();
         this.bindInputs(); // TODO ideally this should only be called once, but clearDisplay clears everthing
