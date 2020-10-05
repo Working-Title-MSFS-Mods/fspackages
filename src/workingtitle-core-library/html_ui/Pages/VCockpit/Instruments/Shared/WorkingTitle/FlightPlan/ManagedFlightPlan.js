@@ -392,32 +392,64 @@ class ManagedFlightPlan {
   async setDepartureFromIndex(index) {
     if (this.hasOrigin) {
       const origin = this._waypoints[0];
+
       if (index >= 0 && index < origin.infos.departures.length && this.procedureDetails.departureRunwayIndex !== -1) {
-
-        const legs = [];
-        const runwayTransition = origin.infos.departures[index].runwayTransitions[this.procedureDetails.departureRunwayIndex];
-
-        for (var i = 0; i < runwayTransition.legs.length; i++) {
-          if (runwayTransition.legs[i].fixIcao.trim() !== "") {
-            const legWaypoint = await this._parentInstrument.facilityLoader.getFacility(runwayTransition.legs[i].fixIcao);
-            legs.push(legWaypoint);
-          }
-        }
-
-        this._waypoints.splice(1, this.enrouteStart - 1, ...legs);
-        const numWaypointsDiff = legs.length - (this.enrouteStart - this.departureStart)
-
-        this.enrouteStart += numWaypointsDiff;
-        this.arrivalStart += numWaypointsDiff;
-        this.approachStart += numWaypointsDiff;
-        
-        this.procedureDetails.departureSelected = true;
-        this.procedureDetails.departureFromOriginData = true;
         this.procedureDetails.departureIndex = index;
 
-        this._reflowDistances();
+        if (this.procedureDetails.departureRunwayIndex !== -1) {
+          await this._insertDepartureFromIndexes();
+        }
       }
     }
+  }
+
+  /**
+   * Sets the departure runway transition from an index in the origin airport departure information.
+   * @param {Number} index The index of the runway transition in the origin departures information.
+   */
+  async setDepartureRunwayFromIndex(index) {
+    if (this.hasOrigin) {
+      const origin = this._waypoints[0];
+      if (index >= 0 && index < origin.infos.oneWayRunways.length) {
+        this.procedureDetails.departureRunwayIndex = index;
+
+        if (this.procedureDetails.departureIndex !== -1) {
+          await this._insertDepartureFromIndexes();
+        }
+      }
+    }
+  }
+
+  /**
+   * Inserts a departure into the flight plan from indexes in the departure airport information.
+   */
+  async _insertDepartureFromIndexes() {
+      const legs = [];
+
+      const departureIndex = this.procedureDetails.departureIndex;
+      const runwayIndex = this.procedureDetails.departureRunwayIndex;
+      const transitionIndex = this.procedureDetails.departureTransitionIndex;
+
+      const runwayTransition = origin.infos.departures[departureIndex].runwayTransitions[runwayIndex];
+
+      for (var i = 0; i < runwayTransition.legs.length; i++) {
+        if (runwayTransition.legs[i].fixIcao.trim() !== "") {
+          const legWaypoint = await this._parentInstrument.facilityLoader.getFacility(runwayTransition.legs[i].fixIcao);
+          legs.push(legWaypoint);
+        }
+      }
+
+      this._waypoints.splice(1, this.enrouteStart - 1, ...legs);
+      const numWaypointsDiff = legs.length - (this.enrouteStart - this.departureStart)
+
+      this.enrouteStart += numWaypointsDiff;
+      this.arrivalStart += numWaypointsDiff;
+      this.approachStart += numWaypointsDiff;
+      
+      this.procedureDetails.departureSelected = true;
+      this.procedureDetails.departureFromOriginData = true;
+
+      this._reflowDistances();
   }
 
   /**
