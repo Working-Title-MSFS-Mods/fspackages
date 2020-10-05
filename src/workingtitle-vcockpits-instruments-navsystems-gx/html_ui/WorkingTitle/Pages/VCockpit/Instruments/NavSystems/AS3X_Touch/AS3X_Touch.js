@@ -31,7 +31,8 @@ class AS3X_Touch extends NavSystemTouch {
         this.mfdMapElement = this.getChildById("Map_Elements");
         this.mfdMapMapElement = this.mfdMapElement.getElementsByTagName("map-instrument")[0];
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", new PFD_Warnings()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("MainMap", "Map_Elements", new AS3X_Touch_Map()));
+        this.mainMap = new AS3X_Touch_Map();
+        this.addIndependentElementContainer(new NavSystemElementContainer("MainMap", "Map_Elements", this.mainMap));
         this.topBar = new AS3X_Touch_TopBar();
         this.addIndependentElementContainer(new NavSystemElementContainer("TopBar", "TopBar", this.topBar));
         this.transponderWindow = new NavSystemElementContainer("Transponder", "XPDR", new AS3X_Touch_Transponder());
@@ -65,6 +66,10 @@ class AS3X_Touch extends NavSystemTouch {
                     new NavSystemTouch_ActiveFPL(true),
                     new AS3X_Touch_MapContainer("Afpl_Map")
                 ]), "FPL", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FLIGHT_PLAN_MED_1.png"),
+                new AS3X_Touch_NavSystemPage("Weather", "Map", new AS3X_Touch_MapContainer("Map"), "WX",
+                    "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png",
+                    () => { this.mainMap.nexradOn = true; },
+                    () => { this.mainMap.nexradOn = false; }),
                 new AS3X_Touch_NavSystemPage("Procedures", "Procedures", new AS3X_Touch_Procedures(), "Proc", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PROCEDURES_1.png")
             ], [
                 new AS3X_Touch_MenuButton("Direct-To", "", this.switchToPopUpPage.bind(this, this.directToWindow), true),
@@ -723,6 +728,13 @@ class AS3X_Touch_Map extends MapInstrumentElement {
                 this.mapOrientation.innerText = this.trackUp ? "TRACK UP" : "NORTH UP";
             }
         }
+        if (this.nexradOn) {
+            // this is less than idea, but I can't find any other way to keep from having the
+            // nexrad map be cut off at the bottom when scrolling to WX through FPL.  Even
+            // forcing an updateWeather in onEnter() doesn't work. 
+            // TODO:  See if there's a better way to do this.
+            this.updateWeather();
+        }
     }
     moveMode() {
         this.instrument.setAttribute("bing-mode", "vfr");
@@ -879,10 +891,20 @@ class AS3X_Touch_PageGroup extends NavSystemPageGroup {
     }
 }
 class AS3X_Touch_NavSystemPage extends NavSystemPage {
-    constructor(_name, _htmlElemId, _element, _shortName, _imagePath) {
+    constructor(_name, _htmlElemId, _element, _shortName, _imagePath, _enterCb, _exitCb) {
         super(_name, _htmlElemId, _element);
         this.shortName = _shortName;
         this.imagePath = _imagePath;
+        this._enterCb = _enterCb;
+        this._exitCb = _exitCb;
+    }
+    onEnter() {
+        super.onEnter();
+        if (this._enterCb) this._enterCb();
+    }
+    onExit() {
+        super.onExit();
+        if (this._exitCb) this._exitCb();
     }
 }
 class AS3X_Touch_DirectTo extends NavSystemTouch_DirectTo {
@@ -1330,5 +1352,7 @@ class AS3X_Touch_ApproachSelection extends NavSystemTouch_ApproachSelection {
         this.gps.closePopUpElement();
     }
 }
+
+
 registerInstrument("as3x-touch-element", AS3X_Touch);
 //# sourceMappingURL=AS3X_Touch.js.map
