@@ -148,7 +148,7 @@ class CJ4_FMC_LegsPage {
     }
 
     render() {
-        console.log("RENDER LEGS");
+        // console.log("RENDER LEGS");
 
         this._lsk6Field = "";
         if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
@@ -379,7 +379,7 @@ class CJ4_FMC_LegsPage {
     }
 
     static ShowPage1(fmc) {
-        console.log("SHOW LEGS PAGE 1");
+        // console.log("SHOW LEGS PAGE 1");
         fmc.clearDisplay();
 
         // create page instance and init 

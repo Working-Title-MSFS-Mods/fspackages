@@ -35,7 +35,7 @@ class CJ4_FMC_NavRadioPageOne {
     }
 
     update() {
-        console.log("navradio.update()");
+        // console.log("navradio.update()");
 
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.vhf2 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 2);
@@ -54,7 +54,7 @@ class CJ4_FMC_NavRadioPageOne {
     }
 
     render() {
-        console.log("Render Nav");
+        // console.log("Render Nav");
         const tcasModeSwitch = this._fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], 0, "blue");
 
         this._fmc._templateRenderer.setTemplateRaw([
