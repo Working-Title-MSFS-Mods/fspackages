@@ -702,14 +702,27 @@ class AS3X_Touch_MapContainer extends NavSystemElement {
 class AS3X_Touch_Map extends MapInstrumentElement {
     init(root) {
         super.init(root);
+        this.trackUp = false;
         this.mapPlus = root.querySelector(".mapPlus");
         this.mapLess = root.querySelector(".mapLess");
         this.mapCenter = root.querySelector(".mapCenter");
+        this.mapOrientation = root.querySelector("#MapOrientation");
         this.gps.makeButton(this.mapPlus, this.instrument.onEvent.bind(this.instrument, "RANGE_DEC"));
         this.gps.makeButton(this.mapLess, this.instrument.onEvent.bind(this.instrument, "RANGE_INC"));
         this.gps.makeButton(this.mapCenter, this.centerOnPlane.bind(this));
         this.instrument.addEventListener("mousedown", this.moveMode.bind(this));
         this.instrument.supportMouseWheel(false);
+    }
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
+        if (SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean") != this.trackUp) {
+            this.trackUp = !this.trackUp;
+            this.instrument.rotateWithPlane(this.trackUp);
+            this.instrument.roadNetwork._lastRange = -1; // force canvas to redraw (SvgRoadNetworkElement.js:297)
+            if (this.mapOrientation) {
+                this.mapOrientation.innerText = this.trackUp ? "TRACK UP" : "NORTH UP";
+            }
+        }
     }
     moveMode() {
         this.instrument.setAttribute("bing-mode", "vfr");
