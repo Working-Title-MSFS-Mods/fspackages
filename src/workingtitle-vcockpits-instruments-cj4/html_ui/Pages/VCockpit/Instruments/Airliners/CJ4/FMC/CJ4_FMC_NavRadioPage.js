@@ -46,19 +46,9 @@ class CJ4_FMC_NavRadioPageOne {
         this._freqProxy.atc1 = SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number");
         this._freqProxy.adf1 = this._fmc.radioNav.getADFActiveFrequency(1);
 
-
         if (this._isDirty) {
             this.invalidate();
         }
-
-        // this._freqProxy.vhf1 = (this._fmc.vhf1Frequency > 0 ? this._fmc.vhf1Frequency.toFixed(3) : "[]");
-        // this._freqProxy.vhf2 = (this._fmc.vhf2Frequency > 0 ? this._fmc.vhf2Frequency.toFixed(3) : "[]");
-        // this._freqProxy.rcl1 = (this._fmc.rcl1Frequency > 0 ? this._fmc.rcl1Frequency.toFixed(3) : "[]");
-        // this._freqProxy.pre2 = (this._fmc.pre2Frequency > 0 ? this._fmc.pre2Frequency.toFixed(3) : "[]");
-        // this._freqProxy.vor1 = (this._fmc.vor1Frequency > 0 ? this._fmc.vor1Frequency.toFixed(2) : "[]");
-        // this._freqProxy.vor2 = (this._fmc.vor2Frequency > 0 ? this._fmc.vor2Frequency.toFixed(2) : "[]");
-        // this._freqProxy.atc1 = (this._fmc.atc1Frequency > 0 ? this._fmc.atc1Frequency.toFixed(0).padStart(4, "0") : "[]");
-        // this._freqProxy.adf1 = (this._fmc.adf1Frequency > 0 ? this._fmc.adf1Frequency.toFixed(0) : "[]");
     }
 
     render() {
