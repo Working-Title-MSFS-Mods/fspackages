@@ -29,6 +29,7 @@
         "FMCMainDisplay": "writable",
         "NavMode": "writable",
         "RegisterViewListener": "writable",
+        "registerInstrument": "writable",
         "WT_FMC_Renderer": "readonly",
         "CJ4_FMC_LegsPage": "readonly",
         "CJ4_FMC_DepArrPage": "readonly",
