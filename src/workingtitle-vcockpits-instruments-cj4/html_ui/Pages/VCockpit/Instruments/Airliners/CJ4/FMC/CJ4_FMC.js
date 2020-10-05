@@ -146,6 +146,10 @@ class CJ4_FMC extends FMCMainDisplay {
             initRadioNav(_boot);
             this.initializeStandbyRadios(_boot);
         };
+
+        const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
+        this.initialFuelLeft = Math.trunc(SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * fuelWeight);
+        this.initialFuelRight = Math.trunc(SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * fuelWeight);
     }
     Update() {
         super.Update();
