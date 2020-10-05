@@ -27,15 +27,6 @@ class SvgMap {
         this.htmlRoot = _root;
         this.planeXY = new Vec2(0.5, 0.5);
 		
-		/*
-		 * Defines orientation of the map:
-		 * hdg: current aircraft heading up
-		 * trk: current ground track up
-		 * north: North up
-		 */
-		this.orientation = "hdg";
-		
-		this.rotation = 0;		// rotation of map, in degrees
 		this.cosRotation = 1;	// cosine of rotation, mainly for internal use
 		this.sinRotation = 0;	// sine of rotation, mainly for internal use
 		
@@ -190,17 +181,8 @@ class SvgMap {
         }
     }
 	
-	// MOD: Add support for three orientation modes: heading, track, and north up.
-	setOrientation(_val) {
-		switch (_val) {
-			case "trk":
-			case "north":
-				this.orientation = _val;
-				break;
-			case "hdg":
-			default:
-				this.orientation = "hdg";
-		}
+	get rotation() {
+		return this.htmlRoot.rotation;
 	}
 	
     computeCoordinates() {
@@ -266,14 +248,6 @@ class SvgMap {
             this.planeLayer = document.createElementNS(Avionics.SVG.NS, "g");
             this.svgHtmlElement.appendChild(this.planeLayer);
         }
-		
-		if (this.orientation == "hdg") {
-			this.rotation = -SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
-		} else if (this.orientation == "trk") {
-			this.rotation = -SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
-		} else {
-			this.rotation = 0;
-		}
 
         this.planeDirection = Math.abs(SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree")) % 360;
         
@@ -530,14 +504,8 @@ class SvgMap {
         let y = -deltaLat * 1000;
         deltaLat += 0.5;
         let x = xNorth * deltaLat + xSouth * (1 - deltaLat);
-        if (this.orientation != "north") {
-            ref.x = x * this.cosRotation - y * this.sinRotation + 500;
-            ref.y = x * this.sinRotation + y * this.cosRotation + 500;
-        }
-        else {
-            ref.x = x + 500;
-            ref.y = y + 500;
-        }
+        ref.x = x * this.cosRotation - y * this.sinRotation + 500;
+        ref.y = x * this.sinRotation + y * this.cosRotation + 500;
     }
 	
     coordinatesToXYToRef(coordinates, ref) {
@@ -547,14 +515,8 @@ class SvgMap {
         let y = -deltaLat * 1000;
         deltaLat += 0.5;
         let x = xNorth * deltaLat + xSouth * (1 - deltaLat);
-        if (this.orientation != "north") {
-            ref.x = x * this.cosRotation - y * this.sinRotation + 500;
-            ref.y = x * this.sinRotation + y * this.cosRotation + 500;
-        }
-        else {
-            ref.x = x + 500;
-            ref.y = y + 500;
-        }
+        ref.x = x * this.cosRotation - y * this.sinRotation + 500;
+        ref.y = x * this.sinRotation + y * this.cosRotation + 500;
     }
 	
     latLongToXYToRefForceCenter(lat, long, ref, forcedCenterCoordinates) {
@@ -564,14 +526,8 @@ class SvgMap {
         let y = -deltaLat * 1000;
         deltaLat += 0.5;
         let x = xNorth * deltaLat + xSouth * (1 - deltaLat);
-        if (this.orientation != "north") {
-            ref.x = x * this.cosRotation - y * this.sinRotation + 500;
-            ref.y = x * this.sinRotation + y * this.cosRotation + 500;
-        }
-        else {
-            ref.x = x + 500;
-            ref.y = y + 500;
-        }
+        ref.x = x * this.cosRotation - y * this.sinRotation + 500;
+        ref.y = x * this.sinRotation + y * this.cosRotation + 500;
     }
 	
     coordinatesToXYToRefForceCenter(coordinates, ref, forcedCenterCoordinates) {
@@ -581,14 +537,8 @@ class SvgMap {
         let y = -deltaLat * 1000;
         deltaLat += 0.5;
         let x = xNorth * deltaLat + xSouth * (1 - deltaLat);
-        if (this.orientation != north) {
-            ref.x = x * this.cosRotation - y * this.sinRotation + 500;
-            ref.y = x * this.sinRotation + y * this.cosRotation + 500;
-        }
-        else {
-            ref.x = x + 500;
-            ref.y = y + 500;
-        }
+        ref.x = x * this.cosRotation - y * this.sinRotation + 500;
+        ref.y = x * this.sinRotation + y * this.cosRotation + 500;
     }
 	
     XYToCoordinates(xy) {

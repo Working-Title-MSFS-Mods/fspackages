@@ -535,11 +535,7 @@ class SvgRoadNetworkElement extends SvgMapElement {
         if (this.parentWidth < this.canvasSize) {
             left = (this.parentWidth - this.canvasSize) * 0.5 + p.x;
         }
-        let deltaRotation = 0;
-        if (_map.orientation != "north") {
-            deltaRotation = _map.rotation - this._forcedDirection;
-        }
-        this.translateCanvas(this._visibleCanvas.canvas, left, top, deltaRotation);
+        this.translateCanvas(this._visibleCanvas.canvas, left, top, _map.rotation - this._forcedDirection);
     }
 	
 	translateCanvas(_canvas, _x, _y, _rotation) {

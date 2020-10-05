@@ -876,6 +876,7 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.bingMap) {
 					// handle bing map rotation with three orientation settings
                     let transform = "";
+					let roundedCompass = 0;
 					/*
                     if (this.bRotateWithAirplane && !this.isDisplayingWeatherRadar() && !this.bTrackUpDisabled) {
                         var compass = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
@@ -884,7 +885,6 @@ class MapInstrument extends ISvgMapRootElement {
                     }
 					*/
 					if (!this.isDisplayingWeatherRadar() && !this.bTrackUpDisabled) {
-						var roundedCompass = 0;
 						if (this.orientation == "hdg") {
 							roundedCompass = fastToFixed(SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree"), 3);
 						} else if (this.orientation == "trk") {
@@ -1255,9 +1255,6 @@ class MapInstrument extends ISvgMapRootElement {
 			case "hdg":
 			default:
 				this.orientation = "hdg";
-		}
-		if (this.navMap) {
-			this.navMap.setOrientation(this.orientation);
 		}
 		Avionics.Utils.diffAndSet(this.mapOrientationElement, this.orientation.toUpperCase() + " UP");
 	}

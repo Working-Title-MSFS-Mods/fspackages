@@ -38,7 +38,7 @@ class SvgAirplaneElement extends SvgMapElement {
             let rotation = "rotate(" + fastToFixed(this._forcedRot, 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.5), 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.5), 1) + ")";
             this.svgElement.children[0].setAttribute("transform", rotation);
         }
-        else if (map.orientation != "hdg") { // MOD: adapt code for new hdg/trk orientations
+        else if (map.htmlRoot.orientation != "hdg") { // MOD: adapt code for new hdg/trk orientations
             if (this._lastTrack !== track && isFinite(track)) {
                 if (this.svgElement.children[0]) {
                     this._lastTrack = track;
@@ -246,9 +246,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
                 if (this.svgElement.children[0]) {
                     this._lastHeading = this.heading;
                     let angle = this.heading;
-                    if (map.orientation != "north") { // MOD: adapt code for new hdg/trk orientations
-                        angle += map.rotation;
-                    }
+                    angle += map.rotation;
                     let rotation = "rotate(" + fastToFixed(angle, 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.7 * 0.5), 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.7 * 0.5), 1) + ")";
                     this.svgElement.children[0].setAttribute("transform", rotation);
                 }
