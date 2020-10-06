@@ -296,7 +296,7 @@ class CJ4_FMC_DepArrPage {
                         rows[2 * (i + 1)][1] = name;
                         fmc.onRightInput[i + 1] = () => {
                             fmc.setApproachTransitionIndex(index, () => {
-                                CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
+                                CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                             });
                         };
                     }
