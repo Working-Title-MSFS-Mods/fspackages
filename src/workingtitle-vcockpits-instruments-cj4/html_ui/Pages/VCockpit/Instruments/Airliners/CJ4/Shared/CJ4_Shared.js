@@ -3728,51 +3728,6 @@ class NormalChecklist extends Checklist {
         super("NORMAL CHECKLIST MENU");
         this.sections = [
             {
-                name: "COCKPIT PREPARATION",
-                checklistItems: [
-                    {
-                        name: "AVIONICS SWITCH",
-                        value: "ON",
-                        key: false
-                    },
-                    {
-                        name: "PARKING BRAKE",
-                        value: "SET",
-                        key: false
-                    },
-                    {
-                        name: "FUEL TRANSFER SELECTOR",
-                        value: "OFF",
-                        key: false
-                    },
-                    {
-                        name: "PRESSURIZATION SOURCE SELECTOR",
-                        value: "NORM",
-                        key: false
-                    },
-                    {
-                        name: "CABIN DUMP PRESSURE BUTTON",
-                        value: "OFF",
-                        key: false
-                    },
-                    {
-                        name: "BATTERY SWITCH",
-                        value: "ON",
-                        key: false
-                    },
-                    {
-                        name: "EXTERIOR LIGHTS",
-                        value: "AS REQUIRED",
-                        key: false
-                    },
-                    {
-                        name: "LANDING GEAR HANDLE",
-                        value: "GEAR DOWN (3 GREEN)",
-                        key: false
-                    }
-                ]
-            },
-            {
                 name: "BEFORE STARTING ENGINES",
                 checklistItems: [
                     {
@@ -3781,7 +3736,7 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
-                        name: "EMER LIGHTS SWITCH",
+                        name: "EMERGENCY LIGHTS SWITCH",
                         value: "ARMED",
                         key: false
                     },
@@ -3801,8 +3756,18 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
+                        name: "SEATS/BELTS/PEDALS",
+                        value: "ADJUST/SECURE",
+                        key: false
+                    },
+                    {
                         name: "EXTERIOR LIGHTS",
                         value: "AS REQUIRED",
+                        key: false
+                    },
+                    {
+                        name: "FMS",
+                        value: "CHECK/SET",
                         key: false
                     },
                     {
@@ -3816,12 +3781,17 @@ class NormalChecklist extends Checklist {
                 name: "BEFORE TAXI",
                 checklistItems: [
                     {
+                        name: "AVIONICS",
+                        value: "ON",
+                        key: false
+                    },
+                    {
                         name: "CLIMATE CONTROL SELECTOR",
                         value: "NORM",
                         key: false
                     },
                     {
-                        name: "PASS LIGHTS SAFTEY",
+                        name: "PASS LIGHTS SAFETY BUTTON",
                         value: "ON",
                         key: false
                     },
@@ -3851,12 +3821,12 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
-                        name: "ENG ONLY ANTI-ICE BUTTONS",
+                        name: "ENGINE ONLY ANTI-ICE",
                         value: "AS REQUIRED",
                         key: false
                     },
                     {
-                        name: "TAKEOFF DATA (V1,VR,V2)",
+                        name: "TAKEOFF DATA",
                         value: "CONFIRM/SET",
                         key: false
                     },
@@ -3871,7 +3841,7 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
-                        name: "ALTIMETERS",
+                        name: "ALTIMETER",
                         value: "SET/CHECK",
                         key: false
                     }
@@ -3899,6 +3869,16 @@ class NormalChecklist extends Checklist {
                         name: "BRAKES",
                         value: "CHECK",
                         key: false
+                    },
+                    {
+                        name: "NOSEWHEEL STEERING",
+                        value: "CHECK",
+                        key: false
+                    },
+                    {
+                        name: "FLIGHT INSTRUMENTS",
+                        value: "CHECK",
+                        key: false
                     }
                 ]
             },
@@ -3907,7 +3887,12 @@ class NormalChecklist extends Checklist {
                 checklistItems: [
                     {
                         name: "ICE PROTECTION SYSTEM",
-                        value: "CHECK/AS REQUIRED",
+                        value: "CHECK",
+                        key: false
+                    },
+                    {
+                        name: "SEATS",
+                        value: "UPRIGHT/OUTBOARD",
                         key: false
                     },
                     {
@@ -3921,7 +3906,7 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
-                        name: "TRIMS",
+                        name: "TRIMS (3)",
                         value: "SET FOR TAKEOFF",
                         key: false
                     },
@@ -3931,13 +3916,13 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
-                        name: "RADAR",
-                        value: "AS REQUIRED",
+                        name: "BATTERY AMPS",
+                        value: "VERIFY 20 OR LESS",
                         key: false
                     },
                     {
-                        name: "BATTERY AMPS",
-                        value: "VERIFY 20 OR LESS",
+                        name: "ICE PROTECTION SYSTEMS",
+                        value: "AS REQUIRED",
                         key: false
                     },
                     {
@@ -3948,6 +3933,31 @@ class NormalChecklist extends Checklist {
                     {
                         name: "EXTERIOR LIGHTS",
                         value: "AS REQUIRED",
+                        key: false
+                    }
+                ]
+            },
+            {
+                name: "TAKEOFF",
+                checklistItems: [
+                    {
+                        name: "THROTTLES",
+                        value: "TAKEOFF",
+                        key: false
+                    },
+                    {
+                        name: "N1 COMMAND BUGS",
+                        value: "GREEN CHEVRON",
+                        key: false
+                    },
+                    {
+                        name: "BRAKES",
+                        value: "RELEASE",
+                        key: false
+                    },
+                    {
+                        name: "CONTROL WHEEL",
+                        value: "ROTATE AT VR",
                         key: false
                     }
                 ]
@@ -3967,7 +3977,7 @@ class NormalChecklist extends Checklist {
                     },
                     {
                         name: "THROTTLES",
-                        value: "CLB",
+                        value: "CLIMB",
                         key: false
                     },
                     {
@@ -3991,7 +4001,7 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
-                        name: "LNDG LIGHTS BUTTON",
+                        name: "LANDING LIGHTS BUTTON",
                         value: "AS REQUIRED",
                         key: false
                     },
@@ -4001,8 +4011,8 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
-                        name: "ALTIMETERS (TRANSITION ALTITUDE)",
-                        value: "STD/CROSSCHECK",
+                        name: "ALTIMETERS",
+                        value: "SET/CROSSCHECK",
                         key: false
                     }
                 ]
@@ -4012,7 +4022,7 @@ class NormalChecklist extends Checklist {
                 checklistItems: [
                     {
                         name: "THROTTLES",
-                        value: "CRU OR AS REQUIRED",
+                        value: "AS REQUIRED",
                         key: false
                     },
                     {
@@ -4032,7 +4042,7 @@ class NormalChecklist extends Checklist {
                 checklistItems: [
                     {
                         name: "PRESSURIZATION",
-                        value: "VERIFY/SET",
+                        value: "VERIFY/SET LDG ELEV",
                         key: false
                     },
                     {
@@ -4041,7 +4051,7 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
-                        name: "ALTIMETERS (TRANSITION FLIGHT LEVEL)",
+                        name: "ALTIMETERS",
                         value: "SET/CROSSCHECK",
                         key: false
                     },
@@ -4096,8 +4106,23 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
+                        name: "SEATS",
+                        value: "UPRIGHT AND OUTBOARD",
+                        key: false
+                    },
+                    {
+                        name: "SEAT BELTS",
+                        value: "ADJUSTED/SECURE",
+                        key: false
+                    },
+                    {
                         name: "PASS LIGHTS SAFETY BUTTON",
                         value: "ON",
+                        key: false
+                    },
+                    {
+                        name: "PRESSURIZATION",
+                        value: "< 0.5 PSI BEFORE LDG",
                         key: false
                     }
                 ]
@@ -4141,7 +4166,7 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
-                        name: "BRAKES",
+                        name: "BRAKES (AFTER NLG TOUCHDOWN)",
                         value: "APPLY",
                         key: false
                     },
@@ -4166,8 +4191,13 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
+                        name: "PITOT/STATIC HEAT BUTTONS",
+                        value: "OFF",
+                        key: false
+                    },
+                    {
                         name: "ICE PROTECTION SYSTEMS",
-                        value: "-",
+                        value: "OFF/AS REQUIRED",
                         key: false
                     },
                     {
