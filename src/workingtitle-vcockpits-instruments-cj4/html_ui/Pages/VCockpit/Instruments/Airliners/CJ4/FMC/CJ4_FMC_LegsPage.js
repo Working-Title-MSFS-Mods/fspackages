@@ -125,7 +125,9 @@ class CJ4_FMC_LegsPage {
                 let bearing = isFinite(waypoint.bearingInFP) ? waypoint.bearingInFP.toFixed(0).padStart(3, "0") + "°" : "";
                 let prevWaypoint = this._wayPointsToRender[i + offset - 1];
                 let distance = "0";
-                if (i == 1 && this._currentPage == 1) {
+                let isFromWpt = (i == 0 && this._currentPage == 1);
+                let isActWpt = (i == 1 && this._currentPage == 1);
+                if (isActWpt) {
                     distance = this._distanceToActiveWpt;
                 }
                 else if (prevWaypoint) {
@@ -149,7 +151,8 @@ class CJ4_FMC_LegsPage {
                     this._rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident : "USR"];
                 }
 
-                this._rows[2 * i + 1][1] = this.getAltSpeedRestriction(waypoint);
+                if (!isFromWpt)
+                    this._rows[2 * i + 1][1] = this.getAltSpeedRestriction(waypoint);
             }
 
         }
@@ -358,8 +361,8 @@ class CJ4_FMC_LegsPage {
     }
 
     getAltSpeedRestriction(waypoint) {
-        let speedConstraint = "";
-        let altitudeConstraint = "FL";
+        let speedConstraint = "---";
+        let altitudeConstraint = "----- ";
 
         if (waypoint.speedConstraint && waypoint.speedConstraint > 100) {
             speedConstraint = waypoint.speedConstraint;
@@ -381,14 +384,10 @@ class CJ4_FMC_LegsPage {
                     : waypoint.legAltitude2.toFixed(0) + "B";
                 altitudeConstraint = altitudeConstraintA + "/" + altitudeConstraintB;
             }
-            else {
-                altitudeConstraint = "FL" + this._fmc.cruiseFlightLevel;
-            }
+
+            altitudeConstraint = altitudeConstraint.padStart(6, " ");
         }
-        else {
-            altitudeConstraint = "FL" + this._fmc.cruiseFlightLevel;
-        }
-        return speedConstraint + "/" + altitudeConstraint;
+        return speedConstraint + "/" + altitudeConstraint + "[green]";
     }
 
     static ShowPage1(fmc) {
