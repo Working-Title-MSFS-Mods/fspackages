@@ -215,7 +215,6 @@
 					<NODE_ID_ENG>CCP_Push_eng</NODE_ID_ENG>
 					<NODE_ID_UPR_MENU>CCP_Push_uprMenu</NODE_ID_UPR_MENU>
 					<NODE_ID_RANGE_STICK>CCP_Joystick</NODE_ID_RANGE_STICK>
-					<NODE_ID_CKLST>CCP_PUSH_CKLST_1</NODE_ID_CKLST>
 					<ANIM_NAME_RANGE_STICK_L_R>CCP_Joystick_L_R</ANIM_NAME_RANGE_STICK_L_R>
 					<ANIM_NAME_RANGE_STICK_DN_UP>CCP_Joystick_DN_UP</ANIM_NAME_RANGE_STICK_DN_UP>
 				</UseTemplate>
@@ -259,6 +258,19 @@
 					<ANIM_NAME_RANGE_STICK_DN_UP>CCP_Joystick_DN_UP</ANIM_NAME_RANGE_STICK_DN_UP>
 				</UseTemplate>
 			</Component>
+			
+			<UseTemplate Name="WT_Detached_Control_Panel_Template">
+				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
+				<ID>1</ID>
+				<!-- Node_ids LOWER PANEL -->
+				<NODE_ID_CKLST>CCP_PUSH_CKLST_1</NODE_ID_CKLST>
+			</UseTemplate>
+			<UseTemplate Name="WT_Detached_Control_Panel_Template">
+				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
+				<ID>1</ID>
+				<!-- Node_ids LOWER PANEL -->
+				<NODE_ID_CKLST>CCP_PUSH_CKLST_2</NODE_ID_CKLST>
+			</UseTemplate>
 		</Component>
 
 		<!-- LIGHTING #############################################################################################################-->
