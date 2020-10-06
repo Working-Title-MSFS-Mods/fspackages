@@ -1342,9 +1342,9 @@ var ChecklistMenu;
             return false;
         }
         get enabled() {
-            if (this.dictKeys != null || this.subMenu)
-                return true;
-            return false;
+            if (!this.subMenu)
+                return false;
+            return true;
         }
     }
     class Menu_Section {
@@ -1401,16 +1401,18 @@ var ChecklistMenu;
             this.updateSpeedInc();
         }
         onActivate() {
-            if (this.highlightItem && this.highlightItem.enabled) {
+            if (this.highlightItem) {
                 switch (this.highlightItem.type) {
                     case Menu_ItemType.SUBMENU:
                         this.highlightItem.subMenu();
                         break;
                     case Menu_ItemType.CHECKBOX:
                         if (!this.highlightItem.checkboxVal) {
+                            console.log("CHECK");
                             this.activateItem(this.highlightItem, true);
                         }
                         else {
+                            console.log("UNCHECK");
                             this.activateItem(this.highlightItem, false);
                             this.highlightItem.checkboxVal = false;
                         }
@@ -1461,8 +1463,6 @@ var ChecklistMenu;
             this.highlightElem.setAttribute("stroke", this.highlightColor);
             this.highlightElem.setAttribute("stroke-width", (this.sectionBorderSize + 1).toString());
             this.sectionRoot.appendChild(this.highlightElem);
-            if (this.dictionary)
-                this.dictionary.changed = false;
         }
         beginSection(_defaultRadio = true) {
             this.section = new Menu_Section();
@@ -1476,13 +1476,10 @@ var ChecklistMenu;
         endSection() {
             for (let i = 0; i < this.section.items.length; i++) {
                 let item = this.section.items[i];
-                let dictIndex = 0;
                 let changed = false;
-                if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[dictIndex])) {
-                    if (this.dictionary.get(item.dictKeys[0]) == "ON") {
-                        this.activateItem(item, true);
-                        changed = true;
-                    }
+                if (item.checklistItem && item.checklistItem.key) {
+                    this.activateItem(item, true);
+                    changed = true;
                 }
                 if (changed)
                     this.onChanged(item);
@@ -1526,8 +1523,8 @@ var ChecklistMenu;
             this.section.items.push(item);
             this.section.endY += this.lineHeight;
         }
-        addCheckItem(_text, _value = "", _textSize, _dictKeys) {
-            let enabled = (_dictKeys != null) ? true : false;
+        addCheckItem(_checklistItem, _textSize) {
+            let enabled = (_checklistItem != null) ? true : false;
             let size = Math.min(this.lineHeight, this.columnLeft2) * 0.66;
             let cx = this.columnLeft1 + (this.columnLeft2 - this.columnLeft1) * 0.5;
             let cy = this.section.endY + this.lineHeight * 0.5;
@@ -1541,7 +1538,7 @@ var ChecklistMenu;
             this.sectionRoot.appendChild(tick);
 
             let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _text;
+            text.textContent = _checklistItem.name;
             text.setAttribute("x", (this.columnLeft2).toString());
             text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
@@ -1551,7 +1548,7 @@ var ChecklistMenu;
             this.sectionRoot.appendChild(text);
 
             let value = document.createElementNS(Avionics.SVG.NS, "text");
-            value.textContent = _value;
+            value.textContent = _checklistItem.value;
             value.setAttribute("x", "350");
             value.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             value.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
@@ -1562,7 +1559,7 @@ var ChecklistMenu;
             this.sectionRoot.appendChild(value);
 
             let item = new Menu_Item(Menu_ItemType.CHECKBOX, this.section, this.section.endY, this.lineHeight);
-            item.dictKeys = _dictKeys;
+            item.checklistItem = _checklistItem;
             item.checkboxTickElem = tick;
             item.text = text;
             item.value = value;
@@ -1649,12 +1646,10 @@ var ChecklistMenu;
             }
         }
         onChanged(_item) {
-            if (this.dictionary) {
-                switch (_item.type) {
-                    case Menu_ItemType.CHECKBOX:
-                        this.dictionary.set(_item.dictKeys[0], (_item.checkboxVal) ? "ON" : "OFF");
-                        break;
-                }
+            switch (_item.type) {
+                case Menu_ItemType.CHECKBOX:
+                    _item.checklistItem.key = (_item.checkboxVal) ? true : false;
+                    break;
             }
         }
         registerWithMouse(_item) {

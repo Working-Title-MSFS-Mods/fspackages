@@ -215,6 +215,7 @@
 					<NODE_ID_ENG>CCP_Push_eng</NODE_ID_ENG>
 					<NODE_ID_UPR_MENU>CCP_Push_uprMenu</NODE_ID_UPR_MENU>
 					<NODE_ID_RANGE_STICK>CCP_Joystick</NODE_ID_RANGE_STICK>
+					<NODE_ID_CKLST>CCP_PUSH_CKLST_1</NODE_ID_CKLST>
 					<ANIM_NAME_RANGE_STICK_L_R>CCP_Joystick_L_R</ANIM_NAME_RANGE_STICK_L_R>
 					<ANIM_NAME_RANGE_STICK_DN_UP>CCP_Joystick_DN_UP</ANIM_NAME_RANGE_STICK_DN_UP>
 				</UseTemplate>
@@ -1052,10 +1053,6 @@
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>CCP_PUSH_MEM3</NODE_ID>
-				<CONTAINER_COUNT>2</CONTAINER_COUNT>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>CCP_PUSH_CKLST</NODE_ID>
 				<CONTAINER_COUNT>2</CONTAINER_COUNT>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">

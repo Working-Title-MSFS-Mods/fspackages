@@ -3437,12 +3437,13 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":
-                    if(this.handler.onChecklistItemPage && !this.handler.highlightItem.checkboxVal){
-                        this.handler.highlight(this.handler.highlightId + 1);
-                        this.handler.changeCurrentSelectionIndex(1);
-                    }
-
                     this.handler.onActivate();
+                    if(this.handler.highlightItem){
+                        if(this.handler.onChecklistItemPage && this.handler.highlightItem.checkboxVal){
+                            this.handler.highlight(this.handler.highlightId + 1);
+                            this.handler.changeCurrentSelectionIndex(1);
+                        }
+                    }
                     break;
                 case "Upr_DATA_DEC":
                 case "Lwr_DATA_DEC":
@@ -3480,10 +3481,6 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
         }
     }
 }
-var CJ4_Checklist_Key;
-(function (CJ4_Checklist_Key) {
-    CJ4_Checklist_Key[CJ4_Checklist_Key["SEATBELTS"] = 0] = "SEATBELTS";
-})(CJ4_Checklist_Key || (CJ4_Checklist_Key = {}));
 
 class CJ4_Checklist_Handler extends ChecklistMenu.Menu_Handler {
     constructor() {
@@ -3629,7 +3626,7 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
                     if(checklistSections[i]){
                         let sectionComplete = true;
                         for(let x = 0; x < checklistSections[i].checklistItems.length; x++){
-                            if(checklistSections[i].checklistItems[x] != "ON"){
+                            if(!checklistSections[i].checklistItems[x].key){
                                 sectionComplete = false;
                             }
                         }
@@ -3677,7 +3674,7 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
                 let endItem = Math.min(checklistItems.length, startingItem + this.maximumItemsPerPage);
                 for(let i = startingItem; i < endItem; i++){
                     if(checklistItems[i]){
-                        this.addCheckItem(checklistItems[i].name, checklistItems[i].value, this.textSize, checklistItems[i].key);
+                        this.addCheckItem(_checklist.sections[_section_id].checklistItems[i], this.textSize);
                     }
                 }
 
@@ -3732,42 +3729,42 @@ class NormalChecklist extends Checklist {
                     {
                         name: "AVIONICS SWITCH",
                         value: "ON",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "PARKING BRAKE",
                         value: "SET",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "FUEL TRANSFER SELECTOR",
                         value: "OFF",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "PRESSURIZATION SOURCE SELECTOR",
                         value: "NORM",
-                        key: [CJ4_Checklist_Key.HOSKY]
+                        key: false
                     },
                     {
                         name: "CABIN DUMP PRESSURE BUTTON",
                         value: "OFF",
-                        key: [CJ4_Checklist_Key.FUEL_SELECTOR]
+                        key: false
                     },
                     {
                         name: "BATTERY SWITCH",
                         value: "ON",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH1]
+                        key: false
                     },
                     {
                         name: "EXTERIOR LIGHTS",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2]
+                        key: false
                     },
                     {
                         name: "LANDING GEAR HANDLE",
                         value: "GEAR DOWN (3 GREEN)",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2]
+                        key: false
                     }
                 ]
             },
@@ -3777,37 +3774,37 @@ class NormalChecklist extends Checklist {
                     {
                         name: "BATTERY SWITCH",
                         value: "ON",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                        key: false
                     },
                     {
                         name: "EMER LIGHTS SWITCH",
                         value: "ARMED",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "AVIONICS SWITCH",
                         value: "DISPATCH",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "PARKING BRAKE",
                         value: "SET",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "PASSENGER BRIEFING",
                         value: "COMPLETE",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "EXTERIOR LIGHTS",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "CLIMATE CONTROL SELECTOR",
                         value: "OFF",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     }
                 ]
             },
@@ -3817,62 +3814,62 @@ class NormalChecklist extends Checklist {
                     {
                         name: "CLIMATE CONTROL SELECTOR",
                         value: "NORM",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "PASS LIGHTS SAFTEY",
                         value: "ON",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                        key: false
                     },
                     {
                         name: "TRIMS",
                         value: "CHECK/SET",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "FLIGHT CONTROLS",
                         value: "FREE/CORRECT",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "SPEEDBRAKES/GROUND SPOILERS",
                         value: "CHECK",
-                        key: [CJ4_Checklist_Key.HOSKY]
+                        key: false
                     },
                     {
                         name: "FLAPS",
                         value: "CHECK/SET",
-                        key: [CJ4_Checklist_Key.FUEL_SELECTOR]
+                        key: false
                     },
                     {
                         name: "HYDRAULIC PRESSURE",
                         value: "CHECK",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH1]
+                        key: false
                     },
                     {
                         name: "ENG ONLY ANTI-ICE BUTTONS",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2]
+                        key: false
                     },
                     {
                         name: "TAKEOFF DATA (V1,VR,V2)",
                         value: "CONFIRM/SET",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH2]
+                        key: false
                     },
                     {
                         name: "AVIONICS",
                         value: "CHECK/SET",
-                        key: [CJ4_Checklist_Key.END]
+                        key: false
                     },
                     {
                         name: "AUTOPILOT",
                         value: "ENGAGE/DISCONNECT",
-                        key: [CJ4_Checklist_Key.END]
+                        key: false
                     },
                     {
                         name: "ALTIMETERS",
                         value: "SET/CHECK",
-                        key: [CJ4_Checklist_Key.END]
+                        key: false
                     }
                 ]
             },
@@ -3882,22 +3879,22 @@ class NormalChecklist extends Checklist {
                     {
                         name: "EXTERIOR LIGHTS",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "BRAKES",
                         value: "APPLY/HOLD",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                        key: false
                     },
                     {
                         name: "PARKING BRAKE",
                         value: "RELEASE",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "BRAKES",
                         value: "CHECK",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     }
                 ]
             },
@@ -3905,49 +3902,49 @@ class NormalChecklist extends Checklist {
                 name: "BEFORE TAKEOFF",
                 checklistItems: [
                     {
-                        name: "ICE PROTECTION SYSTEM (IF REQUIRED)",
+                        name: "ICE PROTECTION SYSTEM",
                         value: "CHECK/AS REQUIRED",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "FLAPS",
                         value: "CHECK/SET",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "SPEED BRAKES",
                         value: "0%",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                        key: false
                     },
                     {
                         name: "TRIMS",
                         value: "SET FOR TAKEOFF",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "CREW BRIEFING",
                         value: "COMPLETE",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "RADAR",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "BATTERY AMPS",
                         value: "VERIFY 20 OR LESS",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "PITOT/STATIC HEAT BUTTONS",
                         value: "ON",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "EXTERIOR LIGHTS",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     }
                 ]
             },
@@ -3957,52 +3954,52 @@ class NormalChecklist extends Checklist {
                     {
                         name: "LANDING GEAR",
                         value: "UP",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "FLAPS",
                         value: "0\xB0",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "THROTTLES",
                         value: "CLB",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                        key: false
                     },
                     {
                         name: "YAW DAMPER",
                         value: "ON",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "AUTOPILOT",
                         value: "AS DESIRED",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "ICE PROTECTION SYSTEMS",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "PASS LIGHTS BUTTONS",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "LNDG LIGHTS BUTTON",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "PRESSURIZATION",
                         value: "CHECK",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "ALTIMETERS (TRANSITION ALTITUDE)",
                         value: "STD/CROSSCHECK",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     }
                 ]
             },
@@ -4012,17 +4009,17 @@ class NormalChecklist extends Checklist {
                     {
                         name: "THROTTLES",
                         value: "CRU OR AS REQUIRED",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "PRESSURIZATION",
                         value: "CHECK",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "ICE PROTECTION SYSTEMS",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                        key: false
                     }
                 ]
             },
@@ -4032,22 +4029,22 @@ class NormalChecklist extends Checklist {
                     {
                         name: "PRESSURIZATION",
                         value: "VERIFY/SET",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "ICE PROTECTION SYSTEMS",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "ALTIMETERS (TRANSITION FLIGHT LEVEL)",
                         value: "SET/CROSSCHECK",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                        key: false
                     },
                     {
                         name: "EXTERIOR LIGHTS",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     }
                 ]
             },
@@ -4057,47 +4054,47 @@ class NormalChecklist extends Checklist {
                     {
                         name: "CREW BRIEFING",
                         value: "COMPLETE",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "AVIONICS/FLIGHT INSTRUMENTS",
                         value: "CHECK",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "MINIMUMS",
                         value: "SET",
-                        key: [CJ4_Checklist_Key.BATTERY_SWITCH]
+                        key: false
                     },
                     {
                         name: "FUEL TRANSFER SELECTOR",
                         value: "OFF",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "EXTERIOR LIGHTS",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "ICE PROTECTION SYSTEMS",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "FLAPS",
                         value: "15\xB0",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "PASSENGER BRIEFING",
                         value: "COMPLETE",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "PASS LIGHTS SAFETY BUTTON",
                         value: "ON",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     }
                 ]
             },
@@ -4107,27 +4104,27 @@ class NormalChecklist extends Checklist {
                     {
                         name: "LANDING GEAR",
                         value: "DOWN (3 GREEN)",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "FLAPS",
                         value: "35\xB0",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "SPEED BRAKES",
                         value: "0%",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "AIRSPEED",
                         value: "V" + "REF",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "AUTOPILOT AND YAW DAMPER",
                         value: "DISENGAGE",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     }
                 ]
             },
@@ -4137,17 +4134,17 @@ class NormalChecklist extends Checklist {
                     {
                         name: "THROTTLES",
                         value: "IDLE",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "BRAKES",
                         value: "APPLY",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "GROUND SPOILERS",
                         value: "EXTEND",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     }
                 ]
             },
@@ -4157,22 +4154,22 @@ class NormalChecklist extends Checklist {
                     {
                         name: "SPEEDBRAKES",
                         value: "0%",
-                        key: [CJ4_Checklist_Key.SEATBELTS]
+                        key: false
                     },
                     {
                         name: "FLAPS",
                         value: "0\xB0",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "ICE PROTECTION SYSTEMS",
                         value: "-",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     },
                     {
                         name: "EXTERIOR LIGHTS",
                         value: "AS REQUIRED",
-                        key: [CJ4_Checklist_Key.EMER_LIGHTS]
+                        key: false
                     }
                 ]
             },
