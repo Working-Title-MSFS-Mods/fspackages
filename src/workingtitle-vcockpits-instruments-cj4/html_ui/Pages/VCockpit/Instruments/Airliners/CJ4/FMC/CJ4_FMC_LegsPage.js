@@ -21,6 +21,7 @@ class CJ4_FMC_LegsPage {
         this._lsk6Field = "";
 
         this._wayPointsToRender = [];
+        this._approachWaypoints = [];
 
         this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
     }
@@ -74,8 +75,8 @@ class CJ4_FMC_LegsPage {
             // get enroute waypoints
 
             if (this._fmc.flightPlanManager.getApproachWaypoints()) {
-                let approachWaypoints = [...this._fmc.flightPlanManager.getApproachWaypoints()];
-                allWaypoints = enrouteWaypoints.concat(approachWaypoints);
+                this._approachWaypoints = [...this._fmc.flightPlanManager.getApproachWaypoints()];
+                allWaypoints = enrouteWaypoints.concat(this._approachWaypoints);
             }
             else {
                 allWaypoints = enrouteWaypoints;
@@ -99,9 +100,9 @@ class CJ4_FMC_LegsPage {
             // TODO i wonder if this reducing of the enroute waypoints is needed, shouldn't that be reflected in the stored flight plan?
             // if so, the whole if for approach can go i guess
             if (this._fmc.flightPlanManager.getApproachWaypoints()) {
-                let approachWaypoints = [...this._fmc.flightPlanManager.getApproachWaypoints()];
+                this._approachWaypoints = [...this._fmc.flightPlanManager.getApproachWaypoints()];
                 let lastEnrouteWaypoint = enrouteWaypoints.slice(lastWaypointIndex);
-                allWaypoints = lastEnrouteWaypoint.concat(approachWaypoints);
+                allWaypoints = lastEnrouteWaypoint.concat(this._approachWaypoints);
             }
 
             // on first wp show em all
@@ -181,6 +182,11 @@ class CJ4_FMC_LegsPage {
                 let waypoint = this._wayPointsToRender[i + offset];
 
                 if (!waypoint) return;
+                let isApproachWaypoint = this._approachWaypoints.indexOf(waypoint) !== -1;
+                if(isApproachWaypoint){
+                    this._fmc.showErrorMessage("UNABLE MOD APPROACH");
+                    return;
+                }
 
                 let value = this._fmc.inOut;
                 let selectedWpIndex = this._currentPage == 1 ? this._fmc.flightPlanManager.getActiveWaypointIndex() + i - 1
