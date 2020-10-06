@@ -156,21 +156,21 @@
         </Component>
     </Template>
 
-    <!-- AS3000 general template -->
-    <Template Name="ASOBO_AS3000_Template">
-        <DefaultTemplateParameters>
-            <AS3000>AS3000</AS3000>
-            <MIN_EMISSIVE_PERCENT>0.02</MIN_EMISSIVE_PERCENT>
-            <MAX_EMISSIVE_PERCENT>1</MAX_EMISSIVE_PERCENT>
-            <LIGHT_DIMMING_SCALE>0.3</LIGHT_DIMMING_SCALE>
-            <POTENTIOMETER>4</POTENTIOMETER>
-        </DefaultTemplateParameters>
-        <UseTemplate Name="ASOBO_AS3000_12_Softkeys_Template">
-            <EMISSIVE_CODE>(L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #MIN_EMISSIVE_PERCENT# - * #MIN_EMISSIVE_PERCENT# +</EMISSIVE_CODE>
-        </UseTemplate>
-        <UseTemplate Name="ASOBO_AS3000_Screen_Template">
-        </UseTemplate>
-    </Template>
+	<!-- AS3000 general template -->
+	<Template Name="ASOBO_AS3000_Template">
+		<DefaultTemplateParameters>
+			<AS3000>AS3000</AS3000>
+			<MIN_EMISSIVE_PERCENT>0.02</MIN_EMISSIVE_PERCENT>
+			<MAX_EMISSIVE_PERCENT>1</MAX_EMISSIVE_PERCENT>
+			<LIGHT_DIMMING_SCALE>0.3</LIGHT_DIMMING_SCALE>
+			<POTENTIOMETER>4</POTENTIOMETER>
+		</DefaultTemplateParameters>
+		<UseTemplate Name="ASOBO_AS3000_12_Softkeys_Template">
+			<EMISSIVE_CODE>(L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #MIN_EMISSIVE_PERCENT# - * #MIN_EMISSIVE_PERCENT# +</EMISSIVE_CODE>
+		</UseTemplate>
+		<UseTemplate Name="ASOBO_AS3000_Screen_Template">
+		</UseTemplate>
+	</Template>
 
     <!-- AS3000_PFD -->
     <Template Name="ASOBO_AS3000_PFD">

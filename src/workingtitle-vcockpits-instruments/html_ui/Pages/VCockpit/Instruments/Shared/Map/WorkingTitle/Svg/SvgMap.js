@@ -160,21 +160,21 @@ class SvgMap {
         }
         return unsmoothedMove;
     }
-    
-    // MOD: width / height
-    get aspectRatio() {
-        return this._ratio;
-    }
-    
+	
+	// MOD: width / height
+	get aspectRatio() {
+		return this._ratio;
+	}
+	
     get NMWidth() {
         return this._NMWidth;
     }
-    
-    // MOD: get the width in NM along the short axis of the map
-    get NMWidthShort() {
-        return this._NMWidth * Math.min(this._ratio, 1 / this._ratio);
-    }
-    
+	
+	// MOD: get the width in NM along the short axis of the map
+	get NMWidthShort() {
+		return this._NMWidth * Math.min(this._ratio, 1 / this._ratio);
+	}
+	
     set NMWidth(v) {
         if (this.NMWidth !== v) {
             this._NMWidth = v;
@@ -185,15 +185,15 @@ class SvgMap {
     setRange(r) {
         this.NMWidth = r;
     }
-    
-    // MOD: convenience methods that just pass through to MapInstrument
-    get rotation() {
-        return this.htmlRoot.rotation;
-    }
-    
-    get overdrawFactor() {
-        return this.htmlRoot.overdrawFactor;
-    }
+	
+	// MOD: convenience methods that just pass through to MapInstrument
+	get rotation() {
+		return this.htmlRoot.rotation;
+	}
+	
+	get overdrawFactor() {
+		return this.htmlRoot.overdrawFactor;
+	}
     
     get minVisibleX() {
         return this.htmlRoot.minVisibleX;
@@ -210,7 +210,7 @@ class SvgMap {
     get maxVisibleY() {
         return this.htmlRoot.maxVisibleY;
     }
-    
+	
     computeCoordinates() {
         this._ftWidth = 6076.11 * this._NMWidth;
         if (this.centerCoordinates) {
@@ -266,10 +266,10 @@ class SvgMap {
             this.textLayer = document.createElementNS(Avionics.SVG.NS, "g");
             this.svgHtmlElement.appendChild(this.textLayer);
         }
-        if (!this.rangeRingLayer) {
-            this.rangeRingLayer = document.createElementNS(Avionics.SVG.NS, "g");
-            this.svgHtmlElement.appendChild(this.rangeRingLayer);
-        }
+		if (!this.rangeRingLayer) {
+			this.rangeRingLayer = document.createElementNS(Avionics.SVG.NS, "g");
+			this.svgHtmlElement.appendChild(this.rangeRingLayer);
+		}
         if (!this.maskLayer) {
             this.maskLayer = document.createElementNS(Avionics.SVG.NS, "g");
             this.svgHtmlElement.appendChild(this.maskLayer);
@@ -307,7 +307,7 @@ class SvgMap {
         for (let i = 0; i < this.planeLayer.children.length; i++) {
             this.planeLayer.children[i].setAttribute("needDeletion", "true");
         }
-        for (let i = 0; i < this.rangeRingLayer.children.length; i++) {
+		for (let i = 0; i < this.rangeRingLayer.children.length; i++) {
             this.rangeRingLayer.children[i].setAttribute("needDeletion", "true");
         }
         for (let i = 0; i < this.maskLayer.children.length; i++) {
@@ -331,6 +331,16 @@ class SvgMap {
             let e = this.planeLayer.children[i];
             if (e.getAttribute("needDeletion") === "true") {
                 this.planeLayer.removeChild(e);
+            }
+            else {
+                i++;
+            }
+        }
+		i = 0;
+        while (i < this.rangeRingLayer.children.length) {
+            let e = this.rangeRingLayer.children[i];
+            if (e.getAttribute("needDeletion") === "true") {
+                this.rangeRingLayer.removeChild(e);
             }
             else {
                 i++;
@@ -438,9 +448,9 @@ class SvgMap {
         else if (mapElement instanceof SvgBackOnTrackElement) {
             this.flightPlanLayer.appendChild(svgElement);
         }
-        else if (mapElement instanceof SvgLabeledRingElement || mapElement instanceof SvgRangeCompassElement) {
-            this.rangeRingLayer.appendChild(svgElement);
-        }
+		else if (mapElement instanceof SvgLabeledRingElement || mapElement instanceof SvgRangeCompassElement) {
+			this.rangeRingLayer.appendChild(svgElement);
+		}
         else if (mapElement instanceof SvgWaypointElement) {
             this.defaultLayer.appendChild(svgElement);
             if (mapElement._label) {
@@ -598,21 +608,21 @@ class SvgMap {
         let y = 1000 * (this.planeXY.y - Math.cos(bearing * Avionics.Utils.DEG2RAD) * distance / this.NMWidth);
         return { x: x, y: y };
     }
-    
-    // MOD: convenience method to return X,Y coordinates of plane
-    getPlanePositionXY() {
-        return this.coordinatesToXY(this.planeCoordinates);
-    }
-    
-    // MOD: returns lat/long coordinates of (X,Y) point of map with plane at center, taking into account any current map rotation
-    // (X,Y) is vector of arbitrary units where (0,0) is top left and (1000, 1000) is bottom right of map
-    XYToCoordinatesFromPlaneWithRotation(xy) {
-        // transform xy with opposite of map rotation;
-        let transformed = new Vec2();
-        transformed.x = (xy.x - 500) * this.cosRotation + (xy.y - 500) * this.sinRotation + 500;
-        transformed.y = -(xy.x - 500) * this.sinRotation + (xy.y - 500) * this.cosRotation + 500;
-        
-        let lat = this.planeCoordinates.lat - ((transformed.y - 500) / 1000) * this._angularHeight;
+	
+	// MOD: convenience method to return X,Y coordinates of plane
+	getPlanePositionXY() {
+		return this.coordinatesToXY(this.planeCoordinates);
+	}
+	
+	// MOD: returns lat/long coordinates of (X,Y) point of map with plane at center, taking into account any current map rotation
+	// (X,Y) is vector of arbitrary units where (0,0) is top left and (1000, 1000) is bottom right of map
+	XYToCoordinatesFromPlaneWithRotation(xy) {
+		// transform xy with opposite of map rotation;
+		let transformed = new Vec2();
+		transformed.x = (xy.x - 500) * this.cosRotation + (xy.y - 500) * this.sinRotation + 500;
+		transformed.y = -(xy.x - 500) * this.sinRotation + (xy.y - 500) * this.cosRotation + 500;
+		
+		let lat = this.planeCoordinates.lat - ((transformed.y - 500) / 1000) * this._angularHeight;
         let long = this.planeCoordinates.long + ((transformed.x - 500) / 1000) * this._angularWidth;
         return new LatLongAlt(lat, long);
     }
