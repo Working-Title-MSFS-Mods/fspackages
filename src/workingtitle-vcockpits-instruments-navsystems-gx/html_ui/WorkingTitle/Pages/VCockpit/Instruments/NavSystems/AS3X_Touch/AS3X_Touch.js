@@ -31,7 +31,8 @@ class AS3X_Touch extends NavSystemTouch {
         this.mfdMapElement = this.getChildById("Map_Elements");
         this.mfdMapMapElement = this.mfdMapElement.getElementsByTagName("map-instrument")[0];
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", new PFD_Warnings()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("MainMap", "Map_Elements", new AS3X_Touch_Map()));
+        this.mainMap = new AS3X_Touch_Map();
+        this.addIndependentElementContainer(new NavSystemElementContainer("MainMap", "Map_Elements", this.mainMap));
         this.topBar = new AS3X_Touch_TopBar();
         this.addIndependentElementContainer(new NavSystemElementContainer("TopBar", "TopBar", this.topBar));
         this.transponderWindow = new NavSystemElementContainer("Transponder", "XPDR", new AS3X_Touch_Transponder());
@@ -65,6 +66,10 @@ class AS3X_Touch extends NavSystemTouch {
                     new NavSystemTouch_ActiveFPL(true),
                     new AS3X_Touch_MapContainer("Afpl_Map")
                 ]), "FPL", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FLIGHT_PLAN_MED_1.png"),
+                new AS3X_Touch_NavSystemPage("Weather", "Map", new AS3X_Touch_MapContainer("Map"), "WX",
+                    "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png",
+                    () => { this.mainMap.nexradOn = true; },
+                    () => { this.mainMap.nexradOn = false; }),
                 new AS3X_Touch_NavSystemPage("Procedures", "Procedures", new AS3X_Touch_Procedures(), "Proc", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PROCEDURES_1.png")
             ], [
                 new AS3X_Touch_MenuButton("Direct-To", "", this.switchToPopUpPage.bind(this, this.directToWindow), true),
@@ -107,6 +112,7 @@ class AS3X_Touch extends NavSystemTouch {
             }
         }.bind(this));
         this.maxUpdateBudget = 12;
+        this.autoPitotHeat = false;
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -127,11 +133,18 @@ class AS3X_Touch extends NavSystemTouch {
                 this.getChildById("LeftKnobInfos").style.display = "None";
                 this.getChildById("RightKnobInfos").style.display = "None";
             }
+            let autoPitotHeat = this.instrumentXmlConfig.getElementsByTagName("AutoPitotHeat")[0];
+            if (autoPitotHeat && autoPitotHeat.textContent == "True") {
+                this.autoPitotHeat = true;
+                this.pitotOnTime = null;
+                this.pitotHeating = false;
+            }
         }
         switch (this.displayMode) {
             case "PFD":
                 this.mainMfd.style.display = "None";
-                this.addIndependentElementContainer(new AS3X_Touch_PFD());
+                this.pfdContainer = new AS3X_Touch_PFD();
+                this.addIndependentElementContainer(this.pfdContainer);
                 this.addIndependentElementContainer(new NavSystemElementContainer("EngineInfos", "EngineInfos", new GlassCockpit_XMLEngine()));
                 this.getChildById("EngineInfos").style.display = "None";
                 this.mainDisplay.setAttribute("state", "FullNoEngine");
@@ -145,6 +158,7 @@ class AS3X_Touch extends NavSystemTouch {
                 break;
             case "MFD":
                 this.pfd.style.display = "None";
+                this.pfdContainer = null;
                 this.mainMap = new AS3X_Touch_MFD_Main();
                 this.addIndependentElementContainer(this.mainMap);
                 this.addIndependentElementContainer(new NavSystemElementContainer("EngineInfos", "EngineInfos", new GlassCockpit_XMLEngine()));
@@ -159,7 +173,8 @@ class AS3X_Touch extends NavSystemTouch {
                 break;
             case "Splitted":
                 this.mainMfd.style.display = "None";
-                this.addIndependentElementContainer(new AS3X_Touch_PFD());
+                this.pfdContainer = new AS3X_Touch_PFD();
+                this.addIndependentElementContainer(this.pfdContainer);
                 this.addIndependentElementContainer(new NavSystemElementContainer("EngineInfos", "EngineInfos", new GlassCockpit_XMLEngine()));
                 this.engineDisplayed = true;
                 this.m_isSplit = true;
@@ -177,6 +192,25 @@ class AS3X_Touch extends NavSystemTouch {
     }
     Update() {
         super.Update();
+        if (this.autoPitotHeat) {
+            let temp = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius");
+            let pitotHeat = SimVar.GetSimVarValue("PITOT HEAT", "bool");
+            let rpm = SimVar.GetSimVarValue("GENERAL ENG RPM:1", "rpm");
+            if (temp <= 7 && rpm > 0) {
+                if (!pitotHeat) {
+                    SimVar.SetSimVarValue("K:PITOT_HEAT_ON", "bool", true);
+                    SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", true);
+                    this.pitotOnTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
+                } else {
+                    let now = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
+                    if (now - this.pitotOnTime > 10 + (7 - temp) / 3) {
+                        SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", false);
+                    };
+                }
+            } else if (pitotHeat && (temp > 7 || rpm <= 0)) {
+                SimVar.SetSimVarValue("K:PITOT_HEAT_OFF", "bool", true);
+            }
+        }
         if (this.handleReversionaryMode && this.displayMode == "PFD") {
             let reversionary = false;
             if (document.body.hasAttribute("reversionary")) {
@@ -371,7 +405,10 @@ class AS3X_Touch extends NavSystemTouch {
                     this.closePopUpElement();
                 }
                 else {
+                    console.log("Computing back push");
                     this.SwitchToMenuName("MFD");
+                    this.computeEvent("Master_Caution_Push");
+                    this.computeEvent("Master_Warning_Push");
                 }
                 break;
             case "NRST_Push":
@@ -496,12 +533,16 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
         this.attitude = new PFD_Attitude();
         this.attitude.setSyntheticVisionEnabled(true);
         this.mapInstrument = new MapInstrumentElement();
+        this.windData = new AS3X_Touch_WindData();
+        this.annunciations = new Cabin_Annunciations();
         this.element = new NavSystemElementGroup([
             new PFD_Altimeter(),
             new PFD_Airspeed(),
             new PFD_Compass(),
+            this.windData,
             this.attitude,
             this.mapInstrument,
+            this.annunciations,
             new AS3X_Touch_elevatorTrim(),
             new PFD_RadarAltitude(),
             new PFD_AutopilotDisplay()
@@ -511,12 +552,23 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
     init() {
         super.init();
         this.attitude.svg.setAttribute("background", "false");
+        this.windData.mode = 1;
+        this.gps.makeButton(this.gps.getChildById("Annunciations"), () => {
+            this.gps.computeEvent("Master_Caution_Push");
+            this.gps.computeEvent("Master Warning Push");
+        })
     }
 }
 class AS3X_Touch_MFD_Main extends NavSystemElementContainer {
     constructor() {
         super("MainMFD", "MainMFD", null);
         this.element = new AS3X_Touch_Map();
+    }
+}
+class AS3X_Touch_WindData extends PFD_WindData {
+    init(root) {
+        super.init(root);
+        this.svg = root.querySelector("glasscockpit-wind-data");
     }
 }
 class AS3X_Touch_TopBar extends NavSystemElement {
@@ -661,14 +713,34 @@ class AS3X_Touch_MapContainer extends NavSystemElement {
 class AS3X_Touch_Map extends MapInstrumentElement {
     init(root) {
         super.init(root);
+        this.trackUp = false;
         this.mapPlus = root.querySelector(".mapPlus");
         this.mapLess = root.querySelector(".mapLess");
         this.mapCenter = root.querySelector(".mapCenter");
+        this.mapOrientation = root.querySelector("#MapOrientation");
         this.gps.makeButton(this.mapPlus, this.instrument.onEvent.bind(this.instrument, "RANGE_DEC"));
         this.gps.makeButton(this.mapLess, this.instrument.onEvent.bind(this.instrument, "RANGE_INC"));
         this.gps.makeButton(this.mapCenter, this.centerOnPlane.bind(this));
         this.instrument.addEventListener("mousedown", this.moveMode.bind(this));
         this.instrument.supportMouseWheel(false);
+    }
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
+        if (SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean") != this.trackUp) {
+            this.trackUp = !this.trackUp;
+            this.instrument.rotateWithPlane(this.trackUp);
+            this.instrument.roadNetwork._lastRange = -1; // force canvas to redraw (SvgRoadNetworkElement.js:297)
+            if (this.mapOrientation) {
+                this.mapOrientation.innerText = this.trackUp ? "TRACK UP" : "NORTH UP";
+            }
+        }
+        if (this.nexradOn) {
+            // this is less than idea, but I can't find any other way to keep from having the
+            // nexrad map be cut off at the bottom when scrolling to WX through FPL.  Even
+            // forcing an updateWeather in onEnter() doesn't work. 
+            // TODO:  See if there's a better way to do this.
+            this.updateWeather();
+        }
     }
     moveMode() {
         this.instrument.setAttribute("bing-mode", "vfr");
@@ -825,10 +897,20 @@ class AS3X_Touch_PageGroup extends NavSystemPageGroup {
     }
 }
 class AS3X_Touch_NavSystemPage extends NavSystemPage {
-    constructor(_name, _htmlElemId, _element, _shortName, _imagePath) {
+    constructor(_name, _htmlElemId, _element, _shortName, _imagePath, _enterCb, _exitCb) {
         super(_name, _htmlElemId, _element);
         this.shortName = _shortName;
         this.imagePath = _imagePath;
+        this._enterCb = _enterCb;
+        this._exitCb = _exitCb;
+    }
+    onEnter() {
+        super.onEnter();
+        if (this._enterCb) this._enterCb();
+    }
+    onExit() {
+        super.onExit();
+        if (this._exitCb) this._exitCb();
     }
 }
 class AS3X_Touch_DirectTo extends NavSystemTouch_DirectTo {
@@ -861,6 +943,7 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
     }
     init(root) {
         this.window = root;
+        this.windData = this.gps.pfdContainer.windData;
         this.cdiSource = this.gps.getChildById("cdi_source_Button");
         this.leftBearing = this.gps.getChildById("left_bearing_button");
         this.rightBearing = this.gps.getChildById("right_bearing_button");
@@ -872,12 +955,17 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         this.timerStartStop_value = this.timerStartStop.getElementsByClassName("value")[0];
         this.timerStartStop_action = this.timerStartStop.getElementsByClassName("topTitle")[0];
         this.timerReset_value = this.timerReset.getElementsByClassName("mainText")[0];
+        this.windMode = this.gps.getChildById("wind_mode_button");
+        this.windMode_value = this.windMode.getElementsByClassName("value")[0];
         this.hsi = this.gps.getChildById("Compass");
         this.gps.makeButton(this.cdiSource, this.gps.computeEvent.bind(this.gps, "SoftKey_CDI"));
         this.gps.makeButton(this.leftBearing, this.gps.computeEvent.bind(this.gps, "SoftKeys_PFD_BRG1"));
         this.gps.makeButton(this.rightBearing, this.gps.computeEvent.bind(this.gps, "SoftKeys_PFD_BRG2"));
         this.gps.makeButton(this.timerStartStop, this.timer_Toggle.bind(this));
         this.gps.makeButton(this.timerReset, this.timer_Reset.bind(this));
+        this.gps.makeButton(this.comActiveButton, SimVar.SetSimVarValue.bind(this, "K:COM_STBY_RADIO_SWAP", "number", 1));
+        this.gps.makeButton(this.windMode, this.setWindMode.bind(this));
+
     }
     onEnter() {
         this.window.setAttribute("state", "Active");
@@ -939,10 +1027,17 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         }
     }
     timer_Reset() {
-        this.timerStartTime = -1;
+        this.timerStartTime = -1; 
         this.pauseTime = 0;
         this.isTimerOn = false;
         this.timerStartStop_action.textContent = "Start";
+    }
+    setWindMode() {
+        let events = ["SoftKeys_Wind_O1", "SoftKeys_Wind_O2", "SoftKeys_Wind_O3", "SoftKeys_Wind_Off"];
+        let event = events[this.windData.mode];
+        console.log(`sending event ${event}`)
+        this.windData.onEvent(event);
+        Avionics.Utils.diffAndSet(this.windMode_value, this.windData.mode);
     }
 }
 class AS3X_Touch_NRST_Airport extends NavSystemTouch_NRST_Airport {
@@ -1263,5 +1358,7 @@ class AS3X_Touch_ApproachSelection extends NavSystemTouch_ApproachSelection {
         this.gps.closePopUpElement();
     }
 }
+
+
 registerInstrument("as3x-touch-element", AS3X_Touch);
 //# sourceMappingURL=AS3X_Touch.js.map
