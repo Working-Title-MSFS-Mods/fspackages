@@ -20,7 +20,6 @@ class SvgRangeRingElement extends SvgLabeledRingElement {
 		rangeRing.setAttribute("stroke", "white");
 		rangeRing.setAttribute("stroke-width", "2");
 		rangeRing.setAttribute("stroke-opacity", "1");
-		rangeRing.setAttribute("stroke-opacity", "1");
 		return rangeRing;
 	}
 	
