@@ -13,7 +13,7 @@
           "no-unused-vars": [
             "error", {
               "vars": "all",
-              "varsIgnorePattern": "^CJ4_FMC"
+              "varsIgnorePattern": "^CJ4_FMC|^WT_FMC"
             }
           ],
           "semi": [2, "always"]
@@ -28,6 +28,7 @@
         "Aircraft": "writable",
         "FMCMainDisplay": "writable",
         "NavMode": "writable",
+        "RadioNav": "writable",
         "RegisterViewListener": "writable",
         "registerInstrument": "writable",
         "WT_FMC_Renderer": "readonly",
