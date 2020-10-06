@@ -226,6 +226,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
         this.unregisterPeriodicPageRefresh();
     }
+
     getOrSelectWaypointByIdent(ident, callback) {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
             if (!waypoints || waypoints.length === 0) {
@@ -381,13 +382,14 @@ class CJ4_FMC extends FMCMainDisplay {
     /**
      * Registers a periodic page refresh with the FMC display.
      * @param {number} interval The interval, in ms, to run the supplied action.
-     * @param {function} action An action to run at each interval.
+     * @param {function} action An action to run at each interval. Can return a bool to indicate if the page refresh should stop.
      * @param {boolean} runImmediately If true, the action will run as soon as registered, and then after each
      * interval. If false, it will start after the supplied interval.
      */
     registerPeriodicPageRefresh(action, interval, runImmediately) {
         let refreshHandler = () => {
-            action();
+            let isBreak = action();
+            if (isBreak) return;
             this._pageRefreshTimer = setTimeout(refreshHandler, interval);
         };
 
@@ -437,7 +439,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
         const leftFuelQty = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons");
         const rightFuelQty = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons");
-        
+
         if (this.previousRightFuelQty === undefined && this.previousLeftFuelQty === undefined) {
             this.previousLeftFuelQty = leftFuelQty;
             this.previousRightFuelQty = rightFuelQty;

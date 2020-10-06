@@ -16,6 +16,7 @@ class CJ4_FMC_LegsPage {
 
         this._selectedWaypoint = undefined;
         this._activeWptIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
+        this._distanceToActiveWpt = "0";
 
         this._lsk6Field = "";
 
@@ -28,7 +29,7 @@ class CJ4_FMC_LegsPage {
         // Noop as there is no preparation with this
     }
 
-    update() {
+    update(forceUpdate = false) {
         // check if active wpt changed
         // TODO: possible that i renders twice as we change index while editing, could cut that out too
         const actWptIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
@@ -37,10 +38,24 @@ class CJ4_FMC_LegsPage {
             this._isDirty = true;
         }
 
+        // get and format distance
+        let distanceToActWpt = this._fmc.flightPlanManager.getDistanceToActiveWaypoint();
+        distanceToActWpt = (distanceToActWpt < 100) ? distanceToActWpt.toFixed(1) : distanceToActWpt.toFixed(0);
+        if (distanceToActWpt !== this._distanceToActiveWpt) {
+            this._distanceToActiveWpt = distanceToActWpt;
+            this._isDirty = true;
+        }
+
         // TODO notice when approach gets activated and render dirty
-        if (this._isDirty) {
+
+        if (this._isDirty || forceUpdate) {
             this.invalidate();
         }
+        // register refresh and bind to update which will only render on changes
+        this._fmc.registerPeriodicPageRefresh(() => {
+            this.update();
+            return true;
+        }, 1000, false);
     }
 
     updateLegs() {
@@ -109,12 +124,20 @@ class CJ4_FMC_LegsPage {
                 let bearing = isFinite(waypoint.bearingInFP) ? waypoint.bearingInFP.toFixed(0).padStart(3, "0") + "°" : "";
                 let prevWaypoint = this._wayPointsToRender[i + offset - 1];
                 let distance = "0";
-                if (prevWaypoint) {
-                    distance = "" + Math.trunc(Avionics.Utils.computeDistance(prevWaypoint.infos.coordinates, waypoint.infos.coordinates));
+                if (i == 1 && this._currentPage == 1) {
+                    distance = this._distanceToActiveWpt;
                 }
+                else if (prevWaypoint) {
+                    distance = Math.trunc(Avionics.Utils.computeDistance(prevWaypoint.infos.coordinates, waypoint.infos.coordinates)).toFixed(0);
+                }
+
                 if (i == 0 && this._currentPage == 1) {
                     //this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM"];
-                    this._rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident + "[blue]" : "USR[blue]"];
+                    if (this._fmc.flightPlanManager.getIsDirectTo()) {
+                        this._rows[2 * i + 1] = ["(DIR)[blue]"];
+                    } else {
+                        this._rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident + "[blue]" : "USR[blue]"];
+                    }
                 }
                 else if (i == 1 && this._currentPage == 1) {
                     this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM[magenta]"];
@@ -132,7 +155,7 @@ class CJ4_FMC_LegsPage {
     }
 
     render() {
-        console.log("RENDER LEGS");
+        // console.log("RENDER LEGS");
 
         this._lsk6Field = "";
         if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
@@ -193,40 +216,42 @@ class CJ4_FMC_LegsPage {
                             }
                             break;
                         case CJ4_FMC_LegsPage.SELECT_MODE.EXISTING: {
-                            this._fmc.setMsg("Working...");
-                            let waypoints = this._fmc.flightPlanManager.getWaypoints();
-                            let targedIndexInFpln = waypoints.findIndex(w => {
-                                return w.icao === this._selectedWaypoint.icao;
-                            });
-                            // MOVE EXISTING WAYPOINT WITH LEGS AFTER
-                            let x = selectedWpIndex;
-                            let isDirectTo = (i == 1 && this._currentPage == 1);
-                            if (isDirectTo) { // DIRECT TO
-                                this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                    this._fmc.activateDirectToWaypoint(this._selectedWaypoint, () => {
-                                        this.resetAfterOp();
-                                    });
-                                });
-                            }
-                            else { // MOVE TO POSITION IN FPLN
-                                let removeWaypointForLegsMethod = (callback = EmptyCallback.Void) => {
-                                    if (x < targedIndexInFpln) {
-                                        this._fmc.flightPlanManager.removeWaypoint(x, false, () => {
-                                            targedIndexInFpln--;
-                                            removeWaypointForLegsMethod(callback);
-                                        });
-                                    }
-                                    else {
-                                        callback();
-                                    }
-                                };
-                                this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                    removeWaypointForLegsMethod(() => {
-                                        this.resetAfterOp();
-                                    });
-                                });
-                            }
+                            if ((i >= 1 && this._currentPage == 1) || this._currentPage > 1) {
 
+                                this._fmc.setMsg("Working...");
+                                let waypoints = this._fmc.flightPlanManager.getWaypoints();
+                                let targedIndexInFpln = waypoints.findIndex(w => {
+                                    return w.icao === this._selectedWaypoint.icao;
+                                });
+                                // MOVE EXISTING WAYPOINT WITH LEGS AFTER
+                                let x = selectedWpIndex;
+                                let isDirectTo = (i == 1 && this._currentPage == 1);
+                                if (isDirectTo) { // DIRECT TO
+                                    this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                        this._fmc.activateDirectToWaypoint(this._selectedWaypoint, () => {
+                                            this.resetAfterOp();
+                                        });
+                                    });
+                                }
+                                else { // MOVE TO POSITION IN FPLN
+                                    let removeWaypointForLegsMethod = (callback = EmptyCallback.Void) => {
+                                        if (x < targedIndexInFpln) {
+                                            this._fmc.flightPlanManager.removeWaypoint(x, false, () => {
+                                                targedIndexInFpln--;
+                                                removeWaypointForLegsMethod(callback);
+                                            });
+                                        }
+                                        else {
+                                            callback();
+                                        }
+                                    };
+                                    this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                        removeWaypointForLegsMethod(() => {
+                                            this.resetAfterOp();
+                                        });
+                                    });
+                                }
+                            }
                             break;
                         }
                         case CJ4_FMC_LegsPage.SELECT_MODE.NEW:
@@ -275,7 +300,7 @@ class CJ4_FMC_LegsPage {
         this._fmc.setMsg();
         this._selectedWaypoint = undefined;
         this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
-        this.invalidate();
+        this.update(true);
     }
 
     bindEvents() {
@@ -284,7 +309,7 @@ class CJ4_FMC_LegsPage {
                 if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     this._fmc.fpHasChanged = false;
                     this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
-                    this._fmc.eraseTemporaryFlightPlan(() => { this.invalidate(); });
+                    this._fmc.eraseTemporaryFlightPlan(() => { this.resetAfterOp(); });
                 }
             }
         };
@@ -295,7 +320,7 @@ class CJ4_FMC_LegsPage {
                 this._fmc.fpHasChanged = false;
                 this._fmc.activateRoute(() => {
                     this._fmc.activatingDirectTo = false;
-                    this._fmc.refreshPageCallback = () => { this.invalidate(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
+                    this._fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
                     this._fmc.onExecDefault();
                 });
             }
@@ -304,13 +329,13 @@ class CJ4_FMC_LegsPage {
         this._fmc.onPrevPage = () => {
             if (this._currentPage > 1) {
                 this._currentPage--;
-                this.invalidate();
+                this.update(true);
             }
         };
         this._fmc.onNextPage = () => {
             if (this._currentPage < this._pageCount) {
                 this._currentPage++;
-                this.invalidate();
+                this.update(true);
             }
         };
     }
@@ -361,17 +386,12 @@ class CJ4_FMC_LegsPage {
     }
 
     static ShowPage1(fmc) {
-        console.log("SHOW LEGS PAGE 1");
+        // console.log("SHOW LEGS PAGE 1");
         fmc.clearDisplay();
 
         // create page instance and init 
         LegsPageInstance = new CJ4_FMC_LegsPage(fmc);
-        LegsPageInstance.invalidate();
-
-        // register refresh and bind to update which will only render on changes
-        fmc.registerPeriodicPageRefresh(() => {
-            LegsPageInstance.update();
-        }, 1000, false);
+        LegsPageInstance.update();
     }
 
 }
