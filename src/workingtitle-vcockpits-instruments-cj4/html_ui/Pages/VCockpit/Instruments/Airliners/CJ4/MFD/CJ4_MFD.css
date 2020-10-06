@@ -614,4 +614,28 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #Checklist {
 }
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #Checklist[visible=false] {
   display: none; }
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay {
+  position: absolute;
+  bottom: 3.5%;
+  left: 2.5%;
+  width: 95%;
+  height: 18%;
+  background-color: black;
+  border: white 2px solid;
+  color: white;
+}
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay .SystemHeader {
+  padding: 5px;
+  width: 100%;
+  height: 30px;
+  background-color: dodgerblue;
+}
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay .SystemBody {
+  width: 100%;
+  max-height: 100%;
+  position: relative;
+}
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay[visible=false] {
+  display: none; }
             
