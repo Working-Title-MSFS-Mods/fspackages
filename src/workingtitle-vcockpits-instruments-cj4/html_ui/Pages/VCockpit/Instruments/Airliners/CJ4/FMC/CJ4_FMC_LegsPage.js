@@ -49,6 +49,11 @@ class CJ4_FMC_LegsPage {
         if (this._isDirty) {
             this.invalidate();
         }
+        // register refresh and bind to update which will only render on changes
+        this._fmc.registerPeriodicPageRefresh(() => {
+            this.update();
+            return true;
+        }, 1000, false);
     }
 
     updateLegs() {
@@ -336,7 +341,7 @@ class CJ4_FMC_LegsPage {
     // TODO, later this could be in the base class
     invalidate() {
         this._isDirty = true;
-        this._fmc.clearDisplay(false);
+        this._fmc.clearDisplay();
         this.updateLegs();
         this.render();
         this.bindInputs(); // TODO ideally this should only be called once, but clearDisplay clears everthing
@@ -384,11 +389,7 @@ class CJ4_FMC_LegsPage {
 
         // create page instance and init 
         LegsPageInstance = new CJ4_FMC_LegsPage(fmc);
-
-        // register refresh and bind to update which will only render on changes
-        fmc.registerPeriodicPageRefresh(() => {
-            LegsPageInstance.update();
-        }, 1000, true);
+        LegsPageInstance.update();
     }
 
 }

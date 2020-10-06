@@ -27,7 +27,6 @@ class CJ4_FMC_NavRadioPageOne {
                 return true;
             }.bind(this)
         });
-
     }
 
     prepare() {
@@ -35,7 +34,7 @@ class CJ4_FMC_NavRadioPageOne {
     }
 
     update() {
-        // console.log("navradio.update()");
+        console.log("navradio.update()");
 
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.vhf2 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 2);
@@ -51,6 +50,11 @@ class CJ4_FMC_NavRadioPageOne {
         if (this._isDirty) {
             this.invalidate();
         }
+        // register refresh and bind to update which will only render on changes
+        this._fmc.registerPeriodicPageRefresh(() => {
+            this.update();
+            return true;
+        }, 1000, false);
     }
 
     render() {
@@ -177,13 +181,13 @@ class CJ4_FMC_NavRadioPageOne {
     }
 
     invalidate() {
+        console.log("navradio.invalidate()");
         this._isDirty = true;
-        this._fmc.clearDisplay(false);
+        this._fmc.clearDisplay();
         this.render();
         this.bindEvents(); // TODO could only call this once on init, but fmc.clearDisplay() clears events
         this._isDirty = false;
     }
-
 }
 
 class CJ4_FMC_NavRadioPage {
@@ -192,12 +196,7 @@ class CJ4_FMC_NavRadioPage {
 
         // create page instance and init 
         NavRadioPage1Instance = new CJ4_FMC_NavRadioPageOne(fmc);
-        NavRadioPage1Instance.update.bind(this);
-        // register refresh and bind to update which will only render on changes
-        
-        fmc.registerPeriodicPageRefresh(() => {
-            NavRadioPage1Instance.update();
-        }, 1000, true);
+        NavRadioPage1Instance.update();
     }
 
     static ShowPage2(fmc) {

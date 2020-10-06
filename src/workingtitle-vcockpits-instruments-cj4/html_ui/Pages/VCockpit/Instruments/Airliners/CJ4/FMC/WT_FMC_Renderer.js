@@ -105,7 +105,7 @@ class WT_FMC_Renderer {
         let cnt = this._fmc.parseContent(template); // TODO remove from fmc scope later
         let charCount = 0;
         // count all letters
-        cnt.forEach(x => { charCount += x.textContent.length });
+        cnt.forEach(x => { charCount += x.textContent.length; });
 
         // set start pos
         let ci = 0;
@@ -120,7 +120,7 @@ class WT_FMC_Renderer {
             (letters).forEach(c => {
                 if (ci > 23) return; // no break in js, wtf
                 row.childNodes[ci].childNodes[0].className = "";
-                row.childNodes[ci].childNodes[0].classList.add("letter")
+                row.childNodes[ci].childNodes[0].classList.add("letter");
                 row.childNodes[ci].childNodes[0].classList.add(...x.classList);
                 row.childNodes[ci].childNodes[0].textContent = c;
                 ci++;
@@ -441,6 +441,7 @@ class WT_FMC_Renderer {
         if (content.startsWith("["))
             return resultElems;
 
+        // eslint-disable-next-line no-useless-escape
         const rx = /([^\[\]\n]+)(\[[^\[\]\n]+\])*/g;
         let match = rx.exec(content);
         if (match) {
@@ -450,8 +451,9 @@ class WT_FMC_Renderer {
                 el.textContent = match[1].replace("__LSB", "[").replace("__RSB", "]");
 
                 if (match[2]) {
+                    // eslint-disable-next-line no-useless-escape
                     let classes = match[2].match(/[^\s\[\]]+/g);
-                    classes.forEach(c => { el.classList.add(c) });
+                    classes.forEach(c => { el.classList.add(c); });
                 }
                 resultElems.push(el);
                 match = rx.exec(content);
