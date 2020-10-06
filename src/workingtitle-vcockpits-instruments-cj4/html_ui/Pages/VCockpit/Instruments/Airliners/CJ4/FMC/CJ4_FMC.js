@@ -460,8 +460,8 @@ class CJ4_FMC extends FMCMainDisplay {
             const leftFuelFlow = Math.max(thrustLeft * tsfc, 150);
             const rightFuelFlow = Math.max(thrustRight * tsfc, 150);
 
-            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", thrustLeft * tsfc);
-            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", thrustRight * tsfc);
+            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", leftFuelFlow);
+            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", rightFuelFlow);
 
             if ((rightFuelUsed > 0.005 && rightFuelUsed < 1) || (leftFuelUsed > 0.005 && rightFuelUsed < 1)) {
 
