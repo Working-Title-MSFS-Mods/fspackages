@@ -258,7 +258,7 @@
 					<ANIM_NAME_RANGE_STICK_DN_UP>CCP_Joystick_DN_UP</ANIM_NAME_RANGE_STICK_DN_UP>
 				</UseTemplate>
 			</Component>
-			
+
 			<UseTemplate Name="WT_Detached_Control_Panel_Template">
 				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
 				<ID>1</ID>

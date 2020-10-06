@@ -3485,10 +3485,6 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
 class CJ4_Checklist_Handler extends ChecklistMenu.Menu_Handler {
     constructor() {
         super(...arguments);
-        this._isOnMainPage = false;
-    }
-    get isOnMainPage() {
-        return this._isOnMainPage;
     }
     reactsOnEvent(_event) {
         switch (_event) {
@@ -3562,7 +3558,6 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         }
     }
     showMainPage(_highlight = 0) {
-        this._isOnMainPage = true; //TODO IS THIS USED?
         this.onChecklistItemPage = false;
         this.currentItemIndex = 0;
 
@@ -3591,6 +3586,7 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
             this.endSection();
         }
         this.closeMenu();
+        this.escapeCbk = () => {};
         this.highlight(_highlight);
         page.appendChild(sectionRoot);
         page.appendChild(this.createEndDividerLine());
@@ -3598,7 +3594,6 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         this.root.appendChild(page);
     }
     showChecklist(_checklist) {
-        this._isOnMainPage = false;
         this.onChecklistItemPage = false;
 
         this.currentMenu = this.showChecklist.bind(this, _checklist);
@@ -3631,6 +3626,16 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
                             }
                         }
                         this.addSubMenu(_checklist.sections[i].name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, i)}).bind(this), sectionComplete ? "#11d011" : "white");
+                        if(sectionComplete){
+                            if(i <= checklistSections.length - 1){
+                                this.highlight(i + 1);
+                                this.currentItemIndex = i + 1;
+                            }
+                            else{
+                                this.highlight(i);
+                                this.currentItemIndex = i;
+                            }
+                        }
                     }
                 }
             }
@@ -3644,7 +3649,6 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         this.root.appendChild(page);
     }
     showChecklistSection(_checklist, _section_id) {
-        this._isOnMainPage = false;
         this.onChecklistItemPage = true;
 
         this.currentMenu = this.showChecklistSection.bind(this, _checklist, _section_id);
@@ -3693,7 +3697,7 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
             this.endSection();
         }
         this.closeMenu();
-        this.escapeCbk = this.showChecklist.bind(this, _checklist);
+        this.escapeCbk = (() => {this.showChecklist(_checklist);}).bind(this);
         page.appendChild(sectionRoot);
         page.appendChild(this.createEndDividerLine());
         Utils.RemoveAllChildren(this.root);
