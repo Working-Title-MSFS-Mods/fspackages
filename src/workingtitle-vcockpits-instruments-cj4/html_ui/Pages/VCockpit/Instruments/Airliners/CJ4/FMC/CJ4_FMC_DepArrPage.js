@@ -258,6 +258,7 @@ class CJ4_FMC_DepArrPage {
         let arrivals = [];
         let selectedArrival;
         let displayableArrivalsCount = 0;
+		let displayableTransitionsCount = 0;
         if (destination) {
             let airportInfo = destination.infos;
             if (airportInfo instanceof AirportInfo) {
@@ -286,8 +287,9 @@ class CJ4_FMC_DepArrPage {
                 };
             }
             else {
+				displayableTransitionsCount = selectedApproach.transitions.length;
                 for (let i = 0; i < 4; i++) {
-                    let index = i;
+                    let index = 4 * (currentPage - 1) + i;
                     let transition = selectedApproach.transitions[index];
                     if (transition) {
                         let name = transition.waypoints[0].infos.icao.substr(5);
@@ -385,7 +387,7 @@ class CJ4_FMC_DepArrPage {
                 i++;
             }
         }
-        let rowsCount = Math.max(displayableApproachesCount, displayableArrivalsCount);
+        let rowsCount = Math.max(Math.max(displayableApproachesCount, displayableArrivalsCount), displayableTransitionsCount);
         let pageCount = Math.floor(rowsCount / 5) + 1;
 
         //start of CWB EXEC handling
