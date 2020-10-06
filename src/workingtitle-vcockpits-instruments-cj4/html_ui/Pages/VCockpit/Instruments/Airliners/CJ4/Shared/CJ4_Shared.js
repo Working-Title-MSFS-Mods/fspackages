@@ -2819,7 +2819,7 @@ class CJ4_NavBarContainer extends NavSystemElementContainer {
             if (rat)
                 this.ratElement.textContent = rat.toFixed(0);
             else
-                this.ratElement.textContent = "---";
+                this.ratElement.textContent = 0;
         }
         if (this.utcElement) {
             let utcTime = "";
