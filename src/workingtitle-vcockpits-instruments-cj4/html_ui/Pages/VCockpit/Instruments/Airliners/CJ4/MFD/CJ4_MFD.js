@@ -92,7 +92,6 @@ class CJ4_MFD extends BaseAirliners {
             }
             else if (this.showChecklist) {
                 this.systems1.minimize(true);
-                this.systems2.show(CJ4_SystemPage.NONE);
                 this.fms.show(false);
                 this.checklist.show(true);
                 this.mapOverlay.setExtended(false);
@@ -186,6 +185,7 @@ class CJ4_MFD extends BaseAirliners {
                 }
                 break;
             case "Lwr_Push_CKLST_1":
+                this.showFms = false;
                 this.showChecklist = !this.showChecklist;
                 break;
         }
