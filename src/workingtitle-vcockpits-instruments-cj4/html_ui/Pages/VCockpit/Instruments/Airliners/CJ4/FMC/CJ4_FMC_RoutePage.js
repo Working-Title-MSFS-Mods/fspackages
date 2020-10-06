@@ -1,5 +1,5 @@
 class CJ4_FMC_RoutePage {
-    static ShowPage1(fmc, offset = 0, pendingAirway) {
+    static ShowPage1(fmc, pendingAirway) {
         fmc.clearDisplay();
 
         //temporary to check flight plan index
@@ -57,7 +57,7 @@ class CJ4_FMC_RoutePage {
                 }
             });
         };
-        let distanceCell = "----"
+        let distanceCell = "----";
         if (fmc.flightPlanManager.getDestination() && fmc.flightPlanManager.getOrigin()) {
             distanceCell = Avionics.Utils.computeGreatCircleDistance(fmc.flightPlanManager.getOrigin().infos.coordinates, fmc.flightPlanManager.getDestination().infos.coordinates).toFixed(0);
         }
@@ -75,10 +75,10 @@ class CJ4_FMC_RoutePage {
                 }
             });
         };
-        let coRouteCell = "--------";
-        if (fmc.coRoute) {
-            coRouteCell = fmc.coRoute;
-        }
+        // let coRouteCell = "--------";
+        // if (fmc.coRoute) {
+        //     coRouteCell = fmc.coRoute;
+        // }
         fmc.onRightInput[2] = () => {
             let value = fmc.inOut;
             fmc.clearUserInput();
@@ -100,7 +100,6 @@ class CJ4_FMC_RoutePage {
         for (let i = 0; i < rows.length; i++) {
             if (allRows.rows[i]) {
                 rows[i] = allRows.rows[i];
-                let fpIndex = allRows.fpIndexes[i];
                 fmc.onRightInput[3] = () => {
                     let value = fmc.inOut;
                     if (value === FMCMainDisplay.clrValue) {
@@ -115,7 +114,7 @@ class CJ4_FMC_RoutePage {
                 showInput = true;
                 if (!pendingAirway) {
                     rows[i] = ["-----", "-----"];
-                    fmc.onRightInput[3] = async () => {
+                    fmc.onRightInput[3] = () => {
                         let value = fmc.inOut;
                         if (value.length > 0) {
                             fmc.clearUserInput();
@@ -124,7 +123,7 @@ class CJ4_FMC_RoutePage {
                             });
                         }
                     };
-                    fmc.onLeftInput[3] = async () => {
+                    fmc.onLeftInput[3] = () => {
                         let value = fmc.inOut;
                         if (value.length > 0) {
                             fmc.clearUserInput();
@@ -167,7 +166,7 @@ class CJ4_FMC_RoutePage {
         //start of CWB edited activation and exec handling
         if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
             fmc.fpHasChanged = true;
-            lsk6Field = "<CANCEL MOD"
+            lsk6Field = "<CANCEL MOD";
         }
         else if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 0) {
             activateCell = "PERF INIT>";
@@ -205,7 +204,7 @@ class CJ4_FMC_RoutePage {
             if (lsk6Field == "<CANCEL MOD") {
                 if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     fmc.fpHasChanged = false;
-                    fmc.eraseTemporaryFlightPlan(() => { CJ4_FMC_RoutePage.ShowPage1(fmc) });
+                    fmc.eraseTemporaryFlightPlan(() => { CJ4_FMC_RoutePage.ShowPage1(fmc); });
                 }
             }
         };
@@ -272,7 +271,7 @@ class CJ4_FMC_RoutePage {
                 showInput = true;
                 if (!pendingAirway) {
                     rows[i] = ["-----", "-----"];
-                    fmc.onRightInput[i] = async () => {
+                    fmc.onRightInput[i] = () => {
                         fmc.setMsg("Working...");
                         let value = fmc.inOut;
                         if (value.length > 0) {
@@ -284,7 +283,7 @@ class CJ4_FMC_RoutePage {
                         }
                         fmc.setMsg();
                     };
-                    fmc.onLeftInput[i] = async () => {
+                    fmc.onLeftInput[i] = () => {
                         fmc.setMsg("Working...");
                         let value = fmc.inOut;
                         if (value.length > 0) {
@@ -332,7 +331,7 @@ class CJ4_FMC_RoutePage {
         let lsk6Field = "";
         if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
             fmc.fpHasChanged = true;
-            lsk6Field = "<CANCEL MOD"
+            lsk6Field = "<CANCEL MOD";
         }
         else if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 0) {
             activateCell = "PERF INIT>";
@@ -361,7 +360,7 @@ class CJ4_FMC_RoutePage {
             if (lsk6Field == "<CANCEL MOD") {
                 if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     fmc.fpHasChanged = false;
-                    fmc.eraseTemporaryFlightPlan(() => { CJ4_FMC_RoutePage.ShowPage2(fmc, offset) });
+                    fmc.eraseTemporaryFlightPlan(() => { CJ4_FMC_RoutePage.ShowPage2(fmc, offset); });
                 }
             }
         };
@@ -418,7 +417,6 @@ class CJ4_FMC_RoutePage {
             for (let i = 0; i < routeWaypoints.length; i++) {
                 let prev = routeWaypoints[i - 1];
                 let wp = routeWaypoints[i];
-                let next = routeWaypoints[i + 1];
                 if (wp) {
                     let prevAirway = IntersectionInfo.GetCommonAirway(prev, wp);
                     if (!prevAirway) {
