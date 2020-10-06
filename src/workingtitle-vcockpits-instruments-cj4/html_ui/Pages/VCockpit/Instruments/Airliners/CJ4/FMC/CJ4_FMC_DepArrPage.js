@@ -315,7 +315,7 @@ class CJ4_FMC_DepArrPage {
                 }
                 else {
                     for (let j = 0; j < selectedArrival.runwayTransitions.length; j++) {
-                        if (selectedArrival.runwayTransitions[j].name.replace("RW", "") === approach.runway) {
+                        if (selectedArrival.runwayTransitions[j].name.replace("RW", "") === approach.runway.trim()) {
                             appendRow = true;
                             displayableApproachesCount++;
                             break;
@@ -361,7 +361,7 @@ class CJ4_FMC_DepArrPage {
                 }
                 else {
                     for (let j = 0; j < arrival.runwayTransitions.length; j++) {
-                        if (arrival.runwayTransitions[j].name.replace("RW", "") === selectedApproach.runway) {
+                        if (arrival.runwayTransitions[j].name.replace("RW", "") === selectedApproach.runway.trim()) {
                             appendRow = true;
                             displayableArrivalsCount++;
                             break;
