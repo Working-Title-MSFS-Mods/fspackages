@@ -185,6 +185,9 @@ class CJ4_MFD extends BaseAirliners {
                     this.checklist.otherMenusOpen = false
                 }
                 break;
+            case "Lwr_Push_CKLST_1":
+                this.showChecklist = !this.showChecklist;
+                break;
         }
     }
     allContainersReady() {
