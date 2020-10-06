@@ -223,7 +223,7 @@ class CJ4_FMC_DepArrPage {
 
 
         fmc.onPrevPage = () => {
-            if (currentPage > 0) {
+            if (currentPage > 1) {
                 CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, currentPage - 1);
             }
         };
@@ -439,7 +439,7 @@ class CJ4_FMC_DepArrPage {
 
 
         fmc.onPrevPage = () => {
-            if (currentPage > 0) {
+            if (currentPage > 1) {
                 CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage - 1);
             }
         };
