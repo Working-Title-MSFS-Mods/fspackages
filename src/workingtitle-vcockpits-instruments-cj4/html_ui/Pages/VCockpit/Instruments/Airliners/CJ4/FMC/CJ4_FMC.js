@@ -74,6 +74,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.maxCruiseFL = 450;
         this.onFplan = () => { CJ4_FMC_RoutePage.ShowPage1(this); };
         this.onLegs = () => { CJ4_FMC_LegsPage.ShowPage1(this); };
+        this.onMsg = () => { CJ4_FMC_MsgPage.ShowPage11(this); };
         this.onIdx = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(this); };
         this.onDepArr = () => { CJ4_FMC_DepArrPage.ShowPage1(this); };
         this.onDsplMenu = () => { CJ4_FMC_DsplMenuPage.ShowPage1(this); };
@@ -167,6 +168,12 @@ class CJ4_FMC extends FMCMainDisplay {
             }
             return true;
         }
+        if (input === "MSG") {
+            if (this.onMsg) {
+                this.onMsg();
+            }
+        }
+
         if (input === "IDX") {
             if (this.onIdx) {
                 this.onIdx();
