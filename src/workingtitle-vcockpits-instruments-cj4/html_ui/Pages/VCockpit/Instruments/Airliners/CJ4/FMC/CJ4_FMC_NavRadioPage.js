@@ -22,7 +22,7 @@ class CJ4_FMC_NavRadioPageOne {
                 if (target[key] !== value) {
                     this._isDirty = true;
                     target[key] = value;
-                    console.log("FREQ CHANGED! " + key + " = " + value);
+                    // console.log("FREQ CHANGED! " + key + " = " + value);
                 }
                 return true;
             }.bind(this)
@@ -34,7 +34,7 @@ class CJ4_FMC_NavRadioPageOne {
     }
 
     update() {
-        console.log("navradio.update()");
+        // console.log("navradio.update()");
 
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.vhf2 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 2);
