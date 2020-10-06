@@ -165,6 +165,11 @@ class SvgMap {
         return this._NMWidth;
     }
 	
+	// MOD: get the width in NM along the short axis of the map
+	get NMWidthShort() {
+		return this._NMWidth * Math.min(this._ratio, 1 / this._ratio);
+	}
+	
     set NMWidth(v) {
         if (this.NMWidth !== v) {
             this._NMWidth = v;
@@ -181,8 +186,13 @@ class SvgMap {
         }
     }
 	
+	// MOD: convenience methods that just pass through to MapInstrument
 	get rotation() {
 		return this.htmlRoot.rotation;
+	}
+	
+	get overdrawFactor() {
+		return this.htmlRoot.overdrawFactor;
 	}
 	
     computeCoordinates() {
@@ -552,6 +562,11 @@ class SvgMap {
         let y = 1000 * (this.planeXY.y - Math.cos(bearing * Avionics.Utils.DEG2RAD) * distance / this.NMWidth);
         return { x: x, y: y };
     }
+	
+	// MOD: convenience method to return X,Y coordinates of plane
+	getPlanePositionXY() {
+		return this.coordinatesToXY(this.planeCoordinates);
+	}
 	
 	// MOD: returns lat/long coordinates of (X,Y) point of map with plane at center, taking into account any current map rotation
 	// (X,Y) is vector of arbitrary units where (0,0) is top left and (1000, 1000) is bottom right of map

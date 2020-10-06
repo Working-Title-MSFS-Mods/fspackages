@@ -103,6 +103,10 @@ class MapInstrument extends ISvgMapRootElement {
 		
 		this._ranges = MapInstrument.ZOOM_RANGES_DEFAULT;
 		
+		// MOD START: new class variables
+		
+		this.overdrawFactor = MapInstrument.OVERDRAW_FACTOR_DEFAULT;
+		
 		/*
 		 * Defines orientation of the map:
 		 * hdg: current aircraft heading up
@@ -119,6 +123,7 @@ class MapInstrument extends ISvgMapRootElement {
 		this.roadHighwayMaxRange = MapInstrument.ROAD_HIGHWAY_RANGE_DEFAULT;
 		this.roadTrunkMaxRange = MapInstrument.ROAD_TRUNK_RANGE_DEFAULT;
 		this.roadPrimaryMaxRange = MapInstrument.ROAD_PRIMARY_RANGE_DEFAULT;
+		// MOD END
     }
     get flightPlanManager() {
         if (this.gps) {
@@ -449,6 +454,7 @@ class MapInstrument extends ISvgMapRootElement {
             };
             this.npcAirplaneManager = new NPCAirplaneManager();
             this.airplaneIconElement = new SvgAirplaneElement();
+			this.rangeCompassElement = new SvgRangeCompassElement(); // MOD: range compass
             this.flightPlanElement = new SvgFlightPlanElement();
             this.flightPlanElement.source = this.flightPlanManager;
             this.flightPlanElement.flightPlanIndex = 0;
@@ -621,7 +627,7 @@ class MapInstrument extends ISvgMapRootElement {
                 else {
                     this.navMap.setRange(this.getDisplayRange());
                 }
-                var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor * MapInstrument.OVERDRAW_FACTOR; // MOD: Need to expand map range to compensate for overdraw
+                var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor * this.overdrawFactor; // MOD: Need to expand map range to compensate for overdraw
                 if (!this.isDisplayingWeather())
                     this.updateBingMapSize();
                 if (this.navMap.lastCenterCoordinates)
@@ -800,6 +806,9 @@ class MapInstrument extends ISvgMapRootElement {
                         this.navMap.mapElements.push(this.constraints[i]);
                     }
                 }
+				
+				this.navMap.mapElements.push(this.rangeCompassElement); // MOD: show range compass
+				
                 if (this.flightPlanManager && this.bIsFlightPlanVisible) {
                     let l = this.flightPlanManager.getWaypointsCount();
                     if (l > 1) {
@@ -1281,7 +1290,7 @@ class MapInstrument extends ISvgMapRootElement {
 	
 	// MOD: get the actual range of the map when accounting for overdraw
 	getTrueRange() {
-		return this.getDisplayRange() * MapInstrument.OVERDRAW_FACTOR;
+		return this.getDisplayRange() * this.overdrawFactor;
 	}
 	
     getDeclutteredRange() {
@@ -1299,7 +1308,7 @@ class MapInstrument extends ISvgMapRootElement {
         let max = Math.max(w, h);
 		
 		// to compensate for potential rotation, we need to overdraw the map
-		max *= MapInstrument.OVERDRAW_FACTOR;
+		max *= this.overdrawFactor;
 		
         if (w * h > 1 && w * h !== this.lastWH) {
             this.lastWH = w * h;
@@ -1596,7 +1605,7 @@ class MapInstrument extends ISvgMapRootElement {
 		this.roadPrimaryMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
 	}
 }
-MapInstrument.OVERDRAW_FACTOR = Math.sqrt(2);
+MapInstrument.OVERDRAW_FACTOR_DEFAULT = Math.sqrt(2);
 MapInstrument.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200];
 
 MapInstrument.INT_RANGE_DEFAULT = 15;
