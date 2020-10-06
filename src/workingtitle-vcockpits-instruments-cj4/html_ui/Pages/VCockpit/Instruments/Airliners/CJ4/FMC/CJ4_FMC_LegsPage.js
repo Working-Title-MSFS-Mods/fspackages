@@ -172,7 +172,7 @@ class CJ4_FMC_LegsPage {
         this._fmc._templateRenderer.setTemplateRaw([
             [" " + modStr + " LEGS[blue]", this._currentPage.toFixed(0) + "/" + Math.max(1, this._pageCount.toFixed(0)) + " [blue]"],
             ...this._rows,
-            ["-------------------------"],
+            ["-------------------------[blue]"],
             [this._lsk6Field + "", "LEG WIND>"]
         ]);
     }
