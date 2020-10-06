@@ -29,7 +29,8 @@ class CJ4_FMC_LegsPage {
         // Noop as there is no preparation with this
     }
 
-    update() {
+    update(forceUpdate = false) {
+        console.log("legs.update()");
 
         // check if active wpt changed
         // TODO: possible that i renders twice as we change index while editing, could cut that out too
@@ -39,14 +40,17 @@ class CJ4_FMC_LegsPage {
             this._isDirty = true;
         }
 
-        const distanceToActWpt = this._fmc.flightPlanManager.getDistanceToActiveWaypoint().toFixed(1);
+        // get and format distance
+        let distanceToActWpt = this._fmc.flightPlanManager.getDistanceToActiveWaypoint();
+        distanceToActWpt = (distanceToActWpt < 100) ? distanceToActWpt.toFixed(1) : distanceToActWpt.toFixed(0);
         if (distanceToActWpt !== this._distanceToActiveWpt) {
             this._distanceToActiveWpt = distanceToActWpt;
             this._isDirty = true;
         }
 
         // TODO notice when approach gets activated and render dirty
-        if (this._isDirty) {
+
+        if (this._isDirty || forceUpdate) {
             this.invalidate();
         }
         // register refresh and bind to update which will only render on changes
@@ -298,7 +302,7 @@ class CJ4_FMC_LegsPage {
         this._fmc.setMsg();
         this._selectedWaypoint = undefined;
         this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
-        this.invalidate();
+        this.update(true);
     }
 
     bindEvents() {
@@ -307,7 +311,7 @@ class CJ4_FMC_LegsPage {
                 if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     this._fmc.fpHasChanged = false;
                     this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
-                    this._fmc.eraseTemporaryFlightPlan(() => { this.invalidate(); });
+                    this._fmc.eraseTemporaryFlightPlan(() => { this.resetAfterOp(); });
                 }
             }
         };
@@ -318,7 +322,7 @@ class CJ4_FMC_LegsPage {
                 this._fmc.fpHasChanged = false;
                 this._fmc.activateRoute(() => {
                     this._fmc.activatingDirectTo = false;
-                    this._fmc.refreshPageCallback = () => { this.invalidate(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
+                    this._fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
                     this._fmc.onExecDefault();
                 });
             }
@@ -327,13 +331,13 @@ class CJ4_FMC_LegsPage {
         this._fmc.onPrevPage = () => {
             if (this._currentPage > 1) {
                 this._currentPage--;
-                this.invalidate();
+                this.update(true);
             }
         };
         this._fmc.onNextPage = () => {
             if (this._currentPage < this._pageCount) {
                 this._currentPage++;
-                this.invalidate();
+                this.update(true);
             }
         };
     }
