@@ -454,7 +454,7 @@ class MapInstrument extends ISvgMapRootElement {
             };
             this.npcAirplaneManager = new NPCAirplaneManager();
             this.airplaneIconElement = new SvgAirplaneElement();
-			this.rangeCompassElement = new SvgRangeCompassElement(); // MOD: range compass
+			this.rangeRingElement = new SvgRangeRingElement(); // MOD: range ring
             this.flightPlanElement = new SvgFlightPlanElement();
             this.flightPlanElement.source = this.flightPlanManager;
             this.flightPlanElement.flightPlanIndex = 0;
@@ -807,7 +807,9 @@ class MapInstrument extends ISvgMapRootElement {
                     }
                 }
 				
-				this.navMap.mapElements.push(this.rangeCompassElement); // MOD: show range compass
+				if (this.orientation == "north") {
+					this.navMap.mapElements.push(this.rangeRingElement); // MOD: show range compass
+				}
 				
                 if (this.flightPlanManager && this.bIsFlightPlanVisible) {
                     let l = this.flightPlanManager.getWaypointsCount();
