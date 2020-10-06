@@ -33,6 +33,7 @@
         "RegisterViewListener": "writable",
         "registerInstrument": "writable",
         "WT_FMC_Renderer": "readonly",
+        "WayPointInfo": "writable",
         "CJ4_FMC_LegsPage": "readonly",
         "CJ4_SystemContainer": "readonly",
         "NavSystemElementGroup": "readonly",
