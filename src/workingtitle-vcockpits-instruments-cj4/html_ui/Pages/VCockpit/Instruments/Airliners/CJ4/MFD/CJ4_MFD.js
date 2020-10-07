@@ -1347,16 +1347,16 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 text.setAttribute("alignment-baseline", "central");
                 trimGroup.appendChild(text);
 
-                var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = "2.6";
-                text.setAttribute("x", (blockPosX + 80).toString());
-                text.setAttribute("y", blockPosY.toString());
-                text.setAttribute("fill", "white");
-                text.setAttribute("font-size", "22");
-                text.setAttribute("font-family", "Roboto-Light");
-                text.setAttribute("text-anchor", "middle");
-                text.setAttribute("alignment-baseline", "central");
-                trimGroup.appendChild(text);
+                this.AileronRadians = document.createElementNS(Avionics.SVG.NS, "text");
+                this.AileronRadians.textContent = "2.6";
+                this.AileronRadians.setAttribute("x", (blockPosX + 80).toString());
+                this.AileronRadians.setAttribute("y", blockPosY.toString());
+                this.AileronRadians.setAttribute("fill", "white");
+                this.AileronRadians.setAttribute("font-size", "22");
+                this.AileronRadians.setAttribute("font-family", "Roboto-Light");
+                this.AileronRadians.setAttribute("text-anchor", "middle");
+                this.AileronRadians.setAttribute("alignment-baseline", "central");
+                trimGroup.appendChild(this.AileronRadians);
 
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
                 text.textContent = "ND";
@@ -1487,6 +1487,10 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 let elev_y = this.ElevatorCursorRY1 + (this.ElevatorCursorRY2 - this.ElevatorCursorRY1) * ElevPct;
                 this.ElevatorCursorR.setAttribute("transform", "translate (" + this.ElevatorCursorRX + " " + elev_y + ")");
                 this.ElevatorCursorL.setAttribute("transform", "translate (" + this.ElevatorCursorLX + " " + elev_y + ")");
+                let ailRadians = (SimVar.GetSimVarValue("ELEVATOR TRIM POSITION", "radian"));
+                console.log("rads: " + ailRadians);
+                this.AileronRadians.textContent = (ailRadians * 180 / Math.PI).toFixed(1).toString();
+
             }
         }
     }
