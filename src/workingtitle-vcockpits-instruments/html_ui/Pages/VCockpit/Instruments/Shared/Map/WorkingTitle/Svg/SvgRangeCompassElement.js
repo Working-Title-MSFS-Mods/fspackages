@@ -158,10 +158,9 @@ class SvgRangeCompassElement extends SvgMapElement {
 				this.bearingLabels[i] = this.createBearingLabel();
 				this.compassLayer.appendChild(this.bearingLabels[i]);
 			}
-			let offset = this.bearingLabelFontSize * 1.4; 	// calculate how much the labels need to be offset from ticks to not collide
+			let offset = this.bearingLabelFontSize * 1.02; 	// calculate how much the labels need to be offset from ticks to not collide
 															// label length approximated as font size * 3 chars * 0.6 (empiric constant), label height is ~= font size
-															// longest path through the label is through the diagonal; avoid doing Math.sqrt() by just approximating as length + height
-															// finally divide by 2 since text is middle-anchored (font size * (1 + 3 * 0.6)/2)
+															// longest path through the label is through the diagonal, so Pythagorean theorem and then divide by 2 because middle anchor
 			let pos = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius - this.bearingTickMajorLength - offset, Math.PI * (currentBearing + map.rotation - 90 - magDev) / 180);
 			this.bearingLabels[i].setAttribute("x", pos.x);
 			this.bearingLabels[i].setAttribute("y", pos.y);
