@@ -455,7 +455,7 @@ class CJ4_FMC extends FMCMainDisplay {
             const rightFuelUsed = this.previousRightFuelQty - rightFuelQty;
 
             const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
-            const tsfc = Math.pow(1 + (.82 * mach), mach) * 0.58; //Inspiration: https://onlinelibrary.wiley.com/doi/pdf/10.1002/9780470117859.app4
+            const tsfc = Math.pow(1 + (1.2 * mach), mach) * 0.58; //Inspiration: https://onlinelibrary.wiley.com/doi/pdf/10.1002/9780470117859.app4
 
             const leftFuelFlow = Math.max(thrustLeft * tsfc, 150);
             const rightFuelFlow = Math.max(thrustRight * tsfc, 150);
