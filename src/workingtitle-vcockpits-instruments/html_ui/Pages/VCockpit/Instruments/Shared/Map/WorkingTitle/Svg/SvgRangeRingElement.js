@@ -87,17 +87,7 @@ class SvgRangeLabelElement {
 		} else {
 			this.rangeDisplayAutoText.setAttribute("display", "none");
 		}
-		
-		let rangeDisplayText = "";
-		if (this.range < 1) {
-			rangeDisplayText = this.range.toFixed(2);
-		} else if (this.range < 10) {
-			rangeDisplayText = this.range.toFixed(1);
-		} else {
-			rangeDisplayText = this.range.toFixed(0);
-		}
-		this.rangeDisplayValueText.textContent = rangeDisplayText;
-		
+		this.rangeDisplayValueText.textContent = MapInstrument.getFormattedRangeDisplayText(this.range);
 		this.formatRangeDisplay(false);
 	}
 	

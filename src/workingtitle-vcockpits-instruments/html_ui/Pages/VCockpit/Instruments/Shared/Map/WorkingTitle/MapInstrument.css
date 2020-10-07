@@ -44,7 +44,7 @@ map-instrument {
     position: absolute;
     bottom: 0%;
     right: 0%;
-    width: 10%;
+    width: 11%;
     height: calc( 4 * 1vh * var(--bodyHeightScale));
     background-color: #1a1d21;
     color: #8ed0d5;

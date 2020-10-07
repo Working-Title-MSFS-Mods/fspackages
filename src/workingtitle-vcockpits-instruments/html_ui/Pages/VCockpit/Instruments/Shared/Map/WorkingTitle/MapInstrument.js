@@ -48,9 +48,10 @@ class MapInstrument extends ISvgMapRootElement {
         this.showCities = false;
         this.showTraffic = true;
         this.showConstraints = false;
-		this.showRangeDisplay = MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT; // whether to show the range display
+		this.showRangeDisplay = MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT; // MOD: whether to show the range display
         this._ranges = MapInstrument.ZOOM_RANGES_DEFAULT;
         this.rangeIndex = 4;
+		this.rangeDisplayBiasFactor = MapInstrument.RANGE_DISPLAY_BIAS_DEFAULT; // MOD: multiplied by the map range to give what the map's range display will show on the UI
         this._declutterLevel = 0;
         this.rangeFactor = 1852;
         this.wpIdValue = "";
@@ -1010,7 +1011,7 @@ class MapInstrument extends ISvgMapRootElement {
 			if (this.showRangeDisplay) {
 				let currentRange = this.getDisplayRange();
 				if (this.rangeValue != currentRange) {
-					Avionics.Utils.diffAndSet(this.mapRangeElementRange, currentRange);
+					Avionics.Utils.diffAndSet(this.mapRangeElementRange, MapInstrument.getFormattedRangeDisplayText(currentRange * this.rangeDisplayBiasFactor));
 					this.rangeValue = currentRange;
 				}
 				Avionics.Utils.diffAndSetAttribute(this.mapRangeElement, "state", "Active");
@@ -1616,11 +1617,33 @@ class MapInstrument extends ISvgMapRootElement {
 	set roadPrimaryMaxRangeIndex(_index) {
 		this.roadPrimaryMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
 	}
+	
+	// MOD: formats range display numbers
+	static getFormattedRangeDisplayText(_range) {
+		if (_range >= 10) {
+			return _range.toFixed(0);
+		}
+		
+		let decimals = 0;
+		if (_range < 1) {
+			decimals = 1;
+		}
+		
+		while (decimals >= 0) {
+			console.log("range " + _range + " rounded " + parseFloat(_range.toFixed(decimals)));
+			if (Math.abs(parseFloat(_range.toFixed(decimals)) - _range) > 0.001) {
+				break;
+			}
+			decimals--;
+		}
+		return _range.toFixed(decimals + 1);
+	}
 }
 MapInstrument.OVERDRAW_FACTOR_DEFAULT = Math.sqrt(2);
 MapInstrument.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200];
 
 MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT = true;
+MapInstrument.RANGE_DISPLAY_BIAS_DEFAULT = 1;
 
 MapInstrument.INT_RANGE_DEFAULT = 15;
 MapInstrument.INT_RANGE_MIN_DEFAULT = 0;
