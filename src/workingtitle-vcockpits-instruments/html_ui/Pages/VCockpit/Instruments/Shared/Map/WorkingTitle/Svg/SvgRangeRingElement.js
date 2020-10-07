@@ -88,8 +88,6 @@ class SvgRangeLabelElement {
 			this.rangeDisplayAutoText.setAttribute("display", "none");
 		}
 		
-		this.formatRangeDisplay(false);
-		
 		let rangeDisplayText = "";
 		if (this.range < 1) {
 			rangeDisplayText = this.range.toFixed(2);
@@ -99,6 +97,8 @@ class SvgRangeLabelElement {
 			rangeDisplayText = this.range.toFixed(0);
 		}
 		this.rangeDisplayValueText.textContent = rangeDisplayText;
+		
+		this.formatRangeDisplay(false);
 	}
 	
 	formatRangeDisplay(_auto) {

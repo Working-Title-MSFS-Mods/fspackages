@@ -34,6 +34,8 @@ class SvgRangeCompassElement extends SvgMapElement {
 		this.hdgTrkTickLength = SvgRangeCompassElement.HDGTRK_TICK_LENGTH_DEFAULT;								// in SVG coordinate units
 		
 		this.rangeDisplayAngle = SvgRangeCompassElement.RANGE_DISPLAY_ANGLE_DEFAULT;
+		
+		this.showRangeDisplay = SvgRangeCompassElement.RANGE_DISPLAY_SHOW_DEFAULT;
 	}
 	
 	id(map) {
@@ -162,15 +164,20 @@ class SvgRangeCompassElement extends SvgMapElement {
 		
 		SvgRangeCompassElement.drawRadialTick(this.hdgTrkTick, this.centerPos, this.radius, this.hdgTrkTickLength, Math.PI * -0.5);
 		
-		this.rangeLabelElement.range = this.radius / 1000 * map.NMWidth;
-		this.rangeLabelElement.updateDraw(map);
-		
-		let labelAngleRad = this.rangeDisplayAngle * Math.PI / 180;
-		let x = this.centerPos.x + this.radius * Math.cos(labelAngleRad);
-		let y = this.centerPos.y + this.radius * Math.sin(labelAngleRad);
-		
-		this.rangeLabelElement.svgElement.setAttribute("x", x - this.rangeLabelElement.svgElement.width.baseVal.value / 2);
-		this.rangeLabelElement.svgElement.setAttribute("y", y - this.rangeLabelElement.svgElement.height.baseVal.value / 2);
+		if (this.showRangeDisplay) {
+			this.rangeLabelElement.range = this.radius / 1000 * map.NMWidth;
+			this.rangeLabelElement.updateDraw(map);
+			
+			let labelAngleRad = this.rangeDisplayAngle * Math.PI / 180;
+			let x = this.centerPos.x + this.radius * Math.cos(labelAngleRad);
+			let y = this.centerPos.y + this.radius * Math.sin(labelAngleRad);
+			
+			this.rangeLabelElement.svgElement.setAttribute("x", x - this.rangeLabelElement.svgElement.width.baseVal.value / 2);
+			this.rangeLabelElement.svgElement.setAttribute("y", y - this.rangeLabelElement.svgElement.height.baseVal.value / 2);
+			this.rangeLabelElement.svgElement.setAttribute("display", "inherit");
+		} else {
+			this.rangeLabelElement.svgElement.setAttribute("display", "none");
+		}
 	}
 	
 	createBearingTickMinor() {
@@ -243,3 +250,4 @@ SvgRangeCompassElement.HDGTRK_TICK_STROKE_WIDTH_DEFAULT = 2;
 SvgRangeCompassElement.HDGTRK_TICK_LENGTH_DEFAULT = 10;
 
 SvgRangeCompassElement.RANGE_DISPLAY_ANGLE_DEFAULT = -135;
+SvgRangeCompassElement.RANGE_DISPLAY_SHOW_DEFAULT = true;

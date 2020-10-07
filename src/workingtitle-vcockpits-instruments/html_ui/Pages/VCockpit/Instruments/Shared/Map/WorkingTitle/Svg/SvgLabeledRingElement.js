@@ -6,6 +6,7 @@ class SvgLabeledRingElement extends SvgMapElement {
 		this.centerPos = new Vec2(500, 500);	// in SVG coordinates for a 1000x1000 map
 		this.labelPosAngle = 0;					// angle along which the label is displaced from the center of the ring, in degrees. 0 = to the right, increasing clockwise
 		this.labelPosOffset = 0;				// by default, label is placed along the ring, this defines the radial offset distance from the default, in SVG coordinate units
+		this.showLabel = true;
 	}
 	
 	createDraw(map) {
@@ -29,7 +30,12 @@ class SvgLabeledRingElement extends SvgMapElement {
 	
 	updateDraw(map) {
 		this.updateRing(map);
-		this.updateLabel(map);
+		if (this.showLabel) {
+			this.updateLabel(map);
+			this.labelSvg.setAttribute("display", "inherit");
+		} else {
+			this.labelSvg.setAttribute("display", "none");
+		}
 	}
 	
 	createRing(map) {
