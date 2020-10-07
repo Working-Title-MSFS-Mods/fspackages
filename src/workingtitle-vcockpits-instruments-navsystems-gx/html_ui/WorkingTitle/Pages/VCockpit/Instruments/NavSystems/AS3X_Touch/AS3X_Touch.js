@@ -61,13 +61,15 @@ class AS3X_Touch extends NavSystemTouch {
         this.duplicateWaypointSelection.setGPS(this);
         this.pageGroups = [
             new AS3X_Touch_PageGroup("MFD", this, [
-                new AS3X_Touch_NavSystemPage("Map", "Map", new AS3X_Touch_MapContainer("Map"), "Map", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png"),
+                new AS3X_Touch_NavSystemPage("Map", "Map", new AS3X_Touch_MapContainer("Map"), "Map", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png",
+                () => {console.log("YOU PUSHED MENU ON THE MAP")}),
                 new AS3X_Touch_NavSystemPage("Active FPL", "FPL", new NavSystemElementGroup([
                     new NavSystemTouch_ActiveFPL(true),
                     new AS3X_Touch_MapContainer("Afpl_Map")
                 ]), "FPL", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FLIGHT_PLAN_MED_1.png"),
                 new AS3X_Touch_NavSystemPage("Weather", "Map", new AS3X_Touch_MapContainer("Map"), "WX",
                     "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png",
+                    () => { console.log("Switching to pagemenu"), this.switchToPopUpPage(this.pageMenu)},
                     () => { this.mainMap.nexradOn = true; },
                     () => { this.mainMap.nexradOn = false; }),
                 new AS3X_Touch_NavSystemPage("Procedures", "Procedures", new AS3X_Touch_Procedures(), "Proc", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PROCEDURES_1.png")
@@ -393,19 +395,25 @@ class AS3X_Touch extends NavSystemTouch {
         super.computeEvent(_event);
         switch (_event) {
             case "Menu_Push":
-                if (this.popUpElement == this.pageMenu) {
-                    this.closePopUpElement();
+                if (this.displayMode != "MFD" && !this.m_isSplit) {
+                    // we're in full PFD mode, if we don't have a popup open show the PFD menu
+                    if (!this.popUpElement) {
+                        this.switchToPopUpPage(this.pfdMenu);
+                    }
                 }
-                else {
-                    this.switchToPopUpPage(this.pageMenu);
-                }
+                // this.getCurrentPageGroup().getCurrentPage().onEvent(_event)
+                // if (this.popUpElement == this.pageMenu) {
+                //     this.closePopUpElement();
+                // }
+                // else {
+                //     this.switchToPopUpPage(this.pageMenu);
+                // }
                 break;
             case "Back_Push":
                 if (this.popUpElement) {
                     this.closePopUpElement();
                 }
                 else {
-                    console.log("Computing back push");
                     this.SwitchToMenuName("MFD");
                     this.computeEvent("Master_Caution_Push");
                     this.computeEvent("Master_Warning_Push");
@@ -753,14 +761,29 @@ class AS3X_Touch_Map extends MapInstrumentElement {
 }
 class AS3X_Touch_PageMenu_Button {
 }
-class AS3X_Touch_PageMenu extends NavSystemElement {
+class AS3X_Touch_Popup extends NavSystemElement {
     init(root) {
         this.root = root;
+    }
+    onEnter() {
+        this.root.setAttribute("state", "Active");
+    }
+    onUpdate(_deltaTime) {
+    }
+    onExit() {
+        this.root.setAttribute("state", "Inactive");
+    }
+    onEvent(_event) {
+    }
+}
+class AS3X_Touch_PageMenu extends AS3X_Touch_Popup {
+    init(root) {
+        super.init(root);
         this.buttons = [];
         this.menuElements = root.getElementsByClassName("menuElements")[0];
     }
     onEnter() {
-        this.root.setAttribute("state", "Active");
+        super.onEnter();
         let pageGroup = this.gps.getCurrentPageGroup();
         for (let i = 0; i < (pageGroup.pages.length + pageGroup.additionalMenuButtons.length); i++) {
             if (i >= this.buttons.length) {
@@ -797,13 +820,6 @@ class AS3X_Touch_PageMenu extends NavSystemElement {
         for (let i = pageGroup.pages.length + pageGroup.additionalMenuButtons.length; i < this.buttons.length; i++) {
             this.buttons[i].base.style.display = "none";
         }
-    }
-    onUpdate(_deltaTime) {
-    }
-    onExit() {
-        this.root.setAttribute("state", "Inactive");
-    }
-    onEvent(_event) {
     }
     switchToPage(i) {
         let pageGroup = this.gps.getCurrentPageGroup();
@@ -897,12 +913,21 @@ class AS3X_Touch_PageGroup extends NavSystemPageGroup {
     }
 }
 class AS3X_Touch_NavSystemPage extends NavSystemPage {
-    constructor(_name, _htmlElemId, _element, _shortName, _imagePath, _enterCb, _exitCb) {
+    constructor(_name, _htmlElemId, _element, _shortName, _imagePath, _menuCb, _enterCb, _exitCb) {
         super(_name, _htmlElemId, _element);
         this.shortName = _shortName;
         this.imagePath = _imagePath;
+        this._menuCb = _menuCb;
         this._enterCb = _enterCb;
         this._exitCb = _exitCb;
+
+    }
+    onEvent(_event) {
+        console.log(`page event ${_event}`);
+        if (_event == 'Menu_Push' && this._menuCb) {
+            console.log("WE ARE CALLING MENU CB")
+            this._menuCb();
+        }            
     }
     onEnter() {
         super.onEnter();
