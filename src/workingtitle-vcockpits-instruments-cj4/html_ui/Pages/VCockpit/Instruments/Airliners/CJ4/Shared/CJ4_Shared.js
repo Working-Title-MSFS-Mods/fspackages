@@ -3437,11 +3437,13 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":
-                    this.handler.onActivate();
-                    if(this.handler.highlightItem){
-                        if(this.handler.onChecklistItemPage && this.handler.highlightItem.checkboxVal){
-                            this.handler.highlight(this.handler.highlightId + 1);
-                            this.handler.changeCurrentSelectionIndex(1);
+                    if(!this.otherMenusOpen){
+                        this.handler.onActivate();
+                        if(this.handler.highlightItem){
+                            if(this.handler.onChecklistItemPage && this.handler.highlightItem.checkboxVal){
+                                this.handler.highlight(this.handler.highlightId + 1);
+                                this.handler.changeCurrentSelectionIndex(1);
+                            }
                         }
                     }
                     break;
@@ -3473,7 +3475,7 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
                     break;
                 case "Upr_Push_ESC":
                 case "Lwr_Push_ESC":
-                    if (!this.handler.isOnMainPage) {
+                    if (!this.handler.isOnMainPage && !this.otherMenusOpen) {
                         this.handler.escapeCbk();
                     }
                     break;

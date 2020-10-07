@@ -111,6 +111,7 @@ class CJ4_MFD extends BaseAirliners {
                 this.fms.show(false);
                 this.checklist.show(false);
                 this.systems1.show(this.systemPage1);
+                this.mapOverlay.setExtended(false);
                 if (this.systemPage1 == CJ4_SystemPage.ENGINES) {
                     if (this.isExtended && !this.systems2.hasAnnunciations()) {
                         this.map.setExtended(true);
@@ -202,6 +203,9 @@ class CJ4_MFD extends BaseAirliners {
             case "Lwr_Push_CKLST_1":
                 this.showFms = false;
                 this.showChecklist = !this.showChecklist;
+                break;
+            case "Lwr_Push_ESC":
+                this.checklist.otherMenusOpen = false
                 break;
         }
     }
