@@ -338,11 +338,13 @@ class CJ4_FMC_RoutePage {
                         let value = fmc.inOut;
                         if (value.length > 0) {
                             fmc.clearUserInput();
-                            CJ4_FMC_RoutePage.insertWaypointsAlongAirway(fmc, value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1, pendingAirway.name, (result) => {
-                                if (result) {
-                                    fmc.setMsg();
-                                    CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
-                                }
+                            fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                CJ4_FMC_RoutePage.insertWaypointsAlongAirway(fmc, value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1, pendingAirway.name, (result) => {
+                                    if (result) {
+                                        fmc.setMsg();
+                                        CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
+                                    }
+                                });
                             });
                         } else
                             fmc.setMsg();
