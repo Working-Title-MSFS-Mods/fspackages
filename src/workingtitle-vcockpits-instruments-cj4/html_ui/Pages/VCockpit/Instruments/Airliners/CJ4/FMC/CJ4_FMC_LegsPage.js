@@ -134,15 +134,20 @@ class CJ4_FMC_LegsPage {
                     distance = Math.trunc(Avionics.Utils.computeDistance(prevWaypoint.infos.coordinates, waypoint.infos.coordinates)).toFixed(0);
                 }
 
-                if (i == 0 && this._currentPage == 1) {
-                    //this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM"];
+                if (isFromWpt) {
                     if (this._fmc.flightPlanManager.getIsDirectTo()) {
                         this._rows[2 * i + 1] = ["(DIR)[blue]"];
                     } else {
-                        this._rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident + "[blue]" : "USR[blue]"];
+                        // show runway where possible
+                        let depRwy = this._fmc.flightPlanManager.getDepartureRunway();
+                        if (this._activeWptIndex == 1 && depRwy) {
+                            let rwyIdent = depRwy.designation.indexOf("RW") === -1 ? "RW" + depRwy.designation : depRwy.designation;
+                            this._rows[2 * i + 1] = [rwyIdent + "[blue]"];
+                        } else
+                            this._rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident + "[blue]" : "USR[blue]"];
                     }
                 }
-                else if (i == 1 && this._currentPage == 1) {
+                else if (isActWpt) {
                     this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM[magenta]"];
                     this._rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident + "[magenta]" : "USR[magenta]"];
                 }
@@ -186,7 +191,7 @@ class CJ4_FMC_LegsPage {
 
                 if (!waypoint) return;
                 let isApproachWaypoint = this._approachWaypoints.indexOf(waypoint) !== -1;
-                if(isApproachWaypoint){
+                if (isApproachWaypoint) {
                     this._fmc.showErrorMessage("UNABLE MOD APPROACH");
                     return;
                 }
