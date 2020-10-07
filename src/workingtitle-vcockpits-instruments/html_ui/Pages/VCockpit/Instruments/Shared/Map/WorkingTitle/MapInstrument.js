@@ -808,10 +808,12 @@ class MapInstrument extends ISvgMapRootElement {
                 }
 				
 				// MOD: show range compass or range ring
-				if (this.showRangeRing) {
-					this.navMap.mapElements.push(this.rangeRingElement);
-				} else if (this.showRangeCompass) { 
-					this.navMap.mapElements.push(this.rangeCompassElement);
+				if (this.eBingMode != EBingMode.CURSOR) {
+					if (this.showRangeRing) {
+						this.navMap.mapElements.push(this.rangeRingElement);
+					} else if (this.showRangeCompass) { 
+						this.navMap.mapElements.push(this.rangeCompassElement);
+					}
 				}
 				
                 if (this.flightPlanManager && this.bIsFlightPlanVisible) {
