@@ -451,8 +451,11 @@ class CJ4_FMC_RoutePage {
                                     return new Promise(resolve => {
                                         console.log("add icao:" + icao + " @ " + idx);
                                         fmc.flightPlanManager.addWaypoint(icao, idx, () => {
-                                            console.log("icao:" + icao + " added");
-                                            resolve();
+                                            fmc.flightPlanManager.setWaypointAdditionalData(idx, "AirwayIdent", airwayName, () => {
+                                                console.log("icao:" + icao + " added");
+                                                resolve();
+
+                                            });
                                         }, false);
                                     });
                                 };
@@ -507,6 +510,14 @@ class CJ4_FMC_RoutePage {
                         allFPIndexes.push(fpIndexes[i]);
                     }
                     else {
+                        // is there a next waypoint?
+                        let nextWp = routeWaypoints[i + 1];
+                        if (nextWp) {
+                            let airway = nextWp.infos.airways.find(a => { return a.name === prevAirway.name; });
+                            // let nextAirway = IntersectionInfo.GetCommonAirway(wp, nextWp);
+                            if (airway)
+                                continue;
+                        }
                         allRows.push([prevAirway.name, wp.ident]);
                         allWaypoints.push(wp);
                         allFPIndexes.push(fpIndexes[i]);
