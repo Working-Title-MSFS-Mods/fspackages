@@ -25,6 +25,8 @@ class SvgRangeCompassElement extends SvgMapElement {
 		this.bearingLabelPeriod = SvgRangeCompassElement.BEARING_LABEL_PERIOD_DEFAULT;							// degrees, how far apart the bearing labels on the compass should be'
 		this.bearingLabelFont = SvgRangeCompassElement.BEARING_LABEL_FONT_DEFAULT;
 		this.bearingLabelColor = SvgRangeCompassElement.BEARING_LABEL_FONT_COLOR_DEFAULT;
+		this.bearingLabelStrokeWidth = SvgRangeCompassElement.BEARING_LABEL_STROKE_WIDTH_DEFAULT;				// in SVG coordinate units
+		this.bearingLabelStrokeColor = SvgRangeCompassElement.BEARING_LABEL_STROKE_COLOR_DEFAULT;
 		this.bearingLabelFontSize = SvgRangeCompassElement.BEARING_LABEL_FONT_SIZE_DEFAULT;						// in SVG coordinate units
 		
 		this.hdgTrkTickColor = SvgRangeCompassElement.HDGTRK_TICK_COLOR_DEFAULT;
@@ -194,6 +196,8 @@ class SvgRangeCompassElement extends SvgMapElement {
 		bearingLabel.setAttribute("fill", this.bearingLabelColor);
 		bearingLabel.setAttribute("text-anchor", "middle");
 		bearingLabel.setAttribute("dominant-baseline", "middle");
+		bearingLabel.setAttribute("stroke", this.bearingLabelStrokeColor);
+		bearingLabel.setAttribute("stroke-width", this.bearingLabelStrokeWidth);
 		bearingLabel.setAttribute("font-size", this.bearingLabelFontSize);
 		bearingLabel.setAttribute("font-family", this.bearingLabelFont);
 		return bearingLabel;
@@ -230,6 +234,8 @@ SvgRangeCompassElement.BEARING_LABEL_START_DEFAULT = 0;
 SvgRangeCompassElement.BEARING_LABEL_PERIOD_DEFAULT = 30;
 SvgRangeCompassElement.BEARING_LABEL_FONT_DEFAULT = "Roboto";
 SvgRangeCompassElement.BEARING_LABEL_FONT_COLOR_DEFAULT = "white";
+SvgRangeCompassElement.BEARING_LABEL_STROKE_WIDTH_DEFAULT = 2;
+SvgRangeCompassElement.BEARING_LABEL_STROKE_COLOR_DEFAULT = "black";
 SvgRangeCompassElement.BEARING_LABEL_FONT_SIZE_DEFAULT = 15;
 
 SvgRangeCompassElement.HDGTRK_TICK_COLOR_DEFAULT = "white";
