@@ -234,6 +234,7 @@ class CJ4_FMC_RoutePage {
         };
     }
     static ShowPage2(fmc, offset = 0, pendingAirway) {
+
         fmc.clearDisplay();
         let rows = [["-----"], [""], [""], [""], [""]];
         let allRows = CJ4_FMC_RoutePage._GetAllRows(fmc);
@@ -280,8 +281,8 @@ class CJ4_FMC_RoutePage {
                                 fmc.setMsg();
                                 CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
                             });
-                        }
-                        fmc.setMsg();
+                        } else
+                            fmc.setMsg();
                     };
                     fmc.onLeftInput[i] = () => {
                         fmc.setMsg("Working...");
@@ -299,8 +300,8 @@ class CJ4_FMC_RoutePage {
                                     fmc.showErrorMessage("NOT IN DATABASE");
                                 }
                             }
-                        }
-                        fmc.setMsg();
+                        } else
+                            fmc.setMsg();
                     };
                 }
                 else {
@@ -316,8 +317,8 @@ class CJ4_FMC_RoutePage {
                                     CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
                                 }
                             });
-                        }
-                        fmc.setMsg();
+                        } else
+                            fmc.setMsg();
                     };
                     if (rows[i + 1]) {
                         rows[i + 1] = ["-----"];
@@ -418,7 +419,7 @@ class CJ4_FMC_RoutePage {
 
                             index -= 1;
                             let count = Math.abs(lastIndex - firstIndex);
-                            for (let i = 1; i < count+1; i++) { // 9 -> 6
+                            for (let i = 1; i < count + 1; i++) { // 9 -> 6
                                 let asyncInsertWaypointByIcao = async (icao, idx) => {
                                     return new Promise(resolve => {
                                         console.log("add icao:" + icao + " @ " + idx);
