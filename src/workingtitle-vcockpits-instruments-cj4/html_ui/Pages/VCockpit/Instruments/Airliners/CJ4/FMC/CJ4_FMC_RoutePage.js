@@ -28,9 +28,11 @@ class CJ4_FMC_RoutePage {
             }
         }
         fmc.onLeftInput[0] = () => {
+            fmc.setMsg("Working...");
             let value = fmc.inOut;
             fmc.clearUserInput();
             fmc.updateRouteOrigin(value, (result) => {
+                fmc.setMsg();
                 if (result) {
                     fmc.fpHasChanged = true;
                     CJ4_FMC_RoutePage.ShowPage1(fmc);
@@ -48,9 +50,11 @@ class CJ4_FMC_RoutePage {
             }
         }
         fmc.onRightInput[0] = () => {
+            fmc.setMsg("Working...");
             let value = fmc.inOut;
             fmc.clearUserInput();
             fmc.updateRouteDestination(value, (result) => {
+                fmc.setMsg();
                 if (result) {
                     fmc.fpHasChanged = true;
                     CJ4_FMC_RoutePage.ShowPage1(fmc);
