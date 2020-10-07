@@ -75,7 +75,7 @@ class CJ4_FMC_DepArrPage {
             fmc.onRightInput[0] = () => {
                 fmc.setRunwayIndex(-1, (success) => {
                     fmc.setDepartureIndex(-1, () => {
-                        CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
+                        CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, currentPage);
                     });
                 });
             };
@@ -127,7 +127,7 @@ class CJ4_FMC_DepArrPage {
             fmc.onLeftInput[0] = () => {
                 fmc.setRunwayIndex(-1, (success) => {
                     fmc.setDepartureIndex(-1, () => {
-                        CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
+                        CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, currentPage);
                     });
                 });
             };
@@ -272,7 +272,7 @@ class CJ4_FMC_DepArrPage {
             rows[0] = ["", Avionics.Utils.formatRunway(selectedApproach.name).trim() + "[d-text green]"];
             fmc.onRightInput[0] = () => {
                 fmc.setApproachIndex(-1, () => {
-                    CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
+                    CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
                 });
             };
             rows[1] = ["", "TRANS [blue]"];
@@ -345,7 +345,7 @@ class CJ4_FMC_DepArrPage {
             rows[0][0] = selectedArrival.name + "[d-text green]";
             fmc.onLeftInput[0] = () => {
                 fmc.setArrivalProcIndex(-1, () => {
-                    CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
+                    CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
                 });
             };
         }
