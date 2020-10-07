@@ -252,7 +252,11 @@ class AS1000_MFD extends BaseAS1000 {
         }
     }
     Update() {
-        super.Update();
+        try {
+            super.Update();
+        } catch (e) {
+            console.log(e.message)
+        }
         SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
     }
 
@@ -727,7 +731,7 @@ class AS1000_MFD_AirportInfos1 extends NavSystemElement {
             }
             if ("designation" in infos.runways[this.selectedRunway]) {
                 this.runwayNameElement.textContent = infos.runways[this.selectedRunway].designation;
-            } 
+            }
             this.runwaySizeElement.textContent = Math.round(infos.runways[this.selectedRunway].length * 3.28084) + "FT x " + Math.round(infos.runways[this.selectedRunway].width * 3.28084) + "FT";
             switch (infos.runways[this.selectedRunway].surface) {
                 case 0:
@@ -898,7 +902,7 @@ class AS1000_MFD_AirportInfos2 extends NavSystemElement {
         this.rootElement.setAttribute("state", "Infos2");
         this.mapContainer.appendChild(this.mapElement);
         this.mapElement.setAttribute("bing-mode", "vfr");
-        this.gps.mapElement.instrument.setTrackUpDisabled(true);        
+        this.gps.mapElement.instrument.setTrackUpDisabled(true);
     }
     onUpdate(_deltaTime) {
         this.icaoSearchField.Update();
