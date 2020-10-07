@@ -250,6 +250,10 @@ class SvgMap {
             this.textLayer = document.createElementNS(Avionics.SVG.NS, "g");
             this.svgHtmlElement.appendChild(this.textLayer);
         }
+		if (!this.rangeRingLayer) {
+			this.rangeRingLayer = document.createElementNS(Avionics.SVG.NS, "g");
+			this.svgHtmlElement.appendChild(this.rangeRingLayer);
+		}
         if (!this.maskLayer) {
             this.maskLayer = document.createElementNS(Avionics.SVG.NS, "g");
             this.svgHtmlElement.appendChild(this.maskLayer);
@@ -405,6 +409,9 @@ class SvgMap {
         else if (mapElement instanceof SvgBackOnTrackElement) {
             this.flightPlanLayer.appendChild(svgElement);
         }
+		else if (mapElement instanceof SvgLabeledRingElement || mapElement instanceof SvgRangeCompassElement) {
+			this.rangeRingLayer.appendChild(svgElement);
+		}
         else if (mapElement instanceof SvgWaypointElement) {
             this.defaultLayer.appendChild(svgElement);
             if (mapElement._label) {
