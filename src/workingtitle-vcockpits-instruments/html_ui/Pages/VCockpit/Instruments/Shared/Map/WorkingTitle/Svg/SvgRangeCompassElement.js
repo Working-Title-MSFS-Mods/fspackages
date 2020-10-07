@@ -2,25 +2,35 @@ class SvgRangeCompassElement extends SvgMapElement {
 	constructor() {
 		super();
 		
-		this.centerPos = new Vec2(500, 500);														// center of the compass, in SVG coordinates for a 1000x1000 map
-		this.radius = 250; 																			// in SVG coordinate units
-		this.arcStrokeWidth = SvgRangeCompassElement.ARC_STROKE_WIDTH_DEFAULT;						// in SVG coordinate units
+		this.centerPos = new Vec2(500, 500);																	// center of the compass, in SVG coordinates for a 1000x1000 map
+		this.radius = 250; 																						// in SVG coordinate units
+		this.arcStrokeWidth = SvgRangeCompassElement.ARC_STROKE_WIDTH_DEFAULT;									// in SVG coordinate units
 		this.arcStrokeColor = SvgRangeCompassElement.ARC_STROKE_COLOR_DEFAULT;
-		this.arcAngularWidth = SvgRangeCompassElement.ARC_ANGULAR_WIDTH_DEFAULT;					// degrees
-		this.arcFacingAngle = SvgRangeCompassElement.ARC_FACING_ANGLE_DEFAULT;						// degrees, 0 = to the right, increasing clockwise
-		this.bearingTickStart = SvgRangeCompassElement.BEARING_TICK_START_DEFAULT;					// degrees, the value of the first bearing tick mark on the compass (0 = NORTH)
-		this.bearingTickPeriod = SvgRangeCompassElement.BEARING_TICK_PERIOD_DEFAULT;				// degrees, how far apart the bearing tick marks on the compass should be			
-		this.bearingTickColor = SvgRangeCompassElement.BEARING_TICK_COLOR_DEFAULT;
-		this.bearingTickStrokeWidth = SvgRangeCompassElement.BEARING_TICK_STROKE_WIDTH_DEFAULT;		// in SVG coordinate units
-		this.bearingTickLength = SvgRangeCompassElement.BEARING_TICK_LENGTH_DEFAULT;				// in SVG coordinate units
-		this.bearingLabelStart = SvgRangeCompassElement.BEARING_LABEL_START_DEFAULT;				// degrees, the value of the first bearing label on the compass (0 = NORTH)
-		this.bearingLabelPeriod = SvgRangeCompassElement.BEARING_LABEL_PERIOD_DEFAULT;				// degrees, how far apart the bearing labels on the compass should be'
+		this.arcAngularWidth = SvgRangeCompassElement.ARC_ANGULAR_WIDTH_DEFAULT;								// degrees
+		this.arcFacingAngle = SvgRangeCompassElement.ARC_FACING_ANGLE_DEFAULT;									// degrees, 0 = to the right, increasing clockwise
+		
+		this.bearingTickMinorStart = SvgRangeCompassElement.BEARING_TICK_MINOR_START_DEFAULT;					// degrees, the value of the first minor bearing tick mark on the compass (0 = NORTH)
+		this.bearingTickMinorPeriod = SvgRangeCompassElement.BEARING_TICK_MINOR_PERIOD_DEFAULT;					// degrees, how far apart the minor bearing tick marks on the compass should be			
+		this.bearingTickMinorColor = SvgRangeCompassElement.BEARING_TICK_MINOR_COLOR_DEFAULT;
+		this.bearingTickMinorStrokeWidth = SvgRangeCompassElement.BEARING_TICK_MINOR_STROKE_WIDTH_DEFAULT;		// in SVG coordinate units
+		this.bearingTickMinorLength = SvgRangeCompassElement.BEARING_TICK_MINOR_LENGTH_DEFAULT;					// in SVG coordinate units
+		
+		this.bearingTickMajorStart = SvgRangeCompassElement.BEARING_TICK_MAJOR_START_DEFAULT;					// degrees, the value of the first major bearing tick mark on the compass (0 = NORTH)
+		this.bearingTickMajorPeriod = SvgRangeCompassElement.BEARING_TICK_MAJOR_PERIOD_DEFAULT;					// degrees, how far apart the major bearing tick marks on the compass should be			
+		this.bearingTickMajorColor = SvgRangeCompassElement.BEARING_TICK_MAJOR_COLOR_DEFAULT;
+		this.bearingTickMajorStrokeWidth = SvgRangeCompassElement.BEARING_TICK_MAJOR_STROKE_WIDTH_DEFAULT;		// in SVG coordinate units
+		this.bearingTickMajorLength = SvgRangeCompassElement.BEARING_TICK_MAJOR_LENGTH_DEFAULT;					// in SVG coordinate units
+		
+		this.bearingLabelStart = SvgRangeCompassElement.BEARING_LABEL_START_DEFAULT;							// degrees, the value of the first bearing label on the compass (0 = NORTH)
+		this.bearingLabelPeriod = SvgRangeCompassElement.BEARING_LABEL_PERIOD_DEFAULT;							// degrees, how far apart the bearing labels on the compass should be'
 		this.bearingLabelFont = SvgRangeCompassElement.BEARING_LABEL_FONT_DEFAULT;
 		this.bearingLabelColor = SvgRangeCompassElement.BEARING_LABEL_FONT_COLOR_DEFAULT;
-		this.bearingLabelFontSize = SvgRangeCompassElement.BEARING_LABEL_FONT_SIZE_DEFAULT;			// in SVG coordinate units
+		this.bearingLabelFontSize = SvgRangeCompassElement.BEARING_LABEL_FONT_SIZE_DEFAULT;						// in SVG coordinate units
+		
 		this.hdgTrkTickColor = SvgRangeCompassElement.HDGTRK_TICK_COLOR_DEFAULT;
-		this.hdgTrkTickStrokeWidth = SvgRangeCompassElement.HDGTRK_TICK_STROKE_WIDTH_DEFAULT;		// in SVG coordinate units
-		this.hdgTrkTickLength = SvgRangeCompassElement.HDGTRK_TICK_LENGTH_DEFAULT;					// in SVG coordinate units
+		this.hdgTrkTickStrokeWidth = SvgRangeCompassElement.HDGTRK_TICK_STROKE_WIDTH_DEFAULT;					// in SVG coordinate units
+		this.hdgTrkTickLength = SvgRangeCompassElement.HDGTRK_TICK_LENGTH_DEFAULT;								// in SVG coordinate units
+		
 		this.rangeDisplayAngle = SvgRangeCompassElement.RANGE_DISPLAY_ANGLE_DEFAULT;
 	}
 	
@@ -50,7 +60,8 @@ class SvgRangeCompassElement extends SvgMapElement {
 		this.arc.setAttribute("stroke-opacity", "1");
 		this.compassLayer.appendChild(this.arc);
 		
-		this.bearingTicks = [];
+		this.bearingTicksMinor = [];
+		this.bearingTicksMajor = [];
 		this.bearingLabels = [];
 		
 		this.hdgTrkTick = document.createElementNS(Avionics.SVG.NS, "path");
@@ -73,10 +84,10 @@ class SvgRangeCompassElement extends SvgMapElement {
 		// draw arc
 		
 		let arcAngularWidthRad = this.arcAngularWidth * Math.PI / 180;
-		let arcTickStart = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius + this.bearingTickLength, -arcAngularWidthRad / 2);
+		let arcTickStart = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius + this.bearingTickMajorLength, -arcAngularWidthRad / 2);
 		let arcStart = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius, -arcAngularWidthRad / 2);
 		let arcEnd = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius, arcAngularWidthRad / 2);
-		let arcTickEnd = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius + this.bearingTickLength, arcAngularWidthRad / 2);
+		let arcTickEnd = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius + this.bearingTickMajorLength, arcAngularWidthRad / 2);
 		
 		this.arc.setAttribute("d", "M " + arcTickStart.x + " " + arcTickStart.y + " L " + arcStart.x + " " + arcStart.y + " A " + this.radius + " " + this.radius + " 0 0 1 " + arcEnd.x + " " + arcEnd.y + " L " + arcTickEnd.x + " " + arcTickEnd.y);
 		this.arc.setAttribute("transform", "rotate(" + this.arcFacingAngle + ", " + this.centerPos.x + ", " + this.centerPos.y + ")");
@@ -90,20 +101,38 @@ class SvgRangeCompassElement extends SvgMapElement {
 			arcBearingStart += 360;
 			arcBearingEnd += 360;
 		}
-		let currentBearing = Math.ceil((arcBearingStart - this.bearingTickStart) / this.bearingTickPeriod) * this.bearingTickPeriod + this.bearingTickStart;
+		let currentBearing = Math.ceil((arcBearingStart - this.bearingTickMinorStart) / this.bearingTickMinorPeriod) * this.bearingTickMinorPeriod + this.bearingTickMinorStart;
 		let i = 0;
 		while (currentBearing <= arcBearingEnd) {
-			if (i >= this.bearingTicks.length) {
-				this.bearingTicks[i] = this.createBearingTick();
-				this.compassLayer.appendChild(this.bearingTicks[i]);
+			if ((currentBearing - this.bearingTickMajorStart) % this.bearingTickMajorPeriod != 0) {
+				if (i >= this.bearingTicksMinor.length) {
+					this.bearingTicksMinor[i] = this.createBearingTickMinor();
+					this.compassLayer.appendChild(this.bearingTicksMinor[i]);
+				}
+				SvgRangeCompassElement.drawRadialTick(this.bearingTicksMinor[i], this.centerPos, this.radius - this.bearingTickMinorLength, this.bearingTickMinorLength, Math.PI * (currentBearing + map.rotation - 90 - magDev) / 180);
+				this.bearingTicksMinor[i].setAttribute("display", "inherit");
+				i++;
 			}
-			SvgRangeCompassElement.drawRadialTick(this.bearingTicks[i], this.centerPos, this.radius - this.bearingTickLength, this.bearingTickLength, Math.PI * (currentBearing + map.rotation - 90 - magDev) / 180);
-			this.bearingTicks[i].setAttribute("display", "inherit");
-			currentBearing += this.bearingTickPeriod;
-			i++;
+			currentBearing += this.bearingTickMinorPeriod;
 		}
-		while (i < this.bearingTicks.length) {
-			this.bearingTicks[i++].setAttribute("display", "none");
+		while (i < this.bearingTicksMinor.length) {
+			this.bearingTicksMinor[i++].setAttribute("display", "none");
+		}
+		
+		currentBearing = Math.ceil((arcBearingStart - this.bearingTickMajorStart) / this.bearingTickMajorPeriod) * this.bearingTickMajorPeriod + this.bearingTickMajorStart;
+		i = 0;
+		while (currentBearing <= arcBearingEnd) {
+			if (i >= this.bearingTicksMajor.length) {
+				this.bearingTicksMajor[i] = this.createBearingTickMajor();
+				this.compassLayer.appendChild(this.bearingTicksMajor[i]);
+			}
+			SvgRangeCompassElement.drawRadialTick(this.bearingTicksMajor[i], this.centerPos, this.radius - this.bearingTickMajorLength, this.bearingTickMajorLength, Math.PI * (currentBearing + map.rotation - 90 - magDev) / 180);
+			this.bearingTicksMajor[i].setAttribute("display", "inherit");
+			i++;
+			currentBearing += this.bearingTickMajorPeriod;
+		}
+		while (i < this.bearingTicksMajor.length) {
+			this.bearingTicksMajor[i++].setAttribute("display", "none");
 		}
 		
 		currentBearing = Math.ceil((arcBearingStart - this.bearingLabelStart) / this.bearingLabelPeriod) * this.bearingLabelPeriod + this.bearingLabelStart;
@@ -117,7 +146,7 @@ class SvgRangeCompassElement extends SvgMapElement {
 															// label length approximated as font size * 3 chars * 0.6 (empiric constant), label height is ~= font size
 															// longest path through the label is through the diagonal; avoid doing Math.sqrt() by just approximating as length + height
 															// finally divide by 2 since text is middle-anchored (font size * (1 + 3 * 0.6)/2)
-			let pos = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius - this.bearingTickLength - offset, Math.PI * (currentBearing + map.rotation - 90 - magDev) / 180);
+			let pos = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius - this.bearingTickMajorLength - offset, Math.PI * (currentBearing + map.rotation - 90 - magDev) / 180);
 			this.bearingLabels[i].setAttribute("x", pos.x);
 			this.bearingLabels[i].setAttribute("y", pos.y);
 			this.bearingLabels[i].textContent = fastToFixed(currentBearing % 360, 0);
@@ -142,11 +171,20 @@ class SvgRangeCompassElement extends SvgMapElement {
 		this.rangeLabelElement.svgElement.setAttribute("y", y - this.rangeLabelElement.svgElement.height.baseVal.value / 2);
 	}
 	
-	createBearingTick() {
+	createBearingTickMinor() {
 		let bearingTick = document.createElementNS(Avionics.SVG.NS, "path");
 		bearingTick.setAttribute("fill-opacity", "0");
-		bearingTick.setAttribute("stroke", this.bearingTickColor);
-		bearingTick.setAttribute("stroke-width", this.bearingTickStrokeWidth);
+		bearingTick.setAttribute("stroke", this.bearingTickMinorColor);
+		bearingTick.setAttribute("stroke-width", this.bearingTickMinorStrokeWidth);
+		bearingTick.setAttribute("stroke-opacity", "1");
+		return bearingTick;
+	}
+	
+	createBearingTickMajor() {
+		let bearingTick = document.createElementNS(Avionics.SVG.NS, "path");
+		bearingTick.setAttribute("fill-opacity", "0");
+		bearingTick.setAttribute("stroke", this.bearingTickMajorColor);
+		bearingTick.setAttribute("stroke-width", this.bearingTickMajorStrokeWidth);
 		bearingTick.setAttribute("stroke-opacity", "1");
 		return bearingTick;
 	}
@@ -175,17 +213,27 @@ SvgRangeCompassElement.ARC_STROKE_WIDTH_DEFAULT = 2;
 SvgRangeCompassElement.ARC_STROKE_COLOR_DEFAULT = "white";
 SvgRangeCompassElement.ARC_ANGULAR_WIDTH_DEFAULT = 120;
 SvgRangeCompassElement.ARC_FACING_ANGLE_DEFAULT = -90;
-SvgRangeCompassElement.BEARING_TICK_START_DEFAULT = 0;
-SvgRangeCompassElement.BEARING_TICK_PERIOD_DEFAULT = 10;
-SvgRangeCompassElement.BEARING_TICK_COLOR_DEFAULT = "white";
-SvgRangeCompassElement.BEARING_TICK_STROKE_WIDTH_DEFAULT = 2;
-SvgRangeCompassElement.BEARING_TICK_LENGTH_DEFAULT = 10;
+
+SvgRangeCompassElement.BEARING_TICK_MINOR_START_DEFAULT = 0;
+SvgRangeCompassElement.BEARING_TICK_MINOR_PERIOD_DEFAULT = 10;
+SvgRangeCompassElement.BEARING_TICK_MINOR_COLOR_DEFAULT = "white";
+SvgRangeCompassElement.BEARING_TICK_MINOR_STROKE_WIDTH_DEFAULT = 2;
+SvgRangeCompassElement.BEARING_TICK_MINOR_LENGTH_DEFAULT = 5;
+
+SvgRangeCompassElement.BEARING_TICK_MAJOR_START_DEFAULT = 0;
+SvgRangeCompassElement.BEARING_TICK_MAJOR_PERIOD_DEFAULT = 30;
+SvgRangeCompassElement.BEARING_TICK_MAJOR_COLOR_DEFAULT = "white";
+SvgRangeCompassElement.BEARING_TICK_MAJOR_STROKE_WIDTH_DEFAULT = 2;
+SvgRangeCompassElement.BEARING_TICK_MAJOR_LENGTH_DEFAULT = 10;
+
 SvgRangeCompassElement.BEARING_LABEL_START_DEFAULT = 0;
 SvgRangeCompassElement.BEARING_LABEL_PERIOD_DEFAULT = 30;
 SvgRangeCompassElement.BEARING_LABEL_FONT_DEFAULT = "Roboto";
 SvgRangeCompassElement.BEARING_LABEL_FONT_COLOR_DEFAULT = "white";
 SvgRangeCompassElement.BEARING_LABEL_FONT_SIZE_DEFAULT = 15;
+
 SvgRangeCompassElement.HDGTRK_TICK_COLOR_DEFAULT = "white";
 SvgRangeCompassElement.HDGTRK_TICK_STROKE_WIDTH_DEFAULT = 2;
 SvgRangeCompassElement.HDGTRK_TICK_LENGTH_DEFAULT = 10;
+
 SvgRangeCompassElement.RANGE_DISPLAY_ANGLE_DEFAULT = -135;
