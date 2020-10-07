@@ -55,6 +55,8 @@ class AS3X_Touch extends NavSystemTouch {
         this.pfdMenu.setGPS(this);
         this.pageMenu = new NavSystemElementContainer("Page menu", "PageMenu", new AS3X_Touch_PageMenu());
         this.pageMenu.setGPS(this);
+        this.mapMenu = new NavSystemElementContainer("Map menu", "MapMenu", new AS3X_Touch_Popup());
+        this.mapMenu.setGPS(this);        
         this.fullKeyboard = new NavSystemElementContainer("Full Keyboard", "fullKeyboard", new AS3X_Touch_FullKeyboard());
         this.fullKeyboard.setGPS(this);
         this.duplicateWaypointSelection = new NavSystemElementContainer("Waypoint Duplicates", "WaypointDuplicateWindow", new AS3X_Touch_DuplicateWaypointSelection());
@@ -62,7 +64,7 @@ class AS3X_Touch extends NavSystemTouch {
         this.pageGroups = [
             new AS3X_Touch_PageGroup("MFD", this, [
                 new AS3X_Touch_NavSystemPage("Map", "Map", new AS3X_Touch_MapContainer("Map"), "Map", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png",
-                () => {console.log("YOU PUSHED MENU ON THE MAP")}),
+                    () => { console.log("YOU PUSHED MENU ON THE MAP"); this.switchToPopUpPage(this.mapMenu)}),
                 new AS3X_Touch_NavSystemPage("Active FPL", "FPL", new NavSystemElementGroup([
                     new NavSystemTouch_ActiveFPL(true),
                     new AS3X_Touch_MapContainer("Afpl_Map")

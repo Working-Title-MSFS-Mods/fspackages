@@ -2378,3 +2378,102 @@ as3x-touch-element {
         height: 10vh;
         width: 9vh;
   };
+
+  as3x-touch-element #MFD #MapMenu .title {
+    position: absolute;
+    width: 100%;
+    top: 0%;
+    text-align: center;
+    font-size: 3vh; }
+        
+  as3x-touch-element #MFD #MapMenu .subpart {
+    position: absolute;
+    border: 0.4vh solid white; }
+
+    as3x-touch-element #MFD #MapMenu .subpart .title {
+      position: absolute;
+      width: 100%;
+      top: 1vh;
+      font-size: 3vh;
+      text-align: center; }
+
+    as3x-touch-element #MFD #MapMenu .subpart .gradientButton {
+      position: absolute;
+      bottom: 0.5vh;
+      height: 10vh; }
+
+      as3x-touch-element #MFD #MapMenu .subpart .gradientButton .title {
+        position: absolute;
+        font-size: 2vh;
+        width: 100%;
+        text-align: center; }
+
+        as3x-touch-element #MFD #MapMenu .subpart .gradientButton .mainText {
+        position: absolute;
+        font-size: 2.3vh;
+        width: 100%;
+        top: 3vh;
+        text-align: center;}
+
+
+as3x-touch-element #MFD #MapMenu #orientation {
+  top: 10%;
+  left: 5%;
+  width: 90%;
+  height: 21%; }
+  
+  as3x-touch-element #MFD #MapMenu #MapMenu_Orient_North {
+    left: 4%;
+    width: 28%}
+
+  as3x-touch-element #MFD #MapMenu #MapMenu_Orient_Track {
+     left: 36%;
+     width: 28%}
+
+   as3x-touch-element #MFD #MapMenu #MapMenu_Orient_Dtk {
+     left: 68%;
+     width: 28%}
+
+as3x-touch-element #MFD #MapMenu #features {
+  top: 35%;
+  left: 5%;
+  width: 90%;
+  height: 34%; }
+
+  as3x-touch-element #MFD #MapMenu #MapMenu_Weather {
+    top: 19%;
+    left: 4%;
+    width: 44%;}   
+ 
+  as3x-touch-element #MFD #MapMenu #MapMenu_Topo {
+    top: 19%;
+    left: 52%;
+    width: 44%;}
+
+  as3x-touch-element #MFD #MapMenu #MapMenu_RangeRing {
+    left: 4%;
+    width: 44%;
+    bottom: .5vh;}   
+ 
+  as3x-touch-element #MFD #MapMenu #MapMenu_Arc {
+    left: 52%;
+    width: 44%;
+    bottom: .5vh;}    
+
+as3x-touch-element #MFD #MapMenu #range {
+  top: 73%;
+  left: 5%;
+  width: 90%;
+  height: 22%; }
+
+  as3x-touch-element #MFD #MapMenu #MapMenu_Range_Inc {
+    left: 4%;
+    width: 28%}
+
+  as3x-touch-element #MFD #MapMenu #MapMenu_Range_Dec {
+    left: 36%;
+    width: 28%;}
+
+  as3x-touch-element #MFD #MapMenu #MapMenu_Range_Auto {
+    left: 68%;
+    width: 28%}
