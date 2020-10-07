@@ -269,17 +269,17 @@ class CJ4_FMC_DepArrPage {
             }
         }
         if (selectedApproach) {
-            rows[0] = ["", "<SEL> " + Avionics.Utils.formatRunway(selectedApproach.name)];
+            rows[0] = ["", Avionics.Utils.formatRunway(selectedApproach.name).trim() + "[d-text green]"];
             fmc.onRightInput[0] = () => {
                 fmc.setApproachIndex(-1, () => {
                     CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                 });
             };
-            rows[1] = ["", "TRANS"];
+            rows[1] = ["", "TRANS [blue]"];
             let selectedTransitionIndex = fmc.flightPlanManager.getApproachTransitionIndex();
             let selectedTransition = selectedApproach.transitions[selectedTransitionIndex];
             if (selectedTransition) {
-                rows[2] = ["", "<SEL> " + selectedTransition.waypoints[0].infos.icao.substr(5)];
+                rows[2] = ["", selectedTransition.waypoints[0].infos.icao.substr(5).trim() + "[d-text green]"];
                 fmc.onRightInput[1] = () => {
                     fmc.setApproachTransitionIndex(-1, () => {
                         CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
@@ -292,7 +292,7 @@ class CJ4_FMC_DepArrPage {
                     let index = 4 * (currentPage - 1) + i;
                     let transition = selectedApproach.transitions[index];
                     if (transition) {
-                        let name = transition.waypoints[0].infos.icao.substr(5);
+                        let name = transition.waypoints[0].infos.icao.substr(5).trim();
                         rows[2 * (i + 1)][1] = name;
                         fmc.onRightInput[i + 1] = () => {
                             fmc.setApproachTransitionIndex(index, () => {
@@ -329,7 +329,7 @@ class CJ4_FMC_DepArrPage {
                 if (appendRow) {
                     if (rowIndex >= 0 && rowIndex < 5) {
                         let ii = i;
-                        rows[2 * rowIndex] = ["", Avionics.Utils.formatRunway(approach.name)];
+                        rows[2 * rowIndex] = ["", Avionics.Utils.formatRunway(approach.name).trim()];
                         fmc.onRightInput[rowIndex] = () => {
                             fmc.setApproachIndex(ii, () => {
                                 CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
@@ -342,7 +342,7 @@ class CJ4_FMC_DepArrPage {
             }
         }
         if (selectedArrival) {
-            rows[0][0] = selectedArrival.name + " <SEL>";
+            rows[0][0] = selectedArrival.name + "[d-text green]";
             fmc.onLeftInput[0] = () => {
                 fmc.setArrivalProcIndex(-1, () => {
                     CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
