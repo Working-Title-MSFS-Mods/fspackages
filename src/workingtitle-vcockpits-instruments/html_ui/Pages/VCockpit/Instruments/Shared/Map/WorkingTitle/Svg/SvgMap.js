@@ -291,6 +291,9 @@ class SvgMap {
         for (let i = 0; i < this.planeLayer.children.length; i++) {
             this.planeLayer.children[i].setAttribute("needDeletion", "true");
         }
+		for (let i = 0; i < this.rangeRingLayer.children.length; i++) {
+            this.rangeRingLayer.children[i].setAttribute("needDeletion", "true");
+        }
         for (let i = 0; i < this.maskLayer.children.length; i++) {
             this.maskLayer.children[i].setAttribute("needDeletion", "true");
         }
@@ -312,6 +315,16 @@ class SvgMap {
             let e = this.planeLayer.children[i];
             if (e.getAttribute("needDeletion") === "true") {
                 this.planeLayer.removeChild(e);
+            }
+            else {
+                i++;
+            }
+        }
+		i = 0;
+        while (i < this.rangeRingLayer.children.length) {
+            let e = this.rangeRingLayer.children[i];
+            if (e.getAttribute("needDeletion") === "true") {
+                this.rangeRingLayer.removeChild(e);
             }
             else {
                 i++;
