@@ -259,7 +259,7 @@ class SvgMap {
             this.svgHtmlElement.appendChild(this.planeLayer);
         }
 
-        this.planeDirection = Math.abs(SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree")) % 360;
+        this.planeDirection = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree") % 360;
         
         this.cosRotation = Math.cos(this.rotation * Math.PI / 180);
         this.sinRotation = Math.sin(this.rotation * Math.PI / 180);
