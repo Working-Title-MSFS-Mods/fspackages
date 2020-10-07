@@ -2,7 +2,8 @@ class AS3000_MapElement extends MapInstrumentElement {
     constructor(_simVarNameID) {
         super();
 		this.simVarNameID = _simVarNameID;
-
+		
+		this.orientation = 0;
 		this.lastSync = 0;
 		//this.lastDcltr = 0;
 		this.lastSymbolVis = new Map([
@@ -42,9 +43,8 @@ class AS3000_MapElement extends MapInstrumentElement {
                 this.onTemplateLoaded();
             });
         }
-		this.instrument.setOrientation("hdg");
 		this.instrument.zoomRanges = AS3000_MapElement.ZOOM_RANGES_DEFAULT;
-		this.instrument.offsetPlaneInHdgTrk = true;
+		this.setHdgUp();
 		
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number", 0);	// set default map orientation (0 = hdg, 1 = trk, 2 = north)
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID, "number", 0);		// set default declutter (0 = none, 1 = DCLTR1, 2 = DCLTR2, 3 = least)
@@ -156,22 +156,44 @@ class AS3000_MapElement extends MapInstrumentElement {
 			}
 		}
 		
-		if (this.instrument.orientation != orientation) {
+		if (this.orientation != orientation) {
 			switch (orientation % 3) {
 			case 0:
-				this.instrument.setOrientation("hdg");
-				this.instrument.planeTrackedPosY = 0.667;
+				this.setHdgUp();
 				break;
 			case 1:
-				this.instrument.setOrientation("trk");
-				this.instrument.planeTrackedPosY = 0.667;
+				this.setTrkUp();
 				break;
 			case 2:
-				this.instrument.setOrientation("north");
-				this.instrument.planeTrackedPosY = 0.5;
+				this.setNorthUp();
 				break;
 			}
+			this.orientation = orientation;
 		}
+	}
+	
+	setHdgUp() {
+		this.instrument.rotationCallback = AS3000_MapElement.HDGUP_ROTATION_CALLBACK;
+		this.instrument.planeTrackedPosY = 0.667;
+		this.instrument.showRangeRing = false;
+		this.instrument.showRangeCompass = true;
+		Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "HDG UP");
+	}
+	
+	setTrkUp() {
+		this.instrument.rotationCallback = AS3000_MapElement.TRKUP_ROTATION_CALLBACK;
+		this.instrument.planeTrackedPosY = 0.667;
+		this.instrument.showRangeRing = false;
+		this.instrument.showRangeCompass = true;
+		Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "TRK UP");
+	}
+	
+	setNorthUp() {
+		this.instrument.rotationCallback = AS3000_MapElement.NORTHUP_ROTATION_CALLBACK;
+		this.instrument.planeTrackedPosY = 0.5;
+		this.instrument.showRangeRing = true;
+		this.instrument.showRangeCompass = false;
+		Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "NORTH UP");
 	}
 	
 	updateSymbolVisibility() {
@@ -235,6 +257,11 @@ class AS3000_MapElement extends MapInstrumentElement {
 AS3000_MapElement.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 25, 35, 50, 100, 150, 200, 250, 400, 500, 750, 1000];
 
 AS3000_MapElement.VARNAME_ORIENTATION_ROOT = "L:AS3000_Map_Orientation";
+
+AS3000_MapElement.HDGUP_ROTATION_CALLBACK = function (_map) {return -SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree")};
+AS3000_MapElement.TRKUP_ROTATION_CALLBACK = function (_map) {return -SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree")};
+AS3000_MapElement.NORTHUP_ROTATION_CALLBACK = function (_map) {return 0};
+
 AS3000_MapElement.VARNAME_SYNC = "L:AS3000_Map_Sync";
 AS3000_MapElement.VARNAME_SYNC_INITID = "L:AS3000_Map_Sync_InitID";
 AS3000_MapElement.SYNC_INITID_ARRAY = ["_PFD", "_MFD"];						// horrible hack because I can't get SetSimVar to work for strings

@@ -48,10 +48,8 @@ class MapInstrument extends ISvgMapRootElement {
         this.showCities = false;
         this.showTraffic = true;
         this.showConstraints = false;
-		this.showRangeDisplay = MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT; // MOD: whether to show the range display
         this._ranges = MapInstrument.ZOOM_RANGES_DEFAULT;
         this.rangeIndex = 4;
-		this.rangeDisplayBiasFactor = MapInstrument.RANGE_DISPLAY_BIAS_DEFAULT; // MOD: multiplied by the map range to give what the map's range display will show on the UI
         this._declutterLevel = 0;
         this.rangeFactor = 1852;
         this.wpIdValue = "";
@@ -101,26 +99,23 @@ class MapInstrument extends ISvgMapRootElement {
         this.weatherHideGPS = false;
         this.isBushTrip = false;
 		
-        this.bTrackUpDisabled = false;
-		
 		this._ranges = MapInstrument.ZOOM_RANGES_DEFAULT;
 		
 		// MOD START: new class variables
 		
 		this.overdrawFactor = MapInstrument.OVERDRAW_FACTOR_DEFAULT;
 		
-		/*
-		 * Defines orientation of the map:
-		 * hdg: current aircraft heading up
-		 * trk: current ground track up
-		 * north: North up
-		 */
-		this.orientation = "north";
-		
 		this.planeTrackedPosX = 0.5; // X pos of plane when map is tracking the plane; 0.5 = center, 0 = left, 1 = right;
 		this.planeTrackedPosY = 0.5; // Y pos of plane when map is tracking the plane; 0.5 = center, 0 = top, 1 = bottom;
 		
 		this.rotation = 0; // current rotation of map, in degrees
+		this.rotationCallback = function (_map) {return 0}; // callback function that returns what the rotation of the map should be in degrees
+		
+		this.showRangeDisplay = MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT;
+		this.rangeDisplayBiasFactor = MapInstrument.RANGE_DISPLAY_BIAS_DEFAULT; // multiplied by the map range to give what the map's range display will show on the UI
+		
+		this.showRangeRing = false;
+		this.showRangeCompass = false;
 		
 		this.airspaceMaxRange = MapInstrument.AIRSPACE_RANGE_DEFAULT;
 		this.roadHighwayMaxRange = MapInstrument.ROAD_HIGHWAY_RANGE_DEFAULT;
@@ -523,6 +518,7 @@ class MapInstrument extends ISvgMapRootElement {
     }
     onBeforeMapRedraw() {
         if (this.eBingMode !== EBingMode.HORIZON) {
+			this.rotation = this.rotationCallback(this);
             this.drawCounter++;
             this.drawCounter %= 100;
             this.npcAirplaneManager.update();
@@ -812,9 +808,9 @@ class MapInstrument extends ISvgMapRootElement {
                 }
 				
 				// MOD: show range compass or range ring
-				if (this.orientation == "north") {
+				if (this.showRangeRing) {
 					this.navMap.mapElements.push(this.rangeRingElement);
-				} else {
+				} else if (this.showRangeCompass) { 
 					this.navMap.mapElements.push(this.rangeCompassElement);
 				}
 				
@@ -888,26 +884,8 @@ class MapInstrument extends ISvgMapRootElement {
                 this.navMap.mapElements.push(...this.topOfCurveElements);
                 this.navMap.mapElements = this.navMap.mapElements.sort((a, b) => { return b.sortIndex - a.sortIndex; });
                 if (this.bingMap) {
-					// handle bing map rotation with three orientation settings
-                    let transform = "";
-					let roundedCompass = 0;
-					/*
-                    if (this.bRotateWithAirplane && !this.isDisplayingWeatherRadar() && !this.bTrackUpDisabled) {
-                        var compass = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
-                        var roundedCompass = fastToFixed(compass, 3);
-                        transform = "rotate(" + -roundedCompass + "deg)";
-                    }
-					*/
-					if (!this.isDisplayingWeatherRadar() && !this.bTrackUpDisabled) {
-						if (this.orientation == "hdg") {
-							roundedCompass = fastToFixed(SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree"), 3);
-						} else if (this.orientation == "trk") {
-							roundedCompass = fastToFixed(SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree"), 3);
-						}
-						transform = "rotate(" + -roundedCompass + "deg)";
-					}
-                    this.bingMap.style.transform = transform;
-					this.rotation = -roundedCompass;
+					// MOD: handle bing map rotation
+                    this.bingMap.style.transform = "rotate(" + this.rotation + "deg)";
                 }
             }
             else {
@@ -1248,27 +1226,8 @@ class MapInstrument extends ISvgMapRootElement {
         this.bEnableCenterOnFplnWaypoint = _val;
     }
 	
-    // MOD: adapt this method to the new orientation model for compatibility purposes
+    // MOD: this method now does nothing
 	rotateWithPlane(_val) {
-		if (_val) {
-			this.setOrientation("hdg");
-		} else {
-			this.setOrientation("north");
-		}
-	}
-	
-	// MOD: Add support for three orientation modes: heading, track, and north up.
-	setOrientation(_val) {
-		switch (_val) {
-			case "trk":
-			case "north":
-				this.orientation = _val;
-				break;
-			case "hdg":
-			default:
-				this.orientation = "hdg";
-		}
-		Avionics.Utils.diffAndSet(this.mapOrientationElement, this.orientation.toUpperCase() + " UP");
 	}
 	
     setPlaneScale(_scale) {
@@ -1361,19 +1320,6 @@ class MapInstrument extends ISvgMapRootElement {
     }
     getIsolines() {
         return this.bingMap.getIsolines();
-    }
-    setTrackUpDisabled(_bool) {
-        this.bTrackUpDisabled = _bool;
-        if (this.navMap) {
-            if (_bool) {
-                this.navMap.rotateWithPlane = false
-            } else {
-                this.navMap.rotateWithPlane = this.bRotateWithAirplane;
-            }
-        }
-    }
-    getTrackUpDisabled() {
-        return this.bTrackUpDisabled;
     }
     showWeather(_mode) {
         let cone = 0;
@@ -1489,14 +1435,12 @@ class MapInstrument extends ISvgMapRootElement {
     scrollMap(_dispX, _dispY) {
         if (this.navMap.lastCenterCoordinates) {
 			// MOD: Adjust for map rotation
-            if (this.orientation != "north" && !this.bTrackUpDisabled) {
-                let hdg = -this.rotation;
-                let hdgRad = hdg * Avionics.Utils.DEG2RAD;
-                let newX = _dispX * Math.cos(hdgRad) - _dispY * Math.sin(hdgRad);
-                let newY = _dispY * Math.cos(hdgRad) + _dispX * Math.sin(hdgRad);
-                _dispX = newX;
-                _dispY = newY;
-            }
+			let hdg = -this.rotation;
+			let hdgRad = hdg * Avionics.Utils.DEG2RAD;
+			let newX = _dispX * Math.cos(hdgRad) - _dispY * Math.sin(hdgRad);
+			let newY = _dispY * Math.cos(hdgRad) + _dispX * Math.sin(hdgRad);
+			_dispX = newX;
+			_dispY = newY;
             var scaleFactor = parseInt(window.getComputedStyle(this).height) / 1000;
             let long = -_dispX * this.navMap.angularWidth / (1000 * scaleFactor);
             let lat = _dispY * this.navMap.angularHeight / (1000 * scaleFactor);
