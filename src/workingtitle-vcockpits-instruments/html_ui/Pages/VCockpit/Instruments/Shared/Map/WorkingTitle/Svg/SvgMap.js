@@ -161,6 +161,11 @@ class SvgMap {
         return unsmoothedMove;
     }
 	
+	// MOD: width / height
+	get aspectRatio() {
+		return this._ratio;
+	}
+	
     get NMWidth() {
         return this._NMWidth;
     }

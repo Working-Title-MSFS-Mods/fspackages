@@ -117,7 +117,8 @@ class MapInstrument extends ISvgMapRootElement {
 		 */
 		this.orientation = "north";
 		
-		this.offsetPlaneInHdgTrk = false; // whether plane should be offset in trk/hdg up modes
+		this.planeTrackedPosX = 0.5; // X pos of plane when map is tracking the plane; 0.5 = center, 0 = left, 1 = right;
+		this.planeTrackedPosY = 0.5; // Y pos of plane when map is tracking the plane; 0.5 = center, 0 = top, 1 = bottom;
 		
 		this.rotation = 0; // current rotation of map, in degrees
 		
@@ -1237,17 +1238,10 @@ class MapInstrument extends ISvgMapRootElement {
     }
 	
     centerOnPlane() {
-        if (this.orientation == "north" || !this.offsetPlaneInHdgTrk) {
-			this.setNavMapCenter(this.navMap.planeCoordinates);
-			if (this.eBingMode == EBingMode.PLANE) {
-				this.airplaneIconElement.forceCoordinates(this.navMap.centerCoordinates.lat, this.navMap.centerCoordinates.long);
-			}
-		} else {
-			// MOD: if orientation is heading or track up, we want to place the plane 33% from the bottom of the map,
-			// but vector needs to be adjusted for overdraw factor of sqrt(2), which is where the magic number of 382 comes from (500-500/sqrt(2)+0.33*1000/sqrt(2))
-			let target = this.navMap.XYToCoordinatesFromPlaneWithRotation(new Vec2(500, 382));
-			this.setNavMapCenter(target);
-		}
+		// MOD: allow for arbitrary placement of plane
+		let r_x = this.navMap.aspectRatio < 1 ? this.navMap.aspectRatio : 1;
+		let r_y = this.navMap.aspectRatio > 1 ? 1 / this.navMap.aspectRatio : 1;
+		this.setNavMapCenter(this.navMap.XYToCoordinatesFromPlaneWithRotation(new Vec2(500 * (1 - r_x) + 1000 * (1 - this.planeTrackedPosX) * r_x, 500 * (1 - r_y) + 1000 * (1 - this.planeTrackedPosY) * r_y)));
     }
 	
     centerOnActiveWaypoint(_val) {

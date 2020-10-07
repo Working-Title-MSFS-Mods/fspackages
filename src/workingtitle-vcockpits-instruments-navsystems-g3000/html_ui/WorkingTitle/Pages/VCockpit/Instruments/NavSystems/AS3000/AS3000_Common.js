@@ -2,8 +2,7 @@ class AS3000_MapElement extends MapInstrumentElement {
     constructor(_simVarNameID) {
         super();
 		this.simVarNameID = _simVarNameID;
-		
-		this.lastOrientation = 0;
+
 		this.lastSync = 0;
 		//this.lastDcltr = 0;
 		this.lastSymbolVis = new Map([
@@ -157,19 +156,21 @@ class AS3000_MapElement extends MapInstrumentElement {
 			}
 		}
 		
-		if (this.lastOrientation != orientation) {
+		if (this.instrument.orientation != orientation) {
 			switch (orientation % 3) {
 			case 0:
 				this.instrument.setOrientation("hdg");
+				this.instrument.planeTrackedPosY = 0.667;
 				break;
 			case 1:
 				this.instrument.setOrientation("trk");
+				this.instrument.planeTrackedPosY = 0.667;
 				break;
 			case 2:
 				this.instrument.setOrientation("north");
+				this.instrument.planeTrackedPosY = 0.5;
 				break;
 			}
-			this.lastOrientation = orientation;
 		}
 	}
 	
