@@ -385,16 +385,16 @@ class CJ4_FMC_RoutePage {
             [lsk6Field, activateCell]
         ]);
         fmc.onPrevPage = () => {
-            if (offset === 0) {
+            if (offset <= 0) {
                 CJ4_FMC_RoutePage.ShowPage1(fmc);
             }
             else {
-                CJ4_FMC_RoutePage.ShowPage2(fmc, offset - 4);
+                CJ4_FMC_RoutePage.ShowPage2(fmc, offset - 5);
             }
         };
         fmc.onNextPage = () => {
             if (offset + 4 < allRows.rows.length) {
-                CJ4_FMC_RoutePage.ShowPage2(fmc, offset + 4);
+                CJ4_FMC_RoutePage.ShowPage2(fmc, offset + 5);
             }
         };
     }
