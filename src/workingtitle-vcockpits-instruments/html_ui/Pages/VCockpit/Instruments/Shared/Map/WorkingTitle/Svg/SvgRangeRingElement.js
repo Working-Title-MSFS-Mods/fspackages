@@ -113,9 +113,9 @@ class SvgRangeLabelElement {
 		
 		let autoFontSize = _auto ? this.rangeDisplayAutoFontSize : 0;
 		
-		let autoWidth = autoFontSize * 2.4;
-		let valueWidth = this.rangeDisplayFontSize * 0.6 * valueLength;
-		let unitWidth = this.rangeDisplayUnitFontSize * 1.2;
+		let autoWidth = this.rangeDisplayAutoText.getComputedTextLength();
+		let valueWidth = this.rangeDisplayValueText.getComputedTextLength();
+		let unitWidth = this.rangeDisplayUnitText.getComputedTextLength();
 		let middleBuffer = this.rangeDisplayFontSize * 0.1;
 		let leftRightBuffer = this.rangeDisplayFontSize * 0.15;
 		let topBottomBuffer = this.rangeDisplayFontSize * 0.1;
