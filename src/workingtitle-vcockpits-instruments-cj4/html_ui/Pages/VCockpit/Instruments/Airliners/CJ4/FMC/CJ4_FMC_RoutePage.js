@@ -317,7 +317,7 @@ class CJ4_FMC_RoutePage {
                         if (value.length > 0) {
                             fmc.clearUserInput();
                             let lastWaypoint = fmc.flightPlanManager.getWaypoints()[fmc.flightPlanManager.getEnRouteWaypointsLastIndex()];
-                            if (lastWaypoint.infos instanceof IntersectionInfo) {
+                            if (lastWaypoint.infos instanceof WayPointInfo) {
                                 let airway = lastWaypoint.infos.airways.find(a => { return a.name === value; });
                                 if (airway) {
                                     fmc.setMsg();
@@ -339,11 +339,17 @@ class CJ4_FMC_RoutePage {
                         if (value.length > 0) {
                             fmc.clearUserInput();
                             fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                CJ4_FMC_RoutePage.insertWaypointsAlongAirway(fmc, value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1, pendingAirway.name, (result) => {
-                                    if (result) {
-                                        fmc.setMsg();
-                                        CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
+                                fmc.getOrSelectWaypointByIdent(value, (waypoint) => {
+                                    if (!waypoint) {
+                                        fmc.showErrorMessage("NOT IN DATABASE");
                                     }
+                                    CJ4_FMC_RoutePage.insertWaypointsAlongAirway(fmc, value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1, pendingAirway.name, (result) => {
+                                        if (result) {
+                                            fmc.setMsg();
+                                            CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
+                                        }else 
+                                        fmc.showErrorMessage("UNABLE");
+                                    });
                                 });
                             });
                         } else
