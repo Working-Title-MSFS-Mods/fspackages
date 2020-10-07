@@ -348,7 +348,7 @@ class CJ4_FMC_RoutePage {
                                             fmc.setMsg();
                                             CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
                                         }else 
-                                        fmc.showErrorMessage("UNABLE");
+                                        fmc.showErrorMessage("NOT ON AIRWAY");
                                     });
                                 });
                             });
