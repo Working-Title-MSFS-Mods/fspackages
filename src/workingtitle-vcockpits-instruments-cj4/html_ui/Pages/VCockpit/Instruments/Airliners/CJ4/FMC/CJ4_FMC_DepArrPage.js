@@ -252,11 +252,15 @@ class CJ4_FMC_DepArrPage {
         fmc.onPrevPage = () => {
             if (currentPage > 1) {
                 CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, currentPage - 1);
+            } else {
+                CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, pageCount);
             }
         };
         fmc.onNextPage = () => {
             if (currentPage < pageCount) {
                 CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, currentPage + 1);
+            } else {
+                CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
             }
         };
     }
@@ -491,11 +495,15 @@ class CJ4_FMC_DepArrPage {
         fmc.onPrevPage = () => {
             if (currentPage > 1) {
                 CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage - 1);
+            } else {
+                CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, pageCount);
             }
         };
         fmc.onNextPage = () => {
             if (currentPage < pageCount) {
                 CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage + 1);
+            } else {
+                CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
             }
         };
     }
