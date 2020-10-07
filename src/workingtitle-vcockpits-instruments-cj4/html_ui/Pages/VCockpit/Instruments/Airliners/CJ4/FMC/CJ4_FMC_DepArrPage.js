@@ -167,7 +167,7 @@ class CJ4_FMC_DepArrPage {
             }
         }
         let rowsCount = Math.max(displayableRunwaysCount, displayableDeparturesCount);
-        let pageCount = Math.floor(rowsCount / 5) + 1;
+        let pageCount = Math.max(Math.ceil(rowsCount / 5), 1);
 
 
         //start of CWB EXEC handling
@@ -388,7 +388,7 @@ class CJ4_FMC_DepArrPage {
             }
         }
         let rowsCount = Math.max(Math.max(displayableApproachesCount, displayableArrivalsCount), displayableTransitionsCount);
-        let pageCount = Math.floor(rowsCount / 5) + 1;
+        let pageCount = Math.max(Math.ceil(rowsCount / 5), 1);
 
         //start of CWB EXEC handling
         let rsk6Field = "";
