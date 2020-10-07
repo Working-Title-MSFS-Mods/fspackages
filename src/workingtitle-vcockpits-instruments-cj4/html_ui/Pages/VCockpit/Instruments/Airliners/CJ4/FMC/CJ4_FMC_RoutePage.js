@@ -243,12 +243,16 @@ class CJ4_FMC_RoutePage {
         allRows.fpIndexes.shift();
         let page = (2 + (Math.floor(offset / 4)));
         let pageCount = (Math.floor(allRows.rows.length / 4) + 2);
-        console.log(fmc.flightPlanManager.getEnRouteWaypoints());
         let showInput = false;
         for (let i = 0; i < rows.length; i++) {
             if (allRows.rows[i + offset]) {
                 rows[i] = allRows.rows[i + offset];
                 let fpIndex = allRows.fpIndexes[i + offset];
+
+                // TODO this is just a quickfix for index when departure is loaded, its ugly though
+                let departure = fmc.flightPlanManager.getDeparture();
+                if (departure) { fpIndex--; }
+
                 // DELETE WAYPOINT
                 fmc.onRightInput[i] = () => {
                     fmc.setMsg("Working...");
@@ -265,6 +269,8 @@ class CJ4_FMC_RoutePage {
                             fmc.setMsg();
                             CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
                         });
+                    } else {
+                        fmc.setMsg();
                     }
                 };
             }
