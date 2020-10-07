@@ -193,6 +193,11 @@ class AS3000_MFD_MapElement extends AS3000_MapElement {
         this.lastWeatherMapMode = 0;
     }
 	
+	init(root) {
+		super.init(root);
+		this.instrument.showRangeDisplay = false;
+	}
+	
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         let isPositionOverride = SimVar.GetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number") != 0;

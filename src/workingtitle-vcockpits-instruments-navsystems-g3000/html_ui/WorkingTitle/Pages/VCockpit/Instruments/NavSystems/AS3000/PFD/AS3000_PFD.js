@@ -73,6 +73,8 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
     init(_root) {
         super.init(_root);
         this.mapContainer = this.gps.getChildById("InnerMap");
+		this.instrument.rangeRingElement.showLabel = false;
+		this.instrument.rangeCompassElement.showRangeDisplay = false;
     }
 	onUpdate(_deltaTime) {
 		super.onUpdate(_deltaTime);
