@@ -9,6 +9,9 @@ class SvgRangeCompassElement extends SvgMapElement {
 		this.arcAngularWidth = SvgRangeCompassElement.ARC_ANGULAR_WIDTH_DEFAULT;								// degrees
 		this.arcFacingAngle = SvgRangeCompassElement.ARC_FACING_ANGLE_DEFAULT;									// degrees, 0 = to the right, increasing clockwise
 		
+		this.bearingTickWindowTolerance = SvgRangeCompassElement.BEARING_TICK_WINDOW_TOLERANCE;					// degrees, how much extra angular width on either side of the displayed compass arc
+																												// to accept display of ticks and labels
+		
 		this.bearingTickMinorStart = SvgRangeCompassElement.BEARING_TICK_MINOR_START_DEFAULT;					// degrees, the value of the first minor bearing tick mark on the compass (0 = NORTH)
 		this.bearingTickMinorPeriod = SvgRangeCompassElement.BEARING_TICK_MINOR_PERIOD_DEFAULT;					// degrees, how far apart the minor bearing tick marks on the compass should be			
 		this.bearingTickMinorColor = SvgRangeCompassElement.BEARING_TICK_MINOR_COLOR_DEFAULT;
@@ -106,8 +109,11 @@ class SvgRangeCompassElement extends SvgMapElement {
 			arcBearingEnd += 360;
 		}
 		let currentBearing = Math.ceil((arcBearingStart - this.bearingTickMinorStart) / this.bearingTickMinorPeriod) * this.bearingTickMinorPeriod + this.bearingTickMinorStart;
+		if (currentBearing - this.bearingTickMinorPeriod >= arcBearingStart - this.bearingTickWindowTolerance) {
+			currentBearing -= this.bearingTickMinorPeriod;
+		}
 		let i = 0;
-		while (currentBearing <= arcBearingEnd) {
+		while (currentBearing <= arcBearingEnd + this.bearingTickWindowTolerance) {
 			if ((currentBearing - this.bearingTickMajorStart) % this.bearingTickMajorPeriod != 0) {
 				if (i >= this.bearingTicksMinor.length) {
 					this.bearingTicksMinor[i] = this.createBearingTickMinor();
@@ -124,8 +130,11 @@ class SvgRangeCompassElement extends SvgMapElement {
 		}
 		
 		currentBearing = Math.ceil((arcBearingStart - this.bearingTickMajorStart) / this.bearingTickMajorPeriod) * this.bearingTickMajorPeriod + this.bearingTickMajorStart;
+		if (currentBearing - this.bearingTickMajorPeriod >= arcBearingStart - this.bearingTickWindowTolerance) {
+			currentBearing -= this.bearingTickMajorPeriod;
+		}
 		i = 0;
-		while (currentBearing <= arcBearingEnd) {
+		while (currentBearing <= arcBearingEnd + this.bearingTickWindowTolerance) {
 			if (i >= this.bearingTicksMajor.length) {
 				this.bearingTicksMajor[i] = this.createBearingTickMajor();
 				this.compassLayer.appendChild(this.bearingTicksMajor[i]);
@@ -140,8 +149,11 @@ class SvgRangeCompassElement extends SvgMapElement {
 		}
 		
 		currentBearing = Math.ceil((arcBearingStart - this.bearingLabelStart) / this.bearingLabelPeriod) * this.bearingLabelPeriod + this.bearingLabelStart;
+		if (currentBearing - this.bearingLabelPeriod >= arcBearingStart - this.bearingTickWindowTolerance) {
+			currentBearing -= this.bearingLabelPeriod;
+		}
 		i = 0;
-		while (currentBearing <= arcBearingEnd) {
+		while (currentBearing <= arcBearingEnd + this.bearingTickWindowTolerance) {
 			if (i >= this.bearingLabels.length) {
 				this.bearingLabels[i] = this.createBearingLabel();
 				this.compassLayer.appendChild(this.bearingLabels[i]);
@@ -222,8 +234,10 @@ class SvgRangeCompassElement extends SvgMapElement {
 }
 SvgRangeCompassElement.ARC_STROKE_WIDTH_DEFAULT = 2;
 SvgRangeCompassElement.ARC_STROKE_COLOR_DEFAULT = "white";
-SvgRangeCompassElement.ARC_ANGULAR_WIDTH_DEFAULT = 120;
+SvgRangeCompassElement.ARC_ANGULAR_WIDTH_DEFAULT = 122;
 SvgRangeCompassElement.ARC_FACING_ANGLE_DEFAULT = -90;
+
+SvgRangeCompassElement.BEARING_TICK_WINDOW_TOLERANCE = 0;
 
 SvgRangeCompassElement.BEARING_TICK_MINOR_START_DEFAULT = 0;
 SvgRangeCompassElement.BEARING_TICK_MINOR_PERIOD_DEFAULT = 10;
