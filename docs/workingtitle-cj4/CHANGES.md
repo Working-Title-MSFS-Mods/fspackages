@@ -1,6 +1,6 @@
-# Working Title CJ4 v0.3.1 Changes
+# Working Title CJ4 v0.4.0 Changes
 
-Welcome to the latest update of the Working Title CRJ (v0.4.0). This is still very much a beta. Thank you to everyone who contributed to this release. We have been hard at work behind the scenes to tackle some of the core flight management systems, so the number of changes is shorter this time, but still with some fun and important features and fixes.
+Welcome to the latest update of the Working Title CRJ (v0.4.0). This is still very much a beta. Thank you to everyone who contributed to this release. We have been hard at work behind the scenes to tackle some of the core flight management systems, so the number of changes is shorter this time, but still with some fun and important features and fixes. Overall, this bird should be a bunch more fun to fly.
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
@@ -9,10 +9,12 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 * New custom engine fuel consumption model code based on FJ44 curves and pilot input
 * Overhauled LEGS page for more flexibility and real unit functions (WIP)
+* Many FPLN page bug fixes
 * A few quality of life and critical bug fixes
 
 ### Engine Model
 * Engine fuel consumption model has been custom coded and replaces the sim fuel consumption. Fuel consumption, especially at cruise, should be much, much closer to published. Expect 1800-1850pph per side at ISA full power and 500-800pph per side at cruise, depending on altitude, mach, and power settings.
+* Thrust now scales exponentially with N1 instead of linearly. Power settings based on throttle position
 
 ### LEGS Page
 * Added ability to insert a new fix
@@ -20,12 +22,27 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Added ability to to direct-to a leg by pressing LSK of the fix and then dropping onto the magenta line
 * Added ability to delete individual fixes
 * Magenta fix distance updates distance to go as aircraft moves
+* Fixed issue where unable to delete with a departure active
+* Made the WORKING prompt more consistent
+* Added feature to show runway where possible
+* Disabled the ability to adjust approach fixes due to simulator limitations
+
+### FPLN Page
+* Fixed issue where adding via airway would not add all fixes along airway to flight plan
+* Fixed issue where a blank line was not always provided to add a fix
+* Condensed display to only show airway entry and exit as per the real unit
+* Fixed issue where VIA was not displayed on page 2+
+* Fixed issue where attempting to delete the first fix on page 1 would insert CLRIC
+* Fixed issue where unable to delete with a departure active
 
 ### FUEL MGMT Page
 * Total fuel used now initialized to its starting point when the FMC loads
 
 ### TUNE Page
 * Page now updates and syncs back radio changes made from other instruments or the simulator
+
+### FMC Performance
+* Attempted to work around the Asobo facility loader performance issues. Performance should be improved in most scenarios now.
 
 ### PFD/MFD
 * Fixed issue where ILS localizers reporting DME distance as strings would crash the displays
