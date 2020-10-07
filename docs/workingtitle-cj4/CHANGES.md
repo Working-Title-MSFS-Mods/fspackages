@@ -14,7 +14,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ### Engine Model
 * Engine fuel consumption model has been custom coded and replaces the sim fuel consumption. Fuel consumption, especially at cruise, should be much, much closer to published. Expect 1800-1850pph per side at ISA full power and 500-800pph per side at cruise, depending on altitude, mach, and power settings.
-* Thrust now scales exponentially with N1 instead of linearly. Power settings based on throttle position
+* Thrust now scales exponentially with N1 instead of linearly. Power settings should feel much more accurate.
 
 ### LEGS Page
 * Added ability to insert a new fix
@@ -40,9 +40,6 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ### TUNE Page
 * Page now updates and syncs back radio changes made from other instruments or the simulator
-
-### FMC Performance
-* Attempted to work around the Asobo facility loader performance issues. Performance should be improved in most scenarios now.
 
 ### PFD/MFD
 * Fixed issue where ILS localizers reporting DME distance as strings would crash the displays
