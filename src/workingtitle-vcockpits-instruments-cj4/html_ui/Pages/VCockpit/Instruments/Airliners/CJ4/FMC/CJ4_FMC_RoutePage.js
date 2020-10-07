@@ -119,12 +119,22 @@ class CJ4_FMC_RoutePage {
                 if (!pendingAirway) {
                     rows[i] = ["-----", "-----"];
                     fmc.onRightInput[3] = () => {
+                        fmc.setMsg("Working...");
                         let value = fmc.inOut;
-                        if (value.length > 0) {
+                        if (value === FMCMainDisplay.clrValue) {
                             fmc.clearUserInput();
-                            fmc.insertWaypoint(value, 1, () => {
+                            fmc.removeWaypoint(1, () => {
+                                fmc.setMsg();
                                 CJ4_FMC_RoutePage.ShowPage1(fmc);
                             });
+                        } else if (value.length > 0) {
+                            fmc.clearUserInput();
+                            fmc.insertWaypoint(value, 1, () => {
+                                fmc.setMsg();
+                                CJ4_FMC_RoutePage.ShowPage1(fmc);
+                            });
+                        } else {
+                            fmc.setMsg();
                         }
                     };
                     fmc.onLeftInput[3] = () => {
