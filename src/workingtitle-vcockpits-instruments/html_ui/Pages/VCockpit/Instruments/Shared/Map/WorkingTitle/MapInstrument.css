@@ -53,6 +53,8 @@ map-instrument {
 	align-items: flex-end;
     text-align: center; 
 	border: solid 1px white; }
+  map-instrument #MapRange[state="Inactive"] {
+	display: none !important; }
 	map-instrument #MapRange .range {
 	  font-size: calc( 3 * 1vh * var(--bodyHeightScale));
 	  text-align: right; }

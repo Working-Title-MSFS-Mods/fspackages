@@ -48,6 +48,7 @@ class MapInstrument extends ISvgMapRootElement {
         this.showCities = false;
         this.showTraffic = true;
         this.showConstraints = false;
+		this.showRangeDisplay = MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT; // whether to show the range display
         this._ranges = MapInstrument.ZOOM_RANGES_DEFAULT;
         this.rangeIndex = 4;
         this._declutterLevel = 0;
@@ -1006,11 +1007,16 @@ class MapInstrument extends ISvgMapRootElement {
         }
 		// Adapt code to new range display formatting
         if (this.mapRangeElement) {
-            let currentRange = this.getDisplayRange();
-            if (this.rangeValue != currentRange) {
-				Avionics.Utils.diffAndSet(this.mapRangeElementRange, currentRange);
-                this.rangeValue = currentRange;
-            }
+			if (this.showRangeDisplay) {
+				let currentRange = this.getDisplayRange();
+				if (this.rangeValue != currentRange) {
+					Avionics.Utils.diffAndSet(this.mapRangeElementRange, currentRange);
+					this.rangeValue = currentRange;
+				}
+				Avionics.Utils.diffAndSetAttribute(this.mapRangeElement, "state", "Active");
+			} else {
+				Avionics.Utils.diffAndSetAttribute(this.mapRangeElement, "state", "Inactive");
+			}
         }
         if (this.navMap) {
             this.navMap.update();
@@ -1613,6 +1619,8 @@ class MapInstrument extends ISvgMapRootElement {
 }
 MapInstrument.OVERDRAW_FACTOR_DEFAULT = Math.sqrt(2);
 MapInstrument.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200];
+
+MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT = true;
 
 MapInstrument.INT_RANGE_DEFAULT = 15;
 MapInstrument.INT_RANGE_MIN_DEFAULT = 0;
