@@ -169,7 +169,6 @@
 			<EMISSIVE_CODE>(L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #MIN_EMISSIVE_PERCENT# - * #MIN_EMISSIVE_PERCENT# +</EMISSIVE_CODE>
 		</UseTemplate>
 		<UseTemplate Name="ASOBO_AS3000_Screen_Template">
-			<SCREEN_EMISSIVE_CODE>0.5</SCREEN_EMISSIVE_CODE>
 		</UseTemplate>
 	</Template>
 
