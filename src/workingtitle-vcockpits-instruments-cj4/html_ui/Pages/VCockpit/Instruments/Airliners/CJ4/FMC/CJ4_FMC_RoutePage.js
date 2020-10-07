@@ -399,7 +399,7 @@ class CJ4_FMC_RoutePage {
 
         fmc._templateRenderer.setTemplateRaw([
             [" " + modStr + " FPLN[blue]", page + "/" + pageCount + " [blue]"],
-            [""],
+            ["VIA[s-text blue]", "TO[s-text blue]"],
             rows[0],
             [""],
             rows[1],
