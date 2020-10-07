@@ -252,9 +252,16 @@ class CJ4_FMC_RoutePage {
         fmc.clearDisplay();
         let rows = [["-----"], [""], [""], [""], [""]];
         let allRows = CJ4_FMC_RoutePage._GetAllRows(fmc);
+
         allRows.rows.shift();
         allRows.waypoints.shift();
-        allRows.fpIndexes.shift();
+
+        // TODO: this should fix missing indexes for when departure is loaded, not the nicest solution though
+        let departure = fmc.flightPlanManager.getDeparture();
+        if (!departure) {
+            allRows.fpIndexes.shift();
+        }
+
         let page = (2 + (Math.floor(offset / 4)));
         let pageCount = (Math.floor(allRows.rows.length / 4) + 2);
         let showInput = false;
@@ -264,8 +271,8 @@ class CJ4_FMC_RoutePage {
                 let fpIndex = allRows.fpIndexes[i + offset];
 
                 // TODO this is just a quickfix for index when departure is loaded, its ugly though
-                let departure = fmc.flightPlanManager.getDeparture();
-                if (departure) { fpIndex--; }
+                // let departure = fmc.flightPlanManager.getDeparture();
+                // if (departure) { fpIndex--; }
 
                 // DELETE WAYPOINT
                 fmc.onRightInput[i] = () => {
