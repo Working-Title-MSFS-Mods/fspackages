@@ -3,7 +3,7 @@
 	<UserProjectSettingsInfo>
 		<UserProjectSettings Name="" ID="{697F4815-0ED3-4225-A83F-BFD68DD799C9}">
 			<PropertyList>
-				<Property Name="AudioFilesImporter\Path" Type="string" Value="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Originals\SFX\"/>
+				<Property Name="AudioFilesImporter\Path" Type="string" Value="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Originals\SFX\Passenger Announcements\"/>
 				<Property Name="Event Action List\{23F782EA-85B6-4184-9FB8-9DC0AB4FF7AA}\x64_Expand States" Type="string" Value=""/>
 				<Property Name="Event Action List\{2CDEC3AF-2E80-493B-A8A1-5B8246B4708B}\x64_Expand States" Type="string" Value=""/>
 				<Property Name="Event Action List\{3E658FAF-C9CA-430C-AF3E-E40464EFCB13}\x64_Expand States" Type="string" Value=""/>
