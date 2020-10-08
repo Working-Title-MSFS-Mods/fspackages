@@ -451,8 +451,6 @@ class MapInstrument extends ISvgMapRootElement {
             };
             this.npcAirplaneManager = new NPCAirplaneManager();
             this.airplaneIconElement = new SvgAirplaneElement();
-			this.rangeRingElement = new SvgRangeRingElement(); // MOD: range ring
-			this.rangeCompassElement = new SvgRangeCompassElement(); // MOD: range compass
             this.flightPlanElement = new SvgFlightPlanElement();
             this.flightPlanElement.source = this.flightPlanManager;
             this.flightPlanElement.flightPlanIndex = 0;
@@ -808,9 +806,10 @@ class MapInstrument extends ISvgMapRootElement {
 				
 				// MOD: show range compass or range ring
 				if (this.eBingMode != EBingMode.CURSOR) {
-					if (this.showRangeRing) {
+					if (this.showRangeRing && this.rangeRingElement) {
 						this.navMap.mapElements.push(this.rangeRingElement);
-					} else if (this.showRangeCompass) { 
+					}
+                    if (this.showRangeCompass && this.rangeCompassElement) { 
 						this.navMap.mapElements.push(this.rangeCompassElement);
 					}
 				}

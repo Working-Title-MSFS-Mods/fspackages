@@ -45,6 +45,8 @@ class AS3000_MapElement extends MapInstrumentElement {
         }
 		this.instrument.zoomRanges = AS3000_MapElement.ZOOM_RANGES_DEFAULT;
         this.instrument.rotationHandler = this;
+        this.instrument.rangeRingElement = new SvgRangeRingElement();
+        this.instrument.rangeCompassElement = new SvgRangeCompassElement();
 		this.setHdgUp();
 		
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number", 0);	// set default map orientation (0 = hdg, 1 = trk, 2 = north)
