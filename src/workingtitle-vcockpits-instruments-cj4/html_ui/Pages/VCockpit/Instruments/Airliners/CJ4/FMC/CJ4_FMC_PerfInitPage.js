@@ -168,7 +168,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [""],
             [""],
-            ["-----------------------[blue]"],
+            ["-------------------------[blue]"],
             ["", "PERF MENU>"]
         ]);
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage1(fmc); };
