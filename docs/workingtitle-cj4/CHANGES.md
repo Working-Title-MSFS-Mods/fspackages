@@ -35,6 +35,10 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Fixed issue where attempting to delete the first fix on page 1 would insert CLRIC
 * Fixed issue where unable to delete with a departure active
 
+### DEP/ARR Pages
+* Proper formatting and flow of DEP/ARR pages (thanks @tscharlii)
+* Fixed scrolling through procedures and runways (thanks @tscharlii)
+
 ### FUEL MGMT Page
 * Total fuel used now initialized to its starting point when the FMC loads
 
