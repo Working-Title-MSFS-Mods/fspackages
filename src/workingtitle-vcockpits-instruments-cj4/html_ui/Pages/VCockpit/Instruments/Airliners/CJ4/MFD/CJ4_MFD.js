@@ -219,7 +219,13 @@ class CJ4_MFD extends BaseAirliners {
                 break;
             case "Lwr_Push_CKLST_1":
                 this.showFms = false;
+                this.showPassengerBrief = false;
                 this.showChecklist = !this.showChecklist;
+                break;
+            case "Lwr_Push_PASSBRIEF_1":
+                this.showChecklist = false;
+                this.showFms = false;
+                this.showPassengerBrief = !this.showPassengerBrief;
                 break;
             case "Lwr_Push_ESC":
                 this.checklist.otherMenusOpen = false
