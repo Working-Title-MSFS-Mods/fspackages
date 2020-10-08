@@ -112,7 +112,6 @@ class MapInstrument extends ISvgMapRootElement {
 		this.rotationHandler = MapInstrument_DefaultRotationHandler.INSTANCE; // returns what the rotation of the map should be in degrees
 		
 		this.showRangeDisplay = MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT;
-		this.rangeDisplayBiasFactor = MapInstrument.RANGE_DISPLAY_BIAS_DEFAULT; // multiplied by the map range to give what the map's range display will show on the UI
 		
 		this.showRangeRing = false;
 		this.showRangeCompass = false;
@@ -992,7 +991,7 @@ class MapInstrument extends ISvgMapRootElement {
 			if (this.showRangeDisplay) {
 				let currentRange = this.getDisplayRange();
 				if (this.rangeValue != currentRange) {
-					Avionics.Utils.diffAndSet(this.mapRangeElementRange, MapInstrument.getFormattedRangeDisplayText(currentRange * this.rangeDisplayBiasFactor));
+					Avionics.Utils.diffAndSet(this.mapRangeElementRange, MapInstrument.getFormattedRangeDisplayText(currentRange));
 					this.rangeValue = currentRange;
 				}
 				Avionics.Utils.diffAndSetAttribute(this.mapRangeElement, "state", "Active");
@@ -1583,7 +1582,6 @@ MapInstrument.OVERDRAW_FACTOR_DEFAULT = Math.sqrt(2);
 MapInstrument.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200];
 
 MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT = true;
-MapInstrument.RANGE_DISPLAY_BIAS_DEFAULT = 1;
 
 MapInstrument.INT_RANGE_DEFAULT = 15;
 MapInstrument.INT_RANGE_MIN_DEFAULT = 0;
