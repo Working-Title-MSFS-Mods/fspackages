@@ -15,3 +15,4 @@ CJ4 Build.ps1
 *.wsetting
 *.validationcache
 *.wem
+*.wsettings

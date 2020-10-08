@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="12" SoundbankVersion="135">
 	<RootPaths>
-		<ProjectRoot>C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\</ProjectRoot>
-		<SourceFilesRoot>C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\.cache\Windows\</SourceFilesRoot>
-		<SoundBanksRoot>C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<ProjectRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\GeneratedSoundBanks\Windows\</SoundBanksRoot>
 		<ExternalSourcesInputFile></ExternalSourcesInputFile>
-		<ExternalSourcesOutputRoot>C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
+		<ExternalSourcesOutputRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
 	</RootPaths>
 	<DialogueEvents/>
 	<StreamedFiles/>
@@ -101,20 +101,12 @@
 				<GameParameter Id="4194702645" Name="ENV_COCKPIT_INSULATION" ObjectPath="\Game Parameters\environment\common\ENV_COCKPIT_INSULATION" GUID="{41B00B57-897A-4477-A19B-88C4DE7B46F4}"/>
 			</GameParameters>
 		</SoundBank>
-		<SoundBank Id="3661779907" GUID="{CCCCFDFA-06A9-42B0-B420-F5811DF76F04}" Language="SFX">
-			<ObjectPath>\SoundBanks\Asobo_CJ4_Extended\Asobo_CJ4_Extended</ObjectPath>
-			<ShortName>Asobo_CJ4_Extended</ShortName>
-			<Path>Asobo_CJ4_Extended.bnk</Path>
+		<SoundBank Id="2975758793" GUID="{CCCCFDFA-06A9-42B0-B420-F5811DF76F04}" Language="SFX">
+			<ObjectPath>\SoundBanks\Asobo_CJ4_WorkingTitle\Asobo_CJ4_WorkingTitle</ObjectPath>
+			<ShortName>Asobo_CJ4_WorkingTitle</ShortName>
+			<Path>Asobo_CJ4_WorkingTitle.bnk</Path>
 			<IncludedEvents>
-				<Event Id="977765659" Name="Play_Asobo_CJ4_ac" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended\Play_Asobo_CJ4_ac" GUID="{4F6F47F3-9186-4165-974D-B62193170273}" DurationType="OneShot" DurationMin="8.085125" DurationMax="8.085125">
-					<IncludedMemoryFiles>
-						<File Id="1047630926" Language="SFX">
-							<ShortName>CJ4_AC_On_Ambiance.wav</ShortName>
-							<Path>SFX\CJ4_AC_On_Ambiance_1E8ECBBC.wem</Path>
-						</File>
-					</IncludedMemoryFiles>
-				</Event>
-				<Event Id="3202083259" Name="Play_Asobo_CJ4_air_fan" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended\Play_Asobo_CJ4_air_fan" GUID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}" MaxAttenuation="3.000000" DurationType="Infinite">
+				<Event Id="3202083259" Name="Play_Asobo_CJ4_air_fan" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\Play_Asobo_CJ4_air_fan" GUID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}" MaxAttenuation="3.000000" DurationType="Infinite">
 					<IncludedMemoryFiles>
 						<File Id="67448994" Language="SFX">
 							<ShortName>CJ4_Air_Vent.wav</ShortName>
@@ -122,19 +114,11 @@
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
-				<Event Id="206545353" Name="Play_Asobo_CJ4_ap_disconnect" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended\Play_Asobo_CJ4_ap_disconnect" GUID="{2CDEC3AF-2E80-493B-A8A1-5B8246B4708B}" MaxAttenuation="3.000000" DurationType="OneShot" DurationMin="0.629854" DurationMax="0.629854">
+				<Event Id="2656505846" Name="Play_Asobo_CJ4_seatbelt_light" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\Passenger Announcements\Play_Asobo_CJ4_seatbelt_light" GUID="{8CE6A881-FB7F-46E8-B8FC-8A201E0B6021}" MaxAttenuation="3.000000" DurationType="OneShot" DurationMin="10.184240" DurationMax="10.184240">
 					<IncludedMemoryFiles>
-						<File Id="287374701" Language="SFX">
-							<ShortName>CJ4_Autopilot_Disconnect.wav</ShortName>
-							<Path>SFX\CJ4_Autopilot_Disconnect_78BD8C0F.wem</Path>
-						</File>
-					</IncludedMemoryFiles>
-				</Event>
-				<Event Id="2656505846" Name="Play_Asobo_CJ4_seatbelt_light" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended\PASS BRIEF\Play_Asobo_CJ4_seatbelt_light" GUID="{8CE6A881-FB7F-46E8-B8FC-8A201E0B6021}" MaxAttenuation="3.000000" DurationType="OneShot" DurationMin="10.184240" DurationMax="10.184240">
-					<IncludedMemoryFiles>
-						<File Id="991214373" Language="SFX">
-							<ShortName>CJ4_Seatbelt.wav</ShortName>
-							<Path>SFX\CJ4_Seatbelt_78BD8C0F.wem</Path>
+						<File Id="233927793" Language="SFX">
+							<ShortName>Passenger Announcements\CJ4_Seatbelt.wav</ShortName>
+							<Path>SFX\Passenger Announcements\CJ4_Seatbelt_78BD8C0F.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>

@@ -3,8 +3,14 @@
   <ManualPackagingInfo BlockSize="1" UnassignedBanksPackageId="00000000-0000-0000-0000-000000000000" UnassignedStreamsPackageId="00000000-0000-0000-0000-000000000000" UnassignedExternalsPackageId="00000000-0000-0000-0000-000000000000" UnassignedLooseMediaPackageId="00000000-0000-0000-0000-000000000000">
     <Packages>
       <Package Id="544cf1a0-d3d9-40b1-854d-7e6e71dc408f" Name="Asobo_CJ4_Extended.PC.PCK">
+        <Items />
+        <LayoutItems>
+          <ContentItemBase Id="0" Language="" FileName="" />
+        </LayoutItems>
+      </Package>
+      <Package Id="164e0b66-8e9d-41c7-8bb2-f3727823c983" Name="Asobo_CJ4_WorkingTitle.pck">
         <Items>
-          <PackageContentItem Id="3661779907" Language="SFX" FileName="Asobo_CJ4_Extended" InclusionMode="BankAndStreamsAndLooseMedia" />
+          <PackageContentItem Id="2975758793" Language="SFX" FileName="Asobo_CJ4_WorkingTitle" InclusionMode="BankAndStreamsAndLooseMedia" />
         </Items>
         <LayoutItems>
           <ContentItemBase Id="0" Language="" FileName="" />

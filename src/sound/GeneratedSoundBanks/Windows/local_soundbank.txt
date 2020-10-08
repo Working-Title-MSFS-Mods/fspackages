@@ -210,7 +210,7 @@ Effect plug-ins	ID	Name	Type				Notes
 	4280681428	rev_outdoor_aircraft_generic	Wwise Convolution Reverb			
 
 Plug-in Media	ID	Name	Source file	Type	Wwise Object Path	Notes	Data Size
-	74039724	rev_outdoor_aircraft_low_end	C:\MSFS SDK\Samples\WwiseSampleProject\.cache\Windows\Plugins\Wwise Convolution Reverb\AE_DistantBuilding_MicsFar_734A3E6F.wem	Wwise Convolution Reverb (Shared)	\Effects\reverb_convolution\rev_outdoor_aircraft_low_end		376736
-	231298282	rev_inside_generic_custom	C:\MSFS SDK\Samples\WwiseSampleProject\.cache\Windows\Plugins\Wwise Convolution Reverb\IR_ATR42-600_AT4022_084CD397.wem	Wwise Convolution Reverb (Shared)	\Effects\reverb_convolution\rev_inside_generic_custom		721040
-	879285817	rev_outdoor_aircraft_generic	C:\MSFS SDK\Samples\WwiseSampleProject\.cache\Windows\Plugins\Wwise Convolution Reverb\AE_DistantBuilding_MicsFar_0345FA8A.wem	Wwise Convolution Reverb (Shared)	\Effects\reverb_convolution\rev_outdoor_aircraft_generic		377840
+	74039724	rev_outdoor_aircraft_low_end	C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\.cache\Windows\Plugins\Wwise Convolution Reverb\AE_DistantBuilding_MicsFar_734A3E6F.wem	Wwise Convolution Reverb (Shared)	\Effects\reverb_convolution\rev_outdoor_aircraft_low_end		376736
+	231298282	rev_inside_generic_custom	C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\.cache\Windows\Plugins\Wwise Convolution Reverb\IR_ATR42-600_AT4022_084CD397.wem	Wwise Convolution Reverb (Shared)	\Effects\reverb_convolution\rev_inside_generic_custom		721040
+	879285817	rev_outdoor_aircraft_generic	C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\.cache\Windows\Plugins\Wwise Convolution Reverb\AE_DistantBuilding_MicsFar_0345FA8A.wem	Wwise Convolution Reverb (Shared)	\Effects\reverb_convolution\rev_outdoor_aircraft_generic		377840
 

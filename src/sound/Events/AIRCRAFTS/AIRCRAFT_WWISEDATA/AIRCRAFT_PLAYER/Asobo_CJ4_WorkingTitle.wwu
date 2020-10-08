@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" SchemaVersion="97">
 	<Events>
-		<WorkUnit Name="Asobo_CJ4_Extended" ID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Standalone">
+		<WorkUnit Name="Asobo_CJ4_WorkingTitle" ID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Standalone">
 			<ChildrenList>
 				<Event Name="Play_Asobo_CJ4_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}">
 					<ChildrenList>

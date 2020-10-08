@@ -13,9 +13,7 @@ namespace AK
 {
     namespace EVENTS
     {
-        static const AkUniqueID PLAY_ASOBO_CJ4_AC = 977765659U;
         static const AkUniqueID PLAY_ASOBO_CJ4_AIR_FAN = 3202083259U;
-        static const AkUniqueID PLAY_ASOBO_CJ4_AP_DISCONNECT = 206545353U;
         static const AkUniqueID PLAY_ASOBO_CJ4_SEATBELT_LIGHT = 2656505846U;
     } // namespace EVENTS
 
@@ -731,7 +729,7 @@ namespace AK
     namespace BANKS
     {
         static const AkUniqueID INIT = 1355168291U;
-        static const AkUniqueID ASOBO_CJ4_EXTENDED = 3661779907U;
+        static const AkUniqueID ASOBO_CJ4_WORKINGTITLE = 2975758793U;
         static const AkUniqueID LOCAL_SOUNDBANK = 2933379036U;
     } // namespace BANKS
 

@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{45BA91ED-07D2-463B-AE6A-6E6C5501C282}" SchemaVersion="97">
 	<SoundBanks>
-		<WorkUnit Name="Asobo_CJ4_Extended" ID="{45BA91ED-07D2-463B-AE6A-6E6C5501C282}" PersistMode="Standalone">
+		<WorkUnit Name="Asobo_CJ4_WorkingTitle" ID="{45BA91ED-07D2-463B-AE6A-6E6C5501C282}" PersistMode="Standalone">
 			<ChildrenList>
-				<SoundBank Name="Asobo_CJ4_Extended" ID="{CCCCFDFA-06A9-42B0-B420-F5811DF76F04}">
+				<SoundBank Name="Asobo_CJ4_WorkingTitle" ID="{CCCCFDFA-06A9-42B0-B420-F5811DF76F04}">
 					<ObjectInclusionList>
-						<ObjectRef Name="Play_Asobo_CJ4_ac" ID="{4F6F47F3-9186-4165-974D-B62193170273}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Play_Asobo_CJ4_seatbelt_light" ID="{8CE6A881-FB7F-46E8-B8FC-8A201E0B6021}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_ap_disconnect" ID="{2CDEC3AF-2E80-493B-A8A1-5B8246B4708B}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Play_Asobo_CJ4_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>

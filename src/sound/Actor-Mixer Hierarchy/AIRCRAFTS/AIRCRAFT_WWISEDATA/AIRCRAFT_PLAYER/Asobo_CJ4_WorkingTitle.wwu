@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}" SchemaVersion="97">
 	<AudioObjects>
-		<WorkUnit Name="Asobo_CJ4_Extended" ID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}" PersistMode="Standalone">
+		<WorkUnit Name="Asobo_CJ4_WorkingTitle" ID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}" PersistMode="Standalone">
 			<ChildrenList>
 				<ActorMixer Name="3D" ID="{17E3FED6-BD2E-4086-8581-62B73B953F10}" ShortID="516312089">
 					<PropertyList>
