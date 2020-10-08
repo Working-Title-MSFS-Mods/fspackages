@@ -3,20 +3,6 @@
 	<Events>
 		<WorkUnit Name="Asobo_CJ4_Extended" ID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Standalone">
 			<ChildrenList>
-				<Event Name="Play_Asobo_CJ4_ap_disconnect" ID="{2CDEC3AF-2E80-493B-A8A1-5B8246B4708B}">
-					<ChildrenList>
-						<Action Name="" ID="{D86915D5-B834-4968-9627-4CE66EBA96E2}" ShortID="1061549373">
-							<PropertyList>
-								<Property Name="ActionType" Type="int16" Value="1"/>
-							</PropertyList>
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="CJ4_Autopilot_Disconnect" ID="{70F60012-C13C-4922-8920-80B33125F690}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
-					</ChildrenList>
-				</Event>
 				<Event Name="Play_Asobo_CJ4_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}">
 					<ChildrenList>
 						<Action Name="" ID="{4A3C5870-EEC7-46F1-A854-6996E8EE133E}" ShortID="795490384">
@@ -25,27 +11,13 @@
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="CJ4_Air_Vent" ID="{4C9FE86F-B85B-4CCD-8992-6A70635A65F1}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+									<ObjectRef Name="CJ4_Air_Vent" ID="{923DCC0B-8E17-45D1-B7FA-E9CEF50248D1}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_Asobo_CJ4_ac" ID="{4F6F47F3-9186-4165-974D-B62193170273}">
-					<ChildrenList>
-						<Action Name="" ID="{D40E39AF-AF26-4E58-B9EF-737ED63337E8}" ShortID="666479273">
-							<PropertyList>
-								<Property Name="ActionType" Type="int16" Value="1"/>
-							</PropertyList>
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="CJ4_AC_On_Ambiance" ID="{C739A027-CDE5-4F99-BCA3-CAA2DC1CF216}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
-					</ChildrenList>
-				</Event>
-				<Folder Name="PASSENGER ANNOUNCEMENTS" ID="{11642B21-B870-47F5-855E-2E8232DF091E}" ShortID="320280906">
+				<Folder Name="Passenger Announcements" ID="{11642B21-B870-47F5-855E-2E8232DF091E}" ShortID="320280906">
 					<ChildrenList>
 						<Event Name="Play_Asobo_CJ4_takeoff_short" ID="{BF3C1C63-5698-4CDC-8273-C0A0330B7E36}">
 							<ChildrenList>
@@ -55,7 +27,7 @@
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="CJ4_takeoff_short" ID="{36751B12-562E-4B06-ADC4-171DD7762219}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+											<ObjectRef Name="CJ4_Takeoff_Short" ID="{59FE024E-1739-4C56-9FB0-B3D4DA1EB4D2}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
@@ -69,7 +41,7 @@
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="CJ4_takeoff_long" ID="{48404A64-4F2E-47BD-9F94-222E01DAA585}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+											<ObjectRef Name="CJ4_Takeoff_Long" ID="{94D8F267-E1BF-4D77-848A-F8C15BCB04FF}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
@@ -83,7 +55,7 @@
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="CJ4_landing" ID="{E7324955-88F5-4A75-A6E9-A2FA45BD8BD8}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+											<ObjectRef Name="CJ4_Landing" ID="{96E5061A-45F9-443F-8295-83778D8F73C0}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
@@ -97,7 +69,7 @@
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="CJ4_oxygen_mask_deployment" ID="{3081108C-2424-428D-8C2C-598539921CFF}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+											<ObjectRef Name="CJ4_Oxygen Mask" ID="{D890116D-517C-43AF-9B6C-C5E086EE2DD2}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
@@ -111,7 +83,7 @@
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="CJ4_turbulence" ID="{753FE579-3907-454C-A905-0D81362057E4}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+											<ObjectRef Name="CJ4_Turbulence" ID="{03895704-1DEB-4807-A9D4-7BB24CCF5C4C}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
@@ -125,7 +97,7 @@
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="CJ4_safety_lights" ID="{6B57D75B-81CB-439F-9086-66D946DF2F3A}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+											<ObjectRef Name="CJ4_Safety_Lights" ID="{E3D8FBC8-7E13-4419-AF8F-DF4318BB9ADF}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
@@ -139,7 +111,7 @@
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="CJ4_seatbelt" ID="{F3A92F01-5D40-4CF3-98D5-06C670644615}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+											<ObjectRef Name="CJ4_Seatbelt" ID="{D8ED4895-59D8-42F8-B79D-D4580DDD332B}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
@@ -153,7 +125,7 @@
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="CJ4_chime" ID="{B3858900-A24E-4085-926B-83177C10682A}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+											<ObjectRef Name="CJ4_Chime" ID="{8058844C-8E56-43C6-8B5A-5B62C6453CA6}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>

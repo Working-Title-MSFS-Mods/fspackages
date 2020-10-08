@@ -2601,68 +2601,56 @@
 				</File>
 			</Language>
 			<Language ID="393239870" Name="SFX">
-				<File Name="CJ4_AC_On_Ambiance.wav">
-					<WObject ID="{90097171-CEC2-4756-8D48-CF2965D453EC}">
-						<MediaID ID="1047630926"/>
-						<Hash Platform="Windows" Value="512674748"/>
-					</WObject>
-				</File>
 				<File Name="CJ4_Air_Vent.wav">
-					<WObject ID="{3D320746-0044-4D79-A268-7B76B8D5F23B}">
+					<WObject ID="{7C6ED982-48EE-4BF1-A335-259CB381722D}">
 						<MediaID ID="67448994"/>
 						<Hash Platform="Windows" Value="1069876237"/>
 					</WObject>
 				</File>
-				<File Name="CJ4_Autopilot_Disconnect.wav">
-					<WObject ID="{3CDCE721-088D-4292-BA6C-A2EAB890E0D6}">
-						<MediaID ID="287374701"/>
-						<Hash Platform="Windows" Value="2025688079"/>
-					</WObject>
-				</File>
 				<File Name="Passenger Announcements\CJ4_Seatbelt.wav">
-					<WObject ID="{C1F4F164-A79D-4396-8D9C-EF044BC34E27}">
+					<WObject ID="{D04387A8-3D9C-4B0F-B825-5BB2AA01BAC9}">
 						<MediaID ID="233927793"/>
 						<Hash Platform="Windows" Value="2025688079"/>
 					</WObject>
 				</File>
 				<File Name="Passenger Announcements\Landing.wav">
-					<WObject ID="{A2053405-6BC9-4ED6-BAB0-3FBD5922BE97}">
+					<WObject ID="{06DAAEA9-6E81-43EA-9857-8B0B62A2A711}">
 						<MediaID ID="834296385"/>
 						<Hash Platform="Windows" Value="2025688079"/>
 					</WObject>
 				</File>
 				<File Name="Passenger Announcements\Oxygen Mask.wav">
-					<WObject ID="{2D5839A2-9823-4D94-B006-FAE448BBCB18}">
+					<WObject ID="{B1DA09FE-B346-40A0-A3AE-E97FACB4FDDC}">
 						<MediaID ID="109324084"/>
 						<Hash Platform="Windows" Value="2025688079"/>
 					</WObject>
 				</File>
 				<File Name="Passenger Announcements\Safety Belt.wav">
-					<WObject ID="{902CAB07-8CF4-42B2-B479-98D6B100041F}">
+					<WObject ID="{7969D84E-BD6B-4C96-9BC8-FC7F53721D78}">
 						<MediaID ID="789484764"/>
 						<Hash Platform="Windows" Value="2025688079"/>
 					</WObject>
 				</File>
 				<File Name="Passenger Announcements\Seatbelt &amp; Safety Off Chime 3.wav">
-					<WObject ID="{25D95C91-51CA-4690-ADD3-6ACC47E9BB65}">
+					<WObject ID="{2A952BCB-4A0A-4283-83F9-8E0941C9B7D8}">
 						<MediaID ID="616300746"/>
 						<Hash Platform="Windows" Value="2025688079"/>
 					</WObject>
 				</File>
 				<File Name="Passenger Announcements\Takeoff Long, Welcome Aboard.wav">
-					<WObject ID="{32773A6F-5AA8-455D-89A6-B141367DD67A}">
+					<WObject ID="{FCD393B6-BDCF-4B1D-ACB4-3FB1E46A1D80}">
 						<MediaID ID="139609880"/>
 						<Hash Platform="Windows" Value="2025688079"/>
 					</WObject>
 				</File>
 				<File Name="Passenger Announcements\Takeoff Short.wav">
-					<WObject ID="{A48A92B0-7A62-4E5F-93F4-5473D8A34FF9}">
+					<WObject ID="{38D395AE-8325-4473-9385-E4BF7309A0C0}">
 						<MediaID ID="155964119"/>
 						<Hash Platform="Windows" Value="2025688079"/>
 					</WObject>
 				</File>
 				<File Name="Passenger Announcements\Turbulence.wav">
-					<WObject ID="{D262BF46-22AB-4E8D-A661-A050FFDDC537}">
+					<WObject ID="{0CF4FD00-5354-4E29-83F3-78334007B5B1}">
 						<MediaID ID="479884975"/>
 						<Hash Platform="Windows" Value="2025688079"/>
 					</WObject>
