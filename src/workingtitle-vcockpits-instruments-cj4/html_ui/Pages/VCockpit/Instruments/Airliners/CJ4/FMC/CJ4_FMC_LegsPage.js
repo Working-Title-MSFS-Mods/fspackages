@@ -41,7 +41,7 @@ class CJ4_FMC_LegsPage {
 
         // get and format distance
         let distanceToActWpt = this._fmc.flightPlanManager.getDistanceToActiveWaypoint();
-        distanceToActWpt = (distanceToActWpt < 100) ? distanceToActWpt.toFixed(1) : distanceToActWpt.toFixed(0);
+        // distanceToActWpt = (distanceToActWpt < 100) ? distanceToActWpt.toFixed(1) : distanceToActWpt.toFixed(0);
         if (distanceToActWpt !== this._distanceToActiveWpt) {
             this._distanceToActiveWpt = distanceToActWpt;
             this._isDirty = true;
@@ -124,15 +124,18 @@ class CJ4_FMC_LegsPage {
             else if (waypoint) {
                 let bearing = isFinite(waypoint.bearingInFP) ? waypoint.bearingInFP.toFixed(0).padStart(3, "0") + "°" : "";
                 let prevWaypoint = this._wayPointsToRender[i + offset - 1];
-                let distance = "0";
+                let distance = 0;
                 let isFromWpt = (i == 0 && this._currentPage == 1);
                 let isActWpt = (i == 1 && this._currentPage == 1);
                 if (isActWpt) {
                     distance = this._distanceToActiveWpt;
                 }
                 else if (prevWaypoint) {
-                    distance = Math.trunc(Avionics.Utils.computeDistance(prevWaypoint.infos.coordinates, waypoint.infos.coordinates)).toFixed(0);
+                    distance = Math.trunc(Avionics.Utils.computeDistance(prevWaypoint.infos.coordinates, waypoint.infos.coordinates));
                 }
+
+                // format distance
+                distance = (distance < 100) ? distance.toFixed(1) : distance.toFixed(0);
 
                 if (isFromWpt) {
                     if (this._fmc.flightPlanManager.getIsDirectTo()) {
