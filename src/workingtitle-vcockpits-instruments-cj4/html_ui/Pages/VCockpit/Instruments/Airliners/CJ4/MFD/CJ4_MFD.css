@@ -615,6 +615,18 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #Checklist {
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #Checklist[visible=false] {
   display: none; }
 
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #PassengerBrief {
+  position: absolute;
+  top: 22.5%;
+  left: 0;
+  width: 100%;
+  height: 22.5%;
+  background-color: black;
+  color: white;
+}
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #PassengerBrief[visible=false] {
+  display: none; }
+
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay {
   position: absolute;
   bottom: 3.5%;
