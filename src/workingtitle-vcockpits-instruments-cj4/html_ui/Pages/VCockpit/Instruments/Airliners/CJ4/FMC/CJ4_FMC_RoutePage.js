@@ -493,11 +493,12 @@ class CJ4_FMC_RoutePage {
         let allWaypoints = [];
         let allFPIndexes = [];
         let flightPlan = fmc.flightPlanManager;
+        let lastDepartureWaypoint = undefined;
         if (flightPlan) {
             let departure = flightPlan.getDeparture();
             if (departure) {
                 let departureWaypoints = flightPlan.getDepartureWaypoints();
-                let lastDepartureWaypoint = departureWaypoints[departureWaypoints.length - 1];
+                lastDepartureWaypoint = departureWaypoints[departureWaypoints.length - 1];
                 if (lastDepartureWaypoint) {
                     allRows.push([departure.name, lastDepartureWaypoint.ident]);
                 }
@@ -505,7 +506,7 @@ class CJ4_FMC_RoutePage {
             let fpIndexes = [];
             let routeWaypoints = flightPlan.getEnRouteWaypoints(fpIndexes);
             for (let i = 0; i < routeWaypoints.length; i++) {
-                let prev = routeWaypoints[i - 1];
+                let prev = (i==0) ? lastDepartureWaypoint : routeWaypoints[i - 1]; // check with dep on first waypoint
                 let wp = routeWaypoints[i];
                 if (wp) {
                     let prevAirway = IntersectionInfo.GetCommonAirway(prev, wp);
