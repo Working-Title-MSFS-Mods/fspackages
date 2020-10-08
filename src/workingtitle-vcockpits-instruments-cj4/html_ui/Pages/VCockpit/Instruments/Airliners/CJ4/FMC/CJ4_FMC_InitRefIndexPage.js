@@ -715,16 +715,23 @@ class CJ4_FMC_InitRefIndexPage {
         let longestRunwayElevation = new Number(longestRunway.elevation * 3.28);
         let longestRunwayLengthFeet = new Number(longestRunwayLength * 3.28);
 
-        let wptCoordinatesAlt = new String(databaseWaypoint.infos.coordinates);
-        let wptIndex = wptCoordinatesAlt.indexOf("alt");
-        let wptCoordinates = wptCoordinatesAlt.substring(0, wptIndex);
+        let wptCoordinatesAlt = databaseWaypoint.infos.coordinates.toString();
+        let altIndex = wptCoordinatesAlt.indexOf("alt");
+        let latIndex = wptCoordinatesAlt.indexOf("lat");
+        let longIndex = wptCoordinatesAlt.indexOf("long");
+        let latNum = new Number(wptCoordinatesAlt.substring(latIndex + 4, longIndex - 2));
+        let latText = latNum < 0 ? "S " + Math.abs(latNum)
+            : "N " + latNum;
+        let lonNum = new Number(wptCoordinatesAlt.substring(longIndex + 5, altIndex - 2));
+        let lonText = lonNum < 0 ? "W " + Math.abs(lonNum)
+        : "E " + lonNum;
 
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "DATA BASE[blue]"],
             [" IDENT[blue]", "LONG RWY [blue]"],
             [airportIdent + " AIRPORT", Math.trunc(longestRunwayLengthFeet) + " FT"],
             [" ARP LOCATION[blue]", "MAG VAR[blue]"],
-            [wptCoordinates + "", "MV"],
+            [latText + "/" + lonText, "N/A"],
             [" NAME[blue]"],
             [databaseWaypoint.infos.name + ""],
             ["RUNWAY LENGTH[blue]", "ELEV[blue]"],
