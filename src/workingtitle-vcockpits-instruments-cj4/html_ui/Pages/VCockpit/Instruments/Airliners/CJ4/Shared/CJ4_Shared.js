@@ -3277,7 +3277,7 @@ class CJ4_PopupMenu_UPPER extends CJ4_PopupMenu_Handler {
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
                 this.addRadio("FMS TEXT", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
                 this.addRadio("CHECKLIST", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
-                this.addRadio("PASS BRIEF", this.textSize, null);
+                this.addRadio("PASS BRIEF", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
                 this.addRadio("SYSTEMS 1/2", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
             }
             this.endSection();
@@ -3377,28 +3377,7 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class CJ4_ChecklistContainer extends NavSystemElementContainer {
+class CJ4_Checklist_Container extends NavSystemElementContainer {
     constructor(_name, _root) {
         super(_name, _root, null);
         this.isVisible = undefined;
@@ -3483,7 +3462,6 @@ class CJ4_ChecklistContainer extends NavSystemElementContainer {
         }
     }
 }
-
 class CJ4_Checklist_Handler extends ChecklistMenu.Menu_Handler {
     constructor() {
         super(...arguments);
@@ -3700,6 +3678,172 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         }
         this.closeMenu();
         this.escapeCbk = (() => {this.showChecklist(_checklist);}).bind(this);
+        page.appendChild(sectionRoot);
+        page.appendChild(this.createEndDividerLine());
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    createEndDividerLine(){
+        let highlightElem1 = document.createElementNS(Avionics.SVG.NS, "line");
+        highlightElem1.setAttribute("x1", "75");
+        highlightElem1.setAttribute("y1", "140");
+        highlightElem1.setAttribute("x2", "427");
+        highlightElem1.setAttribute("y2", "140");
+        highlightElem1.setAttribute("stroke", "cyan");
+        highlightElem1.setAttribute("stroke-width", "2");
+        highlightElem1.setAttribute("stroke-dasharray", "4.95 3.1");
+        return highlightElem1;
+    }
+}
+
+class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
+    constructor(_name, _root) {
+        super(_name, _root, null);
+        this.isVisible = undefined;
+        this.dictionary = new Avionics.Dictionary();
+        this.otherMenusOpen = false;
+    }
+    init() {
+        super.init();
+        this.root = this.gps.getChildById(this.htmlElemId);
+        if (!this.root) {
+            console.log("Root component expected!");
+        }
+    }
+    onUpdate(_dTime) {
+        super.onUpdate(_dTime);
+        if (this.handler)
+            this.handler.onUpdate(_dTime);
+    }
+    show(_value) {
+        if (this.isVisible != _value) {
+            this.isVisible = _value;
+            this.root.setAttribute("visible", (_value) ? "true" : "false");
+
+            if(this.isVisible == true){
+                this.handler = new CJ4_PassengerBrief(this.root, this.dictionary);
+            }
+            else if(this.isVisible == false){
+                Utils.RemoveAllChildren(this.root);
+                this.handler = null;
+            }
+        }
+    }
+    onEvent(_event) {
+        super.onEvent(_event);
+        if (this.handler && this.handler.reactsOnEvent(_event)) {
+            switch (_event) {
+                case "Upr_DATA_PUSH":
+                case "Lwr_DATA_PUSH":
+                    if(!this.otherMenusOpen){
+                        this.handler.onActivate();
+                    }
+                    break;
+                case "Upr_DATA_DEC":
+                case "Lwr_DATA_DEC":
+                    if(!this.otherMenusOpen)
+                        this.handler.onDataDec();
+                    break;
+                case "Upr_DATA_INC":
+                case "Lwr_DATA_INC":
+                    if(!this.otherMenusOpen)
+                        this.handler.onDataInc();
+                    break;
+                case "Upr_MENU_ADV_DEC":
+                case "Lwr_MENU_ADV_DEC":
+                    if(!this.otherMenusOpen){
+                        this.handler.onMenuDec();
+                    }
+                    console.log("item num: " + this.handler.currentItemIndex);
+                    break;
+                case "Upr_MENU_ADV_INC":
+                case "Lwr_MENU_ADV_INC":
+                    if(!this.otherMenusOpen){
+                        this.handler.onMenuInc();
+                    }
+                    console.log("item num: " + this.handler.currentItemIndex);
+                    break;
+                case "Upr_Push_ESC":
+                case "Lwr_Push_ESC":
+                    if (!this.handler.isOnMainPage && !this.otherMenusOpen) {
+                        this.handler.escapeCbk();
+                    }
+                    break;
+            }
+        }
+    }
+}
+class CJ4_PassengerBrief_Handler extends PassengerBriefMenu.Menu_Handler {
+    constructor() {
+        super(...arguments);
+    }
+    reactsOnEvent(_event) {
+        switch (_event) {
+            case "Upr_DATA_PUSH":
+            case "Upr_DATA_DEC":
+            case "Upr_DATA_INC":
+            case "Upr_MENU_ADV_DEC":
+            case "Upr_MENU_ADV_INC":
+            case "Upr_Push_ESC":
+                return true;
+            case "Lwr_DATA_PUSH":
+            case "Lwr_DATA_DEC":
+            case "Lwr_DATA_INC":
+            case "Lwr_MENU_ADV_DEC":
+            case "Lwr_MENU_ADV_INC":
+            case "Lwr_Push_ESC":
+                return true;
+        }
+        return false;
+    }
+}
+class CJ4_PassengerBrief extends CJ4_PassengerBrief_Handler {
+    constructor(_root, _dictionary) {
+        super();
+        // Styling
+        this.titleSize = 15;
+        this.textSize = 13;
+        this.root = _root;
+        this.menuLeft = 75;
+        this.menuWidth = 350;
+        this.dictionary = _dictionary;
+
+        // Logic
+        this.showMainPage();
+    }
+    refreshPage() {
+        console.log("refresh");
+        if(this.currentMenu){
+            this.currentMenu();
+        }
+    }
+    showMainPage(_highlight = 0) {
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addBriefTitle("PASSENGER BRIEFING MENU", this.titleSize, 1.0);
+                this.addBriefTitle("", this.titleSize, 1.0);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addBriefItem("TAKEOFF (LONG)", this.textSize);
+                this.addBriefItem("TAKEOFF (SHORT)", this.textSize);
+                this.addBriefItem("LANDING", this.textSize);
+                this.addBriefItem("TURBULENCE", this.textSize);
+                this.addBriefItem("SEATBELT", this.textSize);
+                this.addBriefItem("PASSENGER SAFETY", this.textSize);
+                this.addBriefItem("OXYGEN MASK DEPLOYMENT", this.textSize);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = () => {};
+        this.highlight(_highlight);
         page.appendChild(sectionRoot);
         page.appendChild(this.createEndDividerLine());
         Utils.RemoveAllChildren(this.root);

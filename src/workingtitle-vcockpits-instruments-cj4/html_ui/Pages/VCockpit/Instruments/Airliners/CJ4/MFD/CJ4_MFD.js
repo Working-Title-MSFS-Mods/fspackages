@@ -7,6 +7,7 @@ class CJ4_MFD extends BaseAirliners {
         this.showFms = false;
         this.showGwx = false;
         this.showChecklist = false;
+        this.showPassengerBrief = false;
         this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
         this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
         this.mapNavigationSource = 0;
@@ -27,7 +28,8 @@ class CJ4_MFD extends BaseAirliners {
         this.map = new CJ4_MapContainer("Map", "Map");
         this.mapOverlay = new CJ4_MapOverlayContainer("MapInfos", "MapOverlay");
         this.fms = new CJ4_FMSContainer("Fms", "FMSInfos");
-        this.checklist = new CJ4_ChecklistContainer("Checklist", "Checklist");
+        this.checklist = new CJ4_Checklist_Container("Checklist", "Checklist");
+        this.passengerBrief = new CJ4_PassengerBrief_Container("PassengerBrief", "PassengerBrief");
         this.navBar = new CJ4_NavBarContainer("Nav", "NavBar");
         this.popup = new CJ4_PopupMenuContainer("Menu", "PopupMenu");
         this.addIndependentElementContainer(this.systems1);
@@ -38,6 +40,7 @@ class CJ4_MFD extends BaseAirliners {
         this.addIndependentElementContainer(this.navBar);
         this.addIndependentElementContainer(this.fms);
         this.addIndependentElementContainer(this.checklist);
+        this.addIndependentElementContainer(this.passengerBrief);
         this.addIndependentElementContainer(this.popup);
         this.modeChangeMask = this.getChildById("ModeChangeMask");
         this.maxUpdateBudget = 12;
@@ -100,16 +103,26 @@ class CJ4_MFD extends BaseAirliners {
                 this.fms.show(true);
                 this.checklist.show(false);
                 this.mapOverlay.setExtended(false);
+                this.passengerBrief.show(false);
             }
             else if (this.showChecklist) {
                 this.systems1.minimize(true);
                 this.fms.show(false);
                 this.checklist.show(true);
                 this.mapOverlay.setExtended(false);
+                this.passengerBrief.show(false);
+            }
+            else if (this.showPassengerBrief) {
+                this.systems1.minimize(true);
+                this.fms.show(false);
+                this.checklist.show(false);
+                this.mapOverlay.setExtended(false);
+                this.passengerBrief.show(true);
             }
             else {
                 this.fms.show(false);
                 this.checklist.show(false);
+                this.passengerBrief.show(false);
                 this.systems1.show(this.systemPage1);
                 this.mapOverlay.setExtended(false);
                 if (this.systemPage1 == CJ4_SystemPage.ENGINES) {
@@ -185,9 +198,11 @@ class CJ4_MFD extends BaseAirliners {
                 this.popup.setMode(CJ4_PopupMenu.UPPER);
                 if(this.popup.mode == CJ4_PopupMenu.UPPER){
                     this.checklist.otherMenusOpen = true;
+                    this.passengerBrief.otherMenusOpen = true;
                 }
                 else{
                     this.checklist.otherMenusOpen = false
+                    this.passengerBrief.otherMenusOpen = false;
                 }
                 break;
             case "Lwr_Push_LWR_MENU":
@@ -195,9 +210,11 @@ class CJ4_MFD extends BaseAirliners {
                 this.popup.setMode(CJ4_PopupMenu.LOWER);
                 if(this.popup.mode == CJ4_PopupMenu.LOWER){
                     this.checklist.otherMenusOpen = true;
+                    this.passengerBrief.otherMenusOpen = true;
                 }
                 else{
                     this.checklist.otherMenusOpen = false
+                    this.passengerBrief.otherMenusOpen = false;
                 }
                 break;
             case "Lwr_Push_CKLST_1":
@@ -206,6 +223,7 @@ class CJ4_MFD extends BaseAirliners {
                 break;
             case "Lwr_Push_ESC":
                 this.checklist.otherMenusOpen = false
+                this.passengerBrief.otherMenusOpen = false;
                 break;
         }
     }
@@ -277,21 +295,31 @@ class CJ4_MFD extends BaseAirliners {
             this.isExtended = true;
             this.showFms = false;
             this.showChecklist = false;
+            this.showPassengerBrief = false;
         }
         else if (sysMode == "FMS TEXT") {
             this.isExtended = false;
             this.showFms = true;
             this.showChecklist = false;
+            this.showPassengerBrief = false;
         }
-        else if (sysMode == "SYSTEMS") {
+        else if (sysMode == "SYSTEMS 1/2") {
             this.isExtended = false;
             this.showFms = false;
             this.showChecklist = false;
+            this.showPassengerBrief = false;
         }
         else if (sysMode == "CHECKLIST") {
             this.isExtended = false;
             this.showFms = false;
             this.showChecklist = true;
+            this.showPassengerBrief = false;
+        }
+        else if (sysMode == "PASS BRIEF") {
+            this.isExtended = false;
+            this.showFms = false;
+            this.showChecklist = false;
+            this.showPassengerBrief = true;
         }
         if (modeChanged)
             this.onModeChanged();
@@ -321,9 +349,10 @@ class CJ4_MFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.SYS_SRC, "FMS TEXT");
         else if (this.showChecklist)
             _dict.set(CJ4_PopupMenu_Key.SYS_SRC, "CHECKLIST");
+        else if (this.showPassengerBrief)
+            _dict.set(CJ4_PopupMenu_Key.SYS_SRC, "PASS BRIEF");
         else
-            _dict.set(CJ4_PopupMenu_Key.SYS_SRC, "SYSTEMS");
-            _dict.changed = false;
+            _dict.set(CJ4_PopupMenu_Key.SYS_SRC, "SYSTEMS 1/2");
     }
 }
 class CJ4_FMSContainer extends NavSystemElementContainer {
