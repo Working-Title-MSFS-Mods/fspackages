@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ValidationCache Version="1" SchemaVersion="97">
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Virtual Acoustics\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Triggers\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Switches\surface.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Switches\levers.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Switches\flight_control.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Switches\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\States\flow_states.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\States\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\States\aircraft.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Soundcaster Sessions\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\SoundBanks\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\SoundBanks\Asobo_CJ4_Extended.wwu" DateLow="1602138548" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\SoundBanks\aircrafts.wwu" DateLow="1600763411" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\SoundBanks\aircraft_ai.wwu" DateLow="1600763455" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Queries\Factory Queries.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Queries\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Presets\Factory Spatial Audio.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Presets\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Modulators\planes.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Modulators\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Mixing Sessions\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Master-Mixer Hierarchy\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Interactive Music Hierarchy\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Game Parameters\simvar.wwu" DateLow="1601023835" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Game Parameters\npc.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Game Parameters\gui.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Game Parameters\gplay.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Game Parameters\environment.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Game Parameters\engine.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Game Parameters\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Game Parameters\control_signal.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Game Parameters\_NOT_IN_GAME\Factory SoundSeed Air Game Syncs.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\FlightSim.wproj" DateLow="1600764511" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\FlightSim.Calcutt.wsettings" DateLow="1602140633" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Events\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\MyCompany_Simple_Aircraft.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\MyCompany_Gauge_Aircraft.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_DA62.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended.wwu" DateLow="1602140381" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\MyCompany_Simple_Aircraft_AI.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\MyCompany_Gauge_Aircraft_AI.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\reverb_roomverb.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\reverb_convolution.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\meter.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\flanger.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\eq.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\distortion.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\_NOT_IN_GAME\Factory McDSP Effects.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\_NOT_IN_GAME\Factory iZotope Singleband Distortion.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\_NOT_IN_GAME\Factory iZotope Multiband Distortion.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\_NOT_IN_GAME\Factory iZotope Hybrid Reverb Effects.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\_NOT_IN_GAME\Factory iZotope Filters.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\_NOT_IN_GAME\Factory iZotope Dynamics.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\_NOT_IN_GAME\Factory iZotope Delay.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\_NOT_IN_GAME\Factory iZotope Box Modeler.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\_NOT_IN_GAME\Factory Effects.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\_NOT_IN_GAME\Factory Convolution Reverb Effects.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\_NOT_IN_GAME\Factory Auro Headphone.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Effects\_NOT_IN_GAME\Factory Altiverb - Outdoor and More.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Dynamic Dialogue\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Conversion Settings\Factory Conversion Settings.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Conversion Settings\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Control Surface Sessions\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Audio Devices\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Attenuations\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Attenuations\aircraft.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\MyCompany_Simple_Aircraft.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\MyCompany_Gauge_Aircraft.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_DA62.wwu" DateLow="1600124465" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended.wwu" DateLow="1602140346" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\_Templates.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\_Template_Turboprop.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\_Template_Piston.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\_Template_Jet.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\_Template_Airliner.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\MyCompany_Simple_Aircraft_AI.wwu" DateLow="1600124465" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\MyCompany_Gauge_Aircraft_AI.wwu" DateLow="1600124465" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\DA62_SDK_AIRCRAFT.wwu" DateLow="1600124465" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\Asobo_DA62_AI.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\AIRCRAFT_AI.wwu" DateLow="1600124465" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Virtual Acoustics\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Triggers\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Switches\surface.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Switches\levers.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Switches\flight_control.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Switches\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\States\flow_states.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\States\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\States\aircraft.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Soundcaster Sessions\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\SoundBanks\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\SoundBanks\Asobo_CJ4_Extended.wwu" DateLow="1602138548" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Queries\Factory Queries.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Queries\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Presets\Factory Spatial Audio.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Presets\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Modulators\planes.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Modulators\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Mixing Sessions\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Master-Mixer Hierarchy\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Interactive Music Hierarchy\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Game Parameters\simvar.wwu" DateLow="1601023835" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Game Parameters\npc.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Game Parameters\gui.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Game Parameters\gplay.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Game Parameters\environment.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Game Parameters\engine.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Game Parameters\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Game Parameters\control_signal.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Game Parameters\_NOT_IN_GAME\Factory SoundSeed Air Game Syncs.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\FlightSim.wproj" DateLow="1600764511" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\FlightSim.Calcutt.wsettings" DateLow="1602153494" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Events\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended.wwu" DateLow="1602153494" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\reverb_roomverb.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\reverb_convolution.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\meter.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\flanger.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\eq.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\distortion.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\_NOT_IN_GAME\Factory McDSP Effects.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\_NOT_IN_GAME\Factory iZotope Singleband Distortion.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\_NOT_IN_GAME\Factory iZotope Multiband Distortion.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\_NOT_IN_GAME\Factory iZotope Hybrid Reverb Effects.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\_NOT_IN_GAME\Factory iZotope Filters.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\_NOT_IN_GAME\Factory iZotope Dynamics.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\_NOT_IN_GAME\Factory iZotope Delay.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\_NOT_IN_GAME\Factory iZotope Box Modeler.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\_NOT_IN_GAME\Factory Effects.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\_NOT_IN_GAME\Factory Convolution Reverb Effects.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\_NOT_IN_GAME\Factory Auro Headphone.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Effects\_NOT_IN_GAME\Factory Altiverb - Outdoor and More.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Dynamic Dialogue\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Conversion Settings\Factory Conversion Settings.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Conversion Settings\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Control Surface Sessions\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Audio Devices\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Attenuations\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Attenuations\aircraft.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Actor-Mixer Hierarchy\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended.wwu" DateLow="1602153494" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Virtual Acoustics\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Triggers\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Switches\surface.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Switches\levers.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Switches\flight_control.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Switches\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\States\flow_states.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\States\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\States\aircraft.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Soundcaster Sessions\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\SoundBanks\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\SoundBanks\CJ4_Extended.wwu" DateLow="1600126703" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\SoundBanks\Asobo_CJ4_Extended.wwu" DateLow="1600569157" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\SoundBanks\aircrafts.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\SoundBanks\aircraft_ai.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Queries\Factory Queries.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Queries\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Presets\Factory Spatial Audio.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Presets\Default Work Unit.wwu" DateLow="1595392198" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Modulators\planes.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Modulators\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Mixing Sessions\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Master-Mixer Hierarchy\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Interactive Music Hierarchy\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Game Parameters\simvar.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Game Parameters\npc.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Game Parameters\gui.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Game Parameters\gplay.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Game Parameters\environment.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Game Parameters\engine.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Game Parameters\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Game Parameters\control_signal.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Game Parameters\_NOT_IN_GAME\Factory SoundSeed Air Game Syncs.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\FlightSim.wproj" DateLow="1600421026" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\FlightSim.Calcutt.wsettings" DateLow="1600683523" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Events\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\MyCompany_Simple_Aircraft.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\MyCompany_Gauge_Aircraft.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\CJ4_Extended_CJ4.wwu" DateLow="1600124479" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_DA62.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended.wwu" DateLow="1600683523" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\MyCompany_Simple_Aircraft_AI.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\MyCompany_Gauge_Aircraft_AI.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\reverb_roomverb.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\reverb_convolution.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\meter.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\flanger.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\eq.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\distortion.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\_NOT_IN_GAME\Factory McDSP Effects.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\_NOT_IN_GAME\Factory iZotope Singleband Distortion.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\_NOT_IN_GAME\Factory iZotope Multiband Distortion.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\_NOT_IN_GAME\Factory iZotope Hybrid Reverb Effects.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\_NOT_IN_GAME\Factory iZotope Filters.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\_NOT_IN_GAME\Factory iZotope Dynamics.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\_NOT_IN_GAME\Factory iZotope Delay.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\_NOT_IN_GAME\Factory iZotope Box Modeler.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\_NOT_IN_GAME\Factory Effects.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\_NOT_IN_GAME\Factory Convolution Reverb Effects.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\_NOT_IN_GAME\Factory Auro Headphone.wwu" DateLow="1587891876" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Effects\_NOT_IN_GAME\Factory Altiverb - Outdoor and More.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Dynamic Dialogue\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Conversion Settings\Factory Conversion Settings.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Conversion Settings\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Control Surface Sessions\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Audio Devices\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Attenuations\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Attenuations\aircraft.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\Default Work Unit.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\MyCompany_Simple_Aircraft.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\MyCompany_Gauge_Aircraft.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\CJ4_Extended_CJ4.wwu" DateLow="1600124491" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_DA62.wwu" DateLow="1600124465" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended.wwu" DateLow="1600683472" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\_Templates.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\_Template_Turboprop.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\_Template_Piston.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\_Template_Jet.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\_Template_Airliner.wwu" DateLow="1595392180" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\MyCompany_Simple_Aircraft_AI.wwu" DateLow="1600124465" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\MyCompany_Gauge_Aircraft_AI.wwu" DateLow="1600124465" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\DA62_SDK_AIRCRAFT.wwu" DateLow="1600124465" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\Asobo_DA62_AI.wwu" DateLow="1591257826" DateHigh="0"/>
+	<ValidationCacheItem File="C:\MSFS SDK\Samples\WwiseSampleProject\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_AI\AIRCRAFT_AI.wwu" DateLow="1600124465" DateHigh="0"/>
+</ValidationCache>
