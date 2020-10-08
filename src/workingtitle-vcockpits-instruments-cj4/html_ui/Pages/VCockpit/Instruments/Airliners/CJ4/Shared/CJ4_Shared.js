@@ -3523,16 +3523,18 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         }
     }
     changeCurrentSelectionIndex(_delta){
+        // Checklist item scrolling
         if((this.currentItemIndex + _delta) >= 0 && (this.currentItemIndex + _delta < this.totalSectionItems)){
             this.currentItemIndex += _delta;
-            let bool = false;
+            let startAtLastPageItem = false;
 
+            // Handle page transition
             const newPage = Math.ceil((this.currentItemIndex + 1) / this.maximumItemsPerPage);
             if(newPage != this.currentPage && newPage >= 1){
-                if(newPage < this.currentPage) bool = true;
+                if(newPage < this.currentPage) startAtLastPageItem = true;
                 this.currentPage = newPage;
                 this.refreshPage();
-                if(bool) this.highlight(6);
+                if(startAtLastPageItem) this.highlight(6); // Starts highlight on last item of previous page
             }
 
         }
@@ -3638,6 +3640,7 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
             this.totalPages += 1;
             this.totalSectionItems += 1;
         }
+        // (this.totalPages - (_checklist.sections[_section_id].checklistItems.length / 7)).toFixed(2)) == 0.16
 
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
         page.setAttribute("id", "ViewBox");
