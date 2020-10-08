@@ -277,10 +277,9 @@ class CJ4_FMC_LegsPage {
                                 this._fmc.insertWaypoint(value, selectedWpIndex, () => {
                                     let isDirectTo = (i == 1 && this._currentPage == 1);
                                     if (isDirectTo) {
-                                        this._fmc.getOrSelectWaypointByIdent(value, (w) => {
-                                            this._fmc.activateDirectToWaypoint(w, () => {
-                                                this.resetAfterOp();
-                                            });
+                                        let wp = this._fmc.flightPlanManager.getWaypoint(selectedWpIndex);
+                                        this._fmc.activateDirectToWaypoint(wp, () => {
+                                            this.resetAfterOp();
                                         });
                                     } else
                                         this.resetAfterOp();

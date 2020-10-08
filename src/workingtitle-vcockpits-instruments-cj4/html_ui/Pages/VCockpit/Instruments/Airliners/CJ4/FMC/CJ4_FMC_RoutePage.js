@@ -343,7 +343,7 @@ class CJ4_FMC_RoutePage {
                                     if (!waypoint) {
                                         fmc.showErrorMessage("NOT IN DATABASE");
                                     }
-                                    CJ4_FMC_RoutePage.insertWaypointsAlongAirway(fmc, value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1, pendingAirway.name, (result) => {
+                                    CJ4_FMC_RoutePage.insertWaypointsAlongAirway(fmc, value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex(), pendingAirway.name, (result) => {
                                         if (result) {
                                             fmc.setMsg();
                                             CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
@@ -436,7 +436,7 @@ class CJ4_FMC_RoutePage {
     }
 
     static async insertWaypointsAlongAirway(fmc, lastWaypointIdent, index, airwayName, callback = EmptyCallback.Boolean) {
-        let referenceWaypoint = fmc.flightPlanManager.getWaypoint(index - 1);
+        let referenceWaypoint = fmc.flightPlanManager.getWaypoint(index);
         if (referenceWaypoint) {
             let infos = referenceWaypoint.infos;
             if (infos instanceof WayPointInfo) {
@@ -452,7 +452,6 @@ class CJ4_FMC_RoutePage {
                                 inc = -1;
                             }
 
-                            index -= 1;
                             let count = Math.abs(lastIndex - firstIndex);
                             for (let i = 1; i < count + 1; i++) { // 9 -> 6
                                 let asyncInsertWaypointByIcao = async (icao, idx) => {
@@ -461,7 +460,7 @@ class CJ4_FMC_RoutePage {
                                         fmc.flightPlanManager.addWaypoint(icao, idx, () => {
                                             console.log("icao:" + icao + " added");
                                             resolve();
-                                        }, false);
+                                        });
                                     });
                                 };
                                 let outOfSync = async () => {
