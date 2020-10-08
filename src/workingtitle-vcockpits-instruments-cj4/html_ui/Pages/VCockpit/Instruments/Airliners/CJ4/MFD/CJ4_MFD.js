@@ -368,12 +368,6 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
         this.previousWaypoint = undefined;
         this._flightPlanUpdateCounter = 0;
     }
-    static secondsTohhmm(seconds) {
-        let h = Math.floor(seconds / 3600);
-        seconds -= h * 3600;
-        let m = Math.ceil(seconds / 60);
-        return h.toFixed(0) + ":" + m.toFixed(0).padStart(2, "0");
-    }
     init() {
         super.init();
         this.root = this.gps.getChildById(this.htmlElemId);
@@ -407,7 +401,7 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
             let flightPlanManager = this.gps.currFlightPlanManager;
             if (flightPlanManager) {
                 this._flightPlanUpdateCounter++;
-                if (this._flightPlanUpdateCounter > 60) {
+                if (this._flightPlanUpdateCounter > 120) {
                     flightPlanManager.updateFlightPlan();
                     this._flightPlanUpdateCounter = 0;
                 }
@@ -445,24 +439,25 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                 // Set distances to go
                 const previousWaypointDistance = previousWaypoint && previousWaypoint.ident != flightPlanManager.getOrigin().ident ? Avionics.Utils.computeDistance(aircraftPosition, previousWaypoint.infos.coordinates).toFixed(1) : -1;
                 const activeWaypointDistance = activeWaypoint && activeWaypoint.ident != destination.ident ? Avionics.Utils.computeDistance(aircraftPosition, activeWaypoint.infos.coordinates).toFixed(1) : -1;
-                const nextWaypointDistance = activeWaypoint && nextWaypoint ? (activeWaypointDistance + Avionics.Utils.computeDistance(activeWaypoint.infos.coordinates, nextWaypoint.infos.coordinates)).toFixed(1) : -1;
-                let destinationDistance = activeWaypoint && activeWaypoint.ident != destination.ident ? activeWaypointDistance : 0;
-                for(let w = activeIndex + 1; w < FPWaypoints.length - 1; w++){
-                    destinationDistance += Avionics.Utils.computeDistance(FPWaypoints[w].infos.coordinates, FPWaypoints[w + 1].infos.coordinates);
+                const nextWaypointDistance = nextWaypoint && destination && nextWaypoint.ident != destination.ident && activeWaypoint ? (new Number(activeWaypointDistance) + new Number(Avionics.Utils.computeDistance(activeWaypoint.infos.coordinates, nextWaypoint.infos.coordinates))).toFixed(1) : -1;
+                let destinationDistance = new Number(Avionics.Utils.computeDistance(aircraftPosition, activeWaypoint.infos.coordinates));
+                for(let w = activeIndex; w < FPWaypoints.length - 1; w++){
+                    destinationDistance += new Number(Avionics.Utils.computeDistance(FPWaypoints[w].infos.coordinates, FPWaypoints[w + 1].infos.coordinates));
                 }
+                destinationDistance = destinationDistance.toFixed(1);
 
                 this._previousWaypointContainer
                     .querySelector(".cj4x-navigation-data-waypoint-distance")
-                    .textContent = previousWaypointDistance != -1 ? previousWaypointDistance : "---NM";
+                    .textContent = previousWaypointDistance != -1 ? previousWaypointDistance + "NM" : "---NM";
                 this._activeWaypointContainer
                     .querySelector(".cj4x-navigation-data-waypoint-distance")
-                    .textContent = activeWaypointDistance != -1 ? activeWaypointDistance : "---NM";
+                    .textContent = activeWaypointDistance != -1 ? activeWaypointDistance + "NM" : "---NM";
                 this._nextWaypointContainer
                     .querySelector(".cj4x-navigation-data-waypoint-distance")
-                    .textContent = nextWaypointDistance != -1 ? nextWaypointDistance : "---NM";
+                    .textContent = nextWaypointDistance != -1 ? nextWaypointDistance + "NM" : "---NM";
                 this._destinationWaypointContainer
                     .querySelector(".cj4x-navigation-data-waypoint-distance")
-                    .textContent = destinationDistance != 0 ? destinationDistance : "---NM";
+                    .textContent = destinationDistance != 0 ? destinationDistance + "NM" : "---NM";
 
                 // Set ETE
                 let activeWaypointETEValue = "-:--";
@@ -471,12 +466,12 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                 }
 
                 let nextWaypointETEValue = "-:--";
-                if(groundSpeed >= 50 && activeWaypointDistance > 0){
+                if(groundSpeed >= 50 && nextWaypointDistance > 0){
                     nextWaypointETEValue = new Date(this.calcETEseconds(nextWaypointDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
                 }
 
                 let destinationWaypointETEValue = "-:--";
-                if(groundSpeed >= 50 && activeWaypointDistance > 0){
+                if(groundSpeed >= 50 && destinationDistance > 0){
                     destinationWaypointETEValue = new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
                 }
 
@@ -494,10 +489,16 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
 
                 // Set ETA
                 let previousWaypointETAValue = "--:--";
-                if (previousWaypoint && (this.previousWaypoint == undefined || this.previousWaypoint.ident != previousWaypoint)) {
-                    const seconds = Number.parseInt(UTCTime);
-                    previousWaypointETAValue = Utils.SecondsToDisplayTime(seconds, true, false, false);
-                    this.previousWaypoint = previousWaypoint;
+                if (previousWaypoint && previousWaypoint.ident != flightPlanManager.getOrigin().ident) {
+                    if(this.previousWaypoint == undefined || this.previousWaypoint.ident != previousWaypoint.ident){
+                        const seconds = Number.parseInt(UTCTime);
+                        previousWaypointETAValue = Utils.SecondsToDisplayTime(seconds, true, false, false);
+                        this.previousWaypoint = previousWaypoint;
+
+                        this._previousWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-eta")
+                            .textContent = previousWaypointETAValue;
+                    }
                 }
 
                 let activeWaypointETAValue = "--:--";
@@ -521,11 +522,6 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                     destinationWaypointETAValue = time;
                 }
 
-
-                this._previousWaypointContainer
-                    .querySelector(".cj4x-navigation-data-waypoint-eta")
-                    .textContent = previousWaypointETAValue;
-
                 this._activeWaypointContainer
                     .querySelector(".cj4x-navigation-data-waypoint-eta")
                     .textContent = activeWaypointETAValue;
@@ -542,7 +538,7 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                 // Set expected fuel and gross weight
                 if(groundSpeed >= 50){
                     const fuelFlow = (SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour") + SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour")) / 2;
-                    const expectedFuelUsage = (fuelFlow * (this.calcETEseconds(totalDestinationDistance, groundSpeed) / 3600)).toFixed(0);
+                    const expectedFuelUsage = (fuelFlow * (this.calcETEseconds(destinationDistance, groundSpeed) / 3600)).toFixed(0);
                     const currentFuel = (SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds") * SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons")).toFixed(0);
                     const expectedFuelAtDestination = (currentFuel - expectedFuelUsage).toFixed(0) < 0 ? 0 : (currentFuel - expectedFuelUsage).toFixed(0);
                     const grossWeight = SimVar.GetSimVarValue("MAX GROSS WEIGHT", "pounds");
@@ -559,10 +555,14 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                     if(destination.ident == activeWaypoint.ident){
                         this._destinationWaypointContainer
                             .setAttribute("style", "color: magenta");
+                        this._activeWaypointContainer
+                            .setAttribute("style", "color: white");
                     }
                     else{
                         this._destinationWaypointContainer
                             .setAttribute("style", "color: white");
+                        this._activeWaypointContainer
+                            .setAttribute("style", "color: magenta");
                     }
                 }
             }
