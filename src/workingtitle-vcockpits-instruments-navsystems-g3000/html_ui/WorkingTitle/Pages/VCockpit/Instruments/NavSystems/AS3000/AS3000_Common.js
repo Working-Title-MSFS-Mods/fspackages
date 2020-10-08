@@ -44,6 +44,7 @@ class AS3000_MapElement extends MapInstrumentElement {
             });
         }
 		this.instrument.zoomRanges = AS3000_MapElement.ZOOM_RANGES_DEFAULT;
+        this.instrument.rotationHandler = this;
 		this.setHdgUp();
 		
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number", 0);	// set default map orientation (0 = hdg, 1 = trk, 2 = north)
@@ -157,7 +158,7 @@ class AS3000_MapElement extends MapInstrumentElement {
 		}
 		
 		if (this.orientation != orientation) {
-			switch (orientation % 3) {
+			switch (orientation) {
 			case 0:
 				this.setHdgUp();
 				break;
@@ -173,7 +174,6 @@ class AS3000_MapElement extends MapInstrumentElement {
 	}
 	
 	setHdgUp() {
-		this.instrument.rotationCallback = AS3000_MapElement.HDGUP_ROTATION_CALLBACK;
 		this.instrument.planeTrackedPosY = 0.667;
 		this.instrument.showRangeRing = false;
 		this.instrument.showRangeCompass = true;
@@ -181,7 +181,6 @@ class AS3000_MapElement extends MapInstrumentElement {
 	}
 	
 	setTrkUp() {
-		this.instrument.rotationCallback = AS3000_MapElement.TRKUP_ROTATION_CALLBACK;
 		this.instrument.planeTrackedPosY = 0.667;
 		this.instrument.showRangeRing = false;
 		this.instrument.showRangeCompass = true;
@@ -189,12 +188,19 @@ class AS3000_MapElement extends MapInstrumentElement {
 	}
 	
 	setNorthUp() {
-		this.instrument.rotationCallback = AS3000_MapElement.NORTHUP_ROTATION_CALLBACK;
 		this.instrument.planeTrackedPosY = 0.5;
 		this.instrument.showRangeRing = true;
 		this.instrument.showRangeCompass = false;
 		Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "NORTH UP");
 	}
+    
+    getRotation() {
+        switch (this.orientation) {
+            case 0: return -SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
+            case 1: return -SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+        }
+        return 0;
+    }
 	
 	updateSymbolVisibility() {
 		let dcltr = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID, "number");
@@ -257,10 +263,6 @@ class AS3000_MapElement extends MapInstrumentElement {
 AS3000_MapElement.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 25, 35, 50, 100, 150, 200, 250, 400, 500, 750, 1000];
 
 AS3000_MapElement.VARNAME_ORIENTATION_ROOT = "L:AS3000_Map_Orientation";
-
-AS3000_MapElement.HDGUP_ROTATION_CALLBACK = function (_map) {return -SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree")};
-AS3000_MapElement.TRKUP_ROTATION_CALLBACK = function (_map) {return -SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree")};
-AS3000_MapElement.NORTHUP_ROTATION_CALLBACK = function (_map) {return 0};
 
 AS3000_MapElement.VARNAME_SYNC = "L:AS3000_Map_Sync";
 AS3000_MapElement.VARNAME_SYNC_INITID = "L:AS3000_Map_Sync_InitID";

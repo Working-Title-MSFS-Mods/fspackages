@@ -109,7 +109,7 @@ class MapInstrument extends ISvgMapRootElement {
 		this.planeTrackedPosY = 0.5; // Y pos of plane when map is tracking the plane; 0.5 = center, 0 = top, 1 = bottom;
 		
 		this.rotation = 0; // current rotation of map, in degrees
-		this.rotationCallback = function (_map) {return 0}; // callback function that returns what the rotation of the map should be in degrees
+		this.rotationHandler = MapInstrument_DefaultRotationHandler.INSTANCE; // returns what the rotation of the map should be in degrees
 		
 		this.showRangeDisplay = MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT;
 		this.rangeDisplayBiasFactor = MapInstrument.RANGE_DISPLAY_BIAS_DEFAULT; // multiplied by the map range to give what the map's range display will show on the UI
@@ -518,7 +518,7 @@ class MapInstrument extends ISvgMapRootElement {
     }
     onBeforeMapRedraw() {
         if (this.eBingMode !== EBingMode.HORIZON) {
-			this.rotation = this.rotationCallback(this);
+			this.rotation = this.rotationHandler.getRotation();
             this.drawCounter++;
             this.drawCounter %= 100;
             this.npcAirplaneManager.update();
@@ -1602,6 +1602,14 @@ MapInstrument.AIRSPACE_RANGE_DEFAULT = Infinity;
 MapInstrument.ROAD_HIGHWAY_RANGE_DEFAULT = Infinity;
 MapInstrument.ROAD_TRUNK_RANGE_DEFAULT = Infinity;
 MapInstrument.ROAD_PRIMARY_RANGE_DEFAULT = Infinity;
+
+
+class MapInstrument_DefaultRotationHandler {
+    getRotation() {
+        return 0;
+    }
+}
+MapInstrument_DefaultRotationHandler.INSTANCE = new MapInstrument_DefaultRotationHandler();
 
 customElements.define("map-instrument", MapInstrument);
 checkAutoload();
