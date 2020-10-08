@@ -105,30 +105,10 @@ class CJ4_FMC_DepArrPage {
                     }
                 }
                 if (appendRow) {
-<<<<<<< HEAD
-                    if (rowIndex >= 0 && rowIndex < 5) {
-                        rows[2 * rowIndex] = ["", Avionics.Utils.formatRunway(runway.designation) + "[s-text]"];
-                        fmc.onRightInput[rowIndex] = () => {
-                            fmc.setMsg("Working...");
-                            if (fmc.flightPlanManager.getDepartureProcIndex() === -1) {
-                                fmc.setOriginRunwayIndex(index, () => {
-                                    fmc.setMsg();
-                                    CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, undefined);
-                                });
-                            }
-                            else {
-                                fmc.setRunwayIndex(index, () => {
-                                    fmc.setMsg();
-                                    CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, undefined);
-                                });
-                            }
-                        };
-=======
                     if (rowIndex === 5) {
                         pageIndex++;
                         rowIndex = 0;
                         runwayPages[pageIndex] = [];
->>>>>>> main
                     }
                     runwayPages[pageIndex][rowIndex] = {
                         text: Avionics.Utils.formatRunway(runway.designation) + "[s-text]",
@@ -162,12 +142,7 @@ class CJ4_FMC_DepArrPage {
                 fmc.setMsg("Working...");
                 fmc.setRunwayIndex(-1, () => {
                     fmc.setDepartureIndex(-1, () => {
-<<<<<<< HEAD
-                        fmc.setMsg();
-                        CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
-=======
                         CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, currentPage);
->>>>>>> main
                     });
                 });
             };
@@ -196,23 +171,10 @@ class CJ4_FMC_DepArrPage {
                 }
                 // distribute rows accross pages 
                 if (appendRow) {
-<<<<<<< HEAD
-                    if (rowIndex >= 0 && rowIndex < 5) {
-                        let ii = i;
-                        rows[2 * rowIndex][0] = departure.name + "[s-text]";
-                        fmc.onLeftInput[rowIndex] = () => {
-                            fmc.setMsg("Working...");
-                            fmc.setDepartureIndex(ii, () => {
-                                fmc.setMsg();
-                                CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
-                            });
-                        };
-=======
                     if (rowIndex === 5) {
                         pageIndex++;
                         rowIndex = 0;
                         departurePages[pageIndex] = [];
->>>>>>> main
                     }
                     departurePages[pageIndex][rowIndex] = {
                         text: departure.name + "[s-text]",
@@ -345,12 +307,7 @@ class CJ4_FMC_DepArrPage {
             fmc.onRightInput[0] = () => {
                 fmc.setMsg("Working...");
                 fmc.setApproachIndex(-1, () => {
-<<<<<<< HEAD
-                    fmc.setMsg();
-                    CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
-=======
                     CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
->>>>>>> main
                 });
             };
             rows[1] = ["", "TRANS [blue]"];
@@ -377,15 +334,8 @@ class CJ4_FMC_DepArrPage {
                         let name = transition.waypoints[0].infos.icao.substr(5).trim();
                         rows[2 * (i + 1)][1] = name;
                         fmc.onRightInput[i + 1] = () => {
-<<<<<<< HEAD
-                            fmc.setMsg("Working...");
-                            fmc.setApproachTransitionIndex(index, () => {
-                                fmc.setMsg();
-                                CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
-=======
                             fmc.setApproachTransitionIndex(transitionIndex, () => {
                                 CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
->>>>>>> main
                             });
                         };
                     }
@@ -417,23 +367,10 @@ class CJ4_FMC_DepArrPage {
                     }
                 }
                 if (appendRow) {
-<<<<<<< HEAD
-                    if (rowIndex >= 0 && rowIndex < 5) {
-                        let ii = i;
-                        rows[2 * rowIndex] = ["", Avionics.Utils.formatRunway(approach.name)];
-                        fmc.onRightInput[rowIndex] = () => {
-                            fmc.setMsg("Working...");
-                            fmc.setApproachIndex(ii, () => {
-                                fmc.setMsg();
-                                CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
-                            });
-                        };
-=======
                     if (rowIndex === 5) {
                         pageIndex++;
                         rowIndex = 0;
                         approachPages[pageIndex] = [];
->>>>>>> main
                     }
                     approachPages[pageIndex][rowIndex] = {
                         text: Avionics.Utils.formatRunway(approach.name).trim() + "[s-text]",
@@ -458,12 +395,7 @@ class CJ4_FMC_DepArrPage {
             fmc.onLeftInput[0] = () => {
                 fmc.setMsg("Working...");
                 fmc.setArrivalProcIndex(-1, () => {
-<<<<<<< HEAD
-                    fmc.setMsg();
-                    CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
-=======
                     CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
->>>>>>> main
                 });
             };
         }
@@ -492,23 +424,10 @@ class CJ4_FMC_DepArrPage {
                     }
                 }
                 if (appendRow) {
-<<<<<<< HEAD
-                    if (rowIndex >= 0 && rowIndex < 5) {
-                        let ii = i;
-                        rows[2 * rowIndex][0] = arrival.name;
-                        fmc.onLeftInput[rowIndex] = () => {
-                            fmc.setMsg("Working...");
-                            fmc.setArrivalProcIndex(ii, () => {
-                                fmc.setMsg();
-                                CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
-                            });
-                        };
-=======
                     if (rowIndex === 5) {
                         pageIndex++;
                         rowIndex = 0;
                         arrivalPages[pageIndex] = [];
->>>>>>> main
                     }
                     arrivalPages[pageIndex][rowIndex] = {
                         text: arrival.name + "[s-text]",
@@ -555,7 +474,7 @@ class CJ4_FMC_DepArrPage {
         modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
         fmc._templateRenderer.setTemplateRaw([
-            [" " + modStr + " " + destinationIdent + " ARRIVAL", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
+            [" " + modStr + " " + destinationIdent + " ARRIVAL[blue]", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
             [" STARS[blue]", "APPROACHES [blue]"],
             ...rows,
             ["-----------------------[blue]"],
