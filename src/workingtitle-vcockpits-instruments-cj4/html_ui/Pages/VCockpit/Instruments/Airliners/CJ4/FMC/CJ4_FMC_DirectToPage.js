@@ -33,20 +33,6 @@ class CJ4_FMC_DirectToPage {
         };
         let i = 0;
 
-        //Get total count of waypoints, including arrival and approach waypoints
-        let approachWaypointsCount = fmc.flightPlanManager.getApproachWaypoints().length;
-        let waypointsCount = fmc.flightPlanManager.getWaypointsCount() + approachWaypointsCount;
-        
-        //temporary
-        // console.log("idx:" + fmc.flightPlanManager.getActiveWaypointIndex());
-        // console.log("wpts:" + fmc.flightPlanManager.getWaypointsCount());
-        // console.log("app:" + approachWaypointsCount);
-        // console.log("arr:" + fmc.flightPlanManager.getArrivalWaypointsCount());
-        // console.log("tot:" + waypointsCount);
-        // console.log("appidx:" + fmc.flightPlanManager.getApproachIndex());
-        // console.log("app loaded?:" + fmc.flightPlanManager.isLoadedApproach());
-        // console.log("app active?:" + fmc.flightPlanManager.isActiveApproach());
-
         let waypoints = CJ4_FMC_DirectToPage.getAvailableWaypoints(fmc);
         while (i < waypoints.length && i + wptsListIndex < waypoints.length && i < iMax) {
             let waypoint = waypoints[i + wptsListIndex];
