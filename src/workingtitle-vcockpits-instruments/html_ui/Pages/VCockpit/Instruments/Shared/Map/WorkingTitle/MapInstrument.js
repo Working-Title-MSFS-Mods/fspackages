@@ -99,8 +99,6 @@ class MapInstrument extends ISvgMapRootElement {
         this.weatherHideGPS = false;
         this.isBushTrip = false;
 		
-		this._ranges = MapInstrument.ZOOM_RANGES_DEFAULT;
-		
 		// MOD START: new class variables
 		
 		this.overdrawFactor = MapInstrument.OVERDRAW_FACTOR_DEFAULT;
