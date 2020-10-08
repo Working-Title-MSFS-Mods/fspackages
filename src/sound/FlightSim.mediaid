@@ -1,0 +1,2673 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="MediaIDs" SchemaVersion="97">
+  <MediaIDInfo>
+    <MediaIDs>
+      <Language ID="135219">
+        <File Name="Auditorium.wav">
+          <WObject ID="{D4846814-C3F4-4F40-9A76-8B0025FDEED2}">
+            <MediaID ID="103650774" />
+            <Hash Platform="Windows" Value="462689551" />
+          </WObject>
+        </File>
+        <File Name="Car Interior.wav">
+          <WObject ID="{7625F8D6-E620-47D4-B844-A82C19CEB6AE}">
+            <MediaID ID="606914821" />
+            <Hash Platform="Windows" Value="1908353949" />
+          </WObject>
+        </File>
+        <File Name="Cavern.wav">
+          <WObject ID="{708A63DA-72DF-47A4-AE8E-1AB398F035D8}">
+            <MediaID ID="71612167" />
+            <Hash Platform="Windows" Value="581618391" />
+          </WObject>
+        </File>
+        <File Name="Church.wav">
+          <WObject ID="{576DC51E-8E05-4A63-889A-C10208ED7D54}">
+            <MediaID ID="810134382" />
+            <Hash Platform="Windows" Value="2184752823" />
+          </WObject>
+        </File>
+        <File Name="City Center.wav">
+          <WObject ID="{63F73444-446A-492A-9DE5-A5743D61554B}">
+            <MediaID ID="875305839" />
+            <Hash Platform="Windows" Value="4013052814" />
+          </WObject>
+        </File>
+        <File Name="City Streets.wav">
+          <WObject ID="{FEAAE5A1-A9A3-452A-90D1-6AA148AA3828}">
+            <MediaID ID="28968811" />
+            <Hash Platform="Windows" Value="2223488715" />
+          </WObject>
+        </File>
+        <File Name="Forest.wav">
+          <WObject ID="{A34F93CF-3CA4-4F62-8DBB-C9B60D6E58EF}">
+            <MediaID ID="191326383" />
+            <Hash Platform="Windows" Value="1818616575" />
+          </WObject>
+        </File>
+        <File Name="Medium Metal Room.wav">
+          <WObject ID="{F1DFE9B5-9333-4382-A167-BDD83A2A36FE}">
+            <MediaID ID="95168819" />
+            <Hash Platform="Windows" Value="1020320833" />
+          </WObject>
+        </File>
+        <File Name="Medium Wood Hall.wav">
+          <WObject ID="{CB8E33E3-5509-4FEC-80AC-456B0BB44FAC}">
+            <MediaID ID="1003161334" />
+            <Hash Platform="Windows" Value="1924039416" />
+          </WObject>
+        </File>
+        <File Name="Medium Wood Room.wav">
+          <WObject ID="{9ADF02FD-DD9B-4C59-8917-6E09B2ACD985}">
+            <MediaID ID="280502389" />
+            <Hash Platform="Windows" Value="4080000288" />
+          </WObject>
+        </File>
+        <File Name="Metallic Hall.wav">
+          <WObject ID="{20A5A0B9-114D-4676-86BC-18C77DB525F9}">
+            <MediaID ID="75421462" />
+            <Hash Platform="Windows" Value="2620506333" />
+          </WObject>
+        </File>
+        <File Name="Rock Wall.wav">
+          <WObject ID="{16DC2867-52CE-4852-A7EA-5DCFD83A3C95}">
+            <MediaID ID="873919185" />
+            <Hash Platform="Windows" Value="3746739019" />
+          </WObject>
+        </File>
+        <File Name="Small Metal Room.wav">
+          <WObject ID="{E2EBAF6C-65EE-4867-923B-3FDAFCBCB0B2}">
+            <MediaID ID="468134467" />
+            <Hash Platform="Windows" Value="2822887323" />
+          </WObject>
+        </File>
+        <File Name="Small Wood Room.wav">
+          <WObject ID="{1FF68362-3DCD-4F7D-8657-7B574D5C19EF}">
+            <MediaID ID="549794242" />
+            <Hash Platform="Windows" Value="2337579664" />
+          </WObject>
+        </File>
+      </Language>
+      <Language ID="462899">
+        <File Name="/boxmodel.wav">
+          <WObject ID="{1AFF01D0-DC31-41C1-A0EB-03E1359514D5}">
+            <MediaID ID="903989418" />
+            <Hash Platform="Windows" Value="718591495" />
+          </WObject>
+          <WObject ID="{E0DAFC91-04D8-41F9-90D3-D33081ABCAF0}">
+            <MediaID ID="459775696" />
+            <Hash Platform="Windows" Value="3992456269" />
+          </WObject>
+          <WObject ID="{C50692C8-65AF-4302-8169-4B1739A02088}">
+            <MediaID ID="965606001" />
+            <Hash Platform="Windows" Value="1250482423" />
+          </WObject>
+          <WObject ID="{2A054DA1-8524-432D-BB6C-0D0410B66AD6}">
+            <MediaID ID="823722508" />
+            <Hash Platform="Windows" Value="1263346805" />
+          </WObject>
+          <WObject ID="{5F4CD654-5CE2-442C-82D0-7AA520FCC0CB}">
+            <MediaID ID="161915251" />
+            <Hash Platform="Windows" Value="978104768" />
+          </WObject>
+          <WObject ID="{1455BF48-51B4-4887-A883-A259A888BEAD}">
+            <MediaID ID="298944769" />
+            <Hash Platform="Windows" Value="2924285316" />
+          </WObject>
+          <WObject ID="{0A4B2342-5182-48DE-8975-91940213D442}">
+            <MediaID ID="818534888" />
+            <Hash Platform="Windows" Value="1903182794" />
+          </WObject>
+          <WObject ID="{218C80FB-B7BD-4923-A6DC-D147DA9D643A}">
+            <MediaID ID="590155990" />
+            <Hash Platform="Windows" Value="2616759795" />
+          </WObject>
+          <WObject ID="{1B593321-7F63-4BC7-A61D-043284B2DE23}">
+            <MediaID ID="475887785" />
+            <Hash Platform="Windows" Value="3897375590" />
+          </WObject>
+          <WObject ID="{BE94D118-A130-4BF0-AB81-467C31EA57AD}">
+            <MediaID ID="335444097" />
+            <Hash Platform="Windows" Value="3767147045" />
+          </WObject>
+          <WObject ID="{D2569304-EE64-4CC6-AB7B-1D3ACCE1CFA7}">
+            <MediaID ID="211286948" />
+            <Hash Platform="Windows" Value="2236437079" />
+          </WObject>
+          <WObject ID="{2CB56BB7-790B-4F50-A4A2-99D3E5FC0506}">
+            <MediaID ID="711600818" />
+            <Hash Platform="Windows" Value="3209527353" />
+          </WObject>
+        </File>
+      </Language>
+      <Language ID="8323075">
+        <File Name="AE_DistantBuilding_MicsFar.wav">
+          <WObject ID="{8CF8C3E0-9350-4608-BE4B-B85308DE04DB}">
+            <MediaID ID="74039724" />
+            <Hash Platform="Windows" Value="1934245487" />
+          </WObject>
+          <WObject ID="{372CD829-DD97-4657-92AC-0F0A45F44D4E}">
+            <MediaID ID="105318537" />
+            <Hash Platform="Windows" Value="4218828647" />
+          </WObject>
+          <WObject ID="{23F37D72-CCD4-47A8-9230-91DF080B63EC}">
+            <MediaID ID="879285817" />
+            <Hash Platform="Windows" Value="54917770" />
+          </WObject>
+          <WObject ID="{C522245B-F956-4C3D-BEE6-13A60C46CFFD}">
+            <MediaID ID="879285817" />
+            <Hash Platform="Windows" Value="54917770" />
+          </WObject>
+          <WObject ID="{EB0EBCAD-3C47-4CBD-A911-79926C2BAFAE}">
+            <MediaID ID="105318537" />
+            <Hash Platform="Windows" Value="4218828647" />
+          </WObject>
+          <WObject ID="{9977BE6A-C5C4-4ED3-A72E-7B7842A086B7}">
+            <MediaID ID="879285817" />
+            <Hash Platform="Windows" Value="54917770" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Churches\AK Medium Church.wav">
+          <WObject ID="{947B2DEF-09DA-4546-9EDD-3BE75AB3C2B1}">
+            <MediaID ID="1010865616" />
+            <Hash Platform="Windows" Value="2932871278" />
+          </WObject>
+          <WObject ID="{D89E8FFC-F6B7-46CD-B475-25DE33104B93}">
+            <MediaID ID="1035327888" />
+            <Hash Platform="Windows" Value="2183146124" />
+          </WObject>
+          <WObject ID="{9C238E27-5F6F-49E3-A0B5-C2143DD1336B}">
+            <MediaID ID="659069709" />
+            <Hash Platform="Windows" Value="1028186101" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Churches\AK St-Katharinen.wav">
+          <WObject ID="{D5A61DB3-EE33-431A-BD34-2FF9611F6282}">
+            <MediaID ID="8071170" />
+            <Hash Platform="Windows" Value="1227582080" />
+          </WObject>
+          <WObject ID="{5314F988-340E-4631-B4BC-52FB22E4AD77}">
+            <MediaID ID="101091316" />
+            <Hash Platform="Windows" Value="2496666163" />
+          </WObject>
+          <WObject ID="{C5313782-BD0A-4C94-9B74-E9F268B84A87}">
+            <MediaID ID="535111108" />
+            <Hash Platform="Windows" Value="2762474965" />
+          </WObject>
+          <WObject ID="{CAF740FD-0DE5-4D73-8C7F-FAAB52665D18}">
+            <MediaID ID="99990637" />
+            <Hash Platform="Windows" Value="1396465950" />
+          </WObject>
+          <WObject ID="{E7B574A3-AD36-4D7A-BB0E-E25E3ED6C822}">
+            <MediaID ID="1005069350" />
+            <Hash Platform="Windows" Value="469958518" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Exteriors\AK Hamburg Harburger See.wav">
+          <WObject ID="{1523AA96-D5B1-462D-9619-F40F5BC1471B}">
+            <MediaID ID="612082619" />
+            <Hash Platform="Windows" Value="1088593370" />
+          </WObject>
+          <WObject ID="{E93B7651-0A28-4AAC-A86F-D3995CB3E07D}">
+            <MediaID ID="930622550" />
+            <Hash Platform="Windows" Value="1552754551" />
+          </WObject>
+          <WObject ID="{3F6FB504-8D95-4B23-9015-F1F87AF22F50}">
+            <MediaID ID="926581162" />
+            <Hash Platform="Windows" Value="12957168" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Exteriors\AK Hamburg Stadtpark 01.wav">
+          <WObject ID="{BF048F2A-BA09-46E4-A29F-E1150D014061}">
+            <MediaID ID="152920739" />
+            <Hash Platform="Windows" Value="2222888538" />
+          </WObject>
+          <WObject ID="{822FA9DA-7687-4794-90DA-AA3A8C91580A}">
+            <MediaID ID="1051291760" />
+            <Hash Platform="Windows" Value="4110631236" />
+          </WObject>
+          <WObject ID="{55105436-A217-4AC5-8F9D-C4DAB8A97557}">
+            <MediaID ID="584321413" />
+            <Hash Platform="Windows" Value="389635861" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Exteriors\AK Hamburg Stadtpark 02.wav">
+          <WObject ID="{97E580AC-488A-4296-964B-5B8B91C87A80}">
+            <MediaID ID="1002455080" />
+            <Hash Platform="Windows" Value="3520050207" />
+          </WObject>
+          <WObject ID="{ED2C8D5F-4C93-4527-9FB5-5AB0886DFE34}">
+            <MediaID ID="433739780" />
+            <Hash Platform="Windows" Value="243255810" />
+          </WObject>
+          <WObject ID="{20E26D41-8E0A-4B04-B5B3-340BB77A42C4}">
+            <MediaID ID="195840690" />
+            <Hash Platform="Windows" Value="2190696264" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Exteriors\AK Hamburg Volksdorfer Wald.wav">
+          <WObject ID="{D598937B-2ABE-4263-862F-4BE4C4E4DA67}">
+            <MediaID ID="13000251" />
+            <Hash Platform="Windows" Value="718430298" />
+          </WObject>
+          <WObject ID="{1AD06791-38BB-4CF8-B88E-E0F7A249317E}">
+            <MediaID ID="299482528" />
+            <Hash Platform="Windows" Value="530669509" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Halls\AK Berlin Stadtbad.wav">
+          <WObject ID="{BE26ADD0-4A3E-4342-8A3F-4AF02920A1A1}">
+            <MediaID ID="88530505" />
+            <Hash Platform="Windows" Value="2776494706" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Halls\AK Berlin Teldex.wav">
+          <WObject ID="{74A74A9F-7BBC-40A4-AE8F-AEFE26BF5747}">
+            <MediaID ID="1045271283" />
+            <Hash Platform="Windows" Value="1065898145" />
+          </WObject>
+          <WObject ID="{BEC683B7-F228-43CE-BFA0-8F641B9AA366}">
+            <MediaID ID="654850749" />
+            <Hash Platform="Windows" Value="4274195882" />
+          </WObject>
+          <WObject ID="{A8F0CB83-4005-44E4-9C2F-95052ED3CAA9}">
+            <MediaID ID="689379106" />
+            <Hash Platform="Windows" Value="3898756500" />
+          </WObject>
+          <WObject ID="{F790A942-06D7-4B0D-98CA-00192F55631F}">
+            <MediaID ID="733994131" />
+            <Hash Platform="Windows" Value="2289582704" />
+          </WObject>
+          <WObject ID="{BE2B50C1-670E-4C34-BF9B-0F68780E6780}">
+            <MediaID ID="162018685" />
+            <Hash Platform="Windows" Value="4254147190" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Halls\AK Brasilien Halle.wav">
+          <WObject ID="{DFA34AB6-25FF-4677-ADC1-8E4F112BA18E}">
+            <MediaID ID="609174262" />
+            <Hash Platform="Windows" Value="617383706" />
+          </WObject>
+          <WObject ID="{55A22F2C-DD1C-4B35-A865-6CA83DB573C6}">
+            <MediaID ID="417701482" />
+            <Hash Platform="Windows" Value="543991011" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Large Spaces\AK Hamburg Fabrik SCOUT.wav">
+          <WObject ID="{8776D08B-A0B5-448E-A09A-E355E3646440}">
+            <MediaID ID="765520479" />
+            <Hash Platform="Windows" Value="2573250807" />
+          </WObject>
+          <WObject ID="{1EC9BCD4-19BA-4AE0-BB05-D1AD66F9F72B}">
+            <MediaID ID="825862340" />
+            <Hash Platform="Windows" Value="862500418" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Large Spaces\AK Hamburg Fabrik.wav">
+          <WObject ID="{4AEBCBEE-DCE1-4E5A-879B-843712E0648C}">
+            <MediaID ID="734720825" />
+            <Hash Platform="Windows" Value="627606661" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Large Spaces\AK Hamburg Parkhaus.wav">
+          <WObject ID="{72804A69-D338-40C4-A3DF-CB9121E56309}">
+            <MediaID ID="785966780" />
+            <Hash Platform="Windows" Value="2869890718" />
+          </WObject>
+          <WObject ID="{F5643149-8089-46B4-81BE-A77E435F4A39}">
+            <MediaID ID="1010311290" />
+            <Hash Platform="Windows" Value="2706503177" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Large Spaces\AK Stair Way Hall.wav">
+          <WObject ID="{0A3DCE8C-790D-45FB-AA4A-D32C0AD8F146}">
+            <MediaID ID="304471122" />
+            <Hash Platform="Windows" Value="1151084952" />
+          </WObject>
+          <WObject ID="{8D8913CE-9343-49C7-B562-29C1A9944A27}">
+            <MediaID ID="811934407" />
+            <Hash Platform="Windows" Value="1992902493" />
+          </WObject>
+          <WObject ID="{68868578-9A15-49D1-9D7E-0B3F2AEC3A63}">
+            <MediaID ID="46969465" />
+            <Hash Platform="Windows" Value="890635881" />
+          </WObject>
+          <WObject ID="{4AB19057-35F9-4A73-A1F5-FED1EFF110D5}">
+            <MediaID ID="539027193" />
+            <Hash Platform="Windows" Value="3630735160" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Rooms\AK Blue Noise Room 01.wav">
+          <WObject ID="{E2405E23-5F0A-41D7-B854-DF78E534D101}">
+            <MediaID ID="358895007" />
+            <Hash Platform="Windows" Value="4133826604" />
+          </WObject>
+          <WObject ID="{4CDF023A-F100-4A7D-80A2-CB591F591EDC}">
+            <MediaID ID="477192351" />
+            <Hash Platform="Windows" Value="403793095" />
+          </WObject>
+          <WObject ID="{220EFEE1-7F13-4EA4-80D2-7E6E197BA77E}">
+            <MediaID ID="830379119" />
+            <Hash Platform="Windows" Value="1959330252" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Rooms\AK Blue Noise Room 02.wav">
+          <WObject ID="{7113FA76-290B-46C7-934E-FC3104C13403}">
+            <MediaID ID="828807711" />
+            <Hash Platform="Windows" Value="1087409790" />
+          </WObject>
+          <WObject ID="{35482B35-AD23-4C36-9863-2252DA794223}">
+            <MediaID ID="238341606" />
+            <Hash Platform="Windows" Value="2871347909" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Rooms\AK Blue Noise Room 03.wav">
+          <WObject ID="{507AD50D-8703-4CD8-880E-5C11D4E133E1}">
+            <MediaID ID="680452063" />
+            <Hash Platform="Windows" Value="2198965202" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Rooms\AK Hamburg Echo Chamber.wav">
+          <WObject ID="{EB7CAD97-6B2B-4742-97D5-9C7BFFFCB430}">
+            <MediaID ID="538281099" />
+            <Hash Platform="Windows" Value="688739431" />
+          </WObject>
+          <WObject ID="{1EC8D311-6031-4BD4-A538-EDD062C4AC92}">
+            <MediaID ID="185425063" />
+            <Hash Platform="Windows" Value="3792291949" />
+          </WObject>
+          <WObject ID="{21702E7B-FF1F-4F93-85D5-A60DAA1F4682}">
+            <MediaID ID="667537849" />
+            <Hash Platform="Windows" Value="433345176" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Rooms\AK Hamburg Karl Schneider Halle.wav">
+          <WObject ID="{E8DE3F46-8E2D-46D4-95BC-1E8E5673CEF9}">
+            <MediaID ID="634339357" />
+            <Hash Platform="Windows" Value="2290072650" />
+          </WObject>
+          <WObject ID="{6676DD52-CE82-48D0-8C11-8910933FEEFA}">
+            <MediaID ID="237532662" />
+            <Hash Platform="Windows" Value="296896110" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Rooms\AK Hamburg Pinguin Buro.wav">
+          <WObject ID="{3BE96017-02D3-40B6-AF9E-E89764DC3631}">
+            <MediaID ID="879974927" />
+            <Hash Platform="Windows" Value="3474274659" />
+          </WObject>
+        </File>
+        <File Name="AK_Factory_IR\Rooms\AK Luna Studio.wav">
+          <WObject ID="{F0214EF8-B9F1-4513-9BF0-2C17DB934FD5}">
+            <MediaID ID="765420741" />
+            <Hash Platform="Windows" Value="3283187034" />
+          </WObject>
+          <WObject ID="{F77C031B-A37D-4B46-90E5-F65781FC5369}">
+            <MediaID ID="1012937350" />
+            <Hash Platform="Windows" Value="3850533268" />
+          </WObject>
+          <WObject ID="{64942F62-D719-4DCE-92FC-3C040065DEF5}">
+            <MediaID ID="749103419" />
+            <Hash Platform="Windows" Value="3003587436" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\AroundWalls_Balloon_Close.wav">
+          <WObject ID="{3595E1E0-4049-47A2-AF4E-660C50E3C079}">
+            <MediaID ID="915288326" />
+            <Hash Platform="Windows" Value="2611530809" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\CaveEntrance_Balloon_Close.wav">
+          <WObject ID="{9519B6A1-D1C3-454B-AD5D-87BE7225F077}">
+            <MediaID ID="291411929" />
+            <Hash Platform="Windows" Value="3774511637" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\CliffAboveTown_Balloon_5m.wav">
+          <WObject ID="{EC878FD6-EFC6-498B-95E6-4274D27F33CB}">
+            <MediaID ID="660032956" />
+            <Hash Platform="Windows" Value="3361354101" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\CliffAndWall_Balloon_10m.wav">
+          <WObject ID="{7E1B0B66-8B93-45D2-97F0-8275694C8EF4}">
+            <MediaID ID="600158462" />
+            <Hash Platform="Windows" Value="1815351135" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\CliffAndWall_Toygun_10m.wav">
+          <WObject ID="{DB6064E1-F207-4091-9E4A-0A62B7E71BF6}">
+            <MediaID ID="1021665858" />
+            <Hash Platform="Windows" Value="3884878889" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\CloisterCenterOutside_Balloon_Close.wav">
+          <WObject ID="{2B03F7E1-A80F-4368-8372-8384B2C29CB5}">
+            <MediaID ID="239428438" />
+            <Hash Platform="Windows" Value="2430438317" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\FrontOfHugeWall_Balloon_Close.wav">
+          <WObject ID="{5DCF620A-453C-44B8-BD5E-C7A448214460}">
+            <MediaID ID="67970960" />
+            <Hash Platform="Windows" Value="1940293449" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\FrontOfWalls_Balloon_Close.wav">
+          <WObject ID="{E560AEBF-4203-4A14-AF6C-EA2CA5F5341D}">
+            <MediaID ID="394479133" />
+            <Hash Platform="Windows" Value="4049472750" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\HugePlace_Balloon_Close.wav">
+          <WObject ID="{5FE40149-E052-4BA5-84C6-C4B8E0725ADE}">
+            <MediaID ID="531614219" />
+            <Hash Platform="Windows" Value="590338886" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\InsideWell_Balloon_Close.wav">
+          <WObject ID="{D1957576-1567-48FD-A81C-095616D05EAC}">
+            <MediaID ID="254636992" />
+            <Hash Platform="Windows" Value="11244245" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\InsideWell_Toygun_Close.wav">
+          <WObject ID="{EEBE2E6E-09C8-4912-9BEA-2258458641BE}">
+            <MediaID ID="164350634" />
+            <Hash Platform="Windows" Value="488140908" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\NarrowStreet02_Balloon_Close.wav">
+          <WObject ID="{540751EB-2074-4FCC-8FAB-44EF4AFCC315}">
+            <MediaID ID="149239048" />
+            <Hash Platform="Windows" Value="3721838944" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\NarrowStreet_Balloon_5m.wav">
+          <WObject ID="{85B8B32C-B9C5-42D0-A676-8D22AA1C5F02}">
+            <MediaID ID="691392012" />
+            <Hash Platform="Windows" Value="312259728" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\PlaceSurrounded_Balloon_Close.wav">
+          <WObject ID="{D8D98919-C726-450F-88D6-B78723F8D6FB}">
+            <MediaID ID="450930949" />
+            <Hash Platform="Windows" Value="3505218208" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\SmallArch_Balloon_5m.wav">
+          <WObject ID="{6CC7BC9E-9B8C-4193-B7EB-1B0008C2308B}">
+            <MediaID ID="177907399" />
+            <Hash Platform="Windows" Value="1681413474" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\SmallPlace02_Balloon_Close.wav">
+          <WObject ID="{60C1F638-3A45-4FA9-9830-8796124005F1}">
+            <MediaID ID="188482823" />
+            <Hash Platform="Windows" Value="177392574" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\SmallPlace_Balloon_5m.wav">
+          <WObject ID="{6D014C4F-3794-4392-9558-59F030716577}">
+            <MediaID ID="207384505" />
+            <Hash Platform="Windows" Value="1761391060" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\SmallStreet_Balloon_5m.wav">
+          <WObject ID="{421AAD8B-8EA9-4D2D-9E1B-0DD3DBD21BCD}">
+            <MediaID ID="12051376" />
+            <Hash Platform="Windows" Value="1111588702" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\SmallStreet_Toygun_5m.wav">
+          <WObject ID="{FF6A2212-7D0A-49B2-9B30-E3B3D07A88E8}">
+            <MediaID ID="143630561" />
+            <Hash Platform="Windows" Value="856485276" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\UnderArch02_Balloon_Close.wav">
+          <WObject ID="{83D6518D-1387-45E0-9DF7-7B6BCF67A90F}">
+            <MediaID ID="112766616" />
+            <Hash Platform="Windows" Value="637208826" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\UnderArch_Balloon_Close.wav">
+          <WObject ID="{60E337C7-6162-4206-998C-2092119607DF}">
+            <MediaID ID="249218062" />
+            <Hash Platform="Windows" Value="323979541" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\UnderArchWithFountain_Balloon_Close.wav">
+          <WObject ID="{E20B41B7-7483-40E9-BAAA-6AAB5E05CB74}">
+            <MediaID ID="750116354" />
+            <Hash Platform="Windows" Value="2670114051" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\UnderCloister_Balloon_Close.wav">
+          <WObject ID="{2A0CA8A5-642A-4CAD-8EED-C06E7459CC90}">
+            <MediaID ID="755938796" />
+            <Hash Platform="Windows" Value="2336808265" />
+          </WObject>
+        </File>
+        <File Name="Asobo IR\Vineyard_Balloon_10m.wav">
+          <WObject ID="{FC0EB597-2904-466A-B994-0AAC92701328}">
+            <MediaID ID="523740878" />
+            <Hash Platform="Windows" Value="3339022751" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Domestic\AE_Attic_01.wav">
+          <WObject ID="{4FE9ABA0-B6FA-4502-9D66-ACE15EF6B7D3}">
+            <MediaID ID="1036982010" />
+            <Hash Platform="Windows" Value="794427782" />
+          </WObject>
+          <WObject ID="{F4501A89-CE4E-4EBD-AD69-36E6AEA0AC2E}">
+            <MediaID ID="1036982010" />
+            <Hash Platform="Windows" Value="794427782" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Domestic\AE_Attic_02.wav">
+          <WObject ID="{EB5F4C3B-B975-42D9-899E-CCDC0BE79C1D}">
+            <MediaID ID="784089586" />
+            <Hash Platform="Windows" Value="1313596349" />
+          </WObject>
+          <WObject ID="{4A9D4ABB-ECA4-438E-9C41-20D400BD3292}">
+            <MediaID ID="784089586" />
+            <Hash Platform="Windows" Value="1313596349" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Domestic\AE_Bathroom.wav">
+          <WObject ID="{E616F50D-2EDA-414E-B8CF-C78DBB027E83}">
+            <MediaID ID="335771894" />
+            <Hash Platform="Windows" Value="3482971364" />
+          </WObject>
+          <WObject ID="{BAA48491-35F0-4291-A1D8-9380217CE90D}">
+            <MediaID ID="335771894" />
+            <Hash Platform="Windows" Value="3482971364" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Domestic\AE_Bedroom.wav">
+          <WObject ID="{D06BDB9B-7405-44F0-BBA1-1DFBFAA54287}">
+            <MediaID ID="145606016" />
+            <Hash Platform="Windows" Value="1596082960" />
+          </WObject>
+          <WObject ID="{39541D49-3EB3-483D-B725-A9B6F4251BC6}">
+            <MediaID ID="145606016" />
+            <Hash Platform="Windows" Value="1596082960" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Domestic\AE_Classroom.wav">
+          <WObject ID="{0365AA17-19E2-4293-AB8E-CB73EB495C95}">
+            <MediaID ID="1065017051" />
+            <Hash Platform="Windows" Value="1204720798" />
+          </WObject>
+          <WObject ID="{1C66EDDA-FC4F-4823-A7E3-F50D1B0E67F8}">
+            <MediaID ID="1065017051" />
+            <Hash Platform="Windows" Value="1204720798" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Domestic\AE_Corridor.wav">
+          <WObject ID="{5ABE7E35-3980-4054-8AFB-EE0D05D2500A}">
+            <MediaID ID="176639550" />
+            <Hash Platform="Windows" Value="310190381" />
+          </WObject>
+          <WObject ID="{5110A1D7-9953-4DA9-8EA3-74A1095BC1B9}">
+            <MediaID ID="176639550" />
+            <Hash Platform="Windows" Value="310190381" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Domestic\AE_Hallway.wav">
+          <WObject ID="{2684A218-DFEB-42AC-858B-2596D653EA13}">
+            <MediaID ID="564240408" />
+            <Hash Platform="Windows" Value="1110643231" />
+          </WObject>
+          <WObject ID="{0B05BD80-D9C7-4494-844C-919BDA7A5BF1}">
+            <MediaID ID="564240408" />
+            <Hash Platform="Windows" Value="1110643231" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Domestic\AE_LivingRoom_01.wav">
+          <WObject ID="{698538E5-481E-4ADC-9664-14FCD6D2EB1C}">
+            <MediaID ID="1067972070" />
+            <Hash Platform="Windows" Value="3860287984" />
+          </WObject>
+          <WObject ID="{948D85A9-A8B5-4D2B-B178-1E209BE7F400}">
+            <MediaID ID="1067972070" />
+            <Hash Platform="Windows" Value="3860287984" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Domestic\AE_LivingRoom_02.wav">
+          <WObject ID="{D167275D-58EE-4751-AD68-99F1126750B7}">
+            <MediaID ID="704285525" />
+            <Hash Platform="Windows" Value="1729657960" />
+          </WObject>
+          <WObject ID="{5A7B6485-E087-4B05-A324-EDCD48E8061D}">
+            <MediaID ID="704285525" />
+            <Hash Platform="Windows" Value="1729657960" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Domestic\AE_SchoolHall.wav">
+          <WObject ID="{4897E56E-0827-4520-A18C-1CB88B925149}">
+            <MediaID ID="911481362" />
+            <Hash Platform="Windows" Value="1569357920" />
+          </WObject>
+          <WObject ID="{C6E99C24-52B7-4ADE-AE7B-3CC0A4FA9256}">
+            <MediaID ID="911481362" />
+            <Hash Platform="Windows" Value="1569357920" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Domestic\AE_Staircase.wav">
+          <WObject ID="{D4AE5DDF-8FBB-4A21-A3D0-9B1397794FED}">
+            <MediaID ID="766552006" />
+            <Hash Platform="Windows" Value="1508336632" />
+          </WObject>
+          <WObject ID="{B40005F2-C454-4EB4-BC11-0286CCA30343}">
+            <MediaID ID="766552006" />
+            <Hash Platform="Windows" Value="1508336632" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Misc\AE_FireDepartment.wav">
+          <WObject ID="{5195743B-5183-4A5C-8929-8CD5BEC0EA69}">
+            <MediaID ID="325701497" />
+            <Hash Platform="Windows" Value="2499324960" />
+          </WObject>
+          <WObject ID="{7A35A933-0DA2-4E18-888A-581A4E309154}">
+            <MediaID ID="325701497" />
+            <Hash Platform="Windows" Value="2499324960" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Alley\AE_AlleyIntimate.wav">
+          <WObject ID="{60FE1332-9D2F-4356-908E-B217FC095CFF}">
+            <MediaID ID="390698980" />
+            <Hash Platform="Windows" Value="4291768866" />
+          </WObject>
+          <WObject ID="{5D81E7C6-DC92-45AC-81D1-597D3615B24A}">
+            <MediaID ID="390698980" />
+            <Hash Platform="Windows" Value="4291768866" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Alley\AE_LongDeepAlley.wav">
+          <WObject ID="{0797768C-F19E-4982-9FAA-258A7EDB8504}">
+            <MediaID ID="608492997" />
+            <Hash Platform="Windows" Value="9714940" />
+          </WObject>
+          <WObject ID="{6891C3F5-3910-4D71-BCE2-09D91210E9DF}">
+            <MediaID ID="608492997" />
+            <Hash Platform="Windows" Value="9714940" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Alley\AE_NarrowShortAlley.wav">
+          <WObject ID="{97A51D93-4600-462A-AF15-3951DE84480C}">
+            <MediaID ID="702837951" />
+            <Hash Platform="Windows" Value="922730955" />
+          </WObject>
+          <WObject ID="{E37584F9-A4CA-49C0-A760-651E207D5951}">
+            <MediaID ID="702837951" />
+            <Hash Platform="Windows" Value="922730955" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Field\AE_DistantBuilding_MicsClose.wav">
+          <WObject ID="{C829FD76-DB16-49CD-BA05-E76C94C920F1}">
+            <MediaID ID="584028783" />
+            <Hash Platform="Windows" Value="181099302" />
+          </WObject>
+          <WObject ID="{CBE8A74C-4663-4EB4-B2B9-DFEFFC55721E}">
+            <MediaID ID="584028783" />
+            <Hash Platform="Windows" Value="181099302" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Field\AE_DistantBuilding_MicsFar.wav">
+          <WObject ID="{78F2EF96-A978-4992-8E74-2ED63EE41047}">
+            <MediaID ID="941961706" />
+            <Hash Platform="Windows" Value="680267073" />
+          </WObject>
+          <WObject ID="{AF8FC84E-07AF-4E3A-87BE-4854579C6ED0}">
+            <MediaID ID="577553829" />
+            <Hash Platform="Windows" Value="1059508620" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Forest\AE_ForestAuterlitz_BetweenTrees.wav">
+          <WObject ID="{1D048460-A7CA-456B-A603-B457754E2562}">
+            <MediaID ID="240375165" />
+            <Hash Platform="Windows" Value="4162591374" />
+          </WObject>
+          <WObject ID="{DE0A91AE-9963-4DED-987D-88FC16776C14}">
+            <MediaID ID="785542896" />
+            <Hash Platform="Windows" Value="2927197962" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Forest\AE_ForestAuterlitz_DenseClose.wav">
+          <WObject ID="{DE667F13-9710-43BA-AACF-9F3C0F5A8715}">
+            <MediaID ID="211457885" />
+            <Hash Platform="Windows" Value="228148998" />
+          </WObject>
+          <WObject ID="{CDA065EA-748A-47AE-8F5B-7D4B29F3A23E}">
+            <MediaID ID="211457885" />
+            <Hash Platform="Windows" Value="228148998" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Forest\AE_ForestAuterlitz_DenseFar.wav">
+          <WObject ID="{A28C96C6-5323-4407-8EA3-E2011B78F872}">
+            <MediaID ID="591795791" />
+            <Hash Platform="Windows" Value="3154197464" />
+          </WObject>
+          <WObject ID="{1A3482E3-66E4-4885-A098-186C5E2E7E2D}">
+            <MediaID ID="507160658" />
+            <Hash Platform="Windows" Value="1310703528" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Forest\AE_ForestAuterlitz_WideOpen.wav">
+          <WObject ID="{278F0ABD-58FC-459E-85F9-78F692749854}">
+            <MediaID ID="165680395" />
+            <Hash Platform="Windows" Value="4266190300" />
+          </WObject>
+          <WObject ID="{5DD365BC-4CD8-4AFD-B5BF-15061C611248}">
+            <MediaID ID="165680395" />
+            <Hash Platform="Windows" Value="4266190300" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_CloseEcho.wav">
+          <WObject ID="{2FBAC692-236B-45A5-BED6-B776C24B563A}">
+            <MediaID ID="906178887" />
+            <Hash Platform="Windows" Value="3450915359" />
+          </WObject>
+          <WObject ID="{842CC81F-10B1-46DD-84D3-240C98D3F2F0}">
+            <MediaID ID="906178887" />
+            <Hash Platform="Windows" Value="3450915359" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_ComplexDistantEcho.wav">
+          <WObject ID="{23587679-C54D-4878-B998-334181ED916C}">
+            <MediaID ID="538240800" />
+            <Hash Platform="Windows" Value="2244883784" />
+          </WObject>
+          <WObject ID="{0FF97EEE-61DA-4CD5-8F75-D8A6D0AE7C73}">
+            <MediaID ID="847080288" />
+            <Hash Platform="Windows" Value="3449029819" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_ComplexEcho.wav">
+          <WObject ID="{2DFDA45C-B47A-40DF-A01A-FE479B552372}">
+            <MediaID ID="726190852" />
+            <Hash Platform="Windows" Value="304412533" />
+          </WObject>
+          <WObject ID="{A49A0B75-ADE9-46C7-A675-62B1A8625539}">
+            <MediaID ID="726190852" />
+            <Hash Platform="Windows" Value="304412533" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_DistantEcho.wav">
+          <WObject ID="{027E1A87-6299-4196-9D95-1F7030619121}">
+            <MediaID ID="523956079" />
+            <Hash Platform="Windows" Value="2697302572" />
+          </WObject>
+          <WObject ID="{97A51EC9-F17A-41DE-9639-245B44C52A39}">
+            <MediaID ID="523956079" />
+            <Hash Platform="Windows" Value="2697302572" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_DistantSlaps.wav">
+          <WObject ID="{EDEAAA02-01D5-46B6-AD58-90351FBD5A21}">
+            <MediaID ID="448086141" />
+            <Hash Platform="Windows" Value="3760252406" />
+          </WObject>
+          <WObject ID="{E3F4F6F9-4F26-488A-B4BE-8483ACFBB97E}">
+            <MediaID ID="448086141" />
+            <Hash Platform="Windows" Value="3760252406" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_EquallySpacedEchoes.wav">
+          <WObject ID="{8B8AAC41-A32A-43F2-A384-1C4361988517}">
+            <MediaID ID="427082243" />
+            <Hash Platform="Windows" Value="1968785249" />
+          </WObject>
+          <WObject ID="{67950949-081C-4B3E-8559-6238C45CB56E}">
+            <MediaID ID="427082243" />
+            <Hash Platform="Windows" Value="1968785249" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_LongAndComplex.wav">
+          <WObject ID="{4587D099-672B-46FA-AC31-F6D8A8CD2EF3}">
+            <MediaID ID="364607082" />
+            <Hash Platform="Windows" Value="174616335" />
+          </WObject>
+          <WObject ID="{CE554E2D-D304-4F48-B1D0-C7AE73D4E16F}">
+            <MediaID ID="476012097" />
+            <Hash Platform="Windows" Value="1269158558" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_LongNoEchoes.wav">
+          <WObject ID="{6F9CBF77-70DC-4338-93FF-6324C3492DD6}">
+            <MediaID ID="92795693" />
+            <Hash Platform="Windows" Value="1534436213" />
+          </WObject>
+          <WObject ID="{611DC056-60DE-45A2-94DE-2D49FBF5BCFB}">
+            <MediaID ID="92795693" />
+            <Hash Platform="Windows" Value="1534436213" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_LongSixWideEchoes.wav">
+          <WObject ID="{E6684A0D-EF01-47B0-ACD1-250546D26940}">
+            <MediaID ID="593001367" />
+            <Hash Platform="Windows" Value="486984011" />
+          </WObject>
+          <WObject ID="{B8AF2380-13B3-4A00-96BD-DB2BACC55152}">
+            <MediaID ID="593001367" />
+            <Hash Platform="Windows" Value="486984011" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_LoudEcho.wav">
+          <WObject ID="{FAF8C3B4-EDC5-470B-8A45-65578EA8F12B}">
+            <MediaID ID="1037099072" />
+            <Hash Platform="Windows" Value="3305491954" />
+          </WObject>
+          <WObject ID="{7FEE22D5-8DDE-4D32-8334-EB3BE27109E5}">
+            <MediaID ID="1037099072" />
+            <Hash Platform="Windows" Value="3305491954" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_OpenShortTwoEchoes.wav">
+          <WObject ID="{E90A3FB9-A568-45D5-832A-DBEAC014F058}">
+            <MediaID ID="432605132" />
+            <Hash Platform="Windows" Value="174353415" />
+          </WObject>
+          <WObject ID="{D4D17F05-8D94-4D53-8D0E-C0503D7E49DF}">
+            <MediaID ID="432605132" />
+            <Hash Platform="Windows" Value="174353415" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_OpenThreeEchoes.wav">
+          <WObject ID="{F6DAFCBE-235C-4058-8670-A0047D9E92C2}">
+            <MediaID ID="803100439" />
+            <Hash Platform="Windows" Value="2010203879" />
+          </WObject>
+          <WObject ID="{38284454-BB53-4ED6-AF13-E72533690D26}">
+            <MediaID ID="803100439" />
+            <Hash Platform="Windows" Value="2010203879" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_PheeeewEcho_01.wav">
+          <WObject ID="{21077BCD-259C-46EF-B957-238C9C0A1C08}">
+            <MediaID ID="221434356" />
+            <Hash Platform="Windows" Value="304957374" />
+          </WObject>
+          <WObject ID="{6132AC69-F352-4AEE-978C-BAD82EA81A97}">
+            <MediaID ID="221434356" />
+            <Hash Platform="Windows" Value="304957374" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_PheeeewEcho_02.wav">
+          <WObject ID="{98DDD2ED-B859-4175-8F8F-857381C0AC2F}">
+            <MediaID ID="209885184" />
+            <Hash Platform="Windows" Value="1516156980" />
+          </WObject>
+          <WObject ID="{3836CBAE-B0BC-4C4F-B1F6-49C72B74ED48}">
+            <MediaID ID="209885184" />
+            <Hash Platform="Windows" Value="1516156980" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_SlapsEchoClose.wav">
+          <WObject ID="{ABC90D37-253F-40A4-AE85-22F9FB40BA49}">
+            <MediaID ID="17438495" />
+            <Hash Platform="Windows" Value="3343888977" />
+          </WObject>
+          <WObject ID="{19FAA381-C292-4C75-A057-CD1BA0FB7F71}">
+            <MediaID ID="17438495" />
+            <Hash Platform="Windows" Value="3343888977" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_SmoothIntimate.wav">
+          <WObject ID="{EDD814FB-180C-4751-95C1-12C25D08E6A2}">
+            <MediaID ID="1000175366" />
+            <Hash Platform="Windows" Value="2709842850" />
+          </WObject>
+          <WObject ID="{7D55369E-A2D0-48AC-A32F-09A2200AD208}">
+            <MediaID ID="1000175366" />
+            <Hash Platform="Windows" Value="2709842850" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_TwoFarBuildings.wav">
+          <WObject ID="{14598513-5AC2-4201-8C9D-FC781674B6B2}">
+            <MediaID ID="596456988" />
+            <Hash Platform="Windows" Value="3649905867" />
+          </WObject>
+          <WObject ID="{55F13B73-5C13-43DA-BACB-C30F64B06104}">
+            <MediaID ID="928800826" />
+            <Hash Platform="Windows" Value="463555138" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_WideEcho.wav">
+          <WObject ID="{81F0ECFF-BE0A-4550-AA1E-EA2EB2FFB080}">
+            <MediaID ID="784884765" />
+            <Hash Platform="Windows" Value="3019446716" />
+          </WObject>
+          <WObject ID="{4FF697DC-8D0B-4634-A1DA-0DC7788A7C69}">
+            <MediaID ID="784884765" />
+            <Hash Platform="Windows" Value="3019446716" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Street\AE_Street_WideWithCars.wav">
+          <WObject ID="{B08D7D55-8DD2-4C94-9347-6288FBA044F9}">
+            <MediaID ID="512867119" />
+            <Hash Platform="Windows" Value="3601351947" />
+          </WObject>
+          <WObject ID="{30B97752-D597-4EE8-B046-26D8D4E7D7C8}">
+            <MediaID ID="512867119" />
+            <Hash Platform="Windows" Value="3601351947" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Outdoor\Tunnel\AE_Tunnel.wav">
+          <WObject ID="{8DB8FDD3-EE88-4513-920B-1D65FAB465DC}">
+            <MediaID ID="569254388" />
+            <Hash Platform="Windows" Value="1485531586" />
+          </WObject>
+          <WObject ID="{7D8744C9-4E5F-499B-9260-95EE620BF26D}">
+            <MediaID ID="569254388" />
+            <Hash Platform="Windows" Value="1485531586" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Transport\AE_Beetle.wav">
+          <WObject ID="{A24F4E9E-BD7C-4100-AFA0-58BFA18C8FBE}">
+            <MediaID ID="629390471" />
+            <Hash Platform="Windows" Value="959060244" />
+          </WObject>
+          <WObject ID="{1674D796-9B0F-4EEC-97B0-916C8D8D8420}">
+            <MediaID ID="629390471" />
+            <Hash Platform="Windows" Value="959060244" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Transport\AE_Ford_TransitVanRear.wav">
+          <WObject ID="{2DD8FD21-A407-4CF0-A82C-6F6FDF6DA99D}">
+            <MediaID ID="13019291" />
+            <Hash Platform="Windows" Value="4186202326" />
+          </WObject>
+          <WObject ID="{934CAE6B-88C2-4D9A-A440-9B57503AECCB}">
+            <MediaID ID="13019291" />
+            <Hash Platform="Windows" Value="4186202326" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Transport\AE_Helicopter_Sikorski.wav">
+          <WObject ID="{1E009FB0-2062-4748-B96C-5DF22D425EBA}">
+            <MediaID ID="544985840" />
+            <Hash Platform="Windows" Value="2883847742" />
+          </WObject>
+          <WObject ID="{8F35578D-E26C-4939-8D27-492301A43DD1}">
+            <MediaID ID="544985840" />
+            <Hash Platform="Windows" Value="2883847742" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Transport\AE_Honda_Element.wav">
+          <WObject ID="{E418AD94-5883-44BD-8FC4-CDEAEBDDEB88}">
+            <MediaID ID="144661626" />
+            <Hash Platform="Windows" Value="3507911148" />
+          </WObject>
+          <WObject ID="{A151283A-1CF6-4714-B3BF-AE6E281F3E4F}">
+            <MediaID ID="144661626" />
+            <Hash Platform="Windows" Value="3507911148" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Transport\AE_Honda_ElementRear.wav">
+          <WObject ID="{B12341C9-6F96-42BE-A8AF-28EC5CCCB956}">
+            <MediaID ID="976877047" />
+            <Hash Platform="Windows" Value="2857583090" />
+          </WObject>
+          <WObject ID="{0898B161-6350-4971-876D-9A45DDA2B59F}">
+            <MediaID ID="976877047" />
+            <Hash Platform="Windows" Value="2857583090" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Transport\AE_Peugeot_PartnerBackClosed.wav">
+          <WObject ID="{6E98F0D6-FF7C-429C-AA49-2AD71673BB60}">
+            <MediaID ID="584011174" />
+            <Hash Platform="Windows" Value="3008884437" />
+          </WObject>
+          <WObject ID="{4B14A1B2-45A7-4C2A-B11A-F14F9135F5B4}">
+            <MediaID ID="584011174" />
+            <Hash Platform="Windows" Value="3008884437" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Transport\AE_Peugeot_PartnerFront.wav">
+          <WObject ID="{787BE913-8656-486F-8EA6-0480CF46CB3C}">
+            <MediaID ID="569393833" />
+            <Hash Platform="Windows" Value="837049919" />
+          </WObject>
+          <WObject ID="{1A5B4C94-914D-4D11-940C-C270A50DA102}">
+            <MediaID ID="569393833" />
+            <Hash Platform="Windows" Value="837049919" />
+          </WObject>
+        </File>
+        <File Name="AudioEase\Altiverb - Outdoor and More\Transport\AE_Train_BlueAngel.wav">
+          <WObject ID="{C839A949-273F-4666-9C9D-82A2229BF703}">
+            <MediaID ID="318125133" />
+            <Hash Platform="Windows" Value="938464521" />
+          </WObject>
+          <WObject ID="{110A7FC2-8B9E-4B72-89D4-4C5D5437E6A7}">
+            <MediaID ID="318125133" />
+            <Hash Platform="Windows" Value="938464521" />
+          </WObject>
+        </File>
+        <File Name="Boom\Field_Narrow_Small Hills and Forest\Field_Narrow_Small_Hills_and_Forest_30m.wav">
+          <WObject ID="{203E45D4-21B7-4CC9-8FAD-5E61CFAAA22D}">
+            <MediaID ID="644761846" />
+            <Hash Platform="Windows" Value="1548297779" />
+          </WObject>
+        </File>
+        <File Name="Boom\Field_Narrow_Small Hills and Forest\Field_Narrow_Small_Hills_and_Forest_50m.wav">
+          <WObject ID="{8C3AE152-752A-499E-ABBE-F08FD8BF4B99}">
+            <MediaID ID="293448020" />
+            <Hash Platform="Windows" Value="2235539016" />
+          </WObject>
+        </File>
+        <File Name="Boom\Field_Narrow_Small Hills_Mics in Forest\Field_Narrow_Small_Hills_Mics_in_Forest_30m.wav">
+          <WObject ID="{E5EACF65-5698-4054-AD60-FEDFAC64E9BC}">
+            <MediaID ID="491667833" />
+            <Hash Platform="Windows" Value="2012176531" />
+          </WObject>
+        </File>
+        <File Name="Boom\Field_Narrow_Small Hills_Mics in Forest\Field_Narrow_Small_Hills_Mics_in_Forest_50m.wav">
+          <WObject ID="{DBB4CD4E-03CE-442E-B63E-323449D3AC93}">
+            <MediaID ID="767698082" />
+            <Hash Platform="Windows" Value="120512559" />
+          </WObject>
+        </File>
+        <File Name="Boom\Field_Small_Holler with Forest\Field_Small_Holler_with_Forest_30m.wav">
+          <WObject ID="{9644831C-E0FD-47AD-9090-25F100EB8728}">
+            <MediaID ID="635621281" />
+            <Hash Platform="Windows" Value="733524404" />
+          </WObject>
+        </File>
+        <File Name="Boom\Field_Small_Holler with Forest\Field_Small_Holler_with_Forest_50m.wav">
+          <WObject ID="{2989064A-5BD9-4D4F-B6FE-7F489928C423}">
+            <MediaID ID="901517628" />
+            <Hash Platform="Windows" Value="3111312113" />
+          </WObject>
+        </File>
+        <File Name="Boom\Field_Surround by Trees\Field_Surround_by_Trees_100m.wav">
+          <WObject ID="{634BEB54-D195-44AB-BFCE-067A81893D87}">
+            <MediaID ID="23238618" />
+            <Hash Platform="Windows" Value="865322435" />
+          </WObject>
+        </File>
+        <File Name="Boom\Field_Surround by Trees\Field_Surround_by_Trees_10m.wav">
+          <WObject ID="{CD8D8752-BAD0-4E09-B6B4-50F14B24AF21}">
+            <MediaID ID="587145384" />
+            <Hash Platform="Windows" Value="1172772857" />
+          </WObject>
+        </File>
+        <File Name="Boom\Field_Surround by Trees\Field_Surround_by_Trees_30m.wav">
+          <WObject ID="{5F0A4434-F59D-4A5D-A5B3-8880BC8691A9}">
+            <MediaID ID="1013436644" />
+            <Hash Platform="Windows" Value="22049413" />
+          </WObject>
+        </File>
+        <File Name="Boom\Field_Surround by Trees\Field_Surround_by_Trees_50m.wav">
+          <WObject ID="{A820B8F1-E362-4ADE-82C9-AD0AD09185C4}">
+            <MediaID ID="414902848" />
+            <Hash Platform="Windows" Value="2149567287" />
+          </WObject>
+        </File>
+        <File Name="Boom\Field_Wide_Small Hills and Forest\Field_Wide_Small_Hills_and_Forest_100m.wav">
+          <WObject ID="{31BF9C03-47F9-43D8-957E-7840911B1568}">
+            <MediaID ID="101333142" />
+            <Hash Platform="Windows" Value="3067286090" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Crater_Inside\Forest_Crater_Inside_10m.wav">
+          <WObject ID="{7194382C-A318-430D-8E23-8F17348619FE}">
+            <MediaID ID="1036492651" />
+            <Hash Platform="Windows" Value="877437215" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Crater_Inside\Forest_Crater_Inside_30m.wav">
+          <WObject ID="{A11F9108-B9EE-4859-AE1B-45C55B24CAB4}">
+            <MediaID ID="101766005" />
+            <Hash Platform="Windows" Value="3444060888" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Crater_Inside\Forest_Crater_Inside_50m.wav">
+          <WObject ID="{2829989A-50ED-4C92-B674-72D900CC4194}">
+            <MediaID ID="192073342" />
+            <Hash Platform="Windows" Value="2533917274" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Crater_Outside\Forest_Crater_Outside_10m.wav">
+          <WObject ID="{63D1D355-5E19-4B88-B947-F750ED50EDFD}">
+            <MediaID ID="939755235" />
+            <Hash Platform="Windows" Value="3567596309" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Crater_Outside\Forest_Crater_Outside_15m.wav">
+          <WObject ID="{9D839D66-FD38-4E03-B26D-C098F09C01E9}">
+            <MediaID ID="812419751" />
+            <Hash Platform="Windows" Value="524579178" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Crater_Outside\Forest_Crater_Outside_40m.wav">
+          <WObject ID="{D7380070-7CD0-4B28-933D-2124568C677C}">
+            <MediaID ID="813063645" />
+            <Hash Platform="Windows" Value="3665043593" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Crater_Outside\Forest_Crater_Outside_80m.wav">
+          <WObject ID="{5C71F8C7-D70F-42CE-B6DF-9E3C6086C8D2}">
+            <MediaID ID="251294583" />
+            <Hash Platform="Windows" Value="968331420" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Hillside\Forest_Hillside_30m.wav">
+          <WObject ID="{39CB159E-C3BB-4108-8495-53F01D0D1B63}">
+            <MediaID ID="26575055" />
+            <Hash Platform="Windows" Value="2628913157" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Hillside\Forest_Hillside_50m.wav">
+          <WObject ID="{2C2C594A-4C60-416E-9AE8-9EE9FE3FBBB4}">
+            <MediaID ID="737683133" />
+            <Hash Platform="Windows" Value="2038348814" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Light_Small Hill\Forest_Light_Small_Hill_15m.wav">
+          <WObject ID="{3BA10F29-C305-45BA-A851-B7281E0DA015}">
+            <MediaID ID="893088469" />
+            <Hash Platform="Windows" Value="3683501929" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Light_Small Hill\Forest_Light_Small_Hill_20m.wav">
+          <WObject ID="{C3CF9CC2-41CA-42E8-9786-7556C146DD1F}">
+            <MediaID ID="149145033" />
+            <Hash Platform="Windows" Value="1707321565" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Light_Small Hill\Forest_Light_Small_Hill_5m.wav">
+          <WObject ID="{0FE43924-A6D6-4306-A78F-54DDF97CC059}">
+            <MediaID ID="493727715" />
+            <Hash Platform="Windows" Value="4219657171" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Plane\Forest_Plane_20m.wav">
+          <WObject ID="{2FE17409-AC20-407D-8A5B-19F5832E60A1}">
+            <MediaID ID="312158631" />
+            <Hash Platform="Windows" Value="2420425020" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Plane\Forest_Plane_4m.wav">
+          <WObject ID="{F2FA6A72-6AF9-49B0-B1B4-C2F9D20E835C}">
+            <MediaID ID="524879272" />
+            <Hash Platform="Windows" Value="2404782415" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Plane\Forest_Plane_5m.wav">
+          <WObject ID="{77FBADD0-BF5E-47DF-9F7E-69D5B97D1927}">
+            <MediaID ID="82154745" />
+            <Hash Platform="Windows" Value="3007491789" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Small Trees\Forest_Small_Trees_10m.wav">
+          <WObject ID="{52B04999-7331-46CF-BE9F-0E14DD4C7E72}">
+            <MediaID ID="715896192" />
+            <Hash Platform="Windows" Value="2783034850" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Small Trees\Forest_Small_Trees_20m.wav">
+          <WObject ID="{D8F30B32-89FA-4135-B78D-FE1FF268FFAC}">
+            <MediaID ID="94382736" />
+            <Hash Platform="Windows" Value="204654795" />
+          </WObject>
+        </File>
+        <File Name="Boom\Forest_Small Trees\Forest_Small_Trees_indirect_20m.wav">
+          <WObject ID="{B5C5AA72-6389-446E-8498-EFBF1483CB24}">
+            <MediaID ID="913772213" />
+            <Hash Platform="Windows" Value="2255446450" />
+          </WObject>
+        </File>
+        <File Name="Boom\Hills_Creek_Forest\Hills_Creek_Forest_100m.wav">
+          <WObject ID="{4BC07888-1097-4BB4-872D-C5FE48630870}">
+            <MediaID ID="146486299" />
+            <Hash Platform="Windows" Value="794989770" />
+          </WObject>
+        </File>
+        <File Name="Boom\Hills_Creek_Forest\Hills_Creek_Forest_30m.wav">
+          <WObject ID="{3EA6D0F0-1AC1-4C2F-9691-B31616181A4C}">
+            <MediaID ID="624203655" />
+            <Hash Platform="Windows" Value="843844959" />
+          </WObject>
+        </File>
+        <File Name="Boom\Hills_Hillside_Forest\Hills_Hillside_Forest_30m.wav">
+          <WObject ID="{6E0B8B5F-DB36-4839-9356-2076AA431340}">
+            <MediaID ID="910935158" />
+            <Hash Platform="Windows" Value="1418329890" />
+          </WObject>
+        </File>
+        <File Name="Boom\Hills_Hillside_Forest\Hills_Hillside_Forest_50m.wav">
+          <WObject ID="{F551ECDC-06CA-472E-8C39-A157C5D16BD7}">
+            <MediaID ID="826712915" />
+            <Hash Platform="Windows" Value="1591394530" />
+          </WObject>
+        </File>
+        <File Name="Boom\Hills_Light Forest_Valleys\Hills_Light_Forest_Valleys_30m.wav">
+          <WObject ID="{96470E6E-5935-4CAA-8499-E0304F0A08B2}">
+            <MediaID ID="10989908" />
+            <Hash Platform="Windows" Value="1297614420" />
+          </WObject>
+        </File>
+        <File Name="Boom\Hills_Light Forest_Valleys\Hills_Light_Forest_Valleys_50m.wav">
+          <WObject ID="{8421875F-27B1-4E37-9AC3-D299AB36449D}">
+            <MediaID ID="373956917" />
+            <Hash Platform="Windows" Value="1194785166" />
+          </WObject>
+        </File>
+        <File Name="Boom\Hills_Small and Close_Light Forest\Hills_Small_and_Close_Light_Forest_43m.wav">
+          <WObject ID="{2BB8EB76-8A00-42A4-9D74-E5211BEF3411}">
+            <MediaID ID="1056313272" />
+            <Hash Platform="Windows" Value="733486018" />
+          </WObject>
+        </File>
+        <File Name="Boom\Hills_Small Creek_Forest\Hills_Small_Creek_Forest_30m.wav">
+          <WObject ID="{6C17C802-4321-4CC7-91DE-7C882A076C8C}">
+            <MediaID ID="494491058" />
+            <Hash Platform="Windows" Value="542106077" />
+          </WObject>
+        </File>
+        <File Name="Boom\Hills_Small Creek_Forest\Hills_Small_Creek_Forest_50m.wav">
+          <WObject ID="{520EB5CE-AE71-423E-905E-1D298B1FB7D9}">
+            <MediaID ID="216334044" />
+            <Hash Platform="Windows" Value="3519774644" />
+          </WObject>
+        </File>
+        <File Name="Boom\Hills_Small_Light Forest\Hills_Small_Light_Forest_43m.wav">
+          <WObject ID="{02798ECF-2597-4918-AAE6-344CEBA42AF4}">
+            <MediaID ID="106147497" />
+            <Hash Platform="Windows" Value="2226376528" />
+          </WObject>
+        </File>
+        <File Name="Boom\Mountains_Field_Few Houses\Mountains_Field_Few_Houses_50m.wav">
+          <WObject ID="{0C1D8933-C2BA-44CC-8800-9BF10976F12C}">
+            <MediaID ID="191623223" />
+            <Hash Platform="Windows" Value="1709092959" />
+          </WObject>
+        </File>
+        <File Name="Boom\Urban_Few Houses\Urban_Few_Houses_100m.wav">
+          <WObject ID="{2739E612-5C5B-4736-A6B1-DC698BC7B3EE}">
+            <MediaID ID="840286119" />
+            <Hash Platform="Windows" Value="1806678782" />
+          </WObject>
+        </File>
+        <File Name="Boom\Urban_Few Houses\Urban_Few_Houses_10m.wav">
+          <WObject ID="{2A2A0A81-8C56-45CA-8A10-188D83018DC1}">
+            <MediaID ID="209647732" />
+            <Hash Platform="Windows" Value="3823316533" />
+          </WObject>
+        </File>
+        <File Name="Boom\Urban_Few Houses\Urban_Few_Houses_30m.wav">
+          <WObject ID="{076D09A2-C67A-4B09-9410-BFDED15A6D94}">
+            <MediaID ID="68922834" />
+            <Hash Platform="Windows" Value="628334636" />
+          </WObject>
+        </File>
+        <File Name="Boom\Urban_Few Houses\Urban_Few_Houses_50m.wav">
+          <WObject ID="{29129439-5635-4182-AB55-67EE7531366F}">
+            <MediaID ID="395420183" />
+            <Hash Platform="Windows" Value="2001684166" />
+          </WObject>
+        </File>
+        <File Name="Boom\Urban_Narrow Street\Urban_Narrow_Street_Open_Back_30m.wav">
+          <WObject ID="{3AD290DE-8B93-430D-B457-38F1919545D1}">
+            <MediaID ID="731842330" />
+            <Hash Platform="Windows" Value="3116614789" />
+          </WObject>
+        </File>
+        <File Name="Boom\Urban_Open Industrial Street\Urban_Open_Industrial_Street_100m.wav">
+          <WObject ID="{E44D0B1D-E728-4EA8-A9B3-9B8AD7D4D819}">
+            <MediaID ID="109298528" />
+            <Hash Platform="Windows" Value="1543449527" />
+          </WObject>
+        </File>
+        <File Name="Boom\Urban_Open Industrial Street\Urban_Open_Industrial_Street_10m.wav">
+          <WObject ID="{82DA2F2C-8F0D-4995-8C91-79555EA1D41A}">
+            <MediaID ID="459957698" />
+            <Hash Platform="Windows" Value="1923782220" />
+          </WObject>
+        </File>
+        <File Name="Boom\Urban_Open Industrial Street\Urban_Open_Industrial_Street_30m.wav">
+          <WObject ID="{07508920-2400-4FC2-8CC5-18EC5386A0B2}">
+            <MediaID ID="249198664" />
+            <Hash Platform="Windows" Value="3778432242" />
+          </WObject>
+        </File>
+        <File Name="Boom\Urban_Open Industrial Street\Urban_Open_Industrial_Street_50m.wav">
+          <WObject ID="{69F17C76-8711-4661-9C75-AF9C4420B4CC}">
+            <MediaID ID="454303154" />
+            <Hash Platform="Windows" Value="3364617098" />
+          </WObject>
+        </File>
+        <File Name="Boom\Urban_Two Houses\Urban_Two_Houses_100m.wav">
+          <WObject ID="{8D62D8F0-20C3-4AFC-8758-520D57AF3012}">
+            <MediaID ID="330969282" />
+            <Hash Platform="Windows" Value="945195838" />
+          </WObject>
+        </File>
+        <File Name="Boom\Urban_Two Houses\Urban_Two_Houses_30m.wav">
+          <WObject ID="{FC19B220-FD19-4A32-9C4A-C78E4528B5B4}">
+            <MediaID ID="931315700" />
+            <Hash Platform="Windows" Value="3277634983" />
+          </WObject>
+        </File>
+        <File Name="Boom\Urban_Two Houses\Urban_Two_Houses_50m.wav">
+          <WObject ID="{B23ACE80-E640-4033-9704-672499CBBBBF}">
+            <MediaID ID="123910804" />
+            <Hash Platform="Windows" Value="3094839112" />
+          </WObject>
+        </File>
+        <File Name="Boom\Valley_Creek_Forest\Valley_Creek_Forest_100m.wav">
+          <WObject ID="{8AEEB2BA-9C4B-4AC6-8879-E756405EC238}">
+            <MediaID ID="661506287" />
+            <Hash Platform="Windows" Value="3093568487" />
+          </WObject>
+        </File>
+        <File Name="Boom\Valley_Creek_Forest\Valley_Creek_Forest_30m.wav">
+          <WObject ID="{928FEAD9-D5E3-44BC-8EAC-CAC8E1EE8C3E}">
+            <MediaID ID="744236258" />
+            <Hash Platform="Windows" Value="2273561581" />
+          </WObject>
+        </File>
+        <File Name="Boom\Valley_Creek_Forest\Valley_Creek_Forest_50m.wav">
+          <WObject ID="{181FCBE5-D01F-44FD-971A-55DFA934C0DE}">
+            <MediaID ID="55043659" />
+            <Hash Platform="Windows" Value="3742289903" />
+          </WObject>
+        </File>
+        <File Name="Boom\Valley_Low_Forest\Valley_Low_Forest_30m.wav">
+          <WObject ID="{6F4A66A0-83F8-4236-B046-29363B9C5FA2}">
+            <MediaID ID="939366876" />
+            <Hash Platform="Windows" Value="489707265" />
+          </WObject>
+        </File>
+        <File Name="Boom\Valley_Low_Forest\Valley_Low_Forest_50m.wav">
+          <WObject ID="{7D423D98-50AA-4EDA-B490-1A004F260EED}">
+            <MediaID ID="672574874" />
+            <Hash Platform="Windows" Value="3785405712" />
+          </WObject>
+        </File>
+        <File Name="Boom\Valley_Slope\Valley_Slope_30m.wav">
+          <WObject ID="{47753FED-B0E6-44EF-94E7-5CB163080E86}">
+            <MediaID ID="517964780" />
+            <Hash Platform="Windows" Value="2540226554" />
+          </WObject>
+        </File>
+        <File Name="Boom\Valley_Slope\Valley_Slope_50m.wav">
+          <WObject ID="{E269C3D2-C839-43CC-8C8A-DA0FD4B058F6}">
+            <MediaID ID="616078150" />
+            <Hash Platform="Windows" Value="4236414588" />
+          </WObject>
+        </File>
+        <File Name="Boom\Valley_Slope\Valley_Slope_80m.wav">
+          <WObject ID="{FC6669AE-CE90-4E07-8FD8-9EA163D83A71}">
+            <MediaID ID="586124764" />
+            <Hash Platform="Windows" Value="1103066596" />
+          </WObject>
+        </File>
+        <File Name="Boom\Valley_Wide_Forest\Valley_Wide_Forest_30m.wav">
+          <WObject ID="{81869CB4-345A-48BE-8E4D-50105D8ECD0F}">
+            <MediaID ID="382757193" />
+            <Hash Platform="Windows" Value="3882261532" />
+          </WObject>
+        </File>
+        <File Name="Boom\Valley_Wide_Forest\Valley_Wide_Forest_50m.wav">
+          <WObject ID="{553BC132-9A1F-4F17-9433-B0E0E702940A}">
+            <MediaID ID="311150636" />
+            <Hash Platform="Windows" Value="1304377784" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 02\ConiferousDenseForest_InTheDephts02_01_Short.wav">
+          <WObject ID="{586A73E7-EC1A-4D83-B5BF-4BC6CA24C31C}">
+            <MediaID ID="766871968" />
+            <Hash Platform="Windows" Value="2951893651" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 02\ConiferousDenseForest_InTheDephts02_01_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{A5C7CFCE-A5ED-44CC-B9EA-F718FCB9820B}">
+            <MediaID ID="555194853" />
+            <Hash Platform="Windows" Value="1778049542" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 02\ConiferousDenseForest_InTheDephts02_02_Short.wav">
+          <WObject ID="{4B04AA7C-BF85-49CB-96FE-E447CDDA1D14}">
+            <MediaID ID="591667827" />
+            <Hash Platform="Windows" Value="2972597456" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 02\ConiferousDenseForest_InTheDephts02_02_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{6199EBFA-A57D-456C-8366-88F9D6096A6C}">
+            <MediaID ID="792122065" />
+            <Hash Platform="Windows" Value="126308857" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 02\ConiferousDenseForest_InTheDephts02_03_Medium.wav">
+          <WObject ID="{3824187D-8CAE-4F7F-922A-0BB812755009}">
+            <MediaID ID="1001199227" />
+            <Hash Platform="Windows" Value="1886373925" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 02\ConiferousDenseForest_InTheDephts02_03_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{2D904728-1AB7-46F0-9332-3DF9B68132A4}">
+            <MediaID ID="781990636" />
+            <Hash Platform="Windows" Value="973790767" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 02\ConiferousDenseForest_InTheDephts02_04_Medium.wav">
+          <WObject ID="{3A9E4EF1-0372-4735-B451-4EF2AAE07D6C}">
+            <MediaID ID="689738564" />
+            <Hash Platform="Windows" Value="436118214" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 02\ConiferousDenseForest_InTheDephts02_04_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{053BA26F-CBED-4B5C-8202-13A56CB0F6D4}">
+            <MediaID ID="949976877" />
+            <Hash Platform="Windows" Value="4225619938" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 02\ConiferousDenseForest_InTheDephts02_05_Medium.wav">
+          <WObject ID="{158BE759-59A9-4766-A980-A8940FF6D214}">
+            <MediaID ID="308851015" />
+            <Hash Platform="Windows" Value="751906975" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 02\ConiferousDenseForest_InTheDephts02_05_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{33AD65CF-B124-4340-8111-107B4FCE3252}">
+            <MediaID ID="413178383" />
+            <Hash Platform="Windows" Value="2704228136" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_01_Short.wav">
+          <WObject ID="{B57CA8E3-70AF-48F3-9404-DC85CE817004}">
+            <MediaID ID="494389511" />
+            <Hash Platform="Windows" Value="1205264524" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_01_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{11948C6B-818A-4CFB-86B5-AAB6DDE70FB0}">
+            <MediaID ID="79192466" />
+            <Hash Platform="Windows" Value="3538041553" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_02_Short.wav">
+          <WObject ID="{D2E29F8D-1A7E-407E-832D-15D898867BF3}">
+            <MediaID ID="541617190" />
+            <Hash Platform="Windows" Value="1256735882" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_02_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{6F571BB9-03FB-4EC2-8A6A-43CED7F43DFB}">
+            <MediaID ID="200742664" />
+            <Hash Platform="Windows" Value="2281016629" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_03_Medium.wav">
+          <WObject ID="{F21E96EA-B652-4B66-B682-B44A6A847EA7}">
+            <MediaID ID="471267295" />
+            <Hash Platform="Windows" Value="3033909438" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_03_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{62A9D8F7-F274-4E5C-B36B-CBBCF3635DED}">
+            <MediaID ID="278678347" />
+            <Hash Platform="Windows" Value="1561998039" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_04_Medium.wav">
+          <WObject ID="{CFBE577F-8C9C-4FAE-9A05-7EEDFE3DBCC9}">
+            <MediaID ID="691031480" />
+            <Hash Platform="Windows" Value="297527446" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_04_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{557DCC77-DD2A-43BB-A618-903A56860913}">
+            <MediaID ID="405093906" />
+            <Hash Platform="Windows" Value="3409719882" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_05_Medium.wav">
+          <WObject ID="{2D9A4FBB-112F-4CC7-8648-0869F5A37E32}">
+            <MediaID ID="115539823" />
+            <Hash Platform="Windows" Value="4030534331" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_05_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{944DEF42-ED6D-4290-8BEC-AFD1AF104505}">
+            <MediaID ID="115708203" />
+            <Hash Platform="Windows" Value="3386956988" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_06_Medium.wav">
+          <WObject ID="{EA935701-65FA-437F-9F20-EDC3D6A216FE}">
+            <MediaID ID="842578774" />
+            <Hash Platform="Windows" Value="972487715" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_06_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{B999AADB-727B-4CE0-A58D-5DCCE6293AEE}">
+            <MediaID ID="346343783" />
+            <Hash Platform="Windows" Value="2255354876" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_07_Medium.wav">
+          <WObject ID="{F659474F-AD64-431F-B316-FD94A394252E}">
+            <MediaID ID="654637093" />
+            <Hash Platform="Windows" Value="3036285890" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_07_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{D9510D08-5101-42C6-9948-1A4D376455D8}">
+            <MediaID ID="49734867" />
+            <Hash Platform="Windows" Value="4265623871" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_08_Medium.wav">
+          <WObject ID="{F2EB0C5C-6F73-4831-97C9-05DAB1090511}">
+            <MediaID ID="794548394" />
+            <Hash Platform="Windows" Value="2534759988" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_08_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{6AD867AC-C27E-4007-BF8A-51BA0578CF82}">
+            <MediaID ID="758212227" />
+            <Hash Platform="Windows" Value="408761303" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_09_Medium.wav">
+          <WObject ID="{BEE89C0B-0152-4E42-A042-3858DB3FD1BD}">
+            <MediaID ID="305952494" />
+            <Hash Platform="Windows" Value="2826352034" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_09_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{147E4B1D-F68D-4071-AE87-074C7D026B6B}">
+            <MediaID ID="745931185" />
+            <Hash Platform="Windows" Value="2042761023" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_10_Medium.wav">
+          <WObject ID="{709D4241-050E-4A14-8727-CE7B01463C82}">
+            <MediaID ID="185569260" />
+            <Hash Platform="Windows" Value="758194215" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_10_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{31A68F07-9F26-4529-9030-2CF8621543B3}">
+            <MediaID ID="795867398" />
+            <Hash Platform="Windows" Value="701493859" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_11_Medium.wav">
+          <WObject ID="{EA6581F6-5170-45C4-BEF9-26C36999A244}">
+            <MediaID ID="465132048" />
+            <Hash Platform="Windows" Value="3981168104" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths - 03\ConiferousDenseForest_InTheDephts03_11_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{DB66D164-1591-4B6A-9A09-C1F9A42FB7B5}">
+            <MediaID ID="87548907" />
+            <Hash Platform="Windows" Value="1204145819" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths\ConiferousDenseForest_InTheDepths_01_Short.wav">
+          <WObject ID="{FE787A2D-11FD-4248-A3AB-8836FA9A4CDD}">
+            <MediaID ID="665761767" />
+            <Hash Platform="Windows" Value="1358571367" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths\ConiferousDenseForest_InTheDepths_02_Medium.wav">
+          <WObject ID="{1959D44B-D3F1-4E4B-9F79-FBE614AD5152}">
+            <MediaID ID="723212190" />
+            <Hash Platform="Windows" Value="3953073183" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths\ConiferousDenseForest_InTheDepths_03_Medium.wav">
+          <WObject ID="{9D4D2405-C733-49E7-9934-36BECAEED9C2}">
+            <MediaID ID="3105755" />
+            <Hash Platform="Windows" Value="2524008192" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths\ConiferousDenseForest_InTheDepths_04_Long.wav">
+          <WObject ID="{AEB4F00D-009D-480B-86CD-4236019C5174}">
+            <MediaID ID="545374032" />
+            <Hash Platform="Windows" Value="3554456971" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths\ConiferousDenseForest_InTheDepths_05_Long.wav">
+          <WObject ID="{940B4604-C671-4AFE-A3FA-7DCB955BC9AD}">
+            <MediaID ID="103654947" />
+            <Hash Platform="Windows" Value="167268247" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Dense Forest, In the Depths\ConiferousDenseForest_InTheDepths_06_Huge.wav">
+          <WObject ID="{3AAF59E0-BDD2-431A-A35C-4944B4D05171}">
+            <MediaID ID="615781671" />
+            <Hash Platform="Windows" Value="984216483" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Forest, In the Center of 6 Meters Road inside the Forest\InTheCenterOf6MetersRoadInsideTheForest_01_Long.wav">
+          <WObject ID="{97E504F2-8729-4A8A-83E9-E6468B80C024}">
+            <MediaID ID="109628755" />
+            <Hash Platform="Windows" Value="2381739376" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Forest, In the Center of 6 Meters Road inside the Forest\InTheCenterOf6MetersRoadInsideTheForest_02_Long.wav">
+          <WObject ID="{7102A8F9-CF2F-4993-987C-DCE29CDB9FF5}">
+            <MediaID ID="884751602" />
+            <Hash Platform="Windows" Value="2187132630" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, Between two Trees, a lot of Early Reflections\ConiferousSparseForest_BetweenTwoTrees_ALotOfEarlyReflections_01_Short.wav">
+          <WObject ID="{7DA1F2CA-A819-4A14-BCDF-A0E23716AAE3}">
+            <MediaID ID="371852609" />
+            <Hash Platform="Windows" Value="1985355724" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, Between two Trees, a lot of Early Reflections\ConiferousSparseForest_BetweenTwoTrees_ALotOfEarlyReflections_02_Short.wav">
+          <WObject ID="{FFC5F037-9477-4ED5-A296-CD43E7628B58}">
+            <MediaID ID="732644075" />
+            <Hash Platform="Windows" Value="2640602771" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, Between two Trees, a lot of Early Reflections\ConiferousSparseForest_BetweenTwoTrees_ALotOfEarlyReflections_03_Medium.wav">
+          <WObject ID="{44B30DE0-9A8E-4A22-ABE2-1E1A534A2C88}">
+            <MediaID ID="564840753" />
+            <Hash Platform="Windows" Value="2502602090" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, Between two Trees, a lot of Early Reflections\ConiferousSparseForest_BetweenTwoTrees_ALotOfEarlyReflections_04_Long.wav">
+          <WObject ID="{8CFD95F7-8235-471B-B14C-B471BBF05C2C}">
+            <MediaID ID="567226282" />
+            <Hash Platform="Windows" Value="399555544" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, Between two Trees, a lot of Early Reflections\ConiferousSparseForest_BetweenTwoTrees_ALotOfEarlyReflections_05_Long.wav">
+          <WObject ID="{F05A81EB-7F92-4400-9F9D-5B4996C08700}">
+            <MediaID ID="684093298" />
+            <Hash Platform="Windows" Value="496961295" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, With Direct Signal\ConiferousSparseForest_InTheDepths_WithDirectSignal_1_10m_01_Short.wav">
+          <WObject ID="{8B58B607-3B27-4638-9DB0-91EB75E9F4E1}">
+            <MediaID ID="344456342" />
+            <Hash Platform="Windows" Value="924448543" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, With Direct Signal\ConiferousSparseForest_InTheDepths_WithDirectSignal_1_10m_02_Short.wav">
+          <WObject ID="{EC2AFBA2-420F-470F-9746-04678CA8BBA3}">
+            <MediaID ID="198133123" />
+            <Hash Platform="Windows" Value="2567930875" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, With Direct Signal\ConiferousSparseForest_InTheDepths_WithDirectSignal_1_10m_03_Short.wav">
+          <WObject ID="{2E213DD7-3E0C-48A3-A51E-F42FB6177D93}">
+            <MediaID ID="1036521856" />
+            <Hash Platform="Windows" Value="3082312686" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, With Direct Signal\ConiferousSparseForest_InTheDepths_WithDirectSignal_1_10m_04_Short.wav">
+          <WObject ID="{DAB4F4B5-FBCA-4ADE-BD1F-57B5264082A2}">
+            <MediaID ID="896507069" />
+            <Hash Platform="Windows" Value="8014400" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, With Direct Signal\ConiferousSparseForest_InTheDepths_WithDirectSignal_1_10m_05_Short.wav">
+          <WObject ID="{FDCA8824-56FA-499C-9E03-5FD04FB7E35A}">
+            <MediaID ID="473531682" />
+            <Hash Platform="Windows" Value="3397873585" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, With Direct Signal\ConiferousSparseForest_InTheDepths_WithDirectSignal_4_20m_Medium.wav">
+          <WObject ID="{6F76025F-0DA5-4575-8E6A-F9BEEF2A4A36}">
+            <MediaID ID="565427301" />
+            <Hash Platform="Windows" Value="734141884" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, With Direct Signal\ConiferousSparseForest_InTheDepths_WithDirectSignal_4_30m_Medium.wav">
+          <WObject ID="{714EE523-7D91-4CE3-8836-96A9EB985B6E}">
+            <MediaID ID="151856509" />
+            <Hash Platform="Windows" Value="2237566808" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, With Direct Signal\ConiferousSparseForest_InTheDepths_WithDirectSignal_5_20m_Medium.wav">
+          <WObject ID="{8B152399-05A7-4FFB-80D5-E1804F0E10B6}">
+            <MediaID ID="920504481" />
+            <Hash Platform="Windows" Value="3712555495" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, With Direct Signal\ConiferousSparseForest_InTheDepths_WithDirectSignal_5_30m_Medium.wav">
+          <WObject ID="{73DBEB6A-22CF-4F5A-AD8F-AB0FC632C6A3}">
+            <MediaID ID="943933798" />
+            <Hash Platform="Windows" Value="187852879" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, With Direct Signal\ConiferousSparseForest_InTheDepths_WithDirectSignal_8_50m_Long.wav">
+          <WObject ID="{8D1DC8CD-08DD-41DA-B6F4-A7C9B10730D7}">
+            <MediaID ID="774073072" />
+            <Hash Platform="Windows" Value="3988853664" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, With Direct Signal\ConiferousSparseForest_InTheDepths_WithDirectSignal_8_70m_Long.wav">
+          <WObject ID="{866FE14B-2DE7-426C-8B3E-6F17E60CA0A6}">
+            <MediaID ID="789326401" />
+            <Hash Platform="Windows" Value="294752762" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, Without Direct Signal\ConiferousSparseForest_InTheDepths_WithoutDirectSignal_1_15m_01_Short.wav">
+          <WObject ID="{11B079F6-B994-45DC-8A41-305F165C92BE}">
+            <MediaID ID="877068445" />
+            <Hash Platform="Windows" Value="3095938496" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, Without Direct Signal\ConiferousSparseForest_InTheDepths_WithoutDirectSignal_1_15m_02_Short.wav">
+          <WObject ID="{DDDDEC75-A83A-408F-B87B-6B655592A156}">
+            <MediaID ID="569325946" />
+            <Hash Platform="Windows" Value="3725031962" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, Without Direct Signal\ConiferousSparseForest_InTheDepths_WithoutDirectSignal_4_30m_Medium.wav">
+          <WObject ID="{B8E419B7-DEA8-44E7-97BB-A5CD30ACC9E0}">
+            <MediaID ID="356189918" />
+            <Hash Platform="Windows" Value="1226466338" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, Without Direct Signal\ConiferousSparseForest_InTheDepths_WithoutDirectSignal_4_40m_Medium.wav">
+          <WObject ID="{D10587CE-4C16-4DF5-8A21-1A9063BB534C}">
+            <MediaID ID="141929339" />
+            <Hash Platform="Windows" Value="3790001779" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, Without Direct Signal\ConiferousSparseForest_InTheDepths_WithoutDirectSignal_5_40m_Medium.wav">
+          <WObject ID="{26E37E8F-EB18-4E6D-BCD9-2A1A35A5B984}">
+            <MediaID ID="402912067" />
+            <Hash Platform="Windows" Value="941608309" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, Without Direct Signal\ConiferousSparseForest_InTheDepths_WithoutDirectSignal_5_70m_Medium.wav">
+          <WObject ID="{718035D7-A87D-44F2-BA27-D2F98B3496C6}">
+            <MediaID ID="818434108" />
+            <Hash Platform="Windows" Value="2078517505" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths, Without Direct Signal\ConiferousSparseForest_InTheDepths_WithoutDirectSignal_8_70m_Long.wav">
+          <WObject ID="{8F9C931C-FAD5-4786-BB6A-4BB609526C19}">
+            <MediaID ID="467384823" />
+            <Hash Platform="Windows" Value="455433255" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_01_Short.wav">
+          <WObject ID="{4148908A-9FFB-4FE3-91E3-27A404BBC52A}">
+            <MediaID ID="299123465" />
+            <Hash Platform="Windows" Value="348180147" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_01_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{82176DA5-1C1D-4723-BD74-A15100B72D3C}">
+            <MediaID ID="731238717" />
+            <Hash Platform="Windows" Value="762700341" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_02_Short.wav">
+          <WObject ID="{B0C123F0-6D3F-4286-928E-7F7B8CAD4C97}">
+            <MediaID ID="243076605" />
+            <Hash Platform="Windows" Value="3457213221" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_02_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{0A89D7A4-40B2-4F8F-8131-B71272CA32B2}">
+            <MediaID ID="260482021" />
+            <Hash Platform="Windows" Value="492096251" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_03_Short.wav">
+          <WObject ID="{6144397F-CF8A-425A-9989-037D9F914B8A}">
+            <MediaID ID="460829021" />
+            <Hash Platform="Windows" Value="3508805307" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_03_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{3541B56B-FFE5-434B-983D-24FB0FE8C056}">
+            <MediaID ID="522025724" />
+            <Hash Platform="Windows" Value="937642162" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_04_Short.wav">
+          <WObject ID="{55099EF7-4476-4660-8F32-6BBE0ADCA3B5}">
+            <MediaID ID="172520082" />
+            <Hash Platform="Windows" Value="4118328651" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_04_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{10AEBFC5-3D68-4941-9538-F9EF988851FF}">
+            <MediaID ID="163468500" />
+            <Hash Platform="Windows" Value="2744418109" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_05_Short.wav">
+          <WObject ID="{75B5EA8F-3818-4338-8665-DB0EBB87F66B}">
+            <MediaID ID="971088045" />
+            <Hash Platform="Windows" Value="32646783" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_05_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{3C5E1806-807D-4197-9D1F-EA330286003C}">
+            <MediaID ID="246795380" />
+            <Hash Platform="Windows" Value="583649806" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_06_Short.wav">
+          <WObject ID="{9777CB7A-D618-410E-8068-98FEF66738F9}">
+            <MediaID ID="430614917" />
+            <Hash Platform="Windows" Value="848371005" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_06_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{B92E4F29-48AA-42B1-9B16-57CB919EB72C}">
+            <MediaID ID="224403477" />
+            <Hash Platform="Windows" Value="805539419" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_07_Short.wav">
+          <WObject ID="{5E6B21AB-0226-44C4-8AB0-A9330F01BCAF}">
+            <MediaID ID="921535330" />
+            <Hash Platform="Windows" Value="2685157026" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_07_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{AFF5A242-C5B5-4012-A026-55AF81A32F9E}">
+            <MediaID ID="333740597" />
+            <Hash Platform="Windows" Value="3573908871" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_08_Short.wav">
+          <WObject ID="{11012CCA-8E28-438E-B27C-2D5F612C9FD2}">
+            <MediaID ID="876134462" />
+            <Hash Platform="Windows" Value="3846391388" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_08_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{51FAB7F6-59F9-4FAF-A542-D0EFD49D951B}">
+            <MediaID ID="851966990" />
+            <Hash Platform="Windows" Value="3625269845" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_09_Short.wav">
+          <WObject ID="{A3F2142F-F75A-4742-B601-BFEC2C3CAC0D}">
+            <MediaID ID="435619542" />
+            <Hash Platform="Windows" Value="3942546322" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_09_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{C3827CD5-DDE5-492A-90E5-6206B9C2CED5}">
+            <MediaID ID="757350948" />
+            <Hash Platform="Windows" Value="4014293241" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_10_Short.wav">
+          <WObject ID="{9FDC66E9-D74E-41AE-8F0C-2B1184C5F117}">
+            <MediaID ID="203881207" />
+            <Hash Platform="Windows" Value="2142187363" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_10_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{2384746C-FDE4-4CF1-85E4-205492734863}">
+            <MediaID ID="97315660" />
+            <Hash Platform="Windows" Value="3681497005" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_11_Short.wav">
+          <WObject ID="{AA03CE48-6D24-454D-B895-F5BE983DA7CD}">
+            <MediaID ID="480053369" />
+            <Hash Platform="Windows" Value="778254070" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_11_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{F9E83288-0FFC-4AC3-A7B9-4880D1C59AA2}">
+            <MediaID ID="101329219" />
+            <Hash Platform="Windows" Value="2575300217" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_12_Short.wav">
+          <WObject ID="{62079BDD-BA56-4A64-97B3-289DB455AA39}">
+            <MediaID ID="398563459" />
+            <Hash Platform="Windows" Value="1142809086" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_12_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{FE648434-662F-4BEB-82B8-B7B743231405}">
+            <MediaID ID="795817715" />
+            <Hash Platform="Windows" Value="1535732161" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_13_Short.wav">
+          <WObject ID="{4294C049-9356-4C5E-B3EE-3D4A68557875}">
+            <MediaID ID="422288235" />
+            <Hash Platform="Windows" Value="2867948495" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_13_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{6CB83BF7-90CC-466C-A535-0D9559CBAFFD}">
+            <MediaID ID="97037779" />
+            <Hash Platform="Windows" Value="4165480074" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_14_Short.wav">
+          <WObject ID="{39586F8D-F165-455B-B90C-39E23169B392}">
+            <MediaID ID="436299597" />
+            <Hash Platform="Windows" Value="1973730328" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_14_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{0514D41C-1A13-49DA-8116-1792A5029696}">
+            <MediaID ID="225560031" />
+            <Hash Platform="Windows" Value="1832836188" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_15_Short.wav">
+          <WObject ID="{C0689DE5-DEBB-4B66-A1C0-38FAD829AE06}">
+            <MediaID ID="942284727" />
+            <Hash Platform="Windows" Value="2765998723" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_15_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{DBDD5563-06CB-4240-A7FE-EB25F6F04A2A}">
+            <MediaID ID="368161812" />
+            <Hash Platform="Windows" Value="563558765" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_16_Short.wav">
+          <WObject ID="{47549BBF-0CBA-4CDA-A9E0-12EFE22A30B9}">
+            <MediaID ID="5870578" />
+            <Hash Platform="Windows" Value="885670391" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_16_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{8B86EF31-9C88-4AFF-8EDA-A9641FAD3358}">
+            <MediaID ID="213317740" />
+            <Hash Platform="Windows" Value="597463142" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_17_Medium.wav">
+          <WObject ID="{A4A02667-79FB-40AE-BA9F-A2D4DED990FC}">
+            <MediaID ID="84992842" />
+            <Hash Platform="Windows" Value="966782905" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_17_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{0DB6AC26-E696-4827-A203-13B4366FB8DD}">
+            <MediaID ID="82640349" />
+            <Hash Platform="Windows" Value="565058672" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_18_Medium.wav">
+          <WObject ID="{6BAA7ADC-579E-49FF-9F81-815F54B5D854}">
+            <MediaID ID="952854063" />
+            <Hash Platform="Windows" Value="337453213" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_18_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{72837312-51EA-4EFD-BB48-358451AE0646}">
+            <MediaID ID="300534293" />
+            <Hash Platform="Windows" Value="3097540603" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_19_Medium.wav">
+          <WObject ID="{8E0A230B-B070-443A-9839-867A6DE6F44F}">
+            <MediaID ID="189735518" />
+            <Hash Platform="Windows" Value="684391883" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_19_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{5F524332-3126-4F54-A2FF-40FA131D4A71}">
+            <MediaID ID="83395665" />
+            <Hash Platform="Windows" Value="2134172986" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_20_Medium.wav">
+          <WObject ID="{F199212D-5AF2-480E-AB6E-87F4C5D78FC6}">
+            <MediaID ID="116751741" />
+            <Hash Platform="Windows" Value="4290670875" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_20_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{60D5747C-3AC3-4CE2-94C6-BACCEC2724E8}">
+            <MediaID ID="104714336" />
+            <Hash Platform="Windows" Value="266814947" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_21_Medium.wav">
+          <WObject ID="{AC5EC187-AAF3-479E-8374-358714B7BEAC}">
+            <MediaID ID="264465981" />
+            <Hash Platform="Windows" Value="3998373380" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_21_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{75720A14-A52D-47F6-B9F9-7CA44671BFB1}">
+            <MediaID ID="796971056" />
+            <Hash Platform="Windows" Value="2601057184" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_22_Medium.wav">
+          <WObject ID="{0DBA3C73-576B-4027-A9F1-05818EA3EDD1}">
+            <MediaID ID="125305055" />
+            <Hash Platform="Windows" Value="2665486376" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_22_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{A9D0FE09-F1E1-41E0-828D-EC953158440C}">
+            <MediaID ID="99326667" />
+            <Hash Platform="Windows" Value="2524476264" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_23_Medium.wav">
+          <WObject ID="{6EF7959B-77AA-412E-88CD-3054FFDBB519}">
+            <MediaID ID="127753911" />
+            <Hash Platform="Windows" Value="2792608789" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_23_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{ABC183FB-8266-43E3-BAD3-7BAFDED2D732}">
+            <MediaID ID="756333060" />
+            <Hash Platform="Windows" Value="782410249" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_24_Medium.wav">
+          <WObject ID="{79A3A8AE-B20F-4EBD-9CFC-6F1678C32F9A}">
+            <MediaID ID="196169258" />
+            <Hash Platform="Windows" Value="2469215470" />
+          </WObject>
+        </File>
+        <File Name="Forest\Coniferous Sparse Forest, In the Depths\ConiferousSparseForest_InTheDepths_24_Medium_WithoutEarlyReflections.wav">
+          <WObject ID="{58E94136-6C0B-4009-AA0C-F671C08BCF04}">
+            <MediaID ID="765225889" />
+            <Hash Platform="Windows" Value="3291408561" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, Glade Big\MixedForest_GladeBig_01_Short.wav">
+          <WObject ID="{AE0BBFD9-3E2B-4132-85EF-E053EA6DE6CB}">
+            <MediaID ID="802444233" />
+            <Hash Platform="Windows" Value="1197528714" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, Glade Big\MixedForest_GladeBig_02_Medium.wav">
+          <WObject ID="{0F7BB2EA-DB03-4188-B9C5-0F630C7C16FD}">
+            <MediaID ID="216485997" />
+            <Hash Platform="Windows" Value="2918157093" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, Glade Big\MixedForest_GladeBig_03_Medium.wav">
+          <WObject ID="{140FD9C5-7488-45E0-A6B2-BA4567E8ED22}">
+            <MediaID ID="319665677" />
+            <Hash Platform="Windows" Value="171453024" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, Glade Big\MixedForest_GladeBig_04_Medium.wav">
+          <WObject ID="{F553CD9A-8F54-45A4-A2D3-BAF991CDF258}">
+            <MediaID ID="700026372" />
+            <Hash Platform="Windows" Value="3437965484" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, Glade Big\MixedForest_GladeBig_05_Medium.wav">
+          <WObject ID="{41594751-E62E-4A93-8FFC-C64634AAB988}">
+            <MediaID ID="926476355" />
+            <Hash Platform="Windows" Value="4019329471" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, Glade Big\MixedForest_GladeBig_06_Medium.wav">
+          <WObject ID="{1512C2EC-F691-45D7-B100-A8AE7012F0DA}">
+            <MediaID ID="42990395" />
+            <Hash Platform="Windows" Value="2768187269" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, Glade Big\MixedForest_GladeBig_07_Medium.wav">
+          <WObject ID="{8E9746BD-0784-4AAD-AEAF-0825F8774777}">
+            <MediaID ID="339201834" />
+            <Hash Platform="Windows" Value="4180575645" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, Glade Big\MixedForest_GladeBig_08_Long_Echo.wav">
+          <WObject ID="{B3741F86-A27A-48EC-89E8-15691F8D2A08}">
+            <MediaID ID="865391259" />
+            <Hash Platform="Windows" Value="1371033562" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, Glade Small\MixedForest_GladeSmall_01_Medium.wav">
+          <WObject ID="{7F18B019-D20A-4CBC-9EAB-A1C73A5681CF}">
+            <MediaID ID="728439548" />
+            <Hash Platform="Windows" Value="2677403547" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, Glade Small\MixedForest_GladeSmall_02_Medium.wav">
+          <WObject ID="{F550EBC4-F20D-47A7-B3DB-68B2845E7FA5}">
+            <MediaID ID="723517274" />
+            <Hash Platform="Windows" Value="3169486215" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, Glade Small\MixedForest_GladeSmall_03_Medium.wav">
+          <WObject ID="{93A3A515-B2A1-4D7D-9167-D613CB1C66E0}">
+            <MediaID ID="106181241" />
+            <Hash Platform="Windows" Value="4192947688" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, Glade Small\MixedForest_GladeSmall_04_Medium.wav">
+          <WObject ID="{60DBCE95-E599-43BE-9511-43C00A61EFD6}">
+            <MediaID ID="403466443" />
+            <Hash Platform="Windows" Value="1623241973" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, In the Depths, Deciduous and Coniferous - 02\MixedForest_InTheDepths02_01_Short.wav">
+          <WObject ID="{152D34EE-AE70-4FE7-864E-BDE03FB81E03}">
+            <MediaID ID="926422035" />
+            <Hash Platform="Windows" Value="2314683442" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, In the Depths, Deciduous and Coniferous - 02\MixedForest_InTheDepths02_01_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{59C40143-2EFC-41F0-B66E-031CB8D5A60E}">
+            <MediaID ID="980633487" />
+            <Hash Platform="Windows" Value="2477249851" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, In the Depths, Deciduous and Coniferous - 02\MixedForest_InTheDepths02_02_Short.wav">
+          <WObject ID="{A4050E9D-6110-4BCA-9CDE-8850EEC739D9}">
+            <MediaID ID="215847718" />
+            <Hash Platform="Windows" Value="2318635799" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, In the Depths, Deciduous and Coniferous - 02\MixedForest_InTheDepths02_02_Short_WithoutEarlyReflections.wav">
+          <WObject ID="{07F040EE-C821-44C3-BFEE-C0726B226FCE}">
+            <MediaID ID="222733110" />
+            <Hash Platform="Windows" Value="3513706288" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, In the Depths, Deciduous and Coniferous\MixedForest_InTheDepths_01_Short.wav">
+          <WObject ID="{A641029C-685F-4985-8723-9EF598B3317B}">
+            <MediaID ID="825792293" />
+            <Hash Platform="Windows" Value="2232008336" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, In the Depths, Deciduous and Coniferous\MixedForest_InTheDepths_02_Medium.wav">
+          <WObject ID="{1BC0943A-C4EF-4AF2-80DE-32EA98D4FE93}">
+            <MediaID ID="745801896" />
+            <Hash Platform="Windows" Value="2799168015" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, In the Depths, Deciduous and Coniferous\MixedForest_InTheDepths_03_Long.wav">
+          <WObject ID="{42D10FA2-C589-43B4-BDDB-0A8580B8B2CD}">
+            <MediaID ID="757921327" />
+            <Hash Platform="Windows" Value="4095036005" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, In the Depths, Deciduous and Coniferous\MixedForest_InTheDepths_04_Huge_Echo.wav">
+          <WObject ID="{9823EBF9-8001-4000-AA21-909FA26605C1}">
+            <MediaID ID="797504176" />
+            <Hash Platform="Windows" Value="3807513000" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, On the Top of the Hill\MixedForest_OnTheTopOfTheHill_01_Short.wav">
+          <WObject ID="{4C3D60D3-054A-4D33-9B5C-588747572BC5}">
+            <MediaID ID="133637288" />
+            <Hash Platform="Windows" Value="2154231047" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, On the Top of the Hill\MixedForest_OnTheTopOfTheHill_02_Medium.wav">
+          <WObject ID="{0EEE1245-0C46-4D02-B6BE-18857B5D3FA7}">
+            <MediaID ID="45870919" />
+            <Hash Platform="Windows" Value="3902738559" />
+          </WObject>
+        </File>
+        <File Name="Forest\Mixed Forest, On the Top of the Hill\MixedForest_OnTheTopOfTheHill_03_Long_Echo.wav">
+          <WObject ID="{0DA29084-6BDE-477B-BC7D-0382D2327978}">
+            <MediaID ID="14104254" />
+            <Hash Platform="Windows" Value="2558861022" />
+          </WObject>
+        </File>
+        <File Name="IR_ATR42-600_AT4022.wav">
+          <WObject ID="{D7263029-B703-42C8-9151-19233C4FF68A}">
+            <MediaID ID="231298282" />
+            <Hash Platform="Windows" Value="139252631" />
+          </WObject>
+          <WObject ID="{8BECCF3E-0724-4D26-8D50-694A78CAF6AB}">
+            <MediaID ID="231298282" />
+            <Hash Platform="Windows" Value="139252631" />
+          </WObject>
+        </File>
+        <File Name="IR_C152_ASOBO.wav">
+          <WObject ID="{6CDFE03D-0EC7-43D1-A72D-D8CA7180A980}">
+            <MediaID ID="207365926" />
+            <Hash Platform="Windows" Value="3321848019" />
+          </WObject>
+        </File>
+        <File Name="IR_C172_SKYHAWK_ASOBO.wav">
+          <WObject ID="{8C34B3BC-D412-4BC4-91D1-ADB5011B8C12}">
+            <MediaID ID="345029182" />
+            <Hash Platform="Windows" Value="2126616281" />
+          </WObject>
+        </File>
+        <File Name="IR_C172R_ASOBO.wav">
+          <WObject ID="{9D9A6E47-A3E4-4DFF-9D4E-2A16D737F7F5}">
+            <MediaID ID="655849202" />
+            <Hash Platform="Windows" Value="355327519" />
+          </WObject>
+        </File>
+        <File Name="IR_CAP10C_FRONT_ASOBO.wav">
+          <WObject ID="{851C453A-1E47-4B3D-8406-5AD959503D1D}">
+            <MediaID ID="310175415" />
+            <Hash Platform="Windows" Value="1654377881" />
+          </WObject>
+        </File>
+        <File Name="IR_DA40_ASOBO.wav">
+          <WObject ID="{A84EDF1E-6AF4-428A-B05A-D6BFA9C86BB4}">
+            <MediaID ID="1003119991" />
+            <Hash Platform="Windows" Value="4105982859" />
+          </WObject>
+        </File>
+        <File Name="IR_DA62_ASOBO.wav">
+          <WObject ID="{57395750-DBF2-4F05-AE51-7EF9B1A1C042}">
+            <MediaID ID="841200364" />
+            <Hash Platform="Windows" Value="492787590" />
+          </WObject>
+        </File>
+        <File Name="IR_DR400_120_ASOBO.wav">
+          <WObject ID="{FF150D51-CC18-423A-8CCF-1FBA1A2A303F}">
+            <MediaID ID="295048986" />
+            <Hash Platform="Windows" Value="1578287247" />
+          </WObject>
+        </File>
+        <File Name="IR_DV20_ASOBO.wav">
+          <WObject ID="{0FEF8526-7C63-48AC-A972-4D351055F4FE}">
+            <MediaID ID="299035506" />
+            <Hash Platform="Windows" Value="2933160878" />
+          </WObject>
+        </File>
+        <File Name="IR_FLIGHTDESIGN_CT_ASOBO.wav">
+          <WObject ID="{AFDC1E52-BB5F-42BB-8524-E49347721211}">
+            <MediaID ID="854613417" />
+            <Hash Platform="Windows" Value="3595022881" />
+          </WObject>
+        </File>
+        <File Name="IR_PIPER_J3_BERGERAC_ASOBO.wav">
+          <WObject ID="{227E2A7B-BCCA-472F-8C6A-20AD0A91A905}">
+            <MediaID ID="12659520" />
+            <Hash Platform="Windows" Value="1707078144" />
+          </WObject>
+        </File>
+        <File Name="IR_Pipistrel_Virus_ASOBO.wav">
+          <WObject ID="{81B9B3AF-2EE4-47CC-99DC-AE984598D6D6}">
+            <MediaID ID="836456901" />
+            <Hash Platform="Windows" Value="587015520" />
+          </WObject>
+        </File>
+        <File Name="IR_PITTS_ASOBO.wav">
+          <WObject ID="{08AA07D1-92A9-48D1-99EF-FA7D04DB98F3}">
+            <MediaID ID="538460370" />
+            <Hash Platform="Windows" Value="3272298492" />
+          </WObject>
+        </File>
+        <File Name="IR_TBM930_MSTC64_BACK_ASOBO.wav">
+          <WObject ID="{712CA4FA-BD54-4044-9BD8-0926B3BEC5A6}">
+            <MediaID ID="456840996" />
+            <Hash Platform="Windows" Value="260910070" />
+          </WObject>
+          <WObject ID="{3CA7E9A0-049C-4C36-A92A-C34DC30CCFA7}">
+            <MediaID ID="456840996" />
+            <Hash Platform="Windows" Value="260910070" />
+          </WObject>
+        </File>
+        <File Name="IR_VL3_ASOBO.wav">
+          <WObject ID="{39F2C3D7-950B-4CF4-AECA-DF9AC652354B}">
+            <MediaID ID="475364987" />
+            <Hash Platform="Windows" Value="944270231" />
+          </WObject>
+        </File>
+        <File Name="IR_Xcub_ASOBO.wav">
+          <WObject ID="{A63A5D88-BA55-4A82-8BDF-4D82CEAF9CB4}">
+            <MediaID ID="767317875" />
+            <Hash Platform="Windows" Value="2375565383" />
+          </WObject>
+        </File>
+        <File Name="Kittyhawk_IR_SR22.wav">
+          <WObject ID="{C807D00A-A82C-4873-96C4-C3A10336A078}">
+            <MediaID ID="266641651" />
+            <Hash Platform="Windows" Value="4212128776" />
+          </WObject>
+          <WObject ID="{6A412FA2-01D8-48C8-8A45-0489F58DD9E6}">
+            <MediaID ID="266641651" />
+            <Hash Platform="Windows" Value="4212128776" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_stone_circle_dromgorteen_impusle_10m_0.wav">
+          <WObject ID="{523E88E6-954A-4874-9539-74D7064B76C4}">
+            <MediaID ID="608691156" />
+            <Hash Platform="Windows" Value="3440719718" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_stone_circle_grange_impusle_10m-to-v-shape.wav">
+          <WObject ID="{21B2CBBE-D7DF-47D9-A45D-A8BAC1D7B32D}">
+            <MediaID ID="975065010" />
+            <Hash Platform="Windows" Value="2137776483" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_stone_circle_grange_impusle_10m.wav">
+          <WObject ID="{E08B101A-2885-48B1-ADBD-B577CC5C2409}">
+            <MediaID ID="684383245" />
+            <Hash Platform="Windows" Value="2147126540" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_stone_circle_grange_impusle_10m_0.wav">
+          <WObject ID="{7C0C1B8F-C2F2-40ED-AFC4-518ADE965A12}">
+            <MediaID ID="1063581763" />
+            <Hash Platform="Windows" Value="513744451" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_stone_circle_grange_impusle_5m.wav">
+          <WObject ID="{DACA1971-43CF-4623-99FD-F05BAD348A92}">
+            <MediaID ID="567034379" />
+            <Hash Platform="Windows" Value="2387517701" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_timber_circle_goseck_mic0m.wav">
+          <WObject ID="{5E00A590-F3B9-45D6-9815-3B4D71D4E947}">
+            <MediaID ID="95708350" />
+            <Hash Platform="Windows" Value="2425509614" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_timber_circle_goseck_mic20m.wav">
+          <WObject ID="{7A3625D5-40FE-4084-BEAF-61E09CE88931}">
+            <MediaID ID="1021555780" />
+            <Hash Platform="Windows" Value="2524086640" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_timber_circle_goseck_mic32m.wav">
+          <WObject ID="{688CC2FB-B996-4D40-BE58-9F129E415C71}">
+            <MediaID ID="768639927" />
+            <Hash Platform="Windows" Value="3088107759" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_timber_circle_goseck_mic35m.wav">
+          <WObject ID="{273626CF-95DD-4927-8E48-8922073B7FA8}">
+            <MediaID ID="355181111" />
+            <Hash Platform="Windows" Value="2855741706" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_timber_circle_goseck_mic39m.wav">
+          <WObject ID="{1324C604-26EC-4142-880D-6D964365FF81}">
+            <MediaID ID="893458194" />
+            <Hash Platform="Windows" Value="251165396" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_timber_circle_goseck_mono.wav">
+          <WObject ID="{1C79593A-834A-4D5C-A4F7-701C1258FB68}">
+            <MediaID ID="1068003375" />
+            <Hash Platform="Windows" Value="2623102018" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_timber_circle_pommelte_impulse_10m.wav">
+          <WObject ID="{DC699BEC-E5A9-42FB-8217-0EC9F275E897}">
+            <MediaID ID="70454374" />
+            <Hash Platform="Windows" Value="3019217739" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_timber_circle_pommelte_impulse_30m.wav">
+          <WObject ID="{85613628-36E0-4DF4-9241-BF98F9FB93AA}">
+            <MediaID ID="648696091" />
+            <Hash Platform="Windows" Value="3369008980" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_field_timber_circle_pommelte_impulse_36m.wav">
+          <WObject ID="{1167F087-CA7B-4148-856A-0ECB983CFDAC}">
+            <MediaID ID="465313364" />
+            <Hash Platform="Windows" Value="1332957022" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_forest_koli_snow_site1_4way_mono.wav">
+          <WObject ID="{400948C6-7217-420F-8550-EFEC22E34A11}">
+            <MediaID ID="656832050" />
+            <Hash Platform="Windows" Value="3685083440" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_forest_koli_snow_site1_4way_st.wav">
+          <WObject ID="{D6258BE6-AFC3-4B7C-B7DB-D0EEA679336A}">
+            <MediaID ID="71802525" />
+            <Hash Platform="Windows" Value="606175417" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_forest_koli_snow_site2_4way_mono.wav">
+          <WObject ID="{3792E6D7-91BB-4AA0-BD8B-BB73D9917E57}">
+            <MediaID ID="538355723" />
+            <Hash Platform="Windows" Value="3357785721" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_forest_koli_snow_site2_4way_st.wav">
+          <WObject ID="{B722D243-7A84-4634-922F-2E8DA6D1B4B6}">
+            <MediaID ID="391154088" />
+            <Hash Platform="Windows" Value="1300217704" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_forest_koli_snow_site3_4way_mono.wav">
+          <WObject ID="{31692AD1-4DDB-4216-8F73-68980407EDA8}">
+            <MediaID ID="577796584" />
+            <Hash Platform="Windows" Value="3334997718" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_forest_koli_snow_site3_4way_st.wav">
+          <WObject ID="{6E59E98D-2743-4116-8A23-8523C96C6958}">
+            <MediaID ID="66000381" />
+            <Hash Platform="Windows" Value="389776066" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_forest_koli_snow_site4_4way_mono.wav">
+          <WObject ID="{CF8A73AD-9FD1-456F-8F3D-EEDDF67E69C3}">
+            <MediaID ID="774327211" />
+            <Hash Platform="Windows" Value="797202591" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_forest_koli_snow_site4_4way_st.wav">
+          <WObject ID="{15F25906-0E64-4AAD-9D27-6B032B8CFFFC}">
+            <MediaID ID="625396665" />
+            <Hash Platform="Windows" Value="257348355" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_forest_koli_summer_site1_4way_mono.wav">
+          <WObject ID="{96E16FF9-3BF8-4A26-8774-E60405040E24}">
+            <MediaID ID="676188970" />
+            <Hash Platform="Windows" Value="512778516" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_forest_koli_summer_site2_4way_mono.wav">
+          <WObject ID="{8C4D1B18-F0C0-4032-AE31-D9BDB9F5EBE3}">
+            <MediaID ID="287006284" />
+            <Hash Platform="Windows" Value="198595405" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_forest_koli_summer_site3_4way_mono.wav">
+          <WObject ID="{FF5B0BBA-EB0C-455A-BC43-9B532B6A528B}">
+            <MediaID ID="519924094" />
+            <Hash Platform="Windows" Value="596087418" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_forest_koli_summer_site4_4way_mono.wav">
+          <WObject ID="{A99E64E4-852B-4F17-B018-E05B99B0A37A}">
+            <MediaID ID="834149829" />
+            <Hash Platform="Windows" Value="413511531" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_hill_limestone_gorge_site1_1way.wav">
+          <WObject ID="{DE530B43-464B-4809-867E-00CED378DCA2}">
+            <MediaID ID="143165537" />
+            <Hash Platform="Windows" Value="3943499897" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_hill_limestone_gorge_site1_4way.wav">
+          <WObject ID="{F4705C4A-36D1-4075-98C1-C8B0B6EFA2EF}">
+            <MediaID ID="72664401" />
+            <Hash Platform="Windows" Value="2979770890" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_hill_limestone_gorge_site2_1way.wav">
+          <WObject ID="{07AE815B-20F4-4138-A28A-57008D20CC11}">
+            <MediaID ID="171875030" />
+            <Hash Platform="Windows" Value="1049978008" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_hill_limestone_gorge_site2_4way.wav">
+          <WObject ID="{363788C7-291A-49BB-8161-0AC822E6C90C}">
+            <MediaID ID="443370218" />
+            <Hash Platform="Windows" Value="925055839" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_hill_limestone_gorge_site3_1way.wav">
+          <WObject ID="{D3A908C1-AB72-4593-BDCF-CC9DB212691F}">
+            <MediaID ID="1026124637" />
+            <Hash Platform="Windows" Value="1710243331" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_hill_limestone_gorge_site3_4way.wav">
+          <WObject ID="{043647B6-9784-4793-8714-AD1B02A49611}">
+            <MediaID ID="585466835" />
+            <Hash Platform="Windows" Value="1916260756" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_street_alcuin_s1r1.wav">
+          <WObject ID="{8BADDABD-8E34-4B88-85EB-1F71F723CD79}">
+            <MediaID ID="911291237" />
+            <Hash Platform="Windows" Value="1094793732" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_street_alcuin_s1r2.wav">
+          <WObject ID="{5C2B1D6F-85FD-481E-A4DB-95F565824B5A}">
+            <MediaID ID="582748798" />
+            <Hash Platform="Windows" Value="1588395965" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_street_alcuin_s1r3.wav">
+          <WObject ID="{3B64C24C-3F5A-4633-A905-DAF787F2A037}">
+            <MediaID ID="967890481" />
+            <Hash Platform="Windows" Value="4049623690" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_street_alcuin_s2r1.wav">
+          <WObject ID="{95A3A5CC-6D4F-4F82-B812-BEFE1DE0BA4B}">
+            <MediaID ID="541321795" />
+            <Hash Platform="Windows" Value="2056805677" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_street_alcuin_s2r2.wav">
+          <WObject ID="{77C91F7E-CDA0-4CCA-8731-B52E3223154F}">
+            <MediaID ID="925718351" />
+            <Hash Platform="Windows" Value="1042413236" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_street_alcuin_s2r3.wav">
+          <WObject ID="{57C294B3-7B8A-4EBA-B910-A617C7E2D29B}">
+            <MediaID ID="1023454010" />
+            <Hash Platform="Windows" Value="2876049639" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_street_alcuin_s3r1.wav">
+          <WObject ID="{4E7F9609-CF2B-4C94-8892-475F1976092C}">
+            <MediaID ID="642120911" />
+            <Hash Platform="Windows" Value="3585520106" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_street_alcuin_s4r1.wav">
+          <WObject ID="{AF77A18B-7592-4C9A-9A16-308F62FF5D58}">
+            <MediaID ID="323079319" />
+            <Hash Platform="Windows" Value="1383274203" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_street_alcuin_s4r2.wav">
+          <WObject ID="{2C3AC62D-F8EF-4B0D-AECD-64BBFF3D22CD}">
+            <MediaID ID="19318537" />
+            <Hash Platform="Windows" Value="370905025" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_tennis_court_falkland_omni.wav">
+          <WObject ID="{EFDA3F71-F966-46DC-BF3A-765417820D27}">
+            <MediaID ID="853700909" />
+            <Hash Platform="Windows" Value="347958619" />
+          </WObject>
+        </File>
+        <File Name="OpenAirLib\out_tennis_court_falkland_ortf.wav">
+          <WObject ID="{627EC161-A25E-44AF-A4FC-FD1E4205020B}">
+            <MediaID ID="55690129" />
+            <Hash Platform="Windows" Value="4004216736" />
+          </WObject>
+        </File>
+        <File Name="Savage IR.wav">
+          <WObject ID="{387B4E9C-8F4B-4F33-9199-54AE6C4A76AB}">
+            <MediaID ID="543770064" />
+            <Hash Platform="Windows" Value="3196511699" />
+          </WObject>
+        </File>
+      </Language>
+      <Language ID="393239870" Name="SFX">
+        <File Name="CJ4_AC_On_Ambiance.wav">
+          <WObject ID="{90097171-CEC2-4756-8D48-CF2965D453EC}">
+            <MediaID ID="1047630926" />
+            <Hash Platform="Windows" Value="512674748" />
+          </WObject>
+        </File>
+        <File Name="CJ4_Air_Vent.wav">
+          <WObject ID="{3D320746-0044-4D79-A268-7B76B8D5F23B}">
+            <MediaID ID="67448994" />
+            <Hash Platform="Windows" Value="1069876237" />
+          </WObject>
+        </File>
+        <File Name="CJ4_Autopilot_Disconnect.wav">
+          <WObject ID="{3CDCE721-088D-4292-BA6C-A2EAB890E0D6}">
+            <MediaID ID="287374701" />
+            <Hash Platform="Windows" Value="2025688079" />
+          </WObject>
+        </File>
+        <File Name="CJ4_Seatbelt.wav">
+          <WObject ID="{95D6664C-1AD4-4C56-A0BF-8EE63E741CE8}">
+            <MediaID ID="991214373" />
+            <Hash Platform="Windows" Value="2025688079" />
+          </WObject>
+        </File>
+        <File Name="Landing.wav">
+          <WObject ID="{8AE44BEB-2AF3-4D36-A164-7C4FC2013787}">
+            <MediaID ID="86558154" />
+            <Hash Platform="Windows" Value="2025688079" />
+          </WObject>
+        </File>
+        <File Name="Oxygen Mask.wav">
+          <WObject ID="{6D18164C-4A57-447C-A98B-DB69EE5DA7DB}">
+            <MediaID ID="369936812" />
+            <Hash Platform="Windows" Value="2025688079" />
+          </WObject>
+        </File>
+        <File Name="Safety Belt.wav">
+          <WObject ID="{4B15F64A-82DF-42A4-86E0-2FE701A31ACD}">
+            <MediaID ID="780324629" />
+            <Hash Platform="Windows" Value="2025688079" />
+          </WObject>
+        </File>
+        <File Name="Seatbelt &amp; Safety Off Chime 3.wav">
+          <WObject ID="{54C6A062-5189-4F0D-A2BF-F74152505FC7}">
+            <MediaID ID="688087490" />
+            <Hash Platform="Windows" Value="2025688079" />
+          </WObject>
+        </File>
+        <File Name="Takeoff Long, Welcome Aboard.wav">
+          <WObject ID="{DE6D91BB-76D7-4BB3-A448-A73A3EEEBDCC}">
+            <MediaID ID="127374749" />
+            <Hash Platform="Windows" Value="2025688079" />
+          </WObject>
+        </File>
+        <File Name="Takeoff Short.wav">
+          <WObject ID="{B80ED168-2645-46AC-A3C1-10F6C7A577DF}">
+            <MediaID ID="361931037" />
+            <Hash Platform="Windows" Value="2025688079" />
+          </WObject>
+        </File>
+        <File Name="Turbulence.wav">
+          <WObject ID="{93A56583-E617-432F-8842-8D22BFBFFF25}">
+            <MediaID ID="801090053" />
+            <Hash Platform="Windows" Value="2025688079" />
+          </WObject>
+        </File>
+      </Language>
+    </MediaIDs>
+  </MediaIDInfo>
+</WwiseDocument>
