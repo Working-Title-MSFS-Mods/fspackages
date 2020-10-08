@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="12" SoundbankVersion="135">
+	<RootPaths>
+		<ProjectRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<SoundBanks>
+		<SoundBank Id="2975758793" GUID="{CCCCFDFA-06A9-42B0-B420-F5811DF76F04}" Language="SFX">
+			<ObjectPath>\SoundBanks\Asobo_CJ4_WorkingTitle\Asobo_CJ4_WorkingTitle</ObjectPath>
+			<ShortName>Asobo_CJ4_WorkingTitle</ShortName>
+			<Path>Asobo_CJ4_WorkingTitle.bnk</Path>
+			<IncludedEvents>
+				<Event Id="3202083259" Name="Play_Asobo_CJ4_air_fan" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\Play_Asobo_CJ4_air_fan" GUID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}" MaxAttenuation="3.000000" DurationType="Infinite">
+					<IncludedMemoryFiles>
+						<File Id="67448994" Language="SFX">
+							<ShortName>CJ4_Air_Vent.wav</ShortName>
+							<Path>SFX\CJ4_Air_Vent_3FC5040D.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="2656505846" Name="Play_Asobo_CJ4_seatbelt_light" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\Passenger Announcements\Play_Asobo_CJ4_seatbelt_light" GUID="{8CE6A881-FB7F-46E8-B8FC-8A201E0B6021}" MaxAttenuation="3.000000" DurationType="OneShot" DurationMin="10.184240" DurationMax="10.184240">
+					<IncludedMemoryFiles>
+						<File Id="233927793" Language="SFX">
+							<ShortName>Passenger Announcements\CJ4_Seatbelt.wav</ShortName>
+							<Path>SFX\Passenger Announcements\CJ4_Seatbelt_78BD8C0F.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+			</IncludedEvents>
+			<GameParameters>
+				<GameParameter Id="824435188" Name="SIMVAR_AC" ObjectPath="\Game Parameters\simvar\instruments\SIMVAR_AC" GUID="{1AA79A50-3201-4F5F-8D74-1B3682D07603}"/>
+			</GameParameters>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>

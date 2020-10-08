@@ -5,7 +5,7 @@
 
 	<WwisePackages>
 		<MainPackage Name="Asobo_CJ4"/>
-		<AdditionalPackage Name="Asobo_CJ4_Extended"/>
+		<AdditionalPackage Name="Asobo_CJ4_WorkingTitle"/>
 	</WwisePackages>
 
   <AcousticParameters>
