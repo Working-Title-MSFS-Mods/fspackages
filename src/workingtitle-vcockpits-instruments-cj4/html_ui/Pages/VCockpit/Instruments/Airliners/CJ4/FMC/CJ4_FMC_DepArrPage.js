@@ -314,6 +314,7 @@ class CJ4_FMC_DepArrPage {
                 fmc.setMsg("Working...");
                 fmc.setApproachIndex(-1, () => {
                     CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
+                    fmc.setMsg("");
                 });
             };
             rows[1] = ["", "TRANS [blue]"];
