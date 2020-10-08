@@ -11,6 +11,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Overhauled LEGS page for more flexibility and real unit functions (WIP)
 * Many FPLN page bug fixes
 * A few quality of life and critical bug fixes
+* Overhaul of DEP/ARR pages and working STAR approaches (thanks @tscharlii)
 
 ### Engine Model
 * Engine fuel consumption model has been custom coded and replaces the sim fuel consumption. Fuel consumption, especially at cruise, should be much, much closer to published. Expect 1800-1850pph per side at ISA full power and 500-800pph per side at cruise, depending on altitude, mach, and power settings.
@@ -38,6 +39,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ### DEP/ARR Pages
 * Proper formatting and flow of DEP/ARR pages (thanks @tscharlii)
 * Fixed scrolling through procedures and runways (thanks @tscharlii)
+* STAR approaches should now work properly (thanks @tscharlii)
 
 ### FUEL MGMT Page
 * Total fuel used now initialized to its starting point when the FMC loads
