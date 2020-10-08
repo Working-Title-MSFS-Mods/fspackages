@@ -2358,6 +2358,9 @@ as3x-touch-element {
   }
   as3x-touch-element #Annunciations div {
     background-color: black; }
+  as3x-touch-element #Annunciations[state=Hidden] {
+      visibility: hidden;
+  }
   as3x-touch-element #Annunciations .Warning, as3x-touch-element #Annunciations .Warning_Blink {
     color: red; }
   as3x-touch-element #Annunciations .Caution, as3x-touch-element #Annunciations .Caution_Blink {
@@ -2466,11 +2469,11 @@ as3x-touch-element #MFD #MapMenu #range {
   width: 90%;
   height: 22%; }
 
-  as3x-touch-element #MFD #MapMenu #MapMenu_Range_Inc {
+  as3x-touch-element #MFD #MapMenu #MapMenu_Range_Dec {
     left: 4%;
     width: 28%}
 
-  as3x-touch-element #MFD #MapMenu #MapMenu_Range_Dec {
+  as3x-touch-element #MFD #MapMenu #MapMenu_Range_Inc {
     left: 36%;
     width: 28%;}
 
