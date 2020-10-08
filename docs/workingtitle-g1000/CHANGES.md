@@ -1,9 +1,4 @@
-# Changes in v0.3.1
-
-* Keep the G1000 from breaking synthetic vision on the G3000 and G3Xes
-* Fix WPT-page maps breaking on the MFD when in Track Up.
-
-# Changes in v0.3.0
+# Changes in this version
 
 ## Main features
 
