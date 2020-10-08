@@ -459,11 +459,8 @@ class CJ4_FMC_RoutePage {
                                     return new Promise(resolve => {
                                         console.log("add icao:" + icao + " @ " + idx);
                                         fmc.flightPlanManager.addWaypoint(icao, idx, () => {
-                                            fmc.flightPlanManager.setWaypointAdditionalData(idx, "AirwayIdent", airwayName, () => {
-                                                console.log("icao:" + icao + " added");
-                                                resolve();
-
-                                            });
+                                            console.log("icao:" + icao + " added");
+                                            resolve();
                                         }, false);
                                     });
                                 };
