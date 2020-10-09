@@ -12,6 +12,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Many FPLN page bug fixes
 * A few quality of life and critical bug fixes
 * Overhaul of DEP/ARR pages and working STAR approaches (thanks @tscharlii)
+* TODO hosky's mfd and sound changes
 
 ### Engine Model
 * Engine fuel consumption model has been custom coded and replaces the sim fuel consumption. Fuel consumption, especially at cruise, should be much, much closer to published. Expect 1800-1850pph per side at ISA full power and 500-800pph per side at cruise, depending on altitude, mach, and power settings.
@@ -49,6 +50,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ### PFD/MFD
 * Fixed issue where ILS localizers reporting DME distance as strings would crash the displays
+* Show animated radar bug
 
 ## Known Issues
 * You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are currently overhauling the flight plan management system to allow for much more flexibility and stability.
