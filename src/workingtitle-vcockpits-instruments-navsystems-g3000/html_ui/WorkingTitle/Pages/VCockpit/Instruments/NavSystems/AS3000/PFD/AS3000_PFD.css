@@ -171,25 +171,25 @@ as3000-pfd-element {
         border: 0.4vh solid white;
         font-size: 2.5vh; }
         as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapOrientation {
-		  position: absolute;
-		  left: 0%;
-		  top: 0%;
+          position: absolute;
+          left: 0%;
+          top: 0%;
           width: 11vh;
           height: 2.5vh;
-		  font-size: 1.7vh;
+          font-size: 1.7vh;
           text-align: center; }
         as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapRange {
-		  position: absolute;
-		  left: 0%;
-		  top: 2.7vh;
+          position: absolute;
+          left: 0%;
+          top: 2.7vh;
           width: 9vh;
           height: 3vh; }
-		  as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapRange .range {
-			font-size: 2vh;
+          as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapRange .range {
+            font-size: 2vh;
             text-align: right; }
-		  as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapRange .unit {
-			margin: 0 5% 2.5%;
-			font-size: 1.5vh;
+          as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapRange .unit {
+            margin: 0 5% 2.5%;
+            font-size: 1.5vh;
             text-align: left; }
         as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapCursor {
           height: 9%; }
@@ -833,8 +833,8 @@ as3000-pfd-element {
             width: 95%;
             left: 2.5%;
             height: 90%; }
-			as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Title[state=Greyed] {
-			  color: #505050; }
+            as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Title[state=Greyed] {
+              color: #505050; }
           as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Value {
             position: absolute;
             height: 50%;

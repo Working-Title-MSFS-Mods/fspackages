@@ -228,17 +228,17 @@ as3000-mfd-element {
               left: 0.25%;
               width: 10%;
               height: calc( 3 * 1vh * var(--bodyHeightScale));
-			  font-size: calc( 2.3 * 1vh * var(--bodyHeightScale)); }
+              font-size: calc( 2.3 * 1vh * var(--bodyHeightScale)); }
             as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #WindData {
               position: absolute;
               top: 0.25%;
               width: 10%;
               right: 10%; }
-			  as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #WindData .svg {
+              as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #WindData .svg {
                 position: absolute;
                 top: 0%;
-				height: 100%; 
-				width: 100%; }
+                height: 100%; 
+                width: 100%; }
             as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #MapRange {
               position: absolute;
               bottom: 0%;
@@ -246,10 +246,10 @@ as3000-mfd-element {
               width: 10%;
               height: calc( 4 * 1vh * var(--bodyHeightScale)); }
               as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #MapRange .range {
-				font-size: calc( 3 * 1vh * var(--bodyHeightScale));
+                font-size: calc( 3 * 1vh * var(--bodyHeightScale));
                 text-align: right; }
               as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #MapRange .unit {
-				margin: 0 5% 2.5%;
+                margin: 0 5% 2.5%;
                 font-size: calc( 2.3 * 1vh * var(--bodyHeightScale));
                 text-align: left; }
             as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #MapSVG, as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #road-network-canvas {
