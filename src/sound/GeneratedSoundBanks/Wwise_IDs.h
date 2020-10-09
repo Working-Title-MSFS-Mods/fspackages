@@ -15,6 +15,7 @@ namespace AK
     {
         static const AkUniqueID PLAY_ASOBO_CJ4_AIR_FAN = 3202083259U;
         static const AkUniqueID PLAY_ASOBO_CJ4_CHIME = 260335153U;
+        static const AkUniqueID PLAY_ASOBO_CJ4_SAFETY_LIGHTS = 2846866987U;
         static const AkUniqueID PLAY_ASOBO_CJ4_SEATBELT_LIGHT = 2656505846U;
     } // namespace EVENTS
 
