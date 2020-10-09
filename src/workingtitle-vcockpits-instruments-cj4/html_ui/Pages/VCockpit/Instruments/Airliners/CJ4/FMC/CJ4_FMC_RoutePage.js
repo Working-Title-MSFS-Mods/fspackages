@@ -53,12 +53,14 @@ class CJ4_FMC_RoutePage {
             fmc.setMsg("Working...");
             let value = fmc.inOut;
             fmc.clearUserInput();
-            fmc.updateRouteDestination(value, (result) => {
-                fmc.setMsg();
-                if (result) {
-                    fmc.fpHasChanged = true;
-                    CJ4_FMC_RoutePage.ShowPage1(fmc);
-                }
+            fmc.flightPlanManager.setArrivalProcIndex(-1, () => {
+                fmc.updateRouteDestination(value, (result) => {
+                    fmc.setMsg();
+                    if (result) {
+                        fmc.fpHasChanged = true;
+                        CJ4_FMC_RoutePage.ShowPage1(fmc);
+                    }
+                });
             });
         };
         let distanceCell = "----";
