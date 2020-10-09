@@ -86,7 +86,7 @@ class SvgRangeCompassElement extends SvgMapElement {
     
     updateDraw(map) {
         this.centerPos = map.getPlanePositionXY();
-        this.radius = (this.centerPos.y - map.minVisibleY) / 2;
+        this.radius = map.htmlRoot.getDisplayRange() / map.NMWidth * 1000;
         
         // draw arc
         

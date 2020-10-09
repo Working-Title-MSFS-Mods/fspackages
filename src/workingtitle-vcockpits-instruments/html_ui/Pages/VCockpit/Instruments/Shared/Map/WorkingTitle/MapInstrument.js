@@ -103,6 +103,10 @@ class MapInstrument extends ISvgMapRootElement {
         
         this.overdrawFactor = MapInstrument.OVERDRAW_FACTOR_DEFAULT;
         
+        this.rangeDefinitionContext = new MapInstrument_RangeDefinitionContext(this);
+        
+        this.rangeDefinition = MapInstrument_DefaultRangeDefinition.INSTANCE; // defines how the map should interpret the target zoom levels set via setZoom()
+        
         this.planeTrackedPosX = 0.5; // X pos of plane when map is tracking the plane; 0.5 = center, 0 = left, 1 = right;
         this.planeTrackedPosY = 0.5; // Y pos of plane when map is tracking the plane; 0.5 = center, 0 = top, 1 = bottom;
         
@@ -620,7 +624,8 @@ class MapInstrument extends ISvgMapRootElement {
                     this.navMap.setRange(this.getWeatherRange());
                 }
                 else {
-                    this.navMap.setRange(this.getDisplayRange());
+                    let rangeTarget = this.getDisplayRange() * 1000 / Math.abs(this.rangeDefinition.getRangeDefinition(this.rangeDefinitionContext));
+                    this.navMap.setRange(rangeTarget);
                 }
                 var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor * this.overdrawFactor; // MOD: Need to expand map range to compensate for overdraw
                 if (!this.isDisplayingWeather())
@@ -633,7 +638,7 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showAirports) {
                     this.airportLoader.searchLat = centerCoordinates.lat;
                     this.airportLoader.searchLong = centerCoordinates.long;
-                    this.airportLoader.searchRange = Math.min(this.navMap.NMWidth, this.largeAirportMaxRange) * 1.5;
+                    this.airportLoader.searchRange = this.navMap.NMWidth * 1.5;
                     this.airportLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.airportLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.airportLoader.update();
@@ -649,7 +654,7 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showVORs) {
                     this.vorLoader.searchLat = centerCoordinates.lat;
                     this.vorLoader.searchLong = centerCoordinates.long;
-                    this.vorLoader.searchRange = Math.min(this.navMap.NMWidth, this.vorMaxRange) * 1.5;
+                    this.vorLoader.searchRange = this.navMap.NMWidth * 1.5;
                     this.vorLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.vorLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.vorLoader.update();
@@ -657,7 +662,7 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showNDBs) {
                     this.ndbLoader.searchLat = centerCoordinates.lat;
                     this.ndbLoader.searchLong = centerCoordinates.long;
-                    this.ndbLoader.searchRange = Math.min(this.navMap.NMWidth, this.ndbMaxRange) * 1.5;
+                    this.ndbLoader.searchRange = this.navMap.NMWidth * 1.5;
                     this.ndbLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.ndbLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.ndbLoader.update();
@@ -1625,6 +1630,38 @@ MapInstrument.ROAD_HIGHWAY_RANGE_DEFAULT = Infinity;
 MapInstrument.ROAD_TRUNK_RANGE_DEFAULT = Infinity;
 MapInstrument.ROAD_PRIMARY_RANGE_DEFAULT = Infinity;
 
+class MapInstrument_RangeDefinitionContext {
+    constructor(_map) {
+        this._map = _map;
+    }
+    
+    get top() {
+        return this._map.minVisibleY;
+    }
+    
+    get bottom() {
+        return this._map.maxVisibleY;
+    }
+    
+    get left() {
+        return this._map.minVisibleX;
+    }
+    
+    get right() {
+        return this._map.maxVisibleX;
+    }
+    
+    get planePos() {
+        return this._map.navMap.coordinatesToXY(this._map.navMap.planeCoordinates);
+    }
+}
+
+class MapInstrument_DefaultRangeDefinition {
+    getRangeDefinition(_context) {
+        return context.bottom - _context.top;
+    }
+}
+MapInstrument_DefaultRangeDefinition.INSTANCE = new MapInstrument_DefaultRangeDefinition();
 
 class MapInstrument_DefaultRotationHandler {
     constructor(_rotateWithPlane = false) {

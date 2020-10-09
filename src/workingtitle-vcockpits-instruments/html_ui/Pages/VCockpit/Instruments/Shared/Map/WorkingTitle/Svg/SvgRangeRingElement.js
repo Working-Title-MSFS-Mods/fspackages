@@ -26,7 +26,7 @@ class SvgRangeRingElement extends SvgLabeledRingElement {
     
     updateDraw(map) {
         this.centerPos = map.getPlanePositionXY();
-        this.radius = (this.centerPos.y - map.minVisibleY) / 2;
+        this.radius = map.htmlRoot.getDisplayRange() / map.NMWidth * 1000;
         super.updateDraw(map);
     }
     
@@ -91,8 +91,19 @@ class SvgRangeLabelElement {
         } else {
             this.rangeDisplayAutoText.setAttribute("display", "none");
         }
-        this.rangeDisplayValueText.textContent = MapInstrument.getFormattedRangeDisplayText(this.range);
+        this.updateRangeText();
         this.formatRangeDisplay(false);
+    }
+    
+    updateRangeText() {
+        // switch between NM and feet
+        if (this.range <= 1000 / 6076) {
+            this.rangeDisplayValueText.textContent = MapInstrument.getFormattedRangeDisplayText(this.range * 6076);
+            this.rangeDisplayUnitText.textContent = "FT";
+        } else {
+            this.rangeDisplayValueText.textContent = MapInstrument.getFormattedRangeDisplayText(this.range);
+            this.rangeDisplayUnitText.textContent = "NM";
+        }
     }
     
     formatRangeDisplay(_auto) {
