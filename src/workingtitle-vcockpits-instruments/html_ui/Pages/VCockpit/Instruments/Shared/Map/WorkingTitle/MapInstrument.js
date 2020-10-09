@@ -1215,9 +1215,11 @@ class MapInstrument extends ISvgMapRootElement {
 	
     centerOnPlane() {
 		// MOD: allow for arbitrary placement of plane
-		let r_x = this.navMap.aspectRatio < 1 ? this.navMap.aspectRatio : 1;
-		let r_y = this.navMap.aspectRatio > 1 ? 1 / this.navMap.aspectRatio : 1;
-		this.setNavMapCenter(this.navMap.XYToCoordinatesFromPlaneWithRotation(new Vec2(500 * (1 - r_x) + 1000 * (1 - this.planeTrackedPosX) * r_x, 500 * (1 - r_y) + 1000 * (1 - this.planeTrackedPosY) * r_y)));
+		let r_x = Math.min(this.navMap.aspectRatio, 1);
+		let r_y = Math.min(1 / this.navMap.aspectRatio, 1);
+        let posX = 500 * (1 - r_x) + 1000 * (1 - this.planeTrackedPosX) * r_x;
+        let posY = 500 * (1 - r_y) + 1000 * (1 - this.planeTrackedPosY) * r_y;
+		this.setNavMapCenter(this.navMap.XYToCoordinatesFromPlaneWithRotation(new Vec2(posX, posY)));
     }
 	
     centerOnActiveWaypoint(_val) {
