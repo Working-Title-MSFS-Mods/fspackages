@@ -3571,7 +3571,6 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         this.escapeCbk = () => {};
         this.highlight(_highlight);
         page.appendChild(sectionRoot);
-        page.appendChild(this.createEndDividerLine());
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
@@ -3626,7 +3625,6 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         this.closeMenu();
         this.escapeCbk = this.showMainPage.bind(this, 0);
         page.appendChild(sectionRoot);
-        page.appendChild(this.createEndDividerLine());
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
@@ -3651,7 +3649,7 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
             this.beginSection();
             {
                 this.addCheckTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
-                this.addCheckTitle(_checklist.sections[_section_id].name, this.titleSize, 1.0);
+                this.addCheckTitle(_checklist.sections[_section_id].name, this.titleSize, 1.0, undefined, undefined,"left");
             }
             this.endSection();
             this.beginSection();
@@ -3682,20 +3680,8 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         this.closeMenu();
         this.escapeCbk = (() => {this.showChecklist(_checklist);}).bind(this);
         page.appendChild(sectionRoot);
-        page.appendChild(this.createEndDividerLine());
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
-    }
-    createEndDividerLine(){
-        let highlightElem1 = document.createElementNS(Avionics.SVG.NS, "line");
-        highlightElem1.setAttribute("x1", "75");
-        highlightElem1.setAttribute("y1", "140");
-        highlightElem1.setAttribute("x2", "427");
-        highlightElem1.setAttribute("y2", "140");
-        highlightElem1.setAttribute("stroke", "cyan");
-        highlightElem1.setAttribute("stroke-width", "2");
-        highlightElem1.setAttribute("stroke-dasharray", "4.95 3.1");
-        return highlightElem1;
     }
 }
 
@@ -3848,20 +3834,8 @@ class CJ4_PassengerBrief extends CJ4_PassengerBrief_Handler {
         this.escapeCbk = () => {};
         this.highlight(_highlight);
         page.appendChild(sectionRoot);
-        page.appendChild(this.createEndDividerLine());
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
-    }
-    createEndDividerLine(){
-        let highlightElem1 = document.createElementNS(Avionics.SVG.NS, "line");
-        highlightElem1.setAttribute("x1", "75");
-        highlightElem1.setAttribute("y1", "140");
-        highlightElem1.setAttribute("x2", "427");
-        highlightElem1.setAttribute("y2", "140");
-        highlightElem1.setAttribute("stroke", "cyan");
-        highlightElem1.setAttribute("stroke-width", "2");
-        highlightElem1.setAttribute("stroke-dasharray", "4.95 3.1");
-        return highlightElem1;
     }
 }
 

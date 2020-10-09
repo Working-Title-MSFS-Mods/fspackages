@@ -1487,7 +1487,7 @@ var ChecklistMenu;
             this.allSections.push(this.section);
             this.section = null;
         }
-        addCheckTitle(_text, _textSize, _bgFactor, _pageNumber = undefined, _totalPages = undefined) {
+        addCheckTitle(_text, _textSize, _bgFactor, _pageNumber = undefined, _totalPages = undefined, _alignment = "center") {
             let bg = document.createElementNS(Avionics.SVG.NS, "rect");
             bg.setAttribute("x", "0");
             bg.setAttribute("y", this.section.endY.toString());
@@ -1496,19 +1496,26 @@ var ChecklistMenu;
             this.sectionRoot.appendChild(bg);
             let text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = _text;
-            text.setAttribute("x", "175");
+            if(_alignment == "left"){
+                text.setAttribute("x", (this.columnLeft1).toString());
+                text.setAttribute("text-anchor", "left");
+            }
+            else{
+                text.setAttribute("x", "175");
+                text.setAttribute("text-anchor", "middle");
+            }
             text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             text.setAttribute("fill", "white");
             text.setAttribute("font-size", _textSize.toString());
             text.setAttribute("font-family", this.textStyle);
             text.setAttribute("alignment-baseline", "central");
-            text.setAttribute("text-anchor", "middle");
+
             this.sectionRoot.appendChild(text);
 
             if(_pageNumber && _totalPages && _totalPages > 1){
                 let pageNumber = document.createElementNS(Avionics.SVG.NS, "text");
-                pageNumber.textContent = _pageNumber.toString() + "/" + _totalPages.toString();
-                pageNumber.setAttribute("x", "310");
+                pageNumber.textContent = "PG " + _pageNumber.toString() + "/" + _totalPages.toString();
+                pageNumber.setAttribute("x", "305");
                 pageNumber.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
                 pageNumber.setAttribute("fill", "white");
                 pageNumber.setAttribute("font-size", _textSize.toString());
@@ -1539,7 +1546,7 @@ var ChecklistMenu;
 
             let text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = _checklistItem.name;
-            text.setAttribute("x", (this.columnLeft2).toString());
+            text.setAttribute("x", (this.columnLeft2 - 2).toString());
             text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
             text.setAttribute("font-size", _textSize.toString());
