@@ -3,7 +3,9 @@
 Welcome to the latest update of the Working Title CJ4 (v0.4.0). This is still very much a beta. Thank you to everyone who contributed to this release. We have been hard at work behind the scenes to tackle some of the core flight management systems, so the number of changes is shorter this time, but still with some fun and important features and fixes. Overall, this bird should be a bunch more fun to fly.
 
 ## Installation
-Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
+Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
+
+**Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
 ## Key Features
 
@@ -71,6 +73,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Increased volume of pilot and co-pilot fan air sounds
 
 ## Known Issues
+* Modifications of the flight plan can be slow at times. The cause for this is Asobo's FacilityLoader which they need to fix. When the FMC shows "Working..." it indicates an operation is in progress.
 * Sometimes when entering an airway and the exit fix, the airway name will change to the shared airway, however the routing is still correct.
 * You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are currently overhauling the flight plan management system to allow for much more flexibility and stability.
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
