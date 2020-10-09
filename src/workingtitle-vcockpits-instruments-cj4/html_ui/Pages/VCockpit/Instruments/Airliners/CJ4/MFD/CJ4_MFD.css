@@ -442,32 +442,39 @@ cj4-mfd-element {
               text-anchor: end; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay[extended=on] {
             top: 35%; }
-        cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos {
-          position: absolute;
-          top: 22.5%;
-          left: 0;
-          width: 100%;
-          height: 77.5%;
-          background-color: black;
-          z-index: 2;
-          padding-top: 100px;
-          border: 6px solid white; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos[visible=false] {
-            display: none; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-page-head {
-            margin-bottom: 50px; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-previous-leg {
-            color: darkcyan; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-active-leg {
-            color: magenta; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-flightplan-leg {
-            margin-bottom: 50px; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-col {
-            display: inline-block;
-            text-align: left;
-            width: 40%; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-label {
-            color: darkcyan; }
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos {
+  position: absolute;
+  top: 22.5%;
+  left: 0;
+  width: 100%;
+  height: 22.5%;
+  background-color: black;
+  color: white;
+}
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos[visible=false] {
+  display: none; }
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-page-head {
+  margin-bottom: 50px; }
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-previous-leg {
+  color: cyan; }
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-active-leg {
+  color: magenta; }
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-flightplan-leg {
+  margin-bottom: 50px; }
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-col {
+  display: inline-block;
+  text-align: left;
+  width: 10%; }
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-col-right {
+  display: inline-block;
+  text-align: right;
+  width: 12%;
+  margin-right: 5%;
+}
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-col-large {
+  display: inline-block;
+  text-align: left;
+  width: 21%; }
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar {
           transform: rotateX(0);
           position: absolute;
@@ -595,4 +602,52 @@ cj4-mfd-element #Mainframe #MapOverlay #NDInfo #TopBox text.Wind {
   font-size: 34px;
   fill: #11d011;
 }
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #Checklist {
+  position: absolute;
+  top: 22.5%;
+  left: 0;
+  width: 100%;
+  height: 22.5%;
+  background-color: black;
+  color: white;
+}
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #Checklist[visible=false] {
+  display: none; }
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #PassengerBrief {
+  position: absolute;
+  top: 22.5%;
+  left: 0;
+  width: 100%;
+  height: 22.5%;
+  background-color: black;
+  color: white;
+}
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #PassengerBrief[visible=false] {
+  display: none; }
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay {
+  position: absolute;
+  bottom: 3.5%;
+  left: 2.5%;
+  width: 95%;
+  height: 18%;
+  background-color: black;
+  border: white 2px solid;
+  color: white;
+}
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay .SystemHeader {
+  padding: 5px;
+  width: 100%;
+  height: 30px;
+  background-color: dodgerblue;
+}
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay .SystemBody {
+  width: 100%;
+  max-height: 100%;
+  position: relative;
+}
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay[visible=false] {
+  display: none; }
             

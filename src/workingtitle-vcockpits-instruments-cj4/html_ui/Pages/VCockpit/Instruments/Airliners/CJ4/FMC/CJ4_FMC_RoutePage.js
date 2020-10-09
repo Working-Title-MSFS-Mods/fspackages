@@ -343,7 +343,7 @@ class CJ4_FMC_RoutePage {
                                     if (!waypoint) {
                                         fmc.showErrorMessage("NOT IN DATABASE");
                                     }
-                                    CJ4_FMC_RoutePage.insertWaypointsAlongAirway(fmc, value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1, pendingAirway.name, (result) => {
+                                    CJ4_FMC_RoutePage.insertWaypointsAlongAirway(fmc, value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex(), pendingAirway.name, (result) => {
                                         if (result) {
                                             fmc.setMsg();
                                             CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
@@ -436,7 +436,7 @@ class CJ4_FMC_RoutePage {
     }
 
     static async insertWaypointsAlongAirway(fmc, lastWaypointIdent, index, airwayName, callback = EmptyCallback.Boolean) {
-        let referenceWaypoint = fmc.flightPlanManager.getWaypoint(index - 1);
+        let referenceWaypoint = fmc.flightPlanManager.getWaypoint(index);
         if (referenceWaypoint) {
             let infos = referenceWaypoint.infos;
             if (infos instanceof WayPointInfo) {
@@ -452,19 +452,15 @@ class CJ4_FMC_RoutePage {
                                 inc = -1;
                             }
 
-                            index -= 1;
                             let count = Math.abs(lastIndex - firstIndex);
                             for (let i = 1; i < count + 1; i++) { // 9 -> 6
                                 let asyncInsertWaypointByIcao = async (icao, idx) => {
                                     return new Promise(resolve => {
                                         console.log("add icao:" + icao + " @ " + idx);
                                         fmc.flightPlanManager.addWaypoint(icao, idx, () => {
-                                            fmc.flightPlanManager.setWaypointAdditionalData(idx, "AirwayIdent", airwayName, () => {
-                                                console.log("icao:" + icao + " added");
-                                                resolve();
-
-                                            });
-                                        }, false);
+                                            console.log("icao:" + icao + " added");
+                                            resolve();
+                                        });
                                     });
                                 };
                                 let outOfSync = async () => {
@@ -496,11 +492,12 @@ class CJ4_FMC_RoutePage {
         let allWaypoints = [];
         let allFPIndexes = [];
         let flightPlan = fmc.flightPlanManager;
+        let lastDepartureWaypoint = undefined;
         if (flightPlan) {
             let departure = flightPlan.getDeparture();
             if (departure) {
                 let departureWaypoints = flightPlan.getDepartureWaypoints();
-                let lastDepartureWaypoint = departureWaypoints[departureWaypoints.length - 1];
+                lastDepartureWaypoint = departureWaypoints[departureWaypoints.length - 1];
                 if (lastDepartureWaypoint) {
                     allRows.push([departure.name, lastDepartureWaypoint.ident]);
                 }
@@ -508,7 +505,7 @@ class CJ4_FMC_RoutePage {
             let fpIndexes = [];
             let routeWaypoints = flightPlan.getEnRouteWaypoints(fpIndexes);
             for (let i = 0; i < routeWaypoints.length; i++) {
-                let prev = routeWaypoints[i - 1];
+                let prev = (i==0) ? lastDepartureWaypoint : routeWaypoints[i - 1]; // check with dep on first waypoint
                 let wp = routeWaypoints[i];
                 if (wp) {
                     let prevAirway = IntersectionInfo.GetCommonAirway(prev, wp);
