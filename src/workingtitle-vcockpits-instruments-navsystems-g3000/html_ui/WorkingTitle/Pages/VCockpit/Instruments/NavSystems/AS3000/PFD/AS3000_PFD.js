@@ -64,16 +64,30 @@ class AS3000_PFD_SoftKeyHtmlElement extends SoftKeyHtmlElement {
         }
     }
 }
+
 class AS3000_PFD_InnerMap extends AS3000_MapElement {
     constructor(_simVarNameID) {
         super(_simVarNameID);
 		this.gpsWasInReversionaryMode = false;
 		this.enabled = true;
     }
+	
     init(_root) {
         super.init(_root);
         this.mapContainer = this.gps.getChildById("InnerMap");
+		this.instrument.rangeRingElement.showLabel = false;
+		this.instrument.rangeRingElement.rangeRingStrokeWidth = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH;
+		
+		this.instrument.rangeCompassElement.showRangeDisplay = false;
+		this.instrument.rangeCompassElement.arcStrokeWidth = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH;
+		this.instrument.rangeCompassElement.bearingTickMinorStrokeWidth = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH;
+		this.instrument.rangeCompassElement.bearingTickMinorLength = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_BEARING_TICK_MINOR_LENGTH;
+		this.instrument.rangeCompassElement.bearingTickMajorStrokeWidth = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH;
+		this.instrument.rangeCompassElement.bearingTickMajorLength = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_BEARING_TICK_MAJOR_LENGTH;
+		this.instrument.rangeCompassElement.bearingLabelFontSize = AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_SIZE;
+		this.instrument.rangeCompassElement.bearingLabelStrokeWidth = AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_STROKE_WIDTH;
     }
+	
 	onUpdate(_deltaTime) {
 		super.onUpdate(_deltaTime);
 		
@@ -86,6 +100,7 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
             });
         }
 	}
+	
     onEvent(_event) {
         super.onEvent(_event);
         if (_event == "SoftKeys_InsetOn") {
@@ -97,10 +112,17 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
             this.enabled = false;
         }
     }
+	
 	isEnabled() {
 		return this.enabled;
 	}
 }
+AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH = 5;
+AS3000_PFD_InnerMap.RANGE_RING_COMPASS_BEARING_TICK_MAJOR_LENGTH = 20;
+AS3000_PFD_InnerMap.RANGE_RING_COMPASS_BEARING_TICK_MINOR_LENGTH = 10;
+AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_SIZE = 40;
+AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_STROKE_WIDTH = 5;
+
 class AS3000_PFD_MainPage extends NavSystemPage {
     constructor() {
         super("Main", "Mainframe", new AS3000_PFD_MainElement());
