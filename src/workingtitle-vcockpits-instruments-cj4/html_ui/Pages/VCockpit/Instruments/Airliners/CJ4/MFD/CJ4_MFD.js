@@ -547,7 +547,7 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
 
                     // Set expected fuel and gross weight
                     if(groundSpeed >= 50){
-                        const fuelFlow = (SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour") + SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour")) / 2;
+                        const fuelFlow = (SimVar.GetSimVarValue("CJ4 FUEL FLOW:1", "Pounds per hour") + SimVar.GetSimVarValue("CJ4 FUEL FLOW:2", "Pounds per hour")) / 2;
                         const expectedFuelUsage = (fuelFlow * (this.calcETEseconds(destinationDistance, groundSpeed) / 3600)).toFixed(0);
                         const currentFuel = (SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds") * SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons")).toFixed(0);
                         const expectedFuelAtDestination = (currentFuel - expectedFuelUsage).toFixed(0) < 0 ? 0 : (currentFuel - expectedFuelUsage).toFixed(0);
@@ -1441,9 +1441,9 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 this.HYDPSIValueLeft.textContent = Math.round(HydPSI1).toString();
                 let HydPSI2 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:2", "psi");
                 this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
-                let PPHEng1 = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "Pounds per hour");
+                let PPHEng1 = SimVar.GetSimVarValue("CJ4 FUEL FLOW:1", "Pounds per hour");
                 this.FUELPPHValueLeft.textContent = Math.round(PPHEng1).toString();
-                let PPHEng2 = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "Pounds per hour");
+                let PPHEng2 = SimVar.GetSimVarValue("CJ4 FUEL FLOW:2", "Pounds per hour");
                 this.FUELPPHValueRight.textContent = Math.round(PPHEng2).toString();
                 this.FUELTempValueLeft.textContent = "--";
                 this.FUELTempValueRight.textContent = "--";
