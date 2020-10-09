@@ -7,16 +7,16 @@
     "rules": {
         "no-redeclare": [
             "error", {
-              "builtinGlobals": false
+                "builtinGlobals": false
             }
-          ],
-          "no-unused-vars": [
+        ],
+        "no-unused-vars": [
             "error", {
-              "vars": "all",
-              "varsIgnorePattern": "^CJ4_|^WT_"
+                "vars": "all",
+                "varsIgnorePattern": "^CJ4_|^WT_|Loader$"
             }
-          ],
-          "semi": [2, "always"]
+        ],
+        "semi": [2, "always"]
     },
     "globals": {
         "Avionics": "readonly",
@@ -28,20 +28,57 @@
         "Aircraft": "writable",
         "BaseAirliners": "writable",
         "FMCMainDisplay": "writable",
+        "ERadarMode": "writable",
         "NavMode": "writable",
         "IntersectionInfo": "writable",
         "RadioNav": "writable",
         "RegisterViewListener": "writable",
+        "EMapDisplayMode": "writable",
         "registerInstrument": "writable",
         "WT_FMC_Renderer": "readonly",
         "Utils": "readonly",
-        "NavSystemElementContainer": "readonly",
         "Jet_NDCompass_Display": "readonly",
+        "NearestAirspace": "readonly",
+        "FacilityLoader": "readonly",
+        "MFD_MapElement": "readonly",
+        "NavSystemElement": "readonly",
+        "MFD_NearestNDB_Element": "readonly",
+        "AS1000": "readonly",
+        "g_modDebugMgr": "readonly",
+        "BaseAS1000": "readonly",
+        "NearestWaypointRoute": "readonly",
+        "NearestIntersection": "readonly",
+        "NearestAirport": "readonly",
+        "NearestNDB": "readonly",
+        "WayPoint": "readonly",
+        "Airway": "readonly",
+        "NDBLoader": "readonly",
+        "VORLoader": "readonly",
+        "NearestVOR": "readonly",
+        "IntersectionLoader": "readonly",
+        "LatLongAlt": "readonly",
+        "SoftKeyElement": "readonly",
+        "WTDataStore": "readonly",
+        "MFD_WaypointLine": "readonly",
+        "MFD_Procedures": "readonly",
+        "MFD_ApproachWaypointLine": "readonly",
+        "MFD_ActiveFlightPlan_Element": "readonly",
+        "MFD_NearestVOR_Element": "readonly",
+        "MFD_NearestAirport_Element": "readonly",
+        "MFD_NearestIntersection_Element": "readonly",
+        "NavSystemPage": "readonly",
+        "SearchFieldWaypointICAO": "readonly",
+        "SelectableElementSliderGroup": "readonly",
+        "SelectableElement": "readonly",
+        "SoftKeysMenu": "readonly",
+        "WTEngine": "readonly",
+        "Include": "readonly",
+        "NavSystemPageGroup": "readonly",
+        "NavSystemEventLinkedPopUpWindow": "readonly",
         "Jet_NDCompass_Navigation": "readonly",
         "CJ4_MapSymbol": "readonly",
         "CJ4_PopupMenu": "readonly",
         "CJ4_PopupMenu_Key": "readonly",
-        "CJ4_SystemContainer": "readonly",
         "CJ4_SystemPage": "readonly",
         "CJ4_MapContainer": "readonly",
         "CJ4_MapOverlayContainer": "readonly",
