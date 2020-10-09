@@ -13,13 +13,6 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * A few quality of life and critical bug fixes
 * Overhaul of DEP/ARR pages and working STAR approaches (thanks @tscharlii)
 * Added functional options in the UPR MENU
-* MFD Checklists have been added
-* Pax Brief Menu has been added (Unfortunately, no sounds for it yet, next release)
-* Added FMS Text option (this essentially displays the PROG page on the MFD)
-* Added functional PASS BRIEF, CHECKLIST, and SYS buttons on the CCP
-* Improved BELT button audio (Currently the chime is non-functional for this.  Fix soon)
-* Added SAFETY button chime and announcement and also chime when you turn the SAFETY and BELT buttons off.
-* Increased volume of pilot and co-pilot fan air sounds
 
 ### Engine Model
 * Engine fuel consumption model has been custom coded and replaces the sim fuel consumption. Fuel consumption, especially at cruise, should be much, much closer to published. Expect 1800-1850pph per side at ISA full power at sea level and 500-800pph per side at cruise, depending on altitude, mach, and power settings.
@@ -67,6 +60,15 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ### PFD/MFD
 * Fixed issue where ILS localizers reporting DME distance as strings would crash the displays
 * Show animated radar bug
+* MFD Checklists have been added
+* Pax Brief Menu has been added (Unfortunately, no sounds for it yet, next release)
+* Added FMS Text option (this essentially displays the PROG page on the MFD)
+* Added functional PASS BRIEF, CHECKLIST, and SYS buttons on the CCP (Cursor Control Panel)
+
+### Audio
+* Improved BELT button audio (Currently the chime is non-functional for this.  Fix soon)
+* Added SAFETY button chime and announcement and also chime when you turn the SAFETY and BELT buttons off.
+* Increased volume of pilot and co-pilot fan air sounds
 
 ## Known Issues
 * Sometimes when entering an airway and the exit fix, the airway name will change to the shared airway, however the routing is still correct.
