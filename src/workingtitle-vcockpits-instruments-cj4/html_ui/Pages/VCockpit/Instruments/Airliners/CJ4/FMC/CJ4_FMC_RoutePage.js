@@ -324,7 +324,7 @@ class CJ4_FMC_RoutePage {
                                     CJ4_FMC_RoutePage.ShowPage2(fmc, offset, airway);
                                 }
                                 else {
-                                    fmc.showErrorMessage("NOT IN DATABASE");
+                                    fmc.showErrorMessage("NO INTERSECTION");
                                 }
                             }
                         } else
@@ -347,8 +347,8 @@ class CJ4_FMC_RoutePage {
                                         if (result) {
                                             fmc.setMsg();
                                             CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
-                                        }else 
-                                        fmc.showErrorMessage("NOT ON AIRWAY");
+                                        } else
+                                            fmc.showErrorMessage("NOT ON AIRWAY");
                                     });
                                 });
                             });
@@ -505,7 +505,7 @@ class CJ4_FMC_RoutePage {
             let fpIndexes = [];
             let routeWaypoints = flightPlan.getEnRouteWaypoints(fpIndexes);
             for (let i = 0; i < routeWaypoints.length; i++) {
-                let prev = (i==0) ? lastDepartureWaypoint : routeWaypoints[i - 1]; // check with dep on first waypoint
+                let prev = (i == 0) ? lastDepartureWaypoint : routeWaypoints[i - 1]; // check with dep on first waypoint
                 let wp = routeWaypoints[i];
                 if (wp) {
                     let prevAirway = IntersectionInfo.GetCommonAirway(prev, wp);
