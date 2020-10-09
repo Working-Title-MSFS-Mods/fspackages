@@ -438,7 +438,7 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
 
                     // Set distances to go
                     const previousWaypointDistance = previousWaypoint ? Avionics.Utils.computeDistance(aircraftPosition, previousWaypoint.infos.coordinates).toFixed(1) : -1;
-                    const activeWaypointDistance = activeWaypoint && activeWaypoint.ident != destination.ident ? Avionics.Utils.computeDistance(aircraftPosition, activeWaypoint.infos.coordinates).toFixed(1) : -1;
+                    const activeWaypointDistance = activeWaypoint && destination && activeWaypoint.ident != destination.ident ? Avionics.Utils.computeDistance(aircraftPosition, activeWaypoint.infos.coordinates).toFixed(1) : -1;
                     const nextWaypointDistance = nextWaypoint && destination && nextWaypoint.ident != destination.ident && activeWaypoint ? (new Number(activeWaypointDistance) + new Number(Avionics.Utils.computeDistance(activeWaypoint.infos.coordinates, nextWaypoint.infos.coordinates))).toFixed(1) : -1;
                     let destinationDistance = 0;
                     if(destination && activeWaypoint){
@@ -561,7 +561,7 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
 
                     }
 
-                    if(activeWaypoint){
+                    if(activeWaypoint && destination){
                         if(destination.ident == activeWaypoint.ident){
                             this._destinationWaypointContainer
                                 .setAttribute("style", "color: magenta");
