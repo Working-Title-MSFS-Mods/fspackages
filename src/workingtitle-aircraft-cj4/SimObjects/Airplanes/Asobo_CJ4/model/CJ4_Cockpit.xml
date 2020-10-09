@@ -258,6 +258,21 @@
 					<ANIM_NAME_RANGE_STICK_DN_UP>CCP_Joystick_DN_UP</ANIM_NAME_RANGE_STICK_DN_UP>
 				</UseTemplate>
 			</Component>
+
+			<UseTemplate Name="WT_Detached_Control_Panel_Template">
+				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
+				<ID>1</ID>
+				<!-- Node_ids LOWER PANEL -->
+				<NODE_ID_CKLST>CCP_PUSH_CKLST_1</NODE_ID_CKLST>
+				<NODE_ID_PASSBRIEF>CCP_PUSH_PASSBRIEF_1</NODE_ID_PASSBRIEF>
+			</UseTemplate>
+			<UseTemplate Name="WT_Detached_Control_Panel_Template">
+				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
+				<ID>1</ID>
+				<!-- Node_ids LOWER PANEL -->
+				<NODE_ID_CKLST>CCP_PUSH_CKLST_2</NODE_ID_CKLST>
+				<NODE_ID_PASSBRIEF>CCP_PUSH_PASSBRIEF_2</NODE_ID_PASSBRIEF>
+			</UseTemplate>
 		</Component>
 
 		<!-- LIGHTING #############################################################################################################-->
@@ -1052,14 +1067,6 @@
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>CCP_PUSH_MEM3</NODE_ID>
-				<CONTAINER_COUNT>2</CONTAINER_COUNT>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>CCP_PUSH_CKLST</NODE_ID>
-				<CONTAINER_COUNT>2</CONTAINER_COUNT>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>CCP_PUSH_PASSBRIEF</NODE_ID>
 				<CONTAINER_COUNT>2</CONTAINER_COUNT>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">

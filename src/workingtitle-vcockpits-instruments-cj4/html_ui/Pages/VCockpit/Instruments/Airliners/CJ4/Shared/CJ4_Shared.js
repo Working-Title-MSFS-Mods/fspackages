@@ -3276,7 +3276,9 @@ class CJ4_PopupMenu_UPPER extends CJ4_PopupMenu_Handler {
                 this.addTitle("FORMAT", this.textSize, 0.45);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
                 this.addRadio("FMS TEXT", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
-                this.addRadio("SYSTEMS", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
+                this.addRadio("CHECKLIST", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
+                this.addRadio("PASS BRIEF", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
+                this.addRadio("SYSTEMS 1/2", this.textSize, [CJ4_PopupMenu_Key.SYS_SRC]);
             }
             this.endSection();
         }
@@ -3374,4 +3376,414 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
         this.root.appendChild(page);
     }
 }
+
+class CJ4_Checklist_Container extends NavSystemElementContainer {
+    constructor(_name, _root) {
+        super(_name, _root, null);
+        this.isVisible = undefined;
+        this.dictionary = new Avionics.Dictionary();
+        this.otherMenusOpen = false;
+        this.checklists = undefined;
+    }
+    init() {
+        super.init();
+        this.root = this.gps.getChildById(this.htmlElemId);
+        if (!this.root) {
+            console.log("Root component expected!");
+        }
+    }
+    onUpdate(_dTime) {
+        super.onUpdate(_dTime);
+        if (this.handler)
+            this.handler.onUpdate(_dTime);
+    }
+    show(_value) {
+        if (this.isVisible != _value) {
+            this.isVisible = _value;
+            this.root.setAttribute("visible", (_value) ? "true" : "false");
+
+            if(this.isVisible == true){
+                if(this.checklists == undefined){
+                    this.checklists = [
+                        new NormalChecklist
+                    ];
+                }
+                this.handler = new CJ4_MFDChecklist(this.root, this.dictionary, this.checklists);
+            }
+            else if(this.isVisible == false){
+                Utils.RemoveAllChildren(this.root);
+                this.handler = null;
+            }
+        }
+    }
+    onEvent(_event) {
+        super.onEvent(_event);
+        if (this.handler && this.handler.reactsOnEvent(_event)) {
+            switch (_event) {
+                case "Upr_DATA_PUSH":
+                case "Lwr_DATA_PUSH":
+                    if(!this.otherMenusOpen){
+                        this.handler.onActivate();
+                        if(this.handler.highlightItem){
+                            if(this.handler.onChecklistItemPage && this.handler.highlightItem.checkboxVal){
+                                this.handler.highlight(this.handler.highlightId + 1);
+                                this.handler.changeCurrentSelectionIndex(1);
+                            }
+                        }
+                    }
+                    break;
+                case "Upr_DATA_DEC":
+                case "Lwr_DATA_DEC":
+                    if(!this.otherMenusOpen)
+                        this.handler.onDataDec();
+                    break;
+                case "Upr_DATA_INC":
+                case "Lwr_DATA_INC":
+                    if(!this.otherMenusOpen)
+                        this.handler.onDataInc();
+                    break;
+                case "Upr_MENU_ADV_DEC":
+                case "Lwr_MENU_ADV_DEC":
+                    if(!this.otherMenusOpen){
+                        this.handler.onMenuDec();
+                        this.handler.changeCurrentSelectionIndex(-1);
+                    }
+                    break;
+                case "Upr_MENU_ADV_INC":
+                case "Lwr_MENU_ADV_INC":
+                    if(!this.otherMenusOpen){
+                        this.handler.onMenuInc();
+                        this.handler.changeCurrentSelectionIndex(1);
+                    }
+                    break;
+                case "Upr_Push_ESC":
+                case "Lwr_Push_ESC":
+                    if (!this.handler.isOnMainPage && !this.otherMenusOpen) {
+                        this.handler.escapeCbk();
+                    }
+                    break;
+            }
+        }
+    }
+}
+class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
+    constructor(_root, _dictionary, _checklists) {
+        super();
+        // Styling
+        this.titleSize = 13;
+        this.textSize = 13;
+        this.root = _root;
+        this.menuLeft = 75;
+        this.menuWidth = 350;
+        this.dictionary = _dictionary;
+        this.maximumItemsPerPage = 7;
+
+        // Logic
+        this.onChecklistItemPage = false;
+        this.checklists = _checklists;
+
+        this.currentMenu = this.showMainPage.bind(this);
+        this.currentPage = 1;
+        this.totalPages = 1;
+        this.currentItemIndex = 0;
+        this.totalSectionItems = this.checklists.length;
+
+        this.showMainPage();
+    }
+    refreshPage() {
+        if(this.currentMenu){
+            this.currentMenu();
+        }
+    }
+    changeCurrentSelectionIndex(_delta){
+        // Checklist item scrolling
+        if((this.currentItemIndex + _delta) >= 0 && (this.currentItemIndex + _delta < this.totalSectionItems)){
+            this.currentItemIndex += _delta;
+            let startAtLastPageItem = false;
+
+            // Handle page transition
+            const newPage = Math.ceil((this.currentItemIndex + 1) / this.maximumItemsPerPage);
+            if(newPage != this.currentPage && newPage >= 1){
+                if(newPage < this.currentPage) startAtLastPageItem = true;
+                this.currentPage = newPage;
+                this.refreshPage();
+                if(startAtLastPageItem) this.highlight(6); // Starts highlight on last item of previous page
+            }
+
+        }
+    }
+    showMainPage(_highlight = 0) {
+        this.onChecklistItemPage = false;
+        this.currentItemIndex = 0;
+
+        this.currentMenu = this.showMainPage.bind(this, _highlight);
+        this.currentPage = 1;
+        this.totalPages = Math.ceil(this.checklists.length / this.maximumItemsPerPage);
+        this.totalSectionItems = this.checklists.length;
+
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addChecklistTitle("CHECKLIST INDEX", this.titleSize, 1.0, this.currentPage, this.totalPages);
+                this.addChecklistTitle("", this.titleSize, 1.0);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                for(let i = 0; i < this.checklists.length; i++){
+                    this.addSubMenu(this.checklists[i].name, this.textSize, this.showChecklist.bind(this, this.checklists[i]));
+                }
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = () => {};
+        this.highlight(_highlight);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showChecklist(_checklist) {
+        this.onChecklistItemPage = false;
+
+        this.currentMenu = this.showChecklist.bind(this, _checklist);
+        this.totalPages = Math.ceil(_checklist.sections.length / this.maximumItemsPerPage);
+        this.totalSectionItems = _checklist.sections.length;
+
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addChecklistTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
+                this.addChecklistTitle("", this.titleSize, 1.0);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                let checklistSections = _checklist.sections;
+                let startingItem = (this.currentPage * this.maximumItemsPerPage) - this.maximumItemsPerPage;
+                let endItem = Math.min(checklistSections.length, startingItem + this.maximumItemsPerPage);
+                for(let i = startingItem; i < endItem; i++){
+                    if(checklistSections[i]){
+                        let sectionComplete = true;
+                        for(let x = 0; x < checklistSections[i].checklistItems.length; x++){
+                            if(!checklistSections[i].checklistItems[x].key){
+                                sectionComplete = false;
+                            }
+                        }
+                        this.addSubMenu(_checklist.sections[i].name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, i)}).bind(this), sectionComplete ? "#11d011" : "white");
+                        if(sectionComplete){
+                            if(i <= checklistSections.length - 1){
+                                this.highlight(i + 1);
+                                this.currentItemIndex = i + 1;
+                            }
+                            else{
+                                this.highlight(i);
+                                this.currentItemIndex = i;
+                            }
+                        }
+                    }
+                }
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 0);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showChecklistSection(_checklist, _section_id) {
+        this.onChecklistItemPage = true;
+
+        this.currentMenu = this.showChecklistSection.bind(this, _checklist, _section_id);
+        this.totalPages = Math.ceil(_checklist.sections[_section_id].checklistItems.length / this.maximumItemsPerPage);
+        this.totalSectionItems = _checklist.sections[_section_id].checklistItems.length;
+        if(_checklist.sections[_section_id].checklistItems.length % 7 == 0){
+            this.totalPages += 1;
+            this.totalSectionItems += 1;
+        }
+        // (this.totalPages - (_checklist.sections[_section_id].checklistItems.length / 7)).toFixed(2)) == 0.16
+
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addChecklistTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
+                this.addChecklistTitle(_checklist.sections[_section_id].name, this.titleSize, 1.0, undefined, undefined,"left");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                let checklistItems = _checklist.sections[_section_id].checklistItems;
+                let startingItem = (this.currentPage * this.maximumItemsPerPage) - this.maximumItemsPerPage;
+                let endItem = Math.min(checklistItems.length, startingItem + this.maximumItemsPerPage);
+                for(let i = startingItem; i < endItem; i++){
+                    if(checklistItems[i]){
+                        this.addChecklistItem(_checklist.sections[_section_id].checklistItems[i], this.textSize);
+                    }
+                }
+
+                if(endItem == checklistItems.length && _section_id < _checklist.sections.length - 1){
+                    if(checklistItems.length % 7 != 0){
+                        this.addChecklistTitle("", this.titleSize, 1.0);
+                        this.addSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1);}).bind(this));
+                    }
+                    else{
+                        if(this.currentPage == this.totalPages){
+                            this.addSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1);}).bind(this));
+                        }
+                    }
+                }
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = (() => {this.showChecklist(_checklist);}).bind(this);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+}
+class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
+    constructor(_name, _root) {
+        super(_name, _root, null);
+        this.isVisible = undefined;
+        this.dictionary = new Avionics.Dictionary();
+        this.otherMenusOpen = false;
+    }
+    init() {
+        super.init();
+        this.root = this.gps.getChildById(this.htmlElemId);
+        if (!this.root) {
+            console.log("Root component expected!");
+        }
+    }
+    onUpdate(_dTime) {
+        super.onUpdate(_dTime);
+        if (this.handler)
+            this.handler.onUpdate(_dTime);
+    }
+    show(_value) {
+        if (this.isVisible != _value) {
+            this.isVisible = _value;
+            this.root.setAttribute("visible", (_value) ? "true" : "false");
+
+            if(this.isVisible == true){
+                this.handler = new CJ4_PassengerBrief(this.root, this.dictionary);
+            }
+            else if(this.isVisible == false){
+                Utils.RemoveAllChildren(this.root);
+                this.handler = null;
+            }
+        }
+    }
+    onEvent(_event) {
+        super.onEvent(_event);
+        if (this.handler && this.handler.reactsOnEvent(_event)) {
+            switch (_event) {
+                case "Upr_DATA_PUSH":
+                case "Lwr_DATA_PUSH":
+                    if(!this.otherMenusOpen){
+                        this.handler.onActivate();
+                    }
+                    break;
+                case "Upr_DATA_DEC":
+                case "Lwr_DATA_DEC":
+                    if(!this.otherMenusOpen)
+                        this.handler.onDataDec();
+                    break;
+                case "Upr_DATA_INC":
+                case "Lwr_DATA_INC":
+                    if(!this.otherMenusOpen)
+                        this.handler.onDataInc();
+                    break;
+                case "Upr_MENU_ADV_DEC":
+                case "Lwr_MENU_ADV_DEC":
+                    if(!this.otherMenusOpen){
+                        this.handler.onMenuDec();
+                    }
+                    break;
+                case "Upr_MENU_ADV_INC":
+                case "Lwr_MENU_ADV_INC":
+                    if(!this.otherMenusOpen){
+                        this.handler.onMenuInc();
+                    }
+                    break;
+                case "Upr_Push_ESC":
+                case "Lwr_Push_ESC":
+                    if (!this.handler.isOnMainPage && !this.otherMenusOpen) {
+                        this.handler.escapeCbk();
+                    }
+                    break;
+            }
+        }
+    }
+}
+class CJ4_PassengerBrief extends WTMenu.PassengerBrief_Menu_Handler {
+    constructor(_root, _dictionary) {
+        super();
+        // Styling
+        this.titleSize = 13;
+        this.textSize = 13;
+        this.root = _root;
+        this.menuLeft = 75;
+        this.menuWidth = 350;
+        this.dictionary = _dictionary;
+
+        // Logic
+        this.showMainPage();
+    }
+    refreshPage() {
+        if(this.currentMenu){
+            this.currentMenu();
+        }
+    }
+    showMainPage(_highlight = 0) {
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addPassBriefTitle("PASSENGER BRIEFING MENU", this.titleSize, 1.0);
+                this.addPassBriefTitle("", this.titleSize, 1.0);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addPassBriefItem("TAKEOFF (LONG)", this.textSize);
+                this.addPassBriefItem("TAKEOFF (SHORT)", this.textSize);
+                this.addPassBriefItem("LANDING", this.textSize);
+                this.addPassBriefItem("TURBULENCE", this.textSize);
+                this.addPassBriefItem("SEATBELT", this.textSize);
+                this.addPassBriefItem("PASSENGER SAFETY", this.textSize);
+                this.addPassBriefItem("OXYGEN MASK DEPLOYMENT", this.textSize);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = () => {};
+        this.highlight(_highlight);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+}
+
+
+
 //# sourceMappingURL=CJ4_Shared.js.map
