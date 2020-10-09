@@ -425,7 +425,7 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                     // Set ICAOs
                     this._previousWaypointContainer
                         .querySelector(".cj4x-navigation-data-waypoint-ident")
-                        .textContent = previousWaypoint && previousWaypoint.ident != flightPlanManager.getOrigin().ident ? previousWaypoint.ident : "----";
+                        .textContent = previousWaypoint ? previousWaypoint.ident : "----";
                     this._activeWaypointContainer
                         .querySelector(".cj4x-navigation-data-waypoint-ident")
                         .textContent = activeWaypoint && destination && activeWaypoint.ident != destination.ident ? activeWaypoint.ident : "----";
@@ -437,7 +437,7 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                         .textContent = destination ? destination.ident : "----";
 
                     // Set distances to go
-                    const previousWaypointDistance = previousWaypoint && previousWaypoint.ident != flightPlanManager.getOrigin().ident ? Avionics.Utils.computeDistance(aircraftPosition, previousWaypoint.infos.coordinates).toFixed(1) : -1;
+                    const previousWaypointDistance = previousWaypoint ? Avionics.Utils.computeDistance(aircraftPosition, previousWaypoint.infos.coordinates).toFixed(1) : -1;
                     const activeWaypointDistance = activeWaypoint && activeWaypoint.ident != destination.ident ? Avionics.Utils.computeDistance(aircraftPosition, activeWaypoint.infos.coordinates).toFixed(1) : -1;
                     const nextWaypointDistance = nextWaypoint && destination && nextWaypoint.ident != destination.ident && activeWaypoint ? (new Number(activeWaypointDistance) + new Number(Avionics.Utils.computeDistance(activeWaypoint.infos.coordinates, nextWaypoint.infos.coordinates))).toFixed(1) : -1;
                     let destinationDistance = 0;
