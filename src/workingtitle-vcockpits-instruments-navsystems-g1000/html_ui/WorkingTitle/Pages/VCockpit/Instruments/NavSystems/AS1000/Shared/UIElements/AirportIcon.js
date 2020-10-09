@@ -32,21 +32,20 @@ class AS1000_Airport_Icon extends HTMLElement {
         let untoweredColor = "#A03080";
 
         let towered = info.towered;
-        let serviced = this.fuel !== "";
+        this.setAttribute("towered", towered ? "true" : "false");
+        this.setAttribute("serviced", (info.fuel !== "") ? "true" : "false");
 
         switch (info.airportClass) {
             case 0:
                 break;
             case 1: {
                 this.setAttribute("type", "hard");
-                this.setAttribute("serviced", serviced ? "true" : "false");
-                this.setAttribute("towered", towered ? "true" : "false");
                 this.color = towered ? toweredColor : untoweredColor;
                 break;
             }
             case 2: {
                 this.setAttribute("type", "soft");
-                this.color = untoweredColor;
+                this.color = towered ? toweredColor : untoweredColor;
                 //type = "soft";
                 break;
             }

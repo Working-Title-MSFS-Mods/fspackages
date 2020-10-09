@@ -17,6 +17,10 @@
 @import "Pages/NearestAirports";
 @import "Pages/Settings";
 
+as1000-mfd-element {
+    font-family: $font_family_normal;
+}
+
 as1000-mfd-element #Mainframe #Electricity {
     height: 100%;
     display: grid;
@@ -27,7 +31,7 @@ as1000-mfd-element #Mainframe #Electricity {
         "engine main"
         "softkeys softkeys";
     //font-size: calc(2 * 1vh * var(--bodyHeightScale));
-    background: $page_background_color;
+    background: $page_background_color_2;
 
     #MapSVG,
     #road-network-canvas {

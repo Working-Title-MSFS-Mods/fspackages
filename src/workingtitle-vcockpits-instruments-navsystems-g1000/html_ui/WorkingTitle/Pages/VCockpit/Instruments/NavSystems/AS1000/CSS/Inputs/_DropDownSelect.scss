@@ -8,8 +8,8 @@ drop-down-selector {
         right: 0;
         top: 100%;
         width: 15em;
-        background: $page_background_color;
-        border: 1vh outset #111;
+        background: rgba($popup_background_color, 0.8);
+        border: 1vh outset rgba(#111, 0.8);
         outline: $border_width_thin solid #fff;
         z-index: 1000;
         max-height: 20vh;

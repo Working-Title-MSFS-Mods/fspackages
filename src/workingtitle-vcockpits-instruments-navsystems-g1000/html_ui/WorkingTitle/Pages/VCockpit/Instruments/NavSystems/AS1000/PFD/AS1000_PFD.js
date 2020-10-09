@@ -51,6 +51,7 @@ class AS1000_PFD extends BaseAS1000 {
         /*Include.addScript("/JS/debug.js", function () {
             g_modDebugMgr.AddConsole(null);
         });*/
+        this.updatables = [];
         this.settings = new AS1000_Settings("g36", AS1000_Default_Settings.base);
         this.unitChooser = new UnitChooser(this.settings);
         this.mainPage = new AS1000_PFD_MainPage(this.unitChooser);
@@ -83,24 +84,24 @@ class AS1000_PFD extends BaseAS1000 {
         this.navBoxModel = new AS1000_PFD_Nav_Box_Model(this.unitChooser, this.currFlightPlanManager);
         this.navBoxView = this.querySelector("g1000-nav-box");
         this.navBoxView.setModel(this.navBoxModel);
-
-        this.navFrequenciesModel = new AS1000_Nav_Frequencies_Model();
-        this.navFrequenciesView = this.querySelector("g1000-nav-frequencies");
-        this.navFrequenciesView.setModel(this.navFrequenciesModel);
-
-        this.comFrequenciesModel = new AS1000_Com_Frequencies_Model();
-        this.comFrequenciesView = this.querySelector("g1000-com-frequencies");
-        this.comFrequenciesView.setModel(this.comFrequenciesModel);
+        this.updatables.push(this.navBoxModel);
 
         this.hsiModel = new HSIIndicatorModel();
         this.hsiView = this.querySelector("#Compass");
         this.hsiView.setModel(this.hsiModel);
         let hsiInput = new HSI_Input_Layer(this.hsiModel);
         this.inputStack.push(hsiInput);
+        this.updatables.push(this.hsiModel);
 
         this.attitudeModel = new Attitude_Indicator_Model(this.model.syntheticVision);
         this.attitudeView = this.querySelector("glasscockpit-attitude-indicator");
         this.attitudeView.setModel(this.attitudeModel);
+
+        this.initModelView(new AS1000_OAT_Model(this.unitChooser), "g1000-oat");
+        this.initModelView(new AS1000_Local_Time_Model(this.settings), "g1000-local-time");
+        this.initModelView(new AS1000_PFD_Transponder_Model(), "g1000-transponder");
+        this.comFrequenciesModel = this.initModelView(new AS1000_Com_Frequencies_Model(), "g1000-com-frequencies");
+        this.navFrequenciesModel = this.initModelView(new AS1000_Nav_Frequencies_Model(), "g1000-nav-frequencies");
 
         this.inputStack.push(new AS1000_PFD_Input_Layer(this));
 
@@ -130,6 +131,47 @@ class AS1000_PFD extends BaseAS1000 {
 
         this.showMainMenu();
     }
+    initModelView(model, viewSelector) {
+        let view = document.querySelector(viewSelector);
+        if (!view)
+            throw new Exception(`${viewSelector} didn't match any views`);
+        view.setModel(model);
+        this.updatables.push(model);
+        return model;
+    }
+    showTransponderMenu() {
+        let menu = new AS1000_Soft_Key_Menu(false);
+        menu.addSoftKey(3, new AS1000_Soft_Key("STBY"));
+        menu.addSoftKey(4, new AS1000_Soft_Key("ON"));
+        menu.addSoftKey(5, new AS1000_Soft_Key("ALT"));
+        menu.addSoftKey(6, new AS1000_Soft_Key("GND"));
+        menu.addSoftKey(7, new AS1000_Soft_Key("VFR"));
+        menu.addSoftKey(8, new AS1000_Soft_Key("CODE", this.showTransponderCodeMenu.bind(this)));
+        menu.addSoftKey(9, new AS1000_Soft_Key("IDENT"));
+        menu.addSoftKey(11, new AS1000_Soft_Key("BACK", this.showMainMenu.bind(this)));
+        menu.addSoftKey(12, new AS1000_Soft_Key("ALERTS"));
+        this.softKeyController.setMenu(menu);
+    }
+    showTransponderCodeMenu() {
+        let menu = new AS1000_Soft_Key_Menu(false);
+        let transponderTempCode = "";
+        let addNumber = (number) => {
+            transponderTempCode += number;
+            if (transponderTempCode.length == 4) {
+                var code = transponderTempCode[0] * 4096 + transponderTempCode[1] * 256 + transponderTempCode[2] * 16 + transponderTempCode[3];
+                SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", code);
+                this.showMainMenu();
+            }
+        };
+        for (let i = 0; i <= 7; i++) {
+            menu.addSoftKey(i + 1, new AS1000_Soft_Key(i, () => addNumber(i.toFixed(0))));
+        }
+        menu.addSoftKey(9, new AS1000_Soft_Key("IDENT"));
+        menu.addSoftKey(10, new AS1000_Soft_Key("BKSP"));
+        menu.addSoftKey(11, new AS1000_Soft_Key("BACK", this.showMainMenu.bind(this)));
+        menu.addSoftKey(12, new AS1000_Soft_Key("ALERTS"));
+        this.softKeyController.setMenu(menu);
+    }
     showMainMenu() {
         let menu = new AS1000_Soft_Key_Menu(false);
         menu.addSoftKey(2, new AS1000_Soft_Key("INSET"));
@@ -137,7 +179,7 @@ class AS1000_PFD extends BaseAS1000 {
         menu.addSoftKey(5, new AS1000_Soft_Key("OBS"));
         menu.addSoftKey(6, new AS1000_Soft_Key("CDI", () => this.hsiModel.cycleCdi()));
         menu.addSoftKey(7, new AS1000_Soft_Key("DME"));
-        menu.addSoftKey(8, new AS1000_Soft_Key("XPDR"));
+        menu.addSoftKey(8, new AS1000_Soft_Key("XPDR", this.showTransponderMenu.bind(this)));
         menu.addSoftKey(9, new AS1000_Soft_Key("IDENT"));
         menu.addSoftKey(10, new AS1000_Soft_Key("TMR/REF"));
         menu.addSoftKey(11, new AS1000_Soft_Key("NRST"));
@@ -201,10 +243,9 @@ class AS1000_PFD extends BaseAS1000 {
     }
 
     onUpdate(_deltaTime) {
-        this.navFrequenciesModel.update(_deltaTime);
-        this.comFrequenciesModel.update(_deltaTime);
-        this.navBoxModel.update(_deltaTime);
-        this.hsiModel.update(_deltaTime);
+        for (let updatable of this.updatables) {
+            updatable.update(_deltaTime);
+        }
         this.settings.update(_deltaTime);
         this.model.update(_deltaTime);
         /*if (this._pfdConfigDone) {
@@ -300,15 +341,15 @@ class AS1000_PFD_MainPage extends NavSystemPage {
         this.element = new NavSystemElementGroup([
             this.attitude,
             new PFD_Compass(),
-            new PFD_OAT(unitChooser),
+            //new PFD_OAT(unitChooser),
             this.mapInstrument,
-            new PFD_Altimeter(),
-            new PFD_Airspeed(),/*
-            this.annunciations,
-            new PFD_NavStatus(),
-            new PFD_Minimums(),
-            new PFD_RadarAltitude(),
-            new PFD_MarkerBeacon()*/
+            //new PFD_Altimeter(),
+            //new PFD_Airspeed(),
+            //this.annunciations,
+            //new PFD_NavStatus(),
+            //new PFD_Minimums(),
+            //new PFD_RadarAltitude(),
+            //new PFD_MarkerBeacon()
         ]);
     }
     init() {

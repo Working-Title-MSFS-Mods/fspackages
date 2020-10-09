@@ -1,0 +1,7 @@
+/*class NearestWaypoints {
+
+}
+
+class NearestAirports {
+
+}*/

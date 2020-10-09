@@ -11,6 +11,8 @@ AS1000_Default_Settings.base = {
     mfd_watched_1: "DTK",
     mfd_watched_2: "TRK",
     mfd_watched_3: "ETE",
+    time_offset: 0,
+    time_mode: 0,
 };
 
 class AS1000_Settings {
@@ -51,6 +53,8 @@ class AS1000_Settings {
         let storedData = GetStoredData(this.getStorageKey());
         if (storedData) {
             this.settings = JSON.parse(storedData);
+            console.log("Loaded settings:");
+            console.log(storedData);
             this.lastUpdated = parseInt(GetStoredData(this.getTimestampKey()));
         }
     }

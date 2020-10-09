@@ -1,7 +1,155 @@
+class AS1000_Procedure {
+    constructor(name) {
+        this._name = name;
+    }
+    getTransition(transitionIndex) {
+        return null;
+    }
+    getTransitions() {
+        return null;
+    }
+    getRunways() {
+        return null;
+    }
+    getSequence(transition, runwayIndex) {
+        return null;
+    }
+    getPrimaryFrequency() {
+        return null;
+    }
+    get name() {
+        return this._name;
+    }
+}
+
+class AS1000_Approach_Procedure extends AS1000_Procedure {
+    constructor(airport, approach) {
+        super(approach.name);
+
+        let frequency = airport.frequencies.find(f => {
+            return f.name.replace("RW0", "").replace("RW", "").indexOf(approach.runway) !== -1;
+        });
+        this.primaryFrequency = frequency ? frequency : null;
+
+        this.waypoints = approach.wayPoints;
+        this.transitions = approach.transitions;
+    }
+    getTransition(transitionIndex) {
+        return this.transitions[transitionIndex];
+    }
+    getTransitions() {
+        return this.transitions;
+    }
+    getSequence(transition, runwayIndex) {
+        let waypoints = [];
+        if (transition !== null) {
+            waypoints.push(...transition.waypoints);
+        }
+        waypoints.push(...this.waypoints);
+
+        return waypoints;
+    }
+    getPrimaryFrequency() {
+        return this.primaryFrequency;
+    }
+}
+
+class AS1000_Departure_Procedure extends AS1000_Procedure {
+    constructor(airport, departure) {
+        super(departure.name);
+        this.enRouteTransitions = departure.runwayTransitions;
+        this.commonLegs = departure.commonLegs;
+        this.runwayTransitions = departure.runwayTransitions;
+    }
+    getTransition(transitionIndex) {
+        return this.enRouteTransitions[transitionIndex];
+    }
+    getRunways() {
+        return this.runwayTransitions;
+    }
+    getTransitions() {
+        return this.enRouteTransitions;
+    }
+    getSequence(transition, runwayIndex) {
+        let waypoints = [];
+        if (transition !== null) {
+            waypoints.push(...transition.legs.map(leg => {
+                return {
+                    icao: leg.fixIcao,
+                    bearing: leg.course,
+                    distance: leg.distance * 0.000539957,
+                    ident: leg.fixIcao.substr(7, 5).trim()
+                }
+            }));
+        }
+        waypoints.push(...this.commonLegs.map(leg => {
+            return {
+                icao: leg.fixIcao,
+                bearing: leg.course,
+                distance: leg.distance * 0.000539957,
+                ident: leg.fixIcao.substr(7, 5).trim()
+            }
+        }));
+
+        console.log(JSON.stringify(transition.legs));
+
+        return waypoints;
+    }
+}
+
+class AS1000_Procedure_Renderer {
+
+}
+
+class AS1000_Procedure_Sub_Page {
+    constructor(airport) {
+        this.procedures = new Subject();
+        this.selectedProcedure = new Subject([]);
+        airport.subscribe(this.airportUpdated.bind(this));
+    }
+    airportUpdated(airport) {
+
+    }
+    getProcedure(procedureIndex) {
+
+    }
+    getProcedureType() {
+
+    }
+}
+
+class AS1000_Procedure_Sub_Page_Approaches extends AS1000_Procedure_Sub_Page {
+    airportUpdated(airport) {
+        if (airport)
+            this.procedures.value = airport.approaches.map(approach => new AS1000_Approach_Procedure(airport, approach));
+    }
+    getProcedure(procedureIndex) {
+        return this.procedures.value[procedureIndex];
+    }
+    getProcedureType() {
+        return "Approaches";
+    }
+}
+
+class AS1000_Procedure_Sub_Page_Departures extends AS1000_Procedure_Sub_Page {
+    airportUpdated(airport) {
+        try {
+            if (airport)
+                this.procedures.value = airport.departures.map(departure => new AS1000_Departure_Procedure(airport, departure));
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    getProcedure(procedureIndex) {
+        return this.procedures.value[procedureIndex];
+    }
+    getProcedureType() {
+        return "Departures";
+    }
+}
 
 class AS1000_Approach_Page_Model extends AS1000_Model {
     /**
-     * 
      * @param {AS1000_MFD} gps 
      * @param {FlightPlanManager} flightPlan 
      * @param {WaypointLoader} facilityLoader 
@@ -15,49 +163,49 @@ class AS1000_Approach_Page_Model extends AS1000_Model {
 
         this.icao = null;
         this.airport = new Subject();
-        this.approaches = new Subject();
+        this.procedureType = new Subject();
+        this.procedures = new Subject();
         this.transitions = new Subject();
         this.sequence = new Subject();
-        this.loadedSequence = new Subject();
+        this.waypoints = new Subject();
         this.primaryFrequency = new Subject();
         this.mapCoordinates = new Subject();
 
-        this.selectedApproach = null;
+        this.selectedProcedure = null;
         this.selectedTransition = null;
 
+        this.subPage = null;
+        this.subPages = {
+            "DP": new AS1000_Procedure_Sub_Page_Departures(this.airport),
+            "APR": new AS1000_Procedure_Sub_Page_Approaches(this.airport),
+            "STAR": null,
+        }
+
+        this.showSubPage("DP");
+
         this.airport.subscribe(this.updateAirport.bind(this));
+        this.sequence.subscribe(this.updateWaypoints.bind(this));
+    }
+    showSubPage(id) {
+        if (this.subPageUnsubscribe) {
+            this.subPageUnsubscribe();
+        }
+        this.subPage = this.subPages[id];
+        this.subPageUnsubscribe = this.subPage.procedures.subscribe(procedures => this.procedures.value = procedures);
+        this.procedureType.value = this.subPage.getProcedureType();
     }
     updateAirport(airport) {
         if (airport) {
-            let infos = airport.infos;
-            this.approaches.value = infos.approaches;
-            this.selectApproach(infos.approaches.length > 0 ? 0 : null);
-        } else {
-            this.approaches.value = null;
+            //this.selectProcedure(this.subPage.procedures.length > 0 ? 0 : null);
         }
-    }
-    getWaypoints(airport, approachIndex, transitionIndex) {
-        // Set flight plan index
-        /*(new Promise((resolve, reject) => this.flightPlan.setCurrentFlightPlanIndex(2, () => resolve()))
-        .then(() => new Promise((resolve, reject) => this.flightPlan.setDestination(airport.icao, () => resolve()));*/
     }
     updateSequence() {
-        let waypoints = [];
-        if (this.selectedApproach) {
-            if (this.selectedTransition) {
-                for (let waypoint of this.selectedTransition.waypoints) {
-                    waypoints.push(waypoint);
-                }
-            }
-            for (let waypoint of this.selectedApproach.wayPoints) {
-                waypoints.push(waypoint);
-            }
+        if (this.selectedProcedure) {
+            this.sequence.value = this.selectedProcedure.getSequence(this.selectedTransition, null);
         }
-        this.sequence.value = waypoints;
-
-        if (!waypoints)
-            return;
-
+    }
+    updateWaypoints(waypoints) {
+        return;
         let loaded = 0;
         let failed = 0;
         for (let waypoint of waypoints) {
@@ -95,46 +243,25 @@ class AS1000_Approach_Page_Model extends AS1000_Model {
                     min: minLatLong,
                     max: maxLatLong
                 };
-                this.loadedSequence.value = waypoints;
+                this.waypoints.value = waypoints;
             }
         }
         requestAnimationFrame(frame);
     }
-    selectApproach(approachIndex) {
-        if (approachIndex !== null) {
-            approachIndex = parseInt(approachIndex);
-            this.selectedApproach = this.airport.value.infos.approaches[approachIndex];
-            this.transitions.value = this.selectedApproach.transitions;
-
-            let destination = this.airport.value;
-            let approachName = this.selectedApproach.runway;
-            if (destination) {
-                if (destination.infos instanceof AirportInfo) {
-                    let frequency = destination.infos.frequencies.find(f => {
-                        return f.name.replace("RW0", "").replace("RW", "").indexOf(approachName) !== -1;
-                    });
-                    if (frequency) {
-                        this.primaryFrequency.value = frequency;
-                    } else {
-                        this.primaryFrequency.value = null;
-                    }
-                }
-            }
+    selectProcedure(procedureIndex) {
+        this.selectedProcedure = this.subPage.getProcedure(procedureIndex);
+        if (this.selectedProcedure) {
+            console.log(JSON.stringify(this.selectedProcedure.getTransitions()));
+            this.transitions.value = this.selectedProcedure.getTransitions();
+            this.primaryFrequency.value = this.selectedProcedure.getPrimaryFrequency();
+            this.selectTransition(this.transitions.value.length > 0 ? 0 : null);
         } else {
-            this.selectedApproach = null;
             this.transitions.value = null;
+            this.primaryFrequency.value = null;
         }
-        this.approachIndex = approachIndex;
-        this.selectTransition(this.transitions.value.length > 0 ? 0 : null);
     }
     selectTransition(transitionIndex) {
-        if (transitionIndex !== null) {
-            transitionIndex = parseInt(transitionIndex);
-            this.selectedTransition = this.selectedApproach.transitions[transitionIndex];
-        } else {
-            this.selectedTransition = null;
-        }
-        this.transitionIndex = transitionIndex;
+        this.selectedTransition = transitionIndex !== null ? this.selectedProcedure.getTransition(transitionIndex) : null;
         this.updateSequence();
     }
     selectFrequency() {
@@ -147,7 +274,7 @@ class AS1000_Approach_Page_Model extends AS1000_Model {
         this.icao = icao;
         this.facilityLoader.getFacilityCB(icao, (airport) => {
             if (airport) {
-                this.airport.value = airport;
+                this.airport.value = airport.infos;
             } else {
                 console.log(`Failed to load "${icao}"`);
             }
@@ -205,7 +332,7 @@ class AS1000_Approach_Page_Model extends AS1000_Model {
                 this.flightPlan.setActiveWaypointIndex(0);
                 console.log("FPL: " + SimVar.GetSimVarValue("C:fs9gps:FlightPlanWaypointsNumber", "number"));
                 console.log("APR: " + SimVar.GetSimVarValue("C:fs9gps:FlightPlanApproachWaypointsNumber", "number"));
-                
+
                 /*this.flightPlan.setDestination(this.airport.value.infos.icao, () => {                    
                     this.flightPlan.setApproachIndex(this.approachIndex, () => {
                         console.log("Set approach index");
@@ -230,12 +357,14 @@ class AS1000_Approach_Page_View extends AS1000_HTML_View {
      */
     setModel(model) {
         this.model = model;
-        this.model.approaches.subscribe(this.updateApproaches.bind(this));
+        this.model.procedureType.subscribe(type => this.elements.procedureType.textContent = type);
+        this.model.procedures.subscribe(this.updateProcedures.bind(this));
         this.model.transitions.subscribe(this.updateTransitions.bind(this));
-        this.model.loadedSequence.subscribe(this.updateSequence.bind(this));
+        this.model.sequence.subscribe(this.updateSequence.bind(this));
         this.model.primaryFrequency.subscribe(this.updatePrimaryFrequency.bind(this));
 
-        this.mapProperties = new CombinedSubject([this.model.mapCoordinates, this.model.loadedSequence], (coordinates, sequence) => {
+        return;
+        this.mapProperties = new CombinedSubject([this.model.mapCoordinates, this.model.waypoints], (coordinates, sequence) => {
             let min = coordinates.min;
             let max = coordinates.max;
 
@@ -285,7 +414,6 @@ class AS1000_Approach_Page_View extends AS1000_HTML_View {
             colors[i + 1] = SvgMapConfig.hexaToRGB(color);
         }
 
-        console.log(JSON.stringify(colors));
         return colors;
     }
     connectedCallback() {
@@ -303,7 +431,7 @@ class AS1000_Approach_Page_View extends AS1000_HTML_View {
         bingMap.setReference(EBingReference.PLANE);
         bingMap.setVisible(true);
 
-        this.elements.approachSelector.addEventListener("change", e => this.model.selectApproach(e.target.value));
+        this.elements.procedureSelector.addEventListener("change", e => this.model.selectProcedure(e.target.value));
         this.elements.transitionSelector.addEventListener("change", e => this.model.selectTransition(e.target.value));
         this.elements.primaryFrequencyHz.addEventListener("selected", e => this.model.selectFrequency());
     };
@@ -332,12 +460,12 @@ class AS1000_Approach_Page_View extends AS1000_HTML_View {
             this.elements.primaryFrequencyHz.textContent = "___.__";
         }
     }
-    updateApproaches(approaches) {
-        this.elements.approachSelector.clearOptions();
-        if (approaches) {
+    updateProcedures(procedures) {
+        this.elements.procedureSelector.clearOptions();
+        if (procedures) {
             let i = 0;
-            for (let approach of approaches) {
-                this.elements.approachSelector.addOption(i++, approach.name);
+            for (let procedure of procedures) {
+                this.elements.procedureSelector.addOption(i++, procedure.name);
             }
         }
     }
@@ -352,12 +480,14 @@ class AS1000_Approach_Page_View extends AS1000_HTML_View {
     }
     updateSequence(waypoints) {
         if (waypoints) {
+            console.log("Updating sequence length: " + waypoints.length);
             this.elements.sequenceList.innerHTML = waypoints.map((waypoint) => {
+                //let distance = waypoint.distanceInFP * 0.000539957;
                 return `
                     <div class="sequence-entry">
                         <span class="ident">${waypoint.ident ? waypoint.ident : "USR"}</span>
-                        <span class="bearing">${waypoint.bearingInFP}°</span>
-                        <span class="distance">${(waypoint.distanceInFP * 0.000539957).toFixed(1)}NM</span>
+                        <span class="bearing">${waypoint.bearing}°</span>
+                        <span class="distance">${(waypoint.distance).toFixed(waypoint.distance < 10 ? 1 : 0)}NM</span>
                     </div>`;
             }).join("");
         } else {
@@ -365,6 +495,7 @@ class AS1000_Approach_Page_View extends AS1000_HTML_View {
         }
     }
     renderSequence(properties) {
+        return;
         let waypoints = properties.sequence;
 
         let _NMWidth = properties.radius * 2;

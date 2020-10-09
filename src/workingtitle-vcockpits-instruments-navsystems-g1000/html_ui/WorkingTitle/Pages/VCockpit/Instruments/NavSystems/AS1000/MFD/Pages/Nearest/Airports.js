@@ -10,7 +10,7 @@ class AS1000_Nearest_Airports_Model extends AS1000_Model {
             length: null
         };
         this.loadOptions = {
-            count: 50,
+            count: 150,
             distance: 1000
         }
         this.updateTimer = 0;
@@ -25,11 +25,22 @@ class AS1000_Nearest_Airports_Model extends AS1000_Model {
     filterAirport(airport) {
         if (this.filter.length) {
             let maxLength = 0;
-            for (let runway of infos.runways) {
+            for (let runway of airport.runways) {
                 maxLength = Math.max(runway.length);
             }
             if (maxLength < this.filter.length)
                 return false;
+        }
+
+        if (this.filter.type) {
+            switch (this.filter.type) {
+                case "hardOnly":
+                    if (airport.airportClass != 1)
+                        return false;
+                    break;
+                case "all":
+                    break;
+            }
         }
 
         return true;
@@ -43,19 +54,23 @@ class AS1000_Nearest_Airports_Model extends AS1000_Model {
         console.log("Updating");
         this.nearestAirportList.Update(this.loadOptions.count, this.loadOptions.distance);
 
-        this.airports.value = this.nearestAirportList.airports.map(airport => {
-            if (!airport) {
-                return null;
-            }
-            return {
-                icao: airport.icao,
-                ident: airport.ident,
-                runwayDirection: airport.longestRunwayDirection,
-                bearing: airport.bearing,
-                distance: airport.distance,
-                info: airport
-            }
-        });
+        this.airports.value = this.nearestAirportList.airports
+            .filter(this.filterAirport.bind(this))
+            .map(airport => {
+                if (!airport) {
+                    return null;
+                }
+                return {
+                    icao: airport.icao,
+                    ident: airport.ident,
+                    runwayDirection: airport.longestRunwayDirection,
+                    bearing: airport.bearing,
+                    distance: airport.distance,
+                    info: airport
+                }
+            }).sort((a, b) => {
+                return a.distance - b.distance
+            });
     }
     setSelectedAirport(icao) {
         console.log("Selected " + icao);

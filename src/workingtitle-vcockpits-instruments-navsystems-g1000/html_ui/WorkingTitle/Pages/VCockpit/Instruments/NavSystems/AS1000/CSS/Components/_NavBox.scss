@@ -4,7 +4,7 @@ g1000-nav-box {
     display: grid;
     grid-template-columns: 27% 1fr 25%;
     grid-template-rows: 100%;
-    border-bottom: 0.3vh solid $border_color;
+    border-bottom: $border_width_thick solid $border_color;
     background: $page_background_color;
     width: 100%;
     height: 100%;
@@ -27,26 +27,28 @@ g1000-nav-box {
             align-items: baseline;
             display: flex;
             overflow: hidden;
-            font-family: "Roboto-Mono";
 
             div {
                 width: auto;
                 margin: 0 1vh;
                 flex: none;
                 line-height: 3.5vh;
-                font-size:0.9em;
-                font-weight:bold;
+                font-size: $font_size_large;
+                font-weight: normal;
 
                 &.value {
+                    //font-family: $font_family_mono;
                     font-weight: bold;
                     color: $color_gps;
                     flex: 1;
-                    font-size: 1.2em;
+                    font-size: $font_size_extra_large;
                 }
             }
 
             .small {
                 font-size: 0.7em;
+                font-family: $font_family_normal;
+                text-transform: uppercase;
             }
         }
 
@@ -56,9 +58,9 @@ g1000-nav-box {
             justify-content: center;
             padding: 0 2vh;
             color: $input_color;
-            font-size: 1.2em;
+            font-size: 1.1em;
             line-height: 1;
-            font-family: "Roboto-Mono";
+            font-weight: bold;
         }
     }
 }

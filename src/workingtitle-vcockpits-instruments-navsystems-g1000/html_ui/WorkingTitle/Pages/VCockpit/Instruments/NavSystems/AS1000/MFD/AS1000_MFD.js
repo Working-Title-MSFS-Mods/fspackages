@@ -255,7 +255,7 @@ class AS1000_MFD extends BaseAS1000 {
         try {
             super.Update();
         } catch (e) {
-            console.log(e.message)
+            console.log(e.message);
         }
         SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
     }

@@ -28,7 +28,7 @@ as1000-pfd-element #Mainframe #InstrumentsContainer {
     height: 100%;
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: 8% 1fr 4%;
+    grid-template-rows: 8% 88% 1fr;
     grid-template-areas:
         "nav"
         "main"
@@ -36,6 +36,22 @@ as1000-pfd-element #Mainframe #InstrumentsContainer {
 
     > .center {
         grid-area: main;
+        position: relative;
+        width: 100%;
+        height: 100%;
+
+        > footer {
+            font-family: $font_family_mono;
+            font-weight: normal;
+            font-size: 1rem;
+            position: absolute;
+            display: grid;
+            width: 100%;
+            align-items: end;
+            bottom: 0;
+            grid-template-columns: auto 1fr auto auto;
+            grid-template-areas: "oat blank xpdr lcl";
+        }
     }
 
     g1000-soft-key-menu {
@@ -79,7 +95,7 @@ as1000-pfd-element #Mainframe #InstrumentsContainer #ArcCompass {
     $middle: 46.6%;
     $width: 50%;
     left: $middle - $width/2;
-    bottom: 4%;
+    bottom: 0%;
     width: $width;
     height: 50%;
     z-index: 0;
@@ -170,5 +186,70 @@ g1000-nav-box {
     .ap-right {
         display: grid;
         grid-template-columns: 15% 10% 40% 30%;
+    }
+}
+
+g1000-transponder {
+    grid-area: xpdr;
+    padding: 1vh;
+    display: grid;
+    grid-template-columns: auto 4ch 5ch;
+    grid-gap: 1vh;
+    background-color: $page_background_color;
+    border-top: $border_width_thin solid $border_color;
+    border-left: $border_width_thin solid $border_color;
+
+    label {
+        font-weight: bold;
+    }
+
+    .mode {
+        text-align: right;
+    }
+}
+
+g1000-local-time {
+    grid-area: lcl;
+    padding: 1vh;
+    background-color: $page_background_color;
+    border-top: $border_width_thin solid $border_color;
+    border-left: $border_width_thin solid $border_color;
+    display: grid;
+    grid-template-columns: 3ch 10ch;
+    grid-gap: 1vh;
+
+    label {
+        font-weight: bold;
+    }
+
+    .time {
+        text-align: right;
+    }
+
+    .meridiem {
+        font-size: 0.8em;
+    }
+}
+
+g1000-oat {
+    grid-area: oat;
+    padding: 1vh;
+    display: grid;
+    grid-template-columns: 3ch auto;
+    grid-gap: 1vh;
+    background-color: $page_background_color;
+    border-top: $border_width_thin solid $border_color;
+    border-right: $border_width_thin solid $border_color;
+
+    label {
+        font-weight: bold;
+    }
+
+    .temperature {
+        text-align: right;
+    }
+
+    .units {
+        font-size: 0.8em;
     }
 }

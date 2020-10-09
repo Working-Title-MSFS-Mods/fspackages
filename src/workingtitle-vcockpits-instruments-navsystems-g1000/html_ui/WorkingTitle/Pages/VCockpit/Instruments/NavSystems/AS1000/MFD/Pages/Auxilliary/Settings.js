@@ -42,7 +42,10 @@ class AS1000_System_Settings_View extends AS1000_HTML_View {
 
         super.connectedCallback();
 
+        this.isInitialised = false;
         this.addEventListener("change", (e) => {
+            if (!this.isInitialised)
+                return;
             this.model.updateSetting(e.target.dataset.setting, e.target.value);
             this.model.save();
         });
@@ -58,6 +61,8 @@ class AS1000_System_Settings_View extends AS1000_HTML_View {
         for (let input of this.querySelectorAll("[data-setting]")) {
             input.value = this.model.settings.getValue(input.dataset.setting);
         }
+
+        this.isInitialised = true;
     }
     enter(inputStack) {
         this.inputStack = inputStack;

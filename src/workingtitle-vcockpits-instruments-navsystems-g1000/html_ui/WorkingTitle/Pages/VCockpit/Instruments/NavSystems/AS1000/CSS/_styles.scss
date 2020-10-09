@@ -1,8 +1,9 @@
 $theme: "1000";
 
 $page_background_color: #111;
+$page_background_color_2: rgb(12,12,12);
 
-$border_width_thick: 0.4vh;
+$border_width_thick: 0.3vh;
 $border_width_thin: 0.2vh;
 $border_color: #ccc;
 
@@ -14,6 +15,8 @@ $category_box_background_color: #000;
 $category_border_width: $border_width_thin;
 $category_text_color: #fff;
 
+$popup_background_color: $category_box_background_color;
+
 $input_color: #00ffff;
 
 $font_size_small: 0.8rem;
@@ -21,7 +24,8 @@ $font_size_regular: 1.0rem;
 $font_size_large: 1.2rem;
 $font_size_extra_large: 1.4rem;
 
-$font_family_normal: "Roboto-Mono";
+$font_family_normal: "Roboto-Regular";
+$font_family_mono: "Roboto-Mono";
 
 html {
     font-size: calc(2 * 1vh * var(--bodyHeightScale));

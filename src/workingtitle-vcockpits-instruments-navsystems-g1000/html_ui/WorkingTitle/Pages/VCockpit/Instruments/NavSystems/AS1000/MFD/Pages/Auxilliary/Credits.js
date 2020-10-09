@@ -25,7 +25,7 @@ class AS1000_Credits_Model extends AS1000_Model {
         this.credits.value = `
         <div style="display:grid; grid-template-columns:50% 50%; gap:5vh">
             <article class="article">
-                <img src="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/Garmin.svg" style="width:100%;"/>
+                <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/Garmin.svg" style="width:100%;"/>
                 <h1>Working Title</h1>
                 <p>Thank you for using Working Title's G1000 mod! We hope you enjoy your time with it as much as we enjoyed making it.</p>
                 <p><b><u>github.com/Working-Title-MSFS-Mods/fspackages</u></b></p>

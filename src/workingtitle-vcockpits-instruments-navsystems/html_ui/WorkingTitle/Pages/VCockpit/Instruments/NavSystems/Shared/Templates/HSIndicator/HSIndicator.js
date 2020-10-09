@@ -4,20 +4,45 @@ class HSI_Input_Layer extends Input_Layer {
     constructor(hsiModel) {
         super();
         this.cdiSource = hsiModel.cdi.sourceId;
+        this.courseIncrement = 1;
+        this.courseIncrementLastUpdate = 1;
+        this.courseIncrementTimeout = null;
+        this.courseIncrementDirection = true;
+    }
+    speedUp() {
+        if (this.courseIncrementLastUpdate == null) {
+            this.courseIncrementLastUpdate = performance.now();
+        }
+        let now = performance.now();
+        let dt = (now - this.courseIncrementLastUpdate) / 1000;
+        this.courseIncrementLastUpdate = now;
+        this.courseIncrement = this.courseIncrement * 1.2;
+        this.courseIncrement += (1 - this.courseIncrement) * dt;
+        this.courseIncrement = Math.max(1, Math.min(10, this.courseIncrement));
+        clearTimeout(this.courseIncrementTimeout);
+        this.courseIncrementTimeout = setTimeout(() => this.courseIncrement = 1, 500);
+    }
+    incrementCourse(direction) {
+        if (this.courseIncrementDirection != direction) {
+            this.courseIncrement = 1;
+            this.courseIncrementDirection = direction;
+        }
+
+        this.speedUp();
+        let amount = Math.floor(this.courseIncrement) * (direction ? 1 : -1);
+        if (this.cdiSource.value == 1) {
+            let value = (SimVar.GetSimVarValue("NAV OBS:1", "degree") + amount + 360) % 360;
+            SimVar.SetSimVarValue("K:VOR1_SET", "degree", value);
+        } else if (this.cdiSource.value == 2) {
+            let value = (SimVar.GetSimVarValue("NAV OBS:2", "degree") + amount + 360) % 360;
+            SimVar.SetSimVarValue("K:VOR2_SET", "degree", value);
+        }
     }
     onCourseIncrement(inputStack) {
-        if (this.cdiSource.value == 1) {
-            SimVar.SetSimVarValue("K:VOR1_OBI_INC", "number", 0);
-        } else if (this.cdiSource.value == 2) {
-            SimVar.SetSimVarValue("K:VOR2_OBI_INC", "number", 0);
-        }
+        this.incrementCourse(true);
     }
     onCourseDecrement(inputStack) {
-        if (this.cdiSource.value == 1) {
-            SimVar.SetSimVarValue("K:VOR1_OBI_DEC", "number", 0);
-        } else if (this.cdiSource.value == 2) {
-            SimVar.SetSimVarValue("K:VOR2_OBI_DEC", "number", 0);
-        }
+        this.incrementCourse(false);
     }
     onCoursePush(inputStack) {
         if (this.cdiSource.value == 1) {

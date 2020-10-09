@@ -127,7 +127,6 @@
                         </div>
                     </div>
 
-
                     <div id="Warnings" state="Hidden">
                         <span id="WarningsContent">PULL UP</span>
                     </div>
@@ -137,19 +136,23 @@
                         <div id="acknowledged"></div>
                     </div>
 
-                    <div id="XPDRTimeBox">
-                        <div>XPDR</div>
-                        <div class="green" id="XPDRValue">____</div>
-                        <div class="green" id="XPDRMode">STBY</div>
-                        <div id="XPDRReceive"></div>
-                        <div>LCL</div>
-                        <div id="LocalTime">00:00:00</div>
-                    </div>
+                    <footer>
+                        <g1000-transponder>
+                            <label>XPDR</label>
+                            <span data-element="code"></span>
+                            <span class="mode" data-element="mode"></span>
+                        </g1000-transponder>
 
-                    <div id="OAT">
-                        <div id="OAT_Title">OAT</div>
-                        <div id="OAT_Value"></div>
-                    </div>
+                        <g1000-local-time>
+                            <label data-element="mode">LCL</label>
+                            <span data-element="time" class="time"></span>
+                        </g1000-local-time>
+
+                        <g1000-oat>
+                            <label>OAT</label>
+                            <div data-element="oat" class="temperature"></div>
+                        </g1000-oat>
+                    </footer>
 
                     <div id="DirectToWindow" class="PopupWindow" state="Inactive">
                         <div id="drctTitle" class="subpart">DIRECT TO</div>
@@ -708,6 +711,9 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/FileHandler.js"></script>
 
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/LocalTime.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/OAT.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Transponder.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/RadioFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/ComFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/NavFrequencies.js"></script>
