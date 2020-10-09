@@ -2983,7 +2983,7 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 27] = "SYS_SRC";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["AOA"] = 28] = "AOA";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
-class CJ4_PopupMenu_Handler extends Airliners2.PopupMenu_Handler {
+class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
     constructor() {
         super(...arguments);
         this._isOnMainPage = false;
@@ -3402,7 +3402,7 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
             this.root.setAttribute("visible", (_value) ? "true" : "false");
 
             if(this.isVisible == true){
-                this.handler = new CJ4_MainChecklist(this.root, this.dictionary);
+                this.handler = new CJ4_MFDChecklist(this.root, this.dictionary);
             }
             else if(this.isVisible == false){
                 Utils.RemoveAllChildren(this.root);
@@ -3442,7 +3442,6 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
                         this.handler.onMenuDec();
                         this.handler.changeCurrentSelectionIndex(-1);
                     }
-                    console.log("item num: " + this.handler.currentItemIndex);
                     break;
                 case "Upr_MENU_ADV_INC":
                 case "Lwr_MENU_ADV_INC":
@@ -3450,7 +3449,6 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
                         this.handler.onMenuInc();
                         this.handler.changeCurrentSelectionIndex(1);
                     }
-                    console.log("item num: " + this.handler.currentItemIndex);
                     break;
                 case "Upr_Push_ESC":
                 case "Lwr_Push_ESC":
@@ -3462,31 +3460,7 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
         }
     }
 }
-class CJ4_Checklist_Handler extends ChecklistMenu.Menu_Handler {
-    constructor() {
-        super(...arguments);
-    }
-    reactsOnEvent(_event) {
-        switch (_event) {
-            case "Upr_DATA_PUSH":
-            case "Upr_DATA_DEC":
-            case "Upr_DATA_INC":
-            case "Upr_MENU_ADV_DEC":
-            case "Upr_MENU_ADV_INC":
-            case "Upr_Push_ESC":
-                return true;
-            case "Lwr_DATA_PUSH":
-            case "Lwr_DATA_DEC":
-            case "Lwr_DATA_INC":
-            case "Lwr_MENU_ADV_DEC":
-            case "Lwr_MENU_ADV_INC":
-            case "Lwr_Push_ESC":
-                return true;
-        }
-        return false;
-    }
-}
-class CJ4_MainChecklist extends CJ4_Checklist_Handler {
+class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
     constructor(_root, _dictionary) {
         super();
         // Styling
@@ -3517,7 +3491,6 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         return checklists;
     }
     refreshPage() {
-        console.log("refresh");
         if(this.currentMenu){
             this.currentMenu();
         }
@@ -3555,8 +3528,8 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         {
             this.beginSection();
             {
-                this.addCheckTitle("CHECKLIST INDEX", this.titleSize, 1.0, this.currentPage, this.totalPages);
-                this.addCheckTitle("", this.titleSize, 1.0);
+                this.addChecklistTitle("CHECKLIST INDEX", this.titleSize, 1.0, this.currentPage, this.totalPages);
+                this.addChecklistTitle("", this.titleSize, 1.0);
             }
             this.endSection();
             this.beginSection();
@@ -3589,8 +3562,8 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         {
             this.beginSection();
             {
-                this.addCheckTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
-                this.addCheckTitle("", this.titleSize, 1.0);
+                this.addChecklistTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
+                this.addChecklistTitle("", this.titleSize, 1.0);
             }
             this.endSection();
             this.beginSection();
@@ -3648,8 +3621,8 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         {
             this.beginSection();
             {
-                this.addCheckTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
-                this.addCheckTitle(_checklist.sections[_section_id].name, this.titleSize, 1.0, undefined, undefined,"left");
+                this.addChecklistTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
+                this.addChecklistTitle(_checklist.sections[_section_id].name, this.titleSize, 1.0, undefined, undefined,"left");
             }
             this.endSection();
             this.beginSection();
@@ -3659,13 +3632,13 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
                 let endItem = Math.min(checklistItems.length, startingItem + this.maximumItemsPerPage);
                 for(let i = startingItem; i < endItem; i++){
                     if(checklistItems[i]){
-                        this.addCheckItem(_checklist.sections[_section_id].checklistItems[i], this.textSize);
+                        this.addChecklistItem(_checklist.sections[_section_id].checklistItems[i], this.textSize);
                     }
                 }
 
                 if(endItem == checklistItems.length && _section_id < _checklist.sections.length - 1){
                     if(checklistItems.length % 7 != 0){
-                        this.addCheckTitle("", this.titleSize, 1.0);
+                        this.addChecklistTitle("", this.titleSize, 1.0);
                         this.addSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1);}).bind(this));
                     }
                     else{
@@ -3684,7 +3657,6 @@ class CJ4_MainChecklist extends CJ4_Checklist_Handler {
         this.root.appendChild(page);
     }
 }
-
 class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
     constructor(_name, _root) {
         super(_name, _root, null);
@@ -3743,14 +3715,12 @@ class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
                     if(!this.otherMenusOpen){
                         this.handler.onMenuDec();
                     }
-                    console.log("item num: " + this.handler.currentItemIndex);
                     break;
                 case "Upr_MENU_ADV_INC":
                 case "Lwr_MENU_ADV_INC":
                     if(!this.otherMenusOpen){
                         this.handler.onMenuInc();
                     }
-                    console.log("item num: " + this.handler.currentItemIndex);
                     break;
                 case "Upr_Push_ESC":
                 case "Lwr_Push_ESC":
@@ -3762,31 +3732,7 @@ class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
         }
     }
 }
-class CJ4_PassengerBrief_Handler extends PassengerBriefMenu.Menu_Handler {
-    constructor() {
-        super(...arguments);
-    }
-    reactsOnEvent(_event) {
-        switch (_event) {
-            case "Upr_DATA_PUSH":
-            case "Upr_DATA_DEC":
-            case "Upr_DATA_INC":
-            case "Upr_MENU_ADV_DEC":
-            case "Upr_MENU_ADV_INC":
-            case "Upr_Push_ESC":
-                return true;
-            case "Lwr_DATA_PUSH":
-            case "Lwr_DATA_DEC":
-            case "Lwr_DATA_INC":
-            case "Lwr_MENU_ADV_DEC":
-            case "Lwr_MENU_ADV_INC":
-            case "Lwr_Push_ESC":
-                return true;
-        }
-        return false;
-    }
-}
-class CJ4_PassengerBrief extends CJ4_PassengerBrief_Handler {
+class CJ4_PassengerBrief extends WTMenu.PassengerBrief_Menu_Handler {
     constructor(_root, _dictionary) {
         super();
         // Styling
@@ -3801,7 +3747,6 @@ class CJ4_PassengerBrief extends CJ4_PassengerBrief_Handler {
         this.showMainPage();
     }
     refreshPage() {
-        console.log("refresh");
         if(this.currentMenu){
             this.currentMenu();
         }
@@ -3814,19 +3759,19 @@ class CJ4_PassengerBrief extends CJ4_PassengerBrief_Handler {
         {
             this.beginSection();
             {
-                this.addBriefTitle("PASSENGER BRIEFING MENU", this.titleSize, 1.0);
-                this.addBriefTitle("", this.titleSize, 1.0);
+                this.addPassBriefTitle("PASSENGER BRIEFING MENU", this.titleSize, 1.0);
+                this.addPassBriefTitle("", this.titleSize, 1.0);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addBriefItem("TAKEOFF (LONG)", this.textSize);
-                this.addBriefItem("TAKEOFF (SHORT)", this.textSize);
-                this.addBriefItem("LANDING", this.textSize);
-                this.addBriefItem("TURBULENCE", this.textSize);
-                this.addBriefItem("SEATBELT", this.textSize);
-                this.addBriefItem("PASSENGER SAFETY", this.textSize);
-                this.addBriefItem("OXYGEN MASK DEPLOYMENT", this.textSize);
+                this.addPassBriefItem("TAKEOFF (LONG)", this.textSize);
+                this.addPassBriefItem("TAKEOFF (SHORT)", this.textSize);
+                this.addPassBriefItem("LANDING", this.textSize);
+                this.addPassBriefItem("TURBULENCE", this.textSize);
+                this.addPassBriefItem("SEATBELT", this.textSize);
+                this.addPassBriefItem("PASSENGER SAFETY", this.textSize);
+                this.addPassBriefItem("OXYGEN MASK DEPLOYMENT", this.textSize);
             }
             this.endSection();
         }
@@ -3838,5 +3783,7 @@ class CJ4_PassengerBrief extends CJ4_PassengerBrief_Handler {
         this.root.appendChild(page);
     }
 }
+
+
 
 //# sourceMappingURL=CJ4_Shared.js.map

@@ -185,7 +185,6 @@ class CJ4_MFD extends BaseAirliners {
                 break;
             case "Lwr_Push_SYS":
                 this.showSystemOverlay++;
-                console.log("SYSTEM NUM " + this.showSystemOverlay);
                 if(this.showSystemOverlay == 3){
                     this.showSystemOverlay = 0;
                 }
@@ -588,7 +587,6 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
     constructor(_name, _root) {
         super(_name, _root, null);
         this.isVisible = undefined;
-        this._k = 0;
         this.currentPage = 1;
     }
     init() {
@@ -1451,7 +1449,6 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 this.FUELTempValueRight.textContent = "--";
             }
             else if (this.currentPage == 2){
-
                 let AilPct = (SimVar.GetSimVarValue("AILERON TRIM PCT", "percent over 100") + 1.0) * 0.5;
                 let ail_x = this.AileronCursorX1 + (this.AileronCursorX2 - this.AileronCursorX1) * AilPct;
                 this.AileronCursor.setAttribute("transform", "translate (" + ail_x + " " + this.AileronCursorY + ")");
@@ -1463,9 +1460,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 this.ElevatorCursorR.setAttribute("transform", "translate (" + this.ElevatorCursorRX + " " + elev_y + ")");
                 this.ElevatorCursorL.setAttribute("transform", "translate (" + this.ElevatorCursorLX + " " + elev_y + ")");
                 let ailRadians = (SimVar.GetSimVarValue("ELEVATOR TRIM POSITION", "radian"));
-                console.log("rads: " + ailRadians);
                 this.AileronRadians.textContent = (ailRadians * 180 / Math.PI).toFixed(1).toString();
-
             }
         }
     }

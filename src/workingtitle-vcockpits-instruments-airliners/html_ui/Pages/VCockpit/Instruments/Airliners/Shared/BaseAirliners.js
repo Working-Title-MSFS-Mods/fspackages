@@ -84,7 +84,7 @@ class BaseAirliners extends NavSystem {
     }
 }
 BaseAirliners.isMetric = false;
-var Airliners2;
+var Airliners;
 (function (Airliners) {
     class BaseEICAS extends BaseAirliners {
         constructor() {
@@ -1309,10 +1309,10 @@ var Airliners2;
         }
     }
     Airliners.PopupMenu_Handler = PopupMenu_Handler;
-})(Airliners2 || (Airliners2 = {}));
+})(Airliners || (Airliners = {}));
 
-var ChecklistMenu;
-(function (Checklists) {
+var WTMenu;
+(function (WTMenu) {
     let Menu_ItemType;
     (function (Menu_ItemType) {
         Menu_ItemType[Menu_ItemType["TITLE"] = 0] = "TITLE";
@@ -1356,7 +1356,7 @@ var ChecklistMenu;
             this.defaultRadio = true;
         }
     }
-    class Menu_Handler {
+    class Checklist_Menu_Handler {
         constructor() {
             this.menuLeft = 0;
             this.menuTop = 0;
@@ -1408,11 +1408,9 @@ var ChecklistMenu;
                         break;
                     case Menu_ItemType.CHECKBOX:
                         if (!this.highlightItem.checkboxVal) {
-                            console.log("CHECK");
                             this.activateItem(this.highlightItem, true);
                         }
                         else {
-                            console.log("UNCHECK");
                             this.activateItem(this.highlightItem, false);
                             this.highlightItem.checkboxVal = false;
                         }
@@ -1487,7 +1485,7 @@ var ChecklistMenu;
             this.allSections.push(this.section);
             this.section = null;
         }
-        addCheckTitle(_text, _textSize, _bgFactor, _pageNumber = undefined, _totalPages = undefined, _alignment = "center") {
+        addChecklistTitle(_text, _textSize, _bgFactor, _pageNumber = undefined, _totalPages = undefined, _alignment = "center") {
             let bg = document.createElementNS(Avionics.SVG.NS, "rect");
             bg.setAttribute("x", "0");
             bg.setAttribute("y", this.section.endY.toString());
@@ -1530,10 +1528,10 @@ var ChecklistMenu;
             this.section.items.push(item);
             this.section.endY += this.lineHeight;
         }
-        addCheckItem(_checklistItem, _textSize) {
+        addChecklistItem(_checklistItem, _textSize) {
             let enabled = (_checklistItem != null) ? true : false;
             let size = Math.min(this.lineHeight, this.columnLeft2) * 0.66;
-            let cx = this.columnLeft1 + (this.columnLeft2 - this.columnLeft1) * 0.5;
+            let cx = this.columnLeft1 + this.textMarginX;
             let cy = this.section.endY + this.lineHeight * 0.5;
 
             let tick = document.createElementNS(Avionics.SVG.NS, "path");
@@ -1546,7 +1544,7 @@ var ChecklistMenu;
 
             let text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = _checklistItem.name;
-            text.setAttribute("x", (this.columnLeft2 - 2).toString());
+            text.setAttribute("x", (this.columnLeft2 - 7).toString());
             text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
             text.setAttribute("font-size", _textSize.toString());
@@ -1578,7 +1576,7 @@ var ChecklistMenu;
             let enabled = (_callback != null) ? true : false;
             let text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = _text;
-            text.setAttribute("x", (this.columnLeft2 + this.textMarginX).toString());
+            text.setAttribute("x", (this.columnLeft1 + this.textMarginX).toString());
             text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             text.setAttribute("fill", (enabled) ? _textColour : this.disabledColor);
             text.setAttribute("font-size", _textSize.toString());
@@ -1693,48 +1691,27 @@ var ChecklistMenu;
             if (_item.enabled)
                 this.onActivate();
         }
-    }
-    Checklists.Menu_Handler = Menu_Handler;
-})(ChecklistMenu || (ChecklistMenu = {}));
-
-var PassengerBriefMenu;
-(function (PassengerBrief) {
-    let Menu_ItemType;
-    (function (Menu_ItemType) {
-        Menu_ItemType[Menu_ItemType["TITLE"] = 0] = "TITLE";
-        Menu_ItemType[Menu_ItemType["CHECKBOX"] = 7] = "CHECKBOX";
-    })(Menu_ItemType || (Menu_ItemType = {}));
-    class Menu_Item {
-        constructor(_type, _section, _y, _height) {
-            this.y = 0;
-            this.height = 0;
-            this.checkboxVal = false;
-            this.type = _type;
-            this.section = _section;
-            this.y = _y;
-            this.height = _height;
-        }
-        get interactive() {
-            if (this.type != Menu_ItemType.TITLE)
-                return true;
+        reactsOnEvent(_event) {
+            switch (_event) {
+                case "Upr_DATA_PUSH":
+                case "Upr_DATA_DEC":
+                case "Upr_DATA_INC":
+                case "Upr_MENU_ADV_DEC":
+                case "Upr_MENU_ADV_INC":
+                case "Upr_Push_ESC":
+                    return true;
+                case "Lwr_DATA_PUSH":
+                case "Lwr_DATA_DEC":
+                case "Lwr_DATA_INC":
+                case "Lwr_MENU_ADV_DEC":
+                case "Lwr_MENU_ADV_INC":
+                case "Lwr_Push_ESC":
+                    return true;
+            }
             return false;
         }
-        get enabled() {
-            if (!this.subMenu)
-                return false;
-            return true;
-        }
     }
-    class Menu_Section {
-        constructor() {
-            this.items = new Array();
-            this.startY = 0;
-            this.endY = 0;
-            this.interactionColor = "";
-            this.defaultRadio = true;
-        }
-    }
-    class Menu_Handler {
+    class PassengerBrief_Menu_Handler {
         constructor() {
             this.menuLeft = 0;
             this.menuTop = 0;
@@ -1860,7 +1837,7 @@ var PassengerBriefMenu;
             this.allSections.push(this.section);
             this.section = null;
         }
-        addBriefTitle(_text, _textSize, _bgFactor) {
+        addPassBriefTitle(_text, _textSize, _bgFactor) {
             let bg = document.createElementNS(Avionics.SVG.NS, "rect");
             bg.setAttribute("x", "0");
             bg.setAttribute("y", this.section.endY.toString());
@@ -1882,12 +1859,12 @@ var PassengerBriefMenu;
             this.section.items.push(item);
             this.section.endY += this.lineHeight;
         }
-        addBriefItem(_title, _textSize) {
+        addPassBriefItem(_title, _textSize) {
             let enabled = true;
 
             let tick = document.createElementNS(Avionics.SVG.NS, "text");
             tick.textContent = "-";
-            tick.setAttribute("x", (this.columnLeft1).toString());
+            tick.setAttribute("x", (this.columnLeft1 + this.textMarginX).toString());
             tick.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             tick.setAttribute("fill", "#11d011");
             tick.setAttribute("visibility", "hidden");
@@ -1898,7 +1875,7 @@ var PassengerBriefMenu;
 
             let text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = _title;
-            text.setAttribute("x", (this.columnLeft2).toString());
+            text.setAttribute("x", (this.columnLeft2 - 7).toString());
             text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
             text.setAttribute("font-size", _textSize.toString());
@@ -2013,9 +1990,28 @@ var PassengerBriefMenu;
             if (_item.enabled)
                 this.onActivate();
         }
+        reactsOnEvent(_event) {
+            switch (_event) {
+                case "Upr_DATA_PUSH":
+                case "Upr_DATA_DEC":
+                case "Upr_DATA_INC":
+                case "Upr_MENU_ADV_DEC":
+                case "Upr_MENU_ADV_INC":
+                case "Upr_Push_ESC":
+                    return true;
+                case "Lwr_DATA_PUSH":
+                case "Lwr_DATA_DEC":
+                case "Lwr_DATA_INC":
+                case "Lwr_MENU_ADV_DEC":
+                case "Lwr_MENU_ADV_INC":
+                case "Lwr_Push_ESC":
+                    return true;
+            }
+            return false;
+        }
     }
-    PassengerBrief.Menu_Handler = Menu_Handler;
-})(PassengerBriefMenu || (PassengerBriefMenu = {}));
-
+    WTMenu.PassengerBrief_Menu_Handler = PassengerBrief_Menu_Handler;
+    WTMenu.Checklist_Menu_Handler = Checklist_Menu_Handler;
+})(WTMenu || (WTMenu = {}));
 
 //# sourceMappingURL=BaseAirliners.js.map
