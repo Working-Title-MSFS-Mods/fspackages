@@ -193,8 +193,8 @@ class CJ4_FMC_LegsPage {
                 let waypoint = this._wayPointsToRender[i + offset];
 
                 if (!waypoint) return;
-                let isApproachWaypoint = this._approachWaypoints.indexOf(waypoint) !== -1;
-                if (isApproachWaypoint) {
+                let approachWpIndex = this._approachWaypoints.indexOf(waypoint) !== -1;
+                if (approachWpIndex > 0) {
                     this._fmc.showErrorMessage("UNABLE MOD APPROACH");
                     return;
                 }
