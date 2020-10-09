@@ -69,6 +69,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Show animated radar bug
 
 ## Known Issues
+* Sometimes when entering an airway and the exit fix, the airway name will change to the shared airway, however the routing is still correct.
 * You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are currently overhauling the flight plan management system to allow for much more flexibility and stability.
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
 * The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the various enhancements applied.
