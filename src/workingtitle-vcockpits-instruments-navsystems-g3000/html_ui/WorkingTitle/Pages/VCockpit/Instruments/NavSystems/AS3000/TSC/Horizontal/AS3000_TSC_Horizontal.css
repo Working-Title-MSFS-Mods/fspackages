@@ -96,12 +96,12 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=SpeedBugs] #SpeedBugs,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=Timers] #Timers,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=Minimums] #Minimums,
-	  as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=PFDMapSettings] #PFDMapSettings,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=PFDMapSettings] #PFDMapSettings,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=PFDSettings] #PFDSettings,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=DirectTo] #DirectTo,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MFDHome] #MFDHome,
-	  as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MFDMapSettings] #MFDMapSettings,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MFDMapSettings] #MFDMapSettings,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherSelection] #WeatherSelection,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WaypointsInfo] #WaypointsInfo,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=AirportInfo] #AirportInfo,
@@ -114,8 +114,8 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=DepartureSelection] #DepartureSelection,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=ArrivalSelection] #ArrivalSelection,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=ApproachSelection] #ApproachSelection,
-	  as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=AircraftSystems] #AircraftSystems,
-	  as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=LightingConfig] #LightingConfig {
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=AircraftSystems] #AircraftSystems,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=LightingConfig] #LightingConfig {
         display: block; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome {
         position: absolute;
@@ -305,82 +305,82 @@ as3000-tsc-horizontal-element {
           height: 15vh; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .SelectionMenu[state=Inactive] {
           display: none; }
-		  
-	  as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft {
-	    position: absolute;
-		top: 5%;
-		left: 2.5%;
-		width: 22.5%;
-		display: flex; 
-		flex-flow: column nowrap;
-		justify-content: space-between;
-		align-items: center; }
-		as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .gradientButton {
-		  width: 100%; 
-		  height: 15vh;
-		  margin: 1vh 0; }
-		as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .MapDetailButton {
-		  max-height: 25vh;
-		  height: 25vh; }
-		  as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .MapDetailButton .img {
-		    position: absolute;
-			left: 25%;
-			width: 50%;
-		    bottom: 5%; }
-		  as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .MapDetailButton .img[state=Inactive] {
-		    visibility: hidden; }
-	  as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight {
-		position: absolute;
-		top: 2.5%;
-		right: 1%;
-		height: 95%;
-		width: 70%;
-		display: flex;
-		flex-flow: row nowrap;
-		justify-content: flex-end;
-	    align-items: flex-start; }
-		as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabSelect {
-		  display: flex;
-		  flex-flow: column nowrap;
-		  justify-content: flex-start;
-		  height: 100%; }
-		  as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabSelect .tabButton {
-		    height: 15vh;
-			margin: 1vh 0; }
-		as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer {
-		  position: relative;
-		  width: 100%;
-		  height: 100%;
-		  border: solid white 0.5vh; }
-		  as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent {
-			position: relative;
-			width: 100%;
-			height: 100%;
-			overflow-x: hidden;
-		    overflow-y: scroll; }
-			as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar {
-			  width: 1vw; }
-		    as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar-track {
-			  background: none; }
-		    as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar-thumb {
-			  background: white; }
-			  as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent .tabTable {
-				position: absolute;
-			    width: 100%; }
-				as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRow .gradientButton .statusText {
-				  font-size: 4vh; }
-			    as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRow .MapSettingsTabRowButtonLeft {
-				  width: 22vw;
-				  height: 15vh;
-				  margin: 0.5vh 0.125vw 0 0.5vw; }
-			    as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRow .MapSettingsTabRowButtonRight {
-				  width: 16vw;
-				  height: 15vh;
-				  margin: 0.5vh 0.5vw 0 0.125vw;
-				  display: flex;
-				  justify-content: center;
-				  align-items: center; }
-		  
+          
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft {
+        position: absolute;
+        top: 5%;
+        left: 2.5%;
+        width: 22.5%;
+        display: flex; 
+        flex-flow: column nowrap;
+        justify-content: space-between;
+        align-items: center; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .gradientButton {
+          width: 100%; 
+          height: 15vh;
+          margin: 1vh 0; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .MapDetailButton {
+          max-height: 25vh;
+          height: 25vh; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .MapDetailButton .img {
+            position: absolute;
+            left: 25%;
+            width: 50%;
+            bottom: 5%; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .MapDetailButton .img[state=Inactive] {
+            visibility: hidden; }
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight {
+        position: absolute;
+        top: 2.5%;
+        right: 1%;
+        height: 95%;
+        width: 70%;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: flex-end;
+        align-items: flex-start; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabSelect {
+          display: flex;
+          flex-flow: column nowrap;
+          justify-content: flex-start;
+          height: 100%; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabSelect .tabButton {
+            height: 15vh;
+            margin: 1vh 0; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          border: solid white 0.5vh; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: scroll; }
+            as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar {
+              width: 1vw; }
+            as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar-track {
+              background: none; }
+            as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar-thumb {
+              background: white; }
+              as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent .tabTable {
+                position: absolute;
+                width: 100%; }
+                as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRow .gradientButton .statusText {
+                  font-size: 4vh; }
+                as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRow .MapSettingsTabRowButtonLeft {
+                  width: 22vw;
+                  height: 15vh;
+                  margin: 0.5vh 0.125vw 0 0.5vw; }
+                as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRow .MapSettingsTabRowButtonRight {
+                  width: 16vw;
+                  height: 15vh;
+                  margin: 0.5vh 0.5vw 0 0.125vw;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center; }
+          
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #DirectTo #SelectionTabs {
         position: absolute;
         top: 2.5%;
@@ -499,55 +499,55 @@ as3000-tsc-horizontal-element {
         left: 22%;
         width: 75%;
         border: 0.4vh solid white; }
-	
-	  as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay {
-		  position: absolute;
-		  top: 20%;
-		  left: 25%;
-		  width: 50%;
-		  text-align: center;
+    
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay {
+          position: absolute;
+          top: 20%;
+          left: 25%;
+          width: 50%;
+          text-align: center;
           font-size: 4vh;
-		  color: white; }
-		as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay .value {
+          color: white; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay .value {
           font-size: 6vh;
-		  color: aqua; }
-	  as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls {
-		  position: absolute;
-		  top: 40%; 
-		  width: 100%; 
-		  display: flex;
-		  flex-flow: row nowrap;
-		  justify-content: center;
-		  align-items: center; }
-	    as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingDecreaseButton, as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingIncreaseButton {
-	      height: 15vh;
-		  width: 15vh; }
-		as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls #LightingConfigSliderWrapper {
-		  position: relative;
-		  width: 40%; }
-	    as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .LightingConfigSliderContainer {
-		  width: 100%; }
-		  as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .slider {
-		    -webkit-appearance: none;
-		    width: 100%;
+          color: aqua; }
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls {
+          position: absolute;
+          top: 40%; 
+          width: 100%; 
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: center;
+          align-items: center; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingDecreaseButton, as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingIncreaseButton {
+          height: 15vh;
+          width: 15vh; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls #LightingConfigSliderWrapper {
+          position: relative;
+          width: 40%; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .LightingConfigSliderContainer {
+          width: 100%; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .slider {
+            -webkit-appearance: none;
+            width: 100%;
             background: transparent; }
-		  as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .slider::-webkit-slider-thumb {
-		    -webkit-appearance: none;
-		    width: 10%;
-		    height: 15vh;
-		    background: #00b2bf; 
-			border: solid 0.5vh black; }
-		  as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .slider::-webkit-slider-runnable-track {
-		    width: 100%;
-		    height: 15vh;
-		    background: transparent; }
-		  as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls #LightingConfigSliderWrapper .img {
-			position: absolute;
-			top: 0%;
-			left: 0%;
-			width: 100%;
-			height: 15vh;
-			-webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 10%;
+            height: 15vh;
+            background: #00b2bf; 
+            border: solid 0.5vh black; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .slider::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 15vh;
+            background: transparent; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls #LightingConfigSliderWrapper .img {
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 15vh;
+            -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 
 @keyframes rightEnter {
   0% {
@@ -1693,16 +1693,16 @@ as3000-tsc-horizontal-element {
       height: 15vh; }
       as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow #tabView .gradientButton .mainNumber {
         font-size: 5.5vh;
-		text-align: left; }
+        text-align: left; }
       as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow #tabView .gradientButton .standbyFreq {
-		font-size: 4.5vh;
+        font-size: 4.5vh;
         color: aqua; }
-	  as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow #tabView #Nav1_Frequencies, as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow #tabView #Nav2_Frequencies, as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow #tabView #Com1_Frequencies, as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow #tabView #Com2_Frequencies {
+      as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow #tabView #Nav1_Frequencies, as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow #tabView #Nav2_Frequencies, as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow #tabView #Com1_Frequencies, as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow #tabView #Com2_Frequencies {
         display: flex;
-		flex-flow: row nowrap;
-		justify-content: space-between;
-		align-items: flex-start; }
-	  as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow #tabView .gradientButton .activeNavID {
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: flex-start; }
+      as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow #tabView .gradientButton .activeNavID {
         color: white;
         text-align: right;
         font-size: 4vh;
@@ -2049,7 +2049,7 @@ as3000-tsc-horizontal-element {
           top: 20%;
           text-align: center;
           width: 100%; }
-	as3000-tsc-horizontal-element #Electricity .SelectionListWindow .WindowTitle {
+    as3000-tsc-horizontal-element #Electricity .SelectionListWindow .WindowTitle {
       background-color: black; }
     as3000-tsc-horizontal-element #Electricity .SelectionListWindow .content {
       position: absolute;
@@ -2060,8 +2060,8 @@ as3000-tsc-horizontal-element {
       background-color: black;
       padding: 2%;
       border: 0.4vh solid white; 
-	  overflow-y: scroll; }
-	  as3000-tsc-horizontal-element #Electricity .SelectionListWindow .content::-webkit-scrollbar {
+      overflow-y: scroll; }
+      as3000-tsc-horizontal-element #Electricity .SelectionListWindow .content::-webkit-scrollbar {
         width: 1vw; }
       as3000-tsc-horizontal-element #Electricity .SelectionListWindow .content::-webkit-scrollbar-track {
         background: none; }
@@ -2069,25 +2069,25 @@ as3000-tsc-horizontal-element {
         background: white; }
       as3000-tsc-horizontal-element #Electricity .SelectionListWindow .content .gradientButton {
         width: 100%; 
-		margin-bottom: 5%; }
+        margin-bottom: 5%; }
         as3000-tsc-horizontal-element #Electricity .SelectionListWindow .content .gradientButton .mainText {
           font-size: 5vh;
           position: absolute;
           top: 30%;
           text-align: center;
           width: 100%; }
-	
-	as3000-tsc-horizontal-element #Electricity .StatusButtonSelectionListWindow .content .gradientButton .mainText {
-		top: 20%;
-		font-size: 4vh; }
-	as3000-tsc-horizontal-element #Electricity .StatusButtonSelectionListWindow .content .gradientButton .statusText {
+    
+    as3000-tsc-horizontal-element #Electricity .StatusButtonSelectionListWindow .content .gradientButton .mainText {
+        top: 20%;
+        font-size: 4vh; }
+    as3000-tsc-horizontal-element #Electricity .StatusButtonSelectionListWindow .content .gradientButton .statusText {
         width: 100%;
-		font-size: 5vh;
+        font-size: 5vh;
         position: absolute;
         bottom: 5%;
         text-align: center; }
-		
-	as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .WindowTitle {
+        
+    as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .WindowTitle {
       background-color: black; }
     as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content {
       position: absolute;
@@ -2098,8 +2098,8 @@ as3000-tsc-horizontal-element {
       background-color: black;
       padding: 2%;
       border: 0.4vh solid white; 
-	  overflow-y: scroll; }
-	  as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content::-webkit-scrollbar {
+      overflow-y: scroll; }
+      as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content::-webkit-scrollbar {
         width: 1vw; }
       as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content::-webkit-scrollbar-track {
         background: none; }
@@ -2107,83 +2107,83 @@ as3000-tsc-horizontal-element {
         background: white; }
       as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content .gradientButton {
         width: 100%; 
-		margin-bottom: 5%; }
+        margin-bottom: 5%; }
         as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content .gradientButton .value {
           font-size: 5vh;
           position: absolute;
           top: 30%;
           text-align: center;
           width: 100%; }
-		  
-	as3000-tsc-horizontal-element #Electricity .tabContentContainer .tabContent[state="Active"] {
+          
+    as3000-tsc-horizontal-element #Electricity .tabContentContainer .tabContent[state="Active"] {
       display: block; }
-	as3000-tsc-horizontal-element #Electricity .tabContentContainer .tabContent[state="Inactive"] {
+    as3000-tsc-horizontal-element #Electricity .tabContentContainer .tabContent[state="Inactive"] {
       display: none; }
-	
-	as3000-tsc-horizontal-element #Electricity .MapDetailSelect .WindowTitle {
+    
+    as3000-tsc-horizontal-element #Electricity .MapDetailSelect .WindowTitle {
       background-color: black; }
-	as3000-tsc-horizontal-element #Electricity .MapDetailSelect .Container {
-	  position: absolute;
-	  bottom: 5%;
-	  height: 85%;
-	  left: 25%;
-	  width: 50%;
-	  text-align: center;
-	  font-size: 4vh;
-	  background-color: black;
-	  border: 0.4vh solid white; 
-	  display: flex; 
-	  flex-flow: column wrap; 
-	  justify-content: center;
-	  align-items: center; }
-	  as3000-tsc-horizontal-element #Electricity .MapDetailSelect .Container .gradientButton {
-		position: relative;
-	    width: 15vh;
-		height: 15vh; }
-	  as3000-tsc-horizontal-element #Electricity .MapDetailSelect .Container .MapDetailSliderOuterContainer {
-		position: relative;
-	    width: 15vh; 
-		height: 60%;
-		border: 0.2vh solid white;
-		display: flex;
-		flex-flow: column wrap;
-		justify-content: center;
-		align-items: center; }
-	    as3000-tsc-horizontal-element #Electricity .MapDetailSelect .Container .MapDetailSliderOuterContainer .MapDetailSliderContainer {
-		  position: relative;
-		  width: 100%; 
-		  height: 80%; }
-		  as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper {
-			position: relative;
-			width: 15vh;
-			height: 34vh;			
-			margin: 1vh; }
-		    as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper .slider {
-		      -webkit-appearance: none;
-			  position: relative;
-			  transform: rotate(270deg) translateY(-60%);
-			  margin-top: 9vh;
-			  width: 34vh;
-		      height: 15vh;
+    as3000-tsc-horizontal-element #Electricity .MapDetailSelect .Container {
+      position: absolute;
+      bottom: 5%;
+      height: 85%;
+      left: 25%;
+      width: 50%;
+      text-align: center;
+      font-size: 4vh;
+      background-color: black;
+      border: 0.4vh solid white; 
+      display: flex; 
+      flex-flow: column wrap; 
+      justify-content: center;
+      align-items: center; }
+      as3000-tsc-horizontal-element #Electricity .MapDetailSelect .Container .gradientButton {
+        position: relative;
+        width: 15vh;
+        height: 15vh; }
+      as3000-tsc-horizontal-element #Electricity .MapDetailSelect .Container .MapDetailSliderOuterContainer {
+        position: relative;
+        width: 15vh; 
+        height: 60%;
+        border: 0.2vh solid white;
+        display: flex;
+        flex-flow: column wrap;
+        justify-content: center;
+        align-items: center; }
+        as3000-tsc-horizontal-element #Electricity .MapDetailSelect .Container .MapDetailSliderOuterContainer .MapDetailSliderContainer {
+          position: relative;
+          width: 100%; 
+          height: 80%; }
+          as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper {
+            position: relative;
+            width: 15vh;
+            height: 34vh;           
+            margin: 1vh; }
+            as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper .slider {
+              -webkit-appearance: none;
+              position: relative;
+              transform: rotate(270deg) translateY(-60%);
+              margin-top: 9vh;
+              width: 34vh;
+              height: 15vh;
               background: transparent; }
-		    as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper .slider::-webkit-slider-thumb {
-		      -webkit-appearance: none;
-		      width: 10%;
-		      height: 15vh;
-		      background: #00b2bf; 
-			  border: solid 0.5vh black; }
-		    as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper .slider::-webkit-slider-runnable-track {
-		      width: 10%;
-		      height: 15vh;
-		      background: transparent; }
-		    as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper .sliderBackground {
-			  position: absolute;
-			  top: 1vh;
-			  left: 0.5vh;
-			  width: 14vh;
-			  height: 32vh;
-			  -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
-			
+            as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper .slider::-webkit-slider-thumb {
+              -webkit-appearance: none;
+              width: 10%;
+              height: 15vh;
+              background: #00b2bf; 
+              border: solid 0.5vh black; }
+            as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper .slider::-webkit-slider-runnable-track {
+              width: 10%;
+              height: 15vh;
+              background: transparent; }
+            as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper .sliderBackground {
+              position: absolute;
+              top: 1vh;
+              left: 0.5vh;
+              width: 14vh;
+              height: 32vh;
+              -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+            
     as3000-tsc-horizontal-element #Electricity #LoadFrequencyPopup .content {
       position: absolute;
       left: 10%;
@@ -2461,8 +2461,8 @@ as3000-tsc-horizontal-element {
     height: 21vh;
     max-height: 21vh;
     margin: 0.5vh;
-	border: solid 0.5vh;
-	border-color: gray gray white white;
+    border: solid 0.5vh;
+    border-color: gray gray white white;
     text-align: center; }
     as3000-tsc-horizontal-element .gradientButton[state=Inactive] {
       visibility: hidden; }
@@ -2484,7 +2484,7 @@ as3000-tsc-horizontal-element {
       max-width: 40%;
       margin-top: 5%;
       display: inline-block; }
-	as3000-tsc-horizontal-element .gradientButton .img_large {
+    as3000-tsc-horizontal-element .gradientButton .img_large {
       height: 80%;
       max-width: 80%;
       margin-top: 5%;
@@ -2572,11 +2572,11 @@ as3000-tsc-horizontal-element {
       background-color: white; }
       as3000-tsc-horizontal-element .gradientButton[state=White] .mainText {
         color: black; }
-	as3000-tsc-horizontal-element .gradientButton[state=Highlight] {
+    as3000-tsc-horizontal-element .gradientButton[state=Highlight] {
       background: linear-gradient(#7dddff, #008cb4 15%); }
-	  as3000-tsc-horizontal-element .gradientButton[state=Highlight] .mainText {
+      as3000-tsc-horizontal-element .gradientButton[state=Highlight] .mainText {
         color: black; }
-	  as3000-tsc-horizontal-element .gradientButton[state=Highlight] .value {
+      as3000-tsc-horizontal-element .gradientButton[state=Highlight] .value {
         color: black; }
     as3000-tsc-horizontal-element .gradientButton:Hover:Active {
       background: #37c6ed; }
@@ -2595,24 +2595,24 @@ as3000-tsc-horizontal-element {
     display: inline; }
   
   as3000-tsc-horizontal-element .tabButton {
-	position: relative;
+    position: relative;
     width: 21vh;
     height: 21vh;
     max-height: 21vh;
     margin: 0.5vh;
     text-align: center; 
-	display: flex; 
-	justify-content: center;
-	align-items: center; }
+    display: flex; 
+    justify-content: center;
+    align-items: center; }
   as3000-tsc-horizontal-element .tabButtonRight[state=""] {
     background: linear-gradient(to right, #7fa5c9 90%, #277199); }
   as3000-tsc-horizontal-element .tabButtonRight[state="Disabled"] {
     background: linear-gradient(to right, #485c6d 90%, #0d2733); }
-	as3000-tsc-horizontal-element .tabButton[state=Highlight] {
+    as3000-tsc-horizontal-element .tabButton[state=Highlight] {
       background-color: #d3eaf9; }
     as3000-tsc-horizontal-element .tabButton .mainText {
       color: black;
       text-align: center;
       font-size: 4vh; }
-	as3000-tsc-horizontal-element .tabButton[state=Disabled] .mainText {
+    as3000-tsc-horizontal-element .tabButton[state=Disabled] .mainText {
       color: gray;
