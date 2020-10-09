@@ -1,6 +1,6 @@
 # Working Title CJ4 v0.4.0 Changes
 
-Welcome to the latest update of the Working Title CRJ (v0.4.0). This is still very much a beta. Thank you to everyone who contributed to this release. We have been hard at work behind the scenes to tackle some of the core flight management systems, so the number of changes is shorter this time, but still with some fun and important features and fixes. Overall, this bird should be a bunch more fun to fly.
+Welcome to the latest update of the Working Title CJ4 (v0.4.0). This is still very much a beta. Thank you to everyone who contributed to this release. We have been hard at work behind the scenes to tackle some of the core flight management systems, so the number of changes is shorter this time, but still with some fun and important features and fixes. Overall, this bird should be a bunch more fun to fly.
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
@@ -12,10 +12,17 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Many FPLN page bug fixes
 * A few quality of life and critical bug fixes
 * Overhaul of DEP/ARR pages and working STAR approaches (thanks @tscharlii)
-* TODO hosky's mfd and sound changes
+* Added functional options in the UPR MENU
+* MFD Checklists have been added
+* Pax Brief Menu has been added (Unfortunately, no sounds for it yet, next release)
+* Added FMS Text option (this essentially displays the PROG page on the MFD)
+* Added functional PASS BRIEF, CHECKLIST, and SYS buttons on the CCP
+* Improved BELT button audio (Currently the chime is non-functional for this.  Fix soon)
+* Added SAFETY button chime and announcement and also chime when you turn the SAFETY and BELT buttons off.
+* Increased volume of pilot and co-pilot fan air sounds
 
 ### Engine Model
-* Engine fuel consumption model has been custom coded and replaces the sim fuel consumption. Fuel consumption, especially at cruise, should be much, much closer to published. Expect 1800-1850pph per side at ISA full power and 500-800pph per side at cruise, depending on altitude, mach, and power settings.
+* Engine fuel consumption model has been custom coded and replaces the sim fuel consumption. Fuel consumption, especially at cruise, should be much, much closer to published. Expect 1800-1850pph per side at ISA full power at sea level and 500-800pph per side at cruise, depending on altitude, mach, and power settings.
 * Thrust now scales exponentially with N1 instead of linearly. Power settings should feel much more accurate.
 
 ### LEGS Page
@@ -28,6 +35,10 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Made the WORKING prompt more consistent
 * Added feature to show runway where possible
 * Disabled the ability to adjust approach fixes due to simulator limitations
+* Each waypoint now shows the distance to the next fix instead of the cumulative flight plan distance.
+* Blue waypoint is the FROM waypoint
+* Magenta waypoint is the current TO waypoint
+* Only fixes with an altitude or speed restriction will populate on the right side in green.  (It does not show cruise altitude anymore)
 
 ### FPLN Page
 * Fixed issue where adding via airway would not add all fixes along airway to flight plan
