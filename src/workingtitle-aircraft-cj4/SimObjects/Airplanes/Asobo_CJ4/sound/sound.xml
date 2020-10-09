@@ -223,7 +223,7 @@
       </Requires>
     </Sound>
 
-	  <Sound WwiseData="true" WwiseEvent="seatbelt_light" ViewPoint="Inside" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
+	  <Sound WwiseData="true" WwiseEvent="seatbelt_lights" ViewPoint="Inside" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
 		  <Range LowerBound="1" />
 		  <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
 			  <Range LowerBound="1" />
@@ -231,6 +231,20 @@
 	  </Sound>
 
       <Sound WwiseData="true" WwiseEvent="chime" ViewPoint="Inside" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
+          <Range UpperBound="0" />
+          <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+              <Range LowerBound="1" />
+          </Requires>
+      </Sound>
+
+	  <Sound WwiseData="true" WwiseEvent="safety_lights" ViewPoint="Inside" LocalVar="SAFETY_LIGHT_ON" Continuous="false">
+		  <Range LowerBound="1" />
+		  <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+			  <Range LowerBound="1" />
+		  </Requires>
+	  </Sound>
+
+	  <Sound WwiseData="true" WwiseEvent="chime" ViewPoint="Inside" LocalVar="SAFETY_LIGHT_ON" Continuous="false">
           <Range UpperBound="0" />
           <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
               <Range LowerBound="1" />

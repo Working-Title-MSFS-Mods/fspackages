@@ -276,7 +276,7 @@
 		</Component>
 
 		<!-- LIGHTING #############################################################################################################-->
-		<Component ID="LIGHTING">
+        <Component ID="LIGHTING">
 			<Component ID="LIGHTING_Controls">
 				<Component ID="LIGHTING_Switches">
 					<DefaultTemplateParameters>
@@ -304,6 +304,8 @@
 					</UseTemplate>
 					<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_SeatBelt_Template">
 					</UseTemplate>
+                    <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Safety_Template">
+                    </UseTemplate>
 				</Component>
 				<Component ID="LIGHTING_Knobs">
 					<UseTemplate Name="ASOBO_LIGHTING_Knob_Panel_Template">
@@ -929,9 +931,6 @@
 			</UseTemplate>
 		</Component>
 		<Component ID="TT_INOP">
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>LIGHTING_Push_Light_Safety</NODE_ID>
-			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>push_pilot_DCP_CCPMENU</NODE_ID>
 			</UseTemplate>
