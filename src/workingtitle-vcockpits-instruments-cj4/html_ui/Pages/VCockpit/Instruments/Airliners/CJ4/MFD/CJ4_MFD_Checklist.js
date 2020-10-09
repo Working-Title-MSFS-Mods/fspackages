@@ -23,6 +23,11 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
+                        name: "STANDBY FLIGHT DISPLAY SWITCH",
+                        value: "ON",
+                        key: false
+                    },
+                    {
                         name: "AVIONICS SWITCH",
                         value: "DISPATCH",
                         key: false
@@ -33,18 +38,33 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
+                        name: "WHEEL CHOCKS",
+                        value: "REMOVE",
+                        key: false
+                    },
+                    {
+                        name: "CABIN DOOR",
+                        value: "CLOSED",
+                        key: false
+                    },
+                    {
                         name: "PASSENGER BRIEFING",
                         value: "COMPLETE",
                         key: false
                     },
                     {
                         name: "SEATS/BELTS/PEDALS",
-                        value: "ADJUST/SECURE",
+                        value: "ADJUST/SECTURE",
                         key: false
                     },
                     {
                         name: "EXTERIOR LIGHTS",
                         value: "AS REQUIRED",
+                        key: false
+                    },
+                    {
+                        name: "EICAS",
+                        value: "CHECK",
                         key: false
                     },
                     {
@@ -57,6 +77,8 @@ class NormalChecklist extends Checklist {
                         value: "OFF",
                         key: false
                     }
+                    
+                    
                 ]
             },
             {
@@ -68,7 +90,7 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
-                        name: "ENGINE START BUTTON",
+                        name: "ENGINE STARTER BUTTON",
                         value: "PUSH",
                         key: false
                     },
@@ -83,8 +105,13 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
-                        name: "OPPOSITE ENGINE",
+                        name: "EICAS",
                         value: "CHECK",
+                        key: false
+                    },
+                    {
+                        name: "OPPOSITE ENGINE",
+                        value: "START",
                         key: false
                     },
                     {
@@ -103,7 +130,7 @@ class NormalChecklist extends Checklist {
                 name: "BEFORE TAXI",
                 checklistItems: [
                     {
-                        name: "AVIONICS",
+                        name: "AVIONICS SWITCH",
                         value: "ON",
                         key: false
                     },
@@ -166,6 +193,21 @@ class NormalChecklist extends Checklist {
                         name: "ALTIMETER",
                         value: "SET/CHECK",
                         key: false
+                    },
+                    {
+                        name: "PRESSURIZATION",
+                        value: "VERIFY/SET",
+                        key: false
+                    },
+                    {
+                        name: "EICAS",
+                        value: "CHECK",
+                        key: false
+                    },
+                    {
+                        name: "AFT DIVIDER DOORS",
+                        value: "LATCHED OPEN",
+                        key: false
                     }
                 ]
             },
@@ -213,6 +255,11 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
+                        name: "RUDDER BIAS SYSTEM",
+                        value: "CHECK",
+                        key: false
+                    },
+                    {
                         name: "SEATS",
                         value: "UPRIGHT/OUTBOARD",
                         key: false
@@ -238,6 +285,21 @@ class NormalChecklist extends Checklist {
                         key: false
                     },
                     {
+                        name: "TCAS",
+                        value: "TA/RA",
+                        key: false
+                    },
+                    {
+                        name: "RADAR",
+                        value: "AS REQUIRED",
+                        key: false
+                    },
+                    {
+                        name: "GA BUTTON",
+                        value: "PUSH",
+                        key: false
+                    },
+                    {
                         name: "BATTERY AMPS",
                         value: "VERIFY 20 OR LESS",
                         key: false
@@ -255,6 +317,11 @@ class NormalChecklist extends Checklist {
                     {
                         name: "EXTERIOR LIGHTS",
                         value: "AS REQUIRED",
+                        key: false
+                    },
+                    {
+                        name: "EICAS",
+                        value: "CHECK",
                         key: false
                     }
                 ]
@@ -388,6 +455,11 @@ class NormalChecklist extends Checklist {
                 name: "APPROACH",
                 checklistItems: [
                     {
+                        name: "LANDING DATA",
+                        value: "CONFIRM",
+                        key: false
+                    },
+                    {
                         name: "CREW BRIEFING",
                         value: "COMPLETE",
                         key: false
@@ -469,7 +541,7 @@ class NormalChecklist extends Checklist {
                     },
                     {
                         name: "AIRSPEED",
-                        value: "V" + "REF",
+                        value: "VREF",
                         key: false
                     },
                     {
@@ -502,6 +574,11 @@ class NormalChecklist extends Checklist {
             {
                 name: "ALL ENGINE GO-AROUND",
                 checklistItems: [
+                    {
+                        name: "GA BUTTON",
+                        value: "PUSH",
+                        key: false
+                    },
                     {
                         name: "THROTTLES",
                         value: "TO",
@@ -570,6 +647,11 @@ class NormalChecklist extends Checklist {
                     {
                         name: "ICE PROTECTION SYSTEMS",
                         value: "OFF/AS REQUIRED",
+                        key: false
+                    },
+                    {
+                        name: "RADAR",
+                        value: "STANDBY",
                         key: false
                     },
                     {
