@@ -114,6 +114,14 @@
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
+				<Event Id="260335153" Name="Play_Asobo_CJ4_chime" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\Passenger Announcements\Play_Asobo_CJ4_chime" GUID="{55A78414-A3BF-447F-B9F5-845A4208757A}" MaxAttenuation="3.000000" DurationType="OneShot" DurationMin="0.883787" DurationMax="0.883787">
+					<IncludedMemoryFiles>
+						<File Id="616300746" Language="SFX">
+							<ShortName>Passenger Announcements\Seatbelt &amp; Safety Off Chime 3.wav</ShortName>
+							<Path>SFX\Passenger Announcements\Seatbelt &amp; Safety Off Chime 3_78BD8C0F.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
 				<Event Id="2656505846" Name="Play_Asobo_CJ4_seatbelt_light" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\Passenger Announcements\Play_Asobo_CJ4_seatbelt_light" GUID="{8CE6A881-FB7F-46E8-B8FC-8A201E0B6021}" MaxAttenuation="3.000000" DurationType="OneShot" DurationMin="10.184240" DurationMax="10.184240">
 					<IncludedMemoryFiles>
 						<File Id="233927793" Language="SFX">
