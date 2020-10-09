@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="12" SoundbankVersion="135">
+	<RootPaths>
+		<ProjectRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages\src\sound\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages\src\sound\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages\src\sound\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages\src\sound\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<DialogueEvents/>
+	<StreamedFiles/>
+	<MediaFilesNotInAnyBank/>
+	<SoundBanks>
+		<SoundBank Id="1355168291" GUID="{701ECBBD-9C7B-4030-8CDB-749EE5D1C7B9}" Language="SFX">
+			<ObjectPath>Init</ObjectPath>
+			<ShortName>Init</ShortName>
+			<Path>Init.bnk</Path>
+			<IncludedAuxBusses>
+				<AuxBus Id="1214755710" Name="rev_outdoor_custom_ai" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\game\game_aux\aux_outside\rev_outdoor_custom_ai" GUID="{28AE748C-9139-46CA-91A1-69FD6CEADAAE}"/>
+				<AuxBus Id="1600286681" Name="rev_outdoor_custom" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\game\game_aux\aux_outside\rev_outdoor_custom" GUID="{82F0E64C-A4B2-45A9-A2BB-A88A928CA127}"/>
+				<AuxBus Id="2069837898" Name="rev_outdoor_aircraft" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\game\game_aux\aux_outside\rev_outdoor_aircraft" GUID="{3070D14E-37F3-4DB4-8C7E-262318A02693}"/>
+				<AuxBus Id="3484564662" Name="disto_overspeed" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\game\game_aux\disto_overspeed" GUID="{5815E54F-778D-4C14-BF59-097980689171}"/>
+				<AuxBus Id="3722335303" Name="rev_inside_custom" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\game\game_aux\aux_inside\rev_inside_custom" GUID="{0144F838-F9D8-480E-A1A7-B07D86A7F342}"/>
+				<AuxBus Id="3930462003" Name="rev_outdoor_aircraft_low_end" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\game\game_aux\aux_outside\rev_outdoor_aircraft_low_end" GUID="{A0E63B80-12BA-4344-A23E-1CF56C5A4BEF}"/>
+			</IncludedAuxBusses>
+			<ExcludedMemoryFiles>
+				<File Id="74039724" Language="SFX">
+					<ShortName>AE_DistantBuilding_MicsFar.wav</ShortName>
+					<Path>Plugins\Wwise Convolution Reverb\AE_DistantBuilding_MicsFar_734A3E6F.wem</Path>
+				</File>
+				<File Id="231298282" Language="SFX">
+					<ShortName>IR_ATR42-600_AT4022.wav</ShortName>
+					<Path>Plugins\Wwise Convolution Reverb\IR_ATR42-600_AT4022_084CD397.wem</Path>
+				</File>
+				<File Id="879285817" Language="SFX">
+					<ShortName>AE_DistantBuilding_MicsFar.wav</ShortName>
+					<Path>Plugins\Wwise Convolution Reverb\AE_DistantBuilding_MicsFar_0345FA8A.wem</Path>
+				</File>
+			</ExcludedMemoryFiles>
+			<GameParameters>
+				<GameParameter Id="328924114" Name="MIXER_WARNING_VOLUME" ObjectPath="\Game Parameters\gui\mixer\MIXER_WARNING_VOLUME" GUID="{7908D602-FD8B-404A-B644-22EAB86A3A13}"/>
+				<GameParameter Id="806364695" Name="HEADPHONE_IN_COCKPIT" ObjectPath="\Game Parameters\gplay\HEADPHONE_IN_COCKPIT" GUID="{6A96F2B7-4E69-4D2C-83CD-07F89DB80F92}"/>
+				<GameParameter Id="1012293574" Name="MIXER_ENGINE_VOLUME" ObjectPath="\Game Parameters\gui\mixer\MIXER_ENGINE_VOLUME" GUID="{590DE35B-A8AD-4337-B39A-B32335216856}"/>
+				<GameParameter Id="1033908394" Name="MIXER_MISCELLANEOUS_VOLUME" ObjectPath="\Game Parameters\gui\mixer\MIXER_MISCELLANEOUS_VOLUME" GUID="{6D046FE9-8877-4483-B6F3-4B62E35069E3}"/>
+				<GameParameter Id="1288733096" Name="SC_AURAL_WARNING" ObjectPath="\Game Parameters\control_signal\sidechain\SC_AURAL_WARNING" GUID="{97119893-2912-4259-A0FB-B324273D4B99}"/>
+				<GameParameter Id="1324482047" Name="MIXER_AIRCRAFT_AI_VOLUME" ObjectPath="\Game Parameters\gui\mixer\MIXER_AIRCRAFT_AI_VOLUME" GUID="{35E6CEB4-CCF0-42F7-9519-DC3FD300F09D}"/>
+				<GameParameter Id="1479801155" Name="MUTE_WARNING_OUTSIDE" ObjectPath="\Game Parameters\gui\MUTE_WARNING_OUTSIDE" GUID="{F8ED1B7C-8370-46C1-9E5B-5A0D80C3B930}"/>
+				<GameParameter Id="2025464895" Name="SC_ENGINES" ObjectPath="\Game Parameters\control_signal\sidechain\SC_ENGINES" GUID="{172BD2BB-5DD1-4B2D-8EE4-FC278557ACAA}"/>
+				<GameParameter Id="2207392583" Name="MIXER_ENVIRONMENT_VOLUME" ObjectPath="\Game Parameters\gui\mixer\MIXER_ENVIRONMENT_VOLUME" GUID="{31BA5FC5-650D-4F7C-B486-503A942BC5EA}"/>
+				<GameParameter Id="2339006855" Name="SC_VO" ObjectPath="\Game Parameters\control_signal\sidechain\SC_VO" GUID="{B6839AC9-E419-435D-8213-6AF5526276DA}"/>
+				<GameParameter Id="2586533568" Name="SC_SFX_MID" ObjectPath="\Game Parameters\control_signal\sidechain\SC_SFX_MID" GUID="{8D5BC668-290A-40CB-A7CE-0E7CB037DA98}"/>
+				<GameParameter Id="2920878614" Name="HEADPHONE_FILTER" ObjectPath="\Game Parameters\gplay\HEADPHONE_FILTER" GUID="{8A8CBF06-0F14-4953-A5B8-AEB468C22D92}"/>
+				<GameParameter Id="3028259178" Name="SPP_DISTANCE" ObjectPath="\Game Parameters\engine\spp\SPP_DISTANCE" GUID="{725BFF84-7802-4228-829E-0F43E2AB5928}"/>
+				<GameParameter Id="3192538439" Name="MIXER_COCKPIT_VOLUME" ObjectPath="\Game Parameters\gui\mixer\MIXER_COCKPIT_VOLUME" GUID="{72B08CA1-7049-4516-922F-19EA70360E0D}"/>
+				<GameParameter Id="3567933408" Name="SC_SFX_THUNDER" ObjectPath="\Game Parameters\control_signal\sidechain\SC_SFX_THUNDER" GUID="{80D5FA58-121E-4DBE-B40D-B0C428D874B1}"/>
+				<GameParameter Id="4194702645" Name="ENV_COCKPIT_INSULATION" ObjectPath="\Game Parameters\environment\common\ENV_COCKPIT_INSULATION" GUID="{41B00B57-897A-4477-A19B-88C4DE7B46F4}"/>
+			</GameParameters>
+		</SoundBank>
+		<SoundBank Id="2933379036" GUID="{D8066183-E2C0-4006-B99A-91E46B8ACA5F}" Language="SFX">
+			<ObjectPath>\SoundBanks\Default Work Unit\local_soundbank</ObjectPath>
+			<ShortName>local_soundbank</ShortName>
+			<Path>local_soundbank.bnk</Path>
+			<IncludedAuxBusses>
+				<AuxBus Id="1214755710" Name="rev_outdoor_custom_ai" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\game\game_aux\aux_outside\rev_outdoor_custom_ai" GUID="{28AE748C-9139-46CA-91A1-69FD6CEADAAE}"/>
+				<AuxBus Id="1600286681" Name="rev_outdoor_custom" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\game\game_aux\aux_outside\rev_outdoor_custom" GUID="{82F0E64C-A4B2-45A9-A2BB-A88A928CA127}"/>
+				<AuxBus Id="2069837898" Name="rev_outdoor_aircraft" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\game\game_aux\aux_outside\rev_outdoor_aircraft" GUID="{3070D14E-37F3-4DB4-8C7E-262318A02693}"/>
+				<AuxBus Id="3484564662" Name="disto_overspeed" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\game\game_aux\disto_overspeed" GUID="{5815E54F-778D-4C14-BF59-097980689171}"/>
+				<AuxBus Id="3722335303" Name="rev_inside_custom" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\game\game_aux\aux_inside\rev_inside_custom" GUID="{0144F838-F9D8-480E-A1A7-B07D86A7F342}"/>
+				<AuxBus Id="3930462003" Name="rev_outdoor_aircraft_low_end" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\game\game_aux\aux_outside\rev_outdoor_aircraft_low_end" GUID="{A0E63B80-12BA-4344-A23E-1CF56C5A4BEF}"/>
+			</IncludedAuxBusses>
+			<IncludedMemoryFiles>
+				<File Id="74039724" Language="SFX">
+					<ShortName>AE_DistantBuilding_MicsFar.wav</ShortName>
+					<Path>Plugins\Wwise Convolution Reverb\AE_DistantBuilding_MicsFar_734A3E6F.wem</Path>
+				</File>
+				<File Id="231298282" Language="SFX">
+					<ShortName>IR_ATR42-600_AT4022.wav</ShortName>
+					<Path>Plugins\Wwise Convolution Reverb\IR_ATR42-600_AT4022_084CD397.wem</Path>
+				</File>
+				<File Id="879285817" Language="SFX">
+					<ShortName>AE_DistantBuilding_MicsFar.wav</ShortName>
+					<Path>Plugins\Wwise Convolution Reverb\AE_DistantBuilding_MicsFar_0345FA8A.wem</Path>
+				</File>
+			</IncludedMemoryFiles>
+			<GameParameters>
+				<GameParameter Id="328924114" Name="MIXER_WARNING_VOLUME" ObjectPath="\Game Parameters\gui\mixer\MIXER_WARNING_VOLUME" GUID="{7908D602-FD8B-404A-B644-22EAB86A3A13}"/>
+				<GameParameter Id="806364695" Name="HEADPHONE_IN_COCKPIT" ObjectPath="\Game Parameters\gplay\HEADPHONE_IN_COCKPIT" GUID="{6A96F2B7-4E69-4D2C-83CD-07F89DB80F92}"/>
+				<GameParameter Id="1012293574" Name="MIXER_ENGINE_VOLUME" ObjectPath="\Game Parameters\gui\mixer\MIXER_ENGINE_VOLUME" GUID="{590DE35B-A8AD-4337-B39A-B32335216856}"/>
+				<GameParameter Id="1033908394" Name="MIXER_MISCELLANEOUS_VOLUME" ObjectPath="\Game Parameters\gui\mixer\MIXER_MISCELLANEOUS_VOLUME" GUID="{6D046FE9-8877-4483-B6F3-4B62E35069E3}"/>
+				<GameParameter Id="1288733096" Name="SC_AURAL_WARNING" ObjectPath="\Game Parameters\control_signal\sidechain\SC_AURAL_WARNING" GUID="{97119893-2912-4259-A0FB-B324273D4B99}"/>
+				<GameParameter Id="1324482047" Name="MIXER_AIRCRAFT_AI_VOLUME" ObjectPath="\Game Parameters\gui\mixer\MIXER_AIRCRAFT_AI_VOLUME" GUID="{35E6CEB4-CCF0-42F7-9519-DC3FD300F09D}"/>
+				<GameParameter Id="1479801155" Name="MUTE_WARNING_OUTSIDE" ObjectPath="\Game Parameters\gui\MUTE_WARNING_OUTSIDE" GUID="{F8ED1B7C-8370-46C1-9E5B-5A0D80C3B930}"/>
+				<GameParameter Id="2025464895" Name="SC_ENGINES" ObjectPath="\Game Parameters\control_signal\sidechain\SC_ENGINES" GUID="{172BD2BB-5DD1-4B2D-8EE4-FC278557ACAA}"/>
+				<GameParameter Id="2207392583" Name="MIXER_ENVIRONMENT_VOLUME" ObjectPath="\Game Parameters\gui\mixer\MIXER_ENVIRONMENT_VOLUME" GUID="{31BA5FC5-650D-4F7C-B486-503A942BC5EA}"/>
+				<GameParameter Id="2339006855" Name="SC_VO" ObjectPath="\Game Parameters\control_signal\sidechain\SC_VO" GUID="{B6839AC9-E419-435D-8213-6AF5526276DA}"/>
+				<GameParameter Id="2586533568" Name="SC_SFX_MID" ObjectPath="\Game Parameters\control_signal\sidechain\SC_SFX_MID" GUID="{8D5BC668-290A-40CB-A7CE-0E7CB037DA98}"/>
+				<GameParameter Id="2920878614" Name="HEADPHONE_FILTER" ObjectPath="\Game Parameters\gplay\HEADPHONE_FILTER" GUID="{8A8CBF06-0F14-4953-A5B8-AEB468C22D92}"/>
+				<GameParameter Id="3028259178" Name="SPP_DISTANCE" ObjectPath="\Game Parameters\engine\spp\SPP_DISTANCE" GUID="{725BFF84-7802-4228-829E-0F43E2AB5928}"/>
+				<GameParameter Id="3192538439" Name="MIXER_COCKPIT_VOLUME" ObjectPath="\Game Parameters\gui\mixer\MIXER_COCKPIT_VOLUME" GUID="{72B08CA1-7049-4516-922F-19EA70360E0D}"/>
+				<GameParameter Id="3567933408" Name="SC_SFX_THUNDER" ObjectPath="\Game Parameters\control_signal\sidechain\SC_SFX_THUNDER" GUID="{80D5FA58-121E-4DBE-B40D-B0C428D874B1}"/>
+				<GameParameter Id="4194702645" Name="ENV_COCKPIT_INSULATION" ObjectPath="\Game Parameters\environment\common\ENV_COCKPIT_INSULATION" GUID="{41B00B57-897A-4477-A19B-88C4DE7B46F4}"/>
+			</GameParameters>
+		</SoundBank>
+		<SoundBank Id="2975758793" GUID="{CCCCFDFA-06A9-42B0-B420-F5811DF76F04}" Language="SFX">
+			<ObjectPath>\SoundBanks\Asobo_CJ4_WorkingTitle\Asobo_CJ4_WorkingTitle</ObjectPath>
+			<ShortName>Asobo_CJ4_WorkingTitle</ShortName>
+			<Path>Asobo_CJ4_WorkingTitle.bnk</Path>
+			<IncludedEvents>
+				<Event Id="3202083259" Name="Play_Asobo_CJ4_air_fan" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\Play_Asobo_CJ4_air_fan" GUID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}" MaxAttenuation="3.000000" DurationType="Infinite">
+					<IncludedMemoryFiles>
+						<File Id="67448994" Language="SFX">
+							<ShortName>CJ4_Air_Vent.wav</ShortName>
+							<Path>SFX\CJ4_Air_Vent_3FC5040D.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="260335153" Name="Play_Asobo_CJ4_chime" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\Passenger Announcements\Play_Asobo_CJ4_chime" GUID="{55A78414-A3BF-447F-B9F5-845A4208757A}" MaxAttenuation="3.000000" DurationType="OneShot" DurationMin="0.883787" DurationMax="0.883787">
+					<IncludedMemoryFiles>
+						<File Id="616300746" Language="SFX">
+							<ShortName>Passenger Announcements\Seatbelt &amp; Safety Off Chime 3.wav</ShortName>
+							<Path>SFX\Passenger Announcements\Seatbelt &amp; Safety Off Chime 3_78BD8C0F.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="2846866987" Name="Play_Asobo_CJ4_safety_lights" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\Passenger Announcements\Play_Asobo_CJ4_safety_lights" GUID="{23F782EA-85B6-4184-9FB8-9DC0AB4FF7AA}" MaxAttenuation="3.000000" DurationType="OneShot" DurationMin="10.599184" DurationMax="10.599184">
+					<IncludedMemoryFiles>
+						<File Id="789484764" Language="SFX">
+							<ShortName>Passenger Announcements\Safety Belt.wav</ShortName>
+							<Path>SFX\Passenger Announcements\Safety Belt_78BD8C0F.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="2656505846" Name="Play_Asobo_CJ4_seatbelt_light" ObjectPath="\Events\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\Passenger Announcements\Play_Asobo_CJ4_seatbelt_light" GUID="{8CE6A881-FB7F-46E8-B8FC-8A201E0B6021}" MaxAttenuation="3.000000" DurationType="OneShot" DurationMin="10.184240" DurationMax="10.184240">
+					<IncludedMemoryFiles>
+						<File Id="233927793" Language="SFX">
+							<ShortName>Passenger Announcements\CJ4_Seatbelt.wav</ShortName>
+							<Path>SFX\Passenger Announcements\CJ4_Seatbelt_78BD8C0F.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+			</IncludedEvents>
+			<GameParameters>
+				<GameParameter Id="824435188" Name="SIMVAR_AC" ObjectPath="\Game Parameters\simvar\instruments\SIMVAR_AC" GUID="{1AA79A50-3201-4F5F-8D74-1B3682D07603}"/>
+			</GameParameters>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>
