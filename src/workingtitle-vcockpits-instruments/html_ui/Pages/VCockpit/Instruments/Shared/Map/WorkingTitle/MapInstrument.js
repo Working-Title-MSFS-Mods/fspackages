@@ -1226,8 +1226,11 @@ class MapInstrument extends ISvgMapRootElement {
         this.bEnableCenterOnFplnWaypoint = _val;
     }
 	
-    // MOD: this method now does nothing
+    // keeping this for back-compat
 	rotateWithPlane(_val) {
+        if (this.rotationHandler instanceof MapInstrument_DefaultRotationHandler) {
+            this.rotationHandler.rotateWithPlane = _val;
+        }
 	}
 	
     setPlaneScale(_scale) {
@@ -1602,8 +1605,16 @@ MapInstrument.ROAD_PRIMARY_RANGE_DEFAULT = Infinity;
 
 
 class MapInstrument_DefaultRotationHandler {
+    constructor(_rotateWithPlane = false) {
+        this.rotateWithPlane = _rotateWithPlane;
+    }
+    
     getRotation() {
-        return 0;
+        if (this.rotateWithPlane) {
+            return -SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
+        } else {
+            return 0;
+        }
     }
 }
 MapInstrument_DefaultRotationHandler.INSTANCE = new MapInstrument_DefaultRotationHandler();
