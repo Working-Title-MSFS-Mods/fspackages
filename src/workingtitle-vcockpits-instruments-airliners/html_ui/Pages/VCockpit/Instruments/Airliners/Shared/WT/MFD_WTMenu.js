@@ -214,7 +214,7 @@ var WTMenu;
             let cy = this.section.endY + this.lineHeight * 0.5;
 
             let tick = document.createElementNS(Avionics.SVG.NS, "path");
-            tick.setAttribute("d", "M" + (cx - size * 0.1) + " " + (cy - 0.6) + " l" + (size * 0.1) + " " + (size * 0.5) + " l" + (size * 0.4) + " " + (-size));
+            tick.setAttribute("d", "M" + (cx - size * 0.1) + " " + (cy - 0.2) + " l" + (size * 0.1) + " " + (size * 0.5) + " l" + (size * 0.18) + " " + (-size));
             tick.setAttribute("fill", "none");
             tick.setAttribute("stroke", "white");
             tick.setAttribute("stroke-width", "2");
@@ -233,7 +233,7 @@ var WTMenu;
 
             let value = document.createElementNS(Avionics.SVG.NS, "text");
             value.textContent = _checklistItem.value;
-            value.setAttribute("x", "350");
+            value.setAttribute("x", (350 - this.textMarginX).toString());
             value.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             value.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
             value.setAttribute("font-size", _textSize.toString());
