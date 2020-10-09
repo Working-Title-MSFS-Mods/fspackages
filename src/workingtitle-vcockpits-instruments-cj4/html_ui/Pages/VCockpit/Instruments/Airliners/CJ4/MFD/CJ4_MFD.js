@@ -200,7 +200,7 @@ class CJ4_MFD extends BaseAirliners {
                     this.passengerBrief.otherMenusOpen = true;
                 }
                 else{
-                    this.checklist.otherMenusOpen = false
+                    this.checklist.otherMenusOpen = false;
                     this.passengerBrief.otherMenusOpen = false;
                 }
                 break;
@@ -212,7 +212,7 @@ class CJ4_MFD extends BaseAirliners {
                     this.passengerBrief.otherMenusOpen = true;
                 }
                 else{
-                    this.checklist.otherMenusOpen = false
+                    this.checklist.otherMenusOpen = false;
                     this.passengerBrief.otherMenusOpen = false;
                 }
                 break;
@@ -227,7 +227,7 @@ class CJ4_MFD extends BaseAirliners {
                 this.showPassengerBrief = !this.showPassengerBrief;
                 break;
             case "Lwr_Push_ESC":
-                this.checklist.otherMenusOpen = false
+                this.checklist.otherMenusOpen = false;
                 this.passengerBrief.otherMenusOpen = false;
                 break;
         }
@@ -552,7 +552,7 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                         const currentFuel = (SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds") * SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons")).toFixed(0);
                         const expectedFuelAtDestination = (currentFuel - expectedFuelUsage).toFixed(0) < 0 ? 0 : (currentFuel - expectedFuelUsage).toFixed(0);
                         const grossWeight = SimVar.GetSimVarValue("MAX GROSS WEIGHT", "pounds");
-                        const oilQuantity = SimVar.GetSimVarValue("OIL AMOUNT", "pounds")
+                        // const oilQuantity = SimVar.GetSimVarValue("OIL AMOUNT", "pounds")
                         const expectedGrossWeight = expectedFuelAtDestination == 0 ? (grossWeight / 1000).toFixed(2) : ((grossWeight - expectedFuelUsage) / 1000).toFixed(2);
 
                         this._destinationWaypointContainer
