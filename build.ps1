@@ -64,7 +64,7 @@ function Update-Packages {
             $src = Join-Path "." $assetGroup.AssetDir
             $dest = Join-Path $packagePath $assetGroup.OutputDir
             Write-Host "Copying $src to $dest..."
-            robocopy $src $dest /XO /e /njh /njs /nfl /nc /ndl /PURGE
+            robocopy $src $dest /XO /e /PURGE  | Out-Null
         }
     
         Write-Host "Building layout file..."
