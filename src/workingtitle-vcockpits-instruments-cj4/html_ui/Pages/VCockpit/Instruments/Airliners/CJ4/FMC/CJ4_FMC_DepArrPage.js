@@ -73,8 +73,10 @@ class CJ4_FMC_DepArrPage {
         if (selectedRunway) {
             rows[0] = ["", Avionics.Utils.formatRunway(selectedRunway.designation) + "[d-text green]"];
             fmc.onRightInput[0] = () => {
-                fmc.setRunwayIndex(-1, (success) => {
+                fmc.setMsg("Working...");
+                fmc.setRunwayIndex(-1, () => {
                     fmc.setDepartureIndex(-1, () => {
+                        fmc.setMsg();
                         CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, currentPage);
                     });
                 });
@@ -120,13 +122,16 @@ class CJ4_FMC_DepArrPage {
                 let runwayIndex = runwayPages[displayedPageIndex][i].runwayIndex;
                 rows[2 * i] = ["", runwayPages[displayedPageIndex][i].text];
                 fmc.onRightInput[i] = () => {
+                    fmc.setMsg("Working...");
                     if (fmc.flightPlanManager.getDepartureProcIndex() === -1) {
                         fmc.setOriginRunwayIndex(runwayIndex, () => {
+                            fmc.setMsg();
                             CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, undefined);
                         });
                     }
                     else {
                         fmc.setRunwayIndex(runwayIndex, () => {
+                            fmc.setMsg();
                             CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, undefined);
                         });
                     }
@@ -137,8 +142,10 @@ class CJ4_FMC_DepArrPage {
         if (selectedDeparture) {
             rows[0][0] = selectedDeparture.name + "[d-text green]";
             fmc.onLeftInput[0] = () => {
-                fmc.setRunwayIndex(-1, (success) => {
+                fmc.setMsg("Working...");
+                fmc.setRunwayIndex(-1, () => {
                     fmc.setDepartureIndex(-1, () => {
+                        fmc.setMsg();
                         CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, currentPage);
                     });
                 });
@@ -186,7 +193,9 @@ class CJ4_FMC_DepArrPage {
                 let departureIndex = departurePages[displayedPageIndex][i].departureIndex;
                 rows[2 * i][0] = departurePages[displayedPageIndex][i].text;
                 fmc.onLeftInput[i] = () => {
+                    fmc.setMsg("Working...");
                     fmc.setDepartureIndex(departureIndex, () => {
+                        fmc.setMsg();
                         CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
                     });
                 };
@@ -201,7 +210,7 @@ class CJ4_FMC_DepArrPage {
         let rsk6Field = "";
         if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
             fmc.fpHasChanged = true;
-            rsk6Field = "CANCEL MOD>"
+            rsk6Field = "CANCEL MOD>";
         }
         else if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 0) {
             rsk6Field = "LEGS>";
@@ -218,7 +227,7 @@ class CJ4_FMC_DepArrPage {
 
         fmc.refreshPageCallback = () => {
             CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
-        }
+        };
 
         //end of CWB EXEC handling
         modStr = fmc.fpHasChanged ? "MOD[white] " : "ACT[blue] ";
@@ -302,8 +311,10 @@ class CJ4_FMC_DepArrPage {
         if (selectedApproach) {
             rows[0] = ["", Avionics.Utils.formatRunway(selectedApproach.name).trim() + "[d-text green]"];
             fmc.onRightInput[0] = () => {
+                fmc.setMsg("Working...");
                 fmc.setApproachIndex(-1, () => {
                     CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
+                    fmc.setMsg("");
                 });
             };
             rows[1] = ["", "TRANS [blue]"];
@@ -312,7 +323,9 @@ class CJ4_FMC_DepArrPage {
             if (selectedTransition) {
                 rows[2] = ["", selectedTransition.waypoints[0].infos.icao.substr(5).trim() + "[d-text green]"];
                 fmc.onRightInput[1] = () => {
+                    fmc.setMsg("Working...");
                     fmc.setApproachTransitionIndex(-1, () => {
+                        fmc.setMsg();
                         CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
                     });
                 };
@@ -387,7 +400,9 @@ class CJ4_FMC_DepArrPage {
         if (selectedArrival) {
             rows[0][0] = selectedArrival.name + "[d-text green]";
             fmc.onLeftInput[0] = () => {
+                fmc.setMsg("Working...");
                 fmc.setArrivalProcIndex(-1, () => {
+                    fmc.setMsg();
                     CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
                 });
             };
@@ -434,7 +449,9 @@ class CJ4_FMC_DepArrPage {
                 let arrivalIndex = arrivalPages[displayedPageIndex][i].arrivalIndex;
                 rows[2 * i][0] = arrivalPages[displayedPageIndex][i].text;
                 fmc.onLeftInput[i] = () => {
+                    fmc.setMsg("Working...");
                     fmc.setArrivalProcIndex(arrivalIndex, () => {
+                        fmc.setMsg();
                         CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                     });
                 };
@@ -448,7 +465,7 @@ class CJ4_FMC_DepArrPage {
         let rsk6Field = "";
         if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
             fmc.fpHasChanged = true;
-            rsk6Field = "CANCEL MOD>"
+            rsk6Field = "CANCEL MOD>";
         }
         else if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 0) {
             rsk6Field = "LEGS>";
@@ -467,7 +484,7 @@ class CJ4_FMC_DepArrPage {
         modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
         fmc._templateRenderer.setTemplateRaw([
-            [" " + modStr + " " + destinationIdent + " ARRIVAL", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
+            [" " + modStr + " " + destinationIdent + " ARRIVAL[blue]", currentPage.toFixed(0) + "/" + pageCount.toFixed(0) + " [blue]"],
             [" STARS[blue]", "APPROACHES [blue]"],
             ...rows,
             ["-----------------------[blue]"],
@@ -478,8 +495,10 @@ class CJ4_FMC_DepArrPage {
         //start of CWB CANCEL MOD handling
         fmc.onRightInput[5] = () => {
             if (rsk6Field == "CANCEL MOD>") {
+                fmc.setMsg("Working...");
                 if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     fmc.eraseTemporaryFlightPlan(() => {
+                        fmc.setMsg();
                         fmc.fpHasChanged = false;
                         fmc.onDepArr();
                     });

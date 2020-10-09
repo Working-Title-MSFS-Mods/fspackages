@@ -1,7 +1,7 @@
 {
     "env": {
         "browser": true,
-        "es6": true
+        "es2017": true
     },
     "extends": "eslint:recommended",
     "rules": {
@@ -13,7 +13,7 @@
           "no-unused-vars": [
             "error", {
               "vars": "all",
-              "varsIgnorePattern": "^CJ4_FMC|^WT_FMC"
+              "varsIgnorePattern": "^CJ4_|^WT_"
             }
           ],
           "semi": [2, "always"]
@@ -29,6 +29,7 @@
         "BaseAirliners": "writable",
         "FMCMainDisplay": "writable",
         "NavMode": "writable",
+        "IntersectionInfo": "writable",
         "RadioNav": "writable",
         "RegisterViewListener": "writable",
         "registerInstrument": "writable",
@@ -48,7 +49,12 @@
         "CJ4_PassengerBrief_Container": "readonly",
         "CJ4_NavBarContainer": "readonly",
         "CJ4_PopupMenuContainer": "readonly",
+        "WayPointInfo": "writable",
+        "AirportInfo": "writable",
         "CJ4_FMC_LegsPage": "readonly",
+        "CJ4_SystemContainer": "readonly",
+        "NavSystemElementGroup": "readonly",
+        "NavSystemElementContainer": "readonly",
         "CJ4_FMC_DepArrPage": "readonly",
         "CJ4_FMC_DsplMenuPage": "readonly",
         "CJ4_FMC_PerfInitPage": "readonly",
