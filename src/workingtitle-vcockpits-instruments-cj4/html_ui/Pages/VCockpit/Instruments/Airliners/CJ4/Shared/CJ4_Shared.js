@@ -3383,6 +3383,7 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
         this.isVisible = undefined;
         this.dictionary = new Avionics.Dictionary();
         this.otherMenusOpen = false;
+        this.checklists = undefined;
     }
     init() {
         super.init();
@@ -3402,7 +3403,12 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
             this.root.setAttribute("visible", (_value) ? "true" : "false");
 
             if(this.isVisible == true){
-                this.handler = new CJ4_MFDChecklist(this.root, this.dictionary);
+                if(this.checklists == undefined){
+                    this.checklists = [
+                        new NormalChecklist
+                    ];
+                }
+                this.handler = new CJ4_MFDChecklist(this.root, this.dictionary, this.checklists);
             }
             else if(this.isVisible == false){
                 Utils.RemoveAllChildren(this.root);
@@ -3461,7 +3467,7 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
     }
 }
 class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
-    constructor(_root, _dictionary) {
+    constructor(_root, _dictionary, _checklists) {
         super();
         // Styling
         this.titleSize = 15;
@@ -3474,7 +3480,7 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
 
         // Logic
         this.onChecklistItemPage = false;
-        this.checklists = this.GenerateChecklists();
+        this.checklists = _checklists;
 
         this.currentMenu = this.showMainPage.bind(this);
         this.currentPage = 1;
@@ -3483,12 +3489,6 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
         this.totalSectionItems = this.checklists.length;
 
         this.showMainPage();
-    }
-    GenerateChecklists(){
-        let checklists = [
-            new NormalChecklist
-        ];
-        return checklists;
     }
     refreshPage() {
         if(this.currentMenu){
