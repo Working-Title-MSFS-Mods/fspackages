@@ -2,6 +2,7 @@
 
 ## UPDATES
 Latest Version: [v0.4.0](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.4.0)
+
 Changelog: [CHANGES.md](https://github.com/Working-Title-MSFS-Mods/fspackages/blob/main/docs/workingtitle-cj4/CHANGES.md)
 
 ## BETA
