@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" SchemaVersion="97">
+	<Events>
+		<WorkUnit Name="Asobo_CJ4_WorkingTitle" ID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Play_Asobo_CJ4_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}">
+					<ChildrenList>
+						<Action Name="" ID="{4A3C5870-EEC7-46F1-A854-6996E8EE133E}" ShortID="795490384">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CJ4_Air_Vent" ID="{923DCC0B-8E17-45D1-B7FA-E9CEF50248D1}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Folder Name="Passenger Announcements" ID="{11642B21-B870-47F5-855E-2E8232DF091E}" ShortID="320280906">
+					<ChildrenList>
+						<Event Name="Play_Asobo_CJ4_takeoff_short" ID="{BF3C1C63-5698-4CDC-8273-C0A0330B7E36}">
+							<ChildrenList>
+								<Action Name="" ID="{8B8C46B8-410C-4061-ABB0-B426152FF6AB}" ShortID="451047953">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_Takeoff_Short" ID="{59FE024E-1739-4C56-9FB0-B3D4DA1EB4D2}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_Asobo_CJ4_takeoff_long" ID="{53ECD2B8-5325-4DF8-A9C1-457D153E1AE3}">
+							<ChildrenList>
+								<Action Name="" ID="{84A0F68A-DD49-4E72-B50E-34CB87430073}" ShortID="356775776">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_Takeoff_Long" ID="{94D8F267-E1BF-4D77-848A-F8C15BCB04FF}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_Asobo_CJ4_landing" ID="{9D3A14DF-5E0E-4D92-9C0E-DA411286F5F7}">
+							<ChildrenList>
+								<Action Name="" ID="{F2CA0C84-1473-4437-87BF-FC85B95B08E2}" ShortID="412053111">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_Landing" ID="{96E5061A-45F9-443F-8295-83778D8F73C0}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_Asobo_CJ4_oxygen_mask_deployment" ID="{E86AF906-0EF3-4EE5-A263-E3896543064E}">
+							<ChildrenList>
+								<Action Name="" ID="{2002D568-F81F-4075-8978-906CBDC00DD1}" ShortID="322812119">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_Oxygen Mask" ID="{D890116D-517C-43AF-9B6C-C5E086EE2DD2}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_Asobo_CJ4_turbulence" ID="{6C79303D-DBBF-493E-80F1-9043B6CE5B77}">
+							<ChildrenList>
+								<Action Name="" ID="{1B6511A7-49BF-457A-AF58-74A0EB738ADE}" ShortID="135921870">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_Turbulence" ID="{03895704-1DEB-4807-A9D4-7BB24CCF5C4C}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_Asobo_CJ4_safety_lights" ID="{23F782EA-85B6-4184-9FB8-9DC0AB4FF7AA}">
+							<ChildrenList>
+								<Action Name="" ID="{3DDD6D51-0977-4453-A97C-040169FA9760}" ShortID="646773890">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_Safety_Lights" ID="{E3D8FBC8-7E13-4419-AF8F-DF4318BB9ADF}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_Asobo_CJ4_seatbelt_light" ID="{8CE6A881-FB7F-46E8-B8FC-8A201E0B6021}">
+							<ChildrenList>
+								<Action Name="" ID="{3345935D-1E91-4F38-8ED4-1CC051DF2413}" ShortID="524038386">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_Seatbelt" ID="{D8ED4895-59D8-42F8-B79D-D4580DDD332B}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_Asobo_CJ4_chime" ID="{55A78414-A3BF-447F-B9F5-845A4208757A}">
+							<ChildrenList>
+								<Action Name="" ID="{03131B1C-BBE1-4764-B2A0-519A01731A1A}" ShortID="405024797">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_Chime" ID="{8058844C-8E56-43C6-8B5A-5B62C6453CA6}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

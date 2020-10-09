@@ -1,91 +1,58 @@
-# Working Title CJ4 v0.2.0 Changes
+# Working Title CJ4 v0.4.0 Changes
 
-Welcome to the initial and very much beta release of the Working Title CJ4. Thank you to everyone who contributed to this release. We are all very excited to get this release in your hands, which offers a ton of improvement over the stock MSFS CJ4, focusing heavily on the FMC functionality, but with a number of other changes and improvements. There is a lot that has been added and a lot more to do still!
+Welcome to the latest update of the Working Title CRJ (v0.4.0). This is still very much a beta. Thank you to everyone who contributed to this release. We have been hard at work behind the scenes to tackle some of the core flight management systems, so the number of changes is shorter this time, but still with some fun and important features and fixes. Overall, this bird should be a bunch more fun to fly.
 
 ## Installation
-Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder.
+Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
 ## Key Features
-* Fixed Direct To routing when attempting to go direct to IAF or enroute waypoints
-* Enabled proper EXEC/CANCEL MOD function and removed the 'Activate' logic
-* Created Custom Font and implemented across FMC, PFD and FMS
-* Updated FMC Layout, Coloring, Keyboard Lighting; added message line and EXEC notification to FMC layout
-* Fixed LEGS page listing to include all flight plan and approach waypoints
-* Added PERF pages and functions, including takeoff, landing and fuel management
-* Added IDX pages and functions, including progress pages, approach details
-* Fixed PFD and MFD NAV BAR details
-* Adjusted engine performance and fuel flow to more closely reflect reality (much more work to be done)
-* Removed reverse thrust
-* Eliminated erroneous cabin pressure alarms (will need to be remodeled later)
 
-### Direct To Page
-* Adjusted waypoint listing to show origin, departure, enroute, arrival and first approach fix
-* Added proper handling for activating a direct to the IAF in an approach without causing the plane to fly back to a prior fix and auto activating the approach from present position.
-* Added EXEC/CANCEL MOD logic to replace 'Activate' logic 
+* New custom engine fuel consumption model code based on FJ44 curves and pilot input
+* Overhauled LEGS page for more flexibility and real unit functions (WIP)
+* Many FPLN page bug fixes
+* A few quality of life and critical bug fixes
+* Overhaul of DEP/ARR pages and working STAR approaches (thanks @tscharlii)
+
+### Engine Model
+* Engine fuel consumption model has been custom coded and replaces the sim fuel consumption. Fuel consumption, especially at cruise, should be much, much closer to published. Expect 1800-1850pph per side at ISA full power and 500-800pph per side at cruise, depending on altitude, mach, and power settings.
+* Thrust now scales exponentially with N1 instead of linearly. Power settings should feel much more accurate.
 
 ### LEGS Page
-* Fixed errors in display of flight plan waypoints
-* Added approach waypoints to legs listing
-
-### IDX / INIT REF Index Page
-* Status Page - shows database, time, date 
-* GNSS Pos Page - shows current GPS Lat/Lon, date, time
-* PROG Page 1 - shows last, current, next and destination waypoints, distance in flight plan from current location and ETE
-* PROG Page 2 - shows current wind, headwind component, tailwind component, ISA DEV, flight plan cross track deviation and TAS
-* Database Initial Page now allows selecting waypoint from database
-* Database Airport Page now displays base data for any selected airport
-* Arrival Data Page now displays the selected approach airport, runway, runway elevation, approach type, approach name, frequency and approach course. 
-
-### PERF / PERF INIT
-* Added Main Menu
-* Added Perf Init Page to set/read weight, fuel and cruise altitude
-* Added Takeoff Ref page 1 with working calculator for takeoff data for the selected departure runway, including wind, pressure altitude, runway condition, runway length
-* Added Takeoff Ref page 2 with calculated V speeds and calculated takeoff distance, including selectors for Flaps and Anti Ice state. Vspeeds can be sent to PFD and appear in magenta color when set by FMC.
-* Added Fuel Management page 1 calculating fuel remaining, displaying fuel flow, allowing setting of reserve fuel, showing endurance, range and endurance to reserve fuel and specific range.
-* Added Fuel Management page 2 showing fuel flow in each engine and fuel burned, with added 'reset initial fuel' button
-* Added Approach Ref page 1 with destination details, runway details and landing performance calculator, including headwind/crosswind components, runway condition, pressure altitude and temperature variables.
-* Added Approach Ref page 2 with calculated Vref and Vapp speeds and calculated landing field requirements and landing field available length. Vspeeds can be sent to PFD and appear in magenta color when set by FMC.
-
-### TUN Page
-* Updated layout and fields
+* Added ability to insert a new fix
+* Added ability to remove whole segments by pressing LSK of one fix and then LSK of another
+* Added ability to to direct-to a leg by pressing LSK of the fix and then dropping onto the magenta line
+* Added ability to delete individual fixes
+* Magenta fix distance updates distance to go as aircraft moves
+* Fixed issue where unable to delete with a departure active
+* Made the WORKING prompt more consistent
+* Added feature to show runway where possible
+* Disabled the ability to adjust approach fixes due to simulator limitations
 
 ### FPLN Page
-* Updated layout and fields
-* Enabled first waypoint line management on page 1
-* Added EXEC/CANCEL MOD logic to replace 'Activate' logic 
+* Fixed issue where adding via airway would not add all fixes along airway to flight plan
+* Fixed issue where a blank line was not always provided to add a fix
+* Condensed display to only show airway entry and exit as per the real unit
+* Fixed issue where VIA was not displayed on page 2+
+* Fixed issue where attempting to delete the first fix on page 1 would insert CLRIC
+* Fixed issue where unable to delete with a departure active
 
-### DEP/ARR Page
-* Added EXEC/CANCEL MOD logic to replace 'Activate' logic 
+### DEP/ARR Pages
+* Proper formatting and flow of DEP/ARR pages (thanks @tscharlii)
+* Fixed scrolling through procedures and runways (thanks @tscharlii)
+* STAR approaches should now work properly (thanks @tscharlii)
 
-### DSPL MENU Page
-* Updated layout and established template (to do)
+### FUEL MGMT Page
+* Total fuel used now initialized to its starting point when the FMC loads
 
-### MFD ADV Page
-* Updated layout and established template (to do)
+### TUNE Page
+* Page now updates and syncs back radio changes made from other instruments or the simulator
 
-### PFD
-* Removed erroneous display of GS/TAS from PFD Map
-* Fixed NAV BAR at bottom of PDF to display current accurate COM1 COM2 ATC1 RAT and UTC
-* Set AoA to only appear with Flaps 35
-* Added VRef(VRF) and Vapp(VAP) to the speed tape
-* Setup PFD coloring so that VSpeeds set by FMC are magenta and when manually set or edited they are set to cyan
-* Updated fonts to custom font
-
-### MFD
-* Removed erroneous display of GS/TAS from MFD Map
-* Fixed NAV BAR at bottom of MFD to display current accurate GS TAS RAT SAT and ISA DEV
-* Updated fonts to custom font
-* Removed bad CAS messages for PITOT and INERT SEP (more to do here...)
-
-### Misc
-* Added YD functionality (**credit: musurca**)
-* Added/fixed many gear-related warnings (**credit: musurca**)
-* Improved exterior lighting (Landing/taxi light visibility) (**credit: Uwajimaya**)
-* Overhead light knobs and other cockput buttons are now lit.
+### PFD/MFD
+* Fixed issue where ILS localizers reporting DME distance as strings would crash the displays
 
 ## Known Issues
-* The autopilot will disconnect LNAV mode and go to ROLL mode upon reaching an enroute Direct-To waypoint. The workaround is re-engaging NAV mode and the flight plan will resume.
-* You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are investigating solutions to this issue.
-* There are cosmetic issues regarding the PFD and MFD (shapes, text, alignments). The PFD and MFD have not gotten a full layout overhaul as of this time.
-* The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the engine performance changes.
-* Landing Weight Calculation has not been smoothed and will show erronious values when in takeoff and on the ground, and will show "-----" when on the ground or in situations where the distance to the destination is unavailable.
+* You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are currently overhauling the flight plan management system to allow for much more flexibility and stability.
+* After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
+* The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the various enhancements applied.
+* Performance pages don't currently have input error handling for wind, temp or QNH. These values must be entered correctly and completly in the proper format for the page to work. Note that valid wind directions are 001 through 360 as of now.
+* FLC stability appears to have regressed with the autopilot aircraft energy calculation changes in 1.9.3. We have attempted tuning the autopilot PIDs but as of right now the behavior of the underlying sim FLC PID itself seems to be at issue. We will continue to investigate.

@@ -38,6 +38,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._activatingDirectTo = false;
         this._templateRenderer = undefined;
         this._msg = "";
+        this._activatingDirectToExisting = false;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -67,6 +68,9 @@ class CJ4_FMC extends FMCMainDisplay {
     }
     Init() {
         super.Init();
+
+        // Maybe this gets rid of slowdown on first fpln mod
+        this.flightPlanManager.copyCurrentFlightPlanInto(1);
 
         // init WT_FMC_Renderer.js
         this._templateRenderer = new WT_FMC_Renderer(this);
@@ -128,6 +132,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     this.refreshPageCallback();
                 }
             }
+            this._activatingDirectToExisting = false;
         };
 
         CJ4_FMC_InitRefIndexPage.ShowPage5(this);
@@ -141,10 +146,15 @@ class CJ4_FMC extends FMCMainDisplay {
             initRadioNav(_boot);
             this.initializeStandbyRadios(_boot);
         };
+
+        const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
+        this.initialFuelLeft = Math.trunc(SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * fuelWeight);
+        this.initialFuelRight = Math.trunc(SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * fuelWeight);
     }
     Update() {
         super.Update();
         this.updateAutopilot();
+        this.adjustFuelConsumption();
     }
     onInputAircraftSpecific(input) {
         console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
@@ -216,6 +226,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
         this.unregisterPeriodicPageRefresh();
     }
+
     getOrSelectWaypointByIdent(ident, callback) {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
             if (!waypoints || waypoints.length === 0) {
@@ -259,8 +270,6 @@ class CJ4_FMC extends FMCMainDisplay {
             let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean");
             let currentAltitude = Simplane.getAltitude();
             let groundSpeed = Simplane.getGroundSpeed();
-            let apTargetAltitude = Simplane.getAutoPilotAltitudeLockValue("feet");
-            let planeHeading = Simplane.getHeadingMagnetic();
             let planeCoordinates = new LatLong(SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude"), SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude"));
             if (isVNAVActivate) {
                 let prevWaypoint = this.flightPlanManager.getPreviousActiveWaypoint();
@@ -352,7 +361,7 @@ class CJ4_FMC extends FMCMainDisplay {
         if (selectedRunway) {
             let selectedRunwayDesignation = new String(selectedRunway.designation);
             let selectedRunwayMod = new String(selectedRunwayDesignation.slice(-1));
-            if (selectedRunwayMod == "L" || "C" || "R") {
+            if (selectedRunwayMod == "L" || selectedRunwayMod == "C" || selectedRunwayMod == "R") {
                 if (selectedRunwayDesignation.length == 2) {
                     this.selectedRunwayOutput = "0" + selectedRunwayDesignation;
                 } else {
@@ -373,15 +382,16 @@ class CJ4_FMC extends FMCMainDisplay {
     /**
      * Registers a periodic page refresh with the FMC display.
      * @param {number} interval The interval, in ms, to run the supplied action.
-     * @param {function} action An action to run at each interval.
+     * @param {function} action An action to run at each interval. Can return a bool to indicate if the page refresh should stop.
      * @param {boolean} runImmediately If true, the action will run as soon as registered, and then after each
      * interval. If false, it will start after the supplied interval.
      */
     registerPeriodicPageRefresh(action, interval, runImmediately) {
         let refreshHandler = () => {
-            action();
+            let isBreak = action();
+            if (isBreak) return;
             this._pageRefreshTimer = setTimeout(refreshHandler, interval);
-        }
+        };
 
         if (runImmediately) {
             refreshHandler();
@@ -417,6 +427,67 @@ class CJ4_FMC extends FMCMainDisplay {
                 if (Math.abs(this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 2) - this.pre2Frequency) > 0.005) {
                     this.radioNav.setVHFStandbyFrequency(this.instrumentIndex, 2, this.pre2Frequency);
                 }
+            }
+        }
+    }
+
+    /**
+     * Adjusts fuel consumption by returning fuel to the tanks and updates the
+     * local fuel consumption lvar.
+     */
+    adjustFuelConsumption() {
+
+        const leftFuelQty = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons");
+        const rightFuelQty = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons");
+
+        if (this.previousRightFuelQty === undefined && this.previousLeftFuelQty === undefined) {
+            this.previousLeftFuelQty = leftFuelQty;
+            this.previousRightFuelQty = rightFuelQty;
+        }
+        else {
+            const thrustLeft = SimVar.GetSimVarValue("TURB ENG JET THRUST:1", "pounds");
+            const thrustRight = SimVar.GetSimVarValue("TURB ENG JET THRUST:2", "pounds");
+
+            const pphLeft = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:1", "pounds per hour");
+            const pphRight = SimVar.GetSimVarValue("ENG FUEL FLOW PPH:2", "pounds per hour");
+
+            const leftFuelUsed = this.previousLeftFuelQty - leftFuelQty;
+            const rightFuelUsed = this.previousRightFuelQty - rightFuelQty;
+
+            const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
+            const tsfc = Math.pow(1 + (1.2 * mach), mach) * 0.58; //Inspiration: https://onlinelibrary.wiley.com/doi/pdf/10.1002/9780470117859.app4
+
+            const leftFuelFlow = Math.max(thrustLeft * tsfc, 150);
+            const rightFuelFlow = Math.max(thrustRight * tsfc, 150);
+
+            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", leftFuelFlow);
+            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", rightFuelFlow);
+
+            if ((rightFuelUsed > 0.005 && rightFuelUsed < 1) || (leftFuelUsed > 0.005 && rightFuelUsed < 1)) {
+
+                let leftCorrectionFactor = 1;
+                let rightCorrectionFactor = 1;
+
+                if (pphLeft > 0) {
+                    leftCorrectionFactor = leftFuelFlow / pphLeft;
+                }
+                
+                if (pphRight > 0) {
+                    rightCorrectionFactor = rightFuelFlow / pphRight;
+                }
+                
+                const newLeftFuelQty = this.previousLeftFuelQty - (leftFuelUsed * leftCorrectionFactor);
+                const newRightFuelQty = this.previousRightFuelQty - (rightFuelUsed * rightCorrectionFactor);
+
+                SimVar.SetSimVarValue("FUEL TANK LEFT MAIN QUANTITY", "gallons", newLeftFuelQty);
+                SimVar.SetSimVarValue("FUEL TANK RIGHT MAIN QUANTITY", "gallons", newRightFuelQty);
+
+                this.previousLeftFuelQty = newLeftFuelQty;
+                this.previousRightFuelQty = newRightFuelQty;
+            }
+            else {
+                this.previousLeftFuelQty = leftFuelQty;
+                this.previousRightFuelQty = rightFuelQty;
             }
         }
     }

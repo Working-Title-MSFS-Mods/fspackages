@@ -10,9 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build Package
-        run: powershell.exe -noexit .\build.ps1 -Project workingtitle-project-cj4.xml
+        run: powershell.exe -noexit .\build.ps1 -OutputPath '.\build' -Project 'workingtitle-project-cj4meta.xml' -CleanBuild
       - name: Add documentation
-        run: Copy-Item -Path docs\workingtitle-cj4\* -Destination build -Recurse -Force        
+        run: Copy-Item -Path docs\workingtitle-cj4\* -Destination build\deploy -Recurse -Force        
       - name: Get clean tag name
         uses: olegtarasov/get-tag@v2
         id: tag_name        

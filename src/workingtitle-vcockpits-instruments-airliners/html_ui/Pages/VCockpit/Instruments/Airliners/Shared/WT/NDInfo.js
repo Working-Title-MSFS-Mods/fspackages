@@ -263,6 +263,15 @@ class Jet_MFD_NDInfo extends HTMLElement {
     }
     updateApproach() {
         if (this.approach != null) {
+
+            //CJ4 - No PFD switch for ILS display mode, so auto-detect
+            if (this._navMode === Jet_NDCompass_Navigation.VOR) {
+                const radioFix = this.gps.radioNav.getVORBeacon(this._navSource);
+                if (radioFix.name && radioFix.name.indexOf("ILS") !== -1) {
+                    this._navMode = Jet_NDCompass_Navigation.ILS;
+                }       
+            }
+
             switch (this._navMode) {
                 case Jet_NDCompass_Navigation.VOR:
                     {
@@ -271,12 +280,9 @@ class Jet_MFD_NDInfo extends HTMLElement {
                             vor = this.gps.radioNav.getBestVORBeacon();
                         else {
                             vor = this.gps.radioNav.getVORBeacon(this._navSource);
-
-                            let hasDME = SimVar.GetSimVarValue("NAV HAS DME:" + this._navSource, "bool");
-                            if (hasDME) {
-                                vor.distance = SimVar.GetSimVarValue("NAV DME:" + this._navSource, "Nautical miles");
-                            }
+                            vor.distance = this.getDMEDistance(this._navSource);
                         }
+
                         let suffix = "";
                         if (vor.id == 1 || this._navSource == 1) {
                             if (this.aircraft == Aircraft.A320_NEO || this.aircraft == Aircraft.CJ4)
@@ -334,13 +340,9 @@ class Jet_MFD_NDInfo extends HTMLElement {
                             ils = this.gps.radioNav.getBestILSBeacon();
                         else {
                             ils = this.gps.radioNav.getILSBeacon(this._navSource);
-
-                            let hasDME = SimVar.GetSimVarValue("NAV HAS DME:" + this._navSource, "bool");
-                            if (hasDME) {
-                                vor.distance = SimVar.GetSimVarValue("NAV DME:" + this._navSource, "Nautical miles");
-                            }
+                            ils.distance = this.getDMEDistance(this._navSource);
                         }
-                            
+
                         let suffix = "";
                         if (ils.id == 1 || ils.id == 2 || this._navSource == 1) {
                             if (this.aircraft == Aircraft.A320_NEO || this.aircraft == Aircraft.CJ4)
@@ -454,6 +456,26 @@ class Jet_MFD_NDInfo extends HTMLElement {
         }
 
         return this.gps.radioNav.navBeacon;
+    }
+
+    /**
+     * Gets the DME distance for a given tuned nav radio index.
+     * @param {Number} navRadioIndex The current nav radio index to use.
+     */
+    getDMEDistance(navRadioIndex) {
+        let distance = undefined;
+
+        const hasDME = SimVar.GetSimVarValue("NAV HAS DME:" + navRadioIndex, "bool");
+        if (hasDME) {
+            distance = Math.abs(parseFloat(SimVar.GetSimVarValue("NAV DME:" + navRadioIndex, "Nautical miles")));
+        }
+
+        const hasCloseDME = SimVar.GetSimVarValue("NAV HAS CLOSE DME:" + navRadioIndex, "bool");
+        if (hasCloseDME) {
+            distance = Math.abs(parseFloat(SimVar.GetSimVarValue("NAV CLOSE DME:" + navRadioIndex, "Nautical miles")));
+        }
+
+        return distance;
     }
 }
 Jet_MFD_NDInfo.MIN_WIND_STRENGTH_FOR_ARROW_DISPLAY = 2;

@@ -5,7 +5,7 @@
 
 	<WwisePackages>
 		<MainPackage Name="Asobo_CJ4"/>
-		<AdditionalPackage Name="Asobo_CJ4_Extended"/>
+		<AdditionalPackage Name="Asobo_CJ4_WorkingTitle"/>
 	</WwisePackages>
 
   <AcousticParameters>
@@ -229,6 +229,13 @@
 			  <Range LowerBound="1" />
 		  </Requires>
 	  </Sound>
+
+      <Sound WwiseData="true" WwiseEvent="chime" ViewPoint="Inside" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
+          <Range UpperBound="0" />
+          <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+              <Range LowerBound="1" />
+          </Requires>
+      </Sound>
 
 	    <Sound WwiseData="true" WwiseEvent="air_fan" ViewPoint="Inside" NodeName="PASSENGER_KNOB_AIR_1" LocalVar="PASSENGER_KNOB_AIR_1" Units="PERCENT" Index="1" Continuous="false">
 		  <WwiseRTPC LocalVar="PASSENGER_KNOB_AIR_1" Units="PERCENT" Index="0" RTPCName="SIMVAR_AC" />
