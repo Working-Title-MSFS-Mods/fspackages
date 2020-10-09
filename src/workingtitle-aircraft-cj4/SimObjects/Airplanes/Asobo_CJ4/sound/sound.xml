@@ -237,6 +237,20 @@
           </Requires>
       </Sound>
 
+	  <Sound WwiseData="true" WwiseEvent="safety_light" ViewPoint="Inside" LocalVar="SAFETY_LIGHT_ON" Continuous="false">
+		  <Range LowerBound="1" />
+		  <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+			  <Range LowerBound="1" />
+		  </Requires>
+	  </Sound>
+
+	  <Sound WwiseData="true" WwiseEvent="chime" ViewPoint="Inside" LocalVar="SAFETY_LIGHT_ON" Continuous="false">
+          <Range UpperBound="0" />
+          <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+              <Range LowerBound="1" />
+          </Requires>
+      </Sound>
+
 	    <Sound WwiseData="true" WwiseEvent="air_fan" ViewPoint="Inside" NodeName="PASSENGER_KNOB_AIR_1" LocalVar="PASSENGER_KNOB_AIR_1" Units="PERCENT" Index="1" Continuous="false">
 		  <WwiseRTPC LocalVar="PASSENGER_KNOB_AIR_1" Units="PERCENT" Index="0" RTPCName="SIMVAR_AC" />
 		   <Requires LocalVar="CLIMATE_CONTROL" Units="number" Index="0">
