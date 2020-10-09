@@ -1,39 +1,39 @@
 class AS3000_MapElement extends MapInstrumentElement {
     constructor(_simVarNameID) {
         super();
-		this.simVarNameID = _simVarNameID;
-		
-		this.orientation = 0;
-		this.lastSync = 0;
-		//this.lastDcltr = 0;
-		this.lastSymbolVis = new Map([
-			["show-roads", 1],
-			["show-cities", 1],
-			["show-airspaces", 1],
-			["show-airways", 1],
-			["show-vors", 1],
-			["show-ndbs", 1],
-			["show-intersections", 1],
-			["show-airports", 1]
-		]);
-		
-		this.settingsToSync = [
-			AS3000_MapElement.VARNAME_ORIENTATION_ROOT,
-			AS3000_MapElement.VARNAME_DETAIL_ROOT,
-			AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT,
-			AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT,
-			AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT,
-			AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT,
-			AS3000_MapElement.VARNAME_VOR_RANGE_ROOT,
-			AS3000_MapElement.VARNAME_INT_RANGE_ROOT,
-			AS3000_MapElement.VARNAME_NDB_RANGE_ROOT,
-			AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT,
-			AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT,
-			AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT,
-			AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT,
-			AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT,
-			AS3000_MapElement.NORTHUP_RANGE_DEFAULT
-		]
+        this.simVarNameID = _simVarNameID;
+        
+        this.orientation = 0;
+        this.lastSync = 0;
+        //this.lastDcltr = 0;
+        this.lastSymbolVis = new Map([
+            ["show-roads", 1],
+            ["show-cities", 1],
+            ["show-airspaces", 1],
+            ["show-airways", 1],
+            ["show-vors", 1],
+            ["show-ndbs", 1],
+            ["show-intersections", 1],
+            ["show-airports", 1]
+        ]);
+        
+        this.settingsToSync = [
+            AS3000_MapElement.VARNAME_ORIENTATION_ROOT,
+            AS3000_MapElement.VARNAME_DETAIL_ROOT,
+            AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_VOR_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_INT_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_NDB_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT,
+            AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT,
+            AS3000_MapElement.NORTHUP_RANGE_DEFAULT
+        ]
     }
     
     init(root) {
@@ -43,36 +43,36 @@ class AS3000_MapElement extends MapInstrumentElement {
                 this.onTemplateLoaded();
             });
         }
-		this.instrument.zoomRanges = AS3000_MapElement.ZOOM_RANGES_DEFAULT;
+        this.instrument.zoomRanges = AS3000_MapElement.ZOOM_RANGES_DEFAULT;
         this.instrument.rotationHandler = this;
         this.instrument.rangeRingElement = new SvgRangeRingElement();
         this.instrument.rangeCompassElement = new SvgRangeCompassElement();
-		this.setHdgUp();
-		
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number", 0);	// set default map orientation (0 = hdg, 1 = trk, 2 = north)
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID, "number", 0);		// set default declutter (0 = none, 1 = DCLTR1, 2 = DCLTR2, 3 = least)
-		
-		for (let [attr, val] of this.lastSymbolVis) {
-			SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get(attr) + this.simVarNameID, "number", 1);
-		}
-		this.initDcltrSettings();
-		
-		// initialize symbol range
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRSPACE_RANGE_DEFAULT));
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRPORT_SMALL_RANGE_DEFAULT));
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRPORT_MEDIUM_RANGE_DEFAULT));
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRPORT_LARGE_RANGE_DEFAULT));
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.VOR_RANGE_DEFAULT));
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_INT_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.INT_RANGE_DEFAULT));
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.NDB_RANGE_DEFAULT));
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_HIGHWAY_RANGE_DEFAULT));
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_TRUNK_RANGE_DEFAULT));
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT));
-		
-		// "Other" settings
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT + this.simVarNameID, "number", 0);
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.NORTHUP_RANGE_DEFAULT));
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.simVarNameID, "number", 0);
+        this.setHdgUp();
+        
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number", 0); // set default map orientation (0 = hdg, 1 = trk, 2 = north)
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID, "number", 0);      // set default declutter (0 = none, 1 = DCLTR1, 2 = DCLTR2, 3 = least)
+        
+        for (let [attr, val] of this.lastSymbolVis) {
+            SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get(attr) + this.simVarNameID, "number", 1);
+        }
+        this.initDcltrSettings();
+        
+        // initialize symbol range
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRSPACE_RANGE_DEFAULT));
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRPORT_SMALL_RANGE_DEFAULT));
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRPORT_MEDIUM_RANGE_DEFAULT));
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRPORT_LARGE_RANGE_DEFAULT));
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.VOR_RANGE_DEFAULT));
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_INT_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.INT_RANGE_DEFAULT));
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.NDB_RANGE_DEFAULT));
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_HIGHWAY_RANGE_DEFAULT));
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_TRUNK_RANGE_DEFAULT));
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT));
+        
+        // "Other" settings
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT + this.simVarNameID, "number", 0);
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.NORTHUP_RANGE_DEFAULT));
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.simVarNameID, "number", 0);
     }
     
     initDcltrSettings() {
@@ -148,53 +148,53 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.updateSymbolVisibility();
         this.updateSymbolRange();
     }
-	
-	updateOrientation() {
-		let orientation = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number");
-		
-		// handle Auto North Up
-		if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT + this.simVarNameID, "number") == 1) {
-			if (this.instrument.getDisplayRange() >= this.instrument.zoomRanges[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.simVarNameID, "number")]) {
-				orientation = 2;
-			}
-		}
-		
-		if (this.orientation != orientation) {
-			switch (orientation) {
-			case 0:
-				this.setHdgUp();
-				break;
-			case 1:
-				this.setTrkUp();
-				break;
-			case 2:
-				this.setNorthUp();
-				break;
-			}
-			this.orientation = orientation;
-		}
-	}
-	
-	setHdgUp() {
-		this.instrument.planeTrackedPosY = 0.667;
-		this.instrument.showRangeRing = false;
-		this.instrument.showRangeCompass = true;
-		Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "HDG UP");
-	}
-	
-	setTrkUp() {
-		this.instrument.planeTrackedPosY = 0.667;
-		this.instrument.showRangeRing = false;
-		this.instrument.showRangeCompass = true;
-		Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "TRK UP");
-	}
-	
-	setNorthUp() {
-		this.instrument.planeTrackedPosY = 0.5;
-		this.instrument.showRangeRing = true;
-		this.instrument.showRangeCompass = false;
-		Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "NORTH UP");
-	}
+    
+    updateOrientation() {
+        let orientation = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number");
+        
+        // handle Auto North Up
+        if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT + this.simVarNameID, "number") == 1) {
+            if (this.instrument.getDisplayRange() >= this.instrument.zoomRanges[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.simVarNameID, "number")]) {
+                orientation = 2;
+            }
+        }
+        
+        if (this.orientation != orientation) {
+            switch (orientation) {
+            case 0:
+                this.setHdgUp();
+                break;
+            case 1:
+                this.setTrkUp();
+                break;
+            case 2:
+                this.setNorthUp();
+                break;
+            }
+            this.orientation = orientation;
+        }
+    }
+    
+    setHdgUp() {
+        this.instrument.planeTrackedPosY = 0.667;
+        this.instrument.showRangeRing = false;
+        this.instrument.showRangeCompass = true;
+        Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "HDG UP");
+    }
+    
+    setTrkUp() {
+        this.instrument.planeTrackedPosY = 0.667;
+        this.instrument.showRangeRing = false;
+        this.instrument.showRangeCompass = true;
+        Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "TRK UP");
+    }
+    
+    setNorthUp() {
+        this.instrument.planeTrackedPosY = 0.5;
+        this.instrument.showRangeRing = true;
+        this.instrument.showRangeCompass = false;
+        Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "NORTH UP");
+    }
     
     getRotation() {
         switch (this.orientation) {
@@ -203,64 +203,64 @@ class AS3000_MapElement extends MapInstrumentElement {
         }
         return 0;
     }
-	
-	updateSymbolVisibility() {
-		let dcltr = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID, "number");
-		let changedValues = new Map();
-		for (let [attr, lastVal] of this.lastSymbolVis) {
-			let currentVal = (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get(attr) + this.simVarNameID, "number") == 1) && this.getDcltrSettings(dcltr).get(attr);
-			if (currentVal != lastVal) {
-				this.instrument.setAttribute(attr, currentVal);
-			}
-			changedValues.set(attr, currentVal);
-		}
-		for (let [attr, currentVal] of changedValues) {
-			this.lastSymbolVis.set(attr, currentVal);
-		}
-	}
-	
-	updateSymbolRange() {
-		this.instrument.airspaceMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT + this.simVarNameID, "number");
-		this.instrument.smallAirportMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT + this.simVarNameID, "number");
-		this.instrument.medAirportMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT + this.simVarNameID, "number");
-		this.instrument.largeAirportMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT + this.simVarNameID, "number");
-		this.instrument.vorMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT + this.simVarNameID, "number");
-		this.instrument.intMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_INT_RANGE_ROOT + this.simVarNameID, "number");
-		this.instrument.ndbMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT + this.simVarNameID, "number");
-		this.instrument.roadHighwayMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT + this.simVarNameID, "number");
-		this.instrument.roadTrunkMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT + this.simVarNameID, "number");
-		this.instrument.roadPrimaryMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT + this.simVarNameID, "number");
-	}
-	
-	// returns key-value pairs for declutter settings for a given declutter level
-	getDcltrSettings(_level) {
-		return this.dcltrSettings[_level];
-	}
-	
-	syncMasterToSetting(_root) {
-		SimVar.SetSimVarValue(_root + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", SimVar.GetSimVarValue(_root + this.simVarNameID, "number"));
-	}
-	
-	syncSettingToMaster(_root) {
-		SimVar.SetSimVarValue(_root + this.simVarNameID, "number", SimVar.GetSimVarValue(_root + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number"));
-	}
-	
-	syncMasterToAllSettings() {
-		for (let varNameRoot of this.settingsToSync) {
-			this.syncMasterToSetting(varNameRoot);
-		}
-	}
-	
-	static getSyncInitIDIndex(_id) {
-		return AS3000_MapElement.SYNC_INITID_ARRAY.indexOf(_id);
-	}
-	
-	static setSyncedSettingVar(_root, _id, _val) {
-		SimVar.SetSimVarValue(_root + _id, "number", _val);
-		if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC, "number") == 1) {
-			SimVar.SetSimVarValue(_root + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", _val);
-		}
-	}
+    
+    updateSymbolVisibility() {
+        let dcltr = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID, "number");
+        let changedValues = new Map();
+        for (let [attr, lastVal] of this.lastSymbolVis) {
+            let currentVal = (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get(attr) + this.simVarNameID, "number") == 1) && this.getDcltrSettings(dcltr).get(attr);
+            if (currentVal != lastVal) {
+                this.instrument.setAttribute(attr, currentVal);
+            }
+            changedValues.set(attr, currentVal);
+        }
+        for (let [attr, currentVal] of changedValues) {
+            this.lastSymbolVis.set(attr, currentVal);
+        }
+    }
+    
+    updateSymbolRange() {
+        this.instrument.airspaceMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT + this.simVarNameID, "number");
+        this.instrument.smallAirportMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT + this.simVarNameID, "number");
+        this.instrument.medAirportMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT + this.simVarNameID, "number");
+        this.instrument.largeAirportMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT + this.simVarNameID, "number");
+        this.instrument.vorMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT + this.simVarNameID, "number");
+        this.instrument.intMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_INT_RANGE_ROOT + this.simVarNameID, "number");
+        this.instrument.ndbMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT + this.simVarNameID, "number");
+        this.instrument.roadHighwayMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT + this.simVarNameID, "number");
+        this.instrument.roadTrunkMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT + this.simVarNameID, "number");
+        this.instrument.roadPrimaryMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT + this.simVarNameID, "number");
+    }
+    
+    // returns key-value pairs for declutter settings for a given declutter level
+    getDcltrSettings(_level) {
+        return this.dcltrSettings[_level];
+    }
+    
+    syncMasterToSetting(_root) {
+        SimVar.SetSimVarValue(_root + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", SimVar.GetSimVarValue(_root + this.simVarNameID, "number"));
+    }
+    
+    syncSettingToMaster(_root) {
+        SimVar.SetSimVarValue(_root + this.simVarNameID, "number", SimVar.GetSimVarValue(_root + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number"));
+    }
+    
+    syncMasterToAllSettings() {
+        for (let varNameRoot of this.settingsToSync) {
+            this.syncMasterToSetting(varNameRoot);
+        }
+    }
+    
+    static getSyncInitIDIndex(_id) {
+        return AS3000_MapElement.SYNC_INITID_ARRAY.indexOf(_id);
+    }
+    
+    static setSyncedSettingVar(_root, _id, _val) {
+        SimVar.SetSimVarValue(_root + _id, "number", _val);
+        if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC, "number") == 1) {
+            SimVar.SetSimVarValue(_root + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", _val);
+        }
+    }
 }
 AS3000_MapElement.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 25, 35, 50, 100, 150, 200, 250, 400, 500, 750, 1000];
 
