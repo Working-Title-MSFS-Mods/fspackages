@@ -55,10 +55,7 @@ function Update-Packages {
             Write-Host "Creating package path $packagePath..."  
             New-Item -Path $packagePath -ItemType directory | Out-Null
         }
-        
-        Write-Host "Writing $manifestPath..."  
-        $manifest | ConvertTo-Json | Out-File -FilePath $manifestPath -Encoding ASCII
-    
+           
         Write-Host "Copying source files..."
         foreach ($assetGroup in $packageDef.AssetGroups.AssetGroup) {
             $src = Join-Path "." $assetGroup.AssetDir
@@ -67,6 +64,9 @@ function Update-Packages {
             robocopy $src $dest /XO /e /PURGE  | Out-Null
         }
     
+        Write-Host "Writing $manifestPath..."  
+        $manifest | ConvertTo-Json | Out-File -FilePath $manifestPath -Encoding ASCII
+
         Write-Host "Building layout file..."
         $layoutEntries = @()
         foreach ($file in Get-ChildItem -Path $packagePath -Recurse -Exclude "manifest.json" -Attributes !Directory) {
