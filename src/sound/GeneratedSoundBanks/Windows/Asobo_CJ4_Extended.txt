@@ -1,0 +1,15 @@
+Event	ID	Name			Wwise Object Path	Notes
+	206545353	Play_Asobo_CJ4_ap_disconnect			\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended\Play_Asobo_CJ4_ap_disconnect	
+	977765659	Play_Asobo_CJ4_ac			\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended\Play_Asobo_CJ4_ac	
+	2656505846	Play_Asobo_CJ4_seatbelt_light			\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended\PASS BRIEF\Play_Asobo_CJ4_seatbelt_light	
+	3202083259	Play_Asobo_CJ4_air_fan			\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended\Play_Asobo_CJ4_air_fan	
+
+Game Parameter	ID	Name			Wwise Object Path	Notes
+	824435188	SIMVAR_AC			\simvar\instruments\SIMVAR_AC	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	67448994	CJ4_Air_Vent	C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\.cache\Windows\SFX\CJ4_Air_Vent_3FC5040D.wem		\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended\3D\instruments\instruments\CJ4_Air_Vent\CJ4_Air_Vent		199522
+	287374701	CJ4_Autopilot_Disconnect	C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\.cache\Windows\SFX\CJ4_Autopilot_Disconnect_78BD8C0F.wem		\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended\3D\instruments\instruments\CJ4_autopilot\CJ4_Autopilot_Disconnect		31507
+	991214373	CJ4_Seatbelt	C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\.cache\Windows\SFX\CJ4_Seatbelt_78BD8C0F.wem		\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended\3D\instruments\instruments\PASS BRIEF\CJ4_seatbelt\CJ4_Seatbelt		467179
+	1047630926	CJ4_AC_On_Ambiance	C:\Users\Calcutt\Documents\MSFS2020\Wwise_CJ4_Extended\.cache\Windows\SFX\CJ4_AC_On_Ambiance_1E8ECBBC.wem		\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_Extended\CJ4_AC_On_Ambiance		283493
+

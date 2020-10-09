@@ -7,4 +7,12 @@ ref
 .idea/modules.xml
 .idea/vcs.xml
 .idea/workspace.xml
-CJ4 build.ps1
+CJ4 Build.ps1
+
+src/sound/.cache
+*.akd
+*.prof
+*.wsetting
+*.validationcache
+*.wem
+*.wsettings
