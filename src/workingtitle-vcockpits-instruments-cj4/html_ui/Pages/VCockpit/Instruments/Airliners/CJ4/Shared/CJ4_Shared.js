@@ -3470,7 +3470,7 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
     constructor(_root, _dictionary, _checklists) {
         super();
         // Styling
-        this.titleSize = 15;
+        this.titleSize = 13;
         this.textSize = 13;
         this.root = _root;
         this.menuLeft = 75;
@@ -3736,7 +3736,7 @@ class CJ4_PassengerBrief extends WTMenu.PassengerBrief_Menu_Handler {
     constructor(_root, _dictionary) {
         super();
         // Styling
-        this.titleSize = 15;
+        this.titleSize = 13;
         this.textSize = 13;
         this.root = _root;
         this.menuLeft = 75;
