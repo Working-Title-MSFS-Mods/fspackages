@@ -6,6 +6,6 @@ Game Parameter	ID	Name			Wwise Object Path	Notes
 	824435188	SIMVAR_AC			\simvar\instruments\SIMVAR_AC	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
-	67448994	CJ4_Air_Vent	C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\.cache\Windows\SFX\CJ4_Air_Vent_3FC5040D.wem		\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\3D\instruments\CJ4_Air_Vent		199522
-	233927793	CJ4_Seatbelt	C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\.cache\Windows\SFX\Passenger Announcements\CJ4_Seatbelt_78BD8C0F.wem		\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\3D\passenger_announcements\CJ4_Seatbelt		467179
+	67448994	CJ4_Air_Vent	C:\Users\Calcutt\Documents\MSFS2020\fspackages\src\sound\.cache\Windows\SFX\CJ4_Air_Vent_3FC5040D.wem		\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\3D\instruments\CJ4_Air_Vent		199522
+	233927793	CJ4_Seatbelt	C:\Users\Calcutt\Documents\MSFS2020\fspackages\src\sound\.cache\Windows\SFX\Passenger Announcements\CJ4_Seatbelt_78BD8C0F.wem		\Actor-Mixer Hierarchy\AIRCRAFTS\AIRCRAFT_WWISEDATA\AIRCRAFT_PLAYER\Asobo_CJ4_WorkingTitle\3D\passenger_announcements\CJ4_Seatbelt		467179
 

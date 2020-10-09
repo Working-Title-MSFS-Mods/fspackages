@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="12" SoundbankVersion="135">
 	<RootPaths>
-		<ProjectRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\</ProjectRoot>
-		<SourceFilesRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\.cache\Windows\</SourceFilesRoot>
-		<SoundBanksRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<ProjectRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages\src\sound\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages\src\sound\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages\src\sound\GeneratedSoundBanks\Windows\</SoundBanksRoot>
 		<ExternalSourcesInputFile></ExternalSourcesInputFile>
-		<ExternalSourcesOutputRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages_hosky\fspackages\src\sound\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
+		<ExternalSourcesOutputRoot>C:\Users\Calcutt\Documents\MSFS2020\fspackages\src\sound\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
 	</RootPaths>
 	<SoundBanks>
 		<SoundBank Id="1355168291" GUID="{701ECBBD-9C7B-4030-8CDB-749EE5D1C7B9}" Language="SFX">
