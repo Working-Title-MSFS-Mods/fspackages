@@ -3560,6 +3560,22 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
         }
         this.updateSyncValue();
     }
+    
+    static getRangeValueText(_range) {
+        if (_range <= 1000 / 6076) {
+            return fastToFixed(_range * 6076, 0) + "FT";
+        } else {
+            return _range + "NM";
+        }
+    }
+    
+    static getRangeValuesDisplayToMax(_max) {
+        let values = [];
+        for (let i = 0; i < AS3000_MapElement.ZOOM_RANGES_DEFAULT.length && AS3000_MapElement.ZOOM_RANGES_DEFAULT[i] <= _max; i++) {
+            values.push(AS3000_TSC_MapSettings.getRangeValueText(AS3000_MapElement.ZOOM_RANGES_DEFAULT[i]));
+        }
+        return values;
+    }
 }
 
 class AS3000_TSC_MapDetailSelect extends NavSystemElement {
@@ -3667,14 +3683,6 @@ class AS3000_TSC_MapSettingsTab {
     
     onButtonClick(_rowIndex, _isLeft) {
     }
-    
-    static getRangeValuesDisplayToMax(_max) {
-        let values = [];
-        for (let i = 0; i < AS3000_MapElement.ZOOM_RANGES_DEFAULT.length && AS3000_MapElement.ZOOM_RANGES_DEFAULT[i] <= _max; i++) {
-            values.push(AS3000_MapElement.ZOOM_RANGES_DEFAULT[i] + "NM");
-        }
-        return values;
-    }
 }
 
 class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
@@ -3707,10 +3715,10 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
         Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[4], "state", (SimVar.GetSimVarValue(this.showNDBVarNameRoot + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
         
         // ranges
-        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[0], AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT + this.parentElement.simVarNameID, "number")] + "NM");
-        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[2], AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT + this.parentElement.simVarNameID, "number")] + "NM");
-        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[3], AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_INT_RANGE_ROOT + this.parentElement.simVarNameID, "number")] + "NM");
-        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[4], AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT + this.parentElement.simVarNameID, "number")] + "NM");
+        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[0], AS3000_TSC_MapSettings.getRangeValueText(AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT + this.parentElement.simVarNameID, "number")]));
+        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[2], AS3000_TSC_MapSettings.getRangeValueText(AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT + this.parentElement.simVarNameID, "number")]));
+        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[3], AS3000_TSC_MapSettings.getRangeValueText(AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_INT_RANGE_ROOT + this.parentElement.simVarNameID, "number")]));
+        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[4], AS3000_TSC_MapSettings.getRangeValueText(AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT + this.parentElement.simVarNameID, "number")]));
     }
     
     onButtonClick(_rowIndex, _isLeft) {
@@ -3730,7 +3738,7 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
     // airspace helpers
     
     openAirspaceRangeWindow() {
-        let values = AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.AIRSPACE_RANGE_MAX);
+        let values = AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.AIRSPACE_RANGE_MAX);
         
         this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map Airspace Range", this.setAirspaceRange.bind(this), AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT + this.parentElement.simVarNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
@@ -3753,14 +3761,14 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
     }
     
     getAirportTypeRangeDisplay(_index) {
-        return AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(this.airportTypeSimVarRoots[_index] + this.parentElement.simVarNameID, "number")] + "NM";
+        return AS3000_TSC_MapSettings.getRangeValueText(AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(this.airportTypeSimVarRoots[_index] + this.parentElement.simVarNameID, "number")]);
     }
     
     getAirportTypeRangeValues(_index) {
         switch (_index) {
-        case 0: return AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.AIRPORT_LARGE_RANGE_MAX);
-        case 1: return AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.AIRPORT_MEDIUM_RANGE_MAX);
-        case 2: return AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.AIRPORT_SMALL_RANGE_MAX);
+        case 0: return AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.AIRPORT_LARGE_RANGE_MAX);
+        case 1: return AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.AIRPORT_MEDIUM_RANGE_MAX);
+        case 2: return AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.AIRPORT_SMALL_RANGE_MAX);
         }
         return [];
     }
@@ -3772,21 +3780,21 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
     // VOR/INT/NDB helpers
     
     openVORRangeWindow() {
-        let values = AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.VOR_RANGE_MAX);
+        let values = AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.VOR_RANGE_MAX);
         
         this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map VOR Range", this.setVORRange.bind(this), AS3000_MapElement.VARNAME_VOR_RANGE_ROOT + this.parentElement.simVarNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
     
     openINTRangeWindow() {
-        let values = AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.INT_RANGE_MAX);
+        let values = AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.INT_RANGE_MAX);
         
         this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map INT Range", this.setINTRange.bind(this), AS3000_MapElement.VARNAME_INT_RANGE_ROOT + this.parentElement.simVarNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
     
     openNDBRangeWindow() {
-        let values = AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.NDB_RANGE_MAX);
+        let values = AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.NDB_RANGE_MAX);
         
         this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map NDB Range", this.setNDBRange.bind(this), AS3000_MapElement.VARNAME_NDB_RANGE_ROOT + this.parentElement.simVarNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
@@ -3850,14 +3858,14 @@ class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
     }
     
     getRoadTypeRangeDisplay(_index) {
-        return AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(this.roadTypeSimVarRoots[_index] + this.parentElement.simVarNameID, "number")] + "NM";
+        return AS3000_TSC_MapSettings.getRangeValueText(AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(this.roadTypeSimVarRoots[_index] + this.parentElement.simVarNameID, "number")]);
     }
     
     getRoadTypeRangeValues(_index) {
         switch (_index) {
-        case 0: return AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.ROAD_HIGHWAY_RANGE_MAX);
-        case 1: return AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.ROAD_TRUNK_RANGE_MAX);
-        case 2: return AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.ROAD_PRIMARY_RANGE_MAX);
+        case 0: return AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.ROAD_HIGHWAY_RANGE_MAX);
+        case 1: return AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.ROAD_TRUNK_RANGE_MAX);
+        case 2: return AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.ROAD_PRIMARY_RANGE_MAX);
         }
         return [];
     }
@@ -3874,7 +3882,7 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
         Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[1], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
         
         // statuses
-        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[0], AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.parentElement.simVarNameID, "number")] + "NM");
+        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[0], AS3000_TSC_MapSettings.getRangeValueText(AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.parentElement.simVarNameID, "number")]));
     }
     
     onButtonClick(_rowIndex, _isLeft) {
@@ -3891,7 +3899,7 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
     // auto north up helpers
     
     openNorthUpRangeWindow() {
-        let values = AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.ZOOM_RANGES_DEFAULT[AS3000_MapElement.ZOOM_RANGES_DEFAULT.length - 1]);
+        let values = AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.ZOOM_RANGES_DEFAULT[AS3000_MapElement.ZOOM_RANGES_DEFAULT.length - 1]);
         
         this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map North Up Above", this.setNorthUpRange.bind(this), AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.parentElement.simVarNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);

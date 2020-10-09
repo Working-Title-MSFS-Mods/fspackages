@@ -44,6 +44,7 @@ class AS3000_MapElement extends MapInstrumentElement {
             });
         }
         this.instrument.zoomRanges = AS3000_MapElement.ZOOM_RANGES_DEFAULT;
+        this.instrument.rangeDefinition = this;
         this.instrument.rotationHandler = this;
         this.instrument.rangeRingElement = new SvgRangeRingElement();
         this.instrument.rangeCompassElement = new SvgRangeCompassElement();
@@ -176,14 +177,14 @@ class AS3000_MapElement extends MapInstrumentElement {
     }
     
     setHdgUp() {
-        this.instrument.planeTrackedPosY = 0.667;
+        this.instrument.planeTrackedPosY = 2 / 3;
         this.instrument.showRangeRing = false;
         this.instrument.showRangeCompass = true;
         Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "HDG UP");
     }
     
     setTrkUp() {
-        this.instrument.planeTrackedPosY = 0.667;
+        this.instrument.planeTrackedPosY = 2 / 3;
         this.instrument.showRangeRing = false;
         this.instrument.showRangeCompass = true;
         Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "TRK UP");
@@ -194,6 +195,14 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.instrument.showRangeRing = true;
         this.instrument.showRangeCompass = false;
         Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "NORTH UP");
+    }
+    
+    getRangeDefinition(_context) {
+        if (this.orientation == 2) {
+            return (_context.bottom - _context.top) / 4;
+        } else {
+            return (_context.bottom - _context.top) / 3;
+        }
     }
     
     getRotation() {
@@ -262,7 +271,7 @@ class AS3000_MapElement extends MapInstrumentElement {
         }
     }
 }
-AS3000_MapElement.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 25, 35, 50, 100, 150, 200, 250, 400, 500, 750, 1000];
+AS3000_MapElement.ZOOM_RANGES_DEFAULT = [250 / 6076, 500 / 6076, 750 / 6076, 1000 / 6076, 0.25, 0.5, 0.75, 1, 1.5, 2.5, 4, 5, 7.5, 10, 15, 25, 40, 50, 75, 100, 150, 250, 400, 500, 750, 1000]; // NM
 
 AS3000_MapElement.VARNAME_ORIENTATION_ROOT = "L:AS3000_Map_Orientation";
 
@@ -323,7 +332,7 @@ AS3000_MapElement.ROAD_HIGHWAY_RANGE_DEFAULT = 50;
 AS3000_MapElement.ROAD_HIGHWAY_RANGE_MAX = 400;
 AS3000_MapElement.ROAD_TRUNK_RANGE_DEFAULT = 15;
 AS3000_MapElement.ROAD_TRUNK_RANGE_MAX = 150;
-AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT = 5;
+AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT = 4;
 AS3000_MapElement.ROAD_PRIMARY_RANGE_MAX = 25;
 
 AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT = "L:AS3000_NorthUpAbove_Active";
