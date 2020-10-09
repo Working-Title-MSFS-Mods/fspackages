@@ -25,6 +25,11 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Engine fuel consumption model has been custom coded and replaces the sim fuel consumption. Fuel consumption, especially at cruise, should be much, much closer to published. Expect 1800-1850pph per side at ISA full power at sea level and 500-800pph per side at cruise, depending on altitude, mach, and power settings.
 * Thrust now scales exponentially with N1 instead of linearly. Power settings should feel much more accurate.
 
+### Flight Model
+* Added gear drag (Was non-existent before)
+* Greatly reduced spoiler drag & pitch down moment (You shouldn't be losing airspeed in a 30 degree nose down dive with the speedbrakes out)
+* Reduced flap drag 
+
 ### LEGS Page
 * Added ability to insert a new fix
 * Added ability to remove whole segments by pressing LSK of one fix and then LSK of another
