@@ -7,7 +7,7 @@ class SvgRangeCompassElement extends SvgMapElement {
         this.arcStrokeWidth = SvgRangeCompassElement.ARC_STROKE_WIDTH_DEFAULT;                                  // in SVG coordinate units
         this.arcStrokeColor = SvgRangeCompassElement.ARC_STROKE_COLOR_DEFAULT;
         this.arcAngularWidth = SvgRangeCompassElement.ARC_ANGULAR_WIDTH_DEFAULT;                                // degrees
-        this.arcFacingAngle = SvgRangeCompassElement.ARC_FACING_ANGLE_DEFAULT;                                  // degrees, 0 = to the right, increasing clockwise
+        this.arcFacingAngle = SvgRangeCompassElement.ARC_FACING_ANGLE_DEFAULT;                                  // degrees, 0 = up, increasing clockwise
         
         this.bearingTickWindowTolerance = SvgRangeCompassElement.BEARING_TICK_WINDOW_TOLERANCE;                 // degrees, how much extra angular width on either side of the displayed compass arc
                                                                                                                 // to accept display of ticks and labels
@@ -25,7 +25,7 @@ class SvgRangeCompassElement extends SvgMapElement {
         this.bearingTickMajorLength = SvgRangeCompassElement.BEARING_TICK_MAJOR_LENGTH_DEFAULT;                 // in SVG coordinate units
         
         this.bearingLabelStart = SvgRangeCompassElement.BEARING_LABEL_START_DEFAULT;                            // degrees, the value of the first bearing label on the compass (0 = NORTH)
-        this.bearingLabelPeriod = SvgRangeCompassElement.BEARING_LABEL_PERIOD_DEFAULT;                          // degrees, how far apart the bearing labels on the compass should be'
+        this.bearingLabelPeriod = SvgRangeCompassElement.BEARING_LABEL_PERIOD_DEFAULT;                          // degrees, how far apart the bearing labels on the compass should be
         this.bearingLabelFont = SvgRangeCompassElement.BEARING_LABEL_FONT_DEFAULT;
         this.bearingLabelColor = SvgRangeCompassElement.BEARING_LABEL_FONT_COLOR_DEFAULT;
         this.bearingLabelStrokeWidth = SvgRangeCompassElement.BEARING_LABEL_STROKE_WIDTH_DEFAULT;               // in SVG coordinate units
@@ -102,8 +102,8 @@ class SvgRangeCompassElement extends SvgMapElement {
         // draw bearing indicator ticks
         let magDev = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degrees") - SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degrees") // kind of a hack-y way to get magnetic deviation
         
-        let arcBearingStart = this.arcFacingAngle - this.arcAngularWidth / 2 - map.rotation + 90 + magDev;
-        let arcBearingEnd = this.arcFacingAngle + this.arcAngularWidth / 2 - map.rotation + 90 + magDev;
+        let arcBearingStart = this.arcFacingAngle - this.arcAngularWidth / 2 - map.rotation + magDev;
+        let arcBearingEnd = this.arcFacingAngle + this.arcAngularWidth / 2 - map.rotation + magDev;
         if (arcBearingStart < 0) {
             arcBearingStart += 360;
             arcBearingEnd += 360;
@@ -119,7 +119,7 @@ class SvgRangeCompassElement extends SvgMapElement {
                     this.bearingTicksMinor[i] = this.createBearingTickMinor();
                     this.compassLayer.appendChild(this.bearingTicksMinor[i]);
                 }
-                SvgRangeCompassElement.drawRadialTick(this.bearingTicksMinor[i], this.centerPos, this.radius - this.bearingTickMinorLength, this.bearingTickMinorLength, Math.PI * (currentBearing + map.rotation - 90 - magDev) / 180);
+                SvgRangeCompassElement.drawRadialTick(this.bearingTicksMinor[i], this.centerPos, this.radius - this.bearingTickMinorLength, this.bearingTickMinorLength, Math.PI * (currentBearing + map.rotation - magDev) / 180);
                 this.bearingTicksMinor[i].setAttribute("display", "inherit");
                 i++;
             }
@@ -139,7 +139,7 @@ class SvgRangeCompassElement extends SvgMapElement {
                 this.bearingTicksMajor[i] = this.createBearingTickMajor();
                 this.compassLayer.appendChild(this.bearingTicksMajor[i]);
             }
-            SvgRangeCompassElement.drawRadialTick(this.bearingTicksMajor[i], this.centerPos, this.radius - this.bearingTickMajorLength, this.bearingTickMajorLength, Math.PI * (currentBearing + map.rotation - 90 - magDev) / 180);
+            SvgRangeCompassElement.drawRadialTick(this.bearingTicksMajor[i], this.centerPos, this.radius - this.bearingTickMajorLength, this.bearingTickMajorLength, Math.PI * (currentBearing + map.rotation - magDev) / 180);
             this.bearingTicksMajor[i].setAttribute("display", "inherit");
             i++;
             currentBearing += this.bearingTickMajorPeriod;
@@ -161,7 +161,7 @@ class SvgRangeCompassElement extends SvgMapElement {
             let offset = this.bearingLabelFontSize * 1.02;  // calculate how much the labels need to be offset from ticks to not collide
                                                             // label length approximated as font size * 3 chars * 0.6 (empiric constant), label height is ~= font size
                                                             // longest path through the label is through the diagonal, so Pythagorean theorem and then divide by 2 because middle anchor
-            let pos = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius - this.bearingTickMajorLength - offset, Math.PI * (currentBearing + map.rotation - 90 - magDev) / 180);
+            let pos = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius - this.bearingTickMajorLength - offset, Math.PI * (currentBearing + map.rotation - magDev) / 180);
             this.bearingLabels[i].setAttribute("x", pos.x);
             this.bearingLabels[i].setAttribute("y", pos.y);
             this.bearingLabels[i].textContent = fastToFixed(currentBearing % 360, 0);
@@ -173,15 +173,15 @@ class SvgRangeCompassElement extends SvgMapElement {
             this.bearingLabels[i++].setAttribute("display", "none");
         }
         
-        SvgRangeCompassElement.drawRadialTick(this.hdgTrkTick, this.centerPos, this.radius, this.hdgTrkTickLength, Math.PI * -0.5);
+        SvgRangeCompassElement.drawRadialTick(this.hdgTrkTick, this.centerPos, this.radius, this.hdgTrkTickLength, 0);
         
         if (this.showRangeDisplay) {
             this.rangeLabelElement.range = this.radius / 1000 * map.NMWidth;
             this.rangeLabelElement.updateDraw(map);
             
             let labelAngleRad = this.rangeDisplayAngle * Math.PI / 180;
-            let x = this.centerPos.x + this.radius * Math.cos(labelAngleRad);
-            let y = this.centerPos.y + this.radius * Math.sin(labelAngleRad);
+            let x = this.centerPos.x + this.radius * Math.sin(labelAngleRad);
+            let y = this.centerPos.y - this.radius * Math.cos(labelAngleRad);
             
             this.rangeLabelElement.svgElement.setAttribute("x", x - this.rangeLabelElement.svgElement.width.baseVal.value / 2);
             this.rangeLabelElement.svgElement.setAttribute("y", y - this.rangeLabelElement.svgElement.height.baseVal.value / 2);
@@ -228,13 +228,13 @@ class SvgRangeCompassElement extends SvgMapElement {
     }
     
     static getRadialOffsetPos(_center, _radius, _angle) {
-        return new Vec2(_center.x + _radius * Math.cos(_angle), _center.y + _radius * Math.sin(_angle));
+        return new Vec2(_center.x + _radius * Math.sin(_angle), _center.y - _radius * Math.cos(_angle));
     }
 }
 SvgRangeCompassElement.ARC_STROKE_WIDTH_DEFAULT = 2;
 SvgRangeCompassElement.ARC_STROKE_COLOR_DEFAULT = "white";
 SvgRangeCompassElement.ARC_ANGULAR_WIDTH_DEFAULT = 122;
-SvgRangeCompassElement.ARC_FACING_ANGLE_DEFAULT = -90;
+SvgRangeCompassElement.ARC_FACING_ANGLE_DEFAULT = 0;
 
 SvgRangeCompassElement.BEARING_TICK_WINDOW_TOLERANCE = 0;
 
@@ -262,5 +262,5 @@ SvgRangeCompassElement.HDGTRK_TICK_COLOR_DEFAULT = "white";
 SvgRangeCompassElement.HDGTRK_TICK_STROKE_WIDTH_DEFAULT = 2;
 SvgRangeCompassElement.HDGTRK_TICK_LENGTH_DEFAULT = 10;
 
-SvgRangeCompassElement.RANGE_DISPLAY_ANGLE_DEFAULT = -135;
+SvgRangeCompassElement.RANGE_DISPLAY_ANGLE_DEFAULT = -45;
 SvgRangeCompassElement.RANGE_DISPLAY_SHOW_DEFAULT = true;

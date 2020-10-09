@@ -38,7 +38,7 @@ class SvgRangeRingElement extends SvgLabeledRingElement {
 }
 SvgRangeRingElement.RANGE_RING_STROKE_COLOR_DEFAULT = "white";
 SvgRangeRingElement.RANGE_RING_STROKE_WIDTH_DEFAULT = 2;
-SvgRangeRingElement.RANGE_DISPLAY_ANGLE_DEFAULT = -135;
+SvgRangeRingElement.RANGE_DISPLAY_ANGLE_DEFAULT = -45;
 
 class SvgRangeLabelElement {
     constructor() {
