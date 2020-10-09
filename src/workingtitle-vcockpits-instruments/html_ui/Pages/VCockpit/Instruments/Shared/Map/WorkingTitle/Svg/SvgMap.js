@@ -183,12 +183,7 @@ class SvgMap {
     }
 	
     setRange(r) {
-        if (this._ratio < 1) {
-            this.NMWidth = r / this._ratio;
-        }
-        else {
-            this.NMWidth = r * this._ratio;
-        }
+        this.NMWidth = r;
     }
 	
 	// MOD: convenience methods that just pass through to MapInstrument
@@ -199,6 +194,22 @@ class SvgMap {
 	get overdrawFactor() {
 		return this.htmlRoot.overdrawFactor;
 	}
+    
+    get minVisibleX() {
+        return this.htmlRoot.minVisibleX;
+    }
+    
+    get maxVisibleX() {
+        return this.htmlRoot.maxVisibleX;
+    }
+    
+    get minVisibleY() {
+        return this.htmlRoot.minVisibleY;
+    }
+    
+    get maxVisibleY() {
+        return this.htmlRoot.maxVisibleY;
+    }
 	
     computeCoordinates() {
         this._ftWidth = 6076.11 * this._NMWidth;

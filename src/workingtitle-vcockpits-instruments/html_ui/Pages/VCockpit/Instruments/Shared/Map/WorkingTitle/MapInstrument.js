@@ -1103,12 +1103,35 @@ class MapInstrument extends ISvgMapRootElement {
             this.curHeight = this.clientHeight;
         }
     }
+    
     getWidth() {
         return this.curWidth;
     }
+    
     getHeight() {
         return this.curHeight;
     }
+    
+    getAspectRatio() {
+        return this.getWidth() / this.getHeight();
+    }
+    
+    get minVisibleY() {
+        return 500 * (1 - Math.min(1 / this.getAspectRatio(), 1));
+    }
+    
+    get maxVisibleY() {
+        return 500 * (1 + Math.min(1 / this.getAspectRatio(), 1));
+    }
+    
+    get minVisibleX() {
+        return 500 * (1 - Math.min(this.getAspectRatio(), 1));
+    }
+    
+    get maxVisibleX() {
+        return 500 * (1 + Math.min(this.getAspectRatio(), 1));
+    }
+    
     onEvent(_event) {
         if (_event === "RANGE_DEC" || _event === "RNG_Zoom") {
             this.zoomIn();
@@ -1571,8 +1594,7 @@ class MapInstrument extends ISvgMapRootElement {
 		}
 		
 		while (decimals >= 0) {
-			console.log("range " + _range + " rounded " + parseFloat(_range.toFixed(decimals)));
-			if (Math.abs(parseFloat(_range.toFixed(decimals)) - _range) > 0.001) {
+			if (Math.abs(parseFloat(_range.toFixed(decimals)) - _range) >= 0.01) {
 				break;
 			}
 			decimals--;

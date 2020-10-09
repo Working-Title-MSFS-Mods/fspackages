@@ -26,7 +26,7 @@ class SvgRangeRingElement extends SvgLabeledRingElement {
 	
 	updateDraw(map) {
 		this.centerPos = map.getPlanePositionXY();
-		this.radius = this.centerPos.y / 2 * map.NMWidthShort / map.NMWidth;
+		this.radius = (this.centerPos.y - map.minVisibleY) / 2;
 		super.updateDraw(map);
 	}
 	
