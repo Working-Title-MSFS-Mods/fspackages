@@ -11,6 +11,10 @@ class CJ4_FMC_SelectWptPage {
             [""],
             [""],
             [""],
+            [""],
+            [""],
+            [""],
+            [""],
             [""]
         ];
         for (let i = 0; i < 5; i++) {
@@ -29,9 +33,11 @@ class CJ4_FMC_SelectWptPage {
                 rows[2 * i] = [w.ident + t];
                 rows[2 * i + 1] = [w.infos.coordinates.toDegreeString()];
                 fmc.onLeftInput[i] = () => {
+                    fmc.setMsg("WORKING...");
                     callback(w);
                 };
                 fmc.onRightInput[i] = () => {
+                    fmc.setMsg("WORKING...");
                     callback(w);
                 };
             }
@@ -41,6 +47,7 @@ class CJ4_FMC_SelectWptPage {
             ...rows,
             [""]
         ]);
+        fmc.setMsg();
         fmc.onPrevPage = () => {
             if (page > 0) {
                 CJ4_FMC_SelectWptPage.ShowPage(fmc, waypoints, callback, page - 1);

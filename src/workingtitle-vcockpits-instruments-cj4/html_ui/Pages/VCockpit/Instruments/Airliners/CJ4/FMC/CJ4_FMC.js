@@ -229,6 +229,22 @@ class CJ4_FMC extends FMCMainDisplay {
 
     getOrSelectWaypointByIdent(ident, callback) {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
+
+            const uniqueWaypoints = new Map();
+            waypoints.forEach(wp => {
+                const waypoint = new WayPoint(null);
+
+                waypoint.icao = wp.icao;
+                waypoint.ident = wp.icao.substring(7, 12).replace(new RegExp(" ", "g"), "");
+
+                waypoint.infos.coordinates.lat = wp.lat;
+                waypoint.infos.coordinates.long = wp.lon;
+
+                uniqueWaypoints.set(waypoint.icao, waypoint);
+            });
+
+            waypoints = [...uniqueWaypoints.values()];
+
             if (!waypoints || waypoints.length === 0) {
                 return callback(undefined);
             }
