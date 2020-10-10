@@ -11,10 +11,7 @@ class SvgTrackVectorElement extends SvgMapElement {
         this.dynamicHeadingDeltaMax = SvgTrackVectorElement.DYNAMIC_HEADING_DELTA_MAX_DEFAULT;
         this.smoothingConstant = SvgTrackVectorElement.SMOOTHING_CONSTANT;
         
-        this.lastTrack = 0;
-        this.lastHeading = 0;
         this.lastTurnSpeed = 0;
-        this.lastWindDirection = 0;
         this.lastTime = 0;
     }
     
@@ -51,21 +48,12 @@ class SvgTrackVectorElement extends SvgMapElement {
         let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") / map.NMWidth * 1000 / 3600;
         let track = SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree") * Math.PI / 180;
         let tas = SimVar.GetSimVarValue("AIRSPEED TRUE", "knots") / map.NMWidth * 1000 / 3600;
-        let origHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree") * Math.PI / 180;
+        let heading = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree") * Math.PI / 180;
         let turnSpeed = SimVar.GetSimVarValue("DELTA HEADING RATE", "radians per second");
         let windSpeed = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots") / map.NMWidth * 1000 / 3600;
         let windDirection = (SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180) * Math.PI / 180;
         
-        if (Math.abs(track - this.lastTrack) > Math.PI) {
-            this.lastTrack += Math.sign(track - this.lastTrack) * 2 * Math.PI;
-        }
-        if (Math.abs(origHeading - this.lastHeading) > Math.PI) {
-            this.lastHeading += Math.sign(origHeading - this.lastHeading) * 2 * Math.PI;
-        }
-        track = track * smoothingFactor + (this.lastTrack) * (1 - smoothingFactor);
-        origHeading = origHeading * smoothingFactor + (this.lastHeading) * (1 - smoothingFactor);
         turnSpeed = turnSpeed * smoothingFactor + (this.lastTurnSpeed) * (1 - smoothingFactor);
-        windDirection = windDirection * smoothingFactor + (this.lastWindDirection) * (1 - smoothingFactor);
         
         let points = null;
         if (this.lookahead > this.dynamicLookaheadMax) {
@@ -76,11 +64,10 @@ class SvgTrackVectorElement extends SvgMapElement {
             points.push(new Vec2(newX, newY));
         } else {
             let timeStep = this.dynamicTimeStepMapResolution / tas;
-            let heading = origHeading;
             points = [map.getPlanePositionXY()];
             let i = 0;
             for (let t = 0; t < this.lookahead; t += timeStep) {
-                if (Math.abs(heading - origHeading) > this.dynamicHeadingDeltaMax * Math.PI / 180) {
+                if (Math.abs(heading - track) > this.dynamicHeadingDeltaMax * Math.PI / 180) {
                     break;
                 }
                 let planeSpeedX = tas * Math.sin(heading);
@@ -113,10 +100,7 @@ class SvgTrackVectorElement extends SvgMapElement {
         this.trackInner.setAttribute("transform", "rotate(" + map.rotation + " " + points[0].x + " " + points[0].y + ")");
         
         this.lastTime = currentTime;
-        this.lastTrack = track;
-        this.lastHeading = origHeading;
         this.lastTurnSpeed = turnSpeed;
-        this.lastWindDirection = windDirection;
     }
 }
 SvgTrackVectorElement.STROKE_INNER_COLOR_DEFAULT = "cyan";
@@ -127,4 +111,4 @@ SvgTrackVectorElement.LOOKAHEAD_DEFAULT = 60;                       // seconds
 SvgTrackVectorElement.DYNAMIC_LOOKAHEAD_MAX_DEFAULT = 60;           // seconds
 SvgTrackVectorElement.DYNAMIC_TIME_STEP_MAP_RESOLUTION = 5;         // in SVG coordinate units, the target resolution per time step
 SvgTrackVectorElement.DYNAMIC_HEADING_DELTA_MAX_DEFAULT = 90;       // degrees, the maximum turn angle up to which the dynamic track vector will be calculated
-SvgTrackVectorElement.SMOOTHING_CONSTANT = 40;                      // larger values = more smoothing but also more temporal lag
+SvgTrackVectorElement.SMOOTHING_CONSTANT = 100;                     // larger values = more smoothing but also more temporal lag
