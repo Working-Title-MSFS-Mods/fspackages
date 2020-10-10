@@ -32,7 +32,8 @@ class AS3000_MapElement extends MapInstrumentElement {
             AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT,
             AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT,
             AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT,
-            AS3000_MapElement.NORTHUP_RANGE_DEFAULT
+            AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT,
+            AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT
         ]
     }
     
@@ -48,6 +49,7 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.instrument.rotationHandler = this;
         this.instrument.rangeRingElement = new SvgRangeRingElement();
         this.instrument.rangeCompassElement = new SvgRangeCompassElement();
+        this.instrument.trackVectorElement = new SvgTrackVectorElement();
         this.setHdgUp();
         
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number", 0); // set default map orientation (0 = hdg, 1 = trk, 2 = north)
@@ -73,6 +75,8 @@ class AS3000_MapElement extends MapInstrumentElement {
         // "Other" settings
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT + this.simVarNameID, "number", 0);
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.NORTHUP_RANGE_DEFAULT));
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT + this.simVarNameID, "number", 0);
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT + this.simVarNameID, "number", AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES.indexOf(AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_DEFAULT));
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.simVarNameID, "number", 0);
     }
     
@@ -148,6 +152,7 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.updateOrientation();
         this.updateSymbolVisibility();
         this.updateSymbolRange();
+        this.updateTrackVector();
     }
     
     updateOrientation() {
@@ -239,6 +244,14 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.instrument.roadHighwayMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT + this.simVarNameID, "number");
         this.instrument.roadTrunkMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT + this.simVarNameID, "number");
         this.instrument.roadPrimaryMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT + this.simVarNameID, "number");
+    }
+    
+    updateTrackVector() {
+        let show = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT + this.simVarNameID, "number") == 1;
+        let lookahead = AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT + this.simVarNameID, "number")];
+        
+        this.instrument.showTrackVector = show;
+        this.instrument.trackVectorElement.lookahead = lookahead;
     }
     
     // returns key-value pairs for declutter settings for a given declutter level
@@ -338,4 +351,8 @@ AS3000_MapElement.ROAD_PRIMARY_RANGE_MAX = 25;
 AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT = "L:AS3000_NorthUpAbove_Active";
 AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT = "L:AS3000_NorthUpAbove_Range";
 AS3000_MapElement.NORTHUP_RANGE_DEFAULT = 1000;
+AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT = "L:AS3000_TrackVector_Show";
+AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT = "L:AS3000_TrackVector_Lookahead";
+AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_DEFAULT = 60;
+AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES = [30, 60, 120, 300, 600, 1200];
 AS3000_MapElement.VARNAME_WIND_SHOW_ROOT = "L:AS3000_Wind_Show";

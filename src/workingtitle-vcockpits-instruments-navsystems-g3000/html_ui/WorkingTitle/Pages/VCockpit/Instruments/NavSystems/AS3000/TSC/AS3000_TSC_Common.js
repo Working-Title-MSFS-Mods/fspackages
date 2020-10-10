@@ -3875,24 +3875,31 @@ class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
     }
 }
 
-class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {    
+class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
+    constructor(_parentElement) {
+        super(_parentElement);
+    }
+    
     update() {
         // toggles
         Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[0], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
-        Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[1], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+        Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[1], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+        Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[2], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
         
         // statuses
         Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[0], AS3000_TSC_MapSettings.getRangeValueText(AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.parentElement.simVarNameID, "number")]));
+        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[1], AS3000_TSC_MapSettingsOtherTab.getTrackVectorLookaheadText(SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT + this.parentElement.simVarNameID, "number")));
     }
     
     onButtonClick(_rowIndex, _isLeft) {
         switch (_rowIndex) {
-            case 0: _isLeft ? this.toggleShowSymbol(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT) : this.openNorthUpRangeWindow(); break;
-            case 1: this.toggleShowSymbol(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT); break;
+            case 0: _isLeft ? this.toggleShowElement(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT) : this.openNorthUpRangeWindow(); break;
+            case 1: _isLeft ? this.toggleShowElement(AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT): this.openTrackVectorLookaheadWindow(); break;
+            case 2: this.toggleShowElement(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT); break;
         }
     }
     
-    toggleShowSymbol(_simVarNameRoot) {
+    toggleShowElement(_simVarNameRoot) {
         AS3000_MapElement.setSyncedSettingVar(_simVarNameRoot, this.parentElement.simVarNameID, SimVar.GetSimVarValue(_simVarNameRoot + this.parentElement.simVarNameID, "number") ^ 1);
     }
     
@@ -3907,6 +3914,30 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
     
     setNorthUpRange(_val) {
         AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT, this.parentElement.simVarNameID, _val);
+    }
+    
+    // track vector helpers
+    
+    openTrackVectorLookaheadWindow() {
+        let values = new Array(AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES.length);
+        for (let i = 0; i < AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES.length; i++) {
+            values[i] = AS3000_TSC_MapSettingsOtherTab.getTrackVectorLookaheadText(i);
+        }
+        
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map Track Vector", this.setTrackVectorLookahead.bind(this), AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT + this.parentElement.simVarNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
+        this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
+    }
+    
+    setTrackVectorLookahead(_val) {
+        AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT, this.parentElement.simVarNameID, _val);
+    }
+    
+    static getTrackVectorLookaheadText(_val) {
+        if (AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES[_val] > 60) {
+            return fastToFixed(AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES[_val] / 60, 0) + " minutes";
+        } else {
+            return AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES[_val] + " seconds";
+        }
     }
 }
 
