@@ -3885,6 +3885,7 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
         Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[0], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
         Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[1], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
         Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[2], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+        Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[3], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
         
         // statuses
         Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[0], AS3000_TSC_MapSettings.getRangeValueText(AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.parentElement.simVarNameID, "number")]));
@@ -3896,6 +3897,7 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
             case 0: _isLeft ? this.toggleShowElement(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT) : this.openNorthUpRangeWindow(); break;
             case 1: _isLeft ? this.toggleShowElement(AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT): this.openTrackVectorLookaheadWindow(); break;
             case 2: this.toggleShowElement(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT); break;
+            case 3: this.toggleShowElement(AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT); break;
         }
     }
     

@@ -33,7 +33,8 @@ class AS3000_MapElement extends MapInstrumentElement {
             AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT,
             AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT,
             AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT,
-            AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT
+            AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT,
+            AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT
         ]
     }
     
@@ -50,6 +51,7 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.instrument.rangeRingElement = new SvgRangeRingElement();
         this.instrument.rangeCompassElement = new SvgRangeCompassElement();
         this.instrument.trackVectorElement = new SvgTrackVectorElement();
+        this.instrument.altitudeInterceptElement = new SvgAltitudeInterceptElement();
         this.setHdgUp();
         
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number", 0); // set default map orientation (0 = hdg, 1 = trk, 2 = north)
@@ -78,6 +80,7 @@ class AS3000_MapElement extends MapInstrumentElement {
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT + this.simVarNameID, "number", 0);
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT + this.simVarNameID, "number", AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES.indexOf(AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_DEFAULT));
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.simVarNameID, "number", 0);
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT + this.simVarNameID, "number", 0);
     }
     
     initDcltrSettings() {
@@ -153,6 +156,7 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.updateSymbolVisibility();
         this.updateSymbolRange();
         this.updateTrackVector();
+        this.updateAltitudeIntercept();
     }
     
     updateOrientation() {
@@ -252,6 +256,10 @@ class AS3000_MapElement extends MapInstrumentElement {
         
         this.instrument.showTrackVector = show;
         this.instrument.trackVectorElement.lookahead = lookahead;
+    }
+    
+    updateAltitudeIntercept() {
+        this.instrument.showAltitudeIntercept = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT + this.simVarNameID, "number") == 1;
     }
     
     // returns key-value pairs for declutter settings for a given declutter level
@@ -356,3 +364,4 @@ AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT = "L:AS3000_TrackVector_Lo
 AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_DEFAULT = 60;
 AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES = [30, 60, 120, 300, 600, 1200];
 AS3000_MapElement.VARNAME_WIND_SHOW_ROOT = "L:AS3000_Wind_Show";
+AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT = "L:AS3000_AltitudeIntercept_Show";
