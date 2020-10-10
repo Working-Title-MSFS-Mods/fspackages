@@ -318,25 +318,6 @@ class SvgMap {
         if (SvgMap.LOG_PERFS) {
             t0 = performance.now();
         }
-        /*
-        for (let i = 0; i < this.planeLayer.children.length; i++) {
-            this.planeLayer.children[i].setAttribute("needDeletion", "true");
-        }
-        for (let i = 0; i < this.rangeRingLayer.children.length; i++) {
-            this.rangeRingLayer.children[i].setAttribute("needDeletion", "true");
-        }
-        for (let i = 0; i < this.trackVectorLayer.children.length; i++) {
-            this.trackVectorLayer.children[i].setAttribute("needDeletion", "true");
-        }
-        for (let i = 0; i < this.maskLayer.children.length; i++) {
-            this.maskLayer.children[i].setAttribute("needDeletion", "true");
-        }
-        for (let i = 0; i < this.defaultLayer.children.length; i++) {
-            this.defaultLayer.children[i].setAttribute("needDeletion", "true");
-        }
-        for (let i = 0; i < this.flightPlanLayer.children.length; i++) {
-            this.flightPlanLayer.children[i].setAttribute("needDeletion", "true");
-        }*/
         for (let svgLayer of this.svgLayersToUpdate) {
             for (let child of svgLayer.children) {
                 child.setAttribute("needDeletion", "true");
@@ -371,77 +352,6 @@ class SvgMap {
                 }
             }
         }
-        /*
-        let i = 0;
-        while (i < this.planeLayer.children.length) {
-            let e = this.planeLayer.children[i];
-            if (e.getAttribute("needDeletion") === "true") {
-                this.planeLayer.removeChild(e);
-            }
-            else {
-                i++;
-            }
-        }
-        i = 0;
-        while (i < this.rangeRingLayer.children.length) {
-            let e = this.rangeRingLayer.children[i];
-            if (e.getAttribute("needDeletion") === "true") {
-                this.rangeRingLayer.removeChild(e);
-            }
-            else {
-                i++;
-            }
-        }
-        i = 0;
-        while (i < this.trackVectorLayer.children.length) {
-            let e = this.trackVectorLayer.children[i];
-            if (e.getAttribute("needDeletion") === "true") {
-                this.trackVectorLayer.removeChild(e);
-            }
-            else {
-                i++;
-            }
-        }
-        i = 0;
-        while (i < this.defaultLayer.children.length) {
-            let e = this.defaultLayer.children[i];
-            if (e.getAttribute("needDeletion") === "true") {
-                this.defaultLayer.removeChild(e);
-                if (e.getAttribute("hasTextBox") === "true") {
-                    let textElement = this.htmlRoot.querySelector("#" + e.id + "-text-" + this.index);
-                    if (textElement) {
-                        this.textLayer.removeChild(textElement);
-                    }
-                    let rectElement = this.htmlRoot.querySelector("#" + e.id + "-rect-" + this.index);
-                    if (rectElement) {
-                        this.textLayer.removeChild(rectElement);
-                    }
-                }
-            }
-            else {
-                i++;
-            }
-        }
-        i = 0;
-        while (i < this.flightPlanLayer.children.length) {
-            let e = this.flightPlanLayer.children[i];
-            if (e.getAttribute("needDeletion") === "true") {
-                this.flightPlanLayer.removeChild(e);
-            }
-            else {
-                i++;
-            }
-        }
-        i = 0;
-        while (i < this.maskLayer.children.length) {
-            let e = this.maskLayer.children[i];
-            if (e.getAttribute("needDeletion") === "true") {
-                this.maskLayer.removeChild(e);
-            }
-            else {
-                i++;
-            }
-        }*/
         if (this.config.preventLabelOverlap) {
             this._elementsWithTextBox = [];
             for (let i = 0; i < this.mapElements.length; i++) {
