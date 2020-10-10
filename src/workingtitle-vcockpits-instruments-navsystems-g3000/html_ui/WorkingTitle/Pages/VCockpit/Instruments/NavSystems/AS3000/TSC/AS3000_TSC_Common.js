@@ -3889,7 +3889,7 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
         
         // statuses
         Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[0], AS3000_TSC_MapSettings.getRangeValueText(AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.parentElement.simVarNameID, "number")]));
-        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[1], AS3000_TSC_MapSettingsOtherTab.getTrackVectorLookaheadText(SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT + this.parentElement.simVarNameID, "number")));
+        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[1], AS3000_TSC_MapSettingsOtherTab.getTrackVectorLookaheadText(SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT + this.parentElement.simVarNameID, "number"), true));
     }
     
     onButtonClick(_rowIndex, _isLeft) {
@@ -3934,11 +3934,11 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
         AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT, this.parentElement.simVarNameID, _val);
     }
     
-    static getTrackVectorLookaheadText(_val) {
+    static getTrackVectorLookaheadText(_val, _break = false) {
         if (AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES[_val] > 60) {
-            return fastToFixed(AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES[_val] / 60, 0) + " minutes";
+            return fastToFixed(AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES[_val] / 60, 0) + (_break ? "<br>minutes" : " minutes");
         } else {
-            return AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES[_val] + " seconds";
+            return AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES[_val] + (_break ? "<br>seconds" : " seconds");
         }
     }
 }
