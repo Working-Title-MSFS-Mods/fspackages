@@ -118,6 +118,7 @@ class MapInstrument extends ISvgMapRootElement {
         this.showRangeRing = false;
         this.showRangeCompass = false;
         this.showTrackVector = false;
+        this.showAltitudeIntercept = false;
         
         this.airspaceMaxRange = MapInstrument.AIRSPACE_RANGE_DEFAULT;
         this.roadHighwayMaxRange = MapInstrument.ROAD_HIGHWAY_RANGE_DEFAULT;
@@ -810,6 +811,10 @@ class MapInstrument extends ISvgMapRootElement {
                 
                 if (this.showTrackVector && this.trackVectorElement) {
                     this.navMap.mapElements.push(this.trackVectorElement);
+                }
+                
+                if (this.showAltitudeIntercept && this.altitudeInterceptElement) {
+                    this.navMap.mapElements.push(this.altitudeInterceptElement);
                 }
                 
                 if (this.eBingMode != EBingMode.CURSOR) {

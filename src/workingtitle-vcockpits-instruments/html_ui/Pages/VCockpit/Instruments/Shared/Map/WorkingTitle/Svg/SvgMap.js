@@ -266,6 +266,10 @@ class SvgMap {
             this.textLayer = document.createElementNS(Avionics.SVG.NS, "g");
             this.svgHtmlElement.appendChild(this.textLayer);
         }
+        if (!this.trackVectorLayer) {
+            this.trackVectorLayer = document.createElementNS(Avionics.SVG.NS, "g");
+            this.svgHtmlElement.appendChild(this.trackVectorLayer);
+        }
         if (!this.rangeRingLayer) {
             this.rangeRingLayer = document.createElementNS(Avionics.SVG.NS, "g");
             this.svgHtmlElement.appendChild(this.rangeRingLayer);
@@ -310,6 +314,9 @@ class SvgMap {
         for (let i = 0; i < this.rangeRingLayer.children.length; i++) {
             this.rangeRingLayer.children[i].setAttribute("needDeletion", "true");
         }
+        for (let i = 0; i < this.trackVectorLayer.children.length; i++) {
+            this.trackVectorLayer.children[i].setAttribute("needDeletion", "true");
+        }
         for (let i = 0; i < this.maskLayer.children.length; i++) {
             this.maskLayer.children[i].setAttribute("needDeletion", "true");
         }
@@ -347,10 +354,10 @@ class SvgMap {
             }
         }
         i = 0;
-        while (i < this.rangeRingLayer.children.length) {
-            let e = this.rangeRingLayer.children[i];
+        while (i < this.trackVectorLayer.children.length) {
+            let e = this.trackVectorLayer.children[i];
             if (e.getAttribute("needDeletion") === "true") {
-                this.rangeRingLayer.removeChild(e);
+                this.trackVectorLayer.removeChild(e);
             }
             else {
                 i++;
@@ -438,27 +445,23 @@ class SvgMap {
     appendChild(mapElement, svgElement) {
         if (mapElement instanceof SvgAirplaneElement) {
             this.planeLayer.appendChild(svgElement);
-        }
-        else if (mapElement instanceof SvgMaskElement) {
+        } else if (mapElement instanceof SvgMaskElement) {
             this.maskLayer.appendChild(svgElement);
-        }
-        else if (mapElement instanceof SvgFlightPlanElement) {
+        } else if (mapElement instanceof SvgFlightPlanElement) {
             this.flightPlanLayer.appendChild(svgElement);
-        }
-        else if (mapElement instanceof SvgBackOnTrackElement) {
+        } else if (mapElement instanceof SvgBackOnTrackElement) {
             this.flightPlanLayer.appendChild(svgElement);
-        }
-        else if (mapElement instanceof SvgLabeledRingElement || mapElement instanceof SvgRangeCompassElement || mapElement instanceof SvgTrackVectorElement) {
+        } else if (mapElement instanceof SvgLabeledRingElement || mapElement instanceof SvgRangeCompassElement) {
             this.rangeRingLayer.appendChild(svgElement);
-        }
-        else if (mapElement instanceof SvgWaypointElement) {
+        } else if (mapElement instanceof SvgTrackVectorElement || mapElement instanceof SvgAltitudeInterceptElement) {
+            this.trackVectorLayer.appendChild(svgElement);
+        } else if (mapElement instanceof SvgWaypointElement) {
             this.defaultLayer.appendChild(svgElement);
             if (mapElement._label) {
                 this.textLayer.appendChild(mapElement._label);
             }
             mapElement.needRepaint = true;
-        }
-        else {
+        } else {
             this.defaultLayer.appendChild(svgElement);
         }
     }
