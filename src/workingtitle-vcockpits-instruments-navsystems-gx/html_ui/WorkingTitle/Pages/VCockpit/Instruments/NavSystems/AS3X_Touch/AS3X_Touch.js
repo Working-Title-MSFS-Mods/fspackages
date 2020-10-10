@@ -838,12 +838,13 @@ class AS3X_Touch_Map extends MapInstrumentElement {
         let ranges = this.instrument.zoomRanges;
         let currentRangeIdx = this.instrument.getZoom();
         let newIdx = 0
-        for (i = 1; ranges[i-1] <= wptDistance * 2; i++) {
+        for (let i = 1; ranges[i-1] <= wptDistance * 2; i++) {
             newIdx = i
         }
         if (currentRangeIdx != newIdx) {
             this.instrument.setZoom(newIdx);
         }
+        this._lastAutoRangeDistance = wptDistance;
     }
     onEvent(_event) {
         console.log(_event);
