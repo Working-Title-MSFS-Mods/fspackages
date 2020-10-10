@@ -117,6 +117,7 @@ class MapInstrument extends ISvgMapRootElement {
         
         this.showRangeRing = false;
         this.showRangeCompass = false;
+        this.showTrackVector = false;
         
         this.airspaceMaxRange = MapInstrument.AIRSPACE_RANGE_DEFAULT;
         this.roadHighwayMaxRange = MapInstrument.ROAD_HIGHWAY_RANGE_DEFAULT;
@@ -807,7 +808,10 @@ class MapInstrument extends ISvgMapRootElement {
                     }
                 }
                 
-                // MOD: show range compass or range ring
+                if (this.showTrackVector && this.trackVectorElement) {
+                    this.navMap.mapElements.push(this.trackVectorElement);
+                }
+                
                 if (this.eBingMode != EBingMode.CURSOR) {
                     if (this.showRangeRing && this.rangeRingElement) {
                         this.navMap.mapElements.push(this.rangeRingElement);
