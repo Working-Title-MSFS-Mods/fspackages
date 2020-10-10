@@ -49,7 +49,7 @@ class SvgTrackVectorElement extends SvgMapElement {
         let smoothingFactor = Math.pow(0.5, dt * this.smoothingConstant);
         
         let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") / map.NMWidth * 1000 / 3600;
-        let track = SimVar.GetSimVarValue("GPS GROUND TRUE HEADING", "degree") * Math.PI / 180;
+        let track = SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree") * Math.PI / 180;
         let tas = SimVar.GetSimVarValue("AIRSPEED TRUE", "knots") / map.NMWidth * 1000 / 3600;
         let origHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree") * Math.PI / 180;
         let turnSpeed = SimVar.GetSimVarValue("DELTA HEADING RATE", "radians per second");
@@ -79,7 +79,7 @@ class SvgTrackVectorElement extends SvgMapElement {
             let heading = origHeading;
             points = [map.getPlanePositionXY()];
             let i = 0;
-            for (let t = 0; t < this.dynamicLookaheadMax; t += timeStep) {
+            for (let t = 0; t < this.lookahead; t += timeStep) {
                 if (Math.abs(heading - origHeading) > this.dynamicHeadingDeltaMax * Math.PI / 180) {
                     break;
                 }
