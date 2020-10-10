@@ -131,12 +131,7 @@ class CJ4_FMC_TakeoffRefPage {
         if (origin) {
             originIdent = origin.ident;
         }
-        let grWtCell = "";
-        let grossWeightValue = new Number(fmc.getWeight());
-        if (isFinite(grossWeightValue)) {
-            grWtCell = new Number((grossWeightValue * 2200).toFixed(0));
-        }
-        let tow = (grWtCell - 100);
+        let tow = (fmc.grossWeight - 100);
         let depRunway = "";
         let depRunwayLength = "";
         let selectedRunway = fmc.flightPlanManager.getDepartureRunway();
@@ -227,7 +222,7 @@ class CJ4_FMC_TakeoffRefPage {
             [" T/O FLAPS[blue]", "V[d-text blue]R:[s-text blue] " + vR.toFixed(0).padStart(3, " ") + "[s-text]"],
             [takeoffFlapsActive],
             [" TOW/ GWT/MTOW[blue]", "V[d-text blue]2:[s-text blue] " + v2.toFixed(0).padStart(3, " ") + "[s-text]"],
-            [tow + "/" + grWtCell + "/17110"],
+            [tow + "/" + fmc.grossWeight + "/17110"],
             [" TOFL / " + depRunway + "[blue]", "V[d-text blue]T:[s-text blue] 140[s-text]"],
             [fmc.endTakeoffDist.toFixed(0) + " / " + Math.round(depRunwayLength) + " FT"],
             [""],

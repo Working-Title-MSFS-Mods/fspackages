@@ -16,6 +16,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.paxNumber = 0;
         this.cargoWeight = 0;
         this.basicOperatingWeight = 10280;
+		this.GrossWeight = 0;
         this.takeoffOat = "□□□";
         this.landingOat = "□□□";
         this.takeoffQnh = "□□.□□";
