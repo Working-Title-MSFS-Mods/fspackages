@@ -61,7 +61,7 @@ function Update-Packages {
             $src = Join-Path "." $assetGroup.AssetDir
             $dest = Join-Path $packagePath $assetGroup.OutputDir
             Write-Host "Copying $src to $dest..."
-            robocopy $src $dest /XO /e /PURGE /XF manifest.json layout.json  | Out-Null
+            robocopy $src $dest /XO /e  | Out-Null
         }
     
         Write-Host "Writing $manifestPath..."  
