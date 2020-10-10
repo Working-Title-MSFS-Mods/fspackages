@@ -448,7 +448,7 @@ class SvgMap {
         else if (mapElement instanceof SvgBackOnTrackElement) {
             this.flightPlanLayer.appendChild(svgElement);
         }
-        else if (mapElement instanceof SvgLabeledRingElement || mapElement instanceof SvgRangeCompassElement) {
+        else if (mapElement instanceof SvgLabeledRingElement || mapElement instanceof SvgRangeCompassElement || mapElement instanceof SvgTrackVectorElement) {
             this.rangeRingLayer.appendChild(svgElement);
         }
         else if (mapElement instanceof SvgWaypointElement) {
