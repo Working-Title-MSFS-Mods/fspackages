@@ -45,6 +45,10 @@ class SvgRangeCompassElement extends SvgMapElement {
         return "range-compass" + "-map-" + map.index;
     }
     
+    appendToMap(map) {
+        map.appendChild(this.svgElement, map.rangeRingLayer);
+    }
+    
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);

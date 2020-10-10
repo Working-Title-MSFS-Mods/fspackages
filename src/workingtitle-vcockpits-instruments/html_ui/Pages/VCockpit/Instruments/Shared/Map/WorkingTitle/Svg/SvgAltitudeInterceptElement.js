@@ -18,6 +18,10 @@ class SvgAltitudeInterceptElement extends SvgMapElement {
         return "altitude-intercept" + "-map-" + map.index;
     }
     
+    appendToMap(map) {
+        map.appendChild(this.svgElement, map.altitudeInterceptLayer);
+    }
+    
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         

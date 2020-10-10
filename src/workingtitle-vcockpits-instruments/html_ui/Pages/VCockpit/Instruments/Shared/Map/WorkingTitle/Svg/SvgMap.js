@@ -8,6 +8,9 @@ class SvgMap {
         this.rotateWithPlane = false;
         this.mapElements = [];
         this._elementsWithTextBox = [];
+        
+        this.svgLayersToUpdate = [];
+        
         this._previousCenterCoordinates = [];
         this.planeDirection = 0;
         this.planeDirectionRadian = 0;
@@ -50,6 +53,42 @@ class SvgMap {
             this._svgHtmlElement = _root.querySelector("#" + elementId);
         }
         this.svgHtmlElement.setAttribute("viewBox", "0 0 1000 1000");
+        
+        this.flightPlanLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.svgHtmlElement.appendChild(this.flightPlanLayer);
+        this.svgLayersToUpdate.push(this.flightPlanLayer);
+        
+        this.defaultLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.svgHtmlElement.appendChild(this.defaultLayer);
+        this.svgLayersToUpdate.push(this.defaultLayer);
+        
+        this.textLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.svgHtmlElement.appendChild(this.textLayer);
+        
+        this.trackVectorLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.svgHtmlElement.appendChild(this.trackVectorLayer);
+        this.svgLayersToUpdate.push(this.trackVectorLayer);
+        
+        this.altitudeInterceptLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.svgHtmlElement.appendChild(this.altitudeInterceptLayer);
+        this.svgLayersToUpdate.push(this.altitudeInterceptLayer);
+        
+        this.fuelRingLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.svgHtmlElement.appendChild(this.fuelRingLayer);
+        this.svgLayersToUpdate.push(this.fuelRingLayer);
+        
+        this.rangeRingLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.svgHtmlElement.appendChild(this.rangeRingLayer);
+        this.svgLayersToUpdate.push(this.rangeRingLayer);
+        
+        this.maskLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.svgHtmlElement.appendChild(this.maskLayer);
+        this.svgLayersToUpdate.push(this.maskLayer);
+        
+        this.planeLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.svgHtmlElement.appendChild(this.planeLayer);
+        this.svgLayersToUpdate.push(this.planeLayer);
+        
         let loadConfig = () => {
             if (typeof (SvgMapConfig) !== "undefined") {
                 this.config = new SvgMapConfig();
@@ -254,34 +293,6 @@ class SvgMap {
         if (!this.centerCoordinates) {
             return;
         }
-        if (!this.flightPlanLayer) {
-            this.flightPlanLayer = document.createElementNS(Avionics.SVG.NS, "g");
-            this.svgHtmlElement.appendChild(this.flightPlanLayer);
-        }
-        if (!this.defaultLayer) {
-            this.defaultLayer = document.createElementNS(Avionics.SVG.NS, "g");
-            this.svgHtmlElement.appendChild(this.defaultLayer);
-        }
-        if (!this.textLayer) {
-            this.textLayer = document.createElementNS(Avionics.SVG.NS, "g");
-            this.svgHtmlElement.appendChild(this.textLayer);
-        }
-        if (!this.trackVectorLayer) {
-            this.trackVectorLayer = document.createElementNS(Avionics.SVG.NS, "g");
-            this.svgHtmlElement.appendChild(this.trackVectorLayer);
-        }
-        if (!this.rangeRingLayer) {
-            this.rangeRingLayer = document.createElementNS(Avionics.SVG.NS, "g");
-            this.svgHtmlElement.appendChild(this.rangeRingLayer);
-        }
-        if (!this.maskLayer) {
-            this.maskLayer = document.createElementNS(Avionics.SVG.NS, "g");
-            this.svgHtmlElement.appendChild(this.maskLayer);
-        }
-        if (!this.planeLayer) {
-            this.planeLayer = document.createElementNS(Avionics.SVG.NS, "g");
-            this.svgHtmlElement.appendChild(this.planeLayer);
-        }
 
         this.planeDirection = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree") % 360;
         
@@ -307,7 +318,7 @@ class SvgMap {
         if (SvgMap.LOG_PERFS) {
             t0 = performance.now();
         }
-        ;
+        /*
         for (let i = 0; i < this.planeLayer.children.length; i++) {
             this.planeLayer.children[i].setAttribute("needDeletion", "true");
         }
@@ -325,7 +336,13 @@ class SvgMap {
         }
         for (let i = 0; i < this.flightPlanLayer.children.length; i++) {
             this.flightPlanLayer.children[i].setAttribute("needDeletion", "true");
+        }*/
+        for (let svgLayer of this.svgLayersToUpdate) {
+            for (let child of svgLayer.children) {
+                child.setAttribute("needDeletion", "true");
+            }
         }
+        
         if (this.lineCanvas) {
             this.lineCanvas.getContext("2d").clearRect(0, 0, this.lineCanvas.width, this.lineCanvas.height);
         }
@@ -333,6 +350,28 @@ class SvgMap {
             let svgElement = this.mapElements[i].draw(this);
             svgElement.setAttribute("needDeletion", "false");
         }
+        for (let svgLayer of this.svgLayersToUpdate) {
+            let i = 0;
+            while (i < svgLayer.children.length) {
+                let e = svgLayer.children[i];
+                if (e.getAttribute("needDeletion") === "true") {
+                    svgLayer.removeChild(e);
+                    if (e.getAttribute("hasTextBox") === "true") {
+                        let textElement = this.htmlRoot.querySelector("#" + e.id + "-text-" + this.index);
+                        if (textElement) {
+                            this.textLayer.removeChild(textElement);
+                        }
+                        let rectElement = this.htmlRoot.querySelector("#" + e.id + "-rect-" + this.index);
+                        if (rectElement) {
+                            this.textLayer.removeChild(rectElement);
+                        }
+                    }
+                } else {
+                    i++;
+                }
+            }
+        }
+        /*
         let i = 0;
         while (i < this.planeLayer.children.length) {
             let e = this.planeLayer.children[i];
@@ -402,7 +441,7 @@ class SvgMap {
             else {
                 i++;
             }
-        }
+        }*/
         if (this.config.preventLabelOverlap) {
             this._elementsWithTextBox = [];
             for (let i = 0; i < this.mapElements.length; i++) {
@@ -442,7 +481,13 @@ class SvgMap {
         }
     }
     
-    appendChild(mapElement, svgElement) {
+    appendChild(_svgElement, _svgLayer = null) {
+        if (!_svgLayer) {
+            _svgLayer = this.defaultLayer;
+        }
+        _svgLayer.appendChild(_svgElement);
+        
+        /*
         if (mapElement instanceof SvgAirplaneElement) {
             this.planeLayer.appendChild(svgElement);
         } else if (mapElement instanceof SvgMaskElement) {
@@ -463,7 +508,7 @@ class SvgMap {
             mapElement.needRepaint = true;
         } else {
             this.defaultLayer.appendChild(svgElement);
-        }
+        }*/
     }
     
     resize(w, h) {

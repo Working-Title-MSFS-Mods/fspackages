@@ -11,6 +11,10 @@ class SvgRangeRingElement extends SvgLabeledRingElement {
         return "range-ring" + "-map-" + map.index;
     }
     
+    appendToMap(map) {
+        map.appendChild(this.svgElement, map.rangeRingLayer);
+    }
+    
     createRing(map) {
         let rangeRing = super.createRing(map);
         rangeRing.setAttribute("stroke", this.rangeRingStrokeColor);

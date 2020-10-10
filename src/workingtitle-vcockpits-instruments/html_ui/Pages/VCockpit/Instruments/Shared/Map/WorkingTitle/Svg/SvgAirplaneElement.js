@@ -14,6 +14,11 @@ class SvgAirplaneElement extends SvgMapElement {
     id(map) {
         return "airplane-icon-map-" + map.index;
     }
+    
+    appendToMap(map) {
+        map.appendChild(this.svgElement, map.planeLayer);
+    }
+    
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);

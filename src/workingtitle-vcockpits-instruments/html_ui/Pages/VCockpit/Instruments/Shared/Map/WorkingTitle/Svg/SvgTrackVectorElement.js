@@ -19,6 +19,10 @@ class SvgTrackVectorElement extends SvgMapElement {
         return "track-vector" + "-map-" + map.index;
     }
     
+    appendToMap(map) {
+        map.appendChild(this.svgElement, map.trackVectorLayer);
+    }
+    
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         
