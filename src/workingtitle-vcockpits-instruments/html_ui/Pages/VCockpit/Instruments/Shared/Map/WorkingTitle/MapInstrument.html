@@ -5,7 +5,7 @@
     <bing-map></bing-map>
     <canvas id="road-network-canvas" width="2000" height="2000"></canvas>
     <svg id="MapSVG"></svg>
-    <div id="MapRange">80NM</div>
+    <div id="MapRange" state="Active"><div class="range">80</div><div class="unit">NM</div></div>
     <div id="MapOrientation">NORTH UP</div>
     <svg id="MapCursor" height="3%" viewBox="0 0 100 100" style="display: none">
         <polygon points="0,0 75,25 60,40 100,80 80,100 40,60 25,75" fill="white" stroke="black" stroke-width="5"></polygon>
@@ -38,7 +38,7 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgCityElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgCityManager.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgRoadElement.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgRoadNetworkElement.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/Svg/SvgRoadNetworkElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgAirwayElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgWaypointElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgNearestAirportElement.js"></script>
@@ -48,14 +48,17 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgConstraintElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgObstacleElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgAirportElement.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgAirplaneElement.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/Svg/SvgAirplaneElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgAirspaceElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgLatLonElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgRailwayElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgFlightPlanElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgTextManager.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgMaskElement.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgMap.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/Svg/SvgLabeledRingElement.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/Svg/SvgRangeRingElement.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/Svg/SvgRangeCompassElement.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/Svg/SvgMap.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/MapInstrument.js"></script>
 

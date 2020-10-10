@@ -258,10 +258,25 @@
 					<ANIM_NAME_RANGE_STICK_DN_UP>CCP_Joystick_DN_UP</ANIM_NAME_RANGE_STICK_DN_UP>
 				</UseTemplate>
 			</Component>
+
+			<UseTemplate Name="WT_Detached_Control_Panel_Template">
+				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
+				<ID>1</ID>
+				<!-- Node_ids LOWER PANEL -->
+				<NODE_ID_CKLST>CCP_PUSH_CKLST_1</NODE_ID_CKLST>
+				<NODE_ID_PASSBRIEF>CCP_PUSH_PASSBRIEF_1</NODE_ID_PASSBRIEF>
+			</UseTemplate>
+			<UseTemplate Name="WT_Detached_Control_Panel_Template">
+				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
+				<ID>1</ID>
+				<!-- Node_ids LOWER PANEL -->
+				<NODE_ID_CKLST>CCP_PUSH_CKLST_2</NODE_ID_CKLST>
+				<NODE_ID_PASSBRIEF>CCP_PUSH_PASSBRIEF_2</NODE_ID_PASSBRIEF>
+			</UseTemplate>
 		</Component>
 
 		<!-- LIGHTING #############################################################################################################-->
-		<Component ID="LIGHTING">
+        <Component ID="LIGHTING">
 			<Component ID="LIGHTING_Controls">
 				<Component ID="LIGHTING_Switches">
 					<DefaultTemplateParameters>
@@ -289,6 +304,8 @@
 					</UseTemplate>
 					<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_SeatBelt_Template">
 					</UseTemplate>
+                    <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Safety_Template">
+                    </UseTemplate>
 				</Component>
 				<Component ID="LIGHTING_Knobs">
 					<UseTemplate Name="ASOBO_LIGHTING_Knob_Panel_Template">
@@ -915,9 +932,6 @@
 		</Component>
 		<Component ID="TT_INOP">
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>LIGHTING_Push_Light_Safety</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>push_pilot_DCP_CCPMENU</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
@@ -1052,14 +1066,6 @@
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>CCP_PUSH_MEM3</NODE_ID>
-				<CONTAINER_COUNT>2</CONTAINER_COUNT>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>CCP_PUSH_CKLST</NODE_ID>
-				<CONTAINER_COUNT>2</CONTAINER_COUNT>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>CCP_PUSH_PASSBRIEF</NODE_ID>
 				<CONTAINER_COUNT>2</CONTAINER_COUNT>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">

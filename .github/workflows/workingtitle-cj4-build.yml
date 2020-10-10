@@ -13,12 +13,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build Package
         run: powershell.exe -noexit .\build.ps1 -Project workingtitle-project-cj4.xml
-      - name: Upload Package
-        uses: actions/upload-artifact@v2.1.4
-        with:
-          name: workingtitle-cj4
-          path: |
-            build/workingtitle-aircraft-cj4
-            build/workingtitle-vcockpits-instruments-cj4
-            build/workingtitle-vcockpits-instruments-airliners
-          if-no-files-found: error
+      # - name: Upload Package
+      #   uses: actions/upload-artifact@v2.1.4
+      #   with:
+      #     name: workingtitle-cj4
+      #     path: |
+      #       build/workingtitle-aircraft-cj4
+      #       build/workingtitle-vcockpits-instruments-cj4
+      #       build/workingtitle-vcockpits-instruments-airliners
+      #     if-no-files-found: error

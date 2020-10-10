@@ -23,19 +23,19 @@ class SmartIterator {
 class MapInstrument extends ISvgMapRootElement {
     constructor() {
         super();
-        this.intersectionMaxRange = 15;
-        this.vorMaxRange = 200;
-        this.ndbMaxRange = 100;
-        this.minimizedIntersectionMaxRange = 0;
-        this.minimizedVorMaxRange = 0;
-        this.minimizedNdbMaxRange = 0;
-        this.smallAirportMaxRange = 35;
-        this.medAirportMaxRange = 100;
-        this.largeAirportMaxRange = Infinity;
-        this.smallCityMaxRange = 100;
-        this.medCityMaxRange = 200;
-        this.largeCityMaxRange = 1500;
-        this.npcAirplaneMaxRange = 60;
+        this.intersectionMaxRange = MapInstrument.INT_RANGE_DEFAULT;
+        this.vorMaxRange = MapInstrument.VOR_RANGE_DEFAULT;
+        this.ndbMaxRange = MapInstrument.NDB_RANGE_DEFAULT;
+        this.minimizedIntersectionMaxRange = MapInstrument.INT_RANGE_MIN_DEFAULT;
+        this.minimizedVorMaxRange = MapInstrument.VOR_RANGE_MIN_DEFAULT;
+        this.minimizedNdbMaxRange = MapInstrument.NDB_RANGE_MIN_DEFAULT;
+        this.smallAirportMaxRange = MapInstrument.AIRPORT_SMALL_RANGE_DEFAULT;
+        this.medAirportMaxRange = MapInstrument.AIRPORT_MEDIUM_RANGE_DEFAULT;
+        this.largeAirportMaxRange = MapInstrument.AIRPORT_LARGE_RANGE_DEFAULT;
+        this.smallCityMaxRange = MapInstrument.CITY_SMALL_RANGE_DEFAULT;
+        this.medCityMaxRange = MapInstrument.CITY_MEDIUM_RANGE_DEFAULT;
+        this.largeCityMaxRange = MapInstrument.CITY_LARGE_RANGE_DEFAULT;
+        this.npcAirplaneMaxRange = MapInstrument.PLANE_RANGE_DEFAULT;
         this.showRoads = true;
         this.showAirspaces = true;
         this.showAirways = true;
@@ -48,7 +48,7 @@ class MapInstrument extends ISvgMapRootElement {
         this.showCities = false;
         this.showTraffic = true;
         this.showConstraints = false;
-        this._ranges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200];
+        this._ranges = MapInstrument.ZOOM_RANGES_DEFAULT;
         this.rangeIndex = 4;
         this._declutterLevel = 0;
         this.rangeFactor = 1852;
@@ -98,8 +98,27 @@ class MapInstrument extends ISvgMapRootElement {
         this.weatherRanges = [10, 20, 30, 40, 50, 60, 80, 100];
         this.weatherHideGPS = false;
         this.isBushTrip = false;
-        this.bTrackUpDisabled = false;
-        this.mapScaleFactor = 1.4;  // overscan for hiding corners when we rotate
+        
+        // MOD START: new class variables
+        
+        this.overdrawFactor = MapInstrument.OVERDRAW_FACTOR_DEFAULT;
+        
+        this.planeTrackedPosX = 0.5; // X pos of plane when map is tracking the plane; 0.5 = center, 0 = left, 1 = right;
+        this.planeTrackedPosY = 0.5; // Y pos of plane when map is tracking the plane; 0.5 = center, 0 = top, 1 = bottom;
+        
+        this.rotation = 0; // current rotation of map, in degrees
+        this.rotationHandler = MapInstrument_DefaultRotationHandler.INSTANCE; // returns what the rotation of the map should be in degrees
+        
+        this.showRangeDisplay = MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT;
+        
+        this.showRangeRing = false;
+        this.showRangeCompass = false;
+        
+        this.airspaceMaxRange = MapInstrument.AIRSPACE_RANGE_DEFAULT;
+        this.roadHighwayMaxRange = MapInstrument.ROAD_HIGHWAY_RANGE_DEFAULT;
+        this.roadTrunkMaxRange = MapInstrument.ROAD_TRUNK_RANGE_DEFAULT;
+        this.roadPrimaryMaxRange = MapInstrument.ROAD_PRIMARY_RANGE_DEFAULT;
+        // MOD END
     }
     get flightPlanManager() {
         if (this.gps) {
@@ -385,6 +404,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.disMap = this.querySelector("#DISMap");
             this.gsMap = this.querySelector("#GSMap");
             this.mapRangeElement = this.querySelector("#MapRange");
+            this.mapRangeElementRange = this.mapRangeElement.getElementsByClassName("range")[0]; // MOD: new range display text box
             this.mapOrientationElement = this.querySelector("#MapOrientation");
             if (!this.bShowOverlay) {
                 this.mapRangeElement.classList.add("hide");
@@ -493,10 +513,11 @@ class MapInstrument extends ISvgMapRootElement {
     }
     onBeforeMapRedraw() {
         if (this.eBingMode !== EBingMode.HORIZON) {
+            this.rotation = this.rotationHandler.getRotation();
             this.drawCounter++;
             this.drawCounter %= 100;
             this.npcAirplaneManager.update();
-            if (this.showRoads) {
+            if (this.showRoads && (this.getDisplayRange() <= Math.max(this.roadHighwayMaxRange, this.roadTrunkMaxRange, this.roadPrimaryMaxRange))) {
                 let t0 = performance.now();
                 while (this.roadsBuffer.length > 0 && (performance.now() - t0 < 1)) {
                     let road = this.roadsBuffer.pop();
@@ -601,7 +622,7 @@ class MapInstrument extends ISvgMapRootElement {
                 else {
                     this.navMap.setRange(this.getDisplayRange());
                 }
-                var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor * this.mapScaleFactor;
+                var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor * this.overdrawFactor; // MOD: Need to expand map range to compensate for overdraw
                 if (!this.isDisplayingWeather())
                     this.updateBingMapSize();
                 if (this.navMap.lastCenterCoordinates)
@@ -612,7 +633,7 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showAirports) {
                     this.airportLoader.searchLat = centerCoordinates.lat;
                     this.airportLoader.searchLong = centerCoordinates.long;
-                    this.airportLoader.searchRange = this.navMap.NMWidth * 1.5;
+                    this.airportLoader.searchRange = Math.min(this.navMap.NMWidth, this.largeAirportMaxRange) * 1.5;
                     this.airportLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.airportLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.airportLoader.update();
@@ -628,7 +649,7 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showVORs) {
                     this.vorLoader.searchLat = centerCoordinates.lat;
                     this.vorLoader.searchLong = centerCoordinates.long;
-                    this.vorLoader.searchRange = this.navMap.NMWidth * 1.5;
+                    this.vorLoader.searchRange = Math.min(this.navMap.NMWidth, this.vorMaxRange) * 1.5;
                     this.vorLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.vorLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.vorLoader.update();
@@ -636,7 +657,7 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showNDBs) {
                     this.ndbLoader.searchLat = centerCoordinates.lat;
                     this.ndbLoader.searchLong = centerCoordinates.long;
-                    this.ndbLoader.searchRange = this.navMap.NMWidth * 1.5;
+                    this.ndbLoader.searchRange = Math.min(this.navMap.NMWidth, this.ndbMaxRange) * 1.5;
                     this.ndbLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.ndbLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.ndbLoader.update();
@@ -653,7 +674,7 @@ class MapInstrument extends ISvgMapRootElement {
                 }
             }
             if (this.showAirways && (this.drawCounter % 50 === 40)) {
-                if (this.getDeclutteredRange() < this.intersectionMaxRange) {
+                if (this.getDeclutteredRange() <= this.intersectionMaxRange) {
                     let intersection = this.intersectionLoader.waypoints[this.airwayIterator];
                     if (intersection instanceof NearestIntersection) {
                         if (intersection.routes.length > 0 && !intersection.airwaysDrawn) {
@@ -684,9 +705,14 @@ class MapInstrument extends ISvgMapRootElement {
             }
             this.navMap.mapElements = [];
             if (!this.isDisplayingWeatherRadar() || !this.weatherHideGPS) {
-                if (this.showRoads || this.showAirways || this.showAirspaces) {
-                    this.navMap.mapElements.push(this.roadNetwork);
-                }
+                /*
+                 * Because of the weird way SvgRoadNetworkElement draws its subelements, when it gets removed from the map its subelements
+                 * don't get properly cleaned up and remain on the map indefinitely as static graphics. To prevent this, we will use the 
+                 * hack-y workaround of ensuring SvgRoadNetworkElement is always loaded into the map so it can properly update and hide 
+                 * its subelements as needed.
+                 */
+                this.navMap.mapElements.push(this.roadNetwork);
+                
                 if (this.showTraffic) {
                     if (this.getDeclutteredRange() < this.npcAirplaneMaxRange) {
                         this.navMap.mapElements.push(...this.npcAirplaneManager.npcAirplanes);
@@ -708,15 +734,15 @@ class MapInstrument extends ISvgMapRootElement {
                         let airport = this.airportLoader.waypoints[i];
                         if (airport && airport.infos instanceof AirportInfo) {
                             if (this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
-                                if (this.getDeclutteredRange() < this.smallAirportMaxRange) {
+                                if (this.getDeclutteredRange() <= this.smallAirportMaxRange) {
                                     this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
                                 }
-                                else if (this.getDeclutteredRange() < this.medAirportMaxRange) {
+                                else if (this.getDeclutteredRange() <= this.medAirportMaxRange) {
                                     if (airport.infos.getClassSize() !== AirportSize.Small) {
                                         this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
                                     }
                                 }
-                                else if (this.getDeclutteredRange() < this.largeAirportMaxRange) {
+                                else if (this.getDeclutteredRange() <= this.largeAirportMaxRange) {
                                     if (airport.infos.getClassSize() === AirportSize.Large) {
                                         this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
                                     }
@@ -725,7 +751,7 @@ class MapInstrument extends ISvgMapRootElement {
                         }
                     }
                 }
-                if (this.showVORs && (this.getDeclutteredRange() < this.vorMaxRange || this.getDeclutteredRange() < this.minimizedVorMaxRange)) {
+                if (this.showVORs && (this.getDeclutteredRange() <= this.vorMaxRange || this.getDeclutteredRange() < this.minimizedVorMaxRange)) {
                     for (let i = 0; i < this.vorLoader.waypoints.length; i++) {
                         let vor = this.vorLoader.waypoints[i];
                         vor.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.vorMaxRange;
@@ -734,7 +760,7 @@ class MapInstrument extends ISvgMapRootElement {
                         }
                     }
                 }
-                if (this.showNDBs && (this.getDeclutteredRange() < this.ndbMaxRange || this.getDeclutteredRange() < this.minimizedNdbMaxRange)) {
+                if (this.showNDBs && (this.getDeclutteredRange() <= this.ndbMaxRange || this.getDeclutteredRange() < this.minimizedNdbMaxRange)) {
                     for (let i = 0; i < this.ndbLoader.waypoints.length; i++) {
                         let ndb = this.ndbLoader.waypoints[i];
                         ndb.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.ndbMaxRange;
@@ -743,7 +769,7 @@ class MapInstrument extends ISvgMapRootElement {
                         }
                     }
                 }
-                if (this.showIntersections && (this.getDeclutteredRange() < this.intersectionMaxRange || this.getDeclutteredRange() < this.minimizedIntersectionMaxRange)) {
+                if (this.showIntersections && (this.getDeclutteredRange() <= this.intersectionMaxRange || this.getDeclutteredRange() < this.minimizedIntersectionMaxRange)) {
                     for (let i = 0; i < this.intersectionLoader.waypoints.length; i++) {
                         let intersection = this.intersectionLoader.waypoints[i];
                         intersection.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.intersectionMaxRange;
@@ -775,6 +801,17 @@ class MapInstrument extends ISvgMapRootElement {
                         this.navMap.mapElements.push(this.constraints[i]);
                     }
                 }
+                
+                // MOD: show range compass or range ring
+                if (this.eBingMode != EBingMode.CURSOR) {
+                    if (this.showRangeRing && this.rangeRingElement) {
+                        this.navMap.mapElements.push(this.rangeRingElement);
+                    }
+                    if (this.showRangeCompass && this.rangeCompassElement) { 
+                        this.navMap.mapElements.push(this.rangeCompassElement);
+                    }
+                }
+                
                 if (this.flightPlanManager && this.bIsFlightPlanVisible) {
                     let l = this.flightPlanManager.getWaypointsCount();
                     if (l > 1) {
@@ -845,13 +882,8 @@ class MapInstrument extends ISvgMapRootElement {
                 this.navMap.mapElements.push(...this.topOfCurveElements);
                 this.navMap.mapElements = this.navMap.mapElements.sort((a, b) => { return b.sortIndex - a.sortIndex; });
                 if (this.bingMap) {
-                    let transform = "";
-                    if (this.bRotateWithAirplane && !this.isDisplayingWeatherRadar() && !this.bTrackUpDisabled) {
-                        var compass = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
-                        var roundedCompass = fastToFixed(compass, 3);
-                        transform = "rotate(" + -roundedCompass + "deg)";
-                    }
-                    this.bingMap.style.transform = transform;
+                    // MOD: handle bing map rotation
+                    this.bingMap.style.transform = "rotate(" + this.rotation + "deg)";
                 }
             }
             else {
@@ -951,11 +983,17 @@ class MapInstrument extends ISvgMapRootElement {
                 this.gsValue = gs;
             }
         }
+        // Adapt code to new range display formatting
         if (this.mapRangeElement) {
-            var range = '<div class="Align">' + this.getDisplayRange() + '</div><div class="Align unit">n<br/>m</div>';
-            if (this.rangeValue != range) {
-                this.mapRangeElement.innerHTML = range;
-                this.rangeValue = range;
+            if (this.showRangeDisplay) {
+                let currentRange = this.getDisplayRange();
+                if (this.rangeValue != currentRange) {
+                    Avionics.Utils.diffAndSet(this.mapRangeElementRange, MapInstrument.getFormattedRangeDisplayText(currentRange));
+                    this.rangeValue = currentRange;
+                }
+                Avionics.Utils.diffAndSetAttribute(this.mapRangeElement, "state", "Active");
+            } else {
+                Avionics.Utils.diffAndSetAttribute(this.mapRangeElement, "state", "Inactive");
             }
         }
         if (this.navMap) {
@@ -1065,12 +1103,35 @@ class MapInstrument extends ISvgMapRootElement {
             this.curHeight = this.clientHeight;
         }
     }
+    
     getWidth() {
         return this.curWidth;
     }
+    
     getHeight() {
         return this.curHeight;
     }
+    
+    getAspectRatio() {
+        return this.getWidth() / this.getHeight();
+    }
+    
+    get minVisibleY() {
+        return 500 * (1 - Math.min(1 / this.getAspectRatio(), 1));
+    }
+    
+    get maxVisibleY() {
+        return 500 * (1 + Math.min(1 / this.getAspectRatio(), 1));
+    }
+    
+    get minVisibleX() {
+        return 500 * (1 - Math.min(this.getAspectRatio(), 1));
+    }
+    
+    get maxVisibleX() {
+        return 500 * (1 + Math.min(this.getAspectRatio(), 1));
+    }
+    
     onEvent(_event) {
         if (_event === "RANGE_DEC" || _event === "RNG_Zoom") {
             this.zoomIn();
@@ -1174,20 +1235,27 @@ class MapInstrument extends ISvgMapRootElement {
         }
         return false;
     }
+    
     centerOnPlane() {
-        this.setNavMapCenter(this.navMap.planeCoordinates);
-        if (this.eBingMode == EBingMode.PLANE) {
-            this.airplaneIconElement.forceCoordinates(this.navMap.centerCoordinates.lat, this.navMap.centerCoordinates.long);
-        }
+        // MOD: allow for arbitrary placement of plane
+        let r_x = Math.min(this.navMap.aspectRatio, 1);
+        let r_y = Math.min(1 / this.navMap.aspectRatio, 1);
+        let posX = 500 * (1 - r_x) + 1000 * (1 - this.planeTrackedPosX) * r_x;
+        let posY = 500 * (1 - r_y) + 1000 * (1 - this.planeTrackedPosY) * r_y;
+        this.setNavMapCenter(this.navMap.XYToCoordinatesFromPlaneWithRotation(new Vec2(posX, posY)));
     }
+    
     centerOnActiveWaypoint(_val) {
         this.bEnableCenterOnFplnWaypoint = _val;
     }
+    
+    // keeping this for back-compat
     rotateWithPlane(_val) {
-        this.bRotateWithAirplane = _val;
-        if (this.navMap)
-            this.navMap.rotateWithPlane = _val;
+        if (this.rotationHandler instanceof MapInstrument_DefaultRotationHandler) {
+            this.rotationHandler.rotateWithPlane = _val;
+        }
     }
+    
     setPlaneScale(_scale) {
         if (this.airplaneIconElement) {
             this.airplaneIconElement.setScale(this.navMap, _scale);
@@ -1207,9 +1275,16 @@ class MapInstrument extends ISvgMapRootElement {
     set declutterLevel(_val) {
         this._declutterLevel = _val;
     }
+    
     getDisplayRange() {
         return this._ranges[this.rangeIndex];
     }
+    
+    // MOD: get the actual range of the map when accounting for overdraw
+    getTrueRange() {
+        return this.getDisplayRange() * this.overdrawFactor;
+    }
+    
     getDeclutteredRange() {
         return this._ranges[this.rangeIndex + this._declutterLevel];
     }
@@ -1222,7 +1297,11 @@ class MapInstrument extends ISvgMapRootElement {
     updateBingMapSize() {
         let w = this.curWidth;
         let h = this.curHeight;
-        let max = Math.max(w , h) * this.mapScaleFactor;
+        let max = Math.max(w, h);
+        
+        // to compensate for potential rotation, we need to overdraw the map
+        max *= this.overdrawFactor;
+        
         if (w * h > 1 && w * h !== this.lastWH) {
             this.lastWH = w * h;
             this.bingMap.style.width = fastToFixed(max, 0) + "px";
@@ -1267,19 +1346,6 @@ class MapInstrument extends ISvgMapRootElement {
     }
     getIsolines() {
         return this.bingMap.getIsolines();
-    }
-    setTrackUpDisabled(_bool) {
-        this.bTrackUpDisabled = _bool;
-        if (this.navMap) {
-            if (_bool) {
-                this.navMap.rotateWithPlane = false
-            } else {
-                this.navMap.rotateWithPlane = this.bRotateWithAirplane;
-            }
-        }
-    }
-    getTrackUpDisabled() {
-        return this.bTrackUpDisabled;
     }
     showWeather(_mode) {
         let cone = 0;
@@ -1394,14 +1460,13 @@ class MapInstrument extends ISvgMapRootElement {
     }
     scrollMap(_dispX, _dispY) {
         if (this.navMap.lastCenterCoordinates) {
-            if (this.bRotateWithAirplane && !this.bTrackUpDisabled) {
-                let hdg = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
-                let hdgRad = hdg * Avionics.Utils.DEG2RAD;
-                let newX = _dispX * Math.cos(hdgRad) - _dispY * Math.sin(hdgRad);
-                let newY = _dispY * Math.cos(hdgRad) + _dispX * Math.sin(hdgRad);
-                _dispX = newX;
-                _dispY = newY;
-            }
+            // MOD: Adjust for map rotation
+            let hdg = -this.rotation;
+            let hdgRad = hdg * Avionics.Utils.DEG2RAD;
+            let newX = _dispX * Math.cos(hdgRad) - _dispY * Math.sin(hdgRad);
+            let newY = _dispY * Math.cos(hdgRad) + _dispX * Math.sin(hdgRad);
+            _dispX = newX;
+            _dispY = newY;
             var scaleFactor = parseInt(window.getComputedStyle(this).height) / 1000;
             let long = -_dispX * this.navMap.angularWidth / (1000 * scaleFactor);
             let lat = _dispY * this.navMap.angularHeight / (1000 * scaleFactor);
@@ -1470,7 +1535,112 @@ class MapInstrument extends ISvgMapRootElement {
     supportMouseWheel(_val) {
         this._supportMouseWheel = _val;
     }
+    
+    // MOD: helpers for zoom range settings
+    
+    get zoomRanges() {
+        return this._ranges;
+    }
+    
+    set airspaceMaxRangeIndex(_index) {
+        this.airspaceMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+    }
+    
+    set smallAirportMaxRangeIndex(_index) {
+        this.smallAirportMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+    }
+    
+    set medAirportMaxRangeIndex(_index) {
+        this.medAirportMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+    }
+    
+    set largeAirportMaxRangeIndex(_index) {
+        this.largeAirportMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+    }
+    
+    set vorMaxRangeIndex(_index) {
+        this.vorMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+    }
+    
+    set intMaxRangeIndex(_index) {
+        this.intersectionMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+    }
+    
+    set ndbMaxRangeIndex(_index) {
+        this.ndbMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+    }
+    
+    set roadHighwayMaxRangeIndex(_index) {
+        this.roadHighwayMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+    }
+    
+    set roadTrunkMaxRangeIndex(_index) {
+        this.roadTrunkMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+    }
+    
+    set roadPrimaryMaxRangeIndex(_index) {
+        this.roadPrimaryMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+    }
+    
+    // MOD: formats range display numbers
+    static getFormattedRangeDisplayText(_range) {
+        if (_range >= 10) {
+            return _range.toFixed(0);
+        }
+        
+        let decimals = 0;
+        if (_range < 1) {
+            decimals = 1;
+        }
+        
+        while (decimals >= 0) {
+            if (Math.abs(parseFloat(_range.toFixed(decimals)) - _range) >= 0.01) {
+                break;
+            }
+            decimals--;
+        }
+        return _range.toFixed(decimals + 1);
+    }
 }
+MapInstrument.OVERDRAW_FACTOR_DEFAULT = Math.sqrt(2);
+MapInstrument.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200];
+
+MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT = true;
+
+MapInstrument.INT_RANGE_DEFAULT = 15;
+MapInstrument.INT_RANGE_MIN_DEFAULT = 0;
+MapInstrument.VOR_RANGE_DEFAULT = 200;
+MapInstrument.VOR_RANGE_MIN_DEFAULT = 0;
+MapInstrument.NDB_RANGE_DEFAULT = 100;
+MapInstrument.NDB_RANGE_MIN_DEFAULT = 0;
+MapInstrument.AIRPORT_SMALL_RANGE_DEFAULT = 35;
+MapInstrument.AIRPORT_MEDIUM_RANGE_DEFAULT = 100;
+MapInstrument.AIRPORT_LARGE_RANGE_DEFAULT = Infinity;
+MapInstrument.CITY_SMALL_RANGE_DEFAULT = 100;
+MapInstrument.CITY_MEDIUM_RANGE_DEFAULT = 200;
+MapInstrument.CITY_LARGE_RANGE_DEFAULT = 1500;
+MapInstrument.PLANE_RANGE_DEFAULT = 60;
+MapInstrument.AIRSPACE_RANGE_DEFAULT = Infinity;
+MapInstrument.ROAD_HIGHWAY_RANGE_DEFAULT = Infinity;
+MapInstrument.ROAD_TRUNK_RANGE_DEFAULT = Infinity;
+MapInstrument.ROAD_PRIMARY_RANGE_DEFAULT = Infinity;
+
+
+class MapInstrument_DefaultRotationHandler {
+    constructor(_rotateWithPlane = false) {
+        this.rotateWithPlane = _rotateWithPlane;
+    }
+    
+    getRotation() {
+        if (this.rotateWithPlane) {
+            return -SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
+        } else {
+            return 0;
+        }
+    }
+}
+MapInstrument_DefaultRotationHandler.INSTANCE = new MapInstrument_DefaultRotationHandler();
+
 customElements.define("map-instrument", MapInstrument);
 checkAutoload();
 //# sourceMappingURL=MapInstrument.js.map

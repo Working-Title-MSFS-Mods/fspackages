@@ -1,29 +1,21 @@
 // prototype singleton, this needs to be different ofc
 let PosInitPage1Instance = undefined;
 
-class CJ4_FMC_PosInitPage {
+class CJ4_FMC_PosInitPageOne {
     constructor(fmc) {
         this._fmc = fmc;
         this._isDirty = true; // render on first run ofc
 
-        this._currPos = this.getFmsPos();
+        this._currPos = 0;
 
         this.originCell = "----";
         this.originPos = "";
         this.refAirport = "-----";
         this.refAirportCoordinates = "";
         this.irsPos = "□□□°□□.□ □□□□°□□.□";
-
-        this.prepare();
     }
 
     prepare() {
-        // return if nothing changed
-        if (!this._isDirty) return;
-
-        // TODO not sure if this should be after render or here :thinking:
-        this._isDirty = false;
-
         if (this._fmc && this._fmc.flightPlanManager) {
             let origin = this._fmc.flightPlanManager.getOrigin();
             if (origin) {
@@ -88,7 +80,7 @@ class CJ4_FMC_PosInitPage {
 
     update() {
         // check if active wpt changed
-        const fmsPos = this.getFmsPos()
+        const fmsPos = this.getFmsPos();
         if (this._currPos != fmsPos) {
             this._currPos = fmsPos;
             this._isDirty = true;
@@ -97,10 +89,14 @@ class CJ4_FMC_PosInitPage {
         if (this._isDirty) {
             this.invalidate();
         }
+        // register refresh and bind to update which will only render on changes
+        this._fmc.registerPeriodicPageRefresh(() => {
+            this.update();
+            return true;
+        }, 1000, false);
     }
 
     render() {
-        this._fmc.clearDisplay();
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/2 [blue]", "POS INIT[blue]"],
             [" FMS POS[blue]"],
@@ -120,23 +116,24 @@ class CJ4_FMC_PosInitPage {
 
     invalidate() {
         this._isDirty = true;
-        this.prepare(); // in this case i will not always call prepare as data doesn't change
+        this._fmc.clearDisplay();
+        this.prepare();
         this.render();
         this.bindEvents(); // TODO i would love to only call it once, but fmc.clearDisplay()
+        this._isDirty = false;
     }
 
     // helper functions
     getFmsPos() {
-        return new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")).toDegreeString()
+        return new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")).toDegreeString();
     }
-
-
+}
+class CJ4_FMC_PosInitPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
-        PosInitPage1Instance = new CJ4_FMC_PosInitPage(fmc);
-        PosInitPage1Instance.invalidate();
+        PosInitPage1Instance = new CJ4_FMC_PosInitPageOne(fmc);
+        PosInitPage1Instance.update();
     }
-
 
     static ShowPage2(fmc) {
         fmc.clearDisplay();

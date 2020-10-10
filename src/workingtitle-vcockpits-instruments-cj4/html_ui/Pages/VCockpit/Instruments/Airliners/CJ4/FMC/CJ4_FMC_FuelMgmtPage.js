@@ -1,7 +1,6 @@
 // prototype singleton, this needs to be different ofc
 let FuelMgmtPage1Instance = undefined;
 let FuelMgmtPage2Instance = undefined;
-let FuelMgmtPage3Instance = undefined;
 
 class CJ4_FMC_FuelMgmtPageOne {
     constructor(fmc) {
@@ -25,7 +24,7 @@ class CJ4_FMC_FuelMgmtPageOne {
         //CWB added direct read of fuel quantity simvars
         let fuelQuantityLeft = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
         let fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
-        let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft
+        let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft;
         let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
             + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
 
@@ -39,6 +38,11 @@ class CJ4_FMC_FuelMgmtPageOne {
         if (this._isDirty) {
             this.invalidate();
         }
+        // register refresh and bind to update which will only render on changes
+        this._fmc.registerPeriodicPageRefresh(() => {
+            this.update();
+            return true;
+        }, 1000, false);
     }
 
     updateFuel() {
@@ -87,7 +91,7 @@ class CJ4_FMC_FuelMgmtPageOne {
             this._fmc.reserveFuel = this._fmc.inOut;
             this._fmc.clearUserInput();
             console.log(this._fmc.reserve);
-            { this.invalidate(); };
+            this.invalidate();
         };
         this._fmc.onPrevPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage3(this._fmc); };
         this._fmc.onNextPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage2(this._fmc); };
@@ -126,11 +130,13 @@ class CJ4_FMC_FuelMgmtPageTwo {
 
     update() {
         // TODO i think this could be optimized
-        this._fuelQuantityLeft = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
-        this._fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
+        const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
 
-        let fuelFlowLeft = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
-        let fuelFlowRight = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"))
+        this._fuelQuantityLeft = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
+        this._fuelQuantityRight = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
+
+        let fuelFlowLeft = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"));
+        let fuelFlowRight = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
         let totalFuelFlow = fuelFlowLeft + fuelFlowRight;
 
         let fuelBurnedLeft = this._fmc.initialFuelLeft - this._fuelQuantityLeft;
@@ -155,6 +161,11 @@ class CJ4_FMC_FuelMgmtPageTwo {
         if (this._isDirty) {
             this.invalidate();
         }
+        // register refresh and bind to update which will only render on changes
+        this._fmc.registerPeriodicPageRefresh(() => {
+            this.update();
+            return true;
+        }, 1000, false);
     }
 
     render() {
@@ -206,11 +217,7 @@ class CJ4_FMC_FuelMgmtPage {
 
         // create page instance and init 
         FuelMgmtPage1Instance = new CJ4_FMC_FuelMgmtPageOne(fmc);
-
-        // register refresh and bind to update which will only render on changes
-        fmc.registerPeriodicPageRefresh(() => {
-            FuelMgmtPage1Instance.update();
-        }, 1000, true);
+        FuelMgmtPage1Instance.update();
     }
 
     static ShowPage2(fmc) { //FUEL MGMT Page 2

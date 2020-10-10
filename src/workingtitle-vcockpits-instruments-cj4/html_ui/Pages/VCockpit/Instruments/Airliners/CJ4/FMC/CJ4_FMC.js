@@ -146,6 +146,10 @@ class CJ4_FMC extends FMCMainDisplay {
             initRadioNav(_boot);
             this.initializeStandbyRadios(_boot);
         };
+
+        const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
+        this.initialFuelLeft = Math.trunc(SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * fuelWeight);
+        this.initialFuelRight = Math.trunc(SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * fuelWeight);
     }
     Update() {
         super.Update();
@@ -222,8 +226,25 @@ class CJ4_FMC extends FMCMainDisplay {
 
         this.unregisterPeriodicPageRefresh();
     }
+
     getOrSelectWaypointByIdent(ident, callback) {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
+
+            const uniqueWaypoints = new Map();
+            waypoints.forEach(wp => {
+                const waypoint = new WayPoint(null);
+
+                waypoint.icao = wp.icao;
+                waypoint.ident = wp.icao.substring(7, 12).replace(new RegExp(" ", "g"), "");
+
+                waypoint.infos.coordinates.lat = wp.lat;
+                waypoint.infos.coordinates.long = wp.lon;
+
+                uniqueWaypoints.set(waypoint.icao, waypoint);
+            });
+
+            waypoints = [...uniqueWaypoints.values()];
+
             if (!waypoints || waypoints.length === 0) {
                 return callback(undefined);
             }
@@ -377,13 +398,14 @@ class CJ4_FMC extends FMCMainDisplay {
     /**
      * Registers a periodic page refresh with the FMC display.
      * @param {number} interval The interval, in ms, to run the supplied action.
-     * @param {function} action An action to run at each interval.
+     * @param {function} action An action to run at each interval. Can return a bool to indicate if the page refresh should stop.
      * @param {boolean} runImmediately If true, the action will run as soon as registered, and then after each
      * interval. If false, it will start after the supplied interval.
      */
     registerPeriodicPageRefresh(action, interval, runImmediately) {
         let refreshHandler = () => {
-            action();
+            let isBreak = action();
+            if (isBreak) return;
             this._pageRefreshTimer = setTimeout(refreshHandler, interval);
         };
 
@@ -433,7 +455,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
         const leftFuelQty = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons");
         const rightFuelQty = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons");
-        
+
         if (this.previousRightFuelQty === undefined && this.previousLeftFuelQty === undefined) {
             this.previousLeftFuelQty = leftFuelQty;
             this.previousRightFuelQty = rightFuelQty;
@@ -449,15 +471,27 @@ class CJ4_FMC extends FMCMainDisplay {
             const rightFuelUsed = this.previousRightFuelQty - rightFuelQty;
 
             const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
-            const tsfc = Math.pow(1 + (.82 * mach), mach) * 0.58; //Inspiration: https://onlinelibrary.wiley.com/doi/pdf/10.1002/9780470117859.app4
+            const tsfc = Math.pow(1 + (1.2 * mach), mach) * 0.58; //Inspiration: https://onlinelibrary.wiley.com/doi/pdf/10.1002/9780470117859.app4
 
-            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", thrustLeft * tsfc);
-            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", thrustRight * tsfc);
+            const leftFuelFlow = Math.max(thrustLeft * tsfc, 150);
+            const rightFuelFlow = Math.max(thrustRight * tsfc, 150);
+
+            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", leftFuelFlow);
+            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", rightFuelFlow);
 
             if ((rightFuelUsed > 0.005 && rightFuelUsed < 1) || (leftFuelUsed > 0.005 && rightFuelUsed < 1)) {
-                const leftCorrectionFactor = (thrustLeft * tsfc) / pphLeft;
-                const rightCorrectionFactor = (thrustRight * tsfc) / pphRight;
 
+                let leftCorrectionFactor = 1;
+                let rightCorrectionFactor = 1;
+
+                if (pphLeft > 0) {
+                    leftCorrectionFactor = leftFuelFlow / pphLeft;
+                }
+                
+                if (pphRight > 0) {
+                    rightCorrectionFactor = rightFuelFlow / pphRight;
+                }
+                
                 const newLeftFuelQty = this.previousLeftFuelQty - (leftFuelUsed * leftCorrectionFactor);
                 const newRightFuelQty = this.previousRightFuelQty - (rightFuelUsed * rightCorrectionFactor);
 
