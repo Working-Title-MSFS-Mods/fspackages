@@ -535,18 +535,18 @@ class CJ4_FMC_InitRefIndexPage {
             let currHeadwind = Math.trunc(currWindSpeed * (Math.cos((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
             let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
 
-            let crosswinddirection = currCrosswind > 0 ? "R"
-                : currCrosswind < 0 ? "L"
-                    : "";
-
             let headwindDirection = currHeadwind > 0 ? "HEADWIND"
-                : currHeadwind < 0 ? "TAILWIND"
-                    : "TAILWIND";
+            : currHeadwind < 0 ? "TAILWIND"
+                : "TAILWIND";
 
-            let xtkDirection = xtk > 0 && currHeadwind >= 0 ? "R"
-                : xtk < 0 && currHeadwind >= 0 ? "L"
-                : xtk > 0 && currHeadwind < 0 ? "L"
-                : xtk < 0 && currHeadwind < 0 ? "R"
+            let crosswinddirection = currCrosswind > 0 && currHeadwind >= 0 ? "R"
+                : currCrosswind < 0 && currHeadwind >= 0 ? "L"
+                : currCrosswind > 0 && currHeadwind < 0 ? "L"
+                : currCrosswind < 0 && currHeadwind < 0 ? "R"
+                : "";
+
+            let xtkDirection = xtk > 0 ? "R"
+                : xtk < 0 ? "L"
                 : "";
 
             fmc._templateRenderer.setTemplateRaw([
