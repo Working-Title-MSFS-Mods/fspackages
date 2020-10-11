@@ -88,39 +88,39 @@
   "netBingHeightColor2": [
     {
       "alt": 0,
-      "color": "#6DA36C"
+      "color": "#94b947"
     },
     {
-      "alt": 1500,
-      "color": "#9CAF57"
+      "alt": 500,
+      "color": "#576d2f"
+    },
+    {
+      "alt": 1000,
+      "color": "#d0aa43"
+    },
+    {
+      "alt": 2000,
+      "color": "#c58f45"
+    },
+    {
+      "alt": 3000,
+      "color": "#9d6434"
     },
     {
       "alt": 6000,
-      "color": "#c8b46e"
+      "color": "#904f25"
     },
     {
       "alt": 8000,
-      "color": "#b0975b"
+      "color": "#904522"
     },
     {
-      "alt": 10000,
-      "color": "#9a7c48"
+      "alt": 10500,
+      "color": "#939393"
     },
     {
-      "alt": 13000,
-      "color": "#906a3b"
-    },
-    {
-      "alt": 16000,
-      "color": "#7b5936"
-    },
-    {
-      "alt": 24000,
-      "color": "#5a462e"
-    },
-    {
-      "alt": 32000,
-      "color": "#abb0b5"
+      "alt": 27000,
+      "color": "#c8c8c8"
     }
   ],
     
@@ -128,20 +128,32 @@
   "netBingWaterColor3": "#0000ff",
   "netBingHeightColor3": [
     {
-      "alt": -30000,
-      "color": "#000000"
+      "alt": 0,
+      "color": "#ff0000"
     },
     {
-      "alt": -2000,
-      "color": "#00ff00"
+      "alt": 99,
+      "color": "#ff0000"
     },
     {
-      "alt": -1000,
+      "alt": 100,
       "color": "#ffff00"
     },
     {
-      "alt": -100,
-      "color": "#ff0000"
+      "alt": 999,
+      "color": "#ffff00"
+    },
+    {
+      "alt": 1000,
+      "color": "#00ff00"
+    },
+    {
+      "alt": 1999,
+      "color": "#00ff00"
+    },
+    {
+      "alt": 2000,
+      "color": "#000000"
     }
   ]
 }

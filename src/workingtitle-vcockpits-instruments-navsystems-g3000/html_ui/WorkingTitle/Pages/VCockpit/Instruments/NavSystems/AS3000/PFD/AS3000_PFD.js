@@ -331,7 +331,8 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     
     toggleTerrain() {
         if (this.innerMap.isEnabled()) {
-            AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT, this.innerMap.simVarNameID, (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.innerMap.simVarNameID, "number") + 1) % 2);
+            AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT, this.innerMap.simVarNameID,
+                    (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.innerMap.simVarNameID, "number") + 1) % AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT.length);
         }
     }
     
