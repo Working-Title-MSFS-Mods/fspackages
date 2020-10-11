@@ -84,8 +84,17 @@ class SvgWaypointElement extends SvgMapElement {
             return this.source.imageFileName();
         }
     }
+    
+    getIconSize(map) {
+        return map.config.waypointIconSize;
+    }
+    
+    getLabelFontSize(map) {
+        return map.config.waypointLabelFontSize;
+    }
+    
     createDraw(map) {
-        let fontSize = map.config.waypointLabelFontSize;
+        let fontSize = this.getLabelFontSize(map);
         let text = this.ident;
         let c = document.createElement("canvas");
         let ctx = c.getContext("2d");
@@ -112,10 +121,12 @@ class SvgWaypointElement extends SvgMapElement {
             this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_ACTIVE.png");
         }
         this._lastIsActiveWaypoint = isActiveWaypoint;
-        this._image.setAttribute("width", fastToFixed(map.config.waypointIconSize, 0));
-        this._image.setAttribute("height", fastToFixed(map.config.waypointIconSize, 0));
+        let iconSize = this.getIconSize(map);
+        this._image.setAttribute("width", fastToFixed(iconSize, 0));
+        this._image.setAttribute("height", fastToFixed(iconSize, 0));
         return this._image;
     }
+    
     _refreshLabel(map, isActiveWaypoint) {
         let labelId = this.id(map) + "-text-" + map.index;
         let label = document.getElementById(labelId);
@@ -123,7 +134,7 @@ class SvgWaypointElement extends SvgMapElement {
             this._label = label;
             this.needRepaint = true;
         }
-        let fontSize = map.config.waypointLabelFontSize;
+        let fontSize = this.getLabelFontSize(map);
         let text = this.ident;
         let canvas;
         if (!this._label) {
@@ -169,6 +180,9 @@ class SvgWaypointElement extends SvgMapElement {
             context.fillStyle = "white";
         }
         context.font = fontSize + "px " + map.config.waypointLabelFontFamily;
+        context.strokeStyle = map.config.waypointLabelStrokeColor;
+        context.lineWidth = map.config.waypointLabelStrokeWidth * 2;
+        context.strokeText(text, map.config.waypointLabelBackgroundPaddingLeft, this._textHeight + map.config.waypointLabelBackgroundPaddingTop);
         context.fillText(text, map.config.waypointLabelBackgroundPaddingLeft, this._textHeight + map.config.waypointLabelBackgroundPaddingTop);
     }
     updateDraw(map) {
@@ -198,23 +212,26 @@ class SvgWaypointElement extends SvgMapElement {
             this._lastIsActiveWaypoint = isActiveWaypoint;
         }
         if (isFinite(this.x) && isFinite(this.y)) {
+            let iconSize = this.getIconSize(map);
             if (this._image && this._lastMinimize !== this.minimize) {
                 if (this.minimize) {
-                    this._image.setAttribute("width", fastToFixed(map.config.waypointIconSize * 0.5, 0));
-                    this._image.setAttribute("height", fastToFixed(map.config.waypointIconSize * 0.5, 0));
+                    this._image.setAttribute("width", fastToFixed(iconSize * 0.5, 0));
+                    this._image.setAttribute("height", fastToFixed(iconSize * 0.5, 0));
                 }
                 else {
-                    this._image.setAttribute("width", fastToFixed(map.config.waypointIconSize, 0));
-                    this._image.setAttribute("height", fastToFixed(map.config.waypointIconSize, 0));
+                    this._image.setAttribute("width", fastToFixed(iconSize, 0));
+                    this._image.setAttribute("height", fastToFixed(iconSize, 0));
                 }
                 this._lastMinimize = this.minimize;
                 this.needRepaint = true;
             }
             if (this.needRepaint || Math.abs(this._lastX - this.x) > 0.1 || Math.abs(this._lastY - this.y) > 0.1) {
+                let fontSize = this.getLabelFontSize(map);
                 this._lastX = this.x;
                 this._lastY = this.y;
-                let x = (this.x - map.config.waypointIconSize * 0.5 * (this.minimize ? 0.5 : 1));
-                let y = (this.y - map.config.waypointIconSize * 0.5 * (this.minimize ? 0.5 : 1));
+                iconSize *= (this.minimize ? 0.5 : 1);
+                let x = (this.x - iconSize * 0.5);
+                let y = (this.y - iconSize * 0.5);
                 this.svgElement.setAttribute("x", x + "");
                 this.svgElement.setAttribute("y", y + "");
                 if (this.source instanceof AirportInfo) {
@@ -235,7 +252,6 @@ class SvgWaypointElement extends SvgMapElement {
                     if (label instanceof SVGForeignObjectElement) {
                         let c = document.createElement("canvas");
                         let ctx = c.getContext("2d");
-                        let fontSize = map.config.waypointLabelFontSize;
                         let text = this.ident;
                         ctx.font = fontSize + "px " + map.config.waypointLabelFontFamily;
                         this._textWidth = ctx.measureText(text).width;
@@ -248,17 +264,15 @@ class SvgWaypointElement extends SvgMapElement {
                     if (!isFinite(this._textWidth)) {
                         let c = document.createElement("canvas");
                         let ctx = c.getContext("2d");
-                        let fontSize = map.config.waypointLabelFontSize;
                         let text = this.ident;
                         ctx.font = fontSize + "px " + map.config.waypointLabelFontFamily;
                         this._textWidth = ctx.measureText(text).width;
                     }
                     if (!isFinite(this._textHeight)) {
-                        let fontSize = map.config.waypointLabelFontSize;
                         this._textHeight = fontSize * 0.675;
                     }
-                    let textX = (x + map.config.waypointIconSize * 0.5 - this._textWidth * 0.5 + map.config.waypointLabelDistanceX);
-                    let textY = y + map.config.waypointLabelDistance;
+                    let textX = (x + iconSize * 0.5 - this._textWidth * 0.5 + map.config.waypointLabelDistanceX);
+                    let textY = y - map.config.waypointLabelDistance;
                     this._label.setAttribute("x", textX + "");
                     this._label.setAttribute("y", textY + "");
                     this.needRepaint = false;

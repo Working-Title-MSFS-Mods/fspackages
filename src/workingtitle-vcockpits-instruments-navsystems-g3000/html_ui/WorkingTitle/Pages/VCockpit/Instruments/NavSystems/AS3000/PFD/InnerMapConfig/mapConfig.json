@@ -1,16 +1,19 @@
 {
   "waypointLabelFontSize": 70,
+  "waypointAirportLargeLabelFontSize": 90,
   "waypointLabelFontFamily": "Consolas",
   "waypointLabelColor": "#FFFFFF",
-  "waypointLabelStrokeColor": "#3f3f3f",
-  "waypointLabelStrokeWidth": 0,
-  "waypointLabelUseBackground": true,
+  "waypointLabelStrokeColor": "#000000",
+  "waypointLabelStrokeWidth": 10,
+  "waypointLabelUseBackground": false,
   "waypointLabelBackgroundColor": "#3f4851",
   "waypointLabelBackgroundStrokeColor": "black",
   "waypointLabelBackgroundStrokeWidth": 0,
   "waypointLabelBackgroundPadding": "4 9 4 9",
   "waypointLabelDistance": 12,
-  "waypointIconSize": 250,
+  "waypointIconSize": 200,
+  "waypointAirportClass2IconSize": 150,
+  "waypointINTIconSize": 150,
 
   "cityLabelFontSize": 60,
   "cityLabelFontFamily": "Consolas",
@@ -118,6 +121,27 @@
     {
       "alt": 32000,
       "color": "#abb0b5"
+    }
+  ],
+    
+  "netBingAltitudeColors3": [],
+  "netBingWaterColor3": "#0000ff",
+  "netBingHeightColor3": [
+    {
+      "alt": -30000,
+      "color": "#000000"
+    },
+    {
+      "alt": -2000,
+      "color": "#00ff00"
+    },
+    {
+      "alt": -1000,
+      "color": "#ffff00"
+    },
+    {
+      "alt": -100,
+      "color": "#ff0000"
     }
   ]
 }
