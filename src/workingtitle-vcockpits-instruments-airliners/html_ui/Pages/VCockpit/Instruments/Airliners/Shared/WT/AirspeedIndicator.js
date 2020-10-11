@@ -1848,6 +1848,16 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             else {
                 this.vSpeedSVG.setAttribute("visibility", "hidden");
             }
+            if (Simplane.getIndicatedSpeed() > 200 && SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots") != 0) {
+                SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots", 0);
+                SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots", 0);
+                SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots", 0);
+                SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots", 0);
+                SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
+                SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
+                SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
+                SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
+            }
         }
     }
     computeIAS(_currentSpeed) {
