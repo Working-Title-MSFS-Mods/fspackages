@@ -93,11 +93,11 @@ class CJ4_FMC_DirectToPage {
                             callback();
                         }
                     };
-                    console.log("starting removeWaypointForApproachMethod")
+                    // console.log("starting removeWaypointForApproachMethod");
                     removeWaypointForApproachMethod(() => {
-                        console.log("removeWaypointForApproachMethod done");
-                        fmc.flightPlanManager.tryAutoActivateApproach()
-                        console.log("tryAutoActivateApproach done");
+                        // console.log("removeWaypointForApproachMethod done");
+                        fmc.flightPlanManager.tryAutoActivateApproach();
+                        // console.log("tryAutoActivateApproach done");
                         fmc.onExecDefault();
                     });
                 }
