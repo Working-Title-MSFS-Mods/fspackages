@@ -487,7 +487,7 @@ class CJ4_FMC_InitRefIndexPage {
                     [" LAST[s-text blue]", "DIST ETE FUEL-LB[s-text blue]"],
                     [prevWaypointIdent + "[blue]", Math.trunc(prevWaypointDist) + "      ----- [s-text blue]"],
                     [" TO[s-text blue]",],
-                    [activeWaypointIdent + "[s-text]", Math.trunc(activeWaypointDist) + " " + activeWaypointEte + " ----- [s-text]"],
+                    [activeWaypointIdent + "[s-text magenta]", Math.trunc(activeWaypointDist) + " " + activeWaypointEte + " ----- [s-text magenta]"],
                     [" NEXT[s-text blue]"],
                     [nextWaypointIdent + "[s-text]", Math.trunc(nextWaypointDist) + " " + nextWaypointEte + " ----- [s-text]"],
                     [" DEST[s-text blue]"],
@@ -543,9 +543,11 @@ class CJ4_FMC_InitRefIndexPage {
                 : currHeadwind < 0 ? "TAILWIND"
                     : "TAILWIND";
 
-            let xtkDirection = xtk > 0 ? "R"
-                : xtk < 0 ? "L"
-                    : "";
+            let xtkDirection = xtk > 0 && currHeadwind >= 0 ? "R"
+                : xtk < 0 && currHeadwind >= 0 ? "L"
+                : xtk > 0 && currHeadwind < 0 ? "L"
+                : xtk < 0 && currHeadwind < 0 ? "R"
+                : "";
 
             fmc._templateRenderer.setTemplateRaw([
                 [" PROGRESS[blue]", "2/2 [blue]"],
