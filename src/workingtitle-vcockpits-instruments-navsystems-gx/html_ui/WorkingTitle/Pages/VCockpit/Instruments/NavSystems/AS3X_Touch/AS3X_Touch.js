@@ -31,7 +31,7 @@ class AS3X_Touch extends NavSystemTouch {
         this.mfdMapElement = this.getChildById("Map_Elements");
         this.mfdMapMapElement = this.mfdMapElement.getElementsByTagName("map-instrument")[0];
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", new PFD_Warnings()));
-        this.mainMap = new AS3X_Touch_Map();
+        this.mainMap = new AS3X_Touch_Map("MainMap");
         this.addIndependentElementContainer(new NavSystemElementContainer("MainMap", "Map_Elements", this.mainMap));
         this.topBar = new AS3X_Touch_TopBar();
         this.addIndependentElementContainer(new NavSystemElementContainer("TopBar", "TopBar", this.topBar));
@@ -55,21 +55,23 @@ class AS3X_Touch extends NavSystemTouch {
         this.pfdMenu.setGPS(this);
         this.pageMenu = new NavSystemElementContainer("Page menu", "PageMenu", new AS3X_Touch_PageMenu());
         this.pageMenu.setGPS(this);
+        this.mapMenu = new NavSystemElementContainer("Map menu", "MapMenu", new AS3X_Touch_MapMenu());
+        this.mapMenu.setGPS(this);        
         this.fullKeyboard = new NavSystemElementContainer("Full Keyboard", "fullKeyboard", new AS3X_Touch_FullKeyboard());
         this.fullKeyboard.setGPS(this);
         this.duplicateWaypointSelection = new NavSystemElementContainer("Waypoint Duplicates", "WaypointDuplicateWindow", new AS3X_Touch_DuplicateWaypointSelection());
         this.duplicateWaypointSelection.setGPS(this);
         this.pageGroups = [
             new AS3X_Touch_PageGroup("MFD", this, [
-                new AS3X_Touch_NavSystemPage("Map", "Map", new AS3X_Touch_MapContainer("Map"), "Map", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png"),
+                new AS3X_Touch_NavSystemPage("Map", "Map", new AS3X_Touch_MapContainer("Map"), "Map", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png",
+                    () => { if(this.displayMode == 'MFD' || this.m_isSplit) this.switchToPopUpPage(this.mapMenu)}),
                 new AS3X_Touch_NavSystemPage("Active FPL", "FPL", new NavSystemElementGroup([
                     new NavSystemTouch_ActiveFPL(true),
                     new AS3X_Touch_MapContainer("Afpl_Map")
-                ]), "FPL", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FLIGHT_PLAN_MED_1.png"),
-                new AS3X_Touch_NavSystemPage("Weather", "Map", new AS3X_Touch_MapContainer("Map"), "WX",
-                    "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png",
-                    () => { this.mainMap.nexradOn = true; },
-                    () => { this.mainMap.nexradOn = false; }),
+                ]), "FPL", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FLIGHT_PLAN_MED_1.png",
+                    null,
+                    null,  // should we disable nexrad when in shrunken-window mode?
+                    null), // not sure, but if so, these callback hooks can do it.
                 new AS3X_Touch_NavSystemPage("Procedures", "Procedures", new AS3X_Touch_Procedures(), "Proc", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PROCEDURES_1.png")
             ], [
                 new AS3X_Touch_MenuButton("Direct-To", "", this.switchToPopUpPage.bind(this, this.directToWindow), true),
@@ -190,6 +192,7 @@ class AS3X_Touch extends NavSystemTouch {
     disconnectedCallback() {
         super.disconnectedCallback();
     }
+
     Update() {
         super.Update();
         if (this.autoPitotHeat) {
@@ -393,19 +396,19 @@ class AS3X_Touch extends NavSystemTouch {
         super.computeEvent(_event);
         switch (_event) {
             case "Menu_Push":
-                if (this.popUpElement == this.pageMenu) {
-                    this.closePopUpElement();
+                if (this.displayMode != "MFD" && !this.m_isSplit) {
+                    // we're in full PFD mode, if we don't have a popup open show the PFD menu
+                    if (!this.popUpElement) {
+                        this.switchToPopUpPage(this.pfdMenu);
+                    }
                 }
-                else {
-                    this.switchToPopUpPage(this.pageMenu);
-                }
+
                 break;
             case "Back_Push":
                 if (this.popUpElement) {
                     this.closePopUpElement();
                 }
                 else {
-                    console.log("Computing back push");
                     this.SwitchToMenuName("MFD");
                     this.computeEvent("Master_Caution_Push");
                     this.computeEvent("Master_Warning_Push");
@@ -534,7 +537,7 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
         this.attitude.setSyntheticVisionEnabled(true);
         this.mapInstrument = new MapInstrumentElement();
         this.windData = new AS3X_Touch_WindData();
-        this.annunciations = new Cabin_Annunciations();
+        this.annunciations = new AS3X_Touch_Annunciations();
         this.element = new NavSystemElementGroup([
             new PFD_Altimeter(),
             new PFD_Airspeed(),
@@ -562,13 +565,29 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
 class AS3X_Touch_MFD_Main extends NavSystemElementContainer {
     constructor() {
         super("MainMFD", "MainMFD", null);
-        this.element = new AS3X_Touch_Map();
+        this.element = new AS3X_Touch_Map("MainMFDMap");
     }
 }
 class AS3X_Touch_WindData extends PFD_WindData {
     init(root) {
         super.init(root);
         this.svg = root.querySelector("glasscockpit-wind-data");
+    }
+}
+class AS3X_Touch_Annunciations extends Cabin_Annunciations {
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
+        // Hide ourselves if we have no messages to avoid an empty black box
+        let hideMe = true;
+        for (var i = 0; i < this.allMessages.length; i++) {
+            if (this.allMessages[i].Visible) {
+                hideMe = false;
+                break;
+            }
+        }
+        if (hideMe) {
+            this.annunciations.setAttribute("state", "Hidden");
+        }
     }
 }
 class AS3X_Touch_TopBar extends NavSystemElement {
@@ -711,9 +730,13 @@ class AS3X_Touch_MapContainer extends NavSystemElement {
     }
 }
 class AS3X_Touch_Map extends MapInstrumentElement {
+    constructor(_mapId) {
+        super();
+        this.mapId = _mapId;
+    }
     init(root) {
         super.init(root);
-        this.trackUp = false;
+        this.instrument.zoomRanges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 500, 1000, 1500, 2000];
         this.mapPlus = root.querySelector(".mapPlus");
         this.mapLess = root.querySelector(".mapLess");
         this.mapCenter = root.querySelector(".mapCenter");
@@ -723,22 +746,19 @@ class AS3X_Touch_Map extends MapInstrumentElement {
         this.gps.makeButton(this.mapCenter, this.centerOnPlane.bind(this));
         this.instrument.addEventListener("mousedown", this.moveMode.bind(this));
         this.instrument.supportMouseWheel(false);
+        this.instrument.offsetPlaneInHdgTrk = true;
+        this.loadSavedMapOrientation();
+        this.loadSavedMapWeather();
+        this.loadSavedTopoState();
+        this._autoRange = false;
+        this._lastAutoRangeDistance = 0;
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
-        if (SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean") != this.trackUp) {
-            this.trackUp = !this.trackUp;
-            this.instrument.rotateWithPlane(this.trackUp);
-            this.instrument.roadNetwork._lastRange = -1; // force canvas to redraw (SvgRoadNetworkElement.js:297)
-            if (this.mapOrientation) {
-                this.mapOrientation.innerText = this.trackUp ? "TRACK UP" : "NORTH UP";
-            }
+        if (this._autoRange) {
+            this.doAutoRange();
         }
         if (this.nexradOn) {
-            // this is less than idea, but I can't find any other way to keep from having the
-            // nexrad map be cut off at the bottom when scrolling to WX through FPL.  Even
-            // forcing an updateWeather in onEnter() doesn't work. 
-            // TODO:  See if there's a better way to do this.
             this.updateWeather();
         }
     }
@@ -750,17 +770,158 @@ class AS3X_Touch_Map extends MapInstrumentElement {
         this.instrument.setCenteredOnPlane();
         this.mapCenter.setAttribute("state", "Inactive");
     }
+    disableRotation() {
+        this.instrument.setTrackUpDisabled(true)
+    }
+    enableRotation() {
+        this.instrument.setTrackUpDisabled(false)
+    }
+    loadSavedMapOrientation() {
+        let state = WTDataStore.get(`Map.${this._mapId}.Orientation`, AS3X_Touch_Map.ORIENTATION_TRK_UP);
+        this.setMapOrientation(state);
+    }
+    setMapOrientation(state) {
+        WTDataStore.set(`Map.${this._mapId}.Orientation`, state);
+        SimVar.SetSimVarValue(`L:G3X_Map_${this.mapId}_Orient`, "number", state);
+        switch (state) {
+            case AS3X_Touch_Map.ORIENTATION_NORTH_UP:
+                this.instrument.setOrientation("north");
+                break;
+            case AS3X_Touch_Map.ORIENTATION_TRK_UP:
+                this.instrument.setOrientation("trk");
+                break;
+            case AS3X_Touch_Map.ORIENTATION_DTK_UP:
+                this.instrument.setOrientation("hdg");
+                break;
+        }
+    }
+    getMapOrientation() {
+        return SimVar.GetSimVarValue(`L:G3X_Map_${this.mapId}_Orient`, "number");
+    }
+    loadSavedMapWeather() {
+        let state = WTDataStore.get(`Map.${this._mapId}.Weather`, false);
+        this.setMapWeather(state);
+    }
+    setMapWeather(state) {
+        WTDataStore.set(`Map.${this._mapId}.Weather`, state);
+        this.nexradOn = state;
+        this.updateWeather();
+    }
+    getMapWeather() {
+        return this.nexradOn;
+    }
+    loadSavedTopoState() {
+        let state = WTDataStore.get(`Map.${this._mapId}.Topo`, false)
+        this.setIsolines(state);
+    }
+    setIsolines(state) {
+        if (this.getIsolines() != state) {
+            this.toggleIsolines();
+        }
+        WTDataStore.set(`Map.${this._mapId}.Topo`, state);
+    }
+    getRangeText() {
+        return this.instrument.zoomRanges[this.instrument.getZoom()];
+    }
+    setAutoRange(state) {
+        this._autoRange = state;
+    }
+    getAutoRange() {
+        return this._autoRange;
+    }
+    doAutoRange() {
+        let wptDistance = SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical mile");
+        // For efficiency, don't compute the full thing if we haven't moved much
+        if (Math.abs(wptDistance - this._lastAutoRangeDistance) < 0.5) {
+            return;
+        }
+        let ranges = this.instrument.zoomRanges;
+        let currentRangeIdx = this.instrument.getZoom();
+        let newIdx = 0
+        for (let i = 1; ranges[i-1] <= wptDistance * 2; i++) {
+            newIdx = i
+        }
+        if (currentRangeIdx != newIdx) {
+            this.instrument.setZoom(newIdx);
+        }
+        this._lastAutoRangeDistance = wptDistance;
+    }
+    onEvent(_event) {
+        console.log(_event);
+
+        switch (_event) {
+            case "RANGE_INC":
+            case "RANGE_DEC":
+                this.setAutoRange(false);
+                this.instrument.onEvent(_event);
+                break;
+        }
+    }
+
 }
 class AS3X_Touch_PageMenu_Button {
 }
-class AS3X_Touch_PageMenu extends NavSystemElement {
+class AS3X_Touch_Popup extends NavSystemElement {
     init(root) {
         this.root = root;
+    }
+    onEnter() {
+        this.root.setAttribute("state", "Active");
+    }
+    onUpdate() {
+        super.onUpdate();
+    }
+    onExit() {
+        this.root.setAttribute("state", "Inactive");
+    }
+    onEvent(_event) {
+    }
+}
+class AS3X_Touch_MapMenu extends AS3X_Touch_Popup {
+    init(root) {
+        super.init(root);
+        this._map = this.gps.mainMap;
+        this._setOrient = this._map.setMapOrientation.bind(this.gps.mainMap);
+        this._getOrient = this._map.getMapOrientation.bind(this.gps.mainMap);
+        this.northUp = this.gps.getChildById("MapMenu_Orient_North");
+        this.trkUp = this.gps.getChildById("MapMenu_Orient_Track");
+        this.dtkUp = this.gps.getChildById("MapMenu_Orient_Dtk");
+        this.weather = this.gps.getChildById("MapMenu_Weather");
+        this.topo = this.gps.getChildById("MapMenu_Topo");
+        this.titleRange = this.gps.getChildById("MapMenu_Title_Range");
+        this.rangeInc = this.gps.getChildById("MapMenu_Range_Inc");
+        this.rangeDec = this.gps.getChildById("MapMenu_Range_Dec");
+        this.rangeAuto = this.gps.getChildById("MapMenu_Range_Auto");
+        this.gps.makeButton(this.northUp, () => { this._setOrient(AS3X_Touch_Map.ORIENTATION_NORTH_UP)});
+        this.gps.makeButton(this.trkUp, () => { this._setOrient(AS3X_Touch_Map.ORIENTATION_TRK_UP) });
+        this.gps.makeButton(this.dtkUp, () => { this._setOrient(AS3X_Touch_Map.ORIENTATION_DTK_UP) });
+        this.gps.makeButton(this.weather, () => { this._map.setMapWeather(!this._map.getMapWeather()) });
+        this.gps.makeButton(this.topo, () => { this._map.setIsolines(!this._map.getIsolines()) });
+        this.gps.makeButton(this.rangeDec, () => this.gps.computeEvent("RANGE_DEC"));
+        this.gps.makeButton(this.rangeInc, () => this.gps.computeEvent("RANGE_INC"));
+        this.gps.makeButton(this.rangeAuto, () => {
+            this._map.setAutoRange(!this._map.getAutoRange());
+        })
+    }
+    onUpdate() {
+        Avionics.Utils.diffAndSetAttribute(this.northUp, "state", this._getOrient() == AS3X_Touch_Map.ORIENTATION_NORTH_UP ? "Active" : "")
+        Avionics.Utils.diffAndSetAttribute(this.trkUp, "state", this._getOrient() == AS3X_Touch_Map.ORIENTATION_TRK_UP ? "Active" : "")
+        Avionics.Utils.diffAndSetAttribute(this.dtkUp, "state", this._getOrient() == AS3X_Touch_Map.ORIENTATION_DTK_UP ? "Active" : "")
+        Avionics.Utils.diffAndSetAttribute(this.weather, "state", this._map.getMapWeather() ? "Active" : "");
+        Avionics.Utils.diffAndSetAttribute(this.topo, "state", this._map.getIsolines() ? "Active" : "");
+        Avionics.Utils.diffAndSet(this.titleRange, `(${this._map.getRangeText()}nm)`);
+        Avionics.Utils.diffAndSetAttribute(this.rangeAuto, "state", this._map.getAutoRange() ? "Active" : "");
+    }
+}
+
+class AS3X_Touch_PageMenu extends AS3X_Touch_Popup {
+    init(root) {
+        super.init(root);
         this.buttons = [];
         this.menuElements = root.getElementsByClassName("menuElements")[0];
     }
     onEnter() {
-        this.root.setAttribute("state", "Active");
+        super.onEnter();
         let pageGroup = this.gps.getCurrentPageGroup();
         for (let i = 0; i < (pageGroup.pages.length + pageGroup.additionalMenuButtons.length); i++) {
             if (i >= this.buttons.length) {
@@ -798,13 +959,6 @@ class AS3X_Touch_PageMenu extends NavSystemElement {
             this.buttons[i].base.style.display = "none";
         }
     }
-    onUpdate(_deltaTime) {
-    }
-    onExit() {
-        this.root.setAttribute("state", "Inactive");
-    }
-    onEvent(_event) {
-    }
     switchToPage(i) {
         let pageGroup = this.gps.getCurrentPageGroup();
         if (i < pageGroup.pages.length) {
@@ -815,6 +969,8 @@ class AS3X_Touch_PageMenu extends NavSystemElement {
         else {
             pageGroup.additionalMenuButtons[i - pageGroup.pages.length].callback();
         }
+    }
+    onUpdate() {
     }
 }
 class AS3X_Touch_FullKeyboard extends NavSystemTouch_FullKeyboard {
@@ -897,12 +1053,19 @@ class AS3X_Touch_PageGroup extends NavSystemPageGroup {
     }
 }
 class AS3X_Touch_NavSystemPage extends NavSystemPage {
-    constructor(_name, _htmlElemId, _element, _shortName, _imagePath, _enterCb, _exitCb) {
+    constructor(_name, _htmlElemId, _element, _shortName, _imagePath, _menuCb, _enterCb, _exitCb) {
         super(_name, _htmlElemId, _element);
         this.shortName = _shortName;
         this.imagePath = _imagePath;
+        this._menuCb = _menuCb;
         this._enterCb = _enterCb;
         this._exitCb = _exitCb;
+
+    }
+    onEvent(_event) {
+        if (_event == 'Menu_Push' && this._menuCb) {
+            this._menuCb();
+        }            
     }
     onEnter() {
         super.onEnter();
@@ -1035,7 +1198,6 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
     setWindMode() {
         let events = ["SoftKeys_Wind_O1", "SoftKeys_Wind_O2", "SoftKeys_Wind_O3", "SoftKeys_Wind_Off"];
         let event = events[this.windData.mode];
-        console.log(`sending event ${event}`)
         this.windData.onEvent(event);
         Avionics.Utils.diffAndSet(this.windMode_value, this.windData.mode);
     }
@@ -1358,6 +1520,10 @@ class AS3X_Touch_ApproachSelection extends NavSystemTouch_ApproachSelection {
         this.gps.closePopUpElement();
     }
 }
+
+AS3X_Touch_Map.ORIENTATION_TRK_UP = 0;
+AS3X_Touch_Map.ORIENTATION_DTK_UP = 1;
+AS3X_Touch_Map.ORIENTATION_NORTH_UP = 2;
 
 
 registerInstrument("as3x-touch-element", AS3X_Touch);

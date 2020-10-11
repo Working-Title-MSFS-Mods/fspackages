@@ -293,15 +293,22 @@ class PFD_Attitude extends NavSystemElement {
     constructor() {
         super(...arguments);
         this.vDir = new Vec2();
-        this.syntheticVisionEnabled = false;
         Include.addScript("/JS/debug.js", function () {
             g_modDebugMgr.AddConsole(null);
         });
     }
     init(root) {
         this.svg = this.gps.getChildById("Horizon");
+        this._syntheticVisionEnabled = WTDataStore.get("Attitude.SyntheticVision", false);
     }
     onEnter() {
+    }
+    get syntheticVisionEnabled() {
+        return this._syntheticVisionEnabled;
+    }
+    set syntheticVisionEnabled(enabled) {
+        this._syntheticVisionEnabled = enabled;
+        WTDataStore.set("Attitude.SyntheticVision", enabled);
     }
     setSyntheticVisionEnabled(enabled) {
         this.syntheticVisionEnabled = enabled;
