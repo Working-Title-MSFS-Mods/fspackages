@@ -1,5 +1,9 @@
-class AS1000_PFD_Transponder_Model {
-    constructor() {
+class WT_Transponder_Model {
+    /**
+     * @param {WT_Settings} settings 
+     */
+    constructor(settings) {
+        this.settings = settings;
         this.code = new Subject(this.getSimCode());
         this.mode = new Subject();
         this.editing = new Subject(false);
@@ -37,15 +41,26 @@ class AS1000_PFD_Transponder_Model {
         }
         this.editingTimeout += number.toFixed(0);
     }
+    setSquawk(squawk) {
+        squawk = String(squawk);
+        let code = parseInt(squawk[0]) * 4096 + parseInt(squawk[1]) * 256 + parseInt(squawk[2]) * 16 + parseInt(squawk[3]);
+        SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", code);
+    }
+    setVfrSquawk() {
+        this.setSquawk(this.settings.getValue("vfr_xpdr"));
+    }
+    setMode(mode) {
+        SimVar.SetSimVarValue("TRANSPONDER STATE:1", "number", mode)
+    }
 }
 
-class AS1000_PFD_Transponder_View extends AS1000_HTML_View {
+class WT_Transponder_View extends WT_HTML_View {
     /**
-     * @param {AS1000_PFD_Transponder_Model} model 
+     * @param {WT_PFD_Transponder_Model} model 
      */
     setModel(model) {
         model.code.subscribe(code => this.elements.code.textContent = code);
         model.mode.subscribe(mode => this.elements.mode.textContent = mode);
     }
 }
-customElements.define("g1000-transponder", AS1000_PFD_Transponder_View);
+customElements.define("g1000-transponder", WT_Transponder_View);

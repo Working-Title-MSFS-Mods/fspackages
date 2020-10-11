@@ -1,13 +1,13 @@
-class AS1000_Map_Model extends AS1000_Model {
+class WT_Map_Model extends WT_Model {
     constructor(mapElement) {
         super();
         this.mapElement = mapElement;
     }
 }
 
-class AS1000_Map_View extends AS1000_HTML_View {
+class WT_Map_View extends WT_HTML_View {
     /**
-     * @param {AS1000_Map_Model} model 
+     * @param {WT_Map_Model} model 
      */
     setModel(model) {
         this.model = model;
@@ -20,4 +20,4 @@ class AS1000_Map_View extends AS1000_HTML_View {
         return false;
     }
 }
-customElements.define("g1000-map-page", AS1000_Map_View);
+customElements.define("g1000-map-page", WT_Map_View);

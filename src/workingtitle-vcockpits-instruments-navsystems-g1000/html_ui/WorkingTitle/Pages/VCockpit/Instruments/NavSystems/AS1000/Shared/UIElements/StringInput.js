@@ -1,4 +1,4 @@
-class AS1000_String_Input_Input_Layer extends Input_Layer
+class WT_String_Input_Input_Layer extends Input_Layer
 {
     constructor(input) {
         super();
@@ -24,7 +24,7 @@ class AS1000_String_Input_Input_Layer extends Input_Layer
     }
 }
 
-class AS1000_String_Input extends HTMLElement {
+class WT_String_Input extends HTMLElement {
     constructor() {
         super();
         this._value = "          ";
@@ -78,7 +78,7 @@ class AS1000_String_Input extends HTMLElement {
     }
     enter(e) {
         let inputStack = e.detail.inputStack;
-        let inputLayer = new AS1000_String_Input_Input_Layer(this);
+        let inputLayer = new WT_String_Input_Input_Layer(this);
         this.inputStackManipulator = inputStack.push(inputLayer);
         this._editingValue = this._value;
         for (let i = this._editingValue.length; i < this.elements.characters.length; i++)
@@ -125,4 +125,4 @@ class AS1000_String_Input extends HTMLElement {
         this.updateDisplay();
     }
 }
-customElements.define("string-input", AS1000_String_Input);
+customElements.define("string-input", WT_String_Input);

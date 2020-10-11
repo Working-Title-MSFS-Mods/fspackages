@@ -1,8 +1,8 @@
-class AS1000_PFD_Input_Layer extends Base_Input_Layer {
+class WT_PFD_Input_Layer extends Base_Input_Layer {
 
 }
 
-class AS1000_PFD_Model {
+class WT_PFD_Model {
     constructor() {
         this.syntheticVision = new Subject(false);
         this.lastBrightnessValue = null;
@@ -37,13 +37,58 @@ class AS1000_PFD_Model {
     }
 }
 
+class WT_PFD_Alert_Key extends WT_Soft_Key {
+    /**
+     * @param {WT_Annunciations_Model} annuncationsModel 
+     */
+    constructor() {
+        super("ALERTS", null);
+        this.setOnClick(this.click.bind(this));
+        this.pressAcknowledgesAnnunciations = false;
+    }
+    setAnnunciationsModel(model) {
+        this.annunciationsModel = model;
+        model.alertLevel.subscribe(this.updateAlertLevel.bind(this));
+        model.hasUnacknowledgedAnnunciations.subscribe(has => {
+            this.setAttribute("state", has ? "flashing" : "");
+        });
+    }
+    click() {
+        if (this.pressAcknowledgesAnnunciations)
+            this.annunciationsModel.acknowledgeAll();
+    }
+    updateAlertLevel(level) {
+        this.pressAcknowledgesAnnunciations = true;
+        switch (level) {
+            case 0:
+                this.pressAcknowledgesAnnunciations = false;
+                this.textContent = "ALERTS";
+                this.setAttribute("level", "alert");
+                break;
+            case 1:
+                this.textContent = "ADVISORY";
+                this.setAttribute("level", "advisory");
+                break;
+            case 2:
+                this.textContent = "CAUTION";
+                this.setAttribute("level", "caution");
+                break;
+            case 3:
+                this.textContent = "WARNING";
+                this.setAttribute("level", "warning");
+                break;
+        }
+    }
+}
+customElements.define("g1000-soft-key-alert", WT_PFD_Alert_Key);
+
 class AS1000_PFD extends BaseAS1000 {
     constructor() {
         super();
         this.handleReversionaryMode = false;
         this.initDuration = 7000;
 
-        this.model = new AS1000_PFD_Model();
+        this.model = new WT_PFD_Model();
     }
     get templateID() { return "AS1000_PFD"; }
     connectedCallback() {
@@ -52,8 +97,8 @@ class AS1000_PFD extends BaseAS1000 {
             g_modDebugMgr.AddConsole(null);
         });*/
         this.updatables = [];
-        this.settings = new AS1000_Settings("g36", AS1000_Default_Settings.base);
-        this.unitChooser = new UnitChooser(this.settings);
+        this.settings = new WT_Settings("g36", WT_Default_Settings.base);
+        this.unitChooser = new WT_Unit_Chooser(this.settings);
         this.mainPage = new AS1000_PFD_MainPage(this.unitChooser);
         this.pageGroups = [
             new NavSystemPageGroup("Main", this, [
@@ -69,44 +114,34 @@ class AS1000_PFD extends BaseAS1000 {
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", new PFD_Warnings()));
         this.addIndependentElementContainer(new NavSystemElementContainer("BackGroundTimer", "", bgTimer));*/
         this.addIndependentElementContainer(new Engine("Engine", "EngineDisplay"));
-        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Nearest Airports", "NearestAirports", new AS1000_PFD_NearestAirports(), "SoftKey_NRST"));
+        /*this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Nearest Airports", "NearestAirports", new AS1000_PFD_NearestAirports(), "SoftKey_NRST"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("ADF/DME", "AdfDme", new PFD_ADF_DME(), "SoftKey_ADF_DME"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Alerts", "AlertsWindow", new AS1000_Alerts(), "Toggle_Alerts"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("TMR/REF", "TmrRefWindow", timerRef, "Softkey_TMR_REF"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("AFPL", "ActiveFlightPlan", new AS1000_PFD_ActiveFlightPlan_Element(5), "FPL_Push"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
-        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "CONF_MENU_Push"));
+        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "CONF_MENU_Push"));*/
         this.maxUpdateBudget = 12;
         this._pfdConfigDone = false;
 
         this.inputStack = new Input_Stack();
 
-        this.navBoxModel = new AS1000_PFD_Nav_Box_Model(this.unitChooser, this.currFlightPlanManager);
-        this.navBoxView = this.querySelector("g1000-nav-box");
-        this.navBoxView.setModel(this.navBoxModel);
-        this.updatables.push(this.navBoxModel);
+        this.barometricPressure = new WT_Barometric_Pressure();
+        this.updatables.push(this.barometricPressure);
 
-        this.hsiModel = new HSIIndicatorModel();
-        this.hsiView = this.querySelector("#Compass");
-        this.hsiView.setModel(this.hsiModel);
+        this.initModels();
+
         let hsiInput = new HSI_Input_Layer(this.hsiModel);
         this.inputStack.push(hsiInput);
-        this.updatables.push(this.hsiModel);
 
-        this.attitudeModel = new Attitude_Indicator_Model(this.model.syntheticVision);
-        this.attitudeView = this.querySelector("glasscockpit-attitude-indicator");
-        this.attitudeView.setModel(this.attitudeModel);
-
-        this.initModelView(new AS1000_OAT_Model(this.unitChooser), "g1000-oat");
-        this.initModelView(new AS1000_Local_Time_Model(this.settings), "g1000-local-time");
-        this.initModelView(new AS1000_PFD_Transponder_Model(), "g1000-transponder");
-        this.comFrequenciesModel = this.initModelView(new AS1000_Com_Frequencies_Model(), "g1000-com-frequencies");
-        this.navFrequenciesModel = this.initModelView(new AS1000_Nav_Frequencies_Model(), "g1000-nav-frequencies");
-
-        this.inputStack.push(new AS1000_PFD_Input_Layer(this));
+        this.inputStack.push(new WT_PFD_Input_Layer(this));
 
         this.softKeyController = this.querySelector("g1000-soft-key-menu");
         this.softKeyController.handleInput(this.inputStack);
+
+        let miniPage = this.querySelector("wt-mini-page-container");
+        miniPage.handleInput(this.inputStack);
+        this.miniPageController = miniPage;
 
         this.model.syntheticVision.subscribe(enabled => {
             this.getChildById("SyntheticVision").setAttribute("show-bing-map", enabled ? "true" : "false");
@@ -129,88 +164,72 @@ class AS1000_PFD extends BaseAS1000 {
             SimVar.SetSimVarValue(`L:XMLVAR_AS1000_PFD_Brightness`, "number", brightness);
         });
 
+        if (!this.alertsKey) {
+            this.alertsKey = new WT_PFD_Alert_Key();
+        }
         this.showMainMenu();
+    }
+    onXMLConfigLoaded(_xml) {
+        super.onXMLConfigLoaded(_xml);
+        this.annuncationsModel = this.initModelView(new WT_Annunciations_Model(this.xmlConfig), "g1000-annunciations");
+        if (!this.alertsKey) {
+            this.alertsKey = new WT_PFD_Alert_Key();
+        }
+        this.alertsKey.setAnnunciationsModel(this.annuncationsModel);
+    }
+    initModels() {
+        this.attitudeModel = this.initModelView(new Attitude_Indicator_Model(this.model.syntheticVision), "glasscockpit-attitude-indicator");
+        this.hsiModel = this.initModelView(new HSIIndicatorModel(), "#Compass");
+
+        this.navBoxModel = this.initModelView(new AS1000_PFD_Nav_Box_Model(this.unitChooser, this.currFlightPlanManager), "g1000-nav-box");
+        this.comFrequenciesModel = this.initModelView(new WT_Com_Frequencies_Model(), "g1000-com-frequencies");
+        this.navFrequenciesModel = this.initModelView(new WT_Nav_Frequencies_Model(), "g1000-nav-frequencies");
+
+        this.localTimeModel = this.initModelView(new WT_Local_Time_Model(this.settings), "g1000-local-time");
+        this.oatModel = this.initModelView(new WT_OAT_Model(this.unitChooser), "g1000-oat");
+        this.transponderModel = this.initModelView(new WT_Transponder_Model(this.settings), "g1000-transponder");
+        this.referencesModel = this.initModelView(new WT_Airspeed_References_Model(), "wt-airspeed-references");
+        this.timerModel = this.initModelView(new WT_PFD_Timer_Model(), "wt-timer");
+
+        this.nearestAirportsModel = new WT_Nearest_Airports_Model(this, this.unitChooser, null, this.softKeyController);
+        document.querySelector("wt-nearest").setModel(this.nearestAirportsModel);
     }
     initModelView(model, viewSelector) {
         let view = document.querySelector(viewSelector);
         if (!view)
             throw new Exception(`${viewSelector} didn't match any views`);
         view.setModel(model);
-        this.updatables.push(model);
+        if (model.update)
+            this.updatables.push(model);
         return model;
     }
     showTransponderMenu() {
-        let menu = new AS1000_Soft_Key_Menu(false);
-        menu.addSoftKey(3, new AS1000_Soft_Key("STBY"));
-        menu.addSoftKey(4, new AS1000_Soft_Key("ON"));
-        menu.addSoftKey(5, new AS1000_Soft_Key("ALT"));
-        menu.addSoftKey(6, new AS1000_Soft_Key("GND"));
-        menu.addSoftKey(7, new AS1000_Soft_Key("VFR"));
-        menu.addSoftKey(8, new AS1000_Soft_Key("CODE", this.showTransponderCodeMenu.bind(this)));
-        menu.addSoftKey(9, new AS1000_Soft_Key("IDENT"));
-        menu.addSoftKey(11, new AS1000_Soft_Key("BACK", this.showMainMenu.bind(this)));
-        menu.addSoftKey(12, new AS1000_Soft_Key("ALERTS"));
+        let menu = new WT_PFD_Transponder_Menu(this, this.transponderModel);
         this.softKeyController.setMenu(menu);
     }
     showTransponderCodeMenu() {
-        let menu = new AS1000_Soft_Key_Menu(false);
-        let transponderTempCode = "";
-        let addNumber = (number) => {
-            transponderTempCode += number;
-            if (transponderTempCode.length == 4) {
-                var code = transponderTempCode[0] * 4096 + transponderTempCode[1] * 256 + transponderTempCode[2] * 16 + transponderTempCode[3];
-                SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", code);
-                this.showMainMenu();
-            }
-        };
-        for (let i = 0; i <= 7; i++) {
-            menu.addSoftKey(i + 1, new AS1000_Soft_Key(i, () => addNumber(i.toFixed(0))));
-        }
-        menu.addSoftKey(9, new AS1000_Soft_Key("IDENT"));
-        menu.addSoftKey(10, new AS1000_Soft_Key("BKSP"));
-        menu.addSoftKey(11, new AS1000_Soft_Key("BACK", this.showMainMenu.bind(this)));
-        menu.addSoftKey(12, new AS1000_Soft_Key("ALERTS"));
+        let menu = new WT_PFD_Transponder_Code_Menu(this, this.transponderModel);
         this.softKeyController.setMenu(menu);
     }
     showMainMenu() {
-        let menu = new AS1000_Soft_Key_Menu(false);
-        menu.addSoftKey(2, new AS1000_Soft_Key("INSET"));
-        menu.addSoftKey(4, new AS1000_Soft_Key("PFD", this.showPfdMenu.bind(this)));
-        menu.addSoftKey(5, new AS1000_Soft_Key("OBS"));
-        menu.addSoftKey(6, new AS1000_Soft_Key("CDI", () => this.hsiModel.cycleCdi()));
-        menu.addSoftKey(7, new AS1000_Soft_Key("DME"));
-        menu.addSoftKey(8, new AS1000_Soft_Key("XPDR", this.showTransponderMenu.bind(this)));
-        menu.addSoftKey(9, new AS1000_Soft_Key("IDENT"));
-        menu.addSoftKey(10, new AS1000_Soft_Key("TMR/REF"));
-        menu.addSoftKey(11, new AS1000_Soft_Key("NRST"));
-        menu.addSoftKey(12, new AS1000_Soft_Key("ALERTS"));
+        let menu = new WT_PFD_Main_Menu(this);
         this.softKeyController.setMenu(menu);
     }
     showPfdMenu() {
-        let menu = new AS1000_Soft_Key_Menu(false);
-        menu.addSoftKey(1, new AS1000_Soft_Key("SYN VIS", this.showSyntheticVisionMenu.bind(this)));
-        menu.addSoftKey(2, new AS1000_Soft_Key("DFLTS"));
-        menu.addSoftKey(3, new AS1000_Soft_Key("WIND"));
-        menu.addSoftKey(4, new AS1000_Soft_Key("DME"));
-        menu.addSoftKey(5, new AS1000_Soft_Key("BRG1", () => this.hsiModel.cycleBearing(1)));
-        menu.addSoftKey(6, new AS1000_Soft_Key("HSI FRMT"));
-        menu.addSoftKey(7, new AS1000_Soft_Key("BRG2", () => this.hsiModel.cycleBearing(2)));
-        menu.addSoftKey(9, new AS1000_Soft_Key("ALT UNIT"));
-        menu.addSoftKey(10, new AS1000_Soft_Key("STD BARO"));
-        menu.addSoftKey(11, new AS1000_Soft_Key("BACK", this.showMainMenu.bind(this)));
-        menu.addSoftKey(12, new AS1000_Soft_Key("ALERTS"));
+        let menu = new WT_PFD_PFD_Menu(this, this.hsiModel, this.barometricPressure);
         this.softKeyController.setMenu(menu);
     }
     showSyntheticVisionMenu() {
-        let menu = new AS1000_Soft_Key_Menu(false);
-        menu.addSoftKey(1, new AS1000_Soft_Key("PATHWAY"));
-        menu.addSoftKey(2, new AS1000_Soft_Key("SYN VIS", () => this.model.toggleSyntheticVision()));
-        menu.addSoftKey(3, new AS1000_Soft_Key("HRZN HDG"));
-        menu.addSoftKey(4, new AS1000_Soft_Key("APTSIGNS"));
-        menu.addSoftKey(11, new AS1000_Soft_Key("BACK", this.showPfdMenu.bind(this)));
+        let menu = new WT_PFD_Synthetic_Vision_Menu(this);
         this.softKeyController.setMenu(menu);
     }
+    showAltUnitMenu() {
+        let menu = new WT_PFD_Alt_Unit_Menu(this, this.barometricPressure);
+        this.softKeyController.setMenu(menu);
+    }
+    setDefaultVfrSquawk() {
 
+    }
     async pfdConfig() {
         this.loadSavedBrightness("PFD");
         this.loadSavedBrightness("MFD");
@@ -222,7 +241,6 @@ class AS1000_PFD extends BaseAS1000 {
         this.model.setLightKnob(this.avionicsKnobIndex);
         return Promise.resolve();
     }
-
     processInteriorConfig(dom) {
         this.avionicsKnobIndex = 30;
         let templates = dom.getElementsByTagName("UseTemplate");
@@ -237,28 +255,16 @@ class AS1000_PFD extends BaseAS1000 {
             }
         }
     }
-
-    onFlightStart() {
-
-    }
-
     onUpdate(_deltaTime) {
         for (let updatable of this.updatables) {
             updatable.update(_deltaTime);
         }
         this.settings.update(_deltaTime);
         this.model.update(_deltaTime);
-        /*if (this._pfdConfigDone) {
-            let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
-            if (avionicsKnobValueNow != this.avionicsKnobValue) {
-                this.setBrightness("PFD", avionicsKnobValueNow);
-                this.setBrightness("MFD", avionicsKnobValueNow);
-                this.avionicsKnobValue = avionicsKnobValueNow;
-            }
-        }*/
+        this.miniPageController.update(_deltaTime);
     }
-
     onEvent(_event) {
+        console.log(_event);
         this.inputStack.processEvent(_event);
         if (_event == "MENU_Push") {
             if (this.popUpElement) {
@@ -270,12 +276,10 @@ class AS1000_PFD extends BaseAS1000 {
             }
         }
     }
-
     loadSavedBrightness(display) {
         let brightness = WTDataStore.get(`${display}.Brightness`, 100);
         this.setBrightness(display, brightness);
     }
-
     setBrightness(display, value, relative) {
         let lvar = `L:XMLVAR_AS1000_${display}_Brightness`;
         if (relative) {
@@ -287,11 +291,9 @@ class AS1000_PFD extends BaseAS1000 {
         WTDataStore.set(`${display}.Brightness`, value);
         SimVar.SetSimVarValue(lvar, "number", value);
     }
-
     getBrightness(display) {
         return SimVar.GetSimVarValue(`L:XMLVAR_AS1000_${display}_Brightness`, "number");
     }
-
     parseXMLConfig() {
         super.parseXMLConfig();
         let syntheticVision = null;
@@ -305,21 +307,20 @@ class AS1000_PFD extends BaseAS1000 {
             this.handleReversionaryMode = true;
         }
     }
-
-    disconnectedCallback() {
-        super.disconnectedCallback();
-    }
-
     Update() {
-        super.Update();
-        if (this.handleReversionaryMode) {
-            this.reversionaryMode = false;
-            if (document.body.hasAttribute("reversionary")) {
-                var attr = document.body.getAttribute("reversionary");
-                if (attr == "true") {
-                    this.reversionaryMode = true;
+        try {
+            super.Update();
+            if (this.handleReversionaryMode) {
+                this.reversionaryMode = false;
+                if (document.body.hasAttribute("reversionary")) {
+                    var attr = document.body.getAttribute("reversionary");
+                    if (attr == "true") {
+                        this.reversionaryMode = true;
+                    }
                 }
             }
+        } catch (e) {
+
         }
     }
 }

@@ -1,9 +1,9 @@
-class AS1000_Flight_Plan_Page_Model extends AS1000_Model {
+class WT_Flight_Plan_Page_Model extends WT_Model {
     /**
      * @param {FlightPlanManager} flightPlan 
      * @param {Procedures} procedures 
      * @param {AS1000_MFD} gps
-     * @param {AS1000_Soft_Key_Controller} softKeyController
+     * @param {WT_Soft_Key_Controller} softKeyController
      */
     constructor(flightPlan, procedures, gps, softKeyController, mapInstrument) {
         super();
@@ -21,13 +21,13 @@ class AS1000_Flight_Plan_Page_Model extends AS1000_Model {
 
         this.softKeys = {
             main: {
-                toggleVnav: new AS1000_Soft_Key("CNCL VNV"),
+                toggleVnav: new WT_Soft_Key("CNCL VNV"),
             },
             view: {
-                wide: new AS1000_Soft_Key("WIDE", () => this.viewMode.value = "wide"),
-                narrow: new AS1000_Soft_Key("NARROW", () => this.viewMode.value = "narrow"),
-                leg: new AS1000_Soft_Key("LEG-LEG", () => this.distanceMode.value = "leg"),
-                cumulative: new AS1000_Soft_Key("CUM", () => this.distanceMode.value = "cumulative"),
+                wide: new WT_Soft_Key("WIDE", () => this.viewMode.value = "wide"),
+                narrow: new WT_Soft_Key("NARROW", () => this.viewMode.value = "narrow"),
+                leg: new WT_Soft_Key("LEG-LEG", () => this.distanceMode.value = "leg"),
+                cumulative: new WT_Soft_Key("CUM", () => this.distanceMode.value = "cumulative"),
             }
         }
         this.softKeyMenus = {
@@ -45,24 +45,24 @@ class AS1000_Flight_Plan_Page_Model extends AS1000_Model {
         });
     }
     initViewMenu() {
-        let menu = new AS1000_Soft_Key_Menu(false);
+        let menu = new WT_Soft_Key_Menu(false);
         menu.addSoftKey(5, this.softKeys.view.wide);
         menu.addSoftKey(6, this.softKeys.view.narrow);
         menu.addSoftKey(8, this.softKeys.view.leg);
         menu.addSoftKey(9, this.softKeys.view.cumulative);
-        menu.addSoftKey(11, new AS1000_Soft_Key("BACK", this.softKeyBack.bind(this)));
+        menu.addSoftKey(11, new WT_Soft_Key("BACK", this.softKeyBack.bind(this)));
         return menu;
     }
     initMainMenu() {
-        let menu = new AS1000_Soft_Key_Menu();
-        menu.addSoftKey(4, new AS1000_Soft_Key("NEW WPT", this.newWaypoint.bind(this)));
-        menu.addSoftKey(5, new AS1000_Soft_Key("VIEW", this.showViewMenu.bind(this)));
-        menu.addSoftKey(6, new AS1000_Soft_Key("VNV PROF"));
+        let menu = new WT_Soft_Key_Menu();
+        menu.addSoftKey(4, new WT_Soft_Key("NEW WPT", this.newWaypoint.bind(this)));
+        menu.addSoftKey(5, new WT_Soft_Key("VIEW", this.showViewMenu.bind(this)));
+        menu.addSoftKey(6, new WT_Soft_Key("VNV PROF"));
         menu.addSoftKey(7, this.softKeys.main.toggleVnav);
-        menu.addSoftKey(8, new AS1000_Soft_Key("VNV ->"));
-        menu.addSoftKey(9, new AS1000_Soft_Key("ATK OFST"));
-        menu.addSoftKey(10, new AS1000_Soft_Key("ACT LEG"));
-        menu.addSoftKey(11, new AS1000_Soft_Key("SHW CHRT"));
+        menu.addSoftKey(8, new WT_Soft_Key("VNV ->"));
+        menu.addSoftKey(9, new WT_Soft_Key("ATK OFST"));
+        menu.addSoftKey(10, new WT_Soft_Key("ACT LEG"));
+        menu.addSoftKey(11, new WT_Soft_Key("SHW CHRT"));
         return menu;
     }
     setAltitude(waypointIndex, altitudeInFt) {
@@ -114,7 +114,7 @@ class AS1000_Flight_Plan_Page_Model extends AS1000_Model {
     }
 }
 
-class AS1000_Flight_Plan_Input_Layer extends Selectables_Input_Layer {
+class WT_Flight_Plan_Input_Layer extends Selectables_Input_Layer {
     constructor(flightPlanView) {
         super(new Selectables_Input_Layer_Dynamic_Source(flightPlanView, `[data-selectable="flight-plan"], selectable-button`));
         this.flightPlanView = flightPlanView;
@@ -124,7 +124,7 @@ class AS1000_Flight_Plan_Input_Layer extends Selectables_Input_Layer {
     }
 }
 
-class AS1000_Flight_Plan_Waypoint_Line extends AS1000_HTML_View {
+class WT_Flight_Plan_Waypoint_Line extends WT_HTML_View {
     constructor() {
         super();
         this._index = null;
@@ -144,7 +144,7 @@ class AS1000_Flight_Plan_Waypoint_Line extends AS1000_HTML_View {
         this.bindElements();
 
         DOMUtilities.AddScopedEventListener(this, ".altitude numeric-input", "change", (e, node) => {
-            let evt = new CustomEvent(AS1000_Flight_Plan_Waypoint_Line.EVENT_ALTITUDE_CHANGED, {
+            let evt = new CustomEvent(WT_Flight_Plan_Waypoint_Line.EVENT_ALTITUDE_CHANGED, {
                 bubbles: true,
                 detail: {
                     waypointIndex: this.index,
@@ -222,10 +222,10 @@ class AS1000_Flight_Plan_Waypoint_Line extends AS1000_HTML_View {
         this.elements.bearing.textContent = Math.floor(bearing) + "°";
     }
 }
-AS1000_Flight_Plan_Waypoint_Line.EVENT_ALTITUDE_CHANGED = "altitude_changed";
-customElements.define("g1000-flight-plan-waypoint-line", AS1000_Flight_Plan_Waypoint_Line);
+WT_Flight_Plan_Waypoint_Line.EVENT_ALTITUDE_CHANGED = "altitude_changed";
+customElements.define("g1000-flight-plan-waypoint-line", WT_Flight_Plan_Waypoint_Line);
 
-class AS1000_Flight_Plan_Header_Line extends AS1000_HTML_View {
+class WT_Flight_Plan_Header_Line extends WT_HTML_View {
     constructor() {
         super();
     }
@@ -240,23 +240,23 @@ class AS1000_Flight_Plan_Header_Line extends AS1000_HTML_View {
         this.textContent = text;
     }
 }
-customElements.define("g1000-flight-plan-header-line", AS1000_Flight_Plan_Header_Line);
+customElements.define("g1000-flight-plan-header-line", WT_Flight_Plan_Header_Line);
 
-class AS1000_Flight_Plan_Page_View extends AS1000_HTML_View {
+class WT_Flight_Plan_Page_View extends WT_HTML_View {
     constructor() {
         super();
 
-        this.inputLayer = new AS1000_Flight_Plan_Input_Layer(this);
+        this.inputLayer = new WT_Flight_Plan_Input_Layer(this);
 
         this.waypointLines = [];
         this.headerLines = [];
 
-        DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line", AS1000_Flight_Plan_Waypoint_Line.EVT_ALTITUDE_CHANGED, e => {
+        DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line", WT_Flight_Plan_Waypoint_Line.EVT_ALTITUDE_CHANGED, e => {
             this.model.setAltitude(e.detail.waypointIndex, e.detail.value);
         });
     }
     /**
-     * @param {AS1000_Flight_Plan_Page_Model} model 
+     * @param {WT_Flight_Plan_Page_Model} model 
      */
     setModel(model) {
         this.model = model;
@@ -291,7 +291,7 @@ class AS1000_Flight_Plan_Page_View extends AS1000_HTML_View {
         let waypointLine = (waypoint, type) => {
             let element = this.waypointLines[waypointIndex];
             if (!element) {
-                element = new AS1000_Flight_Plan_Waypoint_Line();
+                element = new WT_Flight_Plan_Waypoint_Line();
             }
             element.waypoint = waypoint;
             element.type = type;
@@ -303,7 +303,7 @@ class AS1000_Flight_Plan_Page_View extends AS1000_HTML_View {
         let headerLine = (type, text) => {
             let element = this.headerLines[headerIndex++];
             if (!element) {
-                element = new AS1000_Flight_Plan_Header_Line();
+                element = new WT_Flight_Plan_Header_Line();
             }
             element.type = type;
             element.text = text;
@@ -414,4 +414,4 @@ class AS1000_Flight_Plan_Page_View extends AS1000_HTML_View {
         }
     }
 }
-customElements.define("g1000-flight-plan-page", AS1000_Flight_Plan_Page_View);
+customElements.define("g1000-flight-plan-page", WT_Flight_Plan_Page_View);

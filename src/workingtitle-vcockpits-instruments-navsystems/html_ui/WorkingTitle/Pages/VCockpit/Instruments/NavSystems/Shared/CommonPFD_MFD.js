@@ -763,7 +763,7 @@ class PFD_XPDR extends NavSystemElement {
 }
 class PFD_OAT extends NavSystemElement {
     /**
-     * @param {UnitChooser} unitChooser 
+     * @param {WT_Unit_Chooser} unitChooser 
      */
     constructor(unitChooser) {
         super(...arguments);

@@ -86,7 +86,7 @@ class Procedures_Input_Layer extends Pane_Input_Layer {
     }
 }
 
-class AS1000_Procedures_Pane extends HTMLElement {
+class WT_Procedures_Pane extends HTMLElement {
     constructor() {
         super();
         DOMUtilities.AddScopedEventListener(this, "selectable-button", "selected", this.onButtonClick.bind(this));
@@ -154,4 +154,4 @@ class AS1000_Procedures_Pane extends HTMLElement {
         }
     }
 }
-customElements.define("g1000-procedures-pane", AS1000_Procedures_Pane);
+customElements.define("g1000-procedures-pane", WT_Procedures_Pane);

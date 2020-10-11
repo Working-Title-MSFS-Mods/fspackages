@@ -1,4 +1,4 @@
-class AS1000_Procedure {
+class WT_Procedure {
     constructor(name) {
         this._name = name;
     }
@@ -22,7 +22,7 @@ class AS1000_Procedure {
     }
 }
 
-class AS1000_Approach_Procedure extends AS1000_Procedure {
+class WT_Approach_Procedure extends WT_Procedure {
     constructor(airport, approach) {
         super(approach.name);
 
@@ -54,7 +54,7 @@ class AS1000_Approach_Procedure extends AS1000_Procedure {
     }
 }
 
-class AS1000_Departure_Procedure extends AS1000_Procedure {
+class WT_Departure_Procedure extends WT_Procedure {
     constructor(airport, departure) {
         super(departure.name);
         this.enRouteTransitions = departure.runwayTransitions;
@@ -97,11 +97,11 @@ class AS1000_Departure_Procedure extends AS1000_Procedure {
     }
 }
 
-class AS1000_Procedure_Renderer {
+class WT_Procedure_Renderer {
 
 }
 
-class AS1000_Procedure_Sub_Page {
+class WT_Procedure_Sub_Page {
     constructor(airport) {
         this.procedures = new Subject();
         this.selectedProcedure = new Subject([]);
@@ -118,10 +118,10 @@ class AS1000_Procedure_Sub_Page {
     }
 }
 
-class AS1000_Procedure_Sub_Page_Approaches extends AS1000_Procedure_Sub_Page {
+class WT_Procedure_Sub_Page_Approaches extends WT_Procedure_Sub_Page {
     airportUpdated(airport) {
         if (airport)
-            this.procedures.value = airport.approaches.map(approach => new AS1000_Approach_Procedure(airport, approach));
+            this.procedures.value = airport.approaches.map(approach => new WT_Approach_Procedure(airport, approach));
     }
     getProcedure(procedureIndex) {
         return this.procedures.value[procedureIndex];
@@ -131,11 +131,11 @@ class AS1000_Procedure_Sub_Page_Approaches extends AS1000_Procedure_Sub_Page {
     }
 }
 
-class AS1000_Procedure_Sub_Page_Departures extends AS1000_Procedure_Sub_Page {
+class WT_Procedure_Sub_Page_Departures extends WT_Procedure_Sub_Page {
     airportUpdated(airport) {
         try {
             if (airport)
-                this.procedures.value = airport.departures.map(departure => new AS1000_Departure_Procedure(airport, departure));
+                this.procedures.value = airport.departures.map(departure => new WT_Departure_Procedure(airport, departure));
         } catch (e) {
             console.log(e);
         }
@@ -148,7 +148,7 @@ class AS1000_Procedure_Sub_Page_Departures extends AS1000_Procedure_Sub_Page {
     }
 }
 
-class AS1000_Approach_Page_Model extends AS1000_Model {
+class WT_Approach_Page_Model extends WT_Model {
     /**
      * @param {AS1000_MFD} gps 
      * @param {FlightPlanManager} flightPlan 
@@ -176,8 +176,8 @@ class AS1000_Approach_Page_Model extends AS1000_Model {
 
         this.subPage = null;
         this.subPages = {
-            "DP": new AS1000_Procedure_Sub_Page_Departures(this.airport),
-            "APR": new AS1000_Procedure_Sub_Page_Approaches(this.airport),
+            "DP": new WT_Procedure_Sub_Page_Departures(this.airport),
+            "APR": new WT_Procedure_Sub_Page_Approaches(this.airport),
             "STAR": null,
         }
 
@@ -345,7 +345,7 @@ class AS1000_Approach_Page_Model extends AS1000_Model {
     }
 }
 
-class AS1000_Approach_Page_View extends AS1000_HTML_View {
+class WT_Approach_Page_View extends WT_HTML_View {
     constructor() {
         super();
 
@@ -353,7 +353,7 @@ class AS1000_Approach_Page_View extends AS1000_HTML_View {
         this.inputLayer.setExitHandler(this);
     }
     /**
-     * @param {AS1000_Approach_Page_Model} model 
+     * @param {WT_Approach_Page_Model} model 
      */
     setModel(model) {
         this.model = model;
@@ -585,4 +585,4 @@ class AS1000_Approach_Page_View extends AS1000_HTML_View {
         this.parentNode.removeChild(this);
     }
 }
-customElements.define("g1000-approach-page", AS1000_Approach_Page_View);
+customElements.define("g1000-approach-page", WT_Approach_Page_View);

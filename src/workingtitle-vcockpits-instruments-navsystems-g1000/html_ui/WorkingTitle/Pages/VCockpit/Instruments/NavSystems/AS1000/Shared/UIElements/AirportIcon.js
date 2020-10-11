@@ -1,4 +1,4 @@
-class AS1000_Airport_Icon extends HTMLElement {
+class WT_Airport_Icon extends HTMLElement {
     constructor() {
         super();
 
@@ -65,4 +65,4 @@ class AS1000_Airport_Icon extends HTMLElement {
 
     }
 }
-customElements.define("airport-icon", AS1000_Airport_Icon);
+customElements.define("airport-icon", WT_Airport_Icon);

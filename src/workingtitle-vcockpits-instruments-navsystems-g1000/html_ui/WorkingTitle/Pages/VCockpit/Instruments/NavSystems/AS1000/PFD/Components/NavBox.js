@@ -1,6 +1,6 @@
 class AS1000_PFD_Nav_Box_Model {
     /**
-     * @param {UnitChooser} unitChooser 
+     * @param {WT_Unit_Chooser} unitChooser 
      */
     constructor(unitChooser, flightPlanManager) {
         this.unitChooser = unitChooser;
@@ -181,7 +181,7 @@ class AS1000_PFD_Nav_Box_Model {
     }
 }
 
-class AS1000_PFD_Nav_Box_View extends AS1000_HTML_View {
+class AS1000_PFD_Nav_Box_View extends WT_HTML_View {
     constructor() {
         super();
     }

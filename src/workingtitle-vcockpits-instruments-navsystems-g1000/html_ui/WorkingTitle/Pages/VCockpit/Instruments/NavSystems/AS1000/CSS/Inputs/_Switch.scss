@@ -12,6 +12,7 @@ toggle-switch {
         flex: 1;
         margin: 0 0.8vh;
         line-height: 1;
+        text-align: center;
     }
 
     &[state="Selected"] {
@@ -38,13 +39,13 @@ toggle-switch {
         border-left: $size solid $off_color;
     }
 
-    &[value="1"] {
+    &[showPrevious] {
         &:before {
             border-right-color: $on_color;
         }
     }
 
-    &:not([value="1"]) {
+    &[showNext] {
         &:after {
             border-left-color: $on_color;
         }

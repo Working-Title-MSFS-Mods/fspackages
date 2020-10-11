@@ -1,5 +1,5 @@
 
-class AS1000_Procedure_Page_Model extends AS1000_Model {
+class WT_Procedure_Page_Model extends WT_Model {
     constructor(gps, flightPlan) {
         super();
 
@@ -160,7 +160,7 @@ class AS1000_Procedure_Page_Model extends AS1000_Model {
     }
 }
 
-class AS1000_Approach_Page_View extends AS1000_HTML_View {
+class WT_Approach_Page_View extends WT_HTML_View {
     constructor() {
         super();
 
@@ -168,7 +168,7 @@ class AS1000_Approach_Page_View extends AS1000_HTML_View {
         this.inputLayer.setExitHandler(this);
     }
     /**
-     * @param {AS1000_Approach_Page_Model} model 
+     * @param {WT_Approach_Page_Model} model 
      */
     setModel(model) {
         this.model = model;
@@ -396,4 +396,4 @@ class AS1000_Approach_Page_View extends AS1000_HTML_View {
         this.parentNode.removeChild(this);
     }
 }
-customElements.define("g1000-approach-page", AS1000_Approach_Page_View);
+customElements.define("g1000-approach-page", WT_Approach_Page_View);

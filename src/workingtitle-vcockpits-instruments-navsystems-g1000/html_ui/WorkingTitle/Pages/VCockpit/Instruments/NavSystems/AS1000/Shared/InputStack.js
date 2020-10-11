@@ -176,7 +176,7 @@ class Selectables_Input_Layer_Element_Source {
 }
 
 class Selectables_Input_Layer_Dynamic_Source {
-    constructor(element, selector = ".selectable") {
+    constructor(element, selector = "numeric-input, drop-down-selector, time-input, selectable-button, toggle-switch, .selectable") {
         this.element = element;
         this.selector = selector;
     }
@@ -291,6 +291,10 @@ class Selectables_Input_Layer extends Input_Layer {
         });
         element.dispatchEvent(evt);
     }
+    sendEventToSelected(event) {
+        let evt = new CustomEvent(event, { bubbles: false });
+        this.selectedElement.dispatchEvent(evt);
+    }
     onSelectedElement(inputStack) {
         let evt = new CustomEvent("selected", {
             bubbles: true,
@@ -317,6 +321,7 @@ class Selectables_Input_Layer extends Input_Layer {
         if (this.options.navigateWithSmall)
             return this.onLargeInc();
         if (this.selectedElement) {
+            this.sendEventToSelected("increment");
             return this.onSelectedElement(inputStack);
         }
     }
@@ -324,6 +329,7 @@ class Selectables_Input_Layer extends Input_Layer {
         if (this.options.navigateWithSmall)
             return this.onLargeDec();
         if (this.selectedElement) {
+            this.sendEventToSelected("decrement");
             return this.onSelectedElement(inputStack);
         }
     }

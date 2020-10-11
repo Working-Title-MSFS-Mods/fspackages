@@ -1,0 +1,69 @@
+wt-timer-references-page {
+    display: block;
+}
+
+wt-timer {
+    margin: 1vh 0;
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr 1fr;
+    grid-gap: 2vh;
+
+    time-input {
+        text-align: right;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    selectable-button {
+        text-align: center;
+    }
+}
+
+wt-airspeed-references {
+    display: block;
+    margin: 1vh 0;
+
+    label {
+        grid-area: label;
+        font-weight: bold;
+    }
+
+    ul {
+        list-style: none;
+
+        li {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr 1fr;
+            grid-template-areas: "label speed non-standard toggle";
+            grid-gap: 2vh;
+        }
+    }
+
+    .non-standard {
+        grid-area: non-standard;
+        color: $input_color;
+    }
+
+    numeric-input {
+        grid-area: speed;
+        //font-family: $font_family_mono;
+        text-align: right;
+    }
+
+    toggle-switch {
+        grid-area: toggle;
+    }
+}
+
+wt-minimums {
+    display: grid;
+    grid-template-columns: 1fr 2.5fr 1fr;
+    grid-gap: 2vh;
+    margin: 1vh 0;
+
+    numeric-input {
+        text-align: right;
+    }
+}

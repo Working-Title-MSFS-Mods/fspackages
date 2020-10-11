@@ -1,16 +1,16 @@
-class UnitChooserException extends Error {
+class WT_Unit_Chooser_Exception extends Error {
 
 }
 
-class UnitChooserInvalidSettingException extends UnitChooserException {
+class WT_Unit_Chooser_Invalid_Setting_Exception extends WT_Unit_Chooser_Exception {
     constructor(setting, type) {
         this.message = `${setting} was not a valid setting for ${type}`;
     }
 }
 
-class UnitChooser {
+class WT_Unit_Chooser {
     /**
-     * @param {AS1000_Settings} settings 
+     * @param {WT_Settings} settings 
      */
     constructor(settings) {
         this.settings = settings;
@@ -23,7 +23,7 @@ class UnitChooser {
             case "nautical":
                 return nautical;
         }
-        throw new UnitChooserInvalidSettingException(setting, "distance or speed");
+        throw new WT_Unit_Chooser_Invalid_Setting_Exception(setting, "distance or speed");
     }
     chooseSpeed(metric, nautical) {
         return this.chooseDistance(metric, nautical);
@@ -36,7 +36,7 @@ class UnitChooser {
             case "metres":
                 return metres;
         }
-        throw new UnitChooserInvalidSettingException(setting, "altitude or vertical speed");
+        throw new WT_Unit_Chooser_Invalid_Setting_Exception(setting, "altitude or vertical speed");
     }
     chooseVerticalSpeed(feet, metres) {
         return this.chooseAltitude(feet, metres);
@@ -49,7 +49,7 @@ class UnitChooser {
             case "farenheit":
                 return farenheit;
         }
-        throw new UnitChooserInvalidSettingException(setting, "temperature");  
+        throw new WT_Unit_Chooser_Invalid_Setting_Exception(setting, "temperature");  
     }
     chooseWeight(pounds, kilos) {
         let setting = this.settings.getValue("weight");
@@ -59,6 +59,6 @@ class UnitChooser {
             case "kilos":
                 return kilos;
         }
-        throw new UnitChooserInvalidSettingException(setting, "weight");  
+        throw new WT_Unit_Chooser_Invalid_Setting_Exception(setting, "weight");  
     }
 }

@@ -1,4 +1,4 @@
-class Fuel_Used {
+class WT_Fuel_Used {
     constructor(tanks = []) {
         this.totalSimVar = "L:WT TOTAL FUEL USED";
         this.tankSimVar = "L:WT TANK FUEL USED";

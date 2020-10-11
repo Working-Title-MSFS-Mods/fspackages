@@ -1,89 +1,4 @@
-class AS1000_Nearest_Airports_Model extends AS1000_Model {
-    constructor(gps, unitChooser, map, softKeyController) {
-        super();
-        this.unitChooser = unitChooser;
-        this.nearestAirportList = new NearestAirportList(gps);
-        this.mapInstrument = map;
-        this.softKeyController = softKeyController;
-        this.filter = {
-            type: "all",
-            length: null
-        };
-        this.loadOptions = {
-            count: 150,
-            distance: 1000
-        }
-        this.updateTimer = 0;
-        this.updateFrequency = 1000;
-
-        this.currentWaypoint = new WayPoint(gps);
-        this.currentWaypoint.type = "A";
-
-        this.airports = new Subject();
-        this.selectedAirport = new Subject();
-    }
-    filterAirport(airport) {
-        if (this.filter.length) {
-            let maxLength = 0;
-            for (let runway of airport.runways) {
-                maxLength = Math.max(runway.length);
-            }
-            if (maxLength < this.filter.length)
-                return false;
-        }
-
-        if (this.filter.type) {
-            switch (this.filter.type) {
-                case "hardOnly":
-                    if (airport.airportClass != 1)
-                        return false;
-                    break;
-                case "all":
-                    break;
-            }
-        }
-
-        return true;
-    }
-    update(dt) {
-        this.updateTimer += dt;
-        if (this.updateTimer < this.updateFrequency) {
-            return;
-        }
-        this.updateTimer = 0;
-        console.log("Updating");
-        this.nearestAirportList.Update(this.loadOptions.count, this.loadOptions.distance);
-
-        this.airports.value = this.nearestAirportList.airports
-            .filter(this.filterAirport.bind(this))
-            .map(airport => {
-                if (!airport) {
-                    return null;
-                }
-                return {
-                    icao: airport.icao,
-                    ident: airport.ident,
-                    runwayDirection: airport.longestRunwayDirection,
-                    bearing: airport.bearing,
-                    distance: airport.distance,
-                    info: airport
-                }
-            }).sort((a, b) => {
-                return a.distance - b.distance
-            });
-    }
-    setSelectedAirport(icao) {
-        console.log("Selected " + icao);
-        this.currentWaypoint.SetICAO(icao, () => {
-            console.log("Loaded " + icao);
-            this.selectedAirport.value = {
-                airport: this.currentWaypoint
-            };
-        }, true);
-    }
-}
-
-class AS1000_Nearest_Airports_View extends AS1000_HTML_View {
+class WT_Nearest_Airports_View extends WT_HTML_View {
     constructor() {
         super();
         this.inputStackHandle = null;
@@ -91,11 +6,11 @@ class AS1000_Nearest_Airports_View extends AS1000_HTML_View {
         this.menu = this.initMenu();
     }
     initMenu() {
-        let menu = new AS1000_Soft_Key_Menu(false);
-        menu.addSoftKey(5, new AS1000_Soft_Key("APT", this.browseAirports.bind(this)));
-        menu.addSoftKey(6, new AS1000_Soft_Key("RNWY", this.browseRunways.bind(this)));
-        menu.addSoftKey(7, new AS1000_Soft_Key("FREQ", this.browseFrequencies.bind(this)));
-        menu.addSoftKey(8, new AS1000_Soft_Key("APR", this.browseApproaches.bind(this)));
+        let menu = new WT_Soft_Key_Menu(false);
+        menu.addSoftKey(5, new WT_Soft_Key("APT", this.browseAirports.bind(this)));
+        menu.addSoftKey(6, new WT_Soft_Key("RNWY", this.browseRunways.bind(this)));
+        menu.addSoftKey(7, new WT_Soft_Key("FREQ", this.browseFrequencies.bind(this)));
+        menu.addSoftKey(8, new WT_Soft_Key("APR", this.browseApproaches.bind(this)));
         return menu;
     }
     popInput() {
@@ -136,7 +51,7 @@ class AS1000_Nearest_Airports_View extends AS1000_HTML_View {
         });
     }
     /**
-     * @param {AS1000_Nearest_Airports_Model} model 
+     * @param {WT_Nearest_Airports_Model} model 
      */
     setModel(model) {
         this.model = model;
@@ -202,8 +117,8 @@ class AS1000_Nearest_Airports_View extends AS1000_HTML_View {
                     <span class="distance"></span>
                 `;
                 element.querySelector(".ident").innerHTML = airport.ident;
-                element.querySelector("airport-icon").angle = airport.runwayDirection;
-                element.querySelector("airport-icon").applyInfo(airport.info);
+                element.querySelector("airport-icon").angle = airport.longestRunwayDirection;
+                element.querySelector("airport-icon").applyInfo(airport);
             }
             element.dataset.icao = airport.icao;
             element.querySelector(".bearing").innerHTML = airport.bearing.toFixed(0) + "°";
@@ -264,4 +179,4 @@ class AS1000_Nearest_Airports_View extends AS1000_HTML_View {
         this.model.softKeyController.setMenu(this.previousMenu);
     }
 }
-customElements.define("g1000-nearest-airports-page", AS1000_Nearest_Airports_View);
+customElements.define("g1000-nearest-airports-page", WT_Nearest_Airports_View);

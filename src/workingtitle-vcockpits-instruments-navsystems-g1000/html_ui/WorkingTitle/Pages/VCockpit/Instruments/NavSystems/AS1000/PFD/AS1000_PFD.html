@@ -136,6 +136,11 @@
                         <div id="acknowledged"></div>
                     </div>
 
+                    <g1000-annunciations>
+                        <ul class="new" data-element="new"></ul>
+                        <ul class="acknowledged" data-element="acknowledged"></ul>
+                    </g1000-annunciations>
+
                     <footer>
                         <g1000-transponder>
                             <label>XPDR</label>
@@ -153,6 +158,33 @@
                             <div data-element="oat" class="temperature"></div>
                         </g1000-oat>
                     </footer>
+
+                    <wt-mini-page-container>
+                        <wt-timer-references-page class="mini-page">
+                            <h1>References</h1>
+                            <wt-timer>
+                                <label>Timer</label>
+                                <time-input data-change="changeTime" value="0" data-element="time"></time-input>
+                                <toggle-switch data-change="changeDirection" values="DN,UP" value="DN" data-element="direction"></toggle-switch>
+                                <selectable-button data-element="button" data-click="clickButton">Start?</selectable-button>
+                            </wt-timer>
+                            <hr />
+                            <wt-airspeed-references>
+                                <ul data-element="references"></ul>
+                            </wt-airspeed-references>
+                            <hr />
+                            <wt-minimums>
+                                <label>Minimums</label>
+                                <toggle-switch data-change="changeMode" values="Off,Baro" value="Off" data-element="mode"></toggle-switch>
+                                <numeric-input data-change="changeAltitude" value="0" increment="10" data-element="altitude" units="ft"></numeric-input>
+                            </wt-minimums>
+                        </wt-timer-references-page>
+
+                        <wt-nearest class="mini-page">
+                            <h1>Nearest Airports</h1>
+                            <ul class="content scrollable-container" data-element="airportList"></ul>
+                        </wt-nearest>
+                    </wt-mini-page-container>
 
                     <div id="DirectToWindow" class="PopupWindow" state="Inactive">
                         <div id="drctTitle" class="subpart">DIRECT TO</div>
@@ -662,6 +694,63 @@
             </div>
         </div>
     </div>
+
+    <template id="airport-icon">
+        <style>
+            .colored {
+                fill: currentColor;
+            }
+
+            .hard, .soft {
+                display: none;
+            }
+            :host([type="hard"]) .hard {
+                display: block;
+            }
+            :host([type="soft"]) .soft {
+                display: block;
+            }
+
+            .towered,
+            .untowered {
+                display: none;
+            }
+            :host([towered="true"]) .towered {
+                display: block;
+            }
+            :host([towered="false"]) .untowered {
+                display: block;
+            }
+
+            .serviced,
+            .unserviced {
+                display: none;
+            }
+            :host([serviced="true"]) .serviced {
+                display: block;
+            }
+            :host([serviced="false"]) .unserviced {
+                display: block;
+            }
+        </style>
+        <svg viewBox="0 0 100 100" width="100%" height="100%">
+            <g class="hard">
+                <g fill="black">
+                    <circle cx="50" cy="50" r="40"></circle>
+                    <path d="M0 35 l30 0 l0 30 l-30 0 M35 0 l30 0 l0 30 l-30 0 M70 35 l30 0 l0 30 l-30 0 M35 70 l30 0 l0 30 l-30 0" fill="#000" class="serviced"></path>
+                </g>
+                <circle cx="50" cy="50" r="35" class="colored"></circle>
+                <path d="M5 40 l20 0 l0 20 l-20 0 M40 5 l20 0 l0 20 l-20 0 M75 40 l20 0 l0 20 l-20 0 M40 75 l20 0 l0 20 l-20 0" class="serviced colored"></path>
+                <rect class="runway" x="45" y="20" width="10" height="60" fill="white" transform="rotate(0 50 50)"></rect>
+            </g>
+            <g class="soft">
+                <circle cx="50" cy="50" r="30" fill="none" stroke="#000" stroke-width="20"></circle>
+                <path d="M0 35 l30 0 l0 30 l-30 0 M35 0 l30 0 l0 30 l-30 0 M70 35 l30 0 l0 30 l-30 0 M35 70 l30 0 l0 30 l-30 0" fill="#000" class="serviced"></path>
+                <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="10"></circle>
+                <path d="M5 40 l20 0 l0 20 l-20 0 M40 5 l20 0 l0 20 l-20 0 M75 40 l20 0 l0 20 l-20 0 M40 75 l20 0 l0 20 l-20 0" class="serviced colored"></path>
+            </g>
+         </svg>
+    </template>
 </script>
 
 <link rel="stylesheet" href="AS1000_PFD.css" />
@@ -711,16 +800,35 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/FileHandler.js"></script>
 
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/LocalTime.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/OAT.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Transponder.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/AirportIcon.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/Confirm.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/DropDownSelector.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/IcaoInput.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/NumericInput.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/StringInput.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/SoftKeys.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/TimeInput.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/ToggleSwitch.js"></script>
+
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/RadioFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/ComFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/NavFrequencies.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/SoftKeys.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Settings.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Observables.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UnitChooser.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/NearestAirports.js"></script>
+
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Annunciations.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/DataModels.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/LocalTime.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Menus.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/MiniPage.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/OAT.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/References.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Timer.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Transponder.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/Nearest.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/TimerReferences.js"></script>
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/NavBox.js"></script>
 

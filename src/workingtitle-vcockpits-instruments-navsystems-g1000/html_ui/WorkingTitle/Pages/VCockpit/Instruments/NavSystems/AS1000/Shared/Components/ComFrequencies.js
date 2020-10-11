@@ -1,9 +1,5 @@
 
-class AS1000_Com_Frequencies_Model extends AS1000_Radio_Frequencies_Model {
-    constructor() {
-        super();
-        this.updateCounter = 0;
-    }
+class WT_Com_Frequencies_Model extends WT_Radio_Frequencies_Model {
     get simVarPrefix() {
         return `K:COM${this.selected.value == 1 ? "" : "2"}`;
     }
@@ -42,15 +38,12 @@ class AS1000_Com_Frequencies_Model extends AS1000_Radio_Frequencies_Model {
     update(dt) {
         for (let i = 1; i <= 2; i++) {
             let radio = this[`radio${i}`];
-            switch (this.updateCounter) {
-                case 0: radio.active.value = SimVar.GetSimVarValue(`COM ACTIVE FREQUENCY:${i}`, "MHz").toFixed(3); break;
-                case 1: radio.standby.value = SimVar.GetSimVarValue(`COM STANDBY FREQUENCY:${i}`, "MHz").toFixed(3); break;
-                case 2: radio.volume.value = SimVar.GetSimVarValue(`COM VOLUME:${i}`, "number"); break;
-            }
+            radio.active.value = SimVar.GetSimVarValue(`COM ACTIVE FREQUENCY:${i}`, "MHz").toFixed(3);
+            radio.standby.value = SimVar.GetSimVarValue(`COM STANDBY FREQUENCY:${i}`, "MHz").toFixed(3);
+            radio.volume.value = SimVar.GetSimVarValue(`COM VOLUME:${i}`, "number");
         }
-        this.updateCounter = (this.updateCounter + 1) % 3;
     }
 }
 
-class AS1000_Com_Frequencies_View extends AS1000_Radio_Frequencies_View { }
-customElements.define("g1000-com-frequencies", AS1000_Com_Frequencies_View);
+class WT_Com_Frequencies_View extends WT_Radio_Frequencies_View { }
+customElements.define("g1000-com-frequencies", WT_Com_Frequencies_View);

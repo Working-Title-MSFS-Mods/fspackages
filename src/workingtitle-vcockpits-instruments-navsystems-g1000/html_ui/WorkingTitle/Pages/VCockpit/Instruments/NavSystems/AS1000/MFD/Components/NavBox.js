@@ -1,6 +1,6 @@
-class AS1000_MFD_Nav_Box_Model {
+class WT_MFD_Nav_Box_Model {
     /**
-     * @param {UnitChooser} unitChooser 
+     * @param {WT_Unit_Chooser} unitChooser 
      */
     constructor(pageTitle, unitChooser, settings) {
         this.pageTitle = pageTitle;
@@ -149,12 +149,12 @@ class AS1000_MFD_Nav_Box_Model {
     }
 }
 
-class AS1000_MFD_Nav_Box_View extends AS1000_HTML_View {
+class WT_MFD_Nav_Box_View extends WT_HTML_View {
     constructor() {
         super();
     }
     /**
-     * @param {AS1000_MFD_Nav_Box_Model} model 
+     * @param {WT_MFD_Nav_Box_Model} model 
      */
     setModel(model) {
         model.pageTitle.subscribe(title => this.elements.pageTitle.innerHTML = title);
@@ -164,4 +164,4 @@ class AS1000_MFD_Nav_Box_View extends AS1000_HTML_View {
         }
     }
 }
-customElements.define("g1000-nav-box", AS1000_MFD_Nav_Box_View);
+customElements.define("g1000-nav-box", WT_MFD_Nav_Box_View);

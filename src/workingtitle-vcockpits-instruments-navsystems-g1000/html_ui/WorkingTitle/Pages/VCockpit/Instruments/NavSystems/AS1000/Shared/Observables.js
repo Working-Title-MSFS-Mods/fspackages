@@ -1,13 +1,14 @@
 class Subject {
-    constructor(value) {
+    constructor(value, inhibitDuplicates = true) {
         this._value = value;
+        this.inhibitDuplicates = inhibitDuplicates;
         this.listeners = [];
     }
     get value() {
         return this._value;
     }
     set value(value) {
-        if (this._value !== value) {
+        if (this._value !== value || !this.inhibitDuplicates) {
             this._value = value;
             for (let listener of this.listeners) {
                 listener(this.value);
@@ -22,6 +23,7 @@ class Subject {
     unsubscribe(callback) {
         let idx = this.listeners.indexOf(callback);
         this.listeners.splice(idx, 1);
+        return null;
     }
     hasSubscribers() {
         return this.listeners.length > 0;
@@ -69,5 +71,20 @@ class CombinedSubject {
     }
     hasSubscribers() {
         return this.listeners.length > 0;
+    }
+}
+
+class Subscrptions {
+    constructor() {
+        this.subscriptions = [];
+    }
+    add(subscription) {
+        this.subscriptions.push(subscription);
+    }
+    unsubscribe() {
+        for (let sub of this.subscriptions) {
+            sub();
+        }
+        this.subscriptions = [];
     }
 }

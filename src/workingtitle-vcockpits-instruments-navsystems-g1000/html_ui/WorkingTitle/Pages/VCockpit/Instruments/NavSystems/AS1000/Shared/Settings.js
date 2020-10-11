@@ -1,7 +1,7 @@
-class AS1000_Default_Settings {
+class WT_Default_Settings {
 }
 
-AS1000_Default_Settings.base = {
+WT_Default_Settings.base = {
     weight: "kg",
     dis_spd: "metric",
     alt_vs: "feet",
@@ -13,14 +13,16 @@ AS1000_Default_Settings.base = {
     mfd_watched_3: "ETE",
     time_offset: 0,
     time_mode: 0,
+    vfr_xpdr: 1200,
 };
 
-class AS1000_Settings {
+class WT_Settings {
     constructor(aircraft, defaults) {
         this.aircraft = aircraft;
         this.defaults = defaults;
         this.settings = {};
         this.lastUpdated = 0;
+        this.listeners = [];
 
         this.load();
     }
@@ -34,7 +36,10 @@ class AS1000_Settings {
         }
     }
     setValue(key, value) {
-        this.settings[key] = value;
+        if (this.settings[key] != value) {
+            this.settings[key] = value;
+            this.onValueChanged(key, value);
+        }
     }
     getStorageKey() {
         return "config_" + this.aircraft;
@@ -52,10 +57,23 @@ class AS1000_Settings {
     load() {
         let storedData = GetStoredData(this.getStorageKey());
         if (storedData) {
-            this.settings = JSON.parse(storedData);
+            let settings = JSON.parse(storedData);
+            /*for (let name of settings) {
+                let value = settings[name];
+                if (this.settings[name] != value) {
+                    this.onValueChanged(name, value);
+                }
+            }*/
+            this.settings = settings;
             console.log("Loaded settings:");
-            console.log(storedData);
             this.lastUpdated = parseInt(GetStoredData(this.getTimestampKey()));
+        }
+    }
+    onValueChanged(name, value) {
+        for (let listener of this.listeners) {
+            if (listener.pattern == name) {
+                listener.listener(value);
+            }
         }
     }
     update() {
@@ -64,5 +82,11 @@ class AS1000_Settings {
             console.log("Updating settings");
             this.load();
         }
+    }
+    addListener(listener, pattern) {
+        this.listeners.push({
+            patter: pattern,
+            listener: listener
+        });
     }
 }

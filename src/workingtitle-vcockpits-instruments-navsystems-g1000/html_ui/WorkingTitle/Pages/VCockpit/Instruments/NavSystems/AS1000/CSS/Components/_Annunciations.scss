@@ -1,0 +1,36 @@
+g1000-annunciations {
+    position: absolute;
+    right: 1vh;
+    bottom: 40%;
+    width: 14%;
+    font-size: 0.9rem;
+    background: #000;
+    border: $border_width_thin solid $border_color;
+    font-family: $font_family_mono;
+
+    &[state="visible"] {
+        display: block;
+    }
+
+    .new:not(:empty) {
+        border-bottom: $border_width_thin solid $border_color;
+    }
+
+    ul {
+        list-style: none;
+    }
+
+    li {
+        margin: 0.7vh 0.8vh;
+
+        &.Warning {
+            color: rgb(255, 65, 65);
+        }
+        &.Caution {
+            color: yellow;
+        }
+        &.Advisory {
+            color: white;
+        }
+    }
+}

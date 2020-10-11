@@ -1,4 +1,4 @@
-class AS1000_Radio_Frequencies_Model {
+class WT_Radio_Frequencies_Model {
     constructor() {
         this.radio1 = {
             active: new Subject(),
@@ -14,13 +14,13 @@ class AS1000_Radio_Frequencies_Model {
     }
 }
 
-class AS1000_Radio_Frequencies_View extends AS1000_HTML_View {
+class WT_Radio_Frequencies_View extends WT_HTML_View {
     constructor() {
         super();
         this.volumeTimeoutDuration = 1000;
     }
     /**
-     * @param {AS1000_Radio_Frequencies_Model} model 
+     * @param {WT_Radio_Frequencies_Model} model 
      */
     setModel(model) {
         model.selected.subscribe(selected => this.setAttribute("selected", selected));

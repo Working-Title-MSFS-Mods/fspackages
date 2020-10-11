@@ -1,5 +1,6 @@
 @import "styles";
 
+@import "Components/Annunciations";
 @import "Components/Category";
 @import "Components/ConfirmDialog";
 @import "Components/NavBox";
@@ -11,6 +12,10 @@
 @import "Inputs/Numeric";
 @import "Inputs/String";
 @import "Inputs/Switch";
+@import "Inputs/Time";
+
+@import "PFD/Pages/Nearest";
+@import "PFD/Pages/TimerReferences";
 
 as1000-pfd-element #Mainframe #HorizonContainer {
     -webkit-transform: rotateX(0deg);
@@ -251,5 +256,41 @@ g1000-oat {
 
     .units {
         font-size: 0.8em;
+    }
+}
+
+wt-mini-page-container {
+    position: absolute;
+    bottom: 6vh;
+    right: 1vh;
+    width: 38vh;
+    height: 27vh;
+    font-size: 1.05rem;
+    font-family: $font_family_normal;
+}
+
+.mini-page {
+    background-color: #000;
+    height: 100%;
+    border: $border_width_thick solid $border_color;
+    padding: 0 1vh;
+
+    &:not([visible]) {
+        display: none;
+    }
+
+    hr {
+        margin: 1vh 0;
+        height: $border_width_thin;
+        background: $border_color;
+    }
+
+    h1 {
+        border-bottom: $border_width_thin solid #fff;
+        color: $input_color;
+        text-align: center;
+        font-size: 1em;
+        padding-bottom: 0.5vh;
+        margin: 1vh 0;
     }
 }

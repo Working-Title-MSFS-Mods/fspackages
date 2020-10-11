@@ -1,4 +1,4 @@
-class Drop_Down_Selector_Input_Layer extends Selectables_Input_Layer
+class WT_Drop_Down_Selector_Input_Layer extends Selectables_Input_Layer
 {
     constructor(dropDown, source) {
         super(source, true);
@@ -10,7 +10,7 @@ class Drop_Down_Selector_Input_Layer extends Selectables_Input_Layer
     }
 }
 
-class AS1000_Drop_Down_Selector extends HTMLElement {
+class WT_Drop_Down_Selector extends HTMLElement {
     constructor() {
         super();
         this.options = [];
@@ -109,7 +109,7 @@ class AS1000_Drop_Down_Selector extends HTMLElement {
                 selectedOption = option;
             i++;
         }
-        let inputLayer = new Drop_Down_Selector_Input_Layer(this, new Selectables_Input_Layer_Element_Source(selectableElements));
+        let inputLayer = new WT_Drop_Down_Selector_Input_Layer(this, new Selectables_Input_Layer_Element_Source(selectableElements));
 
         inputLayer.selectElement(selectedOption);
         inputLayer.setExitHandler(this);
@@ -130,4 +130,4 @@ class AS1000_Drop_Down_Selector extends HTMLElement {
         return false;
     }
 }
-customElements.define("drop-down-selector", AS1000_Drop_Down_Selector);
+customElements.define("drop-down-selector", WT_Drop_Down_Selector);

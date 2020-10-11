@@ -1,6 +1,6 @@
-class AS1000_OAT_Model {
+class WT_OAT_Model {
     /**
-     * @param {UnitChooser} unitChooser 
+     * @param {WT_Unit_Chooser} unitChooser 
      */
     constructor(unitChooser) {
         this.oat = new Subject();
@@ -19,13 +19,13 @@ class AS1000_OAT_Model {
     }
 }
 
-class AS1000_OAT_View extends AS1000_HTML_View {
+class WT_OAT_View extends WT_HTML_View {
     /**
-     * @param {AS1000_OAT_Model} model 
+     * @param {WT_OAT_Model} model 
      */
     setModel(model) {
         this.model = model;
         model.oat.subscribe(oat => this.elements.oat.innerHTML = oat);
     }
 }
-customElements.define("g1000-oat", AS1000_OAT_View);
+customElements.define("g1000-oat", WT_OAT_View);

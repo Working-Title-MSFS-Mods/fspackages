@@ -1,6 +1,6 @@
-class AS1000_Local_Time_Model {
+class WT_Local_Time_Model {
     /**
-     * @param {AS1000_Settings} settings 
+     * @param {WT_Settings} settings 
      */
     constructor(settings) {
         this.settings = settings;
@@ -57,9 +57,9 @@ class AS1000_Local_Time_Model {
     }
 }
 
-class AS1000_Local_Time_View extends AS1000_HTML_View {
+class WT_Local_Time_View extends WT_HTML_View {
     /**
-     * @param {AS1000_Local_Time_Model} model 
+     * @param {WT_Local_Time_Model} model 
      */
     setModel(model) {
         this.model = model;
@@ -76,4 +76,4 @@ class AS1000_Local_Time_View extends AS1000_HTML_View {
         }
     }
 }
-customElements.define("g1000-local-time", AS1000_Local_Time_View);
+customElements.define("g1000-local-time", WT_Local_Time_View);

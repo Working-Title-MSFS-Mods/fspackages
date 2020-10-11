@@ -1,15 +1,14 @@
-class AS1000_Soft_Key_Menu_Input_Layer extends Input_Layer {
+class WT_Soft_Key_Menu_Input_Layer extends Input_Layer {
     constructor(softKeyMenuController) {
         super();
         this.softKeyMenuController = softKeyMenuController;
     }
-
     onSoftKey(index, inputStack) {
         this.softKeyMenuController.activateSoftKey(index);
     }
 }
 
-class AS1000_Soft_Key extends HTMLElement {
+class WT_Soft_Key extends HTMLElement {
     constructor(text, onClick) {
         super();
         this.text = text;
@@ -20,12 +19,14 @@ class AS1000_Soft_Key extends HTMLElement {
         this.onClick = onClick;
     }
     activate() {
+        if (this.hasAttribute("disabled"))
+            return;
         if (this.onClick) {
             this.onClick();
+            this.setAttribute("hover", "hover");
+            clearTimeout(this.hoverTimeout);
+            this.hoverTimeout = setTimeout(() => this.removeAttribute("hover"), 200);
         }
-        this.setAttribute("hover", "hover");
-        clearTimeout(this.hoverTimeout);
-        this.hoverTimeout = setTimeout(() => this.removeAttribute("hover"), 200);
     }
     set selected(selected) {
         selected ? this.setAttribute("selected", "selected") : this.removeAttribute("selected");
@@ -33,10 +34,13 @@ class AS1000_Soft_Key extends HTMLElement {
     set text(text) {
         this.textContent = text;
     }
+    set disabled(disabled) {
+        disabled ? this.setAttribute("disabled", "disabled") : this.removeAttribute("disabled");
+    }
 }
-customElements.define("g1000-soft-key", AS1000_Soft_Key);
+customElements.define("g1000-soft-key", WT_Soft_Key);
 
-class AS1000_Soft_Key_Menu {
+class WT_Soft_Key_Menu {
     constructor(defaultButtons) {
         this.softKeys = [];
         this.options = {
@@ -52,17 +56,24 @@ class AS1000_Soft_Key_Menu {
     }
     /**
      * @param {int} index 
-     * @param {AS1000_Soft_Key} softKey 
+     * @param {WT_Soft_Key} softKey 
      */
     addSoftKey(index, softKey) {
         this.softKeys[index - 1] = softKey;
+        return softKey;
     }
     clearSoftKeys() {
         this.softKeys = [];
     }
+    activate() {
+
+    }
+    deactivate() {
+
+    }
 }
 
-class AS1000_Soft_Key_Menu_Stack {
+class WT_Soft_Key_Menu_Stack {
     constructor() {
         this.stack = [];
     }
@@ -74,7 +85,7 @@ class AS1000_Soft_Key_Menu_Stack {
     }
 }
 
-class AS1000_Soft_Key_Controller extends HTMLElement {
+class WT_Soft_Key_Controller extends HTMLElement {
     constructor() {
         super();
         this.engineMenu = null;
@@ -84,12 +95,12 @@ class AS1000_Soft_Key_Controller extends HTMLElement {
         this.currentMenu = null;
 
         this.defaultButtons = {
-            engine: new AS1000_Soft_Key("ENGINE"),
-            map: new AS1000_Soft_Key("MAP"),
-            checklist: new AS1000_Soft_Key("CHKLIST"),
+            engine: new WT_Soft_Key("ENGINE"),
+            map: new WT_Soft_Key("MAP"),
+            checklist: new WT_Soft_Key("CHKLIST"),
         };
 
-        this.inputLayer = new AS1000_Soft_Key_Menu_Input_Layer(this);
+        this.inputLayer = new WT_Soft_Key_Menu_Input_Layer(this);
     }
     connectedCallback() {
         for (let i = 0; i < this.numButtons; i++) {
@@ -109,10 +120,14 @@ class AS1000_Soft_Key_Controller extends HTMLElement {
         inputStack.push(this.inputLayer);
     }
     /**
-     * @param {AS1000_Soft_Key_Menu} softKeyMenu 
+     * @param {WT_Soft_Key_Menu} softKeyMenu 
      */
     setMenu(softKeyMenu) {
+        if (this.currentMenu) {
+            this.currentMenu.deactivate();
+        }
         this.currentMenu = softKeyMenu;
+        this.currentMenu.activate();
 
         for (let button of this.buttonElements) {
             button.innerHTML = "";
@@ -141,7 +156,7 @@ class AS1000_Soft_Key_Controller extends HTMLElement {
 
         for (let i = 0; i < this.numButtons; i++) {
             if (!buttonsDone[i]) {
-                let softKey = new AS1000_Soft_Key("", null);
+                let softKey = new WT_Soft_Key("", null);
                 this.buttonElements[i].appendChild(softKey);
             }
         }
@@ -156,4 +171,4 @@ class AS1000_Soft_Key_Controller extends HTMLElement {
         }
     }
 }
-customElements.define("g1000-soft-key-menu", AS1000_Soft_Key_Controller);
+customElements.define("g1000-soft-key-menu", WT_Soft_Key_Controller);

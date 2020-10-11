@@ -1150,16 +1150,14 @@ class AS1000_PFD_BackgroundTimer extends NavSystemElement {
     }
 }
 
-class AS1000_Model
-{
+class WT_Model {
     constructor() {
     }
     update(dt) {
     }
 }
 
-class AS1000_HTML_View extends HTMLElement
-{
+class WT_HTML_View extends HTMLElement {
     constructor() {
         super();
         this.elements = {};
@@ -1168,7 +1166,7 @@ class AS1000_HTML_View extends HTMLElement
     }
     bindElements() {
         let elements = this.querySelectorAll("[data-element]");
-        for(let element of elements) {
+        for (let element of elements) {
             this.elements[element.getAttribute("data-element")] = element;
             //element.removeAttribute("data-element");
         }
@@ -1179,13 +1177,15 @@ class AS1000_HTML_View extends HTMLElement
     onButtonClick(e, node) {
         if (node.dataset.click) {
             let click = node.dataset.click;
-            this[click]();
+            if (this[click])
+                this[click](e.target);
         }
     }
     onChange(e, node) {
         if (node.dataset.change) {
             let change = node.dataset.change;
-            this[change](e.target.value);
+            if (this[change])
+                this[change](e.target.value, e.target);
         }
     }
     update(dt) {

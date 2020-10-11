@@ -1,6 +1,6 @@
-class AS1000_System_Settings_Model extends AS1000_Model {
+class WT_System_Settings_Model extends WT_Model {
     /**
-     * @param {AS1000_Settings} settings 
+     * @param {WT_Settings} settings 
      */
     constructor(settings, softKeyController) {
         super();
@@ -13,9 +13,9 @@ class AS1000_System_Settings_Model extends AS1000_Model {
         this.settings.setValue(setting, value);
     }
     initMenu() {
-        let menu = new AS1000_Soft_Key_Menu(true);
+        let menu = new WT_Soft_Key_Menu(true);
         menu.options.showMap = false;
-        menu.addSoftKey(10, new AS1000_Soft_Key("DFLTS", this.resetToDefaults.bind(this)));
+        menu.addSoftKey(10, new WT_Soft_Key("DFLTS", this.resetToDefaults.bind(this)));
         return menu;
     }
     resetToDefaults() {
@@ -33,7 +33,7 @@ class AS1000_System_Settings_Model extends AS1000_Model {
     }
 }
 
-class AS1000_System_Settings_View extends AS1000_HTML_View {
+class WT_System_Settings_View extends WT_HTML_View {
     connectedCallback() {
         let template = document.getElementById('aux-settings');
         let templateContent = template.content;
@@ -84,4 +84,4 @@ class AS1000_System_Settings_View extends AS1000_HTML_View {
         this.model.restoreMenu();
     }
 }
-customElements.define("g1000-aux-settings", AS1000_System_Settings_View);
+customElements.define("g1000-aux-settings", WT_System_Settings_View);

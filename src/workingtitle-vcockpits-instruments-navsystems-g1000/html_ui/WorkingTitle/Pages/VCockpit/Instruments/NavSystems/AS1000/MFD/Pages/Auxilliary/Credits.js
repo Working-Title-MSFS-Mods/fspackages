@@ -1,4 +1,4 @@
-class AS1000_Credits_Model extends AS1000_Model {
+class WT_Credits_Model extends WT_Model {
     constructor() {
         super();
 
@@ -45,12 +45,12 @@ class AS1000_Credits_Model extends AS1000_Model {
     }
 }
 
-class AS1000_Credits_View extends AS1000_HTML_View {
+class WT_Credits_View extends WT_HTML_View {
     connectedCallback() {
         super.connectedCallback();
     }
     /**
-     * @param {AS1000_Credits_Model} model 
+     * @param {WT_Credits_Model} model 
      */
     setModel(model) {
         this.model = model;
@@ -62,4 +62,4 @@ class AS1000_Credits_View extends AS1000_HTML_View {
     exit() {
     }
 }
-customElements.define("g1000-credits", AS1000_Credits_View);
+customElements.define("g1000-credits", WT_Credits_View);

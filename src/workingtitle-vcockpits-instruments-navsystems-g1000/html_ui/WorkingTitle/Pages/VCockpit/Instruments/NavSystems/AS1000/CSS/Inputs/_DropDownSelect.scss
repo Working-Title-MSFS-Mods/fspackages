@@ -3,7 +3,8 @@ drop-down-selector {
     display: block;
 
     .popup {
-        display: none;
+        display: none !important;
+        z-index: 1000;
         position: absolute;
         right: 0;
         top: 100%;
@@ -32,7 +33,7 @@ drop-down-selector {
 
     &[ACTIVE] {
         .popup {
-            display: block;
+            display: block !important;
         }
     }
 

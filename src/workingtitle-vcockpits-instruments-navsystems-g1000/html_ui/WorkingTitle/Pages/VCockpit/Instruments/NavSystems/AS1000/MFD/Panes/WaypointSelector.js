@@ -1,4 +1,4 @@
-class AS1000_Waypoint_Selector_Model extends AS1000_Model {
+class WT_Waypoint_Selector_Model extends WT_Model {
     constructor() {
         super();
 
@@ -8,7 +8,7 @@ class AS1000_Waypoint_Selector_Model extends AS1000_Model {
     }
 }
 
-class Waypoint_Selector_Input_Layer extends Selectables_Input_Layer {
+class WT_Waypoint_Selector_Input_Layer extends Selectables_Input_Layer {
     constructor(view) {
         super(new Selectables_Input_Layer_Dynamic_Source(view, "icao-input"))
         this.view = view;
@@ -21,11 +21,11 @@ class Waypoint_Selector_Input_Layer extends Selectables_Input_Layer {
     }
 }
 
-class AS1000_Waypoint_Selector_View extends AS1000_HTML_View {
+class WT_Waypoint_Selector_View extends WT_HTML_View {
     constructor() {
         super();
 
-        this.inputLayer = new Waypoint_Selector_Input_Layer(this);
+        this.inputLayer = new WT_Waypoint_Selector_Input_Layer(this);
     }
     connectedCallback() {
         let template = document.getElementById('waypoint-selector-pane');
@@ -42,7 +42,7 @@ class AS1000_Waypoint_Selector_View extends AS1000_HTML_View {
         this.resolve(icao);
     }
     /**
-     * @param {AS1000_Waypoint_Selector_Model} model 
+     * @param {WT_Waypoint_Selector_Model} model 
      */
     setModel(model) {
         this.model = model;
@@ -62,4 +62,4 @@ class AS1000_Waypoint_Selector_View extends AS1000_HTML_View {
         this.inputStackHandler.pop();
     }
 }
-customElements.define("g1000-waypoint-selector-pane", AS1000_Waypoint_Selector_View);
+customElements.define("g1000-waypoint-selector-pane", WT_Waypoint_Selector_View);

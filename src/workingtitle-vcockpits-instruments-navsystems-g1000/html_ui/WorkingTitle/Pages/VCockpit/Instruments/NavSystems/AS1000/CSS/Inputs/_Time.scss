@@ -1,0 +1,17 @@
+time-input {
+    color: $input_color;
+
+    &[disabled] {
+        color: #fff;
+    }
+
+    &[state="Selected"] {
+        animation: SelectionBlink 0.5s infinite !important;
+    }
+
+    .digit {
+        &[state="Selected"] {
+            animation: SelectionBlink 0.5s infinite !important;
+        }
+    }
+}

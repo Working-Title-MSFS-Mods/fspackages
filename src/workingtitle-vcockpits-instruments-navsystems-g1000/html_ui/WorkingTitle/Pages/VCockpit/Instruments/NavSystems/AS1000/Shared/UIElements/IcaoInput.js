@@ -1,4 +1,4 @@
-class AS1000_Icao_Input_Input_Layer extends Input_Layer
+class WT_Icao_Input_Input_Layer extends Input_Layer
 {
     constructor(input) {
         super();
@@ -27,7 +27,7 @@ class AS1000_Icao_Input_Input_Layer extends Input_Layer
     }
 }
 
-class AS1000_Icao_Input extends HTMLElement {
+class WT_Icao_Input extends HTMLElement {
     constructor() {
         super();
         this._ident = null;
@@ -102,7 +102,7 @@ class AS1000_Icao_Input extends HTMLElement {
     }
     enter(e) {
         let inputStack = e.detail.inputStack;
-        let inputLayer = new AS1000_Icao_Input_Input_Layer(this);
+        let inputLayer = new WT_Icao_Input_Input_Layer(this);
         this.inputStackManipulator = inputStack.push(inputLayer);
 
         if (this.icao) {
@@ -152,4 +152,4 @@ class AS1000_Icao_Input extends HTMLElement {
         SimVar.SetSimVarValue("C:fs9gps:IcaoSearchAdvanceCharacter", "number", amount, this.instrumentIdentifier);
     }
 }
-customElements.define("icao-input", AS1000_Icao_Input);
+customElements.define("icao-input", WT_Icao_Input);

@@ -1,23 +1,21 @@
-class AS1000_Page {
-    constructor(title, modelFactory, viewClass) {
+class WT_Page {
+    constructor(title, modelFactory, viewFactory) {
         this.title = title;
-        this.viewClass = viewClass;
+        this.viewFactory = viewFactory;
         this.modelFactory = modelFactory;
     }
     initialise(container) {
-        let view = new this.viewClass();
-        console.log(view);
+        let view = this.viewFactory();
         container.appendChild(view);
         let model = this.modelFactory();
         view.setModel(model);
-        console.log(model);
         return view;
     }
 }
 
-class AS1000_Page_Controller_Input_Layer extends Input_Layer {
+class WT_Page_Controller_Input_Layer extends Input_Layer {
     /**
-     * @param {AS1000_Page_Controller} pageController 
+     * @param {WT_Page_Controller} pageController 
      */
     constructor(pageController) {
         super();
@@ -40,13 +38,13 @@ class AS1000_Page_Controller_Input_Layer extends Input_Layer {
     }
 }
 
-class AS1000_Page_Controller {
+class WT_Page_Controller {
     constructor(pageGroups, pageTitle) {
         this.pageGroups = pageGroups;
         this.pageTitle = pageTitle;
 
         this.pageContainer = document.querySelector("#PageContainer");
-        this.inputLayer = new AS1000_Page_Controller_Input_Layer(this);
+        this.inputLayer = new WT_Page_Controller_Input_Layer(this);
 
         this.selectedGroupIndex = 0;
         this.selectedPageIndices = pageGroups.map(group => 0);
@@ -148,7 +146,7 @@ class AS1000_Page_Controller {
     }
 }
 
-class AS1000_Page_Controller_View extends AS1000_HTML_View {
+class WT_Page_Controller_View extends WT_HTML_View {
     constructor() {
         super();
         this.visibleTime = 2000;
@@ -195,4 +193,4 @@ class AS1000_Page_Controller_View extends AS1000_HTML_View {
         });
     }
 }
-customElements.define("g1000-page-selector", AS1000_Page_Controller_View);
+customElements.define("g1000-page-selector", WT_Page_Controller_View);
