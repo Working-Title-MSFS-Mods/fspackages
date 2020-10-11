@@ -737,6 +737,7 @@ class AS3X_Touch_Map extends MapInstrumentElement {
     init(root) {
         super.init(root);
         this.instrument.zoomRanges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 500, 1000, 1500, 2000];
+        this.instrument.rotationHandler = this;
         this.mapPlus = root.querySelector(".mapPlus");
         this.mapLess = root.querySelector(".mapLess");
         this.mapCenter = root.querySelector(".mapCenter");
@@ -747,11 +748,36 @@ class AS3X_Touch_Map extends MapInstrumentElement {
         this.instrument.addEventListener("mousedown", this.moveMode.bind(this));
         this.instrument.supportMouseWheel(false);
         this.instrument.offsetPlaneInHdgTrk = true;
-        this.loadSavedMapOrientation();
         this.loadSavedMapWeather();
         this.loadSavedTopoState();
         this._autoRange = false;
         this._lastAutoRangeDistance = 0;
+        this._orientation = WTDataStore.get(`Map.${this._mapId}.Orientation`, AS3X_Touch_Map.ORIENTATION_TRK_UP);
+        this._rotationDisabled = false;
+    }
+    get orientation() {
+        return this._orientation
+    }
+    set orientation(orientation) {
+        this._orientation = orientation;
+        WTDataStore.set(`Map.${this._mapId}.Orientation`, orientation);
+    }
+    get rotationDisabled() {
+        return AS3X_Touch_DirectTo._rotationDisabled
+    }
+    set rotationDisabled(disabled) {
+        this._rotationDisabled = disabled;
+    }
+    getRotation() {
+        if (this._rotationDisabled) {
+            return 0;
+        }
+
+        switch (this._orientation) {
+            case AS3X_Touch_Map.ORIENTATION_TRK_UP: return -SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+            case AS3X_Touch_Map.ORIENTATION_DTK_UP: return -(SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree") + SimVar.GetSimVarValue("MAGVAR", "degree"));
+        }
+        return 0;
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -769,31 +795,6 @@ class AS3X_Touch_Map extends MapInstrumentElement {
     centerOnPlane() {
         this.instrument.setCenteredOnPlane();
         this.mapCenter.setAttribute("state", "Inactive");
-    }
-    disableRotation() {
-        this.instrument.setTrackUpDisabled(true)
-    }
-    enableRotation() {
-        this.instrument.setTrackUpDisabled(false)
-    }
-    loadSavedMapOrientation() {
-        let state = WTDataStore.get(`Map.${this._mapId}.Orientation`, AS3X_Touch_Map.ORIENTATION_TRK_UP);
-        this.setMapOrientation(state);
-    }
-    setMapOrientation(state) {
-        WTDataStore.set(`Map.${this._mapId}.Orientation`, state);
-        SimVar.SetSimVarValue(`L:G3X_Map_${this.mapId}_Orient`, "number", state);
-        switch (state) {
-            case AS3X_Touch_Map.ORIENTATION_NORTH_UP:
-                this.instrument.setOrientation("north");
-                break;
-            case AS3X_Touch_Map.ORIENTATION_TRK_UP:
-                this.instrument.setOrientation("trk");
-                break;
-            case AS3X_Touch_Map.ORIENTATION_DTK_UP:
-                this.instrument.setOrientation("hdg");
-                break;
-        }
     }
     getMapOrientation() {
         return SimVar.GetSimVarValue(`L:G3X_Map_${this.mapId}_Orient`, "number");
@@ -881,8 +882,6 @@ class AS3X_Touch_MapMenu extends AS3X_Touch_Popup {
     init(root) {
         super.init(root);
         this._map = this.gps.mainMap;
-        this._setOrient = this._map.setMapOrientation.bind(this.gps.mainMap);
-        this._getOrient = this._map.getMapOrientation.bind(this.gps.mainMap);
         this.northUp = this.gps.getChildById("MapMenu_Orient_North");
         this.trkUp = this.gps.getChildById("MapMenu_Orient_Track");
         this.dtkUp = this.gps.getChildById("MapMenu_Orient_Dtk");
@@ -892,9 +891,9 @@ class AS3X_Touch_MapMenu extends AS3X_Touch_Popup {
         this.rangeInc = this.gps.getChildById("MapMenu_Range_Inc");
         this.rangeDec = this.gps.getChildById("MapMenu_Range_Dec");
         this.rangeAuto = this.gps.getChildById("MapMenu_Range_Auto");
-        this.gps.makeButton(this.northUp, () => { this._setOrient(AS3X_Touch_Map.ORIENTATION_NORTH_UP)});
-        this.gps.makeButton(this.trkUp, () => { this._setOrient(AS3X_Touch_Map.ORIENTATION_TRK_UP) });
-        this.gps.makeButton(this.dtkUp, () => { this._setOrient(AS3X_Touch_Map.ORIENTATION_DTK_UP) });
+        this.gps.makeButton(this.northUp, () => { this._map.orientation = AS3X_Touch_Map.ORIENTATION_NORTH_UP });
+        this.gps.makeButton(this.trkUp, () => { this._map.orientation = AS3X_Touch_Map.ORIENTATION_TRK_UP });
+        this.gps.makeButton(this.dtkUp, () => { this._map.orientation = AS3X_Touch_Map.ORIENTATION_DTK_UP });
         this.gps.makeButton(this.weather, () => { this._map.setMapWeather(!this._map.getMapWeather()) });
         this.gps.makeButton(this.topo, () => { this._map.setIsolines(!this._map.getIsolines()) });
         this.gps.makeButton(this.rangeDec, () => this.gps.computeEvent("RANGE_DEC"));
@@ -904,9 +903,9 @@ class AS3X_Touch_MapMenu extends AS3X_Touch_Popup {
         })
     }
     onUpdate() {
-        Avionics.Utils.diffAndSetAttribute(this.northUp, "state", this._getOrient() == AS3X_Touch_Map.ORIENTATION_NORTH_UP ? "Active" : "")
-        Avionics.Utils.diffAndSetAttribute(this.trkUp, "state", this._getOrient() == AS3X_Touch_Map.ORIENTATION_TRK_UP ? "Active" : "")
-        Avionics.Utils.diffAndSetAttribute(this.dtkUp, "state", this._getOrient() == AS3X_Touch_Map.ORIENTATION_DTK_UP ? "Active" : "")
+        Avionics.Utils.diffAndSetAttribute(this.northUp, "state", this._map.orientation == AS3X_Touch_Map.ORIENTATION_NORTH_UP ? "Active" : "")
+        Avionics.Utils.diffAndSetAttribute(this.trkUp, "state", this._map.orientation == AS3X_Touch_Map.ORIENTATION_TRK_UP ? "Active" : "")
+        Avionics.Utils.diffAndSetAttribute(this.dtkUp, "state", this._map.orientation == AS3X_Touch_Map.ORIENTATION_DTK_UP ? "Active" : "")
         Avionics.Utils.diffAndSetAttribute(this.weather, "state", this._map.getMapWeather() ? "Active" : "");
         Avionics.Utils.diffAndSetAttribute(this.topo, "state", this._map.getIsolines() ? "Active" : "");
         Avionics.Utils.diffAndSet(this.titleRange, `(${this._map.getRangeText()}nm)`);
