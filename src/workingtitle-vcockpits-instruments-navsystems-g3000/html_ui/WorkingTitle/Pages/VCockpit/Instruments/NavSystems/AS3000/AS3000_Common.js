@@ -52,9 +52,8 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_ORIENTATION_ROOT, 0); // set default map orientation (0 = hdg, 1 = trk, 2 = north)
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_DETAIL_ROOT, 0); // set default declutter (0 = none, 1 = DCLTR1, 2 = DCLTR2, 3 = least)
 
-        // storage for these as well?
         for (let [attr, val] of this.lastSymbolVis) {
-            SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get(attr) + this.simVarNameID, "number", 1);
+            this.setSimVarFromStorage(AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get(attr), 1);
         }
         this.initDcltrSettings();
         
