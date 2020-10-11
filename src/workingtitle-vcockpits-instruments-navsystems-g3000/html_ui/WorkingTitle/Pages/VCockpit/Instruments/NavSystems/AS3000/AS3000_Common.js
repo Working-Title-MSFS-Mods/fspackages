@@ -94,7 +94,6 @@ class AS3000_MapElement extends MapInstrumentElement {
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_FUEL_RING_SHOW_ROOT + this.simVarNameID, "number", 0);
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_ROOT + this.simVarNameID, "number", AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_DEFAULT);
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT + this.simVarNameID, "number", 0);
-        
     }
 
     setSimVarFromStorage(_root, _default) {
