@@ -48,6 +48,7 @@ class AS3000_MapElement extends MapInstrumentElement {
             });
         }
         this.instrument.zoomRanges = AS3000_MapElement.ZOOM_RANGES_DEFAULT;
+        this.instrument.setZoom(this.instrument.zoomRanges.indexOf(AS3000_MapElement.ZOOM_RANGE_DEFAULT));
         this.instrument.rangeDefinition = this;
         this.instrument.rotationHandler = this;
         this.instrument.rangeRingElement = new SvgRangeRingElement();
@@ -307,6 +308,7 @@ class AS3000_MapElement extends MapInstrumentElement {
     }
 }
 AS3000_MapElement.ZOOM_RANGES_DEFAULT = [250 / 6076, 500 / 6076, 750 / 6076, 1000 / 6076, 0.25, 0.5, 0.75, 1, 1.5, 2.5, 4, 5, 7.5, 10, 15, 25, 40, 50, 75, 100, 150, 250, 400, 500, 750, 1000]; // NM
+AS3000_MapElement.ZOOM_RANGE_DEFAULT = 5;
 
 AS3000_MapElement.VARNAME_ORIENTATION_ROOT = "L:AS3000_Map_Orientation";
 
@@ -349,7 +351,7 @@ AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT = "L:AS3000_Map_Road_Primary_R
 AS3000_MapElement.AIRSPACE_RANGE_DEFAULT = 50;
 AS3000_MapElement.AIRSPACE_RANGE_MAX = 150;
 
-AS3000_MapElement.AIRPORT_SMALL_RANGE_DEFAULT = 25;
+AS3000_MapElement.AIRPORT_SMALL_RANGE_DEFAULT = 15;
 AS3000_MapElement.AIRPORT_SMALL_RANGE_MAX = 150;
 AS3000_MapElement.AIRPORT_MEDIUM_RANGE_DEFAULT = 50;
 AS3000_MapElement.AIRPORT_MEDIUM_RANGE_MAX = 400;
@@ -358,7 +360,7 @@ AS3000_MapElement.AIRPORT_LARGE_RANGE_MAX = 1000;
 
 AS3000_MapElement.VOR_RANGE_DEFAULT = 50;
 AS3000_MapElement.VOR_RANGE_MAX = 250;
-AS3000_MapElement.INT_RANGE_DEFAULT = 25;
+AS3000_MapElement.INT_RANGE_DEFAULT = 7.5;
 AS3000_MapElement.INT_RANGE_MAX = 50;
 AS3000_MapElement.NDB_RANGE_DEFAULT = 25;
 AS3000_MapElement.NDB_RANGE_MAX = 50;
