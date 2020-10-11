@@ -106,6 +106,8 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
         let currentTime = Date.now() / 1000;
         let dt = currentTime - this.lastTime;
         
+        console.log("update");
+        
         this.centerPos = map.getPlanePositionXY();
         
         let fuelRemaining = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons");
@@ -114,6 +116,10 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
         let fuelFlow = 0;
         for (let i = 1; i <= numEngines; i++ ) {
             fuelFlow += SimVar.GetSimVarValue("ENG FUEL FLOW GPH:" + i, "gallons per hour");
+        }
+        
+        if (fuelFlow <= 0) {
+            return;
         }
         
         let fuelTimeRemaining = fuelRemaining / fuelFlow * 60;

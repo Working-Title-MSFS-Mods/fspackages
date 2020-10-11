@@ -41,13 +41,9 @@ class AS3000_MapElement extends MapInstrumentElement {
         ]
     }
     
-    init(root) {
-        this.instrument = root.querySelector("map-instrument");
-        if (this.instrument) {
-            TemplateElement.callNoBinding(this.instrument, () => {
-                this.onTemplateLoaded();
-            });
-        }
+    onTemplateLoaded() {
+        super.onTemplateLoaded();
+        
         this.instrument.zoomRanges = AS3000_MapElement.ZOOM_RANGES_DEFAULT;
         this.instrument.setZoom(this.instrument.zoomRanges.indexOf(AS3000_MapElement.ZOOM_RANGE_DEFAULT));
         this.instrument.rangeDefinition = this;
@@ -68,7 +64,7 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.initDcltrSettings();
         
         // "Sensor" settings
-        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.simVarNameID, "number", 0);
+        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT, 0);
         
         // initialize symbol range
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT, this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRSPACE_RANGE_DEFAULT));
@@ -81,25 +77,24 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT, this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_HIGHWAY_RANGE_DEFAULT));
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT, this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_TRUNK_RANGE_DEFAULT));
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT, this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT));
-
         
         // "Other" settings
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT, 0);
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT, this.instrument.zoomRanges.indexOf(AS3000_MapElement.NORTHUP_RANGE_DEFAULT));
-        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT + this.simVarNameID, "number", 0);
-        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.NORTHUP_RANGE_DEFAULT));
-        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT + this.simVarNameID, "number", 0);
-        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT + this.simVarNameID, "number", AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES.indexOf(AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_DEFAULT));
+        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT, 0);
+        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT, this.instrument.zoomRanges.indexOf(AS3000_MapElement.NORTHUP_RANGE_DEFAULT));
+        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT, 0);
+        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT, AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES.indexOf(AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_DEFAULT));
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT, 0);
-        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_FUEL_RING_SHOW_ROOT + this.simVarNameID, "number", 0);
-        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_ROOT + this.simVarNameID, "number", AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_DEFAULT);
-        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT + this.simVarNameID, "number", 0);
+        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_FUEL_RING_SHOW_ROOT, 0);
+        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_ROOT, AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_DEFAULT);
+        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT, 0);
     }
 
     setSimVarFromStorage(_root, _default) {
-        let value = WTDataStore.get(`${this.simVarNameID}.${_root}`, _default)
+        let value = WTDataStore.get(`${this.simVarNameID}.${_root}`, _default);
         let key = _root + this.simVarNameID;
-        SimVar.SetSimVarValue(key, "number", value)
+        SimVar.SetSimVarValue(key, "number", value);
     }
     
     initDcltrSettings() {
@@ -289,11 +284,13 @@ class AS3000_MapElement extends MapInstrumentElement {
     }
     
     updateFuelRing() {
-        let show = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_FUEL_RING_SHOW_ROOT + this.simVarNameID, "number") == 1;
-        let reserveTime = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_ROOT + this.simVarNameID, "number");
-        
-        this.instrument.showFuelRing = show;
-        this.instrument.fuelRingElement.reserveFuelTime = reserveTime;
+        if (this.instrument.fuelRingElement) {
+            let show = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_FUEL_RING_SHOW_ROOT + this.simVarNameID, "number") == 1;
+            let reserveTime = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_ROOT + this.simVarNameID, "number");
+            
+            this.instrument.showFuelRing = show;
+            this.instrument.fuelRingElement.reserveFuelTime = reserveTime;
+        }
     }
     
     updateAltitudeIntercept() {
@@ -312,7 +309,7 @@ class AS3000_MapElement extends MapInstrumentElement {
     syncSettingToMaster(_root) {
         let newVal = SimVar.GetSimVarValue(_root + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number");
         SimVar.SetSimVarValue(_root + this.simVarNameID, "number", newVal);
-        WTDataStore.set(`${this.simVarNameID}.${_root}`, newVal)
+        WTDataStore.set(`${this.simVarNameID}.${_root}`, newVal);
     }
     
     syncMasterToAllSettings() {
