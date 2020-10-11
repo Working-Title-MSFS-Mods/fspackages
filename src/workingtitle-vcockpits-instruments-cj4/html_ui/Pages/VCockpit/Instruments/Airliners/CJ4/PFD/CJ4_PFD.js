@@ -42,6 +42,11 @@ class CJ4_PFD extends BaseAirliners {
         this.radioNav.setRADIONAVSource(NavSource.GPS);
         SimVar.SetSimVarValue("L:WT_CJ4_VAP", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "knots", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "knots", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "knots", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "knots", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "knots", 0);
     }
     Update() {
         super.Update();
@@ -240,24 +245,24 @@ class CJ4_PFD extends BaseAirliners {
         let vT = _dict.get(CJ4_PopupMenu_Key.VSPEED_VT);
         let vRef = _dict.get(CJ4_PopupMenu_Key.VSPEED_VRF);
         let vApp = _dict.get(CJ4_PopupMenu_Key.VSPEED_VAP);
-        if (parseInt(v1) != parseInt(SimVar.GetSimVarValue("L:AIRLINER_V1_SPEED", "Knots"))) {
-            SimVar.SetSimVarValue("L:AIRLINER_V1_SPEED", "Knots", parseInt(v1));
+        if (parseInt(v1) != parseInt(SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots"))) {
+            SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots", parseInt(v1));
             SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", false);
         }
-        if (parseInt(vR) != parseInt(SimVar.GetSimVarValue("L:AIRLINER_VR_SPEED", "Knots"))) {
-            SimVar.SetSimVarValue("L:AIRLINER_VR_SPEED", "Knots", parseInt(vR));
+        if (parseInt(vR) != parseInt(SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots"))) {
+            SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots", parseInt(vR));
             SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", false);
         }
-        if (parseInt(v2) != parseInt(SimVar.GetSimVarValue("L:AIRLINER_V2_SPEED", "Knots"))) {
-            SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", parseInt(v2));
+        if (parseInt(v2) != parseInt(SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots"))) {
+            SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots", parseInt(v2));
             SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", false);
         }
-        if (parseInt(vT) != parseInt(SimVar.GetSimVarValue("L:AIRLINER_VX_SPEED", "Knots"))) {
-            SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", parseInt(vT));
+        if (parseInt(vT) != parseInt(SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots"))) {
+            SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots", parseInt(vT));
             SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", false);
         }
-        if (parseInt(vRef) != parseInt(SimVar.GetSimVarValue("L:AIRLINER_VREF_SPEED", "Knots"))) {
-            SimVar.SetSimVarValue("L:AIRLINER_VREF_SPEED", "Knots", parseInt(vRef));
+        if (parseInt(vRef) != parseInt(SimVar.GetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots"))) {
+            SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots", parseInt(vRef));
             SimVar.SetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool", false);
         }
         if (parseInt(vApp) != parseInt(SimVar.GetSimVarValue("L:WT_CJ4_VAP", "Knots"))) {
@@ -326,11 +331,11 @@ class CJ4_PFD extends BaseAirliners {
                 _dict.set(CJ4_PopupMenu_Key.AOA, "OFF");
             }
         }
-        let v1 = Simplane.getV1Airspeed().toFixed(0);
-        let vR = Simplane.getVRAirspeed().toFixed(0);
-        let v2 = Simplane.getV2Airspeed().toFixed(0);
-        let vT = Simplane.getVXAirspeed().toFixed(0);
-        let vRef = Simplane.getREFAirspeed().toFixed(0);
+        let v1 = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots").toFixed(0);
+        let vR = SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots").toFixed(0);
+        let v2 = SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots").toFixed(0);
+        let vT = SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots").toFixed(0);
+        let vRef = SimVar.GetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots").toFixed(0);
         let vApp = SimVar.GetSimVarValue("L:WT_CJ4_VAP", "Knots").toFixed(0);
         _dict.set(CJ4_PopupMenu_Key.VSPEED_V1, v1);
         _dict.set(CJ4_PopupMenu_Key.VSPEED_VR, vR);
