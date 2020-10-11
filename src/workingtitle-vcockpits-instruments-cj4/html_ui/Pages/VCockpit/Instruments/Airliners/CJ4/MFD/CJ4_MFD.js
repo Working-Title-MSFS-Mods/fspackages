@@ -104,6 +104,7 @@ class CJ4_MFD extends BaseAirliners {
                 this.checklist.show(false);
                 this.mapOverlay.setExtended(false);
                 this.passengerBrief.show(false);
+                this.map.setExtended(false);
             }
             else if (this.showChecklist) {
                 this.systems1.minimize(true);
@@ -111,6 +112,7 @@ class CJ4_MFD extends BaseAirliners {
                 this.checklist.show(true);
                 this.mapOverlay.setExtended(false);
                 this.passengerBrief.show(false);
+                this.map.setExtended(false);
             }
             else if (this.showPassengerBrief) {
                 this.systems1.minimize(true);
@@ -118,6 +120,7 @@ class CJ4_MFD extends BaseAirliners {
                 this.checklist.show(false);
                 this.mapOverlay.setExtended(false);
                 this.passengerBrief.show(true);
+                this.map.setExtended(false);
             }
             else {
                 this.fms.show(false);
