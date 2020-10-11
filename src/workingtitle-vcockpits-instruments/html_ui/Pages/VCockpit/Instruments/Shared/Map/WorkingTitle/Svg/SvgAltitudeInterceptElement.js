@@ -51,9 +51,6 @@ class SvgAltitudeInterceptElement extends SvgMapElement {
         let vSpeed = SimVar.GetSimVarValue("VERTICAL SPEED", "feet per minute");
         let altTarget = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
         let altCurrent = SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet");
-        console.log("vSpeed " + vSpeed);
-        console.log("target alt " + altTarget);
-        console.log("current alt " + altCurrent);
         if (Math.abs(vSpeed) < this.vSpeedThreshold || ((altTarget - altCurrent) / vSpeed) < 0) {
             this.arcOuter.setAttribute("display", "none");
             this.arcInner.setAttribute("display", "none");
