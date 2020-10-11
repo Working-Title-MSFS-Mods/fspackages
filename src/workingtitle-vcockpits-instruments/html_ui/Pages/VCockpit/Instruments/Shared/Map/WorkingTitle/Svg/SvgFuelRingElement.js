@@ -117,6 +117,7 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
         }
         
         if (fuelFlow <= 0) {
+            this.lastFuelTime = -1;
             return;
         }
         
@@ -142,8 +143,16 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
         
         this.radiusOuter = fuelTimeRemaining * groundSpeed / 60 / map.NMWidth * 1000;
         
-        this.updateRingComponent(this.rangeRingOuterCore, this.radiusOuter);
-        this.updateRingComponent(this.rangeRingOuterOutline, this.radiusOuter);
+        if (!this.isInView()) {
+            fuelTimeRemaining = -1;
+            this.showRing = false;
+            this.showLabel = false;
+            this.rangeRingOuter.setAttribute("display", "none");
+        } else {
+            this.rangeRingOuter.setAttribute("display", "inherit");
+            this.updateRingComponent(this.rangeRingOuterCore, this.radiusOuter);
+            this.updateRingComponent(this.rangeRingOuterOutline, this.radiusOuter);
+        }
         super.updateDraw(map);
         
         this.lastTime = currentTime;
@@ -165,6 +174,37 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
     updateLabel(map) {
         this.reserveTimeLabelElement.updateDraw(map);
         super.updateLabel(map);
+    }
+    
+    isInView(map) {
+        let outerRadius = this.radiusOuter;
+        let innerRadius = outerRadius;
+        if (this.showRing) {
+            innerRadius = this.radius;
+        }
+        
+        let innerHalfLength = innerRadius / Math.sqrt(2);
+        let innerLeft = this.centerPos.x - innerHalfLength;
+        let innerRight = this.centerPos.x + innerHalfLength;
+        let innerTop = this.centerPos.y - innerHalfLength;
+        let innerBottom = this.centerPos.y + innerHalfLength;
+        
+        let outerLeft = this.centerPos.x - outerRadius;
+        let outerRight = this.centerPos.x + outerRadius;
+        let outerTop = this.centerPos.y - outerRadius;
+        let outerBottom = this.centerPos.y + outerRadius;
+        
+        // check if view bounds are completely inside inner circle (with margin)
+        if (innerLeft < -50 && innerRight > 1050 && innerTop < -50 && innerBottom > 1050) {
+            return false;
+        }
+        
+        // check if view bounds are outside outer circle (with margin)
+        if (outerLeft > 1050 || outerRight < -50 || outerTop > 1050 || outerBottom < -50) {
+            return false;
+        }
+        
+        return true;
     }
     
     static getRadialOffsetPos(_center, _radius, _angle) {
