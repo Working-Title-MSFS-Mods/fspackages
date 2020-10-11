@@ -16,3 +16,4 @@ src/sound/.cache
 *.validationcache
 *.wem
 *.wsettings
+src/sound/GeneratedSoundBanks
