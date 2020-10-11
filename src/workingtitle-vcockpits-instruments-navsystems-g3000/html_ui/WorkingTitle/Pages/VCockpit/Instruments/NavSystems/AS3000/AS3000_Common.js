@@ -21,6 +21,14 @@ class AS3000_MapElement extends MapInstrumentElement {
             AS3000_MapElement.VARNAME_ORIENTATION_ROOT,
             AS3000_MapElement.VARNAME_DETAIL_ROOT,
             AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT,
+            AS3000_MapElement.VARNAME_ROAD_SHOW_ROOT,
+            AS3000_MapElement.VARNAME_CITY_SHOW_ROOT,
+            AS3000_MapElement.VARNAME_AIRSPACE_SHOW_ROOT,
+            AS3000_MapElement.VARNAME_AIRWAY_SHOW_ROOT,
+            AS3000_MapElement.VARNAME_VOR_SHOW_ROOT,
+            AS3000_MapElement.VARNAME_NDB_SHOW_ROOT,
+            AS3000_MapElement.VARNAME_INT_SHOW_ROOT,
+            AS3000_MapElement.VARNAME_AIRPORT_SHOW_ROOT,
             AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT,
             AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT,
             AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT,
@@ -38,7 +46,7 @@ class AS3000_MapElement extends MapInstrumentElement {
             AS3000_MapElement.VARNAME_FUEL_RING_SHOW_ROOT,
             AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_ROOT,
             AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT
-        ]
+        ];
     }
     
     onTemplateLoaded() {
@@ -350,15 +358,23 @@ AS3000_MapElement.DETAIL_DISPLAY_TEXT = [
 
 AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT = "L:AS3000_Map_Terrain_Mode";
 
+AS3000_MapElement.VARNAME_ROAD_SHOW_ROOT = "L:AS3000_Map_Road_Show";
+AS3000_MapElement.VARNAME_CITY_SHOW_ROOT = "L:AS3000_Map_City_Show";
+AS3000_MapElement.VARNAME_AIRSPACE_SHOW_ROOT = "L:AS3000_Map_Airspace_Show";
+AS3000_MapElement.VARNAME_AIRWAY_SHOW_ROOT = "L:AS3000_Map_Airway_Show";
+AS3000_MapElement.VARNAME_VOR_SHOW_ROOT = "L:AS3000_Map_VOR_Show";
+AS3000_MapElement.VARNAME_NDB_SHOW_ROOT = "L:AS3000_Map_NDB_Show";
+AS3000_MapElement.VARNAME_INT_SHOW_ROOT = "L:AS3000_Map_Intersection_Show";
+AS3000_MapElement.VARNAME_AIRPORT_SHOW_ROOT = "L:AS3000_Map_Airport_Show";
 AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT = new Map([
-        ["show-roads", "L:AS3000_Map_Roads_Show"],
-        ["show-cities", "L:AS3000_Map_Cities_Show"],
-        ["show-airspaces", "L:AS3000_Map_Cities_Show"],
-        ["show-airways", "L:AS3000_Map_Airways_Show"],
-        ["show-vors", "L:AS3000_Map_VORs_Show"],
-        ["show-ndbs", "L:AS3000_Map_NDBs_Show"],
-        ["show-intersections", "L:AS3000_Map_Intersections_Show"],
-        ["show-airports", "L:AS3000_Map_Airports_Show"]
+        ["show-roads", AS3000_MapElement.VARNAME_ROAD_SHOW_ROOT],
+        ["show-cities", AS3000_MapElement.VARNAME_CITY_SHOW_ROOT],
+        ["show-airspaces", AS3000_MapElement.VARNAME_AIRSPACE_SHOW_ROOT],
+        ["show-airways", AS3000_MapElement.VARNAME_AIRWAY_SHOW_ROOT],
+        ["show-vors", AS3000_MapElement.VARNAME_VOR_SHOW_ROOT],
+        ["show-ndbs", AS3000_MapElement.VARNAME_NDB_SHOW_ROOT],
+        ["show-intersections", AS3000_MapElement.VARNAME_INT_SHOW_ROOT],
+        ["show-airports", AS3000_MapElement.VARNAME_AIRPORT_SHOW_ROOT]
 ]);
 
 AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT = "L:AS3000_Map_Airspace_Range";
