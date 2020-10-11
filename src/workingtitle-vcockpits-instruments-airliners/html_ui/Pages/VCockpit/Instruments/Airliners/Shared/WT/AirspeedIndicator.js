@@ -1802,35 +1802,35 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         if (this.vSpeedSVG) {
             if (Simplane.getIndicatedSpeed() < 30) {
                 this.vSpeedSVG.setAttribute("visibility", "visible");
-                this.v1Speed.textContent = Simplane.getV1Airspeed().toFixed(0);
+                this.v1Speed.textContent = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots").toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool")) {
                     this.v1Speed.setAttribute("fill", "magenta");
                 }
                 else {
                     this.v1Speed.setAttribute("fill", "cyan");
                 }
-                this.vRSpeed.textContent = Simplane.getVRAirspeed().toFixed(0);
+                this.vRSpeed.textContent = SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots").toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool")) {
                     this.vRSpeed.setAttribute("fill", "magenta");
                 }
                 else {
                     this.vRSpeed.setAttribute("fill", "cyan");
                 }
-                this.v2Speed.textContent = Simplane.getV2Airspeed().toFixed(0);
+                this.v2Speed.textContent = SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots").toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool")) {
                     this.v2Speed.setAttribute("fill", "magenta");
                 }
                 else {
                     this.v2Speed.setAttribute("fill", "cyan");
                 }
-                this.vXSpeed.textContent = Simplane.getVXAirspeed().toFixed(0);
+                this.vXSpeed.textContent = SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots").toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool")) {
                     this.vXSpeed.setAttribute("fill", "magenta");
                 }
                 else {
                     this.vXSpeed.setAttribute("fill", "cyan");
                 }
-                this.vRefSpeed.textContent = Simplane.getREFAirspeed().toFixed(0);
+                this.vRefSpeed.textContent = SimVar.GetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots").toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool")) {
                     this.vRefSpeed.setAttribute("fill", "magenta");
                 }

@@ -253,12 +253,11 @@ class CJ4_FMC_TakeoffRefPage {
             { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
         }
         fmc.onRightInput[5] = () => {
-            SimVar.SetSimVarValue("L:AIRLINER_V1_SPEED", "Knots", v1);
-            SimVar.SetSimVarValue("L:AIRLINER_VR_SPEED", "Knots", vR);
-            SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", v2);
-            //use VX for VT in CJ4
-            SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", 140);
-            //new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
+            //added custom LVARS for all v speeds and FMC Set
+            SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots", v1);
+            SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots", vR);
+            SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots", v2);
+            SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots", 140);
             SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
             SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
             SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
