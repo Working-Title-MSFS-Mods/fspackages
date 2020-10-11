@@ -20,6 +20,7 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.settingsToSync = [
             AS3000_MapElement.VARNAME_ORIENTATION_ROOT,
             AS3000_MapElement.VARNAME_DETAIL_ROOT,
+            AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT,
             AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT,
             AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT,
             AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT,
@@ -65,6 +66,9 @@ class AS3000_MapElement extends MapInstrumentElement {
             SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get(attr) + this.simVarNameID, "number", 1);
         }
         this.initDcltrSettings();
+        
+        // "Sensor" settings
+        SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.simVarNameID, "number", 0);
         
         // initialize symbol range
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRSPACE_RANGE_DEFAULT));
@@ -159,6 +163,7 @@ class AS3000_MapElement extends MapInstrumentElement {
         }
         
         this.updateOrientation();
+        this.updateTerrain();
         this.updateSymbolVisibility();
         this.updateSymbolRange();
         this.updateTrackVector();
@@ -227,6 +232,15 @@ class AS3000_MapElement extends MapInstrumentElement {
             case 1: return -SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
         }
         return 0;
+    }
+    
+    updateTerrain() {
+        let mode = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.simVarNameID, "number");
+        if (mode == 0) {
+            this.instrument.mapConfigId = 0;
+        } else {
+            this.instrument.mapConfigId = 1;
+        }
     }
     
     updateSymbolVisibility() {
@@ -325,6 +339,8 @@ AS3000_MapElement.DETAIL_DISPLAY_TEXT = [
         "Least"
 ];
 
+AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT = "L:AS3000_Map_Terrain_Mode";
+
 AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT = new Map([
         ["show-roads", "L:AS3000_Map_Roads_Show"],
         ["show-cities", "L:AS3000_Map_Cities_Show"],
@@ -372,15 +388,15 @@ AS3000_MapElement.ROAD_TRUNK_RANGE_MAX = 150;
 AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT = 4;
 AS3000_MapElement.ROAD_PRIMARY_RANGE_MAX = 25;
 
-AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT = "L:AS3000_NorthUpAbove_Active";
-AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT = "L:AS3000_NorthUpAbove_Range";
+AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT = "L:AS3000_Map_NorthUpAbove_Active";
+AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT = "L:AS3000_Map_NorthUpAbove_Range";
 AS3000_MapElement.NORTHUP_RANGE_DEFAULT = 1000;
-AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT = "L:AS3000_TrackVector_Show";
-AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT = "L:AS3000_TrackVector_Lookahead";
+AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT = "L:AS3000_Map_TrackVector_Show";
+AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT = "L:AS3000_Map_TrackVector_Lookahead";
 AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_DEFAULT = 60;
 AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES = [30, 60, 120, 300, 600, 1200];
-AS3000_MapElement.VARNAME_WIND_SHOW_ROOT = "L:AS3000_Wind_Show";
-AS3000_MapElement.VARNAME_FUEL_RING_SHOW_ROOT = "L:AS3000_FuelRing_Show";
-AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_ROOT = "L:AS3000_FuelRing_Reserve";
+AS3000_MapElement.VARNAME_WIND_SHOW_ROOT = "L:AS3000_Map_Wind_Show";
+AS3000_MapElement.VARNAME_FUEL_RING_SHOW_ROOT = "L:AS3000_Map_FuelRing_Show";
+AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_ROOT = "L:AS3000_Map_FuelRing_Reserve";
 AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_DEFAULT = 45;
-AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT = "L:AS3000_AltitudeIntercept_Show";
+AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT = "L:AS3000_Map_AltitudeIntercept_Show";

@@ -1,5 +1,5 @@
-{
-  "waypointLabelFontSize": 70,
+﻿{
+  "waypointLabelFontSize": 23,
   "waypointLabelFontFamily": "Consolas",
   "waypointLabelColor": "#FFFFFF",
   "waypointLabelStrokeColor": "#3f3f3f",
@@ -8,11 +8,11 @@
   "waypointLabelBackgroundColor": "#3f4851",
   "waypointLabelBackgroundStrokeColor": "black",
   "waypointLabelBackgroundStrokeWidth": 0,
-  "waypointLabelBackgroundPadding": "4 9 4 9",
+  "waypointLabelBackgroundPadding": "5 5 5 5",
   "waypointLabelDistance": 12,
-  "waypointIconSize": 250,
+  "waypointIconSize": 100,
 
-  "cityLabelFontSize": 60,
+  "cityLabelFontSize": 24,
   "cityLabelFontFamily": "Consolas",
   "cityLabelColor": "#black",
   "cityLabelStrokeColor": "#3f3f3f",
@@ -25,7 +25,7 @@
   "cityLabelDistance": 0.45,
   "cityIconSize": 90,
 
-  "airplaneIconSize": 250,
+  "airplaneIconSize": 120,
   "airplaneIcon1": "ICON_MAP_PLANE",
   "airplaneIcon2": "ICON_MAP_PLANE",
 
@@ -56,9 +56,9 @@
   "flightPlanNonActiveLegStrokeWidth": 7,
 
   "roadMotorWayColor": "#7a7a7a",
-  "roadMotorWayWidth": 3,
+  "roadMotorWayWidth": 2,
   "roadTrunkColor": "#7a7a7a",
-  "roadTrunkWidth": 2,
+  "roadTrunkWidth": 1,
   "roadPrimaryColor": "#7a7a7a",
   "roadPrimaryWidth": 1,
 
