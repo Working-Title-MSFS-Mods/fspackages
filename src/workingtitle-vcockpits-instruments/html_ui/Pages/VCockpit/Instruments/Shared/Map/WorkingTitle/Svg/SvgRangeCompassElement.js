@@ -85,6 +85,8 @@ class SvgRangeCompassElement extends SvgMapElement {
         this.rangeLabelElement = new SvgRangeLabelElement();
         this.labelLayer.appendChild(this.rangeLabelElement.createDraw(map));
         
+        container.style.webkitTransform = "rotateX(0deg)"; // for optimization... maybe?
+        
         return container;
     }
     

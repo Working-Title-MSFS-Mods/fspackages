@@ -68,7 +68,10 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
         this.rangeRingCore.setAttribute("stroke", this.rangeRingStrokeInnerColor);
         this.rangeRingCore.setAttribute("stroke-width", this.rangeRingStrokeInnerWidth);
         this.rangeRingCore.setAttribute("stroke-dasharray", this.rangeRingStrokeInnerDash);
+        this.rangeRingCore.setAttribute("vector-effect", "non-scaling-stroke");
         this.rangeRingCore.setAttribute("stroke-opacity", "1");
+        this.rangeRingCore.setAttribute("d", "M 0 -1 A 1 1 0 0 1 0 1 A 1 1 0 0 1 0 -1 Z");
+        
         ring.appendChild(this.rangeRingCore);
         
         return ring;
@@ -134,9 +137,9 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
         }
         
         this.radiusOuter = fuelTimeRemaining * groundSpeed / 60 / map.NMWidth * 1000;
+        
         this.updateRingComponent(this.rangeRingOuterCore, this.radiusOuter);
         this.updateRingComponent(this.rangeRingOuterOutline, this.radiusOuter);
-        
         super.updateDraw(map);
         
         this.lastTime = currentTime;
@@ -146,14 +149,7 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
     updateRing(map) {
         this.updateRingComponent(this.rangeRingOutline, this.radius);
         
-        let arcTop = SvgFuelRingElement.getRadialOffsetPos(this.centerPos, this.radius, 0);
-        let arcBottom = SvgFuelRingElement.getRadialOffsetPos(this.centerPos, this.radius, 180 * Avionics.Utils.DEG2RAD);
-        
-        // when the map rotates, the dashes on the second arc "migrate" up and down slightly for some reason,
-        // so to lessen the visual impact of that we draw BOTH arcs from top to bottom
-        // since the migrating effect seems to only occur near the end of the arc's path
-        this.rangeRingCore.setAttribute("d", "M " + arcTop.x + " " + arcTop.y + " A " + this.radius + " " + this.radius + " 0 0 1 " + arcBottom.x + " " + arcBottom.y
-                + "M " + arcTop.x + " " + arcTop.y + " A " + this.radius + " " + this.radius + " 0 0 0 " + arcBottom.x + " " + arcBottom.y);
+        this.rangeRingCore.setAttribute("transform", "translate(" + this.centerPos.x + ", " + this.centerPos.y + ") scale(" + this.radius + ")");
     }
     
     updateRingComponent(_component, _radius) {

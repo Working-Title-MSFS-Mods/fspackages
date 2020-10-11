@@ -26,6 +26,8 @@ class SvgLabeledRingElement extends SvgMapElement {
         this.labelSvg = this.createLabel(map);
         container.appendChild(this.labelSvg);
         
+        container.style.webkitTransform = "rotateX(0deg)"; // for optimization... maybe?
+        
         return container;
     }
     
