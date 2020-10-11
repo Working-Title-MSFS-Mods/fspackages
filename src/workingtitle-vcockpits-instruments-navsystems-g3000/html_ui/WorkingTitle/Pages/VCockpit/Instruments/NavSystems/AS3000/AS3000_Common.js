@@ -357,6 +357,10 @@ AS3000_MapElement.DETAIL_DISPLAY_TEXT = [
 ];
 
 AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT = "L:AS3000_Map_Terrain_Mode";
+AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT = [
+        "Off",
+        "Absolute"
+];
 
 AS3000_MapElement.VARNAME_ROAD_SHOW_ROOT = "L:AS3000_Map_Road_Show";
 AS3000_MapElement.VARNAME_CITY_SHOW_ROOT = "L:AS3000_Map_City_Show";

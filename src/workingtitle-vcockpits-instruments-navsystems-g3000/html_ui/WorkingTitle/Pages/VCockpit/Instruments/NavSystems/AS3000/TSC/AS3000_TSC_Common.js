@@ -3705,11 +3705,6 @@ class AS3000_TSC_MapSettingsTab {
 class AS3000_TSC_MapSettingsSensorTab extends AS3000_TSC_MapSettingsTab {
     constructor(_parentElement, _elementName) {
         super(_parentElement, _elementName);
-        
-        this.terrainModeValues = [
-            "Off",
-            "Absolute"
-        ];
     }
     
     init(_container) {
@@ -3721,7 +3716,7 @@ class AS3000_TSC_MapSettingsSensorTab extends AS3000_TSC_MapSettingsTab {
         // toggles
         
         // statuses
-        Avionics.Utils.diffAndSet(this.terrainButtonStatusText, this.terrainModeValues[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.parentElement.simVarNameID, "number")]);
+        Avionics.Utils.diffAndSet(this.terrainButtonStatusText, AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.parentElement.simVarNameID, "number")]);
     }
     
     onButtonClick(_rowIndex, _isLeft) {
@@ -3737,7 +3732,7 @@ class AS3000_TSC_MapSettingsSensorTab extends AS3000_TSC_MapSettingsTab {
     // terrain helpers
     
     openTerrainModeWindow() {
-        this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map Terrain Displayed", this.setTerrainMode.bind(this), AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.parentElement.simVarNameID, this.terrainModeValues, this.parentElement.homePageParent, this.parentElement.homePageName);
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map Terrain Displayed", this.setTerrainMode.bind(this), AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.parentElement.simVarNameID, AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT, this.parentElement.homePageParent, this.parentElement.homePageName);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
     
