@@ -539,14 +539,12 @@ class CJ4_FMC_InitRefIndexPage {
             : currHeadwind < 0 ? "TAILWIND"
                 : "TAILWIND";
 
-            let crosswinddirection = currCrosswind > 0 && currHeadwind >= 0 ? "R"
-                : currCrosswind < 0 && currHeadwind >= 0 ? "L"
-                : currCrosswind > 0 && currHeadwind < 0 ? "L"
-                : currCrosswind < 0 && currHeadwind < 0 ? "R"
+            let crosswinddirection = currCrosswind > 0 ? "L"
+                : currCrosswind < 0 ? "R"
                 : "";
 
-            let xtkDirection = xtk > 0 ? "R"
-                : xtk < 0 ? "L"
+            let xtkDirection = xtk > 0 ? "L"
+                : xtk < 0 ? "R"
                 : "";
 
             fmc._templateRenderer.setTemplateRaw([
