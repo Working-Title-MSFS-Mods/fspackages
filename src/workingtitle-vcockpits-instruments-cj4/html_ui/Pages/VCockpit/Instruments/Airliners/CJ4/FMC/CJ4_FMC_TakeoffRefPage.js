@@ -89,13 +89,13 @@ class CJ4_FMC_TakeoffRefPage {
             else {
                 fmc.showErrorMessage("INVALID");
             }
-            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
-        }
+            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
+        };
         fmc.onRightInput[1] = () => {
             fmc.takeoffOat = new Number(fmc.inOut);
             fmc.clearUserInput();
-            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
-        }
+            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
+        };
         fmc.onRightInput[2] = () => {
             let qnh = Number(fmc.inOut);
             if (qnh !== NaN && qnh > 28 && qnh < 34) {
@@ -107,7 +107,7 @@ class CJ4_FMC_TakeoffRefPage {
                 fmc.showErrorMessage("INVALID");
             }
             CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);
-        }
+        };
         fmc.onLeftInput[4] = () => {
             if (fmc.depRunwayCondition == 0) {
                 fmc.depRunwayCondition = 1;
@@ -117,8 +117,8 @@ class CJ4_FMC_TakeoffRefPage {
             depRunwayConditionActive = fmc.depRunwayCondition == 0 ? "DRY"
                 : "WET";
             fmc.clearUserInput();
-            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
-        }
+            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
+        };
 
         fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage3(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
@@ -239,8 +239,8 @@ class CJ4_FMC_TakeoffRefPage {
             takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
             : "OFF[s-text]/[white]ON[green]";
             fmc.clearUserInput();
-            { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
-        }
+            { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); }
+        };
         fmc.onLeftInput[1] = () => {
             if (fmc.takeoffFlaps == 15) {
                 fmc.takeoffFlaps = 0;
@@ -250,8 +250,8 @@ class CJ4_FMC_TakeoffRefPage {
             takeoffFlapsActive = fmc.takeoffFlaps == 0 ? "15"
                 : "0";
             fmc.clearUserInput();
-            { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
-        }
+            { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); }
+        };
         fmc.onRightInput[5] = () => {
             //added custom LVARS for all v speeds and FMC Set
             SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots", v1);
@@ -262,7 +262,7 @@ class CJ4_FMC_TakeoffRefPage {
             SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
             SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
             SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
-        }
+        };
         fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage3(fmc); };
         fmc.updateSideButtonActiveStatus();
