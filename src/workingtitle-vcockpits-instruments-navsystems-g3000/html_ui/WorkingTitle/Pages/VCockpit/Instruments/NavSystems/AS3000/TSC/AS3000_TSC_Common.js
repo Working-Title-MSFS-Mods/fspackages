@@ -2241,6 +2241,7 @@ class AS3000_TSC_ADFFrequencyKeyboard extends NavSystemTouch_ADFFrequencyKeyboar
         this.gps.goBack();
     }
 }
+
 class AS3000_TSC_TimeKeyboard extends NavSystemTouch_TimeKeyboard {
     onEnter() {
         super.onEnter();
@@ -2249,16 +2250,30 @@ class AS3000_TSC_TimeKeyboard extends NavSystemTouch_TimeKeyboard {
         this.gps.activateNavButton(6, "Enter", this.validateEdit.bind(this), true, "Icons/ICON_MAP_ENTER.png");
         this.gps.deactivateNavButton(5);
     }
+    
     onExit() {
         super.onExit();
         this.gps.deactivateNavButton(1, true);
         this.gps.deactivateNavButton(2, true);
         this.gps.deactivateNavButton(6, true);
     }
+    
+    setContext(_endCallback, _startingValue, _homePageParent, _homePageName) {
+        super.setContext(_endCallback, null, _startingValue);
+        this.homePageParent = _homePageParent;
+        this.homePageName = _homePageName;
+    }
+    
     cancelEdit() {
         this.gps.goBack();
     }
+    
+    backHome() {
+        this.gps.closePopUpElement();
+        this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
+    }
 }
+
 class AS3000_TSC_SpeedKeyboard extends NavSystemElement {
     constructor() {
         super(...arguments);
@@ -2693,7 +2708,7 @@ class AS3000_TSC_Timers extends NavSystemElement {
         this.baseTime = (this.isCountingDown ? this.initialValue : 0);
     }
     openKeyboard() {
-        this.gps.timeKeyboard.getElementOfType(AS3000_TSC_TimeKeyboard).setContext(this.endKeyboardCallback.bind(this), this.container, this.getCurrentDisplay());
+        this.gps.timeKeyboard.getElementOfType(AS3000_TSC_TimeKeyboard).setContext(this.endKeyboardCallback.bind(this), this.getCurrentDisplay(), "PFD", "PFD Home");
         this.gps.switchToPopUpPage(this.gps.timeKeyboard);
     }
     endKeyboardCallback(_value) {
@@ -3885,11 +3900,13 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
         Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[0], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
         Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[1], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
         Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[2], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
-        Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[3], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+        Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[3], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_FUEL_RING_SHOW_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+        Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[4], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
         
         // statuses
         Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[0], AS3000_TSC_MapSettings.getRangeValueText(AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.parentElement.simVarNameID, "number")]));
         Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[1], AS3000_TSC_MapSettingsOtherTab.getTrackVectorLookaheadText(SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT + this.parentElement.simVarNameID, "number"), true));
+        Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[3], AS3000_TSC_MapSettingsOtherTab.getFuelRingReserveTimeText(SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_ROOT + this.parentElement.simVarNameID, "number")));
     }
     
     onButtonClick(_rowIndex, _isLeft) {
@@ -3897,7 +3914,8 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
             case 0: _isLeft ? this.toggleShowElement(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT) : this.openNorthUpRangeWindow(); break;
             case 1: _isLeft ? this.toggleShowElement(AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT): this.openTrackVectorLookaheadWindow(); break;
             case 2: this.toggleShowElement(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT); break;
-            case 3: this.toggleShowElement(AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT); break;
+            case 3: _isLeft ? this.toggleShowElement(AS3000_MapElement.VARNAME_FUEL_RING_SHOW_ROOT) : this.openFuelRingReserveTimeWindow(); break;
+            case 4: this.toggleShowElement(AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT); break;
         }
     }
     
@@ -3934,12 +3952,36 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
         AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_TRACK_VECTOR_LOOKAHEAD_ROOT, this.parentElement.simVarNameID, _val);
     }
     
+    // fuel ring helpers
+    
+    openFuelRingReserveTimeWindow() {
+        this.parentElement.gps.timeKeyboard.element.setContext(this.setFuelRingReserveTime.bind(this), SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_ROOT + this.parentElement.simVarNameID, "number") * 60000, this.parentElement.homePageParent, this.parentElement.homePageName);
+        this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.timeKeyboard);
+    }
+    
+    setFuelRingReserveTime(_val) {
+        let reserveTime = Math.max(1, Math.round(_val / 60000));
+        AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_ROOT, this.parentElement.simVarNameID, reserveTime);
+    }
+    
     static getTrackVectorLookaheadText(_val, _break = false) {
         if (AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES[_val] > 60) {
             return fastToFixed(AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES[_val] / 60, 0) + (_break ? "<br>minutes" : " minutes");
         } else {
             return AS3000_MapElement.TRACK_VECTOR_LOOKAHEAD_VALUES[_val] + (_break ? "<br>seconds" : " seconds");
         }
+    }
+    
+    static getFuelRingReserveTimeText(_val) {
+        let hours = Math.floor(_val / 60);
+        let minutes = fastToFixed(_val % 60, 0);
+        
+        let minutesText = minutes;
+        if (minutes < 10) {
+            minutesText = "0" + minutesText;
+        }
+        
+        return hours + "+" + minutesText;
     }
 }
 
