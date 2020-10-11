@@ -118,6 +118,7 @@ class MapInstrument extends ISvgMapRootElement {
         this.showRangeRing = false;
         this.showRangeCompass = false;
         this.showTrackVector = false;
+        this.showFuelRing = false;
         this.showAltitudeIntercept = false;
         
         this.airspaceMaxRange = MapInstrument.AIRSPACE_RANGE_DEFAULT;
@@ -815,6 +816,10 @@ class MapInstrument extends ISvgMapRootElement {
                 
                 if (this.showAltitudeIntercept && this.altitudeInterceptElement) {
                     this.navMap.mapElements.push(this.altitudeInterceptElement);
+                }
+                
+                if (this.showFuelRing && this.fuelRingElement) {
+                    this.navMap.mapElements.push(this.fuelRingElement);
                 }
                 
                 if (this.eBingMode != EBingMode.CURSOR) {
