@@ -2607,6 +2607,12 @@
             <Hash Platform="Windows" Value="1069876237" />
           </WObject>
         </File>
+        <File Name="Passenger Announcements\Chime.wav">
+          <WObject ID="{2EA3AFAA-0E08-48D4-A172-3361EC071DA3}">
+            <MediaID ID="1014455391" />
+            <Hash Platform="Windows" Value="2025688079" />
+          </WObject>
+        </File>
         <File Name="Passenger Announcements\CJ4_Seatbelt.wav">
           <WObject ID="{D04387A8-3D9C-4B0F-B825-5BB2AA01BAC9}">
             <MediaID ID="233927793" />
@@ -2628,12 +2634,6 @@
         <File Name="Passenger Announcements\Safety Belt.wav">
           <WObject ID="{7969D84E-BD6B-4C96-9BC8-FC7F53721D78}">
             <MediaID ID="789484764" />
-            <Hash Platform="Windows" Value="2025688079" />
-          </WObject>
-        </File>
-        <File Name="Passenger Announcements\Seatbelt &amp; Safety Off Chime 3.wav">
-          <WObject ID="{2A952BCB-4A0A-4283-83F9-8E0941C9B7D8}">
-            <MediaID ID="616300746" />
             <Hash Platform="Windows" Value="2025688079" />
           </WObject>
         </File>

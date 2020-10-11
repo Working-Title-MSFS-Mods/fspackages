@@ -493,13 +493,6 @@ Unit : Percent Over 100</Comment>
 								</GameParameter>
 							</ChildrenList>
 						</Folder>
-						<GameParameter Name="SIMVAR_AC" ID="{1AA79A50-3201-4F5F-8D74-1B3682D07603}">
-							<PropertyList>
-								<Property Name="FilterTimeDown" Type="Real64" Value="0.5"/>
-								<Property Name="FilterTimeUp" Type="Real64" Value="0.5"/>
-								<Property Name="RTPCRamping" Type="int16" Value="2"/>
-							</PropertyList>
-						</GameParameter>
 					</ChildrenList>
 				</Folder>
 				<Folder Name="ambient" ID="{E52AE20C-C876-40FB-B79F-259BCEAE3FB1}" ShortID="187171715">
@@ -1395,6 +1388,26 @@ Unit : Percent</Comment>
 								</GameParameter>
 							</ChildrenList>
 						</Folder>
+					</ChildrenList>
+				</Folder>
+				<Folder Name="working_title" ID="{2A089371-D91F-4B8A-8A91-9811EC11DAC7}" ShortID="70824550">
+					<ChildrenList>
+						<GameParameter Name="SIMVAR_AC" ID="{1AA79A50-3201-4F5F-8D74-1B3682D07603}">
+							<PropertyList>
+								<Property Name="FilterTimeDown" Type="Real64" Value="0.5"/>
+								<Property Name="FilterTimeUp" Type="Real64" Value="0.5"/>
+								<Property Name="RTPCRamping" Type="int16" Value="2"/>
+							</PropertyList>
+						</GameParameter>
+						<GameParameter Name="SIMVAR_PLAY_CHIME" ID="{6A5ADBF1-0DD5-44C3-B1B5-4A19F7980F7F}">
+							<PropertyList>
+								<Property Name="FilterTimeDown" Type="Real64" Value="0.5"/>
+								<Property Name="FilterTimeUp" Type="Real64" Value="0.5"/>
+								<Property Name="InitialValue" Type="Real64" Value="0"/>
+								<Property Name="Max" Type="Real64" Value="1"/>
+								<Property Name="RTPCRamping" Type="int16" Value="2"/>
+							</PropertyList>
+						</GameParameter>
 					</ChildrenList>
 				</Folder>
 			</ChildrenList>
