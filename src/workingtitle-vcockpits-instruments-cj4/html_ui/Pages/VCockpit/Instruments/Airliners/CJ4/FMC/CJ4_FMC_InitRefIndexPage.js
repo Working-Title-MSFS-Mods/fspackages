@@ -475,7 +475,7 @@ class CJ4_FMC_InitRefIndexPage {
                     let destination = fmc.flightPlanManager.getDestination();
                     destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
                     let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
-                    let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+                    let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
                     destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
                         : destinationDistanceFlightplan;
                     destinationEte = groundSpeed < 50 ? new String("--:--")
