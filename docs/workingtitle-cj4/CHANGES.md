@@ -10,37 +10,38 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ## Key Features
 
 * Added Passenger Briefing Announcements (accessed from MFD Upper Menu and PASS BRIEF BUTTON)
-* Fixed bugs with engine thrust when engines off (issue 222)
-* Adjusted flight dynamics to minimize (but not eliminate) the AP porpoising effect (issue 163)
+* Fixed bugs with engine thrust when engines off ([#222](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/222))
+* Adjusted flight dynamics to minimize (but not eliminate) the AP porpoising effect ([#163](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/163))
 * Fixed V Speed bug (where v speeds would become stuck at -1 after landing)
-* Updated CAS messages (issue 242)
+* Updated CAS messages ([#242](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/242))
 * Sound Updates/Fixes
 * FMS Bug Fixes
 
 ### Engine Model
-* Thrust when engines off bug squashed (issue 222)
+* Thrust when engines off bug squashed ([#222](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/222))
 
 ### Flight Model
 * Adjusted elevator trim effectiveness to reduce porpoising and facilitate (careful) FLC usage
 
 ### LEGS Page
-* Fixed Direct to IAF from LEGS page (issue 220)
-* Fixed approach waypoint display in LEGS page (issue 220)
+* Fixed Direct to IAF from LEGS page ([#220](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/220))
+* Fixed approach waypoint display in LEGS page ([#220](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/220))
 
 ### FPLN Page
-* Fixed bug when adding airways (issue 226) (thanks @tscharlii)
+* Fixed bug when adding airways ([#226](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/226)) (thanks [@tscharlii](https://github.com/tscharlii) )
 * Fixed bug where invalid waypoints didn't always cause an error
 
 ### PERF Page
 * Added input filters for QNH on takeoff and landing perf pages (user can now enter 29.92, 299 or 2992)
 * Added protection for TAKEOFF and APPROACH REF pages when no runway is selected (error message will appear)
+* Fixed weights 
 
 ### PFD/MFD
-* Fixed FMS Text distances on MFD (issue 232)
+* Fixed FMS Text distances on MFD (issue [#232](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/232))
 * Added PASS BRIEF announcments
-* Fixed V Speed bug where some speeds were locked at -1 after a segment (issue 221)
-* Fixed MFD plane not centered on map (issue 219)
-* Updated CAS messages for Pitot Heat, Parking Break and Oxy Masks (issues 242 and 183)
+* Fixed V Speed bug where some speeds were locked at -1 after a segment (issue [#221](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/221))
+* Fixed MFD plane not centered on map (issue [#219](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/219))
+* Updated CAS messages for Pitot Heat, Parking Break and Oxy Masks (issues [#242](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/242) and [#183](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/183))
 
 ### Audio
 * Fixed no chime when playing seatbelt announcement
