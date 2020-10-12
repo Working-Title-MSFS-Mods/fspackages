@@ -29,12 +29,8 @@ class MapInstrument extends ISvgMapRootElement {
         this.minimizedIntersectionMaxRange = MapInstrument.INT_RANGE_MIN_DEFAULT;
         this.minimizedVorMaxRange = MapInstrument.VOR_RANGE_MIN_DEFAULT;
         this.minimizedNdbMaxRange = MapInstrument.NDB_RANGE_MIN_DEFAULT;
-        this.smallAirportMaxRange = MapInstrument.AIRPORT_SMALL_RANGE_DEFAULT;
-        this.medAirportMaxRange = MapInstrument.AIRPORT_MEDIUM_RANGE_DEFAULT;
-        this.largeAirportMaxRange = MapInstrument.AIRPORT_LARGE_RANGE_DEFAULT;
-        this.smallCityMaxRange = MapInstrument.CITY_SMALL_RANGE_DEFAULT;
-        this.medCityMaxRange = MapInstrument.CITY_MEDIUM_RANGE_DEFAULT;
-        this.largeCityMaxRange = MapInstrument.CITY_LARGE_RANGE_DEFAULT;
+        this.airportMaxRanges = MapInstrument.AIRPORT_RANGES_DEFAULT;
+        this.cityMaxRanges = MapInstrument.CITY_RANGES_DEFAULT;
         this.npcAirplaneMaxRange = MapInstrument.PLANE_RANGE_DEFAULT;
         this.showRoads = true;
         this.showAirspaces = true;
@@ -280,6 +276,12 @@ class MapInstrument extends ISvgMapRootElement {
             this.showRoads = false;
             if (newValue === "true") {
                 this.showRoads = true;
+            }
+        }
+        else if (lowercaseName === "show-cities") {
+            this.showCities = false;
+            if (newValue === "true") {
+                this.showCities = true;
             }
         }
         else if (lowercaseName === "show-airspaces") {
@@ -742,18 +744,8 @@ class MapInstrument extends ISvgMapRootElement {
                         let airport = this.airportLoader.waypoints[i];
                         if (airport && airport.infos instanceof AirportInfo) {
                             if (this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
-                                if (this.getDeclutteredRange() <= this.smallAirportMaxRange) {
+                                if (this.getDeclutteredRange() <= this.airportMaxRanges[airport.infos.getClassSize()]) {
                                     this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
-                                }
-                                else if (this.getDeclutteredRange() <= this.medAirportMaxRange) {
-                                    if (airport.infos.getClassSize() !== AirportSize.Small) {
-                                        this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
-                                    }
-                                }
-                                else if (this.getDeclutteredRange() <= this.largeAirportMaxRange) {
-                                    if (airport.infos.getClassSize() === AirportSize.Large) {
-                                        this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
-                                    }
                                 }
                             }
                         }
@@ -788,18 +780,8 @@ class MapInstrument extends ISvgMapRootElement {
                 }
                 if (this.showCities) {
                     for (let city of this.cityManager.displayedCities) {
-                        if (this.getDeclutteredRange() <= this.smallCityMaxRange) {
+                        if (this.getDeclutteredRange() <= this.cityMaxRanges[city.size]) {
                             this.navMap.mapElements.push(city);
-                        }
-                        else if (this.getDeclutteredRange() <= this.medCityMaxRange) {
-                            if (city.size !== CitySize.Small) {
-                                this.navMap.mapElements.push(city);
-                            }
-                        }
-                        else if (this.getDeclutteredRange() <= this.largeCityMaxRange) {
-                            if (city.size === CitySize.Large) {
-                                this.navMap.mapElements.push(city);
-                            }
                         }
                     }
                 }
@@ -1565,15 +1547,15 @@ class MapInstrument extends ISvgMapRootElement {
     }
     
     set smallAirportMaxRangeIndex(_index) {
-        this.smallAirportMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+        this.airportMaxRanges[AirportSize.Small] = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
     }
     
     set medAirportMaxRangeIndex(_index) {
-        this.medAirportMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+        this.airportMaxRanges[AirportSize.Medium] = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
     }
     
     set largeAirportMaxRangeIndex(_index) {
-        this.largeAirportMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+        this.airportMaxRanges[AirportSize.Large] = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
     }
     
     set vorMaxRangeIndex(_index) {
@@ -1601,15 +1583,15 @@ class MapInstrument extends ISvgMapRootElement {
     }
     
     set smallCityMaxRangeIndex(_index) {
-        this.smallCityMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+        this.cityMaxRanges[CitySize.Small] = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
     }
     
     set medCityMaxRangeIndex(_index) {
-        this.medCityMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+        this.cityMaxRanges[CitySize.Medium] = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
     }
     
     set largeCityMaxRangeIndex(_index) {
-        this.largeCityMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+        this.cityMaxRanges[CitySize.Large] = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
     }
     
     // MOD: formats range display numbers
@@ -1643,12 +1625,8 @@ MapInstrument.VOR_RANGE_DEFAULT = 200;
 MapInstrument.VOR_RANGE_MIN_DEFAULT = 0;
 MapInstrument.NDB_RANGE_DEFAULT = 100;
 MapInstrument.NDB_RANGE_MIN_DEFAULT = 0;
-MapInstrument.AIRPORT_SMALL_RANGE_DEFAULT = 35;
-MapInstrument.AIRPORT_MEDIUM_RANGE_DEFAULT = 100;
-MapInstrument.AIRPORT_LARGE_RANGE_DEFAULT = Infinity;
-MapInstrument.CITY_SMALL_RANGE_DEFAULT = 100;
-MapInstrument.CITY_MEDIUM_RANGE_DEFAULT = 200;
-MapInstrument.CITY_LARGE_RANGE_DEFAULT = 1500;
+MapInstrument.AIRPORT_RANGES_DEFAULT = [35, 100, Infinity];
+MapInstrument.CITY_RANGES_DEFAULT = [1500, 200, 100];
 MapInstrument.PLANE_RANGE_DEFAULT = 60;
 MapInstrument.AIRSPACE_RANGE_DEFAULT = Infinity;
 MapInstrument.ROAD_HIGHWAY_RANGE_DEFAULT = Infinity;

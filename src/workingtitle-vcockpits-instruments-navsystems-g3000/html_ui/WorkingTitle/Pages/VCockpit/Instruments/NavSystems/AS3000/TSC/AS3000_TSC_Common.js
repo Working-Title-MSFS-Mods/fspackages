@@ -164,6 +164,9 @@ class AS3000_TSC extends NavSystemTouch {
         this.mapRoadRangeTypeSelect = new NavSystemElementContainer("Road Settings", "MapRoadRangeTypeSelect", new AS3000_TSC_StatusButtonSelectionListWindow(false));
         this.mapRoadRangeTypeSelect.setGPS(this);
         
+        this.mapCityRangeTypeSelect = new NavSystemElementContainer("City Settings", "MapCityRangeTypeSelect", new AS3000_TSC_StatusButtonSelectionListWindow(false));
+        this.mapCityRangeTypeSelect.setGPS(this);
+        
         Include.addScript("/JS/debug.js", function () {
             g_modDebugMgr.AddConsole(null);
         });
@@ -3876,6 +3879,7 @@ class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
     constructor(_parentElement, _elementName) {
         super(_parentElement, _elementName);
         this.showRoadVarNameRoot = AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get("show-roads");
+        this.showCityVarNameRoot = AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get("show-cities");
         
         this.roadTypeSimVarRoots = [
             AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT,
@@ -3887,16 +3891,29 @@ class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
             "Map Trunk Road Range",
             "Map Local Road Range"
         ];
+        
+        this.cityTypeSimVarRoots = [
+            AS3000_MapElement.VARNAME_CITY_LARGE_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_CITY_MEDIUM_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_CITY_SMALL_RANGE_ROOT
+        ];
+        this.cityTypeRangeSelectTitles = [
+            "Large City Range",
+            "Medium City Range",
+            "Small City Range"
+        ];
     }
     
     update() {
         // toggles
         Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[0], "state", (SimVar.GetSimVarValue(this.showRoadVarNameRoot + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+        Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[1], "state", (SimVar.GetSimVarValue(this.showCityVarNameRoot + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
     }
     
     onButtonClick(_rowIndex, _isLeft) {
         switch (_rowIndex) {
             case 0: _isLeft ? this.toggleShowSymbol(this.showRoadVarNameRoot) : this.openRoadRangeTypeWindow(); break;
+            case 1: _isLeft ? this.toggleShowSymbol(this.showCityVarNameRoot) : this.openCityRangeTypeWindow(); break;
         }
     }
     
@@ -3912,7 +3929,7 @@ class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
     }
     
     openRoadRangeWindow(_index) {
-        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(this.roadTypeRangeSelectTitles[_index], this.setRoadTypeRange.bind(this), this.roadTypeSimVarRoots[_index] + this.parentElement.simVarNameID, this.getRoadTypeRangeValues(_index), this.parentElement.homePageParent, this.parentElement.homePageName, this.roadTypeSimVarRoots[_index]);
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(this.roadTypeRangeSelectTitles[_index], this.setSettingVar.bind(this), this.roadTypeSimVarRoots[_index] + this.parentElement.simVarNameID, this.getRoadTypeRangeValues(_index), this.parentElement.homePageParent, this.parentElement.homePageName, this.roadTypeSimVarRoots[_index]);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
     
@@ -3929,7 +3946,32 @@ class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
         return [];
     }
     
-    setRoadTypeRange(_val, _varNameRoot) {
+    // city helpers
+    
+    openCityRangeTypeWindow() {
+        this.parentElement.gps.mapCityRangeTypeSelect.element.setContext(this.openCityRangeWindow.bind(this), this.getCityTypeRangeDisplay.bind(this), this.parentElement.homePageParent, this.parentElement.homePageName);
+        this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.mapCityRangeTypeSelect);
+    }
+    
+    openCityRangeWindow(_index) {
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(this.roadTypeRangeSelectTitles[_index], this.setSettingVar.bind(this), this.cityTypeSimVarRoots[_index] + this.parentElement.simVarNameID, this.getCityTypeRangeValues(_index), this.parentElement.homePageParent, this.parentElement.homePageName, this.cityTypeSimVarRoots[_index]);
+        this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
+    }
+    
+    getCityTypeRangeDisplay(_index) {
+        return AS3000_TSC_MapSettings.getRangeValueText(AS3000_MapElement.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(this.cityTypeSimVarRoots[_index] + this.parentElement.simVarNameID, "number")]);
+    }
+    
+    getCityTypeRangeValues(_index) {
+        switch (_index) {
+        case 0: return AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.CITY_LARGE_RANGE_MAX);
+        case 1: return AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.CITY_MEDIUM_RANGE_MAX);
+        case 2: return AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.CITY_SMALL_RANGE_MAX);
+        }
+        return [];
+    }
+    
+    setSettingVar(_val, _varNameRoot) {
         AS3000_MapElement.setSyncedSettingVar(_varNameRoot, this.parentElement.simVarNameID, _val);
     }
 }

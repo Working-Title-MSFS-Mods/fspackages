@@ -39,6 +39,9 @@ class AS3000_MapElement extends MapInstrumentElement {
             AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT,
             AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT,
             AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_CITY_SMALL_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_CITY_MEDIUM_RANGE_ROOT,
+            AS3000_MapElement.VARNAME_CITY_LARGE_RANGE_ROOT,
             AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT,
             AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT,
             AS3000_MapElement.VARNAME_TRACK_VECTOR_SHOW_ROOT,
@@ -85,6 +88,9 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT, this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_HIGHWAY_RANGE_DEFAULT));
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT, this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_TRUNK_RANGE_DEFAULT));
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT, this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT));
+        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_CITY_SMALL_RANGE_ROOT, this.instrument.zoomRanges.indexOf(AS3000_MapElement.CITY_SMALL_RANGE_DEFAULT));
+        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_CITY_MEDIUM_RANGE_ROOT, this.instrument.zoomRanges.indexOf(AS3000_MapElement.CITY_MEDIUM_RANGE_DEFAULT));
+        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_CITY_LARGE_RANGE_ROOT, this.instrument.zoomRanges.indexOf(AS3000_MapElement.CITY_LARGE_RANGE_DEFAULT));
         
         // "Other" settings
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT, 0);
@@ -282,6 +288,9 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.instrument.roadHighwayMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT + this.simVarNameID, "number");
         this.instrument.roadTrunkMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT + this.simVarNameID, "number");
         this.instrument.roadPrimaryMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT + this.simVarNameID, "number");
+        this.instrument.smallCityMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_CITY_SMALL_RANGE_ROOT + this.simVarNameID, "number");
+        this.instrument.medCityMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_CITY_MEDIUM_RANGE_ROOT + this.simVarNameID, "number");
+        this.instrument.largeCityMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_CITY_LARGE_RANGE_ROOT + this.simVarNameID, "number");
     }
     
     updateTrackVector() {
@@ -394,6 +403,9 @@ AS3000_MapElement.VARNAME_NDB_RANGE_ROOT = "L:AS3000_Map_NDB_Range";
 AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT = "L:AS3000_Map_Road_Highway_Range";
 AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT = "L:AS3000_Map_Road_Trunk_Range";
 AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT = "L:AS3000_Map_Road_Primary_Range";
+AS3000_MapElement.VARNAME_CITY_SMALL_RANGE_ROOT = "L:AS3000_Map_City_Small_Range";
+AS3000_MapElement.VARNAME_CITY_MEDIUM_RANGE_ROOT = "L:AS3000_Map_City_Med_Range";
+AS3000_MapElement.VARNAME_CITY_LARGE_RANGE_ROOT = "L:AS3000_Map_City_Large_Range";
 
 AS3000_MapElement.AIRSPACE_RANGE_DEFAULT = 50;
 AS3000_MapElement.AIRSPACE_RANGE_MAX = 150;
@@ -418,6 +430,13 @@ AS3000_MapElement.ROAD_TRUNK_RANGE_DEFAULT = 15;
 AS3000_MapElement.ROAD_TRUNK_RANGE_MAX = 150;
 AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT = 4;
 AS3000_MapElement.ROAD_PRIMARY_RANGE_MAX = 25;
+
+AS3000_MapElement.CITY_SMALL_RANGE_DEFAULT = 25;
+AS3000_MapElement.CITY_SMALL_RANGE_MAX = 100;
+AS3000_MapElement.CITY_MEDIUM_RANGE_DEFAULT = 50;
+AS3000_MapElement.CITY_MEDIUM_RANGE_MAX = 400;
+AS3000_MapElement.CITY_LARGE_RANGE_DEFAULT = 100;
+AS3000_MapElement.CITY_LARGE_RANGE_MAX = 1000;
 
 AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT = "L:AS3000_Map_NorthUpAbove_Active";
 AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT = "L:AS3000_Map_NorthUpAbove_Range";

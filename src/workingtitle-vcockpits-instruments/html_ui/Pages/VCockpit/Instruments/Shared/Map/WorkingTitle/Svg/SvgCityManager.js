@@ -143,13 +143,7 @@ class SvgCityManager {
     }
     
     searchCities(_coords, _radius, _size) {
-        if (this.map.htmlRoot.getDeclutteredRange() > this.map.htmlRoot.largeCityMaxRange) {
-            return;
-        }
-        if (_size >= CitySize.Medium && this.map.htmlRoot.getDeclutteredRange() > this.map.htmlRoot.medCityMaxRange) {
-            return;
-        }
-        if (_size == CitySize.Small && this.map.htmlRoot.getDeclutteredRange() > this.map.htmlRoot.smallCityMaxRange) {
+        if (this.map.htmlRoot.getDeclutteredRange() > this.map.htmlRoot.cityMaxRanges[_size]) {
             return;
         }
         

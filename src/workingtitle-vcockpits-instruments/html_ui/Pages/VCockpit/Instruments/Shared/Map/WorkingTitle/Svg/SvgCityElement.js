@@ -15,7 +15,7 @@ class SvgCityElement extends SvgMapElement {
     }
     
     id(map) {
-        return "city-" + this.name + "-map-" + map.index;
+        return "city-" + this.name.replace(" ", "") + "-map-" + map.index;
         ;
     }
     
