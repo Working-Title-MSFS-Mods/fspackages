@@ -12,7 +12,7 @@ class SvgCityElement extends SvgMapElement {
         this._lastX = 0;
         this._lastY = 0;
         this.showText = true;
-        this.idRoot = "city-" + this.name.toLowerCase().replace(/[^a-z]/, "") + "-" + (this.lat + "-" + this.long).replace(".", "_");
+        this.idRoot = "city-" + this.name.toLowerCase().replace(/[^a-z]/g, "") + "-" + (this.lat + "-" + this.long).replace(/\./g, "_");
     }
     
     id(map) {
