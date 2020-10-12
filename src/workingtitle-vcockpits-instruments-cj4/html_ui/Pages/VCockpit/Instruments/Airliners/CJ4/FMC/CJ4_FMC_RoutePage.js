@@ -445,7 +445,7 @@ class CJ4_FMC_RoutePage {
                 let airway = infos.airways.find(a => { return a.name === airwayName; });
                 if (airway) {
                     let firstIndex = airway.icaos.indexOf(referenceWaypoint.icao);
-                    let lastWaypointIcao = airway.icaos.find(icao => { return icao === lastWaypointIdent; });
+                    let lastWaypointIcao = airway.icaos.find(icao => icao.substring(7, 12) === lastWaypointIdent.padEnd(5, " "));
                     let lastIndex = airway.icaos.indexOf(lastWaypointIcao);
                     if (firstIndex >= 0) {
                         if (lastIndex >= 0) {
