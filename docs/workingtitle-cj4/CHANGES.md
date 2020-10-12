@@ -37,11 +37,11 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Fixed weights 
 
 ### PFD/MFD
-* Fixed FMS Text distances on MFD (issue [#232](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/232))
+* Fixed FMS Text distances on MFD ([#232](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/232))
 * Added PASS BRIEF announcments
-* Fixed V Speed bug where some speeds were locked at -1 after a segment (issue [#221](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/221))
-* Fixed MFD plane not centered on map (issue [#219](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/219))
-* Updated CAS messages for Pitot Heat, Parking Break and Oxy Masks (issues [#242](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/242) and [#183](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/183))
+* Fixed V Speed bug where some speeds were locked at -1 after a segment ([#221](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/221))
+* Fixed MFD plane not centered on map ([#219](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/219))
+* Updated CAS messages for Pitot Heat, Parking Break and Oxy Masks ([#242](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/242) and [#183](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/183))
 
 ### Audio
 * Fixed no chime when playing seatbelt announcement
