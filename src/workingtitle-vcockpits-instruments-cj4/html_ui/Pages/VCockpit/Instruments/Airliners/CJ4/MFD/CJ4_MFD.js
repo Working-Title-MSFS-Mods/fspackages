@@ -471,8 +471,12 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                         if (fmc.flightPlanManager.getDestination()) {
                             let destination = fmc.flightPlanManager.getDestination();
                             destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
-                            let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
-                            let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+                            let destinationDistanceDirect = Avionics.Utils.computeDistance(currPos, destination.infos.coordinates);
+                            let destinationDistanceFlightplan = 0;
+                            destinationDistance = destinationDistanceDirect;
+                            if (fmc.flightPlanManager.getActiveWaypoint()) {
+                                destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+                            }
                             destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
                                 : destinationDistanceFlightplan;
                             destinationEte = groundSpeed < 50 || destinationDistance <= 0.1 ? new String("--:--")
