@@ -255,17 +255,30 @@ class CJ4_FMC_PerfInitPage {
             { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
         }
         fmc.onRightInput[2] = () => {
-
-            let qnh = Number(fmc.inOut);
-            if (qnh !== NaN && qnh > 28 && qnh < 34) {
-                fmc.landingQnh = qnh.toFixed(2);
-                fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
-                fmc.clearUserInput();
+            let qnhInput = Number(fmc.inOut);
+            if (qnhInput !== NaN) {
+                if (qnhInput > 28 && qnhInput < 32){
+                    fmc.landingQnh = qnhInput.toFixed(2);
+                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
+                }
+                else if (qnhInput > 280 && qnhInput < 320){
+                    let qnhParse = qnhInput / 10
+                    fmc.landingQnh = qnhParse.toFixed(2);
+                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
+                }
+                else if (qnhInput > 2800 && qnhInput < 3200){
+                    let qnhParse = qnhInput / 100
+                    fmc.landingQnh = qnhParse.toFixed(2);
+                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
+                }
+                else {
+                    fmc.showErrorMessage("INVALID");
+                }
             }
             else {
                 fmc.showErrorMessage("INVALID");
             }
-
+            fmc.clearUserInput();
             CJ4_FMC_PerfInitPage.ShowPage13(fmc);
         }
         fmc.onLeftInput[5] = () => {
