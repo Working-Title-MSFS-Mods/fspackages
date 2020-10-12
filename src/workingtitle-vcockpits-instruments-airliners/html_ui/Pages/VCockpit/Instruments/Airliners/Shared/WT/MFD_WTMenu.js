@@ -537,7 +537,7 @@ var WTMenu;
             this.section.items.push(item);
             this.section.endY += this.lineHeight;
         }
-        addPassBriefItem(_title, _textSize) {
+        addPassBriefItem(_title, _textSize, _simvar) {
             let enabled = true;
 
             let tick = document.createElementNS(Avionics.SVG.NS, "text");
@@ -564,6 +564,7 @@ var WTMenu;
             let item = new Menu_Item(Menu_ItemType.CHECKBOX, this.section, this.section.endY, this.lineHeight);
             item.checkboxTickElem = tick;
             item.text = text;
+            item.simVar = _simvar;
             this.section.items.push(item);
             this.registerWithMouse(item);
             this.section.endY += this.lineHeight;
@@ -630,7 +631,8 @@ var WTMenu;
         onChanged(_item) {
             switch (_item.type) {
                 case Menu_ItemType.CHECKBOX:
-                    // _item.checklistItem.key = (_item.checkboxVal) ? true : false;
+                    const pax_brief_played = (_item.checkboxVal) ? 1 : 0;
+                    SimVar.SetSimVarValue(_item.simVar, "number", pax_brief_played);
                     break;
             }
         }
