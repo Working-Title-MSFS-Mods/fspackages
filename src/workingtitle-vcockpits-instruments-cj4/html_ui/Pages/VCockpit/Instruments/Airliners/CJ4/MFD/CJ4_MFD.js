@@ -93,7 +93,7 @@ class CJ4_MFD extends BaseAirliners {
             if (this.showSystemOverlay == 1 || this.showSystemOverlay == 2) {
                 this.systemOverlay.show(true, this.showSystemOverlay);
             }
-            else{
+            else {
                 this.systemOverlay.show(false);
             }
 
@@ -188,7 +188,7 @@ class CJ4_MFD extends BaseAirliners {
                 break;
             case "Lwr_Push_SYS":
                 this.showSystemOverlay++;
-                if(this.showSystemOverlay == 3){
+                if (this.showSystemOverlay == 3) {
                     this.showSystemOverlay = 0;
                 }
                 break;
@@ -198,11 +198,11 @@ class CJ4_MFD extends BaseAirliners {
             case "Lwr_Push_UPR_MENU":
                 this.fillDictionary(this.popup.dictionary);
                 this.popup.setMode(CJ4_PopupMenu.UPPER);
-                if(this.popup.mode == CJ4_PopupMenu.UPPER){
+                if (this.popup.mode == CJ4_PopupMenu.UPPER) {
                     this.checklist.otherMenusOpen = true;
                     this.passengerBrief.otherMenusOpen = true;
                 }
-                else{
+                else {
                     this.checklist.otherMenusOpen = false;
                     this.passengerBrief.otherMenusOpen = false;
                 }
@@ -210,11 +210,11 @@ class CJ4_MFD extends BaseAirliners {
             case "Lwr_Push_LWR_MENU":
                 this.fillDictionary(this.popup.dictionary);
                 this.popup.setMode(CJ4_PopupMenu.LOWER);
-                if(this.popup.mode == CJ4_PopupMenu.LOWER){
+                if (this.popup.mode == CJ4_PopupMenu.LOWER) {
                     this.checklist.otherMenusOpen = true;
                     this.passengerBrief.otherMenusOpen = true;
                 }
-                else{
+                else {
                     this.checklist.otherMenusOpen = false;
                     this.passengerBrief.otherMenusOpen = false;
                 }
@@ -425,6 +425,15 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                     let nextWaypoint = flightPlanManager.getWaypoint(activeIndex + 1);
                     let destination = flightPlanManager.getDestination();
 
+                    if (flightPlanManager.isActiveApproach()) {
+                        if (flightPlanManager.getApproachWaypoints()) {
+                            let approachWaypoints = flightPlanManager.getApproachWaypoints();
+                            previousWaypoint = approachWaypoints[previousWaypointIndex];
+                            activeWaypoint = approachWaypoints[activeIndex];
+                            nextWaypoint = approachWaypoints[activeIndex + 1];
+                        }
+                    }
+
                     // Set ICAOs
                     this._previousWaypointContainer
                         .querySelector(".cj4x-navigation-data-waypoint-ident")
@@ -444,9 +453,9 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                     const activeWaypointDistance = activeWaypoint && destination && activeWaypoint.ident != destination.ident ? Avionics.Utils.computeDistance(aircraftPosition, activeWaypoint.infos.coordinates).toFixed(1) : -1;
                     const nextWaypointDistance = nextWaypoint && destination && nextWaypoint.ident != destination.ident && activeWaypoint ? (new Number(activeWaypointDistance) + new Number(Avionics.Utils.computeDistance(activeWaypoint.infos.coordinates, nextWaypoint.infos.coordinates))).toFixed(1) : -1;
                     let destinationDistance = 0;
-                    if(destination && activeWaypoint){
+                    if (destination && activeWaypoint) {
                         destinationDistance += new Number(Avionics.Utils.computeDistance(aircraftPosition, activeWaypoint.infos.coordinates));
-                        for(let w = activeIndex; w < FPWaypoints.length - 1; w++){
+                        for (let w = activeIndex; w < FPWaypoints.length - 1; w++) {
                             destinationDistance += new Number(Avionics.Utils.computeDistance(FPWaypoints[w].infos.coordinates, FPWaypoints[w + 1].infos.coordinates));
                         }
                         destinationDistance = destinationDistance.toFixed(1);
@@ -468,17 +477,17 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
 
                     // Set ETE
                     let activeWaypointETEValue = "-:--";
-                    if(groundSpeed >= 50 && activeWaypointDistance > 0){
+                    if (groundSpeed >= 50 && activeWaypointDistance > 0) {
                         activeWaypointETEValue = new Date(this.calcETEseconds(activeWaypointDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
                     }
 
                     let nextWaypointETEValue = "-:--";
-                    if(groundSpeed >= 50 && nextWaypointDistance > 0){
+                    if (groundSpeed >= 50 && nextWaypointDistance > 0) {
                         nextWaypointETEValue = new Date(this.calcETEseconds(nextWaypointDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
                     }
 
                     let destinationWaypointETEValue = "-:--";
-                    if(groundSpeed >= 50 && destinationDistance > 0){
+                    if (groundSpeed >= 50 && destinationDistance > 0) {
                         destinationWaypointETEValue = new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
                     }
 
@@ -497,7 +506,7 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                     // Set ETA
                     let previousWaypointETAValue;
                     if (previousWaypoint && previousWaypoint.ident != flightPlanManager.getOrigin().ident) {
-                        if(this.previousWaypoint == undefined || this.previousWaypoint.ident != previousWaypoint.ident){
+                        if (this.previousWaypoint == undefined || this.previousWaypoint.ident != previousWaypoint.ident) {
                             const seconds = Number.parseInt(UTCTime);
                             previousWaypointETAValue = Utils.SecondsToDisplayTime(seconds, true, false, false);
                             this.previousWaypoint = previousWaypoint;
@@ -507,7 +516,7 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                                 .textContent = previousWaypointETAValue;
                         }
                     }
-                    else{
+                    else {
                         this._previousWaypointContainer
                             .querySelector(".cj4x-navigation-data-waypoint-eta")
                             .textContent = "--:--";
@@ -515,21 +524,21 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
 
 
                     let activeWaypointETAValue = "--:--";
-                    if(groundSpeed >= 50 && activeWaypointDistance > 0){
+                    if (groundSpeed >= 50 && activeWaypointDistance > 0) {
                         const seconds = Number.parseInt(UTCTime) + (this.calcETEseconds(activeWaypointDistance, groundSpeed));
                         const time = Utils.SecondsToDisplayTime(seconds, true, false, false);
                         activeWaypointETAValue = time;
                     }
 
                     let nextWaypointETAValue = "--:--";
-                    if(groundSpeed >= 50 && nextWaypointDistance > 0){
+                    if (groundSpeed >= 50 && nextWaypointDistance > 0) {
                         const seconds = Number.parseInt(UTCTime) + (this.calcETEseconds(nextWaypointDistance, groundSpeed));
                         const time = Utils.SecondsToDisplayTime(seconds, true, false, false);
                         nextWaypointETAValue = time;
                     }
 
                     let destinationWaypointETAValue = "--:--";
-                    if(groundSpeed >= 50 && destinationDistance > 0){
+                    if (groundSpeed >= 50 && destinationDistance > 0) {
                         const seconds = Number.parseInt(UTCTime) + (this.calcETEseconds(destinationDistance, groundSpeed));
                         const time = Utils.SecondsToDisplayTime(seconds, true, false, false);
                         destinationWaypointETAValue = time;
@@ -549,7 +558,7 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
 
 
                     // Set expected fuel and gross weight
-                    if(groundSpeed >= 50){
+                    if (groundSpeed >= 50) {
                         const fuelFlow = (SimVar.GetSimVarValue("CJ4 FUEL FLOW:1", "Pounds per hour") + SimVar.GetSimVarValue("CJ4 FUEL FLOW:2", "Pounds per hour")) / 2;
                         const expectedFuelUsage = (fuelFlow * (this.calcETEseconds(destinationDistance, groundSpeed) / 3600)).toFixed(0);
                         const currentFuel = (SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds") * SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons")).toFixed(0);
@@ -564,14 +573,14 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
 
                     }
 
-                    if(activeWaypoint && destination){
-                        if(destination.ident == activeWaypoint.ident){
+                    if (activeWaypoint && destination) {
+                        if (destination.ident == activeWaypoint.ident) {
                             this._destinationWaypointContainer
                                 .setAttribute("style", "color: magenta");
                             this._activeWaypointContainer
                                 .setAttribute("style", "color: white");
                         }
-                        else{
+                        else {
                             this._destinationWaypointContainer
                                 .setAttribute("style", "color: white");
                             this._activeWaypointContainer
@@ -598,7 +607,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
         if (!this.root) {
             console.log("Root component expected!");
         }
-        else{
+        else {
             this.showPage1();
         }
     }
@@ -607,18 +616,18 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.isVisible = _value;
             this.root.setAttribute("visible", (_value) ? "true" : "false");
         }
-        if(this.isVisible){
-            if(_pageNumber == 1 && this.currentPage != _pageNumber){
+        if (this.isVisible) {
+            if (_pageNumber == 1 && this.currentPage != _pageNumber) {
                 this.showPage1();
                 this.currentPage = 1;
             }
-            else if(_pageNumber == 2 && this.currentPage != _pageNumber){
+            else if (_pageNumber == 2 && this.currentPage != _pageNumber) {
                 this.showPage2();
                 this.currentPage = 2;
             }
         }
     }
-    showPage1(){
+    showPage1() {
         if (!this.root)
             return;
 
@@ -1425,8 +1434,8 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
         if (!this.root)
             return;
 
-        if(this.isVisible){
-            if(this.currentPage == 1){
+        if (this.isVisible) {
+            if (this.currentPage == 1) {
                 let GenAmp1 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS AMPS:1", "amperes");
                 this.DCAmpValueLeft.textContent = Math.round(GenAmp1).toString();
                 let GenAmp2 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS AMPS:2", "amperes");
@@ -1451,7 +1460,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 this.FUELTempValueLeft.textContent = "--";
                 this.FUELTempValueRight.textContent = "--";
             }
-            else if (this.currentPage == 2){
+            else if (this.currentPage == 2) {
                 let AilPct = (SimVar.GetSimVarValue("AILERON TRIM PCT", "percent over 100") + 1.0) * 0.5;
                 let ail_x = this.AileronCursorX1 + (this.AileronCursorX2 - this.AileronCursorX1) * AilPct;
                 this.AileronCursor.setAttribute("transform", "translate (" + ail_x + " " + this.AileronCursorY + ")");
