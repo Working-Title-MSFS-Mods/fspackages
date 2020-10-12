@@ -18,7 +18,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * FMS Bug Fixes
 
 ### Engine Model
-* Thrust when engines off bug squashed.
+* Thrust when engines off bug squashed (issue 222)
 
 ### Flight Model
 * Adjusted elevator trim effectiveness to reduce porpoising and facilitate (careful) FLC usage
