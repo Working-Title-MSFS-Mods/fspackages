@@ -31,6 +31,10 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Fixed bug when adding airways ([#226](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/226)) (thanks [@tscharlii](https://github.com/tscharlii) )
 * Fixed bug where invalid waypoints didn't always cause an error
 
+### PROG Page
+* Updated distances to show decimals under 100NM
+* Fixed reveresed XTK and CROSSWIND indications on Page 2
+
 ### PERF Page
 * Added input filters for QNH on takeoff and landing perf pages (user can now enter 29.92, 299 or 2992)
 * Added protection for TAKEOFF and APPROACH REF pages when no runway is selected (error message will appear)
