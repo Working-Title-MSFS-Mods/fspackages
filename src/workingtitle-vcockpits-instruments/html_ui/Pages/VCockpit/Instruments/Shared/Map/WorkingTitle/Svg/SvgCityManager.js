@@ -11,6 +11,7 @@ class SvgCityManager {
             SvgCityManager.CITY_SMALL_SEARCH_LIMIT_DEFAULT                                      // the maximum number of small cities to return with a single search
         ];
         this.bufferMaxSize = SvgCityManager.BUFFER_SIZE_DEFAULT;
+        this.displayedCitiesCleanInterval = SvgCityManager.DISPLAYED_CITIES_CLEAN_INTERVAL;     // seconds, how often to periodically remove out of frame cities from the display list
         
         this.buffer = new Array(this.bufferMaxSize);
         this.bufferHead = -1;
@@ -30,6 +31,8 @@ class SvgCityManager {
         
         this.searchedCitiesSmall = false;
         this.searchedCitiesMedium = false;
+        
+        this.lastDisplayCleanTime = -1;
         
         let request = new XMLHttpRequest();
         request.overrideMimeType("application/json");
@@ -103,14 +106,9 @@ class SvgCityManager {
             let end = this.bufferTail;
             while (start >= 0) {
                 let city = this.dequeueBuffer();
-                if (this.map.isLatLongInFrame(new LatLong(city.lat, city.long)), 0.05) {
+                if (this.map.isLatLongInFrame(new LatLong(city.lat, city.long), 0.05)) {
                     let svgCityElement = new SvgCityElement(city);
                     if (!this.displayedCities.has(svgCityElement)) {
-                        let manager = this;
-                        svgCityElement.onDrawOutOfFrame = () => {
-                            manager.displayedCities.remove(svgCityElement);
-                            manager.toExclude.remove(city);
-                        };
                         this.displayedCities.add(svgCityElement);
                         this.toExclude.add(city);
                     }
@@ -121,6 +119,12 @@ class SvgCityManager {
                 if (start == end) {
                     break;
                 }
+            }
+            
+            if (this.lastDisplayCleanTime < 0 && this.displayedCities.size > 0) {
+                this.lastDisplayCleanTime = currentTime;
+            } else if (currentTime - this.lastDisplayCleanTime >= this.displayedCitiesCleanInterval) {
+                this.cleanDisplayedCities(currentTime);
             }
         }
     }
@@ -190,6 +194,20 @@ class SvgCityManager {
             this.bufferHead = -1;
         }
         return e;
+    }
+    
+    cleanDisplayedCities(_currentTime) {
+        let toRemove = [];
+        for (let cityElement of this.displayedCities) {
+            if (!this.map.isLatLongInFrame(new LatLong(cityElement.lat, cityElement.long), 1)) {
+                toRemove.push(cityElement);
+            }
+        }
+        for (let cityElement of toRemove) {
+            this.displayedCities.delete(cityElement);
+            this.toExclude.delete(cityElement.city);
+        }
+        this.lastDisplayCleanTime = _currentTime;
     }
     
     findNearestCitiesNearPos(_coords, _radius, _size, _numCities) {
@@ -313,10 +331,11 @@ class SvgCityManager {
     }
 }
 SvgCityManager.SEARCH_INTERVAL_DEFAULT = 30;
-SvgCityManager.MAP_CHANGE_SEARCH_DELAY_DEFAULT = 2;
+SvgCityManager.MAP_CHANGE_SEARCH_DELAY_DEFAULT = 1;
 SvgCityManager.MIN_SEARCH_RADIUS_DEFAULT = 10;
 SvgCityManager.CITY_SMALL_SEARCH_LIMIT_DEFAULT = 20;
 SvgCityManager.CITY_MEDIUM_SEARCH_LIMIT_DEFAULT = 20;
 SvgCityManager.CITY_LARGE_SEARCH_LIMIT_DEFAULT = Infinity; 
 SvgCityManager.BUFFER_SIZE_DEFAULT = 100;
+SvgCityManager.DISPLAYED_CITIES_CLEAN_INTERVAL = 120;
 //# sourceMappingURL=SvgCityManager.js.map
