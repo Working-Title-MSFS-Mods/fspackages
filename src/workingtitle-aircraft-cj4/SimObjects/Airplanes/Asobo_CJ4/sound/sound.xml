@@ -224,60 +224,60 @@
     </Sound>
 
         <!--      PASSENGER BRIEFINGS-->
-      <Sound WwiseData="true" WwiseEvent="seatbelt_lights" ViewPoint="Inside" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
+      <Sound WwiseData="true" WwiseEvent="seatbelt_lights" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
           <Range LowerBound="1" />
           <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
               <Range LowerBound="1" />
           </Requires>
       </Sound>
 
-      <Sound WwiseData="true" WwiseEvent="safety_lights" ViewPoint="Inside" LocalVar="SAFETY_LIGHT_ON" Continuous="false">
+      <Sound WwiseData="true" WwiseEvent="safety_lights" LocalVar="SAFETY_LIGHT_ON" Continuous="false">
           <Range LowerBound="1" />
           <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
               <Range LowerBound="1" />
           </Requires>
       </Sound>
 
-      <Sound WwiseData="true" WwiseEvent="takeoff_short" ViewPoint="Inside" LocalVar="PAX_BRIEF_TAKEOFF_SHORT_PLAYED" Continuous="false">
+      <Sound WwiseData="true" WwiseEvent="takeoff_short" LocalVar="PAX_BRIEF_TAKEOFF_SHORT_PLAYED" Continuous="false">
           <Range LowerBound="1" />
           <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
               <Range LowerBound="1" />
           </Requires>
       </Sound>
 
-      <Sound WwiseData="true" WwiseEvent="takeoff_long" ViewPoint="Inside" LocalVar="PAX_BRIEF_TAKEOFF_LONG_PLAYED" Continuous="false">
+      <Sound WwiseData="true" WwiseEvent="takeoff_long" LocalVar="PAX_BRIEF_TAKEOFF_LONG_PLAYED" Continuous="false">
           <Range LowerBound="1" />
           <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
               <Range LowerBound="1" />
           </Requires>
       </Sound>
 
-      <Sound WwiseData="true" WwiseEvent="oxygen_mask_deployment" ViewPoint="Inside" LocalVar="PAX_BRIEF_OXYGEN_PLAYED" Continuous="false">
+      <Sound WwiseData="true" WwiseEvent="oxygen_mask_deployment" LocalVar="PAX_BRIEF_OXYGEN_PLAYED" Continuous="false">
           <Range LowerBound="1" />
           <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
               <Range LowerBound="1" />
           </Requires>
       </Sound>
 
-      <Sound WwiseData="true" WwiseEvent="turbulence" ViewPoint="Inside" LocalVar="PAX_BRIEF_TURBULENCE_PLAYED" Continuous="false">
+      <Sound WwiseData="true" WwiseEvent="turbulence" LocalVar="PAX_BRIEF_TURBULENCE_PLAYED" Continuous="false">
           <Range LowerBound="1" />
           <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
               <Range LowerBound="1" />
           </Requires>
       </Sound>
 
-      <Sound WwiseData="true" WwiseEvent="landing" ViewPoint="Inside" LocalVar="PAX_BRIEF_LANDING_PLAYED" Continuous="false">
+      <Sound WwiseData="true" WwiseEvent="landing" LocalVar="PAX_BRIEF_LANDING_PLAYED" Continuous="false">
           <Range LowerBound="1" />
           <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
               <Range LowerBound="1" />
           </Requires>
       </Sound>
 
-      <Sound WwiseData="true" WwiseEvent="chime" ViewPoint="Inside" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
+      <Sound WwiseData="true" WwiseEvent="chime" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
           <Range UpperBound="0" />
       </Sound>
 
-      <Sound WwiseData="true" WwiseEvent="chime" ViewPoint="Inside" LocalVar="SAFETY_LIGHT_ON" Continuous="false">
+      <Sound WwiseData="true" WwiseEvent="chime" LocalVar="SAFETY_LIGHT_ON" Continuous="false">
           <Range UpperBound="0" />
       </Sound>
 

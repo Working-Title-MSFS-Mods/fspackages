@@ -232,6 +232,27 @@
 											<AudioFile>Passenger Announcements\Turbulence.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
+									<StateInfo>
+										<StateGroupList>
+											<StateGroupInfo>
+												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+											</StateGroupInfo>
+										</StateGroupList>
+										<CustomStateList>
+											<CustomState>
+												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+												<CustomState Name="" ID="{1B47E762-3003-4E58-929A-F139D2374856}" ShortID="865942737"/>
+											</CustomState>
+											<CustomState>
+												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+												<CustomState Name="" ID="{BDBEC88C-0D97-4D14-8DE9-A03C59FF2AAF}" ShortID="1072466003">
+													<PropertyList>
+														<Property Name="Volume" Type="Real64" Value="-108"/>
+													</PropertyList>
+												</CustomState>
+											</CustomState>
+										</CustomStateList>
+									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Turbulence" ID="{0CF4FD00-5354-4E29-83F3-78334007B5B1}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -281,6 +302,27 @@
 											<AudioFile>Passenger Announcements\Safety Belt.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
+									<StateInfo>
+										<StateGroupList>
+											<StateGroupInfo>
+												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+											</StateGroupInfo>
+										</StateGroupList>
+										<CustomStateList>
+											<CustomState>
+												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+												<CustomState Name="" ID="{D7891549-8150-4BAF-9076-F7A27D9D38D4}" ShortID="139752943"/>
+											</CustomState>
+											<CustomState>
+												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+												<CustomState Name="" ID="{4B2221E6-E52B-4B5E-ADEA-72A2C180A6AF}" ShortID="442660486">
+													<PropertyList>
+														<Property Name="Volume" Type="Real64" Value="-108"/>
+													</PropertyList>
+												</CustomState>
+											</CustomState>
+										</CustomStateList>
+									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Safety Belt" ID="{7969D84E-BD6B-4C96-9BC8-FC7F53721D78}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -330,6 +372,27 @@
 											<AudioFile>Passenger Announcements\CJ4_Seatbelt.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
+									<StateInfo>
+										<StateGroupList>
+											<StateGroupInfo>
+												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+											</StateGroupInfo>
+										</StateGroupList>
+										<CustomStateList>
+											<CustomState>
+												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+												<CustomState Name="" ID="{84B627E3-BE47-4C4B-969C-343E403EDAFE}" ShortID="607915802"/>
+											</CustomState>
+											<CustomState>
+												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+												<CustomState Name="" ID="{E9412541-65F1-4B6D-913E-64240BB1794E}" ShortID="25894665">
+													<PropertyList>
+														<Property Name="Volume" Type="Real64" Value="-108"/>
+													</PropertyList>
+												</CustomState>
+											</CustomState>
+										</CustomStateList>
+									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="CJ4_Seatbelt" ID="{D04387A8-3D9C-4B0F-B825-5BB2AA01BAC9}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -379,6 +442,27 @@
 											<AudioFile>Passenger Announcements\Takeoff Short.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
+									<StateInfo>
+										<StateGroupList>
+											<StateGroupInfo>
+												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+											</StateGroupInfo>
+										</StateGroupList>
+										<CustomStateList>
+											<CustomState>
+												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+												<CustomState Name="" ID="{FDF14CFC-2250-4004-AC97-B9D998A37591}" ShortID="910837787"/>
+											</CustomState>
+											<CustomState>
+												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+												<CustomState Name="" ID="{6F2D1AF6-0585-4D11-9C25-F7B177E1E6E7}" ShortID="962814249">
+													<PropertyList>
+														<Property Name="Volume" Type="Real64" Value="-108"/>
+													</PropertyList>
+												</CustomState>
+											</CustomState>
+										</CustomStateList>
+									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Takeoff Short" ID="{38D395AE-8325-4473-9385-E4BF7309A0C0}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -428,6 +512,27 @@
 											<AudioFile>Passenger Announcements\Takeoff Long, Welcome Aboard.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
+									<StateInfo>
+										<StateGroupList>
+											<StateGroupInfo>
+												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+											</StateGroupInfo>
+										</StateGroupList>
+										<CustomStateList>
+											<CustomState>
+												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+												<CustomState Name="" ID="{D04E668A-6C68-4D57-9E96-066D09FEA60E}" ShortID="485225602"/>
+											</CustomState>
+											<CustomState>
+												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+												<CustomState Name="" ID="{55BF9B23-CCF8-4A1E-8203-592161E99D1F}" ShortID="1038457505">
+													<PropertyList>
+														<Property Name="Volume" Type="Real64" Value="-108"/>
+													</PropertyList>
+												</CustomState>
+											</CustomState>
+										</CustomStateList>
+									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Takeoff Long, Welcome Aboard" ID="{FCD393B6-BDCF-4B1D-ACB4-3FB1E46A1D80}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -477,6 +582,27 @@
 											<AudioFile>Passenger Announcements\Chime.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
+									<StateInfo>
+										<StateGroupList>
+											<StateGroupInfo>
+												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+											</StateGroupInfo>
+										</StateGroupList>
+										<CustomStateList>
+											<CustomState>
+												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+												<CustomState Name="" ID="{2181D92C-9AFC-4013-ABA2-67C0912EF36A}" ShortID="214706462"/>
+											</CustomState>
+											<CustomState>
+												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+												<CustomState Name="" ID="{E5E6B280-CE2E-44BC-B96D-16FA399B59F2}" ShortID="541747308">
+													<PropertyList>
+														<Property Name="Volume" Type="Real64" Value="-108"/>
+													</PropertyList>
+												</CustomState>
+											</CustomState>
+										</CustomStateList>
+									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Chime" ID="{2EA3AFAA-0E08-48D4-A172-3361EC071DA3}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -526,6 +652,27 @@
 											<AudioFile>Passenger Announcements\Oxygen Mask.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
+									<StateInfo>
+										<StateGroupList>
+											<StateGroupInfo>
+												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+											</StateGroupInfo>
+										</StateGroupList>
+										<CustomStateList>
+											<CustomState>
+												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+												<CustomState Name="" ID="{CC1720C8-4855-4C18-84BA-2FC0B3766E23}" ShortID="32242254"/>
+											</CustomState>
+											<CustomState>
+												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+												<CustomState Name="" ID="{58BA76F5-B193-4AC3-88FE-F51C77898E84}" ShortID="169763296">
+													<PropertyList>
+														<Property Name="Volume" Type="Real64" Value="-108"/>
+													</PropertyList>
+												</CustomState>
+											</CustomState>
+										</CustomStateList>
+									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Oxygen Mask" ID="{B1DA09FE-B346-40A0-A3AE-E97FACB4FDDC}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -575,6 +722,27 @@
 											<AudioFile>Passenger Announcements\Landing.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
+									<StateInfo>
+										<StateGroupList>
+											<StateGroupInfo>
+												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+											</StateGroupInfo>
+										</StateGroupList>
+										<CustomStateList>
+											<CustomState>
+												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+												<CustomState Name="" ID="{46E67A67-BBA2-4DF0-871B-1E3E769011F9}" ShortID="61009101"/>
+											</CustomState>
+											<CustomState>
+												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+												<CustomState Name="" ID="{43993C9D-D61B-49BF-9700-A021796E3323}" ShortID="307667740">
+													<PropertyList>
+														<Property Name="Volume" Type="Real64" Value="-108"/>
+													</PropertyList>
+												</CustomState>
+											</CustomState>
+										</CustomStateList>
+									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Landing" ID="{06DAAEA9-6E81-43EA-9857-8B0B62A2A711}" Platform="Linked"/>
 									</ActiveSourceList>
