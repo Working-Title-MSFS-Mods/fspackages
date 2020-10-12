@@ -3571,6 +3571,7 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
                 let checklistSections = _checklist.sections;
                 let startingItem = (this.currentPage * this.maximumItemsPerPage) - this.maximumItemsPerPage;
                 let endItem = Math.min(checklistSections.length, startingItem + this.maximumItemsPerPage);
+
                 for(let i = startingItem; i < endItem; i++){
                     if(checklistSections[i]){
                         let sectionComplete = true;
@@ -3580,18 +3581,10 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
                             }
                         }
                         this.addSubMenu(_checklist.sections[i].name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, i)}).bind(this), sectionComplete ? "#11d011" : "white");
-                        if(sectionComplete){
-                            if(i <= checklistSections.length - 1){
-                                this.highlight(i + 1);
-                                this.currentItemIndex = i + 1;
-                            }
-                            else{
-                                this.highlight(i);
-                                this.currentItemIndex = i;
-                            }
-                        }
                     }
                 }
+
+
             }
             this.endSection();
         }
