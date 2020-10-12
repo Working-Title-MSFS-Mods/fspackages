@@ -9,7 +9,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ## Key Features
 
-* Added Passenger Briefing Announcements (accessed from MFD Upper Menu)
+* Added Passenger Briefing Announcements (accessed from MFD Upper Menu and PASS BRIEF BUTTON)
 * Fixed bugs with engine thrust when engines off (issue 222)
 * Adjusted flight dynamics to minimize (but not eliminate) the AP porpoising effect (issue 163)
 * Fixed V Speed bug (where v speeds would become stuck at -1 after landing)
