@@ -54,6 +54,10 @@ class SvgMap {
         }
         this.svgHtmlElement.setAttribute("viewBox", "0 0 1000 1000");
         
+        this.cityLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.svgHtmlElement.appendChild(this.cityLayer);
+        this.svgLayersToUpdate.push(this.cityLayer);
+        
         this.flightPlanLayer = document.createElementNS(Avionics.SVG.NS, "g");
         this.svgHtmlElement.appendChild(this.flightPlanLayer);
         this.svgLayersToUpdate.push(this.flightPlanLayer);
@@ -390,29 +394,6 @@ class SvgMap {
             _svgLayer = this.defaultLayer;
         }
         _svgLayer.appendChild(_svgElement);
-        
-        /*
-        if (mapElement instanceof SvgAirplaneElement) {
-            this.planeLayer.appendChild(svgElement);
-        } else if (mapElement instanceof SvgMaskElement) {
-            this.maskLayer.appendChild(svgElement);
-        } else if (mapElement instanceof SvgFlightPlanElement) {
-            this.flightPlanLayer.appendChild(svgElement);
-        } else if (mapElement instanceof SvgBackOnTrackElement) {
-            this.flightPlanLayer.appendChild(svgElement);
-        } else if (mapElement instanceof SvgLabeledRingElement || mapElement instanceof SvgRangeCompassElement) {
-            this.rangeRingLayer.appendChild(svgElement);
-        } else if (mapElement instanceof SvgTrackVectorElement || mapElement instanceof SvgAltitudeInterceptElement) {
-            this.trackVectorLayer.appendChild(svgElement);
-        } else if (mapElement instanceof SvgWaypointElement) {
-            this.defaultLayer.appendChild(svgElement);
-            if (mapElement._label) {
-                this.textLayer.appendChild(mapElement._label);
-            }
-            mapElement.needRepaint = true;
-        } else {
-            this.defaultLayer.appendChild(svgElement);
-        }*/
     }
     
     resize(w, h) {

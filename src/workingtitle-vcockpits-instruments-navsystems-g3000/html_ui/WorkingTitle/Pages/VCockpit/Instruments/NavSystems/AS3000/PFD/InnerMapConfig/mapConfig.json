@@ -26,7 +26,10 @@
   "cityLabelBackgroundStrokeWidth": 10,
   "cityLabelBackgroundPadding": "7 12 0 12",
   "cityLabelDistance": 12,
-  "cityIconSize": 200,
+  "cityIconSize": [60, 45, 35],
+  "cityIconFillColor": "#7b8083",
+  "cityIconStrokeColor": "#3f3f3f",
+  "cityIconStrokeWidth": 6,
 
   "airplaneIconSize": 250,
   "airplaneIcon1": "ICON_MAP_PLANE",

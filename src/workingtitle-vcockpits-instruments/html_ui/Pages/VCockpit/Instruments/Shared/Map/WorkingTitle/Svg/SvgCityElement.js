@@ -35,6 +35,14 @@ class SvgCityElement extends SvgMapElement {
         return this.city.long;
     }
     
+    appendToMap(map) {
+        map.appendChild(this.svgElement, map.cityLayer);
+        
+        if (this._label) {
+            map.appendChild(this._label, map.textLayer);
+        }
+    }
+    
     imageFileName() {
         let fName = "ICON_MAP_MEDIUM_CITY.svg";
         if (this.size === CitySize.Small) {
@@ -47,57 +55,42 @@ class SvgCityElement extends SvgMapElement {
     }
     
     createDraw(map) {
-        let container = document.createElementNS(Avionics.SVG.NS, "svg");
-        container.id = this.id(map);
-        container.setAttribute("overflow", "visible");
+        this.icon = document.createElementNS(Avionics.SVG.NS, "circle");
+        this.icon.id = this.id(map);
+        this.icon.setAttribute("hasTextBox", "true");
         
-        let icon;
-        icon = document.createElementNS(Avionics.SVG.NS, "image");
-        icon.classList.add("map-city-icon");
-        icon.setAttribute("width", "100%");
-        icon.setAttribute("height", "100%");
-        icon.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName() + "?_= " + new Date().getTime());
-        container.appendChild(icon);
-        container.setAttribute("width", fastToFixed(map.config.cityIconSize, 0));
-        container.setAttribute("height", fastToFixed(map.config.cityIconSize, 0));
+        this.icon.setAttribute("r", map.config.cityIconSize[this.size] / 2);
+        this.icon.setAttribute("fill", map.config.cityIconFillColor);
+        this.icon.setAttribute("fill-opacity", "1");
+        this.icon.setAttribute("stroke", map.config.cityIconStrokeColor);
+        this.icon.setAttribute("stroke-width", map.config.cityIconStrokeWidth);
+        this.icon.setAttribute("stroke-opacity", "1");
         
         this._label = document.createElementNS(Avionics.SVG.NS, "text");
-        this._label.classList.add("map-city-text");
+        this._label.id = this.id(map) + "-text-" + map.index;
         this._label.textContent = this.name;
         this._label.setAttribute("text-anchor", "middle");
-        this._label.setAttribute("x", fastToFixed(map.config.cityIconSize * 0.5, 0));
-        this._label.setAttribute("y", fastToFixed(map.config.cityIconSize * 0.5 - map.config.cityLabelDistance, 0));
         this._label.setAttribute("fill", map.config.cityLabelColor);
         this._label.setAttribute("stroke", map.config.cityLabelStrokeColor);
         this._label.setAttribute("stroke-width", map.config.cityLabelStrokeWidth);
         this._label.setAttribute("font-size", map.config.cityLabelFontSize, 0);
         this._label.setAttribute("font-family", map.config.cityLabelFontFamily);
-        container.appendChild(this._label);
         
-        if (map.config.cityLabelUseBackground) {
-            setTimeout(() => {
-                let bbox = this._label.getBBox();
-                let rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                rect.classList.add("map-city-text-background");
-                rect.setAttribute("width", fastToFixed((bbox.width - 4 + map.config.cityLabelBackgroundPaddingRight + map.config.cityLabelBackgroundPaddingLeft), 0));
-                rect.setAttribute("height", fastToFixed(Math.max((bbox.height - 17 + map.config.cityLabelBackgroundPaddingTop + map.config.cityLabelBackgroundPaddingBottom), 1), 0));
-                rect.setAttribute("x", fastToFixed((bbox.x + 4 - map.config.cityLabelBackgroundPaddingLeft), 0));
-                rect.setAttribute("y", fastToFixed((bbox.y + 10 - map.config.cityLabelBackgroundPaddingTop), 0));
-                rect.setAttribute("fill", map.config.cityLabelBackgroundColor);
-                rect.setAttribute("stroke", map.config.cityLabelBackgroundStrokeColor);
-                rect.setAttribute("stroke-width", fastToFixed(map.config.cityLabelBackgroundStrokeWidth, 0));
-                container.insertBefore(rect, this._label);
-            }, 0);
-        }
-        return container;
+        return this.icon;
     }
     
     updateDraw(map) {
         map.latLongToXYToRef(this.lat, this.long, this);
         if (isFinite(this.x) && isFinite(this.y)) {
             if (Math.abs(this.x - this._lastX) > 0.1 || Math.abs(this.y - this._lastY) > 0.1) {
-                this.svgElement.setAttribute("x", this.x - map.config.cityIconSize * 0.5);
-                this.svgElement.setAttribute("y", this.y - map.config.cityIconSize * 0.5);
+                let iconSize = [30, 25, 20];
+                
+                this.icon.setAttribute("cx", this.x);
+                this.icon.setAttribute("cy", this.y);
+                
+                this._label.setAttribute("x", this.x);
+                this._label.setAttribute("y", this.y - map.config.cityIconSize[this.size] * 0.25 - map.config.cityLabelDistance);
+                
                 this._lastX = this.x;
                 this._lastY = this.y;
             }
