@@ -111,7 +111,7 @@ class CJ4_FMC_LegsPage {
             }
             // skip previous legs
             else if (this._activeWptIndex > 1) {
-                this._wayPointsToRender = allWaypoints.splice(this._activeWptIndex);
+                this._wayPointsToRender = allWaypoints.splice(this._activeWptIndex- 1);
             }
         }
 
