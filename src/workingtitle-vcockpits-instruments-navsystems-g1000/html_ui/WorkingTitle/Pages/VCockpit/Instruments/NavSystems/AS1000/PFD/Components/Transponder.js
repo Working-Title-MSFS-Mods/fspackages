@@ -7,6 +7,7 @@ class WT_Transponder_Model {
         this.code = new Subject(this.getSimCode());
         this.mode = new Subject();
         this.editing = new Subject(false);
+        this.interrogated = new Subject(false);
 
         //this.codeDisplay = new CombinedSubject([this.code, this.editing])
     }
@@ -18,12 +19,14 @@ class WT_Transponder_Model {
         switch (mode) {
             case 1:
                 return "STBY";
+            case 2:
+                return "GND";
             case 3:
                 return "ON";
             case 4:
                 return "ALT";
         }
-        return "IDENT";
+        return "IDNT";
     }
     setEditingCode(code) {
         this.code.value = code;
@@ -31,6 +34,17 @@ class WT_Transponder_Model {
     update(dt) {
         this.code.value = this.getSimCode();
         this.mode.value = this.getMode();
+
+        if (Math.random() < 1 / 180) {
+            this.interrogated.value = true;
+            setTimeout(() => this.interrogated.value = false, 1000);
+        }
+
+        let onGround = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") < 50;
+        if (this.lastOnGround && !onGround) {
+            this.setMode(4);
+        }
+        this.lastOnGround = onGround;
     }
     enterNumber(number) {
         if (!this.editing) {
@@ -60,7 +74,20 @@ class WT_Transponder_View extends WT_HTML_View {
      */
     setModel(model) {
         model.code.subscribe(code => this.elements.code.textContent = code);
-        model.mode.subscribe(mode => this.elements.mode.textContent = mode);
+        model.mode.subscribe(mode => {
+            if (mode == "STBY")
+                this.removeAttribute("enabled");
+            else
+                this.setAttribute("enabled", "enabled");
+            this.elements.mode.textContent = mode;
+        });
+        model.interrogated.subscribe(interrogated => {
+            if (interrogated) {
+                this.setAttribute("interrogated", "interrogated");
+            } else {
+                this.removeAttribute("interrogated");
+            }
+        })
     }
 }
 customElements.define("g1000-transponder", WT_Transponder_View);

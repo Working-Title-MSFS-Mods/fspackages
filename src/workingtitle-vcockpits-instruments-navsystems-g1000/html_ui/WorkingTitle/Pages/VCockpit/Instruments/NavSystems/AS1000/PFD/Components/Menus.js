@@ -107,7 +107,7 @@ class WT_PFD_Transponder_Menu extends WT_Soft_Key_Menu {
         this.stby = new WT_Soft_Key("STBY", () => transponderModel.setMode(1));
         this.on = new WT_Soft_Key("ON", () => transponderModel.setMode(3));
         this.alt = new WT_Soft_Key("ALT", () => transponderModel.setMode(4));
-        this.gnd = new WT_Soft_Key("GND");
+        this.gnd = new WT_Soft_Key("GND", () => transponderModel.setMode(2));
         this.addSoftKey(3, this.stby);
         this.addSoftKey(4, this.on);
         this.addSoftKey(5, this.alt);
@@ -124,6 +124,7 @@ class WT_PFD_Transponder_Menu extends WT_Soft_Key_Menu {
             this.stby.selected = mode == "STBY";
             this.on.selected = mode == "ON";
             this.alt.selected = mode == "ALT";
+            this.gnd.selected = mode == "GND";
         });
     }
     deactivate() {
@@ -145,9 +146,14 @@ class WT_PFD_Transponder_Code_Menu extends WT_Soft_Key_Menu {
             this.addSoftKey(i + 1, new WT_Soft_Key(i, this.addNumber.bind(this, i.toFixed(0))));
         }
         this.addSoftKey(9, new WT_Soft_Key("IDENT"));
-        this.addSoftKey(10, new WT_Soft_Key("BKSP"));
+        this.addSoftKey(10, new WT_Soft_Key("BKSP", this.backspace.bind(this)));
         this.addSoftKey(11, new WT_Soft_Key("BACK", pfd.showMainMenu.bind(pfd)));
         this.addSoftKey(12, pfd.alertsKey);
+    }
+    backspace() {
+        if (this.transponderTempCode.length > 0) {
+            this.transponderTempCode = this.transponderTempCode.slice(0, this.transponderTempCode.length - 1);
+        }
     }
     addNumber(number) {
         this.transponderTempCode += number;

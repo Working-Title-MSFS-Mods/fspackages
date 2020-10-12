@@ -11,6 +11,12 @@ class WT_Local_Time_Model {
     getMode() {
         return this.settings.getValue("time_mode");
     }
+    secondsToZulu(v) {
+        let hours = Math.floor(v / 3600);
+        let minutes = Math.floor((v % 3600) / 60);
+        let seconds = Math.floor(v % 60);
+        return `${hours.toFixed(0)}:${minutes.toFixed(0).padStart(2, "0")}:${seconds.toFixed(0).padStart(2, "0")}`;
+    }
     getTime(mode) {
         let offset = this.settings.getValue("time_offset");
         switch (mode) {
@@ -24,7 +30,7 @@ class WT_Local_Time_Model {
                         meridiem = "<span class='meridiem'>pm</span>";
                         seconds -= 86400 / 2;
                     }
-                    let time = Utils.SecondsToDisplayTime(seconds, true, true, false);
+                    let time = this.secondsToZulu(seconds);
                     return time + meridiem;
                 }
             }
@@ -34,7 +40,7 @@ class WT_Local_Time_Model {
                 let value = SimVar.GetGlobalVarValue("LOCAL TIME", "seconds");
                 if (value) {
                     let seconds = (Number.parseInt(value) + offset + 86400) % 86400;
-                    let time = Utils.SecondsToDisplayTime(seconds, true, true, false);
+                    let time = this.secondsToZulu(seconds);
                     return time;
                 }
             }
@@ -44,7 +50,7 @@ class WT_Local_Time_Model {
                 let value = SimVar.GetGlobalVarValue("E:ZULU TIME", "seconds");
                 if (value) {
                     let seconds = (Number.parseInt(value) + offset + 86400) % 86400;
-                    let time = Utils.SecondsToDisplayTime(seconds, true, true, false);
+                    let time = this.secondsToZulu(seconds);
                     return time;
                 }
             }

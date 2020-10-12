@@ -196,13 +196,29 @@ class AS1000_PFD_Nav_Box_View extends WT_HTML_View {
         model.autopilot.lateral.armed.subscribe(value => this.elements.apLateralArmed.innerHTML = value);
         model.autopilot.lateral.active.subscribe(value => this.elements.apLateralActive.innerHTML = value);
 
-        model.autopilot.status.subscribe(value => this.elements.apStatus.innerHTML = value ? "AP" : "");
+        model.autopilot.status.subscribe(this.updateAutoPilotStatus.bind(this));
 
         model.leg.from.subscribe(value => this.elements.legFrom.innerHTML = value);
         model.leg.to.subscribe(value => this.elements.legTo.innerHTML = value);
         model.leg.symbol.subscribe(value => this.elements.legSymbol.innerHTML = value);
         model.leg.distance.subscribe(distance => this.elements.legDistance.innerHTML = distance);
         model.leg.bearing.subscribe(bearing => this.elements.legBearing.innerHTML = bearing);
+    }
+    updateAutoPilotStatus(status) {
+        if (!status) {
+            if (this.loaded) {
+                this.elements.apStatus.setAttribute("status", "disabling");
+                this.apStatusTimeout = setTimeout(() => {
+                    this.elements.apStatus.setAttribute("status", "disabled");
+                }, 5000);
+            } else {
+                this.elements.apStatus.setAttribute("status", "disabled");
+            }
+            this.loaded = true;
+        } else {
+            clearTimeout(this.apStatusTimeout);
+            this.elements.apStatus.setAttribute("status", "enabled");
+        }
     }
 }
 customElements.define("g1000-nav-box", AS1000_PFD_Nav_Box_View);

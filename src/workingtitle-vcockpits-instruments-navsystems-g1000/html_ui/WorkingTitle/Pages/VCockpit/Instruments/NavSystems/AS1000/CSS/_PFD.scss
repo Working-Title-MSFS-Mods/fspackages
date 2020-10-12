@@ -192,14 +192,50 @@ g1000-nav-box {
         display: grid;
         grid-template-columns: 15% 10% 40% 30%;
     }
+
+    .ap-status {
+        .active {
+            display: inline-block;
+            @keyframes ap-status-disable-animation {
+                0% {
+                    background: yellow;
+                    color: #000;
+                }
+                45% {
+                    background: yellow;
+                    color: #000;
+                }
+                50% {
+                    background: transparent;
+                    color: yellow;
+                }
+                95% {
+                    background: transparent;
+                    color: yellow;
+                }
+                100% {
+                    background: yellow;
+                    color: #000;
+                }
+            }
+            &[status="disabling"] {
+                animation: ap-status-disable-animation infinite 1s !important;
+                animation-timing-function: cubic-bezier(1, 0, 0, 0.99);
+            }
+            &[status="disabled"] {
+                visibility: hidden;
+            }
+        }
+    }
 }
 
 g1000-transponder {
     grid-area: xpdr;
     padding: 1vh;
     display: grid;
-    grid-template-columns: auto 4ch 5ch;
+    grid-template-columns: auto 4ch 4ch 1ch;
     grid-gap: 1vh;
+    align-items: center;
     background-color: $page_background_color;
     border-top: $border_width_thin solid $border_color;
     border-left: $border_width_thin solid $border_color;
@@ -210,6 +246,24 @@ g1000-transponder {
 
     .mode {
         text-align: right;
+    }
+
+    &[enabled] {
+        .mode,
+        .code {
+            color: $color_ap_active;
+        }
+    }
+
+    .reply {
+        visibility: hidden;
+        font-size: 0.8em;
+        font-weight: bold;
+    }
+    &[interrogated][enabled] {
+        .reply {
+            visibility: visible;
+        }
     }
 }
 
