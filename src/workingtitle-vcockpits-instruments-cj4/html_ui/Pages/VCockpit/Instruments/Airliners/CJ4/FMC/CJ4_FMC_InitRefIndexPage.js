@@ -480,6 +480,9 @@ class CJ4_FMC_InitRefIndexPage {
                     if (fmc.flightPlanManager.getActiveWaypoint()) {
                         destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
                     }
+                    else {
+                        destinationDistanceFlightplan = destination.cumulativeDistanceInFP;
+                    }
                     destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
                         : destinationDistanceFlightplan;
                     destinationEte = groundSpeed < 50 || destinationDistance <= 0.1 ? new String("--:--")
