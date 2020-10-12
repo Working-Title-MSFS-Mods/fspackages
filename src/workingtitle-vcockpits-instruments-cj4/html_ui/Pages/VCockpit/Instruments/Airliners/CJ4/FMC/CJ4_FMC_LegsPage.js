@@ -111,7 +111,7 @@ class CJ4_FMC_LegsPage {
             }
             // skip previous legs
             else if (this._activeWptIndex > 1) {
-                this._wayPointsToRender = allWaypoints.splice(this._activeWptIndex- 1);
+                this._wayPointsToRender = allWaypoints.splice(this._activeWptIndex - 1);
             }
         }
 
@@ -299,15 +299,21 @@ class CJ4_FMC_LegsPage {
                         case CJ4_FMC_LegsPage.SELECT_MODE.NEW:
                             if ((i >= 1 && this._currentPage == 1) || this._currentPage > 1) {
                                 this._fmc.setMsg("Working...");
-                                this._fmc.insertWaypoint(value, selectedWpIndex, () => {
-                                    let isDirectTo = (i == 1 && this._currentPage == 1);
-                                    if (isDirectTo) {
-                                        let wp = this._fmc.flightPlanManager.getWaypoint(selectedWpIndex);
-                                        this._fmc.activateDirectToWaypoint(wp, () => {
+                                this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
+                                    if (isSuccess) {
+                                        let isDirectTo = (i == 1 && this._currentPage == 1);
+                                        if (isDirectTo) {
+                                            let wp = this._fmc.flightPlanManager.getWaypoint(selectedWpIndex);
+                                            this._fmc.activateDirectToWaypoint(wp, () => {
+                                                this.resetAfterOp();
+                                            });
+                                        } else
                                             this.resetAfterOp();
-                                        });
-                                    } else
-                                        this.resetAfterOp();
+                                    } else {
+                                        this._fmc.fpHasChanged = false;
+                                        this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
+                                        this._fmc.eraseTemporaryFlightPlan();
+                                    }
                                 });
                             }
                             break;
