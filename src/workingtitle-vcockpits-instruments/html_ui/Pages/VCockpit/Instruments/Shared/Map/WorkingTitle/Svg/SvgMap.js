@@ -356,13 +356,7 @@ class SvgMap {
             this._elementsWithTextBox = [];
             for (let i = 0; i < this.mapElements.length; i++) {
                 let e = this.mapElements[i];
-                if (e instanceof SvgNearestAirportElement) {
-                    this._elementsWithTextBox.push(e);
-                }
-                else if (e instanceof SvgWaypointElement) {
-                    this._elementsWithTextBox.push(e);
-                }
-                else if (e instanceof SvgConstraintElement) {
+                if (e.hasTextBox) {
                     this._elementsWithTextBox.push(e);
                 }
             }

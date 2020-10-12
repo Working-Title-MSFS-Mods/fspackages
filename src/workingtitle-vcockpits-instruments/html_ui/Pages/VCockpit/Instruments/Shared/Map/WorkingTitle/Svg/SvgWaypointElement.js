@@ -1,6 +1,7 @@
 class SvgWaypointElement extends SvgMapElement {
     constructor(source) {
         super();
+        this.hasTextBox = true;
         this.textOffsetRatio = 0.25;
         this.showText = true;
         this.minimize = false;

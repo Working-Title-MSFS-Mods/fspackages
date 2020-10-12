@@ -45,7 +45,7 @@ class MapInstrument extends ISvgMapRootElement {
         this.showNDBs = true;
         this.showAirports = true;
         this.showObstacles = true;
-        this.showCities = false;
+        this.showCities = true;
         this.showTraffic = true;
         this.showConstraints = false;
         this._ranges = MapInstrument.ZOOM_RANGES_DEFAULT;
@@ -787,17 +787,16 @@ class MapInstrument extends ISvgMapRootElement {
                     }
                 }
                 if (this.showCities) {
-                    for (let i = 0; i < this.cityManager.displayedCities.length; i++) {
-                        let city = this.cityManager.displayedCities[i];
-                        if (this.getDeclutteredRange() < this.smallCityMaxRange) {
+                    for (let city of this.cityManager.displayedCities) {
+                        if (this.getDeclutteredRange() <= this.smallCityMaxRange) {
                             this.navMap.mapElements.push(city);
                         }
-                        else if (this.getDeclutteredRange() < this.medCityMaxRange) {
+                        else if (this.getDeclutteredRange() <= this.medCityMaxRange) {
                             if (city.size !== CitySize.Small) {
                                 this.navMap.mapElements.push(city);
                             }
                         }
-                        else if (this.getDeclutteredRange() < this.largeCityMaxRange) {
+                        else if (this.getDeclutteredRange() <= this.largeCityMaxRange) {
                             if (city.size === CitySize.Large) {
                                 this.navMap.mapElements.push(city);
                             }
@@ -1599,6 +1598,18 @@ class MapInstrument extends ISvgMapRootElement {
     
     set roadPrimaryMaxRangeIndex(_index) {
         this.roadPrimaryMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+    }
+    
+    set smallCityMaxRangeIndex(_index) {
+        this.smallCityMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+    }
+    
+    set medCityMaxRangeIndex(_index) {
+        this.medCityMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+    }
+    
+    set largeCityMaxRangeIndex(_index) {
+        this.largeCityMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
     }
     
     // MOD: formats range display numbers

@@ -25,6 +25,7 @@ class SvgMapElementPerfProbe {
 class SvgMapElement {
     constructor() {
         this.sortIndex = 0;
+        this.hasTextBox = false;
     }
     findSvgElement(map) {
         let element;
