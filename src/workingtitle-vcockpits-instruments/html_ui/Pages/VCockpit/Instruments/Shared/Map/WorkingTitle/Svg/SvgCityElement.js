@@ -12,15 +12,15 @@ class SvgCityElement extends SvgMapElement {
         this._lastX = 0;
         this._lastY = 0;
         this.showText = true;
+        this.idRoot = "city-" + this.name.toLowerCase().replace(/[^a-z]/, "");
     }
     
     id(map) {
-        return "city-" + this.name.replace(" ", "") + "-map-" + map.index;
-        ;
+        return this.idRoot + "-map-" + map.index;
     }
     
     get name() {
-        return this.city.name.replace("'", "");
+        return this.city.name;
     }
     
     get size() {
@@ -73,7 +73,7 @@ class SvgCityElement extends SvgMapElement {
         this._label.setAttribute("fill", map.config.cityLabelColor);
         this._label.setAttribute("stroke", map.config.cityLabelStrokeColor);
         this._label.setAttribute("stroke-width", map.config.cityLabelStrokeWidth);
-        this._label.setAttribute("font-size", map.config.cityLabelFontSize, 0);
+        this._label.setAttribute("font-size", map.config.cityLabelFontSize);
         this._label.setAttribute("font-family", map.config.cityLabelFontFamily);
         
         return this.icon;
@@ -83,8 +83,6 @@ class SvgCityElement extends SvgMapElement {
         map.latLongToXYToRef(this.lat, this.long, this);
         if (isFinite(this.x) && isFinite(this.y)) {
             if (Math.abs(this.x - this._lastX) > 0.1 || Math.abs(this.y - this._lastY) > 0.1) {
-                let iconSize = [30, 25, 20];
-                
                 this.icon.setAttribute("cx", this.x);
                 this.icon.setAttribute("cy", this.y);
                 

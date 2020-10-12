@@ -108,10 +108,8 @@ class SvgCityManager {
                 let city = this.dequeueBuffer();
                 if (this.map.isLatLongInFrame(new LatLong(city.lat, city.long), 0.05)) {
                     let svgCityElement = new SvgCityElement(city);
-                    if (!this.displayedCities.has(svgCityElement)) {
-                        this.displayedCities.add(svgCityElement);
-                        this.toExclude.add(city);
-                    }
+                    this.displayedCities.add(svgCityElement);
+                    this.toExclude.add(city);
                 } else {
                     this.enqueueBuffer(city);
                 }
@@ -242,7 +240,7 @@ class SvgCityManager {
         let other = -1;
         if (side < 0 && city.greater >= 0) {
             other = city.greater;
-        } else if (city.lesser >= 0) {
+        } else if (side >= 0 && city.lesser >= 0) {
             other = city.lesser;
         }
         
