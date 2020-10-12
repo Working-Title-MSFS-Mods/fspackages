@@ -407,7 +407,7 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                     flightPlanManager.updateFlightPlan();
                     this._flightPlanUpdateCounter = 0;
                 }
-                if (this._flightPlanUpdateCounter % 30 == 0) {
+                if (this._flightPlanUpdateCounter % 10 == 0) {
 
                     // Grab plane information
                     let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
@@ -427,9 +427,10 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                         let activeIndex = flightPlanManager.getActiveWaypointIndex();
                         let activeWaypoint = FPWaypoints[activeIndex];
                         let nextWaypoint = flightPlanManager.getWaypoint(activeIndex + 1);
-                        if (!nextWaypoint)
-                            nextWaypoint = flightPlanManager.getWaypoint(activeIndex + 1, NaN, true);
                         let destination = flightPlanManager.getDestination();
+
+                        if (!nextWaypoint || (nextWaypoint.ident === destination.ident))
+                            nextWaypoint = flightPlanManager.getWaypoint(activeIndex + 1, NaN, true);
 
                         if (flightPlanManager.isActiveApproach()) {
                             if (flightPlanManager.getApproachWaypoints()) {
