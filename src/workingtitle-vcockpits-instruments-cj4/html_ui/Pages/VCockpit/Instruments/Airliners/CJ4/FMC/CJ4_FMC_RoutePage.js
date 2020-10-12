@@ -131,9 +131,14 @@ class CJ4_FMC_RoutePage {
                             });
                         } else if (value.length > 0) {
                             fmc.clearUserInput();
-                            fmc.insertWaypoint(value, 1, () => {
-                                fmc.setMsg();
-                                CJ4_FMC_RoutePage.ShowPage1(fmc);
+                            fmc.insertWaypoint(value, 1, (isSuccess) => {
+                                if (isSuccess) {
+                                    fmc.setMsg();
+                                    CJ4_FMC_RoutePage.ShowPage1(fmc);
+                                } else {
+                                    fmc.fpHasChanged = false;
+                                    fmc.eraseTemporaryFlightPlan(() => { CJ4_FMC_RoutePage.ShowPage1(fmc); });
+                                }
                             });
                         } else {
                             fmc.setMsg();
@@ -288,9 +293,14 @@ class CJ4_FMC_RoutePage {
                         });
                     } else if (value.length > 0) {
                         fmc.clearUserInput();
-                        fmc.insertWaypoint(value, fpIndex, () => {
-                            fmc.setMsg();
-                            CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
+                        fmc.insertWaypoint(value, fpIndex, (isSuccess) => {
+                            if (isSuccess) {
+                                fmc.setMsg();
+                                CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
+                            } else {
+                                fmc.fpHasChanged = false;
+                                fmc.eraseTemporaryFlightPlan(() => { CJ4_FMC_RoutePage.ShowPage2(fmc, offset); });
+                            }
                         });
                     } else {
                         fmc.setMsg();
@@ -306,9 +316,14 @@ class CJ4_FMC_RoutePage {
                         let value = fmc.inOut;
                         if (value.length > 0) {
                             fmc.clearUserInput();
-                            fmc.insertWaypoint(value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1, () => {
-                                fmc.setMsg();
-                                CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
+                            fmc.insertWaypoint(value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1, (isSuccess) => {
+                                if (isSuccess) {
+                                    fmc.setMsg();
+                                    CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
+                                } else {
+                                    fmc.fpHasChanged = false;
+                                    fmc.eraseTemporaryFlightPlan(() => { CJ4_FMC_RoutePage.ShowPage2(fmc, offset); });
+                                }
                             });
                         } else
                             fmc.setMsg();
@@ -445,7 +460,7 @@ class CJ4_FMC_RoutePage {
                 let airway = infos.airways.find(a => { return a.name === airwayName; });
                 if (airway) {
                     let firstIndex = airway.icaos.indexOf(referenceWaypoint.icao);
-                    let lastWaypointIcao = airway.icaos.find(icao => { return icao.indexOf(lastWaypointIdent) !== -1; });
+                    let lastWaypointIcao = airway.icaos.find(icao => icao.substring(7, 12) === lastWaypointIdent.padEnd(5, " "));
                     let lastIndex = airway.icaos.indexOf(lastWaypointIcao);
                     if (firstIndex >= 0) {
                         if (lastIndex >= 0) {

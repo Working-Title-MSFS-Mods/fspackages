@@ -27,11 +27,7 @@ class CJ4_FMC_PerfInitPage {
     }
     static ShowPage2(fmc) { //PERF INIT
         fmc.clearDisplay();
-        let grWtCell = "";
-        let grossWeightValue = fmc.getWeight();
-        if (isFinite(grossWeightValue)) {
-            grWtCell = (grossWeightValue * 2200).toFixed(0);
-        }
+		
         let crzAltCell = "□□□□□";
         if (fmc.cruiseFlightLevel) {
             crzAltCell = fmc.cruiseFlightLevel;
@@ -48,16 +44,23 @@ class CJ4_FMC_PerfInitPage {
         let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft;
         let fuelCell = Math.trunc(fuelQuantityTotal);
 
+		let zFW = 10280 + (fmc.paxNumber * 170) + fmc.cargoWeight;
+		fmc.grossWeight = zFW + fuelCell;
+		
+		if (zFW > 12500) {
+			zFW = zFW + "[yellow]";
+		}
+
         fmc._templateRenderer.setTemplateRaw([
             [" ACT PERF INIT[blue]","",""],
             [" BOW[blue]", "CRZ ALT[blue] "],
             ["(10280)[d-text]LB[s-text]", "FL" + crzAltCell],
             [" PASS/WT[blue]"],
-            [" " + fmc.paxNumber + "/190[d-text]LB[s-text]"],
+            [" " + fmc.paxNumber + "/170[d-text]LB[s-text]"],
             [" CARGO[blue]", "= ZFW[blue] "],
-            [" " + fmc.cargoWeight.toFixed(0).padStart(4, " ") + "[d-text] LB[s-text]", (fmc.zeroFuelWeight * 2200).toFixed(0).toString() + " LB[s-text]"],
+            [" " + fmc.cargoWeight.toFixed(0).padStart(4, " ") + "[d-text] LB[s-text]", zFW + " LB[s-text]"],
             [" SENSED FUEL[blue]", "= GWT[blue] "],
-            [" " + fuelCell + "[d-text] LB[s-text]", grWtCell + " LB[s-text]"],
+            [" " + fuelCell + "[d-text] LB[s-text]", fmc.grossWeight + " LB[s-text]"],
             ["------------------------[blue]"],
             ["", "TAKEOFF>"],
             ["", ""],
@@ -65,13 +68,13 @@ class CJ4_FMC_PerfInitPage {
         ]);
         fmc.onLeftInput[1] = () => {
             fmc.paxNumber = fmc.inOut;
-            fmc.zeroFuelWeight = ((fmc.inOut * 170) + fmc.cargoWeight + fmc.basicOperatingWeight) / 2200;
+            zFW = ((fmc.inOut * 170) + fmc.cargoWeight + fmc.basicOperatingWeight) / 2200;
             fmc.clearUserInput();
             { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
         }
         fmc.onLeftInput[2] = () => {
             fmc.cargoWeight = parseInt(fmc.inOut); //ParseInt changes from string to number
-            fmc.zeroFuelWeight = (fmc.cargoWeight + (fmc.paxNumber * 170) + fmc.basicOperatingWeight) / 2200;
+            zFW = (fmc.cargoWeight + (fmc.paxNumber * 170) + fmc.basicOperatingWeight) / 2200;
             fmc.clearUserInput();
             { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
         }
@@ -200,6 +203,9 @@ class CJ4_FMC_PerfInitPage {
             arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
             arrRunwayLength = new Number((arrRunway.length) * 3.28);
         }
+        else {
+            arrRunwayOutput = "NO APPROACH RW";
+        }
 
         let headwind = "";
         let crosswind = "";
@@ -252,17 +258,30 @@ class CJ4_FMC_PerfInitPage {
             { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
         }
         fmc.onRightInput[2] = () => {
-
-            let qnh = Number(fmc.inOut);
-            if (qnh !== NaN && qnh > 28 && qnh < 34) {
-                fmc.landingQnh = qnh.toFixed(2);
-                fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
-                fmc.clearUserInput();
+            let qnhInput = Number(fmc.inOut);
+            if (qnhInput !== NaN) {
+                if (qnhInput > 28 && qnhInput < 32){
+                    fmc.landingQnh = qnhInput.toFixed(2);
+                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
+                }
+                else if (qnhInput > 280 && qnhInput < 320){
+                    let qnhParse = qnhInput / 10
+                    fmc.landingQnh = qnhParse.toFixed(2);
+                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
+                }
+                else if (qnhInput > 2800 && qnhInput < 3200){
+                    let qnhParse = qnhInput / 100
+                    fmc.landingQnh = qnhParse.toFixed(2);
+                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
+                }
+                else {
+                    fmc.showErrorMessage("INVALID");
+                }
             }
             else {
                 fmc.showErrorMessage("INVALID");
             }
-
+            fmc.clearUserInput();
             CJ4_FMC_PerfInitPage.ShowPage13(fmc);
         }
         fmc.onLeftInput[5] = () => {
@@ -276,8 +295,22 @@ class CJ4_FMC_PerfInitPage {
             fmc.clearUserInput();
             { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
         }
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage15(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage14(fmc); };
+        fmc.onPrevPage = () => {
+            if (fmc.flightPlanManager.getApproachRunway()) {
+                CJ4_FMC_PerfInitPage.ShowPage15(fmc);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            };
+        fmc.onNextPage = () => {
+            if (fmc.flightPlanManager.getApproachRunway()) {
+                CJ4_FMC_PerfInitPage.ShowPage14(fmc);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage14(fmc) { //APPROACH REF Page 2
@@ -325,8 +358,8 @@ class CJ4_FMC_PerfInitPage {
         let eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
             : 0;
         let fuelBurn = eteToDestination * totalFuelFlow;
-        let ldgWt = grWtCell - fuelBurn;
-        let ldgWtCell = (grWtCell - fuelBurn) == 0 ? "-----"
+        let ldgWt = fmc.grossWeight - fuelBurn;
+        let ldgWtCell = (fmc.grossWeight - fuelBurn) == 0 ? "-----"
             : Math.trunc(ldgWt);
 		
         let vRef = ((ldgWt - 10500) * .00393) + 92; //V Speeds based on weight at 0C
@@ -386,7 +419,7 @@ class CJ4_FMC_PerfInitPage {
             ["", "V[blue]REF:[s-text blue] " + vRef.toFixed(0)],
             [""],
             [" LW / GWT/MLW[blue]", "V[blue]APP:[s-text blue] " + vApp.toFixed(0)],
-            [ldgWtCell + "/" + grWtCell + "/15660"],
+            [ldgWtCell + "/" + fmc.grossWeight + "/15660"],
             [" LFL / RWXX[blue]"],
             [ldgFieldLength.toFixed(0) + " / " + Math.trunc(arrRunwayLength) + " FT"],
             [" LDG FACTOR[blue]"],
@@ -396,8 +429,8 @@ class CJ4_FMC_PerfInitPage {
         ]);
 
         fmc.onRightInput[5] = () => {
-            SimVar.SetSimVarValue("L:AIRLINER_VREF_SPEED", "Knots", vRef);
-            //new L:WT_CJ4_VAP for Vapp in CJ4
+            //new custom Cj4 LVARS for all V Speeds
+            SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots", vRef);
             SimVar.SetSimVarValue("L:WT_CJ4_VAP", "Knots", vApp);
             //new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
             SimVar.SetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool", true);

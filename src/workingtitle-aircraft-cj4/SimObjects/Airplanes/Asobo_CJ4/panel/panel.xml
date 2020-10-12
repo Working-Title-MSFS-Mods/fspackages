@@ -152,20 +152,28 @@
 
 		<Annunciation>
 		  <Type>Warning</Type>
-		  <Text>PARK BRAKE</Text>
-		  <Condition>
-			<Simvar name="BRAKE PARKING INDICATOR" unit="Bool"/>
-		  </Condition>
-		</Annunciation>
-
-		<Annunciation>
-		  <Type>Warning</Type>
 		  <Text>FIRE</Text>
 		  <Condition>
 			<Or>
 				<Simvar name="ENG ON FIRE:1" unit="Bool"/>
 				<Simvar name="ENG ON FIRE:2" unit="Bool"/>
 			</Or>
+		  </Condition>
+		</Annunciation>
+
+		<Annunciation>
+		  <Type>Caution</Type>
+		  <Text>PARKING BRAKE</Text>
+		  <Condition>
+			<And>
+				<Greater>
+					<Simvar name="TURB ENG N1:1" unit="percent"/>
+					<Constant>70</Constant>
+				</Greater>
+				<And>
+					<Simvar name="BRAKE PARKING INDICATOR" unit="Bool"/>
+				</And>
+			</And>
 		  </Condition>
 		</Annunciation>
 
@@ -295,7 +303,7 @@
 		  <!-- </Condition> -->
 		<!-- </Annunciation> -->
 
-		<Annunciation>
+		<!-- <Annunciation>
 		  <Type>Caution</Type>
 		  <Text>USE OXYGEN MASK</Text>
 		  <Condition>
@@ -304,7 +312,7 @@
 				<Constant>10000</Constant>
 			</Greater>
 		  </Condition>
-		</Annunciation>
+		</Annunciation> -->
 
 		<Annunciation>
 		  <Type>Caution</Type>
@@ -317,15 +325,14 @@
 		  </Condition>
 		</Annunciation>
 
-		<!--
 		<Annunciation>
 		  <Type>Caution</Type>
-		  <Text>PITOT NO HT </Text>
-		  <Condition Suffix="L-R">
+		  <Text>PITOT/STATIC COLD </Text>
+		  <Condition Suffix="L/R">
 			<And>
 				<Greater>
-					<Simvar name="PROP RPM:1" unit="rpm"/>
-					<Constant>1</Constant>
+					<Simvar name="TURB ENG N1:1" unit="percent"/>
+					<Constant>70</Constant>
 				</Greater>
 				<Not>
 					<Or>
@@ -338,8 +345,8 @@
 		  <Condition Suffix="L">
 			<And>
 				<Greater>
-					<Simvar name="PROP RPM:1" unit="rpm"/>
-					<Constant>1</Constant>
+					<Simvar name="TURB ENG N1:1" unit="percent"/>
+					<Constant>70</Constant>
 				</Greater>
 				<Not>
 					<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
@@ -349,8 +356,8 @@
 		  <Condition Suffix="R">
 			<And>
 				<Greater>
-					<Simvar name="PROP RPM:1" unit="rpm"/>
-					<Constant>1</Constant>
+					<Simvar name="TURB ENG N1:1" unit="percent"/>
+					<Constant>70</Constant>
 				</Greater>
 				<Not>
 					<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
@@ -359,7 +366,7 @@
 		  </Condition>
 		</Annunciation>
 		
-		<Annunciation>
+		<!--<Annunciation>
 		  <Type>Caution</Type>
 		  <Text>PITOT HT ON </Text>
 		  <Condition Suffix="L-R">

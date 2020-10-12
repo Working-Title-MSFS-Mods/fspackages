@@ -20,6 +20,9 @@ class CJ4_FMC_TakeoffRefPage {
             depRunwayElevation = new Number(depRunway.elevation * 3.28);
             depRunwayLength = new Number((depRunway.length) * 3.28);
         }
+        else {
+            depRunwayOutput = "NO TAKEOFF RW";
+        }
 
         let headwind = "";
         let crosswind = "";
@@ -89,25 +92,41 @@ class CJ4_FMC_TakeoffRefPage {
             else {
                 fmc.showErrorMessage("INVALID");
             }
-            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
-        }
+            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
+        };
         fmc.onRightInput[1] = () => {
             fmc.takeoffOat = new Number(fmc.inOut);
             fmc.clearUserInput();
-            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
-        }
+            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
+        };
         fmc.onRightInput[2] = () => {
-            let qnh = Number(fmc.inOut);
-            if (qnh !== NaN && qnh > 28 && qnh < 34) {
-                fmc.takeoffQnh = qnh.toFixed(2);
-                fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
-                fmc.clearUserInput();
+            let qnhInput = Number(fmc.inOut);
+            if (qnhInput !== NaN) {
+                if (qnhInput > 28 && qnhInput < 32){
+                    fmc.takeoffQnh = qnhInput.toFixed(2);
+                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                }
+                else if (qnhInput > 280 && qnhInput < 320){
+                    let qnhParse = qnhInput / 10
+                    fmc.takeoffQnh = qnhParse.toFixed(2);
+                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                }
+                else if (qnhInput > 2800 && qnhInput < 3200){
+                    let qnhParse = qnhInput / 100
+                    fmc.takeoffQnh = qnhParse.toFixed(2);
+                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                }
+                else {
+                    fmc.showErrorMessage("INVALID");
+                }
             }
             else {
                 fmc.showErrorMessage("INVALID");
             }
+            fmc.clearUserInput();
             CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);
-        }
+        };
+
         fmc.onLeftInput[4] = () => {
             if (fmc.depRunwayCondition == 0) {
                 fmc.depRunwayCondition = 1;
@@ -117,11 +136,25 @@ class CJ4_FMC_TakeoffRefPage {
             depRunwayConditionActive = fmc.depRunwayCondition == 0 ? "DRY"
                 : "WET";
             fmc.clearUserInput();
-            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
-        }
+            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
+        };
 
-        fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage3(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
+        fmc.onPrevPage = () => {
+            if (fmc.flightPlanManager.getDepartureRunway()) {
+                CJ4_FMC_TakeoffRefPage.ShowPage3(fmc);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            };
+        fmc.onNextPage = () => {
+            if (fmc.flightPlanManager.getDepartureRunway()) {
+                CJ4_FMC_TakeoffRefPage.ShowPage2(fmc);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage2(fmc) { //TAKEOFF REF Page 2
@@ -131,12 +164,7 @@ class CJ4_FMC_TakeoffRefPage {
         if (origin) {
             originIdent = origin.ident;
         }
-        let grWtCell = "";
-        let grossWeightValue = new Number(fmc.getWeight());
-        if (isFinite(grossWeightValue)) {
-            grWtCell = new Number((grossWeightValue * 2200).toFixed(0));
-        }
-        let tow = (grWtCell - 100);
+        let tow = (fmc.grossWeight - 100);
         let depRunway = "";
         let depRunwayLength = "";
         let selectedRunway = fmc.flightPlanManager.getDepartureRunway();
@@ -227,7 +255,7 @@ class CJ4_FMC_TakeoffRefPage {
             [" T/O FLAPS[blue]", "V[d-text blue]R:[s-text blue] " + vR.toFixed(0).padStart(3, " ") + "[s-text]"],
             [takeoffFlapsActive],
             [" TOW/ GWT/MTOW[blue]", "V[d-text blue]2:[s-text blue] " + v2.toFixed(0).padStart(3, " ") + "[s-text]"],
-            [tow + "/" + grWtCell + "/17110"],
+            [tow + "/" + fmc.grossWeight + "/17110"],
             [" TOFL / " + depRunway + "[blue]", "V[d-text blue]T:[s-text blue] 140[s-text]"],
             [fmc.endTakeoffDist.toFixed(0) + " / " + Math.round(depRunwayLength) + " FT"],
             [""],
@@ -244,8 +272,8 @@ class CJ4_FMC_TakeoffRefPage {
             takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
             : "OFF[s-text]/[white]ON[green]";
             fmc.clearUserInput();
-            { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
-        }
+            { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); }
+        };
         fmc.onLeftInput[1] = () => {
             if (fmc.takeoffFlaps == 15) {
                 fmc.takeoffFlaps = 0;
@@ -255,20 +283,19 @@ class CJ4_FMC_TakeoffRefPage {
             takeoffFlapsActive = fmc.takeoffFlaps == 0 ? "15"
                 : "0";
             fmc.clearUserInput();
-            { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
-        }
+            { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); }
+        };
         fmc.onRightInput[5] = () => {
-            SimVar.SetSimVarValue("L:AIRLINER_V1_SPEED", "Knots", v1);
-            SimVar.SetSimVarValue("L:AIRLINER_VR_SPEED", "Knots", vR);
-            SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", v2);
-            //use VX for VT in CJ4
-            SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", 140);
-            //new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
+            //added custom LVARS for all v speeds and FMC Set
+            SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots", v1);
+            SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots", vR);
+            SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots", v2);
+            SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots", 140);
             SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
             SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
             SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
             SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
-        }
+        };
         fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage3(fmc); };
         fmc.updateSideButtonActiveStatus();
