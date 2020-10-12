@@ -144,6 +144,27 @@
 									</ActiveSourceList>
 								</Sound>
 							</ChildrenList>
+							<StateInfo>
+								<StateGroupList>
+									<StateGroupInfo>
+										<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+									</StateGroupInfo>
+								</StateGroupList>
+								<CustomStateList>
+									<CustomState>
+										<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+										<CustomState Name="" ID="{EF1B25AD-9905-4084-B069-F8980EF0597F}" ShortID="779790000"/>
+									</CustomState>
+									<CustomState>
+										<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+										<CustomState Name="" ID="{8467903F-B439-4C39-A022-BD1D7C91C8B9}" ShortID="527175949">
+											<PropertyList>
+												<Property Name="Volume" Type="Real64" Value="-108"/>
+											</PropertyList>
+										</CustomState>
+									</CustomState>
+								</CustomStateList>
+							</StateInfo>
 						</ActorMixer>
 						<ActorMixer Name="passenger announcements" ID="{E3E2BAE8-5A4A-4A33-A9D0-9D1B6355A900}" ShortID="778009430">
 							<PropertyList>
@@ -232,27 +253,6 @@
 											<AudioFile>Passenger Announcements\Turbulence.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{1B47E762-3003-4E58-929A-F139D2374856}" ShortID="865942737"/>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{BDBEC88C-0D97-4D14-8DE9-A03C59FF2AAF}" ShortID="1072466003">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-108"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Turbulence" ID="{0CF4FD00-5354-4E29-83F3-78334007B5B1}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -302,27 +302,6 @@
 											<AudioFile>Passenger Announcements\Safety Belt.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{D7891549-8150-4BAF-9076-F7A27D9D38D4}" ShortID="139752943"/>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{4B2221E6-E52B-4B5E-ADEA-72A2C180A6AF}" ShortID="442660486">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-108"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Safety Belt" ID="{7969D84E-BD6B-4C96-9BC8-FC7F53721D78}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -372,27 +351,6 @@
 											<AudioFile>Passenger Announcements\CJ4_Seatbelt.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{84B627E3-BE47-4C4B-969C-343E403EDAFE}" ShortID="607915802"/>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{E9412541-65F1-4B6D-913E-64240BB1794E}" ShortID="25894665">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-108"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="CJ4_Seatbelt" ID="{D04387A8-3D9C-4B0F-B825-5BB2AA01BAC9}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -442,27 +400,6 @@
 											<AudioFile>Passenger Announcements\Takeoff Short.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{FDF14CFC-2250-4004-AC97-B9D998A37591}" ShortID="910837787"/>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{6F2D1AF6-0585-4D11-9C25-F7B177E1E6E7}" ShortID="962814249">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-108"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Takeoff Short" ID="{38D395AE-8325-4473-9385-E4BF7309A0C0}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -512,27 +449,6 @@
 											<AudioFile>Passenger Announcements\Takeoff Long, Welcome Aboard.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{D04E668A-6C68-4D57-9E96-066D09FEA60E}" ShortID="485225602"/>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{55BF9B23-CCF8-4A1E-8203-592161E99D1F}" ShortID="1038457505">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-108"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Takeoff Long, Welcome Aboard" ID="{FCD393B6-BDCF-4B1D-ACB4-3FB1E46A1D80}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -582,27 +498,6 @@
 											<AudioFile>Passenger Announcements\Chime.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{2181D92C-9AFC-4013-ABA2-67C0912EF36A}" ShortID="214706462"/>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{E5E6B280-CE2E-44BC-B96D-16FA399B59F2}" ShortID="541747308">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-108"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Chime" ID="{2EA3AFAA-0E08-48D4-A172-3361EC071DA3}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -652,27 +547,6 @@
 											<AudioFile>Passenger Announcements\Oxygen Mask.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{CC1720C8-4855-4C18-84BA-2FC0B3766E23}" ShortID="32242254"/>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{58BA76F5-B193-4AC3-88FE-F51C77898E84}" ShortID="169763296">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-108"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Oxygen Mask" ID="{B1DA09FE-B346-40A0-A3AE-E97FACB4FDDC}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -722,32 +596,319 @@
 											<AudioFile>Passenger Announcements\Landing.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{46E67A67-BBA2-4DF0-871B-1E3E769011F9}" ShortID="61009101"/>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{43993C9D-D61B-49BF-9700-A021796E3323}" ShortID="307667740">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-108"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Landing" ID="{06DAAEA9-6E81-43EA-9857-8B0B62A2A711}" Platform="Linked"/>
 									</ActiveSourceList>
 								</Sound>
 							</ChildrenList>
+							<StateInfo>
+								<StateGroupList>
+									<StateGroupInfo>
+										<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+									</StateGroupInfo>
+								</StateGroupList>
+								<CustomStateList>
+									<CustomState>
+										<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+										<CustomState Name="" ID="{A7D8751C-1B14-44D0-9500-8B817B4D8551}" ShortID="221295109"/>
+									</CustomState>
+									<CustomState>
+										<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+										<CustomState Name="" ID="{E4991F61-FAC8-422E-B057-D4259E258F74}" ShortID="38810191">
+											<PropertyList>
+												<Property Name="Volume" Type="Real64" Value="-108"/>
+											</PropertyList>
+										</CustomState>
+									</CustomState>
+								</CustomStateList>
+							</StateInfo>
+						</ActorMixer>
+						<ActorMixer Name="battery" ID="{6AE75521-3C95-4C69-90FF-BFE3B3EBA634}" ShortID="1056097228">
+							<PropertyList>
+								<Property Name="3DPosition" Type="int16" Value="1"/>
+								<Property Name="3DSpatialization" Type="int16" Value="2"/>
+								<Property Name="CenterPercentage" Type="int32">
+									<ValueList>
+										<Value>73</Value>
+									</ValueList>
+								</Property>
+								<Property Name="IgnoreParentMaxSoundInstance" Type="bool" Value="True"/>
+								<Property Name="MaxSoundPerInstance" Type="int16">
+									<ValueList>
+										<Value>1</Value>
+									</ValueList>
+								</Property>
+								<Property Name="OverrideOutput" Type="bool" Value="True"/>
+								<Property Name="OverridePositioning" Type="bool" Value="True"/>
+								<Property Name="UseMaxSoundPerInstance" Type="bool">
+									<ValueList>
+										<Value>True</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-12</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="aircraft_player_inside_3m_spread75" ID="{85370419-0399-41B9-92E8-48DBCA137150}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+								</Reference>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="miscellaneous_inside" ID="{A94A7A7F-2F28-46C7-9158-EA25E9E42914}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<RandomSequenceContainer Name="Battery_On_Seq" ID="{5F4F4A0F-04B9-47FF-B1FC-650E693B980F}" ShortID="985289277">
+									<PropertyList>
+										<Property Name="PlayMechanismSpecialTransitionsType" Type="int16" Value="4"/>
+										<Property Name="PlayMechanismSpecialTransitionsValue" Type="Real64" Value="0.5"/>
+										<Property Name="PlayMechanismStepOrContinuous" Type="int16" Value="0"/>
+										<Property Name="RandomOrSequence" Type="int16" Value="0"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="CJ4_Battery_On" ID="{C2BB0A07-EF0E-4569-9C1F-5D7F88B2AF96}" ShortID="347383099">
+											<PropertyList>
+												<Property Name="3DPosition" Type="int16" Value="1"/>
+												<Property Name="3DSpatialization" Type="int16" Value="2"/>
+												<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
+												<Property Name="CenterPercentage" Type="int32">
+													<ValueList>
+														<Value>73</Value>
+													</ValueList>
+												</Property>
+												<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
+												<Property Name="Priority" Type="int16">
+													<ValueList>
+														<Value>100</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="aircraft_player_inside_3m_spread75" ID="{85370419-0399-41B9-92E8-48DBCA137150}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="miscellaneous_inside" ID="{A94A7A7F-2F28-46C7-9158-EA25E9E42914}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Battery_On" ID="{2CBBE9E3-9780-4F56-AA7C-F30B05C9700F}">
+													<PropertyList>
+														<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+														<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+														<Property Name="TrimBegin" Type="Real64" Value="0.0503396594817276"/>
+														<Property Name="TrimEnd" Type="Real64" Value="4.83965271832192"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Master On Run and Off.WAV</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<PositioningInfo>
+												<Position Name="" ID="{C0948A80-2729-43C8-BC24-0F27FBFA6341}">
+													<ChildrenList>
+														<Path2D Name="battery_Path" ID="{11810E1E-F869-4073-ABF9-2D832C4736EA}">
+															<PointList>
+																<Point>
+																	<XPos>-72.78481</XPos>
+																	<YPos>79.29936</YPos>
+																	<Flags>12</Flags>
+																	<Time>0</Time>
+																</Point>
+															</PointList>
+														</Path2D>
+													</ChildrenList>
+												</Position>
+											</PositioningInfo>
+											<ActiveSourceList>
+												<ActiveSource Name="Battery_On" ID="{2CBBE9E3-9780-4F56-AA7C-F30B05C9700F}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="CJ4_Battery_Loop" ID="{084FCF57-997B-434B-9EA4-CE5DDBCCA61D}" ShortID="73390909">
+											<PropertyList>
+												<Property Name="3DPosition" Type="int16" Value="1"/>
+												<Property Name="3DSpatialization" Type="int16" Value="2"/>
+												<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
+												<Property Name="CenterPercentage" Type="int32">
+													<ValueList>
+														<Value>73</Value>
+													</ValueList>
+												</Property>
+												<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
+												<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+												<Property Name="Priority" Type="int16">
+													<ValueList>
+														<Value>100</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="aircraft_player_inside_3m_spread75" ID="{85370419-0399-41B9-92E8-48DBCA137150}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="miscellaneous_inside" ID="{A94A7A7F-2F28-46C7-9158-EA25E9E42914}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Battery_Loop" ID="{A6F9BB97-F52F-4F4D-BD3B-AA5187DBBD86}">
+													<PropertyList>
+														<Property Name="CrossfadeDuration" Type="Real64" Value="1"/>
+														<Property Name="LoopBegin" Type="Real64" Value="6.73151796018836"/>
+														<Property Name="LoopEnd" Type="Real64" Value="9.1987894713185"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+														<Property Name="TrimBegin" Type="Real64" Value="5.10363477311644"/>
+														<Property Name="TrimEnd" Type="Real64" Value="9.33078"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Master On Run and Off.WAV</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<PositioningInfo>
+												<Position Name="" ID="{FC14BEFE-6A16-4DDD-929A-A9625A61FF8C}">
+													<ChildrenList>
+														<Path2D Name="battery_Path" ID="{0581092D-E0AE-401C-843A-510E67FDCDC4}">
+															<PointList>
+																<Point>
+																	<XPos>-72.78481</XPos>
+																	<YPos>79.29936</YPos>
+																	<Flags>12</Flags>
+																	<Time>0</Time>
+																</Point>
+															</PointList>
+														</Path2D>
+													</ChildrenList>
+												</Position>
+											</PositioningInfo>
+											<ActiveSourceList>
+												<ActiveSource Name="Battery_Loop" ID="{A6F9BB97-F52F-4F4D-BD3B-AA5187DBBD86}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+									<Playlist>
+										<ItemRef Name="CJ4_Battery_On" ID="{C2BB0A07-EF0E-4569-9C1F-5D7F88B2AF96}"/>
+										<ItemRef Name="CJ4_Battery_Loop" ID="{084FCF57-997B-434B-9EA4-CE5DDBCCA61D}"/>
+									</Playlist>
+								</RandomSequenceContainer>
+								<Sound Name="CJ4_Battery_Off" ID="{89131AF4-9F00-488D-99F2-A523547A030A}" ShortID="109050507">
+									<PropertyList>
+										<Property Name="3DPosition" Type="int16" Value="1"/>
+										<Property Name="3DSpatialization" Type="int16" Value="2"/>
+										<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
+										<Property Name="CenterPercentage" Type="int32">
+											<ValueList>
+												<Value>73</Value>
+											</ValueList>
+										</Property>
+										<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
+										<Property Name="Priority" Type="int16">
+											<ValueList>
+												<Value>100</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="aircraft_player_inside_3m_spread75" ID="{85370419-0399-41B9-92E8-48DBCA137150}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+										</Reference>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="miscellaneous_inside" ID="{A94A7A7F-2F28-46C7-9158-EA25E9E42914}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Battery_Off" ID="{194A6AC4-6955-49FD-B106-7BB9502B4E38}">
+											<PropertyList>
+												<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+												<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+												<Property Name="TrimBegin" Type="Real64" Value="22.2599739383923"/>
+												<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>Master On Run and Off.WAV</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<PositioningInfo>
+										<Position Name="" ID="{492F783B-A994-4640-9DBB-6C5C4A07FA76}">
+											<ChildrenList>
+												<Path2D Name="battery_Path" ID="{8A4FA8AE-46F7-4B75-B769-8D4C771DEEF4}">
+													<PointList>
+														<Point>
+															<XPos>-72.78481</XPos>
+															<YPos>79.29936</YPos>
+															<Flags>12</Flags>
+															<Time>0</Time>
+														</Point>
+													</PointList>
+												</Path2D>
+											</ChildrenList>
+										</Position>
+									</PositioningInfo>
+									<ActiveSourceList>
+										<ActiveSource Name="Battery_Off" ID="{194A6AC4-6955-49FD-B106-7BB9502B4E38}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+							<PositioningInfo>
+								<Position Name="" ID="{6595225A-C037-4E31-A139-D5347CDA3665}">
+									<ChildrenList>
+										<Path2D Name="battery_Path" ID="{3331D789-94C5-49C3-899A-698C19E1C711}">
+											<PointList>
+												<Point>
+													<XPos>-72.78481</XPos>
+													<YPos>79.29936</YPos>
+													<Flags>12</Flags>
+													<Time>0</Time>
+												</Point>
+											</PointList>
+										</Path2D>
+									</ChildrenList>
+								</Position>
+							</PositioningInfo>
+							<StateInfo>
+								<StateGroupList>
+									<StateGroupInfo>
+										<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+									</StateGroupInfo>
+								</StateGroupList>
+								<CustomStateList>
+									<CustomState>
+										<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+										<CustomState Name="" ID="{02DF07D1-61AD-4C7B-ADAC-A09001C4C634}" ShortID="25286289"/>
+									</CustomState>
+									<CustomState>
+										<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+										<CustomState Name="" ID="{246BA3D5-4356-4422-9B3F-CAB6717C494F}" ShortID="842075632">
+											<PropertyList>
+												<Property Name="Lowpass" Type="int16" Value="42"/>
+												<Property Name="Volume" Type="Real64" Value="-18"/>
+											</PropertyList>
+										</CustomState>
+									</CustomState>
+								</CustomStateList>
+							</StateInfo>
 						</ActorMixer>
 					</ChildrenList>
 				</ActorMixer>

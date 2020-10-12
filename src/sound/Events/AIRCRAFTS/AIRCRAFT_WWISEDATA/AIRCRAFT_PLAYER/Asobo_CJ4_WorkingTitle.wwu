@@ -750,6 +750,38 @@
 						</Event>
 					</ChildrenList>
 				</Folder>
+				<Folder Name="Battery" ID="{F09AA56A-3A74-4A7E-8E18-C3C7C1999D5D}" ShortID="739931387">
+					<ChildrenList>
+						<Event Name="Play_Asobo_CJ4_wt_battery_on" ID="{AB510CBA-FFB3-4F57-80B5-C85843ABAC24}">
+							<ChildrenList>
+								<Action Name="" ID="{BBD96459-1157-4EFC-A8DA-3C246BC47BBA}" ShortID="16031308">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Battery_On_Seq" ID="{5F4F4A0F-04B9-47FF-B1FC-650E693B980F}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_Asobo_CJ4_wt_battery_off" ID="{27F59267-B434-46DD-8A90-A1CB7F5DA8BD}">
+							<ChildrenList>
+								<Action Name="" ID="{A5A80F75-B150-4618-9378-D5C9D89C4208}" ShortID="683417332">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_Battery_Off" ID="{89131AF4-9F00-488D-99F2-A523547A030A}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>
