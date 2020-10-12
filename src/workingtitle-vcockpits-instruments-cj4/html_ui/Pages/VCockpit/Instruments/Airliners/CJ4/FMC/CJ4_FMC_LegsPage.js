@@ -254,7 +254,6 @@ class CJ4_FMC_LegsPage {
                                             });
 
                                             if (i < destinationIndex) {
-                                                this._fmc.activateRoute();
                                                 this._fmc.flightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
                                                     removeWaypointForApproachMethod(callback);
                                                 });
