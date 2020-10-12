@@ -507,7 +507,7 @@ class CJ4_FMC_InitRefIndexPage {
                     [" ALTN[s-text blue]"],
                     ["-----[s-text]", "----  -:-- ----- [s-text]"],
                     [" NAVIGATION[s-text blue]"],
-                    ["FMS DR[yellow]"]
+                    [""]
                 ]);
             }
 
