@@ -20,6 +20,9 @@ class CJ4_FMC_TakeoffRefPage {
             depRunwayElevation = new Number(depRunway.elevation * 3.28);
             depRunwayLength = new Number((depRunway.length) * 3.28);
         }
+        else {
+            depRunwayOutput = "NO TAKEOFF RUNWAY";
+        }
 
         let headwind = "";
         let crosswind = "";
@@ -136,8 +139,22 @@ class CJ4_FMC_TakeoffRefPage {
             { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
         };
 
-        fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage3(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
+        fmc.onPrevPage = () => {
+            if (fmc.flightPlanManager.getDepartureRunway()) {
+                CJ4_FMC_TakeoffRefPage.ShowPage3(fmc);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            };
+        fmc.onNextPage = () => {
+            if (fmc.flightPlanManager.getDepartureRunway()) {
+                CJ4_FMC_TakeoffRefPage.ShowPage2(fmc);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage2(fmc) { //TAKEOFF REF Page 2

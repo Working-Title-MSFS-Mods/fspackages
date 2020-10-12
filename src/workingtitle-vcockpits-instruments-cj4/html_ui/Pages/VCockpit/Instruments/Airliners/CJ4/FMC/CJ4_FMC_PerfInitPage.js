@@ -203,6 +203,9 @@ class CJ4_FMC_PerfInitPage {
             arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
             arrRunwayLength = new Number((arrRunway.length) * 3.28);
         }
+        else {
+            arrRunwayOutput = "NO APPROACH RUNWAY";
+        }
 
         let headwind = "";
         let crosswind = "";
@@ -292,8 +295,22 @@ class CJ4_FMC_PerfInitPage {
             fmc.clearUserInput();
             { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
         }
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage15(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage14(fmc); };
+        fmc.onPrevPage = () => {
+            if (fmc.flightPlanManager.getApproachRunway()) {
+                CJ4_FMC_PerfInitPage.ShowPage15(fmc);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            };
+        fmc.onNextPage = () => {
+            if (fmc.flightPlanManager.getApproachRunway()) {
+                CJ4_FMC_PerfInitPage.ShowPage14(fmc);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage14(fmc) { //APPROACH REF Page 2
