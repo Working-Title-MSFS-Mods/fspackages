@@ -459,14 +459,25 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                         const activeWaypointDistance = activeWaypoint && destination && activeWaypoint.ident != destination.ident ? Avionics.Utils.computeDistance(aircraftPosition, activeWaypoint.infos.coordinates).toFixed(1) : -1;
                         const nextWaypointDistance = nextWaypoint && destination && nextWaypoint.ident != destination.ident && activeWaypoint ? (new Number(activeWaypointDistance) + new Number(Avionics.Utils.computeDistance(activeWaypoint.infos.coordinates, nextWaypoint.infos.coordinates))).toFixed(1) : -1;
                         let destinationDistance = 0;
-                        if (destination && activeWaypoint) {
-                            destinationDistance += new Number(Avionics.Utils.computeDistance(aircraftPosition, activeWaypoint.infos.coordinates));
-                            for (let w = activeIndex; w < FPWaypoints.length - 1; w++) {
-                                destinationDistance += new Number(Avionics.Utils.computeDistance(FPWaypoints[w].infos.coordinates, FPWaypoints[w + 1].infos.coordinates));
-                            }
-                            destinationDistance = destinationDistance.toFixed(1);
-                        }
+                        //if (destination && activeWaypoint) {
+                        //    destinationDistance += new Number(Avionics.Utils.computeDistance(aircraftPosition, activeWaypoint.infos.coordinates));
+                        //    for (let w = activeIndex; w < FPWaypoints.length - 1; w++) {
+                        //        destinationDistance += new Number(Avionics.Utils.computeDistance(FPWaypoints[w].infos.coordinates, FPWaypoints[w + 1].infos.coordinates));
+                        //    }
+                        //    destinationDistance = destinationDistance.toFixed(1);
+                        //}
 
+                        // Revised distance to destination to use same code as PROG page (original code left commented for easy revert if needed)
+                        if (fmc.flightPlanManager.getDestination()) {
+                            let destination = fmc.flightPlanManager.getDestination();
+                            destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
+                            let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
+                            let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+                            destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
+                                : destinationDistanceFlightplan;
+                            destinationEte = groundSpeed < 50 || destinationDistance <= 0.1 ? new String("--:--")
+                                : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                        }
 
                         this._previousWaypointContainer
                             .querySelector(".cj4x-navigation-data-waypoint-distance")
@@ -493,10 +504,14 @@ class CJ4_FMSContainer extends NavSystemElementContainer {
                         }
 
                         let destinationWaypointETEValue = "-:--";
-                        if (groundSpeed >= 50 && destinationDistance > 0) {
-                            destinationWaypointETEValue = new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                        //if (groundSpeed >= 50 && destinationDistance > 0) {
+                        //    destinationWaypointETEValue = new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                        //}
+                        // Revised ETE to destination to use same code as PROG page (original code left commented for easy revert if needed)
+                        if (destinationEte) {
+                            destinationWaypointETEValue = destinationEte;
                         }
-
+                        
                         this._activeWaypointContainer
                             .querySelector(".cj4x-navigation-data-waypoint-ete")
                             .textContent = activeWaypointETEValue;
