@@ -437,13 +437,13 @@ class CJ4_FMC_InitRefIndexPage {
                 let prevWaypointDist = "----";
                 let activeWaypointIdent = "-----";
                 let activeWaypointDist = "----";
-                let activeWaypointEte = "--:--";
+                let activeWaypointEte = "-:--";
                 let nextWaypointIdent = "-----";
                 let nextWaypointDist = "----";
-                let nextWaypointEte = "--:--";
+                let nextWaypointEte = "-:--";
                 let destinationIdent = "----";
                 let destinationDistance = "----";
-                let destinationEte = "--:--";
+                let destinationEte = "-:--";
 
                 //previous waypoint data
                 if (fmc.flightPlanManager.getPreviousActiveWaypoint()) {
@@ -457,7 +457,7 @@ class CJ4_FMC_InitRefIndexPage {
                     let activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
                     activeWaypointIdent = new String(fmc.flightPlanManager.getActiveWaypoint().ident);
                     activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
-                    activeWaypointEte = groundSpeed < 50 ? new String("--:--")
+                    activeWaypointEte = groundSpeed < 50 ? new String("-:--")
                         : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
                 }
 
@@ -466,7 +466,7 @@ class CJ4_FMC_InitRefIndexPage {
                     let nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint();
                     nextWaypointIdent = new String(fmc.flightPlanManager.getNextActiveWaypoint().ident);
                     nextWaypointDist = new Number(activeWaypointDist + Avionics.Utils.computeDistance(fmc.flightPlanManager.getActiveWaypoint().infos.coordinates, nextWaypoint.infos.coordinates));
-                    nextWaypointEte = groundSpeed < 50 ? new String("--:--")
+                    nextWaypointEte = groundSpeed < 50 ? new String("-:--")
                         : new Date(this.calcETEseconds(nextWaypointDist, groundSpeed) * 1000).toISOString().substr(11, 5);
                 }
 
@@ -485,22 +485,27 @@ class CJ4_FMC_InitRefIndexPage {
                     }
                     destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
                         : destinationDistanceFlightplan;
-                    destinationEte = groundSpeed < 50 || destinationDistance <= 0.1 ? new String("--:--")
+                    destinationEte = groundSpeed < 50 || destinationDistance <= 0.1 ? new String("-:--")
                         : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
                 }
 
+                const prevWaypointDistanceConst = prevWaypointDist >= 100 ? prevWaypointDist.toFixed(0) : prevWaypointDist.toFixed(1);
+                const activeWaypointDistanceConst = activeWaypointDist >= 100 ? activeWaypointDist.toFixed(0) : activeWaypointDist.toFixed(1);
+                const nextWaypointDistanceConst = nextWaypointDist >= 100 ? nextWaypointDist.toFixed(0) : nextWaypointDist.toFixed(1);
+                const destWaypointDistanceConst = destinationDistance >= 100 ? destinationDistance.toFixed(0) : destinationDistance.toFixed(1);
+
                 fmc._templateRenderer.setTemplateRaw([
                     [" PROGRESS[blue]", "1/2[blue] "],
-                    [" LAST[s-text blue]", "DIST ETE FUEL-LB[s-text blue]"],
-                    [prevWaypointIdent + "[blue]", Math.trunc(prevWaypointDist) + "      ----- [s-text blue]"],
+                    [" LAST[s-text blue]", "DIST   ETE FUEL-LB[s-text blue]"],
+                    [prevWaypointIdent + "[blue]", prevWaypointDistanceConst + "       ----- [s-text blue]"],
                     [" TO[s-text blue]",],
-                    [activeWaypointIdent + "[s-text magenta]", Math.trunc(activeWaypointDist) + " " + activeWaypointEte + " ----- [s-text magenta]"],
+                    [activeWaypointIdent + "[s-text magenta]", activeWaypointDistanceConst + "  " + activeWaypointEte + " ----- [s-text magenta]"],
                     [" NEXT[s-text blue]"],
-                    [nextWaypointIdent + "[s-text]", Math.trunc(nextWaypointDist) + " " + nextWaypointEte + " ----- [s-text]"],
+                    [nextWaypointIdent + "[s-text]", nextWaypointDistanceConst + "  " + nextWaypointEte + " ----- [s-text]"],
                     [" DEST[s-text blue]"],
-                    [destinationIdent + "[s-text]", Math.trunc(destinationDistance) + " " + destinationEte + " ----- [s-text]"],
+                    [destinationIdent + "[s-text]", destWaypointDistanceConst + "  " + destinationEte + " ----- [s-text]"],
                     [" ALTN[s-text blue]"],
-                    ["-----[s-text]", "--- -:-- ----- [s-text]"],
+                    ["-----[s-text]", "----  -:-- ----- [s-text]"],
                     [" NAVIGATION[s-text blue]"],
                     ["FMS DR[yellow]"]
                 ]);
