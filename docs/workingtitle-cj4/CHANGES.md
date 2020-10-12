@@ -34,7 +34,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ### PERF Page
 * Added input filters for QNH on takeoff and landing perf pages (user can now enter 29.92, 299 or 2992)
 * Added protection for TAKEOFF and APPROACH REF pages when no runway is selected (error message will appear)
-* Fixed weights 
+* Fixed weight calculation issues ([#241](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/241))
 
 ### PFD/MFD
 * Fixed FMS Text distances on MFD ([#232](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/232))
@@ -45,7 +45,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ### Audio
 * Fixed no chime when playing seatbelt announcement
-* Fixed erronious chimes when setting battery master to on
+* Fixed erroneous chimes when setting battery master to on
 * Fixed sounds for internal/external view swaps/fixed passenger sounds stopping when switching to outside view
 * Added passenger briefing announcements (MFD)
 * Fixed announcments to restrict to only one announcement at a time
