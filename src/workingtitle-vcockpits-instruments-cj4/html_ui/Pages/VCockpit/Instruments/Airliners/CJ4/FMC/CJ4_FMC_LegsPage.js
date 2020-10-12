@@ -94,15 +94,15 @@ class CJ4_FMC_LegsPage {
         // APPROACH
         else if (this._fmc.flightPlanManager.isActiveApproach()) {
             // get index of last wp
-            let lastWaypointIndex = enrouteWaypoints.length - 1;
+            // let lastWaypointIndex = enrouteWaypoints.length - 1;
             // see if there are approach waypoints already loaded and add them
 
             // TODO i wonder if this reducing of the enroute waypoints is needed, shouldn't that be reflected in the stored flight plan?
             // if so, the whole if for approach can go i guess
             if (this._fmc.flightPlanManager.getApproachWaypoints()) {
                 this._approachWaypoints = [...this._fmc.flightPlanManager.getApproachWaypoints()];
-                let lastEnrouteWaypoint = enrouteWaypoints.slice(lastWaypointIndex);
-                allWaypoints = lastEnrouteWaypoint.concat(this._approachWaypoints);
+                // let lastEnrouteWaypoint = enrouteWaypoints.slice(lastWaypointIndex);
+                allWaypoints = this._approachWaypoints;
             }
 
             // on first wp show em all
