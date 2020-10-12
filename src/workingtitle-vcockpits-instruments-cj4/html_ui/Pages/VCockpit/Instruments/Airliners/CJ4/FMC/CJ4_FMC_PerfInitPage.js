@@ -204,7 +204,7 @@ class CJ4_FMC_PerfInitPage {
             arrRunwayLength = new Number((arrRunway.length) * 3.28);
         }
         else {
-            arrRunwayOutput = "NO APPROACH RUNWAY";
+            arrRunwayOutput = "NO APPROACH RW";
         }
 
         let headwind = "";

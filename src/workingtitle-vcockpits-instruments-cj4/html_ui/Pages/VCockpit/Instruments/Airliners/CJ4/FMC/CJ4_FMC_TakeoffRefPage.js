@@ -21,7 +21,7 @@ class CJ4_FMC_TakeoffRefPage {
             depRunwayLength = new Number((depRunway.length) * 3.28);
         }
         else {
-            depRunwayOutput = "NO TAKEOFF RUNWAY";
+            depRunwayOutput = "NO TAKEOFF RW";
         }
 
         let headwind = "";
