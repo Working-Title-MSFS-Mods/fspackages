@@ -193,7 +193,7 @@ class CJ4_FMC_LegsPage {
                 let waypoint = this._wayPointsToRender[i + offset];
 
                 if (!waypoint) return;
-                let approachWpIndex = this._approachWaypoints.indexOf(waypoint) !== -1;
+                let approachWpIndex = this._approachWaypoints.indexOf(waypoint);
                 if (approachWpIndex > 0) {
                     this._fmc.showErrorMessage("UNABLE MOD APPROACH");
                     return;
@@ -244,11 +244,37 @@ class CJ4_FMC_LegsPage {
                                 let x = selectedWpIndex;
                                 let isDirectTo = (i == 1 && this._currentPage == 1);
                                 if (isDirectTo) { // DIRECT TO
-                                    this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                        this._fmc.activateDirectToWaypoint(this._selectedWaypoint, () => {
+                                    approachWpIndex = this._approachWaypoints.indexOf(this._selectedWaypoint);
+                                    if (approachWpIndex == 0) {
+                                        // TODO i hate the fact we have code copies of this everywhere
+                                        let removeWaypointForApproachMethod = (callback = EmptyCallback.Void) => {
+                                            let i = 1;
+                                            let destinationIndex = this._fmc.flightPlanManager.getWaypoints().findIndex(w => {
+                                                return w.icao === this._fmc.flightPlanManager.getDestination().icao;
+                                            });
+
+                                            if (i < destinationIndex) {
+                                                this._fmc.activateRoute();
+                                                this._fmc.flightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
+                                                    removeWaypointForApproachMethod(callback);
+                                                });
+                                            }
+                                            else {
+                                                callback();
+                                            }
+                                        };
+                                        removeWaypointForApproachMethod(() => {
+                                            this._fmc.flightPlanManager.tryAutoActivateApproach();
                                             this.resetAfterOp();
                                         });
-                                    });
+                                    } else {
+                                        this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                            this._fmc.activateDirectToWaypoint(this._selectedWaypoint, () => {
+                                                this.resetAfterOp();
+                                            });
+
+                                        });
+                                    }
                                 }
                                 else { // MOVE TO POSITION IN FPLN
                                     let removeWaypointForLegsMethod = (callback = EmptyCallback.Void) => {

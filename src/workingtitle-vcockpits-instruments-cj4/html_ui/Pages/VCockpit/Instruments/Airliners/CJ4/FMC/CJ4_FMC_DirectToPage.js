@@ -108,7 +108,7 @@ class CJ4_FMC_DirectToPage {
                         fmc.flightPlanManager.setActiveWaypointIndex(1, () => {
                             fmc.activateRoute(() => {
                                 fmc.onExecDefault();
-                            })
+                            });
                         });
                     });
                 }
