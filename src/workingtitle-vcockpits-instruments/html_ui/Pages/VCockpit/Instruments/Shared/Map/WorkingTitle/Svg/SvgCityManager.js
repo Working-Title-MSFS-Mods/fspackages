@@ -17,7 +17,8 @@ class SvgCityManager {
         this.bufferHead = -1;
         this.bufferTail = 0;
         this.bufferSize = 0;
-        this.toExclude = new Set();
+        this.excludeFromSearch = new Set();
+        this.cityElementTable = new Map();
         this.displayedCities = new Set();
         
         this.lastTime = -1;
@@ -107,9 +108,13 @@ class SvgCityManager {
             while (start >= 0) {
                 let city = this.dequeueBuffer();
                 if (this.map.isLatLongInFrame(new LatLong(city.lat, city.long), 0.05)) {
-                    let svgCityElement = new SvgCityElement(city);
+                    let svgCityElement = this.cityElementTable.get(city);
+                    if (!svgCityElement) {
+                        svgCityElement = new SvgCityElement(city);
+                        this.cityElementTable.set(city, svgCityElement);
+                    }
                     this.displayedCities.add(svgCityElement);
-                    this.toExclude.add(city);
+                    this.excludeFromSearch.add(city);
                 } else {
                     this.enqueueBuffer(city);
                 }
@@ -166,7 +171,7 @@ class SvgCityManager {
             this.dequeueBuffer();
         }
         this.buffer[this.bufferTail] = _city;
-        this.toExclude.add(_city);
+        this.excludeFromSearch.add(_city);
         if (this.bufferHead == -1) {
             this.bufferHead = this.bufferTail;
         }
@@ -179,7 +184,7 @@ class SvgCityManager {
             return null;
         }
         let e = this.buffer[this.bufferHead];
-        this.toExclude.delete(e);
+        this.excludeFromSearch.delete(e);
         this.bufferHead = (this.bufferHead + 1) % this.buffer.length;
         this.bufferSize--;
         if (this.bufferHead == this.bufferTail) {
@@ -197,7 +202,7 @@ class SvgCityManager {
         }
         for (let cityElement of toRemove) {
             this.displayedCities.delete(cityElement);
-            this.toExclude.delete(cityElement.city);
+            this.excludeFromSearch.delete(cityElement.city);
         }
         this.lastDisplayCleanTime = _currentTime;
     }
@@ -227,7 +232,7 @@ class SvgCityManager {
             return;
         }
         
-        if (!this.toExclude.has(city)) {
+        if (!this.excludeFromSearch.has(city)) {
             SvgCityManager.insertInOrder(city, _cities, function (_val) {
                 return SvgCityManager.getDistanceSquared(_pos.get("x"), _pos.get("y"), _pos.get("z"), _val.x, _val.y, _val.z);
             });
@@ -269,7 +274,7 @@ class SvgCityManager {
     findAllCitiesNearPosHelper(_pos, _radius, _node, _cities) {
         let city = this.cities.cities[_node];
         
-        if (!this.toExclude.has(city)) {
+        if (!this.excludeFromSearch.has(city)) {
             let distanceSquared = SvgCityManager.getDistanceSquared(_pos.get("x"), _pos.get("y"), _pos.get("z"), city.x, city.y, city.z);
             if (distanceSquared <= _radius * _radius) {
                 _cities.push(city);
