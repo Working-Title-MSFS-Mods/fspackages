@@ -29,36 +29,40 @@ map-instrument {
   left: 0%;
   display: block;
   overflow: hidden;
+  font-size:1.0rem !important;
   /* Map position (left and top) is set in mapConfig.json file (see SvgMapConfig.ts) (makes it editable at runtime) */
   /* Map position (left and top) is set in mapConfig.json file (see SvgMapConfig.ts) (makes it editable at runtime) */ }
   map-instrument #MapOrientation {
     position: absolute;
     top: 0%;
     right: 0%;
-    width: 13%;
-    height: calc( 2.5 * 1vh * var(--bodyHeightScale));
-    background-color: #1a1d21;
-    color: #8ed0d5; 
-	border: solid 1px white; }
+    width: 12ch;
+    line-height:1.5em;
+    text-align: center;
+    background-color: #000;
+    color: #00ffff; 
+	border:0.3vh solid #888;
+    box-shadow:-1px -1px 0px 0px #fff inset, 1px 1px 0px 0px #000;
+    font-weight:bold;
+}
   map-instrument #MapRange {
     position: absolute;
     bottom: 0%;
     right: 0%;
-    width: 10%;
-    height: calc( 4 * 1vh * var(--bodyHeightScale));
-    background-color: #1a1d21;
-    color: #8ed0d5;
-	display: flex;
-	justify-content: flex-end;
-	align-items: flex-end;
+    line-height:1.5em;
+    background-color: #000;
+    color: #00ffff;
     text-align: center; 
-	border: solid 1px white; }
+	border:0.3vh solid #888;
+    box-shadow:-1px -1px 0px 0px #fff inset, 1px 1px 0px 0px #000;
+    font-weight:bold;
+    padding:0 1vh; }
 	map-instrument #MapRange .range {
-	  font-size: calc( 3 * 1vh * var(--bodyHeightScale));
-	  text-align: right; }
+        display: inline;
+      font-size: 1.0em; }
     map-instrument #MapRange .unit {
-	  margin: 0 5% 2.5%;
-	  font-size: calc( 2.3 * 1vh * var(--bodyHeightScale));
+        display: inline;
+	  font-size: 0.8em;
 	  text-align: left; }
   map-instrument #MapSVG, map-instrument #road-network-canvas {
     position: absolute; }

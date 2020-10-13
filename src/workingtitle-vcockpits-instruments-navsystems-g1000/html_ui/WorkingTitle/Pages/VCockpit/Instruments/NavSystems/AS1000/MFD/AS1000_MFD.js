@@ -72,6 +72,8 @@ class AS1000_MFD extends BaseAS1000 {
         this.pageController.handleInput(this.inputStack);
         this.mapElement = new MFD_MapElement();
         this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "RightInfos", this.mapElement));
+        this.miniMap = document.querySelector("#MiniMap");
+        this.miniMap.init(this);
 
         this.electricityAvailable = new Subject(this.isElectricityAvailable());
         this.fuelUsed = new WT_Fuel_Used(["FUEL LEFT QUANTITY", "FUEL RIGHT QUANTITY"]);
@@ -140,9 +142,10 @@ class AS1000_MFD extends BaseAS1000 {
         view.enter(this, this.inputStack);
     }
     showWaypointSelector(icaoType = null) {
-        let model = new WT_Waypoint_Selector_Model(icaoType);
+        let model = new WT_Waypoint_Selector_Model(icaoType, this);
         let view = new WT_Waypoint_Selector_View();
         this.paneContainer.appendChild(view);
+        view.setMap(this.miniMap);
         view.setModel(model);
         return view.enter(this.inputStack).catch(e => {
             this.paneContainer.removeChild(view);
@@ -189,6 +192,7 @@ class AS1000_MFD extends BaseAS1000 {
         this.electricityAvailable.value = this.isElectricityAvailable();
         this.fuelUsed.update(dt);
         this.pageController.update(dt);
+        this.miniMap.update(dt);
     }
     disconnectedCallback() {
     }
@@ -252,11 +256,7 @@ class AS1000_MFD extends BaseAS1000 {
         }
     }
     Update() {
-        try {
-            super.Update();
-        } catch (e) {
-            console.log(e.message);
-        }
+        super.Update();        
         SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
     }
 

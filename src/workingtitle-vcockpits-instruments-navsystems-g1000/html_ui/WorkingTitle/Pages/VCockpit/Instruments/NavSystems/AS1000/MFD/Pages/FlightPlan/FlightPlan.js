@@ -116,7 +116,7 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
 
 class WT_Flight_Plan_Input_Layer extends Selectables_Input_Layer {
     constructor(flightPlanView) {
-        super(new Selectables_Input_Layer_Dynamic_Source(flightPlanView, `[data-selectable="flight-plan"], selectable-button`));
+        super(new Selectables_Input_Layer_Dynamic_Source(flightPlanView));
         this.flightPlanView = flightPlanView;
     }
     onCLR() {
@@ -132,7 +132,7 @@ class WT_Flight_Plan_Waypoint_Line extends WT_HTML_View {
 
         this.innerHTML = `
         <div></div>
-        <div class="ident" data-selectable="flight-plan" data-element="ident"></div>
+        <div class="ident selectable" data-element="ident"></div>
         <div class="dtk" data-element="dtk"></div>
         <div class="distance"><span data-element="distance"></span><span class="units-small">NM</span></div>
         <div class="altitude"><numeric-input digits="5" units="FT" value="0" class="altitude" data-element="altitude"></numeric-input></div>
@@ -207,7 +207,7 @@ class WT_Flight_Plan_Waypoint_Line extends WT_HTML_View {
         this.elements.distance.textContent = distance.toFixed(distance < 10 ? 1 : 0);
     }
     set altitude(altitude) {
-        this.elements.altitude.textContent = Math.floor(altitude);
+        this.elements.altitude.value = Math.floor(altitude);
     }
     set fod(fod) {
         this.elements.fod.textContent = Math.floor(fod, 1);
@@ -228,6 +228,7 @@ customElements.define("g1000-flight-plan-waypoint-line", WT_Flight_Plan_Waypoint
 class WT_Flight_Plan_Header_Line extends WT_HTML_View {
     constructor() {
         super();
+        this.classList.add("selectable");
     }
     connectedCallback() {
         super.connectedCallback();

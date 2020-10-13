@@ -71,6 +71,7 @@
     .category {
         font-size: $font_size_regular;
         margin: 1.5vh 0;
+        --border-color: #{$category_box_outline_color};
 
         *[state="Selected"] {
             animation: SelectionBlink 0.5s infinite !important;
@@ -80,7 +81,7 @@
             display: flex;
             align-items: flex-end;
             color: #fff;
-            border-bottom: 1px solid $category_box_outline_color;
+            border-bottom: 1px solid var(--border-color);
             padding: 0;
             width: auto;
             line-height: 1.5em;
@@ -93,11 +94,11 @@
                 display: block;
                 height: 10px;
                 background: $category_box_background_color;
-                border-top: 1px solid $category_box_outline_color;
+                border-top: 1px solid var(--border-color);
                 position: relative;
                 top: 1px;
-                border-right: 1px solid $category_box_outline_color;
-                border-left: 1px solid $category_box_outline_color;
+                border-right: 1px solid var(--border-color);
+                border-left: 1px solid var(--border-color);
             }
 
             &:before {
@@ -113,7 +114,7 @@
         .content {
             text-align: left;
             background-color: $category_box_background_color;
-            border: 1.5px solid $category_box_outline_color;
+            border: 1.5px solid var(--border-color);
             border-top: none;
             padding: 1vh;
             line-height: 1.8em;
@@ -134,6 +135,35 @@
 
             &.highlighted {
                 color: $input_color;
+            }
+        }
+
+        &.map-category {
+            --border-color: #fff;
+
+            h1 {
+                margin-bottom: -10px;
+                border-bottom: none;
+                z-index: 100;
+                position: relative;
+
+                > div {
+                    padding: 0 1vh;
+                    background: lighten($page_background_color, 10%);
+                    border-bottom: 1px solid var(--border-color);
+                }
+
+                &:before,
+                &:after {
+                    border-top: none;
+                    background: transparent;
+                    margin: 0;
+                }
+            }
+
+            .content {
+                padding: 0px;
+                border-top: 1.5px solid var(--border-color);
             }
         }
     }

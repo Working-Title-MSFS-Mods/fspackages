@@ -180,6 +180,7 @@ class AS1000_PFD extends BaseAS1000 {
     initModels() {
         this.attitudeModel = this.initModelView(new Attitude_Indicator_Model(this.model.syntheticVision), "glasscockpit-attitude-indicator");
         this.hsiModel = this.initModelView(new HSIIndicatorModel(), "#Compass");
+        this.altimeterModel = this.initModelView(new WT_Altimeter_Model(this.barometricPressure), "glasscockpit-altimeter");
 
         this.navBoxModel = this.initModelView(new AS1000_PFD_Nav_Box_Model(this.unitChooser, this.currFlightPlanManager), "g1000-nav-box");
         this.comFrequenciesModel = this.initModelView(new WT_Com_Frequencies_Model(), "g1000-com-frequencies");

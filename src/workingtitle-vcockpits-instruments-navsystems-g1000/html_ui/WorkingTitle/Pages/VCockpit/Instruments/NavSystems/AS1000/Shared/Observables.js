@@ -37,6 +37,8 @@ class CombinedSubject {
         this.callback = callback;
         this.subjects = subjects;
         for (let subject of subjects) {
+            if (!(subject instanceof Subject))
+                throw new Error("Tried to create a combined subject with non subjects");
             subject.subscribe(this.updated.bind(this));
         }
     }

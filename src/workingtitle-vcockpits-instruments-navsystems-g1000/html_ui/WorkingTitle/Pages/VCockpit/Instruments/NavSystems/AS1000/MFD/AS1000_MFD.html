@@ -19,6 +19,7 @@
                     <map-instrument id="MapInstrument" bing-id="MFD" config-path="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/" hide-flightplan-if-bushtrip="true"></map-instrument>
                     <glasscockpit-wind-data id="WindData" style="display:none !important;"></glasscockpit-wind-data>
                 </div>
+                <map-instrument id="MiniMap" bing-id="MiniMap" config-path="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/"></map-instrument>
             </div>
 
             <div class="page-container" id="PageContainer"></div>
@@ -451,20 +452,34 @@
     </template>
 
     <template id="waypoint-selector-pane">
+        <h1 class="title">Waypoint Information</h1>
         <div class="category">
             <h1>Ident, Facility, City</h1>
             <section class="content">
                 <!--<string-input characters="10" value="EGLL"></string-input>-->
-                <icao-input data-element="icaoInput" characters="4"></icao-input>
+                <icao-input data-element="icaoInput" characters="6"></icao-input>
             </section>
         </div>
-
-        <div class="category">
-            <h1>Ident, Facility, City</h1>
+        <div class="category map-category">
+            <h1><div>Map</div></h1>
             <section class="content">
-                <map-instrument id="MFD_NewWP" bing-id="MFD_NewWP" config-path="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/" style="width:20vh; height:20vh;"></map-instrument>
+                <div data-element="mapContainer" class="waypoint-map"></div>
             </section>
         </div>
+        <div class="category">
+            <h1>Location</h1>
+            <section class="content">
+                <div class="location">
+                    <label>BRG</label>
+                    <div class="bearing" data-element="bearing"></div>
+                    <div class="country" data-element="country"></div>
+                    <label>DIS</label>
+                    <div class="distance" data-element="distance"></div>
+                    <div class="city" data-element="city"></div>
+                </div>
+            </section>
+        </div>
+        <div class="enter-accept">Press "ENT" to accept</div>
     </template>
 
     <template id="flight-plan-page">

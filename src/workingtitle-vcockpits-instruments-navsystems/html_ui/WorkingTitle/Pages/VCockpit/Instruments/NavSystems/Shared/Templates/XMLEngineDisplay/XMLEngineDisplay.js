@@ -873,7 +873,7 @@ class XMLCircularGauge extends XMLGauge {
         this.titleText.setAttribute("x", "50");
         this.titleText.setAttribute("y", "30");
         this.titleText.setAttribute("fill", "white");
-        this.titleText.setAttribute("font-size", "10");
+        this.titleText.setAttribute("font-size", "8");
         this.titleText.setAttribute("font-family", "Roboto-Bold");
         this.titleText.setAttribute("text-anchor", "middle");
         this.titleText.setAttribute("AlertBlink", "Text");
@@ -883,7 +883,7 @@ class XMLCircularGauge extends XMLGauge {
         this.unitText.setAttribute("x", "50");
         this.unitText.setAttribute("y", "45");
         this.unitText.setAttribute("fill", "white");
-        this.unitText.setAttribute("font-size", "10");
+        this.unitText.setAttribute("font-size", "8");
         this.unitText.setAttribute("font-family", "Roboto-Bold");
         this.unitText.setAttribute("text-anchor", "middle");
         this.unitText.setAttribute("AlertBlink", "Text");

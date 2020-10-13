@@ -1,5 +1,14 @@
 Include.addScript("/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js")
 
+class WT_Altimeter_Model {
+    /**
+     * @param {WT_Barometric_Pressure} barometricPressure 
+     */
+    constructor(barometricPressure) {
+        this.barometricPressure = barometricPressure;
+    }
+}
+
 class Altimeter extends HTMLElement {
     constructor() {
         super();
@@ -24,6 +33,25 @@ class Altimeter extends HTMLElement {
             "selected-altitude-alert",
             "baro-mode"
         ];
+    }
+    /**
+     * @param {WT_Barometric_Pressure} model 
+     */
+    setModel(model) {
+        let baro = new CombinedSubject([model.barometricPressure.altUnit, model.barometricPressure.pressure], (unit, pressure) => {
+            return {
+                unit: unit,
+                pressure: pressure,
+                isStandard: (unit == WT_Barometric_Pressure.IN_MG && (Math.abs(pressure - 29.92) < 0.005)) || (unit == WT_Barometric_Pressure.HPA && (Math.abs(pressure - 1013) < 0.2))
+            }
+        });
+        baro.subscribe(settings => {
+            if (settings.isStandard) {
+                this.baroText.textContent = "STD BARO";
+            } else {
+                this.baroText.textContent = settings.pressure.toFixed(settings.unit == "IN" ? 2 : 0) + settings.unit;
+            }
+        });
     }
     connectedCallback() {
         let vsStyle = this.getAttribute("VSStyle");
@@ -642,19 +670,19 @@ class Altimeter extends HTMLElement {
                         break;
                 }
                 break;
-            case "pressure":
+            /*case "pressure":
                 this.lastPressure = newValue;
-                newValue = this.baroMode;
-                /* fall through to update the HTML text */
-            case "baro-mode":
-                if (newValue == "HPA") {
-                    this.baroMode = "HPA";
-                    this.baroText.textContent = fastToFixed(parseFloat(this.lastPressure) * 33.8639, 0) + "HPA";
-                } else {
-                    this.baroMode = "IN";
-                    this.baroText.textContent = fastToFixed(parseFloat(this.lastPressure), 2) + "IN";
-                }
-                WTDataStore.set("Alt.BaroMode", this.baroMode);
+                newValue = this.baroMode;*/
+            /* fall through to update the HTML text */
+            /*case "baro-mode":
+            if (newValue == "HPA") {
+                this.baroMode = "HPA";
+                this.baroText.textContent = fastToFixed(parseFloat(this.lastPressure) * 33.8639, 0) + "HPA";
+            } else {
+                this.baroMode = "IN";
+                this.baroText.textContent = fastToFixed(parseFloat(this.lastPressure), 2) + "IN";
+            }
+            WTDataStore.set("Alt.BaroMode", this.baroMode);*/
             case "vspeed":
                 let vSpeed = parseFloat(newValue);
                 if (this.compactVs) {

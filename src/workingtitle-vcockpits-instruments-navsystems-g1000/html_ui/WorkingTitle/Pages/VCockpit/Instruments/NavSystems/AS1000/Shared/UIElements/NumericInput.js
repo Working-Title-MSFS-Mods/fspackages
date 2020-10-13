@@ -124,6 +124,7 @@ class WT_Numeric_Input extends HTMLElement {
             this.appendChild(unitsNode);
         }
         this.value = parseInt(this.getAttribute("value"));
+        this.updateDisplay();
     }
     back() {
         this.exit();

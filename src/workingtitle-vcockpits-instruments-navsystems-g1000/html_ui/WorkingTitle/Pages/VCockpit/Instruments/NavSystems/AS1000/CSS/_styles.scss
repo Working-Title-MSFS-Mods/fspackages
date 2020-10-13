@@ -10,7 +10,7 @@ $border_color: #ccc;
 $color_gps: #ff00ff;
 $color_ap_active: #00ff00;
 
-$category_box_outline_color: #888;
+$category_box_outline_color: #999;
 $category_box_background_color: #000;
 $category_border_width: $border_width_thin;
 $category_text_color: #fff;
@@ -30,6 +30,11 @@ $font_family_mono: "Roboto-Mono";
 html {
     font-size: calc(2 * 1vh * var(--bodyHeightScale));
     font-family: $font_family_normal;
+
+    --engine-green: #00cc00;
+    --engine-red: #f84444;
+    --engine-yellow: #ffff00;
+
 }
 
 @keyframes SelectionBlink {

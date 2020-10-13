@@ -1,0 +1,38 @@
+g1000-waypoint-selector-pane {
+    .location {
+        display: grid;
+        grid-template-columns: 20% 30% 50%;
+        grid-template-rows: auto auto;
+        align-items: center;
+    }
+
+    .bearing,
+    .distance,
+    .city,
+    .country {
+        color: $input_color;
+    }
+
+    .bearing,
+    .distance {
+        font-family: $font_family_mono;
+    }
+
+    .city,
+    .country {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .units {
+        font-size: 0.8em;
+    }
+
+    .enter-accept {
+        font-weight: bold;
+        text-align: center;
+        margin-top: 1em;
+        font-size: 1.1em;
+    }
+}
