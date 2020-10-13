@@ -54,7 +54,7 @@ class SvgMap {
         }
         this.svgHtmlElement.setAttribute("viewBox", "0 0 1000 1000");
         
-        this.cityLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.cityLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.cityLayer);
         this.svgLayersToUpdate.push(this.cityLayer);
         

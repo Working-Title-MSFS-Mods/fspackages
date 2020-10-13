@@ -30,6 +30,8 @@
   "cityIconFillColor": "#7b8083",
   "cityIconStrokeColor": "#3f3f3f",
   "cityIconStrokeWidth": 3,
+  
+  "obstacleIconSize": 90,
 
   "airplaneIconSize": 80,
   "airplaneIcon1": "ICON_MAP_PLANE",
