@@ -11,6 +11,7 @@ class SvgCityManager {
             SvgCityManager.CITY_SMALL_SEARCH_LIMIT_DEFAULT                                      // the maximum number of small cities to return with a single search
         ];
         this.bufferMaxSize = SvgCityManager.BUFFER_SIZE_DEFAULT;
+        this.bufferMaxProcess = SvgCityManager.BUFFER_MAX_PROCESS_DEFAULT;                      // maximum number of items in the buffer to process in one update cycle
         this.displayedCitiesCleanInterval = SvgCityManager.DISPLAYED_CITIES_CLEAN_INTERVAL;     // seconds, how often to periodically remove out of frame cities from the display list
         
         this.buffer = new Array(this.bufferMaxSize);
@@ -105,7 +106,8 @@ class SvgCityManager {
             // no search was done this update, so start creating city elements from the buffer
             let start = this.bufferHead;
             let end = this.bufferTail;
-            while (start >= 0) {
+            let count = 0;
+            while (start >= 0 && count < this.bufferMaxProcess) {
                 let city = this.dequeueBuffer();
                 if (this.map.isLatLongInFrame(new LatLong(city.lat, city.long), 0.05)) {
                     let svgCityElement = this.cityElementTable.get(city);
@@ -122,8 +124,8 @@ class SvgCityManager {
                 if (start == end) {
                     break;
                 }
+                count++;
             }
-            
             if (this.lastDisplayCleanTime < 0 && this.displayedCities.size > 0) {
                 this.lastDisplayCleanTime = currentTime;
             } else if (currentTime - this.lastDisplayCleanTime >= this.displayedCitiesCleanInterval) {
@@ -330,9 +332,10 @@ class SvgCityManager {
 SvgCityManager.SEARCH_INTERVAL_DEFAULT = 30;
 SvgCityManager.MAP_CHANGE_SEARCH_DELAY_DEFAULT = 1;
 SvgCityManager.MIN_SEARCH_RADIUS_DEFAULT = 10;
-SvgCityManager.CITY_SMALL_SEARCH_LIMIT_DEFAULT = 40;
-SvgCityManager.CITY_MEDIUM_SEARCH_LIMIT_DEFAULT = 40;
+SvgCityManager.CITY_SMALL_SEARCH_LIMIT_DEFAULT = Infinity;
+SvgCityManager.CITY_MEDIUM_SEARCH_LIMIT_DEFAULT = Infinity;
 SvgCityManager.CITY_LARGE_SEARCH_LIMIT_DEFAULT = Infinity; 
-SvgCityManager.BUFFER_SIZE_DEFAULT = 150;
+SvgCityManager.BUFFER_SIZE_DEFAULT = 2000;
+SvgCityManager.BUFFER_MAX_PROCESS_DEFAULT = 200;
 SvgCityManager.DISPLAYED_CITIES_CLEAN_INTERVAL = 120;
 //# sourceMappingURL=SvgCityManager.js.map
