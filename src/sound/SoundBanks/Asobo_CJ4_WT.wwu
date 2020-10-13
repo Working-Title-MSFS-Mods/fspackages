@@ -5,15 +5,16 @@
 			<ChildrenList>
 				<SoundBank Name="Asobo_CJ4_WT" ID="{CCCCFDFA-06A9-42B0-B420-F5811DF76F04}">
 					<ObjectInclusionList>
-						<ObjectRef Name="Play_Asobo_CJ4_WT_ccp_button" ID="{233133ED-EC1E-414A-81F0-F89DBF8F747E}" WorkUnitID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_WT_fms_button" ID="{B552179A-486C-42D1-9C03-056264872073}" WorkUnitID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_WT_battery_off" ID="{E50873FA-CA00-42D3-9C0F-B86B7545D537}" WorkUnitID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Autopilot" ID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" WorkUnitID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Push_Buttons" ID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" WorkUnitID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Passenger_Announcements" ID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" WorkUnitID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_WT_battery_switch" ID="{EBD59A13-393D-481F-A1FC-C479B585828D}" WorkUnitID="{7AC2DAB5-0757-4DDD-B0E6-EF4B5F0A494B}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_WT_battery_on" ID="{ED408425-4567-4879-989D-B21F93E89B57}" WorkUnitID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Knobs" ID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" WorkUnitID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Lights" ID="{DE4AAF1A-04AB-4943-9C14-B93F78436984}" WorkUnitID="{DE4AAF1A-04AB-4943-9C14-B93F78436984}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Play_Asobo_CJ4_WT_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}" WorkUnitID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_WT_climate_control_knob" ID="{BCDBD124-BF9D-4BE2-ACFA-657A05F1D2DA}" WorkUnitID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Engines" ID="{56901329-1362-4C16-9FB5-DA8711422FA8}" WorkUnitID="{56901329-1362-4C16-9FB5-DA8711422FA8}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Battery" ID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" WorkUnitID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Switches" ID="{7AC2DAB5-0757-4DDD-B0E6-EF4B5F0A494B}" WorkUnitID="{7AC2DAB5-0757-4DDD-B0E6-EF4B5F0A494B}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Aural" ID="{9F2DA274-CC3E-4FCB-9204-266F88D59B5D}" WorkUnitID="{9F2DA274-CC3E-4FCB-9204-266F88D59B5D}" Origin="Manual" Filter="7"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>
