@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{9F2DA274-CC3E-4FCB-9204-266F88D59B5D}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
+	<Events>
+		<WorkUnit Name="WT_Aural" ID="{9F2DA274-CC3E-4FCB-9204-266F88D59B5D}" OwnerID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Nested"/>
+	</Events>
+</WwiseDocument>

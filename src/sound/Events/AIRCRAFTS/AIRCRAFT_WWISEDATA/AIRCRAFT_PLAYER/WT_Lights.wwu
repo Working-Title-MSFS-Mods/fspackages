@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{DE4AAF1A-04AB-4943-9C14-B93F78436984}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
+	<Events>
+		<WorkUnit Name="WT_Lights" ID="{DE4AAF1A-04AB-4943-9C14-B93F78436984}" OwnerID="{8BD56E05-FC92-4457-AC56-FD5FDEB696ED}" PersistMode="Nested">
+			<ChildrenList>
+				<Event Name="Play_Asobo_CJ4_lights_button" ID="{3B1440C7-96C3-46B8-8867-C9E07AB70232}">
+					<ChildrenList>
+						<Action Name="" ID="{3F37F931-6809-4E2A-A021-30E97D5E1455}" ShortID="1019397325">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+								<Property Name="FadeTime" Type="Real64" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CJ4_Lights_Button" ID="{C8D799CC-1C5E-475D-B34E-96C017BA5BD0}" WorkUnitID="{06E4B28D-BA80-4AC2-9AE6-5906E68C9F7B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

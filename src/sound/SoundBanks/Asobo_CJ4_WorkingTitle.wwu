@@ -5,23 +5,31 @@
 			<ChildrenList>
 				<SoundBank Name="Asobo_CJ4_WorkingTitle" ID="{CCCCFDFA-06A9-42B0-B420-F5811DF76F04}">
 					<ObjectInclusionList>
-						<ObjectRef Name="Play_Asobo_CJ4_Autopilot_Disconnect" ID="{1BC9F260-0514-416E-85DD-34B95BCA570E}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_oxygen_mask_deployment" ID="{96B3577C-4D77-4177-B5E1-AC3B444F0094}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_safety_lights" ID="{23F782EA-85B6-4184-9FB8-9DC0AB4FF7AA}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_takeoff_long" ID="{14259A5E-F548-41F1-BD7D-AA377EA4A671}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_battery_off" ID="{E50873FA-CA00-42D3-9C0F-B86B7545D537}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_landing" ID="{D6D0F9F4-BA31-43B2-93D4-D39BD7DAB800}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_takeoff_short" ID="{1118FF41-0E32-4462-B7BF-BF15DA9D5DA1}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_wt_battery_off" ID="{27F59267-B434-46DD-8A90-A1CB7F5DA8BD}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_seatbelt_lights" ID="{8CE6A881-FB7F-46E8-B8FC-8A201E0B6021}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_battery_switch" ID="{EBD59A13-393D-481F-A1FC-C479B585828D}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_battery_on_new" ID="{ED408425-4567-4879-989D-B21F93E89B57}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_turbulence" ID="{D6F22E55-B68D-489F-98BB-A7B4D25FC6EA}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_Climate_Control_Knob" ID="{BCDBD124-BF9D-4BE2-ACFA-657A05F1D2DA}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_chime" ID="{4C574D9B-7C67-4C11-9763-498F6B9BB907}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_Yoke_Autopilot_Disconnect" ID="{1C1318B9-D665-4C42-811C-2F8DE55D7E06}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="CJ4_Fuel_Transfer_Selector_Knob" ID="{73FBAE8A-A2D5-4CD8-A500-22FBED286D65}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_CPP_Button" ID="{233133ED-EC1E-414A-81F0-F89DBF8F747E}" WorkUnitID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_Autopilot_Disconnect" ID="{1BC9F260-0514-416E-85DD-34B95BCA570E}" WorkUnitID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_oxygen_mask_deployment" ID="{96B3577C-4D77-4177-B5E1-AC3B444F0094}" WorkUnitID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_safety_lights" ID="{23F782EA-85B6-4184-9FB8-9DC0AB4FF7AA}" WorkUnitID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_takeoff_long" ID="{14259A5E-F548-41F1-BD7D-AA377EA4A671}" WorkUnitID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_Course_Select_Knob" ID="{7454E37C-1D41-425A-81C7-FB6AE49E83F4}" WorkUnitID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_FMS_Button" ID="{B552179A-486C-42D1-9C03-056264872073}" WorkUnitID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_wt_battery_off" ID="{E50873FA-CA00-42D3-9C0F-B86B7545D537}" WorkUnitID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_landing" ID="{D6D0F9F4-BA31-43B2-93D4-D39BD7DAB800}" WorkUnitID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_fuel_transfer_switch_knob" ID="{4808F8C8-593E-4436-93A0-A5EBD27A7A50}" WorkUnitID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_takeoff_short" ID="{1118FF41-0E32-4462-B7BF-BF15DA9D5DA1}" WorkUnitID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_lights_button" ID="{3B1440C7-96C3-46B8-8867-C9E07AB70232}" WorkUnitID="{DE4AAF1A-04AB-4943-9C14-B93F78436984}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_seatbelt_lights" ID="{8CE6A881-FB7F-46E8-B8FC-8A201E0B6021}" WorkUnitID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_Comms_Out" ID="{3EEB4C93-EBCA-4742-B70F-37A5B53D251E}" WorkUnitID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_battery_switch" ID="{EBD59A13-393D-481F-A1FC-C479B585828D}" WorkUnitID="{7AC2DAB5-0757-4DDD-B0E6-EF4B5F0A494B}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_wt_battery_on" ID="{ED408425-4567-4879-989D-B21F93E89B57}" WorkUnitID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_turbulence" ID="{D6F22E55-B68D-489F-98BB-A7B4D25FC6EA}" WorkUnitID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}" WorkUnitID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_Heading_Knob" ID="{CD3BE17C-DAFF-4A88-A1C6-80B0900A6E39}" WorkUnitID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_Altitude_Select_Knob" ID="{09BD93B2-38EB-4B29-A09F-0F3214BE57B7}" WorkUnitID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_Climate_Control_Knob" ID="{BCDBD124-BF9D-4BE2-ACFA-657A05F1D2DA}" WorkUnitID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_chime" ID="{4C574D9B-7C67-4C11-9763-498F6B9BB907}" WorkUnitID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_Yoke_Autopilot_Disconnect" ID="{1C1318B9-D665-4C42-811C-2F8DE55D7E06}" WorkUnitID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_Vertical_Speed_Wheel" ID="{27A28FDA-72A7-4C78-9F35-E692BC34DF01}" WorkUnitID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_Comms_In" ID="{B6190F7C-C716-4EBB-BA15-DB65A07C5DA5}" WorkUnitID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" Origin="Manual" Filter="7"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>

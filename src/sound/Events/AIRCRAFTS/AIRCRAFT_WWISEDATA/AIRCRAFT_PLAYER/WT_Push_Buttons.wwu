@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
+	<Events>
+		<WorkUnit Name="WT_Push_Buttons" ID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" OwnerID="{8BD56E05-FC92-4457-AC56-FD5FDEB696ED}" PersistMode="Nested">
+			<ChildrenList>
+				<Event Name="Play_Asobo_CJ4_CPP_Button" ID="{233133ED-EC1E-414A-81F0-F89DBF8F747E}">
+					<ChildrenList>
+						<Action Name="" ID="{4A97FFBD-3EA2-4066-83E8-C003A72AC2F2}" ShortID="846080182">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+								<Property Name="FadeTime" Type="Real64" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CJ4_CCP_Button" ID="{B6C8CDA5-3A0F-43B0-964D-468AF7D59433}" WorkUnitID="{768D8EA5-FA4D-4565-81CC-EE6E78573D6A}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_FMS_Button" ID="{B552179A-486C-42D1-9C03-056264872073}">
+					<ChildrenList>
+						<Action Name="" ID="{98D9746C-7F34-41AC-A259-3E2FFA724119}" ShortID="235864233">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+								<Property Name="FadeTime" Type="Real64" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CJ4_FMS_Button" ID="{5271B766-A6F0-470F-8AE3-D1D24DC660E4}" WorkUnitID="{8F943296-33C9-43A6-B749-5C770DCF5C13}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_Comms_In" ID="{B6190F7C-C716-4EBB-BA15-DB65A07C5DA5}">
+					<ChildrenList>
+						<Action Name="" ID="{BC7B4427-D52C-4A0C-8A28-E3CE3F816C35}" ShortID="594402871">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+								<Property Name="FadeTime" Type="Real64" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CJ4_Comms_Button_In" ID="{2BC1393F-2F69-4590-B922-031E4D065C9F}" WorkUnitID="{24C81625-8C5E-4E75-A2BB-C680DA71EF96}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_Comms_Out" ID="{3EEB4C93-EBCA-4742-B70F-37A5B53D251E}">
+					<ChildrenList>
+						<Action Name="" ID="{311FBC27-2C55-4B96-A2FF-E498D9573959}" ShortID="676486951">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+								<Property Name="FadeTime" Type="Real64" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CJ4_Comms_Button_Out" ID="{AC6BC206-324B-466C-A091-4DB47C4F9884}" WorkUnitID="{24C81625-8C5E-4E75-A2BB-C680DA71EF96}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

@@ -116,18 +116,18 @@
 
   	<!-- COCKPIT LOOPS SOUNDS ==================================================================================-->    
        
-    <Sound WwiseData="true" WwiseEvent="battery_on" NodeName="MFD_SCREEN_1" ContinuousStopDelay="0.2" FadeOutType="2" FadeOutTime="5" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+    <!-- <Sound WwiseData="true" WwiseEvent="battery_on" NodeName="MFD_SCREEN_1" ContinuousStopDelay="0.2" FadeOutType="2" FadeOutTime="5" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
 	    <WwiseRTPC SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0" RTPCName="SIMVAR_ELECTRICAL_MASTER_BATTERY_INTERPOLATION_A4_R4" />
       <Range LowerBound="1.0" />
-    </Sound>  
+    </Sound>   -->
 
-    <!-- <Sound WwiseData="true" WwiseEvent="wt_battery_on" NodeName="MFD_SCREEN_1" ContinuousStopDelay="0.1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+    <Sound WwiseData="true" WwiseEvent="wt_battery_on" NodeName="MFD_SCREEN_1" ContinuousStopDelay="0.1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
       <Range LowerBound="1.0" />
     </Sound>     
 
     <Sound WwiseData="true" WwiseEvent="wt_battery_off" Continuous="false" NodeName="MFD_SCREEN_1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
       <Range UpperBound="0.0" />
-    </Sound>      -->
+    </Sound>
     	
 	<!-- Fuel pump ========================================================================================== -->
 	
@@ -334,7 +334,8 @@
       <Sound WwiseData="true" WwiseEvent="Fuel_Transfer_Selector_Knob" ViewPoint="Inside"/>
 
       <!-- ELECTRICAL ========================================================================================== -->
-    <Sound WwiseData="true" WwiseEvent="battery_switch" ViewPoint="Inside"/>	  
+    <!-- don't play battery switch as it comes with the battery event already -->
+    <!-- <Sound WwiseData="true" WwiseEvent="battery_switch" ViewPoint="Inside"/>	   -->
     <Sound WwiseData="true" WwiseEvent="alternator_switch" ViewPoint="Inside"/>	      
 	<Sound WwiseData="true" WwiseEvent="avionic_switch" ViewPoint="Inside"/>	  	
 	<Sound WwiseData="true" WwiseEvent="electrical_circuit_switch_on" ViewPoint="Inside"/>	  	
