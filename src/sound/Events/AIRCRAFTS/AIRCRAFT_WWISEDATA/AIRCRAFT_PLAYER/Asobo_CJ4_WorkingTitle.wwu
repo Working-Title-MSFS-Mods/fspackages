@@ -750,31 +750,238 @@
 						</Event>
 					</ChildrenList>
 				</Folder>
-				<Folder Name="Battery" ID="{F09AA56A-3A74-4A7E-8E18-C3C7C1999D5D}" ShortID="739931387">
+				<Folder Name="Instruments" ID="{5DA94818-9162-4B97-9A1B-ABF0CBB389B7}" ShortID="627143040">
 					<ChildrenList>
-						<Event Name="Play_Asobo_CJ4_wt_battery_on" ID="{AB510CBA-FFB3-4F57-80B5-C85843ABAC24}">
+						<Folder Name="Autopilot" ID="{6D3AD2C8-2D3E-4C82-8277-B64A7A85E42D}" ShortID="936111574">
 							<ChildrenList>
-								<Action Name="" ID="{BBD96459-1157-4EFC-A8DA-3C246BC47BBA}" ShortID="16031308">
+								<Event Name="Play_Asobo_CJ4_Altitude_Select_Knob" ID="{09BD93B2-38EB-4B29-A09F-0F3214BE57B7}">
+									<ChildrenList>
+										<Action Name="" ID="{5EC6D4C0-F922-453A-AC68-C67E6EF37138}" ShortID="373569466">
+											<PropertyList>
+												<Property Name="ActionType" Type="int16" Value="1"/>
+												<Property Name="FadeTime" Type="Real64" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="CJ4_Altitude_Select_Knob" ID="{55BE23C0-8B22-4AA9-8713-8C4798450C5B}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Play_Asobo_CJ4_Course_Select_Knob" ID="{7454E37C-1D41-425A-81C7-FB6AE49E83F4}">
+									<ChildrenList>
+										<Action Name="" ID="{14138652-1E7E-4A5A-9E94-5418D55C183E}" ShortID="976431604">
+											<PropertyList>
+												<Property Name="ActionType" Type="int16" Value="1"/>
+												<Property Name="FadeTime" Type="Real64" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="CJ4_Course_Select_Knob" ID="{74CDC19E-505A-46F4-916A-57381B22D649}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Play_Asobo_CJ4_Heading_Knob" ID="{CD3BE17C-DAFF-4A88-A1C6-80B0900A6E39}">
+									<ChildrenList>
+										<Action Name="" ID="{B4DA21C9-8C51-4ECB-A8E7-6CD807B9C2B2}" ShortID="102105355">
+											<PropertyList>
+												<Property Name="ActionType" Type="int16" Value="1"/>
+												<Property Name="FadeTime" Type="Real64" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="CJ4_Heading_Knob" ID="{7946EA37-382C-4EAE-A8C5-84F0C7E966BE}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Play_Asobo_CJ4_Vertical_Speed_Wheel" ID="{27A28FDA-72A7-4C78-9F35-E692BC34DF01}">
+									<ChildrenList>
+										<Action Name="" ID="{A2D99207-17E0-4A8C-8C89-EE67C027F843}" ShortID="890975797">
+											<PropertyList>
+												<Property Name="ActionType" Type="int16" Value="1"/>
+												<Property Name="FadeTime" Type="Real64" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="CJ4_Vertical_Speed_Wheel" ID="{09F4BC27-9D17-44E6-8271-9E44684F7068}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Play_Asobo_CJ4_Autopilot_Disconnect" ID="{1C1318B9-D665-4C42-811C-2F8DE55D7E06}">
+									<ChildrenList>
+										<Action Name="" ID="{C0F46D93-1ADE-4986-B497-60F9DB29503F}" ShortID="885735186">
+											<PropertyList>
+												<Property Name="ActionType" Type="int16" Value="1"/>
+												<Property Name="FadeTime" Type="Real64" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="CJ4_Yoke_Autopilot_Disconnect" ID="{05D62558-9DC4-4D70-ABDA-1160F65AD4C7}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
+						<Event Name="Play_Asobo_CJ4_lights_button" ID="{3B1440C7-96C3-46B8-8867-C9E07AB70232}">
+							<ChildrenList>
+								<Action Name="" ID="{3F37F931-6809-4E2A-A021-30E97D5E1455}" ShortID="1019397325">
 									<PropertyList>
 										<Property Name="ActionType" Type="int16" Value="1"/>
+										<Property Name="FadeTime" Type="Real64" Value="1"/>
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="Battery_On_Seq" ID="{5F4F4A0F-04B9-47FF-B1FC-650E693B980F}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+											<ObjectRef Name="CJ4_Lights_Button" ID="{C8D799CC-1C5E-475D-B34E-96C017BA5BD0}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
 							</ChildrenList>
 						</Event>
-						<Event Name="Play_Asobo_CJ4_wt_battery_off" ID="{27F59267-B434-46DD-8A90-A1CB7F5DA8BD}">
+						<Event Name="Play_Asobo_CJ4_fuel_transfer_switch_knob" ID="{4808F8C8-593E-4436-93A0-A5EBD27A7A50}">
 							<ChildrenList>
-								<Action Name="" ID="{A5A80F75-B150-4618-9378-D5C9D89C4208}" ShortID="683417332">
+								<Action Name="" ID="{4A3C064D-F3F0-465E-8AA5-ADF19F99B2A8}" ShortID="811256402">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+										<Property Name="FadeTime" Type="Real64" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_Fuel_Transfer_Selector_Knob" ID="{73FBAE8A-A2D5-4CD8-A500-22FBED286D65}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_Asobo_CJ4_FMS_Button" ID="{B552179A-486C-42D1-9C03-056264872073}">
+							<ChildrenList>
+								<Action Name="" ID="{98D9746C-7F34-41AC-A259-3E2FFA724119}" ShortID="235864233">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+										<Property Name="FadeTime" Type="Real64" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_FMS_Button" ID="{5271B766-A6F0-470F-8AE3-D1D24DC660E4}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_Asobo_CJ4_CPP_Button" ID="{233133ED-EC1E-414A-81F0-F89DBF8F747E}">
+							<ChildrenList>
+								<Action Name="" ID="{4A97FFBD-3EA2-4066-83E8-C003A72AC2F2}" ShortID="846080182">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+										<Property Name="FadeTime" Type="Real64" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_CCP_Button" ID="{B6C8CDA5-3A0F-43B0-964D-468AF7D59433}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_Asobo_CJ4_Climate_Control_Knob" ID="{BCDBD124-BF9D-4BE2-ACFA-657A05F1D2DA}">
+							<ChildrenList>
+								<Action Name="" ID="{31670435-34E1-45D9-B7B2-0CCBE8610003}" ShortID="625055637">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+										<Property Name="FadeTime" Type="Real64" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_Climate_Control_Knob" ID="{B85C7554-DF10-4DCC-A29D-EB4736C89139}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_Asobo_CJ4_battery_switch" ID="{EBD59A13-393D-481F-A1FC-C479B585828D}">
+							<ChildrenList>
+								<Action Name="" ID="{E59E284A-832C-4A11-85D8-666A1C6AD1A3}" ShortID="759937401">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+										<Property Name="FadeTime" Type="Real64" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_Battery_Switch" ID="{C986B327-70DC-4CA8-8D75-3A3F22C407CA}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Folder Name="Comms" ID="{6DCC75F4-6453-426F-8084-0693F0E7421E}" ShortID="522912831">
+							<ChildrenList>
+								<Event Name="Play_Asobo_CJ4_Comms_In" ID="{B6190F7C-C716-4EBB-BA15-DB65A07C5DA5}">
+									<ChildrenList>
+										<Action Name="" ID="{BC7B4427-D52C-4A0C-8A28-E3CE3F816C35}" ShortID="594402871">
+											<PropertyList>
+												<Property Name="ActionType" Type="int16" Value="1"/>
+												<Property Name="FadeTime" Type="Real64" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="CJ4_Comms_Button_In" ID="{2BC1393F-2F69-4590-B922-031E4D065C9F}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Play_Asobo_CJ4_Comms_Out" ID="{3EEB4C93-EBCA-4742-B70F-37A5B53D251E}">
+									<ChildrenList>
+										<Action Name="" ID="{311FBC27-2C55-4B96-A2FF-E498D9573959}" ShortID="676486951">
+											<PropertyList>
+												<Property Name="ActionType" Type="int16" Value="1"/>
+												<Property Name="FadeTime" Type="Real64" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="CJ4_Comms_Button_Out" ID="{AC6BC206-324B-466C-A091-4DB47C4F9884}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
+					</ChildrenList>
+				</Folder>
+				<Folder Name="Battery" ID="{177CED17-2135-49C8-BC03-11FA10EABB7B}" ShortID="571544015">
+					<ChildrenList>
+						<Event Name="Play_Asobo_CJ4_battery_on_new" ID="{ED408425-4567-4879-989D-B21F93E89B57}">
+							<ChildrenList>
+								<Action Name="" ID="{0842CEDC-5D5A-4D70-A5ED-36CBE47F6157}" ShortID="11298372">
 									<PropertyList>
 										<Property Name="ActionType" Type="int16" Value="1"/>
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="CJ4_Battery_Off" ID="{89131AF4-9F00-488D-99F2-A523547A030A}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+											<ObjectRef Name="CJ4_Battery_On_Seq" ID="{C9DD6643-2F9C-4319-8FFD-D8D15D61D407}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_Asobo_CJ4_battery_off" ID="{E50873FA-CA00-42D3-9C0F-B86B7545D537}">
+							<ChildrenList>
+								<Action Name="" ID="{0E9988FC-E74F-4810-AB92-10310FCB073F}" ShortID="54075620">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="CJ4_Battery_On_End" ID="{E5E0759A-1048-44E0-9BF3-3F83C27D4D69}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
