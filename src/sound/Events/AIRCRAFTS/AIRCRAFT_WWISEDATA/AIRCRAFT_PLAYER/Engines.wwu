@@ -3,15 +3,15 @@
 	<Events>
 		<WorkUnit Name="Engines" ID="{56901329-1362-4C16-9FB5-DA8711422FA8}" OwnerID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Nested">
 			<ChildrenList>
-				<Event Name="Play_Asobo_CJ4_eng1_combustion_wt" ID="{338E9205-E2F1-4B0B-8759-2FB459108785}">
+				<Event Name="Play_Asobo_CJ4_eng1_starter_wt" ID="{1B653F9F-6F61-41D7-8155-153320E5CFEA}">
 					<ChildrenList>
-						<Action Name="" ID="{E7B56FE9-4A31-4F4A-A109-4CA6852FC413}" ShortID="1025384001">
+						<Action Name="" ID="{34ED33FD-249F-40A0-9FA2-94E79C7C3706}" ShortID="170631649">
 							<PropertyList>
 								<Property Name="ActionType" Type="int16" Value="1"/>
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="combustion" ID="{0E226D30-3557-4D91-BCF6-D74BFF015AC3}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+									<ObjectRef Name="starter_inside" ID="{40C3A2F6-16DC-46C6-A355-58E850032F3B}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
@@ -25,21 +25,21 @@
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="shutdown" ID="{CE4A7E08-62D9-417B-A776-CFA66F6620B4}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+									<ObjectRef Name="shutdown_inside" ID="{69EC2F71-B690-4087-B1CE-E95A0C2786AF}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_Asobo_CJ4_eng1_starter_wt" ID="{1B653F9F-6F61-41D7-8155-153320E5CFEA}">
+				<Event Name="Play_Asobo_CJ4_eng1_combustion_wt" ID="{338E9205-E2F1-4B0B-8759-2FB459108785}">
 					<ChildrenList>
-						<Action Name="" ID="{34ED33FD-249F-40A0-9FA2-94E79C7C3706}" ShortID="170631649">
+						<Action Name="" ID="{E7B56FE9-4A31-4F4A-A109-4CA6852FC413}" ShortID="1025384001">
 							<PropertyList>
 								<Property Name="ActionType" Type="int16" Value="1"/>
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="starter" ID="{B20EF916-E79E-4023-BB40-B556719CD883}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+									<ObjectRef Name="combustion_inside" ID="{9157CC7D-CBB6-46EE-83DB-0FBB8393FF85}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
@@ -53,7 +53,7 @@
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="starter" ID="{B20EF916-E79E-4023-BB40-B556719CD883}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+									<ObjectRef Name="starter_inside" ID="{40C3A2F6-16DC-46C6-A355-58E850032F3B}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
@@ -67,7 +67,7 @@
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="combustion" ID="{0E226D30-3557-4D91-BCF6-D74BFF015AC3}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+									<ObjectRef Name="combustion_inside" ID="{9157CC7D-CBB6-46EE-83DB-0FBB8393FF85}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
@@ -81,7 +81,7 @@
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="shutdown" ID="{CE4A7E08-62D9-417B-A776-CFA66F6620B4}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+									<ObjectRef Name="shutdown_inside" ID="{69EC2F71-B690-4087-B1CE-E95A0C2786AF}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
