@@ -58,38 +58,38 @@ class SvgMap {
         this.svgHtmlElement.appendChild(this.cityLayer);
         this.svgLayersToUpdate.push(this.cityLayer);
         
-        this.flightPlanLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.flightPlanLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.flightPlanLayer);
         this.svgLayersToUpdate.push(this.flightPlanLayer);
         
-        this.defaultLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.defaultLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.defaultLayer);
         this.svgLayersToUpdate.push(this.defaultLayer);
         
-        this.textLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.textLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.textLayer);
         
-        this.trackVectorLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.trackVectorLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.trackVectorLayer);
         this.svgLayersToUpdate.push(this.trackVectorLayer);
         
-        this.altitudeInterceptLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.altitudeInterceptLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.altitudeInterceptLayer);
         this.svgLayersToUpdate.push(this.altitudeInterceptLayer);
         
-        this.fuelRingLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.fuelRingLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.fuelRingLayer);
         this.svgLayersToUpdate.push(this.fuelRingLayer);
         
-        this.rangeRingLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.rangeRingLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.rangeRingLayer);
         this.svgLayersToUpdate.push(this.rangeRingLayer);
         
-        this.maskLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.maskLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.maskLayer);
         this.svgLayersToUpdate.push(this.maskLayer);
         
-        this.planeLayer = document.createElementNS(Avionics.SVG.NS, "g");
+        this.planeLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.planeLayer);
         this.svgLayersToUpdate.push(this.planeLayer);
         
