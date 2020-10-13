@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}" SchemaVersion="97">
 	<AudioObjects>
-		<WorkUnit Name="Asobo_CJ4_WorkingTitle" ID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}" PersistMode="Standalone">
+		<WorkUnit Name="WorkingTitle_CJ4" ID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}" PersistMode="Standalone">
 			<ChildrenList>
 				<ActorMixer Name="3D" ID="{17E3FED6-BD2E-4086-8581-62B73B953F10}" ShortID="516312089">
 					<PropertyList>
@@ -23,11 +23,11 @@
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
-						<WorkUnit Name="WT_Cabin_Announcements" ID="{DA339109-38A0-457A-AE85-174A4DED155C}" PersistMode="Reference"/>
-						<WorkUnit Name="WT_Instruments" ID="{0FEBD8CE-49EC-46F6-9131-E3B4EA066A69}" PersistMode="Reference"/>
-						<WorkUnit Name="WT_Engines" ID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}" PersistMode="Reference"/>
-						<WorkUnit Name="WT_Ambience" ID="{8066802F-8FED-4C99-B3A9-9777472C1FD5}" PersistMode="Reference"/>
-						<WorkUnit Name="WT_Aural" ID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}" PersistMode="Reference"/>
+						<WorkUnit Name="Cabin_Announcements" ID="{DA339109-38A0-457A-AE85-174A4DED155C}" PersistMode="Reference"/>
+						<WorkUnit Name="Instruments" ID="{0FEBD8CE-49EC-46F6-9131-E3B4EA066A69}" PersistMode="Reference"/>
+						<WorkUnit Name="Engines" ID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}" PersistMode="Reference"/>
+						<WorkUnit Name="Ambience" ID="{8066802F-8FED-4C99-B3A9-9777472C1FD5}" PersistMode="Reference"/>
+						<WorkUnit Name="Aural" ID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}" PersistMode="Reference"/>
 					</ChildrenList>
 				</ActorMixer>
 			</ChildrenList>

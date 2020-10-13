@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
 	<Events>
-		<WorkUnit Name="WT_Push_Buttons" ID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" OwnerID="{8BD56E05-FC92-4457-AC56-FD5FDEB696ED}" PersistMode="Nested">
+		<WorkUnit Name="Push_Buttons" ID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" OwnerID="{8BD56E05-FC92-4457-AC56-FD5FDEB696ED}" PersistMode="Nested">
 			<ChildrenList>
-				<Event Name="Play_Asobo_CJ4_CPP_Button" ID="{233133ED-EC1E-414A-81F0-F89DBF8F747E}">
+				<Event Name="Play_WorkingTitle_CJ4_ccp_button" ID="{233133ED-EC1E-414A-81F0-F89DBF8F747E}">
 					<ChildrenList>
 						<Action Name="" ID="{4A97FFBD-3EA2-4066-83E8-C003A72AC2F2}" ShortID="846080182">
 							<PropertyList>
@@ -18,7 +18,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_Asobo_CJ4_FMS_Button" ID="{B552179A-486C-42D1-9C03-056264872073}">
+				<Event Name="Play_WorkingTitle_CJ4_fms_button" ID="{B552179A-486C-42D1-9C03-056264872073}">
 					<ChildrenList>
 						<Action Name="" ID="{98D9746C-7F34-41AC-A259-3E2FFA724119}" ShortID="235864233">
 							<PropertyList>
@@ -33,7 +33,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_Asobo_CJ4_Comms_In" ID="{B6190F7C-C716-4EBB-BA15-DB65A07C5DA5}">
+				<Event Name="Play_WorkingTitle_CJ4_comms_in" ID="{B6190F7C-C716-4EBB-BA15-DB65A07C5DA5}">
 					<ChildrenList>
 						<Action Name="" ID="{BC7B4427-D52C-4A0C-8A28-E3CE3F816C35}" ShortID="594402871">
 							<PropertyList>
@@ -48,7 +48,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_Asobo_CJ4_Comms_Out" ID="{3EEB4C93-EBCA-4742-B70F-37A5B53D251E}">
+				<Event Name="Play_WorkingTitle_CJ4_comms_out" ID="{3EEB4C93-EBCA-4742-B70F-37A5B53D251E}">
 					<ChildrenList>
 						<Action Name="" ID="{311FBC27-2C55-4B96-A2FF-E498D9573959}" ShortID="676486951">
 							<PropertyList>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{24C81625-8C5E-4E75-A2BB-C680DA71EF96}" SchemaVersion="97" RootDocumentID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}">
 	<AudioObjects>
-		<WorkUnit Name="WT_Comms" ID="{24C81625-8C5E-4E75-A2BB-C680DA71EF96}" OwnerID="{0977AE6C-8431-4438-889A-58DBE54DB723}" PersistMode="Nested">
+		<WorkUnit Name="Comms" ID="{24C81625-8C5E-4E75-A2BB-C680DA71EF96}" OwnerID="{0977AE6C-8431-4438-889A-58DBE54DB723}" PersistMode="Nested">
 			<ChildrenList>
 				<RandomSequenceContainer Name="CJ4_Comms_Button_Out" ID="{AC6BC206-324B-466C-A091-4DB47C4F9884}" ShortID="807057970">
 					<PropertyList>

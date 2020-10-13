@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
 	<Events>
-		<WorkUnit Name="WT_Battery" ID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" OwnerID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" PersistMode="Nested">
+		<WorkUnit Name="Battery" ID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" OwnerID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" PersistMode="Nested">
 			<ChildrenList>
-				<Event Name="Play_Asobo_CJ4_wt_battery_off" ID="{E50873FA-CA00-42D3-9C0F-B86B7545D537}">
+				<Event Name="Play_WorkingTitle_CJ4_battery_off" ID="{E50873FA-CA00-42D3-9C0F-B86B7545D537}">
 					<ChildrenList>
 						<Action Name="" ID="{0E9988FC-E74F-4810-AB92-10310FCB073F}" ShortID="54075620">
 							<PropertyList>
@@ -17,7 +17,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_Asobo_CJ4_wt_battery_on" ID="{ED408425-4567-4879-989D-B21F93E89B57}">
+				<Event Name="Play_WorkingTitle_CJ4_battery_on" ID="{ED408425-4567-4879-989D-B21F93E89B57}">
 					<ChildrenList>
 						<Action Name="" ID="{0842CEDC-5D5A-4D70-A5ED-36CBE47F6157}" ShortID="11298372">
 							<PropertyList>

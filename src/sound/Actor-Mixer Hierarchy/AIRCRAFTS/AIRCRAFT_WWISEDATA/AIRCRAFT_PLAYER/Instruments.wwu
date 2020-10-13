@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{0FEBD8CE-49EC-46F6-9131-E3B4EA066A69}" SchemaVersion="97" RootDocumentID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}">
 	<AudioObjects>
-		<WorkUnit Name="WT_Instruments" ID="{0FEBD8CE-49EC-46F6-9131-E3B4EA066A69}" OwnerID="{17E3FED6-BD2E-4086-8581-62B73B953F10}" PersistMode="Nested">
+		<WorkUnit Name="Instruments" ID="{0FEBD8CE-49EC-46F6-9131-E3B4EA066A69}" OwnerID="{17E3FED6-BD2E-4086-8581-62B73B953F10}" PersistMode="Nested">
 			<ChildrenList>
 				<ActorMixer Name="instruments" ID="{0977AE6C-8431-4438-889A-58DBE54DB723}" ShortID="166483329">
 					<PropertyList>
@@ -45,13 +45,13 @@
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
-						<WorkUnit Name="WT_Autopilot" ID="{61628032-0E82-4AC0-BDEE-354882EFAC79}" PersistMode="Reference"/>
-						<WorkUnit Name="WT_CCP_Buttons" ID="{768D8EA5-FA4D-4565-81CC-EE6E78573D6A}" PersistMode="Reference"/>
-						<WorkUnit Name="WT_FMS_Buttons" ID="{8F943296-33C9-43A6-B749-5C770DCF5C13}" PersistMode="Reference"/>
-						<WorkUnit Name="WT_Climate_Control" ID="{C7BFFC0D-76E9-4171-A179-64C005CBED68}" PersistMode="Reference"/>
-						<WorkUnit Name="WT_Comms" ID="{24C81625-8C5E-4E75-A2BB-C680DA71EF96}" PersistMode="Reference"/>
-						<WorkUnit Name="WT_Lights" ID="{06E4B28D-BA80-4AC2-9AE6-5906E68C9F7B}" PersistMode="Reference"/>
-						<WorkUnit Name="WT_Misc_Switches_And_Knobs" ID="{3AA131EF-2779-4588-B1E0-F574DE9CC071}" PersistMode="Reference"/>
+						<WorkUnit Name="Autopilot" ID="{61628032-0E82-4AC0-BDEE-354882EFAC79}" PersistMode="Reference"/>
+						<WorkUnit Name="CCP_Buttons" ID="{768D8EA5-FA4D-4565-81CC-EE6E78573D6A}" PersistMode="Reference"/>
+						<WorkUnit Name="FMS_Buttons" ID="{8F943296-33C9-43A6-B749-5C770DCF5C13}" PersistMode="Reference"/>
+						<WorkUnit Name="Climate_Control" ID="{C7BFFC0D-76E9-4171-A179-64C005CBED68}" PersistMode="Reference"/>
+						<WorkUnit Name="Comms" ID="{24C81625-8C5E-4E75-A2BB-C680DA71EF96}" PersistMode="Reference"/>
+						<WorkUnit Name="Lights" ID="{06E4B28D-BA80-4AC2-9AE6-5906E68C9F7B}" PersistMode="Reference"/>
+						<WorkUnit Name="Misc_Switches_And_Knobs" ID="{3AA131EF-2779-4588-B1E0-F574DE9CC071}" PersistMode="Reference"/>
 					</ChildrenList>
 					<StateInfo>
 						<StateGroupList>

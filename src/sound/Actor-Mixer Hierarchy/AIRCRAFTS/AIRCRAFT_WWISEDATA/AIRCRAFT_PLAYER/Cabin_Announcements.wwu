@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{DA339109-38A0-457A-AE85-174A4DED155C}" SchemaVersion="97" RootDocumentID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}">
 	<AudioObjects>
-		<WorkUnit Name="WT_Cabin_Announcements" ID="{DA339109-38A0-457A-AE85-174A4DED155C}" OwnerID="{17E3FED6-BD2E-4086-8581-62B73B953F10}" PersistMode="Nested">
+		<WorkUnit Name="Cabin_Announcements" ID="{DA339109-38A0-457A-AE85-174A4DED155C}" OwnerID="{17E3FED6-BD2E-4086-8581-62B73B953F10}" PersistMode="Nested">
 			<ChildrenList>
 				<ActorMixer Name="passenger announcements" ID="{E3E2BAE8-5A4A-4A33-A9D0-9D1B6355A900}" ShortID="778009430">
 					<PropertyList>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{3AA131EF-2779-4588-B1E0-F574DE9CC071}" SchemaVersion="97" RootDocumentID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}">
 	<AudioObjects>
-		<WorkUnit Name="WT_Misc_Switches_And_Knobs" ID="{3AA131EF-2779-4588-B1E0-F574DE9CC071}" OwnerID="{0977AE6C-8431-4438-889A-58DBE54DB723}" PersistMode="Nested">
+		<WorkUnit Name="Misc_Switches_And_Knobs" ID="{3AA131EF-2779-4588-B1E0-F574DE9CC071}" OwnerID="{0977AE6C-8431-4438-889A-58DBE54DB723}" PersistMode="Nested">
 			<ChildrenList>
 				<Sound Name="CJ4_Battery_Switch" ID="{C986B327-70DC-4CA8-8D75-3A3F22C407CA}" ShortID="562749981">
 					<PropertyList>

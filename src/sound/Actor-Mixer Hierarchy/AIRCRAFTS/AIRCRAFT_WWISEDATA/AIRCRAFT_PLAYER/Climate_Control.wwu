@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{C7BFFC0D-76E9-4171-A179-64C005CBED68}" SchemaVersion="97" RootDocumentID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}">
 	<AudioObjects>
-		<WorkUnit Name="WT_Climate_Control" ID="{C7BFFC0D-76E9-4171-A179-64C005CBED68}" OwnerID="{0977AE6C-8431-4438-889A-58DBE54DB723}" PersistMode="Nested">
+		<WorkUnit Name="Climate_Control" ID="{C7BFFC0D-76E9-4171-A179-64C005CBED68}" OwnerID="{0977AE6C-8431-4438-889A-58DBE54DB723}" PersistMode="Nested">
 			<ChildrenList>
 				<RandomSequenceContainer Name="CJ4_Climate_Control_Knob" ID="{B85C7554-DF10-4DCC-A29D-EB4736C89139}" ShortID="539993619">
 					<PropertyList>

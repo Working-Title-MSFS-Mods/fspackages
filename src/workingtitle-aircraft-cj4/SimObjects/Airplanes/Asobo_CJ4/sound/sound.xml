@@ -5,7 +5,7 @@
 
 	<WwisePackages>
 		<MainPackage Name="Asobo_CJ4"/>
-		<AdditionalPackage Name="Asobo_CJ4_WorkingTitle"/>
+		<AdditionalPackage Name="WorkingTitle_CJ4"/>
 	</WwisePackages>
 
   <AcousticParameters>
@@ -121,11 +121,11 @@
       <Range LowerBound="1.0" />
     </Sound>   -->
 
-    <Sound WwiseData="true" WwiseEvent="wt_battery_on" NodeName="MFD_SCREEN_1" ContinuousStopDelay="0.1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+    <Sound WwiseData="true" WwiseEvent="battery_on" NodeName="MFD_SCREEN_1" ContinuousStopDelay="0.1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
       <Range LowerBound="1.0" />
     </Sound>     
 
-    <Sound WwiseData="true" WwiseEvent="wt_battery_off" Continuous="false" NodeName="MFD_SCREEN_1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+    <Sound WwiseData="true" WwiseEvent="battery_off" Continuous="false" NodeName="MFD_SCREEN_1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
       <Range UpperBound="0.0" />
     </Sound>
     	
@@ -224,7 +224,7 @@
       </Requires>
     </Sound>
 	
-	<Sound WwiseData="true" WwiseEvent="Autopilot_Disconnect" NodeName="PUSH_CEILING_TESTLIGHT" Continuous="false" SimVar="AUTOPILOT MASTER" Units="BOOL" Index="0">
+	<Sound WwiseData="true" WwiseEvent="ap_disengage_sound" NodeName="PUSH_CEILING_TESTLIGHT" Continuous="false" SimVar="AUTOPILOT MASTER" Units="BOOL" Index="0">
 	  <Range UpperBound="0" />
 	  <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
         <Range LowerBound="1" />
@@ -329,9 +329,8 @@
   
 <!-- COMMON ####################################################################################### -->
       <!-- WORKING TITLE ======================================================================================= -->
-      <Sound WwiseData="true" WwiseEvent="Climate_Control_Knob" ViewPoint="Inside"/>
-      <Sound WwiseData="true" WwiseEvent="Climate_Battery_Switch" ViewPoint="Inside"/>
-      <Sound WwiseData="true" WwiseEvent="Fuel_Transfer_Selector_Knob" ViewPoint="Inside"/>
+      <Sound WwiseData="true" WwiseEvent="climate_control_knob" ViewPoint="Inside"/>
+      <Sound WwiseData="true" WwiseEvent="battery_switch" ViewPoint="Inside"/>
 
       <!-- ELECTRICAL ========================================================================================== -->
     <!-- don't play battery switch as it comes with the battery event already -->

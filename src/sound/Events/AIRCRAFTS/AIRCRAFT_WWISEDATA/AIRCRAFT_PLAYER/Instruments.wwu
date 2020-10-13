@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{8BD56E05-FC92-4457-AC56-FD5FDEB696ED}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
+	<Events>
+		<WorkUnit Name="Instruments" ID="{8BD56E05-FC92-4457-AC56-FD5FDEB696ED}" OwnerID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Nested">
+			<ChildrenList>
+				<WorkUnit Name="Lights" ID="{DE4AAF1A-04AB-4943-9C14-B93F78436984}" PersistMode="Reference"/>
+				<WorkUnit Name="Push_Buttons" ID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" PersistMode="Reference"/>
+				<WorkUnit Name="Knobs" ID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" PersistMode="Reference"/>
+				<WorkUnit Name="Switches" ID="{7AC2DAB5-0757-4DDD-B0E6-EF4B5F0A494B}" PersistMode="Reference"/>
+				<WorkUnit Name="Autopilot" ID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" PersistMode="Reference"/>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

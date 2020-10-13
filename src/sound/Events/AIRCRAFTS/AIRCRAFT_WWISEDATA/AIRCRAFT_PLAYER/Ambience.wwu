@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
 	<Events>
-		<WorkUnit Name="WT_Ambience" ID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" OwnerID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Nested">
+		<WorkUnit Name="Ambience" ID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" OwnerID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Nested">
 			<ChildrenList>
-				<Event Name="Play_Asobo_CJ4_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}">
+				<Event Name="Play_WorkingTitle_CJ4_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}">
 					<ChildrenList>
 						<Action Name="" ID="{4A3C5870-EEC7-46F1-A854-6996E8EE133E}" ShortID="795490384">
 							<PropertyList>
@@ -18,7 +18,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<WorkUnit Name="WT_Battery" ID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" PersistMode="Reference"/>
+				<WorkUnit Name="Battery" ID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" PersistMode="Reference"/>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{768D8EA5-FA4D-4565-81CC-EE6E78573D6A}" SchemaVersion="97" RootDocumentID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}">
 	<AudioObjects>
-		<WorkUnit Name="WT_CCP_Buttons" ID="{768D8EA5-FA4D-4565-81CC-EE6E78573D6A}" OwnerID="{0977AE6C-8431-4438-889A-58DBE54DB723}" PersistMode="Nested">
+		<WorkUnit Name="CCP_Buttons" ID="{768D8EA5-FA4D-4565-81CC-EE6E78573D6A}" OwnerID="{0977AE6C-8431-4438-889A-58DBE54DB723}" PersistMode="Nested">
 			<ChildrenList>
 				<RandomSequenceContainer Name="CJ4_CCP_Button" ID="{B6C8CDA5-3A0F-43B0-964D-468AF7D59433}" ShortID="612527106">
 					<PropertyList>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}" SchemaVersion="97" RootDocumentID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}">
 	<AudioObjects>
-		<WorkUnit Name="WT_Engines" ID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}" OwnerID="{17E3FED6-BD2E-4086-8581-62B73B953F10}" PersistMode="Nested"/>
+		<WorkUnit Name="Engines" ID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}" OwnerID="{17E3FED6-BD2E-4086-8581-62B73B953F10}" PersistMode="Nested"/>
 	</AudioObjects>
 </WwiseDocument>

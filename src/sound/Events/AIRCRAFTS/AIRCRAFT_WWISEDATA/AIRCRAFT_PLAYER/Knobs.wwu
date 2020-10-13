@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
 	<Events>
-		<WorkUnit Name="WT_Knobs" ID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" OwnerID="{8BD56E05-FC92-4457-AC56-FD5FDEB696ED}" PersistMode="Nested">
+		<WorkUnit Name="Knobs" ID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" OwnerID="{8BD56E05-FC92-4457-AC56-FD5FDEB696ED}" PersistMode="Nested">
 			<ChildrenList>
-				<Event Name="Play_Asobo_CJ4_fuel_transfer_switch_knob" ID="{4808F8C8-593E-4436-93A0-A5EBD27A7A50}">
+				<Event Name="Play_WorkingTitle_CJ4_fuel_transfer_switch_knob" ID="{4808F8C8-593E-4436-93A0-A5EBD27A7A50}">
 					<ChildrenList>
 						<Action Name="" ID="{4A3C064D-F3F0-465E-8AA5-ADF19F99B2A8}" ShortID="811256402">
 							<PropertyList>
@@ -18,7 +18,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_Asobo_CJ4_Climate_Control_Knob" ID="{BCDBD124-BF9D-4BE2-ACFA-657A05F1D2DA}">
+				<Event Name="Play_WorkingTitle_CJ4_climate_control_knob" ID="{BCDBD124-BF9D-4BE2-ACFA-657A05F1D2DA}">
 					<ChildrenList>
 						<Action Name="" ID="{31670435-34E1-45D9-B7B2-0CCBE8610003}" ShortID="625055637">
 							<PropertyList>

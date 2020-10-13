@@ -747,7 +747,7 @@
 				<ANIM_NAME>PASSENGER_KNOB_CLIMATECONTROL_1</ANIM_NAME>
 				<NODE_ID>PASSENGER_KNOB_CLIMATECONTROL_1</NODE_ID>
 				<PART_ID>PASSENGER_KNOB_CLIMATECONTROL_1</PART_ID>
-                <WWISE_EVENT>Climate_Control_Knob</WWISE_EVENT>
+                <WWISE_EVENT>climate_control_knob</WWISE_EVENT>
 				<SWITCH_DIRECTION>Horizontal</SWITCH_DIRECTION>
 				<LEFTARROW>TurnLeft</LEFTARROW>
 				<RIGHTARROW>TurnRight</RIGHTARROW>
@@ -763,7 +763,7 @@
 				<ANIM_NAME>KNOB_PRESSOURCE</ANIM_NAME>
 				<NODE_ID>knob_pressSource</NODE_ID>
 				<PART_ID>knob_pressSource</PART_ID>
-                <WWISE_EVENT>Climate_Control_Knob</WWISE_EVENT>
+                <WWISE_EVENT>climate_control_knob</WWISE_EVENT>
 				<SWITCH_DIRECTION>Horizontal</SWITCH_DIRECTION>
 				<LEFTARROW>TurnLeft</LEFTARROW>
 				<RIGHTARROW>TurnRight</RIGHTARROW>
@@ -830,7 +830,6 @@
 				<ANIMTIP_0>TT:COCKPIT.TOOLTIPS.FUEL_XFEED_RIGHT_TO_LEFT</ANIMTIP_0>
 				<ANIMTIP_1>TT:COCKPIT.TOOLTIPS.FUEL_XFEED_OFF</ANIMTIP_1>
 				<ANIMTIP_2>TT:COCKPIT.TOOLTIPS.FUEL_XFEED_LEFT_TO_RIGHT</ANIMTIP_2>
-                <WWISE_EVENT>Fuel_Transfer_Selector_Knob</WWISE_EVENT>
 			</UseTemplate>
 			<Component ID="FUEL_Pumps_Switches">
 				<DefaultTemplateParameters>

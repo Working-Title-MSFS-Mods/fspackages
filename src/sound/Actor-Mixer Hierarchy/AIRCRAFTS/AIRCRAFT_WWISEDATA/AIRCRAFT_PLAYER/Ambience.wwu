@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{8066802F-8FED-4C99-B3A9-9777472C1FD5}" SchemaVersion="97" RootDocumentID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}">
 	<AudioObjects>
-		<WorkUnit Name="WT_Ambience" ID="{8066802F-8FED-4C99-B3A9-9777472C1FD5}" OwnerID="{17E3FED6-BD2E-4086-8581-62B73B953F10}" PersistMode="Nested">
+		<WorkUnit Name="Ambience" ID="{8066802F-8FED-4C99-B3A9-9777472C1FD5}" OwnerID="{17E3FED6-BD2E-4086-8581-62B73B953F10}" PersistMode="Nested">
 			<ChildrenList>
 				<ActorMixer Name="ambience" ID="{5855951D-7E27-4745-A966-A54B47169D53}" ShortID="980880327">
 					<PropertyList>
@@ -16,7 +16,7 @@
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
-						<WorkUnit Name="WT_Battery" ID="{C1079D91-FF2B-4433-A403-85578F051E45}" PersistMode="Reference"/>
+						<WorkUnit Name="Battery" ID="{C1079D91-FF2B-4433-A403-85578F051E45}" PersistMode="Reference"/>
 					</ChildrenList>
 				</ActorMixer>
 			</ChildrenList>

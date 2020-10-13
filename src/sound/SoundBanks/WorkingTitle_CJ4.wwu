@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{45BA91ED-07D2-463B-AE6A-6E6C5501C282}" SchemaVersion="97">
+	<SoundBanks>
+		<WorkUnit Name="WorkingTitle_CJ4" ID="{45BA91ED-07D2-463B-AE6A-6E6C5501C282}" PersistMode="Standalone">
+			<ChildrenList>
+				<SoundBank Name="WorkingTitle_CJ4" ID="{CCCCFDFA-06A9-42B0-B420-F5811DF76F04}">
+					<ObjectInclusionList>
+						<ObjectRef Name="Play_WorkingTitle_CJ4_ccp_button" ID="{233133ED-EC1E-414A-81F0-F89DBF8F747E}" WorkUnitID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_WorkingTitle_CJ4_fms_button" ID="{B552179A-486C-42D1-9C03-056264872073}" WorkUnitID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_WorkingTitle_CJ4_battery_off" ID="{E50873FA-CA00-42D3-9C0F-B86B7545D537}" WorkUnitID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Passenger_Announcements" ID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" WorkUnitID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_WorkingTitle_CJ4_battery_switch" ID="{EBD59A13-393D-481F-A1FC-C479B585828D}" WorkUnitID="{7AC2DAB5-0757-4DDD-B0E6-EF4B5F0A494B}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_WorkingTitle_CJ4_battery_on" ID="{ED408425-4567-4879-989D-B21F93E89B57}" WorkUnitID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_WorkingTitle_CJ4_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}" WorkUnitID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_WorkingTitle_CJ4_climate_control_knob" ID="{BCDBD124-BF9D-4BE2-ACFA-657A05F1D2DA}" WorkUnitID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Battery" ID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" WorkUnitID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" Origin="Manual" Filter="7"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+			</ChildrenList>
+		</WorkUnit>
+	</SoundBanks>
+</WwiseDocument>
