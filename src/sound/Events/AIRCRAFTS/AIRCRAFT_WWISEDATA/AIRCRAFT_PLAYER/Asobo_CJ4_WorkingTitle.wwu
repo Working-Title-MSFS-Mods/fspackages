@@ -814,16 +814,29 @@
 										</Action>
 									</ChildrenList>
 								</Event>
-								<Event Name="Play_Asobo_CJ4_Autopilot_Disconnect" ID="{1C1318B9-D665-4C42-811C-2F8DE55D7E06}">
+								<Event Name="Play_Asobo_CJ4_Yoke_Autopilot_Disconnect" ID="{1C1318B9-D665-4C42-811C-2F8DE55D7E06}">
 									<ChildrenList>
 										<Action Name="" ID="{C0F46D93-1ADE-4986-B497-60F9DB29503F}" ShortID="885735186">
 											<PropertyList>
 												<Property Name="ActionType" Type="int16" Value="1"/>
-												<Property Name="FadeTime" Type="Real64" Value="1"/>
 											</PropertyList>
 											<ReferenceList>
 												<Reference Name="Target">
 													<ObjectRef Name="CJ4_Yoke_Autopilot_Disconnect" ID="{05D62558-9DC4-4D70-ABDA-1160F65AD4C7}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Play_Asobo_CJ4_Autopilot_Disconnect" ID="{1BC9F260-0514-416E-85DD-34B95BCA570E}">
+									<ChildrenList>
+										<Action Name="" ID="{E6162C71-DB35-4E64-8EDC-EB93F537C158}" ShortID="78591259">
+											<PropertyList>
+												<Property Name="ActionType" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="CJ4_Autopilot_Disconnect" ID="{B63FA4A0-F033-4F7C-AE68-A24D6D8C8A10}" WorkUnitID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}"/>
 												</Reference>
 											</ReferenceList>
 										</Action>
@@ -896,7 +909,6 @@
 								<Action Name="" ID="{31670435-34E1-45D9-B7B2-0CCBE8610003}" ShortID="625055637">
 									<PropertyList>
 										<Property Name="ActionType" Type="int16" Value="1"/>
-										<Property Name="FadeTime" Type="Real64" Value="1"/>
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Target">

@@ -224,7 +224,7 @@
       </Requires>
     </Sound>
 	
-	<Sound WwiseData="true" WwiseEvent="ap_disengage_sound" NodeName="PUSH_CEILING_TESTLIGHT" Continuous="false" SimVar="AUTOPILOT MASTER" Units="BOOL" Index="0">
+	<Sound WwiseData="true" WwiseEvent="Autopilot_Disconnect" NodeName="PUSH_CEILING_TESTLIGHT" Continuous="false" SimVar="AUTOPILOT MASTER" Units="BOOL" Index="0">
 	  <Range UpperBound="0" />
 	  <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
         <Range LowerBound="1" />
@@ -327,10 +327,15 @@
 
   <AnimationSounds>
   
-<!-- COMMON ####################################################################################### -->  
-	<!-- ELECTRICAL ========================================================================================== --> 
-  <Sound WwiseData="true" WwiseEvent="battery_switch" ViewPoint="Inside"/>	  
-  <Sound WwiseData="true" WwiseEvent="alternator_switch" ViewPoint="Inside"/>	      
+<!-- COMMON ####################################################################################### -->
+      <!-- WORKING TITLE ======================================================================================= -->
+      <Sound WwiseData="true" WwiseEvent="Climate_Control_Knob" ViewPoint="Inside"/>
+      <Sound WwiseData="true" WwiseEvent="Climate_Battery_Switch" ViewPoint="Inside"/>
+      <Sound WwiseData="true" WwiseEvent="Fuel_Transfer_Selector_Knob" ViewPoint="Inside"/>
+
+      <!-- ELECTRICAL ========================================================================================== -->
+    <Sound WwiseData="true" WwiseEvent="battery_switch" ViewPoint="Inside"/>	  
+    <Sound WwiseData="true" WwiseEvent="alternator_switch" ViewPoint="Inside"/>	      
 	<Sound WwiseData="true" WwiseEvent="avionic_switch" ViewPoint="Inside"/>	  	
 	<Sound WwiseData="true" WwiseEvent="electrical_circuit_switch_on" ViewPoint="Inside"/>	  	
 	<Sound WwiseData="true" WwiseEvent="electrical_circuit_switch_off" ViewPoint="Inside"/>
@@ -346,9 +351,9 @@
 	<Sound WwiseData="true" WwiseEvent="autopilot_altitude_100_knob" ViewPoint="Inside"/>	
 	<Sound WwiseData="true" WwiseEvent="autopilot_altitude_knob" ViewPoint="Inside"/>	
 	<Sound WwiseData="true" WwiseEvent="autopilot_verticalspeed_knob" ViewPoint="Inside"/>	  		  
-	<Sound WwiseData="true" WwiseEvent="autopilot_knob" ViewPoint="Inside"/>	  
-	<Sound WwiseData="true" WwiseEvent="autopilot_disconnect_button_on" ViewPoint="Inside"/>	  
-	<Sound WwiseData="true" WwiseEvent="autopilot_disconnect_button_off" ViewPoint="Inside"/>	  
+	<Sound WwiseData="true" WwiseEvent="autopilot_knob" ViewPoint="Inside"/>
+	<Sound WwiseData="true" WwiseEvent="autopilot_disconnect_button_on" ViewPoint="Inside"/>
+	<Sound WwiseData="true" WwiseEvent="autopilot_disconnect_button_off" ViewPoint="Inside"/>
 
 	<!-- Navcom ========================================================================================== --> 
 	<Sound WwiseData="true" WwiseEvent="navcom_audio_mute_switch_on" ViewPoint="Inside"/>	  	  	
