@@ -4,8 +4,6 @@ Welcome to the latest update of the Working Title CJ4 (v0.4.1). This is still ve
 
 Feel free to test out our new Simbrief Profile: [SIMBRIEF PROFILE](https://www.simbrief.com/system/dispatch.php?sharefleet=eyJ0cyI6IjE2MDI1MzkxMTUxODMiLCJiYXNldHlwZSI6IkMyNUMiLCJjb21tZW50cyI6IldPUktJTkcgVElUTEUgQ0o0IiwiaWNhbyI6IkMyNUMiLCJuYW1lIjoiQ0lUQVRJT04gQ0o0IiwiZW5naW5lcyI6IkZKNDQtNEEiLCJyZWciOiJONTI1V1QiLCJmaW4iOiIyNTQiLCJzZWxjYWwiOiIiLCJoZXhjb2RlIjoiIiwiY2F0IjoiTSIsInBlciI6IkIiLCJlcXVpcCI6IlNERTJFM0ZHSFJXWFlaIiwidHJhbnNwb25kZXIiOiJMQjEiLCJwYm4iOiJBMUIyQzJEMkQzTzJPM1MyIiwiZXh0cmFybWsiOiIiLCJtYXhwYXgiOiI3Iiwid2d0dW5pdHMiOiJMQlMiLCJvZXciOiIxMDI4MCIsIm16ZnciOiIxMjUwMCIsIm10b3ciOiIxNzExMCIsIm1sdyI6IjE1NjYwIiwibWF4ZnVlbCI6IjU3NjIiLCJwYXh3Z3QiOiIxNzAiLCJkZWZhdWx0Y2kiOiIiLCJmdWVsZmFjdG9yIjoiUDAwIiwiY3J1aXNlb2Zmc2V0IjoiUDAwMDAifQ--)
 
-Feel free to test out our new Simbrief Profile: [SIMBRIEF PROFILE](https://www.simbrief.com/system/dispatch.php?sharefleet=eyJ0cyI6IjE2MDI1MzkxMTUxODMiLCJiYXNldHlwZSI6IkMyNUMiLCJjb21tZW50cyI6IldPUktJTkcgVElUTEUgQ0o0IiwiaWNhbyI6IkMyNUMiLCJuYW1lIjoiQ0lUQVRJT04gQ0o0IiwiZW5naW5lcyI6IkZKNDQtNEEiLCJyZWciOiJONTI1V1QiLCJmaW4iOiIyNTQiLCJzZWxjYWwiOiIiLCJoZXhjb2RlIjoiIiwiY2F0IjoiTSIsInBlciI6IkIiLCJlcXVpcCI6IlNERTJFM0ZHSFJXWFlaIiwidHJhbnNwb25kZXIiOiJMQjEiLCJwYm4iOiJBMUIyQzJEMkQzTzJPM1MyIiwiZXh0cmFybWsiOiIiLCJtYXhwYXgiOiI3Iiwid2d0dW5pdHMiOiJMQlMiLCJvZXciOiIxMDI4MCIsIm16ZnciOiIxMjUwMCIsIm10b3ciOiIxNzExMCIsIm1sdyI6IjE1NjYwIiwibWF4ZnVlbCI6IjU3NjIiLCJwYXh3Z3QiOiIxNzAiLCJkZWZhdWx0Y2kiOiIiLCJmdWVsZmFjdG9yIjoiUDAwIiwiY3J1aXNlb2Zmc2V0IjoiUDAwMDAifQ--)
-
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
 
@@ -37,7 +35,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ### PROG Page
 * Updated distances to show decimals under 100NM
-* Fixed reveresed XTK and CROSSWIND indications on Page 2
+* Fixed reversed XTK and CROSSWIND indications on Page 2
 
 ### PERF Page
 * Added input filters for QNH on takeoff and landing perf pages (user can now enter 29.92, 299 or 2992)
@@ -46,7 +44,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ### PFD/MFD
 * Fixed FMS Text distances on MFD ([#232](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/232))
-* Added PASS BRIEF announcments
+* Added PASS BRIEF announcements
 * Fixed V Speed bug where some speeds were locked at -1 after a segment ([#221](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/221))
 * Fixed MFD plane not centered on map ([#219](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/219))
 * Updated CAS messages for Pitot Heat, Parking Break and Oxy Masks ([#242](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/242) and [#183](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/183))
@@ -56,7 +54,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Fixed erroneous chimes when setting battery master to on
 * Fixed sounds for internal/external view swaps/fixed passenger sounds stopping when switching to outside view
 * Added passenger briefing announcements (MFD)
-* Fixed announcments to restrict to only one announcement at a time
+* Fixed announcements to restrict to only one announcement at a time
 * Improvements to climate control knob sound
 
 ## Known Issues
@@ -66,3 +64,4 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
 * The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the various enhancements applied.
 * FLC stability appears to have regressed with the autopilot aircraft energy calculation changes in 1.9.3. We have made some improvements to this behavior in this update. We will continue to investigate after the 13 October 2020 patch is released.
+* Some flight plan distances are still misreported when the approach is activated. We will look at this more carefully after the Asobo update.
