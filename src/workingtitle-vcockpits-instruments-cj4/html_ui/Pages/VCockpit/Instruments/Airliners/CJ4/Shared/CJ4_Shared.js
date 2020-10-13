@@ -3050,7 +3050,6 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             {
                 this.addTitle("CONTROLS", this.textSize, 0.5);
                 this.addList("NAV-SRC", this.textSize, ["FMS1", "VOR1", "VOR2"], [CJ4_PopupMenu_Key.NAV_SRC]);
-                this.addList("MAP-SRC", this.textSize, ["FMS1"], [CJ4_PopupMenu_Key.MAP_SRC]);
                 this.addList("RANGE", this.textSize, ["10", "20", "40", "80", "160", "320"], [CJ4_PopupMenu_Key.MAP_RANGE]);
             }
             this.endSection();
@@ -3058,7 +3057,11 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             {
                 this.addSubMenu("BRG SRC", this.textSize, this.showNavPage.bind(this));
                 this.addSubMenu("CONFIG", this.textSize, this.showConfigPage.bind(this));
+                this.addSubMenu("OVERLAYS", this.textSize, null);
+                this.addSubMenu("RADAR", this.textSize, null);
                 this.addSubMenu("REFS", this.textSize, this.showRefPage.bind(this));
+                this.addSubMenu("TAWS", this.textSize, null);
+                this.addSubMenu("BARO SET", this.textSize, null);
             }
             this.endSection();
         }
