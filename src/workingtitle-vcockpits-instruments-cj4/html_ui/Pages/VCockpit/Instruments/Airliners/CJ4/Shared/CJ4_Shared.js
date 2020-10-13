@@ -3322,18 +3322,27 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
                 this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
                 this.addRadio("PPOS", this.textSize, null);
                 this.addRadio("PLAN", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
+                this.addRadio("GWX", this.textSize, null);
                 this.addRadio("TCAS", this.textSize, null);
             }
             this.endSection();
             this.beginSection();
             {
                 this.addTitle("CONTROLS", this.textSize, 0.5);
-                this.addList("NAV-SRC", this.textSize, ["FMS1", "VOR1", "VOR2"], [CJ4_PopupMenu_Key.NAV_SRC]);
+                this.addList("MAP-SRC", this.textSize, ["FMS1"], [CJ4_PopupMenu_Key.MAP_SRC]);
+                this.addSubMenu("OVERLAYS", this.textSize, null);
                 this.addSubMenu("MAP SYMBOLS", this.textSize, this.showMapSymbolsPage.bind(this));
-                this.addSubMenu("SYS TEST", this.textSize, null);
+                this.addSubMenu("TFR TEST", this.textSize, null);
+                this.addSubMenu("SYS TEST", this.textSize, this.showSystemTestPage.bind(this));
+            }
+            this.endSection();
+
+            this.beginSection();
+            {
                 this.addSubMenu("L PFD MENU", this.textSize, null);
             }
             this.endSection();
+
         }
         this.closeMenu();
         this.highlight(_highlight);
@@ -3366,6 +3375,48 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
                 this.addCheckbox("NAVAIDS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_NAVAIDS]);
                 this.addCheckbox("AIRPORTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRPORTS]);
                 this.addCheckbox("INTERSECTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_INTERSECTS]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 7);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showSystemTestPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("LWR MENU", this.titleSize, 1.0, "blue");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("SYS TEST", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addCheckbox("FIRE WARN", this.textSize, null);
+                this.addCheckbox("LDG GEAR", this.textSize, null);
+                this.addCheckbox("BLEED LEAK", this.textSize, null);
+                this.addCheckbox("TAIL DE-ICE", this.textSize, null);
+                this.addCheckbox("AOA", this.textSize, null);
+                this.addCheckbox("RUDDER BIAS", this.textSize, null);
+                this.addCheckbox("W/S TEMP", this.textSize, null);
+                this.addCheckbox("OVERSPEED", this.textSize, null);
+                this.addCheckbox("ANTI-SKID", this.textSize, null);
+                this.addCheckbox("ANNUNCIATOR", this.textSize, null);
+                this.addCheckbox("CABIN PRESS", this.textSize, null);
+                this.addCheckbox("ELEV TRIM", this.textSize, null);
+                this.addCheckbox("TAWS", this.textSize, null);
+                this.addCheckbox("OFF", this.textSize, null);
             }
             this.endSection();
         }
