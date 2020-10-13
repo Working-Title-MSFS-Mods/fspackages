@@ -121,11 +121,11 @@
       <Range LowerBound="1.0" />
     </Sound>   -->
 
-    <Sound WwiseData="true" WwiseEvent="battery_on" NodeName="MFD_SCREEN_1" ContinuousStopDelay="0.1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+    <Sound WwiseData="true" WwiseEvent="battery_on_wt" NodeName="MFD_SCREEN_1" ContinuousStopDelay="0.1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
       <Range LowerBound="1.0" />
     </Sound>     
 
-    <Sound WwiseData="true" WwiseEvent="battery_off" Continuous="false" NodeName="MFD_SCREEN_1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+    <Sound WwiseData="true" WwiseEvent="battery_off_wt" Continuous="false" NodeName="MFD_SCREEN_1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
       <Range UpperBound="0.0" />
     </Sound>
     	

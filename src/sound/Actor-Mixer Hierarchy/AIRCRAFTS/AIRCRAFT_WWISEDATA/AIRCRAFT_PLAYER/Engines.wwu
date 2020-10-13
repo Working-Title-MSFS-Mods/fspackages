@@ -1,6 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}" SchemaVersion="97" RootDocumentID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}">
 	<AudioObjects>
-		<WorkUnit Name="Engines" ID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}" OwnerID="{17E3FED6-BD2E-4086-8581-62B73B953F10}" PersistMode="Nested"/>
+		<WorkUnit Name="Engines" ID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}" OwnerID="{17E3FED6-BD2E-4086-8581-62B73B953F10}" PersistMode="Nested">
+			<ChildrenList>
+				<ActorMixer Name="engine" ID="{FBCF13E9-E849-4B6C-9DDE-CF2B79CD8648}" ShortID="750679148">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<SwitchContainer Name="combustion" ID="{0E226D30-3557-4D91-BCF6-D74BFF015AC3}" ShortID="612448253">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+								</Reference>
+								<Reference Name="DefaultSwitchOrState">
+									<ObjectRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}" WorkUnitID="{87A0C03E-5FFD-4005-A0D0-08169986D5FA}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+								</Reference>
+								<Reference Name="SwitchGroupOrStateGroup">
+									<ObjectRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}" WorkUnitID="{87A0C03E-5FFD-4005-A0D0-08169986D5FA}"/>
+								</Reference>
+							</ReferenceList>
+							<GroupingInfo/>
+						</SwitchContainer>
+						<SwitchContainer Name="starter" ID="{B20EF916-E79E-4023-BB40-B556719CD883}" ShortID="900005671">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+								</Reference>
+								<Reference Name="DefaultSwitchOrState">
+									<ObjectRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}" WorkUnitID="{87A0C03E-5FFD-4005-A0D0-08169986D5FA}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+								</Reference>
+								<Reference Name="SwitchGroupOrStateGroup">
+									<ObjectRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}" WorkUnitID="{87A0C03E-5FFD-4005-A0D0-08169986D5FA}"/>
+								</Reference>
+							</ReferenceList>
+							<GroupingInfo/>
+						</SwitchContainer>
+						<SwitchContainer Name="shutdown" ID="{CE4A7E08-62D9-417B-A776-CFA66F6620B4}" ShortID="133301774">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+								</Reference>
+								<Reference Name="DefaultSwitchOrState">
+									<ObjectRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}" WorkUnitID="{87A0C03E-5FFD-4005-A0D0-08169986D5FA}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+								</Reference>
+								<Reference Name="SwitchGroupOrStateGroup">
+									<ObjectRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}" WorkUnitID="{87A0C03E-5FFD-4005-A0D0-08169986D5FA}"/>
+								</Reference>
+							</ReferenceList>
+							<GroupingInfo/>
+						</SwitchContainer>
+					</ChildrenList>
+				</ActorMixer>
+			</ChildrenList>
+		</WorkUnit>
 	</AudioObjects>
 </WwiseDocument>
