@@ -2,9 +2,9 @@
 <Project Version="7" InfoFilePath="GeneratedSoundBanks\Windows\SoundbanksInfo.xml" OutputDirectory="..\">
   <ManualPackagingInfo BlockSize="1" UnassignedBanksPackageId="00000000-0000-0000-0000-000000000000" UnassignedStreamsPackageId="00000000-0000-0000-0000-000000000000" UnassignedExternalsPackageId="00000000-0000-0000-0000-000000000000" UnassignedLooseMediaPackageId="00000000-0000-0000-0000-000000000000">
     <Packages>
-      <Package Id="ecdfbbe7-3628-4bf3-83e5-c3d699e5ba85" Name="WorkingTitle_CJ4.PC.PCK">
+      <Package Id="ef92aa8d-a2d5-48cb-b182-7686908ceaac" Name="Asobo_CJ4_WT.PC.PCK">
         <Items>
-          <PackageContentItem Id="3342905300" Language="SFX" FileName="WorkingTitle_CJ4" InclusionMode="BankAndStreamsAndLooseMedia" />
+          <PackageContentItem Id="261553593" Language="SFX" FileName="Asobo_CJ4_WT" InclusionMode="BankAndStreamsAndLooseMedia" />
         </Items>
         <LayoutItems>
           <ContentItemBase Id="0" Language="" FileName="" />

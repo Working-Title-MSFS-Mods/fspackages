@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" SchemaVersion="97">
+	<Events>
+		<WorkUnit Name="Asobo_CJ4_WT" ID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Standalone">
+			<ChildrenList>
+				<WorkUnit Name="Passenger_Announcements" ID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" PersistMode="Reference"/>
+				<WorkUnit Name="Instruments" ID="{8BD56E05-FC92-4457-AC56-FD5FDEB696ED}" PersistMode="Reference"/>
+				<WorkUnit Name="Engines" ID="{56901329-1362-4C16-9FB5-DA8711422FA8}" PersistMode="Reference"/>
+				<WorkUnit Name="Ambience" ID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" PersistMode="Reference"/>
+				<WorkUnit Name="Aural" ID="{9F2DA274-CC3E-4FCB-9204-266F88D59B5D}" PersistMode="Reference"/>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

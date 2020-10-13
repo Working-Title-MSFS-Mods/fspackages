@@ -3,7 +3,7 @@
 	<Events>
 		<WorkUnit Name="Autopilot" ID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" OwnerID="{8BD56E05-FC92-4457-AC56-FD5FDEB696ED}" PersistMode="Nested">
 			<ChildrenList>
-				<Event Name="Play_WorkingTitle_CJ4_heading_knob" ID="{CD3BE17C-DAFF-4A88-A1C6-80B0900A6E39}">
+				<Event Name="Play_Asobo_CJ4_WT_heading_knob" ID="{CD3BE17C-DAFF-4A88-A1C6-80B0900A6E39}">
 					<ChildrenList>
 						<Action Name="" ID="{B4DA21C9-8C51-4ECB-A8E7-6CD807B9C2B2}" ShortID="102105355">
 							<PropertyList>
@@ -18,7 +18,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_WorkingTitle_CJ4_vertical_speed_wheel" ID="{27A28FDA-72A7-4C78-9F35-E692BC34DF01}">
+				<Event Name="Play_Asobo_CJ4_WT_vertical_speed_wheel" ID="{27A28FDA-72A7-4C78-9F35-E692BC34DF01}">
 					<ChildrenList>
 						<Action Name="" ID="{A2D99207-17E0-4A8C-8C89-EE67C027F843}" ShortID="890975797">
 							<PropertyList>
@@ -33,7 +33,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_WorkingTitle_CJ4_altitude_select_knob" ID="{09BD93B2-38EB-4B29-A09F-0F3214BE57B7}">
+				<Event Name="Play_Asobo_CJ4_WT_altitude_select_knob" ID="{09BD93B2-38EB-4B29-A09F-0F3214BE57B7}">
 					<ChildrenList>
 						<Action Name="" ID="{5EC6D4C0-F922-453A-AC68-C67E6EF37138}" ShortID="373569466">
 							<PropertyList>
@@ -48,7 +48,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_WorkingTitle_CJ4_course_select_knob" ID="{7454E37C-1D41-425A-81C7-FB6AE49E83F4}">
+				<Event Name="Play_Asobo_CJ4_WT_course_select_knob" ID="{7454E37C-1D41-425A-81C7-FB6AE49E83F4}">
 					<ChildrenList>
 						<Action Name="" ID="{14138652-1E7E-4A5A-9E94-5418D55C183E}" ShortID="976431604">
 							<PropertyList>
@@ -63,7 +63,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_WorkingTitle_CJ4_autopilot_disconnect" ID="{1BC9F260-0514-416E-85DD-34B95BCA570E}">
+				<Event Name="Play_Asobo_CJ4_WT_autopilot_disconnect" ID="{1BC9F260-0514-416E-85DD-34B95BCA570E}">
 					<ChildrenList>
 						<Action Name="" ID="{E6162C71-DB35-4E64-8EDC-EB93F537C158}" ShortID="78591259">
 							<PropertyList>
@@ -77,7 +77,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_WorkingTitle_CJ4_yoke_autopilot_disconnect" ID="{1C1318B9-D665-4C42-811C-2F8DE55D7E06}">
+				<Event Name="Play_Asobo_CJ4_WT_yoke_autopilot_disconnect" ID="{1C1318B9-D665-4C42-811C-2F8DE55D7E06}">
 					<ChildrenList>
 						<Action Name="" ID="{C0F46D93-1ADE-4986-B497-60F9DB29503F}" ShortID="885735186">
 							<PropertyList>

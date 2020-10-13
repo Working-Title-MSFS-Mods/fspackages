@@ -3,7 +3,7 @@
 	<Events>
 		<WorkUnit Name="Switches" ID="{7AC2DAB5-0757-4DDD-B0E6-EF4B5F0A494B}" OwnerID="{8BD56E05-FC92-4457-AC56-FD5FDEB696ED}" PersistMode="Nested">
 			<ChildrenList>
-				<Event Name="Play_WorkingTitle_CJ4_battery_switch" ID="{EBD59A13-393D-481F-A1FC-C479B585828D}">
+				<Event Name="Play_Asobo_CJ4_WT_battery_switch" ID="{EBD59A13-393D-481F-A1FC-C479B585828D}">
 					<ChildrenList>
 						<Action Name="" ID="{E59E284A-832C-4A11-85D8-666A1C6AD1A3}" ShortID="759937401">
 							<PropertyList>
