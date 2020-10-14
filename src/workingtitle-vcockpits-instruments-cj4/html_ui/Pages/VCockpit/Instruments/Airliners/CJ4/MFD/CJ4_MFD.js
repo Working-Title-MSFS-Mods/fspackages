@@ -1479,9 +1479,9 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 this.HYDPSIValueLeft.textContent = Math.round(HydPSI1).toString();
                 let HydPSI2 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:2", "psi");
                 this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
-                let PPHEng1 = SimVar.GetSimVarValue("CJ4 FUEL FLOW:1", "Pounds per hour");
+                let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
                 this.FUELPPHValueLeft.textContent = Math.round(PPHEng1).toString();
-                let PPHEng2 = SimVar.GetSimVarValue("CJ4 FUEL FLOW:2", "Pounds per hour");
+                let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
                 this.FUELPPHValueRight.textContent = Math.round(PPHEng2).toString();
                 this.FUELTempValueLeft.textContent = "--";
                 this.FUELTempValueRight.textContent = "--";
