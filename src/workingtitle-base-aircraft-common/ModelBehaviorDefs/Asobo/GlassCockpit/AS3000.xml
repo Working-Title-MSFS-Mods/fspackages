@@ -128,7 +128,24 @@
             </Condition>
                 </False>
             </Condition>
-            <SCREEN_EMISSIVE_CODE>(L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #SCREEN_LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #SCREEN_MIN_EMISSIVE_PERCENT# - * #SCREEN_MIN_EMISSIVE_PERCENT# +</SCREEN_EMISSIVE_CODE>
+            <Condition Check="USE_STATIC_SCREEN_EMISSIVE">
+                    <True>
+                        <SCREEN_EMISSIVE_CODE>
+                            (L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
+                                (L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #SCREEN_LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #SCREEN_MIN_EMISSIVE_PERCENT# - * #SCREEN_MIN_EMISSIVE_PERCENT# +
+                            } els{ 0.5 }
+                        </SCREEN_EMISSIVE_CODE>
+                    </True>
+                    <False>
+                        <SCREEN_EMISSIVE_CODE>
+                            (L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
+                                (L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #SCREEN_LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #SCREEN_MIN_EMISSIVE_PERCENT# - * #SCREEN_MIN_EMISSIVE_PERCENT# +
+                            } els{
+                                (A:LIGHT POTENTIOMETER:#POTENTIOMETER#, Percent over 100) #SCREEN_LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #SCREEN_MIN_EMISSIVE_PERCENT# - * #SCREEN_MIN_EMISSIVE_PERCENT# +
+                            }
+                        </SCREEN_EMISSIVE_CODE>
+                    </False>
+                </Condition>
             <Condition Check="CIRCUIT_ID">
                 <True>
                     <FAILURE>(A:CIRCUIT ON:#CIRCUIT_ID#, Bool)</FAILURE>
@@ -166,7 +183,31 @@
             <POTENTIOMETER>4</POTENTIOMETER>
         </DefaultTemplateParameters>
         <UseTemplate Name="ASOBO_AS3000_12_Softkeys_Template">
-            <EMISSIVE_CODE>(L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #MIN_EMISSIVE_PERCENT# - * #MIN_EMISSIVE_PERCENT# +</EMISSIVE_CODE>
+            <Condition Check="USE_STATIC_SCREEN_EMISSIVE">
+                <True>
+                    <EMISSIVE_CODE>
+                        (L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
+                            (L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #MIN_EMISSIVE_PERCENT# - * #MIN_EMISSIVE_PERCENT# +
+                        } els{
+                            (A:LIGHT POTENTIOMETER:#POTENTIOMETER#, Percent over 100)
+                        }
+                    </EMISSIVE_CODE>
+                    <SCREEN_EMISSIVE_CODE>
+                        (L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
+                            (L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #SCREEN_LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #SCREEN_MIN_EMISSIVE_PERCENT# - * #SCREEN_MIN_EMISSIVE_PERCENT# +
+                        } els{ 0.5 }
+                    </SCREEN_EMISSIVE_CODE>
+                </True>
+                <False>
+                    <EMISSIVE_CODE>
+                        (L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
+                            (L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #MIN_EMISSIVE_PERCENT# - * #MIN_EMISSIVE_PERCENT# +
+                        } els{
+                            (A:LIGHT POTENTIOMETER:#POTENTIOMETER#, Percent over 100) #LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #MIN_EMISSIVE_PERCENT# - * #MIN_EMISSIVE_PERCENT# +
+                        }
+                    </EMISSIVE_CODE>
+                </False>
+            </Condition>
         </UseTemplate>
         <UseTemplate Name="ASOBO_AS3000_Screen_Template">
         </UseTemplate>

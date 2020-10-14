@@ -54,6 +54,7 @@ class AS3000_TSC extends NavSystemTouch {
         this.history = [];
         this.initDuration = 4000;
         
+        SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLightingBool", "bool", true); // tell xmls to use custom display lighting xmlvar
         SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", 1.0); // initialize display brightness variable: 1.0 = maximum brightness
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_SYNC, "number", 0); // initialize map sync variable: 0 = off, 1 = all
         SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_SYNC_INITID, "number", -1) // -1 = nothing to sync
