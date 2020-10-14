@@ -76,6 +76,7 @@
         "NavSystemPageGroup": "readonly",
         "NavSystemEventLinkedPopUpWindow": "readonly",
         "Jet_NDCompass_Navigation": "readonly",
+        "CJ4_FMC_ModSettingsPage": "readonly",
         "CJ4_MapSymbol": "readonly",
         "CJ4_PopupMenu": "readonly",
         "CJ4_PopupMenu_Key": "readonly",

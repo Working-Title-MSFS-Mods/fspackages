@@ -41,7 +41,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<ABOUT", "DATABASE>"], // Page 27 ---- 18, 19, 20, 21
             [""],
-            ["", "DB DISK OPS>"], //Page XX
+            ["<MOD SET", "DB DISK OPS>"], //Page XX
             [""],
             ["", "DEFAULTS>"], //Page 22, 23, 24
             [""],
@@ -51,6 +51,7 @@ class CJ4_FMC_InitRefIndexPage {
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage8(fmc); };
         fmc.onLeftInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage27(fmc); };
+        fmc.onLeftInput[2] = () => { CJ4_FMC_ModSettingsPage.ShowPage1(fmc); };
         fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage17(fmc); };
         fmc.onRightInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc); };
         //fmc.onRightInput[2] = () => { CJ4_FMC_InitRefIndexPage.ShowPage19(fmc); };

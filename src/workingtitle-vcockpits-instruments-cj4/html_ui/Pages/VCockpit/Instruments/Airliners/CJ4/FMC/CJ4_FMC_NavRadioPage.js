@@ -181,7 +181,6 @@ class CJ4_FMC_NavRadioPageOne {
     }
 
     invalidate() {
-        console.log("navradio.invalidate()");
         this._isDirty = true;
         this._fmc.clearDisplay();
         this.render();
