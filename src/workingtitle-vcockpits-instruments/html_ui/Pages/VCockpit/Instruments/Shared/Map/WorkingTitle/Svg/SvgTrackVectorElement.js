@@ -61,7 +61,9 @@ class SvgTrackVectorElement extends SvgMapElement {
         let windSpeed = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots") / map.NMWidth * 1000 / 3600;
         let windDirection = (SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180) * Math.PI / 180;
         
-        turnSpeed = turnSpeed * smoothingFactor + (this.lastTurnSpeed) * (1 - smoothingFactor);
+        if (dt < 1) {
+            turnSpeed = turnSpeed * smoothingFactor + (this.lastTurnSpeed) * (1 - smoothingFactor);
+        }
         
         let points = null;
         if (this.lookahead > this.dynamicLookaheadMax) {
