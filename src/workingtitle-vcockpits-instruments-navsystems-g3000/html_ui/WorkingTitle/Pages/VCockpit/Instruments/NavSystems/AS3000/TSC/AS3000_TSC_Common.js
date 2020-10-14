@@ -168,9 +168,9 @@ class AS3000_TSC extends NavSystemTouch {
         this.mapCityRangeTypeSelect = new NavSystemElementContainer("City Settings", "MapCityRangeTypeSelect", new AS3000_TSC_StatusButtonSelectionListWindow(false));
         this.mapCityRangeTypeSelect.setGPS(this);
         
-        Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });
+        //Include.addScript("/JS/debug.js", function () {
+        //    g_modDebugMgr.AddConsole(null);
+        //});
     }
     parseXMLConfig() {
         super.parseXMLConfig();

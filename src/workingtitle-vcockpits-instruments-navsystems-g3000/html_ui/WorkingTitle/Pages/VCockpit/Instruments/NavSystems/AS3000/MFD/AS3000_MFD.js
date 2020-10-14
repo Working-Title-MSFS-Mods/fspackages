@@ -18,9 +18,9 @@ class AS3000_MFD extends NavSystem {
             ]),
         ];
         
-        Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });
+        //Include.addScript("/JS/debug.js", function () {
+        //    g_modDebugMgr.AddConsole(null);
+        //});
     }
     disconnectedCallback() {
     }
