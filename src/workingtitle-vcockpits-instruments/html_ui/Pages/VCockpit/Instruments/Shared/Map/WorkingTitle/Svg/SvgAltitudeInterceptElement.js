@@ -5,9 +5,10 @@ class SvgAltitudeInterceptElement extends SvgMapElement {
         this.strokeInnerWidth = SvgAltitudeInterceptElement.STROKE_INNER_WIDTH_DEFAULT;
         this.strokeOuterColor = SvgAltitudeInterceptElement.STROKE_OUTER_COLOR_DEFAULT;
         this.strokeOuterWidth = SvgAltitudeInterceptElement.STROKE_OUTER_WIDTH_DEFAULT;
-        this.angularWidth = SvgAltitudeInterceptElement.ANGULAR_WIDTH_DEFAULT;                      // degrees
-        this.vSpeedThreshold = SvgAltitudeInterceptElement.VERTICAL_SPEED_THRESHOLD_DEFAULT;        // feet per minute, minimum deviation from 0 before altitude intercept arc is shown
-        this.smoothingConstant = SvgAltitudeInterceptElement.SMOOTHING_CONSTANT;                    // larger values = more smoothing but also more temporal lag
+        this.angularWidth = SvgAltitudeInterceptElement.ANGULAR_WIDTH_DEFAULT;                          // degrees
+        this.vSpeedThreshold = SvgAltitudeInterceptElement.VERTICAL_SPEED_THRESHOLD_DEFAULT;            // feet per minute, minimum deviation from 0 before arc is shown
+        this.altitudeTargetThreshold = SvgAltitudeInterceptElement.ALTITUDE_TARGET_THRESHOLD_DEFAULT;   // feet, minimum deviation from altitude target before arc is shown
+        this.smoothingConstant = SvgAltitudeInterceptElement.SMOOTHING_CONSTANT;                        // larger values = more smoothing but also more temporal lag
         
         this.lastTime = 0;
         this.lastDistance = -1;
@@ -45,13 +46,17 @@ class SvgAltitudeInterceptElement extends SvgMapElement {
     }
     
     updateDraw(map) {
+        if (SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
+            return;
+        }
+        
         let currentTime = Date.now() / 1000;
         let dt = currentTime - this.lastTime;
         
         let vSpeed = SimVar.GetSimVarValue("VERTICAL SPEED", "feet per minute");
         let altTarget = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
         let altCurrent = SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet");
-        if (Math.abs(vSpeed) < this.vSpeedThreshold || ((altTarget - altCurrent) / vSpeed) < 0) {
+        if (Math.abs(vSpeed) < this.vSpeedThreshold || ((altTarget - altCurrent) / vSpeed) < 0 || Math.abs(altTarget - altCurrent) < this.altitudeTargetThreshold) {
             this.arcOuter.setAttribute("display", "none");
             this.arcInner.setAttribute("display", "none");
             this.lastDistance = -1;
@@ -99,4 +104,5 @@ SvgAltitudeInterceptElement.STROKE_OUTER_WIDTH_DEFAULT = 6;
 SvgAltitudeInterceptElement.ANGULAR_WIDTH_DEFAULT = 40;                   
 
 SvgAltitudeInterceptElement.VERTICAL_SPEED_THRESHOLD_DEFAULT = 100;
+SvgAltitudeInterceptElement.ALTITUDE_TARGET_THRESHOLD_DEFAULT = 100;
 SvgAltitudeInterceptElement.SMOOTHING_CONSTANT = 100;

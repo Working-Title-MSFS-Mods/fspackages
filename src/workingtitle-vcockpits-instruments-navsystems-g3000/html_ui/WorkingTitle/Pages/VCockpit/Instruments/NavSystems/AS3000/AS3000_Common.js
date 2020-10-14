@@ -246,8 +246,11 @@ class AS3000_MapElement extends MapInstrumentElement {
     
     getRotation() {
         switch (this.orientation) {
+            case 1:
+                if (!SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
+                    return -SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+                }
             case 0: return -SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
-            case 1: return -SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
         }
         return 0;
     }

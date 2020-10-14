@@ -44,6 +44,10 @@ class SvgTrackVectorElement extends SvgMapElement {
     }
     
     updateDraw(map) {
+        if (SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
+            return;
+        }
+        
         let currentTime = Date.now() / 1000;
         let dt = currentTime - this.lastTime;
         
