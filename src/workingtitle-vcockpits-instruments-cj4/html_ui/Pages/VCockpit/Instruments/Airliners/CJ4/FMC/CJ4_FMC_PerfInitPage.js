@@ -322,7 +322,7 @@ class CJ4_FMC_PerfInitPage {
             };
         fmc.onNextPage = () => {
             if (fmc.flightPlanManager.getApproachRunway() && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
-                CJ4_FMC_PerfInitPage.ShowPage14(fmc, arrRunwayOutput);
+                CJ4_FMC_PerfInitPage.ShowPage14(fmc);
             }
             else {
                 fmc.showErrorMessage("INVALID");
@@ -330,8 +330,9 @@ class CJ4_FMC_PerfInitPage {
             };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage14(fmc, arrRunwayOutput = "XX") { //APPROACH REF Page 2
+    static ShowPage14(fmc) { //APPROACH REF Page 2
         fmc.clearDisplay();
+        let arrRunwayOutput = "RW" + fmc.getRunwayDesignation(fmc.flightPlanManager.getApproachRunway());
         let grWtCell = "";
         let grossWeightValue = fmc.getWeight();
         if (isFinite(grossWeightValue)) {
