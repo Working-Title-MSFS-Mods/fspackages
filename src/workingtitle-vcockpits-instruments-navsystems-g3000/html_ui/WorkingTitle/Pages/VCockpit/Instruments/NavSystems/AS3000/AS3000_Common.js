@@ -257,6 +257,9 @@ class AS3000_MapElement extends MapInstrumentElement {
     
     updateTerrain() {
         let mode = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.simVarNameID, "number");
+        if (mode == 2 && SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
+            mode = 0;
+        }
         this.instrument.mapConfigId = mode;
         if (mode == 2) {
             this.instrument.bingMapRef = EBingReference.PLANE;
