@@ -66,7 +66,7 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.instrument.altitudeInterceptElement = new SvgAltitudeInterceptElement();
         this.setHdgUp();
         
-        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_ORIENTATION_ROOT, 0); // set default map orientation (0 = hdg, 1 = trk, 2 = north)
+        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_ORIENTATION_ROOT, WT_AS3000_Map.Orientation.HDG); // set default map orientation (0 = hdg, 1 = trk, 2 = north)
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_DETAIL_ROOT, 0); // set default declutter (0 = none, 1 = DCLTR1, 2 = DCLTR2, 3 = least)
 
         for (let [attr, val] of this.lastSymbolVis) {
@@ -75,7 +75,7 @@ class AS3000_MapElement extends MapInstrumentElement {
         this.initDcltrSettings();
         
         // "Sensor" settings
-        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT, 0);
+        this.setSimVarFromStorage(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT, WT_AS3000_Map.TerrainMode.OFF);
         
         // initialize symbol range
         this.setSimVarFromStorage(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT, this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRSPACE_RANGE_DEFAULT));
@@ -195,19 +195,19 @@ class AS3000_MapElement extends MapInstrumentElement {
         // handle Auto North Up
         if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT + this.simVarNameID, "number") == 1) {
             if (this.instrument.getDisplayRange() >= this.instrument.zoomRanges[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.simVarNameID, "number")]) {
-                orientation = 2;
+                orientation = WT_AS3000_Map.Orientation.NORTH;
             }
         }
         
         if (this.orientation != orientation) {
             switch (orientation) {
-            case 0:
+            case WT_AS3000_Map.Orientation.HDG:
                 this.setHdgUp();
                 break;
-            case 1:
+            case WT_AS3000_Map.Orientation.TRK:
                 this.setTrkUp();
                 break;
-            case 2:
+            case WT_AS3000_Map.Orientation.NORTH:
                 this.setNorthUp();
                 break;
             }
@@ -237,7 +237,7 @@ class AS3000_MapElement extends MapInstrumentElement {
     }
     
     getRangeDefinition(_context) {
-        if (this.orientation == 2) {
+        if (this.orientation == WT_AS3000_Map.Orientation.NORTH) {
             return (_context.bottom - _context.top) / 4;
         } else {
             return (_context.bottom - _context.top) / 3;
@@ -246,22 +246,22 @@ class AS3000_MapElement extends MapInstrumentElement {
     
     getRotation() {
         switch (this.orientation) {
-            case 1:
+            case WT_AS3000_Map.Orientation.TRK:
                 if (!SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
                     return -SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
                 }
-            case 0: return -SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
+            case WT_AS3000_Map.Orientation.HDG: return -SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
         }
         return 0;
     }
     
     updateTerrain() {
         let mode = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.simVarNameID, "number");
-        if (mode == 2 && SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
-            mode = 0;
+        if (mode == WT_AS3000_Map.TerrainMode.RELATIVE && SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
+            mode = WT_AS3000_Map.TerrainMode.OFF;
         }
         this.instrument.mapConfigId = mode;
-        if (mode == 2) {
+        if (mode == WT_AS3000_Map.TerrainMode.RELATIVE) {
             this.instrument.bingMapRef = EBingReference.PLANE;
         } else {
             this.instrument.bingMapRef = EBingReference.SEA;
@@ -456,3 +456,17 @@ AS3000_MapElement.VARNAME_FUEL_RING_SHOW_ROOT = "L:AS3000_Map_FuelRing_Show";
 AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_ROOT = "L:AS3000_Map_FuelRing_Reserve";
 AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_DEFAULT = 45;
 AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT = "L:AS3000_Map_AltitudeIntercept_Show";
+
+const WT_AS3000_Map = {
+    Orientation: {
+        HDG: 0,
+        TRK: 1,
+        NORTH: 2
+    },
+    
+    TerrainMode: {
+        OFF: 0,
+        ABSOLUTE: 1,
+        RELATIVE: 2
+    }
+}
