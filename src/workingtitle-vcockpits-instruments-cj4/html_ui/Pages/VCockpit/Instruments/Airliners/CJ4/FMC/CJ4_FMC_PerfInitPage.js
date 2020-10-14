@@ -322,7 +322,7 @@ class CJ4_FMC_PerfInitPage {
             };
         fmc.onNextPage = () => {
             if (fmc.flightPlanManager.getApproachRunway() && fmc.landingQnh && fmc.landingOat && fmc.landingWindDir) {
-                CJ4_FMC_PerfInitPage.ShowPage14(fmc);
+                CJ4_FMC_PerfInitPage.ShowPage14(fmc, arrRunwayOutput);
             }
             else {
                 fmc.showErrorMessage("INVALID");
@@ -330,7 +330,7 @@ class CJ4_FMC_PerfInitPage {
             };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage14(fmc) { //APPROACH REF Page 2
+    static ShowPage14(fmc, arrRunwayOutput = "XX") { //APPROACH REF Page 2
         fmc.clearDisplay();
         let grWtCell = "";
         let grossWeightValue = fmc.getWeight();
@@ -437,7 +437,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             [" LW / GWT/MLW[blue]", "V[blue]APP:[s-text blue] " + vApp.toFixed(0)],
             [ldgWtCell + "/" + fmc.grossWeight + "/15660"],
-            [" LFL / RWXX[blue]"],
+            [" LFL / " + arrRunwayOutput + "[blue]"],
             [ldgFieldLength.toFixed(0) + " / " + Math.trunc(arrRunwayLength) + " FT"],
             [" LDG FACTOR[blue]"],
             ["1.0[green]" + "/[white]1.25[s-text]" + "/[white]1.67[s-text]" + "/[white]1.92[s-text]"],
