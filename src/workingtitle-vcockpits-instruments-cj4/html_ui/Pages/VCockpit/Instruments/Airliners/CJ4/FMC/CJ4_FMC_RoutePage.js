@@ -148,16 +148,21 @@ class CJ4_FMC_RoutePage {
                         let value = fmc.inOut;
                         if (value.length > 0) {
                             fmc.clearUserInput();
+                            fmc.ensureCurrentFlightPlanIsTemporary(() => {
                             let lastWaypoint = fmc.flightPlanManager.getWaypoints()[fmc.flightPlanManager.getEnRouteWaypointsLastIndex()];
-                            if (lastWaypoint.infos instanceof IntersectionInfo) {
-                                let airway = lastWaypoint.infos.airways.find(a => { return a.name === value; });
-                                if (airway) {
-                                    CJ4_FMC_RoutePage.ShowPage1(fmc, airway);
+                                if (lastWaypoint.infos instanceof WayPointInfo) {
+                                    lastWaypoint.infos.UpdateAirway(value).then(() => {
+                                        let airway = lastWaypoint.infos.airways.find(a => { return a.name === value; });
+                                        if (airway) {
+                                            lastWaypoint.infos.airwayOut = airway.name;
+                                            CJ4_FMC_RoutePage.ShowPage1(fmc, airway);
+                                        }
+                                        else {
+                                            fmc.showErrorMessage("NOT IN DATABASE");
+                                        }
+                                    });
                                 }
-                                else {
-                                    fmc.showErrorMessage("NOT IN DATABASE");
-                                }
-                            }
+                            });
                         }
                     };
                 }
@@ -333,17 +338,24 @@ class CJ4_FMC_RoutePage {
                         let value = fmc.inOut;
                         if (value.length > 0) {
                             fmc.clearUserInput();
-                            let lastWaypoint = fmc.flightPlanManager.getWaypoints()[fmc.flightPlanManager.getEnRouteWaypointsLastIndex()];
-                            if (lastWaypoint.infos instanceof WayPointInfo) {
-                                let airway = lastWaypoint.infos.airways.find(a => { return a.name === value; });
-                                if (airway) {
-                                    fmc.setMsg();
-                                    CJ4_FMC_RoutePage.ShowPage2(fmc, offset, airway);
+                            fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                let lastWaypoint = fmc.flightPlanManager.getWaypoints()[fmc.flightPlanManager.getEnRouteWaypointsLastIndex()];
+                                if (lastWaypoint.infos instanceof WayPointInfo) {
+                                    // Load the fixes of the selected airway and their infos.airways
+                                    lastWaypoint.infos.UpdateAirway(value).then(() => {
+                                        let airway = lastWaypoint.infos.airways.find(a => { return a.name === value; });
+                                        if (airway) {
+                                        	// set the outgoing airway of the last enroute or departure waypoint of the flightplan
+                                            lastWaypoint.infos.airwayOut = airway.name;
+                                            fmc.setMsg();
+                                            CJ4_FMC_RoutePage.ShowPage2(fmc, offset, airway);
+                                        }
+                                        else {
+                                            fmc.showErrorMessage("NO INTERSECTION");
+                                        }
+                                    });
                                 }
-                                else {
-                                    fmc.showErrorMessage("NO INTERSECTION");
-                                }
-                            }
+                            });
                         } else
                             fmc.setMsg();
                     };
@@ -471,19 +483,24 @@ class CJ4_FMC_RoutePage {
 
                             let count = Math.abs(lastIndex - firstIndex);
                             for (let i = 1; i < count + 1; i++) { // 9 -> 6
-                                let asyncInsertWaypointByIcao = async (icao, idx) => {
+                                let syncInsertWaypointByIcao = async (icao, idx) => {
                                     return new Promise(resolve => {
                                         console.log("add icao:" + icao + " @ " + idx);
                                         fmc.flightPlanManager.addWaypoint(icao, idx, () => {
-                                            console.log("icao:" + icao + " added");
-                                            resolve();
+                                            let waypoint = fmc.flightPlanManager.getWaypoint(idx);
+                                            waypoint.infos.UpdateAirway(airwayName).then(() => {
+                                                waypoint.infos.airwayIn = airwayName;
+                                                if (i < count) {
+                                                    waypoint.infos.airwayOut = airwayName;
+                                                }
+                                                console.log("icao:" + icao + " added");
+                                                resolve();
+                                            });
                                         });
-                                    });
+                                    })
                                 };
-                                let outOfSync = async () => {
-                                    await asyncInsertWaypointByIcao(airway.icaos[firstIndex + i * inc], index + i);
-                                };
-                                await outOfSync();
+
+                                await syncInsertWaypointByIcao(airway.icaos[firstIndex + i * inc], index + i);
                             }
                             callback(true);
                             return;
@@ -513,7 +530,7 @@ class CJ4_FMC_RoutePage {
         if (flightPlan) {
             let departure = flightPlan.getDeparture();
             if (departure) {
-                let departureWaypoints = flightPlan.getDepartureWaypoints();
+                let departureWaypoints = flightPlan.getDepartureWaypointsMap();
                 lastDepartureWaypoint = departureWaypoints[departureWaypoints.length - 1];
                 if (lastDepartureWaypoint) {
                     allRows.push([departure.name, lastDepartureWaypoint.ident]);
@@ -525,24 +542,22 @@ class CJ4_FMC_RoutePage {
                 let prev = (i == 0) ? lastDepartureWaypoint : routeWaypoints[i - 1]; // check with dep on first waypoint
                 let wp = routeWaypoints[i];
                 if (wp) {
-                    let prevAirway = IntersectionInfo.GetCommonAirway(prev, wp);
-                    if (!prevAirway) {
-                        allRows.push(["DIRECT", wp.ident]);
+                    if (wp.infos.airwayIn !== undefined && prev.infos.airwayOut === wp.infos.airwayIn) {
+                        // is there a next waypoint?
+                        let nextWp = routeWaypoints[i + 1];
+                        if (nextWp) {
+                            let airwayContinues = (wp.infos.airwayIn === wp.infos.airwayOut && nextWp.infos.airwayIn === wp.infos.airwayOut);
+                            if (airwayContinues)
+                                continue;
+                        }
+                        allRows.push([wp.infos.airwayIn, wp.ident]);
                         allWaypoints.push(wp);
                         allFPIndexes.push(fpIndexes[i]);
                     }
                     else {
-                        // is there a next waypoint?
-                        let nextWp = routeWaypoints[i + 1];
-                        if (nextWp) {
-                            let airway = nextWp.infos.airways.find(a => { return a.name === prevAirway.name; });
-                            // let nextAirway = IntersectionInfo.GetCommonAirway(wp, nextWp);
-                            if (airway)
-                                continue;
-                        }
-                        allRows.push([prevAirway.name, wp.ident]);
+                        allRows.push(["DIRECT", wp.ident]);
                         allWaypoints.push(wp);
-                        allFPIndexes.push(fpIndexes[i]);
+                        allFPIndexes.push(fpIndexes[i]);                        
                     }
                 }
             }

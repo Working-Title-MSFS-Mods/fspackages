@@ -321,7 +321,7 @@ class CJ4_FMC_DepArrPage {
             let selectedTransitionIndex = fmc.flightPlanManager.getApproachTransitionIndex();
             let selectedTransition = selectedApproach.transitions[selectedTransitionIndex];
             if (selectedTransition) {
-                rows[2] = ["", selectedTransition.waypoints[0].infos.icao.substr(5).trim() + "[d-text green]"];
+                rows[2] = ["", selectedTransition.waypoints[0].ident.trim() + "[d-text green]"];
                 fmc.onRightInput[1] = () => {
                     fmc.setMsg("Working...");
                     fmc.setApproachTransitionIndex(-1, () => {
@@ -333,12 +333,12 @@ class CJ4_FMC_DepArrPage {
             else {
                 displayableTransitionsCount = selectedApproach.transitions.length;
                 let maxTransitionPageIndex = Math.max(Math.ceil(displayableTransitionsCount / 4), 1) - 1;
-                let displayedTransitionPageIndex = Math.min(currentPage - 1, maxTransitionPageIndex);                
+                let displayedTransitionPageIndex = Math.min(currentPage - 1, maxTransitionPageIndex);
                 for (let i = 0; i < 4; i++) {
                     let transitionIndex = 4 * displayedTransitionPageIndex + i;
                     let transition = selectedApproach.transitions[transitionIndex];
                     if (transition) {
-                        let name = transition.waypoints[0].infos.icao.substr(5).trim();
+                        let name = transition.waypoints[0].ident.trim();
                         rows[2 * (i + 1)][1] = name;
                         fmc.onRightInput[i + 1] = () => {
                             fmc.setApproachTransitionIndex(transitionIndex, () => {

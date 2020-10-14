@@ -196,6 +196,15 @@ class FlightPlanManager {
                         if (v) {
                             v.infos.icao = v.icao;
                             v.infos.ident = v.ident;
+                            
+                            v.infos.UpdateAirways();
+                            // Keep the waypoints airway selection, if available
+                            let matchingCurrentWaypoint = currentWaypoints.find(wp => wp.infos.icao === v.infos.icao);
+                            if (matchingCurrentWaypoint) {
+                                v.infos.airwayIn = matchingCurrentWaypoint.infos.airwayIn;
+                                v.infos.airwayOut = matchingCurrentWaypoint.infos.airwayOut;
+                            }
+                            
                             v.latitudeFP = waypointData.lla.lat;
                             v.longitudeFP = waypointData.lla.long;
                             v.altitudeinFP = waypointData.lla.alt * 3.2808;
@@ -880,6 +889,14 @@ class FlightPlanManager {
     }
     removeWaypoint(index, thenSetActive = false, callback = () => { }) {
         Coherent.call("REMOVE_WAYPOINT", index, thenSetActive).then(() => {
+            let prev = this.getWaypoint(index - 1);
+            if (prev && prev.infos) {
+                prev.infos.airwayOut = undefined;
+            }
+            let next = this.getWaypoint(index + 1);
+            if (next && next.infos) {
+                next.infos.airwayIn = undefined;
+            }
             this.updateFlightPlan(callback);
         });
     }
