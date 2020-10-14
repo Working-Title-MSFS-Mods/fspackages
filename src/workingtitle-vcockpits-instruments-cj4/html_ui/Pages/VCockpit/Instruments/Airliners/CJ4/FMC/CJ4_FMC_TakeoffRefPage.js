@@ -84,7 +84,7 @@ class CJ4_FMC_TakeoffRefPage {
         ]);
         fmc.onRightInput[0] = () => {
             let windIn = fmc.inOut.split("/");
-            if(windIn.length == 2 && windIn[0] <= 360 && windIn[0] >= 0 && windIn[1] >= 0){
+            if (windIn.length == 2 && windIn[0] <= 360 && windIn[0] >= 0 && windIn[1] >= 0){
                 fmc.takeoffWindDir = new Number(windIn[0]);
                 fmc.takeoffWindSpeed = new Number(windIn[1]);
                 fmc.clearUserInput();
@@ -95,7 +95,16 @@ class CJ4_FMC_TakeoffRefPage {
             { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
         };
         fmc.onRightInput[1] = () => {
-            fmc.takeoffOat = new Number(fmc.inOut);
+            let tempIn = parseFloat(fmc.inOut);
+            if (tempIn && isNaN(tempIn)) {
+                fmc.showErrorMessage("INVALID");
+            }
+            else if (tempIn) {
+                fmc.takeoffOat = Math.trunc(tempIn);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
             fmc.clearUserInput();
             { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
         };
@@ -140,7 +149,7 @@ class CJ4_FMC_TakeoffRefPage {
         };
 
         fmc.onPrevPage = () => {
-            if (fmc.flightPlanManager.getDepartureRunway()) {
+            if (fmc.flightPlanManager.getDepartureRunway() && fmc.takeoffQnh && fmc.takeoffOat && fmc.takeoffWindDir) {
                 CJ4_FMC_TakeoffRefPage.ShowPage3(fmc);
             }
             else {
@@ -148,7 +157,7 @@ class CJ4_FMC_TakeoffRefPage {
             }
             };
         fmc.onNextPage = () => {
-            if (fmc.flightPlanManager.getDepartureRunway()) {
+            if (fmc.flightPlanManager.getDepartureRunway() && fmc.takeoffQnh && fmc.takeoffOat && fmc.takeoffWindDir) {
                 CJ4_FMC_TakeoffRefPage.ShowPage2(fmc);
             }
             else {
