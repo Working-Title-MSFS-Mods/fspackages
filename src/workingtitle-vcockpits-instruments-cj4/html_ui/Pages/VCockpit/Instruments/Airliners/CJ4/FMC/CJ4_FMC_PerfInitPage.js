@@ -332,8 +332,8 @@ class CJ4_FMC_PerfInitPage {
     }
     static ShowPage14(fmc) { //APPROACH REF Page 2
         fmc.clearDisplay();
-        let arrRunwayOutput = "RW" + fmc.getRunwayDesignation(fmc.flightPlanManager.getApproachRunway());
         let grWtCell = "";
+        let arrRunwayOutput = "";
         let grossWeightValue = fmc.getWeight();
         if (isFinite(grossWeightValue)) {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
@@ -420,6 +420,7 @@ class CJ4_FMC_PerfInitPage {
         let arrRunway = fmc.flightPlanManager.getApproachRunway();
         if (arrRunway) {
             arrRunwayLength = new Number((arrRunway.length) * 3.28);
+            arrRunwayOutput = "RW" + fmc.getRunwayDesignation(arrRunway);
         }
 
         if (fmc.arrRunwayCondition == 1) { // If the runway is wet
@@ -428,7 +429,9 @@ class CJ4_FMC_PerfInitPage {
 		
 		if (ldgWtCell > 15660) { //Turn the landing weight yellow if it exceeds the maximum landing weight
 			ldgWtCell = ldgWtCell + "[yellow]";
-		}
+        }
+        
+
 		
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "2/3 [blue]", "APPROACH REF[blue]"],
