@@ -549,6 +549,9 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
 #Coms div.Modifiable {
   color: #11d011 !important;
 }
+#Coms #GS div.Modifiable {
+    color: magenta !important;
+}
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox {
   top: 0;
