@@ -104,8 +104,8 @@ class SvgTrackVectorElement extends SvgMapElement {
         
         this.trackOuter.setAttribute("d", pathString);
         this.trackInner.setAttribute("d", pathString);
-        this.trackOuter.setAttribute("transform", "rotate(" + map.rotation + " " + points[0].x + " " + points[0].y + ")");
-        this.trackInner.setAttribute("transform", "rotate(" + map.rotation + " " + points[0].x + " " + points[0].y + ")");
+        this.trackOuter.setAttribute("transform", `rotate(${map.rotation} ${points[0].x} ${points[0].y})`);
+        this.trackInner.setAttribute("transform", `rotate(${map.rotation} ${points[0].x} ${points[0].y})`);
         
         this.lastTime = currentTime;
         this.lastTurnSpeed = turnSpeed;

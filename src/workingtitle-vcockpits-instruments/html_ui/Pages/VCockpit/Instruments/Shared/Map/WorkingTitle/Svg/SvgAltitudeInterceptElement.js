@@ -80,10 +80,10 @@ class SvgAltitudeInterceptElement extends SvgMapElement {
         let arcStart = SvgAltitudeInterceptElement.getRadialOffsetPos(centerPos, distance, -arcAngularWidthRad / 2);
         let arcEnd = SvgAltitudeInterceptElement.getRadialOffsetPos(centerPos, distance, arcAngularWidthRad / 2);
         
-        this.arcOuter.setAttribute("d", "M " + arcStart.x + " " + arcStart.y + " A " + distance + " " + distance + " 0 0 1 " + arcEnd.x + " " + arcEnd.y);
-        this.arcOuter.setAttribute("transform", "rotate(" + (track + map.rotation) + ", " + centerPos.x + ", " + centerPos.y + ")");
-        this.arcInner.setAttribute("d", "M " + arcStart.x + " " + arcStart.y + " A " + distance + " " + distance + " 0 0 1 " + arcEnd.x + " " + arcEnd.y);
-        this.arcInner.setAttribute("transform", "rotate(" + (track + map.rotation) + ", " + centerPos.x + ", " + centerPos.y + ")");
+        this.arcOuter.setAttribute("d", `M ${arcStart.x} ${arcStart.y} A ${distance} ${distance} 0 0 1 ${arcEnd.x} ${arcEnd.y}`);
+        this.arcOuter.setAttribute("transform", `rotate(${track + map.rotation} ${centerPos.x} ${centerPos.y})`);
+        this.arcInner.setAttribute("d", `M ${arcStart.x} ${arcStart.y} A ${distance} ${distance} 0 0 1 ${arcEnd.x} ${arcEnd.y}`);
+        this.arcInner.setAttribute("transform", `rotate(${track + map.rotation} ${centerPos.x} ${centerPos.y})`);
         
         this.lastTime = currentTime;
         this.lastDistance = distance;
