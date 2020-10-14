@@ -247,11 +247,18 @@ class CJ4_FMC_PerfInitPage {
         ]);
 
         fmc.onRightInput[0] = () => {
-            fmc.landingWindDir = fmc.inOut.slice(0, 3);
-            fmc.landingWindSpeed = fmc.inOut.slice(4, 7);
-            fmc.clearUserInput();
-            { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
-        }
+            let windIn = fmc.inOut.split("/");
+            if(windIn.length == 2 && windIn[0] <= 360 && windIn[0] >= 0 && windIn[1] >= 0){
+                fmc.landingWindDir = new Number(windIn[0]);
+                fmc.landingWindSpeed = new Number(windIn[1]);
+                fmc.clearUserInput();
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            { CJ4_FMC_PerfInitPage.ShowPage13(fmc); }
+        };
+
         fmc.onRightInput[1] = () => {
             fmc.landingOat = new Number(fmc.inOut);
             fmc.clearUserInput();

@@ -84,7 +84,7 @@ class CJ4_FMC_TakeoffRefPage {
         ]);
         fmc.onRightInput[0] = () => {
             let windIn = fmc.inOut.split("/");
-            if(windIn.length == 2){
+            if(windIn.length == 2 && windIn[0] <= 360 && windIn[0] >= 0 && windIn[1] >= 0){
                 fmc.takeoffWindDir = new Number(windIn[0]);
                 fmc.takeoffWindSpeed = new Number(windIn[1]);
                 fmc.clearUserInput();
