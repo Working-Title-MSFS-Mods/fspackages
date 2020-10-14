@@ -11,6 +11,10 @@ class SvgRangeRingElement extends SvgLabeledRingElement {
         return "range-ring" + "-map-" + map.index;
     }
     
+    appendToMap(map) {
+        map.appendChild(this.svgElement, map.rangeRingLayer);
+    }
+    
     createRing(map) {
         let rangeRing = super.createRing(map);
         rangeRing.setAttribute("stroke", this.rangeRingStrokeColor);
@@ -26,7 +30,7 @@ class SvgRangeRingElement extends SvgLabeledRingElement {
     
     updateDraw(map) {
         this.centerPos = map.getPlanePositionXY();
-        this.radius = (this.centerPos.y - map.minVisibleY) / 2;
+        this.radius = map.htmlRoot.getDisplayRange() / map.NMWidth * 1000;
         super.updateDraw(map);
     }
     
@@ -38,7 +42,7 @@ class SvgRangeRingElement extends SvgLabeledRingElement {
 }
 SvgRangeRingElement.RANGE_RING_STROKE_COLOR_DEFAULT = "white";
 SvgRangeRingElement.RANGE_RING_STROKE_WIDTH_DEFAULT = 2;
-SvgRangeRingElement.RANGE_DISPLAY_ANGLE_DEFAULT = -135;
+SvgRangeRingElement.RANGE_DISPLAY_ANGLE_DEFAULT = -45;
 
 class SvgRangeLabelElement {
     constructor() {
@@ -91,8 +95,19 @@ class SvgRangeLabelElement {
         } else {
             this.rangeDisplayAutoText.setAttribute("display", "none");
         }
-        this.rangeDisplayValueText.textContent = MapInstrument.getFormattedRangeDisplayText(this.range);
+        this.updateRangeText();
         this.formatRangeDisplay(false);
+    }
+    
+    updateRangeText() {
+        // switch between NM and feet
+        if (this.range <= 1000 / 6076) {
+            this.rangeDisplayValueText.textContent = MapInstrument.getFormattedRangeDisplayText(this.range * 6076);
+            this.rangeDisplayUnitText.textContent = "FT";
+        } else {
+            this.rangeDisplayValueText.textContent = MapInstrument.getFormattedRangeDisplayText(this.range);
+            this.rangeDisplayUnitText.textContent = "NM";
+        }
     }
     
     formatRangeDisplay(_auto) {

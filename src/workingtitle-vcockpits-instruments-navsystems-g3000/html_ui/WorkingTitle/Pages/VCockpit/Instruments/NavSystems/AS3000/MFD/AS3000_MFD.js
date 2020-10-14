@@ -158,7 +158,7 @@ class AS3000_MFD_WindData extends MFD_WindData {
         if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.mapElement.simVarNameID, "number") == 0) {
             this.svg.setAttribute("wind-mode", "0");
         } else {
-            if (SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") < 5) {
+            if (SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
                 this.svg.setAttribute("wind-mode", "4")
             } else {
                 var wind = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180; // fix for MFD wind direction bug

@@ -1,29 +1,37 @@
 {
   "waypointLabelFontSize": 70,
+  "waypointAirportLargeLabelFontSize": 90,
   "waypointLabelFontFamily": "Consolas",
   "waypointLabelColor": "#FFFFFF",
-  "waypointLabelStrokeColor": "#3f3f3f",
-  "waypointLabelStrokeWidth": 0,
-  "waypointLabelUseBackground": true,
+  "waypointLabelStrokeColor": "#000000",
+  "waypointLabelStrokeWidth": 10,
+  "waypointLabelUseBackground": false,
   "waypointLabelBackgroundColor": "#3f4851",
   "waypointLabelBackgroundStrokeColor": "black",
   "waypointLabelBackgroundStrokeWidth": 0,
   "waypointLabelBackgroundPadding": "4 9 4 9",
   "waypointLabelDistance": 12,
-  "waypointIconSize": 250,
+  "waypointIconSize": 200,
+  "waypointAirportClass2IconSize": 150,
+  "waypointINTIconSize": 150,
 
-  "cityLabelFontSize": 60,
+  "cityLabelFontSize": 70,
   "cityLabelFontFamily": "Consolas",
-  "cityLabelColor": "#black",
-  "cityLabelStrokeColor": "#3f3f3f",
-  "cityLabelStrokeWidth": 0,
+  "cityLabelColor": "#ffffff",
+  "cityLabelStrokeColor": "#000000",
+  "cityLabelStrokeWidth": 10,
   "cityLabelUseBackground": false,
   "cityLabelBackgroundColor": "white",
   "cityLabelBackgroundStrokeColor": "red",
   "cityLabelBackgroundStrokeWidth": 10,
   "cityLabelBackgroundPadding": "7 12 0 12",
-  "cityLabelDistance": 0.45,
-  "cityIconSize": 90,
+  "cityLabelDistance": 12,
+  "cityIconSize": [60, 45, 35],
+  "cityIconFillColor": "#7b8083",
+  "cityIconStrokeColor": "#3f3f3f",
+  "cityIconStrokeWidth": 6,
+  
+  "obstacleIconSize": 90,
 
   "airplaneIconSize": 250,
   "airplaneIcon1": "ICON_MAP_PLANE",
@@ -68,43 +76,89 @@
 
   "netBingTextureResolution": 1024,
   "netBingAltitudeColors1": [],
-  "netBingWaterColor1": "#184b77",
+  "netBingWaterColor1": "#0000ff",
   "netBingHeightColor1": [
     {
       "alt": 0,
-      "color": "#6DA36C"
+      "color": "#000000"
     },
     {
-      "alt": 1500,
-      "color": "#9CAF57"
+      "alt": 9000,
+      "color": "#000000"
+    }
+  ],
+  
+  "netBingAltitudeColors2": [],
+  "netBingWaterColor2": "#184b77",
+  "netBingHeightColor2": [
+    {
+      "alt": 0,
+      "color": "#94b947"
+    },
+    {
+      "alt": 500,
+      "color": "#738922"
+    },
+    {
+      "alt": 1000,
+      "color": "#d0aa43"
+    },
+    {
+      "alt": 2000,
+      "color": "#c58f45"
+    },
+    {
+      "alt": 3000,
+      "color": "#9d6434"
     },
     {
       "alt": 6000,
-      "color": "#c8b46e"
+      "color": "#904f25"
     },
     {
       "alt": 8000,
-      "color": "#b0975b"
+      "color": "#904522"
     },
     {
-      "alt": 10000,
-      "color": "#9a7c48"
+      "alt": 10500,
+      "color": "#939393"
     },
     {
-      "alt": 13000,
-      "color": "#906a3b"
+      "alt": 27000,
+      "color": "#c8c8c8"
+    }
+  ],
+    
+  "netBingAltitudeColors3": [],
+  "netBingWaterColor3": "#0000ff",
+  "netBingHeightColor3": [
+    {
+      "alt": 0,
+      "color": "#ff0000"
     },
     {
-      "alt": 16000,
-      "color": "#7b5936"
+      "alt": 99,
+      "color": "#ff0000"
     },
     {
-      "alt": 24000,
-      "color": "#5a462e"
+      "alt": 100,
+      "color": "#ffff00"
     },
     {
-      "alt": 32000,
-      "color": "#abb0b5"
+      "alt": 999,
+      "color": "#ffff00"
+    },
+    {
+      "alt": 1000,
+      "color": "#00ff00"
+    },
+    {
+      "alt": 1999,
+      "color": "#00ff00"
+    },
+    {
+      "alt": 2000,
+      "color": "#000000"
     }
   ]
 }
