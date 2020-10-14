@@ -299,6 +299,14 @@ class CJ4_FMC_DepArrPage {
         let selectedArrival;
         let displayableArrivalsCount = 0;
         let displayableTransitionsCount = 0;
+
+        //add runways
+        let runways = [];
+        let displayableRunwaysCount = 0;
+
+
+
+
         if (destination) {
             let airportInfo = destination.infos;
             if (airportInfo instanceof AirportInfo) {
@@ -306,6 +314,7 @@ class CJ4_FMC_DepArrPage {
                 approaches = airportInfo.approaches;
                 selectedArrival = airportInfo.arrivals[fmc.flightPlanManager.getArrivalProcIndex()];
                 arrivals = airportInfo.arrivals;
+                runways = airportInfo.oneWayRunways;
             }
         }
         if (selectedApproach) {
