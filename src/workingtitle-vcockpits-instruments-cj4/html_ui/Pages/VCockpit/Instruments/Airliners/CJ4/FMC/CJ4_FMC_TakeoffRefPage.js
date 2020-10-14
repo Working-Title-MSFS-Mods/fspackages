@@ -149,7 +149,7 @@ class CJ4_FMC_TakeoffRefPage {
         };
 
         fmc.onPrevPage = () => {
-            if (fmc.flightPlanManager.getDepartureRunway() && fmc.takeoffQnh && fmc.takeoffOat && fmc.takeoffWindDir) {
+            if (fmc.flightPlanManager.getDepartureRunway() && fmc.takeoffQnh > 28 && fmc.takeoffQnh < 32 && fmc.takeoffOat && fmc.takeoffWindDir >= 0 && fmc.takeoffWindDir <= 360) {
                 CJ4_FMC_TakeoffRefPage.ShowPage3(fmc);
             }
             else {
@@ -157,7 +157,7 @@ class CJ4_FMC_TakeoffRefPage {
             }
             };
         fmc.onNextPage = () => {
-            if (fmc.flightPlanManager.getDepartureRunway() && fmc.takeoffQnh && fmc.takeoffOat && fmc.takeoffWindDir) {
+            if (fmc.flightPlanManager.getDepartureRunway() && fmc.takeoffQnh > 28 && fmc.takeoffQnh < 32 && fmc.takeoffOat && fmc.takeoffWindDir >= 0 && fmc.takeoffWindDir <= 360) {
                 CJ4_FMC_TakeoffRefPage.ShowPage2(fmc);
             }
             else {

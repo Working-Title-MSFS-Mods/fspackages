@@ -271,7 +271,7 @@ class CJ4_FMC_PerfInitPage {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
-            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
+            { CJ4_FMC_PerfInitPage.ShowPage13(fmc); }
         };
 
         fmc.onRightInput[2] = () => {
@@ -313,7 +313,7 @@ class CJ4_FMC_PerfInitPage {
             { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
         }
         fmc.onPrevPage = () => {
-            if (fmc.flightPlanManager.getApproachRunway() && fmc.landingQnh && fmc.landingOat && fmc.landingWindDir) {
+            if (fmc.flightPlanManager.getApproachRunway() && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
                 CJ4_FMC_PerfInitPage.ShowPage15(fmc);
             }
             else {
@@ -321,7 +321,7 @@ class CJ4_FMC_PerfInitPage {
             }
             };
         fmc.onNextPage = () => {
-            if (fmc.flightPlanManager.getApproachRunway() && fmc.landingQnh && fmc.landingOat && fmc.landingWindDir) {
+            if (fmc.flightPlanManager.getApproachRunway() && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
                 CJ4_FMC_PerfInitPage.ShowPage14(fmc, arrRunwayOutput);
             }
             else {
