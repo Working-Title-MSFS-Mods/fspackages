@@ -102,9 +102,35 @@ cj4-mfd-element {
           display: none; }
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemFMS,
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS {
-          top: 0%;
           position: relative;
+            top: 5%;
+            left: 0;
+            width: 100%;
+            color: white;
           display: none; }
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .cj4x-navigation-data-page-head {
+    margin-bottom: 50px; }
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .cj4x-navigation-data-previous-leg {
+    color: cyan; }
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .cj4x-navigation-data-active-leg {
+    color: magenta; }
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .cj4x-navigation-data-flightplan-leg {
+    margin-bottom: 50px; }
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .cj4x-navigation-data-col {
+    display: inline-block;
+    text-align: left;
+    width: 10%; }
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .cj4x-navigation-data-col-right {
+    display: inline-block;
+    text-align: right;
+    width: 8%;
+    margin-right: 5%;
+}
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .cj4x-navigation-data-col-large {
+    display: inline-block;
+    text-align: left;
+    width: 21%; }
+
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations,
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations {
           top: 5%;
@@ -210,7 +236,7 @@ cj4-mfd-element {
           display: none; }
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=fms] .SystemFMS,
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=fms] .SystemFMS {
-          display: block; }
+          display: block;}
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=fms] .SystemEngines,
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=fms] .SystemElectrics,
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=fms] .SystemAnnunciations,
@@ -442,39 +468,6 @@ cj4-mfd-element {
               text-anchor: end; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay[extended=on] {
             top: 35%; }
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos {
-  position: absolute;
-  top: 22.5%;
-  left: 0;
-  width: 100%;
-  height: 22.5%;
-  background-color: black;
-  color: white;
-}
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos[visible=false] {
-  display: none; }
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-page-head {
-  margin-bottom: 50px; }
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-previous-leg {
-  color: cyan; }
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-active-leg {
-  color: magenta; }
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-flightplan-leg {
-  margin-bottom: 50px; }
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-col {
-  display: inline-block;
-  text-align: left;
-  width: 10%; }
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-col-right {
-  display: inline-block;
-  text-align: right;
-  width: 12%;
-  margin-right: 5%;
-}
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #FMSInfos .cj4x-navigation-data-col-large {
-  display: inline-block;
-  text-align: left;
-  width: 21%; }
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar {
           transform: rotateX(0);
           position: absolute;
