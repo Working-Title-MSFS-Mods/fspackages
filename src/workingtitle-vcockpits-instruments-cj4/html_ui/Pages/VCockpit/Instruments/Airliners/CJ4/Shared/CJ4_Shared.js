@@ -2634,6 +2634,10 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
         this.isWeatherVisible = undefined;
         this.isGwxVisible = undefined;
         this.element = new NavSystemElementGroup([this.compass, this.infos]);
+        this._chronoValue = 0;
+        this._chronoStarted = false;
+        this._showET = false;
+        this._timeCounterStarted = 0;
     }
     init() {
         super.init();
@@ -2641,11 +2645,16 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
         if (!this.root) {
             console.log("Root component expected!");
         }
+        else{
+            this.elapsedTime = this.root.querySelector("#ElapsedTime");
+            this.elapsedTimeValue = this.root.querySelector("#ET_Value");
+        }
     }
     onUpdate(_dTime) {
         super.onUpdate(_dTime);
         this.infos.showSymbol(CJ4_MapOverlaySymbol.WX, this.isWeatherVisible);
         this.infos.showSymbol(CJ4_MapOverlaySymbol.TERR, this.isTerrainVisible);
+        this.updateElapsedTime();
     }
     onEvent(_event) {
         super.onEvent(_event);
@@ -2700,6 +2709,46 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
                 this.root.setAttribute("extended", "on");
             else
                 this.root.setAttribute("extended", "off");
+        }
+    }
+    updateElapsedTime(_dTime) {
+        if (this.elapsedTime) {
+            if (this._showET) {
+                if (this._chronoStarted) {
+                    if(this._timeCounterStarted == 0){
+                        this._timeCounterStarted = Number.parseInt(SimVar.GetGlobalVarValue("ZULU TIME", "seconds"));
+                    }
+                    this._chronoValue = Number.parseInt(SimVar.GetGlobalVarValue("ZULU TIME", "seconds")) - this._timeCounterStarted;
+                }
+                var hours = Math.floor(this._chronoValue / 3600);
+                var minutes = Math.floor((this._chronoValue - (hours * 3600)) / 60);
+                var seconds = Math.floor(this._chronoValue - (minutes * 60) - (hours * 3600));
+                let val = "";
+                if (hours > 0) {
+                    if (hours < 10)
+                        val += "0";
+                    val += hours;
+                    val += ":";
+                    if (minutes < 10)
+                        val += "0";
+                    val += minutes;
+                }
+                else {
+                    if (minutes < 10)
+                        val += "0";
+                    val += minutes;
+                    val += ":";
+                    if (seconds < 10)
+                        val += "0";
+                    val += seconds;
+                }
+                this.elapsedTimeValue.textContent = val;
+                this.elapsedTime.style.display = "block";
+            }
+            else {
+                this.elapsedTime.style.display = "none";
+                this._timeCounterStarted = 0;
+            }
         }
     }
 }

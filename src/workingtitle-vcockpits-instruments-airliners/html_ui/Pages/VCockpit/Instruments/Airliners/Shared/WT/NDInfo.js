@@ -56,9 +56,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
     }
     onEvent(_event) {
         if (_event == "Push_ET") {
-            console.log("hesssllodd");
             if (!this._showET) {
-                console.log("hellodd");
                 this._showET = true;
                 this._chronoValue = 0;
                 this._chronoStarted = true;

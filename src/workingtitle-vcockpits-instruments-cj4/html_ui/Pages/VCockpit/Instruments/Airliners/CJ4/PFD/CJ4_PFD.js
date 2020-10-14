@@ -163,6 +163,19 @@ class CJ4_PFD extends BaseAirliners {
                 this.fillDictionary(this.popup.dictionary);
                 this.popup.setMode(CJ4_PopupMenu.REFS);
                 break;
+            case "Upr_Push_ET":
+                if (!this.mapOverlay._showET) {
+                    this.mapOverlay._showET = true;
+                    this.mapOverlay._chronoValue = 0;
+                    this.mapOverlay._chronoStarted = true;
+                }
+                else if (this.mapOverlay._chronoStarted) {
+                    this.mapOverlay._chronoStarted = false;
+                }
+                else {
+                    this.mapOverlay._showET = false;
+                }
+                break;
         }
     }
     allContainersReady() {
