@@ -57,7 +57,8 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
         this.model = model;
         model.airports.subscribe(this.updateAirports.bind(this));
         model.selectedAirport.subscribe(this.updateSelectedAirport.bind(this));
-        this.elements.map.appendChild(this.model.mapInstrument);
+        this.map = this.model.mapInstrument;
+        this.elements.map.appendChild(this.map);
     }
     updateSelectedRunway(runway) {
         this.elements.runwayDesignation = runway.designation;
@@ -84,17 +85,22 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
             if (infos.frequencies) {
                 let elems = [];
                 for (let i = 0; i < infos.frequencies.length; i++) {
-                    elems.push(`<div class="element"><span class="name">${infos.frequencies[i].name}</span><span class="value selectable" data-frequency="${infos.frequencies[i].mhValue}">${infos.frequencies[i].mhValue.toFixed(2)}</span></div>`);
+                    elems.push(`<li class="element"><span class="name">${infos.frequencies[i].name}</span><span class="value selectable" data-frequency="${infos.frequencies[i].mhValue}">${infos.frequencies[i].mhValue.toFixed(2)}</span></li>`);
                 }
                 this.elements.frequencyList.innerHTML = elems.join("");
             }
             if (infos.approaches) {
                 let elems = [];
                 for (let i = 0; i < infos.approaches.length; i++) {
-                    elems.push(`<div class="element selectable" data-approach="${i}"><span class="name">${infos.ident}-${infos.approaches[i].name}</span></div>`);
+                    elems.push(`<li class="element selectable" data-approach="${i}"><span class="name">${infos.ident}-${infos.approaches[i].name}</span></li>`);
                 }
                 this.elements.approachList.innerHTML = elems.join("");
             }
+
+            let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+            let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+            let planeCoordinates = new LatLong(lat, long);
+            this.map.centerOnCoordinates([planeCoordinates, infos.coordinates]);
         }
     }
     updateAirports(airports) {
@@ -109,56 +115,25 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
                 continue;
             let element = listElement.querySelector(`[data-icao="${airport.icao}"]`);
             if (!element) {
-                element = document.createElement("div");
+                element = document.createElement("li");
                 element.innerHTML = `
                     <span class="ident"></span>
                     <airport-icon></airport-icon>
-                    <span class="bearing"></span>
-                    <span class="distance"></span>
+                    <span class="bearing"><span></span>°</span>
+                    <span class="distance"><span></span><span class='small'></span></span>
                 `;
                 element.querySelector(".ident").innerHTML = airport.ident;
                 element.querySelector("airport-icon").angle = airport.longestRunwayDirection;
                 element.querySelector("airport-icon").applyInfo(airport);
             }
             element.dataset.icao = airport.icao;
-            element.querySelector(".bearing").innerHTML = airport.bearing.toFixed(0) + "°";
-            element.querySelector(".distance").innerHTML = this.model.unitChooser.chooseDistance((airport.distance * 1.852).toFixed(1) + "<span class='small'>KM</span>", airport.distance.toFixed(1) + "<span class='small'>NM</span>");
+            Avionics.Utils.diffAndSet(element.querySelector(".bearing span"), airport.bearing.toFixed(0));
+            Avionics.Utils.diffAndSet(element.querySelector(".distance span:first-child"), this.model.unitChooser.chooseDistance((airport.distance * 1.852).toFixed(1), airport.distance.toFixed(1)));
+            Avionics.Utils.diffAndSet(element.querySelector(".distance .small"), this.model.unitChooser.chooseDistance("KM", "NM"));
             elements.push(element);
         }
 
-        let firstElement = listElement.firstChild;
-        let previousElement = null;
-        let modifications = 0;
-        let first = true;
-        for (let element of elements) {
-            if (previousElement && previousElement.nextSibling == element || (first && firstElement == element)) {
-            } else {
-                if (previousElement && previousElement.nextSibling) {
-                    listElement.insertBefore(element, first ? listElement.firstChild : previousElement.nextSibling);
-                } else {
-                    if (first) {
-                        listElement.insertBefore(element, listElement.firstChild);
-                    } else {
-                        listElement.appendChild(element);
-                    }
-                }
-                modifications++;
-            }
-            previousElement = element;
-            first = false;
-        }
-        let removed = 0;
-        if (previousElement) {
-            let remove = previousElement.nextSibling;
-            while (remove) {
-                let next = remove.nextSibling;
-                listElement.removeChild(remove);
-                remove = next;
-                removed++;
-            }
-        }
-        console.log("Modifications: " + modifications);
-        console.log("Removed: " + removed);
+        DOMUtilities.repopulateElement(listElement, elements);
     }
     update(dt) {
         if (this.model)

@@ -91,8 +91,6 @@ class WT_Departure_Procedure extends WT_Procedure {
             }
         }));
 
-        console.log(JSON.stringify(transition.legs));
-
         return waypoints;
     }
 }
@@ -133,12 +131,9 @@ class WT_Procedure_Sub_Page_Approaches extends WT_Procedure_Sub_Page {
 
 class WT_Procedure_Sub_Page_Departures extends WT_Procedure_Sub_Page {
     airportUpdated(airport) {
-        try {
-            if (airport)
-                this.procedures.value = airport.departures.map(departure => new WT_Departure_Procedure(airport, departure));
-        } catch (e) {
-            console.log(e);
-        }
+        if (airport)
+            this.procedures.value = airport.departures.map(departure => new WT_Departure_Procedure(airport, departure));
+        console.log("Updated departures");
     }
     getProcedure(procedureIndex) {
         return this.procedures.value[procedureIndex];
@@ -153,13 +148,15 @@ class WT_Approach_Page_Model extends WT_Model {
      * @param {AS1000_MFD} gps 
      * @param {FlightPlanManager} flightPlan 
      * @param {WaypointLoader} facilityLoader 
+     * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
      */
-    constructor(gps, flightPlan, facilityLoader) {
+    constructor(gps, flightPlan, facilityLoader, waypointQuickSelect) {
         super();
 
         this.gps = gps;
         this.flightPlan = flightPlan;
         this.facilityLoader = facilityLoader;
+        this.waypointQuickSelect = waypointQuickSelect;
 
         this.icao = null;
         this.airport = new Subject();
@@ -251,7 +248,6 @@ class WT_Approach_Page_Model extends WT_Model {
     selectProcedure(procedureIndex) {
         this.selectedProcedure = this.subPage.getProcedure(procedureIndex);
         if (this.selectedProcedure) {
-            console.log(JSON.stringify(this.selectedProcedure.getTransitions()));
             this.transitions.value = this.selectedProcedure.getTransitions();
             this.primaryFrequency.value = this.selectedProcedure.getPrimaryFrequency();
             this.selectTransition(this.transitions.value.length > 0 ? 0 : null);
@@ -362,6 +358,8 @@ class WT_Approach_Page_View extends WT_HTML_View {
         this.model.transitions.subscribe(this.updateTransitions.bind(this));
         this.model.sequence.subscribe(this.updateSequence.bind(this));
         this.model.primaryFrequency.subscribe(this.updatePrimaryFrequency.bind(this));
+
+        this.elements.icaoInput.setQuickSelect(this.model.waypointQuickSelect);
 
         return;
         this.mapProperties = new CombinedSubject([this.model.mapCoordinates, this.model.waypoints], (coordinates, sequence) => {
@@ -480,7 +478,6 @@ class WT_Approach_Page_View extends WT_HTML_View {
     }
     updateSequence(waypoints) {
         if (waypoints) {
-            console.log("Updating sequence length: " + waypoints.length);
             this.elements.sequenceList.innerHTML = waypoints.map((waypoint) => {
                 //let distance = waypoint.distanceInFP * 0.000539957;
                 return `

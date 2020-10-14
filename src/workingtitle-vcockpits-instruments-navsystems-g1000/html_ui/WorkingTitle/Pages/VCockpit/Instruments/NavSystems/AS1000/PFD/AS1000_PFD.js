@@ -309,19 +309,15 @@ class AS1000_PFD extends BaseAS1000 {
         }
     }
     Update() {
-        try {
-            super.Update();
-            if (this.handleReversionaryMode) {
-                this.reversionaryMode = false;
-                if (document.body.hasAttribute("reversionary")) {
-                    var attr = document.body.getAttribute("reversionary");
-                    if (attr == "true") {
-                        this.reversionaryMode = true;
-                    }
+        super.Update();
+        if (this.handleReversionaryMode) {
+            this.reversionaryMode = false;
+            if (document.body.hasAttribute("reversionary")) {
+                var attr = document.body.getAttribute("reversionary");
+                if (attr == "true") {
+                    this.reversionaryMode = true;
                 }
             }
-        } catch (e) {
-
         }
     }
 }

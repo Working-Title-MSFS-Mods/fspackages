@@ -1,8 +1,9 @@
 class WT_Waypoint_Selector_Model extends WT_Model {
-    constructor(type, gps) {
+    constructor(type, gps, softKeyController) {
         super();
         this.gps = gps;
         this.facilityLoader = this.gps.facilityLoader;
+        this.softKeyController = softKeyController;
 
         this.waypoint = new Subject();
         this.bearing = new Subject();
@@ -281,6 +282,12 @@ class WT_Waypoint_Selector_Input_Layer extends Selectables_Input_Layer {
     onNavigationPush() {
         this.view.cancel();
     }
+    onRangeInc() {
+        this.view.zoomMapIn();
+    }
+    onRangeDec() {
+        this.view.zoomMapOut();
+    }
 }
 
 class WT_Waypoint_Selector_View extends WT_HTML_View {
@@ -315,15 +322,15 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
      */
     setModel(model) {
         this.model = model;
+        this.elements.icaoInput.setQuickSelect(this.model.gps.waypointQuickSelect);
         this.model.waypoint.subscribe(waypoint => {
             if (waypoint && waypoint.infos) {
                 let infos = waypoint.infos;
                 let map = this.getMap();
-                map.bVfrMapFollowPlane = false;
-                console.log(infos.lat);
-                console.log(infos.lon);
                 map.setCenter(infos.coordinates, 0);
-                map.setZoom(7); //20nm
+
+                this.elements.icaoName.textContent = infos.name;
+                this.elements.icaoCity.textContent = infos.city;
                 this.elements.country.textContent = this.model.getCountry(infos.ident);
                 this.elements.city.textContent = infos.city;
 
@@ -334,6 +341,8 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
                 let distance = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, infos.coordinates);
                 this.elements.distance.innerHTML = `${distance.toFixed(distance < 100 ? 1 : 0)}<span class="units">NM</span>`;
             } else {
+                this.elements.icaoName.innerHTML = `__________________`;
+                this.elements.icaoCity.innerHTML = `__________________`;
                 this.elements.bearing.innerHTML = `___°`;
                 this.elements.distance.innerHTML = `__._<span class="units">NM</span>`;
             }
@@ -341,9 +350,18 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
     }
     setMap(map) {
         this.elements.mapContainer.appendChild(map);
+        map.setZoom(7); //20nm
+    }
+    zoomMapIn() {
+        this.getMap().zoomIn();
+    }
+    zoomMapOut() {
+        this.getMap().zoomOut();
     }
     enter(inputStack) {
         this.inputStackHandler = inputStack.push(this.inputLayer);
+        this.storedMenu = this.model.softKeyController.currentMenu;
+        this.model.softKeyController.setMenu(new WT_Soft_Key_Menu());
         return new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
@@ -355,6 +373,7 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
     }
     exit() {
         this.inputStackHandler.pop();
+        this.model.softKeyController.setMenu(this.storedMenu);
     }
 }
 customElements.define("g1000-waypoint-selector-pane", WT_Waypoint_Selector_View);

@@ -4,6 +4,13 @@ class WT_PFD_Main_Menu extends WT_Soft_Key_Menu {
      */
     constructor(pfd) {
         super(false);
+        this.addSoftKey(1, new WT_Soft_Key("TEST", () => {
+            Coherent.trigger("AP_ALT_VAL_SET", 4200);
+            Coherent.trigger("AP_VS_VAL_SET", 300);
+            Coherent.trigger("AP_HDG_VAL_SET", 180);
+            //SimVar.SetSimVarValue("K:AP_ALT_VAR_SET_ENGLISH", "feet", -500);
+            //Coherent.call("AP_ALT_VAR_SET_ENGLISH", 0, -1000, false);
+        }));
         this.addSoftKey(2, new WT_Soft_Key("INSET"));
         this.addSoftKey(4, new WT_Soft_Key("PFD", pfd.showPfdMenu.bind(pfd)));
         this.addSoftKey(5, new WT_Soft_Key("OBS"));

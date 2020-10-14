@@ -16,6 +16,7 @@ class AS1000_MFD extends BaseAS1000 {
         this.inputStack = new Input_Stack();
         this.loadSavedMapOrientation();
         this.engineDisplay = new WTEngine("Engine", "LeftInfos", this._xmlConfigPath);
+        this.waypointQuickSelect = new WT_Waypoint_Quick_Select(this, this.currFlightPlanManager);
 
         this.pageContainer = this.getChildById("PageContainer");
         this.paneContainer = this.getChildById("PaneContainer");
@@ -105,6 +106,7 @@ class AS1000_MFD extends BaseAS1000 {
         this.showMainMenu();
 
         this.inputStack.push(new Base_Input_Layer(this));
+        //this.pageController.goTo("MAP", "Map");
     }
     initDefaultSoftKeys() {
         let engine = new WT_Soft_Key("ENGINE", this.showEngineMenu.bind(this));
@@ -134,7 +136,7 @@ class AS1000_MFD extends BaseAS1000 {
         });
     }
     showApproaches() {
-        let model = new WT_Approach_Page_Model(this, this.currFlightPlanManager, this.facilityLoader);
+        let model = new WT_Approach_Page_Model(this, this.currFlightPlanManager, this.facilityLoader, this.waypointQuickSelect);
         model.setICAO("A      EGLL ");
         let view = document.createElement("g1000-approach-page");
         this.pageContainer.appendChild(view);
@@ -142,7 +144,7 @@ class AS1000_MFD extends BaseAS1000 {
         view.enter(this, this.inputStack);
     }
     showWaypointSelector(icaoType = null) {
-        let model = new WT_Waypoint_Selector_Model(icaoType, this);
+        let model = new WT_Waypoint_Selector_Model(icaoType, this, this.softKeyMenu);
         let view = new WT_Waypoint_Selector_View();
         this.paneContainer.appendChild(view);
         view.setMap(this.miniMap);
@@ -198,16 +200,17 @@ class AS1000_MFD extends BaseAS1000 {
     }
     computeEvent(_event) {
         if (this.isBootProcedureComplete()) {
-            for (let i = 0; i < this.IndependentsElements.length; i++) {
-                this.IndependentsElements[i].onEvent(_event);
-            }
-            switch (_event) {
-                case "ActiveFPL_Modified":
-                    console.log("Did a thing");
-                    this.currFlightPlan.FillWithCurrentFP();
-            }
-
             let r = this.inputStack.processEvent(_event);
+            if (r === false) {
+                for (let i = 0; i < this.IndependentsElements.length; i++) {
+                    this.IndependentsElements[i].onEvent(_event);
+                }
+                switch (_event) {
+                    case "ActiveFPL_Modified":
+                        console.log("Did a thing");
+                        this.currFlightPlan.FillWithCurrentFP();
+                }
+            }
         }
     }
     onEvent(_event) {
@@ -256,7 +259,7 @@ class AS1000_MFD extends BaseAS1000 {
         }
     }
     Update() {
-        super.Update();        
+        super.Update();
         SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
     }
 

@@ -37,12 +37,13 @@ g1000-nearest-airports-page {
         font-weight: bold;
         -webkit-transform: rotateX(0deg);
 
-        > div {
+        li {
             width: 100%;
             display: grid;
             grid-gap: 2vh;
             grid-template-columns: 17% 2.5ch 20% 1fr;
             align-items: center;
+            margin:0;
 
             .small {
                 font-size: 0.7em;
@@ -53,6 +54,8 @@ g1000-nearest-airports-page {
             }
 
             .ident {
+                font-family: $font_family_mono;
+
                 &[state="Selected"] {
                     animation: SelectionBlink 0.5s infinite !important;
                 }
@@ -63,5 +66,13 @@ g1000-nearest-airports-page {
                 height: 2.5ch;
             }
         }
+    }
+
+    .frequency-list .value {
+        @extend %animated-selection;
+    }
+
+    .approach-list li {
+        @extend %animated-selection;
     }
 }

@@ -31,6 +31,7 @@ class WT_Icao_Input extends HTMLElement {
         super();
         this._ident = null;
         this._icao = null;
+        this.type = null;
         this.elements = {
             characters: []
         };
@@ -38,6 +39,15 @@ class WT_Icao_Input extends HTMLElement {
         this.editingPosition = null;
 
         this.addEventListener("selected", this.enter.bind(this));
+        this.addEventListener("decrement", e => {
+            this.showQuickSelect(e.detail.inputStack).then((icao) => {
+                this.icao = icao;
+                this.confirm();
+            });
+        });
+
+        this.quickSelect = document.createElement("waypoint-quick-select");
+        this.appendChild(this.quickSelect);
     }
     set ident(value) {
         if (this._ident !== value) {
@@ -51,7 +61,11 @@ class WT_Icao_Input extends HTMLElement {
     set icao(icao) {
         this._icao = icao;
         if (this._icao) {
+            this.ident = icao.substring(7, 12);
             SimVar.SetSimVarValue("C:fs9gps:IcaoSearchInitialIcao", "string", this.icao, this.instrumentIdentifier);
+            if (this.type)
+                SimVar.SetSimVarValue("C:fs9gps:IcaoSearchStartCursor", "string", this.type, this.instrumentIdentifier);
+            this.updateDisplay();
         }
     }
     get icao() {
@@ -62,6 +76,16 @@ class WT_Icao_Input extends HTMLElement {
     }
     get value() {
         return this.icao;
+    }
+    /**
+     * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
+     */
+    setQuickSelect(waypointQuickSelect) {
+        this.waypointQuickSelect = waypointQuickSelect;
+        this.quickSelect.setWaypointQuickSelect(waypointQuickSelect, this.type);
+    }
+    showQuickSelect(inputStack) {
+        return this.quickSelect.enter(inputStack);
     }
     updateDisplay() {
         let value = this._ident ? this._ident : "";
@@ -101,6 +125,8 @@ class WT_Icao_Input extends HTMLElement {
             this.appendChild(character);
         }
         this.icao = this.getAttribute("value");
+        if (this.hasAttribute("type"))
+            this.type = this.getAttribute("type");
         this.updateDisplay();
     }
     back() {
@@ -129,6 +155,10 @@ class WT_Icao_Input extends HTMLElement {
     }
     confirm() {
         this.active = false;
+
+        if (this.waypointQuickSelect) {
+            this.waypointQuickSelect.addRecentWaypoint(this.icao);
+        }
 
         let evt = document.createEvent("HTMLEvents");
         evt.initEvent("change", true, true);
@@ -159,3 +189,100 @@ class WT_Icao_Input extends HTMLElement {
     }
 }
 customElements.define("icao-input", WT_Icao_Input);
+
+class WT_Waypoint_Quick_Select_Input_Layer extends Selectables_Input_Layer {
+    constructor(quickSelect) {
+        super(new Selectables_Input_Layer_Dynamic_Source(quickSelect));
+        this.quickSelect = quickSelect;
+    }
+    onCLR(inputStack) {
+        this.quickSelect.exit();
+    }
+}
+
+class WT_Waypoint_Quick_Select_View extends WT_HTML_View {
+    constructor() {
+        super();
+        this.inputLayer = new WT_Waypoint_Quick_Select_Input_Layer(this);
+        DOMUtilities.AddScopedEventListener(this, "li", "selected", (e, node) => {
+            this.selectWaypoint(node.dataset.icao);
+        });
+        this.addEventListener("selected", e => {
+            e.stopPropagation();
+        });
+        this.addEventListener("change", e => {
+            e.stopPropagation();
+        });
+        this.addEventListener("input", e => {
+            e.stopPropagation();
+        });
+        this.currentList = null;
+    }
+    connectedCallback() {
+        let template = document.getElementById('waypoint-quick-select');
+        let templateContent = template.content;
+
+        this.appendChild(templateContent.cloneNode(true));
+
+        super.connectedCallback();
+
+        this.removeChild(this.elements.nrst);
+        this.removeChild(this.elements.fpl);
+        this.removeChild(this.elements.recent);
+        this.chooseList("NRST");
+    }
+    /**
+     * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
+     */
+    async setWaypointQuickSelect(waypointQuickSelect, type) {
+        let waypoints = await waypointQuickSelect.getWaypoints(type);
+        let mapWaypoint = waypoint => {
+            if (false && waypoint.distance)
+                return `<li class="selectable" data-icao="${waypoint.icao}"><span class="ident">${waypoint.ident}</span><span class="distance">${waypoint.distance.toFixed(0)}<span class="units">nm</span></span></li>`;
+            else
+                return `<li class="selectable" data-icao="${waypoint.icao}">${waypoint.ident}</li>`;
+        }
+        this.elements.nrst.innerHTML = waypoints.nearest.map(mapWaypoint).join("");
+        this.elements.fpl.innerHTML = waypoints.flightPlan.map(mapWaypoint).join("");
+        this.elements.recent.innerHTML = waypoints.recent.map(mapWaypoint).join("");
+    }
+    chooseList(list) {
+        if (this.currentList)
+            this.removeChild(this.currentList);
+        switch (list) {
+            case "NRST":
+                this.appendChild(this.elements.nrst);
+                this.currentList = this.elements.nrst;
+                break;
+            case "FPL":
+                this.appendChild(this.elements.fpl);
+                this.currentList = this.elements.fpl;
+                break;
+            case "RECENT":
+                this.appendChild(this.elements.recent);
+                this.currentList = this.elements.recent;
+                break;
+        }
+    }
+    selectWaypoint(icao) {
+        this.resolve(icao);
+        this.exit();
+    }
+    enter(inputStack) {
+        this.inputHandle = inputStack.push(this.inputLayer);
+        this.setAttribute("state", "visible");
+        return new Promise((resolve, reject) => {
+            this.resolve = resolve;
+            this.reject = reject;
+        });
+    }
+    exit() {
+        if (this.inputHandle) {
+            this.inputHandle.pop();
+            this.inputHandle = null;
+        }
+        this.removeAttribute("state");
+        this.reject();
+    }
+}
+customElements.define("waypoint-quick-select", WT_Waypoint_Quick_Select_View);

@@ -1180,6 +1180,7 @@ class WT_HTML_View extends HTMLElement {
             if (this[click])
                 this[click](e.target);
         }
+        e.stopPropagation();
     }
     onChange(e, node) {
         if (node.dataset.change) {
@@ -1187,6 +1188,7 @@ class WT_HTML_View extends HTMLElement {
             if (this[change])
                 this[change](e.target.value, e.target);
         }
+        e.stopPropagation();
     }
     update(dt) {
     }
@@ -1208,8 +1210,6 @@ class Base_Input_Layer extends Input_Layer {
     }
 
     processEvent(_event, inputStack) {
-        if (this.navSystem.mapElement2)
-            this.navSystem.mapElement2.onEvent(_event);
         return super.processEvent(_event, inputStack);
     }
 

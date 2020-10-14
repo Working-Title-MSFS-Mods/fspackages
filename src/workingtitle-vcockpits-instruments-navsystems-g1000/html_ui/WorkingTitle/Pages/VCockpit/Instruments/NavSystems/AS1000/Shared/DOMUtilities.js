@@ -19,6 +19,7 @@ DOMUtilities.IsChildOfSelector = function (child, selector) {
     return false;
 }
 
+// Gets the closest parent matching a selector
 DOMUtilities.GetClosestParent = function (node, selector) {
     while (node = node.parentNode) {
         if (node == document)
@@ -43,6 +44,8 @@ DOMUtilities.RemoveChildren = function (node, selector) {
     }
 }
 
+// Add an event listener to "node" that catches "e" when fired on an element matching "selector"
+// Avoids having to attach listeners to every node
 DOMUtilities.AddScopedEventListener = function (node, selector, e, func, capture = false) {
     var func2 = function (e) {
         var targetNode = e.target;
@@ -63,4 +66,35 @@ DOMUtilities.AddScopedEventListener = function (node, selector, e, func, capture
     };
     node.addEventListener(e, func2, capture);
     return func2;
+}
+
+// Repopulates an element minimising adding/removing nodes
+DOMUtilities.repopulateElement = function (listElement, elements) {
+    let firstElement = listElement.firstChild;
+    let previousElement = null;
+    let first = true;
+    for (let element of elements) {
+        if (previousElement && previousElement.nextSibling == element || (first && firstElement == element)) {
+        } else {
+            if (previousElement && previousElement.nextSibling) {
+                listElement.insertBefore(element, first ? listElement.firstChild : previousElement.nextSibling);
+            } else {
+                if (first) {
+                    listElement.insertBefore(element, listElement.firstChild);
+                } else {
+                    listElement.appendChild(element);
+                }
+            }
+        }
+        previousElement = element;
+        first = false;
+    }
+    if (previousElement) {
+        let remove = previousElement.nextSibling;
+        while (remove) {
+            let next = remove.nextSibling;
+            listElement.removeChild(remove);
+            remove = next;
+        }
+    }
 }

@@ -13,12 +13,16 @@ class WT_Credits_Model extends WT_Model {
             },
             {
                 name: "knighty",
-                role: "Programming"
+                role: "Architecture and visual design"
             },
             {
                 name: "Chris",
                 role: "Programming"
             },
+            {
+                name: "aznricepuff",
+                role: "Map programming"
+            }
         ];
     }
     initCredits() {

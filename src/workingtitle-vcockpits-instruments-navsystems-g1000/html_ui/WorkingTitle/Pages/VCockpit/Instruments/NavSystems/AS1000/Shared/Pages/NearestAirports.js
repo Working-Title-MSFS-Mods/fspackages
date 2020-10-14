@@ -10,11 +10,11 @@ class WT_Nearest_Airports_Model extends WT_Model {
             length: null
         };
         this.loadOptions = {
-            count: 150,
-            distance: 1000
-        }
+            count: 50,
+            distance: 200
+        };
         this.updateTimer = 0;
-        this.updateFrequency = 1000;
+        this.updateFrequency = 500;
 
         this.currentWaypoint = new WayPoint(gps);
         this.currentWaypoint.type = "A";
@@ -24,11 +24,7 @@ class WT_Nearest_Airports_Model extends WT_Model {
     }
     filterAirport(airport) {
         if (this.filter.length) {
-            let maxLength = 0;
-            for (let runway of airport.runways) {
-                maxLength = Math.max(runway.length);
-            }
-            if (maxLength < this.filter.length)
+            if (airport.longestRunwayLength < this.filter.length)
                 return false;
         }
 
@@ -51,25 +47,11 @@ class WT_Nearest_Airports_Model extends WT_Model {
             return;
         }
         this.updateTimer = 0;
-        console.log("Updating");
         this.nearestAirportList.Update(this.loadOptions.count, this.loadOptions.distance);
 
         this.airports.value = this.nearestAirportList.airports
             .filter(this.filterAirport.bind(this))
-            .map(airport => {
-                if (!airport) {
-                    return null;
-                }
-                return airport;
-                /*return {
-                    icao: airport.icao,
-                    ident: airport.ident,
-                    runwayDirection: airport.longestRunwayDirection,
-                    bearing: airport.bearing,
-                    distance: airport.distance,
-                    info: airport
-                }*/
-            }).sort((a, b) => {
+            .sort((a, b) => {
                 return a.distance - b.distance
             });
     }

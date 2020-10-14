@@ -12,6 +12,8 @@ class WT_Map_View extends WT_HTML_View {
     setModel(model) {
         this.model = model;
         this.appendChild(this.model.mapElement);
+        if (this.model.mapElement.isInit())
+            this.model.mapElement.centerOnPlane();
     }
     connectedCallback() {
         super.connectedCallback();

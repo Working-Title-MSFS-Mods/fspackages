@@ -6,6 +6,11 @@ g1000-waypoint-selector-pane {
         align-items: center;
     }
 
+    .waypoint-info {
+        font-family: $font_family_mono;
+        color: $input_color;
+    }
+
     .bearing,
     .distance,
     .city,
@@ -34,5 +39,17 @@ g1000-waypoint-selector-pane {
         text-align: center;
         margin-top: 1em;
         font-size: 1.1em;
+    }
+
+    .waypoint-map {
+        display: block;
+        position: relative;
+        width: 100%;
+        height: 40vh;
+
+        bing-map {
+            width: 100%;
+            height: 100%;
+        }
     }
 }

@@ -34,6 +34,9 @@ class Input_Layer {
     onCourseDecrement(inputStack) { return false; }
     onCoursePush(inputStack) { return false; }
 
+    onRangeInc(inputStack) { return false; }
+    onRangeDec(inputStack) { return false; }
+
     processEvent(_event, inputStack) {
         switch (_event) {
             case "FMS_Lower_INC":
@@ -125,6 +128,11 @@ class Input_Layer {
                 return this.onCourseDecrement(inputStack);
             case "CRS_PUSH":
                 return this.onCoursePush(inputStack);
+
+            case "RANGE_INC":
+                return this.onRangeInc(inputStack);
+            case "RANGE_DEC":
+                return this.onRangeDec(inputStack);
         }
         return false;
     }
@@ -199,7 +207,7 @@ class Selectables_Input_Layer_Dynamic_Source {
         let selected = elements[0];
         let chooseNext = false;
         for (let element of elements) {
-            if (chooseNext) {
+            if (chooseNext && element.offsetParent) {
                 selected = element;
                 break;
             }
@@ -217,10 +225,12 @@ class Selectables_Input_Layer_Dynamic_Source {
         let selected = elements[elements.length - 1];
         let previous = elements[elements.length - 1];
         for (let element of elements) {
-            if (element == iterator.element) {
-                selected = previous;
+            if (element.offsetParent) {
+                if (element == iterator.element) {
+                    selected = previous;
+                }
+                previous = element;
             }
-            previous = element;
         }
         iterator.element = selected;
         return iterator.element;
@@ -261,7 +271,13 @@ class Selectables_Input_Layer extends Input_Layer {
             if (scrollable) {
                 let scrollableContainerY = scrollable.getBoundingClientRect().top;
                 let selectedElementY = this.selectedElement.getBoundingClientRect().top;
-                scrollable.scrollTop = scrollable.scrollTop + (selectedElementY - scrollableContainerY - scrollable.getBoundingClientRect().height / 2);
+                let selectedElementHeight = this.selectedElement.getBoundingClientRect().height;
+                if (scrollable.dataset.elementSelector) {
+                    let parentElement = DOMUtilities.GetClosestParent(this.selectedElement, scrollable.dataset.elementSelector);
+                    selectedElementHeight = parentElement.offsetHeight;
+                }
+                let scrollTop = scrollable.scrollTop + (selectedElementY - scrollableContainerY - scrollable.getBoundingClientRect().height / 2);
+                scrollable.scrollTop = Math.floor(scrollTop / selectedElementHeight) * selectedElementHeight;
             }
         }
     }
@@ -291,11 +307,20 @@ class Selectables_Input_Layer extends Input_Layer {
         });
         element.dispatchEvent(evt);
     }
-    sendEventToSelected(event) {
-        let evt = new CustomEvent(event, { bubbles: false });
+    sendEventToSelected(event, inputStack) {
+        if (!this.selectedElement)
+            return;
+        let evt = new CustomEvent(event, {
+            bubbles: false,
+            detail: {
+                inputStack: inputStack,
+            }
+        });
         this.selectedElement.dispatchEvent(evt);
     }
     onSelectedElement(inputStack) {
+        if (!this.selectedElement)
+            return;
         let evt = new CustomEvent("selected", {
             bubbles: true,
             detail: {
@@ -321,16 +346,18 @@ class Selectables_Input_Layer extends Input_Layer {
         if (this.options.navigateWithSmall)
             return this.onLargeInc();
         if (this.selectedElement) {
-            this.sendEventToSelected("increment");
-            return this.onSelectedElement(inputStack);
+            this.sendEventToSelected("increment", inputStack);
+            this.onSelectedElement(inputStack);
+            return true;
         }
     }
     onSmallDec(inputStack) {
         if (this.options.navigateWithSmall)
             return this.onLargeDec();
         if (this.selectedElement) {
-            this.sendEventToSelected("decrement");
-            return this.onSelectedElement(inputStack);
+            this.sendEventToSelected("decrement", inputStack);
+            this.onSelectedElement(inputStack);
+            return true;
         }
     }
     onNavigationPush(inputStack) {
@@ -413,8 +440,9 @@ class Input_Stack {
             let layer = this.stack[i];
             let handled = layer.processEvent(_event, this);
             if (handled !== false)
-                return;
+                return true;
             i--;
         }
+        return false;
     }
 }

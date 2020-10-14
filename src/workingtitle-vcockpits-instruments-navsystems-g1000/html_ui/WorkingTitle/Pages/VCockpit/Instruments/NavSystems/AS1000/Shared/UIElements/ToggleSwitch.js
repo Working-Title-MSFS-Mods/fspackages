@@ -55,10 +55,10 @@ class WT_Toggle_Switch extends HTMLElement {
         this.elements.text = document.createElement("div");
         this.appendChild(this.elements.text);
 
-        this.value = this.getAttribute("value");
         if (this.hasAttribute("values")) {
             this.values = this.getAttribute("values").split(",");
         }
+        this.value = this.getAttribute("value");
         this.updateDisplayValue();
     }
     next() {

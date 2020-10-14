@@ -145,9 +145,55 @@ class SvgMapConfig {
                         this.netBingAltitudeColors1[0] = this.netBingWaterColor1;
                         let curve = new Avionics.Curve();
                         curve.interpolationFunction = Avionics.CurveTool.StringColorRGBInterpolation;
+                        this.netBingHeightColor1 = [
+                            {
+                                alt: 0,
+                                color: "#579542"
+                            },
+                            {
+                                alt: 500,
+                                color: "#528413"
+                            },
+                            {
+                                alt: 1000,
+                                color: "#7E9C25"
+                            },
+                            {
+                                alt: 2000,
+                                color: "#EED853"
+                            },
+                            {
+                                alt: 3000,
+                                color: "#F5BB51"
+                            },
+                            {
+                                alt: 5000,
+                                color: "#d68b48"
+                            },
+                            {
+                                alt: 7000,
+                                color: "#c47034"
+                            },
+                            {
+                                alt: 9000,
+                                color: "#b85d2e"
+                            },
+                            {
+                                alt: 12000,
+                                color: "#a14d28"
+                            },
+                            {
+                                alt: 20000,
+                                color: "#7e4124"
+                            },
+                            {
+                                alt: 28000,
+                                color: "#b8b9bb"
+                            }
+                        ]
                         for (let i = 0; i < this.netBingHeightColor1.length; i++) {
                             let color = this.netBingHeightColor1[i].color;
-                            color = this.convertColor(color);
+                            //color = this.convertColor(color);
                             curve.add(this.netBingHeightColor1[i].alt, color);
                         }
                         for (let i = 0; i < 60; i++) {
@@ -193,6 +239,8 @@ class SvgMapConfig {
         request.send();
     }
     convertColor(_color) {
+        console.log(_color);
+        return _color;
         let r = parseInt(_color.substr(1, 2), 16) / 255;
         let g = parseInt(_color.substr(3, 2), 16) / 255;
         let b = parseInt(_color.substr(5, 2), 16) / 255;

@@ -68,23 +68,23 @@
 
   "netBingTextureResolution": 2048,
   "netBingAltitudeColors1": [],
-  "netBingWaterColor1": "#184b77",
+  "netBingWaterColor1": "#000080",
   "netBingHeightColor1": [
     {
       "alt": 0,
-      "color": "#64a676"
+      "color": "#5CA671"
     },
     {
       "alt": 1000,
-      "color": "#8f9942"
+      "color": "#7E9C25"
     },
     {
       "alt": 2000,
-      "color": "#fbd45b"
+      "color": "#EED853"
     },
     {
       "alt": 3000,
-      "color": "#fab858"
+      "color": "#F5BB51"
     },
     {
       "alt": 5000,

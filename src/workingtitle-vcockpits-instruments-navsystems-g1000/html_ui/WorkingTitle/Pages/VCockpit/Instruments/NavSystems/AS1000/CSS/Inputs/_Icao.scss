@@ -1,3 +1,61 @@
 icao-input {
     font-family: $font_family_mono;
+    position: relative;
+
+    /*[state="Selected"] {
+        animation-name: none !important;
+        .character {
+            animation: SelectionBlink 0.5s infinite !important;
+        }
+    }*/
+}
+
+waypoint-quick-select {
+    position: absolute;
+    left: 0;
+    top: 2em;
+    z-index: 10000;
+    width: 8em;
+    padding: 1vh;
+    background: #000;
+    border: 1vh outset #111;
+    box-shadow: 0px 0px 0px $border_width_thick #fff;
+    display: none;
+    font-family: $font_family_normal;
+    font-size: 1rem;
+    line-height: 1.5em;
+
+    &[state="visible"] {
+        display: block;
+    }
+
+    toggle-switch {
+        border-bottom: $border_width_thin solid $border_color;
+        padding-bottom: 0.5em;
+        margin-bottom: 0.5vh;
+    }
+
+    ul {
+        height: 1.5em * 4;
+        overflow-y: scroll;
+        list-style: none;
+
+        li {
+            /*display: grid;
+            width: 100%;
+            grid-template-columns: 60% 40%;
+            align-items: center;*/
+
+            .distance {
+                text-align: right;
+                font-size: 0.8em;
+                font-weight: bold;
+                font-family: $font_family_mono;
+            }
+
+            &[state="Selected"] {
+                animation: SelectionBlink 0.5s infinite !important;
+            }
+        }
+    }
 }

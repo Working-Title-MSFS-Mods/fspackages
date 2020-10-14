@@ -1,11 +1,11 @@
 $theme: "1000";
 
 $page_background_color: #111;
-$page_background_color_2: rgb(12,12,12);
+$page_background_color_2: rgb(12, 12, 12);
 
 $border_width_thick: 0.3vh;
 $border_width_thin: 0.2vh;
-$border_color: #ccc;
+$border_color: #e8e8e8;
 
 $color_gps: #ff00ff;
 $color_ap_active: #00ff00;
@@ -20,7 +20,7 @@ $popup_background_color: $category_box_background_color;
 $input_color: #00ffff;
 
 $font_size_small: 0.8rem;
-$font_size_regular: 1.0rem;
+$font_size_regular: 1rem;
 $font_size_large: 1.2rem;
 $font_size_extra_large: 1.4rem;
 
@@ -34,7 +34,10 @@ html {
     --engine-green: #00cc00;
     --engine-red: #f84444;
     --engine-yellow: #ffff00;
+}
 
+ul {
+    list-style: none;
 }
 
 @keyframes SelectionBlink {
@@ -57,6 +60,12 @@ html {
     100% {
         background: $input_color;
         color: #000;
+    }
+}
+
+%animated-selection {
+    &[state="Selected"] {
+        animation: SelectionBlink 0.5s infinite !important;
     }
 }
 

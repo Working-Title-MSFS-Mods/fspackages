@@ -354,6 +354,11 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
 
         DOMUtilities.RemoveChildren(this.elements.flightPlanWaypoints, "g1000-flight-plan-waypoint-line, g1000-flight-plan-header-line");
         lines.forEach(line => this.elements.flightPlanWaypoints.insertBefore(line, this.elements.newWaypointLine));
+
+        this.updateMap();
+    }
+    updateMap() {
+        this.model.mapInstrument.centerOnCoordinates(this.model.flightPlan.getWaypoints().map(waypoint => waypoint.infos.coordinates));
     }
     deleteSelectedWaypoint() {
         let selectedElement = this.inputLayer.selectedElement;

@@ -376,7 +376,7 @@
                 <h1>Airport</h1>
                 <section class="content">
                     <!--<string-input characters="10" value="EGLL"></string-input>-->
-                    <icao-input data-element="icaoInput" characters="4" data-change="updateIcao"></icao-input>
+                    <icao-input data-element="icaoInput" characters="6" data-change="updateIcao"></icao-input>
                     <airport-selector></airport-selector>
                 </section>
             </div>
@@ -427,7 +427,7 @@
         <section class="sidebar">
             <div class="category category-fill-container">
                 <h1>Nearest Airports</h1>
-                <div class="content scrollable-container airport-list" data-element="airportList"></div>
+                <ul class="content scrollable-container airport-list" data-element="airportList" data-element-selector="li"></ul>
             </div>
             <div class="category category-fill-container">
                 <h1>Information</h1>
@@ -442,11 +442,11 @@
             </div>
             <div class="category category-fill-container">
                 <h1>Frequencies</h1>
-                <div class="content scrollable-container" data-element="frequencyList"></div>
+                <ul class="content scrollable-container frequency-list" data-element="frequencyList"></ul>
             </div>
             <div class="category category-fill-container">
                 <h1>Approaches</h1>
-                <div class="content scrollable-container" data-element="approachList"></div>
+                <ul class="content scrollable-container approach-list" data-element="approachList"></ul>
             </div>
         </section>
     </template>
@@ -455,9 +455,11 @@
         <h1 class="title">Waypoint Information</h1>
         <div class="category">
             <h1>Ident, Facility, City</h1>
-            <section class="content">
+            <section class="content waypoint-info">
                 <!--<string-input characters="10" value="EGLL"></string-input>-->
                 <icao-input data-element="icaoInput" characters="6"></icao-input>
+                <div data-element="icaoName"></div>
+                <div data-element="icaoCity"></div>
             </section>
         </div>
         <div class="category map-category">
@@ -613,6 +615,13 @@
 
     <template id="map-page">
     </template>
+
+    <template id="waypoint-quick-select">
+        <toggle-switch values="FPL,NRST,RECENT" value="NRST" data-change="chooseList"></toggle-switch>
+        <ul data-element="nrst" class="scrollable-container" visible></ul>
+        <ul data-element="fpl" class="scrollable-container"></ul>
+        <ul data-element="recent" class="scrollable-container"></ul>
+    </template>
 </script>
 
 <link rel="stylesheet" href="AS1000_MFD.css" />
@@ -656,6 +665,7 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/RadioFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/ComFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/NavFrequencies.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/WaypointQuickSelect.js?wefwef"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/AirportIcon.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/Confirm.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/DropDownSelector.js"></script>
