@@ -328,7 +328,7 @@
 		<Annunciation>
 		  <Type>Caution</Type>
 		  <Text>PITOT/STATIC COLD </Text>
-		  <Condition Suffix="L/R">
+		  <Condition Suffix="BOTH">
 			<And>
 				<Greater>
 					<Simvar name="TURB ENG N1:1" unit="percent"/>
@@ -366,53 +366,6 @@
 		  </Condition>
 		</Annunciation>
 		
-		<!--<Annunciation>
-		  <Type>Caution</Type>
-		  <Text>PITOT HT ON </Text>
-		  <Condition Suffix="L-R">
-			<And>
-				<Lower>
-					<Simvar name="PROP RPM:1" unit="rpm"/>
-					<Constant>1</Constant>
-				</Lower>
-				<And>
-					<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
-					<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
-				</And>
-			</And>
-		  </Condition>
-		  <Condition Suffix="L">
-			<And>
-				<Lower>
-					<Simvar name="PROP RPM:1" unit="rpm"/>
-					<Constant>1</Constant>
-				</Lower>
-				<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
-			</And>
-		  </Condition>
-		  <Condition Suffix="R">
-			<And>
-				<Lower>
-					<Simvar name="PROP RPM:1" unit="rpm"/>
-					<Constant>1</Constant>
-				</Lower>
-				<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
-			</And>
-		  </Condition>
-		</Annunciation>
-
-		<Annunciation>
-		  <Type>Caution</Type>
-		  <Text>INERT SEP ON</Text>
-		  <Condition>
-			<Or>
-				<Simvar name="ENG ANTI ICE:1" unit="Bool"/>
-				<Simvar name="ENG ANTI ICE:2" unit="Bool"/>
-			</Or>
-		  </Condition>
-		</Annunciation>
-		-->
-
 		<Annunciation>
 		  <Type>Caution</Type>
 		  <Text>NG HI</Text>
@@ -429,31 +382,6 @@
 			</Or>
 		  </Condition>
 		</Annunciation>
-
-		<!--
-		<Annunciation>
-		  <Type>Caution</Type>
-		  <Text>PROP DEICE ON</Text>
-		  <Condition>
-			<Or>
-				<And>
-					<Lower>
-						<Simvar name="PROP RPM:1" unit="rpm"/>
-						<Constant>1</Constant>
-					</Lower>
-					<Simvar name="PROP DEICE SWITCH:1" unit="Bool"/>
-				</And>
-				<And>
-					<Lower>
-						<Simvar name="PROP RPM:2" unit="rpm"/>
-						<Constant>1</Constant>
-					</Lower>
-					<Simvar name="PROP DEICE SWITCH:2" unit="Bool"/>
-				</And>
-			</Or>
-		  </Condition>
-		</Annunciation>
-		-->
 
 		<Annunciation>
 		  <Type>Advisory</Type>
