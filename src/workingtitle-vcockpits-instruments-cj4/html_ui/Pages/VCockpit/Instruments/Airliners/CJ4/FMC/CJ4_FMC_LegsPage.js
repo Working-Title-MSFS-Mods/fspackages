@@ -289,6 +289,7 @@ class CJ4_FMC_LegsPage {
                     case CJ4_FMC_LegsPage.SELECT_MODE.NEW:
                         if (this._fmc.flightPlanManager.isActiveApproach()) {
                             this._fmc.showErrorMessage("UNABLE MOD APPROACH");
+                            return;
                         }
 
                         if ((i >= 1 && this._currentPage == 1) || this._currentPage > 1) {
@@ -314,6 +315,7 @@ class CJ4_FMC_LegsPage {
                     case CJ4_FMC_LegsPage.SELECT_MODE.DELETE:
                         if (this._fmc.flightPlanManager.isActiveApproach()) {
                             this._fmc.showErrorMessage("UNABLE MOD APPROACH");
+                            return;
                         }
 
                         // DELETE WAYPOINT
