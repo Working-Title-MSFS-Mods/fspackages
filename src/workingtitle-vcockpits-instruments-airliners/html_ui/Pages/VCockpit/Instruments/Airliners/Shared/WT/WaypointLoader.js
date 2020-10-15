@@ -105,9 +105,21 @@ class FacilityLoader {
             this._pendingRawRequests.delete(_data.icaoTrimed);
         }
         else {
-            this.loadedFacilities.push(_data);
-            while (this.loadedFacilities.length > 1000) {
-                this.loadedFacilities.splice(0, 1);
+            // After a "Coherent.call('LOAD_*', icao)" we get many responses received by "Coherent.on('Send*'") for the same facility.
+            // The assumption is: The data is the same across the multiple receptions. If this does not hold, this approach needs to be reconsidered.
+            // The idea is to
+            //  - avoid redundancy in "loadedFacilities"
+            //  - keep subsequent search operations fast at the cost of an existence check here
+            //  - reduce the need to reload facilities, after they got shifted out due to the 1000 elements limit
+            // So: Load the facility only, if we don't have it already.
+            // We, however, allow two variants of a facility: With and without routes. Some users of "loadedFacilites" look for the variant with routes, some for the other.
+            let facilityIndex = this.loadedFacilities.findIndex(f => f.icao === _data.icao && ((f.routes === undefined && _data.routes === undefined) || (f.routes !== undefined && _data.routes !== undefined)));
+            let facilityLoadedAlready = facilityIndex > -1;
+            if (!facilityLoadedAlready) {
+                this.loadedFacilities.push(_data);
+                while (this.loadedFacilities.length > 1000) {
+                    this.loadedFacilities.splice(0, 1);
+                }
             }
         }
     }
@@ -141,7 +153,7 @@ class FacilityLoader {
             }
         });
     }
-    getFacilityCB(icao, callback) {
+    getFacilityCB(icao, callback, loadFacilitiesTransitively = false) {
         if (this._isCompletelyRegistered && this.loadingFacilities.length < this._maxSimultaneousCoherentCalls) {
             this.getFacilityDataCB(icao, (data) => {
                 let waypoint;
@@ -149,7 +161,7 @@ class FacilityLoader {
                     waypoint = new WayPoint(this.instrument);
                     waypoint.SetFromIFacility(data, () => {
                         callback(waypoint);
-                    });
+                    }, loadFacilitiesTransitively);
                 }
                 else {
                     callback(undefined);
@@ -178,11 +190,11 @@ class FacilityLoader {
             await waitForCompleteRegistration();
         }
     }
-    async getFacility(icao) {
+    async getFacility(icao, loadFacilitiesTransitively = false) {
         return new Promise(resolve => {
             return this.getFacilityCB(icao, (wp) => {
                 resolve(wp);
-            });
+            }, loadFacilitiesTransitively);
         });
     }
     getFacilityDataCB(icao, callback) {
@@ -218,12 +230,12 @@ class FacilityLoader {
             });
         });
     }
-    async getAirport(icao) {
+    async getAirport(icao, loadFacilitiesTransitively = false) {
         await this.waitRegistration();
         let data = await this.getAirportData(icao);
         if (data) {
             let airport = new WayPoint(this.instrument);
-            airport.SetFromIFacility(data);
+            airport.SetFromIFacility(data, EmptyCallback.Void, loadFacilitiesTransitively);
             return airport;
         }
     }
@@ -918,7 +930,7 @@ class FacilityLoader {
             loadedVorsCallback();
         });
     }
-    async getAllAirways(intersection, maxLength = 100) {
+    async getAllAirways(intersection, name = undefined, maxLength = 100) {
         await this.waitRegistration();
         let airways = [];
         let intersectionInfo;
@@ -929,7 +941,7 @@ class FacilityLoader {
             intersectionInfo = intersection;
         }
         if (intersectionInfo instanceof WayPointInfo) {
-            let datas = await this.getAllAirwaysData(intersectionInfo);
+            let datas = await this.getAllAirwaysData(intersectionInfo, name, maxLength);
             for (let i = 0; i < datas.length; i++) {
                 let airway = new Airway();
                 airway.SetFromIAirwayData(datas[i]);
@@ -938,19 +950,21 @@ class FacilityLoader {
         }
         return airways;
     }
-    async getAllAirwaysData(intersectionInfo, maxLength = 100) {
+    async getAllAirwaysData(intersectionInfo, name = undefined, maxLength = 100) {
         await this.waitRegistration();
         let airways = [];
         if (intersectionInfo.routes) {
             for (let i = 0; i < intersectionInfo.routes.length; i++) {
-                let routeName = intersectionInfo.routes[i].name;
-                let airwayData = this.loadedAirwayDatas.get(routeName);
-                if (!airwayData) {
-                    airwayData = await this.getAirwayData(intersectionInfo, intersectionInfo.routes[i].name, maxLength);
-                    this.loadedAirwayDatas.set(routeName, airwayData);
-                }
-                if (airwayData) {
-                    airways.push(airwayData);
+                if (name === undefined || name === intersectionInfo.routes[i].name) {
+                    let routeName = intersectionInfo.routes[i].name;
+                    let airwayData = this.loadedAirwayDatas.get(routeName);
+                    if (!airwayData) {
+                        airwayData = await this.getAirwayData(intersectionInfo, intersectionInfo.routes[i].name, maxLength);
+                        this.loadedAirwayDatas.set(routeName, airwayData);
+                    }
+                    if (airwayData) {
+                        airways.push(airwayData);
+                    }
                 }
             }
         }
@@ -972,6 +986,7 @@ class FacilityLoader {
                 icaos: [intersectionInfo.icao]
             };
             let currentRoute = route;
+            let currentWaypointIcao = intersectionInfo.icao;
             for (let i = 0; i < maxLength * 0.5; i++) {
                 if (currentRoute) {
                     let prevIcao = currentRoute.prevIcao;
@@ -980,6 +995,7 @@ class FacilityLoader {
                         let prevWaypoint = await this.getIntersectionData(prevIcao);
                         if (prevWaypoint) {
                             airway.icaos.splice(0, 0, prevWaypoint.icao);
+                            currentWaypointIcao = prevWaypoint.icao;
                             if (prevWaypoint.routes) {
                                 currentRoute = prevWaypoint.routes.find(r => { return r.name === name; });
                             }
@@ -988,6 +1004,7 @@ class FacilityLoader {
                 }
             }
             currentRoute = route;
+            currentWaypointIcao = intersectionInfo.icao;
             for (let i = 0; i < maxLength * 0.5; i++) {
                 if (currentRoute) {
                     let nextIcao = currentRoute.nextIcao;
@@ -996,6 +1013,7 @@ class FacilityLoader {
                         let nextWaypoint = await this.getIntersectionData(nextIcao);
                         if (nextWaypoint) {
                             airway.icaos.push(nextWaypoint.icao);
+                            currentWaypointIcao = nextWaypoint.icao;
                             if (nextWaypoint.routes) {
                                 currentRoute = nextWaypoint.routes.find(r => { return r.name === name; });
                             }

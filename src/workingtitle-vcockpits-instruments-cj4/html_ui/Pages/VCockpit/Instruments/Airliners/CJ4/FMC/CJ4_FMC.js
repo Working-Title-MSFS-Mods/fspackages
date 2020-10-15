@@ -111,6 +111,7 @@ class CJ4_FMC extends FMCMainDisplay {
             if (this.getIsRouteActivated() && !this._activatingDirectTo) {
                 // console.log("running this.getIsRouteActivated() && !this._activatingDirectTo");
                 this.insertTemporaryFlightPlan(() => {
+                    this.copyAirwaySelections();
                     this._isRouteActivated = false;
                     SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
                     // console.log("done with onExec insert temp");
@@ -516,6 +517,18 @@ class CJ4_FMC extends FMCMainDisplay {
             else {
                 this.previousLeftFuelQty = leftFuelQty;
                 this.previousRightFuelQty = rightFuelQty;
+            }
+        }
+    }
+    
+    // Copy airway selections from temporary to active flightplan
+    copyAirwaySelections() {
+        let temporaryFPWaypoints = this.flightPlanManager.getWaypoints(1);
+        let activeFPWaypoints = this.flightPlanManager.getWaypoints(0);
+        for (let i = 0; i < activeFPWaypoints.length; i++) {
+            if (activeFPWaypoints[i].infos && temporaryFPWaypoints[i] && activeFPWaypoints[i].icao === temporaryFPWaypoints[i].icao && temporaryFPWaypoints[i].infos) {
+                activeFPWaypoints[i].infos.airwayIn = temporaryFPWaypoints[i].infos.airwayIn;
+                activeFPWaypoints[i].infos.airwayOut = temporaryFPWaypoints[i].infos.airwayOut;
             }
         }
     }

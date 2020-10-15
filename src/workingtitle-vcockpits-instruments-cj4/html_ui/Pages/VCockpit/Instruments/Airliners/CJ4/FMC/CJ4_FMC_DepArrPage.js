@@ -380,7 +380,7 @@ class CJ4_FMC_DepArrPage {
             else {
                 displayableTransitionsCount = selectedApproach.transitions.length;
                 let maxTransitionPageIndex = Math.max(Math.ceil(displayableTransitionsCount / 4), 1) - 1;
-                let displayedTransitionPageIndex = Math.min(currentPage - 1, maxTransitionPageIndex);                
+                let displayedTransitionPageIndex = Math.min(currentPage - 1, maxTransitionPageIndex);
                 for (let i = 0; i < 4; i++) {
                     let transitionIndex = 4 * displayedTransitionPageIndex + i;
                     let transition = selectedApproach.transitions[transitionIndex];
