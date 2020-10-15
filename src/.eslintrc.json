@@ -59,6 +59,7 @@
         "LatLongAlt": "readonly",
         "SoftKeyElement": "readonly",
         "WTDataStore": "readonly",
+        "NavSource": "readonly",
         "MFD_WaypointLine": "readonly",
         "MFD_Procedures": "readonly",
         "MFD_ApproachWaypointLine": "readonly",
