@@ -195,6 +195,7 @@ class CJ4_FMC_PerfInitPage {
         let arrRunwayLength = "";
         let arrRunwayOutput = "";
         let arrRunway = "";
+        let runwayLoaded = false;
 
         if (fmc.flightPlanManager.getApproachRunway()) {
             arrRunway = fmc.flightPlanManager.getApproachRunway();
@@ -202,6 +203,7 @@ class CJ4_FMC_PerfInitPage {
             arrRunwayDirection = new Number(arrRunway.direction);
             arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
             arrRunwayLength = new Number((arrRunway.length) * 3.28);
+            runwayLoaded = true;
         }
         else if (fmc.vfrLandingRunway) {
             arrRunway = fmc.vfrLandingRunway;
@@ -209,9 +211,11 @@ class CJ4_FMC_PerfInitPage {
             arrRunwayDirection = new Number(arrRunway.direction);
             arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
             arrRunwayLength = new Number((arrRunway.length) * 3.28);
+            runwayLoaded = true;
         }
         else {
             arrRunwayOutput = "NO APPROACH RW";
+            runwayLoaded = false;
         }
 
         let headwind = "";
@@ -320,7 +324,7 @@ class CJ4_FMC_PerfInitPage {
             CJ4_FMC_PerfInitPage.ShowPage13(fmc);
         }
         fmc.onPrevPage = () => {
-            if (arrRunwayOutput !== "NO APPROACH RW" && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
+            if (runwayLoaded == true && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
                 CJ4_FMC_PerfInitPage.ShowPage15(fmc);
             }
             else {
@@ -328,7 +332,7 @@ class CJ4_FMC_PerfInitPage {
             }
             };
         fmc.onNextPage = () => {
-            if (arrRunwayOutput !== "NO APPROACH RW" && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
+            if (runwayLoaded == true && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
                 CJ4_FMC_PerfInitPage.ShowPage14(fmc);
             }
             else {

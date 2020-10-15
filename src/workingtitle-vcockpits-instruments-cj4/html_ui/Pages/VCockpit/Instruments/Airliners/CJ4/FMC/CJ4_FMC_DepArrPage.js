@@ -649,18 +649,9 @@ class CJ4_FMC_DepArrPage {
         fmc.onRightInput[5] = () => {
             if (rsk6Field == "CANCEL MOD>") {
                 fmc.setMsg("Working...");
-                if (fmc.modVfrRunway == true && fmc.vfrLandingRunway && fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
+                if (fmc.modVfrRunway == true && fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     fmc.eraseTemporaryFlightPlan(() => {
-                        fmc.vfrLandingRunway = undefined;
-                        fmc.modVfrRunway = false;
-                        fmc.fpHasChanged = false;
-                        fmc.setMsg();
-                        CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
-                    });
-                }
-                else if (fmc.modVfrRunway == true && fmc.vfrLandingRunway == undefined && fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
-                    fmc.eraseTemporaryFlightPlan(() => {
-                        fmc.vfrLandingRunway = fmc.deletedVfrLandingRunway;
+                        fmc.vfrLandingRunway = fmc.vfrLandingRunway == undefined ? fmc.deletedVfrLandingRunway : undefined;
                         fmc.modVfrRunway = false;
                         fmc.fpHasChanged = false;
                         fmc.setMsg();
