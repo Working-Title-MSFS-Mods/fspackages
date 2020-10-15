@@ -40,6 +40,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._templateRenderer = undefined;
         this._msg = "";
         this._activatingDirectToExisting = false;
+        this.vfrLandingRunway = "";
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -265,6 +266,14 @@ class CJ4_FMC extends FMCMainDisplay {
         this.fpHasChanged = true;
         SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 1);
         callback();
+    }
+    //function added to set departure enroute transition index
+    setDepartureEnrouteTransitionIndex(departureEnrouteTransitionIndex, callback = EmptyCallback.Boolean) {
+        this.ensureCurrentFlightPlanIsTemporary(() => {
+            this.flightPlanManager.setDepartureEnRouteTransitionIndex(departureEnrouteTransitionIndex, () => {
+                callback(true);
+            });
+        });
     }
     updateAutopilot() {
         let now = performance.now();
