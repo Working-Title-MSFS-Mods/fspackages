@@ -49,10 +49,10 @@ Face=1, 1, 1
 
 [ParticleAttributes.0]
 Blend Mode=2
-Texture=FX_ulm04.PNG
+Texture=fx_0.png
 Bounce=0.0
-Color Start=97, 97, 182, 71
-Color End=97, 97, 182, 71
+Color Start=173, 180, 255, 1
+Color End=173, 180, 255, 1
 Jitter Distance=0.0
 Jitter Time=0.0
 uv1=0.00, 0.00
@@ -116,10 +116,10 @@ Face=1, 1, 1
 
 [ParticleAttributes.1]
 Blend Mode=2
-Texture=FX_ulm01.png
+Texture=FX_ulm03.PNG
 Bounce=0.0
-Color Start=200, 200, 255, 1
-Color End=2, 200, 200, 255, 1
+Color Start=120, 130, 200, 1
+Color End=2, 120, 130, 200, 1
 Jitter Distance=0.0
 Jitter Time=0.0
 uv1=0.00, 0.00
@@ -182,10 +182,10 @@ Face=1, 1, 1
 
 [ParticleAttributes.2]
 Blend Mode=2
-Texture=FX_ulm01.png
+Texture=FX_ulm03.PNG
 Bounce=0.0
-Color Start=20, 20, 55, 1
-Color End=20, 20, 55, 1
+Color Start=30, 40, 65, 2
+Color End=30, 40, 65, 2
 Jitter Distance=0.0
 Jitter Time=0.0
 uv1=0.00, 0.00
@@ -248,10 +248,10 @@ Face=1, 1, 1
 
 [ParticleAttributes.3]
 Blend Mode=2
-Texture=FX_ulm04.PNG
+Texture=fx_0.png
 Bounce=0.0
-Color Start=5, 5, 20, 1
-Color End=5, 5, 20, 1
+Color Start=10, 15, 25, 3
+Color End=10, 15, 25, 3
 Jitter Distance=0.0
 Jitter Time=0.0
 uv1=0.00, 0.00
