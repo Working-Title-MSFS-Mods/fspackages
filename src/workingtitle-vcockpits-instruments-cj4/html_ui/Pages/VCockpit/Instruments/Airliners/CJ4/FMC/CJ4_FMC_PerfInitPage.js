@@ -254,16 +254,33 @@ class CJ4_FMC_PerfInitPage {
         ]);
 
         fmc.onRightInput[0] = () => {
-            fmc.landingWindDir = fmc.inOut.slice(0, 3);
-            fmc.landingWindSpeed = fmc.inOut.slice(4, 7);
-            fmc.clearUserInput();
-            { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
-        }
+            let windIn = fmc.inOut.split("/");
+            if(windIn.length == 2 && windIn[0] <= 360 && windIn[0] >= 0 && windIn[1] >= 0){
+                fmc.landingWindDir = new Number(windIn[0]);
+                fmc.landingWindSpeed = new Number(windIn[1]);
+                fmc.clearUserInput();
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            { CJ4_FMC_PerfInitPage.ShowPage13(fmc); }
+        };
+
         fmc.onRightInput[1] = () => {
-            fmc.landingOat = new Number(fmc.inOut);
+            let tempIn = parseFloat(fmc.inOut);
+            if (tempIn && isNaN(tempIn)) {
+                fmc.showErrorMessage("INVALID");
+            }
+            else if (tempIn) {
+                fmc.landingOat = Math.trunc(tempIn);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
             fmc.clearUserInput();
-            { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
-        }
+            { CJ4_FMC_PerfInitPage.ShowPage13(fmc); }
+        };
+
         fmc.onRightInput[2] = () => {
             let qnhInput = Number(fmc.inOut);
             if (qnhInput !== NaN) {
@@ -303,7 +320,7 @@ class CJ4_FMC_PerfInitPage {
             { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
         }
         fmc.onPrevPage = () => {
-            if (fmc.flightPlanManager.getApproachRunway() || fmc.vfrLandingRunway) {
+            if (arrRunwayOutput !== "NO APPROACH RW" && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
                 CJ4_FMC_PerfInitPage.ShowPage15(fmc);
             }
             else {
@@ -311,7 +328,7 @@ class CJ4_FMC_PerfInitPage {
             }
             };
         fmc.onNextPage = () => {
-            if (fmc.flightPlanManager.getApproachRunway() || fmc.vfrLandingRunway) {
+            if (arrRunwayOutput !== "NO APPROACH RW" && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
                 CJ4_FMC_PerfInitPage.ShowPage14(fmc);
             }
             else {
@@ -323,6 +340,7 @@ class CJ4_FMC_PerfInitPage {
     static ShowPage14(fmc) { //APPROACH REF Page 2
         fmc.clearDisplay();
         let grWtCell = "";
+        let arrRunwayOutput = "";
         let grossWeightValue = fmc.getWeight();
         if (isFinite(grossWeightValue)) {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
@@ -427,7 +445,9 @@ class CJ4_FMC_PerfInitPage {
 		
 		if (ldgWtCell > 15660) { //Turn the landing weight yellow if it exceeds the maximum landing weight
 			ldgWtCell = ldgWtCell + "[yellow]";
-		}
+        }
+        
+
 		
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "2/3 [blue]", "APPROACH REF[blue]"],
