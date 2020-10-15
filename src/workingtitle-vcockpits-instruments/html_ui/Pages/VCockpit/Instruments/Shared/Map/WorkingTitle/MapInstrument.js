@@ -1661,7 +1661,7 @@ class MapInstrument_RangeDefinitionContext {
 
 class MapInstrument_DefaultRangeDefinition {
     getRangeDefinition(_context) {
-        return context.bottom - _context.top;
+        return _context.bottom - _context.top;
     }
 }
 MapInstrument_DefaultRangeDefinition.INSTANCE = new MapInstrument_DefaultRangeDefinition();
