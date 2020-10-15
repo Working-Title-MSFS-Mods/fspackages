@@ -241,16 +241,21 @@ class CJ4_FMC_LegsPage {
                             if (isDirectTo) { // DIRECT TO
                                 if (approachWpIndex >= 0) {
                                     let setApproachIndex = (idx) => {
-                                        this._fmc.flightPlanManager.setActiveWaypointIndex(idx);
-                                        this.resetAfterOp();
+                                        this._fmc.flightPlanManager.setActiveWaypointIndex(idx, () => {
+                                            this._fmc.flightPlanManager._isDirectTo = true;
+                                            this.resetAfterOp();
+                                        });
                                     };
                                     let index = this._approachWaypoints.findIndex(w => { return w.infos && w.infos.icao === this._selectedWaypoint.icao; });
                                     if (this._fmc.flightPlanManager.isActiveApproach()) {
                                         setApproachIndex(index);
                                     } else {
-                                        this._fmc.flightPlanManager.activateApproach(() => {
-                                            setApproachIndex(index + 1); // probably +1 because we have USER here
+                                        this._fmc.activateDirectToWaypoint(this._selectedWaypoint, () => {
+                                            this._fmc.flightPlanManager.activateApproach(() => {
+                                                setApproachIndex(index + 1);
+                                            });
                                         });
+
                                     }
 
                                 } else {
