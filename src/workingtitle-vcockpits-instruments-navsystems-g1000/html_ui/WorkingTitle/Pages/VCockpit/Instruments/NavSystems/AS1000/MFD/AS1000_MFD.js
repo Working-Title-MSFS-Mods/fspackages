@@ -11,6 +11,7 @@ class AS1000_MFD extends BaseAS1000 {
         super.connectedCallback();
 
         this.settings = new WT_Settings("g36", WT_Default_Settings.base);
+        this.modSettings = new WT_Settings("mod", WT_Default_Settings.modBase);
         this.unitChooser = new WT_Unit_Chooser(this.settings);
         this.procedures = new Procedures(this.currFlightPlanManager);
         this.inputStack = new Input_Stack();
@@ -53,8 +54,9 @@ class AS1000_MFD extends BaseAS1000 {
             {
                 name: "AUX",
                 pages: [
-                    new WT_Page("Credits", () => new WT_Credits_Model(), () => new WT_Credits_View()),
                     new WT_Page("System Settings", () => new WT_System_Settings_Model(this.settings, this.softKeyMenu), () => new WT_System_Settings_View()),
+                    new WT_Page("Mod Settings", () => new WT_Mod_Settings_Model(this.modSettings, this.softKeyMenu), () => new WT_Mod_Settings_View()),
+                    new WT_Page("Credits", () => new WT_Credits_Model(), () => new WT_Credits_View()),
                 ]
             },
             {

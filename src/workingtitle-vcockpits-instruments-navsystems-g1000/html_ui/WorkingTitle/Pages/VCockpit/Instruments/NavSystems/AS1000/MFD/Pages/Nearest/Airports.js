@@ -48,7 +48,13 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
         this.approachesInputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this.elements.approachList, ".selectable"));
         DOMUtilities.AddScopedEventListener(this.elements.airportList, ".ident", "highlighted", e => {
             this.model.setSelectedAirport(e.detail.element.parentNode.dataset.icao);
+            e.detail.element.parentNode.querySelector(".arrow").appendChild(this.elements.arrow);
         });
+
+        this.elements.arrow = document.createElement("div");
+        this.elements.arrow.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewbox="0 0 100 100">
+            <path d="M0 30 L50 30 L50 0 L100 50 L50 100 L50 70 L0 70 z" fill="white"></path>
+        </svg>`;
     }
     /**
      * @param {WT_Nearest_Airports_Model} model 
@@ -117,6 +123,7 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
             if (!element) {
                 element = document.createElement("li");
                 element.innerHTML = `
+                    <span class="arrow"></span>
                     <span class="ident"></span>
                     <airport-icon></airport-icon>
                     <span class="bearing"><span></span>°</span>

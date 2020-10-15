@@ -41,9 +41,18 @@ g1000-nearest-airports-page {
             width: 100%;
             display: grid;
             grid-gap: 2vh;
-            grid-template-columns: 17% 2.5ch 20% 1fr;
+            grid-template-columns: 2ch 17% 2.5ch 20% 1fr;
             align-items: center;
-            margin:0;
+            margin: 0;
+
+            .arrow {
+                div,
+                svg {
+                    display: block;
+                    width: 2ch;
+                    height: 2ch;
+                }
+            }
 
             .small {
                 font-size: 0.7em;

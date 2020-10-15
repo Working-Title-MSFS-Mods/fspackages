@@ -98,6 +98,7 @@ class AS1000_PFD extends BaseAS1000 {
         });*/
         this.updatables = [];
         this.settings = new WT_Settings("g36", WT_Default_Settings.base);
+        this.modSettings = new WT_Settings("mod", WT_Default_Settings.modBase);
         this.unitChooser = new WT_Unit_Chooser(this.settings);
         this.mainPage = new AS1000_PFD_MainPage(this.unitChooser);
         this.pageGroups = [
@@ -188,7 +189,7 @@ class AS1000_PFD extends BaseAS1000 {
 
         this.localTimeModel = this.initModelView(new WT_Local_Time_Model(this.settings), "g1000-local-time");
         this.oatModel = this.initModelView(new WT_OAT_Model(this.unitChooser), "g1000-oat");
-        this.transponderModel = this.initModelView(new WT_Transponder_Model(this.settings), "g1000-transponder");
+        this.transponderModel = this.initModelView(new WT_Transponder_Model(this.modSettings), "g1000-transponder");
         this.referencesModel = this.initModelView(new WT_Airspeed_References_Model(), "wt-airspeed-references");
         this.timerModel = this.initModelView(new WT_PFD_Timer_Model(), "wt-timer");
 
@@ -261,6 +262,7 @@ class AS1000_PFD extends BaseAS1000 {
             updatable.update(_deltaTime);
         }
         this.settings.update(_deltaTime);
+        this.modSettings.update(_deltaTime);
         this.model.update(_deltaTime);
         this.miniPageController.update(_deltaTime);
     }

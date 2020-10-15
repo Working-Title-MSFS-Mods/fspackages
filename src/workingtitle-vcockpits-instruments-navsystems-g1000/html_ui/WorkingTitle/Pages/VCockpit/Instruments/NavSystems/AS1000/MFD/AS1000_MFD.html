@@ -318,9 +318,55 @@
                         <div id="Setup_ChannelConfig" class="value Selectable">25.0 kHz</div>
                     </div>
                 </div>
+            </section>            
+        </section>
+    </template>
+
+    <template id="aux-mod-settings">
+        <section>
+            <section class="category">
+                <h1>Controls</h1>
+                <div class="content">
+                    <div class="element" data-id="date">
+                        <div class="name">Range Knob</div>
+                        <toggle-switch values="Range,Zoom" class="value" data-setting="range_knob"></toggle-switch>
+                    </div>
+                    <div class="element" data-id="date">
+                        <div class="name">Navigation</div>
+                        <toggle-switch values="Normal,Reversed" class="value" data-setting="navigation_knob"></toggle-switch>
+                    </div>
+                    <div class="element" data-id="date">
+                        <div class="name">Scroll Wrap</div>
+                        <toggle-switch values="Disabled,Enabled" class="value" data-setting="scroll_wrap"></toggle-switch>
+                    </div>
+                </div>
             </section>
             <section class="category">
-                <h1>ADDITIONAL CONFIG</h1>
+                <h1>Font</h1>
+                <div class="content">
+                    <div class="element" data-id="date">
+                        <div class="name">Font Family</div>
+                        <drop-down-selector class="value" data-setting="font_family">
+                            <drop-down-selector-option value="default">Default</drop-down-selector-option>
+                            <drop-down-selector-option value="mono">Mono</drop-down-selector-option>
+                            <drop-down-selector-option value="g1000">G1000</drop-down-selector-option>
+                        </drop-down-selector>
+                    </div>
+                    <div class="element" data-id="date">
+                        <div class="name">Font Size</div>
+                        <drop-down-selector class="value" data-setting="font_size">
+                            <drop-down-selector-option value="normal">Normal</drop-down-selector-option>
+                            <drop-down-selector-option value="large">Large</drop-down-selector-option>
+                        </drop-down-selector>
+                    </div>
+                </div>
+            </section>
+        </section>
+        <section>
+        </section>
+        <section>
+            <section class="category">
+                <h1>System Config</h1>
                 <div class="content">
                     <div class="element">
                         <div class="name">VFR</div>
@@ -683,6 +729,7 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Components/NavBox.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Page.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/Credits.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/ModSettings.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/Settings.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/FlightPlan/FlightPlan.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Map/Map.js"></script>

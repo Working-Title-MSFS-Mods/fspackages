@@ -1250,7 +1250,7 @@ class MapInstrument extends ISvgMapRootElement {
         let distance = Avionics.Utils.computeGreatCircleDistance(min, max);
         this.setCenter(midpoint, 0);
         for (let i = 0; i < this.zoomRanges.length; i++) {
-            if (this.zoomRanges[i] > distance) {
+            if (this.zoomRanges[i] > distance || (i == this.zoomRanges.length - 1)) {
                 this.setZoom(i);
                 break;
             }
@@ -1626,7 +1626,7 @@ class MapInstrument extends ISvgMapRootElement {
     }
 }
 MapInstrument.OVERDRAW_FACTOR = Math.sqrt(2);
-MapInstrument.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200];
+MapInstrument.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 500, 1000, 2000];
 
 MapInstrument.INT_RANGE_DEFAULT = 15;
 MapInstrument.INT_RANGE_MIN_DEFAULT = 0;

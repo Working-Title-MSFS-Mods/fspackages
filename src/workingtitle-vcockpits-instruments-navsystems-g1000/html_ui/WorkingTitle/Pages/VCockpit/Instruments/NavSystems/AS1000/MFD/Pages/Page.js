@@ -90,7 +90,7 @@ class WT_Page_Controller {
         let page = this.selectedPage;
         this.pageTitle.value = `${this.selectedGroup.name} - ${page.title}`;
         this.currentPageView = page.initialise(this.pageContainer);
-        this.currentPageView.activate();
+        this.currentPageView.activate(this.inputStack);
 
         this.pageSelection.value = {
             groups: this.pageGroups,

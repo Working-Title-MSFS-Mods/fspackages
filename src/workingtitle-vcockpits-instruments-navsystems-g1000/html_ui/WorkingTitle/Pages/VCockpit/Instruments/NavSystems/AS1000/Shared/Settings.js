@@ -16,6 +16,15 @@ WT_Default_Settings.base = {
     vfr_xpdr: 1200,
 };
 
+WT_Default_Settings.modBase = {
+    range_knob: "Range",
+    navigation_knob: "Default",
+    font_family: "default",
+    font_size: "normal",
+    scroll_wrap: "disabled",
+    vfr_xpdr: 1200
+}
+
 class WT_Settings {
     constructor(aircraft, defaults) {
         this.aircraft = aircraft;
