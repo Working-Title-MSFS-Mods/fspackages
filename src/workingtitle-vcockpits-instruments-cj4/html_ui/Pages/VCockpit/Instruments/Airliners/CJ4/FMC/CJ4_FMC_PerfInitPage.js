@@ -263,7 +263,7 @@ class CJ4_FMC_PerfInitPage {
             else {
                 fmc.showErrorMessage("INVALID");
             }
-            { CJ4_FMC_PerfInitPage.ShowPage13(fmc); }
+            CJ4_FMC_PerfInitPage.ShowPage13(fmc);
         };
 
         fmc.onRightInput[1] = () => {
@@ -278,7 +278,7 @@ class CJ4_FMC_PerfInitPage {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
-            { CJ4_FMC_PerfInitPage.ShowPage13(fmc); }
+            CJ4_FMC_PerfInitPage.ShowPage13(fmc);
         };
 
         fmc.onRightInput[2] = () => {
@@ -317,7 +317,7 @@ class CJ4_FMC_PerfInitPage {
             arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY[green]/[white]WET[s-text]"
             : "DRY[s-text]/[white]WET[green]";
             fmc.clearUserInput();
-            { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
+            CJ4_FMC_PerfInitPage.ShowPage13(fmc);
         }
         fmc.onPrevPage = () => {
             if (arrRunwayOutput !== "NO APPROACH RW" && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
@@ -340,7 +340,6 @@ class CJ4_FMC_PerfInitPage {
     static ShowPage14(fmc) { //APPROACH REF Page 2
         fmc.clearDisplay();
         let grWtCell = "";
-        let arrRunwayOutput = "";
         let grossWeightValue = fmc.getWeight();
         if (isFinite(grossWeightValue)) {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
@@ -473,7 +472,6 @@ class CJ4_FMC_PerfInitPage {
             SimVar.SetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool", true);
             SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", true);
         }
-
 
         fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage15(fmc); };
