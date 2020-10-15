@@ -325,7 +325,7 @@ class CJ4_FMC_TakeoffRefPage {
                     SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
                     fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.SENT;
                     CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); // TODO: this will probably send us back to this page even when user navigated away, find better solution
-                }, 3000);
+                }, 2000);
                 CJ4_FMC_TakeoffRefPage.ShowPage2(fmc);
             };
         }
