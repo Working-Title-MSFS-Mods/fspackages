@@ -542,7 +542,7 @@ class CJ4_FMC_RoutePage {
                 let prev = (i == 0) ? lastDepartureWaypoint : routeWaypoints[i - 1]; // check with dep on first waypoint
                 let wp = routeWaypoints[i];
                 if (wp) {
-                    if (wp.infos.airwayIn !== undefined && prev.infos.airwayOut === wp.infos.airwayIn) {
+                    if (wp.infos.airwayIn !== undefined && prev && prev.infos.airwayOut === wp.infos.airwayIn) {
                         // is there a next waypoint?
                         let nextWp = routeWaypoints[i + 1];
                         if (nextWp) {
