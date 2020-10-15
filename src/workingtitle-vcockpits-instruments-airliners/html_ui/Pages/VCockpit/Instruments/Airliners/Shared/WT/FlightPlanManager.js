@@ -844,7 +844,12 @@ class FlightPlanManager {
             index = this._waypoints.length;
         }
         Coherent.call("ADD_WAYPOINT", icao, index, setActive).then(() => {
-            this.updateFlightPlan(callback);
+            // Approach set? Reinitialize it after adding a waypoint
+            if (this.getApproachIndex() > -1) {
+                this.setApproachIndex(this.getApproachIndex(), callback, this.getApproachTransitionIndex());
+            } else {
+                this.updateFlightPlan(callback);
+            }
         });
     }
     setWaypointAltitude(altitude, index, callback = () => { }) {
