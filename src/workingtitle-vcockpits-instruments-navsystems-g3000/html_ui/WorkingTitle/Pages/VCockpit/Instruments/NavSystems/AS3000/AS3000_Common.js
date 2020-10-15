@@ -50,10 +50,22 @@ class AS3000_MapElement extends MapInstrumentElement {
             AS3000_MapElement.VARNAME_FUEL_RING_RESERVE_ROOT,
             AS3000_MapElement.VARNAME_ALTITUDE_INTERCEPT_SHOW_ROOT
         ];
+        
+        this.revertToDefault = true;
     }
     
     onTemplateLoaded() {
         super.onTemplateLoaded();
+        
+        if (SimVar.GetSimVarValue("ATC MODEL", "string") == "TT:ATCCOM.AC_MODEL_TBM9.0.text") {
+            this.revertToDefault = false;
+        }
+        
+        if (this.revertToDefault) {
+            this.instrument.setAttribute("show-cities", false);
+            this.instrument.mapConfigId = 1;
+            return;
+        }
         
         this.instrument.zoomRanges = AS3000_MapElement.ZOOM_RANGES_DEFAULT;
         this.instrument.setZoom(this.instrument.zoomRanges.indexOf(AS3000_MapElement.ZOOM_RANGE_DEFAULT));
@@ -157,6 +169,10 @@ class AS3000_MapElement extends MapInstrumentElement {
     
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
+        
+        if (this.revertToDefault) {
+            return;
+        }
         
         let sync = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC, "number");
         if (sync != this.lastSync) {

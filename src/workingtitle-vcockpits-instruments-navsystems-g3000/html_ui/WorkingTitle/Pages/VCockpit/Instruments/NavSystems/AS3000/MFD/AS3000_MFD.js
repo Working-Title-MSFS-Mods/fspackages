@@ -193,9 +193,11 @@ class AS3000_MFD_MapElement extends AS3000_MapElement {
         this.lastWeatherMapMode = 0;
     }
     
-    init(root) {
-        super.init(root);
-        this.instrument.showRangeDisplay = false;
+    onTemplateLoaded() {
+        super.onTemplateLoaded();
+        if (!this.revertToDefault) {
+            this.instrument.showRangeDisplay = false;
+        }
     }
     
     onUpdate(_deltaTime) {
