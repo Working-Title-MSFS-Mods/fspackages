@@ -1,5 +1,9 @@
 # Changelog
 
+### v0.2.0-pre2
+**Fixes**
+- \[Compatibility\] Fixed issue where installing both this mod and the WorkingTitle G1000 mod would cause G1000 screens to freeze.
+
 ### v0.2.0-pre1
 **New Features**
 - \[MISC\] Certain G3000 settings will now be automatically saved and reloaded between flights. This includes nearly all map settings as well as SVT toggle and Baro Units.

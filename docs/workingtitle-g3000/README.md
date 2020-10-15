@@ -1,6 +1,9 @@
 # Working Title G3000
 
-### Latest version: v0.2.0 PRE-release 1
+### Latest version: v0.2.0 PRE-release 2
+
+### Changes from v0.2.0 PRE-release 1
+- Fixed compatibility issue with G1000 mod causing avionics screens to freeze.
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000. The goal is to bring functionality closer to the real-life G3000, with a focus on both features and layout/UI. Most of development and testing was done with the TBM 930, and the TBM 930 version of the G3000 pilot's guide was used as the primary reference.
@@ -12,7 +15,7 @@ This mod was created with cross-compatibility in mind. It modifies the minimum n
 ### Installation
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
-### Release Highlights (v0.2.0-pre1)
+### Release Highlights (v0.2.0-pre2)
 Please refer to the changelog for a more detailed description of updates.
 
 - The G3000 mod is now integrated with the WorkingTitle ecosystem! This has allowed the addition of the following features:
