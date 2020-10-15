@@ -16,6 +16,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.paxNumber = 0;
         this.cargoWeight = 0;
         this.basicOperatingWeight = 10280;
+		this.grossWeight = 0;
         this.takeoffOat = "□□□";
         this.landingOat = "□□□";
         this.takeoffQnh = "□□.□□";
@@ -229,6 +230,22 @@ class CJ4_FMC extends FMCMainDisplay {
 
     getOrSelectWaypointByIdent(ident, callback) {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
+
+            const uniqueWaypoints = new Map();
+            waypoints.forEach(wp => {
+                const waypoint = new WayPoint(null);
+
+                waypoint.icao = wp.icao;
+                waypoint.ident = wp.icao.substring(7, 12).replace(new RegExp(" ", "g"), "");
+
+                waypoint.infos.coordinates.lat = wp.lat;
+                waypoint.infos.coordinates.long = wp.lon;
+
+                uniqueWaypoints.set(waypoint.icao, waypoint);
+            });
+
+            waypoints = [...uniqueWaypoints.values()];
+
             if (!waypoints || waypoints.length === 0) {
                 return callback(undefined);
             }
@@ -455,15 +472,27 @@ class CJ4_FMC extends FMCMainDisplay {
             const rightFuelUsed = this.previousRightFuelQty - rightFuelQty;
 
             const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
-            const tsfc = Math.pow(1 + (.82 * mach), mach) * 0.58; //Inspiration: https://onlinelibrary.wiley.com/doi/pdf/10.1002/9780470117859.app4
+            const tsfc = Math.pow(1 + (1.2 * mach), mach) * 0.58; //Inspiration: https://onlinelibrary.wiley.com/doi/pdf/10.1002/9780470117859.app4
 
-            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", thrustLeft * tsfc);
-            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", thrustRight * tsfc);
+            const leftFuelFlow = Math.max(thrustLeft * tsfc, 150);
+            const rightFuelFlow = Math.max(thrustRight * tsfc, 150);
+
+            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", leftFuelFlow);
+            SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", rightFuelFlow);
 
             if ((rightFuelUsed > 0.005 && rightFuelUsed < 1) || (leftFuelUsed > 0.005 && rightFuelUsed < 1)) {
-                const leftCorrectionFactor = (thrustLeft * tsfc) / pphLeft;
-                const rightCorrectionFactor = (thrustRight * tsfc) / pphRight;
 
+                let leftCorrectionFactor = 1;
+                let rightCorrectionFactor = 1;
+
+                if (pphLeft > 0) {
+                    leftCorrectionFactor = leftFuelFlow / pphLeft;
+                }
+                
+                if (pphRight > 0) {
+                    rightCorrectionFactor = rightFuelFlow / pphRight;
+                }
+                
                 const newLeftFuelQty = this.previousLeftFuelQty - (leftFuelUsed * leftCorrectionFactor);
                 const newRightFuelQty = this.previousRightFuelQty - (rightFuelUsed * rightCorrectionFactor);
 

@@ -21,6 +21,7 @@ class CJ4_FMC_LegsPage {
         this._lsk6Field = "";
 
         this._wayPointsToRender = [];
+        this._approachWaypoints = [];
 
         this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
     }
@@ -40,7 +41,7 @@ class CJ4_FMC_LegsPage {
 
         // get and format distance
         let distanceToActWpt = this._fmc.flightPlanManager.getDistanceToActiveWaypoint();
-        distanceToActWpt = (distanceToActWpt < 100) ? distanceToActWpt.toFixed(1) : distanceToActWpt.toFixed(0);
+        // distanceToActWpt = (distanceToActWpt < 100) ? distanceToActWpt.toFixed(1) : distanceToActWpt.toFixed(0);
         if (distanceToActWpt !== this._distanceToActiveWpt) {
             this._distanceToActiveWpt = distanceToActWpt;
             this._isDirty = true;
@@ -74,8 +75,8 @@ class CJ4_FMC_LegsPage {
             // get enroute waypoints
 
             if (this._fmc.flightPlanManager.getApproachWaypoints()) {
-                let approachWaypoints = [...this._fmc.flightPlanManager.getApproachWaypoints()];
-                allWaypoints = enrouteWaypoints.concat(approachWaypoints);
+                this._approachWaypoints = [...this._fmc.flightPlanManager.getApproachWaypoints()];
+                allWaypoints = enrouteWaypoints.concat(this._approachWaypoints);
             }
             else {
                 allWaypoints = enrouteWaypoints;
@@ -93,15 +94,15 @@ class CJ4_FMC_LegsPage {
         // APPROACH
         else if (this._fmc.flightPlanManager.isActiveApproach()) {
             // get index of last wp
-            let lastWaypointIndex = enrouteWaypoints.length - 1;
+            // let lastWaypointIndex = enrouteWaypoints.length - 1;
             // see if there are approach waypoints already loaded and add them
 
             // TODO i wonder if this reducing of the enroute waypoints is needed, shouldn't that be reflected in the stored flight plan?
             // if so, the whole if for approach can go i guess
             if (this._fmc.flightPlanManager.getApproachWaypoints()) {
-                let approachWaypoints = [...this._fmc.flightPlanManager.getApproachWaypoints()];
-                let lastEnrouteWaypoint = enrouteWaypoints.slice(lastWaypointIndex);
-                allWaypoints = lastEnrouteWaypoint.concat(approachWaypoints);
+                this._approachWaypoints = [...this._fmc.flightPlanManager.getApproachWaypoints()];
+                // let lastEnrouteWaypoint = enrouteWaypoints.slice(lastWaypointIndex);
+                allWaypoints = this._approachWaypoints;
             }
 
             // on first wp show em all
@@ -110,7 +111,7 @@ class CJ4_FMC_LegsPage {
             }
             // skip previous legs
             else if (this._activeWptIndex > 1) {
-                this._wayPointsToRender = allWaypoints.splice(0, this._activeWptIndex - 1);
+                this._wayPointsToRender = allWaypoints.splice(this._activeWptIndex - 1);
             }
         }
 
@@ -123,23 +124,33 @@ class CJ4_FMC_LegsPage {
             else if (waypoint) {
                 let bearing = isFinite(waypoint.bearingInFP) ? waypoint.bearingInFP.toFixed(0).padStart(3, "0") + "°" : "";
                 let prevWaypoint = this._wayPointsToRender[i + offset - 1];
-                let distance = "0";
-                if (i == 1 && this._currentPage == 1) {
+                let distance = 0;
+                let isFromWpt = (i == 0 && this._currentPage == 1);
+                let isActWpt = (i == 1 && this._currentPage == 1);
+                if (isActWpt) {
                     distance = this._distanceToActiveWpt;
                 }
                 else if (prevWaypoint) {
-                    distance = Math.trunc(Avionics.Utils.computeDistance(prevWaypoint.infos.coordinates, waypoint.infos.coordinates)).toFixed(0);
+                    distance = Math.trunc(Avionics.Utils.computeDistance(prevWaypoint.infos.coordinates, waypoint.infos.coordinates));
                 }
 
-                if (i == 0 && this._currentPage == 1) {
-                    //this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM"];
+                // format distance
+                distance = (distance < 100) ? distance.toFixed(1) : distance.toFixed(0);
+
+                if (isFromWpt) {
                     if (this._fmc.flightPlanManager.getIsDirectTo()) {
                         this._rows[2 * i + 1] = ["(DIR)[blue]"];
                     } else {
-                        this._rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident + "[blue]" : "USR[blue]"];
+                        // show runway where possible
+                        let depRwy = this._fmc.flightPlanManager.getDepartureRunway();
+                        if (this._activeWptIndex == 1 && depRwy) {
+                            let rwyIdent = depRwy.designation.indexOf("RW") === -1 ? "RW" + depRwy.designation : depRwy.designation;
+                            this._rows[2 * i + 1] = [rwyIdent + "[blue]"];
+                        } else
+                            this._rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident + "[blue]" : "USR[blue]"];
                     }
                 }
-                else if (i == 1 && this._currentPage == 1) {
+                else if (isActWpt) {
                     this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM[magenta]"];
                     this._rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident + "[magenta]" : "USR[magenta]"];
                 }
@@ -148,7 +159,8 @@ class CJ4_FMC_LegsPage {
                     this._rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident : "USR"];
                 }
 
-                this._rows[2 * i + 1][1] = this.getAltSpeedRestriction(waypoint);
+                if (!isFromWpt)
+                    this._rows[2 * i + 1][1] = this.getAltSpeedRestriction(waypoint);
             }
 
         }
@@ -168,7 +180,7 @@ class CJ4_FMC_LegsPage {
         this._fmc._templateRenderer.setTemplateRaw([
             [" " + modStr + " LEGS[blue]", this._currentPage.toFixed(0) + "/" + Math.max(1, this._pageCount.toFixed(0)) + " [blue]"],
             ...this._rows,
-            ["-------------------------"],
+            ["-------------------------[blue]"],
             [this._lsk6Field + "", "LEG WIND>"]
         ]);
     }
@@ -181,6 +193,11 @@ class CJ4_FMC_LegsPage {
                 let waypoint = this._wayPointsToRender[i + offset];
 
                 if (!waypoint) return;
+                let approachWpIndex = this._approachWaypoints.indexOf(waypoint);
+                if (approachWpIndex > 0) {
+                    this._fmc.showErrorMessage("UNABLE MOD APPROACH");
+                    return;
+                }
 
                 let value = this._fmc.inOut;
                 let selectedWpIndex = this._currentPage == 1 ? this._fmc.flightPlanManager.getActiveWaypointIndex() + i - 1
@@ -227,11 +244,36 @@ class CJ4_FMC_LegsPage {
                                 let x = selectedWpIndex;
                                 let isDirectTo = (i == 1 && this._currentPage == 1);
                                 if (isDirectTo) { // DIRECT TO
-                                    this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                        this._fmc.activateDirectToWaypoint(this._selectedWaypoint, () => {
+                                    approachWpIndex = this._approachWaypoints.indexOf(this._selectedWaypoint);
+                                    if (approachWpIndex == 0) {
+                                        // TODO i hate the fact we have code copies of this everywhere
+                                        let removeWaypointForApproachMethod = (callback = EmptyCallback.Void) => {
+                                            let i = 1;
+                                            let destinationIndex = this._fmc.flightPlanManager.getWaypoints().findIndex(w => {
+                                                return w.icao === this._fmc.flightPlanManager.getDestination().icao;
+                                            });
+
+                                            if (i < destinationIndex) {
+                                                this._fmc.flightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
+                                                    removeWaypointForApproachMethod(callback);
+                                                });
+                                            }
+                                            else {
+                                                callback();
+                                            }
+                                        };
+                                        removeWaypointForApproachMethod(() => {
+                                            this._fmc.flightPlanManager.tryAutoActivateApproach();
                                             this.resetAfterOp();
                                         });
-                                    });
+                                    } else {
+                                        this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                            this._fmc.activateDirectToWaypoint(this._selectedWaypoint, () => {
+                                                this.resetAfterOp();
+                                            });
+
+                                        });
+                                    }
                                 }
                                 else { // MOVE TO POSITION IN FPLN
                                     let removeWaypointForLegsMethod = (callback = EmptyCallback.Void) => {
@@ -257,16 +299,21 @@ class CJ4_FMC_LegsPage {
                         case CJ4_FMC_LegsPage.SELECT_MODE.NEW:
                             if ((i >= 1 && this._currentPage == 1) || this._currentPage > 1) {
                                 this._fmc.setMsg("Working...");
-                                this._fmc.insertWaypoint(value, selectedWpIndex, () => {
-                                    let isDirectTo = (i == 1 && this._currentPage == 1);
-                                    if (isDirectTo) {
-                                        this._fmc.getOrSelectWaypointByIdent(value, (w) => {
-                                            this._fmc.activateDirectToWaypoint(w, () => {
+                                this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
+                                    if (isSuccess) {
+                                        let isDirectTo = (i == 1 && this._currentPage == 1);
+                                        if (isDirectTo) {
+                                            let wp = this._fmc.flightPlanManager.getWaypoint(selectedWpIndex);
+                                            this._fmc.activateDirectToWaypoint(wp, () => {
                                                 this.resetAfterOp();
                                             });
-                                        });
-                                    } else
-                                        this.resetAfterOp();
+                                        } else
+                                            this.resetAfterOp();
+                                    } else {
+                                        this._fmc.fpHasChanged = false;
+                                        this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
+                                        this._fmc.eraseTemporaryFlightPlan();
+                                    }
                                 });
                             }
                             break;
@@ -352,8 +399,8 @@ class CJ4_FMC_LegsPage {
     }
 
     getAltSpeedRestriction(waypoint) {
-        let speedConstraint = "";
-        let altitudeConstraint = "FL";
+        let speedConstraint = "---";
+        let altitudeConstraint = "----- ";
 
         if (waypoint.speedConstraint && waypoint.speedConstraint > 100) {
             speedConstraint = waypoint.speedConstraint;
@@ -375,14 +422,10 @@ class CJ4_FMC_LegsPage {
                     : waypoint.legAltitude2.toFixed(0) + "B";
                 altitudeConstraint = altitudeConstraintA + "/" + altitudeConstraintB;
             }
-            else {
-                altitudeConstraint = "FL" + this._fmc.cruiseFlightLevel;
-            }
+
+            altitudeConstraint = altitudeConstraint.padStart(6, " ");
         }
-        else {
-            altitudeConstraint = "FL" + this._fmc.cruiseFlightLevel;
-        }
-        return speedConstraint + "/" + altitudeConstraint;
+        return speedConstraint + "/" + altitudeConstraint + "[green]";
     }
 
     static ShowPage1(fmc) {

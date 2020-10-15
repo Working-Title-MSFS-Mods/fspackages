@@ -168,13 +168,13 @@ class SvgRoadNetworkElement extends SvgMapElement {
             new RoadNetworkLODedData(SvgRoadNetworkElement.EPSILON_ROADS_LEVEL1),
             new RoadNetworkLODedData(SvgRoadNetworkElement.EPSILON_ROADS_LEVEL2)
         ];
-		
-		// MOD: need to keep track of when visibility changes so we know when to redraw
-		this.lastShowRoadsHighway = true;
-		this.lastShowRoadsTrunk = true;
-		this.lastShowRoadsPrimary = true;
-		this.lastShowAirspaces = true;
-		this.lastShowAirways = true;
+        
+        // MOD: need to keep track of when visibility changes so we know when to redraw
+        this.lastShowRoadsHighway = true;
+        this.lastShowRoadsTrunk = true;
+        this.lastShowRoadsPrimary = true;
+        this.lastShowAirspaces = true;
+        this.lastShowAirways = true;
     }
     nodes(map) {
         if (map.NMWidth > SvgRoadNetworkElement.EPSILON_ROADS_LEVEL0) { // pretty sure this is broken???? Will always return true given the value of the constant
@@ -241,24 +241,24 @@ class SvgRoadNetworkElement extends SvgMapElement {
             else
                 this._visibleCanvas.canvas.style.display = "none";
         }
-		
-		let mapRange = map.htmlRoot.getDisplayRange();
-		let showRoadsHighway = map.htmlRoot.showRoads && (mapRange <= map.htmlRoot.roadHighwayMaxRange);
-		let showRoadsTrunk = map.htmlRoot.showRoads && (mapRange <= map.htmlRoot.roadTrunkMaxRange);
-		let showRoadsPrimary = map.htmlRoot.showRoads && (mapRange <= map.htmlRoot.roadPrimaryMaxRange);
-		let showAirspaces = map.htmlRoot.showAirspaces && (map.htmlRoot.getDisplayRange() <= map.htmlRoot.airspaceMaxRange);
-		let showAirways = map.htmlRoot.showAirways;
-		
-		let visibilityChanged = (this.lastShowRoadsHighway != showRoadsHighway) ||
-								(this.lastShowRoadsTrunk != showRoadsTrunk) ||
-								(this.lastShowRoadsPrimary != showRoadsPrimary) ||
-								(this.lastShowAirspaces != showAirspaces) ||
-								(this.lastShowAirways != showAirways);
-								
-		this.lastShowRoads = map.htmlRoot.showRoads;
-		this.lastShowAirspaces = map.htmlRoot.showAirspaces;
-		this.lastShowAirways = map.htmlRoot.showAirways;
-		
+        
+        let mapRange = map.htmlRoot.getDisplayRange();
+        let showRoadsHighway = map.htmlRoot.showRoads && (mapRange <= map.htmlRoot.roadHighwayMaxRange);
+        let showRoadsTrunk = map.htmlRoot.showRoads && (mapRange <= map.htmlRoot.roadTrunkMaxRange);
+        let showRoadsPrimary = map.htmlRoot.showRoads && (mapRange <= map.htmlRoot.roadPrimaryMaxRange);
+        let showAirspaces = map.htmlRoot.showAirspaces && (map.htmlRoot.getDisplayRange() <= map.htmlRoot.airspaceMaxRange);
+        let showAirways = map.htmlRoot.showAirways;
+        
+        let visibilityChanged = (this.lastShowRoadsHighway != showRoadsHighway) ||
+                                (this.lastShowRoadsTrunk != showRoadsTrunk) ||
+                                (this.lastShowRoadsPrimary != showRoadsPrimary) ||
+                                (this.lastShowAirspaces != showAirspaces) ||
+                                (this.lastShowAirways != showAirways);
+                                
+        this.lastShowRoads = map.htmlRoot.showRoads;
+        this.lastShowAirspaces = map.htmlRoot.showAirspaces;
+        this.lastShowAirways = map.htmlRoot.showAirways;
+        
         this.parentWidth = map.htmlRoot.getWidth();
         this.parentHeight = map.htmlRoot.getHeight();
         if (this.parentWidth * this.parentHeight < 1) {
@@ -316,23 +316,23 @@ class SvgRoadNetworkElement extends SvgMapElement {
         if (l === 0) {
             return;
         }
-		
-		if (!map.htmlRoot.showRoads && !map.htmlRoot.showAirspaces && !map.htmlRoot.showAirways) {
-			// all elements are hidden, so cleanup graphics and skip the rest of the update
-			this._iterator = 0;
-			this._visibleCanvas.context2D.clearRect(0, 0, this.canvasSize, this.canvasSize);
+        
+        if (!map.htmlRoot.showRoads && !map.htmlRoot.showAirspaces && !map.htmlRoot.showAirways) {
+            // all elements are hidden, so cleanup graphics and skip the rest of the update
+            this._iterator = 0;
+            this._visibleCanvas.context2D.clearRect(0, 0, this.canvasSize, this.canvasSize);
             invisibleContext.clearRect(0, 0, this.canvasSize, this.canvasSize);
-			this._deprecatePoints = true;
-			this._deprecatePointsIterator = 0;
-			return;
-		}
-		
+            this._deprecatePoints = true;
+            this._deprecatePointsIterator = 0;
+            return;
+        }
+        
         this.onLatLongChanged(map, this._lastCoords);
         let diffLastLat = Math.abs(this._lastCoords.lat - map.centerCoordinates.lat);
         let diffLastLong = Math.abs(this._lastCoords.long - map.centerCoordinates.long);
-		
+        
         if (this._lastRange !== map.NMWidth || resized) {
-			// map was resized or map range (zoom level) was changed
+            // map was resized or map range (zoom level) was changed
             this._iterator = 0;
             this._lastRange = map.NMWidth;
             this._visibleCanvas.context2D.clearRect(0, 0, this.canvasSize, this.canvasSize);
@@ -348,9 +348,9 @@ class SvgRoadNetworkElement extends SvgMapElement {
             return;
         }
         if (this._iterator >= l) {
-			// finished drawing to back buffer
+            // finished drawing to back buffer
             if (this._iterator !== Infinity) {
-				// screen needs to be updated from back buffer
+                // screen needs to be updated from back buffer
                 let visibleContext = this._visibleCanvas.context2D;
                 visibleContext.clearRect(0, 0, this.canvasSize, this.canvasSize);
                 visibleContext.drawImage(this._invisibleCanvases[this._activeInvisibleCanvasIndex].canvas, 0, 0, this.canvasSize, this.canvasSize);
@@ -361,7 +361,7 @@ class SvgRoadNetworkElement extends SvgMapElement {
             }
             if (visibilityChanged || this._hasNewRoads || diffLastLat > thresholdLat || diffLastLong > thresholdLong || Math.abs(this._forcedDirection - map.rotation) > 2) {
                 // back buffer needs to be updated
-				this._iterator = 0;
+                this._iterator = 0;
                 this._activeInvisibleCanvasIndex = (this._activeInvisibleCanvasIndex + 1) % 2;
                 invisibleContext = this._invisibleCanvases[this._activeInvisibleCanvasIndex].context2D;
                 invisibleContext.clearRect(0, 0, this.canvasSize, this.canvasSize);
@@ -397,15 +397,15 @@ class SvgRoadNetworkElement extends SvgMapElement {
         while ((performance.now() - t0) < SvgRoadNetworkElement.MAX_STALL_DRAW_ROADS && this._iterator < l) {
             let link = links.get(this._iterator++);
             if (link) {
-				
-				if ((link.type == 0 && !showRoadsHighway) ||
-					(link.type == 2 && !showRoadsTrunk) ||
-					(link.type == 4 && !showRoadsPrimary) ||
-					(link.type == 101 && !showAirways) ||
-					(link.type > 102 && !showAirspaces)) {
-					continue;
-				}
-				
+                
+                if ((link.type == 0 && !showRoadsHighway) ||
+                    (link.type == 2 && !showRoadsTrunk) ||
+                    (link.type == 4 && !showRoadsPrimary) ||
+                    (link.type == 101 && !showAirways) ||
+                    (link.type > 102 && !showAirspaces)) {
+                    continue;
+                }
+                
                 if (lastLinkType !== link.type) {
                     if (link.type === 0) {
                         invisibleContext.stroke();
@@ -488,7 +488,7 @@ class SvgRoadNetworkElement extends SvgMapElement {
                         lastLinkType = link.type;
                     }
                 }
-				
+                
                 let n1 = link.start;
                 let n2 = link.end;
                 if (!n1.isPointUpToDate) {
@@ -520,7 +520,7 @@ class SvgRoadNetworkElement extends SvgMapElement {
         invisibleContext.stroke();
         this.onLatLongChanged(map, this._lastCoords);
     }
-	
+    
     onLatLongChanged(_map, _coords) {
         let p = _map.coordinatesToXY(_coords);
         p.x -= this.svgMapSize * 0.5;
@@ -537,8 +537,8 @@ class SvgRoadNetworkElement extends SvgMapElement {
         }
         this.translateCanvas(this._visibleCanvas.canvas, left, top, _map.rotation - this._forcedDirection);
     }
-	
-	translateCanvas(_canvas, _x, _y, _rotation) {
+    
+    translateCanvas(_canvas, _x, _y, _rotation) {
         _canvas.style.transform = "translate(" + _x + "px, " + _y + "px) rotate(" + _rotation + "deg)";
     }
 }

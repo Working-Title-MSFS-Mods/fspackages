@@ -17,10 +17,10 @@ class AS3000_MFD extends NavSystem {
                 new AS3000_MFD_MainMap()
             ]),
         ];
-		
-		Include.addScript("/JS/debug.js", function () {
-			g_modDebugMgr.AddConsole(null);
-		});
+        
+        Include.addScript("/JS/debug.js", function () {
+            g_modDebugMgr.AddConsole(null);
+        });
     }
     disconnectedCallback() {
     }
@@ -36,18 +36,18 @@ class AS3000_MFD extends NavSystem {
 }
 
 class AS3000_MFD_WindDataDisplay extends HTMLElement {
-	static get observedAttributes() {
+    static get observedAttributes() {
         return [
-			"wind-mode",
+            "wind-mode",
             "wind-direction",
             "wind-strength",
         ];
     }
-	
+    
     constructor() {
         super();
     }
-	
+    
     connectedCallback() {
         this.root = document.createElementNS(Avionics.SVG.NS, "svg");
         this.root.setAttribute("viewBox", "0 0 150 50");
@@ -58,86 +58,86 @@ class AS3000_MFD_WindDataDisplay extends HTMLElement {
         this.windDataBackground.setAttribute("width", "149");
         this.windDataBackground.setAttribute("height", "49");
         this.windDataBackground.setAttribute("fill", "#1a1d21");
-		this.windDataBackground.setAttribute("style", "fill:#1a1d21; stroke:white; stroke-width:1");
+        this.windDataBackground.setAttribute("style", "fill:#1a1d21; stroke:white; stroke-width:1");
         this.root.appendChild(this.windDataBackground);
-		
-		// shorter, thicker arrow than the default
-		this.windData = document.createElementNS(Avionics.SVG.NS, "g");
-        this.root.appendChild(this.windData);
-		
-		this.arrow = document.createElementNS(Avionics.SVG.NS, "path");
-		this.arrow.setAttribute("d", "M25 2.5 L10.75 20 L19.75 20 L19.75 47.5 L30.25 47.5 L30.25 20 L39.25 20 Z");
-		this.arrow.setAttribute("fill", "white");
-        this.windData.appendChild(this.arrow);
-		
-		this.valueText = document.createElementNS(Avionics.SVG.NS, "text");
-		this.valueText.setAttribute("text-align", "right");
-		this.valueText.setAttribute("fill", "white");
-		this.valueText.setAttribute("x", "95");
-		this.valueText.setAttribute("y", "35");
-		this.valueText.setAttribute("text-anchor", "end");
-		this.valueText.setAttribute("font-size", "30");
-		this.valueText.setAttribute("font-family", "Roboto-Bold");
-		this.windData.appendChild(this.valueText);
-		this.unitText = document.createElementNS(Avionics.SVG.NS, "text");
-		this.unitText.textContent = "KT";
-		this.unitText.setAttribute("fill", "white");
-		this.unitText.setAttribute("x", "100");
-		this.unitText.setAttribute("y", "35");
-		this.unitText.setAttribute("font-size", "20");
-		this.unitText.setAttribute("font-family", "Roboto");
-		this.windData.appendChild(this.unitText);
         
-		this.noData = document.createElementNS(Avionics.SVG.NS, "g");
-		this.root.appendChild(this.noData);
-		let noDataText = document.createElementNS(Avionics.SVG.NS, "text");
-		noDataText.innerHTML = "NO WIND DATA";
-		noDataText.setAttribute("fill", "white");
-		noDataText.setAttribute("x", "75");
-		noDataText.setAttribute("y", "35");
-		noDataText.setAttribute("font-size", "20");
-		noDataText.setAttribute("font-family", "Roboto-Bold");
-		noDataText.setAttribute("text-anchor", "middle");
-		this.noData.appendChild(noDataText);
+        // shorter, thicker arrow than the default
+        this.windData = document.createElementNS(Avionics.SVG.NS, "g");
+        this.root.appendChild(this.windData);
+        
+        this.arrow = document.createElementNS(Avionics.SVG.NS, "path");
+        this.arrow.setAttribute("d", "M25 2.5 L10.75 20 L19.75 20 L19.75 47.5 L30.25 47.5 L30.25 20 L39.25 20 Z");
+        this.arrow.setAttribute("fill", "white");
+        this.windData.appendChild(this.arrow);
+        
+        this.valueText = document.createElementNS(Avionics.SVG.NS, "text");
+        this.valueText.setAttribute("text-align", "right");
+        this.valueText.setAttribute("fill", "white");
+        this.valueText.setAttribute("x", "95");
+        this.valueText.setAttribute("y", "35");
+        this.valueText.setAttribute("text-anchor", "end");
+        this.valueText.setAttribute("font-size", "30");
+        this.valueText.setAttribute("font-family", "Roboto-Bold");
+        this.windData.appendChild(this.valueText);
+        this.unitText = document.createElementNS(Avionics.SVG.NS, "text");
+        this.unitText.textContent = "KT";
+        this.unitText.setAttribute("fill", "white");
+        this.unitText.setAttribute("x", "100");
+        this.unitText.setAttribute("y", "35");
+        this.unitText.setAttribute("font-size", "20");
+        this.unitText.setAttribute("font-family", "Roboto");
+        this.windData.appendChild(this.unitText);
+        
+        this.noData = document.createElementNS(Avionics.SVG.NS, "g");
+        this.root.appendChild(this.noData);
+        let noDataText = document.createElementNS(Avionics.SVG.NS, "text");
+        noDataText.innerHTML = "NO WIND DATA";
+        noDataText.setAttribute("fill", "white");
+        noDataText.setAttribute("x", "75");
+        noDataText.setAttribute("y", "35");
+        noDataText.setAttribute("font-size", "20");
+        noDataText.setAttribute("font-family", "Roboto-Bold");
+        noDataText.setAttribute("text-anchor", "middle");
+        this.noData.appendChild(noDataText);
     }
     attributeChangedCallback(name, oldValue, newValue) {
         if (oldValue == newValue) {
             return;
-		}
-		
+        }
+        
         switch (name) {
             case "wind-mode":
-				let backgroundDisplay = "inherit";
-				let windDataDisplay = "none";
-				let noDataDisplay = "none";
-				if (newValue == 0) {
-					backgroundDisplay = "none";
+                let backgroundDisplay = "inherit";
+                let windDataDisplay = "none";
+                let noDataDisplay = "none";
+                if (newValue == 0) {
+                    backgroundDisplay = "none";
                 } else if (newValue == 4) {
-					windDataDisplay = "none";
-					noDataDisplay = "inherit";
-				} else {
-					windDataDisplay = "inherit";
-					noDataDisplay = "none";
-				}
-				this.windDataBackground.setAttribute("display", backgroundDisplay);
-				this.windData.setAttribute("display", windDataDisplay);
-				this.noData.setAttribute("display", noDataDisplay);
+                    windDataDisplay = "none";
+                    noDataDisplay = "inherit";
+                } else {
+                    windDataDisplay = "inherit";
+                    noDataDisplay = "none";
+                }
+                this.windDataBackground.setAttribute("display", backgroundDisplay);
+                this.windData.setAttribute("display", windDataDisplay);
+                this.noData.setAttribute("display", noDataDisplay);
                 break;
             case "wind-direction":
                 this.arrow.setAttribute("transform", "rotate(" + newValue + ", 25, 25)");
                 break;
             case "wind-strength":
-				let strength = parseFloat(newValue);
+                let strength = parseFloat(newValue);
                 this.valueText.textContent = fastToFixed(strength, 0);
-				this.arrow.setAttribute("display", "inherit");
-				this.valueText.setAttribute("x", "95");
-				this.unitText.setAttribute("x", "100");
-				if (strength >= 100) {
-					this.valueText.setAttribute("x", "100");
-					this.unitText.setAttribute("x", "115");
-				} else if (strength < 1) {
-					this.arrow.setAttribute("display", "none");
-				}
+                this.arrow.setAttribute("display", "inherit");
+                this.valueText.setAttribute("x", "95");
+                this.unitText.setAttribute("x", "100");
+                if (strength >= 100) {
+                    this.valueText.setAttribute("x", "100");
+                    this.unitText.setAttribute("x", "115");
+                } else if (strength < 1) {
+                    this.arrow.setAttribute("display", "none");
+                }
                 break;
         }
     }
@@ -147,7 +147,7 @@ customElements.define('as3000-mfd-wind-data', AS3000_MFD_WindDataDisplay);
 class AS3000_MFD_WindData extends MFD_WindData {
     constructor(_mapElement) {
         super();
-		this.mapElement = _mapElement;
+        this.mapElement = _mapElement;
     }
     init(root) {
         super.init(root);
@@ -155,29 +155,29 @@ class AS3000_MFD_WindData extends MFD_WindData {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-		if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.mapElement.simVarNameID, "number") == 0) {
-			this.svg.setAttribute("wind-mode", "0");
-		} else {
-			if (SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") < 5) {
-				this.svg.setAttribute("wind-mode", "4")
-			} else {
-				var wind = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180; // fix for MFD wind direction bug
-				
-				// compensate for map rotation
-				wind = fastToFixed((wind + this.mapElement.instrument.rotation) % 360, 0);
-				
-				if (wind != this.windValue) {
-					this.svg.setAttribute("wind-direction", wind);
-					this.windValue = wind;
-				}
-				var strength = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), 0);
-				if (strength != this.strengthValue) {
-					this.svg.setAttribute("wind-strength", strength);
-					this.strengthValue = strength;
-				}
-				this.svg.setAttribute("wind-mode", "2");
-			}
-		}
+        if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.mapElement.simVarNameID, "number") == 0) {
+            this.svg.setAttribute("wind-mode", "0");
+        } else {
+            if (SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
+                this.svg.setAttribute("wind-mode", "4")
+            } else {
+                var wind = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180; // fix for MFD wind direction bug
+                
+                // compensate for map rotation
+                wind = fastToFixed((wind + this.mapElement.instrument.rotation) % 360, 0);
+                
+                if (wind != this.windValue) {
+                    this.svg.setAttribute("wind-direction", wind);
+                    this.windValue = wind;
+                }
+                var strength = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), 0);
+                if (strength != this.strengthValue) {
+                    this.svg.setAttribute("wind-strength", strength);
+                    this.strengthValue = strength;
+                }
+                this.svg.setAttribute("wind-mode", "2");
+            }
+        }
     }
     onExit() {
     }
@@ -192,7 +192,12 @@ class AS3000_MFD_MapElement extends AS3000_MapElement {
         this.lastMapMode = 0;
         this.lastWeatherMapMode = 0;
     }
-	
+    
+    init(root) {
+        super.init(root);
+        this.instrument.showRangeDisplay = false;
+    }
+    
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         let isPositionOverride = SimVar.GetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number") != 0;
@@ -239,7 +244,7 @@ class AS3000_MFD_MapElement extends AS3000_MapElement {
 }
 class AS3000_MFD_MainMap extends NavSystemPage {
     constructor() {
-		let mapElement = new AS3000_MFD_MapElement("_MFD");
+        let mapElement = new AS3000_MFD_MapElement("_MFD");
         super("NAVIGATION MAP", "Map", new NavSystemElementGroup([
             mapElement,
             new AS3000_MFD_WindData(mapElement)
@@ -287,14 +292,14 @@ class AS3000_MFD_NavInfos extends NavSystemElement {
             Avionics.Utils.diffAndSet(this.ETE, Math.floor(ete / 3600).toFixed(0) + (min < 10 ? "+0" : "+") + min.toFixed(0));
         }
         Avionics.Utils.diffAndSet(this.BRG, fastToFixed(this.gps.currFlightPlanManager.getBearingToActiveWaypoint(), 0) + "°");
-		
-		let distance = this.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
-		if (distance >= 100) {
-			distance = fastToFixed(distance, 0);
-		} else {
-			distance = fastToFixed(distance, 1);
-		}
-		
+        
+        let distance = this.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
+        if (distance >= 100) {
+            distance = fastToFixed(distance, 0);
+        } else {
+            distance = fastToFixed(distance, 1);
+        }
+        
         Avionics.Utils.diffAndSet(this.DIS, distance + "NM");
         Avionics.Utils.diffAndSet(this.MSA, "____FT");
         if (ete == 0) {

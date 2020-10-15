@@ -5,7 +5,7 @@
 
 	<WwisePackages>
 		<MainPackage Name="Asobo_CJ4"/>
-		<AdditionalPackage Name="Asobo_CJ4_Extended"/>
+		<AdditionalPackage Name="Asobo_CJ4_WorkingTitle"/>
 	</WwisePackages>
 
   <AcousticParameters>
@@ -117,9 +117,17 @@
   	<!-- COCKPIT LOOPS SOUNDS ==================================================================================-->    
        
     <Sound WwiseData="true" WwiseEvent="battery_on" NodeName="MFD_SCREEN_1" ContinuousStopDelay="0.2" FadeOutType="2" FadeOutTime="5" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
-	  <WwiseRTPC SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0" RTPCName="SIMVAR_ELECTRICAL_MASTER_BATTERY_INTERPOLATION_A4_R4" />
+	    <WwiseRTPC SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0" RTPCName="SIMVAR_ELECTRICAL_MASTER_BATTERY_INTERPOLATION_A4_R4" />
+      <Range LowerBound="1.0" />
+    </Sound>  
+
+    <!-- <Sound WwiseData="true" WwiseEvent="wt_battery_on" NodeName="MFD_SCREEN_1" ContinuousStopDelay="0.1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
       <Range LowerBound="1.0" />
     </Sound>     
+
+    <Sound WwiseData="true" WwiseEvent="wt_battery_off" Continuous="false" NodeName="MFD_SCREEN_1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+      <Range UpperBound="0.0" />
+    </Sound>      -->
     	
 	<!-- Fuel pump ========================================================================================== -->
 	
@@ -223,26 +231,68 @@
       </Requires>
     </Sound>
 
-	  <Sound WwiseData="true" WwiseEvent="seatbelt_light" ViewPoint="Inside" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
-		  <Range LowerBound="1" />
-		  <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
-			  <Range LowerBound="1" />
-		  </Requires>
-	  </Sound>
+        <!--      PASSENGER BRIEFINGS-->
+      <Sound WwiseData="true" WwiseEvent="seatbelt_lights" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
+          <Range LowerBound="1" />
+      </Sound>
 
-	    <Sound WwiseData="true" WwiseEvent="air_fan" ViewPoint="Inside" NodeName="PASSENGER_KNOB_AIR_1" LocalVar="PASSENGER_KNOB_AIR_1" Units="PERCENT" Index="1" Continuous="false">
-		  <WwiseRTPC LocalVar="PASSENGER_KNOB_AIR_1" Units="PERCENT" Index="0" RTPCName="SIMVAR_AC" />
-		   <Requires LocalVar="CLIMATE_CONTROL" Units="number" Index="0">
-		   		<Range LowerBound="1" />
-		   </Requires>
-	  </Sound>
+      <Sound WwiseData="true" WwiseEvent="safety_lights" LocalVar="SAFETY_LIGHT_ON" Continuous="false">
+          <Range LowerBound="1" />
+      </Sound>
 
-	  <Sound WwiseData="true" WwiseEvent="air_fan" ViewPoint="Inside" NodeName="PASSENGER_KNOB_AIR_2" LocalVar="PASSENGER_KNOB_AIR_2" Units="PERCENT" Index="1" Continuous="false">
-		  <WwiseRTPC LocalVar="PASSENGER_KNOB_AIR_2" Units="PERCENT" Index="0" RTPCName="SIMVAR_AC" />
-		  <Requires LocalVar="CLIMATE_CONTROL" Units="number" Index="0">
-		   		<Range LowerBound="1" />
-		   </Requires>
-	  </Sound>
+      <Sound WwiseData="true" WwiseEvent="takeoff_short" LocalVar="PAX_BRIEF_TAKEOFF_SHORT_PLAYED" Continuous="false">
+          <Range LowerBound="1" />
+      </Sound>
+
+      <Sound WwiseData="true" WwiseEvent="takeoff_long" LocalVar="PAX_BRIEF_TAKEOFF_LONG_PLAYED" Continuous="false">
+          <Range LowerBound="1" />
+      </Sound>
+
+      <Sound WwiseData="true" WwiseEvent="oxygen_mask_deployment" LocalVar="PAX_BRIEF_OXYGEN_PLAYED" Continuous="false">
+          <Range LowerBound="1" />
+      </Sound>
+
+      <Sound WwiseData="true" WwiseEvent="turbulence" LocalVar="PAX_BRIEF_TURBULENCE_PLAYED" Continuous="false">
+          <Range LowerBound="1" />
+      </Sound>
+
+      <Sound WwiseData="true" WwiseEvent="landing" LocalVar="PAX_BRIEF_LANDING_PLAYED" Continuous="false">
+          <Range LowerBound="1" />
+      </Sound>
+
+      <Sound WwiseData="true" WwiseEvent="chime" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
+          <Range UpperBound="0" />
+      </Sound>
+
+      <Sound WwiseData="true" WwiseEvent="chime" LocalVar="SAFETY_LIGHT_ON" Continuous="false">
+          <Range UpperBound="0" />
+      </Sound>
+
+      <!--      PASSENGER AIR     -->
+
+      <Sound WwiseData="true" WwiseEvent="air_fan" ViewPoint="Inside" NodeName="PASSENGER_KNOB_AIR_1" LocalVar="PASSENGER_KNOB_AIR_1" Units="PERCENT" Index="1" Continuous="true">
+          <Range LowerBound="1" />
+          <WwiseRTPC LocalVar="PASSENGER_KNOB_AIR_1" Units="PERCENT" Index="0" RTPCName="SIMVAR_AC" />
+          <Requires LocalVar="CLIMATE_CONTROL" Units="number" Index="0">
+              <Range LowerBound="1" />
+          </Requires>
+          <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+              <Range LowerBound="1" />
+          </Requires>
+      </Sound>
+
+      <Sound WwiseData="true" WwiseEvent="air_fan" ViewPoint="Inside" NodeName="PASSENGER_KNOB_AIR_2" LocalVar="PASSENGER_KNOB_AIR_2" Units="PERCENT" Index="1" Continuous="true">
+          <Range LowerBound="1" />
+          <WwiseRTPC LocalVar="PASSENGER_KNOB_AIR_2" Units="PERCENT" Index="0" RTPCName="SIMVAR_AC" />
+          <Requires LocalVar="CLIMATE_CONTROL" Units="number" Index="0">
+              <Range LowerBound="1" />
+          </Requires>
+          <Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
+              <Range LowerBound="1" />
+          </Requires>
+      </Sound>
+
+
 
 
   </SimVarSounds>
@@ -279,8 +329,8 @@
   
 <!-- COMMON ####################################################################################### -->  
 	<!-- ELECTRICAL ========================================================================================== --> 
-    <Sound WwiseData="true" WwiseEvent="battery_switch" ViewPoint="Inside"/>	  
-    <Sound WwiseData="true" WwiseEvent="alternator_switch" ViewPoint="Inside"/>	      
+  <Sound WwiseData="true" WwiseEvent="battery_switch" ViewPoint="Inside"/>	  
+  <Sound WwiseData="true" WwiseEvent="alternator_switch" ViewPoint="Inside"/>	      
 	<Sound WwiseData="true" WwiseEvent="avionic_switch" ViewPoint="Inside"/>	  	
 	<Sound WwiseData="true" WwiseEvent="electrical_circuit_switch_on" ViewPoint="Inside"/>	  	
 	<Sound WwiseData="true" WwiseEvent="electrical_circuit_switch_off" ViewPoint="Inside"/>

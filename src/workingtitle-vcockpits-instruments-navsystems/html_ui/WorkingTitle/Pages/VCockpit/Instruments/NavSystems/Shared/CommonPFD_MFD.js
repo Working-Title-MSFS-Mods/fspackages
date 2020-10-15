@@ -296,6 +296,7 @@ class PFD_Attitude extends NavSystemElement {
     }
     init(root) {
         this.svg = this.gps.getChildById("Horizon");
+        this._syntheticVisionEnabled = WTDataStore.get("Attitude.SyntheticVision", false);
     }
     onEnter() {
     }

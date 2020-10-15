@@ -57,6 +57,8 @@ map-instrument {
     box-shadow:-1px -1px 0px 0px #fff inset, 1px 1px 0px 0px #000;
     font-weight:bold;
     padding:0 1vh; }
+  map-instrument #MapRange[state="Inactive"] {
+	display: none !important; }
 	map-instrument #MapRange .range {
         display: inline;
       font-size: 1.0em; }
