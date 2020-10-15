@@ -154,11 +154,7 @@ class CJ4_FMC_DepArrPage {
             rows[1][0] = " TRANS [blue]";
             let selectedDpEnrouteTransitionIndex = fmc.flightPlanManager.getDepartureEnRouteTransitionIndex();
             let selectedDpEnrouteTransition = selectedDeparture.enRouteTransitions[selectedDpEnrouteTransitionIndex];
-            //console.log("transitions: " + selectedDeparture.enRouteTransitions.length);
-            //console.log(selectedDeparture.enRouteTransitions[fmc.flightPlanManager.getDepartureEnRouteTransitionIndex()].name);
             if (selectedDpEnrouteTransition) {
-                console.log("selectedDpEnrouteTransition");
-                //let selectedDpEnrouteTransitionLength = selectedDpEnrouteTransition.legs.length - 1
                 rows[2][0] = selectedDpEnrouteTransition.name.trim() + "[d-text green]";
                 fmc.onLeftInput[1] = () => {
                     fmc.setMsg("Working...");
@@ -169,8 +165,6 @@ class CJ4_FMC_DepArrPage {
                 };
             }
             else {
-                console.log("no selectedDpEnrouteTransition");
-                //console.log(selectedDeparture.enRouteTransitions[fmc.flightPlanManager.getDepartureEnRouteTransitionIndex()].name);
                 displayableDpEnrouteTransitionsCount = selectedDeparture.enRouteTransitions.length;
                 let maxDpEnrouteTransitionPageIndex = Math.max(Math.ceil(displayableDpEnrouteTransitionsCount / 4), 1) - 1;
                 let displayedDpEnrouteTransitionPageIndex = Math.min(currentPage - 1, maxDpEnrouteTransitionPageIndex);
@@ -374,7 +368,7 @@ class CJ4_FMC_DepArrPage {
             let selectedTransitionIndex = fmc.flightPlanManager.getApproachTransitionIndex();
             let selectedTransition = selectedApproach.transitions[selectedTransitionIndex];
             if (selectedTransition) {
-                rows[2] = ["", selectedTransition.waypoints[0].infos.icao.substr(5).trim() + "[d-text green]"];
+                rows[2] = ["", selectedTransition.name.trim() + "[d-text green]"];
                 fmc.onRightInput[1] = () => {
                     fmc.setMsg("Working...");
                     fmc.setApproachTransitionIndex(-1, () => {
@@ -391,7 +385,7 @@ class CJ4_FMC_DepArrPage {
                     let transitionIndex = 4 * displayedTransitionPageIndex + i;
                     let transition = selectedApproach.transitions[transitionIndex];
                     if (transition) {
-                        let name = transition.waypoints[0].infos.icao.substr(5).trim();
+                        let name = transition.name.trim();
                         rows[2 * (i + 1)][1] = name;
                         fmc.onRightInput[i + 1] = () => {
                             fmc.setApproachTransitionIndex(transitionIndex, () => {
@@ -533,7 +527,7 @@ class CJ4_FMC_DepArrPage {
             let selectedEnrouteTransitionIndex = fmc.flightPlanManager.getArrivalTransitionIndex();
             let selectedEnrouteTransition = selectedArrival.enRouteTransitions[selectedEnrouteTransitionIndex];
             if (selectedEnrouteTransition) {
-                rows[2][0] = selectedEnrouteTransition.legs[0].fixIcao.substr(5).trim() + "[d-text green]";
+                rows[2][0] = selectedEnrouteTransition.name.trim() + "[d-text green]";
                 fmc.onLeftInput[1] = () => {
                     fmc.setMsg("Working...");
                     fmc.setArrivalIndex(selectedArrivalIndex, -1, () => {
@@ -550,7 +544,7 @@ class CJ4_FMC_DepArrPage {
                     let enrouteTransitionIndex = 4 * displayedEnrouteTransitionPageIndex + i;
                     let enrouteTransition = selectedArrival.enRouteTransitions[enrouteTransitionIndex];
                     if (enrouteTransition) {
-                        let enrouteTransitionName = enrouteTransition.legs[0].fixIcao.substr(5).trim();
+                        let enrouteTransitionName = enrouteTransition.name.trim();
                         rows[2 * (i + 1)][0] = enrouteTransitionName;
                         fmc.onLeftInput[i + 1] = () => {
                             fmc.setMsg("Working...");
