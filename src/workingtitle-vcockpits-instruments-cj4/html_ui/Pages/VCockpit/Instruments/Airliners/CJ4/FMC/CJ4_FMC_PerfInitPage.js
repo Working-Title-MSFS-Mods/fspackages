@@ -195,6 +195,7 @@ class CJ4_FMC_PerfInitPage {
         let arrRunwayLength = "";
         let arrRunwayOutput = "";
         let arrRunway = "";
+        let runwayLoaded = false;
 
         if (fmc.flightPlanManager.getApproachRunway()) {
             arrRunway = fmc.flightPlanManager.getApproachRunway();
@@ -202,9 +203,19 @@ class CJ4_FMC_PerfInitPage {
             arrRunwayDirection = new Number(arrRunway.direction);
             arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
             arrRunwayLength = new Number((arrRunway.length) * 3.28);
+            runwayLoaded = true;
+        }
+        else if (fmc.vfrLandingRunway) {
+            arrRunway = fmc.vfrLandingRunway;
+            arrRunwayOutput = "RW" + Avionics.Utils.formatRunway(arrRunway.designation).trim();
+            arrRunwayDirection = new Number(arrRunway.direction);
+            arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
+            arrRunwayLength = new Number((arrRunway.length) * 3.28);
+            runwayLoaded = true;
         }
         else {
             arrRunwayOutput = "NO APPROACH RW";
+            runwayLoaded = false;
         }
 
         let headwind = "";
@@ -256,7 +267,7 @@ class CJ4_FMC_PerfInitPage {
             else {
                 fmc.showErrorMessage("INVALID");
             }
-            { CJ4_FMC_PerfInitPage.ShowPage13(fmc); }
+            CJ4_FMC_PerfInitPage.ShowPage13(fmc);
         };
 
         fmc.onRightInput[1] = () => {
@@ -271,7 +282,7 @@ class CJ4_FMC_PerfInitPage {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
-            { CJ4_FMC_PerfInitPage.ShowPage13(fmc); }
+            CJ4_FMC_PerfInitPage.ShowPage13(fmc);
         };
 
         fmc.onRightInput[2] = () => {
@@ -310,10 +321,10 @@ class CJ4_FMC_PerfInitPage {
             arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY[green]/[white]WET[s-text]"
             : "DRY[s-text]/[white]WET[green]";
             fmc.clearUserInput();
-            { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
+            CJ4_FMC_PerfInitPage.ShowPage13(fmc);
         }
         fmc.onPrevPage = () => {
-            if (fmc.flightPlanManager.getApproachRunway() && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
+            if (runwayLoaded == true && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
                 CJ4_FMC_PerfInitPage.ShowPage15(fmc);
             }
             else {
@@ -321,7 +332,7 @@ class CJ4_FMC_PerfInitPage {
             }
             };
         fmc.onNextPage = () => {
-            if (fmc.flightPlanManager.getApproachRunway() && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
+            if (runwayLoaded == true && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
                 CJ4_FMC_PerfInitPage.ShowPage14(fmc);
             }
             else {
@@ -333,10 +344,30 @@ class CJ4_FMC_PerfInitPage {
     static ShowPage14(fmc) { //APPROACH REF Page 2
         fmc.clearDisplay();
         let grWtCell = "";
-        let arrRunwayOutput = "";
         let grossWeightValue = fmc.getWeight();
         if (isFinite(grossWeightValue)) {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
+        }
+
+        let arrRunwayDirection = "";
+        let arrRunwayElevation = "";
+        let arrRunwayLength = "";
+        let arrRunwayOutput = "";
+        let arrRunway = "";
+
+        if (fmc.flightPlanManager.getApproachRunway()) {
+            arrRunway = fmc.flightPlanManager.getApproachRunway();
+            arrRunwayOutput = "RW" + fmc.getRunwayDesignation(arrRunway);
+            arrRunwayDirection = new Number(arrRunway.direction);
+            arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
+            arrRunwayLength = new Number((arrRunway.length) * 3.28);
+        }
+        else if (fmc.vfrLandingRunway) {
+            arrRunway = fmc.vfrLandingRunway;
+            arrRunwayOutput = "RW" + Avionics.Utils.formatRunway(arrRunway.designation).trim();
+            arrRunwayDirection = new Number(arrRunway.direction);
+            arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
+            arrRunwayLength = new Number((arrRunway.length) * 3.28);
         }
 
         //ADDED FUEL FLOW
@@ -352,13 +383,9 @@ class CJ4_FMC_PerfInitPage {
         let destinationIdent = "";
         let destinationDistance = 0;
 
-        //current active waypoint data
-        if (fmc.flightPlanManager.getActiveWaypoint()) {
-            activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
-        }
-
         //destination data
         if (fmc.flightPlanManager.getDestination() && fmc.flightPlanManager.getActiveWaypoint() && fmc.flightPlanManager.getNextActiveWaypoint()) {
+            activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
             let destination = fmc.flightPlanManager.getDestination();
             destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
             let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
@@ -367,6 +394,7 @@ class CJ4_FMC_PerfInitPage {
                 : destinationDistanceFlightplan;
         }
         else if (fmc.flightPlanManager.getDestination()) {
+            let destination = fmc.flightPlanManager.getDestination();
             let destinationDistanceDirect = new Number(Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
             destinationDistance = destinationDistanceDirect;
         }
@@ -404,8 +432,6 @@ class CJ4_FMC_PerfInitPage {
         }
 
         if (fmc.landingWindDir != "---") {
-            let arrRunway = fmc.flightPlanManager.getApproachRunway();
-            let arrRunwayDirection = new Number(arrRunway.direction);
             let headwind = Math.trunc(fmc.landingWindSpeed * (Math.cos((arrRunwayDirection * Math.PI / 180) - (fmc.landingWindDir * Math.PI / 180))));
             if (headwind > 0) {
                 let headwindFactor = (fmc.landingPressAlt * .00683) + 15;
@@ -414,13 +440,6 @@ class CJ4_FMC_PerfInitPage {
                 let tailWindFactor = (fmc.landingPressAlt * .01608) + 55;
                 ldgFieldLength = ldgFieldLength - (headwind * tailWindFactor);
             }
-        }
-
-        let arrRunwayLength = "";
-        let arrRunway = fmc.flightPlanManager.getApproachRunway();
-        if (arrRunway) {
-            arrRunwayLength = new Number((arrRunway.length) * 3.28);
-            arrRunwayOutput = "RW" + fmc.getRunwayDesignation(arrRunway);
         }
 
         if (fmc.arrRunwayCondition == 1) { // If the runway is wet
@@ -458,7 +477,6 @@ class CJ4_FMC_PerfInitPage {
             SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", true);
         }
 
-
         fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage15(fmc); };
         fmc.updateSideButtonActiveStatus();
@@ -482,12 +500,10 @@ class CJ4_FMC_PerfInitPage {
         let activeWaypointDist = 0;
         let destinationIdent = "";
         let destinationDistance = 0;
-
-        if (fmc.flightPlanManager.getActiveWaypoint()) {
+       
+        //destination data
+        if (fmc.flightPlanManager.getDestination() && fmc.flightPlanManager.getActiveWaypoint() && fmc.flightPlanManager.getNextActiveWaypoint()) {
             activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
-        }
-		
-		if (fmc.flightPlanManager.getDestination()) {
             let destination = fmc.flightPlanManager.getDestination();
             destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
             let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
@@ -495,7 +511,11 @@ class CJ4_FMC_PerfInitPage {
             destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
                 : destinationDistanceFlightplan;
         }
-		
+        else if (fmc.flightPlanManager.getDestination()) {
+            let destination = fmc.flightPlanManager.getDestination();
+            let destinationDistanceDirect = new Number(Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
+            destinationDistance = destinationDistanceDirect;
+        }
 		let eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
             : 0;
         let fuelBurn = eteToDestination * totalFuelFlow;
