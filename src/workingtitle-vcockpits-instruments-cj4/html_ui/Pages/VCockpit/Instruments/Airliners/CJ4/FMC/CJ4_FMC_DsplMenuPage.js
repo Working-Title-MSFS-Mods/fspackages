@@ -34,38 +34,38 @@ class CJ4_FMC_DsplMenuPage {
             this.toggleSymbol(CJ4_MapSymbol.NAVAIDS).then(() => {
                 CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
             });
-        }
+        };
 
         fmc.onLeftInput[3] = () => {
             this.toggleSymbol(CJ4_MapSymbol.INTERSECTS).then(() => {
                 CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
             });
-        }
+        };
 
         fmc.onRightInput[2] = () => {
             this.toggleSymbol(CJ4_MapSymbol.CONSTRAINTS).then(() => {
                 CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
             });
-        }
+        };
 
         fmc.onRightInput[3] = () => {
             this.toggleSymbol(CJ4_MapSymbol.AIRPORTS).then(() => {
                 CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
             });
-        }
+        };
 
         fmc._templateRenderer.setTemplateRaw([
             [" LEFT DISPLAY MENU[blue]", "1/2 [blue]"],
             ["", "", "MFD MAP DISPLAY[blue]"],
-            ["NEAREST APTS[s-text]", "ETA[s-text]"],
+            ["NEAREST APTS[s-text disabled]", "ETA[s-text disabled]"],
             [""],
-            ["HI NAVAIDS[s-text]", "SPEED[s-text]"],
+            ["HI NAVAIDS[s-text disabled]", "SPEED[s-text disabled]"],
             [""],
             [loNavaidsActive, altitudeActive],
             [""],
             [intersectionsActive, airportsActive],
             [""],
-            ["TERM WPTS[s-text]", "MISS APPR[s-text]"],
+            ["TERM WPTS[s-text disabled]", "MISS APPR[s-text disabled]"],
             ["WINDOW[blue s-text]", "SIDE[blue]"],
             ["OFF/[s-text]ON[green]/VNAV[s-text]", "L[green]/[white]R[s-text]>"]
         ]);
@@ -79,9 +79,9 @@ class CJ4_FMC_DsplMenuPage {
         fmc._templateRenderer.setTemplateRaw([
             [" LEFT DISPLAY MENU[blue]", "2/2 [blue]"],
             ["", "", "MFD MAP DISPLAY[blue s-text]"],
-            ["MISS APPR[s-text]"],
+            ["MISS APPR[s-text disabled]"],
             [""],
-            ["NDBS[s-text]"],
+            ["NDBS[s-text disabled]"],
             [""],
             ["RNG: ALT SEL"],
             [""],

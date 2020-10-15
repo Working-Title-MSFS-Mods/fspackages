@@ -7,7 +7,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             ["<PERF INIT", "FUEL MGMT>"],
             [""],
-            ["<VNAV SETUP", "FLT LOG>"], //Page 3, 4, 5 ----12
+            ["<VNAV SETUP[disabled]", "FLT LOG>"], //Page 3, 4, 5 ----12
             [""],
             ["<TAKEOFF", "APPROACH>"], //Page 6, 7, 8 ---13, 14, 15
             [""],
