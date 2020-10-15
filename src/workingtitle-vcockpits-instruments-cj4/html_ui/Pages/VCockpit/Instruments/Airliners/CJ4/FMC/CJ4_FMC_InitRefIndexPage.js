@@ -1197,33 +1197,106 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage30(fmc) { //DATALINK
         fmc.clearDisplay();
-
         fmc.registerPeriodicPageRefresh(() => {
+        
+        let currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
+        let currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
+        //let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+        let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+        //let fromWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint();
+        let toWaypoint = fmc.flightPlanManager.getActiveWaypoint();
+        let apCurrentHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "Degrees");	
+        let currTrack = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees");
+        let xtk = SimVar.GetSimVarValue("GPS WP CROSS TRK", "meters") * (0.000539957); //meters to NM conversion
+        let dtk = toWaypoint.bearingInFP.toFixed(0);
+        //let distanceToWaypoint = Avionics.Utils.computeDistance(currPos, toWaypoint.infos.coordinates);
+        //let bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(currPos, toWaypoint.infos.coordinates);
+        let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
 
-            let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
-            let hours = new String(Math.trunc(simtime / 3600));
-            let minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
-            let hourspad = hours.padStart(2, "0");
-            let minutesspad = minutes.padStart(2, "0");
+        let activeWaypointDistance = fmc.flightPlanManager.getDistanceToActiveWaypoint();
+        let desiredFPA = 3;
+        
 
-            fmc._templateRenderer.setTemplateRaw([
-                ["DL[blue]", "1/2[blue]", "DATALINK MENU[blue]"],
-                [""],
-                ["<RCVD MSGS", "ATS LOG>"],
-                [""],
-                ["<SEND MSGS", "DEPART CLX>"],
-                [""],
-                ["<WEATHER", "OCEANIC CLX>"],
-                [""],
-                ["<TWIP"],
-                [""],
-                ["<ATIS"],
-                ["        NO COMM[green s-text]"],
-                ["<RETURN [white]" + hourspad + "[blue s-text]" + ":[blue s-text]" + minutesspad + "[blue s-text]"]
-            ]);
-            fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-            fmc.updateSideButtonActiveStatus();
+
+        let windCorrection = 180 * Math.asin(currCrosswind / groundSpeed) / Math.PI;
+        
+        let setHeading = dtk;
+
+        if (xtk >= 1) {
+            setHeading = dtk + windCorrection - 30 < 0 ? dtk + windCorrection - 330
+                : dtk + windCorrection - 30;
+        }
+        else if (xtk <= -1) {
+            setHeading = dtk + windCorrection + 30 > 360 ? dtk + windCorrection - 330
+                : dtk + windCorrection + 30;
+        }
+        else if (1 > xtk && xtk > 0.5) {
+            setHeading = dtk + windCorrection - 20 < 0 ? dtk + windCorrection - 340
+                : dtk + windCorrection - 20;
+        }
+        else if (-1 < xtk && xtk < -0.5) {
+            setHeading = dtk + windCorrection + 20 > 360 ? dtk + windCorrection - 340
+                : dtk + windCorrection + 20;
+        }
+        else if (0.5 >= xtk && xtk > 0.2) {
+            setHeading = dtk + windCorrection - 10 < 0 ? dtk + windCorrection - 350
+                : dtk + windCorrection - 10;
+        }
+        else if (-0.5 <= xtk && xtk < -0.2) {
+            setHeading = dtk + windCorrection + 10 > 360 ? dtk + windCorrection - 350
+                : dtk + windCorrection + 10;
+        }
+        else if (0.2 >= xtk && xtk > 0) {
+            setHeading = dtk + windCorrection - 5 < 0 ? dtk + windCorrection - 355
+                : dtk + windCorrection - 5;
+        }
+        else if (-0.2 <= xtk && xtk < 0) {
+            setHeading = dtk + windCorrection + 5 > 360 ? dtk + windCorrection - 355
+                : dtk + windCorrection + 5;
+        }
+        else if (xtk = 0) {
+            setHeading = dtk + windCorrection;
+        }
+        console.log(setHeading.toFixed(0));
+        SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading.toFixed(0));
+        
+        fmc.setTemplate([
+            ["CWB MANUAL VNAV" + "[color]blue"],
+            [""],
+            ["currCrosswind", "groundSpeed"],
+            [currCrosswind.toFixed(0) + "", groundSpeed.toFixed(0) + ""],
+            ["xtk", "dtk"],
+            [xtk.toFixed(2) + "", dtk.toFixed(0) + ""],
+            ["windCorrection", "setHeading"],
+            [windCorrection.toFixed(0) + "", setHeading.toFixed(0) + ""],
+            ["currTrack", "apCurrentHeading"],
+            [currTrack.toFixed(0) + "", apCurrentHeading.toFixed(0) + ""],
+            [""],
+            [""],
+            ["<RETURN"]
+        ]);
+        //fmc.setTemplate([
+        //    ["DL    DATALINK MENU" + "[color]blue"],
+        //    [""],
+        //    ["<RCVD MSGS", "ATS LOG>"],
+        //    [""],
+        //    ["<SEND MSGS", "DEPART CLX>"],
+        //    [""],
+        //    ["<WEATHER", "OCEANIC CLX>"],
+        //    [""],
+        //    ["<TWIP"],
+        //    [""],
+        //    ["<ATIS"],
+        //    [""],
+        //    ["<RETURN"]
+        //]);
+
         }, 1000, true);
+
+
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.updateSideButtonActiveStatus();
     }
 }
+
 //# sourceMappingURL=CJ4_FMC_InitRefIndexPage.js.map
