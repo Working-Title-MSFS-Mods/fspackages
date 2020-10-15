@@ -120,8 +120,8 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
 AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH = 5;
 AS3000_PFD_InnerMap.RANGE_RING_COMPASS_BEARING_TICK_MAJOR_LENGTH = 20;
 AS3000_PFD_InnerMap.RANGE_RING_COMPASS_BEARING_TICK_MINOR_LENGTH = 10;
-AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_SIZE = 40;
-AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_STROKE_WIDTH = 5;
+AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_SIZE = 50;
+AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_STROKE_WIDTH = 20;
 
 class AS3000_PFD_MainPage extends NavSystemPage {
     constructor() {
@@ -199,7 +199,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
             new AS3000_PFD_SoftKeyElement("Weather Legend"),
             new AS3000_PFD_SoftKeyElement("Traffic"),
             new AS3000_PFD_SoftKeyElement("Storm-scope"),
-            new AS3000_PFD_SoftKeyElement("Terrain"),
+            new AS3000_PFD_SoftKeyElement("Terrain", this.toggleTerrain.bind(this), null, this.terrainStatus.bind(this), this.getInsetMapSoftkeyState.bind(this)),
             new AS3000_PFD_SoftKeyElement("Data Link Settings"),
             new AS3000_PFD_SoftKeyElement("WX&nbsp;Overlay", this.toggleWX.bind(this), null, this.wxOverlayStatus.bind(this), this.getInsetMapSoftkeyState.bind(this)),
             new AS3000_PFD_SoftKeyElement(""),
@@ -327,6 +327,17 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     
     dlctrStatus() {
         return AS3000_MapElement.DETAIL_DISPLAY_TEXT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.innerMap.simVarNameID, "number")];
+    }
+    
+    toggleTerrain() {
+        if (this.innerMap.isEnabled()) {
+            AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT, this.innerMap.simVarNameID,
+                    (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.innerMap.simVarNameID, "number") + 1) % AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT.length);
+        }
+    }
+    
+    terrainStatus() {
+        return AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.innerMap.simVarNameID, "number")];
     }
     
     toggleWX() {
