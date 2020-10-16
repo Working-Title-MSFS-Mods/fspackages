@@ -1211,70 +1211,118 @@ class CJ4_FMC_InitRefIndexPage {
         let dtk = toWaypoint.bearingInFP.toFixed(0);
         //let distanceToWaypoint = Avionics.Utils.computeDistance(currPos, toWaypoint.infos.coordinates);
         //let bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(currPos, toWaypoint.infos.coordinates);
-        let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
+        //let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
+        let apCurrentAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "Feet");
+        let apCurrentVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute");
+        let altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
+                
 
         let activeWaypointDistance = fmc.flightPlanManager.getDistanceToActiveWaypoint();
         let desiredFPA = 3;
+        let activeWaypointTargetAltitude = 2000;
+        let desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(desiredFPA * (Math.PI / 180));
+        let desiredAltitude = activeWaypointTargetAltitude + (Math.tan(desiredFPA * (Math.PI / 180)) * activeWaypointDistance * 6076.12);
         
-
-
-        let windCorrection = 180 * Math.asin(currCrosswind / groundSpeed) / Math.PI;
+        //let windCorrection = 180 * Math.asin(currCrosswind / groundSpeed) / Math.PI;
         
         let setHeading = dtk;
+        let setVerticalSpeed = desiredVerticalSpeed;
+        //let vsDeviation = desiredVerticalSpeed < 0 ? desiredVerticalSpeed - apCurrentVerticalSpeed
+        //    :desiredVerticalSpeed > 0 ? apCurrentVerticalSpeed - desiredVerticalSpeed
+        //    :apCurrentVerticalSpeed;
+        let altDeviation = altitude - desiredAltitude;
 
-        if (xtk >= 1) {
-            setHeading = dtk + windCorrection - 30 < 0 ? dtk + windCorrection - 330
-                : dtk + windCorrection - 30;
+
+        if (altDeviation >= 500) {
+            setVerticalSpeed = desiredVerticalSpeed * 1.5;
         }
-        else if (xtk <= -1) {
-            setHeading = dtk + windCorrection + 30 > 360 ? dtk + windCorrection - 330
-                : dtk + windCorrection + 30;
+        else if (altDeviation <= -500) {
+            setVerticalSpeed = desiredVerticalSpeed * 0;
         }
-        else if (1 > xtk && xtk > 0.5) {
-            setHeading = dtk + windCorrection - 20 < 0 ? dtk + windCorrection - 340
-                : dtk + windCorrection - 20;
+        else if (altDeviation >= 400) {
+            setVerticalSpeed = desiredVerticalSpeed * 1.4;
         }
-        else if (-1 < xtk && xtk < -0.5) {
-            setHeading = dtk + windCorrection + 20 > 360 ? dtk + windCorrection - 340
-                : dtk + windCorrection + 20;
+        else if (altDeviation <= -400) {
+            setVerticalSpeed = desiredVerticalSpeed * 0;
         }
-        else if (0.5 >= xtk && xtk > 0.2) {
-            setHeading = dtk + windCorrection - 10 < 0 ? dtk + windCorrection - 350
-                : dtk + windCorrection - 10;
+        else if (altDeviation >= 300) {
+            setVerticalSpeed = desiredVerticalSpeed * 1.3;
         }
-        else if (-0.5 <= xtk && xtk < -0.2) {
-            setHeading = dtk + windCorrection + 10 > 360 ? dtk + windCorrection - 350
-                : dtk + windCorrection + 10;
+        else if (altDeviation <= -300) {
+            setVerticalSpeed = desiredVerticalSpeed * 0.25;
         }
-        else if (0.2 >= xtk && xtk > 0) {
-            setHeading = dtk + windCorrection - 5 < 0 ? dtk + windCorrection - 355
-                : dtk + windCorrection - 5;
+        else if (altDeviation >= 200) {
+            setVerticalSpeed = desiredVerticalSpeed * 1.2;
         }
-        else if (-0.2 <= xtk && xtk < 0) {
-            setHeading = dtk + windCorrection + 5 > 360 ? dtk + windCorrection - 355
-                : dtk + windCorrection + 5;
+        else if (altDeviation <= -200) {
+            setVerticalSpeed = desiredVerticalSpeed * 0.5;
         }
-        else if (xtk = 0) {
-            setHeading = dtk + windCorrection;
+        else if (altDeviation >= 100) {
+            setVerticalSpeed = desiredVerticalSpeed * 1.1;
         }
-        console.log(setHeading.toFixed(0));
-        SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading.toFixed(0));
+        else if (altDeviation <= -100) {
+            setVerticalSpeed = desiredVerticalSpeed * 0.8;
+        }
+        else if (altDeviation >= 50) {
+            setVerticalSpeed = desiredVerticalSpeed * 1.05;
+        }
+        else if (altDeviation <= -50) {
+            setVerticalSpeed = desiredVerticalSpeed * 0.9;
+        }
+        else {
+            setVerticalSpeed = desiredVerticalSpeed;
+        }
+        console.log(setVerticalSpeed.toFixed(0));
+        //SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading.toFixed(0));
+
+        let deltaVS = setVerticalSpeed - apCurrentVerticalSpeed;
+        let iMax = deltaVS > 0 ? Math.min(deltaVS / 100)
+            :deltaVS < 0 ? Math.max(deltaVS / 100)
+            : 0;
+        let iMaxAbs = Math.abs(iMax);
+        for (let i = 0; i < iMaxAbs; i++) {
+            if (deltaVS < 0) {
+                SimVar.SetSimVarValue("K:AP_VS_VAR_DEC", "number", 0);
+            }
+            else if (deltaVS > 0) {
+                SimVar.SetSimVarValue("K:AP_VS_VAR_INC", "number", 0);
+            }
+        }
+
+        //SimVar.SetSimVarValue("K:AP_VS_VAR_SELECT", "feet per minute", setVerticalSpeed.toFixed(0));
+
         
-        fmc.setTemplate([
-            ["CWB MANUAL VNAV" + "[color]blue"],
+
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "", "CWB MANUAL VNAV" + "[blue]"],
             [""],
-            ["currCrosswind", "groundSpeed"],
-            [currCrosswind.toFixed(0) + "", groundSpeed.toFixed(0) + ""],
-            ["xtk", "dtk"],
-            [xtk.toFixed(2) + "", dtk.toFixed(0) + ""],
-            ["windCorrection", "setHeading"],
-            [windCorrection.toFixed(0) + "", setHeading.toFixed(0) + ""],
-            ["currTrack", "apCurrentHeading"],
-            [currTrack.toFixed(0) + "", apCurrentHeading.toFixed(0) + ""],
-            [""],
-            [""],
+            [" target altitude[blue]", "target distance [blue]"],
+            [activeWaypointTargetAltitude.toFixed(0) + "ft", activeWaypointDistance.toFixed(1) + "nm"],
+            [" altitude[blue]", "ground speed [blue]"],
+            [altitude.toFixed(0) + "ft", groundSpeed.toFixed(0) + ""],
+            [" target FPA[blue]", "target VS [blue]"],
+            [desiredFPA.toFixed(0) + "°", desiredVerticalSpeed.toFixed(0) + "fpm"],
+            [" alt dev[blue]", "ap vs [blue]"],
+            [altDeviation.toFixed(0) + "ft", apCurrentVerticalSpeed.toFixed(0) + "fpm"],
+            [" set vertical speed[blue]", ""],
+            [setVerticalSpeed.toFixed(0) + "fpm[green]", ""],
             ["<RETURN"]
         ]);
+        //fmc.setTemplate([
+        //    ["CWB MANUAL VNAV" + "[color]blue"],
+        //    [""],
+        //    ["currCrosswind", "groundSpeed"],
+        //    [currCrosswind.toFixed(0) + "", groundSpeed.toFixed(0) + ""],
+        //    ["xtk", "dtk"],
+        //    [xtk.toFixed(2) + "", dtk.toFixed(0) + ""],
+        //    ["windCorrection", "setHeading"],
+        //    [windCorrection.toFixed(0) + "", setHeading.toFixed(0) + ""],
+        //    ["currTrack", "apCurrentHeading"],
+        //    [currTrack.toFixed(0) + "", apCurrentHeading.toFixed(0) + ""],
+        //    [""],
+        //    [""],
+        //    ["<RETURN"]
+        //]);
         //fmc.setTemplate([
         //    ["DL    DATALINK MENU" + "[color]blue"],
         //    [""],
