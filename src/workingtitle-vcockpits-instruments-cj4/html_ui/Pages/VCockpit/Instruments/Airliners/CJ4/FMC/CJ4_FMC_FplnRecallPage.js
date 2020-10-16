@@ -46,8 +46,10 @@ class CJ4_FMC_FplnRecallPage {
             let addWaypoint = async () => {
                 if (idx >= routeArr.length - 1) {
                     // DONE
-                    fmc.setMsg("DONE[green]");
+                    fmc.setMsg();
+                    fmc.showErrorMessage("DONE[green]");
                     fmc.flightPlanManager.setActiveWaypointIndex(0);
+                    CJ4_FMC_RoutePage.ShowPage1(fmc);
                     return;
                 }
                 let icao = routeArr[idx];
@@ -117,13 +119,14 @@ class CJ4_FMC_FplnRecallPage {
     }
 
     static ShowPage1(fmc) {
-        let pilotId = WTDataStore.get('simbriefPilotId');
-        if (pilotId) {
+        let pilotId = WTDataStore.get('simbriefPilotId', 'none');
+        if (pilotId && pilotId != "none") {
             fmc.setMsg("LOADING FPLN...[yellow]");
             this.GetFplnFromSimBrief(pilotId, fmc);
         }
         else {
             fmc.showErrorMessage("NO PILOT ID OR PLAN[red]");
         }
+
     }
 }

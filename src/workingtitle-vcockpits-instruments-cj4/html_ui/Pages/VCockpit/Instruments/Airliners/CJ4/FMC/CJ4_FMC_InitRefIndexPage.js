@@ -604,7 +604,7 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage17(fmc) { //ROUTE MENU
         fmc.clearDisplay();
-        let pilotId = WTDataStore.get('simbriefPilotId');
+        let pilotId = WTDataStore.get('simbriefPilotId', '-------');
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "ROUTE MENU[blue]"],
             [""],
