@@ -32,6 +32,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ### FPLN Page
 * Redesigned waypoint loader to dramatically improved flight plan management/FMS performance on FPLN page
 * Added ability to directly download and import the latest OFP from Simbrief - auto load simbrief flight plan directly to FMS!
+* Fixed bug where airways were renamed after entry
 
 ### DEP/ARR Page
 * Added ability to select VFR runway for landing (when no approach selected or available)
@@ -61,10 +62,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Added controllable passenger cabin lighting (accessed from FMS -> IDX -> MOD SETTINGS)
 
 ## Known Issues
-* Modifications of the flight plan can be slow at times. The cause for this is Asobo's FacilityLoader which they need to fix. When the FMC shows "Working..." it indicates an operation is in progress.
-* Sometimes when entering an airway and the exit fix, the airway name will change to the shared airway, however the routing is still correct.
 * You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are currently overhauling the flight plan management system to allow for much more flexibility and stability.
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
 * The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the various enhancements applied.
-* FLC stability appears to have regressed with the autopilot aircraft energy calculation changes in 1.9.3. We have made some improvements to this behavior in this update. We will continue to investigate after the 13 October 2020 patch is released.
-* Some flight plan distances are still misreported when the approach is activated. We will look at this more carefully after the Asobo update.
+* Some flight plan distances may still be misreported when the approach is activated. Please log an issue if you encounter this with details.
