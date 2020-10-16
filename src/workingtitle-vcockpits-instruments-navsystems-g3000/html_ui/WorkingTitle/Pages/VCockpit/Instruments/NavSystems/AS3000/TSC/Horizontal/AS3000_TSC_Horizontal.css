@@ -38,6 +38,17 @@
   src: url("/Fonts/RobotoMono-Bold.ttf") format("truetype");
   font-weight: normal;
   font-style: normal; }
+  
+@font-face {
+  font-family: "Tahoma";
+  src: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/tahoma.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+@font-face {
+  font-family: "Tahoma-Bold";
+  src: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/tahomabd.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
 
 @keyframes SelectedCharBlinkFreqEdit {
   0%, 40% {
@@ -48,7 +59,7 @@
     color: aqua; } }
 
 as3000-tsc-horizontal-element {
-  font-family: Roboto-Bold;
+  font-family: Tahoma;
   width: 100%;
   height: 100%;
   position: fixed; }
@@ -76,19 +87,21 @@ as3000-tsc-horizontal-element {
       position: absolute;
       top: 0%;
       left: 0%;
-      height: 10%;
+      height: 8%;
       width: 80%;
-      background-color: black;
+      background-color: #141619;
+      background-image: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/TITLE_BACKGROUND.png");
       color: white;
-      font-size: 5vh;
+      font-size: 4.5vh;
       text-align: center; }
     as3000-tsc-horizontal-element #Electricity #PagesDisplay {
       position: absolute;
-      height: 90%;
-      width: 76%;
+      height: 92.1%;
+      width: 80%;
       left: 0%;
       bottom: 0%;
-      background-color: black; }
+      background-image: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/BACKGROUND.png");
+      background-color: #141619; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome, as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs, as3000-tsc-horizontal-element #Electricity #PagesDisplay #Timers, as3000-tsc-horizontal-element #Electricity #PagesDisplay #Minimums, as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDMapSettings, as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings, as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDHome, as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDMapSettings, as3000-tsc-horizontal-element #Electricity #PagesDisplay #WeatherSelection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #DirectTo, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome, as3000-tsc-horizontal-element #Electricity #PagesDisplay #WaypointsInfo, as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo, as3000-tsc-horizontal-element #Electricity #PagesDisplay #Nearest, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestAirport, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestIntersection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestVOR, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestNDB, as3000-tsc-horizontal-element #Electricity #PagesDisplay #Procedures, as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #AircraftSystems, as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig {
         display: none; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=NavComHome] #NavComHome,
@@ -1562,20 +1575,23 @@ as3000-tsc-horizontal-element {
           z-index: 2; }
     as3000-tsc-horizontal-element #Electricity #NavigationBar {
       position: absolute;
-      right: 14%;
-      width: 10%;
+      right: 10%;
+      width: 12%;
       height: 100%;
-      background-color: #212121; }
+      background: linear-gradient(to right, #48575e, rgba(72, 87, 94, 0) 90%);
+      border-left: solid 5px white;
+      border-right: solid 5px white;
+      background-color: #2b4049; }
       as3000-tsc-horizontal-element #Electricity #NavigationBar .gradientButton {
-        width: 80%;
-        left: 8%;
-        height: 16.30%;
-        margin-top: 0.5vh;
-        margin-bottom: 0.5vh; }
+        width: 100%;
+        left: -5%;
+        height: 14.8%;
+        margin-top: 2vh;
+        margin-bottom: 0vh; }
     as3000-tsc-horizontal-element #Electricity #SoftKeys {
       position: absolute;
       right: 0%;
-      width: 14%;
+      width: 10%;
       height: 100%;
       background-color: #212121;
       color: #3F4751;
@@ -2438,9 +2454,10 @@ as3000-tsc-horizontal-element {
           display: none; }
     as3000-tsc-horizontal-element #Electricity .PopUpWindow {
       position: absolute;
-      width: 76%;
+      width: 78%;
       height: 100%;
-      background-color: black;
+      background-image: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/BACKGROUND.png");
+      background-color: #141619;
       z-index: 10; }
       as3000-tsc-horizontal-element #Electricity .PopUpWindow[state=Inactive] {
         display: none; }
@@ -2457,19 +2474,25 @@ as3000-tsc-horizontal-element {
     display: flex;
     justify-content: center; }
   as3000-tsc-horizontal-element .gradientButton {
-    background: linear-gradient(#507182, #272a2c 15%);
+    background: linear-gradient(#5f7283 0.4vh, #1f3445, black 2vh);
+    background-color: black;
+    border: 3px solid grey;
+    box-shadow: 0px 0px 0px 3px black inset;
+    border-radius: 4px;
     position: relative;
-    width: 21vh;
+    width: 27vh;
     height: 21vh;
     max-height: 21vh;
-    margin: 0.5vh;
-    border: solid 0.5vh;
-    border-color: gray gray white white;
+    margin: 1.0vh;
+    font-size: 5vh;
     text-align: center; }
+    as3000-tsc-horizontal-element .gradientButton:Hover:Active {
+      background: linear-gradient(#62f0f5, #0eb8d4 8%, #018cb5 30%, #0285ac 90%);
+      border: 0.5vh solid #32a1bd; }
     as3000-tsc-horizontal-element .gradientButton[state=Inactive] {
       visibility: hidden; }
     as3000-tsc-horizontal-element .gradientButton[state=Greyed] {
-      filter: grayscale(100%) brightness(40%); }
+      filter: grayscale(50%) brightness(40%); }
       as3000-tsc-horizontal-element .gradientButton[state=Greyed]:Hover:Active {
         background-color: black !important; }
     as3000-tsc-horizontal-element .gradientButton[state=Hidden] {
@@ -2497,13 +2520,14 @@ as3000-tsc-horizontal-element {
       display: inline-block;
       margin-top: 20%; }
     as3000-tsc-horizontal-element .gradientButton .centerImg {
+      position: relative;
+      top: 25%;
       height: 40%;
       max-width: 60%;
-      display: inline-block;
-      margin-top: 14%; }
+      display: inline-block; }
     as3000-tsc-horizontal-element .gradientButton .lowerValue {
       position: absolute;
-      top: 42%;
+      top: 55%;
       width: 90%;
       left: 5%;
       font-size: 4vh;
@@ -2512,22 +2536,22 @@ as3000-tsc-horizontal-element {
       position: absolute;
       height: 40%;
       width: 100%;
-      bottom: 0%;
+      bottom: 2%;
       text-align: center;
       color: white;
-      font-size: 3.5vh;
-      line-height: 3.5vh;
+      font-size: 4vh;
+      line-height: 4vh;
       background: none;
       vertical-align: bottom; }
     as3000-tsc-horizontal-element .gradientButton .upperTitle {
       position: absolute;
       height: 40%;
       width: 100%;
-      top: 5%;
+      top: 10%;
       text-align: center;
       color: white;
-      font-size: 3.5vh;
-      line-height: 3.5vh;
+      font-size: 4vh;
+      line-height: 4vh;
       background: none;
       vertical-align: bottom; }
     as3000-tsc-horizontal-element .gradientButton .topText {
@@ -2570,8 +2594,10 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element .gradientButton[state=Selected] .mainNumber .ToWrite {
         color: dimgray; }
     as3000-tsc-horizontal-element .gradientButton[state=White] {
-      background: none;
-      background-color: white; }
+      background-color: #c8e3f0;
+      border-color: #1a4862;
+      margin: auto;
+      box-shadow: none; }
       as3000-tsc-horizontal-element .gradientButton[state=White] .mainText {
         color: black; }
     as3000-tsc-horizontal-element .gradientButton[state=Highlight] {
@@ -2583,15 +2609,22 @@ as3000-tsc-horizontal-element {
     as3000-tsc-horizontal-element .gradientButton:Hover:Active {
       background: #37c6ed; }
   as3000-tsc-horizontal-element .roundButton {
-    border-radius: 50%;
-    background: linear-gradient(#0093d0, rgba(0, 147, 208, 0) 60%);
+    position: relative;
     color: white;
     font-size: 10vh;
     text-align: center;
+    vertical-align: center;
     width: 21vh;
-    height: 21vh; }
+    height: 21vh;
+    border: 0.5vh solid #515c60;
+    border-radius: 50%;
+    background: linear-gradient(#4b6677, black 30%);
+    box-shadow: 0px 0px 5px 4px black inset; }
     as3000-tsc-horizontal-element .roundButton:Hover:Active {
-      background-color: #0093d0; }
+      background-color: #0093d0;
+      box-shadow: 0px 0px 0px 0px black inset ;
+      border: 0.5vh solid #515c60;
+      background: radial-gradient(#55e8f5, #018cb5 60%, #0285ac 90%); }
   as3000-tsc-horizontal-element .DrctImg {
     height: 8vh;
     display: inline; }
