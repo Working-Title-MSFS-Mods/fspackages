@@ -54,18 +54,15 @@ class CJ4_FMC_FplnRecallPage {
                 }
                 let icao = routeArr[idx];
                 fmc.setMsg("LOAD FPLN...ADD [yellow]" + icao);
-                let isWaypoint = await fmc.dataManager.IsWaypointValid(icao);
+                // let isWaypoint = await fmc.dataManager.IsWaypointValid(icao);
                 idx++;
-                if (icao === "DCT") { // skip this
-                    addWaypoint();
-                    return;
-                }
 
                 let wptIndex = fmc.flightPlanManager.getWaypointsCount() - 1;
                 console.log("MOD INDEX " + wptIndex);
 
-                if (isWaypoint) {
+                if (icao === "DCT") {
                     // should be a normal waypoint then
+                    icao = routeArr[idx];
                     console.log("adding as waypoint " + icao);
                     fmc.insertWaypoint(icao, wptIndex, () => {
                         CJ4_FMC_InitRefIndexPage.ShowPage17(fmc);
