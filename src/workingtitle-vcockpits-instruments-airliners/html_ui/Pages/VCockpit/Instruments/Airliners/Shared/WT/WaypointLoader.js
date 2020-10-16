@@ -244,12 +244,12 @@ class FacilityLoader {
             icao = icao.trim();
             let airport = this.loadedFacilities.find(f => { return f.icaoTrimed === icao && (f.routes === undefined); });
             if (airport) {
-                console.log("Airport found in loadedFacilities array.");
+                // console.log("Airport found in loadedFacilities array.");
                 return callback(airport);
             }
             else {
-                console.log("Airport not found in loadedFacilities array.");
-                console.log(this.loadedFacilities);
+                // console.log("Airport not found in loadedFacilities array.");
+                // console.log(this.loadedFacilities);
             }
             if (icao[0] !== "A") {
                 console.warn("Icao mismatch trying to load AIRPORT of invalid icao '" + icao + "'");
