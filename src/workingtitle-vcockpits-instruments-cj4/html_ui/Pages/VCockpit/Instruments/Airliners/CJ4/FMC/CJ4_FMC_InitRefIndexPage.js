@@ -627,7 +627,7 @@ class CJ4_FMC_InitRefIndexPage {
                 CJ4_FMC_FplnRecallPage.ShowPage1(fmc);
             }
             else {
-                fmc.showErrorMessage("NO PILOT ID OR PLAN[red]");
+                fmc.showErrorMessage("NO PILOT ID[red]");
                 CJ4_FMC_ModSettingsPage.ShowPage1(fmc);
             }
             };
