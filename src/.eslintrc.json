@@ -36,6 +36,7 @@
         "FMCDataManager": "writable",
         "EMapDisplayMode": "writable",
         "registerInstrument": "writable",
+        "WTUtils": "readonly",
         "WT_FMC_Renderer": "readonly",
         "Utils": "readonly",
         "Jet_NDCompass_Display": "readonly",
