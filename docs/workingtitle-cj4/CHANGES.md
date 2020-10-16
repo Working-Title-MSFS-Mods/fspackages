@@ -49,6 +49,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Added ability to have VFR runway selected to allow PERF pages even when no approach is selected (for airports without approaches)
 * Added vspeed send logic and messages to FMC to replicate real unit
 * Fixed refresh error after entering/updating reserve fuel on FUEL MANAGEMENT page
+* Addressed fuel flow bugs throughout / closes [#224](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/224)
 
 ### PFD/MFD
 * xxx
@@ -60,6 +61,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ### Lighting
 * Incorporated the latest lighting package from Uwajimaya including volumetric external lighting.
 * Added controllable passenger cabin lighting (accessed from FMS -> IDX -> MOD SETTINGS)
+* Fixed some lighting bleed (thanks again Uwajimaya)
 
 ## Known Issues
 * You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are currently overhauling the flight plan management system to allow for much more flexibility and stability.
