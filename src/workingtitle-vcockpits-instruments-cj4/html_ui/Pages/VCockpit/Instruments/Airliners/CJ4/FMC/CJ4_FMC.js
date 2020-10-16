@@ -17,6 +17,8 @@ class CJ4_FMC extends FMCMainDisplay {
         this.cargoWeight = 0;
         this.basicOperatingWeight = 10280;
     	this.grossWeight = 10280;
+		this.zFWActive = 0;
+		this.zFWPilotInput = 0;
         this.takeoffOat = "□□□";
         this.landingOat = "□□□";
         this.takeoffQnh = "□□.□□";

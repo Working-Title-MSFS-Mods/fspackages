@@ -29,6 +29,9 @@ class CJ4_FMC_PerfInitPage {
         fmc.clearDisplay();
 		
         let crzAltCell = "□□□□□";
+		let zFW = 0;
+		let paxNumber = "/170[d-text]LB[s-text]";
+		let bow = 10280;
         if (fmc.cruiseFlightLevel) {
             crzAltCell = fmc.cruiseFlightLevel;
         }
@@ -44,21 +47,31 @@ class CJ4_FMC_PerfInitPage {
         let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft;
         let fuelCell = Math.trunc(fuelQuantityTotal);
 
-		let zFW = 10280 + (fmc.paxNumber * 170) + fmc.cargoWeight;
+		if (fmc.zFWActive == 1) {
+			zFW = fmc.zFWPilotInput;
+			bow = "-----";
+			fmc.paxNumber = "--";
+			paxNumber = "--";
+			fmc.cargoWeight = "----";
+		} else {
+			zFW = 10280 + (fmc.paxNumber * 170) + fmc.cargoWeight;
+		}
 		fmc.grossWeight = zFW + fuelCell;
 		
 		if (zFW > 12500) {
 			zFW = zFW + "[yellow]";
 		}
+		
+		
 
         fmc._templateRenderer.setTemplateRaw([
             [" ACT PERF INIT[blue]","",""],
             [" BOW[blue]", "CRZ ALT[blue] "],
-            ["(10280)[d-text]LB[s-text]", "FL" + crzAltCell],
+            [bow + "[d-text]LB[s-text]", "FL" + crzAltCell],
             [" PASS/WT[blue]"],
-            [" " + fmc.paxNumber + "/170[d-text]LB[s-text]"],
+            [" " + fmc.paxNumber + paxNumber],
             [" CARGO[blue]", "= ZFW[blue] "],
-            [" " + fmc.cargoWeight.toFixed(0).padStart(4, " ") + "[d-text] LB[s-text]", zFW + " LB[s-text]"],
+            [" " + fmc.cargoWeight + "[d-text] LB[s-text]", zFW + " LB[s-text]"],
             [" SENSED FUEL[blue]", "= GWT[blue] "],
             [" " + fuelCell + "[d-text] LB[s-text]", fmc.grossWeight + " LB[s-text]"],
             ["------------------------[blue]"],
@@ -77,6 +90,19 @@ class CJ4_FMC_PerfInitPage {
             zFW = (fmc.cargoWeight + (fmc.paxNumber * 170) + fmc.basicOperatingWeight) / 2200;
             fmc.clearUserInput();
             { CJ4_FMC_PerfInitPage.ShowPage2(fmc); }
+        };
+		fmc.onRightInput[2] = () => {
+			if (fmc.inOut == FMCMainDisplay.clrValue){
+				fmc.zFWActive = 0;
+				fmc.paxNumber = 0;
+				fmc.cargoWeight = 0;
+			} else {
+            zFW = parseInt(fmc.inOut);
+			fmc.zFWPilotInput = parseInt(fmc.inOut);
+			fmc.zFWActive = 1;
+			}
+			fmc.clearUserInput();
+            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
         fmc.onRightInput[4] = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
