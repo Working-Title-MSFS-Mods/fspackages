@@ -150,6 +150,18 @@ class AS3000_TSC extends NavSystemTouch {
         this.dynamicSelectionListWindow = new NavSystemElementContainer("Dynamic Selection List Window", "DynamicSelectionListWindow", new AS3000_TSC_DynamicSelectionListWindow());
         this.dynamicSelectionListWindow.setGPS(this);
         
+        this.aoaSelect = new NavSystemElementContainer("AOA Settings", "AoASelect", new AS3000_TSC_HighlightSelectionListWindow());
+        this.aoaSelect.setGPS(this);
+        
+        this.pfdWindSelect = new NavSystemElementContainer("Wind Settings", "PFDWindSelect", new AS3000_TSC_HighlightSelectionListWindow());
+        this.pfdWindSelect.setGPS(this);
+        
+        this.mapOrientationSelect = new NavSystemElementContainer("Map Orientation Settings", "MapOrientationSelect", new AS3000_TSC_SimpleSelectionListWindow());
+        this.mapOrientationSelect.setGPS(this);
+        
+        this.mapOrientationSelect = new NavSystemElementContainer("Map Orientation Settings", "MapOrientationSelect", new AS3000_TSC_SimpleSelectionListWindow());
+        this.mapOrientationSelect.setGPS(this);
+        
         this.mapOrientationSelect = new NavSystemElementContainer("Map Orientation Settings", "MapOrientationSelect", new AS3000_TSC_SimpleSelectionListWindow());
         this.mapOrientationSelect.setGPS(this);
         
@@ -240,7 +252,7 @@ class AS3000_TSC extends NavSystemTouch {
         let data = new AS3000_TSC_NavButton_Data();
         data.title = _title;
         data.callback = _callback;
-        data.imagePath = "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/" + _imagePath;
+        data.imagePath = "/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/" + _imagePath;
         data.isActive = true;
         this.navButtons[_id - 1].setState(data, _fromPopUp);
     }
@@ -555,6 +567,26 @@ class AS3000_TSC_WeatherSelection extends NavSystemElement {
     }
 }
 class AS3000_TSC_DirectTo extends NavSystemTouch_DirectTo {
+    init(root) {
+        this.SelectedWaypoint = this.gps.getChildById("SelectedWaypoint");
+        this.SelectedWaypoint_Symbol = this.SelectedWaypoint.getElementsByClassName("waypointSymbol")[0];
+        this.SelectedWaypoint_MainText = this.SelectedWaypoint.getElementsByClassName("mainText")[0];
+        this.SelectedWaypoint_MainValue = this.SelectedWaypoint.getElementsByClassName("mainValue")[0];
+        this.SelectedWaypoint_SubText = this.SelectedWaypoint.getElementsByClassName("title")[0];
+        this.DRCT_City = this.gps.getChildById("DRCT_City");
+        this.DRCT_Region = this.gps.getChildById("DRCT_Region");
+        this.DRCT_Bearing = this.gps.getChildById("DRCT_Bearing");
+        this.DRCT_Distance = this.gps.getChildById("DRCT_Distance");
+        this.DRCT_CancelButton = this.gps.getChildById("DRCT_CancelButton");
+        this.DRCT_CancelButton_MainValue = this.DRCT_CancelButton.getElementsByClassName("value")[0];
+        this.DRCT_ActivateDirect = this.gps.getChildById("DRCT_ActivateDirect");
+        this.DRCT_ActivateDirect_MainValue = this.DRCT_ActivateDirect.getElementsByClassName("value")[0];
+        this.gps.makeButton(this.SelectedWaypoint, this.openKeyboard.bind(this));
+        this.gps.makeButton(this.DRCT_CancelButton, this.cancelDirectTo.bind(this));
+        this.gps.makeButton(this.DRCT_ActivateDirect, this.activateDirectTo.bind(this));
+        this.GeoCalc = new GeoCalcInfo(this.gps);
+    }
+    
     onEnter() {
         super.onEnter();
         this.gps.setTopKnobText("");
@@ -2887,60 +2919,27 @@ class AS3000_TSC_PFDSettings extends NavSystemElement {
         this.windMode = 0;
         this.comSpacingMode = 0;
     }
+    
     init(root) {
         this.aoaButton = this.gps.getChildById("AoaButton");
-        this.aoaValue = this.aoaButton.getElementsByClassName("mainValue")[0];
+        this.aoaValue = this.aoaButton.getElementsByClassName("statusText")[0];
         this.windButton = this.gps.getChildById("WindButton");
-        this.windValue = this.windButton.getElementsByClassName("mainValue")[0];
+        this.windValue = this.windButton.getElementsByClassName("statusText")[0];
         this.comSpacingButton = this.gps.getChildById("ComSpacingButton");
-        this.comSpacingValue = this.comSpacingButton.getElementsByClassName("mainValue")[0];
-        this.aoaOn = this.gps.getChildById("AoaOn");
-        this.aoaOff = this.gps.getChildById("AoaOff");
-        this.aoaAuto = this.gps.getChildById("AoaAuto");
-        this.windO1 = this.gps.getChildById("WindO1");
-        this.windO2 = this.gps.getChildById("WindO2");
-        this.windO3 = this.gps.getChildById("WindO3");
-        this.windOff = this.gps.getChildById("WindOff");
-        this.channelSpacing25 = this.gps.getChildById("Com25");
-        this.channelSpacing833 = this.gps.getChildById("Com833");
-        this.aoaMenu = this.gps.getChildById("AoaSelectionMenu");
-        this.windMenu = this.gps.getChildById("WindSelectionMenu");
-        this.comSpacingSelectionMenu = this.gps.getChildById("ComSpacingSelectionMenu");
-        this.gps.makeButton(this.aoaButton, this.aoaPress.bind(this));
-        this.gps.makeButton(this.windButton, this.windPress.bind(this));
-        this.gps.makeButton(this.comSpacingButton, this.compSpacingPress.bind(this));
-        this.gps.makeButton(this.aoaOn, this.aoaSetMode.bind(this, "On"));
-        this.gps.makeButton(this.aoaOff, this.aoaSetMode.bind(this, "Off"));
-        this.gps.makeButton(this.aoaAuto, this.aoaSetMode.bind(this, "Auto"));
-        this.gps.makeButton(this.windO1, this.windSetMode.bind(this, "O1"));
-        this.gps.makeButton(this.windO2, this.windSetMode.bind(this, "O2"));
-        this.gps.makeButton(this.windO3, this.windSetMode.bind(this, "O3"));
-        this.gps.makeButton(this.windOff, this.windSetMode.bind(this, "Off"));
-        this.gps.makeButton(this.channelSpacing25, this.channelSpacingSetMode.bind(this, 0));
-        this.gps.makeButton(this.channelSpacing833, this.channelSpacingSetMode.bind(this, 1));
+        this.comSpacingValue = this.comSpacingButton.getElementsByClassName("statusText")[0];
+        //this.comSpacingSelectionMenu = this.gps.getChildById("ComSpacingSelectionMenu");
+        this.gps.makeButton(this.aoaButton, this.openAoASelectWindow.bind(this));
+        this.gps.makeButton(this.windButton, this.openWindSelectWindow.bind(this));
+        //this.gps.makeButton(this.comSpacingButton, this.compSpacingPress.bind(this));
+        //this.gps.makeButton(this.channelSpacing25, this.channelSpacingSetMode.bind(this, 0));
+        //this.gps.makeButton(this.channelSpacing833, this.channelSpacingSetMode.bind(this, 1));
     }
-    aoaPress() {
-        this.active = (this.active == 1 ? 0 : 1);
-        this.updateDisplayedMenu();
-    }
-    aoaSetMode(_mode) {
-        LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", this.gps.pfdPrefix + "_AOA_" + _mode);
-        this.active = 0;
-        this.updateDisplayedMenu();
-    }
-    windPress() {
-        this.active = (this.active == 2 ? 0 : 2);
-        this.updateDisplayedMenu();
-    }
-    windSetMode(_mode) {
-        LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", this.gps.pfdPrefix + "_Wind_" + _mode);
-        this.active = 0;
-        this.updateDisplayedMenu();
-    }
+    
     compSpacingPress() {
         this.active = (this.active == 3 ? 0 : 3);
         this.updateDisplayedMenu();
     }
+    
     channelSpacingSetMode(_mode) {
         if (_mode != SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum")) {
             SimVar.SetSimVarValue("K:COM_1_SPACING_MODE_SWITCH", "number", 0);
@@ -2951,15 +2950,12 @@ class AS3000_TSC_PFDSettings extends NavSystemElement {
         this.active = 0;
         this.updateDisplayedMenu();
     }
-    updateDisplayedMenu() {
-        Avionics.Utils.diffAndSetAttribute(this.aoaMenu, "state", this.active == 1 ? "Active" : "Inactive");
-        Avionics.Utils.diffAndSetAttribute(this.windMenu, "state", this.active == 2 ? "Active" : "Inactive");
-        Avionics.Utils.diffAndSetAttribute(this.comSpacingSelectionMenu, "state", this.active == 3 ? "Active" : "Inactive");
-    }
+    
     onEnter() {
         this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
         this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
     }
+    
     onUpdate(_deltaTime) {
         let aoa = SimVar.GetSimVarValue("L:Glasscockpit_AOA_Mode", "number");
         let wind = SimVar.GetSimVarValue("L:Glasscockpit_Wind_Mode", "number");
@@ -2978,6 +2974,7 @@ class AS3000_TSC_PFDSettings extends NavSystemElement {
                     break;
             }
         }
+        
         if (wind != this.windMode) {
             this.windMode = wind;
             switch (wind) {
@@ -2995,6 +2992,7 @@ class AS3000_TSC_PFDSettings extends NavSystemElement {
                     break;
             }
         }
+        
         if (comSpacing != this.comSpacingMode) {
             this.comSpacingMode = comSpacing;
             switch (comSpacing) {
@@ -3007,25 +3005,74 @@ class AS3000_TSC_PFDSettings extends NavSystemElement {
             }
         }
     }
+    
     onExit() {
         this.gps.deactivateNavButton(1);
         this.gps.deactivateNavButton(2);
     }
+    
     onEvent(_event) {
     }
+    
+    openAoASelectWindow() {
+        this.gps.aoaSelect.element.setContext(this.setAoAMode.bind(this), this.getAoAHighlight.bind(this), "PFD", "PFD Home");
+        this.gps.switchToPopUpPage(this.gps.aoaSelect);
+    }
+    
+    setAoAMode(_val) {
+        let mode = "";
+        switch (_val) {
+            case 0:
+                mode = "On";
+                break;
+            case 1:
+                mode = "Off";
+                break;
+            case 2:
+                mode = "Auto";
+                break;
+        }
+        LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", this.gps.pfdPrefix + "_AOA_" + mode);
+    }
+    
+    getAoAHighlight(_val) {
+        let mode = SimVar.GetSimVarValue("L:Glasscockpit_AOA_Mode", "number");
+        switch (mode) {
+            case 0:
+                return _val == 1;
+            case 1:
+                return _val == 0;
+            case 2:
+                return _val == 2;
+        }
+    }
+    
+    openWindSelectWindow() {
+        this.gps.pfdWindSelect.element.setContext(this.setWindMode.bind(this), this.getWindHighlight.bind(this), "PFD", "PFD Home");
+        this.gps.switchToPopUpPage(this.gps.pfdWindSelect);
+    }
+    
+    setWindMode(_val) {
+        let mode = "";
+        if (_val < 3) {
+            mode = `O${_val + 1}`;
+        } else {
+            mode = "Off";
+        }
+        LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", this.gps.pfdPrefix + "_Wind_" + mode);
+    }
+    
+    getWindHighlight(_val) {
+        let mode = SimVar.GetSimVarValue("L:Glasscockpit_Wind_Mode", "number");
+        return mode == (_val + 1) % 4;
+    }
+    
     back() {
-        if (this.active != 0) {
-            this.active = 0;
-            this.updateDisplayedMenu();
-        }
-        else {
-            this.gps.goBack();
-        }
+        this.gps.goBack();
         return true;
     }
+    
     backHome() {
-        this.active = 0;
-        this.updateDisplayedMenu();
         this.gps.SwitchToPageName("PFD", "PFD Home");
         return true;
     }
@@ -4121,6 +4168,21 @@ class AS3000_TSC_SelectionListWindow extends NavSystemElement {
     backHome() {
         this.gps.closePopUpElement();
         this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
+    }
+}
+
+class AS3000_TSC_HighlightSelectionListWindow extends AS3000_TSC_SelectionListWindow {
+    onUpdate(_deltaTime) {
+        for (let i = 0; i < this.buttonList.length; i++) {
+            Avionics.Utils.diffAndSetAttribute(this.buttonList[i], "state", this.highlightCallback(i) ? "Highlight" : "");
+        }
+    }
+    
+    setContext(_callback, _highlightCallback, _homePageParent, _homePageName) {
+        this.callback = _callback;
+        this.highlightCallback = _highlightCallback;
+        this.homePageParent = _homePageParent;
+        this.homePageName = _homePageName;
     }
 }
 

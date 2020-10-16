@@ -76,28 +76,28 @@
                         <div class="gradientButton" id="SB_AllOff">
                             <div class="mainText">All Off</div>
                         </div>
-                        <div class="gradientButton statusButton" id="SB_VrStatus">
+                        <div class="gradientButton statusToggleButton" id="SB_VrStatus">
                             <div class="mainText">Vr</div>
                             <div class="statusBar"></div>
                         </div>
                         <div class="gradientButton" id="SB_VrValue">
                             <div class="mainValue">85KT</div>
                         </div>
-                        <div class="gradientButton statusButton" id="SB_VxStatus">
+                        <div class="gradientButton statusToggleButton" id="SB_VxStatus">
                             <div class="mainText">Vx</div>
                             <div class="statusBar"></div>
                         </div>
                         <div class="gradientButton" id="SB_VxValue">
                             <div class="mainValue">100KT</div>
                         </div>
-                        <div class="gradientButton statusButton" id="SB_VyStatus">
+                        <div class="gradientButton statusToggleButton" id="SB_VyStatus">
                             <div class="mainText">Vy</div>
                             <div class="statusBar"></div>
                         </div>
                         <div class="gradientButton" id="SB_VyValue">
                             <div class="mainValue">124KT</div>
                         </div>
-                        <div class="gradientButton statusButton" id="SB_VappStatus">
+                        <div class="gradientButton statusToggleButton" id="SB_VappStatus">
                             <div class="mainText">Vapp</div>
                             <div class="statusBar"></div>
                         </div>
@@ -117,26 +117,26 @@
 
                     <div id="CountSelection">
                         <div class="sectionTitle">Count</div>
-                        <div class="gradientButton" state="Active" id="TMR_UpButton">
-                            <div class="upperTitle">Up</div>
+                        <div class="gradientButton statusToggleButton" state="Active" id="TMR_UpButton">
+                            <div class="mainText">Up</div>
                             <div class="statusBar"></div>
                         </div>
-                        <div class="gradientButton" id="TMR_DownButton">
-                            <div class="upperTitle">Down</div>
+                        <div class="gradientButton statusToggleButton" id="TMR_DownButton">
+                            <div class="mainText">Down</div>
                             <div class="statusBar"></div>
                         </div>
                     </div>
 
                     <div class="gradientButton" id="TMR_ResetButton">
-                        <div class="upperTitle">Reset</div>
+                        <div class="mainText">Reset</div>
                     </div>
 
                     <div class="gradientButton" id="TMR_StopButton">
-                        <div class="upperTitle">Start</div>
+                        <div class="mainText">Start</div>
                     </div>
                 </div>
                 <div id="Minimums">
-                    <div class="gradientButton" id="min_typeButton">
+                    <div class="gradientButton valueButton" id="min_typeButton">
                         <div class="upperTitle">Minimums</div>
                         <div class="lowerValue">Baro</div>
                     </div>
@@ -152,37 +152,29 @@
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
                             <div class="title">BKSP</div>
                         </div>
-                        <table id="min_KeyBoard_Table">
-                            <tr>
-                                <td> <div class="roundButton" id="min_1">1</div> </td>
-                                <td> <div class="roundButton" id="min_2">2</div> </td>
-                                <td> <div class="roundButton" id="min_3">3</div> </td>
-                            </tr>
-                            <tr>
-                                <td> <div class="roundButton" id="min_4">4</div> </td>
-                                <td> <div class="roundButton" id="min_5">5</div> </td>
-                                <td> <div class="roundButton" id="min_6">6</div> </td>
-                            </tr>
-                            <tr>
-                                <td> <div class="roundButton" id="min_7">7</div> </td>
-                                <td> <div class="roundButton" id="min_8">8</div> </td>
-                                <td> <div class="roundButton" id="min_9">9</div> </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td> <div class="roundButton" id="min_0">0</div> </td>
-                                <td></td>
-                            </tr>
-                        </table>
+                        <div class="numPad" id="min_KeyBoard_Table">
+                            <div class="roundButton" id="min_1"><div class="mainText">1</div></div>
+                            <div class="roundButton" id="min_2"><div class="mainText">2</div></div>
+                            <div class="roundButton" id="min_3"><div class="mainText">3</div></div>
+                            <div class="roundButton" id="min_4"><div class="mainText">4</div></div>
+                            <div class="roundButton" id="min_5"><div class="mainText">5</div></div>
+                            <div class="roundButton" id="min_6"><div class="mainText">6</div></div>
+                            <div class="roundButton" id="min_7"><div class="mainText">7</div></div>
+                            <div class="roundButton" id="min_8"><div class="mainText">8</div></div>
+                            <div class="roundButton" id="min_9"><div class="mainText">9</div></div>
+                            <div class="dummy"></div>
+                            <div class="roundButton" id="min_0"><div class="mainText">0</div></div>
+                            <div class="dummy"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="MapSettings" id="PFDMapSettings">
                     <div class="MapSettingsLeft" id="PFDMapSettingsLeft">
-                        <div class="gradientButton" id="PFDMapOrientationButton">
+                        <div class="gradientButton valueButton" id="PFDMapOrientationButton">
                             <div class="upperTitle">Orientation</div>
                             <div class="lowerValue"></div>
                         </div>
-                        <div class="gradientButton" id="PFDMapSyncButton">
+                        <div class="gradientButton valueButton" id="PFDMapSyncButton">
                             <div class="upperTitle">Map Sync</div>
                             <div class="lowerValue"></div>
                         </div>
@@ -214,21 +206,17 @@
                         </div>
                         <div class="tabContentContainer MapSettingsTabContentContainer" id="PFDMapSettingsTabContentContainer">
                             <div class="tabContent MapSensorTab" state="Active">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft">
-                                                <div class="upperTitle">Terrain</div>
-                                                <div class="lowerValue"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton valueButton MapSettingsTabRowButtonLeft">
+                                            <div class="upperTitle">Terrain</div>
+                                            <div class="lowerValue"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tabContent MapInsetTab" state="Inactive">
                                 <div class="gradientButton">
@@ -236,220 +224,145 @@
                                 </div>
                             </div>
                             <div class="tabContent MapAviationTab" state="Inactive">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">Airspaces</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">Airports</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">VOR</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">INT</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">NDB</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Airspaces</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Airports</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">VOR</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">INT</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">NDB</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tabContent MapLandTab" state="Inactive">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">Roads</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">Cities</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Roads</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Cities</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tabContent MapOtherTab" state="Inactive">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="upperTitle">North Up<br>Above</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="upperTitle">Track Vector</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="upperTitle">Wind Vector</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="upperTitle">Fuel Rng (Rsv)</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="upperTitle">Range to<br>Altitude</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">North Up<br>Above</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Track Vector</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Wind Vector</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="dummy"></div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Fuel Rng (Rsv)</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Range to<br>Altitude</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="dummy"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div id="PFDSettings">
-                    <div class="buttonsContainer">
-                        <div class="line">
-                            <div class="lineTitle"><span>AOA</span></div>
-                            <div class="gradientButton" id="AoaButton">
-                                <div class="mainValue">On</div>
+                    <div class="scrollContainer">
+                        <div class="buttonsContainer">
+                            <div class="line">
+                                <div class="lineTitle">AOA</div>
+                                <div class="gradientButton" id="AoaButton">
+                                    <div class="statusText">On</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="line">
-                            <div class="lineTitle"><span>Wind</span></div>
-                            <div class="gradientButton" id="WindButton">
-                                <div class="mainValue">Off</div>
+                            <div class="line">
+                                <div class="lineTitle">Wind</div>
+                                <div class="gradientButton" id="WindButton">
+                                    <div class="statusText">Off</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="line">
-                            <div class="lineTitle"><span>COM Channel Spacing</span></div>
-                            <div class="gradientButton" id="ComSpacingButton">
-                                <div class="mainValue">25 kHz</div>
+                            <div class="line">
+                                <div class="lineTitle">COM Channel Spacing</div>
+                                <div class="gradientButton" id="ComSpacingButton" state="Greyed">
+                                    <div class="statusText">25 kHz</div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="SelectionMenu" id="AoaSelectionMenu" state="Inactive">
-                        <div class="gradientButton" id="AoaOn">
-                            <div class="mainValue">On</div>
-                        </div>
-                        <div class="gradientButton" id="AoaOff">
-                            <div class="mainValue">Off</div>
-                        </div>
-                        <div class="gradientButton" id="AoaAuto">
-                            <div class="mainValue">Auto</div>
-                        </div>
-                    </div>
-                    <div class="SelectionMenu" id="WindSelectionMenu" state="Inactive">
-                        <div class="gradientButton" id="WindO1">
-                            <div class="mainValue">Option 1</div>
-                        </div>
-                        <div class="gradientButton" id="WindO2">
-                            <div class="mainValue">Option 2</div>
-                        </div>
-                        <div class="gradientButton" id="WindO3">
-                            <div class="mainValue">Option 3</div>
-                        </div>
-                        <div class="gradientButton" id="WindOff">
-                            <div class="mainValue">Off</div>
-                        </div>
-                    </div>
-                    <div class="SelectionMenu" id="ComSpacingSelectionMenu" state="Inactive">
-                        <div class="gradientButton" id="Com25">
-                            <div class="mainValue">25 kHz</div>
-                        </div>
-                        <div class="gradientButton" id="Com833">
-                            <div class="mainValue">8.33 kHz</div>
                         </div>
                     </div>
                 </div>
@@ -527,11 +440,11 @@
                 </div>
                 <div class="MapSettings" id="MFDMapSettings">
                     <div class="MapSettingsLeft" id="MFDMapSettingsLeft">
-                        <div class="gradientButton" id="MFDMapOrientationButton">
+                        <div class="gradientButton valueButton" id="MFDMapOrientationButton">
                             <div class="upperTitle">Orientation</div>
                             <div class="lowerValue"></div>
                         </div>
-                        <div class="gradientButton" id="MFDMapSyncButton">
+                        <div class="gradientButton valueButton" id="MFDMapSyncButton">
                             <div class="upperTitle">Map Sync</div>
                             <div class="lowerValue"></div>
                         </div>
@@ -563,21 +476,17 @@
                         </div>
                         <div class="tabContentContainer MapSettingsTabContentContainer" id="MFDMapSettingsTabContentContainer">
                             <div class="tabContent MapSensorTab" state="Active">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft">
-                                                <div class="upperTitle">Terrain</div>
-                                                <div class="lowerValue"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton valueButton MapSettingsTabRowButtonLeft">
+                                            <div class="upperTitle">Terrain</div>
+                                            <div class="lowerValue"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tabContent MapInsetTab" state="Inactive">
                                 <div class="gradientButton">
@@ -585,166 +494,120 @@
                                 </div>
                             </div>
                             <div class="tabContent MapAviationTab" state="Inactive">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">Airspaces</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">Airports</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">VOR</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">INT</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">NDB</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Airspaces</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Airports</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">VOR</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">INT</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">NDB</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tabContent MapLandTab" state="Inactive">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">Roads</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="upperTitle">Cities</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Roads</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Cities</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tabContent MapOtherTab" state="Inactive">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="upperTitle">North Up<br>Above</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="upperTitle">Track Vector</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="upperTitle">Wind Vector</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="upperTitle">Fuel Rng (Rsv)</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="upperTitle">Range to<br>Altitude</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">North Up<br>Above</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Track Vector</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Wind Vector</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="dummy"></div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Fuel Rng (Rsv)</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Range to<br>Altitude</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="dummy"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -766,84 +629,77 @@
                     </div>
                 </div>
                 <div id="DirectTo">
-                    <div id="SelectionTabs">
-                        <div class="gradientButton" state="White" id="Waypoint_Select">
-                            <div class="mainText">Waypoint</div>
-                        </div>
-                        <div class="gradientButton" id="FlightPlan_Select" state="Hidden">
-                            <div class="mainText">Flight Plan</div>
-                        </div>
-                        <div class="gradientButton" id="Nearest_Select" state="Hidden">
-                            <div class="mainText">Nearest</div>
-                        </div>
-                        <div class="gradientButton" id="Recent_Select" state="Hidden">
-                            <div class="mainText">Recent</div>
-                        </div>
-                    </div>
-                    <div id="TabContent" state="Waypoint">
-                        <div id="Waypoint">
-                            <div class="gradientButton" id="SelectedWaypoint">
-                                <div class="mainText">SELECT WAYPOINT</div>
-                                <div class="mainValue"></div>
-                                <div class="title"></div>
-                                <img class="waypointSymbol" />
+                    <div class="tabContainer">
+                        <div class="tabSelect">
+                            <div class="tabButton tabButtonRight" id="Waypoint_Select" state="Highlight">
+                                <div class="mainText">Waypoint</div>
                             </div>
-                            <div id="TopInfos">
-                                <div id="Location">
-                                    <div id="DRCT_City"></div>
-                                    <div id="DRCT_Region"></div>
-                                </div>
-                                <div id="Bearing">
-                                    <div>BRG</div>
-                                    <div id="DRCT_Bearing">___°</div>
-                                </div>
-                                <div id="Distance">
-                                    <div>DIS</div>
-                                    <div id="DRCT_Distance">___._NM</div>
-                                </div>
+                            <div class="tabButton tabButtonRight" id="FlightPlan_Select" state="Disabled">
+                                <div class="mainText">Flight Plan</div>
                             </div>
-                            <div id="TopLine">
-                                <div class="gradientButton" id="DRCT_VNavAltButton" state="Hidden">
-                                    <div class="mainText">VNAV Altitude</div>
-                                    <div class="mainValue">_____FT</div>
-                                </div>
-                                <div class="gradientButton" id="DRCT_VNavOffsetButton" state="Hidden">
-                                    <div class="mainText">VNAV Offset</div>
-                                    <div class="mainValue">0NM</div>
-                                </div>
+                            <div class="tabButton tabButtonRight" id="Nearest_Select" state="Disabled">
+                                <div class="mainText">Nearest</div>
                             </div>
-                            <div id="MiddleLine">
-                                <div class="gradientButton" id="DRCT_CrsButton" state="Hidden">
-                                    <div class="mainText">Course</div>
-                                    <div class="mainValue">090°</div>
-                                </div>
-                                <div class="gradientButton" id="DRCT_HoldButton" state="Hidden">
-                                    <div class="mainText">Hold</div>
-                                    <div class="mainValue">---</div>
-                                </div>
-                            </div>
-                            <div id="bottomLine">
-                                <div class="gradientButton" id="DRCT_CancelButton">
-                                    <div class="mainText">Cancel <img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                                    <div class="mainValue">______</div>
-                                </div>
-                                <div class="gradientButton" id="DRCT_ActivateInsertInFP" state="Hidden">
-                                    <div class="mainText">Activate and Insert in Flight Plan</div>
-                                </div>
-                                <div class="gradientButton" id="DRCT_ActivateDirect">
-                                    <div class="mainText">Activate <img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                                    <div class="mainValue">______</div>
-                                </div>
+                            <div class="tabButton tabButtonRight" id="Recent_Select" state="Disabled">
+                                <div class="mainText">Recent</div>
                             </div>
                         </div>
-                        <div id="FlightPlan">
-
-                        </div>
-                        <div id="Nearest">
-
-                        </div>
-                        <div id="Recent">
-
+                        <div class="tabContentContainer" id="DirectToTabContentContainer" state="Waypoint">
+                            <div class="tabContent" id="Waypoint">
+                                <div class="gradientButton" id="SelectedWaypoint">
+                                    <div class="mainText">SELECT WAYPOINT</div>
+                                    <div class="mainValue"></div>
+                                    <div class="title"></div>
+                                    <img class="waypointSymbol" />
+                                </div>
+                                <div id="TopInfos">
+                                    <div id="Location">
+                                        <div id="DRCT_City"></div>
+                                        <div id="DRCT_Region"></div>
+                                    </div>
+                                    <div id="Bearing">
+                                        <div>BRG</div>
+                                        <div id="DRCT_Bearing">___°</div>
+                                    </div>
+                                    <div id="Distance">
+                                        <div>DIS</div>
+                                        <div id="DRCT_Distance">___._NM</div>
+                                    </div>
+                                </div>
+                                <div id="TopLine">
+                                    <div class="gradientButton" id="DRCT_VNavAltButton" state="Hidden">
+                                        <div class="mainText">VNAV Altitude</div>
+                                        <div class="mainValue">_____FT</div>
+                                    </div>
+                                    <div class="gradientButton" id="DRCT_VNavOffsetButton" state="Hidden">
+                                        <div class="mainText">VNAV Offset</div>
+                                        <div class="mainValue">0NM</div>
+                                    </div>
+                                </div>
+                                <div id="MiddleLine">
+                                    <div class="gradientButton" id="DRCT_CrsButton" state="Hidden">
+                                        <div class="mainText">Course</div>
+                                        <div class="mainValue">090°</div>
+                                    </div>
+                                    <div class="gradientButton" id="DRCT_HoldButton" state="Hidden">
+                                        <div class="mainText">Hold</div>
+                                        <div class="mainValue">---</div>
+                                    </div>
+                                </div>
+                                <div id="bottomLine">
+                                    <div class="gradientButton" id="DRCT_CancelButton">
+                                        <div class="label">Cancel <img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
+                                        <div class="value">______</div>
+                                    </div>
+                                    <div class="gradientButton" id="DRCT_ActivateInsertInFP" state="Hidden">
+                                        <div class="mainText">Activate and Insert in Flight Plan</div>
+                                    </div>
+                                    <div class="gradientButton" id="DRCT_ActivateDirect">
+                                        <div class="label">Activate <img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
+                                        <div class="value">______</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2631,22 +2487,22 @@
                 <div class="WindowTitle">Minimum Source</div>
                 <div class="Container">
                     <div class="gradientButton" id="minSource_Off">
-                        <div class="mainValue">
+                        <div class="mainText">
                             Off
                         </div>
                     </div>
                     <div class="gradientButton" id="minSource_Baro">
-                        <div class="mainValue">
+                        <div class="mainText">
                             Baro
                         </div>
                     </div>
                     <div class="gradientButton" id="minSource_TempComp" state="Hidden">
-                        <div class="mainValue">
+                        <div class="mainText">
                             Temp Comp
                         </div>
                     </div>
                     <div class="gradientButton" id="minSource_RadioAlt">
-                        <div class="mainValue">
+                        <div class="mainText">
                             Radio Alt
                         </div>
                     </div>
@@ -2655,6 +2511,37 @@
             <div class="PopUpWindow Transparent" id="DynamicSelectionListWindow" state="Inactive">
                 <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
                 <div class="content">
+                </div>
+            </div>
+            <div class="PopUpWindow Transparent SelectionListWindow" id="AoASelect" state="Inactive">
+                <div class="WindowTitle">AOA Settings</div>
+                <div class="content">
+                    <div class="gradientButton" state="Highlight">
+                        <div class="mainText">On</div>
+                    </div>
+                    <div class="gradientButton" state="">
+                        <div class="mainText">Off</div>
+                    </div>
+                    <div class="gradientButton" state="">
+                        <div class="mainText">Auto</div>
+                    </div>
+                </div>
+            </div>
+            <div class="PopUpWindow Transparent SelectionListWindow" id="PFDWindSelect" state="Inactive">
+                <div class="WindowTitle">Wind Settings</div>
+                <div class="content">
+                    <div class="gradientButton" state="">
+                        <div class="mainText">Option 1</div>
+                    </div>
+                    <div class="gradientButton" state="">
+                        <div class="mainText">Option 2</div>
+                    </div>
+                    <div class="gradientButton" state="">
+                        <div class="mainText">Option 3</div>
+                    </div>
+                    <div class="gradientButton" state="Highlight">
+                        <div class="mainText">Off</div>
+                    </div>
                 </div>
             </div>
             <div class="PopUpWindow Transparent SelectionListWindow" id="MapOrientationSelect" state="Inactive">
