@@ -37,7 +37,7 @@ class CJ4_FMC_InitRefIndexPage {
         fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue] ", "INDEX[blue]"],
             [""],
-            ["<FMS CTL[disabled]", "ROUTE MENU>[disabled]"], //Page 27 ---- 17
+            ["<FMS CTL[disabled]", "ROUTE MENU>"], //Page 27 ---- 17
             [""],
             ["<ABOUT", "DATABASE>"], // Page 27 ---- 18, 19, 20, 21
             [""],
@@ -604,22 +604,34 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage17(fmc) { //ROUTE MENU
         fmc.clearDisplay();
+        let pilotId = WTDataStore.get('simbriefPilotId', '');
+        let fplnRecallDisplay = pilotId == "" ? "<FPLN RECALL[disabled]" : "<FPLN RECALL[d-text]";
+        let pilotIdDisplay = pilotId == "" ? "" : "PILOT ID: " + pilotId + "[s-text green]"
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "ROUTE MENU[blue]"],
             [""],
-            ["<PILOT ROUTE LIST"],
+            ["<PILOT ROUTE LIST[disabled]"],
             [""],
-            ["<DISK ROUTE LIST"],
+            ["<DISK ROUTE LIST[disabled]"],
             [""],
-            ["<FPLN RECALL"],
-            [""],
-            ["<FPLN WIND"],
+            [fplnRecallDisplay],
+            [pilotIdDisplay],
+            ["<FPLN WIND[disabled]"],
             [""],
             [""],
             ["-----------------------[blue]"],
-            ["<SEC FPLN"]
+            ["<SEC FPLN[disabled]"]
         ]);
-        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
+        fmc.onLeftInput[2] = () => {
+            if (pilotId != "") {
+                CJ4_FMC_FplnRecallPage.ShowPage1(fmc);
+            }
+            else {
+                fmc.showErrorMessage("NO PILOT ID[red]");
+                CJ4_FMC_ModSettingsPage.ShowPage1(fmc);
+            }
+            };
+        // fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage18(fmc, databaseWaypoint) { //DATABASE INITIAL
