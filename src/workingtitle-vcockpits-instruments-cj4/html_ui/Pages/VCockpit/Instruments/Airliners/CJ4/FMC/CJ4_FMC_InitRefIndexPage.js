@@ -6,15 +6,15 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<MCDU MENU", "GNSS1 POS>"], //Page 3, 4 ---- 9
             [""],
-            ["<DATALINK", "FREQUENCY>"], //Page XXX ---- 10
+            ["<DATALINK[disabled]", "FREQUENCY>[disabled]"], //Page XXX ---- 10
             [""],
-            ["<STATUS", "FIX>"], //Page 2 ---- 11
+            ["<STATUS", "FIX>[disabled]"], //Page 2 ---- 11
             [""],
-            ["<POS INIT", "HOLD>"], //N/A ---- 12
+            ["<POS INIT", "HOLD>[disabled]"], //N/A ---- 12
             [" FMS1[s-text]"],
-            ["<VORDME CTL", "PROG>"], //Page 6 ---- 13, 14
+            ["<VORDME CTL[disabled]", "PROG>"], //Page 6 ---- 13, 14
             [" FMS1[s-text]"],
-            ["<GNSS CTL", "SEC FPLN>"] //Page 7 ---- 15
+            ["<GNSS CTL[disabled]", "SEC FPLN>[disabled]"] //Page 7 ---- 15
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage3(fmc); };
         fmc.onLeftInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage30(fmc); };
@@ -37,13 +37,13 @@ class CJ4_FMC_InitRefIndexPage {
         fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue] ", "INDEX[blue]"],
             [""],
-            ["<FMS CTL", "ROUTE MENU>"], //Page 27 ---- 17
+            ["<FMS CTL", "ROUTE MENU>[disabled]"], //Page 27 ---- 17
             [""],
             ["<ABOUT", "DATABASE>"], // Page 27 ---- 18, 19, 20, 21
             [""],
-            ["<MOD SET", "DB DISK OPS>"], //Page XX
+            ["<MOD SET", "DB DISK OPS>[disabled]"], //Page XX
             [""],
-            ["", "DEFAULTS>"], //Page 22, 23, 24
+            ["", "DEFAULTS>[disabled]"], //Page 22, 23, 24
             [""],
             ["", "ARR DATA>"], //Page 25
             [""],
@@ -69,9 +69,9 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<FMS 1", "GPS 1 POS>"],
             [""],
-            ["<DL"],
+            ["<DL[disabled]"],
             [""],
-            ["<DBU"],
+            ["<DBU[disabled]"],
             [""],
             [""],
             [""],
@@ -1209,15 +1209,15 @@ class CJ4_FMC_InitRefIndexPage {
             fmc._templateRenderer.setTemplateRaw([
                 ["DL[blue]", "1/2[blue]", "DATALINK MENU[blue]"],
                 [""],
-                ["<RCVD MSGS", "ATS LOG>"],
+                ["<RCVD MSGS[disabled]", "ATS LOG>[disabled]"],
                 [""],
-                ["<SEND MSGS", "DEPART CLX>"],
+                ["<SEND MSGS[disabled]", "DEPART CLX>[disabled]"],
                 [""],
-                ["<WEATHER", "OCEANIC CLX>"],
+                ["<WEATHER[disabled]", "OCEANIC CLX>[disabled]"],
                 [""],
-                ["<TWIP"],
+                ["<TWIP[disabled]"],
                 [""],
-                ["<ATIS"],
+                ["<ATIS[disabled]"],
                 ["        NO COMM[green s-text]"],
                 ["<RETURN [white]" + hourspad + "[blue s-text]" + ":[blue s-text]" + minutesspad + "[blue s-text]"]
             ]);
