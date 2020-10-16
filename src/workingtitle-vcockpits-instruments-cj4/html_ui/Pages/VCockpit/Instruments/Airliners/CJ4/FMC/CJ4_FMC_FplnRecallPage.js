@@ -99,6 +99,8 @@ class CJ4_FMC_FplnRecallPage {
             if (!json || json === "") {
                 fmc.showErrorMessage("NO DATA");
             }
+            fmc.updateFlightNo(json.general.icao_airline + json.general.flight_number);
+            fmc.setCruiseFlightLevelAndTemperature(json.general.initial.altitude);
             updateFrom();
         });
     }
