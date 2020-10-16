@@ -9,10 +9,12 @@ class CJ4_FMC_FplnRecallPage {
             console.log("UPDATE FROMTO");
             let from = json.origin.icao_code;
             // fmc.tryUpdateFromTo(json.origin.icao_code + "/" + json.destination.icao_code, updateRunways);
-            fmc.eraseTemporaryFlightPlan(() => {
-                fmc.flightPlanManager.clearFlightPlan(() => {
-                    fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                        fmc.updateRouteOrigin(from, updateRunways);
+            fmc.flightPlanManager.setActiveWaypointIndex(0, () => {
+                fmc.eraseTemporaryFlightPlan(() => {
+                    fmc.flightPlanManager.clearFlightPlan(() => {
+                        fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                            fmc.updateRouteOrigin(from, updateRunways);
+                        });
                     });
                 });
             });
@@ -40,7 +42,7 @@ class CJ4_FMC_FplnRecallPage {
                 if (idx >= routeArr.length - 1) {
                     // DONE
                     fmc.setMsg("DONE");
-                    fmc.flightPlanManager.setActiveWaypointIndex(1);
+                    fmc.flightPlanManager.setActiveWaypointIndex(0);
                     return;
                 }
                 let icao = routeArr[idx];
