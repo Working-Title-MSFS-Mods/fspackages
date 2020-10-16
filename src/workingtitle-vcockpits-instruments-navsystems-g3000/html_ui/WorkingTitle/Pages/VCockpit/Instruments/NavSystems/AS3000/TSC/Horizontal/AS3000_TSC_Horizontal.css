@@ -143,37 +143,53 @@ as3000-tsc-horizontal-element {
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDHome .gradientButton[state="Active"] .active, as3000-tsc-horizontal-element #Electricity #PagesDisplay #WeatherSelection .gradientButton[state="Active"] .active {
           display: inline-block; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(5, 1fr);
         position: absolute;
-        height: 85vh;
-        border: 0.4vh solid white;
-        border-collapse: collapse;
+        height: 90vh;
+        border: 0.4vh solid #454b4e;
+        background: linear-gradient(#1f3445, black 10%);
+        border-radius: 10px;
         right: 10%;
         width: 50%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons tr, as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons td {
-          height: 20%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons td {
-          width: 50%;
-          position: relative;
-          border: 0.2vh solid white; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton {
-          position: absolute;
           width: auto;
           height: auto;
           top: 0.5vh;
           bottom: 0.5vh;
           left: 0.5vh;
           right: 0.5vh; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .mainText {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            font-size: 5vh; }
+            as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .statusButton .mainText {
+             position: absolute;
+             top: 40%;
+             width: 100%;
+             font-size: 5vh; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .mainValue {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
             color: aqua;
-            font-size: 5vh;
-            margin-top: 3.5vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .statusBar {
-            bottom: 40%; }
+            font-size: 5vh; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_RestoreDefaults {
         position: absolute;
-        left: 5%;
-        bottom: 5%;
-        width: 30%; }
+        left: 10%;
+        bottom: 2%;
+        height: 17%;
+        width: 25%; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_RestoreDefaults .mainText {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 100%;
+          font-size: 5vh; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #Timers .sectionTitle {
         position: absolute;
         top: 0.5vh;
@@ -2573,11 +2589,11 @@ as3000-tsc-horizontal-element {
       font-size: 5vh; }
     as3000-tsc-horizontal-element .gradientButton .statusBar {
       position: absolute;
-      width: 80%;
-      height: 5%;
+      width: 50%;
+      height: 7%;
       background-color: grey;
-      left: 10%;
-      bottom: 30%; }
+      left: 25%;
+      bottom: 15%; }
     as3000-tsc-horizontal-element .gradientButton[state=Active] .mainNumber {
       color: lawngreen; }
     as3000-tsc-horizontal-element .gradientButton[state=Active] .statusBar {
