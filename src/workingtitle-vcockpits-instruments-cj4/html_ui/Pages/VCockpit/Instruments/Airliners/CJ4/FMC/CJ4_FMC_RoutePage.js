@@ -149,7 +149,7 @@ class CJ4_FMC_RoutePage {
                         if (value.length > 0) {
                             fmc.clearUserInput();
                             fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                            let lastWaypoint = fmc.flightPlanManager.getWaypoints()[fmc.flightPlanManager.getEnRouteWaypointsLastIndex()];
+                                let lastWaypoint = fmc.flightPlanManager.getWaypoints()[fmc.flightPlanManager.getEnRouteWaypointsLastIndex()];
                                 if (lastWaypoint.infos instanceof WayPointInfo) {
                                     lastWaypoint.infos.UpdateAirway(value).then(() => {
                                         let airway = lastWaypoint.infos.airways.find(a => { return a.name === value; });
@@ -345,7 +345,7 @@ class CJ4_FMC_RoutePage {
                                     lastWaypoint.infos.UpdateAirway(value).then(() => {
                                         let airway = lastWaypoint.infos.airways.find(a => { return a.name === value; });
                                         if (airway) {
-                                        	// set the outgoing airway of the last enroute or departure waypoint of the flightplan
+                                            // set the outgoing airway of the last enroute or departure waypoint of the flightplan
                                             lastWaypoint.infos.airwayOut = airway.name;
                                             fmc.setMsg();
                                             CJ4_FMC_RoutePage.ShowPage2(fmc, offset, airway);
@@ -497,7 +497,7 @@ class CJ4_FMC_RoutePage {
                                                 resolve();
                                             });
                                         });
-                                    })
+                                    });
                                 };
 
                                 await syncInsertWaypointByIcao(airway.icaos[firstIndex + i * inc], index + i);
@@ -557,7 +557,7 @@ class CJ4_FMC_RoutePage {
                     else {
                         allRows.push(["DIRECT", wp.ident]);
                         allWaypoints.push(wp);
-                        allFPIndexes.push(fpIndexes[i]);                        
+                        allFPIndexes.push(fpIndexes[i]);
                     }
                 }
             }
