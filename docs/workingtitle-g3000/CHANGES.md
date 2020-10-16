@@ -1,5 +1,11 @@
 # Changelog
 
+### v0.2.0
+**Fixes**
+- \[Compatibility\] Disabled new functionality for the Longitude to avoid locking users into settings they could not control in-game. The mod now only applies cosmetic changes to the Longitude, including:
+  - Updated terrain colors.
+  - Updated formatting of symbols and text labels on the navigational map.
+
 ### v0.2.0-pre2
 **Fixes**
 - \[Compatibility\] Fixed issue where installing both this mod and the WorkingTitle G1000 mod would cause G1000 screens to freeze.
