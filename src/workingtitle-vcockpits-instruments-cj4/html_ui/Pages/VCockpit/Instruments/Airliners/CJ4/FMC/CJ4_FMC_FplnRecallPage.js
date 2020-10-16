@@ -107,17 +107,23 @@ class CJ4_FMC_FplnRecallPage {
             }
 
             let flightNo = json.general.icao_airline + json.general.flight_number;
-            fmc.setMsg("GET FPLN...FLIGHTNO [yellow]" + flightNo);
+            fmc.setMsg("LOADING FPLN...FLIGHTNO[green]" + flightNo);
             fmc.updateFlightNo(flightNo);
             let crz = json.general.initial_altitude;
-            fmc.setMsg("GET FPLN...CRZ [yellow]" + crz);
+            fmc.setMsg("LOADING FPLN...CRZ[green]" + crz);
             fmc.setCruiseFlightLevelAndTemperature(crz);
             updateFrom();
         });
     }
 
     static ShowPage1(fmc) {
-        fmc.setMsg("GET FPLN...[yellow]");
-        this.GetFplnFromSimBrief(347439, fmc);
+        let simbriefUser = WTDataStore.get('simbriefUser');
+        if (simbriefUser) {
+            fmc.setMsg("LOADING FPLN...[yellow]");
+            this.GetFplnFromSimBrief(simbriefUser, fmc);
+        }
+        else {
+            fmc.setMsg("NO SIMBRIEF USER OR PLAN[red]");
+        }
     }
 }
