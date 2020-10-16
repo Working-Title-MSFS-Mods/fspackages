@@ -1,5 +1,5 @@
 class CJ4_FMC_ApproachRefPage {
-    static ShowPage13(fmc) { //APPROACH REF Page 1
+    static ShowPage1(fmc) { //APPROACH REF Page 1
         fmc.clearDisplay();
         let destinationIdent = "";
         let destination = fmc.flightPlanManager.getDestination();
@@ -61,7 +61,7 @@ class CJ4_FMC_ApproachRefPage {
         let arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY[green]/[white]WET[s-text]"
             : "DRY[s-text]/[white]WET[green]";
 
-        let selAptValue = destinationIdent ? destinationIdent + "[green]/[white]" + originIdent + "[s-text]" : "----"
+        let selAptValue = destinationIdent ? destinationIdent + "[green]/[white]" + originIdent + "[s-text]" : "----";
 
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "1/3 [blue]", "APPROACH REF[blue]"],
@@ -81,15 +81,16 @@ class CJ4_FMC_ApproachRefPage {
 
         fmc.onRightInput[0] = () => {
             let windIn = fmc.inOut.split("/");
-            if(windIn.length == 2 && windIn[0] <= 360 && windIn[0] >= 0 && windIn[1] >= 0){
+            if (windIn.length == 2 && windIn[0] <= 360 && windIn[0] >= 0 && windIn[1] >= 0) {
                 fmc.landingWindDir = new Number(windIn[0]);
                 fmc.landingWindSpeed = new Number(windIn[1]);
+                fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
                 fmc.clearUserInput();
             }
             else {
                 fmc.showErrorMessage("INVALID");
             }
-            CJ4_FMC_PerfInitPage.ShowPage13(fmc);
+            CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
         };
 
         fmc.onRightInput[1] = () => {
@@ -99,28 +100,29 @@ class CJ4_FMC_ApproachRefPage {
             }
             else if (tempIn) {
                 fmc.landingOat = Math.trunc(tempIn);
+                fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
             }
             else {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
-            CJ4_FMC_PerfInitPage.ShowPage13(fmc);
+            CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
         };
 
         fmc.onRightInput[2] = () => {
             let qnhInput = Number(fmc.inOut);
-            if (qnhInput !== NaN) {
-                if (qnhInput > 28 && qnhInput < 32){
+            if (!isNaN(qnhInput)) {
+                if (qnhInput > 28 && qnhInput < 32) {
                     fmc.landingQnh = qnhInput.toFixed(2);
                     fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
                 }
-                else if (qnhInput > 280 && qnhInput < 320){
-                    let qnhParse = qnhInput / 10
+                else if (qnhInput > 280 && qnhInput < 320) {
+                    let qnhParse = qnhInput / 10;
                     fmc.landingQnh = qnhParse.toFixed(2);
                     fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
                 }
-                else if (qnhInput > 2800 && qnhInput < 3200){
-                    let qnhParse = qnhInput / 100
+                else if (qnhInput > 2800 && qnhInput < 3200) {
+                    let qnhParse = qnhInput / 100;
                     fmc.landingQnh = qnhParse.toFixed(2);
                     fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
                 }
@@ -132,8 +134,9 @@ class CJ4_FMC_ApproachRefPage {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
-            CJ4_FMC_PerfInitPage.ShowPage13(fmc);
-        }
+            fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
+            CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
+        };
         fmc.onLeftInput[5] = () => {
             if (fmc.arrRunwayCondition == 0) {
                 fmc.arrRunwayCondition = 1;
@@ -141,29 +144,29 @@ class CJ4_FMC_ApproachRefPage {
                 fmc.arrRunwayCondition = 0;
             }
             arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY[green]/[white]WET[s-text]"
-            : "DRY[s-text]/[white]WET[green]";
-            fmc.clearUserInput();
-            CJ4_FMC_PerfInitPage.ShowPage13(fmc);
-        }
+                : "DRY[s-text]/[white]WET[green]";
+            fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
+            CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
+        };
         fmc.onPrevPage = () => {
             if (runwayLoaded == true && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
-                CJ4_FMC_PerfInitPage.ShowPage15(fmc);
+                CJ4_FMC_ApproachRefPage.ShowPage3(fmc);
             }
             else {
                 fmc.showErrorMessage("INVALID");
             }
-            };
+        };
         fmc.onNextPage = () => {
             if (runwayLoaded == true && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
-                CJ4_FMC_PerfInitPage.ShowPage14(fmc);
+                CJ4_FMC_ApproachRefPage.ShowPage2(fmc);
             }
             else {
                 fmc.showErrorMessage("INVALID");
             }
-            };
+        };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage14(fmc) { //APPROACH REF Page 2
+    static ShowPage2(fmc) { //APPROACH REF Page 2
         fmc.clearDisplay();
         let grWtCell = "";
         let grossWeightValue = fmc.getWeight();
@@ -229,7 +232,7 @@ class CJ4_FMC_ApproachRefPage {
         let ldgWt = fmc.grossWeight - fuelBurn;
         let ldgWtCell = (fmc.grossWeight - fuelBurn) == 0 ? "-----"
             : Math.trunc(ldgWt);
-		
+
         let vRef = ((ldgWt - 10500) * .00393) + 92; //V Speeds based on weight at 0C
         let vApp = ((ldgWt - 10500) * .00408) + 98;
         let ldgFieldLength = ((ldgWt - 10500) * .126) + 2180; // Sea level base value for a given weight
@@ -267,62 +270,77 @@ class CJ4_FMC_ApproachRefPage {
         if (fmc.arrRunwayCondition == 1) { // If the runway is wet
             ldgFieldLength = ldgFieldLength * ((fmc.landingPressAlt * .0001025) + 1.21875); //Determines a factor to multiply with dependent on pressure altitude.  Sea level being 1.21x landing distance
         }
-		
-		if (ldgWtCell > 15660) { //Turn the landing weight yellow if it exceeds the maximum landing weight
-			ldgWtCell = ldgWtCell + "[yellow]";
-        }
-        
 
-		
+        if (ldgWtCell > 15660) { //Turn the landing weight yellow if it exceeds the maximum landing weight
+            ldgWtCell = ldgWtCell + "[yellow]";
+        }
+
+        let vspeedSendMsg = "";
+        if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.INPROGRESS)
+            vspeedSendMsg = "IN PROGRESS";
+        else if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT)
+            vspeedSendMsg = "COMPLETE";
+
+        let vspeedColor = "";
+        if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT)
+            vspeedColor = "blue";
+
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "2/3 [blue]", "APPROACH REF[blue]"],
             [" A/I[blue]"],
             ["OFF[green]/[white]ON[s-text]"],
-            ["", "V[blue]REF:[s-text blue] " + vRef.toFixed(0)],
+            ["", "V[blue]REF:[s-text blue] " + vRef.toFixed(0) + "[s-text + " + vspeedColor + "]"],
             [""],
-            [" LW / GWT/MLW[blue]", "V[blue]APP:[s-text blue] " + vApp.toFixed(0)],
+            [" LW / GWT/MLW[blue]", "V[blue]APP:[s-text blue] " + vApp.toFixed(0) + "[s-text + " + vspeedColor + "]"],
             [ldgWtCell + "/" + fmc.grossWeight + "/15660"],
             [" LFL / " + arrRunwayOutput + "[blue]"],
             [ldgFieldLength.toFixed(0) + " / " + Math.trunc(arrRunwayLength) + " FT"],
             [" LDG FACTOR[blue]"],
             ["1.0[green]" + "/[white]1.25[s-text]" + "/[white]1.67[s-text]" + "/[white]1.92[s-text]"],
-            [""],
-            ["", "SEND>"]
+            ["", vspeedSendMsg + "[s-text]"],
+            ["", "SEND>[s-text]"]
         ]);
 
-        fmc.onRightInput[5] = () => {
-            //new custom Cj4 LVARS for all V Speeds
-            SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots", vRef);
-            SimVar.SetSimVarValue("L:WT_CJ4_VAP", "Knots", vApp);
-            //new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
-            SimVar.SetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool", true);
-            SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", true);
+        if (fmc.appVSpeedStatus !== CJ4_FMC.VSPEED_STATUS.INPROGRESS) {
+            fmc.onRightInput[5] = () => {
+                fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.INPROGRESS;
+                setTimeout(() => {
+                    //new custom Cj4 LVARS for all V Speeds
+                    SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots", vRef);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VAP", "Knots", vApp);
+                    //new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
+                    SimVar.SetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool", true);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", true);
+                    CJ4_FMC_ApproachRefPage.ShowPage2(fmc); // TODO: this will probably send us back to this page even when user navigated away, find better solution
+                }, 2000);
+            };
+            CJ4_FMC_ApproachRefPage.ShowPage2(fmc);
         }
 
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage15(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_ApproachRefPage.ShowPage1(fmc); };
+        fmc.onNextPage = () => { CJ4_FMC_ApproachRefPage.ShowPage3(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
 
-    static ShowPage15(fmc) { //APPROACH REF Page 3
+    static ShowPage3(fmc) { //APPROACH REF Page 3
         fmc.clearDisplay();
-		
-		let grWtCell = "";
+
+        let grWtCell = "";
         let grossWeightValue = fmc.getWeight();
         if (isFinite(grossWeightValue)) {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
         }
-		
-		let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
+
+        let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
             + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
-		
-		let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
-		let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+
+        let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+        let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
 
         let activeWaypointDist = 0;
         let destinationIdent = "";
         let destinationDistance = 0;
-       
+
         //destination data
         if (fmc.flightPlanManager.getDestination() && fmc.flightPlanManager.getActiveWaypoint() && fmc.flightPlanManager.getNextActiveWaypoint()) {
             activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
@@ -338,17 +356,17 @@ class CJ4_FMC_ApproachRefPage {
             let destinationDistanceDirect = new Number(Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
             destinationDistance = destinationDistanceDirect;
         }
-		let eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
+        let eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
             : 0;
         let fuelBurn = eteToDestination * totalFuelFlow;
         let ldgWt = grWtCell - fuelBurn;
         let ldgWtCell = (grWtCell - fuelBurn) == 0 ? "-----"
             : Math.trunc(ldgWt);
-		
-		if (ldgWtCell > 15660) { //Turn the landing weight yellow if it exceeds the maximum landing weight
-			ldgWtCell = ldgWtCell + "[yellow]";
-		}
-		
+
+        if (ldgWtCell > 15660) { //Turn the landing weight yellow if it exceeds the maximum landing weight
+            ldgWtCell = ldgWtCell + "[yellow]";
+        }
+
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "3/3 [blue]", "APPROACH REF[blue]"],
             [" LW /MLW[blue]"],
@@ -364,8 +382,8 @@ class CJ4_FMC_ApproachRefPage {
             [""],
             [""]
         ]);
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage14(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage13(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_ApproachRefPage.ShowPage2(fmc); };
+        fmc.onNextPage = () => { CJ4_FMC_ApproachRefPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
 }
