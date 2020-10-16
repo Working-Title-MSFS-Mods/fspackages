@@ -1,6 +1,10 @@
-# Working Title CJ4 v0.4.0 Changes
+# Working Title CJ4 v0.4.1 Changes
 
-Welcome to the latest update of the Working Title CJ4 (v0.4.0). This is still very much a beta. Thank you to everyone who contributed to this release. We have been hard at work behind the scenes to tackle some of the core flight management systems, so the number of changes is shorter this time, but still with some fun and important features and fixes. Overall, this bird should be a bunch more fun to fly.
+Welcome to the latest update of the Working Title CJ4 (v0.4.1). This is still very much a beta. Thank you to everyone who contributed to this release.
+
+Feel free to test out our new Simbrief Profile: [SIMBRIEF PROFILE](https://www.simbrief.com/system/dispatch.php?sharefleet=eyJ0cyI6IjE2MDI1MzkxMTUxODMiLCJiYXNldHlwZSI6IkMyNUMiLCJjb21tZW50cyI6IldPUktJTkcgVElUTEUgQ0o0IiwiaWNhbyI6IkMyNUMiLCJuYW1lIjoiQ0lUQVRJT04gQ0o0IiwiZW5naW5lcyI6IkZKNDQtNEEiLCJyZWciOiJONTI1V1QiLCJmaW4iOiIyNTQiLCJzZWxjYWwiOiIiLCJoZXhjb2RlIjoiIiwiY2F0IjoiTSIsInBlciI6IkIiLCJlcXVpcCI6IlNERTJFM0ZHSFJXWFlaIiwidHJhbnNwb25kZXIiOiJMQjEiLCJwYm4iOiJBMUIyQzJEMkQzTzJPM1MyIiwiZXh0cmFybWsiOiIiLCJtYXhwYXgiOiI3Iiwid2d0dW5pdHMiOiJMQlMiLCJvZXciOiIxMDI4MCIsIm16ZnciOiIxMjUwMCIsIm10b3ciOiIxNzExMCIsIm1sdyI6IjE1NjYwIiwibWF4ZnVlbCI6IjU3NjIiLCJwYXh3Z3QiOiIxNzAiLCJkZWZhdWx0Y2kiOiIiLCJmdWVsZmFjdG9yIjoiUDAwIiwiY3J1aXNlb2Zmc2V0IjoiUDAwMDAifQ--)
+
+Check out our interim SoP doc: [Interim SoP Document](https://docs.google.com/document/d/15qb3g2ECsA8XH6gSbqbe5kGydNJ3Tj0j7vJPAWirwh4/edit?usp=sharing)
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -9,68 +13,51 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ## Key Features
 
-* New custom engine fuel consumption model code based on FJ44 curves and pilot input
-* Overhauled LEGS page for more flexibility and real unit functions (WIP)
-* Many FPLN page bug fixes
-* A few quality of life and critical bug fixes
-* Overhaul of DEP/ARR pages and working STAR approaches (thanks @tscharlii)
-* Added functional options in the UPR MENU
+* Added Passenger Briefing Announcements (accessed from MFD Upper Menu and PASS BRIEF BUTTON)
+* Fixed bugs with engine thrust when engines off ([#222](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/222))
+* Adjusted flight dynamics to minimize (but not eliminate) the AP porpoising effect ([#163](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/163))
+* Fixed V Speed bug (where v speeds would become stuck at -1 after landing)
+* Updated CAS messages ([#242](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/242))
+* Sound Updates/Fixes
+* FMS Bug Fixes
 
 ### Engine Model
-* Engine fuel consumption model has been custom coded and replaces the sim fuel consumption. Fuel consumption, especially at cruise, should be much, much closer to published. Expect 1800-1850pph per side at ISA full power at sea level and 500-800pph per side at cruise, depending on altitude, mach, and power settings.
-* Thrust now scales exponentially with N1 instead of linearly. Power settings should feel much more accurate.
+* Thrust when engines off bug squashed ([#222](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/222))
 
 ### Flight Model
-* Added gear drag (Was non-existent before)
-* Greatly reduced spoiler drag & pitch down moment (You shouldn't be losing airspeed in a 30 degree nose down dive with the speedbrakes out)
-* Reduced flap drag 
+* Adjusted elevator trim effectiveness to reduce porpoising and facilitate (careful) FLC usage
 
 ### LEGS Page
-* Added ability to insert a new fix
-* Added ability to remove whole segments by pressing LSK of one fix and then LSK of another
-* Added ability to to direct-to a leg by pressing LSK of the fix and then dropping onto the magenta line
-* Added ability to delete individual fixes
-* Magenta fix distance updates distance to go as aircraft moves
-* Fixed issue where unable to delete with a departure active
-* Made the WORKING prompt more consistent
-* Added feature to show runway where possible
-* Disabled the ability to adjust approach fixes due to simulator limitations
-* Each waypoint now shows the distance to the next fix instead of the cumulative flight plan distance.
-* Blue waypoint is the FROM waypoint
-* Magenta waypoint is the current TO waypoint
-* Only fixes with an altitude or speed restriction will populate on the right side in green.  (It does not show cruise altitude anymore)
+* Fixed Direct to IAF from LEGS page ([#220](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/220))
+* Fixed approach waypoint display in LEGS page ([#220](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/220))
 
 ### FPLN Page
-* Fixed issue where adding via airway would not add all fixes along airway to flight plan
-* Fixed issue where a blank line was not always provided to add a fix
-* Condensed display to only show airway entry and exit as per the real unit
-* Fixed issue where VIA was not displayed on page 2+
-* Fixed issue where attempting to delete the first fix on page 1 would insert CLRIC
-* Fixed issue where unable to delete with a departure active
+* Fixed bug when adding airways ([#226](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/226)) (thanks [@tscharlii](https://github.com/tscharlii) )
+* Fixed bug where invalid waypoints didn't always cause an error
 
-### DEP/ARR Pages
-* Proper formatting and flow of DEP/ARR pages (thanks @tscharlii)
-* Fixed scrolling through procedures and runways (thanks @tscharlii)
-* STAR approaches should now work properly (thanks @tscharlii)
+### PROG Page
+* Updated distances to show decimals under 100NM
+* Fixed reversed XTK and CROSSWIND indications on Page 2
 
-### FUEL MGMT Page
-* Total fuel used now initialized to its starting point when the FMC loads
-
-### TUNE Page
-* Page now updates and syncs back radio changes made from other instruments or the simulator
+### PERF Page
+* Added input filters for QNH on takeoff and landing perf pages (user can now enter 29.92, 299 or 2992)
+* Added protection for TAKEOFF and APPROACH REF pages when no runway is selected (error message will appear)
+* Fixed weight calculation issues ([#241](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/241))
 
 ### PFD/MFD
-* Fixed issue where ILS localizers reporting DME distance as strings would crash the displays
-* Show animated radar bug
-* MFD Checklists have been added
-* Pax Brief Menu has been added (Unfortunately, no sounds for it yet, next release)
-* Added FMS Text option (this essentially displays the PROG page on the MFD)
-* Added functional PASS BRIEF, CHECKLIST, and SYS buttons on the CCP (Cursor Control Panel)
+* Fixed FMS Text distances on MFD ([#232](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/232))
+* Added PASS BRIEF announcements
+* Fixed V Speed bug where some speeds were locked at -1 after a segment ([#221](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/221))
+* Fixed MFD plane not centered on map ([#219](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/219))
+* Updated CAS messages for Pitot Heat, Parking Break and Oxy Masks ([#242](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/242) and [#183](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/183))
 
 ### Audio
-* Improved BELT button audio (Currently the chime is non-functional for this.  Fix soon)
-* Added SAFETY button chime and announcement and also chime when you turn the SAFETY and BELT buttons off.
-* Increased volume of pilot and co-pilot fan air sounds
+* Fixed no chime when playing seatbelt announcement
+* Fixed erroneous chimes when setting battery master to on
+* Fixed sounds for internal/external view swaps/fixed passenger sounds stopping when switching to outside view
+* Added passenger briefing announcements (MFD)
+* Fixed announcements to restrict to only one announcement at a time
+* Improvements to climate control knob sound
 
 ## Known Issues
 * Modifications of the flight plan can be slow at times. The cause for this is Asobo's FacilityLoader which they need to fix. When the FMC shows "Working..." it indicates an operation is in progress.
@@ -78,5 +65,5 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are currently overhauling the flight plan management system to allow for much more flexibility and stability.
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
 * The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the various enhancements applied.
-* Performance pages don't currently have input error handling for wind, temp or QNH. These values must be entered correctly and completly in the proper format for the page to work. Note that valid wind directions are 001 through 360 as of now.
-* FLC stability appears to have regressed with the autopilot aircraft energy calculation changes in 1.9.3. We have attempted tuning the autopilot PIDs but as of right now the behavior of the underlying sim FLC PID itself seems to be at issue. We will continue to investigate.
+* FLC stability appears to have regressed with the autopilot aircraft energy calculation changes in 1.9.3. We have made some improvements to this behavior in this update. We will continue to investigate after the 13 October 2020 patch is released.
+* Some flight plan distances are still misreported when the approach is activated. We will look at this more carefully after the Asobo update.

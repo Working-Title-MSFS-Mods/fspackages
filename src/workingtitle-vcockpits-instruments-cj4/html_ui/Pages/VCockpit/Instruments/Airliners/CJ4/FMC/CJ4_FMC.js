@@ -16,6 +16,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.paxNumber = 0;
         this.cargoWeight = 0;
         this.basicOperatingWeight = 10280;
+    	this.grossWeight = 10280;
         this.takeoffOat = "□□□";
         this.landingOat = "□□□";
         this.takeoffQnh = "□□.□□";
@@ -34,11 +35,16 @@ class CJ4_FMC extends FMCMainDisplay {
         this.initialFuelLeft = 0;
         this.initialFuelRight = 0;
         this.selectedRunwayOutput = "";
+        this.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
+        this.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
         this._fpHasChanged = false;
         this._activatingDirectTo = false;
         this._templateRenderer = undefined;
         this._msg = "";
         this._activatingDirectToExisting = false;
+        this.vfrLandingRunway = undefined;
+        this.modVfrRunway = false;
+        this.deletedVfrLandingRunway = undefined;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -107,6 +113,7 @@ class CJ4_FMC extends FMCMainDisplay {
             if (this.getIsRouteActivated() && !this._activatingDirectTo) {
                 // console.log("running this.getIsRouteActivated() && !this._activatingDirectTo");
                 this.insertTemporaryFlightPlan(() => {
+                    this.copyAirwaySelections();
                     this._isRouteActivated = false;
                     SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
                     // console.log("done with onExec insert temp");
@@ -264,6 +271,14 @@ class CJ4_FMC extends FMCMainDisplay {
         this.fpHasChanged = true;
         SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 1);
         callback();
+    }
+    //function added to set departure enroute transition index
+    setDepartureEnrouteTransitionIndex(departureEnrouteTransitionIndex, callback = EmptyCallback.Boolean) {
+        this.ensureCurrentFlightPlanIsTemporary(() => {
+            this.flightPlanManager.setDepartureEnRouteTransitionIndex(departureEnrouteTransitionIndex, () => {
+                callback(true);
+            });
+        });
     }
     updateAutopilot() {
         let now = performance.now();
@@ -507,6 +522,26 @@ class CJ4_FMC extends FMCMainDisplay {
             }
         }
     }
+    
+    // Copy airway selections from temporary to active flightplan
+    copyAirwaySelections() {
+        let temporaryFPWaypoints = this.flightPlanManager.getWaypoints(1);
+        let activeFPWaypoints = this.flightPlanManager.getWaypoints(0);
+        for (let i = 0; i < activeFPWaypoints.length; i++) {
+            if (activeFPWaypoints[i].infos && temporaryFPWaypoints[i] && activeFPWaypoints[i].icao === temporaryFPWaypoints[i].icao && temporaryFPWaypoints[i].infos) {
+                activeFPWaypoints[i].infos.airwayIn = temporaryFPWaypoints[i].infos.airwayIn;
+                activeFPWaypoints[i].infos.airwayOut = temporaryFPWaypoints[i].infos.airwayOut;
+            }
+        }
+    }
 }
+
+
+CJ4_FMC.VSPEED_STATUS = {
+    NONE: 0,
+    INPROGRESS: 1,
+    SENT: 2,
+};
+
 registerInstrument("cj4-fmc", CJ4_FMC);
 //# sourceMappingURL=CJ4_FMC.js.map

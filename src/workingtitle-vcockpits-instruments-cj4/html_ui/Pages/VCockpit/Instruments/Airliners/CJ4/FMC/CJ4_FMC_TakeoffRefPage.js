@@ -20,6 +20,9 @@ class CJ4_FMC_TakeoffRefPage {
             depRunwayElevation = new Number(depRunway.elevation * 3.28);
             depRunwayLength = new Number((depRunway.length) * 3.28);
         }
+        else {
+            depRunwayOutput = "NO TAKEOFF RW";
+        }
 
         let headwind = "";
         let crosswind = "";
@@ -67,13 +70,13 @@ class CJ4_FMC_TakeoffRefPage {
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "1/3[blue] ", "TAKEOFF REF[blue]"],
             [" RWY ID[blue]", "WIND[blue] "],
-            [depRunwayOutput + "[s-text]", fmc.takeoffWindDir.toString().padStart(3,"0") + "\xB0/" + fmc.takeoffWindSpeed.toString().padStart(3, " ")],
+            [depRunwayOutput + "[s-text]", fmc.takeoffWindDir.toString().padStart(3, "0") + "\xB0/" + fmc.takeoffWindSpeed.toString().padStart(3, " ")],
             [" RWY WIND[blue]", "OAT[blue] "],
-            [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.takeoffOat + "\xB0C"],
+            [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", fmc.takeoffOat + "\xB0C"],
             [" RWY LENGTH[blue]", "QNH[blue] "],
-            [Math.round(depRunwayLength) + " FT", fmc.takeoffQnh + ""],
+            [Math.round(depRunwayLength) + " FT[s-text]", fmc.takeoffQnh + "[s-text]"],
             [" RWY SLOPE[blue]", "P ALT[blue] "],
-            ["--.-%", fmc.takeoffPressAlt + " FT"],
+            ["--.-%[s-text]", fmc.takeoffPressAlt + " FT[s-text]"],
             [" RWY COND[blue]"],
             [depRunwayConditionActive],
             [""],
@@ -81,33 +84,61 @@ class CJ4_FMC_TakeoffRefPage {
         ]);
         fmc.onRightInput[0] = () => {
             let windIn = fmc.inOut.split("/");
-            if(windIn.length == 2){
+            if (windIn.length == 2 && windIn[0] <= 360 && windIn[0] >= 0 && windIn[1] >= 0) {
                 fmc.takeoffWindDir = new Number(windIn[0]);
                 fmc.takeoffWindSpeed = new Number(windIn[1]);
+                fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
                 fmc.clearUserInput();
             }
             else {
                 fmc.showErrorMessage("INVALID");
             }
-            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
-        }
+            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
+        };
         fmc.onRightInput[1] = () => {
-            fmc.takeoffOat = new Number(fmc.inOut);
-            fmc.clearUserInput();
-            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
-        }
-        fmc.onRightInput[2] = () => {
-            let qnh = Number(fmc.inOut);
-            if (qnh !== NaN && qnh > 28 && qnh < 34) {
-                fmc.takeoffQnh = qnh.toFixed(2);
-                fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
-                fmc.clearUserInput();
+            let tempIn = parseFloat(fmc.inOut);
+            if (tempIn && isNaN(tempIn)) {
+                fmc.showErrorMessage("INVALID");
+            }
+            else if (tempIn) {
+                fmc.takeoffOat = Math.trunc(tempIn);
             }
             else {
                 fmc.showErrorMessage("INVALID");
             }
+            fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
+            fmc.clearUserInput();
+            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
+        };
+        fmc.onRightInput[2] = () => {
+            let qnhInput = Number(fmc.inOut);
+            if (!isNaN(qnhInput)) {
+                if (qnhInput > 28 && qnhInput < 32) {
+                    fmc.takeoffQnh = qnhInput.toFixed(2);
+                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                }
+                else if (qnhInput > 280 && qnhInput < 320) {
+                    let qnhParse = qnhInput / 10;
+                    fmc.takeoffQnh = qnhParse.toFixed(2);
+                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                }
+                else if (qnhInput > 2800 && qnhInput < 3200) {
+                    let qnhParse = qnhInput / 100;
+                    fmc.takeoffQnh = qnhParse.toFixed(2);
+                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                }
+                else {
+                    fmc.showErrorMessage("INVALID");
+                }
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
+            fmc.clearUserInput();
             CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);
-        }
+        };
+
         fmc.onLeftInput[4] = () => {
             if (fmc.depRunwayCondition == 0) {
                 fmc.depRunwayCondition = 1;
@@ -116,12 +147,27 @@ class CJ4_FMC_TakeoffRefPage {
             }
             depRunwayConditionActive = fmc.depRunwayCondition == 0 ? "DRY"
                 : "WET";
+            fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
             fmc.clearUserInput();
-            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
-        }
+            { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
+        };
 
-        fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage3(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
+        fmc.onPrevPage = () => {
+            if (fmc.flightPlanManager.getDepartureRunway() && fmc.takeoffQnh > 28 && fmc.takeoffQnh < 32 && fmc.takeoffOat && fmc.takeoffWindDir >= 0 && fmc.takeoffWindDir <= 360) {
+                CJ4_FMC_TakeoffRefPage.ShowPage3(fmc);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+        };
+        fmc.onNextPage = () => {
+            if (fmc.flightPlanManager.getDepartureRunway() && fmc.takeoffQnh > 28 && fmc.takeoffQnh < 32 && fmc.takeoffOat && fmc.takeoffWindDir >= 0 && fmc.takeoffWindDir <= 360) {
+                CJ4_FMC_TakeoffRefPage.ShowPage2(fmc);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+        };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage2(fmc) { //TAKEOFF REF Page 2
@@ -131,12 +177,7 @@ class CJ4_FMC_TakeoffRefPage {
         if (origin) {
             originIdent = origin.ident;
         }
-        let grWtCell = "";
-        let grossWeightValue = new Number(fmc.getWeight());
-        if (isFinite(grossWeightValue)) {
-            grWtCell = new Number((grossWeightValue * 2200).toFixed(0));
-        }
-        let tow = (grWtCell - 100);
+        let tow = (fmc.grossWeight - 100);
         let depRunway = "";
         let depRunwayLength = "";
         let selectedRunway = fmc.flightPlanManager.getDepartureRunway();
@@ -216,23 +257,34 @@ class CJ4_FMC_TakeoffRefPage {
         let takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
             : "OFF[s-text]/[white]ON[green]";
 
-		if (tow > 17110) { //Turn the takeoff weight yellow if it exceeds the maximum takeoff weight
-			tow = tow + "[yellow]";
-		}
+        if (tow > 17110) { //Turn the takeoff weight yellow if it exceeds the maximum takeoff weight
+            tow = tow + "[yellow]";
+        }
+
+        let vspeedSendMsg = "";
+        if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.INPROGRESS)
+            vspeedSendMsg = "IN PROGRESS";
+        else if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT)
+            vspeedSendMsg = "COMPLETE";
+
+        let vspeedColor = "";
+        if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT)
+            vspeedColor = "blue";
+
 
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "2/3[blue] ", "TAKEOFF REF[blue]"],
-            [" A/I[blue]", "V[d-text blue]1:[s-text blue] " + v1.toFixed(0).padStart(3, " ") + "[s-text]"],
+            [" A/I[blue]", "V[d-text blue]1:[s-text blue] " + v1.toFixed(0).padStart(3, " ") + "[s-text " + vspeedColor + "]"],
             [takeoffAntiIceActive],
-            [" T/O FLAPS[blue]", "V[d-text blue]R:[s-text blue] " + vR.toFixed(0).padStart(3, " ") + "[s-text]"],
+            [" T/O FLAPS[blue]", "V[d-text blue]R:[s-text blue] " + vR.toFixed(0).padStart(3, " ") + "[s-text " + vspeedColor + "]"],
             [takeoffFlapsActive],
-            [" TOW/ GWT/MTOW[blue]", "V[d-text blue]2:[s-text blue] " + v2.toFixed(0).padStart(3, " ") + "[s-text]"],
-            [tow + "/" + grWtCell + "/17110"],
-            [" TOFL / " + depRunway + "[blue]", "V[d-text blue]T:[s-text blue] 140[s-text]"],
-            [fmc.endTakeoffDist.toFixed(0) + " / " + Math.round(depRunwayLength) + " FT"],
+            [" TOW/ GWT/MTOW[blue]", "V[d-text blue]2:[s-text blue] " + v2.toFixed(0).padStart(3, " ") + "[s-text " + vspeedColor + "]"],
+            [tow + "/" + fmc.grossWeight + "/17110[s-text]"],
+            [" TOFL / " + depRunway + "[blue]", "V[d-text blue]T:[s-text blue] 140" + "[s-text " + vspeedColor + "]"],
+            [fmc.endTakeoffDist.toFixed(0) + " / " + Math.round(depRunwayLength) + " FT[s-text]"],
             [""],
             [""],
-            [""],
+            ["", vspeedSendMsg + " [s-text]"],
             ["", "SEND>[s-text]"]
         ]);
         fmc.onLeftInput[0] = () => {
@@ -242,10 +294,10 @@ class CJ4_FMC_TakeoffRefPage {
                 fmc.takeoffAntiIce = 0;
             }
             takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
-            : "OFF[s-text]/[white]ON[green]";
+                : "OFF[s-text]/[white]ON[green]";
             fmc.clearUserInput();
-            { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
-        }
+            { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); }
+        };
         fmc.onLeftInput[1] = () => {
             if (fmc.takeoffFlaps == 15) {
                 fmc.takeoffFlaps = 0;
@@ -255,20 +307,29 @@ class CJ4_FMC_TakeoffRefPage {
             takeoffFlapsActive = fmc.takeoffFlaps == 0 ? "15"
                 : "0";
             fmc.clearUserInput();
-            { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
+            { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); }
+        };
+
+        if (fmc.toVSpeedStatus !== CJ4_FMC.VSPEED_STATUS.INPROGRESS) {
+            fmc.onRightInput[5] = () => {
+                fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.INPROGRESS;
+                setTimeout(() => {
+                    //added custom LVARS for all v speeds and FMC Set
+                    SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots", v1);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots", vR);
+                    SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots", v2);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots", 140);
+                    SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
+                    SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
+                    fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.SENT;
+                    CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); // TODO: this will probably send us back to this page even when user navigated away, find better solution
+                }, 2000);
+                CJ4_FMC_TakeoffRefPage.ShowPage2(fmc);
+            };
         }
-        fmc.onRightInput[5] = () => {
-            SimVar.SetSimVarValue("L:AIRLINER_V1_SPEED", "Knots", v1);
-            SimVar.SetSimVarValue("L:AIRLINER_VR_SPEED", "Knots", vR);
-            SimVar.SetSimVarValue("L:AIRLINER_V2_SPEED", "Knots", v2);
-            //use VX for VT in CJ4
-            SimVar.SetSimVarValue("L:AIRLINER_VX_SPEED", "Knots", 140);
-            //new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
-            SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
-            SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
-            SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
-            SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
-        }
+
         fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage3(fmc); };
         fmc.updateSideButtonActiveStatus();
@@ -286,10 +347,10 @@ class CJ4_FMC_TakeoffRefPage {
             grWtCell = (grossWeightValue * 2200).toFixed(0);
         }
         let tow = (grWtCell - 100);
-		
-		if (tow > 17110) { //Turn the takeoff weight yellow if it exceeds the maximum takeoff weight
-			tow = tow + "[yellow]";
-		}
+
+        if (tow > 17110) { //Turn the takeoff weight yellow if it exceeds the maximum takeoff weight
+            tow = tow + "[yellow]";
+        }
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "3/3[blue] ", "TAKEOFF REF[blue]"],
             ["TOW/MTOW[blue]"],

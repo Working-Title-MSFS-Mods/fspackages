@@ -6,15 +6,15 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<MCDU MENU", "GNSS1 POS>"], //Page 3, 4 ---- 9
             [""],
-            ["<DATALINK", "FREQUENCY>"], //Page XXX ---- 10
+            ["<DATALINK[disabled]", "FREQUENCY>[disabled]"], //Page XXX ---- 10
             [""],
-            ["<STATUS", "FIX>"], //Page 2 ---- 11
+            ["<STATUS", "FIX>[disabled]"], //Page 2 ---- 11
             [""],
-            ["<POS INIT", "HOLD>"], //N/A ---- 12
+            ["<POS INIT", "HOLD>[disabled]"], //N/A ---- 12
             [" FMS1[s-text]"],
-            ["<VORDME CTL", "PROG>"], //Page 6 ---- 13, 14
+            ["<VORDME CTL[disabled]", "PROG>"], //Page 6 ---- 13, 14
             [" FMS1[s-text]"],
-            ["<GNSS CTL", "SEC FPLN>"] //Page 7 ---- 15
+            ["<GNSS CTL[disabled]", "SEC FPLN>[disabled]"] //Page 7 ---- 15
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage3(fmc); };
         fmc.onLeftInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage30(fmc); };
@@ -37,13 +37,13 @@ class CJ4_FMC_InitRefIndexPage {
         fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue] ", "INDEX[blue]"],
             [""],
-            ["<FMS CTL", "ROUTE MENU>"], //Page 27 ---- 17
+            ["<FMS CTL", "ROUTE MENU>[disabled]"], //Page 27 ---- 17
             [""],
             ["<ABOUT", "DATABASE>"], // Page 27 ---- 18, 19, 20, 21
             [""],
-            ["", "DB DISK OPS>"], //Page XX
+            ["<MOD SET", "DB DISK OPS>[disabled]"], //Page XX
             [""],
-            ["", "DEFAULTS>"], //Page 22, 23, 24
+            ["", "DEFAULTS>[disabled]"], //Page 22, 23, 24
             [""],
             ["", "ARR DATA>"], //Page 25
             [""],
@@ -51,6 +51,7 @@ class CJ4_FMC_InitRefIndexPage {
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage8(fmc); };
         fmc.onLeftInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage27(fmc); };
+        fmc.onLeftInput[2] = () => { CJ4_FMC_ModSettingsPage.ShowPage1(fmc); };
         fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage17(fmc); };
         fmc.onRightInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc); };
         //fmc.onRightInput[2] = () => { CJ4_FMC_InitRefIndexPage.ShowPage19(fmc); };
@@ -68,9 +69,9 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<FMS 1", "GPS 1 POS>"],
             [""],
-            ["<DL"],
+            ["<DL[disabled]"],
             [""],
-            ["<DBU"],
+            ["<DBU[disabled]"],
             [""],
             [""],
             [""],
@@ -437,13 +438,13 @@ class CJ4_FMC_InitRefIndexPage {
                 let prevWaypointDist = "----";
                 let activeWaypointIdent = "-----";
                 let activeWaypointDist = "----";
-                let activeWaypointEte = "--:--";
+                let activeWaypointEte = "-:--";
                 let nextWaypointIdent = "-----";
                 let nextWaypointDist = "----";
-                let nextWaypointEte = "--:--";
+                let nextWaypointEte = "-:--";
                 let destinationIdent = "----";
                 let destinationDistance = "----";
-                let destinationEte = "--:--";
+                let destinationEte = "-:--";
 
                 //previous waypoint data
                 if (fmc.flightPlanManager.getPreviousActiveWaypoint()) {
@@ -457,7 +458,7 @@ class CJ4_FMC_InitRefIndexPage {
                     let activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
                     activeWaypointIdent = new String(fmc.flightPlanManager.getActiveWaypoint().ident);
                     activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
-                    activeWaypointEte = groundSpeed < 50 ? new String("--:--")
+                    activeWaypointEte = groundSpeed < 50 ? new String("-:--")
                         : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
                 }
 
@@ -466,7 +467,7 @@ class CJ4_FMC_InitRefIndexPage {
                     let nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint();
                     nextWaypointIdent = new String(fmc.flightPlanManager.getNextActiveWaypoint().ident);
                     nextWaypointDist = new Number(activeWaypointDist + Avionics.Utils.computeDistance(fmc.flightPlanManager.getActiveWaypoint().infos.coordinates, nextWaypoint.infos.coordinates));
-                    nextWaypointEte = groundSpeed < 50 ? new String("--:--")
+                    nextWaypointEte = groundSpeed < 50 ? new String("-:--")
                         : new Date(this.calcETEseconds(nextWaypointDist, groundSpeed) * 1000).toISOString().substr(11, 5);
                 }
 
@@ -474,28 +475,40 @@ class CJ4_FMC_InitRefIndexPage {
                 if (fmc.flightPlanManager.getDestination()) {
                     let destination = fmc.flightPlanManager.getDestination();
                     destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
-                    let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
-                    let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+                    let destinationDistanceDirect = Avionics.Utils.computeDistance(currPos, destination.infos.coordinates);
+                    let destinationDistanceFlightplan = 0;
+                    destinationDistance = destinationDistanceDirect;
+                    if (fmc.flightPlanManager.getActiveWaypoint()) {
+                        destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+                    }
+                    else {
+                        destinationDistanceFlightplan = destination.cumulativeDistanceInFP;
+                    }
                     destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
                         : destinationDistanceFlightplan;
-                    destinationEte = groundSpeed < 50 ? new String("--:--")
+                    destinationEte = groundSpeed < 50 || destinationDistance <= 0.1 ? new String("-:--")
                         : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
                 }
 
+                const prevWaypointDistanceConst = prevWaypointDist >= 100 ? prevWaypointDist.toFixed(0) : prevWaypointDist.toFixed(1);
+                const activeWaypointDistanceConst = activeWaypointDist >= 100 ? activeWaypointDist.toFixed(0) : activeWaypointDist.toFixed(1);
+                const nextWaypointDistanceConst = nextWaypointDist >= 100 ? nextWaypointDist.toFixed(0) : nextWaypointDist.toFixed(1);
+                const destWaypointDistanceConst = destinationDistance >= 100 ? destinationDistance.toFixed(0) : destinationDistance.toFixed(1);
+
                 fmc._templateRenderer.setTemplateRaw([
                     [" PROGRESS[blue]", "1/2[blue] "],
-                    [" LAST[s-text blue]", "DIST ETE FUEL-LB[s-text blue]"],
-                    [prevWaypointIdent + "[blue]", Math.trunc(prevWaypointDist) + "      ----- [s-text blue]"],
+                    [" LAST[s-text blue]", "DIST   ETE FUEL-LB[s-text blue]"],
+                    [prevWaypointIdent + "[blue]", prevWaypointDistanceConst + "       ----- [s-text blue]"],
                     [" TO[s-text blue]",],
-                    [activeWaypointIdent + "[s-text]", Math.trunc(activeWaypointDist) + " " + activeWaypointEte + " ----- [s-text]"],
+                    [activeWaypointIdent + "[s-text magenta]", activeWaypointDistanceConst + "  " + activeWaypointEte + " ----- [s-text magenta]"],
                     [" NEXT[s-text blue]"],
-                    [nextWaypointIdent + "[s-text]", Math.trunc(nextWaypointDist) + " " + nextWaypointEte + " ----- [s-text]"],
+                    [nextWaypointIdent + "[s-text]", nextWaypointDistanceConst + "  " + nextWaypointEte + " ----- [s-text]"],
                     [" DEST[s-text blue]"],
-                    [destinationIdent + "[s-text]", Math.trunc(destinationDistance) + " " + destinationEte + " ----- [s-text]"],
+                    [destinationIdent + "[s-text]", destWaypointDistanceConst + "  " + destinationEte + " ----- [s-text]"],
                     [" ALTN[s-text blue]"],
-                    ["-----[s-text]", "--- -:-- ----- [s-text]"],
+                    ["-----[s-text]", "----  -:-- ----- [s-text]"],
                     [" NAVIGATION[s-text blue]"],
-                    ["FMS DR[yellow]"]
+                    [""]
                 ]);
             }
 
@@ -535,17 +548,17 @@ class CJ4_FMC_InitRefIndexPage {
             let currHeadwind = Math.trunc(currWindSpeed * (Math.cos((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
             let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
 
-            let crosswinddirection = currCrosswind > 0 ? "R"
-                : currCrosswind < 0 ? "L"
-                    : "";
-
             let headwindDirection = currHeadwind > 0 ? "HEADWIND"
-                : currHeadwind < 0 ? "TAILWIND"
-                    : "TAILWIND";
+            : currHeadwind < 0 ? "TAILWIND"
+                : "TAILWIND";
 
-            let xtkDirection = xtk > 0 ? "R"
-                : xtk < 0 ? "L"
-                    : "";
+            let crosswinddirection = currCrosswind > 0 ? "L"
+                : currCrosswind < 0 ? "R"
+                : "";
+
+            let xtkDirection = xtk > 0 ? "L"
+                : xtk < 0 ? "R"
+                : "";
 
             fmc._templateRenderer.setTemplateRaw([
                 [" PROGRESS[blue]", "2/2 [blue]"],
@@ -1172,7 +1185,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["Working-Title-MSFS-Mods[white s-text]"],
             [""],
             [" VERSION[blue]"],
-            ["0.4.0[s-text white]"],
+            ["0.4.1[s-text white]"],
             [""],
             [""],
             [""],
@@ -1196,15 +1209,15 @@ class CJ4_FMC_InitRefIndexPage {
             fmc._templateRenderer.setTemplateRaw([
                 ["DL[blue]", "1/2[blue]", "DATALINK MENU[blue]"],
                 [""],
-                ["<RCVD MSGS", "ATS LOG>"],
+                ["<RCVD MSGS[disabled]", "ATS LOG>[disabled]"],
                 [""],
-                ["<SEND MSGS", "DEPART CLX>"],
+                ["<SEND MSGS[disabled]", "DEPART CLX>[disabled]"],
                 [""],
-                ["<WEATHER", "OCEANIC CLX>"],
+                ["<WEATHER[disabled]", "OCEANIC CLX>[disabled]"],
                 [""],
-                ["<TWIP"],
+                ["<TWIP[disabled]"],
                 [""],
-                ["<ATIS"],
+                ["<ATIS[disabled]"],
                 ["        NO COMM[green s-text]"],
                 ["<RETURN [white]" + hourspad + "[blue s-text]" + ":[blue s-text]" + minutesspad + "[blue s-text]"]
             ]);

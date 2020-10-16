@@ -93,11 +93,11 @@ class CJ4_FMC_DirectToPage {
                             callback();
                         }
                     };
-                    console.log("starting removeWaypointForApproachMethod")
+                    // console.log("starting removeWaypointForApproachMethod");
                     removeWaypointForApproachMethod(() => {
-                        console.log("removeWaypointForApproachMethod done");
-                        fmc.flightPlanManager.tryAutoActivateApproach()
-                        console.log("tryAutoActivateApproach done");
+                        // console.log("removeWaypointForApproachMethod done");
+                        fmc.flightPlanManager.tryAutoActivateApproach();
+                        // console.log("tryAutoActivateApproach done");
                         fmc.onExecDefault();
                     });
                 }
@@ -108,7 +108,7 @@ class CJ4_FMC_DirectToPage {
                         fmc.flightPlanManager.setActiveWaypointIndex(1, () => {
                             fmc.activateRoute(() => {
                                 fmc.onExecDefault();
-                            })
+                            });
                         });
                     });
                 }
@@ -130,7 +130,7 @@ class CJ4_FMC_DirectToPage {
         fmc._templateRenderer.setTemplateRaw([
             [" " + modStr + " DIRECT-TO[blue]", "1/1[blue]", ""],
             [""],
-            ["<" + directWaypointCell, "NEAREST APTS>",],
+            ["<" + directWaypointCell, "NEAREST APTS>[disabled]",],
             [""],
             [waypointsCell[0]],
             [""],

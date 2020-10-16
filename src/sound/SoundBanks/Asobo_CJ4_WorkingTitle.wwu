@@ -5,10 +5,17 @@
 			<ChildrenList>
 				<SoundBank Name="Asobo_CJ4_WorkingTitle" ID="{CCCCFDFA-06A9-42B0-B420-F5811DF76F04}">
 					<ObjectInclusionList>
+						<ObjectRef Name="Play_Asobo_CJ4_oxygen_mask_deployment" ID="{96B3577C-4D77-4177-B5E1-AC3B444F0094}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Play_Asobo_CJ4_safety_lights" ID="{23F782EA-85B6-4184-9FB8-9DC0AB4FF7AA}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_chime" ID="{55A78414-A3BF-447F-B9F5-845A4208757A}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Asobo_CJ4_seatbelt_light" ID="{8CE6A881-FB7F-46E8-B8FC-8A201E0B6021}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_takeoff_long" ID="{14259A5E-F548-41F1-BD7D-AA377EA4A671}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_landing" ID="{D6D0F9F4-BA31-43B2-93D4-D39BD7DAB800}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_takeoff_short" ID="{1118FF41-0E32-4462-B7BF-BF15DA9D5DA1}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_wt_battery_off" ID="{27F59267-B434-46DD-8A90-A1CB7F5DA8BD}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_seatbelt_lights" ID="{8CE6A881-FB7F-46E8-B8FC-8A201E0B6021}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_turbulence" ID="{D6F22E55-B68D-489F-98BB-A7B4D25FC6EA}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Play_Asobo_CJ4_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_chime" ID="{4C574D9B-7C67-4C11-9763-498F6B9BB907}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_wt_battery_on" ID="{AB510CBA-FFB3-4F57-80B5-C85843ABAC24}" WorkUnitID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" Origin="Manual" Filter="7"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>

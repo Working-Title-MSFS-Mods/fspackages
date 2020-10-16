@@ -3507,7 +3507,7 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
                 if(newPage < this.currentPage) startAtLastPageItem = true;
                 this.currentPage = newPage;
                 this.refreshPage();
-                if(startAtLastPageItem) this.highlight(6); // Starts highlight on last item of previous page
+                //if(startAtLastPageItem) this.highlight(6); // Starts highlight on last item of previous page
             }
 
         }
@@ -3571,6 +3571,7 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
                 let checklistSections = _checklist.sections;
                 let startingItem = (this.currentPage * this.maximumItemsPerPage) - this.maximumItemsPerPage;
                 let endItem = Math.min(checklistSections.length, startingItem + this.maximumItemsPerPage);
+
                 for(let i = startingItem; i < endItem; i++){
                     if(checklistSections[i]){
                         let sectionComplete = true;
@@ -3580,18 +3581,10 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
                             }
                         }
                         this.addSubMenu(_checklist.sections[i].name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, i)}).bind(this), sectionComplete ? "#11d011" : "white");
-                        if(sectionComplete){
-                            if(i <= checklistSections.length - 1){
-                                this.highlight(i + 1);
-                                this.currentItemIndex = i + 1;
-                            }
-                            else{
-                                this.highlight(i);
-                                this.currentItemIndex = i;
-                            }
-                        }
                     }
                 }
+
+
             }
             this.endSection();
         }
@@ -3765,13 +3758,13 @@ class CJ4_PassengerBrief extends WTMenu.PassengerBrief_Menu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addPassBriefItem("TAKEOFF (LONG)", this.textSize);
-                this.addPassBriefItem("TAKEOFF (SHORT)", this.textSize);
-                this.addPassBriefItem("LANDING", this.textSize);
-                this.addPassBriefItem("TURBULENCE", this.textSize);
-                this.addPassBriefItem("SEATBELT", this.textSize);
-                this.addPassBriefItem("PASSENGER SAFETY", this.textSize);
-                this.addPassBriefItem("OXYGEN MASK DEPLOYMENT", this.textSize);
+                this.addPassBriefItem("TAKEOFF (LONG)", this.textSize, "L:PAX_BRIEF_TAKEOFF_LONG_PLAYED");
+                this.addPassBriefItem("TAKEOFF (SHORT)", this.textSize, "L:PAX_BRIEF_TAKEOFF_SHORT_PLAYED");
+                this.addPassBriefItem("LANDING", this.textSize, "L:PAX_BRIEF_LANDING_PLAYED");
+                this.addPassBriefItem("TURBULENCE", this.textSize, "L:PAX_BRIEF_TURBULENCE_PLAYED");
+                this.addPassBriefItem("SEATBELT", this.textSize, "L:SEATBELT_LIGHT_ON");
+                this.addPassBriefItem("PASSENGER SAFETY", this.textSize, "L:SAFETY_LIGHT_ON");
+                this.addPassBriefItem("OXYGEN MASK DEPLOYMENT", this.textSize, "L:PAX_BRIEF_OXYGEN_PLAYED");
             }
             this.endSection();
         }
