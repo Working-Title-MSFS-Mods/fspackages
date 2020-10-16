@@ -160,17 +160,6 @@ as3000-tsc-horizontal-element {
           bottom: 0.5vh;
           left: 0.5vh;
           right: 0.5vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .mainText {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 100%;
-            font-size: 5vh; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .statusButton .mainText {
-             position: absolute;
-             top: 40%;
-             width: 100%;
-             font-size: 5vh; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .mainValue {
             position: absolute;
             top: 50%;
@@ -216,7 +205,10 @@ as3000-tsc-horizontal-element {
         left: 32.5%;
         height: 50%;
         width: 35%;
-        border: 0.2vh solid white; }
+        border-radius: 10px;
+        background: linear-gradient(#1f3445, black 10%);
+        background-color: black;
+        border: 0.4vh solid #454b4e; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #Timers #CountSelection #TMR_UpButton {
           position: absolute;
           height: 40%;
@@ -234,11 +226,11 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #Timers #TMR_ResetButton {
         position: absolute;
         bottom: 15%;
-        left: 12%; }
+        left: 10%; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #Timers #TMR_StopButton {
         position: absolute;
         bottom: 15%;
-        right: 12%; }
+        right: 10%; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #Minimums #min_typeButton {
         position: absolute;
         left: 5%;
@@ -2582,8 +2574,13 @@ as3000-tsc-horizontal-element {
       margin-left: 8%; }
     as3000-tsc-horizontal-element .gradientButton .mainText {
       color: white;
-      text-align: center;
-      font-size: 4vh; }
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      font-size: 5vh; }
+      as3000-tsc-horizontal-element .statusButton .mainText {
+        top: 35%; }
     as3000-tsc-horizontal-element .gradientButton .statusText {
       color: aqua;
       font-size: 5vh; }
