@@ -313,8 +313,8 @@ class CJ4_FMC_ApproachRefPage {
                     SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", true);
                     CJ4_FMC_ApproachRefPage.ShowPage2(fmc); // TODO: this will probably send us back to this page even when user navigated away, find better solution
                 }, 2000);
+                CJ4_FMC_ApproachRefPage.ShowPage2(fmc);
             };
-            CJ4_FMC_ApproachRefPage.ShowPage2(fmc);
         }
 
         fmc.onPrevPage = () => { CJ4_FMC_ApproachRefPage.ShowPage1(fmc); };
