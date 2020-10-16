@@ -1,4 +1,4 @@
-<AssetPackage Name="workingtitle-g3000" Version="0.1.0">
+<AssetPackage Name="workingtitle-g3000" Version="0.2.0">
 	<ItemSettings>
 		<ContentType>CUSTOM</ContentType>
 		<Title>Working Title G3000</Title>
@@ -16,6 +16,14 @@
 				<FSXCompatibility>false</FSXCompatibility>
 			</Flags>
 			<AssetDir>src\workingtitle-core-library</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>
+        <AssetGroup Name="workingtitle-aircraft-tbm930">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-aircraft-tbm930</AssetDir>
 			<OutputDir>.\</OutputDir>
 		</AssetGroup>
         <AssetGroup Name="workingtitle-vcockpits-instruments-navsystems">

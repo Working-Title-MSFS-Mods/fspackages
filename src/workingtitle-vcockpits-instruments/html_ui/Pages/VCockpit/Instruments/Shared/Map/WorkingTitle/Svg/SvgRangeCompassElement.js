@@ -102,7 +102,7 @@ class SvgRangeCompassElement extends SvgMapElement {
         let arcEnd = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius, arcAngularWidthRad / 2);
         let arcTickEnd = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius + this.bearingTickMajorLength, arcAngularWidthRad / 2);
         
-        this.arc.setAttribute("d", "M " + arcTickStart.x + " " + arcTickStart.y + " L " + arcStart.x + " " + arcStart.y + " A " + this.radius + " " + this.radius + " 0 0 1 " + arcEnd.x + " " + arcEnd.y + " L " + arcTickEnd.x + " " + arcTickEnd.y);
+        this.arc.setAttribute("d", `M ${arcTickStart.x} ${arcTickStart.y} L ${arcStart.x} ${arcStart.y} A ${this.radius} ${this.radius} 0 0 1 ${arcEnd.x} ${arcEnd.y} L ${arcTickEnd.x} ${arcTickEnd.y}`);
         this.arc.setAttribute("transform", "rotate(" + this.arcFacingAngle + ", " + this.centerPos.x + ", " + this.centerPos.y + ")");
         
         // draw bearing indicator ticks
@@ -230,7 +230,7 @@ class SvgRangeCompassElement extends SvgMapElement {
     static drawRadialTick(_tick, _center, _radiusInner, _length, _angle) {
         let start = SvgRangeCompassElement.getRadialOffsetPos(_center, _radiusInner, _angle);
         let end = SvgRangeCompassElement.getRadialOffsetPos(_center, _radiusInner + _length, _angle);
-        _tick.setAttribute("d", "M " + start.x + " " + start.y + " L " + end.x + " " + end.y);
+        _tick.setAttribute("d", `M ${start.x} ${start.y} L ${end.x} ${end.y}`);
     }
     
     static getRadialOffsetPos(_center, _radius, _angle) {

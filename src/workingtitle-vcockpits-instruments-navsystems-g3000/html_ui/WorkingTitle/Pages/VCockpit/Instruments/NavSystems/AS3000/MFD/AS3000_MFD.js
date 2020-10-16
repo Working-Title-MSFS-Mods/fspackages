@@ -18,9 +18,9 @@ class AS3000_MFD extends NavSystem {
             ]),
         ];
         
-        Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });
+        //Include.addScript("/JS/debug.js", function () {
+        //    g_modDebugMgr.AddConsole(null);
+        //});
     }
     disconnectedCallback() {
     }
@@ -193,9 +193,11 @@ class AS3000_MFD_MapElement extends AS3000_MapElement {
         this.lastWeatherMapMode = 0;
     }
     
-    init(root) {
-        super.init(root);
-        this.instrument.showRangeDisplay = false;
+    onTemplateLoaded() {
+        super.onTemplateLoaded();
+        if (!this.revertToDefault) {
+            this.instrument.showRangeDisplay = false;
+        }
     }
     
     onUpdate(_deltaTime) {
