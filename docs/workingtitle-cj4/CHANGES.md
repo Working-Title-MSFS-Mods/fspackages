@@ -1,4 +1,4 @@
-# Working Title CJ4 v0.4.1 Changes
+# Working Title CJ4 v0.5.0 Changes
 
 Welcome to the latest update of the Working Title CJ4 (v0.5.0). Thank you to everyone who contributed to this release.
 
