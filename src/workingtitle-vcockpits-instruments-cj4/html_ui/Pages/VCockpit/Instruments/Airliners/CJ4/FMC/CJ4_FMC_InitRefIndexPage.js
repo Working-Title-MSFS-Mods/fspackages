@@ -1095,19 +1095,21 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage25(fmc) { //ARR DATA
         fmc.clearDisplay();
 
-        let destinationIdent = "";
+        let destinationString = "NO DESTINATION AIRPORT";
         let approachName = "";
         let approachFrequency = "";
-        let destination = "";
         let appRunway = "";
-        let approach = "";
 
-        if (fmc.flightPlanManager.getDestination()) {
-            destination = fmc.flightPlanManager.getDestination();
-            destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
+        let destination = fmc.flightPlanManager.getDestination();
+        if (destination) {
+            destinationString = destination.ident;
+            if (destination.infos) {
+                destinationString = destinationString + "/" + destination.infos.name;
+            }
         }
+        
         if (fmc.flightPlanManager.getApproach()) {
-            approach = fmc.flightPlanManager.getApproach();
+            let approach = fmc.flightPlanManager.getApproach();
             approachName = fmc.flightPlanManager.getApproach().name;
             approachFrequency = fmc.flightPlanManager.getApproachNavFrequency();
         }
@@ -1121,7 +1123,7 @@ class CJ4_FMC_InitRefIndexPage {
         fmc._templateRenderer.setTemplateRaw([
             [" ACT", "ARRIVAL DATA  [blue]"],
             [" ARR AIRPORT[blue]"],
-            [destinationIdent + " / " + destination.infos.name],
+            [destinationString],
             [" APPR[blue]", "FREQ [blue]"],
             [approachName + "", approachFrequency.toFixed(2) + ""],
             [" GS ANGLE[blue]"],
