@@ -289,15 +289,15 @@ class CJ4_FMC_ApproachRefPage {
             [destinationIdent, "2/3 [blue]", "APPROACH REF[blue]"],
             [" A/I[blue]"],
             ["OFF[green]/[white]ON[s-text]"],
-            ["", "V[blue]REF:[s-text blue] " + vRef.toFixed(0) + "[s-text + " + vspeedColor + "]"],
+            ["", "V[d-text blue]REF:[s-text blue] " + vRef.toFixed(0) + "[s-text + " + vspeedColor + "]"],
             [""],
-            [" LW / GWT/MLW[blue]", "V[blue]APP:[s-text blue] " + vApp.toFixed(0) + "[s-text + " + vspeedColor + "]"],
-            [ldgWtCell + "/" + fmc.grossWeight + "/15660"],
+            [" LW / GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + vApp.toFixed(0) + "[s-text + " + vspeedColor + "]"],
+            [ldgWtCell + "/" + fmc.grossWeight + "/15660[s-text]"],
             [" LFL / " + arrRunwayOutput + "[blue]"],
-            [ldgFieldLength.toFixed(0) + " / " + Math.trunc(arrRunwayLength) + " FT"],
+            [ldgFieldLength.toFixed(0) + " / " + Math.trunc(arrRunwayLength) + " FT[s-text]"],
             [" LDG FACTOR[blue]"],
             ["1.0[green]" + "/[white]1.25[s-text]" + "/[white]1.67[s-text]" + "/[white]1.92[s-text]"],
-            ["", vspeedSendMsg + "[s-text]"],
+            ["", vspeedSendMsg + " [s-text]"],
             ["", "SEND>[s-text]"]
         ]);
 
@@ -305,6 +305,7 @@ class CJ4_FMC_ApproachRefPage {
             fmc.onRightInput[5] = () => {
                 fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.INPROGRESS;
                 setTimeout(() => {
+                    fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.SENT;
                     //new custom Cj4 LVARS for all V Speeds
                     SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots", vRef);
                     SimVar.SetSimVarValue("L:WT_CJ4_VAP", "Knots", vApp);
