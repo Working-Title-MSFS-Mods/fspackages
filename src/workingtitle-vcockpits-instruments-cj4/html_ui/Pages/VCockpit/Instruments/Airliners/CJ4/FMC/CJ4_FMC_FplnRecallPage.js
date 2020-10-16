@@ -9,9 +9,11 @@ class CJ4_FMC_FplnRecallPage {
             console.log("UPDATE FROMTO");
             let from = json.origin.icao_code;
             // fmc.tryUpdateFromTo(json.origin.icao_code + "/" + json.destination.icao_code, updateRunways);
+            fmc.setMsg("GET FPLN...CLEAR FPLN[yellow]");
             fmc.flightPlanManager.setActiveWaypointIndex(0, () => {
                 fmc.eraseTemporaryFlightPlan(() => {
                     fmc.flightPlanManager.clearFlightPlan(() => {
+                        fmc.setMsg("GET FPLN...ORIG [yellow]" + from);
                         fmc.ensureCurrentFlightPlanIsTemporary(() => {
                             fmc.updateRouteOrigin(from, updateRunways);
                         });
@@ -24,12 +26,15 @@ class CJ4_FMC_FplnRecallPage {
             called++;
             if (called < 2) return;
             console.log("UPDATE RUNWAY");
-            fmc.setOriginRunway(json.origin.plan_rwy, updateDestination);
+            let rwy = json.origin.plan_rwy;
+            fmc.setMsg("GET FPLN...RWY [yellow]" + rwy);
+            fmc.setOriginRunway(rwy, updateDestination);
         };
 
         let updateDestination = () => {
             console.log("UPDATE DESTINATION");
             let dest = json.destination.icao_code;
+            fmc.setMsg("GET FPLN...DST [yellow]" + dest);
             fmc.updateRouteDestination(dest, updateRoute);
         };
 
@@ -41,11 +46,12 @@ class CJ4_FMC_FplnRecallPage {
             let addWaypoint = async () => {
                 if (idx >= routeArr.length - 1) {
                     // DONE
-                    fmc.setMsg("DONE");
+                    fmc.setMsg("DONE[green]");
                     fmc.flightPlanManager.setActiveWaypointIndex(0);
                     return;
                 }
                 let icao = routeArr[idx];
+                fmc.setMsg("GET FPLN...ADD [yellow]" + icao);
                 let isWaypoint = await fmc.dataManager.IsWaypointValid(icao);
                 idx++;
                 if (icao === "DCT") { // skip this
@@ -99,14 +105,19 @@ class CJ4_FMC_FplnRecallPage {
             if (!json || json === "") {
                 fmc.showErrorMessage("NO DATA");
             }
-            fmc.updateFlightNo(json.general.icao_airline + json.general.flight_number);
-            fmc.setCruiseFlightLevelAndTemperature(json.general.initial.altitude);
+
+            let flightNo = json.general.icao_airline + json.general.flight_number;
+            fmc.setMsg("GET FPLN...FLIGHTNO [yellow]" + flightNo);
+            fmc.updateFlightNo(flightNo);
+            let crz = json.general.initial_altitude;
+            fmc.setMsg("GET FPLN...CRZ [yellow]" + crz);
+            fmc.setCruiseFlightLevelAndTemperature(crz);
             updateFrom();
         });
     }
 
     static ShowPage1(fmc) {
-        fmc.setMsg("GET FPLN...");
+        fmc.setMsg("GET FPLN...[yellow]");
         this.GetFplnFromSimBrief(347439, fmc);
     }
 }
