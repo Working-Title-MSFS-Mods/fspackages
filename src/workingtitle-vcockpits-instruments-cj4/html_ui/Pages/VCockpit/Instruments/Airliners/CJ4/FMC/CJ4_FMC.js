@@ -35,6 +35,8 @@ class CJ4_FMC extends FMCMainDisplay {
         this.initialFuelLeft = 0;
         this.initialFuelRight = 0;
         this.selectedRunwayOutput = "";
+        this.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
+        this.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
         this._fpHasChanged = false;
         this._activatingDirectTo = false;
         this._templateRenderer = undefined;
@@ -533,5 +535,13 @@ class CJ4_FMC extends FMCMainDisplay {
         }
     }
 }
+
+
+CJ4_FMC.VSPEED_STATUS = {
+    NONE: 0,
+    INPROGRESS: 1,
+    SENT: 2,
+};
+
 registerInstrument("cj4-fmc", CJ4_FMC);
 //# sourceMappingURL=CJ4_FMC.js.map
