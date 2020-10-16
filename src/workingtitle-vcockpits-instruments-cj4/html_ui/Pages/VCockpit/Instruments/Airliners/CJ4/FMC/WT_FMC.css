@@ -71,6 +71,10 @@
 
 /* General */
 
+.disabled {
+    color: #757575;
+}
+
 .hidden {
     display: none;
 }
