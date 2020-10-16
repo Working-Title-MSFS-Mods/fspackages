@@ -106,6 +106,10 @@ class CJ4_FMC_FplnRecallPage {
             json = JSON.parse(r);
             if (!json || json === "") {
                 fmc.showErrorMessage("NO DATA");
+                return;
+            }else if (json.indexOf("Error") > -1){
+                fmc.showErrorMessage("WRONG PILOTID");
+                return;
             }
 
             let flightNo = json.general.icao_airline + json.general.flight_number;
@@ -119,8 +123,8 @@ class CJ4_FMC_FplnRecallPage {
     }
 
     static ShowPage1(fmc) {
-        let pilotId = WTDataStore.get('simbriefPilotId', 'none');
-        if (pilotId && pilotId != "none") {
+        let pilotId = WTDataStore.get('simbriefPilotId', '');
+        if (pilotId !== '') {
             fmc.setMsg("LOADING FPLN...[yellow]");
             this.GetFplnFromSimBrief(pilotId, fmc);
         }
