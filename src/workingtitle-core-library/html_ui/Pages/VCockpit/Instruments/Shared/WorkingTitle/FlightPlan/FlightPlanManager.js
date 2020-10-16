@@ -838,12 +838,17 @@ class FlightPlanManager {
 
   /**
    * Sets the arrival procedure index for the current flight plan.
-   * @param {Number} index The index of the departure transition to select.
+   * @param {Number} index The index of the arrival procedure to select.
    * @param {() => void} callback A callback to call when the operation completes.
    */
   setArrivalProcIndex(index, callback = () => { }) {
-    this._flightPlans[this._currentFlightPlanIndex].setArrivalFromIndex(index);
-
+    if (index === -1) {
+      this._flightPlans[this._currentFlightPlanIndex].clearArrival();
+    }
+    else {
+      this._flightPlans[this._currentFlightPlanIndex].setArrivalFromIndex(index);
+    }
+    
     this._updateFlightPlanVersion();
     callback();
   }
@@ -869,6 +874,7 @@ class FlightPlanManager {
    */
   setArrivalEnRouteTransitionIndex(index, callback = () => { }) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+
     if (currentFlightPlan.procedureDetails.arrivalSelected) {
       currentFlightPlan.procedureDetails.arrivalTransitionIndex = index;
     }
