@@ -56,7 +56,9 @@ class AS3X_Touch extends NavSystemTouch {
         this.pageMenu = new NavSystemElementContainer("Page menu", "PageMenu", new AS3X_Touch_PageMenu());
         this.pageMenu.setGPS(this);
         this.mapMenu = new NavSystemElementContainer("Map menu", "MapMenu", new AS3X_Touch_MapMenu());
-        this.mapMenu.setGPS(this);        
+        this.mapMenu.setGPS(this);
+        this.afcsMenu = new NavSystemElementContainer("AFCS Menu", "AFCS_Menu", new AS3X_Touch_AFCSMenu());
+        this.afcsMenu.setGPS(this);
         this.fullKeyboard = new NavSystemElementContainer("Full Keyboard", "fullKeyboard", new AS3X_Touch_FullKeyboard());
         this.fullKeyboard.setGPS(this);
         this.duplicateWaypointSelection = new NavSystemElementContainer("Waypoint Duplicates", "WaypointDuplicateWindow", new AS3X_Touch_DuplicateWaypointSelection());
@@ -111,6 +113,14 @@ class AS3X_Touch extends NavSystemTouch {
             }
             else {
                 this.switchToPopUpPage(this.pfdMenu);
+            }
+        }.bind(this));
+        this.makeButton(this.getChildById("AutopilotInfos"), function () {
+            if (this.popUpElement == this.afcsMenu) {
+                this.closePopUpElement();
+            }
+            else {
+                this.switchToPopUpPage(this.afcsMenu);
             }
         }.bind(this));
         this.maxUpdateBudget = 12;
@@ -912,7 +922,62 @@ class AS3X_Touch_MapMenu extends AS3X_Touch_Popup {
         Avionics.Utils.diffAndSetAttribute(this.rangeAuto, "state", this._map.getAutoRange() ? "Active" : "");
     }
 }
-
+class AS3X_Touch_AFCSMenu extends AS3X_Touch_Popup {
+    init(root) {
+        super.init(root);
+        this.MasterButton = this.gps.getChildById("AFCS_AP_Master");
+        this.FdButton = this.gps.getChildById("AFCS_FD_Button");
+        this.YdButton = this.gps.getChildById("AFCS_YD_Button");
+        this.LvlButton = this.gps.getChildById("AFCS_LVL_Button");
+        this.HdgButton = this.gps.getChildById("AFCS_HDG_Button");
+        this.NavButton = this.gps.getChildById("AFCS_NAV_Button");
+        this.ApprButton = this.gps.getChildById("AFCS_APPR_Button");
+        this.IasButton = this.gps.getChildById("AFCS_IAS_Button");
+        this.AltButton = this.gps.getChildById("AFCS_ALT_Button");
+        this.VsButton = this.gps.getChildById("AFCS_VS_Button");
+        this.UpButton = this.gps.getChildById("AFCS_UP_Button");
+        this.DnButton = this.gps.getChildById("AFCS_DN_Button");
+        this.gps.makeButton(this.MasterButton, () => {this.buttonToggle("K:AP_MASTER")});
+        this.gps.makeButton(this.FdButton, () => {this.buttonToggle("K:TOGGLE_FLIGHT_DIRECTOR")});
+        this.gps.makeButton(this.YdButton, () => {this.buttonToggle("K:YAW_DAMPER_TOGGLE")});
+        this.gps.makeButton(this.LvlButton, () => {this.buttonToggle("K:AP_WING_LEVELER")});
+        this.gps.makeButton(this.HdgButton, () => {this.buttonToggle("K:AP_HDG_HOLD")});
+        this.gps.makeButton(this.NavButton, () => {this.buttonToggle("K:AP_NAV1_HOLD")});
+        this.gps.makeButton(this.ApprButton, () => {this.buttonToggle("K:AP_APR_HOLD")});
+        this.gps.makeButton(this.IasButton, () => {this.buttonToggle("K:FLIGHT_LEVEL_CHANGE")});
+        this.gps.makeButton(this.AltButton, () => {this.buttonToggle("K:AP_ALT_HOLD")});
+        this.gps.makeButton(this.VsButton, () => {this.buttonToggle("K:AP_VS_HOLD")});
+        this.gps.makeButton(this.UpButton, () => {this.buttonUpDn("UP")});
+        this.gps.makeButton(this.DnButton, () => {this.buttonUpDn("DN")});
+    }
+    onUpdate() {
+        this.MasterButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") ? "Active" : ""));
+        this.FdButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") ? "Active" : ""));
+        this.YdButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Bool") ? "Active" : ""));
+        this.LvlButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Bool") ? "Active" : ""));
+        this.HdgButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Bool") ? "Active" : ""));
+        this.NavButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Bool") ? "Active" : ""));
+        this.ApprButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool") ? "Active" : ""));
+        this.IasButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Bool") ? "Active" : ""));
+        this.AltButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Bool") ? "Active" : ""));
+        this.VsButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Bool") ? "Active" : ""));
+    }
+    buttonToggle(simvar) {
+        SimVar.SetSimVarValue(simvar, "number", 0)
+    }
+    buttonUpDn(dir) {
+        if (SimVar.GetSimVarValue("A:AUTOPILOT VERTICAL HOLD", "bool")) {
+            var cmds = { "UP": "K:AP_VS_VAR_INC", "DN": "K:AP_VS_VAR_DEC" }
+        } else if (SimVar.GetSimVarValue("A:AUTOPILOT FLIGHT LEVEL CHANGE", "bool")) {
+            var cmds = { "UP": "K:AP_SPD_VAR_DEC", "DN": "K:AP_SPD_VAR_INC" }
+        } else if (SimVar.GetSimVarValue("A:AUTOPILOT PITCH HOLD", "bool")) {
+            var cmds = { "UP": "K:PITCH_REF_INC_UP", "DN": "K:PITCH_REF_INC_DN" }
+        } else {
+            var cmds = {}
+        }
+        if (dir in cmds) this.buttonToggle(cmds[dir]);
+    }
+}
 class AS3X_Touch_PageMenu extends AS3X_Touch_Popup {
     init(root) {
         super.init(root);
@@ -1064,7 +1129,7 @@ class AS3X_Touch_NavSystemPage extends NavSystemPage {
     onEvent(_event) {
         if (_event == 'Menu_Push' && this._menuCb) {
             this._menuCb();
-        }            
+        }
     }
     onEnter() {
         super.onEnter();
@@ -1189,7 +1254,7 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         }
     }
     timer_Reset() {
-        this.timerStartTime = -1; 
+        this.timerStartTime = -1;
         this.pauseTime = 0;
         this.isTimerOn = false;
         this.timerStartStop_action.textContent = "Start";
