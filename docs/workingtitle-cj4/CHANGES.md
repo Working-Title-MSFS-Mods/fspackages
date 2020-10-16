@@ -12,8 +12,12 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
 ## Key Features
+* Simbrief Imports: Added ability to enter your PILOT ID from Simbrief and then load the latest OFP/Flight Plan directly to the FMC (store your PILOT ID in the MOD SETTINGS page and then use the ROUTE MENU to FPLN RECALL)
+* Approach Waypoints: Added ability to skip and go direct to any waypoint on the approach
+* FMS Performance: Greatly improved the performance of the FMS / waypoint loading times
+* Volumetric External Lights: Incorporated the latest lighting package from Uwajimaya including volumetric external lighting
+* Cabin Lights: Added the ability via the MOD SETTINGS menu to change the cabin light setting
 
-* xxx
 
 ### Engine Model
 * xxx
@@ -23,9 +27,11 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ### LEGS Page
 * Redesigned waypoint loader to dramatically improved flight plan management/FMS performance on LEGS page
+* Added ability to skip approach waypoints or go direct to any approach waypoint
 
 ### FPLN Page
 * Redesigned waypoint loader to dramatically improved flight plan management/FMS performance on FPLN page
+* Added ability to directly download and import the latest OFP from Simbrief - auto load simbrief flight plan directly to FMS!
 
 ### DEP/ARR Page
 * Added ability to select VFR runway for landing (when no approach selected or available)
@@ -40,7 +46,8 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Fixed bug with gross weight calculation
 * Added indication when no runway is selected for TAKEOFF REF and APPROACH REF
 * Added ability to have VFR runway selected to allow PERF pages even when no approach is selected (for airports without approaches)
-
+* Added vspeed send logic and messages to FMC to replicate real unit
+* Fixed refresh error after entering/updating reserve fuel on FUEL MANAGEMENT page
 
 ### PFD/MFD
 * xxx
