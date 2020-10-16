@@ -1,4 +1,4 @@
-Include.addScript("/JS/dataStorage.js") // it's required, so why not load it ourselves?
+Include.addScript("/JS/dataStorage.js"); // it's required, so why not load it ourselves?
 
 /** class WTDataStore provides an interface to the lower-level storage API */
 class WTDataStore {
@@ -26,7 +26,7 @@ class WTDataStore {
             case "boolean":
                 // Unfortunately, Boolean("false") is true.
                 if (stringValue == "false") {
-                    return false
+                    return false;
                 }
                 return true;
         }
@@ -48,4 +48,4 @@ class WTDataStore {
         }
         return value;
     }
-};
+}

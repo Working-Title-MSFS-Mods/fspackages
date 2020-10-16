@@ -4,7 +4,8 @@ class CJ4_FMC_ModSettingsPageOne {
     constructor(fmc) {
         this._fmc = fmc;
         
-        this._pilotId = WTDataStore.get('simbriefPilotId');
+        this._pilotDefault = "--------";
+        this._pilotId = WTDataStore.get('simbriefPilotId', this._pilotDefault);
 
         let potValue = SimVar.SetSimVarValue("K:LIGHT_POTENTIOMETER_28_SET", "number");
         if (potValue == 100) {
@@ -45,14 +46,14 @@ class CJ4_FMC_ModSettingsPageOne {
 
     render() {
         let lightSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "DIM", "ON"], this.lightMode);
-        let pilotIdDisplay = this.pilotId ? this.pilotId + "[green]" : "--------";
+        let pilotIdDisplay = (this.pilotId !== this._pilotDefault) ? this.pilotId + "[green]" : this._pilotDefault;
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/1[blue] ", "WT MOD SETTINGS[yellow]"],
-            ["Cabin Lights[blue]", "Simbrief Username[blue]"],
-            [lightSwitch, pilotIdDisplay],
-            [""],
-            ["", ""],
+            ["Cabin Lights[blue]"],
+            [lightSwitch],
+            ["Simbrief PilotID[blue]"],
+            [pilotIdDisplay, ""],
             [""],
             ["", ""],
             [""],
