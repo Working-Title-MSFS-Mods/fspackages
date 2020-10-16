@@ -604,23 +604,33 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage17(fmc) { //ROUTE MENU
         fmc.clearDisplay();
-        let pilotId = WTDataStore.get('simbriefPilotId', '-------');
+        let pilotId = WTDataStore.get('simbriefPilotId', '');
+        let fplnRecallDisplay = pilotId == "" ? "<FPLN RECALL[disabled]" : "<FPLN RECALL[d-text]";
+        let pilotIdDisplay = pilotId == "" ? "" : "PILOT ID: " + pilotId + "[s-text green]"
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "ROUTE MENU[blue]"],
             [""],
             ["<PILOT ROUTE LIST[disabled]"],
             [""],
             ["<DISK ROUTE LIST[disabled]"],
-            ["", "PILOT ID [blue]"],
-            ["<FPLN RECALL", pilotId + "[s-text]"],
             [""],
+            [fplnRecallDisplay],
+            [pilotIdDisplay],
             ["<FPLN WIND[disabled]"],
             [""],
             [""],
             ["-----------------------[blue]"],
             ["<SEC FPLN[disabled]"]
         ]);
-        fmc.onLeftInput[2] = () => { CJ4_FMC_FplnRecallPage.ShowPage1(fmc); };
+        fmc.onLeftInput[2] = () => {
+            if (pilotId != "") {
+                CJ4_FMC_FplnRecallPage.ShowPage1(fmc);
+            }
+            else {
+                fmc.showErrorMessage("NO PILOT ID OR PLAN[red]");
+                CJ4_FMC_ModSettingsPage.ShowPage1(fmc);
+            }
+            };
         // fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
         fmc.updateSideButtonActiveStatus();
     }

@@ -47,7 +47,7 @@ class CJ4_FMC_FplnRecallPage {
                 if (idx >= routeArr.length - 1) {
                     // DONE
                     fmc.setMsg();
-                    fmc.showErrorMessage("DONE[green]");
+                    fmc.showErrorMessage("FPLN LOADED[green]");
                     fmc.flightPlanManager.setActiveWaypointIndex(0);
                     CJ4_FMC_RoutePage.ShowPage1(fmc);
                     return;
@@ -107,10 +107,11 @@ class CJ4_FMC_FplnRecallPage {
             if (!json || json === "") {
                 fmc.showErrorMessage("NO DATA");
                 return;
-            }else if (json.indexOf("Error") > -1){
-                fmc.showErrorMessage("WRONG PILOTID");
-                return;
             }
+            //else if (json.indexOf("Error") > -1) {
+            //    fmc.showErrorMessage("WRONG PILOTID");
+            //    return;
+            //}
 
             let flightNo = json.general.icao_airline + json.general.flight_number;
             fmc.setMsg("LOADING FPLN...FLIGHTNO[green]" + flightNo);

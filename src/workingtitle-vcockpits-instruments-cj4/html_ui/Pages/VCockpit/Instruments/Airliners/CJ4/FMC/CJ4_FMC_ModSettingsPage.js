@@ -50,9 +50,9 @@ class CJ4_FMC_ModSettingsPageOne {
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/1[blue] ", "WT MOD SETTINGS[yellow]"],
-            ["Cabin Lights[blue]"],
+            [" CABIN LIGHTS[blue]"],
             [lightSwitch],
-            ["Simbrief PilotID[blue]"],
+            [" SIMBRIEF PILOT ID[blue]"],
             [pilotIdDisplay, ""],
             [""],
             ["", ""],
@@ -67,9 +67,9 @@ class CJ4_FMC_ModSettingsPageOne {
 
     bindEvents() {
         this._fmc.onLeftInput[0] = () => { this.lightMode = this.lightMode + 1; };
-        this._fmc.onRightInput[0] = () => {
-            let value = this._fmc.inOut;
-            this.pilotId = value == FMCMainDisplay.clrValue ? undefined : value;
+        this._fmc.onLeftInput[1] = () => {
+            let idValue = this._fmc.inOut;
+            this.pilotId = idValue == "CLR" ? "" : idValue;
             this._fmc.clearUserInput();
         };
         this._fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(this._fmc); };
