@@ -117,10 +117,10 @@ class CJ4_FMC_FplnRecallPage {
     }
 
     static ShowPage1(fmc) {
-        let simbriefUser = WTDataStore.get('simbriefUser');
-        if (simbriefUser) {
+        let pilotId = WTDataStore.get('simbriefPilotId');
+        if (pilotId) {
             fmc.setMsg("LOADING FPLN...[yellow]");
-            this.GetFplnFromSimBrief(simbriefUser, fmc);
+            this.GetFplnFromSimBrief(pilotId, fmc);
         }
         else {
             fmc.setMsg("NO SIMBRIEF USER OR PLAN[red]");
