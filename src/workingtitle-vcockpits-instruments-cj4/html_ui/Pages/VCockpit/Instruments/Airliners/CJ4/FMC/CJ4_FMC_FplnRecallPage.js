@@ -123,7 +123,7 @@ class CJ4_FMC_FplnRecallPage {
             this.GetFplnFromSimBrief(pilotId, fmc);
         }
         else {
-            fmc.setMsg("NO SIMBRIEF USER OR PLAN[red]");
+            fmc.setMsg("NO PILOT ID OR PLAN[red]");
         }
     }
 }
