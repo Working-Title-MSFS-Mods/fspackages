@@ -1256,6 +1256,13 @@ class MapInstrument extends ISvgMapRootElement {
         }
     }
     
+    // g1000 compatibility
+    setTrackUpDisabled(_val) {
+        if (this.rotationHandler instanceof MapInstrument_DefaultRotationHandler) {
+            this.rotationHandler.rotationDisabled = _val;
+        }
+    }
+    
     setPlaneScale(_scale) {
         if (this.airplaneIconElement) {
             this.airplaneIconElement.setScale(this.navMap, _scale);
@@ -1669,10 +1676,11 @@ MapInstrument_DefaultRangeDefinition.INSTANCE = new MapInstrument_DefaultRangeDe
 class MapInstrument_DefaultRotationHandler {
     constructor(_rotateWithPlane = false) {
         this.rotateWithPlane = _rotateWithPlane;
+        this.rotationDisabled = false;
     }
     
     getRotation() {
-        if (this.rotateWithPlane) {
+        if (this.rotateWithPlane && !this.rotationDisabled) {
             return -SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
         } else {
             return 0;
