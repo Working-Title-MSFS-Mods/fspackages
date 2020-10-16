@@ -67,9 +67,9 @@ class CJ4_FMC_ModSettingsPageOne {
     bindEvents() {
         this._fmc.onLeftInput[0] = () => { this.lightMode = this.lightMode + 1; };
         this._fmc.onRightInput[0] = () => {
-            value = fmc.inOut;
-            this.pilotId = value === FMCMainDisplay.clrValue ? undefined : value;
-            fmc.clearUserInput();
+            let value = this._fmc.inOut;
+            this.pilotId = value == FMCMainDisplay.clrValue ? undefined : value;
+            this._fmc.clearUserInput();
         };
         this._fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(this._fmc); };
     }
