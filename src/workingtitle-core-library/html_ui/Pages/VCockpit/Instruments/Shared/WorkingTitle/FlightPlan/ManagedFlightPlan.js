@@ -108,17 +108,22 @@ class ManagedFlightPlan {
    * @param {WayPoint} waypoint The waypoint to add.
    * @param {Number} index The index to add the waypoint at. If ommitted or if larger than the
    * flight plan length, the waypoint will be appended to the end of the flight plan.
+   * @param {Boolean} replace Whether or not to replace the waypoint at the specified index
+   * instead of inserting or appending.
    */
   addWaypoint(waypoint, index) {
+
+    const mappedWaypoint = RawDataMapper.toWaypoint(waypoint, this._parentInstrument);
+
     if (index === undefined || index >= this._waypoints.length) {
-      index = this._waypoints.length;
-      this._waypoints.push(waypoint);
+      this._waypoints.push(mappedWaypoint);
+      index = this._waypoints.length - 1;
     }
     else {
-      this._waypoints.splice(index, 0, waypoint);
+      this._waypoints.splice(index, 0, mappedWaypoint);
     }
     
-    this._shiftSegmentIndexes(waypoint, index);
+    this._shiftSegmentIndexes(mappedWaypoint, index);
     this._reflowDistances();
   }
 
@@ -346,7 +351,12 @@ class ManagedFlightPlan {
 
       const visitObject = (obj) => {
 
-        obj = Object.assign({}, obj);
+        if (Array.isArray(obj)) {
+          obj = [...obj];
+        }
+        else {
+          obj = Object.assign({}, obj);
+        }
 
         delete obj.instrument;
         delete obj._svgElements;
@@ -458,7 +468,7 @@ class ManagedFlightPlan {
    * Clears the departure from the flight plan.
    */
   clearDeparture() {
-    if (this.procedureDetails.departureSelected = true) {
+    if (this.procedureDetails.departureSelected === true) {
       this._waypoints.splice(1, this.enrouteStart - 1);
 
       this.procedureDetails.departureSelected = false;
@@ -490,7 +500,7 @@ class ManagedFlightPlan {
    * Clears the arrival from the flight plan.
    */
   clearArrival() {
-    if (this.procedureDetails.arrivalSelected = true) {
+    if (this.procedureDetails.arrivalSelected === true) {
       this._waypoints.splice(this.arrivalStart, this.approachStart - this.arrivalStart);
 
       this.procedureDetails.arrivalSelected = false;
@@ -523,7 +533,7 @@ class ManagedFlightPlan {
    * Clears the approach from the flight plan.
    */
   clearApproach() {
-    if (this.procedureDetails.approachSelected = true) {
+    if (this.procedureDetails.approachSelected === true) {
       this._waypoints.splice(this.approachStart, this._waypoints.length - this.approachStart - 2);
 
       this.procedureDetails.approachSelected = false;
@@ -542,40 +552,56 @@ ManagedFlightPlan.fromObject = (flightPlanObject, parentInstrument) => {
 
   const visitObject = (obj) => {
     for(var key in obj) {
-      if (typeof obj[key] === 'object' && obj[key] && obj[key].scroll === undefined) {    
-        visitObject(obj[key]);
+      if (typeof obj[key] === 'object' && obj[key] && obj[key].scroll === undefined) {
+        if (Array.isArray(obj[key])) {
+          visitArray(obj[key]);
+        }
+        else {  
+          visitObject(obj[key]);
+        }
 
         if (obj[key] && obj[key].infos) {
           obj[key] = Object.assign(new WayPoint(parentInstrument), obj[key]);          
         }
 
         if(obj[key] && obj[key].coordinates) {
-          obj[key] = Object.assign(new WayPointInfo(parentInstrument), obj[key]);
+          switch (obj.type) {
+            case 'A':
+              obj[key] = Object.assign(new AirportInfo(parentInstrument), obj[key]);
+              break;
+            case 'W':
+              obj[key] = Object.assign(new IntersectionInfo(parentInstrument), obj[key]);
+              break;
+            case 'V':
+              obj[key] = Object.assign(new VORInfo(parentInstrument), obj[key]);
+              break;
+            case 'N':
+              obj[key] = Object.assign(new NDBInfo(parentInstrument), obj[key]);
+              break;
+          }
+          
           obj[key].coordinates = Object.assign(new LatLongAlt(), obj[key].coordinates);
         }
       }
 
-      if (Array.isArray(obj[key])) {
-        visitArray(obj[key]);
-      }
+      
     }
   };
 
   const visitArray = (array) => {
     array.forEach(item => {
-      if (typeof item === 'object') {
-        visitObject(item);
-      }
-
       if (Array.isArray(item)) {
         visitArray(item);
+      }
+      else if (typeof item === 'object') {
+        visitObject(item);
       }
     });
   };
 
   visitObject(plan);
   return plan;
-}
+};
 
 /**
  * The details of procedures selected in the flight plan.
@@ -714,6 +740,8 @@ class FlightPlanSegment {
 class DiscontinuityWayPointInfo extends WayPointInfo {
 
   constructor() {
+    super();
+
     /** Whether or not the waypoint is a discontinuity. */
     this.isDiscontinuity = true;
   }
@@ -727,6 +755,8 @@ DiscontinuityWayPointInfo.WayPointType = "D";
 class RadiusFixWayPointInfo extends WayPointInfo {
   
   constructor() {
+    super();
+
     /** The radius, in NM, around the reference fix. */
     this.radius = 0;
 
@@ -746,6 +776,7 @@ RadiusFixWayPointInfo.WayPointType = "R"
 class BearingDistanceWayPointInfo extends WayPointInfo {
   
   constructor() {
+    super();
 
     /** The bearing, in degrees, from the reference fix. */
     this.bearing = 0;
@@ -770,6 +801,8 @@ BearingDistanceWayPointInfo.WayPointType = "BD";
 class AltitudeTurnWayPointInfo extends WayPointInfo {
 
   constructor() {
+    super();
+
     /** Whether or not this waypoint has a specific inbound track. */
     this.hasInboundTrack = false;
 
@@ -792,9 +825,97 @@ AltitudeTurnWayPointInfo.WayPointType = "ALT";
 class VectorsWayPointInfo extends WayPointInfo {
 
   constructor() {
+    super();
+
     /** Whether or not this waypoint is a vectors instruction. */
     this.isVectors = true;
   }
 
 }
 VectorsWayPointInfo.WayPointType = "VEC";
+
+
+class RawDataMapper { }
+RawDataMapper.toWaypoint = (facility, instrument) => {
+  const waypoint = new WayPoint(instrument);
+
+  waypoint.ident = facility.icao.substring(7, 12).trim();
+  waypoint.icao = facility.icao;
+  waypoint.type = facility.icao[0];
+
+  switch (waypoint.type) {
+    case 'A':
+      waypoint.infos = new AirportInfo(instrument);
+
+      waypoint.infos.approaches = facility.approaches;
+      //waypoint.infos.approaches.forEach(approach => 
+      //  approach.runwayTransitions.forEach(trans => trans.name = RawDataMapper.generateRunwayTransitionName(trans)));
+
+      waypoint.infos.departures = facility.departures;
+      waypoint.infos.departures.forEach(departure => 
+        departure.runwayTransitions.forEach(trans => trans.name = RawDataMapper.generateRunwayTransitionName(trans)));
+
+      waypoint.infos.arrivals = facility.arrivals;
+      waypoint.infos.arrivals.forEach(arrival => 
+        arrival.runwayTransitions.forEach(trans => trans.name = RawDataMapper.generateRunwayTransitionName(trans)));
+
+      waypoint.infos.runways = facility.runways;
+
+      waypoint.infos.oneWayRunways = [];
+      facility.runways.forEach(runway => waypoint.infos.oneWayRunways.push(...Object.assign(new Runway(), runway).splitIfTwoWays()));
+
+      waypoint.infos.oneWayRunways.sort(RawDataMapper.sortRunways);
+
+      break;
+    default:
+      waypoint.infos = new WayPointInfo(instrument);
+  }
+
+  waypoint.infos.coordinates = new LatLongAlt(facility.lat, facility.lon);
+  return waypoint;
+};
+
+RawDataMapper.sortRunways = (r1, r2) => {
+  if (parseInt(r1.designation) === parseInt(r2.designation)) {
+    let v1 = 0;
+    if (r1.designation.indexOf("L") != -1) {
+        v1 = 1;
+    }
+    else if (r1.designation.indexOf("C") != -1) {
+        v1 = 2;
+    }
+    else if (r1.designation.indexOf("R") != -1) {
+        v1 = 3;
+    }
+    let v2 = 0;
+    if (r2.designation.indexOf("L") != -1) {
+        v2 = 1;
+    }
+    else if (r2.designation.indexOf("C") != -1) {
+        v2 = 2;
+    }
+    else if (r2.designation.indexOf("R") != -1) {
+        v2 = 3;
+    }
+    return v1 - v2;
+  }
+  return parseInt(r1.designation) - parseInt(r2.designation);
+};
+
+RawDataMapper.generateRunwayTransitionName = (runwayTransition) => {
+  let name = `RW${runwayTransition.runwayNumber}`;
+
+  switch (runwayTransition.runwayDesignation) {
+      case 1:
+          name += "L";
+          break;
+      case 2:
+          name += "R";
+          break;
+      case 3:
+          name += "C";
+          break;
+  }
+
+  return name;
+};

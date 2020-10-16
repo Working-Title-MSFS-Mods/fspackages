@@ -128,10 +128,10 @@ class FacilityLoader {
      * @param {String} icao The ICAO to get the raw facility data for.
      */
     getFacilityRaw(icao, timeout = 1000) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const request = {
                 resolve: resolve,
-                timeout: setTimeout(() => reject(), timeout),
+                timeout: setTimeout(() => resolve(undefined), timeout),
                 icao: icao.trim()
             };
 

@@ -186,12 +186,9 @@ class FlightPlanManager {
    */
   async setOrigin(icao, callback = () => { }) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    const airport = await this._parentInstrument.facilityLoader.getAirport(icao);
+    const airport = await this._parentInstrument.facilityLoader.getFacilityRaw(icao);
 
-    if (currentFlightPlan.hasOrigin) {
-      currentFlightPlan.removeWaypoint(0);
-    }
-
+    currentFlightPlan.clearPlan();
     currentFlightPlan.addWaypoint(airport, 0);
     this._updateFlightPlanVersion();
 
@@ -465,13 +462,13 @@ class FlightPlanManager {
    * @param {() => void} callback A callback to call once the operation completes.
    */
   async setDestination(icao, callback = () => { }) {
-    const waypoint = await this._parentInstrument.facilityLoader.getAirport(icao);
+    const waypoint = await this._parentInstrument.facilityLoader.getFacilityRaw(icao);
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     if (currentFlightPlan.hasDestination) {
       currentFlightPlan.removeWaypoint(currentFlightPlan.length - 1);
     }
-    this._flightPlans[this._currentFlightPlanIndex].addWaypoint(waypoint);
+    this._flightPlans[this._currentFlightPlanIndex].addWaypoint(waypoint, undefined, true);
 
     this._updateFlightPlanVersion();
     callback();
@@ -486,7 +483,7 @@ class FlightPlanManager {
    */
   async addWaypoint(icao, index = Infinity, callback = () => { }, setActive = true) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    const waypoint = await this._parentInstrument.facilityLoader.getFacility(icao);
+    const waypoint = await this._parentInstrument.facilityLoader.getFacilityRaw(icao);
     
     currentFlightPlan.addWaypoint(waypoint, index);
     if (setActive) {
@@ -1014,7 +1011,7 @@ class FlightPlanManager {
    * Gets the approach waypoints for the current flight plan.
    */
   getApproachWaypoints() {
-    return this._flightPlans[this._currentFlightPlanIndex].approach;
+    return this._flightPlans[this._currentFlightPlanIndex].approach.waypoints;
   }
 
   /**
@@ -1048,7 +1045,7 @@ class FlightPlanManager {
    */
   async activateDirectTo(icao, callback = EmptyCallback.Void) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    const waypoint = this._parentInstrument.facilityLoader.getFacility(icao);
+    const waypoint = this._parentInstrument.facilityLoader.getFacilityRaw(icao);
     
     currentFlightPlan.directTo.activateFromWaypoint(waypoint);
     this._updateFlightPlanVersion();
