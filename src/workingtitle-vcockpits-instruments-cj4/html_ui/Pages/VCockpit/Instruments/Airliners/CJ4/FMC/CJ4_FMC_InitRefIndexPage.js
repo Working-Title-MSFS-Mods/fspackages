@@ -37,7 +37,7 @@ class CJ4_FMC_InitRefIndexPage {
         fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue] ", "INDEX[blue]"],
             [""],
-            ["<FMS CTL", "ROUTE MENU>[disabled]"], //Page 27 ---- 17
+            ["<FMS CTL[disabled]", "ROUTE MENU>[disabled]"], //Page 27 ---- 17
             [""],
             ["<ABOUT", "DATABASE>"], // Page 27 ---- 18, 19, 20, 21
             [""],
@@ -47,7 +47,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["", "ARR DATA>"], //Page 25
             [""],
-            ["", "TEMP COMP>"] //Page 26
+            ["", "TEMP COMP>[disabled]"] //Page 26
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage8(fmc); };
         fmc.onLeftInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage27(fmc); };
