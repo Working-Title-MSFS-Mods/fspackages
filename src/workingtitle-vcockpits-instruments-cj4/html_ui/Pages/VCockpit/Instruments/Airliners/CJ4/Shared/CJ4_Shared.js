@@ -3804,11 +3804,13 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
                     pageIndex -= this.maximumItemsPerPage * (this.currentPage - 1);
                 }
                  //= Math.abs(this.currentItemIndex - this.currentPage * (this.maximumItemsPerPage - 1)  Math.ceil(this.currentItemIndex / (this.maximumItemsPerPage - 1));
-                if((this.totalPages == this.currentPage && pageIndex == 6) || pageIndex == 0){
+                if((this.totalPages == this.currentPage && pageIndex == 6) || (pageIndex == 0 && this.currentPage == 1)){
                     this.highlight(pageIndex);
+                    console.log(pageIndex + "+0");
                 }
                 else{
                     this.highlight(pageIndex + 1);
+                    console.log(pageIndex + "+1");
                 }
 
             }
