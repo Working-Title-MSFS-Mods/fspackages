@@ -83,7 +83,9 @@ var WTMenu;
             if (this.highlightItem) {
                 switch (this.highlightItem.type) {
                     case Menu_ItemType.SUBMENU:
-                        this.highlightItem.subMenu();
+                        if(this.highlightItem.subMenu != null){
+                            this.highlightItem.subMenu();
+                        }
                         break;
                     case Menu_ItemType.CHECKBOX:
                         if (!this.highlightItem.checkboxVal) {

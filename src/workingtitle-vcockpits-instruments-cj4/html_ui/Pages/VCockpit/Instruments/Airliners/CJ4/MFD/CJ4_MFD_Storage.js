@@ -1,13 +1,6 @@
-class Checklist{
-    constructor(_name) {
-        this.name = _name; // NORMAL CHECKLIST
-        this.sections = []; // TAKEOFF, DESCENT
-    }
-}
-
-class NormalChecklist extends Checklist {
+class NormalChecklist {
     constructor() {
-        super("NORMAL CHECKLIST MENU");
+        this.name = "NORMAL CHECKLIST MENU"; // NORMAL CHECKLIST
         this.sections = [
             {
                 name: "BEFORE STARTING ENGINES",
@@ -77,8 +70,8 @@ class NormalChecklist extends Checklist {
                         value: "OFF",
                         key: false
                     }
-                    
-                    
+
+
                 ]
             },
             {
@@ -661,6 +654,131 @@ class NormalChecklist extends Checklist {
                     }
                 ]
             },
-        ];
+        ]; // TAKEOFF, DESCENT
+    }
+    hasProgress(){
+        for(let s = 0; s < this.sections.length; s++){
+            const section = this.sections[s];
+            for(let i = 0; i < section.checklistItems.length; i++){
+                if(section.checklistItems[i].key){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    isSectionComplete(_sectionIndex){
+        const section = this.sections[_sectionIndex];
+        for(let i = 0; i < section.checklistItems.length; i++){
+            if(!section.checklistItems[i].key){
+                return false;
+            }
+        }
+        return true;
+    }
+    resetChecklistState(){
+        for(let s = 0; s < this.sections.length; s++){
+            const section = this.sections[s];
+            for(let i = 0; i < section.checklistItems.length; i++){
+                section.checklistItems[i].key = false;
+            }
+        }
+    }
+    findCurrentSectionIndex(){
+        let currentSelectionIndex = 0;
+        for(let s = 0; s < this.sections.length; s++){
+            if(this.isSectionComplete(s)){
+                currentSelectionIndex = s;
+            }
+        }
+        console.log("CURRENT: " + currentSelectionIndex);
+        return currentSelectionIndex;
+    }
+    findCurrentChecklistItemIndex(_sectionIndex){
+        let currentChecklistItem = 0;
+        const section = this.sections[_sectionIndex];
+        for(let i = 0; i < section.checklistItems.length; i++){
+            if(section.checklistItems[i].key){
+                currentChecklistItem = i;
+                if(i != section.checklistItems.length -1){
+                    currentChecklistItem++;
+                }
+            }
+        }
+        return currentChecklistItem;
+    }
+}
+
+class MemoryState {
+    constructor(_memoryPreset) {
+        if(_memoryPreset == 1){
+            // System containers
+            this.systemPage1 = CJ4_SystemPage.ENGINES;
+            this.systemPage2 = CJ4_SystemPage.ELECTRICS;
+            this.showChecklist = true;
+            this.showPassengerBrief = false;
+
+            // Map
+            this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
+            this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
+            this.mapNavigationSource = 0;
+            this.showSystemOverlay = 0;
+            this.showTerrain = false;
+            this.showWeather = false;
+            this.showGwx = false;
+            this.isExtended = false;
+        }
+        else if (_memoryPreset == 2){
+            // System containers
+            this.systemPage1 = CJ4_SystemPage.ENGINES;
+            this.systemPage2 = CJ4_SystemPage.ELECTRICS;
+            this.showChecklist = true;
+            this.showPassengerBrief = false;
+
+            // Map
+            this.mapDisplayMode = Jet_NDCompass_Display.PLAN;
+            this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
+            this.mapNavigationSource = 0;
+            this.showSystemOverlay = 0;
+            this.showTerrain = false;
+            this.showWeather = false;
+            this.showGwx = false;
+            this.isExtended = false;
+        }
+        else{
+            // System containers
+            this.systemPage1 = CJ4_SystemPage.ENGINES;
+            this.systemPage2 = CJ4_SystemPage.ELECTRICS;
+            this.showChecklist = true;
+            this.showPassengerBrief = false;
+
+            // Map
+            this.mapDisplayMode = Jet_NDCompass_Display.ARC;
+            this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
+            this.mapNavigationSource = 0;
+            this.showTerrain = false;
+            this.showWeather = false;
+            this.showGwx = false;
+            this.isExtended = false;
+        }
+
+    }
+
+    setMemoryState(_systemPage1, systemPage2, _showChecklist, _showPassengerBrief, _mapDisplayMode, _mapNavigationMode, _mapNavigationSource, _showTerrain, _showWeather, _showGwx, _isExtended){
+        // Set system pages
+        this.systemPage1 = _systemPage1;
+        this.systemPage2 = systemPage2;
+        this.showChecklist = _showChecklist;
+        this.showPassengerBrief = _showPassengerBrief;
+
+        // Set map
+        this.mapDisplayMode = _mapDisplayMode;
+        this.mapNavigationMode = _mapNavigationMode;
+        this.mapNavigationSource = _mapNavigationSource;
+        this.showTerrain = _showTerrain;
+        this.showWeather = _showWeather;
+        this.showGwx = _showGwx;
+        this.isExtended = _isExtended;
+
     }
 }
