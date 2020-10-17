@@ -64,7 +64,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Fixed broken fuel reading on SYSTEM OVERLAY menu / closes [#246](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/246)
 
 ### Audio
-* Fixed audio bugs with announcments
+* Fixed audio bugs with announcements
 
 ### Lighting
 * Incorporated the latest lighting package from Uwajimaya including volumetric external lighting.
