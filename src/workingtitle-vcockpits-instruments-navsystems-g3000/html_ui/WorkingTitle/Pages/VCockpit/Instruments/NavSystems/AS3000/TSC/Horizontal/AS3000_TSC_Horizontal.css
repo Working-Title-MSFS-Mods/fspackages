@@ -1805,6 +1805,9 @@ as3000-tsc-horizontal-element {
         display: flex;
         width: 70%;
         left: 15%; }
+        as3000-tsc-horizontal-element #Electricity #frequencyKeyboard #topLine .gradientButton {
+          height: 15vh;
+          width: 15vh; }
         as3000-tsc-horizontal-element #Electricity #frequencyKeyboard #topLine #FK_ActiveFreqLine {
           color: white;
           font-size: 3.5vh;
@@ -1838,18 +1841,11 @@ as3000-tsc-horizontal-element {
         position: absolute;
         top: 25%;
         height: 75%;
-        width: 60%;
-        left: 23%; }
-        as3000-tsc-horizontal-element #Electricity #frequencyKeyboard #KeyBoard .roundButton {
-          width: 15vh;
-          height: 15vh;
-          line-height: 15vh;
-          display: inline-block; }
+        width: 50%;
+        left: 25%; }
         as3000-tsc-horizontal-element #Electricity #frequencyKeyboard #KeyBoard .gradientButton {
           width: 15vh;
           height: 15vh; }
-        as3000-tsc-horizontal-element #Electricity #frequencyKeyboard #KeyBoard td {
-          width: 33.33%; }
     as3000-tsc-horizontal-element #Electricity #timeKeyboard, as3000-tsc-horizontal-element #Electricity #speedKeyboard, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard {
       position: relative; }
       as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_Bksp, as3000-tsc-horizontal-element #Electricity #timeKeyboard #SK_Bksp, as3000-tsc-horizontal-element #Electricity #timeKeyboard #AK_Bksp, as3000-tsc-horizontal-element #Electricity #speedKeyboard #TK_Bksp, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Bksp, as3000-tsc-horizontal-element #Electricity #speedKeyboard #AK_Bksp, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #TK_Bksp, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #SK_Bksp, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Bksp {
@@ -1882,10 +1878,10 @@ as3000-tsc-horizontal-element {
           background-color: aqua; }
       as3000-tsc-horizontal-element #Electricity #timeKeyboard #KeyBoard, as3000-tsc-horizontal-element #Electricity #speedKeyboard #KeyBoard, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #KeyBoard {
         position: absolute;
-        top: 28%;
-        height: 70%;
-        width: 60%;
-        left: 21%; }
+        top: 25%;
+        height: 75%;
+        width: 50%;
+        left: 25%; }
         as3000-tsc-horizontal-element #Electricity #timeKeyboard #KeyBoard .gradientButton, as3000-tsc-horizontal-element #Electricity #speedKeyboard #KeyBoard .gradientButton, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #KeyBoard .gradientButton {
           width: 15vh;
           height: 15vh; }
