@@ -1,4 +1,4 @@
-# Working Title CJ4 v0.4.1 Changes
+# Working Title CJ4 v0.5.0 Changes
 
 Welcome to the latest update of the Working Title CJ4 (v0.5.0). Thank you to everyone who contributed to this release.
 
@@ -45,10 +45,12 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ### PERF Page
 * Added error protection for PERF Pages / closes [#253](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/253)
 * Fixed bug with gross weight calculation
+* Added ability to enter a zero fuel weight number to calculate gross weight instead of pax/cargo entries.
 * Added indication when no runway is selected for TAKEOFF REF and APPROACH REF
 * Added ability to have VFR runway selected to allow PERF pages even when no approach is selected (for airports without approaches)
 * Added vspeed send logic and messages to FMC to replicate real unit
 * Fixed refresh error after entering/updating reserve fuel on FUEL MANAGEMENT page
+* Addressed fuel flow bugs throughout / closes [#224](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/224)
 
 ### PFD/MFD
 * xxx
@@ -60,6 +62,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ### Lighting
 * Incorporated the latest lighting package from Uwajimaya including volumetric external lighting.
 * Added controllable passenger cabin lighting (accessed from FMS -> IDX -> MOD SETTINGS)
+* Fixed some lighting bleed (thanks again Uwajimaya)
 
 ## Known Issues
 * You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are currently overhauling the flight plan management system to allow for much more flexibility and stability.

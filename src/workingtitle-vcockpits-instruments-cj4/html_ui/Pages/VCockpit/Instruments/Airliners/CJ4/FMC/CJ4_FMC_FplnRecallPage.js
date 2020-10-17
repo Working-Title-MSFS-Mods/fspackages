@@ -41,7 +41,7 @@ class CJ4_FMC_FplnRecallPage {
         let updateRoute = () => {
             let routeArr = json.general.route.split(' ');
             console.log("UPDATE ROUTE");
-            let idx = 1; // TODO starting from 1 to skip departure trans for now
+            let idx = 0; // TODO starting from 1 to skip departure trans for now
 
             let addWaypoint = async () => {
                 if (idx >= routeArr.length - 1) {
@@ -53,19 +53,24 @@ class CJ4_FMC_FplnRecallPage {
                     return;
                 }
                 let icao = routeArr[idx];
-                fmc.setMsg("LOAD FPLN...ADD [yellow]" + icao);
-                let isWaypoint = await fmc.dataManager.IsWaypointValid(icao);
-                idx++;
-                if (icao === "DCT") { // skip this
+
+                if(idx == 0 && icao !== "DCT"){
+                    // if first waypoint is no dct it must be a departure
+                    // skip that
+                    idx++;
                     addWaypoint();
-                    return;
                 }
+
+                fmc.setMsg("LOAD FPLN...ADD [yellow]" + icao);
+                // let isWaypoint = await fmc.dataManager.IsWaypointValid(icao);
+                idx++;
 
                 let wptIndex = fmc.flightPlanManager.getWaypointsCount() - 1;
                 console.log("MOD INDEX " + wptIndex);
 
-                if (isWaypoint) {
+                if (icao === "DCT") {
                     // should be a normal waypoint then
+                    icao = routeArr[idx];
                     console.log("adding as waypoint " + icao);
                     fmc.insertWaypoint(icao, wptIndex, () => {
                         CJ4_FMC_InitRefIndexPage.ShowPage17(fmc);

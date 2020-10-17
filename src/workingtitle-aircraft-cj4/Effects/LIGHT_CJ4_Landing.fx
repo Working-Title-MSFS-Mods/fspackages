@@ -68,6 +68,6 @@ Range=3000.0
 Intensity=400.0
 Softness=0.0
 SpotInner=14
-SpotOuter=19
+SpotOuter=17
 Volumetric=0
 ScatDir=0.0
