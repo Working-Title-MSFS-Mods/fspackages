@@ -18,6 +18,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Volumetric External Lights: Incorporated the latest lighting package from Uwajimaya including volumetric external lighting
 * Improvements to PFD and MFD
 * Cabin Lights: Added the ability via the MOD SETTINGS menu to change the cabin light setting
+* FMS: Non functional menu items are now greyed out
 
 
 ### Engine Model
