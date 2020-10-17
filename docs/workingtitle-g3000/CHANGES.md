@@ -2,9 +2,11 @@
 
 ### v0.2.0
 **Fixes**
+- \[Compatibility\] Fixed issue that would cause the G1000 MFD screen to freeze when entering WPT page if the WT G1000 mod (v0.3.1) is also installed.
 - \[Compatibility\] Disabled new functionality for the Longitude to avoid locking users into settings they could not control in-game. The mod now only applies cosmetic changes to the Longitude, including:
   - Updated terrain colors.
   - Updated formatting of symbols and text labels on the navigational map.
+- \[NavMap\] Fixed issue where turning weather on would change map zoom.
 
 ### v0.2.0-pre2
 **Fixes**
