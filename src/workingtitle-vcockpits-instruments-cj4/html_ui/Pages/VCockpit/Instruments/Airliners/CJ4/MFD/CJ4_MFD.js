@@ -32,6 +32,11 @@ class CJ4_MFD extends BaseAirliners {
         this.passengerBrief = new CJ4_PassengerBrief_Container("PassengerBrief", "PassengerBrief");
         this.navBar = new CJ4_NavBarContainer("Nav", "NavBar");
         this.popup = new CJ4_PopupMenuContainer("Menu", "PopupMenu");
+
+        this.mem1 = new MemoryState(1);
+        this.mem2 = new MemoryState(2);
+        this.mem3 = new MemoryState(3);
+
         this.addIndependentElementContainer(this.systems1);
         this.addIndependentElementContainer(this.systems2);
         this.addIndependentElementContainer(this.systemOverlay);
@@ -229,11 +234,54 @@ class CJ4_MFD extends BaseAirliners {
                 // this.showFms = false;
                 this.showPassengerBrief = !this.showPassengerBrief;
                 break;
+            case "Lwr_Push_MEM1_1":
+                this.activeMemoryFunction(1);
+                break;
+            case "Lwr_Push_MEM1_1":
+                this.activeMemoryFunction(1);
+                break;
+            case "Lwr_Hold_MEM1_1":
+                this.mem1.setMemoryState(this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode);
+                this.activeMemoryFunction(1);
+                break;
+            case "Lwr_Push_MEM2_1":
+                this.activeMemoryFunction(2);
+                break;
+            case "Lwr_Hold_MEM2_1":
+                this.mem2.setMemoryState(this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode);
+                this.activeMemoryFunction(2);
+                break;
+            case "Lwr_Push_MEM3_1":
+                this.activeMemoryFunction(3);
+                break;
+            case "Lwr_Hold_MEM3_1":
+                this.mem3.setMemoryState(this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode);
+                this.activeMemoryFunction(3);
+                break;
             case "Lwr_Push_ESC":
                 this.checklist.otherMenusOpen = false;
                 this.passengerBrief.otherMenusOpen = false;
                 break;
         }
+    }
+    activeMemoryFunction(_memoryFunction){
+        let memoryFunction = this.mem1;
+        if(_memoryFunction == 1){
+            memoryFunction = this.mem1;
+        }
+        else if (_memoryFunction == 2){
+            memoryFunction = this.mem2;
+        }
+        else if (_memoryFunction == 3){
+            memoryFunction = this.mem3;
+        }
+
+        this.systemPage1 = memoryFunction.systemPage1;
+        this.systemPage2 = memoryFunction.systemPage2;
+        this.showChecklist = memoryFunction.showChecklist;
+        this.showPassengerBrief = memoryFunction.showPassengerBrief;
+        this.mapDisplayMode = memoryFunction.mapDisplayMode;
+        this.mapNavigationMode = memoryFunction.mapNavigationMode;
     }
     allContainersReady() {
         for (var i = 0; i < this.IndependentsElements.length; i++) {

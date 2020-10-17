@@ -708,3 +708,42 @@ class NormalChecklist {
         return currentChecklistItem;
     }
 }
+
+class MemoryState {
+    constructor(_memoryPreset) {
+        if(_memoryPreset == 1){
+            this.systemPage1 = CJ4_SystemPage.ENGINES;
+            this.systemPage2 = CJ4_SystemPage.ELECTRICS;
+            this.showChecklist = false;
+            this.showPassengerBrief = false;
+            this.mapDisplayMode = Jet_NDCompass_Display.PLAN;
+            this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
+        }
+        else if (_memoryPreset == 2){
+            this.systemPage1 = CJ4_SystemPage.ENGINES;
+            this.systemPage2 = CJ4_SystemPage.FMS;
+            this.showChecklist = false;
+            this.showPassengerBrief = false;
+            this.mapDisplayMode = Jet_NDCompass_Display.ARC;
+            this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
+        }
+        else{
+            this.systemPage1 = CJ4_SystemPage.ENGINES;
+            this.systemPage2 = CJ4_SystemPage.ELECTRICS;
+            this.showChecklist = true;
+            this.showPassengerBrief = false;
+            this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
+            this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
+        }
+
+    }
+
+    setMemoryState(_systemPage1, systemPage2, _showChecklist, _showPassengerBrief, _mapDisplayMode, _mapNavigationMode){
+        this.systemPage1 = _systemPage1;
+        this.systemPage2 = systemPage2;
+        this.showChecklist = _showChecklist;
+        this.showPassengerBrief = _showPassengerBrief;
+        this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
+        this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
+    }
+}
