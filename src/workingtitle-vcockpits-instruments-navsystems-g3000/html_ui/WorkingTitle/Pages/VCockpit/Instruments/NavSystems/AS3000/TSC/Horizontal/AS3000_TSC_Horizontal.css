@@ -555,7 +555,9 @@ as3000-tsc-horizontal-element {
         height: 97%;
         left: 22%;
         width: 75%;
-        border: 0.4vh solid white; }
+        border: 0.4vh solid #454b4e;
+        background: linear-gradient(#1f3445, black 10%);
+        border-radius: 10px; }
     
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay {
           position: absolute;
@@ -1835,11 +1837,13 @@ as3000-tsc-horizontal-element {
       position: relative; }
       as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_Bksp, as3000-tsc-horizontal-element #Electricity #timeKeyboard #SK_Bksp, as3000-tsc-horizontal-element #Electricity #timeKeyboard #AK_Bksp, as3000-tsc-horizontal-element #Electricity #speedKeyboard #TK_Bksp, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Bksp, as3000-tsc-horizontal-element #Electricity #speedKeyboard #AK_Bksp, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #TK_Bksp, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #SK_Bksp, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Bksp {
         position: absolute;
+        height: 15vh;
         width: 20%;
         right: 5%; }
       as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay, as3000-tsc-horizontal-element #Electricity #timeKeyboard #SK_Display, as3000-tsc-horizontal-element #Electricity #timeKeyboard #AK_Display, as3000-tsc-horizontal-element #Electricity #speedKeyboard #TK_TimeDisplay, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display, as3000-tsc-horizontal-element #Electricity #speedKeyboard #AK_Display, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #TK_TimeDisplay, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #SK_Display, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display {
         position: absolute;
         width: 30%;
+        top: 12%;
         left: 35%;
         background-color: grey;
         margin: 1vh;
@@ -1861,20 +1865,13 @@ as3000-tsc-horizontal-element {
           background-color: aqua; }
       as3000-tsc-horizontal-element #Electricity #timeKeyboard #KeyBoard, as3000-tsc-horizontal-element #Electricity #speedKeyboard #KeyBoard, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #KeyBoard {
         position: absolute;
-        top: 25%;
-        height: 75%;
+        top: 28%;
+        height: 70%;
         width: 60%;
-        left: 23%; }
-        as3000-tsc-horizontal-element #Electricity #timeKeyboard #KeyBoard .roundButton, as3000-tsc-horizontal-element #Electricity #speedKeyboard #KeyBoard .roundButton, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #KeyBoard .roundButton {
-          width: 15vh;
-          height: 15vh;
-          line-height: 15vh;
-          display: inline-block; }
+        left: 21%; }
         as3000-tsc-horizontal-element #Electricity #timeKeyboard #KeyBoard .gradientButton, as3000-tsc-horizontal-element #Electricity #speedKeyboard #KeyBoard .gradientButton, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #KeyBoard .gradientButton {
           width: 15vh;
           height: 15vh; }
-        as3000-tsc-horizontal-element #Electricity #timeKeyboard #KeyBoard td, as3000-tsc-horizontal-element #Electricity #speedKeyboard #KeyBoard td, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #KeyBoard td {
-          width: 33.33%; }
     as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable,
     as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_NumberTable {
       display: none; }
@@ -1951,9 +1948,7 @@ as3000-tsc-horizontal-element {
         width: 11.5vw; }
         as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable .gradientButton .mainText,
         as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_NumberTable .gradientButton .mainText {
-          display: inline;
-          font-size: 7vh;
-          vertical-align: central; }
+          font-size: 7vh; }
       as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable #K_SwitchToNum,
       as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable #KN_SwitchToLetters,
       as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_NumberTable #K_SwitchToNum,
