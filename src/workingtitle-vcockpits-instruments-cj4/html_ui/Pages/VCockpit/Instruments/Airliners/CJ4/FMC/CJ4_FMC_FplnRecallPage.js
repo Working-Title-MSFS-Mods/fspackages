@@ -41,7 +41,7 @@ class CJ4_FMC_FplnRecallPage {
         let updateRoute = () => {
             let routeArr = json.general.route.split(' ');
             console.log("UPDATE ROUTE");
-            let idx = 1; // TODO starting from 1 to skip departure trans for now
+            let idx = 0; // TODO starting from 1 to skip departure trans for now
 
             let addWaypoint = async () => {
                 if (idx >= routeArr.length - 1) {
@@ -53,6 +53,14 @@ class CJ4_FMC_FplnRecallPage {
                     return;
                 }
                 let icao = routeArr[idx];
+
+                if(idx == 0 && icao !== "DCT"){
+                    // if first waypoint is no dct it must be a departure
+                    // skip that
+                    idx++;
+                    addWaypoint();
+                }
+
                 fmc.setMsg("LOAD FPLN...ADD [yellow]" + icao);
                 // let isWaypoint = await fmc.dataManager.IsWaypointValid(icao);
                 idx++;
