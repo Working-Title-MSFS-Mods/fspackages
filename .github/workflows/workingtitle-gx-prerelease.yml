@@ -3,6 +3,7 @@ on:
   push:
     tags:
       - 'gx-v*-pre*'
+      - 'gx-v*-dev*'
 jobs:
   build:
     runs-on: windows-latest

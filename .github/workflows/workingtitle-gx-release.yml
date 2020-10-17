@@ -4,6 +4,7 @@ on:
     tags:
       - 'gx-v*'
       - '!gx-v*-pre*'
+      - '!gx-v*-dev*'
 jobs:
   build:
     runs-on: windows-latest
