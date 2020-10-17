@@ -9,11 +9,11 @@ class CJ4_FMC_FplnRecallPage {
             console.log("UPDATE FROMTO");
             let from = json.origin.icao_code;
             // fmc.tryUpdateFromTo(json.origin.icao_code + "/" + json.destination.icao_code, updateRunways);
-            fmc.setMsg("GET FPLN...CLEAR FPLN[yellow]");
+            fmc.setMsg("LOAD FPLN...CLEAR FPLN[yellow]");
             fmc.flightPlanManager.setActiveWaypointIndex(0, () => {
                 fmc.eraseTemporaryFlightPlan(() => {
                     fmc.flightPlanManager.clearFlightPlan(() => {
-                        fmc.setMsg("GET FPLN...ORIG [yellow]" + from);
+                        fmc.setMsg("LOAD FPLN...ORIG [yellow]" + from);
                         fmc.ensureCurrentFlightPlanIsTemporary(() => {
                             fmc.updateRouteOrigin(from, updateRunways);
                         });
@@ -27,21 +27,21 @@ class CJ4_FMC_FplnRecallPage {
             if (called < 2) return;
             console.log("UPDATE RUNWAY");
             let rwy = json.origin.plan_rwy;
-            fmc.setMsg("GET FPLN...RWY [yellow]" + rwy);
+            fmc.setMsg("LOAD FPLN...RWY [yellow]" + rwy);
             fmc.setOriginRunway(rwy, updateDestination);
         };
 
         let updateDestination = () => {
             console.log("UPDATE DESTINATION");
             let dest = json.destination.icao_code;
-            fmc.setMsg("GET FPLN...DST [yellow]" + dest);
+            fmc.setMsg("LOAD FPLN...DST [yellow]" + dest);
             fmc.updateRouteDestination(dest, updateRoute);
         };
 
         let updateRoute = () => {
             let routeArr = json.general.route.split(' ');
             console.log("UPDATE ROUTE");
-            let idx = 1; // TODO starting from 1 to skip departure trans for now
+            let idx = 0; // TODO starting from 1 to skip departure trans for now
 
             let addWaypoint = async () => {
                 if (idx >= routeArr.length - 1) {
@@ -53,19 +53,24 @@ class CJ4_FMC_FplnRecallPage {
                     return;
                 }
                 let icao = routeArr[idx];
-                fmc.setMsg("GET FPLN...ADD [yellow]" + icao);
-                let isWaypoint = await fmc.dataManager.IsWaypointValid(icao);
-                idx++;
-                if (icao === "DCT") { // skip this
+
+                if(idx == 0 && icao !== "DCT"){
+                    // if first waypoint is no dct it must be a departure
+                    // skip that
+                    idx++;
                     addWaypoint();
-                    return;
                 }
+
+                fmc.setMsg("LOAD FPLN...ADD [yellow]" + icao);
+                // let isWaypoint = await fmc.dataManager.IsWaypointValid(icao);
+                idx++;
 
                 let wptIndex = fmc.flightPlanManager.getWaypointsCount() - 1;
                 console.log("MOD INDEX " + wptIndex);
 
-                if (isWaypoint) {
+                if (icao === "DCT") {
                     // should be a normal waypoint then
+                    icao = routeArr[idx];
                     console.log("adding as waypoint " + icao);
                     fmc.insertWaypoint(icao, wptIndex, () => {
                         CJ4_FMC_InitRefIndexPage.ShowPage17(fmc);
@@ -102,10 +107,10 @@ class CJ4_FMC_FplnRecallPage {
             addWaypoint();
         };
 
-        Utils.loadFile(url, (r) => {
+        WTUtils.loadFile(url, (r) => {
             json = JSON.parse(r);
             if (!json || json === "") {
-                fmc.showErrorMessage("NO DATA");
+                fmc.showErrorMessage("NO DATA[red]");
                 return;
             }
             //else if (json.indexOf("Error") > -1) {
@@ -114,19 +119,23 @@ class CJ4_FMC_FplnRecallPage {
             //}
 
             let flightNo = json.general.icao_airline + json.general.flight_number;
-            fmc.setMsg("LOADING FPLN...FLIGHTNO[green]" + flightNo);
+            fmc.setMsg("LOAD FPLN...FLIGHTNO[green]" + flightNo);
             fmc.updateFlightNo(flightNo);
             let crz = json.general.initial_altitude;
-            fmc.setMsg("LOADING FPLN...CRZ[green]" + crz);
+            fmc.setMsg("LOAD FPLN...CRZ[green]" + crz);
             fmc.setCruiseFlightLevelAndTemperature(crz);
             updateFrom();
+        }, () => {
+            // wrong pilot id is the most obvious error here, so lets show that
+            fmc.showErrorMessage("WRONG PILOTID[red]");
+            return;
         });
     }
 
     static ShowPage1(fmc) {
         let pilotId = WTDataStore.get('simbriefPilotId', '');
         if (pilotId !== '') {
-            fmc.setMsg("LOADING FPLN...[yellow]");
+            fmc.setMsg("LOAD FPLN...[yellow]");
             this.GetFplnFromSimBrief(pilotId, fmc);
         }
         else {
