@@ -712,38 +712,69 @@ class NormalChecklist {
 class MemoryState {
     constructor(_memoryPreset) {
         if(_memoryPreset == 1){
-            this.systemPage1 = CJ4_SystemPage.ENGINES;
-            this.systemPage2 = CJ4_SystemPage.ELECTRICS;
-            this.showChecklist = false;
-            this.showPassengerBrief = false;
-            this.mapDisplayMode = Jet_NDCompass_Display.PLAN;
-            this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
-        }
-        else if (_memoryPreset == 2){
-            this.systemPage1 = CJ4_SystemPage.ENGINES;
-            this.systemPage2 = CJ4_SystemPage.FMS;
-            this.showChecklist = false;
-            this.showPassengerBrief = false;
-            this.mapDisplayMode = Jet_NDCompass_Display.ARC;
-            this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
-        }
-        else{
+            // System containers
             this.systemPage1 = CJ4_SystemPage.ENGINES;
             this.systemPage2 = CJ4_SystemPage.ELECTRICS;
             this.showChecklist = true;
             this.showPassengerBrief = false;
+
+            // Map
             this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
             this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
+            this.mapNavigationSource = 0;
+            this.showSystemOverlay = 0;
+            this.showTerrain = false;
+            this.showWeather = false;
+            this.showGwx = false;
+        }
+        else if (_memoryPreset == 2){
+            // System containers
+            this.systemPage1 = CJ4_SystemPage.ENGINES;
+            this.systemPage2 = CJ4_SystemPage.ELECTRICS;
+            this.showChecklist = true;
+            this.showPassengerBrief = false;
+
+            // Map
+            this.mapDisplayMode = Jet_NDCompass_Display.PLAN;
+            this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
+            this.mapNavigationSource = 0;
+            this.showSystemOverlay = 0;
+            this.showTerrain = false;
+            this.showWeather = false;
+            this.showGwx = false;
+        }
+        else{
+            // System containers
+            this.systemPage1 = CJ4_SystemPage.ENGINES;
+            this.systemPage2 = CJ4_SystemPage.ELECTRICS;
+            this.showChecklist = true;
+            this.showPassengerBrief = false;
+
+            // Map
+            this.mapDisplayMode = Jet_NDCompass_Display.ARC;
+            this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
+            this.mapNavigationSource = 0;
+            this.showTerrain = false;
+            this.showWeather = false;
+            this.showGwx = false;
         }
 
     }
 
-    setMemoryState(_systemPage1, systemPage2, _showChecklist, _showPassengerBrief, _mapDisplayMode, _mapNavigationMode){
+    setMemoryState(_systemPage1, systemPage2, _showChecklist, _showPassengerBrief, _mapDisplayMode, _mapNavigationMode, _mapNavigationSource, _showTerrain, _showWeather, _showGwx){
+        // Set system pages
         this.systemPage1 = _systemPage1;
         this.systemPage2 = systemPage2;
         this.showChecklist = _showChecklist;
         this.showPassengerBrief = _showPassengerBrief;
-        this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
-        this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
+
+        // Set map
+        this.mapDisplayMode = _mapDisplayMode;
+        this.mapNavigationMode = _mapNavigationMode;
+        this.mapNavigationSource = _mapNavigationSource;
+        this.showTerrain = _showTerrain;
+        this.showWeather = _showWeather;
+        this.showGwx = _showGwx;
+
     }
 }

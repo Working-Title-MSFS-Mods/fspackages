@@ -241,21 +241,21 @@ class CJ4_MFD extends BaseAirliners {
                 this.activeMemoryFunction(1);
                 break;
             case "Lwr_Hold_MEM1_1":
-                this.mem1.setMemoryState(this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode);
+                this.mem1.setMemoryState(this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource, this.showTerrain, this.showWeather, this.showGwx);
                 this.activeMemoryFunction(1);
                 break;
             case "Lwr_Push_MEM2_1":
                 this.activeMemoryFunction(2);
                 break;
             case "Lwr_Hold_MEM2_1":
-                this.mem2.setMemoryState(this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode);
+                this.mem2.setMemoryState(this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource, this.showTerrain, this.showWeather, this.showGwx);
                 this.activeMemoryFunction(2);
                 break;
             case "Lwr_Push_MEM3_1":
                 this.activeMemoryFunction(3);
                 break;
             case "Lwr_Hold_MEM3_1":
-                this.mem3.setMemoryState(this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode);
+                this.mem3.setMemoryState(this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource, this.showTerrain, this.showWeather, this.showGwx);
                 this.activeMemoryFunction(3);
                 break;
             case "Lwr_Push_ESC":
@@ -276,12 +276,19 @@ class CJ4_MFD extends BaseAirliners {
             memoryFunction = this.mem3;
         }
 
+        // Update system pages
         this.systemPage1 = memoryFunction.systemPage1;
         this.systemPage2 = memoryFunction.systemPage2;
         this.showChecklist = memoryFunction.showChecklist;
         this.showPassengerBrief = memoryFunction.showPassengerBrief;
+
+        // Update map
         this.mapDisplayMode = memoryFunction.mapDisplayMode;
         this.mapNavigationMode = memoryFunction.mapNavigationMode;
+        this.mapNavigationSource = memoryFunction.mapNavigationSource;
+        this.showTerrain = memoryFunction.showTerrain;
+        this.showWeather = memoryFunction.showWeather;
+        this.showGwx = memoryFunction.showGwx;
     }
     allContainersReady() {
         for (var i = 0; i < this.IndependentsElements.length; i++) {
