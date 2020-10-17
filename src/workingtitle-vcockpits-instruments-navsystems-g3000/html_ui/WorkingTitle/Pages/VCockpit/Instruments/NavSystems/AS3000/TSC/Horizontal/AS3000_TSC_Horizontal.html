@@ -69,7 +69,7 @@
                     </div>
                 </div>
                 <div id="SpeedBugs">
-                    <div id="SB_buttons">
+                    <div class="backgroundBox" id="SB_buttons">
                         <div class="gradientButton" id="SB_AllOn">
                             <div class="mainText">All On</div>
                         </div>
@@ -115,7 +115,7 @@
                         <div id="TMR_Timer">00:00:00</div>
                     </div>
 
-                    <div id="CountSelection">
+                    <div class="backgroundBox" id="CountSelection">
                         <div class="sectionTitle">Count</div>
                         <div class="gradientButton statusToggleButton" state="Active" id="TMR_UpButton">
                             <div class="mainText">Up</div>
@@ -343,7 +343,7 @@
                     </div>
                 </div>
                 <div id="PFDSettings">
-                    <div class="scrollContainer">
+                    <div class="backgroundBox scrollContainer">
                         <div class="buttonsContainer">
                             <div class="line">
                                 <div class="lineTitle">AOA</div>
@@ -721,7 +721,7 @@
                             <div class="mainText">Flight Plan Options</div>
                         </div>
                     </div>
-                    <div id="flightPlan" displayedMenu="None">
+                    <div class="backgroundBox" id="flightPlan" displayedMenu="None">
                         <table id="AFPL_WayPointsTable">
                             <thead>
                                 <tr>
@@ -1010,7 +1010,7 @@
                         <div class="title">Runway</div>
                         <div class="value">____</div>
                     </div>
-                    <div id="Departure_Options">
+                    <div class="backgroundBox" id="Departure_Options">
                         <div class="title">Departure Options</div>
                         <div class="gradientButton" id="Departure_Preview" state="Hidden">
                             <div class="title">Preview</div>
@@ -1027,7 +1027,7 @@
                             <div class="title">Load</div>
                         </div>
                     </div>
-                    <div id="Departure_Sequence">
+                    <div class="backgroundBox" id="Departure_Sequence">
                         <div class="title">Sequence</div>
                         <div class="content"></div>
                     </div>
@@ -1051,7 +1051,7 @@
                         <div class="title">Runway</div>
                         <div class="value">____</div>
                     </div>
-                    <div id="Arrival_Options">
+                    <div class="backgroundBox" id="Arrival_Options">
                         <div class="title">Arrival Options</div>
                         <div class="gradientButton" id="Arrival_Preview" state="Hidden">
                             <div class="title">Preview</div>
@@ -1068,7 +1068,7 @@
                             <div class="title">Load</div>
                         </div>
                     </div>
-                    <div id="Arrival_Sequence">
+                    <div class="backgroundBox" id="Arrival_Sequence">
                         <div class="title">Sequence</div>
                         <div class="content"></div>
                     </div>
@@ -1097,7 +1097,7 @@
                         <div class="title">Primary Frequency</div>
                         <div class="value">BD 110.30</div>
                     </div>
-                    <div id="Approach_Options">
+                    <div class="backgroundBox" id="Approach_Options">
                         <div class="title">Approach Options</div>
                         <div class="gradientButton" id="Approach_Preview" state="Hidden">
                             <div class="title">Preview</div>
@@ -1113,7 +1113,7 @@
                             <div class="title">Load &amp; Activate</div>
                         </div>
                     </div>
-                    <div id="Approach_Sequence">
+                    <div class="backgroundBox" id="Approach_Sequence">
                         <div class="title">Sequence</div>
                         <div class="content"></div>
                     </div>
@@ -1644,53 +1644,37 @@
                             </td>
                         </tr>
                     </table>
-                    <table id="NumbersKeyboard">
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="NKFindButton" state="Hidden">
-                                    <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FIND.png" />
-                                    <div class="title">Find</div>
-                                </div>
-                            </td>
-                            <td></td>
-                            <td>
-                                <div class="gradientButton" id="NKBkspButton">
-                                    <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
-                                    <div class="title">BKSP</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td> <div class="roundButton" id="NK_1">1</div> </td>
-                            <td> <div class="roundButton" id="NK_2">2</div> </td>
-                            <td> <div class="roundButton" id="NK_3">3</div> </td>
-                        </tr>
-                        <tr>
-                            <td> <div class="roundButton" id="NK_4">4</div> </td>
-                            <td> <div class="roundButton" id="NK_5">5</div> </td>
-                            <td> <div class="roundButton" id="NK_6">6</div> </td>
-                        </tr>
-                        <tr>
-                            <td> <div class="roundButton" id="NK_7">7</div> </td>
-                            <td> <div class="roundButton" id="NK_8">8</div> </td>
-                            <td> <div class="roundButton" id="NK_9">9</div> </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="NKPlayButton" state="Hidden">
-                                    <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PLAYBACK_PLAY_1.png" />
-                                    <div class="title">Play</div>
-                                </div>
-                            </td>
-                            <td> <div class="roundButton" id="NK_0">0</div> </td>
-                            <td>
-                                <div class="gradientButton" id="NKXferButton">
-                                    <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Misc/DoubleArrowVerticalWhite.svg" />
-                                    <div class="title">XFER</div>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+                    <div id="NumbersKeyboard">
+                        <div class="gradientButton" id="NKFindButton" state="Hidden">
+                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FIND.png" />
+                            <div class="title">Find</div>
+                        </div>
+                        <div class="dummy"></div>
+                        <div class="dummy"></div>
+                        <div class="gradientButton" id="NKBkspButton">
+                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
+                            <div class="title">BKSP</div>
+                        </div>
+                        <div class="roundButton" id="NK_1"><div class="mainText">1</div></div>
+                        <div class="roundButton" id="NK_2"><div class="mainText">2</div></div>
+                        <div class="roundButton" id="NK_3"><div class="mainText">3</div></div>
+                        <div class="roundButton" id="NK_4"><div class="mainText">4</div></div>
+                        <div class="roundButton" id="NK_5"><div class="mainText">5</div></div>
+                        <div class="roundButton" id="NK_6"><div class="mainText">6</div></div>
+                        <div class="roundButton" id="NK_7"><div class="mainText">7</div></div>
+                        <div class="roundButton" id="NK_8"><div class="mainText">8</div></div>
+                        <div class="roundButton" id="NK_9"><div class="mainText">9</div></div>
+                        <div class="gradientButton" id="NKPlayButton" state="Hidden">
+                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PLAYBACK_PLAY_1.png" />
+                            <div class="title">Play</div>
+                        </div>
+                        <div class="dummy"></div>
+                        <div class="roundButton" id="NK_0"><div class="mainText">0</div></div>
+                        <div class="gradientButton" id="NKXferButton">
+                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Misc/DoubleArrowVerticalWhite.svg" />
+                            <div class="title">XFER</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="NavigationBar">

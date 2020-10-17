@@ -148,9 +148,6 @@ as3000-tsc-horizontal-element {
         grid-template-rows: repeat(5, 1fr);
         position: absolute;
         height: 90vh;
-        border: 0.4vh solid #454b4e;
-        background: linear-gradient(#1f3445, black 10%);
-        border-radius: 10px;
         right: 10%;
         width: 50%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton {
@@ -204,11 +201,7 @@ as3000-tsc-horizontal-element {
         top: 40%;
         left: 32.5%;
         height: 50%;
-        width: 35%;
-        border-radius: 10px;
-        background: linear-gradient(#1f3445, black 10%);
-        background-color: black;
-        border: 0.4vh solid #454b4e; }
+        width: 35%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #Timers #CountSelection #TMR_UpButton {
           position: absolute;
           height: 40%;
@@ -296,9 +289,6 @@ as3000-tsc-horizontal-element {
         width: 60%;
         height: 90%;
         border-radius: 4px;
-        background: linear-gradient(#1f3445, black 10%);
-        background-color: black;
-        border: 0.4vh solid #454b4e;
         overflow-y: scroll; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .scrollContainer::-webkit-scrollbar {
           width: 1vw; }
@@ -539,9 +529,11 @@ as3000-tsc-horizontal-element {
               top: 0%;
               left: 30%;
               width: 39%; }
+      
+      
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #leftBar {
         position: absolute;
-        left: 5%;
+        left: 1%;
         height: 98%;
         width: 15%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #leftBar .gradientButton {
@@ -553,11 +545,8 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan {
         position: absolute;
         height: 97%;
-        left: 22%;
-        width: 75%;
-        border: 0.4vh solid #454b4e;
-        background: linear-gradient(#1f3445, black 10%);
-        border-radius: 10px; }
+        left: 17%;
+        width: 80%; }
 
 @keyframes rightEnter {
   0% {
@@ -593,7 +582,7 @@ as3000-tsc-horizontal-element {
             color: white;
             font-size: 4vh;
             height: 7vh;
-            width: 97%;
+            width: 100%;
             border-bottom: 0.4vh solid white;
             padding-right: 3%; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody {
@@ -601,11 +590,11 @@ as3000-tsc-horizontal-element {
             overflow-y: scroll;
             overflow-x: hidden;
             height: 80vh;
-            width: 97%;
+            width: 100%;
             position: relative;
             padding-right: 1.75%; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody::-webkit-scrollbar {
-              width: 0.5vw; }
+              width: 1vw; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody::-webkit-scrollbar-track {
               background: none; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody::-webkit-scrollbar-thumb {
@@ -619,7 +608,7 @@ as3000-tsc-horizontal-element {
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .DTK, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .DIS {
               color: magenta; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody td {
-              height: 15.4vh;
+              height: 16vh;
               position: relative; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton {
               position: absolute;
@@ -628,10 +617,15 @@ as3000-tsc-horizontal-element {
               bottom: 0.4vh;
               right: 0.4vh;
               height: auto;
-              width: auto; }
+              width: auto;
+              margin: 0.25vh; }
               as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue {
+                position: absolute;
+                width: 100%;
+                top: 50%;
+                transform: translateY(-50%);
                 color: white;
-                font-size: 4vh; }
+                font-size: 5vh; }
                 as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue[altitudeMode=Manual] {
                   color: aqua; }
                 as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue[altitudeMode=Subdued] {
@@ -640,15 +634,20 @@ as3000-tsc-horizontal-element {
                   -webkit-mask-repeat: repeat; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .mainValue {
               position: absolute;
+              width: auto;
               text-align: left;
+              transform: none;
               left: 10%;
-              top: 5%; }
+              top: 10%; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .title {
               position: absolute;
               text-align: left;
               left: 10%;
-              bottom: 10%;
-              width: 80%; }
+              bottom: 0%;
+              width: 80%;
+              font-size: 3vh;
+              overflow-x: scroll;
+              overflow-y: hidden; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .symbol {
               position: absolute;
               right: 0%;
@@ -817,8 +816,7 @@ as3000-tsc-horizontal-element {
         width: 62.5%;
         left: 2.5%;
         height: 50%;
-        top: 50%;
-        border: 0.4vh solid white; }
+        top: 50%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Options .title {
           position: absolute;
           top: 2%;
@@ -853,11 +851,10 @@ as3000-tsc-horizontal-element {
           width: 42.5%; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Sequence {
         position: absolute;
-        right: 2.5%;
+        right: 3%;
         width: 30%;
         top: 27.5%;
-        height: 72.5%;
-        border: 0.4vh solid white; }
+        height: 72.5%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Sequence .title {
           position: absolute;
           width: 100%;
@@ -925,8 +922,7 @@ as3000-tsc-horizontal-element {
         width: 62.5%;
         left: 2.5%;
         height: 50%;
-        top: 50%;
-        border: 0.4vh solid white; }
+        top: 50%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Options .title {
           position: absolute;
           top: 2%;
@@ -961,11 +957,10 @@ as3000-tsc-horizontal-element {
           width: 42.5%; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Sequence {
         position: absolute;
-        right: 2.5%;
+        right: 3%;
         width: 30%;
         top: 27.5%;
-        height: 72.5%;
-        border: 0.4vh solid white; }
+        height: 72.5%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Sequence .title {
           position: absolute;
           width: 100%;
@@ -1049,8 +1044,7 @@ as3000-tsc-horizontal-element {
         width: 62.5%;
         left: 2.5%;
         height: 50%;
-        top: 50%;
-        border: 0.4vh solid white; }
+        top: 50%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Options .title {
           position: absolute;
           top: 2%;
@@ -1086,11 +1080,10 @@ as3000-tsc-horizontal-element {
           width: 30%; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Sequence {
         position: absolute;
-        right: 2.5%;
+        right: 3%;
         width: 30%;
         top: 27.5%;
-        height: 72.5%;
-        border: 0.4vh solid white; }
+        height: 72.5%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Sequence .title {
           position: absolute;
           width: 100%;
@@ -1110,10 +1103,7 @@ as3000-tsc-horizontal-element {
         top: 20%;
         left: 15%;
         width: 70%;
-        height: 60%;
-        border: 0.4vh solid #454b4e;
-        background: linear-gradient(#1f3445, black 10%);
-        border-radius: 10px; }
+        height: 60%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay {
             position: absolute;
             top: 10%;
@@ -1553,7 +1543,10 @@ as3000-tsc-horizontal-element {
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome #NavComLeft #Mic, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome #NavComLeft #Mon {
             text-align: center; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome #NavComLeft td {
-            border: 0.5vh solid white;
+            border-radius: 10px;  
+            background: linear-gradient(#1f3445, black 10%);  
+            background-color: black;  
+            border: 0.4vh solid #454b4e;
             padding: 1%; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome #NavComLeft .cutBot {
             border-bottom: 0; }
@@ -1571,24 +1564,23 @@ as3000-tsc-horizontal-element {
             width: 60%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome #NumbersKeyboard {
           position: absolute;
-          height: 101%;
-          width: 50.09%;
-          right: 0%;
-          top: -0.4%; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome #NumbersKeyboard td {
-            height: 20%;
-            width: 33.33%;
-            text-align: center; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome .roundButton {
-          width: 15vh;
-          height: 15vh;
-          line-height: 15vh;
-          display: inline-block; }
+          height: 100%;
+          width: 50%;
+          right: 1%;
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          grid-template-rows: repeat(5, 1fr);
+          justify-items: center;
+          align-items: center; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome .gradientButton {
-          width: 18vh;
-          height: 18vh; }
+          width: 15vh;
+          height: 15vh; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome .gradient {
-          background: linear-gradient(#0093d0, rgba(0, 147, 208, 0) 60%);
+          background: linear-gradient(#5f7283 4%, #1f3445, black 20%);
+          border: 3px solid grey;
+          box-shadow: 0px 0px 0px 3px black inset;
+          border-radius: 4px;
+          background-color: black;
           height: 100%;
           width: 100%;
           color: white;
@@ -1606,11 +1598,11 @@ as3000-tsc-horizontal-element {
             font-size: 4vh; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome .gradient .statusBar {
             position: absolute;
-            width: 80%;
-            height: 5%;
+            width: 50%;
+            height: 7%;
             background-color: grey;
-            left: 10%;
-            bottom: 30%; }
+            left: 25%;
+            bottom: 15%; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome .gradient[state=Active] .mainNumber {
             color: lawngreen; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome .gradient[state=Active] .statusBar {
@@ -2741,3 +2733,9 @@ as3000-tsc-horizontal-element {
       grid-template-rows: repeat(4, 1fr);
       justify-items: center;
       align-items: center; }
+      
+  as3000-tsc-horizontal-element .backgroundBox {
+    border-radius: 10px;  
+    background: linear-gradient(#1f3445, black 10%);  
+    background-color: black;  
+    border: 0.4vh solid #454b4e; }
