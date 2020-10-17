@@ -1,13 +1,6 @@
-class Checklist{
-    constructor(_name) {
-        this.name = _name; // NORMAL CHECKLIST
-        this.sections = []; // TAKEOFF, DESCENT
-    }
-}
-
-class NormalChecklist extends Checklist {
+class NormalChecklist {
     constructor() {
-        super("NORMAL CHECKLIST MENU");
+        this.name = "NORMAL CHECKLIST MENU"; // NORMAL CHECKLIST
         this.sections = [
             {
                 name: "BEFORE STARTING ENGINES",
@@ -77,8 +70,8 @@ class NormalChecklist extends Checklist {
                         value: "OFF",
                         key: false
                     }
-                    
-                    
+
+
                 ]
             },
             {
@@ -661,6 +654,57 @@ class NormalChecklist extends Checklist {
                     }
                 ]
             },
-        ];
+        ]; // TAKEOFF, DESCENT
+    }
+    hasProgress(){
+        for(let s = 0; s < this.sections.length; s++){
+            const section = this.sections[s];
+            for(let i = 0; i < section.checklistItems.length; i++){
+                if(section.checklistItems[i].key){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    isSectionComplete(_sectionIndex){
+        const section = this.sections[_sectionIndex];
+        for(let i = 0; i < section.checklistItems.length; i++){
+            if(!section.checklistItems[i].key){
+                return false;
+            }
+        }
+        return true;
+    }
+    resetChecklistState(){
+        for(let s = 0; s < this.sections.length; s++){
+            const section = this.sections[s];
+            for(let i = 0; i < section.checklistItems.length; i++){
+                section.checklistItems[i].key = false;
+            }
+        }
+    }
+    findCurrentSectionIndex(){
+        let currentSelectionIndex = 0;
+        for(let s = 0; s < this.sections.length; s++){
+            if(this.isSectionComplete(s)){
+                currentSelectionIndex = s;
+            }
+        }
+        console.log("CURRENT: " + currentSelectionIndex);
+        return currentSelectionIndex;
+    }
+    findCurrentChecklistItemIndex(_sectionIndex){
+        let currentChecklistItem = 0;
+        const section = this.sections[_sectionIndex];
+        for(let i = 0; i < section.checklistItems.length; i++){
+            if(section.checklistItems[i].key){
+                currentChecklistItem = i;
+                if(i != section.checklistItems.length -1){
+                    currentChecklistItem++;
+                }
+            }
+        }
+        return currentChecklistItem;
     }
 }

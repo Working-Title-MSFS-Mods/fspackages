@@ -166,7 +166,7 @@ class CJ4_MFD extends BaseAirliners {
         }
     }
     onEvent(_event) {
-        console.log(_event);
+        //console.log(_event);
         switch (_event) {
             case "Lwr_Push_TERR_WX":
                 if (this.showTerrain) {
