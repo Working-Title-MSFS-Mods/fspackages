@@ -2680,7 +2680,7 @@ as3000-tsc-horizontal-element {
     position: relative;
     width: 17vh;
     height: 17vh;
-    border: 0.5vh solid #515c60;
+    border: 0.5vh solid #dedede;
     border-radius: 50%;
     background: linear-gradient(#4b6677, black 30%);
     box-shadow: 0px 0px 5px 4px black inset; }
