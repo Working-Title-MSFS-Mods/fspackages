@@ -12,7 +12,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
 ## Key Features
-* Simbrief Imports: Added ability to enter your PILOT ID from Simbrief and then load the latest OFP/Flight Plan directly to the FMC (store your PILOT ID in the MOD SETTINGS page and then use the ROUTE MENU to FPLN RECALL)
+* Simbrief flight plan import: Added ability to enter your PILOT ID from Simbrief and then load the latest OFP/Flight Plan directly to the FMC (store your PILOT ID in the MOD SETTINGS page and then use the ROUTE MENU to FPLN RECALL)
 * Approach Waypoints: Added ability to skip and go direct to any waypoint on the approach
 * FMS Performance: Greatly improved the performance of the FMS / waypoint loading times
 * Volumetric External Lights: Incorporated the latest lighting package from Uwajimaya including volumetric external lighting
@@ -28,7 +28,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ### LEGS Page
 * Redesigned waypoint loader to dramatically improved flight plan management/FMS performance on LEGS page
-* Added ability to skip approach waypoints or go direct to any approach waypoint
+* Added ability to skip approach waypoints or go direct to any approach waypoint / closes [#27](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/27)
 
 ### FPLN Page
 * Redesigned waypoint loader to dramatically improved flight plan management/FMS performance on FPLN page
@@ -55,13 +55,15 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Added takeoff time, enroute time, and landing time to flight log page
 
 ### PFD/MFD
-* added elapsed timer functionality to PFD
-* restructured PFD menu
-* restructured Lower MFD menu
-* improved the usability of MFD checklist (saves last opened page and resumes completed section)
+* Fix stuck PFD menu when AOA was turned on / closes [#251](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/251)
+* Added elapsed timer functionality to PFD
+* Restructured PFD menu
+* Restructured Lower MFD menu
+* GS is now magenta  / closes [#249](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/249)
+* Improved the usability of MFD checklist (saves last opened page and resumes completed section)
 * FMS Text on the MFD will now stay opened after opening MFD checklist or passenger briefing menus
-* added functionality to CCP MEM buttons, allowing users to save states of the MFD and switch quickly between them.
-* Fixed broken fuel reading on SYSTEM OVERLAY menu
+* Added functionality to CCP MEM buttons, allowing users to save states of the MFD and switch quickly between them.
+* Fixed broken fuel reading on SYSTEM OVERLAY menu / closes [#246](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/246)
 
 ### Audio
 * xxx
@@ -69,7 +71,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ### Lighting
 * Incorporated the latest lighting package from Uwajimaya including volumetric external lighting.
 * Added controllable passenger cabin lighting (accessed from FMS -> IDX -> MOD SETTINGS)
-* Fixed some lighting bleed (thanks again Uwajimaya)
+* Fixed some lighting bleed (thanks again Uwajimaya) / closes [#171](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/171)
 
 ## Known Issues
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
