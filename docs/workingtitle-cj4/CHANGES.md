@@ -45,6 +45,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ### PERF Page
 * Added error protection for PERF Pages / closes [#253](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/253)
 * Fixed bug with gross weight calculation
+* Added ability to enter a zero fuel weight number to calculate gross weight instead of pax/cargo entries.
 * Added indication when no runway is selected for TAKEOFF REF and APPROACH REF
 * Added ability to have VFR runway selected to allow PERF pages even when no approach is selected (for airports without approaches)
 * Added vspeed send logic and messages to FMC to replicate real unit
