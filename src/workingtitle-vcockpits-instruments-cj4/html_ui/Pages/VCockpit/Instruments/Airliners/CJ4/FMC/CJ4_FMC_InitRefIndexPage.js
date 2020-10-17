@@ -651,7 +651,9 @@ class CJ4_FMC_InitRefIndexPage {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
+                fmc.setMsg("Working...");
                 fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    fmc.setMsg();
                     if (w) {
                         if (w.icao.slice(0, 1) == "A") {
                             CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
@@ -716,7 +718,7 @@ class CJ4_FMC_InitRefIndexPage {
                 longestRunwayOutput = longestRunwayDesignation;
             }
         } else {
-            if (depRunwayDesignation.length == 2) {
+            if (longestRunwayDesignation.length == 2) {
                 longestRunwayOutput = longestRunwayDesignation;
             } else {
                 longestRunwayOutput = "0" + longestRunwayDesignation;
@@ -771,7 +773,9 @@ class CJ4_FMC_InitRefIndexPage {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
+                fmc.setMsg("Working...");
                 fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    fmc.setMsg();
                     if (w) {
                         if (w.icao.slice(0, 1) == "A") {
                             CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
@@ -842,7 +846,9 @@ class CJ4_FMC_InitRefIndexPage {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
+                fmc.setMsg("Working...");
                 fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    fmc.setMsg();
                     if (w) {
                         if (w.icao.slice(0, 1) == "A") {
                             CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
@@ -897,7 +903,9 @@ class CJ4_FMC_InitRefIndexPage {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
+                fmc.setMsg("Working...");
                 fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    fmc.setMsg();
                     if (w) {
                         if (w.icao.slice(0, 1) == "A") {
                             CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
@@ -958,7 +966,9 @@ class CJ4_FMC_InitRefIndexPage {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
+                fmc.setMsg("Working...");
                 fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    fmc.setMsg();
                     if (w) {
                         if (w.icao.slice(0, 1) == "A") {
                             CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);

@@ -96,31 +96,31 @@ class FacilityLoader {
         }
     }
     addFacility(_data) {
-        _data.icaoTrimed = _data.icao.trim();
 
+        _data.icaoTrimed = _data.icao.trim();
+        
+        // After a "Coherent.call('LOAD_*', icao)" we get many responses received by "Coherent.on('Send*'") for the same facility.
+        // The assumption is: The data is the same across the multiple receptions. If this does not hold, this approach needs to be reconsidered.
+        // The idea is to
+        //  - avoid redundancy in "loadedFacilities"
+        //  - keep subsequent search operations fast at the cost of an existence check here
+        //  - reduce the need to reload facilities, after they got shifted out due to the 1000 elements limit
+        // So: Load the facility only, if we don't have it already.
+        // We, however, allow two variants of a facility: With and without routes. Some users of "loadedFacilites" look for the variant with routes, some for the other.
+        let facilityIndex = this.loadedFacilities.findIndex(f => f.icao === _data.icao && ((f.routes === undefined && _data.routes === undefined) || (f.routes !== undefined && _data.routes !== undefined)));
+        let facilityLoadedAlready = facilityIndex > -1;
+        if (!facilityLoadedAlready) {
+            this.loadedFacilities.push(_data);
+            while (this.loadedFacilities.length > 1000) {
+                this.loadedFacilities.splice(0, 1);
+            }
+        }
+        
         const pendingRequest = this._pendingRawRequests.get(_data.icaoTrimed);
         if (pendingRequest) {
             clearTimeout(pendingRequest.timeout);
             pendingRequest.resolve(_data);
             this._pendingRawRequests.delete(_data.icaoTrimed);
-        }
-        else {
-            // After a "Coherent.call('LOAD_*', icao)" we get many responses received by "Coherent.on('Send*'") for the same facility.
-            // The assumption is: The data is the same across the multiple receptions. If this does not hold, this approach needs to be reconsidered.
-            // The idea is to
-            //  - avoid redundancy in "loadedFacilities"
-            //  - keep subsequent search operations fast at the cost of an existence check here
-            //  - reduce the need to reload facilities, after they got shifted out due to the 1000 elements limit
-            // So: Load the facility only, if we don't have it already.
-            // We, however, allow two variants of a facility: With and without routes. Some users of "loadedFacilites" look for the variant with routes, some for the other.
-            let facilityIndex = this.loadedFacilities.findIndex(f => f.icao === _data.icao && ((f.routes === undefined && _data.routes === undefined) || (f.routes !== undefined && _data.routes !== undefined)));
-            let facilityLoadedAlready = facilityIndex > -1;
-            if (!facilityLoadedAlready) {
-                this.loadedFacilities.push(_data);
-                while (this.loadedFacilities.length > 1000) {
-                    this.loadedFacilities.splice(0, 1);
-                }
-            }
         }
     }
     /**
@@ -1023,6 +1023,13 @@ class FacilityLoader {
             }
             return airway;
         }
+    }
+    
+    async UpdateFacilityInfos(facility, loadFacilitiesTransitively = false) {
+        await this.waitRegistration();
+        return new Promise(resolve => {
+            facility.UpdateInfos(resolve, loadFacilitiesTransitively);
+        });
     }
 }
 class WaypointLoader {
