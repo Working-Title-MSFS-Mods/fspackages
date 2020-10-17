@@ -72,7 +72,7 @@ class FMCDataManager {
                         return new Promise((resolve) => {
                             SimVar.SetSimVarValue("C:fs9gps:IcaoSearchMatchedIcao", "number", index, "FMC").then(async () => {
                                 let icao = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCurrentIcao", "string", "FMC");
-                                let waypoint = await this.fmc.facilityLoader.getFacilityRaw(icao);
+                                let waypoint = await this.fmc.facilityLoader.getFacility(icao);
                                 resolve(waypoint);
                             });
                         });

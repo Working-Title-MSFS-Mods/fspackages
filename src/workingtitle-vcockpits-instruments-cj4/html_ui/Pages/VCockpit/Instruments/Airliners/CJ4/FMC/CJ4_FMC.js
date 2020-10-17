@@ -236,29 +236,25 @@ class CJ4_FMC extends FMCMainDisplay {
 
     getOrSelectWaypointByIdent(ident, callback) {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
-
             const uniqueWaypoints = new Map();
             waypoints.forEach(wp => {
-                const waypoint = new WayPoint(null);
-
-                waypoint.icao = wp.icao;
-                waypoint.ident = wp.icao.substring(7, 12).replace(new RegExp(" ", "g"), "");
-
-                waypoint.infos.coordinates.lat = wp.lat;
-                waypoint.infos.coordinates.long = wp.lon;
-
-                uniqueWaypoints.set(waypoint.icao, waypoint);
+                uniqueWaypoints.set(wp.icao, wp);
             });
-
             waypoints = [...uniqueWaypoints.values()];
-
             if (!waypoints || waypoints.length === 0) {
                 return callback(undefined);
             }
             if (waypoints.length === 1) {
-                return callback(waypoints[0]);
+                this.facilityLoader.UpdateFacilityInfos(waypoints[0]).then(() => {
+                    return callback(waypoints[0]);
+                });
+            } else {
+                CJ4_FMC_SelectWptPage.ShowPage(this, waypoints, selectedWaypoint => {
+                    this.facilityLoader.UpdateFacilityInfos(selectedWaypoint).then(() => {
+                        return callback(selectedWaypoint);
+                    });
+                });
             }
-            CJ4_FMC_SelectWptPage.ShowPage(this, waypoints, callback);
         });
     }
     updateSideButtonActiveStatus() {
