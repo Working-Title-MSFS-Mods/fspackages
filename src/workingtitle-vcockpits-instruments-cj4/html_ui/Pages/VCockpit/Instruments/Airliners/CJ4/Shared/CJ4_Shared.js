@@ -3684,6 +3684,9 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
         if (!this.root) {
             console.log("Root component expected!");
         }
+        else{
+            this.handler = new CJ4_MFDChecklist(this.root, this.dictionary, this.checklist);
+        }
     }
     onUpdate(_dTime) {
         super.onUpdate(_dTime);
@@ -3696,11 +3699,10 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
             this.root.setAttribute("visible", (_value) ? "true" : "false");
 
             if(this.isVisible == true){
-                this.handler = new CJ4_MFDChecklist(this.root, this.dictionary, this.checklist);
+                this.handler.expand();
             }
             else if(this.isVisible == false){
-                Utils.RemoveAllChildren(this.root);
-                this.handler = null;
+                this.handler.minimise();
             }
         }
     }
@@ -3884,7 +3886,6 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
-
     showChecklistSection(_checklist, _section_id) {
         this.onChecklistItemPage = true;
 
@@ -3939,6 +3940,12 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
         page.appendChild(sectionRoot);
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
+    }
+    minimise(){
+        this.root.setAttribute("visible", "false");
+    }
+    expand(){
+        this.root.setAttribute("visible", "true");
     }
 }
 class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
