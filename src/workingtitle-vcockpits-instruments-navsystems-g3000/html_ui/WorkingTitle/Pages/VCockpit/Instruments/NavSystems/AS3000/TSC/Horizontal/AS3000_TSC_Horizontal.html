@@ -188,19 +188,19 @@
                     </div>
                     <div class="tabContainer MapSettingsRight" id="PFDMapSettingsRight">
                         <div class="tabSelect MapSettingsTabSelect" id="PFDMapSettingsTabSelect">
-                            <div class="tabButton tabButtonRight" state="Highlight">
+                            <div class="tabButton tabButtonLeft" state="Highlight">
                                 <div class="mainText">Sensor</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="Disabled">
+                            <div class="tabButton tabButtonLeft" state="Disabled">
                                 <div class="mainText">Inset Window</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="">
+                            <div class="tabButton tabButtonLeft" state="">
                                 <div class="mainText">Aviation</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="">
+                            <div class="tabButton tabButtonLeft" state="">
                                 <div class="mainText">Land</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="">
+                            <div class="tabButton tabButtonLeft" state="">
                                 <div class="mainText">Other</div>
                             </div>
                         </div>
@@ -458,19 +458,19 @@
                     </div>
                     <div class="tabContainer MapSettingsRight" id="MFDMapSettingsRight">
                         <div class="tabSelect MapSettingsTabSelect" id="MFDMapSettingsTabSelect">
-                            <div class="tabButton tabButtonRight" state="Highlight">
+                            <div class="tabButton tabButtonLeft" state="Highlight">
                                 <div class="mainText">Sensor</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="Disabled">
+                            <div class="tabButton tabButtonLeft" state="Disabled">
                                 <div class="mainText">Inset Window</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="">
+                            <div class="tabButton tabButtonLeft" state="">
                                 <div class="mainText">Aviation</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="">
+                            <div class="tabButton tabButtonLeft" state="">
                                 <div class="mainText">Land</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="">
+                            <div class="tabButton tabButtonLeft" state="">
                                 <div class="mainText">Other</div>
                             </div>
                         </div>
@@ -631,16 +631,16 @@
                 <div id="DirectTo">
                     <div class="tabContainer">
                         <div class="tabSelect">
-                            <div class="tabButton tabButtonRight" id="Waypoint_Select" state="Highlight">
+                            <div class="tabButton tabButtonLeft" id="Waypoint_Select" state="Highlight">
                                 <div class="mainText">Waypoint</div>
                             </div>
-                            <div class="tabButton tabButtonRight" id="FlightPlan_Select" state="Disabled">
+                            <div class="tabButton tabButtonLeft" id="FlightPlan_Select" state="Disabled">
                                 <div class="mainText">Flight Plan</div>
                             </div>
-                            <div class="tabButton tabButtonRight" id="Nearest_Select" state="Disabled">
+                            <div class="tabButton tabButtonLeft" id="Nearest_Select" state="Disabled">
                                 <div class="mainText">Nearest</div>
                             </div>
-                            <div class="tabButton tabButtonRight" id="Recent_Select" state="Disabled">
+                            <div class="tabButton tabButtonLeft" id="Recent_Select" state="Disabled">
                                 <div class="mainText">Recent</div>
                             </div>
                         </div>
@@ -1321,7 +1321,7 @@
                     </div>
                 </div>
                 <div id="NearestAirport">
-                    <div class="NrstContainer">
+                    <div class="backgroundBox NrstContainer">
                         <table class="NearestList">
                             <thead>
                                 <tr>
@@ -1381,7 +1381,7 @@
                     </div>
                 </div>
                 <div id="NearestIntersection">
-                    <div class="NrstContainer">
+                    <div class="backgroundBox NrstContainer">
                         <table class="NearestList">
                             <thead>
                                 <tr>
@@ -1432,7 +1432,7 @@
                     </div>
                 </div>
                 <div id="NearestVOR">
-                    <div class="NrstContainer">
+                    <div class="backgroundBox NrstContainer">
                         <table class="NearestList">
                             <thead>
                                 <tr>
@@ -1485,7 +1485,7 @@
                     </div>
                 </div>
                 <div id="NearestNDB">
-                    <div class="NrstContainer">
+                    <div class="backgroundBox NrstContainer">
                         <table class="NearestList">
                             <thead>
                                 <tr>
@@ -1780,233 +1780,235 @@
             </div>
             <div class="PopUpWindow" id="AudioRadiosWindow" state="Inactive">
                 <div class="WindowTitle">Audio &amp; Radios</div>
-                <div id="tabSelectors">
-                    <div class="gradientButton" state="White">
-                        <div class="mainText">Pilot</div>
+                <div class="tabContainer">
+                    <div class="tabSelect">
+                        <div class="tabButton tabButtonTop" state="Highlight">
+                            <div class="mainText">Pilot</div>
+                        </div>
+                        <div class="tabButton tabButtonTop" state="Disabled">
+                            <div class="mainText">Copilot</div>
+                        </div>
+                        <div class="tabButton tabButtonTop" state="Disabled">
+                            <div class="mainText">Pass</div>
+                        </div>
                     </div>
-                    <div class="gradientButton" state="Hidden">
-                        <div class="mainText">Copilot</div>
-                    </div>
-                    <div class="gradientButton" state="Hidden">
-                        <div class="mainText">Pass</div>
-                    </div>
-                </div>
-                <div id="tabView" state="Pilot">
-                    <div id="Pilot">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th colspan="2"></th>
-                                    <th>Volume</th>
-                                    <th colspan="2">Control</th>
-                                </tr>
-                            </thead>
-                            <tbody id="AudioRadioPilotBody">
-                                <tr id="Nav1" state="Selected">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Nav1_Status">
-                                            <div class="mainText">NAV1</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Nav1_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Nav1_Frequencies">
-                                            <div class="NavFrequencyDisplay">
-                                                <div class="mainNumber activeFreq">112.80</div>
-                                                <div class="mainNumber standbyFreq">110.70</div>
+                    <div class="tabContentContainer" id="AudioRadioTabContentContainer">
+                        <div class="tabContent" id="Pilot" state="Active">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th colspan="2"></th>
+                                        <th>Volume</th>
+                                        <th colspan="2">Control</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="AudioRadioPilotBody">
+                                    <tr id="Nav1" state="Selected">
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Nav1_Status">
+                                                <div class="mainText">NAV1</div>
+                                                <div class="statusBar"></div>
                                             </div>
-                                            <div class="activeNavID"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Nav2">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Nav2_Status">
-                                            <div class="mainText">NAV2</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Nav2_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Nav2_Frequencies">
-                                            <div class="NavFrequencyDisplay">
-                                                <div class="mainNumber activeFreq">112.80</div>
-                                                <div class="mainNumber standbyFreq">110.70</div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Nav1_Volume">
                                             </div>
-                                            <div class="activeNavID"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Com1">
-                                    <td>
-                                        <div class="gradientButton" id="Com1_Status">
-                                            <div class="mainText">COM1</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Com1_Mic">
-                                            <div class="mainText">MIC</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Com1_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Com1_Frequencies">
-                                            <div class="ComFrequencyDisplay">
-                                                <div class="mainNumber activeFreq">118.80</div>
-                                                <div class="mainNumber standbyFreq">123.70</div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Nav1_Frequencies">
+                                                <div class="NavFrequencyDisplay">
+                                                    <div class="mainNumber activeFreq">112.80</div>
+                                                    <div class="mainNumber standbyFreq">110.70</div>
+                                                </div>
+                                                <div class="activeNavID"></div>
                                             </div>
-                                            <div class="Dummy"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Com2">
-                                    <td>
-                                        <div class="gradientButton" id="Com2_Status">
-                                            <div class="mainText">COM2</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Com2_Mic">
-                                            <div class="mainText">MIC</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Com2_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Com2_Frequencies">
-                                            <div class="ComFrequencyDisplay">
-                                                <div class="mainNumber activeFreq">118.80</div>
-                                                <div class="mainNumber standbyFreq">123.70</div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Nav2">
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Nav2_Status">
+                                                <div class="mainText">NAV2</div>
+                                                <div class="statusBar"></div>
                                             </div>
-                                            <div class="Dummy"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Speaker">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Speaker_Status">
-                                            <div class="mainText">Speaker</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Speaker_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2"></td>
-                                </tr>
-                                <tr id="Recorder">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Recorder_Play">
-                                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PLAYBACK_PLAY_1.png" />
-                                            <div class="title">Recorder</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Recorder_Volume">
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Recorder_Prev">
-                                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PREV_SUP.png" />
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Recorder_Next">
-                                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_NEXT_SUP.png" />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Marker">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Marker_Status">
-                                            <div class="mainText">Marker</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Marker_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="MarkerHighSense_Status">
-                                            <div class="mainText">High Sense</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Adf">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Adf_Status">
-                                            <div class="mainText">ADF</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Adf_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Adf_Frequencies">
-                                            <div class="activeFreq">1799.5</div>
-                                            <div class="standbyFreq">190.0</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Music">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Music_Status">
-                                            <div class="mainText">Music</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Music_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Music_MuteSettings">
-                                            <div class="mainText">Mute Settings</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Clicks">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Clicks_Status">
-                                            <div class="mainText">Clicks</div>
-                                            <div class="statusText">Off</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Clicks_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="Copilot">
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Nav2_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Nav2_Frequencies">
+                                                <div class="NavFrequencyDisplay">
+                                                    <div class="mainNumber activeFreq">112.80</div>
+                                                    <div class="mainNumber standbyFreq">110.70</div>
+                                                </div>
+                                                <div class="activeNavID"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Com1">
+                                        <td>
+                                            <div class="gradientButton" id="Com1_Status">
+                                                <div class="mainText">COM1</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Com1_Mic">
+                                                <div class="mainText">MIC</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Com1_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Com1_Frequencies">
+                                                <div class="ComFrequencyDisplay">
+                                                    <div class="mainNumber activeFreq">118.80</div>
+                                                    <div class="mainNumber standbyFreq">123.70</div>
+                                                </div>
+                                                <div class="Dummy"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Com2">
+                                        <td>
+                                            <div class="gradientButton" id="Com2_Status">
+                                                <div class="mainText">COM2</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Com2_Mic">
+                                                <div class="mainText">MIC</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Com2_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Com2_Frequencies">
+                                                <div class="ComFrequencyDisplay">
+                                                    <div class="mainNumber activeFreq">118.80</div>
+                                                    <div class="mainNumber standbyFreq">123.70</div>
+                                                </div>
+                                                <div class="Dummy"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Speaker">
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Speaker_Status">
+                                                <div class="mainText">Speaker</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Speaker_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                    <tr id="Recorder">
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Recorder_Play">
+                                                <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PLAYBACK_PLAY_1.png" />
+                                                <div class="title">Recorder</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Recorder_Volume">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Recorder_Prev">
+                                                <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PREV_SUP.png" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Recorder_Next">
+                                                <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_NEXT_SUP.png" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Marker">
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Marker_Status">
+                                                <div class="mainText">Marker</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Marker_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="MarkerHighSense_Status">
+                                                <div class="mainText">High Sense</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Adf">
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Adf_Status">
+                                                <div class="mainText">ADF</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Adf_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Adf_Frequencies">
+                                                <div class="activeFreq">1799.5</div>
+                                                <div class="standbyFreq">190.0</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Music">
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Music_Status">
+                                                <div class="mainText">Music</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Music_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Music_MuteSettings">
+                                                <div class="mainText">Mute Settings</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Clicks">
+                                        <td colspan="2">
+                                            <div class="gradientButton statusTextButton" id="Clicks_Status">
+                                                <div class="mainText">Clicks</div>
+                                                <div class="statusText">Off</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Clicks_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="Copilot">
 
-                    </div>
-                    <div id="Pass">
+                        </div>
+                        <div id="Pass">
 
+                        </div>
                     </div>
                 </div>
             </div>
