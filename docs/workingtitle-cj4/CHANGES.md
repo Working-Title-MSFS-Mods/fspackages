@@ -52,6 +52,9 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Fixed refresh error after entering/updating reserve fuel on FUEL MANAGEMENT page
 * Addressed fuel flow bugs throughout / closes [#224](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/224)
 
+### ARR DATA Page
+* Closer to real ARR DATA page look and feel
+
 ### PFD/MFD
 * xxx
 * xxx
