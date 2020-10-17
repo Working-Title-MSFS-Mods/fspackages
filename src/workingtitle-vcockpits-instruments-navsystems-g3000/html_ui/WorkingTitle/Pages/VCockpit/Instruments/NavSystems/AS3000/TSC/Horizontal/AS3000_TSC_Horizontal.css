@@ -2651,7 +2651,7 @@ as3000-tsc-horizontal-element {
       top: 50%;
       transform: translateY(-50%);
       width: 100%; }
-      as3000-tsc-horizontal-element .gradientButton .statusText {
+      as3000-tsc-horizontal-element .statusTextButton .statusText {
         transform: none;
         bottom: 0%; }
     as3000-tsc-horizontal-element .gradientButton .statusBar {
