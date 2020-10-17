@@ -28,7 +28,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ### LEGS Page
 * Redesigned waypoint loader to dramatically improved flight plan management/FMS performance on LEGS page
-* Added ability to skip approach waypoints or go direct to any approach waypoint
+* Added ability to skip approach waypoints or go direct to any approach waypoint / closes [#27](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/27)
 
 ### FPLN Page
 * Redesigned waypoint loader to dramatically improved flight plan management/FMS performance on FPLN page
@@ -54,7 +54,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Addressed fuel flow bugs throughout / closes [#224](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/224)
 
 ### PFD/MFD
-* xxx
+* Fix stuck PFD menu when AOA was turned on / closes [#251](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/251)
 * xxx
 
 ### Audio
@@ -63,7 +63,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ### Lighting
 * Incorporated the latest lighting package from Uwajimaya including volumetric external lighting.
 * Added controllable passenger cabin lighting (accessed from FMS -> IDX -> MOD SETTINGS)
-* Fixed some lighting bleed (thanks again Uwajimaya)
+* Fixed some lighting bleed (thanks again Uwajimaya) / closes [#171](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/171)
 
 ## Known Issues
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
