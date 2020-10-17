@@ -127,6 +127,7 @@ class AS3X_Touch extends NavSystemTouch {
         }.bind(this));
         this.maxUpdateBudget = 12;
         this.autoPitotHeat = false;
+        this.pfdMenuDisplayed = false;
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -409,9 +410,16 @@ class AS3X_Touch extends NavSystemTouch {
         switch (_event) {
             case "Menu_Push":
                 if (this.displayMode != "MFD" && !this.m_isSplit) {
+                    if (!this.pfdMenuDisplayed) {
+                        this.pfdMenuDisplayed = true;
                         this.switchToPopUpPage(this.pfdMenu);
+                    } else {
+                        this.closePopUpElement();
+                        this.switchToPopUpPage(this.mainMenu);
+                    }
+                } else {
+                    this.getCurrentPage().loadMenuPage();
                 }
-
                 break;
             case "Back_Push":
                 if (this.popUpElement) {
@@ -857,8 +865,6 @@ class AS3X_Touch_Map extends MapInstrumentElement {
         this._lastAutoRangeDistance = wptDistance;
     }
     onEvent(_event) {
-        console.log(_event);
-
         switch (_event) {
             case "RANGE_INC":
             case "RANGE_DEC":
@@ -874,27 +880,22 @@ class AS3X_Touch_PageMenu_Button {
 class AS3X_Touch_Popup extends NavSystemElement {
     init(root) {
         this.root = root;
+        this._displayed = false;
     }
     onEnter() {
         this.root.setAttribute("state", "Active");
+        this._displayed = true;
     }
     onUpdate() {
     }
     onExit() {
         this.root.setAttribute("state", "Inactive");
+        this._displayed = false;
     }
     onEvent(_event) {
-        console.log(`popup got ${_event}`)
-        switch (_event) {
-            case "Menu_Push":
-                if (this.gps.popUpElement != this.gps.mainMenu) {
-                    console.log("popup swtiching to maen menu")
-                    this.gps.closePopUpElement();
-                    this.gps.switchToPopUpPage(this.gps.mainMenu);
-                } else {
-                    console.log("main menu is our popup element wtf?")
-                }
-        }
+    }
+    displayed() {
+        return this._displayed;
     }
 }
 class AS3X_Touch_MapMenu extends AS3X_Touch_Popup {
@@ -1133,16 +1134,8 @@ class AS3X_Touch_NavSystemPage extends NavSystemPage {
         this._menuPage = _menuPage;
         this._enterCb = _enterCb;
         this._exitCb = _exitCb;
-
     }
     onEvent(_event) {
-        if (_event == 'Menu_Push' && !this.gps.popUpElement) {
-            if (this._menuPage) {
-                this.gps.switchToPopUpPage(this._menuPage);
-            } else {
-                this.gps.switchToPopUpPage(this.gps.mainMenu)
-            }
-        }
     }
     onEnter() {
         super.onEnter();
@@ -1151,6 +1144,18 @@ class AS3X_Touch_NavSystemPage extends NavSystemPage {
     onExit() {
         super.onExit();
         if (this._exitCb) this._exitCb();
+    }
+    loadMenuPage() {
+        if (this._menuPage) {
+            if (this._menuPage.element.displayed()) {
+                this.gps.closePopUpElement();
+                this.gps.switchToPopUpPage(this.gps.mainMenu);
+            } else {
+                this.gps.switchToPopUpPage(this._menuPage);
+            }
+        } else {
+            this.gps.switchToPopUpPage(this.gps.mainMenu);
+        }
     }
 }
 class AS3X_Touch_DirectTo extends NavSystemTouch_DirectTo {
@@ -1205,7 +1210,10 @@ class AS3X_Touch_PFD_Menu extends AS3X_Touch_Popup { //NavSystemElement {
         this.gps.makeButton(this.timerReset, this.timer_Reset.bind(this));
         this.gps.makeButton(this.comActiveButton, SimVar.SetSimVarValue.bind(this, "K:COM_STBY_RADIO_SWAP", "number", 1));
         this.gps.makeButton(this.windMode, this.setWindMode.bind(this));
-
+    }
+    onExit() {
+        super.onExit();
+        this.gps.pfdMenuDisplayed = false;
     }
     onUpdate(_deltaTime) {
         Avionics.Utils.diffAndSet(this.cdiSource_value, this.hsi.getAttribute("nav_source"));
