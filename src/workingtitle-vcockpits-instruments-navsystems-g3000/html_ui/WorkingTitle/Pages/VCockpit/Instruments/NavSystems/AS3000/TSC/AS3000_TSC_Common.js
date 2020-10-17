@@ -9,7 +9,7 @@ class AS3000_TSC_NavButton {
         this.gps = _gps;
         this.button = this.gps.getChildById(_id);
         if (this.button) {
-            this.text = this.button.getElementsByClassName("title")[0];
+            this.text = this.button.getElementsByClassName("label")[0];
             this.img = this.button.getElementsByClassName("img")[0];
         }
         this.currentState = this.noData;
@@ -567,26 +567,6 @@ class AS3000_TSC_WeatherSelection extends NavSystemElement {
     }
 }
 class AS3000_TSC_DirectTo extends NavSystemTouch_DirectTo {
-    init(root) {
-        this.SelectedWaypoint = this.gps.getChildById("SelectedWaypoint");
-        this.SelectedWaypoint_Symbol = this.SelectedWaypoint.getElementsByClassName("waypointSymbol")[0];
-        this.SelectedWaypoint_MainText = this.SelectedWaypoint.getElementsByClassName("mainText")[0];
-        this.SelectedWaypoint_MainValue = this.SelectedWaypoint.getElementsByClassName("mainValue")[0];
-        this.SelectedWaypoint_SubText = this.SelectedWaypoint.getElementsByClassName("title")[0];
-        this.DRCT_City = this.gps.getChildById("DRCT_City");
-        this.DRCT_Region = this.gps.getChildById("DRCT_Region");
-        this.DRCT_Bearing = this.gps.getChildById("DRCT_Bearing");
-        this.DRCT_Distance = this.gps.getChildById("DRCT_Distance");
-        this.DRCT_CancelButton = this.gps.getChildById("DRCT_CancelButton");
-        this.DRCT_CancelButton_MainValue = this.DRCT_CancelButton.getElementsByClassName("value")[0];
-        this.DRCT_ActivateDirect = this.gps.getChildById("DRCT_ActivateDirect");
-        this.DRCT_ActivateDirect_MainValue = this.DRCT_ActivateDirect.getElementsByClassName("value")[0];
-        this.gps.makeButton(this.SelectedWaypoint, this.openKeyboard.bind(this));
-        this.gps.makeButton(this.DRCT_CancelButton, this.cancelDirectTo.bind(this));
-        this.gps.makeButton(this.DRCT_ActivateDirect, this.activateDirectTo.bind(this));
-        this.GeoCalc = new GeoCalcInfo(this.gps);
-    }
-    
     onEnter() {
         super.onEnter();
         this.gps.setTopKnobText("");
@@ -844,6 +824,8 @@ class AS3000_TSC_AirportInfo extends NavSystemElement {
         this.frequencyElements = [];
         this.runwayElements = [];
         this.showInMap = false;
+        
+        this.tabbedContent = new AS3000_TSC_TabbedContent(this);
     }
     init(root) {
         this.geoCalc = new GeoCalcInfo(this.gps);
@@ -881,6 +863,7 @@ class AS3000_TSC_AirportInfo extends NavSystemElement {
         this.gps.makeButton(this.runwaysTab, this.switchPage.bind(this, "Runways", this.runwaysTab));
         this.gps.makeButton(this.airportSelection, this.openKeyboard.bind(this));
         this.gps.makeButton(this.waypointOptions, this.openOptions.bind(this));
+        this.tabbedContent.init(root.getElementsByClassName("tabContainer")[0]);
     }
     onEnter() {
         this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
@@ -4306,7 +4289,7 @@ class AS3000_TSC_TabbedContent {
     
     init(_container) {
         this.container = _container;
-        this.tabButtons = this.container.getElementsByClassName("tabSelect")[0].getElementsByClassName("tabButton");
+        this.tabButtons = this.container.getElementsByClassName("tabButton");
         this.tabContent = this.container.getElementsByClassName("tabContentContainer")[0].getElementsByClassName("tabContent");
         
         for (let i = 0; i < this.tabButtons.length; i++) {
