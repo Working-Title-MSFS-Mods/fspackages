@@ -28,7 +28,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ### LEGS Page
 * Redesigned waypoint loader to dramatically improved flight plan management/FMS performance on LEGS page
-* Added ability to skip approach waypoints or go direct to any approach waypoint / closes [#27](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/27)
+* Added ability to skip approach waypoints or go direct to any approach waypoint
 
 ### FPLN Page
 * Redesigned waypoint loader to dramatically improved flight plan management/FMS performance on FPLN page
@@ -52,10 +52,16 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Added vspeed send logic and messages to FMC to replicate real unit
 * Fixed refresh error after entering/updating reserve fuel on FUEL MANAGEMENT page
 * Addressed fuel flow bugs throughout / closes [#224](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/224)
+* Added takeoff time, enroute time, and landing time to flight log page
 
 ### PFD/MFD
-* Fix stuck PFD menu when AOA was turned on / closes [#251](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/251)
-* xxx
+* added elapsed timer functionality to PFD
+* restructured PFD menu
+* restructured Lower MFD menu
+* improved the usability of MFD checklist (saves last opened page and resumes completed section)
+* FMS Text on the MFD will now stay opened after opening MFD checklist or passenger briefing menus
+* added functionality to CCP MEM buttons, allowing users to save states of the MFD and switch quickly between them.
+* Fixed broken fuel reading on SYSTEM OVERLAY menu
 
 ### Audio
 * xxx
@@ -63,7 +69,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ### Lighting
 * Incorporated the latest lighting package from Uwajimaya including volumetric external lighting.
 * Added controllable passenger cabin lighting (accessed from FMS -> IDX -> MOD SETTINGS)
-* Fixed some lighting bleed (thanks again Uwajimaya) / closes [#171](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/171)
+* Fixed some lighting bleed (thanks again Uwajimaya)
 
 ## Known Issues
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
