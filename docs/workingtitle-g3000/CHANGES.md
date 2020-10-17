@@ -2,9 +2,11 @@
 
 ### v0.2.0
 **Fixes**
+- \[Compatibility\] Fixed issue that would cause the G1000 MFD screen to freeze when entering WPT page if the WT G1000 mod (v0.3.1) is also installed.
 - \[Compatibility\] Disabled new functionality for the Longitude to avoid locking users into settings they could not control in-game. The mod now only applies cosmetic changes to the Longitude, including:
   - Updated terrain colors.
   - Updated formatting of symbols and text labels on the navigational map.
+- \[NavMap\] Fixed issue where turning weather on would change map zoom.
 
 ### v0.2.0-pre2
 **Fixes**
@@ -75,7 +77,7 @@
   - To change this setting for the main navigational map, navigate to MFD Home -> Map Settings -> Map Orientation.
   - To change this setting for the PFD inset map, navigate to PFD Home -> PFD Map Settings -> Map Orientation.
 - \[NavMap\] Added the ability to choose between four declutter (detail) settings for the navigational map.
-  - The available declutter levels are: **None**: All map elements visible, **DCLTR 1**: Roads and cities decluttered, **DCLTR 2**: DCLTR 1 plus airways, airspaces, and navaids decluttered, **Least**: Everything decluttered except flight plan waypoints. 
+  - The available declutter levels are: **None**: All map elements visible, **DCLTR 1**: Roads and cities decluttered, **DCLTR 2**: DCLTR 1 plus airways, airspaces, and navaids decluttered, **Least**: Everything decluttered except flight plan waypoints.
   - To change this setting for the main navigational map, navigate to MFD Home -> Map Settings -> Map Detail.
   - To change this setting for the PFD inset map, navigate to PFD Home -> PFD Map Settings -> Map Detail, _or_ use the PFD softkey menu to navigate to PFD Map Settings, then select Detail.
 - \[NavMap\] Added the ability to sync map settings across the main navigational map and the PFD inset maps.

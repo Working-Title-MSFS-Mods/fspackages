@@ -414,7 +414,7 @@ class CJ4_FMC_DepArrPage {
             let approachPages = [[]];
             let rowIndex = 0;
             let pageIndex = 0;
-            let lastApproachIndex = 0;
+            let lastApproachIndex = -1;
             for (let i = 0; i < approaches.length; i++) {
                 let approach = approaches[i];
                 let appendRow = false;
@@ -505,7 +505,7 @@ class CJ4_FMC_DepArrPage {
 
                 };
             }
-            if (currentPage > lastApproachPage) {
+            if (currentPage > lastApproachPage || lastApproachIndex == -1) {
                 headStr = "RUNWAYS";
             }
             else if (currentPage == firstRunwayPage && firstRunwayPage == lastApproachPage && firstRunwayTitleRow > 0) {

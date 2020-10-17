@@ -10,6 +10,14 @@
 		<CanBeReferenced>false</CanBeReferenced>
 	</Flags>
 	<AssetGroups>
+		<AssetGroup Name="workingtitle-core-library">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-core-library</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>
 		<AssetGroup Name="workingtitle-aircraft-cj4">
 			<Type>Copy</Type>
 			<Flags>

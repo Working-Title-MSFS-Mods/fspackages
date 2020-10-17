@@ -56,9 +56,9 @@ class WayPoint {
                 break;
         }
     }
-    UpdateInfos(_CallBack = null, _LoadApproaches = true) {
+    UpdateInfos(_CallBack = null, loadFacilitiesTransitively = true) {
         this.instrument.facilityLoader.getFacilityDataCB(this.icao, (data) => {
-            this.SetFromIFacility(data, _LoadApproaches);
+            this.SetFromIFacility(data, () => {}, loadFacilitiesTransitively);
             if (_CallBack) {
                 _CallBack();
             }

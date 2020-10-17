@@ -8,7 +8,7 @@ class WTConfigLoader {
     constructor(basepath) {
         let vfspath = "/VFS/" + basepath.replace(/\\/g, "/");
         let vfspathParts = vfspath.split("/");
-        this._vfspath = vfspathParts.slice(0, -2).join("/")
+        this._vfspath = vfspathParts.slice(0, -2).join("/");
     }
 
     /**
@@ -88,10 +88,10 @@ class WTConfigLoader {
                         console.log(`Reading ${where} xml at ${cfg.models[where]}.`);
                         this.loadXml(`model/${cfg.models[where]}`).then((dom) => resolve(dom));
                     } else {
-                        reject("Could not find models in model.cfg.")
+                        reject("Could not find models in model.cfg.");
                     }
                 })
-            .catch(() => reject("Could not load model configuration."))
+            .catch(() => reject("Could not load model configuration."));
         });
     }
 
@@ -107,7 +107,7 @@ class WTConfigLoader {
      * @returns {Promise}  An XMLDocument representing the model's definition wrapped in a FAKEROOT tag
      */
     loadInteriorModel() {
-        return this.loadModelFile("interior")
+        return this.loadModelFile("interior");
     }
 }
 
@@ -128,7 +128,7 @@ class WTIniParser {
         var re = /^\[([^\]]*)\]$|^([^=\s]+)\s*= *([^#\s]+)/i;
         var lines = iniString.split(/[\r\n]+/g);
 
-        lines.forEach((line, crap, morecrap) => {
+        lines.forEach((line) => {
             // skip blank likes and comments
             if (!line || line.match(/^\s*#/)) {
                 return;
@@ -148,15 +148,15 @@ class WTIniParser {
             let key = match[2];
             let value = match[3].toLowerCase();
             if (["true", "yes", "on", "1"].includes(value)) {
-                value = true
+                value = true;
             } else if (["false", "no", "off", "0"].includes(value)) {
-                value = false
+                value = false;
             }
 
             ptr[key] = value;
-        })
+        });
 
         return out;
     }
-};
+}
 

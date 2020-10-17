@@ -262,16 +262,22 @@
 			<UseTemplate Name="WT_Detached_Control_Panel_Template">
 				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
 				<ID>1</ID>
-				<!-- Node_ids LOWER PANEL -->
+				<!-- LOWER PANEL -->
 				<NODE_ID_CKLST>CCP_PUSH_CKLST_1</NODE_ID_CKLST>
 				<NODE_ID_PASSBRIEF>CCP_PUSH_PASSBRIEF_1</NODE_ID_PASSBRIEF>
+                <NODE_ID_MEM1>CCP_PUSH_MEM1_1</NODE_ID_MEM1>
+                <NODE_ID_MEM2>CCP_PUSH_MEM2_1</NODE_ID_MEM2>
+                <NODE_ID_MEM3>CCP_PUSH_MEM3_1</NODE_ID_MEM3>
 			</UseTemplate>
 			<UseTemplate Name="WT_Detached_Control_Panel_Template">
 				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
 				<ID>1</ID>
-				<!-- Node_ids LOWER PANEL -->
+				<!-- LOWER PANEL -->
 				<NODE_ID_CKLST>CCP_PUSH_CKLST_2</NODE_ID_CKLST>
 				<NODE_ID_PASSBRIEF>CCP_PUSH_PASSBRIEF_2</NODE_ID_PASSBRIEF>
+                <NODE_ID_MEM1>CCP_PUSH_MEM1_2</NODE_ID_MEM1>
+                <NODE_ID_MEM2>CCP_PUSH_MEM2_2</NODE_ID_MEM2>
+                <NODE_ID_MEM3>CCP_PUSH_MEM3_2</NODE_ID_MEM3>
 			</UseTemplate>
 		</Component>
 
@@ -1065,10 +1071,6 @@
 				<CONTAINER_COUNT>2</CONTAINER_COUNT>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>CCP_PUSH_MEM3</NODE_ID>
-				<CONTAINER_COUNT>2</CONTAINER_COUNT>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>CCP_PUSH_DATABASE</NODE_ID>
 				<CONTAINER_COUNT>2</CONTAINER_COUNT>
 			</UseTemplate>
@@ -1077,15 +1079,7 @@
 				<CONTAINER_COUNT>2</CONTAINER_COUNT>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>CCP_PUSH_MEM1</NODE_ID>
-				<CONTAINER_COUNT>2</CONTAINER_COUNT>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>CCP_PUSH_UNKNOWN</NODE_ID>
-				<CONTAINER_COUNT>2</CONTAINER_COUNT>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>CCP_PUSH_MEM2</NODE_ID>
 				<CONTAINER_COUNT>2</CONTAINER_COUNT>
 			</UseTemplate>
 		</Component>

@@ -3,15 +3,20 @@ let ModSettingsPage1Instance = undefined;
 class CJ4_FMC_ModSettingsPageOne {
     constructor(fmc) {
         this._fmc = fmc;
+        
+        this._pilotDefault = "--------";
+        this._pilotId = WTDataStore.get('simbriefPilotId', this._pilotDefault);
 
         let potValue = SimVar.SetSimVarValue("K:LIGHT_POTENTIOMETER_28_SET", "number");
-        if (potValue == 100)
+        if (potValue == 100) {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.ON;
-        else if (potValue == 5)
+        }
+        else if (potValue == 5) {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.DIM;
-        else
+        }
+        else {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF;
-
+        }
     }
 
     get lightMode() { return this._lightMode; }
@@ -29,15 +34,26 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
+    get pilotId() { return this._pilotId; }
+    set pilotId(value) {
+        this._pilotId = value;
+
+        // set datastore
+        WTDataStore.set('simbriefPilotId', value);
+
+        this.invalidate();
+    }
+
     render() {
         let lightSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "DIM", "ON"], this.lightMode);
+        let pilotIdDisplay = (this.pilotId !== this._pilotDefault) ? this.pilotId + "[green]" : this._pilotDefault;
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/1[blue] ", "WT MOD SETTINGS[yellow]"],
-            ["Cabin Lights[blue]"],
-            [lightSwitch, ""],
-            [""],
-            ["", ""],
+            [" CABIN LIGHTS[blue]"],
+            [lightSwitch],
+            [" SIMBRIEF PILOT ID[blue]"],
+            [pilotIdDisplay, ""],
             [""],
             ["", ""],
             [""],
@@ -51,6 +67,11 @@ class CJ4_FMC_ModSettingsPageOne {
 
     bindEvents() {
         this._fmc.onLeftInput[0] = () => { this.lightMode = this.lightMode + 1; };
+        this._fmc.onLeftInput[1] = () => {
+            let idValue = this._fmc.inOut;
+            this.pilotId = idValue == "CLR" ? "" : idValue;
+            this._fmc.clearUserInput();
+        };
         this._fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(this._fmc); };
     }
 

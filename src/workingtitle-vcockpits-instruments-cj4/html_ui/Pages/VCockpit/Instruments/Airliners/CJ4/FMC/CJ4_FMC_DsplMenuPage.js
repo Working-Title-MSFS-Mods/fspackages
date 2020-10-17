@@ -1,7 +1,7 @@
 class CJ4_FMC_DsplMenuPage {
 
     static toggleSymbol(_symbol) {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
             let symbols = SimVar.GetSimVarValue("L:CJ4_MAP_SYMBOLS", "number");
             if (symbols == -1)
                 resolve(); // if it fails, it fails
@@ -83,11 +83,11 @@ class CJ4_FMC_DsplMenuPage {
             [""],
             ["NDBS[s-text disabled]"],
             [""],
-            ["RNG: ALT SEL"],
+            ["RNG: ALT SEL[s-text disabled]"],
             [""],
-            ["GNSS POS"],
+            ["GNSS POS[s-text disabled]"],
             ["", "DISPLAY [blue s-text]"],
-            ["ALTN FPLN[s-text]", "MFD[green]/[white]PFD>[s-text white]"],
+            ["ALTN FPLN[s-text disabled]", "MFD[green]/[white]PFD>[s-text white]"],
             ["", "SIDE [blue s-text]"],
             ["", "L[green]/[white]R[s-text]>"]
         ]);

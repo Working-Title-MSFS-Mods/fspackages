@@ -17,6 +17,8 @@ class CJ4_FMC extends FMCMainDisplay {
         this.cargoWeight = 0;
         this.basicOperatingWeight = 10280;
     	this.grossWeight = 10280;
+		this.zFWActive = 0;
+		this.zFWPilotInput = 0;
         this.takeoffOat = "□□□";
         this.landingOat = "□□□";
         this.takeoffQnh = "□□.□□";
@@ -162,6 +164,7 @@ class CJ4_FMC extends FMCMainDisplay {
         super.Update();
         this.updateAutopilot();
         this.adjustFuelConsumption();
+        this.updateFlightLog();
     }
     onInputAircraftSpecific(input) {
         console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
@@ -236,29 +239,25 @@ class CJ4_FMC extends FMCMainDisplay {
 
     getOrSelectWaypointByIdent(ident, callback) {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
-
             const uniqueWaypoints = new Map();
             waypoints.forEach(wp => {
-                const waypoint = new WayPoint(null);
-
-                waypoint.icao = wp.icao;
-                waypoint.ident = wp.icao.substring(7, 12).replace(new RegExp(" ", "g"), "");
-
-                waypoint.infos.coordinates.lat = wp.lat;
-                waypoint.infos.coordinates.long = wp.lon;
-
-                uniqueWaypoints.set(waypoint.icao, waypoint);
+                uniqueWaypoints.set(wp.icao, wp);
             });
-
             waypoints = [...uniqueWaypoints.values()];
-
             if (!waypoints || waypoints.length === 0) {
                 return callback(undefined);
             }
             if (waypoints.length === 1) {
-                return callback(waypoints[0]);
+                this.facilityLoader.UpdateFacilityInfos(waypoints[0]).then(() => {
+                    return callback(waypoints[0]);
+                });
+            } else {
+                CJ4_FMC_SelectWptPage.ShowPage(this, waypoints, selectedWaypoint => {
+                    this.facilityLoader.UpdateFacilityInfos(selectedWaypoint).then(() => {
+                        return callback(selectedWaypoint);
+                    });
+                });
             }
-            CJ4_FMC_SelectWptPage.ShowPage(this, waypoints, callback);
         });
     }
     updateSideButtonActiveStatus() {
@@ -488,8 +487,8 @@ class CJ4_FMC extends FMCMainDisplay {
             const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
             const tsfc = Math.pow(1 + (1.2 * mach), mach) * 0.58; //Inspiration: https://onlinelibrary.wiley.com/doi/pdf/10.1002/9780470117859.app4
 
-            const leftFuelFlow = Math.max(thrustLeft * tsfc, 150);
-            const rightFuelFlow = Math.max(thrustRight * tsfc, 150);
+            const leftFuelFlow = pphLeft > 5 ? Math.max(thrustLeft * tsfc, 150) : 0;
+            const rightFuelFlow = pphRight > 5 ? Math.max(thrustRight * tsfc, 150) : 0;
 
             SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", leftFuelFlow);
             SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", rightFuelFlow);
@@ -533,6 +532,48 @@ class CJ4_FMC extends FMCMainDisplay {
                 activeFPWaypoints[i].infos.airwayOut = temporaryFPWaypoints[i].infos.airwayOut;
             }
         }
+    }
+    
+    updateFlightLog(){
+        const takeOffTime = SimVar.GetSimVarValue("L:TAKEOFF_TIME", "seconds");
+        const landingTime = SimVar.GetSimVarValue("L:LANDING_TIME", "seconds");
+        const onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
+        const altitude = SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "number");
+        const zuluTime = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
+
+        // Update takeoff time
+        if(!takeOffTime){
+            if (!onGround && altitude > 15){
+                if(zuluTime){
+                    SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
+                }
+            }
+        }
+        else if (takeOffTime && takeOffTime > 0 && landingTime && landingTime > 0){
+            if (!onGround && altitude > 15){
+                if(zuluTime){
+                    SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
+                }
+                SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", 0); // Reset landing time
+                SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", 0); // Reset enroute time
+            }
+        }
+
+        // Update landing time
+        if(takeOffTime && takeOffTime > 0){
+            if(onGround){
+                if(zuluTime){
+                    SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", zuluTime);
+                }
+            }
+        }
+
+        // Update enroute time
+        if(takeOffTime && takeOffTime > 0){
+            const enrouteTime = zuluTime - takeOffTime;
+            SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", enrouteTime);
+        }
+
     }
 }
 

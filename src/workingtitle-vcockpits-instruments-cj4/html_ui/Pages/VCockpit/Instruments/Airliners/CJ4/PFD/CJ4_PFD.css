@@ -469,9 +469,9 @@ cj4-pfd-element {
           fill: cyan;
           text-anchor: end; }
       cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime {
-        top: 76%;
-        left: 87%;
-        width: 11%;
+        bottom: 5%;
+        left: 3.45%;
+        width: 15%;
         height: 5%;
         position: absolute; }
         cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime svg {
@@ -479,15 +479,14 @@ cj4-pfd-element {
           height: 100%; }
         cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime text {
           width: 100%;
-          height: 100%;
-          font-family: 'Collins ProLine'; }
+          height: 100%;}
         cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime text.Title {
           font-size: 18px;
           fill: white; }
         cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime text.Value {
           font-size: 18px;
-          fill: green;
-          text-anchor: end; }
+          fill: #11d011;
+          text-anchor: start; }
       cj4-pfd-element #Mainframe #NDMapOverlay[extended=on] {
         top: 35%; }
     cj4-pfd-element #Mainframe #NavBar {

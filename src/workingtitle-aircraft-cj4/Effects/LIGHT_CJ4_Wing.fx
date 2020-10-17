@@ -2,12 +2,12 @@
 Lifetime=5
 Version=2.0
 Radius=-1
-Priority=0
+Priority=1
 
 [Properties]
 
 [Emitter.0]
-Lifetime=0.50, 0.50
+Lifetime=1.0, 1.0
 Delay=0.0, 0.0
 Bounce=0.0
 Light=1
@@ -20,7 +20,7 @@ Drag=0.0, 0.0
 X Particle Velocity=0.0, 0.0
 Y Particle Velocity=0.0, 0.0
 Z Particle Velocity=0.0, 0.0
-X Rotation=10.0, 10.0
+X Rotation=0.0, 0.0
 Y Rotation=0.0, 0.0
 Z Rotation=0.0, 0.0
 X Offset=0.0, 0.0
@@ -30,8 +30,8 @@ Z Offset=0.0, 0.0
 [Particle.0]
 Lifetime=0.0, 0.0
 Type=19
-X Scale=0.3, 0.3
-Y Scale=0.3, 0.3
+X Scale=0.1, 0.1
+Y Scale=0.1, 0.1
 Z Scale=0.0, 0.0
 X Scale Rate=0.0, 0.0
 Y Scale Rate=0.0, 0.0
@@ -51,23 +51,29 @@ Face=1, 1, 1
 Blend Mode=2
 Texture=fx_0.png
 Bounce=0.0
-Color Start=173, 180, 255, 25
-Color End=173, 180, 255, 25
+Color Start=255, 255, 255, 10
+Color End=255, 255, 255, 10
 Jitter Distance=0.0
 Jitter Time=0.0
 uv1=0.0, 0.0
 uv2=1.0, 1.0
-NearEndFade= 5.0
-NearFade= 10.0
-MinProjSize= 0.4
+X Scale Goal=0.0
+Y Scale Goal=0.0
+Z Scale Goal=0.0
+Extrude Length=0.0
+Extrude Pitch Max=0.0
+Extrude Heading Max=0.0
+NearEndFade= 1.0
+NearFade= 6.0
+MinProjSize=0.1
 
 [LightAttributes.0]
 Type=spot
-Size=0.1
-Range=3000.0
-Intensity=400.0
+Size=0.0
+Range=6
+Intensity=2.0
 Softness=0.0
-SpotInner=14
-SpotOuter=17
+SpotInner=8
+SpotOuter=18
 Volumetric=0
 ScatDir=0.0
