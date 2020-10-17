@@ -44,6 +44,10 @@ class SvgTrackVectorElement extends SvgMapElement {
     }
     
     updateDraw(map) {
+        if (SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
+            return;
+        }
+        
         let currentTime = Date.now() / 1000;
         let dt = currentTime - this.lastTime;
         
@@ -57,7 +61,9 @@ class SvgTrackVectorElement extends SvgMapElement {
         let windSpeed = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots") / map.NMWidth * 1000 / 3600;
         let windDirection = (SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180) * Math.PI / 180;
         
-        turnSpeed = turnSpeed * smoothingFactor + (this.lastTurnSpeed) * (1 - smoothingFactor);
+        if (dt < 1) {
+            turnSpeed = turnSpeed * smoothingFactor + (this.lastTurnSpeed) * (1 - smoothingFactor);
+        }
         
         let points = null;
         if (this.lookahead > this.dynamicLookaheadMax) {
@@ -100,8 +106,8 @@ class SvgTrackVectorElement extends SvgMapElement {
         
         this.trackOuter.setAttribute("d", pathString);
         this.trackInner.setAttribute("d", pathString);
-        this.trackOuter.setAttribute("transform", "rotate(" + map.rotation + " " + points[0].x + " " + points[0].y + ")");
-        this.trackInner.setAttribute("transform", "rotate(" + map.rotation + " " + points[0].x + " " + points[0].y + ")");
+        this.trackOuter.setAttribute("transform", `rotate(${map.rotation} ${points[0].x} ${points[0].y})`);
+        this.trackInner.setAttribute("transform", `rotate(${map.rotation} ${points[0].x} ${points[0].y})`);
         
         this.lastTime = currentTime;
         this.lastTurnSpeed = turnSpeed;

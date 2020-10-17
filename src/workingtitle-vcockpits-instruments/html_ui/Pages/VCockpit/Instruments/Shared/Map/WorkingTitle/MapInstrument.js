@@ -625,13 +625,8 @@ class MapInstrument extends ISvgMapRootElement {
             this.scrollDisp.x = 0;
             this.scrollDisp.y = 0;
             if (this.bingMap) {
-                if (this.isDisplayingWeather()) {
-                    this.navMap.setRange(this.getWeatherRange());
-                }
-                else {
-                    let rangeTarget = this.getDisplayRange() * 1000 / Math.abs(this.rangeDefinition.getRangeDefinition(this.rangeDefinitionContext));
-                    this.navMap.setRange(rangeTarget);
-                }
+                let rangeTarget = this.getDisplayRange() * 1000 / Math.abs(this.rangeDefinition.getRangeDefinition(this.rangeDefinitionContext));
+                this.navMap.setRange(rangeTarget);
                 var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor * this.overdrawFactor; // MOD: Need to expand map range to compensate for overdraw
                 if (!this.isDisplayingWeather())
                     this.updateBingMapSize();
@@ -1256,6 +1251,13 @@ class MapInstrument extends ISvgMapRootElement {
         }
     }
     
+    // g1000 compatibility
+    setTrackUpDisabled(_val) {
+        if (this.rotationHandler instanceof MapInstrument_DefaultRotationHandler) {
+            this.rotationHandler.rotationDisabled = _val;
+        }
+    }
+    
     setPlaneScale(_scale) {
         if (this.airplaneIconElement) {
             this.airplaneIconElement.setScale(this.navMap, _scale);
@@ -1661,7 +1663,7 @@ class MapInstrument_RangeDefinitionContext {
 
 class MapInstrument_DefaultRangeDefinition {
     getRangeDefinition(_context) {
-        return context.bottom - _context.top;
+        return _context.bottom - _context.top;
     }
 }
 MapInstrument_DefaultRangeDefinition.INSTANCE = new MapInstrument_DefaultRangeDefinition();
@@ -1669,10 +1671,11 @@ MapInstrument_DefaultRangeDefinition.INSTANCE = new MapInstrument_DefaultRangeDe
 class MapInstrument_DefaultRotationHandler {
     constructor(_rotateWithPlane = false) {
         this.rotateWithPlane = _rotateWithPlane;
+        this.rotationDisabled = false;
     }
     
     getRotation() {
-        if (this.rotateWithPlane) {
+        if (this.rotateWithPlane && !this.rotationDisabled) {
             return -SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
         } else {
             return 0;

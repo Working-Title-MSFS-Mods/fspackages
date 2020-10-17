@@ -18,9 +18,9 @@ class AS3000_PFD extends NavSystem {
         this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(AS3000_PFD_SoftKeyHtmlElement)));
         this.maxUpdateBudget = 12;
         
-        Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });
+        //Include.addScript("/JS/debug.js", function () {
+        //    g_modDebugMgr.AddConsole(null);
+        //});
     }
     disconnectedCallback() {
         super.disconnectedCallback();
@@ -75,6 +75,15 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
     init(_root) {
         super.init(_root);
         this.mapContainer = this.gps.getChildById("InnerMap");
+    }
+    
+    onTemplateLoaded() {
+        super.onTemplateLoaded();
+        
+        if (this.revertToDefault) {
+            return;
+        }
+        
         this.instrument.rangeRingElement.showLabel = false;
         this.instrument.rangeRingElement.rangeRingStrokeWidth = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH;
         
@@ -165,6 +174,12 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         this.mapInstrument.setGPS(this.gps);
         this.innerMap = this.gps.getElementOfType(AS3000_PFD_InnerMap);
         this.attitude.svg.setAttribute("background", "false");
+        
+        if (SimVar.GetSimVarValue("ATC MODEL", "string") != "TT:ATCCOM.AC_MODEL_TBM9.0.text") {
+            this.attitude.syntheticVisionEnabled = true;
+            this.gps.computeEvent.bind(this.gps, "SoftKeys_Baro_IN");
+        }
+        
         this.rootMenu.elements = [
             new AS3000_PFD_SoftKeyElement("Map Range-", this.changeMapRange.bind(this, "dec"), null, null, this.getInsetMapSoftkeyState.bind(this)),
             new AS3000_PFD_SoftKeyElement("Map Range+", this.changeMapRange.bind(this, "inc"), null, null, this.getInsetMapSoftkeyState.bind(this)),
