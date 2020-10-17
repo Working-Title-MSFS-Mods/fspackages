@@ -164,6 +164,7 @@ class CJ4_FMC extends FMCMainDisplay {
         super.Update();
         this.updateAutopilot();
         this.adjustFuelConsumption();
+        this.updateFlightLog();
     }
     onInputAircraftSpecific(input) {
         console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
@@ -531,6 +532,48 @@ class CJ4_FMC extends FMCMainDisplay {
                 activeFPWaypoints[i].infos.airwayOut = temporaryFPWaypoints[i].infos.airwayOut;
             }
         }
+    }
+    
+    updateFlightLog(){
+        const takeOffTime = SimVar.GetSimVarValue("L:TAKEOFF_TIME", "seconds");
+        const landingTime = SimVar.GetSimVarValue("L:LANDING_TIME", "seconds");
+        const onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
+        const altitude = SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "number");
+        const zuluTime = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
+
+        // Update takeoff time
+        if(!takeOffTime){
+            if (!onGround && altitude > 15){
+                if(zuluTime){
+                    SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
+                }
+            }
+        }
+        else if (takeOffTime && takeOffTime > 0 && landingTime && landingTime > 0){
+            if (!onGround && altitude > 15){
+                if(zuluTime){
+                    SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
+                }
+                SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", 0); // Reset landing time
+                SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", 0); // Reset enroute time
+            }
+        }
+
+        // Update landing time
+        if(takeOffTime && takeOffTime > 0){
+            if(onGround){
+                if(zuluTime){
+                    SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", zuluTime);
+                }
+            }
+        }
+
+        // Update enroute time
+        if(takeOffTime && takeOffTime > 0){
+            const enrouteTime = zuluTime - takeOffTime;
+            SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", enrouteTime);
+        }
+
     }
 }
 

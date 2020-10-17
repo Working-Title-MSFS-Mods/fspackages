@@ -177,9 +177,43 @@ class CJ4_FMC_PerfInitPage {
 
     static ShowPage12(fmc) { //FLIGHT LOG
         fmc.clearDisplay();
+
+        // Set takeoff time
         let toTime = "---";
+        const takeOffTime = SimVar.GetSimVarValue("L:TAKEOFF_TIME", "seconds");
+        if(takeOffTime && takeOffTime > 0){
+            const hours = Math.floor(takeOffTime / 60 / 60);
+            const hoursString = hours > 9 ? "" + hours : "0" + hours;
+
+            const minutes = Math.floor(takeOffTime / 60) - (hours * 60);
+            const minutesString = minutes > 9 ? "" + minutes : "0" + minutes;
+            toTime = hoursString + ":" + minutesString;
+        }
+
+        // Set landing time
         let ldgTime = "---";
-        let enrouteTime = "---";
+        const landingTime = SimVar.GetSimVarValue("L:LANDING_TIME", "seconds");
+        if(landingTime && landingTime > 0){
+            const hours = Math.floor(landingTime / 60 / 60);
+            const hoursString = hours > 9 ? "" + hours : "0" + hours;
+
+            const minutes = Math.floor(landingTime / 60) - (hours * 60);
+            const minutesString = minutes > 9 ? "" + minutes : "0" + minutes;
+            ldgTime = hoursString + ":" + minutesString;
+        }
+
+        // Set enroute time
+        let eteTime = "---";
+        const enrouteTime = SimVar.GetSimVarValue("L:ENROUTE_TIME", "seconds");
+        if(enrouteTime && enrouteTime > 0){
+            const hours = Math.floor(enrouteTime / 60 / 60);
+            const hoursString = hours > 9 ? "" + hours : "0" + hours;
+
+            const minutes = Math.floor(enrouteTime / 60) - (hours * 60);
+            const minutesString = minutes > 9 ? "" + minutes : "0" + minutes;
+            eteTime = hoursString + ":" + minutesString;
+        }
+
         let fuelUsed = "---";
         let avgTas = "---";
         let avgGs = "---";
@@ -188,7 +222,7 @@ class CJ4_FMC_PerfInitPage {
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "FLIGHT LOG[blue]"],
             [" T/O[s-text blue]", "LDG [s-text blue]", "EN ROUTE[s-text blue]"],
-            [toTime, ldgTime, enrouteTime],
+            [toTime, ldgTime, eteTime],
             [" FUEL USED[blue]", "AVG TAS/GS [blue]"],
             [fuelUsed, avgTas + "/" + avgGs],
             [" AIR DIST[blue]", "GND DIST [blue]"],
