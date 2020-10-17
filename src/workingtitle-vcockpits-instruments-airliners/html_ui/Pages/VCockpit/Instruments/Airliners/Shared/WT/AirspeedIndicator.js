@@ -1380,8 +1380,8 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 this.graduationVLine.setAttribute("y2", "0");
                 this.graduationVLine.setAttribute("stroke", "white");
                 this.graduationVLine.setAttribute("stroke-width", "6");
-                for (var i = 0; i < this.totalGraduations; i++) {
-                    var line = this.graduations[i];
+                for (let i = 0; i < this.totalGraduations; i++) {
+                    let line = this.graduations[i];
                     graduationGroup.appendChild(line.SVGLine);
                     if (line.SVGText1) {
                         graduationGroup.appendChild(line.SVGText1);

@@ -1,7 +1,7 @@
 class CJ4_FMC_DsplMenuPage {
 
     static toggleSymbol(_symbol) {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
             let symbols = SimVar.GetSimVarValue("L:CJ4_MAP_SYMBOLS", "number");
             if (symbols == -1)
                 resolve(); // if it fails, it fails
