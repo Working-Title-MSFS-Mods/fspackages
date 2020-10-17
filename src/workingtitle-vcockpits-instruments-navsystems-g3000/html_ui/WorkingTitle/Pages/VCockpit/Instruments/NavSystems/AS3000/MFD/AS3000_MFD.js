@@ -246,7 +246,7 @@ class AS3000_MFD_MapElement extends AS3000_MapElement {
 }
 class AS3000_MFD_MainMap extends NavSystemPage {
     constructor() {
-        let mapElement = new AS3000_MFD_MapElement("_MFD");
+        let mapElement = new AS3000_MFD_MapElement("MFD");
         super("NAVIGATION MAP", "Map", new NavSystemElementGroup([
             mapElement,
             new AS3000_MFD_WindData(mapElement)

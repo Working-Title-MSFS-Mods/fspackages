@@ -1,10 +1,8 @@
 class WT_MapElement extends MapInstrumentElement {
     // _settings should be an iterable of WT_MapSetting or WT_MapSettingGroup objects
-    constructor(_simVarNameID, _settings = [], _syncVarName = WT_MapElement.VARNAME_SYNC, _syncInitVarName = WT_MapElement.VARNAME_SYNC_INIT_DEFAULT) {
+    constructor(_varNameID, _settings = []) {
         super();
-        this.simVarNameID = _simVarNameID;
-        this.syncVarName = _syncVarName;
-        this.syncInitVarName = _syncInitVarName;
+        this.varNameID = _varNameID;
         
         this._settings = Array.from(_settings);
         this._settingsToSync = [];
@@ -13,8 +11,6 @@ class WT_MapElement extends MapInstrumentElement {
                 this._settingsToSync.push(setting);
             }
         }
-        
-        this._lastSync = 0;
     }
     
     addSetting(_setting) {
@@ -33,21 +29,14 @@ class WT_MapElement extends MapInstrumentElement {
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         
-        let sync = SimVar.GetSimVarValue(this.syncVarName, "number");
-        if (sync != this._lastSync) {
-            if (sync == WT_MapElement.Sync.ALL) {
-                let initIndex = SimVar.GetSimVarValue(this.syncInitVarName, "number");
-                if (initIndex >= 0) {
-                    let initID = WT_MapElement.SYNC_INITID_ARRAY[initIndex];
-                    if (initID == this.simVarNameID) {
-                        this.syncMasterToAllSettings();
-                        SimVar.SetSimVarValue(this.syncInitVarName, "number", -1);
-                    }
-                }
-            }
-            this._lastSync = sync;
+        let initID = WT_MapElement.getSettingVar(WT_MapElement.VARNAME_SYNC_INIT_ROOT_DEFAULT, WT_MapElement.VARNAME_SYNC_ALL_ID, "");
+        if (initID == this.varNameID) {
+            this.syncMasterToAllSettings();
+            WT_MapElement.setSettingVar(WT_MapElement.VARNAME_SYNC_INIT_ROOT_DEFAULT, WT_MapElement.VARNAME_SYNC_ALL_ID, "");
+            WT_MapElement.setSettingVar(WT_MapElement.VARNAME_SYNC_ROOT, WT_MapElement.VARNAME_SYNC_ALL_ID, WT_MapElement.Sync.ALL);
         }
         
+        let sync = WT_MapElement.getSettingVar(WT_MapElement.VARNAME_SYNC_ROOT, WT_MapElement.VARNAME_SYNC_ALL_ID);
         if (sync == WT_MapElement.Sync.ALL) {
             for (let setting of this._settingsToSync) {
                 setting.syncFrom(WT_MapElement.VARNAME_SYNC_ALL_ID);
@@ -65,26 +54,24 @@ class WT_MapElement extends MapInstrumentElement {
         }
     }
     
-    static getSyncInitIDIndex(_id) {
-        return WT_MapElement.SYNC_INITID_ARRAY.indexOf(_id);
-    }
-    
     static setSyncedSettingVar(_root, _id, _val) {
         WT_MapElement.setSettingVar(_root, _id, _val);
-        if (SimVar.GetSimVarValue(WT_MapElement.VARNAME_SYNC, "number") == 1) {
+        if (WT_MapElement.getSettingVar(WT_MapElement.VARNAME_SYNC_ROOT, WT_MapElement.VARNAME_SYNC_ALL_ID) == 1) {
             WT_MapElement.setSettingVar(_root, WT_MapElement.VARNAME_SYNC_ALL_ID, _val);
         }
     }
     
     static setSettingVar(_root, _id, _val) {
-        SimVar.SetSimVarValue(_root + _id, "number", _val);
         WTDataStore.set(`${_id}.${_root}`, _val);
     }
+    
+    static getSettingVar(_root, _id, _default = 0) {
+        return WTDataStore.get(`${_id}.${_root}`, _default);
+    }
 }
-WT_MapElement.VARNAME_SYNC = "L:WT_Map_Sync";
-WT_MapElement.SYNC_INITID_ARRAY = ["_PFD", "_MFD"];
-WT_MapElement.VARNAME_SYNC_ALL_ID = "_SyncAll";
-WT_MapElement.VARNAME_SYNC_INIT_DEFAULT = "L:WT_Map_Sync_Init";
+WT_MapElement.VARNAME_SYNC_ROOT = "L:WT_Map_Sync";
+WT_MapElement.VARNAME_SYNC_ALL_ID = "SyncAll";
+WT_MapElement.VARNAME_SYNC_INIT_ROOT_DEFAULT = "L:WT_Map_Sync_Init";
 
 WT_MapElement.Sync = {
     OFF: 0,
@@ -92,9 +79,9 @@ WT_MapElement.Sync = {
 };
 
 class WT_MapSetting {
-    constructor(_mapElement, _simVarNameRoot, _toSync, _defaultValue = 0, _useStorage = true) {
+    constructor(_mapElement, _varNameRoot, _toSync, _defaultValue = 0, _useStorage = true) {
         this.mapElement = _mapElement;
-        this.simVarNameRoot = _simVarNameRoot;
+        this.varNameRoot = _varNameRoot;
         this._toSync = _toSync;
         this.defaultValue = _defaultValue;
         this.useStorage = _useStorage;
@@ -104,34 +91,28 @@ class WT_MapSetting {
         return this._toSync;
     }
     
-    setFromStorage() {
-        let value = WTDataStore.get(`${this.mapElement.simVarNameID}.${this.simVarNameRoot}`, this.defaultValue);
-        this.setValue(value);
-    }
-    
-    setValue(_val) {
-        SimVar.SetSimVarValue(this.simVarNameRoot + this.mapElement.simVarNameID, "number", _val);
+    setValue(_val, _skipSync = false) {
+        if (this.toSync && !_skipSync) {
+            WT_MapElement.setSyncedSettingVar(this.varNameRoot, this.mapElement.varNameID, _val);
+        } else {
+            WT_MapElement.setSettingVar(this.varNameRoot, this.mapElement.varNameID, _val);
+        }
     }
     
     getValue() {
-        return SimVar.GetSimVarValue(this.simVarNameRoot + this.mapElement.simVarNameID, "number");
+        return WT_MapElement.getSettingVar(this.varNameRoot, this.mapElement.varNameID, this.defaultValue);
     }
     
     syncTo(_syncID) {
-        SimVar.SetSimVarValue(this.simVarNameRoot + _syncID, "number", this.getValue());
+        WT_MapElement.setSettingVar(this.varNameRoot, _syncID, this.getValue());
     }
     
     syncFrom(_syncID) {
-        let newVal = SimVar.GetSimVarValue(this.simVarNameRoot + _syncID, "number");
-        this.setValue(newVal, this.mapElement.simVarNameID);
+        let newVal = WT_MapElement.getSettingVar(this.varNameRoot, _syncID);
+        this.setValue(newVal, true);
     }
     
     onTemplateLoaded() {
-        if (this.useStorage) {
-            this.setFromStorage();
-        } else {
-            setValue(this.defaultValue);
-        }
     }
     
     onUpdate() {
@@ -148,8 +129,16 @@ class WT_MapSettingGroup {
         this._settings = Array.from(_settings);
     }
     
+    get varNameRoot() {
+        return Array.from(this._settings, setting => setting.varNameRoot);
+    }
+    
     get toSync() {
         return this._toSync;
+    }
+    
+    getValue() {
+        return Array.from(this._settings, setting => setting.getValue());
     }
     
     addSetting(_setting) {
@@ -186,8 +175,8 @@ class WT_MapSettingGroup {
 }
 
 class WT_MapOrientationSetting extends WT_MapSetting {
-    constructor(_mapElement, _simVarNameRoot = WT_MapOrientationSetting.VARNAME_ROOT_DEFAULT, _toSync = true) {
-        super(_mapElement, _simVarNameRoot, _toSync);
+    constructor(_mapElement, _varNameRoot = WT_MapOrientationSetting.VARNAME_ROOT_DEFAULT, _toSync = true) {
+        super(_mapElement, _varNameRoot, _toSync);
     }
     
     onTemplateLoaded() {
@@ -198,8 +187,8 @@ class WT_MapOrientationSetting extends WT_MapSetting {
 WT_MapOrientationSetting.VARNAME_ROOT_DEFAULT = "L:WT_Map_Orientation";
 
 class WT_MapTerrainModeSetting extends WT_MapSetting {
-    constructor(_mapElement, _simVarNameRoot = WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT, _toSync = true) {
-        super(_mapElement, _simVarNameRoot, _toSync);
+    constructor(_mapElement, _varNameRoot = WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT, _toSync = true) {
+        super(_mapElement, _varNameRoot, _toSync);
     }
     
     onUpdate() {
@@ -228,8 +217,8 @@ class WT_MapDcltrSetting extends WT_MapSetting {
      * Each level definition should be an iterable over key-value pairs where key = name of visibility attribute and value = bool.
      * Attributes not explicity defined will default to true.
      */
-    constructor(_mapElement, _dcltrDefinitions, _simVarNameRoot = WT_MapDcltrSetting.VARNAME_ROOT_DEFAULT, _toSync = true) {
-        super(_mapElement, _simVarNameRoot, _toSync);
+    constructor(_mapElement, _dcltrDefinitions, _varNameRoot = WT_MapDcltrSetting.VARNAME_ROOT_DEFAULT, _toSync = true) {
+        super(_mapElement, _varNameRoot, _toSync);
         
         this.dcltrLevels = [];
         for (let levelDef of _dcltrDefinitions) {
@@ -260,8 +249,8 @@ WT_MapDcltrSetting.DCLTR_DEFINITION_DEFAULT = new Map([
 ]);
 
 class WT_MapSymbolVisSetting extends WT_MapSetting {
-    constructor(_mapElement, _attrName, _simVarNameRoot, _dcltrSetting = null, _toSync = true, _defaultValue = 1) {
-        super(_mapElement, _simVarNameRoot, _toSync, _defaultValue);
+    constructor(_mapElement, _attrName, _varNameRoot, _dcltrSetting = null, _toSync = true, _defaultValue = 1) {
+        super(_mapElement, _varNameRoot, _toSync, _defaultValue);
         
         this.attrName = _attrName;
         this.dcltrSetting = _dcltrSetting;
@@ -283,8 +272,8 @@ class WT_MapSymbolVisSettingGroup extends WT_MapSettingGroup {
         this.dcltrSetting = _dcltrSetting;
         this.addSetting(_dcltrSetting);
         
-        for (let [attrName, simVarNameRoot] of WT_MapSymbolVisSettingGroup.VARNAME_ATTRIBUTES_ROOT) {
-            this.addSetting(new WT_MapSymbolVisSetting(_mapElement, attrName, simVarNameRoot, this.dcltrSetting));
+        for (let [attrName, varNameRoot] of WT_MapSymbolVisSettingGroup.VARNAME_ATTRIBUTES_ROOT) {
+            this.addSetting(new WT_MapSymbolVisSetting(_mapElement, attrName, varNameRoot, this.dcltrSetting));
         }
     }
 }
@@ -300,8 +289,8 @@ WT_MapSymbolVisSettingGroup.VARNAME_ATTRIBUTES_ROOT = new Map([
 ]);
 
 class WTMapSymbolRangeSetting extends WT_MapSetting {
-    constructor(_mapElement, _simVarNameRoot, _attrName, _defaultRange, _toSync = true) {
-        super(_mapElement, _simVarNameRoot, _toSync, _mapElement.instrument.zoomRanges.indexOf(_defaultRange));
+    constructor(_mapElement, _varNameRoot, _attrName, _defaultRange, _toSync = true) {
+        super(_mapElement, _varNameRoot, _toSync, _mapElement.instrument.zoomRanges.indexOf(_defaultRange));
         this.attrName = _attrName;
     }
     
@@ -384,8 +373,8 @@ WT_MapFuelRingSetting.VARNAME_RESERVE_ROOT = "L:WT_Map_FuelRing_Reserve";
 WT_MapFuelRingSetting.VARNAME_RESERVE_DEFAULT = 45;
 
 class WT_MapAltitudeInterceptSetting extends WT_MapSetting {
-    constructor(_mapElement, _simVarNameRoot = WT_MapAltitudeInterceptSetting.VARNAME_SHOW_ROOT_DEFAULT, _toSync = true) {
-        super(_mapElement, _simVarNameRoot, _toSync);
+    constructor(_mapElement, _varNameRoot = WT_MapAltitudeInterceptSetting.VARNAME_SHOW_ROOT_DEFAULT, _toSync = true) {
+        super(_mapElement, _varNameRoot, _toSync);
     }
     
     onUpdate() {
