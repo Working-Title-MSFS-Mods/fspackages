@@ -59,6 +59,8 @@ class AS3X_Touch extends NavSystemTouch {
         this.mapMenu.setGPS(this);
         this.afcsMenu = new NavSystemElementContainer("AFCS Menu", "AFCS_Menu", new AS3X_Touch_AFCSMenu());
         this.afcsMenu.setGPS(this);
+        this.mainMenu = new NavSystemElementContainer("Main Menu", "Main_Menu", new AS3X_Touch_Popup());
+        this.mainMenu.setGPS(this);
         this.fullKeyboard = new NavSystemElementContainer("Full Keyboard", "fullKeyboard", new AS3X_Touch_FullKeyboard());
         this.fullKeyboard.setGPS(this);
         this.duplicateWaypointSelection = new NavSystemElementContainer("Waypoint Duplicates", "WaypointDuplicateWindow", new AS3X_Touch_DuplicateWaypointSelection());
@@ -66,7 +68,7 @@ class AS3X_Touch extends NavSystemTouch {
         this.pageGroups = [
             new AS3X_Touch_PageGroup("MFD", this, [
                 new AS3X_Touch_NavSystemPage("Map", "Map", new AS3X_Touch_MapContainer("Map"), "Map", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png",
-                    () => { if(this.displayMode == 'MFD' || this.m_isSplit) this.switchToPopUpPage(this.mapMenu)}),
+                    this.mapMenu),
                 new AS3X_Touch_NavSystemPage("Active FPL", "FPL", new NavSystemElementGroup([
                     new NavSystemTouch_ActiveFPL(true),
                     new AS3X_Touch_MapContainer("Afpl_Map")
@@ -407,10 +409,7 @@ class AS3X_Touch extends NavSystemTouch {
         switch (_event) {
             case "Menu_Push":
                 if (this.displayMode != "MFD" && !this.m_isSplit) {
-                    // we're in full PFD mode, if we don't have a popup open show the PFD menu
-                    if (!this.popUpElement) {
                         this.switchToPopUpPage(this.pfdMenu);
-                    }
                 }
 
                 break;
@@ -880,12 +879,22 @@ class AS3X_Touch_Popup extends NavSystemElement {
         this.root.setAttribute("state", "Active");
     }
     onUpdate() {
-        super.onUpdate();
     }
     onExit() {
         this.root.setAttribute("state", "Inactive");
     }
     onEvent(_event) {
+        console.log(`popup got ${_event}`)
+        switch (_event) {
+            case "Menu_Push":
+                if (this.gps.popUpElement != this.gps.mainMenu) {
+                    console.log("popup swtiching to maen menu")
+                    this.gps.closePopUpElement();
+                    this.gps.switchToPopUpPage(this.gps.mainMenu);
+                } else {
+                    console.log("main menu is our popup element wtf?")
+                }
+        }
     }
 }
 class AS3X_Touch_MapMenu extends AS3X_Touch_Popup {
@@ -1117,18 +1126,22 @@ class AS3X_Touch_PageGroup extends NavSystemPageGroup {
     }
 }
 class AS3X_Touch_NavSystemPage extends NavSystemPage {
-    constructor(_name, _htmlElemId, _element, _shortName, _imagePath, _menuCb, _enterCb, _exitCb) {
+    constructor(_name, _htmlElemId, _element, _shortName, _imagePath, _menuPage, _enterCb, _exitCb) {
         super(_name, _htmlElemId, _element);
         this.shortName = _shortName;
         this.imagePath = _imagePath;
-        this._menuCb = _menuCb;
+        this._menuPage = _menuPage;
         this._enterCb = _enterCb;
         this._exitCb = _exitCb;
 
     }
     onEvent(_event) {
-        if (_event == 'Menu_Push' && this._menuCb) {
-            this._menuCb();
+        if (_event == 'Menu_Push' && !this.gps.popUpElement) {
+            if (this._menuPage) {
+                this.gps.switchToPopUpPage(this._menuPage);
+            } else {
+                this.gps.switchToPopUpPage(this.gps.mainMenu)
+            }
         }
     }
     onEnter() {
@@ -1161,7 +1174,7 @@ class AS3X_Touch_DirectTo extends NavSystemTouch_DirectTo {
         this.gps.closePopUpElement();
     }
 }
-class AS3X_Touch_PFD_Menu extends NavSystemElement {
+class AS3X_Touch_PFD_Menu extends AS3X_Touch_Popup { //NavSystemElement {
     constructor() {
         super(...arguments);
         this.timerStartTime = -1;
@@ -1169,7 +1182,7 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         this.pauseTime = 0;
     }
     init(root) {
-        this.window = root;
+        super.init(root);
         this.windData = this.gps.pfdContainer.windData;
         this.cdiSource = this.gps.getChildById("cdi_source_Button");
         this.leftBearing = this.gps.getChildById("left_bearing_button");
@@ -1193,9 +1206,6 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         this.gps.makeButton(this.comActiveButton, SimVar.SetSimVarValue.bind(this, "K:COM_STBY_RADIO_SWAP", "number", 1));
         this.gps.makeButton(this.windMode, this.setWindMode.bind(this));
 
-    }
-    onEnter() {
-        this.window.setAttribute("state", "Active");
     }
     onUpdate(_deltaTime) {
         Avionics.Utils.diffAndSet(this.cdiSource_value, this.hsi.getAttribute("nav_source"));
@@ -1230,11 +1240,6 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
             let hours = Math.floor(Math.min(time / 3600, 99));
             return (hours < 10 ? "0" : "") + hours + (minutes < 10 ? ":0" : ":") + minutes + (seconds < 10 ? ":0" : ":") + seconds;
         }
-    }
-    onExit() {
-        this.window.setAttribute("state", "Inactive");
-    }
-    onEvent(_event) {
     }
     timer_Toggle() {
         if (this.isTimerOn) {
