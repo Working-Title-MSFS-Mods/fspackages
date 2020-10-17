@@ -771,6 +771,16 @@ class AS3X_Touch_Map extends MapInstrumentElement {
     set orientation(orientation) {
         this._orientation = orientation;
         WTDataStore.set(`Map.${this._mapId}.Orientation`, orientation);
+        switch (orientation) {
+            case AS3X_Touch_Map.ORIENTATION_TRK_UP:
+                Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "TRACK UP")
+                break;
+            case AS3X_Touch_Map.ORIENTATION_DTK_UP:
+                Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "DTK UP")
+                break;
+            default:
+                Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "NORTH UP")
+        }
     }
     get rotationDisabled() {
         return AS3X_Touch_DirectTo._rotationDisabled
