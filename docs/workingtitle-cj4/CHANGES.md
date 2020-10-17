@@ -16,6 +16,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Approach Waypoints: Added ability to skip and go direct to any waypoint on the approach
 * FMS Performance: Greatly improved the performance of the FMS / waypoint loading times
 * Volumetric External Lights: Incorporated the latest lighting package from Uwajimaya including volumetric external lighting
+* Improvements to PFD and MFD
 * Cabin Lights: Added the ability via the MOD SETTINGS menu to change the cabin light setting
 
 
@@ -65,7 +66,6 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Fixed some lighting bleed (thanks again Uwajimaya)
 
 ## Known Issues
-* You cannot currently select Direct-To of a fix on your approach that is not the initial approach fix. This is a limitation of the sim flightplan system at present. We are currently overhauling the flight plan management system to allow for much more flexibility and stability.
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
 * The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the various enhancements applied.
 * Some flight plan distances may still be misreported when the approach is activated. Please log an issue if you encounter this with details.
