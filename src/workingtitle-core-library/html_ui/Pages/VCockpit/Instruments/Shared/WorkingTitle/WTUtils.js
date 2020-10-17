@@ -1,7 +1,7 @@
 class WTUtils {
     static loadFile(file, callbackSuccess, callbackError) {
         let httpRequest = new XMLHttpRequest();
-        httpRequest.onreadystatechange = function (data) {
+        httpRequest.onreadystatechange = function () {
             if (this.readyState === XMLHttpRequest.DONE) {
                 let loaded = this.status === 200 || this.status === 0;
                 if (loaded) {
