@@ -558,55 +558,6 @@ as3000-tsc-horizontal-element {
         border: 0.4vh solid #454b4e;
         background: linear-gradient(#1f3445, black 10%);
         border-radius: 10px; }
-    
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay {
-          position: absolute;
-          top: 20%;
-          left: 25%;
-          width: 50%;
-          text-align: center;
-          font-size: 4vh;
-          color: white; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay .value {
-          font-size: 6vh;
-          color: aqua; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls {
-          position: absolute;
-          top: 40%; 
-          width: 100%; 
-          display: flex;
-          flex-flow: row nowrap;
-          justify-content: center;
-          align-items: center; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingDecreaseButton, as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingIncreaseButton {
-          height: 15vh;
-          width: 15vh; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls #LightingConfigSliderWrapper {
-          position: relative;
-          width: 40%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .LightingConfigSliderContainer {
-          width: 100%; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .slider {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 10%;
-            height: 15vh;
-            background: #00b2bf; 
-            border: solid 0.5vh black; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .slider::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 15vh;
-            background: transparent; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls #LightingConfigSliderWrapper .img {
-            position: absolute;
-            top: 0%;
-            left: 0%;
-            width: 100%;
-            height: 15vh;
-            -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 
 @keyframes rightEnter {
   0% {
@@ -635,7 +586,7 @@ as3000-tsc-horizontal-element {
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable {
           width: 100%;
           height: 100%;
-          border: 0.4vh solid white;
+          border: none;
           border-collapse: collapse; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable thead {
             display: block;
@@ -740,7 +691,7 @@ as3000-tsc-horizontal-element {
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable #SizeSetter #CurrentLegArrowSVG {
             overflow: visible; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable td {
-            border: 0.4vh solid white; }
+            border: 0.4vh solid #2c3032; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu {
           position: absolute;
           right: 0vw;
@@ -754,7 +705,7 @@ as3000-tsc-horizontal-element {
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu tr {
             height: 20%; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu tr td {
-              border: 0.4vh solid white;
+              border: none;
               height: 20%;
               width: 50%; }
               as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu tr td .gradientButton {
@@ -1152,7 +1103,81 @@ as3000-tsc-horizontal-element {
           height: 90%;
           font-size: 3.5vh;
           margin-left: 0.5vh;
-          overflow-y: scroll; }
+          overflow-y: scroll; } 
+          
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig .backgroundBox {
+        position: absolute;
+        top: 20%;
+        left: 15%;
+        width: 70%;
+        height: 60%;
+        border: 0.4vh solid #454b4e;
+        background: linear-gradient(#1f3445, black 10%);
+        border-radius: 10px; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay {
+            position: absolute;
+            top: 10%;
+            left: 25%;
+            width: 50%;
+            text-align: center;
+            font-size: 4vh;
+            color: white; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay .value {
+            font-size: 6vh;
+            color: aqua; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls {
+          position: absolute;
+          top: 40%; 
+          width: 100%; 
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: center;
+          align-items: center; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .gradientButton {
+            height: 15vh;
+            width: 15vh;
+            border-color: #bbbbbb; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls #LightingConfigSliderWrapper {
+            position: relative;
+            height: 15vh;
+            width: 60%;
+            background: linear-gradient(#5f7283 0.4vh, #1f3445, black 2vh);
+            background-color: black;
+            border: 3px solid #bbbbbb;
+            box-shadow: 0px 0px 0px 3px black inset;
+            border-radius: 4px; }
+            as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .sliderWindow {
+              position: absolute;
+              left: 2.5%;
+              top: 5%;
+              width: 95%;
+              height: 90%;
+              border: 2px solid grey;
+              background-color: black; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .LightingConfigSliderContainer {
+            width: 100%; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 10%;
+            height: 13vh;
+            background: #00b2bf; 
+            border: solid 0.5vh black; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls .slider::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 13vh;
+            background: transparent; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingControls #LightingConfigSliderWrapper .img {
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+            
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo #AirportInfo_SelectedWaypoint {
         width: 30%;
         height: 15vh; }
