@@ -1,6 +1,7 @@
 class WT_Waypoint_Selector_Model extends WT_Model {
     constructor(type, gps, softKeyController) {
         super();
+        this.type = type;
         this.gps = gps;
         this.facilityLoader = this.gps.facilityLoader;
         this.softKeyController = softKeyController;
@@ -255,7 +256,7 @@ class WT_Waypoint_Selector_Model extends WT_Model {
         waypoint.icao = icao;
         this.facilityLoader.getFacilityDataCB(waypoint.icao, (data) => {
             if (data) {
-                waypoint.SetFromIFacility(data);
+                waypoint.SetFromIFacility(data, () => console.log(JSON.stringify(waypoint.infos.airways.map(aw => aw.name))));
                 this.waypoint.value = waypoint;
             }
         });
@@ -359,7 +360,8 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
         this.getMap().zoomOut();
     }
     enter(inputStack) {
-        this.inputStackHandler = inputStack.push(this.inputLayer);
+        this.inputStackHandler = inputStack.push(new WT_Map_Input_Layer(this.getMap(), false));
+        inputStack.push(this.inputLayer);
         this.storedMenu = this.model.softKeyController.currentMenu;
         this.model.softKeyController.setMenu(new WT_Soft_Key_Menu());
         return new Promise((resolve, reject) => {

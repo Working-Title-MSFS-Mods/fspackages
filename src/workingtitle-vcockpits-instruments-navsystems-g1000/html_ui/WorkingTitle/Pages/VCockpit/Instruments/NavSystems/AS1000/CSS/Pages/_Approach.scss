@@ -1,12 +1,33 @@
 g1000-approach-page {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 60% 1fr;
+    grid-template-rows: 100%;
+    grid-template-areas: "map sidebar";
     position: absolute;
+    left: 0;
+    top: 0;
     height: 100%;
     width: 100%;
     background: $page_background_color;
-    grid-gap: 2vh;
-    padding: 0 2vh;
+
+    .map {
+        grid-area: map;
+        display: block;
+        position: relative;
+        width: 100%;
+        height: 100%;
+
+        bing-map {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    .sidebar {
+        grid-area: sidebar;
+        border-left: $border_width_thick solid $border_color;
+        padding: 0 2vh;
+    }
 
     .sequence {
         max-height: 20vh;

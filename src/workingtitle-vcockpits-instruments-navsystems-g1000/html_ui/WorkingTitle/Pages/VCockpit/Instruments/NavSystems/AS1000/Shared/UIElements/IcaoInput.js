@@ -62,9 +62,6 @@ class WT_Icao_Input extends HTMLElement {
         this._icao = icao;
         if (this._icao) {
             this.ident = icao.substring(7, 12);
-            SimVar.SetSimVarValue("C:fs9gps:IcaoSearchInitialIcao", "string", this.icao, this.instrumentIdentifier);
-            if (this.type)
-                SimVar.SetSimVarValue("C:fs9gps:IcaoSearchStartCursor", "string", this.type, this.instrumentIdentifier);
             this.updateDisplay();
         }
     }
@@ -76,6 +73,13 @@ class WT_Icao_Input extends HTMLElement {
     }
     get value() {
         return this.icao;
+    }
+    setEditingSimVars() {
+        SimVar.SetSimVarValue("C:fs9gps:IcaoSearchInitialIcao", "string", this.icao, this.instrumentIdentifier);
+        if (this.type !== null)
+            SimVar.SetSimVarValue("C:fs9gps:IcaoSearchStartCursor", "string", this.type, this.instrumentIdentifier);
+        else
+            SimVar.SetSimVarValue("C:fs9gps:IcaoSearchStartCursor", "string", "AWNV", this.instrumentIdentifier);
     }
     /**
      * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
@@ -137,10 +141,7 @@ class WT_Icao_Input extends HTMLElement {
         let inputLayer = new WT_Icao_Input_Input_Layer(this);
         this.inputStackManipulator = inputStack.push(inputLayer);
 
-        if (this.icao) {
-            SimVar.SetSimVarValue("C:fs9gps:IcaoSearchInitialIcao", "string", this.icao, this.instrumentIdentifier);
-        }
-        SimVar.SetSimVarValue("C:fs9gps:IcaoSearchStartCursor", "string", "A", this.instrumentIdentifier);
+        this.setEditingSimVars();
 
         let cb = () => {
             if (this.active) {

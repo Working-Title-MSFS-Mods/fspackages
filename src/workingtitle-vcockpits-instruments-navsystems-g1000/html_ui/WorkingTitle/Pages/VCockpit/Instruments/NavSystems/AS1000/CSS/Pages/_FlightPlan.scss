@@ -1,4 +1,16 @@
 g1000-flight-plan-page {
+    $active_width: 2ch;
+    $row_height: 3ch;
+
+    $width_ident: 1fr;
+    $width_dtk: 10vh;
+    $width_dis: 10vh;
+    $width_alt: 11vh;
+    $width_fuel: 10vh;
+    $width_ete: 10vh;
+    $width_eta: 10vh;
+    $width_bearing: 10vh;
+
     display: grid;
     height: 100%;
 
@@ -65,14 +77,13 @@ g1000-flight-plan-page {
         background: $page_background_color;
     }
 
-    // Flight plan container
     .flight-plan-header {
         border-bottom: $border_width_thin solid #fff;
     }
 
     .flight-plan-header-labels {
         display: grid;
-        grid-template-columns: 3fr 7ch 7ch 10ch;
+        grid-template-columns: $width_ident $width_dtk $width_dis $width_alt;
 
         > div {
             text-align: right;
@@ -82,8 +93,6 @@ g1000-flight-plan-page {
             display: none;
         }
     }
-
-    $row_height: 3ch;
 
     .dtk,
     .distance,
@@ -112,14 +121,14 @@ g1000-flight-plan-page {
     }
 
     .flight-plan-waypoints {
-        //-webkit-transform: rotateX(0deg);
+        -webkit-transform: rotateX(0deg);
         display: grid;
-        grid-template-columns: $row_height 1fr;
+        grid-template-columns: $active_width 1fr;
         grid-auto-rows: $row_height;
         align-items: center;
-        //overflow-y: scroll;
-        overflow: scroll;
+        overflow-y: scroll;
         height: 100%;
+        font-size: 1.1em;
     }
 
     g1000-flight-plan-header-line {
@@ -134,8 +143,12 @@ g1000-flight-plan-page {
     g1000-flight-plan-waypoint-line {
         grid-column-start: 2;
         display: grid;
-        grid-template-columns: 2vh 1fr 1fr 1fr 1fr;
+        grid-template-columns: 2vh $width_ident $width_dtk $width_dis $width_alt;
         color: $input_color;
+
+        .ident {
+            font-family: $font_family_mono;
+        }
 
         .ident,
         .altitude {
@@ -181,7 +194,7 @@ g1000-flight-plan-page {
 
     &[view-mode="wide"] {
         .flight-plan-header-labels {
-            grid-template-columns: 3fr 7ch 7ch 10ch 10ch 10ch 10ch 10ch;
+            grid-template-columns: $width_ident $width_dtk $width_dis $width_alt $width_fuel $width_ete $width_eta $width_bearing;
 
             .wide-only {
                 display: block;
@@ -189,7 +202,7 @@ g1000-flight-plan-page {
         }
 
         g1000-flight-plan-waypoint-line {
-            grid-template-columns: 2vh 1fr 7ch 7ch 10ch 10ch 10ch 10ch 10ch;
+            grid-template-columns: 2vh $width_ident $width_dtk $width_dis $width_alt $width_fuel $width_ete $width_eta $width_bearing;
         }
     }
 
@@ -205,6 +218,12 @@ g1000-flight-plan-page {
 
         svg {
             stroke: $color_gps;
+            align-items: center;
         }
+    }
+
+    .new-waypoint {
+        font-family: $font_family_mono;
+        grid-column-start: 2;
     }
 }

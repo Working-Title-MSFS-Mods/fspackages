@@ -1,6 +1,8 @@
 class WT_Procedure {
-    constructor(name) {
+    constructor(airport, name, procedureIndex) {
         this._name = name;
+        this.icao = airport.icao;
+        this.procedureIndex = procedureIndex;
     }
     getTransition(transitionIndex) {
         return null;
@@ -20,11 +22,17 @@ class WT_Procedure {
     get name() {
         return this._name;
     }
+    load(flightPlan, transitionIndex) {
+
+    }
+    activate(flightPlan, transitionIndex) {
+
+    }
 }
 
 class WT_Approach_Procedure extends WT_Procedure {
-    constructor(airport, approach) {
-        super(approach.name);
+    constructor(airport, approach, approachIndex) {
+        super(airport, approach.name, approachIndex);
 
         let frequency = airport.frequencies.find(f => {
             return f.name.replace("RW0", "").replace("RW", "").indexOf(approach.runway) !== -1;
@@ -42,21 +50,47 @@ class WT_Approach_Procedure extends WT_Procedure {
     }
     getSequence(transition, runwayIndex) {
         let waypoints = [];
-        if (transition !== null) {
-            waypoints.push(...transition.waypoints);
+        let map = waypoint => {
+            return {
+                icao: waypoint.icao,
+                bearing: waypoint.bearingInFP,
+                distance: waypoint.distanceInFP * 0.000539957,
+                ident: waypoint.ident,
+            }
         }
-        waypoints.push(...this.waypoints);
+        if (transition !== null) {
+            waypoints.push(...transition.waypoints.map(map));
+        }
+        waypoints.push(...this.waypoints.map(map));
 
         return waypoints;
     }
     getPrimaryFrequency() {
         return this.primaryFrequency;
     }
+    load(flightPlan, transitionIndex) {
+        transitionIndex = parseInt(transitionIndex);
+        return new Promise(resolve => {
+            console.log(`Setting destination to ${this.icao}...`);
+            flightPlan.setDestination(this.icao, () => {
+                console.log(`Loading approach ${this.procedureIndex} transition ${transitionIndex}...`);
+                flightPlan.setApproachIndex(this.procedureIndex, () => {
+                    console.log("Set approach index");
+                    resolve();
+                }, transitionIndex);
+            });
+        });
+    }
+    async activate(flightPlan, transitionIndex) {
+        console.log("Activating approach...");
+        await this.load(flightPlan, transitionIndex);
+        flightPlan.activateApproach();
+    }
 }
 
 class WT_Departure_Procedure extends WT_Procedure {
-    constructor(airport, departure) {
-        super(departure.name);
+    constructor(airport, departure, departureIndex) {
+        super(airport, departure.name, departureIndex);
         this.enRouteTransitions = departure.runwayTransitions;
         this.commonLegs = departure.commonLegs;
         this.runwayTransitions = departure.runwayTransitions;
@@ -72,24 +106,18 @@ class WT_Departure_Procedure extends WT_Procedure {
     }
     getSequence(transition, runwayIndex) {
         let waypoints = [];
-        if (transition !== null) {
-            waypoints.push(...transition.legs.map(leg => {
-                return {
-                    icao: leg.fixIcao,
-                    bearing: leg.course,
-                    distance: leg.distance * 0.000539957,
-                    ident: leg.fixIcao.substr(7, 5).trim()
-                }
-            }));
-        }
-        waypoints.push(...this.commonLegs.map(leg => {
+        let map = leg => {
             return {
                 icao: leg.fixIcao,
                 bearing: leg.course,
                 distance: leg.distance * 0.000539957,
                 ident: leg.fixIcao.substr(7, 5).trim()
             }
-        }));
+        };
+        if (transition !== null) {
+            waypoints.push(...transition.legs.map(map));
+        }
+        waypoints.push(...this.commonLegs.map(map));
 
         return waypoints;
     }
@@ -119,7 +147,7 @@ class WT_Procedure_Sub_Page {
 class WT_Procedure_Sub_Page_Approaches extends WT_Procedure_Sub_Page {
     airportUpdated(airport) {
         if (airport)
-            this.procedures.value = airport.approaches.map(approach => new WT_Approach_Procedure(airport, approach));
+            this.procedures.value = airport.approaches.map((approach, i) => new WT_Approach_Procedure(airport, approach, i));
     }
     getProcedure(procedureIndex) {
         return this.procedures.value[procedureIndex];
@@ -132,7 +160,7 @@ class WT_Procedure_Sub_Page_Approaches extends WT_Procedure_Sub_Page {
 class WT_Procedure_Sub_Page_Departures extends WT_Procedure_Sub_Page {
     airportUpdated(airport) {
         if (airport)
-            this.procedures.value = airport.departures.map(departure => new WT_Departure_Procedure(airport, departure));
+            this.procedures.value = airport.departures.map((departure, i) => new WT_Departure_Procedure(airport, departure, i));
         console.log("Updated departures");
     }
     getProcedure(procedureIndex) {
@@ -169,8 +197,10 @@ class WT_Approach_Page_Model extends WT_Model {
         this.mapCoordinates = new Subject();
 
         this.selectedProcedure = null;
+        this.selectedTransitionIndex = null;
         this.selectedTransition = null;
 
+        this.subPageIndex = new Subject(null);
         this.subPage = null;
         this.subPages = {
             "DP": new WT_Procedure_Sub_Page_Departures(this.airport),
@@ -178,7 +208,7 @@ class WT_Approach_Page_Model extends WT_Model {
             "STAR": null,
         }
 
-        this.showSubPage("DP");
+        this.showSubPage("APR");
 
         this.airport.subscribe(this.updateAirport.bind(this));
         this.sequence.subscribe(this.updateWaypoints.bind(this));
@@ -187,6 +217,7 @@ class WT_Approach_Page_Model extends WT_Model {
         if (this.subPageUnsubscribe) {
             this.subPageUnsubscribe();
         }
+        this.subPageIndex.value = id;
         this.subPage = this.subPages[id];
         this.subPageUnsubscribe = this.subPage.procedures.subscribe(procedures => this.procedures.value = procedures);
         this.procedureType.value = this.subPage.getProcedureType();
@@ -257,6 +288,7 @@ class WT_Approach_Page_Model extends WT_Model {
         }
     }
     selectTransition(transitionIndex) {
+        this.selectedTransitionIndex = transitionIndex;
         this.selectedTransition = transitionIndex !== null ? this.selectedProcedure.getTransition(transitionIndex) : null;
         this.updateSequence();
     }
@@ -276,8 +308,8 @@ class WT_Approach_Page_Model extends WT_Model {
             }
         });
     }
-    loadApproach() {
-        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", 52)
+    loadProcedure() {
+        /*SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", 52)
             .then(() => SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", 0))
             .then(() => SimVar.SetSimVarValue("C:fs9gps:FlightPlanAddWaypoint", "number", 0))
             .then(() => this.flightPlan.updateFlightPlan())
@@ -301,7 +333,7 @@ class WT_Approach_Page_Model extends WT_Model {
             .then(() => {
                 console.log("Lat: " + SimVar.GetSimVarValue("C:fs9gps:FlightPlanWaypointLatitude", "degrees"));
                 console.log("Long: " + SimVar.GetSimVarValue("C:fs9gps:FlightPlanWaypointLongitude", "degrees"));
-            });
+            });*/
 
 
         //SimVar.SetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number", 1);
@@ -318,25 +350,28 @@ class WT_Approach_Page_Model extends WT_Model {
         .then(() => this.flightPlan.updateFlightPlan())
         .then(() => console.log("FPL: " + SimVar.GetSimVarValue("C:fs9gps:FlightPlanWaypointsNumber", "number")));*/
     }
-    activateApproach() {
+    activateProcedure() {
         this.gps.showConfirmDialog("Are you sure you want to activate this approach?").then(() => {
-            if (this.airport.value.infos.icao && this.approachIndex !== null) {
-                SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewApproachAirport", "string", this.airport.value.infos.icao);
-                SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewApproachApproach", "number", this.approachIndex);
-                SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewApproachTransition", "number", this.transitionIndex ? this.transitionIndex : 0);
-                SimVar.SetSimVarValue("C:fs9gps:FlightPlanLoadApproach", "number", 2);
-                this.flightPlan.setActiveWaypointIndex(0);
-                console.log("FPL: " + SimVar.GetSimVarValue("C:fs9gps:FlightPlanWaypointsNumber", "number"));
-                console.log("APR: " + SimVar.GetSimVarValue("C:fs9gps:FlightPlanApproachWaypointsNumber", "number"));
+            this.selectedProcedure.activate(this.flightPlan, this.selectedTransitionIndex !== null ? this.selectedTransitionIndex : 0);
+        });
+    }
+}
 
-                /*this.flightPlan.setDestination(this.airport.value.infos.icao, () => {                    
-                    this.flightPlan.setApproachIndex(this.approachIndex, () => {
-                        console.log("Set approach index");
-                        this.flightPlan.activateApproach();
-                        console.log("Activated approach");
-                    }, this.transitionIndex ? this.transitionIndex : 0);
-                });*/
-            }
+class WT_Procedure_Page_Menu extends WT_Soft_Key_Menu {
+    /**
+     * @param {WT_Approach_Page_View} view 
+     */
+    constructor(model) {
+        super();
+        let buttons = {
+            dp: this.addSoftKey(6, new WT_Soft_Key("DP", () => model.showSubPage("DP"))),
+            star: this.addSoftKey(7, new WT_Soft_Key("STAR", () => model.showSubPage("STAR"))),
+            apr: this.addSoftKey(8, new WT_Soft_Key("APR", () => model.showSubPage("APR"))),
+        };
+        model.subPageIndex.subscribe(page => {
+            buttons.dp.selected = page == "DP";
+            buttons.star.selected = page == "STAR";
+            buttons.apr.selected = page == "APR";
         });
     }
 }
@@ -347,6 +382,16 @@ class WT_Approach_Page_View extends WT_HTML_View {
 
         this.inputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this, "drop-down-selector, numeric-input, string-input, icao-input, toggle-switch, .sequence-entry, .selectable, selectable-button"));
         this.inputLayer.setExitHandler(this);
+    }
+    /**
+     * @param {WT_Soft_Key_Controller} softKeyController 
+     */
+    setSoftKeyController(softKeyController) {
+        this.softKeyController = softKeyController;
+    }
+    setMapElement(map) {
+        this.elements.map.appendChild(map);
+        this.map = map;
     }
     /**
      * @param {WT_Approach_Page_Model} model 
@@ -360,6 +405,8 @@ class WT_Approach_Page_View extends WT_HTML_View {
         this.model.primaryFrequency.subscribe(this.updatePrimaryFrequency.bind(this));
 
         this.elements.icaoInput.setQuickSelect(this.model.waypointQuickSelect);
+
+        this.softKeyMenu = new WT_Procedure_Page_Menu(this.model);
 
         return;
         this.mapProperties = new CombinedSubject([this.model.mapCoordinates, this.model.waypoints], (coordinates, sequence) => {
@@ -397,23 +444,6 @@ class WT_Approach_Page_View extends WT_HTML_View {
 
         //this.elements.icaoInput.ident = this.model.icao;
     }
-    buildMapColors() {
-        let curve = new Avionics.Curve();
-        curve.interpolationFunction = Avionics.CurveTool.StringColorRGBInterpolation;
-
-        let svgConfig = new SvgMapConfig();
-        curve.add(0, svgConfig.convertColor("#000000"));
-        curve.add(16000, svgConfig.convertColor("#000000"));
-
-        let colors = [SvgMapConfig.hexaToRGB(svgConfig.convertColor("#000080"))];
-
-        for (let i = 0; i < 60; i++) {
-            let color = curve.evaluate(i * 30000 / 60);
-            colors[i + 1] = SvgMapConfig.hexaToRGB(color);
-        }
-
-        return colors;
-    }
     connectedCallback() {
         let template = document.getElementById('approach-page');
         let templateContent = template.content;
@@ -421,13 +451,13 @@ class WT_Approach_Page_View extends WT_HTML_View {
         this.appendChild(templateContent.cloneNode(true));
         super.connectedCallback();
 
-        let bingMap = this.elements.bingMap;
+        /*let bingMap = this.elements.bingMap;
         bingMap.setMode(EBingMode.VFR);
         bingMap.setBingId("approachMap");
         bingMap.addConfig({ resolution: 1024, aspectRatio: 1, heightColors: this.buildMapColors() });
         bingMap.setConfig(0);
         bingMap.setReference(EBingReference.PLANE);
-        bingMap.setVisible(true);
+        bingMap.setVisible(true);*/
 
         this.elements.procedureSelector.addEventListener("change", e => this.model.selectProcedure(e.target.value));
         this.elements.transitionSelector.addEventListener("change", e => this.model.selectTransition(e.target.value));
@@ -436,16 +466,16 @@ class WT_Approach_Page_View extends WT_HTML_View {
     updateIcao(icao) {
         this.model.setICAO(icao);
     }
-    loadApproach() {
-        this.model.loadApproach();
+    loadProcedure() {
+        this.model.loadProcedure();
     }
-    activateApproach() {
-        this.model.activateApproach();
+    activateProcedure() {
+        this.model.activateProcedure();
     }
     updateMap(properties) {
         let coordinates = properties.coordinates;
         if (coordinates) {
-            this.elements.bingMap.setParams({ lla: coordinates, radius: properties.radius * 1852 }); // 1852 converts NM to Metres
+            //this.elements.bingMap.setParams({ lla: coordinates, radius: properties.radius * 1852 }); // 1852 converts NM to Metres
         }
         this.renderSequence(properties);
     }
@@ -570,6 +600,9 @@ class WT_Approach_Page_View extends WT_HTML_View {
         this.inputStack = inputStack;
 
         this.inputStackHandle = inputStack.push(this.inputLayer);
+        this.previousSoftKeyMenu = this.softKeyController.currentMenu;
+        this.softKeyController.setMenu(this.softKeyMenu);
+        this.map.mapConfigId = 1;
     }
     back() {
         this.exit();
@@ -579,6 +612,8 @@ class WT_Approach_Page_View extends WT_HTML_View {
             this.inputStackHandle.pop();
             this.inputStackHandle = null;
         }
+        this.softKeyController.setMenu(this.previousSoftKeyMenu);
+        this.map.mapConfigId = 0;
         this.parentNode.removeChild(this);
     }
 }

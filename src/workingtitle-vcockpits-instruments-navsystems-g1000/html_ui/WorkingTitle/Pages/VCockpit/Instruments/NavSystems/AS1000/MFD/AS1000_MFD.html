@@ -407,15 +407,14 @@
     </template>
 
     <template id="approach-page">
-        <section class="map">
-            <div style="position:relative;">
-                <bing-map data-element="bingMap"></bing-map>
-                <svg data-element="waypointSvg" viewBox="0 0 1000 1000" style="position:absolute; left:0; right:0; top:0; bottom:0;">
-                    <path data-element="allTransitionsPath" stroke="#aaaaaa" stroke-width="6" fill="none"></path>
-                    <path data-element="selectedApproachPath" stroke="magenta" stroke-width="10" fill="none"></path>
-                    <g data-element="selectedApproachWaypoints"></g>
-                </svg>
-            </div>
+        <section class="map-container" data-element="map">
+            <!--<bing-map data-element="bingMap"></bing-map>-->
+            <div data-element="map" class="map"></div>
+            <svg data-element="waypointSvg" viewBox="0 0 1000 1000" style="position:absolute; left:0; right:0; top:0; bottom:0;">
+                <path data-element="allTransitionsPath" stroke="#aaaaaa" stroke-width="6" fill="none"></path>
+                <path data-element="selectedApproachPath" stroke="magenta" stroke-width="10" fill="none"></path>
+                <g data-element="selectedApproachWaypoints"></g>
+            </svg>
         </section>
         <section class="sidebar">
             <div class="category">
@@ -461,9 +460,9 @@
                 <section class="content sequence scrollable-container" data-element="sequenceList"></section>
             </div>
             <div class="load-or-activate">
-                <selectable-button data-element="loadApproach" data-click="loadApproach">LOAD?</selectable-button>
+                <selectable-button data-element="loadApproach" data-click="loadProcedure">LOAD?</selectable-button>
                 <span>OR</span>
-                <selectable-button data-element="activateApproach" data-click="activateApproach">ACTIVATE</selectable-button>
+                <selectable-button data-element="activateApproach" data-click="activateProcedure">ACTIVATE</selectable-button>
             </div>
         </section>
     </template>
@@ -552,20 +551,20 @@
                     </div>
                     <div class="flight-plan-waypoints scrollable-container" data-element="flightPlanWaypoints">
                         <div class="flight-plan-marker" data-element="activeLegMarker">
-                            <svg viewBox="0 0 100 100">
-                                <path d="M100 50 L50 50 Q20 50 20 80 L20 100" stroke="magenta" stroke-width="20" fill="none"></path>
+                            <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
+                                <path d="M100 50 L50 50 Q20 50 20 80 L20 200" stroke="magenta" stroke-width="20" fill="none"></path>
                             </svg>
                             <div style="overflow:hidden;">
                                 <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%;">
                                     <path d="M20 0 L20 100" stroke="magenta" stroke-width="20" fill="none"></path>
                                 </svg>
                             </div>
-                            <svg viewBox="0 0 100 100">
-                                <path d="M20 0 L20 30 Q20 50 50 50 L60 50" stroke="magenta" stroke-width="20" fill="none"></path>
+                            <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
+                                <path d="M20 -100 L20 30 Q20 50 50 50 L60 50" stroke="magenta" stroke-width="20" fill="none"></path>
                                 <path d="M60 20 L60 80 L100 50 Z" fill="magenta"></path>
                             </svg>
                         </div>
-                        <div class="flight-plan-waypoint" data-element="newWaypointLine">
+                        <div class="new-waypoint" data-element="newWaypointLine">
                             <div></div>
                             <div class="ident"><selectable-button data-click="createNewWaypoint" class="new-waypoint">__________</selectable-button></div>
                         </div>
@@ -705,7 +704,10 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/FileHandler.js"></script>
 
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/InputStack.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Input/Stack.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Input/Layer.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Input/Layers/Map.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Input/Layers/Selectables.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/BaseAS1000.js"></script>
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/RadioFrequencies.js"></script>
@@ -731,7 +733,7 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/Credits.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/ModSettings.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/Settings.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/FlightPlan/FlightPlan.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/FlightPlan/FlightPlan.js?sdfsdf"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Map/Map.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Nearest/Airports.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Procedures/Approach.js"></script>

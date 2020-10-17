@@ -46,7 +46,6 @@ class WT_Numeric_Input extends HTMLElement {
         return this._value;
     }
     set value(value) {
-        value = parseInt(value);
         if (this._value !== value) {
             this._value = value;
             let evt = document.createEvent("HTMLEvents");
@@ -70,7 +69,12 @@ class WT_Numeric_Input extends HTMLElement {
                         this.elements.digits[i].textContent = stringValue[i];
                     }
                 } else {
-                    let stringValue = value.toFixed(0).padStart(this.elements.digits.length, "0");
+                    let stringValue = "";
+                    if (this.value === null) {
+                        stringValue = "___________________".slice(0, this.elements.digits.length);
+                    } else {
+                        stringValue = value.toFixed(0).padStart(this.elements.digits.length, "0");
+                    }
                     let pastZeroes = false;
                     for (let i = 0; i < this.elements.digits.length; i++) {
                         let digit = stringValue[i];
@@ -116,6 +120,9 @@ class WT_Numeric_Input extends HTMLElement {
         if (this.hasAttribute("max")) {
             this.max = parseInt(this.getAttribute("max"));
         }
+        if (this.hasAttribute("empty")) {
+            this.empty = parseInt(this.getAttribute("empty"));
+        }
         let units = this.getAttribute("units");
         if (units) {
             let unitsNode = document.createElement("span");
@@ -123,7 +130,11 @@ class WT_Numeric_Input extends HTMLElement {
             unitsNode.textContent = units;
             this.appendChild(unitsNode);
         }
-        this.value = parseInt(this.getAttribute("value"));
+        if (this.hasAttribute("value")) {
+            this.value = parseInt(this.getAttribute("value"));
+        } else {
+            this.value = null;
+        }
         this.updateDisplay();
     }
     back() {

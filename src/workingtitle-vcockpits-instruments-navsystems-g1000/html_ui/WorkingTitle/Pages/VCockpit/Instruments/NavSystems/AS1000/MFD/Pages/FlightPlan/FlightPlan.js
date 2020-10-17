@@ -74,14 +74,21 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         });
     }
     deleteWaypoint(waypointIndex) {
-        this.flightPlan.removeWaypoint(waypointIndex, () => {
-            console.log(`Deleted waypoint ${waypointIndex}`);
-        });
+        waypointIndex = parseInt(waypointIndex);
+        this.gps.showConfirmDialog(`Remove ${this.flightPlan.getWaypoint(waypointIndex).ident}?`).then(() => this.flightPlan.removeWaypoint(waypointIndex, false, this.updateWaypoints.bind(this)));
+    }
+    deleteDeparture() {
+        this.gps.showConfirmDialog("Are you sure you want to delete the departure?").then(() => this.flightPlan.removeDeparture());
+    }
+    deleteArrival() {
+        this.gps.showConfirmDialog("Are you sure you want to delete the arrival?").then(() => this.flightPlan.removeArrival());
+    }
+    deleteApproach() {
+        this.gps.showConfirmDialog("Are you sure you want to delete the approach?").then(() => this.flightPlan.deactivateApproach());
     }
     createNewWaypoint() {
         this.gps.showWaypointSelector().then(icao => {
-            this.flightPlan.addWaypoint(icao);
-            console.log(`Added ${icao} to waypoints`);
+            this.flightPlan.addWaypoint(icao, 100, this.updateWaypoints.bind(this));
         });
     }
     updateWaypoints() {
@@ -95,6 +102,14 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
             origin: flightPlan.getOrigin(),
             destination: flightPlan.getDestination(),
         }
+    }
+    centerOnLeg(waypointIndex) {
+        let waypoints = this.flightPlan.getWaypoints();
+        let centerOn = [waypoints[waypointIndex].infos.coordinates];
+        if (waypointIndex > 0) {
+            centerOn.push(waypoints[waypointIndex - 1].infos.coordinates);
+        }
+        this.mapInstrument.centerOnCoordinates(centerOn, centerOn.length > 1 ? null : 20);
     }
     softKeyBack() {
         this.softKeyController.setMenu(this.softKeyMenus.main);
@@ -120,22 +135,27 @@ class WT_Flight_Plan_Input_Layer extends Selectables_Input_Layer {
         this.flightPlanView = flightPlanView;
     }
     onCLR() {
-        this.flightPlanView.deleteSelectedWaypoint();
+        this.flightPlanView.handleDelete();
     }
 }
 
-class WT_Flight_Plan_Waypoint_Line extends WT_HTML_View {
-    constructor() {
+class WT_Flight_Plan_Line extends WT_HTML_View {
+
+}
+
+class WT_Flight_Plan_Waypoint_Line extends WT_Flight_Plan_Line {
+    constructor(view) {
         super();
         this._index = null;
         this._waypoint = null;
+        this.view = view;
 
         this.innerHTML = `
         <div></div>
         <div class="ident selectable" data-element="ident"></div>
         <div class="dtk" data-element="dtk"></div>
         <div class="distance"><span data-element="distance"></span><span class="units-small">NM</span></div>
-        <div class="altitude"><numeric-input digits="5" units="FT" value="0" class="altitude" data-element="altitude"></numeric-input></div>
+        <div class="altitude"><numeric-input digits="5" units="FT" value="0" class="altitude" data-element="altitude" empty="_____"></numeric-input></div>
         <div class="fuel"><span data-element="fod"></span><span class="units-small">GL</span></div>
         <div class="ete" data-element="ete"></div>
         <div class="eta" data-element="eta"></div>
@@ -143,7 +163,8 @@ class WT_Flight_Plan_Waypoint_Line extends WT_HTML_View {
 
         this.bindElements();
 
-        DOMUtilities.AddScopedEventListener(this, ".altitude numeric-input", "change", (e, node) => {
+        this.querySelector(".altitude numeric-input").addEventListener("change", e => {
+            let node = e.target;
             let evt = new CustomEvent(WT_Flight_Plan_Waypoint_Line.EVENT_ALTITUDE_CHANGED, {
                 bubbles: true,
                 detail: {
@@ -151,7 +172,7 @@ class WT_Flight_Plan_Waypoint_Line extends WT_HTML_View {
                     altitude: node.value
                 }
             });
-            element.dispatchEvent(evt);
+            this.dispatchEvent(evt);
         });
     }
     secondsToDuration(v) {
@@ -177,6 +198,9 @@ class WT_Flight_Plan_Waypoint_Line extends WT_HTML_View {
     get waypoint() {
         return this._waypoint;
     }
+    get coordinates() {
+        return this.waypoint.infos.coordinates;
+    }
     set waypoint(waypoint) {
         this._waypoint = waypoint;
         this.dataset.altitudeMode = waypoint.legAltitudeDescription;
@@ -186,46 +210,61 @@ class WT_Flight_Plan_Waypoint_Line extends WT_HTML_View {
         let infos = waypoint.GetInfos();
         this.ident = infos.ident != "" ? infos.ident : waypoint.ident;
         this.dtk = waypoint.bearingInFP;
-        this.distance = waypoint.distanceInFP;
-        this.altitude = waypoint.altitudeinFP;
+        if (this.view.activeLeg && this.index <= this.view.activeLeg.origin) {
+            this.bearing = null;
+            this.fod = null;
+            this.ete = null;
+            this.eta = null;
+            this.altitude = null;
+        } else if (this.view.activeLeg && this.index == this.view.activeLeg.destination) {
+            let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+            let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+            let planeCoordinates = new LatLong(lat, long);
+            this.bearing = Avionics.Utils.computeGreatCircleHeading(planeCoordinates, infos.coordinates);
+        } else {
+            this.bearing = waypoint.bearingInFP;
+        }
         /*this.altitude = waypoint.altitudeinFP;
         let altitudeModifiable = waypoint.legAltitudeDescription == 0;*/
-        let gph = SimVar.GetSimVarValue("ENG FUEL FLOW GPH:1", "gallons per hour");
-        let fob = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY:1", "gallon");
-        this.fod = Math.max(0, fob - gph * (waypoint.estimatedTimeEnRouteFP / 3600));
-        this.ete = waypoint.estimatedTimeEnRouteFP;
-        this.eta = waypoint.estimatedTimeOfArrivalFP;
-        this.bearing = waypoint.bearingInFP;
+        if (!this.view.activeLeg || this.index >= this.view.activeLeg.destination) {
+            let gph = SimVar.GetSimVarValue("ENG FUEL FLOW GPH:1", "gallons per hour");
+            let fob = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY:1", "gallon");
+            this.fod = Math.max(0, fob - gph * (waypoint.estimatedTimeEnRouteFP / 3600));
+            this.ete = waypoint.estimatedTimeEnRouteFP;
+            this.eta = waypoint.estimatedTimeOfArrivalFP;
+            this.altitude = waypoint.altitudeinFP;
+        }
     }
     set ident(ident) {
         this.elements.ident.textContent = ident;
     }
     set dtk(dtk) {
-        this.elements.dtk.textContent = Math.floor(dtk) + "°";
+        this.elements.dtk.textContent = dtk != null ? (Math.floor(dtk) + "°") : "___°";
     }
     set distance(distance) {
-        this.elements.distance.textContent = distance.toFixed(distance < 10 ? 1 : 0);
+        this.elements.distance.textContent = distance != null ? distance.toFixed(distance < 10 ? 1 : 0) : "____";
     }
     set altitude(altitude) {
-        this.elements.altitude.value = Math.floor(altitude);
+        this.elements.altitude.value = altitude > 0 ? Math.floor(altitude) : null;
     }
     set fod(fod) {
-        this.elements.fod.textContent = Math.floor(fod, 1);
+        this.elements.fod.textContent = fod != null ? Math.floor(fod, 1) : "";
     }
     set ete(ete) {
-        this.elements.ete.textContent = this.secondsToDuration(ete);
+        this.elements.ete.textContent = ete != null ? this.secondsToDuration(ete) : "";
     }
     set eta(eta) {
-        this.elements.eta.textContent = this.secondsToZulu(eta);
+        this.elements.eta.textContent = eta != null ? this.secondsToZulu(eta) : "";
     }
     set bearing(bearing) {
-        this.elements.bearing.textContent = Math.floor(bearing) + "°";
+        this.elements.bearing.textContent = bearing != null ? Math.floor(bearing) + "°" : "";
     }
 }
 WT_Flight_Plan_Waypoint_Line.EVENT_ALTITUDE_CHANGED = "altitude_changed";
+WT_Flight_Plan_Waypoint_Line.EVENT_WAYPOINT_DELETED = "waypoint_deleted";
 customElements.define("g1000-flight-plan-waypoint-line", WT_Flight_Plan_Waypoint_Line);
 
-class WT_Flight_Plan_Header_Line extends WT_HTML_View {
+class WT_Flight_Plan_Header_Line extends WT_Flight_Plan_Line {
     constructor() {
         super();
         this.classList.add("selectable");
@@ -236,6 +275,9 @@ class WT_Flight_Plan_Header_Line extends WT_HTML_View {
     }
     set type(type) {
         this.setAttribute("type", type);
+    }
+    get type() {
+        return this.getAttribute("type");
     }
     set text(text) {
         this.textContent = text;
@@ -251,9 +293,14 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
 
         this.waypointLines = [];
         this.headerLines = [];
+        this.activeLeg = null;
 
-        DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line", WT_Flight_Plan_Waypoint_Line.EVT_ALTITUDE_CHANGED, e => {
-            this.model.setAltitude(e.detail.waypointIndex, e.detail.value);
+        DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line", WT_Flight_Plan_Waypoint_Line.EVENT_ALTITUDE_CHANGED, e => {
+            this.model.setAltitude(e.detail.waypointIndex, e.detail.altitude);
+        });
+
+        DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line .ident", "highlighted", e => {
+            this.model.centerOnLeg(e.detail.element.parentNode.index);
         });
     }
     /**
@@ -265,8 +312,6 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
         model.activeLeg.subscribe(this.updateActiveLeg.bind(this));
 
         model.viewMode.subscribe(viewMode => this.setAttribute("view-mode", viewMode));
-
-        this.elements.map.appendChild(this.model.mapInstrument);
     }
     secondsToDuration(v) {
         let hours = Math.floor(v / 3600);
@@ -289,13 +334,29 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
         let destination = waypoints.destination;
 
         let waypointIndex = 0;
+        let cumulativeDistance = 0;
         let waypointLine = (waypoint, type) => {
             let element = this.waypointLines[waypointIndex];
             if (!element) {
-                element = new WT_Flight_Plan_Waypoint_Line();
+                element = new WT_Flight_Plan_Waypoint_Line(this);
             }
             element.waypoint = waypoint;
             element.type = type;
+
+            let legDistance = 0;
+            if (this.activeLeg && waypointIndex <= this.activeLeg.origin) {
+                legDistance = null;
+            } else if (this.activeLeg && waypointIndex == this.activeLeg.destination) {
+                let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+                let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+                let planeCoordinates = new LatLong(lat, long);
+                legDistance = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, waypoint.infos.coordinates);
+            } else {
+                legDistance = waypoint.distanceInFP;
+            }
+            cumulativeDistance += legDistance;
+            element.distance = this.model.distanceMode.value == "leg" ? legDistance : cumulativeDistance;
+
             element.index = waypointIndex++;
             return element;
         }
@@ -304,7 +365,7 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
         let headerLine = (type, text) => {
             let element = this.headerLines[headerIndex++];
             if (!element) {
-                element = new WT_Flight_Plan_Header_Line();
+                element = new WT_Flight_Plan_Header_Line(this);
             }
             element.type = type;
             element.text = text;
@@ -322,6 +383,26 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
         if (departure.length == 0 && origin) {
             lines.push(waypointLine(flightPlan.getOrigin()));
         }
+        /*let currentAirway = null;
+        for (let i in enroute) {
+            let waypoint = enroute[i];
+            let next = enroute[i + 1];
+            let indented = currentAirway != null;
+            if (next) {
+                let commonAirway = IntersectionInfo.GetCommonAirway(waypoint, next);
+                if (commonAirway)
+                    console.log(JSON.stringify(commonAirway));
+                if (!currentAirway || !commonAirway || currentAirway.name != commonAirway.name) {
+                    indented = currentAirway != null;
+                    currentAirway = commonAirway;
+                    if (currentAirway) {
+                        lines.push(headerLine("airway", `Airway - ${currentAirway.name}`));
+                        indented = true;
+                    }
+                }
+            }
+            lines.push(waypointLine(waypoint, `Enroute`));
+        }*/
         lines.push(...enroute.map(waypointLine, "enroute"));
         if (arrival.length > 0) {
             lines.push(headerLine("arrival", `Arrival - ${flightPlan.getArrival().name}`));
@@ -352,22 +433,44 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
         this.headerLines = lines.filter(line => line.tagName == "G1000-FLIGHT-PLAN-HEADER-LINE");
         this.waypointLineIndexes = waypointLines;
 
-        DOMUtilities.RemoveChildren(this.elements.flightPlanWaypoints, "g1000-flight-plan-waypoint-line, g1000-flight-plan-header-line");
-        lines.forEach(line => this.elements.flightPlanWaypoints.insertBefore(line, this.elements.newWaypointLine));
+        lines.unshift(this.elements.activeLegMarker);
+        lines.push(this.elements.newWaypointLine);
+        DOMUtilities.repopulateElement(this.elements.flightPlanWaypoints, lines);
 
         this.updateMap();
     }
     updateMap() {
-        this.model.mapInstrument.centerOnCoordinates(this.model.flightPlan.getWaypoints().map(waypoint => waypoint.infos.coordinates));
+        let waypoints = [];
+        //waypoints.push(...this.model.flightPlan.getWaypoints());
+        //waypoints.push(...this.model.flightPlan.getApproachWaypoints());
+        //this.model.mapInstrument.centerOnCoordinates(waypoints.map(waypoint => waypoint.infos.coordinates));
     }
-    deleteSelectedWaypoint() {
+    handleDelete() {
         let selectedElement = this.inputLayer.selectedElement;
-        if (selectedElement && "waypointIndex" in selectedElement.dataset) {
-            this.model.deleteWaypoint(selectedElement.dataset.waypointIndex);
+        if (!selectedElement)
+            return;
+        let waypointLine = DOMUtilities.GetClosestParent(selectedElement, "G1000-FLIGHT-PLAN-WAYPOINT-LINE");
+        if (waypointLine) {
+            this.model.deleteWaypoint(waypointLine.index);
+        }
+        if (selectedElement.tagName == "G1000-FLIGHT-PLAN-HEADER-LINE") {
+            switch (selectedElement.type) {
+                case "departure":
+                    this.model.deleteDeparture();
+                    break;
+                case "arrival":
+                    this.model.deleteArrival();
+                    break;
+                case "approach":
+                    this.model.deleteApproach();
+                    break;
+            }
         }
     }
     waypointIndexToLineIndex(waypointIndex) {
-        return this.waypointLineIndexes[waypointIndex];
+        let r = this.waypointLineIndexes[waypointIndex];
+        console.log("R: " + r);
+        return r;
     }
     updateActiveLeg(leg) {
         console.log("Updated active leg");
@@ -378,6 +481,7 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
         } else {
             this.elements.activeLegMarker.style.visibility = "hidden";
         }
+        this.activeLeg = leg;
     }
     createNewWaypoint() {
         this.model.createNewWaypoint();
@@ -406,15 +510,17 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
     }
     activate() {
         this.model.showMainMenu();
+        this.elements.map.appendChild(this.model.mapInstrument);
     }
     deactivate() {
         this.model.restoreMenu();
+        this.elements.map.removeChild(this.model.mapInstrument);
     }
     update(dt) {
         if (!this.time)
             this.time = dt;
         this.time += dt;
-        if (this.time > 1000) {
+        if (this.time > 100) {
             this.model.updateWaypoints();
             this.time = 0;
         }

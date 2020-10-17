@@ -73,17 +73,20 @@ DOMUtilities.repopulateElement = function (listElement, elements) {
     let firstElement = listElement.firstChild;
     let previousElement = null;
     let first = true;
+    let modifications = 0;
     for (let element of elements) {
         if (previousElement && previousElement.nextSibling == element || (first && firstElement == element)) {
         } else {
             if (previousElement && previousElement.nextSibling) {
                 listElement.insertBefore(element, first ? listElement.firstChild : previousElement.nextSibling);
+                modifications++;
             } else {
                 if (first) {
                     listElement.insertBefore(element, listElement.firstChild);
                 } else {
                     listElement.appendChild(element);
                 }
+                modifications++;
             }
         }
         previousElement = element;
@@ -92,6 +95,7 @@ DOMUtilities.repopulateElement = function (listElement, elements) {
     if (previousElement) {
         let remove = previousElement.nextSibling;
         while (remove) {
+            modifications++;
             let next = remove.nextSibling;
             listElement.removeChild(remove);
             remove = next;

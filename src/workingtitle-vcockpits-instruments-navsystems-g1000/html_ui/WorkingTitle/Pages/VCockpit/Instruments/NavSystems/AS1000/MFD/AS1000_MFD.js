@@ -44,6 +44,32 @@ class AS1000_MFD extends BaseAS1000 {
             ])
         ];*/
         this.mapElement2 = document.querySelector("#MapInstrument");
+        this.mapElement2.init(this);
+        this.mapElement2.parentNode.removeChild(this.mapElement2);
+        this.inputStack.push(new WT_Map_Input_Layer(this.mapElement2));
+
+        /*function buildMapColors() {
+            let curve = new Avionics.Curve();
+            curve.interpolationFunction = Avionics.CurveTool.StringColorRGBInterpolation;
+
+            let svgConfig = new SvgMapConfig();
+            curve.add(0, svgConfig.convertColor("#000000"));
+            curve.add(16000, svgConfig.convertColor("#000000"));
+
+            let colors = [SvgMapConfig.hexaToRGB(svgConfig.convertColor("#000080"))];
+
+            for (let i = 0; i < 60; i++) {
+                let color = curve.evaluate(i * 30000 / 60);
+                colors[i + 1] = SvgMapConfig.hexaToRGB(color);
+            }
+
+            return colors;
+        }
+
+        let proceduresMapConfig = { resolution: 1024, aspectRatio: 1, heightColors: buildMapColors() };
+        let bingMap = this.mapElement2.querySelector("bing-map");
+        bingMap.addConfig(proceduresMapConfig);*/
+
         this.pageController = new WT_Page_Controller([
             {
                 name: "MAP",
@@ -73,10 +99,11 @@ class AS1000_MFD extends BaseAS1000 {
             }
         ], this.pageTitle);
         this.pageController.handleInput(this.inputStack);
-        this.mapElement = new MFD_MapElement();
-        this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "RightInfos", this.mapElement));
+        //this.mapElement = new MFD_MapElement();
+        //this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "RightInfos", this.mapElement));
         this.miniMap = document.querySelector("#MiniMap");
         this.miniMap.init(this);
+        this.miniMap.parentNode.removeChild(this.miniMap);
 
         this.electricityAvailable = new Subject(this.isElectricityAvailable());
         this.fuelUsed = new WT_Fuel_Used(["FUEL LEFT QUANTITY", "FUEL RIGHT QUANTITY"]);
@@ -108,7 +135,7 @@ class AS1000_MFD extends BaseAS1000 {
         this.showMainMenu();
 
         this.inputStack.push(new Base_Input_Layer(this));
-        //this.pageController.goTo("MAP", "Map");
+        this.pageController.goTo("MAP", "Map");
     }
     initDefaultSoftKeys() {
         let engine = new WT_Soft_Key("ENGINE", this.showEngineMenu.bind(this));
@@ -142,6 +169,8 @@ class AS1000_MFD extends BaseAS1000 {
         model.setICAO("A      EGLL ");
         let view = document.createElement("g1000-approach-page");
         this.pageContainer.appendChild(view);
+        view.setMapElement(this.mapElement2);
+        view.setSoftKeyController(this.softKeyMenu);
         view.setModel(model);
         view.enter(this, this.inputStack);
     }
@@ -196,7 +225,10 @@ class AS1000_MFD extends BaseAS1000 {
         this.electricityAvailable.value = this.isElectricityAvailable();
         this.fuelUsed.update(dt);
         this.pageController.update(dt);
-        this.miniMap.update(dt);
+        if (this.mapElement2.offsetParent)
+            this.mapElement2.update(dt);
+        if (this.miniMap.offsetParent)
+            this.miniMap.update(dt);
     }
     disconnectedCallback() {
     }
@@ -261,8 +293,16 @@ class AS1000_MFD extends BaseAS1000 {
         }
     }
     Update() {
-        super.Update();
-        SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
+        try {
+            super.Update();
+            SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
+        } catch (e) {
+            /*if (!this.efwef) {
+                console.log(e.message);
+                this.efwef = true;
+            }*/
+            throw e;
+        }
     }
 
     loadSavedMapOrientation() {
