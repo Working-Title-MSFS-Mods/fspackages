@@ -726,6 +726,7 @@ class MemoryState {
             this.showTerrain = false;
             this.showWeather = false;
             this.showGwx = false;
+            this.isExtended = false;
         }
         else if (_memoryPreset == 2){
             // System containers
@@ -742,6 +743,7 @@ class MemoryState {
             this.showTerrain = false;
             this.showWeather = false;
             this.showGwx = false;
+            this.isExtended = false;
         }
         else{
             // System containers
@@ -757,11 +759,12 @@ class MemoryState {
             this.showTerrain = false;
             this.showWeather = false;
             this.showGwx = false;
+            this.isExtended = false;
         }
 
     }
 
-    setMemoryState(_systemPage1, systemPage2, _showChecklist, _showPassengerBrief, _mapDisplayMode, _mapNavigationMode, _mapNavigationSource, _showTerrain, _showWeather, _showGwx){
+    setMemoryState(_systemPage1, systemPage2, _showChecklist, _showPassengerBrief, _mapDisplayMode, _mapNavigationMode, _mapNavigationSource, _showTerrain, _showWeather, _showGwx, _isExtended){
         // Set system pages
         this.systemPage1 = _systemPage1;
         this.systemPage2 = systemPage2;
@@ -775,6 +778,7 @@ class MemoryState {
         this.showTerrain = _showTerrain;
         this.showWeather = _showWeather;
         this.showGwx = _showGwx;
+        this.isExtended = _isExtended;
 
     }
 }

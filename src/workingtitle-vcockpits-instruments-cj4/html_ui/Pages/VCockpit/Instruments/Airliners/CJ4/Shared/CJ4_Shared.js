@@ -3724,23 +3724,29 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
                     break;
                 case "Upr_DATA_DEC":
                 case "Lwr_DATA_DEC":
-                    if(!this.otherMenusOpen)
+                    if(!this.otherMenusOpen){
                         this.handler.onDataDec();
+                    }
                     break;
                 case "Upr_DATA_INC":
                 case "Lwr_DATA_INC":
-                    if(!this.otherMenusOpen)
+                    if(!this.otherMenusOpen){
                         this.handler.onDataInc();
+                    }
                     break;
                 case "Upr_MENU_ADV_DEC":
                 case "Lwr_MENU_ADV_DEC":
-                    this.handler.onMenuDec();
-                    this.handler.changeCurrentSelectionIndex(-1);
+                    if(!this.otherMenusOpen){
+                        this.handler.onMenuDec();
+                        this.handler.changeCurrentSelectionIndex(-1);
+                    }
                     break;
                 case "Upr_MENU_ADV_INC":
                 case "Lwr_MENU_ADV_INC":
-                    this.handler.onMenuInc();
-                    this.handler.changeCurrentSelectionIndex(1);
+                    if(!this.otherMenusOpen){
+                        this.handler.onMenuInc();
+                        this.handler.changeCurrentSelectionIndex(1);
+                    }
                     break;
                 case "Upr_Push_ESC":
                 case "Lwr_Push_ESC":
