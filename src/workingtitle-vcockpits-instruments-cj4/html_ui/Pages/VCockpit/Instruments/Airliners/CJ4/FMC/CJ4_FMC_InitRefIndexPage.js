@@ -1102,51 +1102,80 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage22(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
+    static ShowPage25ErrorMsg(fmc, msg, rskText) {
+         fmc._templateRenderer.setTemplateRaw([
+            [" ACT[blue]", "ARRIVAL DATA  [blue]"],
+            [" " + msg],
+            [""],
+            [""],
+            [""],
+            [""],
+            [""],
+            [""],
+            [""],
+            [""],
+            [""],
+            ["-----------------------[blue]"],
+            ["<INDEX", rskText + ">"]
+        ]);
+    }
     static ShowPage25(fmc) { //ARR DATA
         fmc.clearDisplay();
-
-        let destinationString = "NO DESTINATION AIRPORT";
-        let approachName = "";
-        let approachFrequency = "";
-        let appRunway = "";
+        
+        let arrAirportText = "";
+        let approachText = "";
+        let rwyThresholdAltText = "";
+        let freqText = "---.--";
+        let gsAngleText = "-.--°";
+        let locTrueBrgText = "---T";
+        
+        let rightSelectionKeyProc = undefined;
 
         let destination = fmc.flightPlanManager.getDestination();
-        if (destination) {
-            destinationString = destination.ident;
-            if (destination.infos) {
-                destinationString = destinationString + "/" + destination.infos.name;
+        if (!destination) {
+            CJ4_FMC_InitRefIndexPage.ShowPage25ErrorMsg(fmc, "NO DEST SELECTED", "FPLN");
+            rightSelectionKeyProc = CJ4_FMC_RoutePage.ShowPage1;
+        } else {
+            let approach = fmc.flightPlanManager.getApproach();
+            if (!approach.name && !fmc.vfrLandingRunway) {
+                CJ4_FMC_InitRefIndexPage.ShowPage25ErrorMsg(fmc, "NO APPROACH SELECTED", "ARRIVAL");
+                rightSelectionKeyProc = CJ4_FMC_DepArrPage.ShowArrivalPage;
+            } else {
+                arrAirportText = destination.ident;
+                if (destination.infos) {
+                    arrAirportText = arrAirportText + "/" + destination.infos.name;
+                }
+
+                approachText = approach.name || "RW" + Avionics.Utils.formatRunway(fmc.vfrLandingRunway.designation);
+                let approachRunway = fmc.flightPlanManager.getApproachRunway() || fmc.vfrLandingRunway;
+                rwyThresholdAltText = Math.trunc(approachRunway.elevation * 3.28) + " FT";
+                if (approach.name.startsWith("ILS")) {
+                    freqText = fmc.flightPlanManager.getApproachNavFrequency().toFixed(2);
+                    locTrueBrgText = Math.trunc(approachRunway.direction).toString().padStart(3, "0") + "T";
+                    gsAngleText = "3.00°";
+                }
+                
+                fmc._templateRenderer.setTemplateRaw([
+                    [" ACT[blue]", "ARRIVAL DATA  [blue]"],
+                    [" ARR AIRPORT[blue]"],
+                    [arrAirportText],
+                    [" APPR[blue]", "FREQ [blue]"],
+                    [approachText, freqText],
+                    [" GS ANGLE[blue]"],
+                    [gsAngleText],
+                    [" LOC TRUE BRG[blue]"],
+                    [locTrueBrgText],
+                    [" RWY THRESHOLD ALT[blue]"],
+                    [rwyThresholdAltText],
+                    ["-----------------------[blue]"],
+                    ["<INDEX", "LEGS>"]
+                ]);
+                rightSelectionKeyProc = CJ4_FMC_LegsPage.ShowPage1;
             }
         }
-        
-        if (fmc.flightPlanManager.getApproach()) {
-            let approach = fmc.flightPlanManager.getApproach();
-            approachName = fmc.flightPlanManager.getApproach().name;
-            approachFrequency = fmc.flightPlanManager.getApproachNavFrequency();
-        }
-        if (fmc.flightPlanManager.getApproachRunway()) {
-            appRunway = fmc.flightPlanManager.getApproachRunway();
-        }
 
-        let appRunwayDirection = new Number(appRunway.direction);
-        let appRunwayElevation = new Number(appRunway.elevation * 3.28);
-
-        fmc._templateRenderer.setTemplateRaw([
-            [" ACT", "ARRIVAL DATA  [blue]"],
-            [" ARR AIRPORT[blue]"],
-            [destinationString],
-            [" APPR[blue]", "FREQ [blue]"],
-            [approachName + "", approachFrequency.toFixed(2) + ""],
-            [" GS ANGLE[blue]"],
-            ["3.00"],
-            [" LOC TRUE BRG[blue]"],
-            [Math.trunc(appRunwayDirection) + ""],
-            [" RWY THRESHOLD ALT[blue]"],
-            [Math.trunc(appRunwayElevation) + ""],
-            ["-----------------------[blue]"],
-            ["<INDEX", "LEGS>"]
-        ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_LegsPage.ShowPage1(fmc); };
+        fmc.onRightInput[5] = () => { rightSelectionKeyProc(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage26(fmc) { //TEMP COMP

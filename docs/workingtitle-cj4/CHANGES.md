@@ -55,6 +55,9 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Addressed fuel flow bugs throughout / closes [#224](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/224)
 * Added takeoff time, enroute time, and landing time to flight log page
 
+### ARR DATA Page
+* Closer to real ARR DATA page look and feel
+
 ### PFD/MFD
 * Fix stuck PFD menu when AOA was turned on / closes [#251](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/251)
 * Added elapsed timer functionality to PFD
