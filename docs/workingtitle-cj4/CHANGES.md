@@ -13,19 +13,13 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ## Key Features
 * Simbrief flight plan import: Added ability to enter your PILOT ID from Simbrief and then load the latest OFP/Flight Plan directly to the FMC (store your PILOT ID in the MOD SETTINGS page and then use the ROUTE MENU to FPLN RECALL)
-* Approach Waypoints: Added ability to skip and go direct to any waypoint on the approach
+* Approach Waypoints: Added ability to skip waypoints on the approach
 * FMS Performance: Greatly improved the performance of the FMS / waypoint loading times
+* Added MFD Memory Functions - MEM buttons now allowing users to save states of the MFD and switch quickly between them (press and hold a MEM button to save the current state to that button)
 * Volumetric External Lights: Incorporated the latest lighting package from Uwajimaya including volumetric external lighting
 * Improvements to PFD and MFD
 * Cabin Lights: Added the ability via the MOD SETTINGS menu to change the cabin light setting
 * FMS: Non functional menu items are now greyed out
-
-
-### Engine Model
-* xxx
-
-### Flight Model
-* xxx
 
 ### LEGS Page
 * Redesigned waypoint loader to dramatically improved flight plan management/FMS performance on LEGS page
@@ -42,7 +36,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Fixed display error with approach transitions
 
 ### PROG Page
-* xxx
+* Fixed several display bugs
 
 ### PERF Page
 * Added error protection for PERF Pages / closes [#253](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/253)
@@ -66,11 +60,11 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * GS is now magenta  / closes [#249](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/249)
 * Improved the usability of MFD checklist (saves last opened page and resumes completed section)
 * FMS Text on the MFD will now stay opened after opening MFD checklist or passenger briefing menus
-* Added functionality to CCP MEM buttons, allowing users to save states of the MFD and switch quickly between them.
+* Added functionality to CCP MEM buttons, allowing users to save states of the MFD and switch quickly between them
 * Fixed broken fuel reading on SYSTEM OVERLAY menu / closes [#246](https://github.com/Working-Title-MSFS-Mods/fspackages/issues/246)
 
 ### Audio
-* xxx
+* Fixed audio bugs with announcments
 
 ### Lighting
 * Incorporated the latest lighting package from Uwajimaya including volumetric external lighting.
@@ -81,3 +75,4 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
 * The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the various enhancements applied.
 * Some flight plan distances may still be misreported when the approach is activated. Please log an issue if you encounter this with details.
+* Some instances of the autopilot skipping approach waypoints still occur - this is deep in the sim handling of waypoints and is, for now, out of our hands. We will continue to research this.

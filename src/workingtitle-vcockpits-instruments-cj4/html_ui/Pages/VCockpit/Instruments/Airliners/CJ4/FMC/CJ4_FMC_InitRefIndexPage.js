@@ -498,7 +498,7 @@ class CJ4_FMC_InitRefIndexPage {
                 fmc._templateRenderer.setTemplateRaw([
                     [" PROGRESS[blue]", "1/2[blue] "],
                     [" LAST[s-text blue]", "DIST   ETE FUEL-LB[s-text blue]"],
-                    [prevWaypointIdent + "[blue]", prevWaypointDistanceConst + "       ----- [s-text blue]"],
+                    [prevWaypointIdent + "[blue]", prevWaypointDistanceConst + "        ----- [s-text blue]"],
                     [" TO[s-text blue]",],
                     [activeWaypointIdent + "[s-text magenta]", activeWaypointDistanceConst + "  " + activeWaypointEte + " ----- [s-text magenta]"],
                     [" NEXT[s-text blue]"],
