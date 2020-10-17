@@ -163,6 +163,19 @@ class CJ4_PFD extends BaseAirliners {
                 this.fillDictionary(this.popup.dictionary);
                 this.popup.setMode(CJ4_PopupMenu.REFS);
                 break;
+            case "Upr_Push_ET":
+                if (!this.mapOverlay._showET) {
+                    this.mapOverlay._showET = true;
+                    this.mapOverlay._chronoValue = 0;
+                    this.mapOverlay._chronoStarted = true;
+                }
+                else if (this.mapOverlay._chronoStarted) {
+                    this.mapOverlay._chronoStarted = false;
+                }
+                else {
+                    this.mapOverlay._showET = false;
+                }
+                break;
         }
     }
     allContainersReady() {
@@ -227,7 +240,7 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool", (baroUnits == "HPA") ? 1 : 0);
         let mtrsOn = _dict.get(CJ4_PopupMenu_Key.UNITS_MTR_ALT);
         this.horizon.showMTRS((mtrsOn == "ON") ? true : false);
-        let aoaSetting = _dict.get(CJ4_PopupMenu_Key.AOA)
+        let aoaSetting = _dict.get(CJ4_PopupMenu_Key.AOA);
         if (aoaSetting) {
             if (aoaSetting == "AUTO") {
                 SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 0);
@@ -324,10 +337,10 @@ class CJ4_PFD extends BaseAirliners {
             if (aoaSettingFill == 0) {
                 _dict.set(CJ4_PopupMenu_Key.AOA, "AUTO");
             }
-            else if (aoaSetting == 1) {
+            else if (aoaSettingFill == 1) {
                 _dict.set(CJ4_PopupMenu_Key.AOA, "ON");
             }
-            else if (aoaSetting == 2) {
+            else if (aoaSettingFill == 2) {
                 _dict.set(CJ4_PopupMenu_Key.AOA, "OFF");
             }
         }
