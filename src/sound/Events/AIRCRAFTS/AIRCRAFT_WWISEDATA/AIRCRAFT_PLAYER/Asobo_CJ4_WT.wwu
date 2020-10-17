@@ -8,6 +8,7 @@
 				<WorkUnit Name="Engines" ID="{56901329-1362-4C16-9FB5-DA8711422FA8}" PersistMode="Reference"/>
 				<WorkUnit Name="Ambience" ID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" PersistMode="Reference"/>
 				<WorkUnit Name="Aural" ID="{9F2DA274-CC3E-4FCB-9204-266F88D59B5D}" PersistMode="Reference"/>
+				<WorkUnit Name="Warnings" ID="{A2476568-8A3D-4287-AA7D-D5CE4405BC8F}" PersistMode="Reference"/>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{A2476568-8A3D-4287-AA7D-D5CE4405BC8F}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
+	<Events>
+		<WorkUnit Name="Warnings" ID="{A2476568-8A3D-4287-AA7D-D5CE4405BC8F}" OwnerID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Nested">
+			<ChildrenList>
+				<WorkUnit Name="System Test" ID="{5C6052E2-BB5C-4BA5-9122-9487C64614EB}" PersistMode="Reference"/>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

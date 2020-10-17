@@ -28,6 +28,7 @@
 						<WorkUnit Name="Engines" ID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}" PersistMode="Reference"/>
 						<WorkUnit Name="Ambience" ID="{8066802F-8FED-4C99-B3A9-9777472C1FD5}" PersistMode="Reference"/>
 						<WorkUnit Name="Aural" ID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}" PersistMode="Reference"/>
+						<WorkUnit Name="Warnings" ID="{17F89ACC-A515-462A-895C-F7C85636DC3D}" PersistMode="Reference"/>
 					</ChildrenList>
 				</ActorMixer>
 			</ChildrenList>
