@@ -221,11 +221,20 @@ class CJ4_FMC_LegsPage {
                         // CANT SELECT MAGENTA OR BLUE ON PAGE 1
                         if (((i > 1 && this._currentPage == 1) || (this._currentPage > 1))) {
                             // SELECT EXISTING WAYPOINT FROM FLIGHT PLAN
-                            if(waypoint.ident === "USR"){
+                            if (waypoint.ident === "USR") {
                                 this._fmc.showErrorMessage("UNABLE MOD USR");
                                 return;
                             }
-                            this._selectedWaypoint = waypoint;                           
+
+                            this._approachWaypoints = this._fmc.flightPlanManager.getApproachWaypoints();
+                            if (this._approachWaypoints.length > 0) {
+                                if (waypoint.ident === this._approachWaypoints[this._approachWaypoints.length - 1].ident) {
+                                    this._fmc.showErrorMessage("UNABLE MOD RW");
+                                    return;
+                                }
+                            }
+
+                            this._selectedWaypoint = waypoint;
                             this._fmc.inOut = waypoint.ident;
                             this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.EXISTING;
                         }
@@ -243,6 +252,7 @@ class CJ4_FMC_LegsPage {
                             let isDirectTo = (i == 1 && this._currentPage == 1);
                             this._approachWaypoints = this._fmc.flightPlanManager.getApproachWaypoints();
                             let approachWpIndex = this._approachWaypoints.indexOf(this._selectedWaypoint);
+
                             if (isDirectTo) { // DIRECT TO
                                 if (approachWpIndex >= 0) {
                                     let setApproachIndex = (idx) => {
