@@ -14,7 +14,6 @@ class CJ4_FMC_LegsPage {
         this._pageCount = 1;
         this._rows = [];
 
-        this._selectedWaypoint = undefined;
         this._activeWptIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
         this._distanceToActiveWpt = "0";
 
@@ -22,8 +21,6 @@ class CJ4_FMC_LegsPage {
 
         this._wayPointsToRender = [];
         this._approachWaypoints = [];
-
-        this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
     }
 
     prepare() {
@@ -207,16 +204,16 @@ class CJ4_FMC_LegsPage {
 
                 // Mode evaluation
                 if (value == "")
-                    this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
+                    this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
                 else if (value === FMCMainDisplay.clrValue)
-                    this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.DELETE;
-                else if (value.length > 0 && this._selectMode !== CJ4_FMC_LegsPage.SELECT_MODE.EXISTING)
-                    this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NEW;
+                    this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.DELETE;
+                else if (value.length > 0 && this._fmc.selectMode !== CJ4_FMC_LegsPage.SELECT_MODE.EXISTING)
+                    this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NEW;
 
                 // only allow insert new on add line
-                if (waypoint === "EMPTY" && this._selectMode !== CJ4_FMC_LegsPage.SELECT_MODE.NEW) return;
+                if (waypoint === "EMPTY" && this._fmc.selectMode !== CJ4_FMC_LegsPage.SELECT_MODE.NEW) return;
 
-                switch (this._selectMode) {
+                switch (this._fmc.selectMode) {
                     case CJ4_FMC_LegsPage.SELECT_MODE.NONE:
                         // CANT SELECT MAGENTA OR BLUE ON PAGE 1
                         if (((i > 1 && this._currentPage == 1) || (this._currentPage > 1))) {
@@ -234,9 +231,9 @@ class CJ4_FMC_LegsPage {
                                 }
                             }
 
-                            this._selectedWaypoint = waypoint;
+                            this._fmc.selectedWaypoint = waypoint;
                             this._fmc.inOut = waypoint.ident;
-                            this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.EXISTING;
+                            this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.EXISTING;
                         }
                         break;
                     case CJ4_FMC_LegsPage.SELECT_MODE.EXISTING: {
@@ -245,13 +242,13 @@ class CJ4_FMC_LegsPage {
                             this._fmc.setMsg("Working...");
                             let waypoints = this._fmc.flightPlanManager.getWaypoints();
                             let targedIndexInFpln = waypoints.findIndex(w => {
-                                return w.icao === this._selectedWaypoint.icao;
+                                return w.icao === this._fmc.selectedWaypoint.icao;
                             });
                             // MOVE EXISTING WAYPOINT WITH LEGS AFTER
                             let x = selectedWpIndex;
                             let isDirectTo = (i == 1 && this._currentPage == 1);
                             this._approachWaypoints = this._fmc.flightPlanManager.getApproachWaypoints();
-                            let approachWpIndex = this._approachWaypoints.indexOf(this._selectedWaypoint);
+                            let approachWpIndex = this._approachWaypoints.indexOf(this._fmc.selectedWaypoint);
 
                             if (isDirectTo) { // DIRECT TO
                                 if (approachWpIndex >= 0) {
@@ -261,13 +258,13 @@ class CJ4_FMC_LegsPage {
                                             this.resetAfterOp();
                                         });
                                     };
-                                    let index = this._approachWaypoints.findIndex(w => { return w.infos && w.infos.icao === this._selectedWaypoint.icao; });
+                                    let index = this._approachWaypoints.findIndex(w => { return w.infos && w.infos.icao === this._fmc.selectedWaypoint.icao; });
                                     if (this._fmc.flightPlanManager.isActiveApproach()) {
                                         setApproachIndex(index);
                                     } else {
-                                        this._fmc.activateDirectToWaypoint(this._selectedWaypoint, () => {
+                                        this._fmc.activateDirectToWaypoint(this._fmc.selectedWaypoint, () => {
                                             this._fmc.flightPlanManager.activateApproach(() => {
-                                                index = this._approachWaypoints.findIndex(w => { return w.infos && w.infos.icao === this._selectedWaypoint.icao; }); // find index again after activating everything
+                                                index = this._approachWaypoints.findIndex(w => { return w.infos && w.infos.icao === this._fmc.selectedWaypoint.icao; }); // find index again after activating everything
                                                 setApproachIndex(index + 1);
                                             });
                                         });
@@ -276,7 +273,7 @@ class CJ4_FMC_LegsPage {
 
                                 } else {
                                     this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                        this._fmc.activateDirectToWaypoint(this._selectedWaypoint, () => {
+                                        this._fmc.activateDirectToWaypoint(this._fmc.selectedWaypoint, () => {
                                             this.resetAfterOp();
                                         });
 
@@ -328,7 +325,7 @@ class CJ4_FMC_LegsPage {
                                         this.resetAfterOp();
                                 } else {
                                     this._fmc.fpHasChanged = false;
-                                    this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
+                                    this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
                                     this._fmc.eraseTemporaryFlightPlan();
                                 }
                             });
@@ -361,8 +358,8 @@ class CJ4_FMC_LegsPage {
     resetAfterOp() {
         this._fmc.clearUserInput();
         this._fmc.setMsg();
-        this._selectedWaypoint = undefined;
-        this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
+        this._fmc.selectedWaypoint = undefined;
+        this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
         this.update(true);
     }
 
@@ -371,7 +368,7 @@ class CJ4_FMC_LegsPage {
             if (this._lsk6Field == "<CANCEL MOD") {
                 if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     this._fmc.fpHasChanged = false;
-                    this._selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
+                    this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
                     this._fmc.eraseTemporaryFlightPlan(() => { this.resetAfterOp(); });
                 }
             }
