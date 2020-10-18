@@ -548,30 +548,27 @@ as3000-tsc-horizontal-element {
         left: 17%;
         width: 80%; }
 
-@keyframes rightEnter {
+@keyframes flightplanMenuEnter {
   0% {
-    right: -29.5vw; }
+    right: -100%; }
   100% {
-    right: 0vw; } }
+    right: -1%; } }
 
 @keyframes rightExit {
   0% {
-    right: 0vw;
+    right: 0;
     visibility: visible; }
   100% {
     right: -29.5vw;
     visibility: hidden; } }
+
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu {
           visibility: hidden; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan[displayedMenu=Waypoint] #AFPL_WaypointButtonsTable,
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan[displayedMenu=Destination] #AFPL_DestinationButtonsTable,
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan[displayedMenu=Origin] #AFPL_OriginButtonsTable {
           visibility: visible;
-          animation: rightEnter 0.5s; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_Origin[state=SelectedWP],
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_EnRoute[state=SelectedWP],
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_Destination[state=SelectedWP] {
-          background-color: #0093d0; }
+          animation: flightplanMenuEnter 0.5s; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable {
           width: 100%;
           height: 100%;
@@ -604,7 +601,7 @@ as3000-tsc-horizontal-element {
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=Inactive] {
               display: none; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .Waypoint .mainValue, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .Waypoint .title {
-              color: magenta; }
+              color: magenta !important; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .DTK, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .DIS {
               color: magenta; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody td {
@@ -624,21 +621,27 @@ as3000-tsc-horizontal-element {
                 width: 100%;
                 top: 50%;
                 transform: translateY(-50%);
-                color: white;
-                font-size: 5vh; }
+                font-size: 5vh;
+                color: #42cac9; }
                 as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue[altitudeMode=Manual] {
                   color: #42cac9; }
                 as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue[altitudeMode=Subdued] {
                   color: darkcyan;
                   -webkit-mask: url(/Pages/VCockpit/Instruments/NavSystems/Shared/Images/SubduedMask.png);
                   -webkit-mask-repeat: repeat; }
+            as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable .phaseHeader[state=SelectedWP] .gradientButton {
+              background: linear-gradient(#7dddff, #008cb4 15%); }
+              as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable .phaseHeader[state=SelectedWP] .gradientButton .mainValue {
+                color: black; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .mainValue {
               position: absolute;
               width: auto;
               text-align: left;
               transform: none;
               left: 10%;
-              top: 10%; }
+              top: 10%;
+              font-size: 6vh;
+              color: #42cac9; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .title {
               position: absolute;
               text-align: left;
@@ -652,8 +655,6 @@ as3000-tsc-horizontal-element {
               position: absolute;
               right: 0%;
               top: 0%; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint[state=SelectedWP] {
-              background-color: #0093d0; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .DTK {
               position: absolute;
               right: 5%;
@@ -693,11 +694,9 @@ as3000-tsc-horizontal-element {
             border: 0.4vh solid #2c3032; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu {
           position: absolute;
-          right: 0vw;
+          right: -1%;
           top: 0%;
           height: 100%;
-          border-collapse: collapse;
-          background-color: black;
           width: 31.25vw; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu tbody {
             height: 100%; }
@@ -2758,3 +2757,10 @@ as3000-tsc-horizontal-element {
     background: linear-gradient(#1f3445, black 10%);
     background-color: black;
     border: 0.4vh solid #454b4e; }
+
+  as3000-tsc-horizontal-element .Waypoint[state=SelectedWP] {
+    background: linear-gradient(#7dddff, #008cb4 15%) !important; }
+    as3000-tsc-horizontal-element .Waypoint[state=SelectedWP] .mainValue {
+      color: black !important; }
+    as3000-tsc-horizontal-element .Waypoint[state=SelectedWP] .title {
+      color: black !important; }
