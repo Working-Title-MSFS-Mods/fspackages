@@ -6,7 +6,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<MCDU MENU", "GNSS1 POS>"], //Page 3, 4 ---- 9
             [""],
-            ["<DATALINK[disabled]", "FREQUENCY>[disabled]"], //Page XXX ---- 10
+            ["<DATALINK[disabled]", "FREQUENCY>"], //Page XXX ---- CJ4_FMC_FrequencyPage
             [""],
             ["<STATUS", "FIX>[disabled]"], //Page 2 ---- 11
             [""],
@@ -23,7 +23,7 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onLeftInput[4] = () => { CJ4_FMC_InitRefIndexPage.ShowPage6(fmc); };
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage7(fmc); };
         fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage9(fmc); };
-        fmc.onRightInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage10(fmc); };
+        fmc.onRightInput[1] = () => { CJ4_FMC_FrequencyPage.ShowMainPage(fmc); };
         fmc.onRightInput[2] = () => { CJ4_FMC_InitRefIndexPage.ShowPage11(fmc); };
         fmc.onRightInput[3] = () => { CJ4_FMC_InitRefIndexPage.ShowPage12(fmc); };
         fmc.onRightInput[4] = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
@@ -344,26 +344,6 @@ class CJ4_FMC_InitRefIndexPage {
             ]);
         }, 1000, true);
 
-        fmc.updateSideButtonActiveStatus();
-    }
-    static ShowPage10(fmc) { //FREQUENCY
-        fmc.clearDisplay();
-        fmc._templateRenderer.setTemplateRaw([
-            ["", "", "FREQUENCY[blue]"],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
-            ["", "", "UNDER CONSTRUCTION"],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
-            ["<INDEX"]
-        ]);
-        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage11(fmc) { //FIX

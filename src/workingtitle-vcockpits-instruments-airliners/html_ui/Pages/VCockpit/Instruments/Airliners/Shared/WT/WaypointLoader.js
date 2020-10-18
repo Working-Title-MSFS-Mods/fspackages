@@ -1031,6 +1031,64 @@ class FacilityLoader {
             facility.UpdateInfos(resolve, loadFacilitiesTransitively);
         });
     }
+    
+    /* Gets an array of frequencies of the given airport ident.
+     */
+    async GetAirportNamedFrequenciesByIdent(airportIdent) {
+        await this.waitRegistration();
+        return new Promise(resolve => {
+            SimVar.SetSimVarValue("C:fs9gps:IcaoSearchStartCursor", "string", "A", this.instrument.instrumentIdentifier + "-loader").then(() => {
+                this.instrument.requestCall(() => {
+                    SimVar.SetSimVarValue("C:fs9gps:IcaoSearchEnterChar", "string", airportIdent, this.instrument.instrumentIdentifier + "-loader").then(() => {
+                        SimVar.SetSimVarValue("C:fs9gps:IcaoSearchMatchedIcao", "number", 0, this.instrument.instrumentIdentifier + "-loader").then(async () => {
+                            let airportIcao = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCurrentIcao", "string", this.instrument.instrumentIdentifier + "-loader");
+                            this.GetAirportNamedFrequencies(airportIcao).then((frequencies) => resolve(frequencies));
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+    /* Gets an array of frequencies of the given airport icao.
+     * The elements of the returned array contain name ("Clearance", "Ground", etc.) and value in MHz.
+     */
+    async GetAirportNamedFrequencies(airportIcao) {
+        await this.waitRegistration();
+        return new Promise(resolve => {
+            SimVar.SetSimVarValue("C:fs9gps:WaypointAirportICAO", "string", airportIcao, this.instrument.instrumentIdentifier + "-loader").then(async () => {
+                let frequencyCount = SimVar.GetSimVarValue("C:fs9gps:WaypointAirportFrequenciesNumber", "number", this.instrument.instrumentIdentifier + "-loader");
+                let attempts = 0;
+                // Wait for the database query to complete
+                while (frequencyCount === 0 && attempts < 10) {
+                    await new Promise(resolve => this.instrument.requestCall(resolve));
+                    frequencyCount = SimVar.GetSimVarValue("C:fs9gps:WaypointAirportFrequenciesNumber", "number", this.instrument.instrumentIdentifier + "-loader");
+                    attempts++;                    
+                }
+
+                let getFrequency = async (index) => {
+                    return new Promise((resolve) => {
+                        SimVar.SetSimVarValue("C:fs9gps:WaypointAirportCurrentFrequency", "number", index, this.instrument.instrumentIdentifier + "-loader").then(() => {
+                            let frequencyName = SimVar.GetSimVarValue("C:fs9gps:WaypointAirportFrequencyName", "string", this.instrument.instrumentIdentifier + "-loader");
+                            let frequencyValue = SimVar.GetSimVarValue("C:fs9gps:WaypointAirportFrequencyValue", "number", this.instrument.instrumentIdentifier + "-loader");
+                            resolve({
+                                name: frequencyName,
+                                // convert from Hz to MHz
+                                value: (parseFloat(frequencyValue) / 1000000)
+                            });
+                        });
+                    });
+                };
+                
+                let frequencies = [];
+                for (let i = 0; i < frequencyCount; i++) {
+                    let frequency = await getFrequency(i);
+                    frequencies.push(frequency);
+                }
+                resolve(frequencies);
+            });
+        });
+    }
 }
 class WaypointLoader {
     constructor(_instrument) {
