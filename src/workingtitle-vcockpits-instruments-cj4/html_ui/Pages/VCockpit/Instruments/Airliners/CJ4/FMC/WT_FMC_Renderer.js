@@ -107,6 +107,8 @@ class WT_FMC_Renderer {
         // count all letters
         cnt.forEach(x => { charCount += x.textContent.length; });
 
+        charCount = Math.min(charCount, 24);
+
         // set start pos
         let ci = 0;
         if (dir === "right")
