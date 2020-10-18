@@ -2346,10 +2346,19 @@ as3000-tsc-horizontal-element {
       color: white;
       font-size: 4.5vh;
       position: relative; }
-      as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow .WindowTitle {
-        width: 70%;
-        padding-left: 15%;
-        background-color: black; }
+      as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow .Container {
+        position: absolute;
+        background: black;
+        top: 8%;
+        left: 1%;
+        height: 90%;
+        width: 98%;
+        border: 0.4vh solid grey;
+        border-radius: 10px;
+        padding: 0.5vh; }
+      as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow #WPDup_SearchTitle {
+        position: relative;
+        left: 1%; }
       as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow thead tr th:nth-child(1), as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow tbody tr:first-child td:nth-child(1) {
         width: 40vw; }
       as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow thead tr th:nth-child(2), as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow tbody tr:first-child td:nth-child(2) {
@@ -2357,36 +2366,32 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow thead tr th:nth-child(3), as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow tbody tr:first-child td:nth-child(3) {
         width: 30vw; }
       as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table {
-        position: absolute;
         width: 100%;
-        height: 80%;
-        top: 15%;
-        bottom: 0%;
-        left: 0%;
-        right: 0%;
-        border: 0.4vh solid white;
-        border-collapse: collapse;
+        height: 90%;
+        border: 0.2vh solid grey;
+        border-radius: 6px;
         color: white;
         text-align: center;
-        font-size: 4vh; }
+        font-size: 4vh;
+        border-spacing: 0;
+        padding: 0.5vh;
+        overflow-y: hidden; }
         as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table thead {
           display: block;
           color: white;
           font-size: 4vh;
           height: 7vh;
-          width: 97%;
-          border: 0.4vh solid white;
-          padding-right: 3%; }
+          width: 100%; }
         as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody {
           display: block;
           overflow-y: scroll;
           overflow-x: hidden;
-          height: 75vh;
-          width: 97%;
+          height: 92%;
+          width: 100%;
           position: relative;
-          padding-right: 1.75%; }
+          padding: 0.5vh; }
           as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody::-webkit-scrollbar {
-            width: 0.5vw; }
+            width: 1vw; }
           as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody::-webkit-scrollbar-track {
             background: none; }
           as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody::-webkit-scrollbar-thumb {
@@ -2398,23 +2403,19 @@ as3000-tsc-horizontal-element {
             height: 19vh;
             position: relative; }
             as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody tr .gradientButton, as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody td .gradientButton {
-              position: absolute;
-              top: 1vh;
-              left: 1vh;
-              right: 1vh;
-              bottom: 1vh;
-              width: auto;
-              height: auto; }
+              width: 100%;
+              height: 100%;
+              margin: 0.25vh; }
               as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody tr .gradientButton .Ident, as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody td .gradientButton .Ident {
                 position: absolute;
-                top: 1vh;
+                top: 0%;
                 left: 1vh;
-                font-size: 5vh; }
+                font-size: 6vh; }
               as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody tr .gradientButton .Logo, as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody td .gradientButton .Logo {
                 position: absolute;
                 top: 1vh;
                 right: 1vh;
-                height: 5vh; }
+                height: 8vh; }
               as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody tr .gradientButton .Name, as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody td .gradientButton .Name {
                 position: absolute;
                 top: 6.5vh;
@@ -2431,13 +2432,16 @@ as3000-tsc-horizontal-element {
           as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody tr[state=Inactive] {
             display: none; }
           as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody td {
-            border-top: 0.4vh solid white;
-            border-bottom: 0.4vh solid white; }
+            border-top: 0.2vh solid grey;
+            border-bottom: 0.2vh solid grey; }
             as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody td[state=Inactive] {
               display: none; }
           as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody tr td:first-child {
-            border-left: 0.4vh solid white;
-            border-right: 0.4vh solid white; }
+            border-left: 0.2vh solid grey;
+            border-radius: 6px 0 0 6px; }
+          as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow table tbody tr td:last-child {
+            border-right: 0.2vh solid grey;
+            border-radius: 0 6px 6px 0; }
       as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow .BearingArrow {
         position: absolute;
         left: 10%;
