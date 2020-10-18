@@ -35,4 +35,31 @@
             <SEQ1_EMISSIVE_CODE>(L:SEATBELT_LIGHT_ON, Bool)</SEQ1_EMISSIVE_CODE>
         </UseTemplate>
     </Template>
+
+    <Template Name="ASOBO_DEICE_Switch_Tail_Template">
+        <DefaultTemplateParameters>
+            <ID>1</ID>
+            <INTERACTION>Switch</INTERACTION>
+        </DefaultTemplateParameters>
+        <UseTemplate Name="ASOBO_DEICE_Switch_Tail_SubTemplate">
+        </UseTemplate>
+    </Template>
+
+    <Template Name="ASOBO_DEICE_Switch_Tail_SubTemplate">
+        <DefaultTemplateParameters>
+            <NODE_ID>DEICE_#INTERACTION#_Tail_#ID#</NODE_ID>
+            <ANIM_NAME>DEICE_#INTERACTION#_Tail_#ID#</ANIM_NAME>
+            <PART_ID>DEICE_Tail</PART_ID>
+            <WWISE_EVENT>deice_engine_knob</WWISE_EVENT>
+            <WWISE_EVENT_1>deice_engine_switch_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>deice_engine_switch_off</WWISE_EVENT_2>
+            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+        </DefaultTemplateParameters>
+        <UseTemplate Name="ASOBO_GT_Push_Button_Airliner">
+            <LEFT_SINGLE_CODE>(L:TAIL ANTI ICE:#ID#) ! (&gt;L:TAIL ANTI ICE:#ID#)</LEFT_SINGLE_CODE>
+            <ONLY_SEQ1/>
+            <SEQ1_EMISSIVE_CODE>(L:TAIL ANTI ICE:#ID#, Bool)</SEQ1_EMISSIVE_CODE>
+        </UseTemplate>
+    </Template>
 </ModelBehaviors>
