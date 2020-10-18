@@ -47,7 +47,7 @@ class NormalChecklist {
                     },
                     {
                         name: "SEATS/BELTS/PEDALS",
-                        value: "ADJUST/SECTURE",
+                        value: "ADJUST/SECURE",
                         key: false
                     },
                     {
