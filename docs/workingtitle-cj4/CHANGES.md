@@ -23,6 +23,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 
 ## Known Issues
+* Direct to or skipping waypoints in an approach sometimes results in undesired behavior. Monitor these changes closely. We will continue to look into improvements in this capability.
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
 * The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the various enhancements applied.
 * Some flight plan distances may still be misreported when the approach is activated. Please log an issue if you encounter this with details.
