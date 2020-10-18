@@ -1070,7 +1070,7 @@ class FacilityLoader {
                     return new Promise((resolve) => {
                         SimVar.SetSimVarValue("C:fs9gps:WaypointAirportCurrentFrequency", "number", index, this.instrument.instrumentIdentifier + "-loader").then(() => {
                             let frequencyName = SimVar.GetSimVarValue("C:fs9gps:WaypointAirportFrequencyName", "string", this.instrument.instrumentIdentifier + "-loader");
-                            let frequencyValue = SimVar.GetSimVarValue("C:fs9gps:WaypointAirportFrequencyValue", "string", this.instrument.instrumentIdentifier + "-loader");
+                            let frequencyValue = SimVar.GetSimVarValue("C:fs9gps:WaypointAirportFrequencyValue", "number", this.instrument.instrumentIdentifier + "-loader");
                             resolve({
                                 name: frequencyName,
                                 // convert from Hz to MHz
