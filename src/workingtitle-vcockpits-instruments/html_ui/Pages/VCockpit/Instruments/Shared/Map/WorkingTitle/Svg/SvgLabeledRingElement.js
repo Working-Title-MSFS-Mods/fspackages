@@ -4,8 +4,9 @@ class SvgLabeledRingElement extends SvgMapElement {
         
         this.radius = 250;                      // in SVG coordinate units
         this.centerPos = new Vec2(500, 500);    // in SVG coordinates for a 1000x1000 map
-        this.labelPosAngle = 0;                 // angle along which the label is displaced from the center of the ring, in degrees. 0 = to the right, increasing clockwise
+        this.labelPosAngle = 0;                 // angle along which the label is displaced from the center of the ring, in degrees. 0 = up, increasing clockwise
         this.labelPosOffset = 0;                // by default, label is placed along the ring, this defines the radial offset distance from the default, in SVG coordinate units
+        this.showRing = true;
         this.showLabel = true;
     }
     
@@ -25,11 +26,18 @@ class SvgLabeledRingElement extends SvgMapElement {
         this.labelSvg = this.createLabel(map);
         container.appendChild(this.labelSvg);
         
+        container.style.webkitTransform = "rotateX(0deg)"; // for optimization... maybe?
+        
         return container;
     }
     
     updateDraw(map) {
-        this.updateRing(map);
+        if (this.showRing) {
+            this.updateRing(map);
+            this.rangeRing.setAttribute("display", "inherit");
+        } else {
+            this.rangeRing.setAttribute("display", "none");
+        }
         if (this.showLabel) {
             this.updateLabel(map);
             this.labelSvg.setAttribute("display", "inherit");
@@ -56,8 +64,8 @@ class SvgLabeledRingElement extends SvgMapElement {
     
     updateLabel(map) {
         let angle = this.labelPosAngle * Math.PI / 180;
-        let x = this.centerPos.x + this.radius * Math.cos(angle);
-        let y = this.centerPos.y + this.radius * Math.sin(angle);
+        let x = this.centerPos.x + this.radius * Math.sin(angle);
+        let y = this.centerPos.y - this.radius * Math.cos(angle);
         
         this.labelSvg.setAttribute("x", x - this.labelSvg.width.baseVal.value / 2);
         this.labelSvg.setAttribute("y", y - this.labelSvg.height.baseVal.value / 2);

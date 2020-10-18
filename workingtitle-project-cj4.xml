@@ -2,6 +2,7 @@
 	<OutputDirectory>.</OutputDirectory>
 	<TemporaryOutputDirectory>_PackageInt</TemporaryOutputDirectory>
 	<Packages>
+		<Package>PackageDefinitions\workingtitle-core-library.xml</Package>
 		<Package>PackageDefinitions\workingtitle-vcockpits-instruments-cj4.xml</Package>
 		<Package>PackageDefinitions\workingtitle-vcockpits-instruments-airliners.xml</Package>
 		<Package>PackageDefinitions\workingtitle-aircraft-cj4.xml</Package>

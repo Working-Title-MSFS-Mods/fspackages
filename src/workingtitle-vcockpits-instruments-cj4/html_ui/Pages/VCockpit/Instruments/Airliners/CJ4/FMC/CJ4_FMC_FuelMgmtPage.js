@@ -92,6 +92,7 @@ class CJ4_FMC_FuelMgmtPageOne {
             this._fmc.clearUserInput();
             console.log(this._fmc.reserve);
             this.invalidate();
+            this.update();
         };
         this._fmc.onPrevPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage3(this._fmc); };
         this._fmc.onNextPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage2(this._fmc); };
@@ -102,7 +103,6 @@ class CJ4_FMC_FuelMgmtPageOne {
     invalidate() {
         this._isDirty = true;
         this._fmc.clearDisplay();
-        // this.prepare();
         this.render();
         this.bindEvents(); // TODO could only call this once on init, but fmc.clearDisplay() clears events
         this._isDirty = false;

@@ -16,7 +16,9 @@ class CJ4_FMC extends FMCMainDisplay {
         this.paxNumber = 0;
         this.cargoWeight = 0;
         this.basicOperatingWeight = 10280;
-		this.GrossWeight = 0;
+    	this.grossWeight = 10280;
+		this.zFWActive = 0;
+		this.zFWPilotInput = 0;
         this.takeoffOat = "□□□";
         this.landingOat = "□□□";
         this.takeoffQnh = "□□.□□";
@@ -35,11 +37,19 @@ class CJ4_FMC extends FMCMainDisplay {
         this.initialFuelLeft = 0;
         this.initialFuelRight = 0;
         this.selectedRunwayOutput = "";
+        this.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
+        this.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
         this._fpHasChanged = false;
         this._activatingDirectTo = false;
         this._templateRenderer = undefined;
         this._msg = "";
         this._activatingDirectToExisting = false;
+        this.vfrLandingRunway = undefined;
+        this.modVfrRunway = false;
+        this.deletedVfrLandingRunway = undefined;
+        this.selectedWaypoint = undefined;
+        this.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
+
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -108,6 +118,7 @@ class CJ4_FMC extends FMCMainDisplay {
             if (this.getIsRouteActivated() && !this._activatingDirectTo) {
                 // console.log("running this.getIsRouteActivated() && !this._activatingDirectTo");
                 this.insertTemporaryFlightPlan(() => {
+                    this.copyAirwaySelections();
                     this._isRouteActivated = false;
                     SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
                     // console.log("done with onExec insert temp");
@@ -156,6 +167,7 @@ class CJ4_FMC extends FMCMainDisplay {
         super.Update();
         this.updateAutopilot();
         this.adjustFuelConsumption();
+        this.updateFlightLog();
     }
     onInputAircraftSpecific(input) {
         console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
@@ -230,29 +242,25 @@ class CJ4_FMC extends FMCMainDisplay {
 
     getOrSelectWaypointByIdent(ident, callback) {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
-
             const uniqueWaypoints = new Map();
             waypoints.forEach(wp => {
-                const waypoint = new WayPoint(null);
-
-                waypoint.icao = wp.icao;
-                waypoint.ident = wp.icao.substring(7, 12).replace(new RegExp(" ", "g"), "");
-
-                waypoint.infos.coordinates.lat = wp.lat;
-                waypoint.infos.coordinates.long = wp.lon;
-
-                uniqueWaypoints.set(waypoint.icao, waypoint);
+                uniqueWaypoints.set(wp.icao, wp);
             });
-
             waypoints = [...uniqueWaypoints.values()];
-
             if (!waypoints || waypoints.length === 0) {
                 return callback(undefined);
             }
             if (waypoints.length === 1) {
-                return callback(waypoints[0]);
+                this.facilityLoader.UpdateFacilityInfos(waypoints[0]).then(() => {
+                    return callback(waypoints[0]);
+                });
+            } else {
+                CJ4_FMC_SelectWptPage.ShowPage(this, waypoints, selectedWaypoint => {
+                    this.facilityLoader.UpdateFacilityInfos(selectedWaypoint).then(() => {
+                        return callback(selectedWaypoint);
+                    });
+                });
             }
-            CJ4_FMC_SelectWptPage.ShowPage(this, waypoints, callback);
         });
     }
     updateSideButtonActiveStatus() {
@@ -265,6 +273,14 @@ class CJ4_FMC extends FMCMainDisplay {
         this.fpHasChanged = true;
         SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 1);
         callback();
+    }
+    //function added to set departure enroute transition index
+    setDepartureEnrouteTransitionIndex(departureEnrouteTransitionIndex, callback = EmptyCallback.Boolean) {
+        this.ensureCurrentFlightPlanIsTemporary(() => {
+            this.flightPlanManager.setDepartureEnRouteTransitionIndex(departureEnrouteTransitionIndex, () => {
+                callback(true);
+            });
+        });
     }
     updateAutopilot() {
         let now = performance.now();
@@ -474,8 +490,8 @@ class CJ4_FMC extends FMCMainDisplay {
             const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
             const tsfc = Math.pow(1 + (1.2 * mach), mach) * 0.58; //Inspiration: https://onlinelibrary.wiley.com/doi/pdf/10.1002/9780470117859.app4
 
-            const leftFuelFlow = Math.max(thrustLeft * tsfc, 150);
-            const rightFuelFlow = Math.max(thrustRight * tsfc, 150);
+            const leftFuelFlow = pphLeft > 5 ? Math.max(thrustLeft * tsfc, 150) : 0;
+            const rightFuelFlow = pphRight > 5 ? Math.max(thrustRight * tsfc, 150) : 0;
 
             SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", leftFuelFlow);
             SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", rightFuelFlow);
@@ -508,6 +524,67 @@ class CJ4_FMC extends FMCMainDisplay {
             }
         }
     }
+    
+    // Copy airway selections from temporary to active flightplan
+    copyAirwaySelections() {
+        let temporaryFPWaypoints = this.flightPlanManager.getWaypoints(1);
+        let activeFPWaypoints = this.flightPlanManager.getWaypoints(0);
+        for (let i = 0; i < activeFPWaypoints.length; i++) {
+            if (activeFPWaypoints[i].infos && temporaryFPWaypoints[i] && activeFPWaypoints[i].icao === temporaryFPWaypoints[i].icao && temporaryFPWaypoints[i].infos) {
+                activeFPWaypoints[i].infos.airwayIn = temporaryFPWaypoints[i].infos.airwayIn;
+                activeFPWaypoints[i].infos.airwayOut = temporaryFPWaypoints[i].infos.airwayOut;
+            }
+        }
+    }
+    
+    updateFlightLog(){
+        const takeOffTime = SimVar.GetSimVarValue("L:TAKEOFF_TIME", "seconds");
+        const landingTime = SimVar.GetSimVarValue("L:LANDING_TIME", "seconds");
+        const onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
+        const altitude = SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "number");
+        const zuluTime = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
+
+        // Update takeoff time
+        if(!takeOffTime){
+            if (!onGround && altitude > 15){
+                if(zuluTime){
+                    SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
+                }
+            }
+        }
+        else if (takeOffTime && takeOffTime > 0 && landingTime && landingTime > 0){
+            if (!onGround && altitude > 15){
+                if(zuluTime){
+                    SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
+                }
+                SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", 0); // Reset landing time
+                SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", 0); // Reset enroute time
+            }
+        }
+
+        
+        if(takeOffTime && takeOffTime > 0){
+            // Update landing time
+            if(onGround && (!landingTime || landingTime == 0)){
+                if(zuluTime){
+                    SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", zuluTime);
+                }
+            }
+            // Update enroute time
+            if(!landingTime || landingTime == 0){
+                const enrouteTime = zuluTime - takeOffTime;
+                SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", enrouteTime);
+            }
+        }
+    }
 }
+
+
+CJ4_FMC.VSPEED_STATUS = {
+    NONE: 0,
+    INPROGRESS: 1,
+    SENT: 2,
+};
+
 registerInstrument("cj4-fmc", CJ4_FMC);
 //# sourceMappingURL=CJ4_FMC.js.map

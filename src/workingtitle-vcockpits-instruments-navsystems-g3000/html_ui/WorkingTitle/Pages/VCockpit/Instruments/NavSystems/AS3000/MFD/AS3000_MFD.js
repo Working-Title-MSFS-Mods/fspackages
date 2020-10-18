@@ -18,9 +18,9 @@ class AS3000_MFD extends NavSystem {
             ]),
         ];
         
-        Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });
+        //Include.addScript("/JS/debug.js", function () {
+        //    g_modDebugMgr.AddConsole(null);
+        //});
     }
     disconnectedCallback() {
     }
@@ -158,7 +158,7 @@ class AS3000_MFD_WindData extends MFD_WindData {
         if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.mapElement.simVarNameID, "number") == 0) {
             this.svg.setAttribute("wind-mode", "0");
         } else {
-            if (SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") < 5) {
+            if (SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
                 this.svg.setAttribute("wind-mode", "4")
             } else {
                 var wind = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180; // fix for MFD wind direction bug
@@ -193,9 +193,11 @@ class AS3000_MFD_MapElement extends AS3000_MapElement {
         this.lastWeatherMapMode = 0;
     }
     
-    init(root) {
-        super.init(root);
-        this.instrument.showRangeDisplay = false;
+    onTemplateLoaded() {
+        super.onTemplateLoaded();
+        if (!this.revertToDefault) {
+            this.instrument.showRangeDisplay = false;
+        }
     }
     
     onUpdate(_deltaTime) {

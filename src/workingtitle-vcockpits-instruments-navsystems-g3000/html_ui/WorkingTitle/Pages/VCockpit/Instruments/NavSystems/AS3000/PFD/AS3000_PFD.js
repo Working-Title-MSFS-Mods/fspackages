@@ -17,10 +17,10 @@ class AS3000_PFD extends NavSystem {
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", new PFD_Warnings()));
         this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(AS3000_PFD_SoftKeyHtmlElement)));
         this.maxUpdateBudget = 12;
-        
-        Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });
+
+        //Include.addScript("/JS/debug.js", function () {
+        //    g_modDebugMgr.AddConsole(null);
+        //});
     }
     disconnectedCallback() {
         super.disconnectedCallback();
@@ -71,13 +71,22 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
         this.gpsWasInReversionaryMode = false;
         this.enabled = true;
     }
-    
+
     init(_root) {
         super.init(_root);
         this.mapContainer = this.gps.getChildById("InnerMap");
+    }
+
+    onTemplateLoaded() {
+        super.onTemplateLoaded();
+
+        if (this.revertToDefault) {
+            return;
+        }
+
         this.instrument.rangeRingElement.showLabel = false;
         this.instrument.rangeRingElement.rangeRingStrokeWidth = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH;
-        
+
         this.instrument.rangeCompassElement.showRangeDisplay = false;
         this.instrument.rangeCompassElement.arcStrokeWidth = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH;
         this.instrument.rangeCompassElement.bearingTickMinorStrokeWidth = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH;
@@ -87,10 +96,10 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
         this.instrument.rangeCompassElement.bearingLabelFontSize = AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_SIZE;
         this.instrument.rangeCompassElement.bearingLabelStrokeWidth = AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_STROKE_WIDTH;
     }
-    
+
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
-        
+
         if (this.gps.isInReversionaryMode() != this.gpsWasInReversionaryMode) {
             this.gpsWasInReversionaryMode = this.gps.isInReversionaryMode();
             this.gps.requestCall(() => {
@@ -100,7 +109,7 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
             });
         }
     }
-    
+
     onEvent(_event) {
         super.onEvent(_event);
         if (_event == "SoftKeys_InsetOn") {
@@ -112,7 +121,7 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
             this.enabled = false;
         }
     }
-    
+
     isEnabled() {
         return this.enabled;
     }
@@ -120,8 +129,8 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
 AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH = 5;
 AS3000_PFD_InnerMap.RANGE_RING_COMPASS_BEARING_TICK_MAJOR_LENGTH = 20;
 AS3000_PFD_InnerMap.RANGE_RING_COMPASS_BEARING_TICK_MINOR_LENGTH = 10;
-AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_SIZE = 40;
-AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_STROKE_WIDTH = 5;
+AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_SIZE = 50;
+AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_STROKE_WIDTH = 20;
 
 class AS3000_PFD_MainPage extends NavSystemPage {
     constructor() {
@@ -161,10 +170,16 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     init() {
         super.init();
         this.hsi = this.gps.getChildById("Compass");
-        this.wind = this.gps.getChildById("WindData");
+        this.wind = this.gps.getElementOfType(PFD_WindData);
         this.mapInstrument.setGPS(this.gps);
         this.innerMap = this.gps.getElementOfType(AS3000_PFD_InnerMap);
         this.attitude.svg.setAttribute("background", "false");
+
+        if (SimVar.GetSimVarValue("ATC MODEL", "string") != "TT:ATCCOM.AC_MODEL_TBM9.0.text") {
+            this.attitude.syntheticVisionEnabled = true;
+            this.gps.computeEvent.bind(this.gps, "SoftKeys_Baro_IN");
+        }
+
         this.rootMenu.elements = [
             new AS3000_PFD_SoftKeyElement("Map Range-", this.changeMapRange.bind(this, "dec"), null, null, this.getInsetMapSoftkeyState.bind(this)),
             new AS3000_PFD_SoftKeyElement("Map Range+", this.changeMapRange.bind(this, "inc"), null, null, this.getInsetMapSoftkeyState.bind(this)),
@@ -199,7 +214,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
             new AS3000_PFD_SoftKeyElement("Weather Legend"),
             new AS3000_PFD_SoftKeyElement("Traffic"),
             new AS3000_PFD_SoftKeyElement("Storm-scope"),
-            new AS3000_PFD_SoftKeyElement("Terrain"),
+            new AS3000_PFD_SoftKeyElement("Terrain", this.toggleTerrain.bind(this), null, this.terrainStatus.bind(this), this.getInsetMapSoftkeyState.bind(this)),
             new AS3000_PFD_SoftKeyElement("Data Link Settings"),
             new AS3000_PFD_SoftKeyElement("WX&nbsp;Overlay", this.toggleWX.bind(this), null, this.wxOverlayStatus.bind(this), this.getInsetMapSoftkeyState.bind(this)),
             new AS3000_PFD_SoftKeyElement(""),
@@ -265,17 +280,17 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         ];
         //ADD START*** G3000 MOD ADD new softkeymenu for change of BARO UNIT
         this.altUnitsMenu.elements = [
-            new AS3000_PFD_SoftKeyElement(""),  
-            new AS3000_PFD_SoftKeyElement(""),  
-            new AS3000_PFD_SoftKeyElement(""),  
-            new AS3000_PFD_SoftKeyElement(""),  
-            new AS3000_PFD_SoftKeyElement(""),  
-            new AS3000_PFD_SoftKeyElement(""),  
-            new AS3000_PFD_SoftKeyElement("METERS"),    
-            new AS3000_PFD_SoftKeyElement("IN", this.gps.computeEvent.bind(this.gps, "SoftKeys_Baro_IN"), this.softkeyBaroStatus.bind(this, "IN")), 
-            new AS3000_PFD_SoftKeyElement("HPA", this.gps.computeEvent.bind(this.gps, "SoftKeys_Baro_HPA"), this.softkeyBaroStatus.bind(this, "HPA")),  
-            new AS3000_PFD_SoftKeyElement(""),  
-            new AS3000_PFD_SoftKeyElement("Back", this.switchToMenu.bind(this, this.otherPfdMenu)), 
+            new AS3000_PFD_SoftKeyElement(""),
+            new AS3000_PFD_SoftKeyElement(""),
+            new AS3000_PFD_SoftKeyElement(""),
+            new AS3000_PFD_SoftKeyElement(""),
+            new AS3000_PFD_SoftKeyElement(""),
+            new AS3000_PFD_SoftKeyElement(""),
+            new AS3000_PFD_SoftKeyElement("METERS"),
+            new AS3000_PFD_SoftKeyElement("IN", this.gps.computeEvent.bind(this.gps, "SoftKeys_Baro_IN"), this.softkeyBaroStatus.bind(this, "IN")),
+            new AS3000_PFD_SoftKeyElement("HPA", this.gps.computeEvent.bind(this.gps, "SoftKeys_Baro_HPA"), this.softkeyBaroStatus.bind(this, "HPA")),
+            new AS3000_PFD_SoftKeyElement(""),
+            new AS3000_PFD_SoftKeyElement("Back", this.switchToMenu.bind(this, this.otherPfdMenu)),
             new AS3000_PFD_SoftKeyElement("")
         ];
         //ADD END***  G3000 MOD ADD new softkeymenu for change of BARO UNIT
@@ -287,7 +302,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     constElement(_elem) {
         return _elem;
     }
-    
+
     // PFD inset map softkeys should be greyed out if the map is not shown.
     getInsetMapSoftkeyState() {
         if (this.innerMap.isEnabled()) {
@@ -296,7 +311,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
             return "Greyed";
         }
     }
-    
+
     changeMapRange(_dir) {
         if (this.innerMap.isEnabled()) {
             if (_dir == "dec") {
@@ -306,35 +321,46 @@ class AS3000_PFD_MainPage extends NavSystemPage {
             }
         }
     }
-    
+
     activateInsetMap() {
         this.gps.computeEvent("SoftKeys_InsetOn");
     }
-    
+
     deactivateInsetMap() {
         this.gps.computeEvent("SoftKeys_InsetOff");
     }
-    
+
     insetMapCompare(_comparison) {
         return this.innerMap.isEnabled() == _comparison;
     }
-    
+
     toggleDcltr() {
         if (this.innerMap.isEnabled()) {
             AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_DETAIL_ROOT, this.innerMap.simVarNameID, (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.innerMap.simVarNameID, "number") + 1) % 4);
         }
     }
-    
+
     dlctrStatus() {
         return AS3000_MapElement.DETAIL_DISPLAY_TEXT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.innerMap.simVarNameID, "number")];
     }
-    
+
+    toggleTerrain() {
+        if (this.innerMap.isEnabled()) {
+            AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT, this.innerMap.simVarNameID,
+                    (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.innerMap.simVarNameID, "number") + 1) % AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT.length);
+        }
+    }
+
+    terrainStatus() {
+        return AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.innerMap.simVarNameID, "number")];
+    }
+
     toggleWX() {
         if (this.innerMap.isEnabled()) {
             this.innerMap.toggleNexrad();
         }
     }
-    
+
     wxOverlayStatus() {
         if (this.innerMap.getNexrad()) {
             return "NEXRAD";
@@ -342,15 +368,15 @@ class AS3000_PFD_MainPage extends NavSystemPage {
             return "OFF";
         }
     }
-    
+
     toggleSyntheticVision() {
         this.attitude.syntheticVisionEnabled = this.attitude.syntheticVisionEnabled ^ 1;
     }
-    
+
     syntheticVisionCompare(_val) {
         return this.attitude.syntheticVisionEnabled == _val;
     }
-    
+
     bearing1Status() {
         if (this.hsi && this.hsi.getAttribute("show_bearing1") == "true") {
             return this.hsi.getAttribute("bearing1_source");
@@ -371,7 +397,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         return this.hsi.getAttribute("nav_source");
     }
     windModeCompare(_comparison) {
-        return this.wind.getAttribute("wind-mode") == _comparison;
+        return this.wind.getCurrentMode() == _comparison;
     }
     aoaStatus() {
         switch (this.aoaIndicator.AoaMode) {
@@ -386,9 +412,9 @@ class AS3000_PFD_MainPage extends NavSystemPage {
                 break;
         }
     }
-    
-    //ADD START*** G3000 MOD ADD new softkeymenu for change of BARO UNIT    
-    softkeyBaroStatus(_state) { 
+
+    //ADD START*** G3000 MOD ADD new softkeymenu for change of BARO UNIT
+    softkeyBaroStatus(_state) {
         return this.altimeter.getCurrentBaroMode() == _state;
     }
     //ADD END***  G3000 MOD ADD new softkeymenu for change of BARO UNIT

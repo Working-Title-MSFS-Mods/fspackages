@@ -3,7 +3,13 @@
 
     <Template Name="ASOBO_AS580">
         <DefaultTemplateParameters>
-            <EMISSIVE_CODE>(L:XMLVAR_AS3000_DisplayLighting, Percent over 100)</EMISSIVE_CODE>
+            <EMISSIVE_CODE>
+                (L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
+                    (L:XMLVAR_AS3000_DisplayLighting, Percent over 100)
+                } els{
+                    (A:LIGHT POTENTIOMETER:4, Percent over 100)
+                }
+            </EMISSIVE_CODE>
             <FAILURE>(A:CIRCUIT AVIONICS ON, Bool)</FAILURE>
             <ANIM_NEVER_FAILS>True</ANIM_NEVER_FAILS>
         </DefaultTemplateParameters>

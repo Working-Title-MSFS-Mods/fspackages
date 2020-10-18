@@ -6,15 +6,15 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<MCDU MENU", "GNSS1 POS>"], //Page 3, 4 ---- 9
             [""],
-            ["<DATALINK", "FREQUENCY>"], //Page XXX ---- 10
+            ["<DATALINK[disabled]", "FREQUENCY>"], //Page XXX ---- CJ4_FMC_FrequencyPage
             [""],
-            ["<STATUS", "FIX>"], //Page 2 ---- 11
+            ["<STATUS", "FIX>[disabled]"], //Page 2 ---- 11
             [""],
-            ["<POS INIT", "HOLD>"], //N/A ---- 12
+            ["<POS INIT", "HOLD>[disabled]"], //N/A ---- 12
             [" FMS1[s-text]"],
-            ["<VORDME CTL", "PROG>"], //Page 6 ---- 13, 14
+            ["<VORDME CTL[disabled]", "PROG>"], //Page 6 ---- 13, 14
             [" FMS1[s-text]"],
-            ["<GNSS CTL", "SEC FPLN>"] //Page 7 ---- 15
+            ["<GNSS CTL[disabled]", "SEC FPLN>[disabled]"] //Page 7 ---- 15
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage3(fmc); };
         fmc.onLeftInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage30(fmc); };
@@ -23,7 +23,7 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onLeftInput[4] = () => { CJ4_FMC_InitRefIndexPage.ShowPage6(fmc); };
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage7(fmc); };
         fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage9(fmc); };
-        fmc.onRightInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage10(fmc); };
+        fmc.onRightInput[1] = () => { CJ4_FMC_FrequencyPage.ShowMainPage(fmc); };
         fmc.onRightInput[2] = () => { CJ4_FMC_InitRefIndexPage.ShowPage11(fmc); };
         fmc.onRightInput[3] = () => { CJ4_FMC_InitRefIndexPage.ShowPage12(fmc); };
         fmc.onRightInput[4] = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
@@ -37,20 +37,21 @@ class CJ4_FMC_InitRefIndexPage {
         fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue] ", "INDEX[blue]"],
             [""],
-            ["<FMS CTL", "ROUTE MENU>"], //Page 27 ---- 17
+            ["<FMS CTL[disabled]", "ROUTE MENU>"], //Page 27 ---- 17
             [""],
             ["<ABOUT", "DATABASE>"], // Page 27 ---- 18, 19, 20, 21
             [""],
-            ["", "DB DISK OPS>"], //Page XX
+            ["<MOD SET", "DB DISK OPS>[disabled]"], //Page XX
             [""],
-            ["", "DEFAULTS>"], //Page 22, 23, 24
+            ["", "DEFAULTS>[disabled]"], //Page 22, 23, 24
             [""],
             ["", "ARR DATA>"], //Page 25
             [""],
-            ["", "TEMP COMP>"] //Page 26
+            ["", "TEMP COMP>[disabled]"] //Page 26
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage8(fmc); };
         fmc.onLeftInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage27(fmc); };
+        fmc.onLeftInput[2] = () => { CJ4_FMC_ModSettingsPage.ShowPage1(fmc); };
         fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage17(fmc); };
         fmc.onRightInput[1] = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc); };
         //fmc.onRightInput[2] = () => { CJ4_FMC_InitRefIndexPage.ShowPage19(fmc); };
@@ -68,9 +69,9 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<FMS 1", "GPS 1 POS>"],
             [""],
-            ["<DL"],
+            ["<DL[disabled]"],
             [""],
-            ["<DBU"],
+            ["<DBU[disabled]"],
             [""],
             [""],
             [""],
@@ -345,26 +346,6 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage10(fmc) { //FREQUENCY
-        fmc.clearDisplay();
-        fmc._templateRenderer.setTemplateRaw([
-            ["", "", "FREQUENCY[blue]"],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
-            ["", "", "UNDER CONSTRUCTION"],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
-            ["<INDEX"]
-        ]);
-        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-        fmc.updateSideButtonActiveStatus();
-    }
     static ShowPage11(fmc) { //FIX
         fmc.clearDisplay();
         fmc._templateRenderer.setTemplateRaw([
@@ -497,7 +478,7 @@ class CJ4_FMC_InitRefIndexPage {
                 fmc._templateRenderer.setTemplateRaw([
                     [" PROGRESS[blue]", "1/2[blue] "],
                     [" LAST[s-text blue]", "DIST   ETE FUEL-LB[s-text blue]"],
-                    [prevWaypointIdent + "[blue]", prevWaypointDistanceConst + "       ----- [s-text blue]"],
+                    [prevWaypointIdent + "[blue]", prevWaypointDistanceConst + "        ----- [s-text blue]"],
                     [" TO[s-text blue]",],
                     [activeWaypointIdent + "[s-text magenta]", activeWaypointDistanceConst + "  " + activeWaypointEte + " ----- [s-text magenta]"],
                     [" NEXT[s-text blue]"],
@@ -603,22 +584,34 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage17(fmc) { //ROUTE MENU
         fmc.clearDisplay();
+        let pilotId = WTDataStore.get('simbriefPilotId', '');
+        let fplnRecallDisplay = pilotId == "" ? "<FPLN RECALL[disabled]" : "<FPLN RECALL[d-text]";
+        let pilotIdDisplay = pilotId == "" ? "" : "PILOT ID: " + pilotId + "[s-text green]"
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "ROUTE MENU[blue]"],
             [""],
-            ["<PILOT ROUTE LIST"],
+            ["<PILOT ROUTE LIST[disabled]"],
             [""],
-            ["<DISK ROUTE LIST"],
+            ["<DISK ROUTE LIST[disabled]"],
             [""],
-            ["<FPLN RECALL"],
-            [""],
-            ["<FPLN WIND"],
+            [fplnRecallDisplay],
+            [pilotIdDisplay],
+            ["<FPLN WIND[disabled]"],
             [""],
             [""],
             ["-----------------------[blue]"],
-            ["<SEC FPLN"]
+            ["<SEC FPLN[disabled]"]
         ]);
-        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
+        fmc.onLeftInput[2] = () => {
+            if (pilotId != "") {
+                CJ4_FMC_FplnRecallPage.ShowPage1(fmc);
+            }
+            else {
+                fmc.showErrorMessage("NO PILOT ID[red]");
+                CJ4_FMC_ModSettingsPage.ShowPage1(fmc);
+            }
+            };
+        // fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage18(fmc, databaseWaypoint) { //DATABASE INITIAL
@@ -638,7 +631,9 @@ class CJ4_FMC_InitRefIndexPage {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
+                fmc.setMsg("Working...");
                 fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    fmc.setMsg();
                     if (w) {
                         if (w.icao.slice(0, 1) == "A") {
                             CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
@@ -703,7 +698,7 @@ class CJ4_FMC_InitRefIndexPage {
                 longestRunwayOutput = longestRunwayDesignation;
             }
         } else {
-            if (depRunwayDesignation.length == 2) {
+            if (longestRunwayDesignation.length == 2) {
                 longestRunwayOutput = longestRunwayDesignation;
             } else {
                 longestRunwayOutput = "0" + longestRunwayDesignation;
@@ -758,7 +753,9 @@ class CJ4_FMC_InitRefIndexPage {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
+                fmc.setMsg("Working...");
                 fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    fmc.setMsg();
                     if (w) {
                         if (w.icao.slice(0, 1) == "A") {
                             CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
@@ -829,7 +826,9 @@ class CJ4_FMC_InitRefIndexPage {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
+                fmc.setMsg("Working...");
                 fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    fmc.setMsg();
                     if (w) {
                         if (w.icao.slice(0, 1) == "A") {
                             CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
@@ -884,7 +883,9 @@ class CJ4_FMC_InitRefIndexPage {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
+                fmc.setMsg("Working...");
                 fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    fmc.setMsg();
                     if (w) {
                         if (w.icao.slice(0, 1) == "A") {
                             CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
@@ -945,7 +946,9 @@ class CJ4_FMC_InitRefIndexPage {
             let value = fmc.inOut;
             if (value && value !== "") {
                 fmc.clearUserInput();
+                fmc.setMsg("Working...");
                 fmc.getOrSelectWaypointByIdent(value, (w) => {
+                    fmc.setMsg();
                     if (w) {
                         if (w.icao.slice(0, 1) == "A") {
                             CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
@@ -1079,49 +1082,80 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onNextPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage22(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
+    static ShowPage25ErrorMsg(fmc, msg, rskText) {
+         fmc._templateRenderer.setTemplateRaw([
+            [" ACT[blue]", "ARRIVAL DATA  [blue]"],
+            [" " + msg],
+            [""],
+            [""],
+            [""],
+            [""],
+            [""],
+            [""],
+            [""],
+            [""],
+            [""],
+            ["-----------------------[blue]"],
+            ["<INDEX", rskText + ">"]
+        ]);
+    }
     static ShowPage25(fmc) { //ARR DATA
         fmc.clearDisplay();
+        
+        let arrAirportText = "";
+        let approachText = "";
+        let rwyThresholdAltText = "";
+        let freqText = "---.--";
+        let gsAngleText = "-.--°";
+        let locTrueBrgText = "---T";
+        
+        let rightSelectionKeyProc = undefined;
 
-        let destinationIdent = "";
-        let approachName = "";
-        let approachFrequency = "";
-        let destination = "";
-        let appRunway = "";
-        let approach = "";
+        let destination = fmc.flightPlanManager.getDestination();
+        if (!destination) {
+            CJ4_FMC_InitRefIndexPage.ShowPage25ErrorMsg(fmc, "NO DEST SELECTED", "FPLN");
+            rightSelectionKeyProc = CJ4_FMC_RoutePage.ShowPage1;
+        } else {
+            let approach = fmc.flightPlanManager.getApproach();
+            if (!approach.name && !fmc.vfrLandingRunway) {
+                CJ4_FMC_InitRefIndexPage.ShowPage25ErrorMsg(fmc, "NO APPROACH SELECTED", "ARRIVAL");
+                rightSelectionKeyProc = CJ4_FMC_DepArrPage.ShowArrivalPage;
+            } else {
+                arrAirportText = destination.ident;
+                if (destination.infos) {
+                    arrAirportText = arrAirportText + "/" + destination.infos.name;
+                }
 
-        if (fmc.flightPlanManager.getDestination()) {
-            destination = fmc.flightPlanManager.getDestination();
-            destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
+                approachText = approach.name || "RW" + Avionics.Utils.formatRunway(fmc.vfrLandingRunway.designation);
+                let approachRunway = fmc.flightPlanManager.getApproachRunway() || fmc.vfrLandingRunway;
+                rwyThresholdAltText = Math.trunc(approachRunway.elevation * 3.28) + " FT";
+                if (approach.name.startsWith("ILS")) {
+                    freqText = fmc.flightPlanManager.getApproachNavFrequency().toFixed(2);
+                    locTrueBrgText = Math.trunc(approachRunway.direction).toString().padStart(3, "0") + "T";
+                    gsAngleText = "3.00°";
+                }
+                
+                fmc._templateRenderer.setTemplateRaw([
+                    [" ACT[blue]", "ARRIVAL DATA  [blue]"],
+                    [" ARR AIRPORT[blue]"],
+                    [arrAirportText],
+                    [" APPR[blue]", "FREQ [blue]"],
+                    [approachText, freqText],
+                    [" GS ANGLE[blue]"],
+                    [gsAngleText],
+                    [" LOC TRUE BRG[blue]"],
+                    [locTrueBrgText],
+                    [" RWY THRESHOLD ALT[blue]"],
+                    [rwyThresholdAltText],
+                    ["-----------------------[blue]"],
+                    ["<INDEX", "LEGS>"]
+                ]);
+                rightSelectionKeyProc = CJ4_FMC_LegsPage.ShowPage1;
+            }
         }
-        if (fmc.flightPlanManager.getApproach()) {
-            approach = fmc.flightPlanManager.getApproach();
-            approachName = fmc.flightPlanManager.getApproach().name;
-            approachFrequency = fmc.flightPlanManager.getApproachNavFrequency();
-        }
-        if (fmc.flightPlanManager.getApproachRunway()) {
-            appRunway = fmc.flightPlanManager.getApproachRunway();
-        }
 
-        let appRunwayDirection = new Number(appRunway.direction);
-        let appRunwayElevation = new Number(appRunway.elevation * 3.28);
-
-        fmc._templateRenderer.setTemplateRaw([
-            [" ACT", "ARRIVAL DATA  [blue]"],
-            [" ARR AIRPORT[blue]"],
-            [destinationIdent + " / " + destination.infos.name],
-            [" APPR[blue]", "FREQ [blue]"],
-            [approachName + "", approachFrequency.toFixed(2) + ""],
-            [" GS ANGLE[blue]"],
-            ["3.00"],
-            [" LOC TRUE BRG[blue]"],
-            [Math.trunc(appRunwayDirection) + ""],
-            [" RWY THRESHOLD ALT[blue]"],
-            [Math.trunc(appRunwayElevation) + ""],
-            ["-----------------------[blue]"],
-            ["<INDEX", "LEGS>"]
-        ]);
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_LegsPage.ShowPage1(fmc); };
+        fmc.onRightInput[5] = () => { rightSelectionKeyProc(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage26(fmc) { //TEMP COMP
@@ -1184,7 +1218,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["Working-Title-MSFS-Mods[white s-text]"],
             [""],
             [" VERSION[blue]"],
-            ["0.4.1[s-text white]"],
+            ["0.5.1[s-text white]"],
             [""],
             [""],
             [""],
@@ -1208,15 +1242,15 @@ class CJ4_FMC_InitRefIndexPage {
             fmc._templateRenderer.setTemplateRaw([
                 ["DL[blue]", "1/2[blue]", "DATALINK MENU[blue]"],
                 [""],
-                ["<RCVD MSGS", "ATS LOG>"],
+                ["<RCVD MSGS[disabled]", "ATS LOG>[disabled]"],
                 [""],
-                ["<SEND MSGS", "DEPART CLX>"],
+                ["<SEND MSGS[disabled]", "DEPART CLX>[disabled]"],
                 [""],
-                ["<WEATHER", "OCEANIC CLX>"],
+                ["<WEATHER[disabled]", "OCEANIC CLX>[disabled]"],
                 [""],
-                ["<TWIP"],
+                ["<TWIP[disabled]"],
                 [""],
-                ["<ATIS"],
+                ["<ATIS[disabled]"],
                 ["        NO COMM[green s-text]"],
                 ["<RETURN [white]" + hourspad + "[blue s-text]" + ":[blue s-text]" + minutesspad + "[blue s-text]"]
             ]);
