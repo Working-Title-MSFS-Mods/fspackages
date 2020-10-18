@@ -148,7 +148,7 @@ class CJ4_FMC_FrequencyPage {
                 }            
 
                 fmc._templateRenderer.setTemplateRaw([
-                    ["FREQUENCY DATA[blue]", currentPage + "/" + pageCount + "[blue]"],
+                    ["", currentPage + "/" + pageCount + "[blue]", "FREQUENCY DATA[blue]"],
                     [" SEL APT[blue]"],
                     [selectedWaypointText],
                     [" " + headlines[0] + "[blue]", headlines[4] + " [blue]"],
