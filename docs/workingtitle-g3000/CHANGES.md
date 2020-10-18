@@ -1,5 +1,12 @@
 # Changelog
 
+### v0.2.1
+**Fixes**
+- \[Compatibility\] Fixed issue that caused gigantic obstacle icons to be displayed on the G1000 navigational map if the WT G1000 mod is concurrently installed.
+- \[Compatibility\] Fixed issue that caused INT waypoint and some airport symbols to not be displayed correctly on the G1000 if the WT G1000 is concurrently installed.
+- \[PFD\] You are now able to select PFD wind options while on the ground. The display will still read NO WIND DATA if enabled, but the system will remember your setting and use the right display format when in the air.
+- \[NavMap\] Performance optimizations for the range ring/compass and fuel ring overlays.
+
 ### v0.2.0
 **Fixes**
 - \[Compatibility\] Fixed issue that would cause the G1000 MFD screen to freeze when entering WPT page if the WT G1000 mod (v0.3.1) is also installed.

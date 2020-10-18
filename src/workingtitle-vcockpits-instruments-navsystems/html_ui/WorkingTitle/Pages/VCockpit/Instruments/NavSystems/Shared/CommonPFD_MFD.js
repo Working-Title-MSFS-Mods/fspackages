@@ -423,7 +423,7 @@ class PFD_Compass extends NavSystemElement {
         }
         else {
             this.ifTimer -= this.gps.deltaTime;
-        }        
+        }
         if (this.gps.currFlightPlanManager.isActiveApproach() && this.gps.currFlightPlanManager.getActiveWaypointIndex() != -1 && Simplane.getAutoPilotApproachType() == 4) {
                 if (((this.ifIcao && this.ifIcao != "" && this.ifIcao == this.gps.currFlightPlanManager.getActiveWaypoint().icao) || (this.gps.currFlightPlanManager.getActiveWaypointIndex() >= this.gps.currFlightPlanManager.getApproachWaypoints().length - 2)) && !this.hasLocBeenEntered) {
                     let approachFrequency = this.gps.currFlightPlanManager.getApproachNavFrequency();
@@ -1108,7 +1108,7 @@ class PFD_WindData extends NavSystemElement {
     }
     init(root) {
         this.svg = root;
-        SimVar.SetSimVarValue("L:Glasscockpit_AOA_Mode", "number", this.mode);
+        SimVar.SetSimVarValue("L:Glasscockpit_Wind_Mode", "number", this.mode);
     }
     getCurrentMode() {
         return this.mode;
@@ -1134,7 +1134,7 @@ class PFD_WindData extends NavSystemElement {
                     this.svg.setAttribute("wind-strength", windSpd);
                     break;
             }
-        }   
+        }
     }
     onExit() {
     }

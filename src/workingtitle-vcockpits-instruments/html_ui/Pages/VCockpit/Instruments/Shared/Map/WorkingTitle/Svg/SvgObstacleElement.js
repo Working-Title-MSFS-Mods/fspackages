@@ -13,10 +13,12 @@ class SvgObstacleElement extends SvgMapElement {
         }
         this._checkAltitude = Math.floor(Math.random() * 60);
     }
+
     id(map) {
         return "obstacle-" + this.name + "-map-" + map.index;
         ;
     }
+
     imageFileName(color = "GREY") {
         let moreLess = "LESS";
         if (this.alt > 1000) {
@@ -28,6 +30,15 @@ class SvgObstacleElement extends SvgMapElement {
         }
         return "ICON_MAP_OBSTACLE_" + litUnlit + "_" + moreLess + "_1000_AGL_" + color + ".svg";
     }
+
+    getIconSize(map) {
+        if (map.config.obstacleIconSize) {
+            return map.config.obstacleIconSize;
+        } else {
+            return map.config.cityIconSize;
+        }
+    }
+
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);
@@ -38,10 +49,12 @@ class SvgObstacleElement extends SvgMapElement {
         this._image.setAttribute("height", "100%");
         this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName());
         container.appendChild(this._image);
-        container.setAttribute("width", fastToFixed(map.config.obstacleIconSize, 0));
-        container.setAttribute("height", fastToFixed(map.config.obstacleIconSize, 0));
+        let iconSize = this.getIconSize(map);
+        container.setAttribute("width", fastToFixed(iconSize, 0));
+        container.setAttribute("height", fastToFixed(iconSize, 0));
         return container;
     }
+
     updateDraw(map) {
         map.latLongToXYToRef(this.lat, this.long, this);
         if (isFinite(this.x) && isFinite(this.y)) {
@@ -65,8 +78,9 @@ class SvgObstacleElement extends SvgMapElement {
                 }
             }
             if (Math.abs(this.x - this._lastX) > 0.1 || Math.abs(this.y - this._lastY) > 0.1) {
-                this.svgElement.setAttribute("x", fastToFixed((this.x - map.config.obstacleIconSize * 0.5), 1));
-                this.svgElement.setAttribute("y", fastToFixed((this.y - map.config.obstacleIconSize * 0.5), 1));
+                let iconSize = this.getIconSize(map);
+                this.svgElement.setAttribute("x", fastToFixed((this.x - iconSize * 0.5), 1));
+                this.svgElement.setAttribute("y", fastToFixed((this.y - iconSize * 0.5), 1));
                 this._lastX = this.x;
                 this._lastY = this.y;
             }
