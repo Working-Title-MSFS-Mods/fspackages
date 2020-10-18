@@ -1176,7 +1176,7 @@ class AS3000_TSC_NRST_Airport_Line {
             let td1 = window.document.createElement("td");
             {
                 this.identButton = window.document.createElement("div");
-                this.identButton.setAttribute("class", "gradientButton");
+                this.identButton.setAttribute("class", "gradientButton Waypoint");
                 {
                     this.ident = window.document.createElement("div");
                     this.ident.setAttribute("class", "mainValue");
