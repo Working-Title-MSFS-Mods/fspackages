@@ -562,21 +562,20 @@ class CJ4_FMC extends FMCMainDisplay {
             }
         }
 
-        // Update landing time
+        
         if(takeOffTime && takeOffTime > 0){
-            if(onGround){
+            // Update landing time
+            if(onGround && (!landingTime || landingTime == 0)){
                 if(zuluTime){
                     SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", zuluTime);
                 }
             }
+            // Update enroute time
+            if(!landingTime || landingTime == 0){
+                const enrouteTime = zuluTime - takeOffTime;
+                SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", enrouteTime);
+            }
         }
-
-        // Update enroute time
-        if(takeOffTime && takeOffTime > 0){
-            const enrouteTime = zuluTime - takeOffTime;
-            SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", enrouteTime);
-        }
-
     }
 }
 
