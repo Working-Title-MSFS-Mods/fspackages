@@ -54,11 +54,9 @@ class CJ4_FMC_FplnRecallPage {
                 }
                 let icao = routeArr[idx];
 
-                if(idx == 0 && icao !== "DCT"){
+                if (idx == 0 && icao !== "DCT") {
                     // if first waypoint is no dct it must be a departure
-                    // skip that
-                    idx++;
-                    addWaypoint();
+                    icao = "DCT";
                 }
 
                 fmc.setMsg("LOAD FPLN...ADD [yellow]" + icao);
