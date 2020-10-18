@@ -484,6 +484,14 @@
 			<UseTemplate Name="ASOBO_DEICE_Switch_Engine_Template">
 				<ID>2</ID>
 			</UseTemplate>
+            <UseTemplate Name="ASOBO_DEICE_Switch_Tail_Template">
+                <ID>1</ID>
+                <TOOLTIPID>%((L:TAIL ANTI ICE:1, Bool))%{if}Turn OFF left tail anti-ice %{else}Turn ON left tail anti-ice%{end}</TOOLTIPID>
+            </UseTemplate>
+            <UseTemplate Name="ASOBO_DEICE_Switch_Tail_Template">
+                <ID>2</ID>
+                <TOOLTIPID>%((L:TAIL ANTI ICE:2, Bool))%{if}Turn OFF right tail anti-ice %{else}Turn ON right tail anti-ice%{end}</TOOLTIPID>
+            </UseTemplate>
 			<UseTemplate Name="ASOBO_DEICE_Switch_Airframe_Template">
 				<ID>1</ID>
 				<PART_ID>DEICE_PUSH_AIRFRAME_1</PART_ID>
@@ -493,12 +501,6 @@
 				<PART_ID>DEICE_PUSH_AIRFRAME_1</PART_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Wing_Template">
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>DEICE_Push_Tail_1</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>DEICE_Push_Tail_2</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>SAFETY_Knob_Oxygen</NODE_ID>
