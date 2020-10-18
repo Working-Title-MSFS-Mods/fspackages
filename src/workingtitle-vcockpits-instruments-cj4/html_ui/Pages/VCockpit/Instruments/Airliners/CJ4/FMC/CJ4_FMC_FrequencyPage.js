@@ -1,3 +1,13 @@
+class CJ4_FMC_FrequencyPage_State {
+
+    constructor() {
+        this.selectedWaypointIndex = 0;
+        this.pilotDefinedAirport = undefined;
+    }
+}
+
+let cj4FmcFrequencyPageState = new CJ4_FMC_FrequencyPage_State();
+
 class CJ4_FMC_FrequencyPage {
 
     static async ShowMainPage(fmc, currentPage = 1) {
@@ -13,15 +23,15 @@ class CJ4_FMC_FrequencyPage {
         let origin = fmc.flightPlanManager.getOrigin();
         let destination = fmc.flightPlanManager.getDestination();
         let alternate; // Not supported yet, flightPlanManager does not manage alternate
-        let pilotDefined = fmc.frequencyPilotDefinedAirport;
+        let pilotDefined = cj4FmcFrequencyPageState.pilotDefinedAirport;
 
         let airports = [origin, destination, alternate, pilotDefined];
-        let selectedWaypoint = airports[fmc.frequencySelectedWaypointIndex];
+        let selectedWaypoint = airports[cj4FmcFrequencyPageState.selectedWaypointIndex];
         let selectionIsAirport = selectedWaypoint && selectedWaypoint.icao[0] === "A";
 
         let formatAirportTextElement = (index, placeholder) => {
             let rslt = airports[index] ? airports[index].ident : placeholder.repeat(4);
-            rslt += (index === fmc.frequencySelectedWaypointIndex && selectedWaypoint) ? "[green]" : "[s-text]";
+            rslt += (index === cj4FmcFrequencyPageState.selectedWaypointIndex && selectedWaypoint) ? "[green]" : "[s-text]";
             return rslt;
         }
          
@@ -157,11 +167,11 @@ class CJ4_FMC_FrequencyPage {
 
         // LSK Airport Selection: Cycles through available airports
         fmc.onLeftInput[0] = () => {
-            let nextIndex = (fmc.frequencySelectedWaypointIndex + 1) % MAX_SELECTABLE_AIRPORTS;
-            while (!airports[nextIndex] && nextIndex !== fmc.frequencySelectedWaypointIndex) {
+            let nextIndex = (cj4FmcFrequencyPageState.selectedWaypointIndex + 1) % MAX_SELECTABLE_AIRPORTS;
+            while (!airports[nextIndex] && nextIndex !== cj4FmcFrequencyPageState.selectedWaypointIndex) {
                 nextIndex = (nextIndex + 1) % MAX_SELECTABLE_AIRPORTS;
             }
-            fmc.frequencySelectedWaypointIndex = nextIndex;
+            cj4FmcFrequencyPageState.selectedWaypointIndex = nextIndex;
             CJ4_FMC_FrequencyPage.ShowMainPage(fmc);
         };
         // RSK Set pilot-defined Airport
@@ -174,8 +184,8 @@ class CJ4_FMC_FrequencyPage {
                     fmc.setMsg();
                     if (airport) {
                         // set and select pilot-defined airport
-                        fmc.frequencySelectedWaypointIndex = PILOT_DEFINED_AIRPORT_INDEX;
-                        fmc.frequencyPilotDefinedAirport = airport;
+                        cj4FmcFrequencyPageState.selectedWaypointIndex = PILOT_DEFINED_AIRPORT_INDEX;
+                        cj4FmcFrequencyPageState.pilotDefinedAirport = airport;
                         CJ4_FMC_FrequencyPage.ShowMainPage(fmc, 1);
                     } else {
                         CJ4_FMC_FrequencyPage.ShowMainPage(fmc, 1);
