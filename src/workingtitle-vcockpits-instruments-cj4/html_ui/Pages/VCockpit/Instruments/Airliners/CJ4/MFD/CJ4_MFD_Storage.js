@@ -714,15 +714,14 @@ class MemoryState {
         if(_memoryPreset == 1){
             // System containers
             this.systemPage1 = CJ4_SystemPage.ENGINES;
-            this.systemPage2 = CJ4_SystemPage.ELECTRICS;
-            this.showChecklist = true;
+            this.systemPage2 = CJ4_SystemPage.FMS;
+            this.showChecklist = false;
             this.showPassengerBrief = false;
 
             // Map
             this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
             this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
             this.mapNavigationSource = 0;
-            //this.showSystemOverlay = 0;
             this.showTerrain = false;
             this.showWeather = false;
             this.showGwx = false;
@@ -732,16 +731,15 @@ class MemoryState {
             // System containers
             this.systemPage1 = CJ4_SystemPage.ENGINES;
             this.systemPage2 = CJ4_SystemPage.ELECTRICS;
-            this.showChecklist = true;
+            this.showChecklist = false;
             this.showPassengerBrief = false;
 
             // Map
             this.mapDisplayMode = Jet_NDCompass_Display.PLAN;
             this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
             this.mapNavigationSource = 0;
-            //this.showSystemOverlay = 0;
             this.showTerrain = false;
-            this.showWeather = false;
+            this.showWeather = true;
             this.showGwx = false;
             this.isExtended = false;
         }
@@ -749,14 +747,14 @@ class MemoryState {
             // System containers
             this.systemPage1 = CJ4_SystemPage.ENGINES;
             this.systemPage2 = CJ4_SystemPage.ELECTRICS;
-            this.showChecklist = true;
+            this.showChecklist = false;
             this.showPassengerBrief = false;
 
             // Map
             this.mapDisplayMode = Jet_NDCompass_Display.ARC;
             this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
             this.mapNavigationSource = 0;
-            this.showTerrain = false;
+            this.showTerrain = true;
             this.showWeather = false;
             this.showGwx = false;
             this.isExtended = false;
