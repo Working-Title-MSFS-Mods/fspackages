@@ -24,8 +24,9 @@ class CJ4_FMC_FrequencyPage {
             formatAirportTextElement(1, "-") + "/[s-text]" +
             formatAirportTextElement(2, "-") + "/[s-text]" +
             formatAirportTextElement(3, "□");
-
-        if (!selectedWaypoint || !selectionIsAirport) {
+            
+        let showNoDataAvailable = () => {
+            fmc.setMsg();
             fmc.clearDisplay();
             pageCount = 1;
             fmc._templateRenderer.setTemplateRaw([
@@ -43,6 +44,10 @@ class CJ4_FMC_FrequencyPage {
                 ["------------------------[blue]"],
                 ["<INDEX"]
             ]);
+        }
+
+        if (!selectedWaypoint || !selectionIsAirport) {
+            showNoDataAvailable();
         } else {
             fmc.setMsg("Working...");
             await selectedWaypoint.infos.UpdateNamedFrequencies();
@@ -75,57 +80,61 @@ class CJ4_FMC_FrequencyPage {
                 }
             });
             
-            // paging
-            pageCount = Math.floor((headlines.length - 1) / 8) + 1;
-            headlines = headlines.slice((currentPage-1)*8, (currentPage)*8);
-            datalines = datalines.slice((currentPage-1)*8, (currentPage)*8);
+            if (headlines.length === 0) {
+                showNoDataAvailable();
+            } else {
+                // paging
+                pageCount = Math.floor((headlines.length - 1) / 8) + 1;                
+                headlines = headlines.slice((currentPage-1)*8, (currentPage)*8);
+                datalines = datalines.slice((currentPage-1)*8, (currentPage)*8);
 
-            // pad to 8 items on the page, they may be empty
-            while (headlines.length < 8) {
-                headlines.push("");
-                datalines.push("");
-            }
+                // pad to 8 items on the page, they may be empty
+                while (headlines.length < 8) {
+                    headlines.push("");
+                    datalines.push("");
+                }
 
-            fmc.setMsg();
-            fmc.clearDisplay();
-            
-            // LSKs
-            for (let i = 0; i < 4; i++) {
-                if (datalines[i] !== MULTIPLE_LEFT) {
-                    fmc.onLeftInput[i+1] = () => {
-                        if (!fmc.inOut || fmc.inOut === "") {
-                            fmc.inOut = datalines[i];
+                fmc.setMsg();
+                fmc.clearDisplay();
+                
+                // LSKs
+                for (let i = 0; i < 4; i++) {
+                    if (datalines[i] !== MULTIPLE_LEFT) {
+                        fmc.onLeftInput[i+1] = () => {
+                            if (!fmc.inOut || fmc.inOut === "") {
+                                fmc.inOut = datalines[i];
+                            }
                         }
                     }
                 }
-            }
-            
-            // RSKs
-            for (let i = 0; i < 4; i++) {
-                if (datalines[i+4] !== MULTIPLE_RIGHT) {
-                    fmc.onRightInput[i+1] = () => {
-                        if (!fmc.inOut || fmc.inOut === "") {
-                            fmc.inOut = datalines[i+4];
+                
+                // RSKs
+                for (let i = 0; i < 4; i++) {
+                    if (datalines[i+4] !== MULTIPLE_RIGHT) {
+                        fmc.onRightInput[i+1] = () => {
+                            if (!fmc.inOut || fmc.inOut === "") {
+                                fmc.inOut = datalines[i+4];
+                            }
                         }
                     }
-                }
-            }            
+                }            
 
-            fmc._templateRenderer.setTemplateRaw([
-                ["FREQUENCY DATA[blue]", currentPage + "/" + pageCount + "[blue]"],
-                [" SEL APT[blue]"],
-                [selectedWaypointText],
-                [" " + headlines[0] + "[blue]", headlines[4] + " [blue]"],
-                [datalines[0], datalines[4]],
-                [" " + headlines[1] + "[blue]", headlines[5] + " [blue]"],
-                [datalines[1], datalines[5]],
-                [" " + headlines[2] + "[blue]", headlines[6] + " [blue]"],
-                [datalines[2], datalines[6]],
-                [" " + headlines[3] + "[blue]", headlines[7] + " [blue]"],
-                [datalines[3], datalines[7]],
-                ["------------------------[blue]"],
-                ["<INDEX"]
-            ]);
+                fmc._templateRenderer.setTemplateRaw([
+                    ["FREQUENCY DATA[blue]", currentPage + "/" + pageCount + "[blue]"],
+                    [" SEL APT[blue]"],
+                    [selectedWaypointText],
+                    [" " + headlines[0] + "[blue]", headlines[4] + " [blue]"],
+                    [datalines[0], datalines[4]],
+                    [" " + headlines[1] + "[blue]", headlines[5] + " [blue]"],
+                    [datalines[1], datalines[5]],
+                    [" " + headlines[2] + "[blue]", headlines[6] + " [blue]"],
+                    [datalines[2], datalines[6]],
+                    [" " + headlines[3] + "[blue]", headlines[7] + " [blue]"],
+                    [datalines[3], datalines[7]],
+                    ["------------------------[blue]"],
+                    ["<INDEX"]
+                ]);
+            }
         }
 
         // LSK Airport Selection: Cycles through available airports
@@ -143,12 +152,12 @@ class CJ4_FMC_FrequencyPage {
             if (value && value !== "") {
                 fmc.clearUserInput();
                 fmc.setMsg("Working...");
-                fmc.getOrSelectWaypointByIdent(value, (w) => {
+                fmc.dataManager.GetAirportByIdent(value).then(airport => {
                     fmc.setMsg();
-                    if (w) {
+                    if (airport) {
                         // set and select pilot-defined airport
                         fmc.frequencySelectedWaypointIndex = 3;
-                        fmc.frequencyPilotDefinedAirport = w;
+                        fmc.frequencyPilotDefinedAirport = airport;
                         CJ4_FMC_FrequencyPage.ShowMainPage(fmc, 1);
                     } else {
                         CJ4_FMC_FrequencyPage.ShowMainPage(fmc, 1);
