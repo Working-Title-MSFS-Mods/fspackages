@@ -53,7 +53,7 @@ class SvgNearestAirportElement extends SvgWaypointElement {
     
     getIconSize(map) {
         if (this.source && this.source.getClassSize) {
-            if (this.source.airportClass >= 2) {
+            if (this.source.airportClass >= 2 && map.config.waypointAirportClass2IconSize) {
                 return map.config.waypointAirportClass2IconSize;
             } else {
                 return map.config.waypointIconSize;
@@ -65,7 +65,7 @@ class SvgNearestAirportElement extends SvgWaypointElement {
     
     getLabelFontSize(map) {
         if (this.source && this.source.getClassSize) {
-            if (this.source.getClassSize() == AirportSize.Large) {
+            if (this.source.getClassSize() == AirportSize.Large && map.config.waypointAirportLargeLabelFontSize) {
                 return map.config.waypointAirportLargeLabelFontSize;
             } else {
                 return map.config.waypointLabelFontSize;

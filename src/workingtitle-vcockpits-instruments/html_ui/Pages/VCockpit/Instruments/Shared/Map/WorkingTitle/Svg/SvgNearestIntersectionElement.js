@@ -22,7 +22,11 @@ class SvgNearestIntersectionElement extends SvgWaypointElement {
     }
     
     getIconSize(map) {
-        return map.config.waypointINTIconSize;
+        if (map.config.waypointINTIconSize) {
+            return map.config.waypointINTIconSize;
+        } else {
+            return map.config.waypointIconSize;
+        }
     }
 }
 //# sourceMappingURL=SvgNearestIntersectionElement.js.map
