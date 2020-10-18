@@ -7,30 +7,31 @@ class CJ4_FMC_FrequencyPage {
         let origin = fmc.flightPlanManager.getOrigin();
         let destination = fmc.flightPlanManager.getDestination();
         let alternate; // Not supported yet, flightPlanManager does not manage alternate
-        let pilotDefined = fmc.frequenciesPilotDefinedAirport;
-        
+        let pilotDefined = fmc.frequencyPilotDefinedAirport;
+
         let airports = [origin, destination, alternate, pilotDefined];
-        let selectedAirport = airports[fmc.frequenciesSelectedAirportIndex];
+        let selectedWaypoint = airports[fmc.frequencySelectedWaypointIndex];
+        let selectionIsAirport = selectedWaypoint && selectedWaypoint.icao[0] === "A";
 
         let formatAirportTextElement = (index, placeholder) => {
             let rslt = airports[index] ? airports[index].ident : placeholder.repeat(4);
-            rslt += (index === fmc.frequenciesSelectedAirportIndex && selectedAirport) ? "[green]" : "[s-text]";
+            rslt += (index === fmc.frequencySelectedWaypointIndex && selectedWaypoint) ? "[green]" : "[s-text]";
             return rslt;
         }
          
-        let selectedAirportText =
+        let selectedWaypointText =
             formatAirportTextElement(0, "-") + "/[s-text]" +
             formatAirportTextElement(1, "-") + "/[s-text]" +
             formatAirportTextElement(2, "-") + "/[s-text]" +
             formatAirportTextElement(3, "□");
 
-        if (!selectedAirport) {
+        if (!selectedWaypoint || !selectionIsAirport) {
             fmc.clearDisplay();
             pageCount = 1;
             fmc._templateRenderer.setTemplateRaw([
                 ["FREQUENCY DATA[blue]", currentPage + "/" + pageCount + "[blue]"],
                 [" SEL APT[blue]"],
-                [selectedAirportText],
+                [selectedWaypointText],
                 [""],
                 [""],
                 ["", "", "NO DATA"],
@@ -44,8 +45,8 @@ class CJ4_FMC_FrequencyPage {
             ]);
         } else {
             fmc.setMsg("Working...");
-            await selectedAirport.infos.UpdateNamedFrequencies();
-            let namedFrequencies = selectedAirport.infos.namedFrequencies;
+            await selectedWaypoint.infos.UpdateNamedFrequencies();
+            let namedFrequencies = selectedWaypoint.infos.namedFrequencies;
             
             // Group frequencies by name. For instance, an airport can have multiple Ground frequencies.
             let frequenciesByName = new Map();
@@ -113,7 +114,7 @@ class CJ4_FMC_FrequencyPage {
             fmc._templateRenderer.setTemplateRaw([
                 ["FREQUENCY DATA[blue]", currentPage + "/" + pageCount + "[blue]"],
                 [" SEL APT[blue]"],
-                [selectedAirportText],
+                [selectedWaypointText],
                 [" " + headlines[0] + "[blue]", headlines[4] + " [blue]"],
                 [datalines[0], datalines[4]],
                 [" " + headlines[1] + "[blue]", headlines[5] + " [blue]"],
@@ -129,11 +130,11 @@ class CJ4_FMC_FrequencyPage {
 
         // LSK Airport Selection: Cycles through available airports
         fmc.onLeftInput[0] = () => {
-            let nextIndex = (fmc.frequenciesSelectedAirportIndex + 1) % 4;
-            while (!airports[nextIndex] && nextIndex !== fmc.frequenciesSelectedAirportIndex) {
+            let nextIndex = (fmc.frequencySelectedWaypointIndex + 1) % 4;
+            while (!airports[nextIndex] && nextIndex !== fmc.frequencySelectedWaypointIndex) {
                 nextIndex = (nextIndex + 1) % 4;
             }
-            fmc.frequenciesSelectedAirportIndex = nextIndex;
+            fmc.frequencySelectedWaypointIndex = nextIndex;
             CJ4_FMC_FrequencyPage.ShowMainPage(fmc);
         };
         // RSK Set pilot-defined Airport
@@ -146,8 +147,8 @@ class CJ4_FMC_FrequencyPage {
                     fmc.setMsg();
                     if (w) {
                         // set and select pilot-defined airport
-                        fmc.frequenciesSelectedAirportIndex = 3;
-                        fmc.frequenciesPilotDefinedAirport = w;
+                        fmc.frequencySelectedWaypointIndex = 3;
+                        fmc.frequencyPilotDefinedAirport = w;
                         CJ4_FMC_FrequencyPage.ShowMainPage(fmc, 1);
                     } else {
                         CJ4_FMC_FrequencyPage.ShowMainPage(fmc, 1);
