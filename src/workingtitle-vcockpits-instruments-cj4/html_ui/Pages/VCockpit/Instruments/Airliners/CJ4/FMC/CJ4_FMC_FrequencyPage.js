@@ -2,6 +2,12 @@ class CJ4_FMC_FrequencyPage {
 
     static async ShowMainPage(fmc, currentPage = 1) {
 
+        const ITEMS_PER_COLOUMN = 4;
+        const ITEMS_PER_PAGE = 2 * ITEMS_PER_COLOUMN;
+        const MAX_SELECTABLE_AIRPORTS = 4;
+        const PILOT_DEFINED_AIRPORT_INDEX = 3;
+        const FREQUENCY_DECIMAL_PLACES = 3;
+
         let pageCount;
 
         let origin = fmc.flightPlanManager.getOrigin();
@@ -69,7 +75,7 @@ class CJ4_FMC_FrequencyPage {
             frequenciesByName.forEach((frequencyValues, freqName) => {
                 headlines.push(freqName);
                 if (frequencyValues.length === 1) {
-                    datalines.push(frequencyValues[0].toFixed(2));
+                    datalines.push(frequencyValues[0].toFixed(FREQUENCY_DECIMAL_PLACES));
                 } else {
                     // every 4 items: switch arrow direction
                     if (Math.floor(datalines.length / 4) % 2 === 0) {
@@ -84,12 +90,12 @@ class CJ4_FMC_FrequencyPage {
                 showNoDataAvailable();
             } else {
                 // paging
-                pageCount = Math.floor((headlines.length - 1) / 8) + 1;                
-                headlines = headlines.slice((currentPage-1)*8, (currentPage)*8);
-                datalines = datalines.slice((currentPage-1)*8, (currentPage)*8);
+                pageCount = Math.floor((headlines.length - 1) / ITEMS_PER_PAGE) + 1;                
+                headlines = headlines.slice((currentPage-1) * ITEMS_PER_PAGE, (currentPage) * ITEMS_PER_PAGE);
+                datalines = datalines.slice((currentPage-1) * ITEMS_PER_PAGE, (currentPage) * ITEMS_PER_PAGE);
 
-                // pad to 8 items on the page, they may be empty
-                while (headlines.length < 8) {
+                // pad to ITEMS_PER_PAGE items, they may be empty
+                while (headlines.length < ITEMS_PER_PAGE) {
                     headlines.push("");
                     datalines.push("");
                 }
@@ -98,22 +104,34 @@ class CJ4_FMC_FrequencyPage {
                 fmc.clearDisplay();
                 
                 // LSKs
-                for (let i = 0; i < 4; i++) {
-                    if (datalines[i] !== MULTIPLE_LEFT) {
-                        fmc.onLeftInput[i+1] = () => {
+                for (let i = 0; i < ITEMS_PER_COLOUMN; i++) {
+                    let dataIndex = i;
+                    let lskIndex = i + 1;
+                    if (datalines[dataIndex] === MULTIPLE_LEFT) {
+                        fmc.onLeftInput[lskIndex] = () => {
+                            CJ4_FMC_FrequencyPage.ShowMultiplePage(fmc, selectedWaypoint, headlines[dataIndex], frequenciesByName.get(headlines[dataIndex]), 1);
+                        }                        
+                    } else {
+                        fmc.onLeftInput[lskIndex] = () => {
                             if (!fmc.inOut || fmc.inOut === "") {
-                                fmc.inOut = datalines[i];
+                                fmc.inOut = datalines[dataIndex];
                             }
                         }
                     }
                 }
                 
                 // RSKs
-                for (let i = 0; i < 4; i++) {
-                    if (datalines[i+4] !== MULTIPLE_RIGHT) {
-                        fmc.onRightInput[i+1] = () => {
+                for (let i = 0; i < ITEMS_PER_COLOUMN; i++) {
+                    let dataIndex = i + ITEMS_PER_COLOUMN;
+                    let rskIndex = i + 1;                    
+                    if (datalines[dataIndex] === MULTIPLE_RIGHT) {
+                        fmc.onRightInput[rskIndex] = () => {
+                            CJ4_FMC_FrequencyPage.ShowMultiplePage(fmc, selectedWaypoint, headlines[dataIndex], frequenciesByName.get(headlines[dataIndex]), 1);                            
+                        }                        
+                    } else {
+                        fmc.onRightInput[rskIndex] = () => {
                             if (!fmc.inOut || fmc.inOut === "") {
-                                fmc.inOut = datalines[i+4];
+                                fmc.inOut = datalines[dataIndex];
                             }
                         }
                     }
@@ -139,9 +157,9 @@ class CJ4_FMC_FrequencyPage {
 
         // LSK Airport Selection: Cycles through available airports
         fmc.onLeftInput[0] = () => {
-            let nextIndex = (fmc.frequencySelectedWaypointIndex + 1) % 4;
+            let nextIndex = (fmc.frequencySelectedWaypointIndex + 1) % MAX_SELECTABLE_AIRPORTS;
             while (!airports[nextIndex] && nextIndex !== fmc.frequencySelectedWaypointIndex) {
-                nextIndex = (nextIndex + 1) % 4;
+                nextIndex = (nextIndex + 1) % MAX_SELECTABLE_AIRPORTS;
             }
             fmc.frequencySelectedWaypointIndex = nextIndex;
             CJ4_FMC_FrequencyPage.ShowMainPage(fmc);
@@ -156,7 +174,7 @@ class CJ4_FMC_FrequencyPage {
                     fmc.setMsg();
                     if (airport) {
                         // set and select pilot-defined airport
-                        fmc.frequencySelectedWaypointIndex = 3;
+                        fmc.frequencySelectedWaypointIndex = PILOT_DEFINED_AIRPORT_INDEX;
                         fmc.frequencyPilotDefinedAirport = airport;
                         CJ4_FMC_FrequencyPage.ShowMainPage(fmc, 1);
                     } else {
@@ -170,5 +188,58 @@ class CJ4_FMC_FrequencyPage {
         fmc.onPrevPage = () => { CJ4_FMC_FrequencyPage.ShowMainPage(fmc, currentPage === 1 ? pageCount : (currentPage - 1)); };
         fmc.onNextPage = () => { CJ4_FMC_FrequencyPage.ShowMainPage(fmc, currentPage === pageCount ? 1 : (currentPage + 1)); };
         fmc.updateSideButtonActiveStatus();
+    }
+
+    /*
+     * Shows multiple frequencies of a specific type, for instance all "Ground" frequencies of the airport.
+     */
+    static ShowMultiplePage(fmc, selectedAirport, frequencyName, frequencyValues, currentPage = 1) {
+        
+        const ITEMS_PER_PAGE = 5;
+        const FREQUENCY_DECIMAL_PLACES = 3;
+        
+        // paging
+        let pageCount = Math.floor((frequencyValues.length - 1) / ITEMS_PER_PAGE) + 1;                
+        let datalines = frequencyValues.slice((currentPage-1) * ITEMS_PER_PAGE, (currentPage) * ITEMS_PER_PAGE);
+        
+        // convert numbers to strings with FREQUENCY_DECIMAL_PLACES decimal places
+        datalines = datalines.map(e => e.toFixed(FREQUENCY_DECIMAL_PLACES));
+        
+        fmc.clearDisplay();
+
+        // LSKs
+        for (let i = 0; i < datalines.length; i++) {
+            fmc.onLeftInput[i] = () => {
+                if (!fmc.inOut || fmc.inOut === "") {
+                    fmc.inOut = datalines[i];
+                }
+            }
+        }
+
+        // pad to ITEMS_PER_PAGE items, they may be empty
+        while (datalines.length < ITEMS_PER_PAGE) {
+            datalines.push("");
+        }
+
+        fmc._templateRenderer.setTemplateRaw([
+            [selectedAirport.ident + "[blue]", currentPage + "/" + pageCount + "[blue]", frequencyName + "[blue]"],
+            [""],
+            [datalines[0]],
+            [""],
+            [datalines[1]],
+            [""],
+            [datalines[2]],
+            [""],
+            [datalines[3]],
+            [""],
+            [datalines[4]],
+            ["------------------------[blue]"],
+            ["<FREQUENCY"]
+        ]);
+        
+        fmc.onLeftInput[5] = () => { CJ4_FMC_FrequencyPage.ShowMainPage(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_FrequencyPage.ShowMultiplePage(fmc, selectedAirport, frequencyName, frequencyValues, currentPage === 1 ? pageCount : (currentPage - 1)); };
+        fmc.onNextPage = () => { CJ4_FMC_FrequencyPage.ShowMultiplePage(fmc, selectedAirport, frequencyName, frequencyValues, currentPage === pageCount ? 1 : (currentPage + 1)); };
+        fmc.updateSideButtonActiveStatus();        
     }
 }
