@@ -47,6 +47,8 @@ class CJ4_FMC extends FMCMainDisplay {
         this.vfrLandingRunway = undefined;
         this.modVfrRunway = false;
         this.deletedVfrLandingRunway = undefined;
+        this.frequenciesSelectedAirportIndex = 0;
+        this.frequenciesPilotDefinedAirport = undefined;
     }
     get templateID() { return "CJ4_FMC"; }
 
