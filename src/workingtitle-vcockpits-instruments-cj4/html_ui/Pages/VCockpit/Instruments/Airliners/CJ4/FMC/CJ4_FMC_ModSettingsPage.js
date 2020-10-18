@@ -7,11 +7,12 @@ class CJ4_FMC_ModSettingsPageOne {
         this._pilotDefault = "--------";
         this._pilotId = WTDataStore.get('simbriefPilotId', this._pilotDefault);
 
-        let potValue = SimVar.SetSimVarValue("K:LIGHT_POTENTIOMETER_28_SET", "number");
-        if (potValue == 100) {
+        let potValue = SimVar.GetSimVarValue("LIGHT POTENTIOMETER:28", "number");
+        // let potValue = 100;
+        if (potValue == 1) {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.ON;
         }
-        else if (potValue == 5) {
+        else if (potValue == 0.05) {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.DIM;
         }
         else {
