@@ -8,14 +8,13 @@ class CJ4_FMC_FrequencyPage {
         let destination = fmc.flightPlanManager.getDestination();
         let alternate; // Not supported yet, flightPlanManager does not manage alternate
         let pilotDefined = fmc.frequenciesPilotDefinedAirport;
-
+        
         let airports = [origin, destination, alternate, pilotDefined];
-        let selectedAirportIndex = fmc.frequenciesSelectedAirportIndex;
-        let selectedAirport = airports[selectedAirportIndex];
+        let selectedAirport = airports[fmc.frequenciesSelectedAirportIndex];
 
         let formatAirportTextElement = (index, placeholder) => {
             let rslt = airports[index] ? airports[index].ident : placeholder.repeat(4);
-            rslt += (index === selectedAirportIndex) ? "[green]" : "[s-text]";
+            rslt += (index === fmc.frequenciesSelectedAirportIndex && selectedAirport) ? "[green]" : "[s-text]";
             return rslt;
         }
          
@@ -128,16 +127,19 @@ class CJ4_FMC_FrequencyPage {
             ]);
         }
 
+        // LSK Airport Selection: Cycles through available airports
         fmc.onLeftInput[0] = () => {
-            fmc.frequenciesSelectedAirportIndex = selectedAirportIndex === 0 ? 3 : selectedAirportIndex - 1;
+            let nextIndex = (fmc.frequenciesSelectedAirportIndex + 1) % 4;
+            while (!airports[nextIndex] && nextIndex !== fmc.frequenciesSelectedAirportIndex) {
+                nextIndex = (nextIndex + 1) % 4;
+            }
+            fmc.frequenciesSelectedAirportIndex = nextIndex;
             CJ4_FMC_FrequencyPage.ShowMainPage(fmc);
         };
+        // RSK Set pilot-defined Airport
         fmc.onRightInput[0] = () => {
             let value = fmc.inOut;
-            if (!value || value === "") {
-                fmc.frequenciesSelectedAirportIndex = selectedAirportIndex === 3 ? 0 : selectedAirportIndex + 1;
-                CJ4_FMC_FrequencyPage.ShowMainPage(fmc, 1);
-            } else {
+            if (value && value !== "") {
                 fmc.clearUserInput();
                 fmc.setMsg("Working...");
                 fmc.getOrSelectWaypointByIdent(value, (w) => {
@@ -153,7 +155,6 @@ class CJ4_FMC_FrequencyPage {
                     
                 });
             }
-
         };
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.onPrevPage = () => { CJ4_FMC_FrequencyPage.ShowMainPage(fmc, currentPage === 1 ? pageCount : (currentPage - 1)); };
