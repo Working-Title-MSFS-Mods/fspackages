@@ -6,7 +6,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<MCDU MENU", "GNSS1 POS>"], //Page 3, 4 ---- 9
             [""],
-            ["<DATALINK[disabled]", "FREQUENCY>[disabled]"], //Page XXX ---- 10
+            ["<DATALINK[disabled]", "FREQUENCY>"], //Page XXX ---- CJ4_FMC_FrequencyPage
             [""],
             ["<STATUS", "FIX>[disabled]"], //Page 2 ---- 11
             [""],
