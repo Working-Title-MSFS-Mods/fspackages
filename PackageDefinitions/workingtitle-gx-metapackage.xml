@@ -1,4 +1,4 @@
-<AssetPackage Name="workingtitle-gx" Version="0.2.0">
+<AssetPackage Name="workingtitle-gx" Version="0.1.0-dev2">
 	<ItemSettings>
 		<ContentType>CUSTOM</ContentType>
 		<Title>Working Title GX</Title>
@@ -33,7 +33,7 @@
 			</Flags>
 			<AssetDir>src\workingtitle-vcockpits-instruments-navsystems-gx</AssetDir>
 			<OutputDir>.\</OutputDir>
-		</AssetGroup>			
+		</AssetGroup>
         <AssetGroup Name="workingtitle-vcockpits-instruments">
 			<Type>Copy</Type>
 			<Flags>
@@ -41,6 +41,6 @@
 			</Flags>
 			<AssetDir>src\workingtitle-vcockpits-instruments</AssetDir>
 			<OutputDir>.\</OutputDir>
-		</AssetGroup>				   
+		</AssetGroup>
 	</AssetGroups>
 </AssetPackage>
