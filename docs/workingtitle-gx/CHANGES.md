@@ -1,4 +1,10 @@
-# Changes in 0.1.0-pre1
+# Changes in 0.1.0-dev2
+
+* Fix "giant map icon" problem in Seattle area
+
+# Changes in earlier versions
+
+## 0.1.0-dev1
 
 * Map menu page with numerous new features:
   * North up, track up, and DTK up options
