@@ -64,6 +64,9 @@ class AS3000_TSC extends NavSystemTouch {
         super.connectedCallback();
         this.pagesContainer = this.getChildById("PagesDisplay");
         this.pageTitle = this.getChildById("PageTitle");
+        this.pfdSoftkey = this.getChildById("SoftKey_2");
+        this.mfdSoftkey = this.getChildById("SoftKey_3");
+        this.navcomSoftkey = this.getChildById("SoftKey_4");
         this.pageGroups = [
             new NavSystemPageGroup("PFD", this, [
                 new NavSystemPage("PFD Home", "PFDHome", new AS3000_TSC_PFDHome()),
@@ -198,6 +201,24 @@ class AS3000_TSC extends NavSystemTouch {
             this.pageTitle.innerHTML = title;
         }
         SimVar.SetSimVarValue("L:AS3000_" + this.urlConfig.index + "_Timer_Value", "number", this.timer.getCurrentDisplay());
+
+        switch (this.getCurrentPageGroup().name) {
+            case "PFD":
+                Avionics.Utils.diffAndSetAttribute(this.pfdSoftkey, "state", "Selected");
+                Avionics.Utils.diffAndSetAttribute(this.mfdSoftkey, "state", "");
+                Avionics.Utils.diffAndSetAttribute(this.navcomSoftkey, "state", "");
+                break;
+            case "MFD":
+                Avionics.Utils.diffAndSetAttribute(this.pfdSoftkey, "state", "");
+                Avionics.Utils.diffAndSetAttribute(this.mfdSoftkey, "state", "Selected");
+                Avionics.Utils.diffAndSetAttribute(this.navcomSoftkey, "state", "");
+                break;
+            case "NavCom":
+                Avionics.Utils.diffAndSetAttribute(this.pfdSoftkey, "state", "");
+                Avionics.Utils.diffAndSetAttribute(this.mfdSoftkey, "state", "");
+                Avionics.Utils.diffAndSetAttribute(this.navcomSoftkey, "state", "Selected");
+                break;
+        }
     }
     onEvent(_event) {
         super.onEvent(_event);
