@@ -1653,31 +1653,57 @@ as3000-tsc-horizontal-element {
       right: 0%;
       width: 10%;
       height: 100%;
-      background-color: #212121;
-      color: #3F4751;
-      font-size: 3.5vh; }
-      as3000-tsc-horizontal-element #Electricity #SoftKeys div {
-        height: 14.5%;
+      background: linear-gradient(to right, #90b5bf, #4e7a8a);
+      font-size: 3.5vh;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 30% 1fr 18% 12% 23%; }
+      as3000-tsc-horizontal-element #Electricity #SoftKeys .softkeyContainer {
+        position: relative;
         text-align: center;
-        background-color: white;
-        margin-top: 0.5vh;
-        margin-bottom: 0.5vh;
-        display: table;
-        width: 100%; }
-        as3000-tsc-horizontal-element #Electricity #SoftKeys div p {
-          height: 100%;
-          display: table-cell;
-          vertical-align: middle;
-          text-align: center;
-          padding-right: 2%;
-          color: #3F4751;
-          font-size: 3.5vh;
-          line-height: 3.8vh; }
-      as3000-tsc-horizontal-element #Electricity #SoftKeys #Softkey_1_Container {
-        height: 34%; }
-      as3000-tsc-horizontal-element #Electricity #SoftKeys #SoftKey_5_Container {
-        height: 21.5%;
-        line-height: 3vh; }
+        background: transparent;
+        width: 100%;
+        height: 100%; }
+      as3000-tsc-horizontal-element #Electricity #SoftKeys .softkeyContainer:first-child {
+        border-bottom: 0.5vh solid black; }
+      as3000-tsc-horizontal-element #Electricity #SoftKeys .softkeyContainer:last-child {
+        border-top: 0.5vh solid black; }
+        as3000-tsc-horizontal-element #Electricity #SoftKeys .softkeyContainer .softkey {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          color: black; }
+        as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkey {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          right: 0;
+          width: 98%;
+          padding: 1vh 0;
+          border: 0.2vh solid rgba(0, 0, 0, 0);
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: center;
+          align-items: center; }
+          as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkeyLabel {
+            width: 60%;
+            text-align: center;
+            color: black;
+            font-size: 4vh;
+            font-family: Tahoma-Bold; }
+          as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkeyArrow {
+            width: 4vh;
+            height: 4vh;
+            background-color: black;
+            -webkit-clip-path: polygon(0 0, 100% 50%, 0 100%);
+            margin-left: 2vh; }
+        as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkey[state="Selected"] {
+          background-color: black;
+          border-color: grey; }
+          as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkey[state="Selected"] .softkeyLabel {
+            color: white; }
+          as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkey[state="Selected"] .softkeyArrow {
+            background-color: green; }
     as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_ModeSelect {
       position: absolute;
       left: 2%;
