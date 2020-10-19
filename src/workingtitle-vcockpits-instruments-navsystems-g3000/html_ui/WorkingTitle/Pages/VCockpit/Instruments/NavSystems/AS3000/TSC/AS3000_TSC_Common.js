@@ -2401,7 +2401,7 @@ class AS3000_TSC_SpeedKeyboard extends NavSystemElement {
             }
         }
         else {
-            this.display.innerHTML = this.currentInput + "KT";
+            this.display.innerHTML = fastToFixed(this.currentInput, 0) + "KT";
         }
     }
     onExit() {
@@ -3139,6 +3139,7 @@ class AS3000_TSC_AirspeedReference {
         this.isDisplayed = false;
         this.valueButton = _valueButton;
         this.valueElement = _valueButton.getElementsByClassName("mainValue")[0];
+        this.valueSpan = _valueButton.getElementsByClassName("valueSpan")[0];
         this.statusElement = _statusElem;
         this.refSpeed = _refSpeed;
         this.displayedSpeed = _refSpeed;
@@ -3178,7 +3179,12 @@ class AS3000_TSC_SpeedBugs extends NavSystemElement {
             if (this.references[i].isDisplayed) {
                 nbOn++;
             }
-            Avionics.Utils.diffAndSet(this.references[i].valueElement, Math.round(this.references[i].displayedSpeed) + (this.references[i].displayedSpeed == this.references[i].refSpeed ? "KT" : "KT*"));
+            Avionics.Utils.diffAndSet(this.references[i].valueSpan, Math.round(this.references[i].displayedSpeed));
+            if (this.references[i].displayedSpeed == this.references[i].refSpeed) {
+                Avionics.Utils.diffAndSetAttribute(this.references[i].valueButton, "state", "");
+            } else {
+                Avionics.Utils.diffAndSetAttribute(this.references[i].valueButton, "state", "Edited");
+            }
         }
         Avionics.Utils.diffAndSetAttribute(this.allOffButton, "state", nbOn == 0 ? "Greyed" : "");
         Avionics.Utils.diffAndSetAttribute(this.allOnButton, "state", nbOn == this.references.length ? "Greyed" : "");

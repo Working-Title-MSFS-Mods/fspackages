@@ -164,6 +164,17 @@ as3000-tsc-horizontal-element {
             width: 100%;
             color: #67e8ef;
             font-size: 5vh; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .mainValue .unitSpan {
+            font-size: 4vh; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .editIcon {
+            display: none;
+            position: absolute;
+            top: 35%;
+            right: 8%;
+            height: 30%;
+            width: auto; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton[state="Edited"] .editIcon {
+            display: block; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_RestoreDefaults {
         position: absolute;
         left: 10%;
