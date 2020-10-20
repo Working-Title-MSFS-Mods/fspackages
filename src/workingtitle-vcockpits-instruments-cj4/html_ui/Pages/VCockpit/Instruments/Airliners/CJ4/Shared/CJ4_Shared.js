@@ -735,14 +735,14 @@ class CJ4_SystemEngines extends NavSystemElement {
             trimGroup.appendChild(rect);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
-            rect.setAttribute("y", (gaugeStartY + gaugeHeight * 0.25).toString());
+            rect.setAttribute("y", (gaugeStartY + gaugeHeight * 0.30).toString());
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", (gaugeHeight * 0.25).toString());
             rect.setAttribute("fill", "green");
             trimGroup.appendChild(rect);
             this.ElevatorCursorX = gaugeStartX + gaugeWidth;
-            this.ElevatorCursorY1 = gaugeStartY + gaugeHeight;
-            this.ElevatorCursorY2 = gaugeStartY;
+            this.ElevatorCursorY1 = gaugeStartY ;
+            this.ElevatorCursorY2 = gaugeStartY + gaugeHeight;
             this.ElevatorCursor = document.createElementNS(Avionics.SVG.NS, "path");
             this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + this.ElevatorCursorY2 + ")");
             this.ElevatorCursor.setAttribute("fill", "white");
