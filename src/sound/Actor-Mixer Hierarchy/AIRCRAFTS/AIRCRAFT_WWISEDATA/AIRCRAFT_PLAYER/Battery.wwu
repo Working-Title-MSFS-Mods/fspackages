@@ -5,12 +5,11 @@
 			<ChildrenList>
 				<ActorMixer Name="battery" ID="{6AE75521-3C95-4C69-90FF-BFE3B3EBA634}" ShortID="1056097228">
 					<PropertyList>
-						<Property Name="3DPosition" Type="int16" Value="1"/>
 						<Property Name="3DSpatialization" Type="int16" Value="2"/>
 						<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 						<Property Name="CenterPercentage" Type="int32">
 							<ValueList>
-								<Value>73</Value>
+								<Value>78</Value>
 							</ValueList>
 						</Property>
 						<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
@@ -36,11 +35,47 @@
 							<ValueList>
 								<Value>-12</Value>
 							</ValueList>
+							<RTPCList>
+								<RTPC Name="" ID="{7342872B-3CBC-45AF-8592-18DA1C8CB55F}" ShortID="479711754">
+									<ReferenceList>
+										<Reference Name="ControlInput">
+											<ObjectRef Name="SIMVAR_GENERAL_ENG_RPM" ID="{2A2495B6-0158-4F47-8261-D625910D546D}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+										</Reference>
+									</ReferenceList>
+									<Curve Name="" ID="{1E514AC9-6E37-4A48-84D6-7FDA2B3785A6}">
+										<PropertyList>
+											<Property Name="Flags" Type="int32" Value="3"/>
+										</PropertyList>
+										<PointList>
+											<Point>
+												<XPos>0</XPos>
+												<YPos>0</YPos>
+												<Flags>5</Flags>
+											</Point>
+											<Point>
+												<XPos>12000</XPos>
+												<YPos>0</YPos>
+												<Flags>0</Flags>
+											</Point>
+											<Point>
+												<XPos>21929.41177</XPos>
+												<YPos>-2.04611</YPos>
+												<Flags>0</Flags>
+											</Point>
+											<Point>
+												<XPos>40000</XPos>
+												<YPos>-3.36244</YPos>
+												<Flags>37</Flags>
+											</Point>
+										</PointList>
+									</Curve>
+								</RTPC>
+							</RTPCList>
 						</Property>
 					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Attenuation">
-							<ObjectRef Name="aircraft_player_inside_3m_spread75" ID="{85370419-0399-41B9-92E8-48DBCA137150}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+							<ObjectRef Name="aircraft_player_inside_3m_spread15" ID="{F5FBB6BB-1F86-4FA7-99C5-7D1DAE906FF9}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
 						</Reference>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
@@ -264,8 +299,8 @@
 								<Path2D Name="battery_Path" ID="{3331D789-94C5-49C3-899A-698C19E1C711}">
 									<PointList>
 										<Point>
-											<XPos>-72.78481</XPos>
-											<YPos>79.29936</YPos>
+											<XPos>-13.92405</XPos>
+											<YPos>78.66242</YPos>
 											<Flags>12</Flags>
 											<Time>0</Time>
 										</Point>
