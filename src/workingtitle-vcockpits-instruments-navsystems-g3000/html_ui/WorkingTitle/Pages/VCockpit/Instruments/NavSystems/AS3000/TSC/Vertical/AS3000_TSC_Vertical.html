@@ -2128,287 +2128,140 @@
                 </div>
             </div>
             <div class="PopUpWindow" id="fullKeyboard" state="Inactive" keyboard="Letters">
-                <div id="topLine">
-                    <div id="EditText"><span class="NoEdit">______</span></div>
-                    <div id="Infos">
-                        <span id="InfosContent">Waypoint Identifier Lookup</span>
-                        <img id="InfosSymbol" />
+                <div class="content">
+                    <div id="topLine">
+                        <div id="EditText"><span class="NoEdit">______</span></div>
+                        <div id="Infos">
+                            <span id="InfosContent">Waypoint Identifier Lookup</span>
+                            <img id="InfosSymbol" />
+                        </div>
+                    </div>
+                    <div id="Keyboard_NumberTable">
+                        <div class="roundButton" id="KN_1">
+                            <div class="mainText">1</div>
+                        </div>
+                        <div class="roundButton" id="KN_2">
+                            <div class="mainText">2</div>
+                        </div>
+                        <div class="roundButton" id="KN_3">
+                            <div class="mainText">3</div>
+                        </div>
+                        <div class="roundButton" id="KN_4">
+                            <div class="mainText">4</div>
+                        </div>
+                        <div class="roundButton" id="KN_5">
+                            <div class="mainText">5</div>
+                        </div>
+                        <div class="dummy"></div>
+                        <div class="roundButton" id="KN_6">
+                            <div class="mainText">6</div>
+                        </div>
+                        <div class="roundButton" id="KN_7">
+                            <div class="mainText">7</div>
+                        </div>
+                        <div class="roundButton" id="KN_8">
+                            <div class="mainText">8</div>
+                        </div>
+                        <div class="roundButton" id="KN_9">
+                            <div class="mainText">9</div>
+                        </div>
+                        <div class="roundButton" id="KN_0">
+                            <div class="mainText">0</div>
+                        </div>
+                        <div class="dummy"></div>
+                    </div>
+                    <div id="Keyboard_LetterTable" state="Inactive">
+                        <div class="gradientButton" id="K_A">
+                            <div class="mainText">A</div>
+                        </div>
+                        <div class="gradientButton" id="K_B">
+                            <div class="mainText">B</div>
+                        </div>
+                        <div class="gradientButton" id="K_Find" state="Hidden">
+                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FIND.png" />
+                            <div class="label">Find</div>
+                        </div>
+                        <div class="dummy"></div>
+                        <div class="dummy"></div>
+                        <div class="dummy"></div>
+                        <div class="gradientButton" id="K_Bksp">
+                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
+                            <div class="label">BKSP</div>
+                        </div>
+                        <div class="gradientButton" id="K_C">
+                            <div class="mainText">C</div>
+                        </div>
+                        <div class="gradientButton" id="K_D">
+                            <div class="mainText">D</div>
+                        </div>
+                        <div class="gradientButton" id="K_E">
+                            <div class="mainText">E</div>
+                        </div>
+                        <div class="gradientButton" id="K_F">
+                            <div class="mainText">F</div>
+                        </div>
+                        <div class="gradientButton" id="K_G">
+                            <div class="mainText">G</div>
+                        </div>
+                        <div class="gradientButton" id="K_H">
+                            <div class="mainText">H</div>
+                        </div>
+                        <div class="gradientButton" id="K_I">
+                            <div class="mainText">I</div>
+                        </div>
+                        <div class="gradientButton" id="K_J">
+                            <div class="mainText">J</div>
+                        </div>
+                        <div class="gradientButton" id="K_K">
+                            <div class="mainText">K</div>
+                        </div>
+                        <div class="gradientButton" id="K_L">
+                            <div class="mainText">L</div>
+                        </div>
+                        <div class="gradientButton" id="K_M">
+                            <div class="mainText">M</div>
+                        </div>
+                        <div class="gradientButton" id="K_N">
+                            <div class="mainText">N</div>
+                        </div>
+                        <div class="gradientButton" id="K_O">
+                            <div class="mainText">O</div>
+                        </div>
+                        <div class="gradientButton" id="K_P">
+                            <div class="mainText">P</div>
+                        </div>
+                        <div class="gradientButton" id="K_Q">
+                            <div class="mainText">Q</div>
+                        </div>
+                        <div class="gradientButton" id="K_R">
+                            <div class="mainText">R</div>
+                        </div>
+                        <div class="gradientButton" id="K_S">
+                            <div class="mainText">S</div>
+                        </div>
+                        <div class="gradientButton" id="K_T">
+                            <div class="mainText">T</div>
+                        </div>
+                        <div class="gradientButton" id="K_U">
+                            <div class="mainText">U</div>
+                        </div>
+                        <div class="gradientButton" id="K_V">
+                            <div class="mainText">V</div>
+                        </div>
+                        <div class="gradientButton" id="K_W">
+                            <div class="mainText">W</div>
+                        </div>
+                        <div class="gradientButton" id="K_X">
+                            <div class="mainText">X</div>
+                        </div>
+                        <div class="gradientButton" id="K_Y">
+                            <div class="mainText">Y</div>
+                        </div>
+                        <div class="gradientButton" id="K_Z">
+                            <div class="mainText">Z</div>
+                        </div>
                     </div>
                 </div>
-                <table id="Keyboard_LetterTable" state="Inactive">
-                    <tr>
-                        <td>
-                            <div class="gradientButton" id="K_A">
-                                <div class="mainText">A</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_B">
-                                <div class="mainText">B</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_Find" state="Hidden">
-                                <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FIND.png" />
-                                <div class="title">Find</div>
-                            </div>
-                        </td>
-                        <td colspan="2" class="Double">
-                            <div class="gradientButton" id="K_SwitchToNum">
-                                <div class="mainText">123...</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_Bksp">
-                                <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
-                                <div class="title">BKSP</div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="gradientButton" id="K_C">
-                                <div class="mainText">C</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_D">
-                                <div class="mainText">D</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_E">
-                                <div class="mainText">E</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_F">
-                                <div class="mainText">F</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_G">
-                                <div class="mainText">G</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_H">
-                                <div class="mainText">H</div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="gradientButton" id="K_I">
-                                <div class="mainText">I</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_J">
-                                <div class="mainText">J</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_K">
-                                <div class="mainText">K</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_L">
-                                <div class="mainText">L</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_M">
-                                <div class="mainText">M</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_N">
-                                <div class="mainText">N</div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="gradientButton" id="K_O">
-                                <div class="mainText">O</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_P">
-                                <div class="mainText">P</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_Q">
-                                <div class="mainText">Q</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_R">
-                                <div class="mainText">R</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_S">
-                                <div class="mainText">S</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_T">
-                                <div class="mainText">T</div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="gradientButton" id="K_U">
-                                <div class="mainText">U</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_V">
-                                <div class="mainText">V</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_W">
-                                <div class="mainText">W</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_X">
-                                <div class="mainText">X</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_Y">
-                                <div class="mainText">Y</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="K_Z">
-                                <div class="mainText">Z</div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                <table id="Keyboard_NumberTable" state="Inactive">
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            <div class="gradientButton" id="KN_Find" state="Hidden">
-                                <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FIND.png" />
-                                <div class="title">Find</div>
-                            </div>
-                        </td>
-                        <td colspan="2" class="Double">
-                            <div class="gradientButton" id="KN_SwitchToLetters">
-                                <div class="mainText">ABC...</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="KN_Bksp">
-                                <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
-                                <div class="title">BKSP</div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="gradientButton" id="KN_N">
-                                <div class="mainText">N</div>
-                            </div>
-                        </td>
-                        <td></td>
-                        <td>
-                            <div class="gradientButton" id="KN_1">
-                                <div class="mainText">1</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="KN_2">
-                                <div class="mainText">2</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="KN_3">
-                                <div class="mainText">3</div>
-                            </div>
-                        </td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="gradientButton" id="KN_S">
-                                <div class="mainText">S</div>
-                            </div>
-                        </td>
-                        <td></td>
-                        <td>
-                            <div class="gradientButton" id="KN_4">
-                                <div class="mainText">4</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="KN_5">
-                                <div class="mainText">5</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="KN_6">
-                                <div class="mainText">6</div>
-                            </div>
-                        </td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="gradientButton" id="KN_E">
-                                <div class="mainText">E</div>
-                            </div>
-                        </td>
-                        <td></td>
-                        <td>
-                            <div class="gradientButton" id="KN_7">
-                                <div class="mainText">7</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="KN_8">
-                                <div class="mainText">8</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="gradientButton" id="KN_9">
-                                <div class="mainText">9</div>
-                            </div>
-                        </td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="gradientButton" id="KN_W">
-                                <div class="mainText">W</div>
-                            </div>
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            <div class="gradientButton" id="KN_0">
-                                <div class="mainText">0</div>
-                            </div>
-                        </td>
-                        <td></td>
-                        <td>
-                            <div class="gradientButton" id="KN_SPC" state="Hidden">
-                                <div class="mainText">SPC</div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
             </div>
             <div class="PopUpWindow Transparent" id="insertBeforeWaypointWindow" state="Inactive">
                 <div class="WindowTitle">Insert Before Waypoint</div>

@@ -1698,27 +1698,26 @@
         width: 60%;
         left: 20%; }
 
-    as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_LetterTable,
-    as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_NumberTable {
-      display: none; }
-    as3000-tsc-vertical-element #Electricity #fullKeyboard[keyboard=Letters] #Keyboard_LetterTable,
-    as3000-tsc-vertical-element #Electricity #fullKeyboard[keyboard=Numbers] #Keyboard_NumberTable {
-      display: inherit; }
+    as3000-tsc-vertical-element #Electricity #fullKeyboard .content {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 4vh 18vh 45vh;
+      grid-gap: 0.5vh 0; }
     as3000-tsc-vertical-element #Electricity #fullKeyboard #topLine {
-      position: absolute;
-      top: 0%;
-      left: 0%;
-      height: 6vh;
-      width: 100%; }
+      position: relative;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center; }
       as3000-tsc-vertical-element #Electricity #fullKeyboard #topLine #EditText {
-        position: absolute;
-        left: 1%;
+        position: relative;
         height: 100%;
         width: 28%;
         background-color: gray;
-        font-size: 4.2vh;
-        padding-left: 2%;
-        color: black; }
+        font-size: 3.5vh;
+        color: black;
+        margin: 0 1vh; }
         as3000-tsc-vertical-element #Electricity #fullKeyboard #topLine #EditText .NoEdit {
           background-color: aqua; }
         as3000-tsc-vertical-element #Electricity #fullKeyboard #topLine #EditText .Writed {
@@ -1733,55 +1732,43 @@
           min-height: 3.6vh;
           display: inline-block; }
       as3000-tsc-vertical-element #Electricity #fullKeyboard #topLine #Infos {
-        position: absolute;
-        left: 32%;
+        position: relative;
         height: 100%;
         width: 68%;
         color: white;
-        font-size: 3vh;
-        vertical-align: bottom; }
+        font-size: 3vh; }
         as3000-tsc-vertical-element #Electricity #fullKeyboard #topLine #Infos #InfosContent {
           position: absolute;
-          bottom: 0%;
-          vertical-align: bottom;
           width: 92%; }
         as3000-tsc-vertical-element #Electricity #fullKeyboard #topLine #Infos #InfosSymbol {
           position: absolute;
-          bottom: 0%;
-          vertical-align: bottom;
           width: 8%;
           right: 0%; }
-    as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_LetterTable,
     as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_NumberTable {
-      position: absolute;
-      top: 6vh;
-      left: 0%;
       width: 100%;
-      height: 54vh; }
-      as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_LetterTable tr,
-      as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_NumberTable tr {
-        height: 8.7vh; }
-        as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_LetterTable tr td,
-        as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_NumberTable tr td {
-          height: 8.7vh;
-          width: 12vw; }
-        as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_LetterTable tr .Double,
-        as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_NumberTable tr .Double {
-          width: 24vw; }
-      as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_LetterTable .gradientButton,
-      as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_NumberTable .gradientButton {
-        height: 8.7vh;
-        width: 11.5vw; }
-        as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_LetterTable .gradientButton .mainText,
-        as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_NumberTable .gradientButton .mainText {
-          display: inline;
-          font-size: 4.2vh;
-          vertical-align: central; }
-      as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_LetterTable #K_SwitchToNum,
-      as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_LetterTable #KN_SwitchToLetters,
-      as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_NumberTable #K_SwitchToNum,
-      as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_NumberTable #KN_SwitchToLetters {
-        width: 24vw; }
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      justify-items: center;
+      align-items: center; }
+    as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_LetterTable {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      justify-items: center;
+      align-items: center; }
+      as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_NumberTable .roundButton {
+        height: 8vh;
+        width: 8vh;
+        border-width: 2px; }
+      as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_LetterTable .gradientButton {
+        height: 8vh;
+        width: 11.5vw;
+        border: 2px solid #dedede; }
+
     as3000-tsc-vertical-element #Electricity #ConfirmationWindow {
       z-index: 11;
       position: absolute;
