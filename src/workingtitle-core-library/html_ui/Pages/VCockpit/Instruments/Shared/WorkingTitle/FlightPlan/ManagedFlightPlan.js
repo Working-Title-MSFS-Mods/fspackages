@@ -264,11 +264,14 @@ class ManagedFlightPlan {
     bearingAndDistance.distance = distance;
     bearingAndDistance.referenceFix = waypoint;
 
+    const computedCoordinates = this.computeCoordsFromBearingAndDistance(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long, bearing, distance);
+    bearingAndDistance.coordinates = new LatLongAlt(computedCoordinates.lat, computedCoordinates.lon);
+
     const bearingDistancewaypoint = new WayPoint(this._parentInstrument);
     waypoint.type = BearingDistanceWayPointInfo.WayPointType;
     waypoint.infos = bearingAndDistance;
 
-    this.addWaypoint(bearingDistancewaypoint, index)
+    this.addWaypoint(bearingDistancewaypoint, index);
   }
 
   /**
@@ -518,6 +521,12 @@ class ManagedFlightPlan {
     if (this.hasDestination) {
       const destination = this._waypoints[this._waypoints.length - 1];
       if (index >= 0 && index < destination.infos.approaches.length) {
+
+        const fixCache = new Map();
+        for (var leg of destination.infos.approaches[index].legs) {
+
+        }
+
         this._waypoints.splice(this.approachStart, this._waypoints.length - this.approachStart - 2, ...destination.infos.approaches[index].wayPoints);
 
         this.procedureDetails.approachSelected = true;
@@ -834,8 +843,15 @@ class VectorsWayPointInfo extends WayPointInfo {
 }
 VectorsWayPointInfo.WayPointType = "VEC";
 
-
+/** A class for mapping raw facility data to WayPoints. */
 class RawDataMapper { }
+
+/**
+ * Maps a raw facility record to a WayPoint.
+ * @param {*} facility The facility record to map.
+ * @param {BaseInstrument} instrument The instrument to attach to the WayPoint.
+ * @returns {WayPoint} The mapped waypoint.
+ */
 RawDataMapper.toWaypoint = (facility, instrument) => {
   const waypoint = new WayPoint(instrument);
 
@@ -867,14 +883,30 @@ RawDataMapper.toWaypoint = (facility, instrument) => {
       waypoint.infos.oneWayRunways.sort(RawDataMapper.sortRunways);
 
       break;
+    case 'V':
+      waypoint.infos = new VORInfo(instrument);
+      break;
+    case 'N':
+      waypoint.infos = new NDBInfo(instrument);
+      break;
+    case 'W':
+      waypoint.infos = new IntersectionInfo(instrument);
+      break;
     default:
       waypoint.infos = new WayPointInfo(instrument);
+      break;
   }
 
   waypoint.infos.coordinates = new LatLongAlt(facility.lat, facility.lon);
   return waypoint;
 };
 
+/**
+ * A comparer for sorting runways by number, and then by L, C, and R.
+ * @param {*} r1 The first runway to compare.
+ * @param {*} r2 The second runway to compare.
+ * @returns {Number} -1 if the first is before, 0 if equal, 1 if the first is after.
+ */
 RawDataMapper.sortRunways = (r1, r2) => {
   if (parseInt(r1.designation) === parseInt(r2.designation)) {
     let v1 = 0;
@@ -902,6 +934,11 @@ RawDataMapper.sortRunways = (r1, r2) => {
   return parseInt(r1.designation) - parseInt(r2.designation);
 };
 
+/**
+ * Generates a runway transition name from the designated runway in the transition data.
+ * @param {*} runwayTransition The runway transition to generate the name for.
+ * @returns {String} The runway transition name.
+ */
 RawDataMapper.generateRunwayTransitionName = (runwayTransition) => {
   let name = `RW${runwayTransition.runwayNumber}`;
 
@@ -919,3 +956,62 @@ RawDataMapper.generateRunwayTransitionName = (runwayTransition) => {
 
   return name;
 };
+
+/**
+ * Creates a collection of waypoints from a legs procedure.
+ */
+class LegsProcedure {
+  /**
+   * Creates an instance of a LegsProcedure.
+   * @param {Array} legs The legs that are part of the procedure.
+   * @param {WayPoint} startingPoint The starting point for the procedure.
+   * @param {BaseInstrument} instrument The instrument that is attached to the flight plan.
+   */
+  constructor(legs, startingPoint, instrument) {
+    /**
+     * The legs that are part of this procedure.
+     */
+    this._legs = legs;
+
+    /**
+     * The starting point for the procedure.
+     */
+    this._startingPoint = startingPoint;
+
+    /**
+     * The instrument that is attached to the flight plan.
+     */
+    this._instrument = instrument;
+  }
+
+  [Symbol.iterator]() {
+    let index = 0;
+    let prevFix = this._startingPoint;
+
+    return {
+      next: () => {
+        while (true) {
+          if (index < this._legs.length) {
+            const leg = this._legs[index];
+            index++;
+  
+            switch (leg.type) {
+              case 2:
+                break;
+              case 3:
+                prevFix = this.mapHeadingForDistance(leg, prevFix);
+                return {value: prevFix, done: false};
+            }
+          }
+          else {
+            return {done: true};
+          }         
+        }
+      }
+    };
+  }
+
+  mapHeadingForDistance(leg, prevFix) {
+    
+  }
+}
