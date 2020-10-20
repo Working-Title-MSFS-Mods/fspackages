@@ -1199,8 +1199,8 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
 
 
                 this.ElevatorCursorRX = gaugeStartX + gaugeWidth;
-                this.ElevatorCursorRY1 = gaugeStartY + gaugeHeight;
-                this.ElevatorCursorRY2 = gaugeStartY;
+                this.ElevatorCursorRY1 = gaugeStartY ;
+                this.ElevatorCursorRY2 = gaugeStartY + gaugeHeight;
                 this.ElevatorCursorR = document.createElementNS(Avionics.SVG.NS, "path");
                 this.ElevatorCursorR.setAttribute("transform", "translate (" + this.ElevatorCursorRX + " " + this.ElevatorCursorRY2 + ")");
                 this.ElevatorCursorR.setAttribute("fill", "white");
@@ -1220,7 +1220,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
 
 
                 this.ElevatorCursorLX = (gaugeStartX - gaugeWidth) + 11;
-                this.ElevatorCursorLY2 = gaugeStartY;
+                this.ElevatorCursorLY2 = gaugeStartY + gaugeHeight;
                 this.ElevatorCursorL = document.createElementNS(Avionics.SVG.NS, "path");
                 this.ElevatorCursorL.setAttribute("transform", "translate (" + this.ElevatorCursorLX + " " + this.ElevatorCursorLY2 + ")");
                 this.ElevatorCursorL.setAttribute("fill", "white");
