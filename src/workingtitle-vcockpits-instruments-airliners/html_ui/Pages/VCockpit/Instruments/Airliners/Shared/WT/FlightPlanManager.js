@@ -821,14 +821,14 @@ class FlightPlanManager {
         let waypointsWithAltitudeConstraints = [];
         for (let i = 0; i < this._waypoints[0].length; i++) {
             let wp = this._waypoints[0][i];
-            if (wp.legAltitudeDescription >= 1 && wp.legAltitude1 < 20000) {
+            if (wp.legAltitudeDescription >= 1 && wp.legAltitude1 < 30000) {
                 waypointsWithAltitudeConstraints.push(wp);
             }
         }
         let approachWaypoints = this.getApproachWaypoints();
         for (let i = 0; i < approachWaypoints.length; i++) {
             let apprWp = approachWaypoints[i];
-            if (apprWp.legAltitudeDescription >= 1 && apprWp.legAltitude1 < 20000) {
+            if (apprWp.legAltitudeDescription >= 1 && apprWp.legAltitude1 < 30000) {
                 waypointsWithAltitudeConstraints.push(apprWp);
             }
         }
