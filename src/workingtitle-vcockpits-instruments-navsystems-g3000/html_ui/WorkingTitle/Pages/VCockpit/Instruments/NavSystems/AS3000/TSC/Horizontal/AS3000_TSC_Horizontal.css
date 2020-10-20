@@ -2402,26 +2402,17 @@ as3000-tsc-horizontal-element {
         as3000-tsc-horizontal-element #Electricity #SelectionList .content .gradientButton[state=Inactive] {
           display: none; }
     as3000-tsc-horizontal-element #Electricity .PopUpWindow {
-      position: absolute;
       width: 78%;
       height: 100%;
       background-image: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/BACKGROUND.png");
-      background-color: #141619;
       z-index: 10; }
-      as3000-tsc-horizontal-element #Electricity .PopUpWindow[state=Inactive] {
-        display: none; }
       as3000-tsc-horizontal-element #Electricity .PopUpWindow .WindowTitle {
-        top: 0%;
-        left: 0%;
         height: 8%;
         width: 100%;
-        background-color: #141619;
-        background-image: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/TITLE_BACKGROUND.png");
-        color: white;
-        font-size: 4.5vh;
-        text-align: center; }
+        background-image: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/TITLE_BOX.png");
+        font-size: 4.5vh; }
     as3000-tsc-horizontal-element #Electricity .Transparent {
-      background-color: rgba(0, 0, 0, 0.8); }
+      background-image: none; }
 
   as3000-tsc-horizontal-element .gradientButton {
     width: 27vh;

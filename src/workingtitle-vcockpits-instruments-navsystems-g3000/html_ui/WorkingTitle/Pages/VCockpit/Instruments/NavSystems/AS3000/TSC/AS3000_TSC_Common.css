@@ -254,8 +254,19 @@
 .tabContentContainer .tabContent[state="Inactive"] {
   display: none; }
 
-.SelectionListWindow .WindowTitle {
-  background-color: black; }
+.PopUpWindow {
+  position: absolute;
+  background-color: black;
+  z-index: 10; }
+.PopUpWindow[state=Inactive] {
+  display: none; }
+  .PopUpWindow .WindowTitle {
+    color: white;
+    text-align: center; }
+  .Transparent {
+    background-image: none;
+    background-color: rgba(0, 0, 0, 0.8); }
+
 .SelectionListWindow .content {
       position: absolute;
       background-color: black;
@@ -272,8 +283,6 @@
     width: 100%;
     margin-bottom: 5%; }
 
-.DynamicSelectionListWindow .WindowTitle {
-  background-color: black; }
 .DynamicSelectionListWindow .content {
   position: absolute;
   background-color: black;
@@ -351,8 +360,6 @@
               justify-content: center;
               align-items: center; }
 
-.MapDetailSelect .WindowTitle {
-  background-color: black; }
 .MapDetailSelect .Container {
   position: absolute;
   text-align: center;
