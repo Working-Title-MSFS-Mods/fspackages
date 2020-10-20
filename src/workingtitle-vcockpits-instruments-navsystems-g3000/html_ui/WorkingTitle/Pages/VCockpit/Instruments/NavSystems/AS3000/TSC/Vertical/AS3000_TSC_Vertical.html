@@ -771,84 +771,77 @@
                     </div>
                 </div>
                 <div id="DirectTo">
-                    <div id="SelectionTabs">
-                        <div class="gradientButton" state="White" id="Waypoint_Select">
-                            <div class="mainText">Waypoint</div>
-                        </div>
-                        <div class="gradientButton" id="FlightPlan_Select" state="Hidden">
-                            <div class="mainText">Flight Plan</div>
-                        </div>
-                        <div class="gradientButton" id="Nearest_Select" state="Hidden">
-                            <div class="mainText">Nearest</div>
-                        </div>
-                        <div class="gradientButton" id="Recent_Select" state="Hidden">
-                            <div class="mainText">Recent</div>
-                        </div>
-                    </div>
-                    <div id="TabContent" state="Waypoint">
-                        <div id="Waypoint">
-                            <div class="gradientButton" id="SelectedWaypoint">
-                                <div class="mainText">SELECT WAYPOINT</div>
-                                <div class="mainValue"></div>
-                                <div class="title"></div>
-                                <img class="waypointSymbol" />
+                    <div class="tabContainer">
+                        <div class="tabSelect">
+                            <div class="tabButton tabButtonLeft" id="Waypoint_Select" state="Highlight">
+                                <div class="mainText">Waypoint</div>
                             </div>
-                            <div id="TopInfos">
-                                <div id="Location">
-                                    <div id="DRCT_City"></div>
-                                    <div id="DRCT_Region"></div>
-                                </div>
-                                <div id="Bearing">
-                                    <div>BRG</div>
-                                    <div id="DRCT_Bearing">___°</div>
-                                </div>
-                                <div id="Distance">
-                                    <div>DIS</div>
-                                    <div id="DRCT_Distance">___._NM</div>
-                                </div>
+                            <div class="tabButton tabButtonLeft" id="FlightPlan_Select" state="Disabled">
+                                <div class="mainText">Flight Plan</div>
                             </div>
-                            <div id="TopLine">
-                                <div class="gradientButton" id="DRCT_VNavAltButton" state="Hidden">
-                                    <div class="mainText">VNAV Altitude</div>
-                                    <div class="mainValue">_____FT</div>
-                                </div>
-                                <div class="gradientButton" id="DRCT_VNavOffsetButton" state="Hidden">
-                                    <div class="mainText">VNAV Offset</div>
-                                    <div class="mainValue">0NM</div>
-                                </div>
+                            <div class="tabButton tabButtonLeft" id="Nearest_Select" state="Disabled">
+                                <div class="mainText">Nearest</div>
                             </div>
-                            <div id="MiddleLine">
-                                <div class="gradientButton" id="DRCT_CrsButton" state="Hidden">
-                                    <div class="mainText">Course</div>
-                                    <div class="mainValue">090°</div>
-                                </div>
-                                <div class="gradientButton" id="DRCT_HoldButton" state="Hidden">
-                                    <div class="mainText">Hold</div>
-                                    <div class="mainValue">---</div>
-                                </div>
-                            </div>
-                            <div id="bottomLine">
-                                <div class="gradientButton" id="DRCT_CancelButton">
-                                    <div class="mainText">Cancel <img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                                    <div class="mainValue">______</div>
-                                </div>
-                                <div class="gradientButton" id="DRCT_ActivateInsertInFP" state="Hidden">
-                                    <div class="mainText">Activate and Insert in Flight Plan</div>
-                                </div>
-                                <div class="gradientButton" id="DRCT_ActivateDirect">
-                                    <div class="mainText">Activate <img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                                    <div class="mainValue">______</div>
-                                </div>
+                            <div class="tabButton tabButtonLeft" id="Recent_Select" state="Disabled">
+                                <div class="mainText">Recent</div>
                             </div>
                         </div>
-                        <div id="FlightPlan">
-
-                        </div>
-                        <div id="Nearest">
-
-                        </div>
-                        <div id="Recent">
-
+                        <div class="tabContentContainer" id="DirectToTabContentContainer" state="Waypoint">
+                            <div class="tabContent" id="Waypoint">
+                                <div class="gradientButton" id="SelectedWaypoint">
+                                    <div class="mainText">SELECT WAYPOINT</div>
+                                    <div class="mainValue"></div>
+                                    <div class="title"></div>
+                                    <img class="waypointSymbol" />
+                                </div>
+                                <div id="TopInfos">
+                                    <div id="Location">
+                                        <div id="DRCT_City"></div>
+                                        <div id="DRCT_Region"></div>
+                                    </div>
+                                    <div id="Bearing">
+                                        <div>BRG</div>
+                                        <div id="DRCT_Bearing">___°</div>
+                                    </div>
+                                    <div id="Distance">
+                                        <div>DIS</div>
+                                        <div id="DRCT_Distance">___._NM</div>
+                                    </div>
+                                </div>
+                                <div id="TopLine">
+                                    <div class="gradientButton" id="DRCT_VNavAltButton" state="Hidden">
+                                        <div class="mainText">VNAV Altitude</div>
+                                        <div class="mainValue">_____FT</div>
+                                    </div>
+                                    <div class="gradientButton" id="DRCT_VNavOffsetButton" state="Hidden">
+                                        <div class="mainText">VNAV Offset</div>
+                                        <div class="mainValue">0NM</div>
+                                    </div>
+                                </div>
+                                <div id="MiddleLine">
+                                    <div class="gradientButton" id="DRCT_CrsButton" state="Hidden">
+                                        <div class="mainText">Course</div>
+                                        <div class="mainValue">090°</div>
+                                    </div>
+                                    <div class="gradientButton" id="DRCT_HoldButton" state="Hidden">
+                                        <div class="mainText">Hold</div>
+                                        <div class="mainValue">---</div>
+                                    </div>
+                                </div>
+                                <div id="bottomLine">
+                                    <div class="gradientButton" id="DRCT_CancelButton">
+                                        <div class="title">Cancel <img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
+                                        <div class="mainValue">______</div>
+                                    </div>
+                                    <div class="gradientButton" id="DRCT_ActivateInsertInFP" state="Hidden">
+                                        <div class="mainText">Activate and Insert in Flight Plan</div>
+                                    </div>
+                                    <div class="gradientButton" id="DRCT_ActivateDirect">
+                                        <div class="title">Activate <img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
+                                        <div class="mainValue">______</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
