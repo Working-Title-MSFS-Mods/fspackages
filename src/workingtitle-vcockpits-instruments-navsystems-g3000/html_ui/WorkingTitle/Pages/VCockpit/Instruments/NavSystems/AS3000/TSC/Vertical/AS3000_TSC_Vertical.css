@@ -1614,13 +1614,19 @@
       bottom: 5%;
       font-size: 3vh;
       color: aqua; }
+
     as3000-tsc-vertical-element #Electricity #frequencyKeyboard {
       position: relative; }
       as3000-tsc-vertical-element #Electricity #frequencyKeyboard #topLine {
         position: absolute;
         display: flex;
-        width: 70%;
-        left: 15%; }
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0 1vh; }
+        as3000-tsc-vertical-element #Electricity #frequencyKeyboard #topLine .gradientButton {
+          height: 10vh;
+          width: 20%; }
         as3000-tsc-vertical-element #Electricity #frequencyKeyboard #topLine #FK_ActiveFreqLine {
           color: white;
           font-size: 2.1vh;
@@ -1655,24 +1661,15 @@
         top: 25%;
         height: 75%;
         width: 60%;
-        left: 23%; }
-        as3000-tsc-vertical-element #Electricity #frequencyKeyboard #KeyBoard .roundButton {
-          width: 9vh;
-          height: 9vh;
-          line-height: 9vh;
-          display: inline-block; }
-        as3000-tsc-vertical-element #Electricity #frequencyKeyboard #KeyBoard .gradientButton {
-          width: 9vh;
-          height: 9vh; }
-        as3000-tsc-vertical-element #Electricity #frequencyKeyboard #KeyBoard td {
-          width: 33.33%; }
+        left: 20%; }
     as3000-tsc-vertical-element #Electricity #timeKeyboard, as3000-tsc-vertical-element #Electricity #speedKeyboard, as3000-tsc-vertical-element #Electricity #altitudeKeyboard {
       position: relative; }
-      as3000-tsc-vertical-element #Electricity #timeKeyboard #TK_Bksp, as3000-tsc-vertical-element #Electricity #timeKeyboard #SK_Bksp, as3000-tsc-vertical-element #Electricity #timeKeyboard #AK_Bksp, as3000-tsc-vertical-element #Electricity #speedKeyboard #TK_Bksp, as3000-tsc-vertical-element #Electricity #speedKeyboard #SK_Bksp, as3000-tsc-vertical-element #Electricity #speedKeyboard #AK_Bksp, as3000-tsc-vertical-element #Electricity #altitudeKeyboard #TK_Bksp, as3000-tsc-vertical-element #Electricity #altitudeKeyboard #SK_Bksp, as3000-tsc-vertical-element #Electricity #altitudeKeyboard #AK_Bksp {
+      as3000-tsc-vertical-element #Electricity #timeKeyboard #TK_Bksp, as3000-tsc-vertical-element #Electricity #speedKeyboard #SK_Bksp, as3000-tsc-vertical-element #Electricity #altitudeKeyboard #AK_Bksp {
         position: absolute;
+        height: 10vh;
         width: 20%;
-        right: 5%; }
-      as3000-tsc-vertical-element #Electricity #timeKeyboard #TK_TimeDisplay, as3000-tsc-vertical-element #Electricity #timeKeyboard #SK_Display, as3000-tsc-vertical-element #Electricity #timeKeyboard #AK_Display, as3000-tsc-vertical-element #Electricity #speedKeyboard #TK_TimeDisplay, as3000-tsc-vertical-element #Electricity #speedKeyboard #SK_Display, as3000-tsc-vertical-element #Electricity #speedKeyboard #AK_Display, as3000-tsc-vertical-element #Electricity #altitudeKeyboard #TK_TimeDisplay, as3000-tsc-vertical-element #Electricity #altitudeKeyboard #SK_Display, as3000-tsc-vertical-element #Electricity #altitudeKeyboard #AK_Display {
+        right: 3%; }
+      as3000-tsc-vertical-element #Electricity #timeKeyboard #TK_TimeDisplay, as3000-tsc-vertical-element #Electricity #speedKeyboard #SK_Display, as3000-tsc-vertical-element #Electricity #altitudeKeyboard #AK_Display {
         position: absolute;
         width: 30%;
         left: 35%;
@@ -1699,17 +1696,8 @@
         top: 25%;
         height: 75%;
         width: 60%;
-        left: 23%; }
-        as3000-tsc-vertical-element #Electricity #timeKeyboard #KeyBoard .roundButton, as3000-tsc-vertical-element #Electricity #speedKeyboard #KeyBoard .roundButton, as3000-tsc-vertical-element #Electricity #altitudeKeyboard #KeyBoard .roundButton {
-          width: 9vh;
-          height: 9vh;
-          line-height: 9vh;
-          display: inline-block; }
-        as3000-tsc-vertical-element #Electricity #timeKeyboard #KeyBoard .gradientButton, as3000-tsc-vertical-element #Electricity #speedKeyboard #KeyBoard .gradientButton, as3000-tsc-vertical-element #Electricity #altitudeKeyboard #KeyBoard .gradientButton {
-          width: 9vh;
-          height: 9vh; }
-        as3000-tsc-vertical-element #Electricity #timeKeyboard #KeyBoard td, as3000-tsc-vertical-element #Electricity #speedKeyboard #KeyBoard td, as3000-tsc-vertical-element #Electricity #altitudeKeyboard #KeyBoard td {
-          width: 33.33%; }
+        left: 20%; }
+
     as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_LetterTable,
     as3000-tsc-vertical-element #Electricity #fullKeyboard #Keyboard_NumberTable {
       display: none; }
@@ -2195,9 +2183,9 @@
         as3000-tsc-vertical-element #Electricity #SelectionList .content .gradientButton[state=Inactive] {
           display: none; }
     as3000-tsc-vertical-element #Electricity .PopUpWindow {
-      top: 18vh;
+      top: 18%;
       width: 100%;
-      height: 65vh;
+      height: 68%;
       z-index: 10; }
       as3000-tsc-vertical-element #Electricity .PopUpWindow .WindowTitle {
         font-size: 3vh;
@@ -2314,10 +2302,10 @@
         min-height: 4.2vh; }
 
   as3000-tsc-vertical-element .roundButton {
-    width: 15vh;
-    height: 15vh; }
+    width: 12vh;
+    height: 12vh; }
     as3000-tsc-vertical-element .roundButton .mainText {
-      font-size: 8vh; }
+      font-size: 6vh; }
 
   as3000-tsc-vertical-element .DrctImg {
     height: 4.8vh;
@@ -2328,3 +2316,7 @@
     height: 13vh; }
     as3000-tsc-vertical-element .tabButton .mainText {
       font-size: 2.5vh; }
+
+  as3000-tsc-vertical-element .numPad .gradientButton {
+    width: 11vh;
+    height: 11vh; }
