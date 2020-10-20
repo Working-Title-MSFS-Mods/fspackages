@@ -151,6 +151,7 @@ as3000-tsc-horizontal-element {
           transform: translateY(-50%);
           width: 100%;
           font-size: 5vh; }
+
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #Timers .sectionTitle {
         position: absolute;
         top: 0.5vh;
@@ -201,6 +202,7 @@ as3000-tsc-horizontal-element {
         bottom: 15%;
         right: 8%;
         height: 17vh; }
+
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #Minimums #min_typeButton {
         position: absolute;
         left: 5%;

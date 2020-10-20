@@ -304,7 +304,7 @@
         width: 35%; }
         as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers #TimerZone #TMR_Timer {
           position: absolute;
-          top: 3vh;
+          top: 4vh;
           width: 100%;
           font-size: 4.2vh;
           color: aqua; }
@@ -313,8 +313,7 @@
         top: 40%;
         left: 32.5%;
         height: 50%;
-        width: 35%;
-        border: 0.15vh solid white; }
+        width: 35%; }
         as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers #CountSelection #TMR_UpButton {
           position: absolute;
           height: 40%;
@@ -331,12 +330,15 @@
           width: auto; }
       as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers #TMR_ResetButton {
         position: absolute;
+        height: 12vh;
         bottom: 15%;
-        left: 12%; }
+        left: 5%; }
       as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers #TMR_StopButton {
         position: absolute;
+        height: 12vh;
         bottom: 15%;
-        right: 12%; }
+        right: 5%; }
+
       as3000-tsc-vertical-element #Electricity #PagesDisplay #Minimums #min_typeButton {
         position: absolute;
         left: 5%;
