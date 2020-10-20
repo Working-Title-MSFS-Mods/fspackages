@@ -413,7 +413,7 @@ class CJ4_FMC_LegsPage {
         this._isDirty = false;
     }
 
-    getAltSpeedRestriction1(waypoint) {
+    getAltSpeedRestriction(waypoint) {
         let speedConstraint = "---";
         let altitudeConstraint = "----- ";
 
