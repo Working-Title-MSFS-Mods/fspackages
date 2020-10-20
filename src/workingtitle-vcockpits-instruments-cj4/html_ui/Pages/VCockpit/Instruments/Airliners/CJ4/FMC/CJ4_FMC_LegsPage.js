@@ -191,6 +191,11 @@ class CJ4_FMC_LegsPage {
 
                 if (!waypoint) return;
 
+                if (waypoint.ident === "USR") {
+                    this._fmc.showErrorMessage("UNABLE MOD USR");
+                    return;
+                }
+
                 let value = this._fmc.inOut;
                 let selectedWpIndex = this._currentPage == 1 ? this._fmc.flightPlanManager.getActiveWaypointIndex() + i - 1
                     : (this._currentPage - 1) * 5 + this._fmc.flightPlanManager.getActiveWaypointIndex() + i - 1;
@@ -218,11 +223,6 @@ class CJ4_FMC_LegsPage {
                         // CANT SELECT MAGENTA OR BLUE ON PAGE 1
                         if (((i > 1 && this._currentPage == 1) || (this._currentPage > 1))) {
                             // SELECT EXISTING WAYPOINT FROM FLIGHT PLAN
-                            if (waypoint.ident === "USR") {
-                                this._fmc.showErrorMessage("UNABLE MOD USR");
-                                return;
-                            }
-
                             this._approachWaypoints = this._fmc.flightPlanManager.getApproachWaypoints();
                             if (this._approachWaypoints.length > 0) {
                                 if (waypoint.ident === this._approachWaypoints[this._approachWaypoints.length - 1].ident) {
@@ -312,9 +312,7 @@ class CJ4_FMC_LegsPage {
                             return;
                         }
 
-
-                        let tempWp = this._wayPointsToRender[selectedWpIndex];
-                        if (this.isApproachWaypoint(tempWp)) {
+                        if (this.isApproachWaypoint(selectedWpIndex)) {
                             this._fmc.showErrorMessage("UNABLE MOD APPROACH");
                             return;
                         }
@@ -346,8 +344,7 @@ class CJ4_FMC_LegsPage {
                             return;
                         }
 
-                        let tempWp = this._wayPointsToRender[selectedWpIndex];
-                        if (this.isApproachWaypoint(tempWp)) {
+                        if (this.isApproachWaypoint(selectedWpIndex)) {
                             this._fmc.showErrorMessage("UNABLE MOD APPROACH");
                             return;
                         }
@@ -371,7 +368,8 @@ class CJ4_FMC_LegsPage {
         }
     }
 
-    isApproachWaypoint(wp) {
+    isApproachWaypoint(idx) {
+        let wp = this._wayPointsToRender[idx];
         this._approachWaypoints = this._fmc.flightPlanManager.getApproachWaypoints();
         let approachWpIndex = this._approachWaypoints.indexOf(wp);
         return (approachWpIndex >= 0);
