@@ -6,11 +6,6 @@
 				<ActorMixer Name="engine" ID="{FBCF13E9-E849-4B6C-9DDE-CF2B79CD8648}" ShortID="750679148">
 					<PropertyList>
 						<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
-						<Property Name="CenterPercentage" Type="int32">
-							<ValueList>
-								<Value>100</Value>
-							</ValueList>
-						</Property>
 						<Property Name="OverrideConversion" Type="bool" Value="True"/>
 						<Property Name="OverridePositioning" Type="bool" Value="True"/>
 						<Property Name="OverrideVirtualVoice" Type="bool" Value="True"/>
@@ -72,11 +67,6 @@
 									<PropertyList>
 										<Property Name="3DSpatialization" Type="int16" Value="2"/>
 										<Property Name="BlendBehavior" Type="int16" Value="1"/>
-										<Property Name="CenterPercentage" Type="int32">
-											<ValueList>
-												<Value>30</Value>
-											</ValueList>
-										</Property>
 										<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 										<Property Name="Lowpass" Type="int16">
 											<RTPCList>
@@ -251,7 +241,7 @@
 												<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 												<Property Name="CenterPercentage" Type="int32">
 													<ValueList>
-														<Value>71</Value>
+														<Value>29</Value>
 													</ValueList>
 												</Property>
 												<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
@@ -327,11 +317,6 @@
 								<BlendContainer Name="shutdown_inside" ID="{69EC2F71-B690-4087-B1CE-E95A0C2786AF}" ShortID="1014723923">
 									<PropertyList>
 										<Property Name="3DSpatialization" Type="int16" Value="2"/>
-										<Property Name="CenterPercentage" Type="int32">
-											<ValueList>
-												<Value>29</Value>
-											</ValueList>
-										</Property>
 										<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 										<Property Name="OverrideAnalysis" Type="bool" Value="True"/>
 										<Property Name="OverrideOutput" Type="bool" Value="True"/>
