@@ -1909,12 +1909,12 @@ as3000-tsc-horizontal-element {
           height: 15vh; }
     as3000-tsc-horizontal-element #Electricity #timeKeyboard, as3000-tsc-horizontal-element #Electricity #speedKeyboard, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard {
       position: relative; }
-      as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_Bksp, as3000-tsc-horizontal-element #Electricity #timeKeyboard #SK_Bksp, as3000-tsc-horizontal-element #Electricity #timeKeyboard #AK_Bksp, as3000-tsc-horizontal-element #Electricity #speedKeyboard #TK_Bksp, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Bksp, as3000-tsc-horizontal-element #Electricity #speedKeyboard #AK_Bksp, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #TK_Bksp, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #SK_Bksp, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Bksp {
+      as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_Bksp, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Bksp, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Bksp {
         position: absolute;
         height: 15vh;
         width: 20%;
         right: 5%; }
-      as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay, as3000-tsc-horizontal-element #Electricity #timeKeyboard #SK_Display, as3000-tsc-horizontal-element #Electricity #timeKeyboard #AK_Display, as3000-tsc-horizontal-element #Electricity #speedKeyboard #TK_TimeDisplay, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display, as3000-tsc-horizontal-element #Electricity #speedKeyboard #AK_Display, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #TK_TimeDisplay, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #SK_Display, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display {
+      as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display {
         position: absolute;
         width: 30%;
         top: 12%;
@@ -1924,18 +1924,18 @@ as3000-tsc-horizontal-element {
         padding-top: 1vh;
         text-align: center;
         font-size: 7vh; }
-        as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay .Writed, as3000-tsc-horizontal-element #Electricity #timeKeyboard #SK_Display .Writed, as3000-tsc-horizontal-element #Electricity #timeKeyboard #AK_Display .Writed, as3000-tsc-horizontal-element #Electricity #speedKeyboard #TK_TimeDisplay .Writed, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display .Writed, as3000-tsc-horizontal-element #Electricity #speedKeyboard #AK_Display .Writed, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #TK_TimeDisplay .Writed, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #SK_Display .Writed, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display .Writed {
+        as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay .Writed, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display .Writed, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display .Writed {
           background-color: none;
           color: #67e8ef; }
-        as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay .ToWrite, as3000-tsc-horizontal-element #Electricity #timeKeyboard #SK_Display .ToWrite, as3000-tsc-horizontal-element #Electricity #timeKeyboard #AK_Display .ToWrite, as3000-tsc-horizontal-element #Electricity #speedKeyboard #TK_TimeDisplay .ToWrite, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display .ToWrite, as3000-tsc-horizontal-element #Electricity #speedKeyboard #AK_Display .ToWrite, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #TK_TimeDisplay .ToWrite, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #SK_Display .ToWrite, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display .ToWrite {
+        as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay .ToWrite, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display .ToWrite, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display .ToWrite {
           background-color: none;
           color: dimgray; }
-        as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay .Writing, as3000-tsc-horizontal-element #Electricity #timeKeyboard #SK_Display .Writing, as3000-tsc-horizontal-element #Electricity #timeKeyboard #AK_Display .Writing, as3000-tsc-horizontal-element #Electricity #speedKeyboard #TK_TimeDisplay .Writing, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display .Writing, as3000-tsc-horizontal-element #Electricity #speedKeyboard #AK_Display .Writing, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #TK_TimeDisplay .Writing, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #SK_Display .Writing, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display .Writing {
+        as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay .Writing, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display .Writing, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display .Writing {
           animation: SelectedCharBlinkFreqEdit 1s infinite;
           min-width: 0.5vw;
           min-height: 6vh;
           display: inline-block; }
-        as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay .Fixed, as3000-tsc-horizontal-element #Electricity #timeKeyboard #SK_Display .Fixed, as3000-tsc-horizontal-element #Electricity #timeKeyboard #AK_Display .Fixed, as3000-tsc-horizontal-element #Electricity #speedKeyboard #TK_TimeDisplay .Fixed, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display .Fixed, as3000-tsc-horizontal-element #Electricity #speedKeyboard #AK_Display .Fixed, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #TK_TimeDisplay .Fixed, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #SK_Display .Fixed, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display .Fixed {
+        as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay .Fixed, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display .Fixed, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display .Fixed {
           background-color: #67e8ef; }
       as3000-tsc-horizontal-element #Electricity #timeKeyboard #KeyBoard, as3000-tsc-horizontal-element #Electricity #speedKeyboard #KeyBoard, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #KeyBoard {
         position: absolute;
@@ -1943,9 +1943,7 @@ as3000-tsc-horizontal-element {
         height: 75%;
         width: 50%;
         left: 25%; }
-        as3000-tsc-horizontal-element #Electricity #timeKeyboard #KeyBoard .gradientButton, as3000-tsc-horizontal-element #Electricity #speedKeyboard #KeyBoard .gradientButton, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #KeyBoard .gradientButton {
-          width: 15vh;
-          height: 15vh; }
+
     as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable,
     as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_NumberTable {
       display: none; }
@@ -2791,6 +2789,9 @@ as3000-tsc-horizontal-element {
       grid-template-rows: repeat(4, 1fr);
       justify-items: center;
       align-items: center; }
+    as3000-tsc-vertical-element .numPad .gradientButton {
+      width: 15vh;
+      height: 15vh; }
 
   as3000-tsc-horizontal-element .backgroundBox {
     border-radius: 10px;
