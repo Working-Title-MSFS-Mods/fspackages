@@ -18,9 +18,9 @@ class AS3000_PFD extends NavSystem {
         this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(AS3000_PFD_SoftKeyHtmlElement)));
         this.maxUpdateBudget = 12;
 
-        //Include.addScript("/JS/debug.js", function () {
-        //    g_modDebugMgr.AddConsole(null);
-        //});
+        Include.addScript("/JS/debug.js", function () {
+            g_modDebugMgr.AddConsole(null);
+        });
     }
     disconnectedCallback() {
         super.disconnectedCallback();
@@ -79,10 +79,6 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
 
     onTemplateLoaded() {
         super.onTemplateLoaded();
-
-        if (this.revertToDefault) {
-            return;
-        }
     }
 
     onUpdate(_deltaTime) {

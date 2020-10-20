@@ -8,16 +8,6 @@ class AS3000_MapElement extends WT_MapElement {
     onTemplateLoaded() {
         super.onTemplateLoaded();
 
-        if (SimVar.GetSimVarValue("ATC MODEL", "string") == "TT:ATCCOM.AC_MODEL_TBM9.0.text") {
-            this.revertToDefault = false;
-        }
-
-        if (this.revertToDefault) {
-            this.instrument.setAttribute("show-cities", false);
-            this.instrument.mapConfigId = 1;
-            return;
-        }
-
         this.instrument.zoomRanges = AS3000_MapElement.ZOOM_RANGES_DEFAULT;
         this.instrument.setZoom(this.instrument.zoomRanges.indexOf(AS3000_MapElement.ZOOM_RANGE_DEFAULT));
         this.instrument.rangeRingElement = new SvgRangeRingElement();
