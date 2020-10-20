@@ -157,72 +157,96 @@
                     </div>
                 </div>
                 <div id="SpeedBugs">
-                    <table id="SB_buttons">
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="SB_AllOn">
-                                    <div class="mainText">All On</div>
+                    <div class="tabContainer">
+                        <div class="tabSelect">
+                            <div class="tabButton tabButtonLeft" state="Highlight">
+                                <div class="mainText">Takeoff</div>
+                            </div>
+                            <div class="tabButton tabButtonLeft" state="">
+                                <div class="mainText">Landing</div>
+                            </div>
+                        </div>
+                        <div class="tabContentContainer">
+                            <div class="tabContent" id="SpeedBugsTakeoff" state="Active">
+                                <div class="container">
+                                    <div id="SpeedBugsTopLine">
+                                        <div class="gradientButton" id="SB_Takeoff_AllOn">
+                                            <div class="mainText">All On</div>
+                                        </div>
+                                        <div class="gradientButton" id="SB_Takeoff_AllOff">
+                                            <div class="mainText">All Off</div>
+                                        </div>
+                                    </div>
+                                    <div id="SpeedBugsDivider"></div>
+                                    <div class="backgroundBox" id="SB_buttons">
+                                        <div class="gradientButton statusToggleButton" id="SB_V1Status">
+                                            <div class="mainText">V1</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton" id="SB_V1Value">
+                                            <div class="mainValue"><span class="valueSpan">85</span><span class="unitSpan">KT</span></div>
+                                            <img class="editIcon" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_PENCIL.png"/>
+                                        </div>
+                                        <div class="gradientButton statusToggleButton" id="SB_VrStatus">
+                                            <div class="mainText">Vr</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton" id="SB_VrValue">
+                                            <div class="mainValue"><span class="valueSpan">100</span><span class="unitSpan">KT</span></div>
+                                            <img class="editIcon" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_PENCIL.png"/>
+                                        </div>
+                                        <div class="gradientButton statusToggleButton" id="SB_V2Status">
+                                            <div class="mainText">V2</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton" id="SB_V2Value">
+                                            <div class="mainValue"><span class="valueSpan">124</span><span class="unitSpan">KT</span></div>
+                                            <img class="editIcon" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_PENCIL.png"/>
+                                        </div>
+                                        <div class="gradientButton statusToggleButton" id="SB_VenrStatus">
+                                            <div class="mainText">Venr</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton" id="SB_VenrValue">
+                                            <div class="mainValue"><span class="valueSpan">85</span><span class="unitSpan">KT</span></div>
+                                            <img class="editIcon" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_PENCIL.png"/>
+                                        </div>
+                                    </div>
                                 </div>
-                            </td>
-                            <td>
-                                <div class="gradientButton" id="SB_AllOff">
-                                    <div class="mainText">All Off</div>
+                            </div>
+                            <div class="tabContent" id="SpeedBugsLanding" state="Inactive">
+                                <div class="container">
+                                    <div id="SpeedBugsTopLine">
+                                        <div class="gradientButton" id="SB_Landing_AllOn">
+                                            <div class="mainText">All On</div>
+                                        </div>
+                                        <div class="gradientButton" id="SB_Landing_AllOff">
+                                            <div class="mainText">All Off</div>
+                                        </div>
+                                    </div>
+                                    <div id="SpeedBugsDivider"></div>
+                                    <div class="backgroundBox" id="SB_buttons">
+                                        <div class="gradientButton statusToggleButton" id="SB_VrefStatus">
+                                            <div class="mainText">Vref</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton" id="SB_VrefValue">
+                                            <div class="mainValue"><span class="valueSpan">85</span><span class="unitSpan">KT</span></div>
+                                            <img class="editIcon" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_PENCIL.png"/>
+                                        </div>
+                                        <div class="gradientButton statusToggleButton" id="SB_VappStatus">
+                                            <div class="mainText">Vapp</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton" id="SB_VappValue">
+                                            <div class="mainValue"><span class="valueSpan">100</span><span class="unitSpan">KT</span></div>
+                                            <img class="editIcon" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_PENCIL.png"/>
+                                        </div>
+                                    </div>
                                 </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="SB_VrStatus">
-                                    <div class="mainText">Vr</div>
-                                    <div class="statusBar"></div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="gradientButton" id="SB_VrValue">
-                                    <div class="mainValue">85KT</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="SB_VxStatus">
-                                    <div class="mainText">Vx</div>
-                                    <div class="statusBar"></div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="gradientButton" id="SB_VxValue">
-                                    <div class="mainValue">100KT</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="SB_VyStatus">
-                                    <div class="mainText">Vy</div>
-                                    <div class="statusBar"></div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="gradientButton" id="SB_VyValue">
-                                    <div class="mainValue">124KT</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="SB_VappStatus">
-                                    <div class="mainText">Vapp</div>
-                                    <div class="statusBar"></div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="gradientButton" id="SB_VappValue">
-                                    <div class="mainValue">85KT</div>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+                            </div>
+                        </div>
+                    </div>
                     <div class="gradientButton" id="SB_RestoreDefaults">
                         <div class="mainText">Restore All Defaults</div>
                     </div>
@@ -2543,4 +2567,4 @@
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/AS3000_Common.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Vertical/AS3000_TSC_Vertical.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Vertical/AS3000_TSC_Vertical.js"></script>
