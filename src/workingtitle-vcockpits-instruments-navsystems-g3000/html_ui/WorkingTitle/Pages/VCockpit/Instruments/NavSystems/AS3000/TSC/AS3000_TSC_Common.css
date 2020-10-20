@@ -351,6 +351,43 @@
               justify-content: center;
               align-items: center; }
 
+.MapDetailSelect .WindowTitle {
+  background-color: black; }
+.MapDetailSelect .Container {
+  position: absolute;
+  text-align: center;
+  background-color: black;
+  border: 2px solid white;
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-items: center; }
+  .MapDetailSelect .Container .MapDetailSliderOuterContainer {
+    position: relative;
+    border: 1px solid white;
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    align-items: center; }
+    .MapDetailSelect .Container .MapDetailSliderOuterContainer .MapDetailSliderContainer {
+      position: relative; }
+      .MapDetailSelect .MapDetailSliderWrapper {
+        position: relative; }
+        .MapDetailSelect .MapDetailSliderWrapper .slider {
+          -webkit-appearance: none;
+          position: relative;
+          transform: rotate(270deg) translateY(-60%);
+          background: transparent; }
+        .MapDetailSelect .MapDetailSliderWrapper .slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          background: #00b2bf;
+          border: solid 3px black; }
+        .MapDetailSelect .MapDetailSliderWrapper .slider::-webkit-slider-runnable-track {
+          width: 100%;
+          background: transparent; }
+        .MapDetailSelect .MapDetailSliderWrapper .sliderBackground {
+          -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+
 #LightingConfig #LightingValueDisplay {
   text-align: center;
   color: white; }

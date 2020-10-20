@@ -2131,69 +2131,40 @@ as3000-tsc-horizontal-element {
         as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content .gradientButton .value {
           font-size: 5vh; }
 
-    as3000-tsc-horizontal-element #Electricity .MapDetailSelect .WindowTitle {
-      background-color: black; }
     as3000-tsc-horizontal-element #Electricity .MapDetailSelect .Container {
-      position: absolute;
       bottom: 5%;
       height: 85%;
       left: 25%;
       width: 50%;
-      text-align: center;
-      font-size: 4vh;
-      background-color: black;
-      border: 0.4vh solid white;
-      display: flex;
-      flex-flow: column wrap;
-      justify-content: center;
-      align-items: center; }
+      font-size: 4vh; }
       as3000-tsc-horizontal-element #Electricity .MapDetailSelect .Container .gradientButton {
-        position: relative;
         width: 15vh;
         height: 15vh; }
       as3000-tsc-horizontal-element #Electricity .MapDetailSelect .Container .MapDetailSliderOuterContainer {
-        position: relative;
         width: 15vh;
-        height: 60%;
-        border: 0.2vh solid white;
-        display: flex;
-        flex-flow: column wrap;
-        justify-content: center;
-        align-items: center; }
+        height: 60%; }
         as3000-tsc-horizontal-element #Electricity .MapDetailSelect .Container .MapDetailSliderOuterContainer .MapDetailSliderContainer {
-          position: relative;
           width: 100%;
           height: 80%; }
           as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper {
-            position: relative;
             width: 15vh;
             height: 34vh;
             margin: 1vh; }
             as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper .slider {
-              -webkit-appearance: none;
-              position: relative;
-              transform: rotate(270deg) translateY(-60%);
               margin-top: 9vh;
               width: 34vh;
-              height: 15vh;
-              background: transparent; }
+              height: 15vh; }
             as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper .slider::-webkit-slider-thumb {
-              -webkit-appearance: none;
               width: 10%;
-              height: 15vh;
-              background: #00b2bf;
-              border: solid 0.5vh black; }
+              height: 15vh; }
             as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper .slider::-webkit-slider-runnable-track {
-              width: 10%;
-              height: 15vh;
-              background: transparent; }
+              height: 15vh; }
             as3000-tsc-horizontal-element #Electricity .MapDetailSelect .MapDetailSliderWrapper .sliderBackground {
               position: absolute;
               top: 1vh;
               left: 0.5vh;
               width: 14vh;
-              height: 32vh;
-              -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+              height: 32vh; }
 
     as3000-tsc-horizontal-element #Electricity #LoadFrequencyPopup .content {
       position: absolute;
