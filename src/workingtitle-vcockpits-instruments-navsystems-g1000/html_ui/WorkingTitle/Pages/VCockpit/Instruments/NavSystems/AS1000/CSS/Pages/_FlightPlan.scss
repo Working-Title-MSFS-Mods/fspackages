@@ -135,9 +135,7 @@ g1000-flight-plan-page {
         grid-column-start: 2;
         height: auto;
 
-        &[state="Selected"] {
-            animation: SelectionBlink 0.5s infinite !important;
-        }
+        @extend %animated-selection;
     }
 
     g1000-flight-plan-waypoint-line {
@@ -152,9 +150,7 @@ g1000-flight-plan-page {
 
         .ident,
         .altitude {
-            &[state="Selected"] {
-                animation: SelectionBlink 0.5s infinite !important;
-            }
+            @extend %animated-selection;
         }
 
         .altitude {

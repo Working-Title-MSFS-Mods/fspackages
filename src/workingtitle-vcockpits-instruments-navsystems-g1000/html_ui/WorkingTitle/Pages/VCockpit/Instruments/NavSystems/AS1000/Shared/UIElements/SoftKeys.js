@@ -127,31 +127,33 @@ class WT_Soft_Key_Controller extends HTMLElement {
             this.currentMenu.deactivate();
         }
         this.currentMenu = softKeyMenu;
-        this.currentMenu.activate();
 
         for (let button of this.buttonElements) {
             button.innerHTML = "";
         }
 
         let buttonsDone = {};
+        if (softKeyMenu != null) {
+            softKeyMenu.activate();
 
-        if (softKeyMenu.options.showEngine) {
-            this.buttonElements[0].appendChild(this.defaultButtons.engine);
-            buttonsDone[0] = true;
-        }
-        if (softKeyMenu.options.showMap) {
-            this.buttonElements[2].appendChild(this.defaultButtons.map);
-            buttonsDone[2] = true;
-        }
-        if (softKeyMenu.options.showChecklist) {
-            this.buttonElements[11].appendChild(this.defaultButtons.checklist);
-            buttonsDone[11] = true;
-        }
+            if (softKeyMenu.options.showEngine) {
+                this.buttonElements[0].appendChild(this.defaultButtons.engine);
+                buttonsDone[0] = true;
+            }
+            if (softKeyMenu.options.showMap) {
+                this.buttonElements[2].appendChild(this.defaultButtons.map);
+                buttonsDone[2] = true;
+            }
+            if (softKeyMenu.options.showChecklist) {
+                this.buttonElements[11].appendChild(this.defaultButtons.checklist);
+                buttonsDone[11] = true;
+            }
 
-        for (let softKeyIndex in softKeyMenu.softKeys) {
-            let softKey = softKeyMenu.softKeys[softKeyIndex];
-            this.buttonElements[softKeyIndex].appendChild(softKey);
-            buttonsDone[softKeyIndex] = true;
+            for (let softKeyIndex in softKeyMenu.softKeys) {
+                let softKey = softKeyMenu.softKeys[softKeyIndex];
+                this.buttonElements[softKeyIndex].appendChild(softKey);
+                buttonsDone[softKeyIndex] = true;
+            }
         }
 
         for (let i = 0; i < this.numButtons; i++) {

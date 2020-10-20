@@ -12,15 +12,16 @@ class Input_Stack {
         }
         this.stack.push(layer);
         this.currentLayer.onActivate();
-        console.log("Input stack pushed");
+        //console.log("Input stack pushed");
         return {
             pop: () => {
                 this.pop(stackSize);
+                return null;
             }
         };
     }
     pop(index) {
-        console.log("Input stack popped");
+        //console.log("Input stack popped");
         while (this.stack.length > index) {
             this.currentLayer.onDeactivate();
             this.stack.pop();
@@ -30,6 +31,7 @@ class Input_Stack {
         }
     }
     processEvent(_event) {
+        //console.log(_event);
         if (!this.currentLayer)
             return;
         let i = this.stack.length - 1;

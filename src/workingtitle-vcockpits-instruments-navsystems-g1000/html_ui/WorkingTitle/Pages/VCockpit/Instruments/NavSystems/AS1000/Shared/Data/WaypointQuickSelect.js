@@ -68,7 +68,7 @@ class WT_Waypoint_Quick_Select {
         };
         return {
             nearest: (await this.getNearestWaypoints(type)).filter(filter),
-            flightPlan: this.getFlightPlanWaypoints(type).filter(filter),
+            flightPlan: [],//this.getFlightPlanWaypoints(type).filter(filter),
             recent: (await this.loadWaypoints(this.recentWaypoints)).filter(filter),
         }
     }

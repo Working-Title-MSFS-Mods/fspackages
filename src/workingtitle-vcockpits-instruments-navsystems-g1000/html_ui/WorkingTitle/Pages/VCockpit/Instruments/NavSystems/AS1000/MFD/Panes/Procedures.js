@@ -80,7 +80,7 @@ class Pane_Input_Layer extends Selectables_Input_Layer {
     }
 }
 
-class Procedures_Input_Layer extends Pane_Input_Layer {
+class WT_Procedures_Input_Layer extends Pane_Input_Layer {
     onProceduresPush() {
         this.pane.exit();
     }
@@ -90,6 +90,7 @@ class WT_Procedures_Pane extends HTMLElement {
     constructor() {
         super();
         DOMUtilities.AddScopedEventListener(this, "selectable-button", "selected", this.onButtonClick.bind(this));
+        this.subscriptions = new Subscriptions();
     }
     connectedCallback() {
         let template = document.getElementById('procedures-pane');
@@ -103,18 +104,16 @@ class WT_Procedures_Pane extends HTMLElement {
             loadedArrival: this.querySelector("[data-id=loadedArrival]"),
         };
 
-        this.inputLayer = new Procedures_Input_Layer(this, new Selectables_Input_Layer_Dynamic_Source(this, "selectable-button"));
+        this.inputLayer = new WT_Procedures_Input_Layer(this, new Selectables_Input_Layer_Dynamic_Source(this, "selectable-button"));
         this.inputLayer.setExitHandler(this);
     };
     disconnectedCallback() {
-        this.approachUnsubscribe = this.approachUnsubscribe ? this.approachUnsubscribe() : null;
-        this.arrivalUnsubscribe = this.arrivalUnsubscribe ? this.arrivalUnsubscribe() : null;
-        this.departureUnsubscribe = this.departureUnsubscribe ? this.departureUnsubscribe() : null;
+        this.subscriptions.unsubscribe();
     }
     setProcedures(procedures) {
-        this.approachUnsubscribe = procedures.approach.subscribe(this.updateLoadedApproach.bind(this));
-        this.arrivalUnsubscribe = procedures.arrival.subscribe(this.updateLoadedArrival.bind(this));
-        this.departureUnsubscribe = procedures.departure.subscribe(this.updateLoadedDeparture.bind(this));
+        this.subscriptions.add(procedures.approach.subscribe(this.updateLoadedApproach.bind(this)));
+        this.subscriptions.add(procedures.arrival.subscribe(this.updateLoadedArrival.bind(this)));
+        this.subscriptions.add(procedures.departure.subscribe(this.updateLoadedDeparture.bind(this)));
     }
     updateLoadedApproach(approach) {
         this.elements.loadedApproach.textContent = approach ? approach.name : "____-";

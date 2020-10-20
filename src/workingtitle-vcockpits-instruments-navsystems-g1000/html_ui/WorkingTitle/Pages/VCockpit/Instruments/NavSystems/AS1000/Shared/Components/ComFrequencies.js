@@ -1,4 +1,3 @@
-
 class WT_Com_Frequencies_Model extends WT_Radio_Frequencies_Model {
     get simVarPrefix() {
         return `K:COM${this.selected.value == 1 ? "" : "2"}`;

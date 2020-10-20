@@ -1,4 +1,7 @@
 g1000-waypoint-selector-pane {
+    display: block;
+    padding: 0 1.5vh;
+    
     .location {
         display: grid;
         grid-template-columns: 20% 30% 50%;

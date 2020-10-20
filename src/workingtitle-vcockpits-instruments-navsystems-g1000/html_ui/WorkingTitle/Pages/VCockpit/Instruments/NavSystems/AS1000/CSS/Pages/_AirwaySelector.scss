@@ -1,0 +1,49 @@
+g1000-airway-selector {
+    display: grid;
+    height: 100%;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 100%;
+    grid-template-areas: "map sidebar";
+
+    .map-container {
+        -webkit-transform: rotateX(0deg);
+        height: 100%;
+        width: 100%;
+        grid-area: map;
+        display: block;
+        position: relative;
+        border-right: $border_width_thin solid #fff;
+    }
+
+    .sidebar {
+        grid-area: sidebar;
+        height: 100%;
+        padding: 0 2vh;
+        background: $page_background_color;
+    }
+
+    .sequence {
+        height: 40vh;
+        overflow-y: scroll;
+
+        li {
+            color: $input_color;
+            display: grid;
+            grid-template-columns: 50% 25% 25%;
+
+            .bearing,
+            .distance {
+                text-align: right;
+            }
+
+            @extend %animated-selection;
+        }
+    }
+
+    .load-button {
+        margin: 2vh 0;
+        font-size: 2em;
+        font-size: 1.1em;
+        font-weight: bold;
+    }
+}

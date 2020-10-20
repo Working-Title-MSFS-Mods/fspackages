@@ -30,7 +30,10 @@ class HSI_Input_Layer extends Input_Layer {
 
         this.speedUp();
         let amount = Math.floor(this.courseIncrement) * (direction ? 1 : -1);
-        if (this.cdiSource.value == 1) {
+        if (this.cdiSource.value == 3) {
+            let value = (SimVar.GetSimVarValue("L:GPS OBS", "degree") + amount + 360) % 360;
+            SimVar.SetSimVarValue("L:GPS OBS", "degree", value);
+        } else if (this.cdiSource.value == 1) {
             let value = (SimVar.GetSimVarValue("NAV OBS:1", "degree") + amount + 360) % 360;
             SimVar.SetSimVarValue("K:VOR1_SET", "degree", value);
         } else if (this.cdiSource.value == 2) {

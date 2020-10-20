@@ -1,0 +1,44 @@
+g1000-map-setup-pane {
+    padding: 0 2vh;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+
+    .options {
+        display: grid;
+        grid-template-columns: 50% 50%;
+        grid-auto-rows: auto;
+        grid-gap: 0;
+
+        &:not([visible]) {
+            display: none;
+        }
+
+        label,
+        > .value {
+            padding: 1vh;
+        }
+
+        > .value {
+            background: $category_box_background_color;
+            border-left: $category_border_width solid $category_box_outline_color;
+            border-right: $category_border_width solid $category_box_outline_color;
+
+            &:first-of-type {
+                border-top: $category_border_width solid $category_box_outline_color;
+            }
+            &:last-child {
+                border-bottom: $category_border_width solid $category_box_outline_color;
+            }
+
+            .columns {
+                display: grid;
+                grid-template-columns: 50% 50%;
+            }
+
+            numeric-input {
+                text-align: right;
+            }
+        }
+    }
+}

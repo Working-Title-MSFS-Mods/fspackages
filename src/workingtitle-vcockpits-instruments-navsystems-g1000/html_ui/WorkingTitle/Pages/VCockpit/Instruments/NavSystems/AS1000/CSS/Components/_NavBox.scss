@@ -73,6 +73,33 @@ g1000-com-frequencies {
     padding: 0 1vh;
     font-family: "Roboto-Mono";
 
+    .active {
+        grid-area: active;
+        font-weight: bold;
+    }
+
+    .standby {
+        grid-area: standby;
+        font-weight: bold;
+    }
+
+    .name {
+        grid-area: name;
+    }
+
+    .arrow {
+        grid-area: arrow;
+        visibility: hidden;
+        width: 1.5ch;
+    }
+
+    .volume {
+        grid-area: volume;
+        display: none;
+        color: $input_color;
+        font-weight: bold;
+    }
+
     .radio-1,
     .radio-2 {
         display: grid;
@@ -81,37 +108,6 @@ g1000-com-frequencies {
         grid-template-columns: 3.5ch 6ch 1.5ch 6ch 4ch;
         grid-template-areas: "name standby arrow active ident";
         font-size: $font_size_large;
-
-        div:first-child {
-            font-size: $font_size_regular;
-        }
-
-        .active {
-            grid-area: active;
-            font-weight: bold;
-        }
-
-        .standby {
-            grid-area: standby;
-            font-weight: bold;
-        }
-
-        .name {
-            grid-area: name;
-        }
-
-        .arrow {
-            grid-area: arrow;
-            visibility: hidden;
-            width: 1.5ch;
-        }
-
-        .volume {
-            grid-area: volume;
-            display: none;
-            color: $input_color;
-            font-weight: bold;
-        }
 
         &[mode="volume"] {
             grid-template-columns: 3.5ch 6ch 1.5ch 6ch 4ch;
@@ -128,6 +124,10 @@ g1000-com-frequencies {
             .volume {
                 display: block;
             }
+        }
+
+        div:first-child {
+            font-size: $font_size_regular;
         }
     }
 

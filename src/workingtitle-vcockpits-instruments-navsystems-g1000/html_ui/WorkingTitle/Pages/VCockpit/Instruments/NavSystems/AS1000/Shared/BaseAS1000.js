@@ -1215,6 +1215,7 @@ class Base_Input_Layer extends Input_Layer {
 
     onProceduresPush(inputStack) { this.navSystem.showProcedures(); }
     onFlightPlan(inputStack) { this.navSystem.showFlightPlan(); }
+    onDirectTo(inputStack) { this.navSystem.showDirectTo(); }
 
     onNavPush(inputStack) { this.navFrequenciesModel.toggleActive(); }
     onNavSwitch(inputStack) { this.navFrequenciesModel.transferActive(); }

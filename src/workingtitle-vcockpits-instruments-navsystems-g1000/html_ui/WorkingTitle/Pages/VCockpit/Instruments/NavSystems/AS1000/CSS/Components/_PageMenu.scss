@@ -1,0 +1,39 @@
+g1000-page-menu {
+    position: absolute;
+    right: 2vh;
+    top: 2vh;
+    width: 35vh;
+    padding: 0 1.5vh;
+    background: lighten($page_background_color, 10%);
+    border: 1vh outset #111;
+    box-shadow: 0px 0px 0px $border_width_thick $border_color;
+
+    .title {
+        margin: 1vh 0;
+        font-size: 1.1em;
+        font-weight: bold;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    .options {
+        height: 30vh;
+        overflow-y: scroll;
+        color: $input_color;
+
+        li {
+            display: block;
+            @extend %animated-selection;
+
+            &[disabled] {
+                color: #555;
+            }
+        }
+    }
+
+    footer {
+        text-align: center;
+        font-size: 1.1em;
+        margin: 2vh 0;
+    }
+}

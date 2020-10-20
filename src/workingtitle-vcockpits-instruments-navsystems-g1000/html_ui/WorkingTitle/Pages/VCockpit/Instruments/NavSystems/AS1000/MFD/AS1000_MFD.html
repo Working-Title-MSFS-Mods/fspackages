@@ -25,6 +25,7 @@
             <div class="page-container" id="PageContainer"></div>
             <div class="pane-container" id="PaneContainer"></div>
             <div class="dialog-container" id="DialogContainer"></div>
+            <div class="page-menu-container" id="PageMenuContainer"></div>
             <g1000-page-selector class="page-selector"></g1000-page-selector>
 
             <g1000-nav-box class="nav-box">
@@ -99,6 +100,47 @@
             <g1000-soft-key-menu id="SoftKeyMenu"></g1000-soft-key-menu>
         </div>
     </div>
+
+    <template id="map-setup-pane">
+        <div class="title">Map Setup</div>
+        <section class="category">
+            <h1>Group</h1>
+            <div class="content">
+                <drop-down-selector data-element="groupSelector">
+                    <drop-down-selector-option value="map">Map</drop-down-selector-option>
+                </drop-down-selector>
+            </div>
+        </section>
+        <div data-element="groupOptions">
+            <section class="options" data-group="map" visible>
+                <label>Orientation</label>
+                <div class="value">
+                    <drop-down-selector data-setting="orientation">
+                        <drop-down-selector-option value="north up">North up</drop-down-selector-option>
+                        <drop-down-selector-option value="track up">Track up</drop-down-selector-option>
+                        <drop-down-selector-option value="dtk up">DTK up</drop-down-selector-option>
+                        <drop-down-selector-option value="hdg up">HDG up</drop-down-selector-option>
+                    </drop-down-selector>
+                </div>
+                <label>Auto Zoom</label>
+                <div class="value">
+                    <drop-down-selector data-setting="autoZoom">
+                        <drop-down-selector-option value="all">All On</drop-down-selector-option>
+                    </drop-down-selector>
+                </div>
+                <label>Track Vector</label>
+                <div class="value">
+                    <div class="columns">
+                        <toggle-switch data-setting="trackVectorEnabled" value="On"></toggle-switch>
+                        <numeric-input min="0" max="60" value="60" units="sec"></numeric-input>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <footer>
+            Press the FMS CRSR knob to return to base page
+        </footer>
+    </template>
 
     <template id="aux-settings">
         <section>
@@ -483,7 +525,12 @@
             </div>
             <div class="category category-fill-container">
                 <h1>Runways</h1>
-                <div class="content" data-element="runways"></div>
+                <div class="content runways" data-element="runways">
+                    <toggle-switch data-element="runwaySelector"></toggle-switch>
+                    <span class="surface" data-element="runwaySurface"></span>
+                    <span class="length" data-element="runwayLength"></span>
+                    <span class="width" data-element="runwayWidth"></span>
+                </div>
             </div>
             <div class="category category-fill-container">
                 <h1>Frequencies</h1>
@@ -527,6 +574,54 @@
             </section>
         </div>
         <div class="enter-accept">Press "ENT" to accept</div>
+    </template>
+
+    <template id="direct-to-pane">
+        <h1 class="title">Direct To</h1>
+        <section class="category">
+            <h1>Ident, Facility, City</h1>
+            <section class="content waypoint-info">
+                <icao-input data-element="icaoInput" characters="6"></icao-input>
+                <div data-element="icaoName"></div>
+                <div data-element="icaoCity"></div>
+            </section>
+        </section>
+        <section class="category">
+            <h1>VNV</h1>
+            <section class="content vnav">
+                <numeric-input digits="5" units="FT" value="0"></numeric-input>
+                <numeric-input units="NM" min="-21" max="0" value="0"></numeric-input>
+            </section>
+        </section>        
+        <section class="category map-category">
+            <h1><div>Map</div></h1>
+            <section class="content">
+                <div data-element="mapContainer" class="waypoint-map"></div>
+            </section>
+        </section>
+        <section class="category">
+            <h1>Location</h1>
+            <section class="content">
+                <div class="location">
+                    <label>BRG</label>
+                    <div class="bearing" data-element="bearing"></div>
+                    <label>DIS</label>
+                    <div class="distance" data-element="distance"></div>
+                </div>
+            </section>
+        </section>
+        <footer>
+            <section class="category">
+                <h1>Course</h1>
+                <section class="content">
+                    <numeric-input units="°" min="0" max="360" value="0" data-element="course"></numeric-input>
+                </section>
+            </section>
+            <section class="buttons">
+                <selectable-button data-click="activateDirectTo">Activate?</selectable-button>
+                <selectable-button data-click="hold">Hold?</selectable-button>
+            </section>
+        </footer>
     </template>
 
     <template id="flight-plan-page">
@@ -583,6 +678,34 @@
                 <h1>Selected Waypoint Weather</h1>
                 <div class="content" style="height:10vh;"></div>
             </div>
+        </section>
+    </template>
+
+    <template id="airway-selector-page">
+        <section class="map-container" data-element="map">
+        </section>
+        <section class="sidebar">
+            <div class="category">
+                <h1>Entry</h1>
+                <div class="content" data-element="entry"></div>
+            </div>
+            <div class="category">
+                <h1>Airway</h1>
+                <div class="content">
+                    <drop-down-selector data-element="airways"></drop-down-selector>
+                </div>
+            </div>
+            <div class="category">
+                <h1>Exit</h1>
+                <div class="content">
+                    <drop-down-selector data-element="exits"></drop-down-selector>
+                </div>
+            </div>
+            <div class="category">
+                <h1>Sequence</h1>
+                <ul class="content sequence" data-element="sequence"></ul>
+            </div>
+            <selectable-button class="load-button" data-element="load" data-click="load">LOAD</selectable-button>
         </section>
     </template>
 
@@ -653,6 +776,15 @@
         </div>
     </template>
 
+    <template id="menu-screen"> 
+        <h1 class="title">Page Menu</h1>
+        <div class="category">
+            <h1>Options</h1>
+            <ul class="content options scrollable-container" data-element="options"></ul>
+        </div>
+        <footer>Press the FMS CRSR knob to return to the base page</footer>
+    </template>
+
     <template id="page-selector-template"> 
         <ul class="page-list" data-element="pageList"></ul>
         <ul class="group-list" data-element="groupList"></ul>
@@ -713,7 +845,10 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/RadioFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/ComFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/NavFrequencies.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/WaypointQuickSelect.js?wefwef"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/PageMenu.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/NearestWaypoints.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/WaypointQuickSelect.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/OBS.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/AirportIcon.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/Confirm.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/DropDownSelector.js"></script>
@@ -733,10 +868,13 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/Credits.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/ModSettings.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/Settings.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/FlightPlan/FlightPlan.js?sdfsdf"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/FlightPlan/Airway.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/FlightPlan/FlightPlan.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Map/Map.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Map/MapSetup.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Nearest/Airports.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Procedures/Approach.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Panes/DirectTo.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Panes/Procedures.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Panes/WaypointSelector.js"></script>
 

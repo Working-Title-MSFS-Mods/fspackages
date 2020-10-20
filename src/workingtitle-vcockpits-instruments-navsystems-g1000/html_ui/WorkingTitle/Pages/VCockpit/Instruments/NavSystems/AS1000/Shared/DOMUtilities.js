@@ -44,6 +44,11 @@ DOMUtilities.RemoveChildren = function (node, selector) {
     }
 }
 
+DOMUtilities.AppendChildren = function (node, children) {
+    for (let child of children)
+        node.appendChild(child);
+}
+
 // Add an event listener to "node" that catches "e" when fired on an element matching "selector"
 // Avoids having to attach listeners to every node
 DOMUtilities.AddScopedEventListener = function (node, selector, e, func, capture = false) {

@@ -9,6 +9,7 @@ class Input_Layer {
     onCLR(inputStack) { return false; }
     onProceduresPush(inputStack) { return false; }
     onFlightPlan(inputStack) { return false; }
+    onDirectTo(inputStack) { return false; }
     onSoftKey(index, inputStack) { return false; }
 
     onNavPush(inputStack) { return false; }
@@ -66,6 +67,8 @@ class Input_Layer {
 
             case "FPL_Push":
                 return this.onFlightPlan(inputStack);
+            case "DIRECTTO":
+                return this.onDirectTo(inputStack);
             case "SOFTKEYS_1":
                 return this.onSoftKey(1, inputStack);
             case "SOFTKEYS_2":

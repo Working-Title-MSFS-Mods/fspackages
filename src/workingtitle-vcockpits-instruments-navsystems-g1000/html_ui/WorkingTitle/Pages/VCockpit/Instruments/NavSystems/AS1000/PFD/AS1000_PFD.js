@@ -100,6 +100,8 @@ class AS1000_PFD extends BaseAS1000 {
         this.settings = new WT_Settings("g36", WT_Default_Settings.base);
         this.modSettings = new WT_Settings("mod", WT_Default_Settings.modBase);
         this.unitChooser = new WT_Unit_Chooser(this.settings);
+        this.nearestWaypoints = new WT_Nearest_Waypoints_Repository(this);
+        this.updatables.push(this.nearestWaypoints);
         this.mainPage = new AS1000_PFD_MainPage(this.unitChooser);
         this.pageGroups = [
             new NavSystemPageGroup("Main", this, [
@@ -193,7 +195,7 @@ class AS1000_PFD extends BaseAS1000 {
         this.referencesModel = this.initModelView(new WT_Airspeed_References_Model(), "wt-airspeed-references");
         this.timerModel = this.initModelView(new WT_PFD_Timer_Model(), "wt-timer");
 
-        this.nearestAirportsModel = new WT_Nearest_Airports_Model(this, this.unitChooser, null, this.softKeyController);
+        this.nearestAirportsModel = new WT_Nearest_Airports_Model(this, this.unitChooser, null, this.softKeyController, this.nearestWaypoints);
         document.querySelector("wt-nearest").setModel(this.nearestAirportsModel);
     }
     initModelView(model, viewSelector) {

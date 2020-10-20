@@ -10,43 +10,29 @@ class AS1000_MFD extends BaseAS1000 {
     connectedCallback() {
         super.connectedCallback();
 
+        this.updatables = [];
         this.settings = new WT_Settings("g36", WT_Default_Settings.base);
         this.modSettings = new WT_Settings("mod", WT_Default_Settings.modBase);
         this.unitChooser = new WT_Unit_Chooser(this.settings);
+        this.flightPlanController = new WT_Flight_Plan_Controller();
+        this.updatables.push(this.flightPlanController);
         this.procedures = new Procedures(this.currFlightPlanManager);
+        this.nearestWaypoints = new WT_Nearest_Waypoints_Repository(this);
+        this.updatables.push(this.nearestWaypoints);
         this.inputStack = new Input_Stack();
         this.loadSavedMapOrientation();
-        this.engineDisplay = new WTEngine("Engine", "LeftInfos", this._xmlConfigPath);
         this.waypointQuickSelect = new WT_Waypoint_Quick_Select(this, this.currFlightPlanManager);
 
         this.pageContainer = this.getChildById("PageContainer");
         this.paneContainer = this.getChildById("PaneContainer");
-
         this.pageTitle = new Subject("MAP - NAVIGATION MAP");
 
-        this.addIndependentElementContainer(this.engineDisplay);
-        /*this.pageGroups = [
-            new NavSystemPageGroup("MAP", this, [
-                new AS1000_MFD_MainMap(this.engineDisplay)
-            ]),
-            new NavSystemPageGroup("WPT", this, [
-                new AS1000_MFD_AirportInfos()
-            ]),
-            new NavSystemPageGroup("AUX", this, [
-                new AS1000_MFD_SystemSetup(),
-                new AS1000_MFD_Page("System Settings", new AS1000_MFD_SystemSettings(this.pageContainer, this.inputStack)),
-            ]),
-            new NavSystemPageGroup("NRST", this, [
-                new AS1000_MFD_NearestAirport(),
-                new AS1000_MFD_NearestVOR(),
-                new AS1000_MFD_NearestNDB(),
-                new AS1000_MFD_NearestIntersection(),
-            ])
-        ];*/
-        this.mapElement2 = document.querySelector("#MapInstrument");
-        this.mapElement2.init(this);
-        this.mapElement2.parentNode.removeChild(this.mapElement2);
-        this.inputStack.push(new WT_Map_Input_Layer(this.mapElement2));
+        this.initEngineDisplay();
+
+        this.initMainMap();
+        this.initMiniMap();
+
+        this.initPageController();
 
         /*function buildMapColors() {
             let curve = new Avionics.Curve();
@@ -67,61 +53,16 @@ class AS1000_MFD extends BaseAS1000 {
         }
 
         let proceduresMapConfig = { resolution: 1024, aspectRatio: 1, heightColors: buildMapColors() };
-        let bingMap = this.mapElement2.querySelector("bing-map");
+        let bingMap = this.mainMap.querySelector("bing-map");
         bingMap.addConfig(proceduresMapConfig);*/
-
-        this.pageController = new WT_Page_Controller([
-            {
-                name: "MAP",
-                pages: [
-                    new WT_Page("Map", () => new WT_Map_Model(this.mapElement2), () => new WT_Map_View()),
-                ]
-            },
-            {
-                name: "AUX",
-                pages: [
-                    new WT_Page("System Settings", () => new WT_System_Settings_Model(this.settings, this.softKeyMenu), () => new WT_System_Settings_View()),
-                    new WT_Page("Mod Settings", () => new WT_Mod_Settings_Model(this.modSettings, this.softKeyMenu), () => new WT_Mod_Settings_View()),
-                    new WT_Page("Credits", () => new WT_Credits_Model(), () => new WT_Credits_View()),
-                ]
-            },
-            {
-                name: "FPL",
-                pages: [
-                    new WT_Page("Flight Plan", () => new WT_Flight_Plan_Page_Model(this.currFlightPlanManager, this.procedures, this, this.softKeyMenu, this.mapElement2), () => new WT_Flight_Plan_Page_View()),
-                ]
-            },
-            {
-                name: "NRST",
-                pages: [
-                    new WT_Page("Nearest Airports", () => new WT_Nearest_Airports_Model(this, this.unitChooser, this.mapElement2, this.softKeyMenu), () => new WT_Nearest_Airports_View()),
-                ]
-            }
-        ], this.pageTitle);
-        this.pageController.handleInput(this.inputStack);
-        //this.mapElement = new MFD_MapElement();
-        //this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "RightInfos", this.mapElement));
-        this.miniMap = document.querySelector("#MiniMap");
-        this.miniMap.init(this);
-        this.miniMap.parentNode.removeChild(this.miniMap);
 
         this.electricityAvailable = new Subject(this.isElectricityAvailable());
         this.fuelUsed = new WT_Fuel_Used(["FUEL LEFT QUANTITY", "FUEL RIGHT QUANTITY"]);
         this.electricityAvailable.subscribe((electricity) => { if (electricity) this.fuelUsed.reset(); });
 
-        this.navBoxModel = new WT_MFD_Nav_Box_Model(this.pageTitle, this.unitChooser, this.settings);
-        this.navBoxView = this.querySelector("g1000-nav-box");
-        this.navBoxView.setModel(this.navBoxModel);
-
-        this.navFrequenciesModel = new WT_Nav_Frequencies_Model();
-        this.navFrequenciesView = this.querySelector("g1000-nav-frequencies");
-        this.navFrequenciesView.setModel(this.navFrequenciesModel);
-
-        this.comFrequenciesModel = new WT_Com_Frequencies_Model();
-        this.comFrequenciesView = this.querySelector("g1000-com-frequencies");
-        this.comFrequenciesView.setModel(this.comFrequenciesModel);
-
-        this.querySelector("g1000-page-selector").setController(this.pageController);
+        this.navBoxModel = this.initModelView(new WT_MFD_Nav_Box_Model(this.pageTitle, this.unitChooser, this.settings), "g1000-nav-box");
+        this.comFrequenciesModel = this.initModelView(new WT_Com_Frequencies_Model(), "g1000-com-frequencies");
+        this.navFrequenciesModel = this.initModelView(new WT_Nav_Frequencies_Model(), "g1000-nav-frequencies");
 
         this.initDefaultSoftKeys();
         this.softKeyMenus = {
@@ -129,13 +70,70 @@ class AS1000_MFD extends BaseAS1000 {
             main: new WT_Soft_Key_Menu(true)
         };
 
-        this.softKeyMenu = this.getChildById("SoftKeyMenu");
-        this.softKeyMenu.setDefaultButtons(this.defaultSoftKeys.engine, this.defaultSoftKeys.map, this.defaultSoftKeys.checklist);
-        this.softKeyMenu.handleInput(this.inputStack);
+        this.softKeyController = this.getChildById("SoftKeyMenu");
+        this.softKeyController.setDefaultButtons(this.defaultSoftKeys.engine, this.defaultSoftKeys.map, this.defaultSoftKeys.checklist);
+        this.softKeyController.handleInput(this.inputStack);
         this.showMainMenu();
 
         this.inputStack.push(new Base_Input_Layer(this));
         this.pageController.goTo("MAP", "Map");
+    }
+    initEngineDisplay() {
+        this.engineDisplay = new WTEngine("Engine", "LeftInfos", this._xmlConfigPath);
+        this.addIndependentElementContainer(this.engineDisplay);
+    }
+    initMainMap() {
+        this.mainMap = document.querySelector("#MapInstrument");
+        this.mainMap.init(this);
+        this.mainMap.parentNode.removeChild(this.mainMap);
+        this.mapSetup = new WT_Map_Setup();
+        this.inputStack.push(new WT_Map_Input_Layer(this.mainMap));
+    }
+    initMiniMap() {
+        this.miniMap = document.querySelector("#MiniMap");
+        this.miniMap.init(this);
+        this.miniMap.parentNode.removeChild(this.miniMap);
+    }
+    initPageController() {
+        this.pageController = new WT_Page_Controller([
+            {
+                name: "MAP",
+                pages: [
+                    new WT_Page("Map", () => new WT_Map_Model(this, this.mainMap), () => new WT_Map_View(this, this.softKeyController)),
+                ]
+            },
+            {
+                name: "AUX",
+                pages: [
+                    new WT_Page("System Settings", () => new WT_System_Settings_Model(this.settings, this.softKeyController), () => new WT_System_Settings_View()),
+                    new WT_Page("Mod Settings", () => new WT_Mod_Settings_Model(this.modSettings, this.softKeyController), () => new WT_Mod_Settings_View()),
+                    new WT_Page("Credits", () => new WT_Credits_Model(), () => new WT_Credits_View()),
+                ]
+            },
+            {
+                name: "FPL",
+                pages: [
+                    new WT_Page("Flight Plan", () => new WT_Flight_Plan_Page_Model(this.currFlightPlanManager, this.procedures, this, this.softKeyController, this.mainMap), () => new WT_Flight_Plan_Page_View()),
+                ]
+            },
+            {
+                name: "NRST",
+                pages: [
+                    new WT_Page("Nearest Airports", () => new WT_Nearest_Airports_Model(this, this.unitChooser, this.mainMap, this.softKeyController, this.nearestWaypoints), () => new WT_Nearest_Airports_View()),
+                ]
+            }
+        ], this.pageTitle);
+        this.pageController.handleInput(this.inputStack);
+        this.querySelector("g1000-page-selector").setController(this.pageController);
+    }
+    initModelView(model, viewSelector) {
+        let view = document.querySelector(viewSelector);
+        if (!view)
+            throw new Exception(`${viewSelector} didn't match any views`);
+        view.setModel(model);
+        if (model.update)
+            this.updatables.push(model);
+        return model;
     }
     initDefaultSoftKeys() {
         let engine = new WT_Soft_Key("ENGINE", this.showEngineMenu.bind(this));
@@ -148,10 +146,10 @@ class AS1000_MFD extends BaseAS1000 {
         };
     }
     showMainMenu() {
-        this.softKeyMenu.setMenu(this.softKeyMenus.main);
+        this.softKeyController.setMenu(this.softKeyMenus.main);
     }
     showEngineMenu() {
-        this.softKeyMenu.setMenu(this.softKeyMenus.engine);
+        this.softKeyController.setMenu(this.softKeyMenus.engine);
     }
     showConfirmDialog(message) {
         let confirm = new WT_Confirm_Dialog();
@@ -164,18 +162,46 @@ class AS1000_MFD extends BaseAS1000 {
             throw e;
         });
     }
+    showPageMenu(model) {
+        let view = new WT_Page_Menu_View();
+        this.getChildById("PageMenuContainer").appendChild(view);
+        view.setModel(model);
+        view.enter(this.inputStack);
+        let softKeyMenu = this.softKeyController.currentMenu;
+        this.softKeyController.setMenu(null);
+        this.currentPageMenu = view;
+        view.onExit.subscribe(() => {
+            view.parentNode.removeChild(view);
+            this.softKeyController.setMenu(softKeyMenu);
+            this.currentPageMenu = null;
+        });
+    }
+    showAirwaySelector(waypoint) {
+        return new Promise((resolve, reject) => {
+            let view = this.pageController.showPage(new WT_Page("FPL - Select Airway", () => new WT_Airway_Selector_Model(this, waypoint), () => new WT_Airway_Selector_View(this.mainMap)), true);
+            view.onLoad.subscribe(waypoints => {
+                view.exit();
+                this.pageController.goTo("MAP", "Map");
+                resolve(waypoints);
+            });
+            view.onCancel.subscribe(() => {
+                this.pageController.goTo("MAP", "Map");
+                reject();
+            });
+        });
+    }
     showApproaches() {
         let model = new WT_Approach_Page_Model(this, this.currFlightPlanManager, this.facilityLoader, this.waypointQuickSelect);
         model.setICAO("A      EGLL ");
         let view = document.createElement("g1000-approach-page");
         this.pageContainer.appendChild(view);
-        view.setMapElement(this.mapElement2);
-        view.setSoftKeyController(this.softKeyMenu);
+        view.setMapElement(this.mainMap);
+        view.setSoftKeyController(this.softKeyController);
         view.setModel(model);
         view.enter(this, this.inputStack);
     }
     showWaypointSelector(icaoType = null) {
-        let model = new WT_Waypoint_Selector_Model(icaoType, this, this.softKeyMenu);
+        let model = new WT_Waypoint_Selector_Model(icaoType, this, this.softKeyController);
         let view = new WT_Waypoint_Selector_View();
         this.paneContainer.appendChild(view);
         view.setMap(this.miniMap);
@@ -187,15 +213,50 @@ class AS1000_MFD extends BaseAS1000 {
             return icao;
         });
     }
+    showDirectTo(icaoType = null, icao = null) {
+        let model = new WT_Direct_To_Model(icaoType, this, this.softKeyController);
+        if (icao) {
+            model.setIcao(icao);
+        }
+        let view = new WT_Direct_To_View();
+        this.paneContainer.appendChild(view);
+        view.setMap(this.miniMap);
+        view.setModel(model);
+        return view.enter(this.inputStack).catch(e => {
+            this.paneContainer.removeChild(view);
+        }).then(directTo => {
+            this.paneContainer.removeChild(view);
+            let obsController = new WT_OBS_Controller(directTo.waypoint, directTo.course, this.mainMap);
+            this.flightPlanController.setMode(obsController);
+        });
+    }
     showFlightPlan() {
+        if (this.currentPageMenu) {
+            this.currentPageMenu.exit();
+        }
         this.pageController.goTo("FPL", "Flight Plan");
     }
     showProcedures() {
+        if (this.currentPageMenu) {
+            this.currentPageMenu.exit();
+        }
         let element = document.createElement("g1000-procedures-pane");
         this.paneContainer.appendChild(element);
         element.setProcedures(this.procedures);
         element.enter(this, this.inputStack);
         this.pageTitle.value = "PROC - PROCEDURES";
+    }
+    showMapSetup() {
+        let view = new WT_Map_Setup_View(this.softKeyController);
+        let model = new WT_Map_Setup_Model(this.mapSetup);
+        view.setModel(model);
+        this.paneContainer.appendChild(view);
+        view.onExit.subscribe(() => {
+            this.paneContainer.removeChild(view);
+            view.deactivate();
+        });
+        view.enter(this.inputStack);
+        view.activate();
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -217,16 +278,16 @@ class AS1000_MFD extends BaseAS1000 {
         }
     }
     onUpdate(dt) {
-        this.navBoxModel.update(dt);
-        this.navFrequenciesModel.update(dt);
-        this.comFrequenciesModel.update(dt);
+        for (let updatable of this.updatables) {
+            updatable.update(dt);
+        }
         this.settings.update(dt);
         this.procedures.update(dt);
         this.electricityAvailable.value = this.isElectricityAvailable();
         this.fuelUsed.update(dt);
         this.pageController.update(dt);
-        if (this.mapElement2.offsetParent)
-            this.mapElement2.update(dt);
+        if (this.mainMap.offsetParent)
+            this.mainMap.update(dt);
         if (this.miniMap.offsetParent)
             this.miniMap.update(dt);
     }
@@ -293,16 +354,8 @@ class AS1000_MFD extends BaseAS1000 {
         }
     }
     Update() {
-        try {
-            super.Update();
-            SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
-        } catch (e) {
-            /*if (!this.efwef) {
-                console.log(e.message);
-                this.efwef = true;
-            }*/
-            throw e;
-        }
+        super.Update();
+        SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
     }
 
     loadSavedMapOrientation() {

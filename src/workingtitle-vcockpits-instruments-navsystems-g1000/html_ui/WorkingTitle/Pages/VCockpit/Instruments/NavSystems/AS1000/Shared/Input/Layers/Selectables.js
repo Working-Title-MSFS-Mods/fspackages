@@ -24,11 +24,13 @@ class Selectables_Input_Layer_Element_Source {
         return this.elements[iterator.index];
     }
     next(iterator) {
-        iterator.index = (iterator.index + 1 + this.numElements) % this.numElements;
+        //iterator.index = (iterator.index + 1 + this.numElements) % this.numElements;
+        iterator.index = Math.min(iterator.index + 1, this.numElements - 1);
         return this.elements[iterator.index];
     }
     previous(iterator) {
-        iterator.index = (iterator.index - 1 + this.numElements) % this.numElements;
+        //iterator.index = (iterator.index - 1 + this.numElements) % this.numElements;
+        iterator.index = Math.max(iterator.index + 1, 0);
         return this.elements[iterator.index];
     }
     selectElement(iterator, element) {
@@ -41,7 +43,7 @@ class Selectables_Input_Layer_Element_Source {
 }
 
 class Selectables_Input_Layer_Dynamic_Source {
-    constructor(element, selector = "numeric-input, drop-down-selector, time-input, selectable-button, toggle-switch, .selectable") {
+    constructor(element, selector = "numeric-input, drop-down-selector, time-input, selectable-button, toggle-switch, .selectable, icao-input") {
         this.element = element;
         this.selector = selector;
     }
@@ -61,7 +63,7 @@ class Selectables_Input_Layer_Dynamic_Source {
         let elements = this.elements;
         if (elements.length == 0)
             return null;
-        let selected = elements[0];
+        let selected = null;//elements[0];
         let chooseNext = false;
         for (let element of elements) {
             if (chooseNext && element.offsetParent) {
@@ -72,24 +74,27 @@ class Selectables_Input_Layer_Dynamic_Source {
                 chooseNext = true;
             }
         }
-        iterator.element = selected;
+        if (selected)
+            iterator.element = selected;
         return iterator.element;
     }
     previous(iterator) {
         let elements = this.elements;
         if (elements.length == 0)
             return null;
-        let selected = elements[elements.length - 1];
-        let previous = elements[elements.length - 1];
+        let selected = null;//elements[elements.length - 1];
+        let previous = null;//elements[elements.length - 1];
         for (let element of elements) {
             if (element.offsetParent) {
                 if (element == iterator.element) {
                     selected = previous;
+                    break;
                 }
                 previous = element;
             }
         }
-        iterator.element = selected;
+        if (selected)
+            iterator.element = selected;
         return iterator.element;
     }
     selectElement(iterator, element) {

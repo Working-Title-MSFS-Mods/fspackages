@@ -2,6 +2,7 @@
 
 @import "Components/Category";
 @import "Components/ConfirmDialog";
+@import "Components/PageMenu";
 @import "Components/NavBox";
 @import "Components/ScrollableContainer";
 @import "Components/SoftKeys";
@@ -13,8 +14,11 @@
 @import "Inputs/String";
 @import "Inputs/Switch";
 
+@import "Pages/AirwaySelector";
 @import "Pages/Approach";
+@import "Pages/DirectTo";
 @import "Pages/FlightPlan";
+@import "Pages/MapSetup";
 @import "Pages/NearestAirports";
 @import "Pages/Settings";
 @import "Pages/WaypointSelector";
@@ -67,7 +71,8 @@ as1000-mfd-element #Mainframe #Electricity {
     .page-container,
     .pane-container,
     .dialog-container,
-    .page-selector {
+    .page-selector,
+    .page-menu-container {
         grid-area: main;
     }
 
@@ -125,7 +130,7 @@ as1000-mfd-element #Mainframe #Electricity {
 
 .pane-container {
     position: absolute;
-    width: 40%;
+    width: 35%;
     right: 1vh;
     top: 1vh;
     bottom: 1vh;
@@ -142,15 +147,19 @@ as1000-mfd-element #Mainframe #Electricity {
         text-transform: uppercase;
     }
 
+    footer {
+        text-align: center;
+        font-size: 1.1em;
+        margin: 2vh 0;
+    }
+
     &:empty {
         display: none;
     }
 
     > * {
-        display: none;
-
-        &:last-child {
-            display: block;
+        &:not(:last-child) {
+            display: none;
         }
     }
 }
@@ -163,10 +172,8 @@ as1000-mfd-element #Mainframe #Electricity {
     bottom: 0;
 }
 
-g1000-procedures-pane,
-g1000-waypoint-selector-pane {
-    display: block;
-    padding: 0 1.5vh;
+.page-menu-container {
+    position: relative;
 }
 
 airport-icon {
@@ -174,8 +181,7 @@ airport-icon {
 }
 
 .article {
-    font-family: "Roboto-Regular";
-    font-size: $font_size_large;
+    font-size: 1em;
     line-height: 1.5em;
     margin: 0 1.5em;
 
@@ -199,6 +205,7 @@ airport-icon {
     }
     ul {
         margin-left: 1.5em;
+        list-style: square;
     }
 }
 
@@ -213,8 +220,7 @@ g1000-map-page {
     right: 0;
     bottom: 0;
     width: 25vh;
-    font-weight: bold;
-    font-size: $font_size_large;
+    font-size: 1rem;
     color: #666;
     text-transform: uppercase;
     display: none;
@@ -227,14 +233,19 @@ g1000-map-page {
         background: $category_box_background_color;
         display: flex;
         border-left: $border_width_thin solid $border_color;
-        padding: 0.5vh;
+        padding: 0 0.5vh;
 
         li {
             display: block;
-            margin: 0 0.5vh;
+            padding: 0.5vh;
+            border-left: 1px solid transparent;
+            border-right: 1px solid transparent;
 
             &.selected {
                 color: $input_color;
+                border-color: #fff;
+                background: $category_box_background_color;
+                margin-top: -$border_width_thin;
             }
         }
     }

@@ -1,3 +1,57 @@
+class WT_Flight_Plan {
+    /**
+     * @param {FlightPlanManager} flightPlan 
+     */
+    constructor(flightPlan) {
+        this.flightPlan = flightPlan;
+    }
+    getWaypoints() {
+
+    }
+}
+
+class WT_Flight_Plan_View_Menu extends WT_Soft_Key_Menu {
+    constructor(model) {
+        super(false);
+
+        let buttons = {
+            wide: new WT_Soft_Key("WIDE", () => model.viewMode.value = "wide"),
+            narrow: new WT_Soft_Key("NARROW", () => model.viewMode.value = "narrow"),
+            leg: new WT_Soft_Key("LEG-LEG", () => model.distanceMode.value = "leg"),
+            cumulative: new WT_Soft_Key("CUM", () => model.distanceMode.value = "cumulative"),
+        }
+
+        model.viewMode.subscribe(mode => {
+            buttons.wide.selected = mode == "wide";
+            buttons.narrow.selected = mode == "narrow";
+        });
+        model.distanceMode.subscribe(mode => {
+            buttons.leg.selected = mode == "leg";
+            buttons.cumulative.selected = mode == "cumulative";
+        });
+
+        this.addSoftKey(5, buttons.wide);
+        this.addSoftKey(6, buttons.narrow);
+        this.addSoftKey(8, buttons.leg);
+        this.addSoftKey(9, buttons.cumulative);
+        this.addSoftKey(11, new WT_Soft_Key("BACK", () => model.softKeyBack()));
+    }
+}
+
+class WT_Flight_Plan_Main_Menu extends WT_Soft_Key_Menu {
+    constructor(model) {
+        super()
+        this.addSoftKey(4, new WT_Soft_Key("NEW WPT", model.newWaypoint.bind(model)));
+        this.addSoftKey(5, new WT_Soft_Key("VIEW", model.showViewMenu.bind(model)));
+        this.addSoftKey(6, new WT_Soft_Key("VNV PROF"));
+        this.addSoftKey(7, new WT_Soft_Key("CNCL VNV"));
+        this.addSoftKey(8, new WT_Soft_Key("VNV ->"));
+        this.addSoftKey(9, new WT_Soft_Key("ATK OFST"));
+        this.addSoftKey(10, new WT_Soft_Key("ACT LEG"));
+        this.addSoftKey(11, new WT_Soft_Key("SHW CHRT"));
+    }
+}
+
 class WT_Flight_Plan_Page_Model extends WT_Model {
     /**
      * @param {FlightPlanManager} flightPlan 
@@ -16,54 +70,16 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         this.waypoints = new Subject();
         this.viewMode = new Subject("narrow");
         this.distanceMode = new Subject("leg");
+        this.selectedWaypointIndex = null;
+        this.selectedWaypoint = null;
+        this.previousWaypoint = null;
 
         this.updateWaypoints();
 
-        this.softKeys = {
-            main: {
-                toggleVnav: new WT_Soft_Key("CNCL VNV"),
-            },
-            view: {
-                wide: new WT_Soft_Key("WIDE", () => this.viewMode.value = "wide"),
-                narrow: new WT_Soft_Key("NARROW", () => this.viewMode.value = "narrow"),
-                leg: new WT_Soft_Key("LEG-LEG", () => this.distanceMode.value = "leg"),
-                cumulative: new WT_Soft_Key("CUM", () => this.distanceMode.value = "cumulative"),
-            }
-        }
         this.softKeyMenus = {
-            main: this.initMainMenu(),
-            view: this.initViewMenu(),
+            main: new WT_Flight_Plan_Main_Menu(this),
+            view: new WT_Flight_Plan_View_Menu(this),
         }
-
-        this.viewMode.subscribe(mode => {
-            this.softKeys.view.wide.selected = mode == "wide";
-            this.softKeys.view.narrow.selected = mode == "narrow";
-        });
-        this.distanceMode.subscribe(mode => {
-            this.softKeys.view.leg.selected = mode == "leg";
-            this.softKeys.view.cumulative.selected = mode == "cumulative";
-        });
-    }
-    initViewMenu() {
-        let menu = new WT_Soft_Key_Menu(false);
-        menu.addSoftKey(5, this.softKeys.view.wide);
-        menu.addSoftKey(6, this.softKeys.view.narrow);
-        menu.addSoftKey(8, this.softKeys.view.leg);
-        menu.addSoftKey(9, this.softKeys.view.cumulative);
-        menu.addSoftKey(11, new WT_Soft_Key("BACK", this.softKeyBack.bind(this)));
-        return menu;
-    }
-    initMainMenu() {
-        let menu = new WT_Soft_Key_Menu();
-        menu.addSoftKey(4, new WT_Soft_Key("NEW WPT", this.newWaypoint.bind(this)));
-        menu.addSoftKey(5, new WT_Soft_Key("VIEW", this.showViewMenu.bind(this)));
-        menu.addSoftKey(6, new WT_Soft_Key("VNV PROF"));
-        menu.addSoftKey(7, this.softKeys.main.toggleVnav);
-        menu.addSoftKey(8, new WT_Soft_Key("VNV ->"));
-        menu.addSoftKey(9, new WT_Soft_Key("ATK OFST"));
-        menu.addSoftKey(10, new WT_Soft_Key("ACT LEG"));
-        menu.addSoftKey(11, new WT_Soft_Key("SHW CHRT"));
-        return menu;
     }
     setAltitude(waypointIndex, altitudeInFt) {
         waypointIndex = parseInt(waypointIndex);
@@ -86,9 +102,12 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
     deleteApproach() {
         this.gps.showConfirmDialog("Are you sure you want to delete the approach?").then(() => this.flightPlan.deactivateApproach());
     }
-    createNewWaypoint() {
+    deleteFlightPlan() {
+        this.gps.showConfirmDialog("Are you sure you want to delete this flight plan?").then(() => this.flightPlan.clearFlightPlan());
+    }
+    createNewWaypoint(index = -1) {
         this.gps.showWaypointSelector().then(icao => {
-            this.flightPlan.addWaypoint(icao, 100, this.updateWaypoints.bind(this));
+            this.flightPlan.addWaypoint(icao, index == -1 ? Infinity : (index - 1), this.updateWaypoints.bind(this));
         });
     }
     updateWaypoints() {
@@ -111,6 +130,45 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         }
         this.mapInstrument.centerOnCoordinates(centerOn, centerOn.length > 1 ? null : 20);
     }
+    setSelectedWaypointIndex(index) {
+        this.selectedWaypointIndex = index;
+        let waypoints = this.flightPlan.getWaypoints();
+        this.selectedWaypoint = waypoints[index];
+        this.previousWaypoint = (index > 0) ? waypoints[index - 1] : null;
+
+        this.centerOnLeg(index);
+    }
+    canShowAirwaySelector() {
+        return this.previousWaypoint != null;
+    }
+    showAirwaySelector() {
+        if (this.canShowAirwaySelector()) {
+            this.gps.showAirwaySelector(this.previousWaypoint.infos).then(waypoints => {
+                this.addWaypoints(waypoints.map(waypoint => waypoint.icao), this.selectedWaypointIndex);
+            });
+        }
+    }
+    addWaypoint(icao, index) {
+        return new Promise(resolve => {
+            this.flightPlan.addWaypoint(icao, index == -1 ? Infinity : index, () => {
+                this.updateWaypoints();
+                resolve();
+            });
+        });
+    }
+    addWaypoints(icaos, index) {
+        return new Promise(async resolve => {
+            let i = 0;
+            for (let icao of icaos) {
+                await new Promise(resolve => {
+                    this.flightPlan.addWaypoint(icao, index == -1 ? Infinity : (index + i++), () => {
+                        resolve();
+                    });
+                });
+            }
+            resolve();
+        });
+    }
     softKeyBack() {
         this.softKeyController.setMenu(this.softKeyMenus.main);
     }
@@ -129,6 +187,37 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
     }
 }
 
+class WT_Flight_Plan_Page_Menu extends WT_Page_Menu_Model {
+    /**
+     * @param {WT_Flight_Plan_Model} model 
+     */
+    constructor(model) {
+        let nullFunc = () => { };
+        super([
+            new WT_Page_Menu_Option("Search and Rescue", nullFunc),
+            new WT_Page_Menu_Option("Show Chart", nullFunc),
+            new WT_Page_Menu_Option("Store Flight Plan", nullFunc),
+            new WT_Page_Menu_Option("Invert Flight Plan", nullFunc),
+            new WT_Page_Menu_Option("Delete Flight Plan", () => model.deleteFlightPlan()),
+            new WT_Page_Menu_Option("Load Airway", () => model.showAirwaySelector()),
+            new WT_Page_Menu_Option("Collapse Airways", nullFunc),
+            new WT_Page_Menu_Option("Remove Departure", () => model.deleteDeparture()),
+            new WT_Page_Menu_Option("Remove Arrival", () => model.deleteArrival()),
+            new WT_Page_Menu_Option("Remove Approach", () => model.deleteApproach()),
+            new WT_Page_Menu_Option("Temperature Compensation"),
+            new WT_Page_Menu_Option("Closest Point of FPL"),
+            new WT_Page_Menu_Option("Parallel Track"),
+            new WT_Page_Menu_Option("Create New User Waypoint", nullFunc),
+            new WT_Page_Menu_Option("Select VNV Profile Window", nullFunc),
+            new WT_Page_Menu_Option("Cancel VNV", nullFunc),
+            new WT_Page_Menu_Option("VNV ->", nullFunc),
+            new WT_Page_Menu_Option("Create ATK Offset Waypoint"),
+            new WT_Page_Menu_Option("Hold At Waypoint", nullFunc),
+            new WT_Page_Menu_Option("Hold At Present Position", nullFunc),
+        ])
+    }
+}
+
 class WT_Flight_Plan_Input_Layer extends Selectables_Input_Layer {
     constructor(flightPlanView) {
         super(new Selectables_Input_Layer_Dynamic_Source(flightPlanView));
@@ -136,6 +225,9 @@ class WT_Flight_Plan_Input_Layer extends Selectables_Input_Layer {
     }
     onCLR() {
         this.flightPlanView.handleDelete();
+    }
+    onMenuPush() {
+        this.flightPlanView.showPageMenu();
     }
 }
 
@@ -162,6 +254,17 @@ class WT_Flight_Plan_Waypoint_Line extends WT_Flight_Plan_Line {
         <div class="bearing" data-element="bearing"></div>`;
 
         this.bindElements();
+
+        DOMUtilities.AddScopedEventListener(this, ".ident, .altitude numeric-input", "highlighted", e => {
+            e.stopPropagation();
+            let evt = new CustomEvent(WT_Flight_Plan_Waypoint_Line.EVENT_WAYPOINT_SELECTED, {
+                bubbles: true,
+                detail: {
+                    waypointIndex: this.index
+                }
+            });
+            this.dispatchEvent(evt);
+        });
 
         this.querySelector(".altitude numeric-input").addEventListener("change", e => {
             let node = e.target;
@@ -262,6 +365,7 @@ class WT_Flight_Plan_Waypoint_Line extends WT_Flight_Plan_Line {
 }
 WT_Flight_Plan_Waypoint_Line.EVENT_ALTITUDE_CHANGED = "altitude_changed";
 WT_Flight_Plan_Waypoint_Line.EVENT_WAYPOINT_DELETED = "waypoint_deleted";
+WT_Flight_Plan_Waypoint_Line.EVENT_WAYPOINT_SELECTED = "waypoint_selected";
 customElements.define("g1000-flight-plan-waypoint-line", WT_Flight_Plan_Waypoint_Line);
 
 class WT_Flight_Plan_Header_Line extends WT_Flight_Plan_Line {
@@ -299,8 +403,12 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
             this.model.setAltitude(e.detail.waypointIndex, e.detail.altitude);
         });
 
-        DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line .ident", "highlighted", e => {
-            this.model.centerOnLeg(e.detail.element.parentNode.index);
+        DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line .ident", "selected", e => {
+            this.model.createNewWaypoint(e.detail.element.parentNode.index + 1);
+        });
+
+        DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line", WT_Flight_Plan_Waypoint_Line.EVENT_WAYPOINT_SELECTED, e => {
+            this.model.setSelectedWaypointIndex(e.detail.waypointIndex);
         });
     }
     /**
@@ -309,9 +417,11 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
     setModel(model) {
         this.model = model;
         model.waypoints.subscribe(this.updateWaypoints.bind(this));
-        model.activeLeg.subscribe(this.updateActiveLeg.bind(this));
+        this.activeLegSubscription = model.activeLeg.subscribe(this.updateActiveLeg.bind(this));
 
         model.viewMode.subscribe(viewMode => this.setAttribute("view-mode", viewMode));
+
+        this.pageMenu = new WT_Flight_Plan_Page_Menu(model);
     }
     secondsToDuration(v) {
         let hours = Math.floor(v / 3600);
@@ -436,14 +546,6 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
         lines.unshift(this.elements.activeLegMarker);
         lines.push(this.elements.newWaypointLine);
         DOMUtilities.repopulateElement(this.elements.flightPlanWaypoints, lines);
-
-        this.updateMap();
-    }
-    updateMap() {
-        let waypoints = [];
-        //waypoints.push(...this.model.flightPlan.getWaypoints());
-        //waypoints.push(...this.model.flightPlan.getApproachWaypoints());
-        //this.model.mapInstrument.centerOnCoordinates(waypoints.map(waypoint => waypoint.infos.coordinates));
     }
     handleDelete() {
         let selectedElement = this.inputLayer.selectedElement;
@@ -452,8 +554,7 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
         let waypointLine = DOMUtilities.GetClosestParent(selectedElement, "G1000-FLIGHT-PLAN-WAYPOINT-LINE");
         if (waypointLine) {
             this.model.deleteWaypoint(waypointLine.index);
-        }
-        if (selectedElement.tagName == "G1000-FLIGHT-PLAN-HEADER-LINE") {
+        } else if (selectedElement.tagName == "G1000-FLIGHT-PLAN-HEADER-LINE") {
             switch (selectedElement.type) {
                 case "departure":
                     this.model.deleteDeparture();
@@ -467,13 +568,13 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
             }
         }
     }
+    showPageMenu() {
+        this.model.gps.showPageMenu(this.pageMenu);
+    }
     waypointIndexToLineIndex(waypointIndex) {
-        let r = this.waypointLineIndexes[waypointIndex];
-        console.log("R: " + r);
-        return r;
+        return this.waypointLineIndexes[waypointIndex];
     }
     updateActiveLeg(leg) {
-        console.log("Updated active leg");
         if (leg) {
             this.elements.activeLegMarker.style.gridRowStart = this.waypointIndexToLineIndex(leg.origin + (leg.originIsApproach ? this.approachIndex : 0)) + 1;
             this.elements.activeLegMarker.style.gridRowEnd = this.waypointIndexToLineIndex(leg.destination + (leg.destinationIsApproach ? this.approachIndex : 0)) + 2;
@@ -501,9 +602,6 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
             this.inputStackHandle.pop();
             this.inputStackHandle = null;
         }
-        if (this.activeLegSubscription) {
-            this.activeLegSubscription();
-        }
     }
     enter(inputStack) {
         this.inputStackHandle = inputStack.push(this.inputLayer);
@@ -513,8 +611,12 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
         this.elements.map.appendChild(this.model.mapInstrument);
     }
     deactivate() {
+        console.log("FlightPlanView.deactivate");
         this.model.restoreMenu();
         this.elements.map.removeChild(this.model.mapInstrument);
+        if (this.activeLegSubscription) {
+            this.activeLegSubscription = this.activeLegSubscription();
+        }
     }
     update(dt) {
         if (!this.time)

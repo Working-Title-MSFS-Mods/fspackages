@@ -6,10 +6,9 @@ drop-down-selector {
         display: none !important;
         z-index: 1000;
         position: absolute;
-        right: 0;
+        left: 0;
         top: 100%;
-        width: 15em;
-        background: rgba($popup_background_color, 0.8);
+        background: $popup_background_color;
         border: 1vh outset rgba(#111, 0.8);
         outline: $border_width_thin solid #fff;
         z-index: 1000;
@@ -20,9 +19,14 @@ drop-down-selector {
             color: $input_color;
             display: block;
             padding: 0 1vh;
+            white-space: nowrap;
 
             &[state="Selected"] {
                 animation: SelectionBlink 0.5s infinite !important;
+            }
+
+            &[disabled] {
+                color: #666;
             }
         }
     }

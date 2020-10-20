@@ -2,9 +2,10 @@ class AS1000_PFD_Nav_Box_Model {
     /**
      * @param {WT_Unit_Chooser} unitChooser 
      */
-    constructor(unitChooser, flightPlanManager) {
+    constructor(unitChooser, flightPlanManager, flightPlanController) {
         this.unitChooser = unitChooser;
         this.flightPlanManager = flightPlanManager;
+        this.flightPlanController = flightPlanController;
         this.leg = {
             from: new Subject(""),
             symbol: new Subject(""),

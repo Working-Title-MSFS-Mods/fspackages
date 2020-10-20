@@ -2,7 +2,6 @@ toggle-switch {
     display: flex;
     align-items: center;
     color: $input_color;
-    padding: 0.3vh 0;
 
     $off_color: #666;
     $on_color: #00ff00;
@@ -10,7 +9,6 @@ toggle-switch {
 
     div {
         flex: 1;
-        margin: 0 0.8vh;
         line-height: 1;
         text-align: center;
     }

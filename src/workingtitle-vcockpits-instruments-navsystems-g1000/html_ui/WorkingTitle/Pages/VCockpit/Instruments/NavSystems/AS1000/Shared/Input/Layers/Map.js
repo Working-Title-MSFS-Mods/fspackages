@@ -1,8 +1,12 @@
 class WT_Map_Input_Layer extends Input_Layer {
+    /**
+     * @param {MapInstrument} map 
+     * @param {boolean} allowScrolling 
+     */
     constructor(map, allowScrolling = true) {
         super()
-        this.cursorSpeed = 2;
-        this.mapSpeed = 4;
+        this.cursorSpeed = 0.4;
+        this.mapSpeed = this.cursorSpeed * 4;
         this.speedMultiplier = 1;
         this.lastCursorTimestamp = null;
         this.map = map;
@@ -22,13 +26,19 @@ class WT_Map_Input_Layer extends Input_Layer {
         }
         let dt = (now - this.lastCursorTimestamp) / 1000;
         this.lastCursorTimestamp = now;
-        this.speedMultiplier = Math.min(this.speedMultiplier * 1.05, 10);
+        this.speedMultiplier = Math.min(this.speedMultiplier * 1.03, 10);
         //this.speedMultiplier += (1 - this.speedMultiplier) * Math.min(1, 1 - Math.pow(0.01, dt * 3))
         if (dt > 0.2)
             this.speedMultiplier = 1;
     }
+    isPanAllowed() {
+        return this.allowScrolling;
+    }
+    canPan() {
+        return this.map.eBingMode === EBingMode.CURSOR;
+    }
     onJoystickUp() {
-        if (!this.allowScrolling)
+        if (!this.canPan())
             return;
         this.updateSpeed();
         if (this.map.cursorY > 10) {
@@ -39,7 +49,7 @@ class WT_Map_Input_Layer extends Input_Layer {
         }
     }
     onJoystickDown() {
-        if (!this.allowScrolling)
+        if (!this.canPan())
             return;
         this.updateSpeed();
         if (this.map.cursorY < 90) {
@@ -50,7 +60,7 @@ class WT_Map_Input_Layer extends Input_Layer {
         }
     }
     onJoystickLeft() {
-        if (!this.allowScrolling)
+        if (!this.canPan())
             return;
         this.updateSpeed();
         if (this.map.cursorX > 10) {
@@ -61,7 +71,7 @@ class WT_Map_Input_Layer extends Input_Layer {
         }
     }
     onJoystickRight() {
-        if (!this.allowScrolling)
+        if (!this.canPan())
             return;
         this.updateSpeed();
         if (this.map.cursorX < 90) {
@@ -72,7 +82,7 @@ class WT_Map_Input_Layer extends Input_Layer {
         }
     }
     onJoystickPush() {
-        if (!this.allowScrolling)
+        if (!this.isPanAllowed())
             return;
         if (this.map.eBingMode === EBingMode.PLANE || this.map.eBingMode === EBingMode.VFR) {
             this.map.activateCursor();

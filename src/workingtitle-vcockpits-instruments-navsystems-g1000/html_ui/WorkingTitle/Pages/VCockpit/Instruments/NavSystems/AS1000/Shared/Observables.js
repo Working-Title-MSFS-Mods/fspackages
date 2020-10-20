@@ -30,6 +30,29 @@ class Subject {
     }
 }
 
+class WT_Event {
+    constructor() {
+        this.listeners = [];
+    }
+    fire(data) {
+        for (let listener of this.listeners) {
+            listener(data);
+        }
+    }
+    subscribe(callback) {
+        this.listeners.push(callback);
+        return () => this.unsubscribe(callback);
+    }
+    unsubscribe(callback) {
+        let idx = this.listeners.indexOf(callback);
+        this.listeners.splice(idx, 1);
+        return null;
+    }
+    hasSubscribers() {
+        return this.listeners.length > 0;
+    }
+}
+
 class CombinedSubject {
     constructor(subjects, callback) {
         this._value = undefined;
@@ -76,7 +99,7 @@ class CombinedSubject {
     }
 }
 
-class Subscrptions {
+class Subscriptions {
     constructor() {
         this.subscriptions = [];
     }

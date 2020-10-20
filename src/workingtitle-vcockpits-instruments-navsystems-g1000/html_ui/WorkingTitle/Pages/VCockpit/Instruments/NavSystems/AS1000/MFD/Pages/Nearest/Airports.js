@@ -1,9 +1,28 @@
+class WT_Nearest_Airports_Airports_Input_Layer extends Selectables_Input_Layer {
+    constructor(model, view) {
+        super(new Selectables_Input_Layer_Dynamic_Source(view.elements.airportList, ".ident"));
+        this.model = model;
+        this.view = view;
+    }
+    onDirectTo() {
+        if (this.selectedElement)
+            this.model.directTo(this.selectedElement.parentNode.dataset.icao);
+    }
+}
+
 class WT_Nearest_Airports_View extends WT_HTML_View {
     constructor() {
         super();
         this.inputStackHandle = null;
 
         this.menu = this.initMenu();
+
+        this.flightPlanElement = new SvgFlightPlanElement();
+        this.flightPlanElement.source = new WT_Flight_Plan_Waypoints();
+        this.flightPlanElement.flightPlanIndex = 10;
+        this.flightPlanElement.setAsDashed(true);
+
+        this.selectedRunway = new Subject();
     }
     initMenu() {
         let menu = new WT_Soft_Key_Menu(false);
@@ -42,10 +61,6 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
         this.appendChild(templateContent.cloneNode(true));
         super.connectedCallback();
 
-        this.airportsInputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this.elements.airportList, ".ident"));
-        this.runwaysInputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this.elements.runways, ".selectable"));
-        this.frequenciesInputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this.elements.frequencyList, ".selectable"));
-        this.approachesInputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this.elements.approachList, ".selectable"));
         DOMUtilities.AddScopedEventListener(this.elements.airportList, ".ident", "highlighted", e => {
             this.model.setSelectedAirport(e.detail.element.parentNode.dataset.icao);
             e.detail.element.parentNode.querySelector(".arrow").appendChild(this.elements.arrow);
@@ -55,6 +70,18 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
         this.elements.arrow.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewbox="0 0 100 100">
             <path d="M0 30 L50 30 L50 0 L100 50 L50 100 L50 70 L0 70 z" fill="white"></path>
         </svg>`;
+
+        this.selectedRunway.subscribe(runway => {
+            if (runway) {
+                this.elements.runwaySurface.textContent = runway.getSurfaceString();
+                this.elements.runwayLength.textContent = runway.length.toFixed(0) + "FT";
+                this.elements.runwayWidth.textContent = runway.width.toFixed(0) + "FT";
+            }
+        });
+
+        this.elements.runwaySelector.addEventListener("change", e => {
+            this.selectedRunway.value = this.runways[this.elements.runwaySelector.value];
+        });
     }
     /**
      * @param {WT_Nearest_Airports_Model} model 
@@ -65,6 +92,11 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
         model.selectedAirport.subscribe(this.updateSelectedAirport.bind(this));
         this.map = this.model.mapInstrument;
         this.elements.map.appendChild(this.map);
+
+        this.airportsInputLayer = new WT_Nearest_Airports_Airports_Input_Layer(this.model, this);
+        this.runwaysInputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this.elements.runways));
+        this.frequenciesInputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this.elements.frequencyList));
+        this.approachesInputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this.elements.approachList));
     }
     updateSelectedRunway(runway) {
         this.elements.runwayDesignation = runway.designation;
@@ -82,12 +114,18 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
             if (infos.coordinates) {
                 this.elements.elevation = fastToFixed(infos.coordinates.alt, 0) + "FT";
             }
-            this.runways = infos.runways;
-            if (this.runways) {
-                for (let runway of this.runways) {
-
+            this.runways = {};
+            let selectedRunway = "";
+            for (let runway of infos.runways) {
+                let name = runway.designation;//`${runway.designatorCharPrimary}-${runway.designatorCharSecondary}`;
+                this.runways[name] = runway;
+                if (selectedRunway == "") {
+                    selectedRunway = name;
                 }
             }
+            this.elements.runwaySelector.values = Object.keys(this.runways);
+            this.elements.runwaySelector.value = selectedRunway;
+            this.elements.runwaySelector.fireChangeEvent();
             if (infos.frequencies) {
                 let elems = [];
                 for (let i = 0; i < infos.frequencies.length; i++) {
@@ -106,7 +144,13 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
             let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
             let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
             let planeCoordinates = new LatLong(lat, long);
-            this.map.centerOnCoordinates([planeCoordinates, infos.coordinates]);
+            this.map.centerOnCoordinate(planeCoordinates, [infos.coordinates], 50);
+            this.flightPlanElement.source.waypoints = [{
+                ident: "",
+                infos: {
+                    coordinates: new LatLongAlt(planeCoordinates.lat, planeCoordinates.long, 0)
+                }
+            }, airport.airport];
         }
     }
     updateAirports(airports) {
@@ -156,9 +200,14 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
     activate() {
         this.previousMenu = this.model.softKeyController.currentMenu;
         this.model.softKeyController.setMenu(this.menu);
+        this.map.flightPlanElements.push(this.flightPlanElement);
+        this.map.showFlightPlan = false;
     }
     deactivate() {
         this.model.softKeyController.setMenu(this.previousMenu);
+        this.map.flightPlanElements.splice(this.map.flightPlanElements.findIndex(item => item == this.flightPlanElement), 1);
+        this.map.showFlightPlan = true;
+        this.model.unsubscribe();
     }
 }
 customElements.define("g1000-nearest-airports-page", WT_Nearest_Airports_View);

@@ -34,7 +34,7 @@ class WT_Page_Controller_Input_Layer extends Input_Layer {
         this.pageController.previousPage();
     }
     onNavigationPush(inputStack) {
-        this.pageController.togglePageActive();
+        this.pageController.togglePageEntered();
     }
 }
 
@@ -50,7 +50,7 @@ class WT_Page_Controller {
         this.selectedPageIndices = pageGroups.map(group => 0);
 
         this.currentPageView = null;
-        this.currentPageActive = false;
+        this.currentPageEntered = false;
 
         this.pageSelection = new Subject();
     }
@@ -79,18 +79,33 @@ class WT_Page_Controller {
         this.inputStack = inputStack;
         this.inputStack.push(this.inputLayer);
     }
-    initialisePage() {
+    showPage(page, activate = false) {
         if (this.currentPageView) {
             this.currentPageView.deactivate();
+            if (this.currentPageEntered)
+                this.currentPageView.exit();
             this.pageContainer.removeChild(this.currentPageView);
         }
 
-        this.currentPageActive = false;
+        this.currentPageEntered = false;
 
-        let page = this.selectedPage;
-        this.pageTitle.value = `${this.selectedGroup.name} - ${page.title}`;
+        this.currentPage = page;
         this.currentPageView = page.initialise(this.pageContainer);
         this.currentPageView.activate(this.inputStack);
+
+        if (activate) {
+            this.togglePageEntered();
+        }
+
+        return this.currentPageView;
+    }
+    showSelectedPage() {
+        let page = this.selectedPage;
+        if (this.currentPage == page)
+            return;
+        this.showPage(page);
+
+        this.pageTitle.value = `${this.selectedGroup.name} - ${page.title}`;
 
         this.pageSelection.value = {
             groups: this.pageGroups,
@@ -99,27 +114,27 @@ class WT_Page_Controller {
         };
     }
     nextGroup() {
-        this.selectedGroupIndex = (this.selectedGroupIndex + 1 + this.numGroups) % this.numGroups;
-        this.initialisePage();
+        this.selectedGroupIndex = Math.min(this.selectedGroupIndex + 1, this.numGroups - 1);
+        this.showSelectedPage();
     }
     previousGroup() {
-        this.selectedGroupIndex = (this.selectedGroupIndex - 1 + this.numGroups) % this.numGroups;
-        this.initialisePage();
+        this.selectedGroupIndex = Math.max(this.selectedGroupIndex - 1, 0);
+        this.showSelectedPage();
     }
     nextPage() {
-        this.selectedGroupPageIndex = (this.selectedGroupPageIndex + 1 + this.numPagesInSelectedGroup) % this.numPagesInSelectedGroup;
-        this.initialisePage();
+        this.selectedGroupPageIndex = Math.min(this.selectedGroupPageIndex + 1, this.numPagesInSelectedGroup - 1);
+        this.showSelectedPage();
     }
     previousPage() {
-        this.selectedGroupPageIndex = (this.selectedGroupPageIndex - 1 + this.numPagesInSelectedGroup) % this.numPagesInSelectedGroup;
-        this.initialisePage();
+        this.selectedGroupPageIndex = Math.max(this.selectedGroupPageIndex - 1, 0);
+        this.showSelectedPage();
     }
-    togglePageActive() {
-        if (this.currentPageActive) {
+    togglePageEntered() {
+        if (this.currentPageEntered) {
             this.currentPageView.exit();
-            this.currentPageActive = false;
+            this.currentPageEntered = false;
         } else {
-            this.currentPageActive = this.currentPageView.enter(this.inputStack) === false ? false : true;
+            this.currentPageEntered = this.currentPageView.enter(this.inputStack) === false ? false : true;
         }
     }
     goTo(groupName, pageName) {
@@ -131,7 +146,7 @@ class WT_Page_Controller {
                     if (page.title == pageName) {
                         this.selectedGroupIndex = i;
                         this.selectedGroupPageIndex = j;
-                        this.initialisePage();
+                        this.showSelectedPage();
                     }
                     j++;
                 }

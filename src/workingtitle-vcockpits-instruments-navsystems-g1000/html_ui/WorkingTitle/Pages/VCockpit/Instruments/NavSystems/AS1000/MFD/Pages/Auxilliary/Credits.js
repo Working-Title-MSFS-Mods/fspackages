@@ -37,7 +37,7 @@ class WT_Credits_Model extends WT_Model {
                     <li><b>Version:</b> 0.3</li>
                     <li><b>Released:</b> 1st October 2020</li>
                 </ul>
-                <p>Don't forget to check out our other project, a massive update to the Cessna Citation CJ4 on our Github!</p>
+                <p>Don't forget to check out our other projects, a massive update to the Cessna Citation CJ4 and the G3000 on our Github!</p>
             </article>
             <article class="article">
                 <h2>Credits</h2>

@@ -16,11 +16,11 @@ class SvgFlightPlanElement extends SvgMapElement {
         return "flight-plan-" + this.flightPlanIndex + "-map-" + map.index;
         ;
     }
-    
+
     appendToMap(map) {
         map.appendChild(this.svgElement, map.flightPlanLayer);
     }
-    
+
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);
@@ -121,6 +121,8 @@ class SvgFlightPlanElement extends SvgMapElement {
                     }
                     wpPoints.push(waypoint.infos.coordinates.toLatLong());
                     for (let j = 0; j < wpPoints.length; j++) {
+                        lastLat = NaN;
+                        lastLong = NaN;
                         this.latLong = wpPoints[j];
                         if (departureRunwayCase && i === 0) {
                             this.latLong.lat = departureRunwayCase.beginningCoordinates.lat;
