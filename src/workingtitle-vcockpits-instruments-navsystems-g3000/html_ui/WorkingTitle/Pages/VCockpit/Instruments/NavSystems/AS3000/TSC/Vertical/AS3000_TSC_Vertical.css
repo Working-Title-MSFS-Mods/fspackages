@@ -125,10 +125,10 @@
         z-index: 2; }
     as3000-tsc-vertical-element #Electricity #PagesDisplay {
       position: absolute;
-      height: 60%;
+      height: 62%;
       width: 100%;
       left: 0%;
-      bottom: 17%;
+      bottom: 14%;
       background-color: black; }
       as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDHome,
       as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs,
@@ -393,6 +393,7 @@
           as3000-tsc-vertical-element #Electricity #PagesDisplay #Minimums #min_keyboard #min_KeyBoard_Table .roundButton {
             height: 9vh;
             width: 9vh; }
+
       as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer {
         position: absolute;
         top: 10%;
@@ -2301,7 +2302,7 @@
 
   as3000-tsc-vertical-element .gradientButton {
     width: 18vh;
-    height: 15vh;
+    height: 14vh;
     max-height: 15vh;
     margin: 0.4vh;
     font-size: 3vh; }
@@ -2309,7 +2310,7 @@
       margin-top: 0; }
     as3000-tsc-vertical-element .gradientButton .centerImg {
       position: relative;
-      top: 20%;
+      top: 25%;
       height: 40%;
       max-width: 60%; }
     as3000-tsc-vertical-element .gradientButton .lowerValue {
