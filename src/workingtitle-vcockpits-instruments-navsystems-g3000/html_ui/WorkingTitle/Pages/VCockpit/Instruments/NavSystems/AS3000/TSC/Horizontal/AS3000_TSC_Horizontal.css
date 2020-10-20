@@ -2495,3 +2495,7 @@ as3000-tsc-horizontal-element {
     max-height: 21vh; }
     as3000-tsc-horizontal-element .tabButton .mainText {
       font-size: 4vh; }
+
+  as3000-tsc-horizontal-element .numPad .gradientButton {
+    width: 15vh;
+    height: 15vh; }
