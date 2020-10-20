@@ -1,0 +1,392 @@
+:root {
+  --bodyHeightScale: 1; }
+
+@keyframes TemporaryShow {
+  0%, 100% {
+    visibility: visible; } }
+
+@keyframes TemporaryHide {
+  0%, 100% {
+    visibility: hidden; } }
+
+#highlight {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 10; }
+
+#Electricity {
+  width: 100%;
+  height: 100%; }
+  #Electricity[state=off] {
+    display: none; }
+
+@font-face {
+  font-family: "Roboto";
+  src: url("/Fonts/RobotoMono-Medium.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Roboto-Light";
+  src: url("/Fonts/RobotoMono-Light.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Roboto-Bold";
+  src: url("/Fonts/RobotoMono-Bold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Tahoma";
+  src: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/tahoma.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+@font-face {
+  font-family: "Tahoma-Bold";
+  src: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/tahomabd.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+@keyframes SelectedCharBlinkFreqEdit {
+  0%, 40% {
+    background-color: #67e8ef;
+    color: black; }
+  60%, 100% {
+    background-color: none;
+    color: #67e8ef; } }
+
+.line {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: center; }
+
+.gradientButton {
+  background: linear-gradient(#5f7283 0.4vh, #1f3445, black 2vh);
+  background-color: black;
+  border: 3px solid #404040;
+  border-radius: 4px;
+  position: relative;
+  text-align: center; }
+.gradientButton:Hover:Active {
+  background: linear-gradient(#62f0f5, #0eb8d4 8%, #018cb5 30%, #0285ac 90%);
+  border: 0.5vh solid #32a1bd; }
+.gradientButton[state=Inactive] {
+  visibility: hidden; }
+.gradientButton[state=Greyed] {
+  filter: grayscale(50%) brightness(40%); }
+  .gradientButton[state=Greyed]:Hover:Active {
+    background-color: black !important; }
+.gradientButton[state=Hidden] {
+  display: none !important; }
+.gradientButton[state=Invisible] {
+  visibility: hidden !important; }
+  .gradientButton .img {
+    height: 60%;
+    max-width: 60%;
+    margin-top: 5%;
+    display: inline-block; }
+  .gradientButton .img_small {
+    height: 40%;
+    max-width: 40%;
+    margin-top: 5%;
+    display: inline-block; }
+  .gradientButton .img_large {
+    height: 80%;
+    max-width: 80%;
+    margin-top: 5%;
+    display: inline-block; }
+  .gradientButton .lowerImg {
+    height: 60%;
+    max-width: 60%;
+    display: inline-block;
+    margin-top: 20%; }
+  .gradientButton .centerImg {
+    display: inline-block; }
+  .gradientButton .lowerValue {
+    color: #67e8ef; }
+  .gradientButton .label {
+    width: 100%;
+    transform: translateY(50%);
+    text-align: center;
+    color: white;
+    background: none; }
+  .gradientButton .upperTitle {
+    width: 100%;
+    text-align: center;
+    color: white;
+    background: none;
+    vertical-align: bottom; }
+    .valueButton .upperTitle {
+      top: auto;
+      height: auto;
+      vertical-align: bottom; }
+  .gradientButton .topText {
+    color: white;
+    text-align: left; }
+  .gradientButton .mainNumber {
+    color: white;
+    text-align: justify; }
+  .gradientButton .mainText {
+    color: white;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%; }
+  .gradientButton .statusText {
+    color: #67e8ef;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%; }
+    .statusTextButton .statusText {
+      transform: none;
+      bottom: 0%; }
+  .gradientButton .statusBar {
+    width: 50%;
+    background-color: grey;
+    left: 25%; }
+.gradientButton[state=Active] .mainNumber {
+  color: lawngreen; }
+.gradientButton[state=Active] .statusBar {
+  background-color: lawngreen; }
+.gradientButton[state=Selected] .mainNumber {
+  color: #67e8ef; }
+  .gradientButton[state=Selected] .mainNumber .Writing {
+    color: dimgray;
+    display: inline-block; }
+.gradientButton[state=White] {
+  background-color: #c8e3f0;
+  border-color: #1a4862;
+  margin: auto;
+  box-shadow: none; }
+  .gradientButton[state=White] .mainText {
+    color: black; }
+.gradientButton[state=Highlight] {
+  border-color: #7dddff;
+  background: linear-gradient(#7dddff 0.4vh, #008cb4 2vh); }
+  .gradientButton[state=Highlight] .mainText {
+    color: black; }
+  .gradientButton[state=Highlight] .value {
+    color: black; }
+.gradientButton:Hover:Active {
+  background: #37c6ed; }
+
+.roundButton {
+  position: relative;
+  border: 0.5vh solid #dedede;
+  border-radius: 50%;
+  background: linear-gradient(#4b6677, black 30%);
+  box-shadow: 0px 0px 5px 4px black inset; }
+  .roundButton .mainText {
+    position: absolute;
+    color: white;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    text-align: center; }
+.roundButton:Hover:Active {
+  background-color: #0093d0;
+  box-shadow: 0px 0px 0px 0px black inset ;
+  border: 0.5vh solid #515c60;
+  background: radial-gradient(#55e8f5, #018cb5 60%, #0285ac 90%); }
+
+.tabButton {
+    font-family: Tahoma-Bold;
+    position: relative;
+    margin: 0.5vh;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center; }
+  .tabButtonLeft {
+    border-radius: 4px 0 0 4px; }
+  .tabButtonLeft[state=""] {
+    background: linear-gradient(to right, #7fa5c9 90%, #277199); }
+  .tabButtonLeft[state="Disabled"] {
+    background: linear-gradient(to right, #485c6d 90%, #0d2733); }
+  .tabButtonRight {
+    border-radius: 0 4px 4px 0; }
+  .tabButtonRight[state=""] {
+    background: linear-gradient(to left, #7fa5c9 90%, #277199); }
+  .tabButtonRight[state="Disabled"] {
+    background: linear-gradient(to left, #485c6d 90%, #0d2733); }
+  .tabButtonTop {
+    border-radius: 4px 4px 0 0; }
+  .tabButtonTop[state=""] {
+    background: linear-gradient(to bottom, #7fa5c9 90%, #277199); }
+  .tabButtonTop[state="Disabled"] {
+    background: linear-gradient(to bottom, #485c6d 90%, #0d2733); }
+    .tabButton[state=Highlight] {
+      background-color: #d3eaf9; }
+    .tabButton .mainText {
+      color: black;
+      text-align: center; }
+    .tabButton[state=Disabled] .mainText {
+      color: gray;}
+
+  .Waypoint[state=SelectedWP] {
+    border-color: #7dddff !important;
+    background: linear-gradient(#7dddff 0.4vh, #008cb4 2vh) !important; }
+    .Waypoint[state=SelectedWP] .mainValue {
+      color: black !important; }
+    .Waypoint[state=SelectedWP] .title {
+      color: black !important; }
+
+.numPad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  justify-items: center;
+  align-items: center; }
+
+.backgroundBox {
+  border-radius: 10px;
+  background: linear-gradient(#1f3445, black 10%);
+  background-color: black;
+  border: 0.4vh solid #454b4e; }
+
+.tabContentContainer .tabContent[state="Active"] {
+  display: block; }
+.tabContentContainer .tabContent[state="Inactive"] {
+  display: none; }
+
+.SelectionListWindow .WindowTitle {
+  background-color: black; }
+.SelectionListWindow .content {
+      position: absolute;
+      background-color: black;
+      border: 0.4vh solid white;
+      overflow-y: scroll; }
+  .SelectionListWindow .content::-webkit-scrollbar {
+    width: 1vw; }
+  .SelectionListWindow .content::-webkit-scrollbar-track {
+    background: none; }
+  .SelectionListWindow .content::-webkit-scrollbar-thumb {
+    background: white; }
+  .SelectionListWindow .content .gradientButton {
+    width: 100%;
+    margin-bottom: 5%; }
+
+.DynamicSelectionListWindow .WindowTitle {
+  background-color: black; }
+.DynamicSelectionListWindow .content {
+  position: absolute;
+  background-color: black;
+  border: 0.4vh solid white;
+  overflow-y: scroll; }
+  .DynamicSelectionListWindow .content::-webkit-scrollbar {
+    width: 1vw; }
+  .DynamicSelectionListWindow .content::-webkit-scrollbar-track {
+    background: none; }
+  .DynamicSelectionListWindow .content::-webkit-scrollbar-thumb {
+    background: white; }
+  .DynamicSelectionListWindow .content .gradientButton {
+    width: 100%;
+    margin-bottom: 5%; }
+    .DynamicSelectionListWindow .content .gradientButton .value {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%; }
+
+.MapSettings .MapSettingsLeft {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  align-items: center; }
+    .MapSettings .MapSettingsLeft .MapDetailButton .img {
+      position: absolute;
+      left: 25%;
+      width: 50%;
+      bottom: 5%; }
+    .MapSettings .MapSettingsLeft .MapDetailButton .img[state=Inactive] {
+      visibility: hidden; }
+
+    .MapSettings .MapSettingsRight {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-end;
+      align-items: flex-start; }
+      .MapSettings .MapSettingsRight .tabSelect {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: flex-start;
+        height: 100%; }
+      .MapSettings .MapSettingsRight .tabContentContainer {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border: 0.4vh solid #d3eaf9;
+        background: #000000;
+        border-radius: 4px; }
+        .MapSettings .MapSettingsRight .tabContentContainer .tabContent {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          overflow-x: hidden;
+          overflow-y: scroll; }
+          .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar {
+            width: 1vw; }
+          .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar-track {
+            background: none; }
+          .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar-thumb {
+            background: white; }
+            .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRow {
+              display: grid;
+              grid-template-rows: 1fr; }
+            .MapSettings .MapSettingsRight .tabContentContainer .tabContent .gradientButton {
+              height: 100%;
+              margin: 0; }
+            .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRowButtonLeft {
+              width: 98%; }
+            .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRowButtonRight {
+              width: 98%;
+              display: flex;
+              justify-content: center;
+              align-items: center; }
+
+#LightingConfig #LightingValueDisplay {
+  text-align: center;
+  color: white; }
+  #LightingConfig #LightingValueDisplay .value {
+    color: #67e8ef; }
+#LightingConfig #LightingControls {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center; }
+  #LightingConfig #LightingControls .gradientButton {
+    border-color: #bbbbbb; }
+  #LightingConfig #LightingControls #LightingConfigSliderWrapper {
+    background: linear-gradient(#5f7283 0.4vh, #1f3445, black 2vh);
+    background-color: black;
+    border: 3px solid #bbbbbb;
+    box-shadow: 0px 0px 0px 3px black inset;
+    border-radius: 4px; }
+    #LightingConfig #LightingControls .sliderWindow {
+      border: 2px solid grey;
+      background-color: black; }
+      #LightingConfig #LightingControls .LightingConfigSliderContainer {
+        width: 100%; }
+      #LightingConfig #LightingControls .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        background: transparent; }
+      #LightingConfig #LightingControls .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        background: #00b2bf;
+        border: solid 0.5vh black; }
+      #LightingConfig #LightingControls .slider::-webkit-slider-runnable-track {
+        width: 100%;
+        background: transparent; }
+      #LightingConfig #LightingControls #LightingConfigSliderWrapper .img {
+        position: absolute;
+        top: 0%;
+        left: 0%;
+        width: 100%;
+        height: 100%;
+        -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
