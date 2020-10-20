@@ -344,6 +344,8 @@
         left: 5%;
         width: 30%;
         height: 20%; }
+        as3000-tsc-vertical-element #Electricity #PagesDisplay #Minimums #min_typeButton .lowerValue {
+          font-size: 3.5vh; }
       as3000-tsc-vertical-element #Electricity #PagesDisplay #Minimums #min_tempAtDestButton {
         position: absolute;
         left: 5%;
@@ -382,17 +384,15 @@
             display: inline-block; }
         as3000-tsc-vertical-element #Electricity #PagesDisplay #Minimums #min_keyboard #min_Bksp {
           position: absolute;
-          right: 0%;
+          right: 1%;
           top: 0%;
-          height: 20%; }
+          width: 11vh;
+          height: 11vh; }
         as3000-tsc-vertical-element #Electricity #PagesDisplay #Minimums #min_keyboard #min_KeyBoard_Table {
           position: absolute;
           width: 100%;
-          height: 80%;
-          bottom: 0%; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #Minimums #min_keyboard #min_KeyBoard_Table .roundButton {
-            height: 9vh;
-            width: 9vh; }
+          height: 79%;
+          bottom: 1%; }
 
       as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer {
         position: absolute;
@@ -1964,26 +1964,18 @@
             top: 0%; }
       as3000-tsc-vertical-element #Electricity #insertBeforeWaypointWindow .Container .EndButtonLine {
         height: 10.2vh; }
-    as3000-tsc-vertical-element #Electricity #minimumSource .WindowTitle {
-      background-color: black; }
+
     as3000-tsc-vertical-element #Electricity #minimumSource .Container {
       position: absolute;
-      width: 30%;
-      left: 35%;
-      height: 80%;
-      bottom: 5%;
-      background-color: black;
-      padding: 2%;
-      border: 0.3vh solid white; }
+      width: 40%;
+      left: 30%;
+      top: 15%;
+      padding: 2%; }
       as3000-tsc-vertical-element #Electricity #minimumSource .Container .gradientButton {
-        width: 100%; }
-        as3000-tsc-vertical-element #Electricity #minimumSource .Container .gradientButton .mainValue {
-          color: white;
-          font-size: 3vh;
-          position: absolute;
-          top: 20%;
-          text-align: center;
-          width: 100%; }
+        height: 12vh;
+        width: 100%;
+        margin: 1vh 0; }
+
     as3000-tsc-vertical-element #Electricity #LoadFrequencyPopup .content {
       position: absolute;
       left: 10%;
@@ -2241,8 +2233,9 @@
       z-index: 10; }
       as3000-tsc-vertical-element #Electricity .PopUpWindow .WindowTitle {
         font-size: 3vh;
-        height: 12%;
+        height: 10%;
         width: 100%;
+        background-color: black;
         background-image: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/TITLE_BOX_VERTICAL.png");
         background-size: contain;
         background-position: center top;
@@ -2304,7 +2297,7 @@
     width: 18vh;
     height: 14vh;
     max-height: 15vh;
-    margin: 0.4vh;
+    margin: 0.5vh;
     font-size: 3vh; }
     as3000-tsc-vertical-element .gradientButton .img {
       margin-top: 0; }
