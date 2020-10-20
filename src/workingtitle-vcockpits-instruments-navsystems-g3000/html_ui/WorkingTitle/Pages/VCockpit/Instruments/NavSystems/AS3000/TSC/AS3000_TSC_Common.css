@@ -260,6 +260,7 @@
       position: absolute;
       background-color: black;
       border: 0.4vh solid white;
+      padding: 2%;
       overflow-y: scroll; }
   .SelectionListWindow .content::-webkit-scrollbar {
     width: 1vw; }
@@ -277,6 +278,7 @@
   position: absolute;
   background-color: black;
   border: 0.4vh solid white;
+  padding: 2%;
   overflow-y: scroll; }
   .DynamicSelectionListWindow .content::-webkit-scrollbar {
     width: 1vw; }
