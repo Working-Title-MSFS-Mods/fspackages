@@ -620,15 +620,15 @@
                     <div class="line">
                         <div class="gradientButton" id="NexradButton">
                             <img class="img" src="" />
-                            <div class="title">NEXRAD</div>
+                            <div class="label">NEXRAD</div>
                         </div>
                         <div class="gradientButton" id="WxRadarButton">
                             <img class="img" src="" />
-                            <div class="title">WX RADAR Horizontal</div>
+                            <div class="label">WX RADAR Horizontal</div>
                         </div>
                         <div class="gradientButton" id="WxRadarVertButton">
                             <img class="img" src="" />
-                            <div class="title">WX RADAR Vertical</div>
+                            <div class="label">WX RADAR Vertical</div>
                         </div>
                     </div>
                 </div>
@@ -1761,17 +1761,17 @@
             </div>
             <div class="PopUpWindow" id="TransponderWindow" state="Inactive">
                 <div class="WindowTitle">Transponder</div>
-                <div id="transponder_ModeSelect">
+                <div class="backgroundBox" id="transponder_ModeSelect">
                     <div id="transponder_ModeSelectTitle">Mode</div>
-                    <div class="gradientButton status" id="transponder_Alt" state="Active">
+                    <div class="gradientButton statusToggleButton" id="transponder_Alt" state="Active">
                         <div class="mainText">Altitude Reporting</div>
                         <div class="statusBar"></div>
                     </div>
-                    <div class="gradientButton" id="transponder_On">
+                    <div class="gradientButton statusToggleButton" id="transponder_On">
                         <div class="mainText">On</div>
                         <div class="statusBar"></div>
                     </div>
-                    <div class="gradientButton" id="transponder_Stby">
+                    <div class="gradientButton statusToggleButton" id="transponder_Stby">
                         <div class="mainText">Standby</div>
                         <div class="statusBar"></div>
                     </div>
@@ -1781,22 +1781,18 @@
                 </div>
                 <div class="gradientButton" id="transponder_Bksp">
                     <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
-                    <div class="title">BKSP</div>
+                    <div class="label">BKSP</div>
                 </div>
-                <table id="transponder_NumberKeyboard">
-                    <tr>
-                        <td> <div class="roundButton" id="transponder_0">0</div> </td>
-                        <td> <div class="roundButton" id="transponder_1">1</div> </td>
-                        <td> <div class="roundButton" id="transponder_2">2</div> </td>
-                        <td> <div class="roundButton" id="transponder_3">3</div> </td>
-                    </tr>
-                    <tr>
-                        <td> <div class="roundButton" id="transponder_4">4</div> </td>
-                        <td> <div class="roundButton" id="transponder_5">5</div> </td>
-                        <td> <div class="roundButton" id="transponder_6">6</div> </td>
-                        <td> <div class="roundButton" id="transponder_7">7</div> </td>
-                    </tr>
-                </table>
+                <div id="transponder_NumberKeyboard">
+                    <div class="roundButton" id="transponder_0"><div class="mainText">0</div></div>
+                    <div class="roundButton" id="transponder_1"><div class="mainText">1</div></div>
+                    <div class="roundButton" id="transponder_2"><div class="mainText">2</div></div>
+                    <div class="roundButton" id="transponder_3"><div class="mainText">3</div></div>
+                    <div class="roundButton" id="transponder_4"><div class="mainText">4</div></div>
+                    <div class="roundButton" id="transponder_5"><div class="mainText">5</div></div>
+                    <div class="roundButton" id="transponder_6"><div class="mainText">6</div></div>
+                    <div class="roundButton" id="transponder_7"><div class="mainText">7</div></div>
+                </div>
                 <div class="gradientButton" id="transponder_ActiveTransponder" state="Hidden">
                     <div class="mainText">Active</div>
                     <div class="statusText">XPDR1</div>

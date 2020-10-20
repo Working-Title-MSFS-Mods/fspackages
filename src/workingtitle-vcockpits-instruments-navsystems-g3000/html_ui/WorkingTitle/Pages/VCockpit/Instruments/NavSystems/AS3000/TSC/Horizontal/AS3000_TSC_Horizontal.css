@@ -1707,12 +1707,13 @@ as3000-tsc-horizontal-element {
     as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_ModeSelect {
       position: absolute;
       left: 2%;
-      top: 0%; }
+      top: 1%; }
       as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_ModeSelect #transponder_ModeSelectTitle {
         color: white;
-        font-size: 5vh; }
-      as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_ModeSelect .mainText {
-        font-size: 3.5vh; }
+        font-size: 5vh;
+        margin: 1vh; }
+      as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_ModeSelect .gradientButton {
+        height: 18vh; }
     as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_CodeDisplay {
       position: absolute;
       right: 25%;
@@ -1737,17 +1738,19 @@ as3000-tsc-horizontal-element {
     as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_Bksp {
       position: absolute;
       right: 2%;
-      top: 0%; }
+      top: 5%;
+      height: 16vh; }
     as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_NumberKeyboard {
       position: absolute;
       right: 2%;
-      top: 25%; }
-      as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_NumberKeyboard .roundButton {
-        width: 20vh;
-        height: 20vh;
-        line-height: 20vh;
-        display: inline-block;
-        margin: 0.5vh; }
+      top: 25%;
+      height: 40%;
+      width: 70%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      justify-items: center;
+      align-items: center; }
     as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_ActiveTransponder {
       position: absolute;
       left: 25%;
