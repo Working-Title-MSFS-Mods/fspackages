@@ -157,7 +157,7 @@ class CJ4_FMC_LegsPage {
                 }
 
                 if (!isFromWpt) {
-                    this._rows[2 * i][1] = this.getAltRestriction2(waypoint) + "[s-text green]";
+                    this._rows[2 * i][1] = this.getAltRestrictionBelow(waypoint);
                     this._rows[2 * i + 1][1] = this.getAltSpeedRestriction(waypoint);
                 }
             }
@@ -423,19 +423,19 @@ class CJ4_FMC_LegsPage {
 
         if (waypoint.legAltitudeDescription && waypoint.legAltitudeDescription > 0) {
             if (waypoint.legAltitudeDescription === 1 && waypoint.legAltitude1 > 100) {
-                altitudeConstraint = waypoint.legAltitude1.toFixed(0) > 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100
+                altitudeConstraint = waypoint.legAltitude1.toFixed(0) >= 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100
                     : waypoint.legAltitude1.toFixed(0);
             }
             else if (waypoint.legAltitudeDescription === 2 && waypoint.legAltitude1 > 100) {
-                altitudeConstraint = waypoint.legAltitude1.toFixed(0) > 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100 + "A"
+                altitudeConstraint = waypoint.legAltitude1.toFixed(0) >= 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100 + "A"
                     : waypoint.legAltitude1.toFixed(0) + "A";
             }
             else if (waypoint.legAltitudeDescription === 3 && waypoint.legAltitude1 > 100) {
-                altitudeConstraint = waypoint.legAltitude1.toFixed(0) > 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100 + "B"
+                altitudeConstraint = waypoint.legAltitude1.toFixed(0) >= 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100 + "B"
                     : waypoint.legAltitude1.toFixed(0) + "B";
             }
-            else if (waypoint.legAltitudeDescription === 4 && waypoint.legAltitude1 > 100) {
-                let altitudeConstraintA = waypoint.legAltitude2.toFixed(0) > 18000 ? "FL" + waypoint.legAltitude2.toFixed(0) / 100 + "B"
+            else if (waypoint.legAltitudeDescription === 4 && waypoint.legAltitude2 > 100) {
+                let altitudeConstraintA = waypoint.legAltitude2.toFixed(0) >= 18000 ? "FL" + waypoint.legAltitude2.toFixed(0) / 100 + "B"
                     : waypoint.legAltitude2.toFixed(0) + "A";
                 altitudeConstraint = altitudeConstraintA;
             }
@@ -445,19 +445,19 @@ class CJ4_FMC_LegsPage {
         return speedConstraint + "/" + altitudeConstraint + "[green]";
     }
 
-    getAltRestriction2(waypoint) {
-        let altitudeConstraint2 = "";
+    getAltRestrictionBelow(waypoint) {
+        let altitudeConstraintBelow = "";
 
         if (waypoint.legAltitudeDescription && waypoint.legAltitudeDescription > 0) {
             if (waypoint.legAltitudeDescription === 4 && waypoint.legAltitude1 > 100) {
-                let altitudeConstraintB = waypoint.legAltitude1.toFixed(0) > 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100 + "A"
+                let altitudeConstraintB = waypoint.legAltitude1.toFixed(0) >= 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100 + "A"
                     : waypoint.legAltitude1.toFixed(0) + "B";
-                altitudeConstraint2 = altitudeConstraintB;
+                altitudeConstraintBelow = altitudeConstraintB;
             }
 
-            altitudeConstraint2 = altitudeConstraint2.padStart(6, " ");
+            altitudeConstraintBelow = altitudeConstraintBelow.padStart(6, " ");
         }
-        return altitudeConstraint2 + "[green]";
+        return altitudeConstraintBelow + "[green]";
     }
 
     static ShowPage1(fmc) {
