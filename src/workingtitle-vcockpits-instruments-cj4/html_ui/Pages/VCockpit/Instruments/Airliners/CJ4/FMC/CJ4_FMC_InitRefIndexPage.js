@@ -1329,8 +1329,6 @@ class CJ4_FMC_InitRefIndexPage {
                 for (let i = waypoints.length - 1; i >= 0; i--) {
                     let waypoint = waypoints[i];
                     let legAltitudeDescription = waypoint.legAltitudeDescription
-                    //let legAltitude1 = waypoint.legAltitude1;
-                    //let legAltitude2 = waypoint.legAltitude2;
                     if (legAltitudeDescription == 1) { //AT CASE
                         vnavTargetAltitude = waypoint.legAltitude1;
                         vnavTargetDistance = waypoint == activeWaypoint ? activeWaypointDist
@@ -1377,10 +1375,6 @@ class CJ4_FMC_InitRefIndexPage {
                     i--;
 
                 }
-                
-                vnavTargetAltitude = destinationElevation + 1500;
-                topOfDescent = 10 + ((altitude - destinationElevation + 1500) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
-                vnavTargetDistance = destinationDistance - 10;
             }
 
 
@@ -1390,49 +1384,53 @@ class CJ4_FMC_InitRefIndexPage {
             let desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(desiredFPA * (Math.PI / 180));
             let desiredAltitude = vnavTargetAltitude + (Math.tan(desiredFPA * (Math.PI / 180)) * vnavTargetDistance * 6076.12);
             let altDeviation = altitude - desiredAltitude;
-            let setVerticalSpeed = desiredVerticalSpeed;
+            let setVerticalSpeed = 0;
 
-
-
-            if (altDeviation >= 500) {
-                setVerticalSpeed = desiredVerticalSpeed * 1.5;
-            }
-            else if (altDeviation <= -500) {
-                setVerticalSpeed = desiredVerticalSpeed * 0;
-            }
-            else if (altDeviation >= 400) {
-                setVerticalSpeed = desiredVerticalSpeed * 1.4;
-            }
-            else if (altDeviation <= -400) {
-                setVerticalSpeed = desiredVerticalSpeed * 0;
-            }
-            else if (altDeviation >= 300) {
-                setVerticalSpeed = desiredVerticalSpeed * 1.3;
-            }
-            else if (altDeviation <= -300) {
-                setVerticalSpeed = desiredVerticalSpeed * 0.25;
-            }
-            else if (altDeviation >= 200) {
-                setVerticalSpeed = desiredVerticalSpeed * 1.2;
-            }
-            else if (altDeviation <= -200) {
-                setVerticalSpeed = desiredVerticalSpeed * 0.5;
-            }
-            else if (altDeviation >= 100) {
-                setVerticalSpeed = desiredVerticalSpeed * 1.1;
-            }
-            else if (altDeviation <= -100) {
-                setVerticalSpeed = desiredVerticalSpeed * 0.8;
-            }
-            else if (altDeviation >= 50) {
-                setVerticalSpeed = desiredVerticalSpeed * 1.05;
-            }
-            else if (altDeviation <= -50) {
-                setVerticalSpeed = desiredVerticalSpeed * 0.9;
+            if (vnavTargetDistance > topOfDescent) {
+                setVerticalSpeed = 0;
             }
             else {
-                setVerticalSpeed = desiredVerticalSpeed;
+                if (altDeviation >= 500) {
+                    setVerticalSpeed = desiredVerticalSpeed * 1.5;
+                }
+                else if (altDeviation <= -500) {
+                    setVerticalSpeed = desiredVerticalSpeed * 0;
+                }
+                else if (altDeviation >= 400) {
+                    setVerticalSpeed = desiredVerticalSpeed * 1.4;
+                }
+                else if (altDeviation <= -400) {
+                    setVerticalSpeed = desiredVerticalSpeed * 0;
+                }
+                else if (altDeviation >= 300) {
+                    setVerticalSpeed = desiredVerticalSpeed * 1.3;
+                }
+                else if (altDeviation <= -300) {
+                    setVerticalSpeed = desiredVerticalSpeed * 0.25;
+                }
+                else if (altDeviation >= 200) {
+                    setVerticalSpeed = desiredVerticalSpeed * 1.2;
+                }
+                else if (altDeviation <= -200) {
+                    setVerticalSpeed = desiredVerticalSpeed * 0.5;
+                }
+                else if (altDeviation >= 100) {
+                    setVerticalSpeed = desiredVerticalSpeed * 1.1;
+                }
+                else if (altDeviation <= -100) {
+                    setVerticalSpeed = desiredVerticalSpeed * 0.8;
+                }
+                else if (altDeviation >= 50) {
+                    setVerticalSpeed = desiredVerticalSpeed * 1.05;
+                }
+                else if (altDeviation <= -50) {
+                    setVerticalSpeed = desiredVerticalSpeed * 0.9;
+                }
+                else {
+                    setVerticalSpeed = desiredVerticalSpeed;
+                }
             }
+
             console.log(setVerticalSpeed.toFixed(0));
             //SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading.toFixed(0));
 
