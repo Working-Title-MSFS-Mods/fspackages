@@ -1450,21 +1450,21 @@ class CJ4_FMC_InitRefIndexPage {
 
             //SimVar.SetSimVarValue("K:AP_VS_VAR_SELECT", "feet per minute", setVerticalSpeed.toFixed(0));
 
-            
+            let distanceToTod = vnavTargetDistance > topOfDescent ? vnavTargetDistance - topOfDescent : "N/A";
 
             fmc._templateRenderer.setTemplateRaw([
                 ["", "", "CWB MANUAL VNAV" + "[blue]"],
-                [""],
                 [" target altitude[blue]", "target distance [blue]"],
-                [activeWaypointTargetAltitude.toFixed(0) + "ft", activeWaypointDistance.toFixed(1) + "nm"],
-                [" altitude[blue]", "ground speed [blue]"],
-                [altitude.toFixed(0) + "ft", groundSpeed.toFixed(0) + ""],
+                [vnavTargetAltitude.toFixed(0) + "ft", vnavTargetDistance.toFixed(1) + "nm"],
+                [" VNAV Target[blue]", "ground speed [blue]"],
+                [vnavTargetWaypoint.ident + "ft", groundSpeed.toFixed(0) + ""],
                 [" target FPA[blue]", "target VS [blue]"],
                 [desiredFPA.toFixed(0) + "°", desiredVerticalSpeed.toFixed(0) + "fpm"],
                 [" alt dev[blue]", "ap vs [blue]"],
                 [altDeviation.toFixed(0) + "ft", apCurrentVerticalSpeed.toFixed(0) + "fpm"],
-                [" set vertical speed[blue]", ""],
-                [setVerticalSpeed.toFixed(0) + "fpm[green]", ""],
+                [" set vertical speed[blue]", "TOD Dist"],
+                [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod + ""],
+                [""],
                 ["<RETURN"]
             ]);
             //fmc.setTemplate([
