@@ -1230,33 +1230,220 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage30(fmc) { //DATALINK
         fmc.clearDisplay();
-
         fmc.registerPeriodicPageRefresh(() => {
 
-            let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
-            let hours = new String(Math.trunc(simtime / 3600));
-            let minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
-            let hourspad = hours.padStart(2, "0");
-            let minutesspad = minutes.padStart(2, "0");
+            let waypoints = [];
+            
+            let currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
+            let currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
+            let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+            let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+            //let fromWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint();
+            let toWaypoint = fmc.flightPlanManager.getActiveWaypoint();
+            let apCurrentHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "Degrees");	
+            let currTrack = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees");
+            let xtk = SimVar.GetSimVarValue("GPS WP CROSS TRK", "meters") * (0.000539957); //meters to NM conversion
+            let dtk = toWaypoint.bearingInFP.toFixed(0);
+            //let distanceToWaypoint = Avionics.Utils.computeDistance(currPos, toWaypoint.infos.coordinates);
+            //let bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(currPos, toWaypoint.infos.coordinates);
+            //let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
+            let apCurrentAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "Feet");
+            let apCurrentVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute");
+            let altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
+            let destination = undefined;
+                    
+            let activeWaypointTargetAltitude = undefined;
+            let activeWaypointDistance = fmc.flightPlanManager.getDistanceToActiveWaypoint();
+            let desiredFPA = 3;
+
+            //let windCorrection = 180 * Math.asin(currCrosswind / groundSpeed) / Math.PI;
+            //previous waypoint data
+            if (fmc.flightPlanManager.getPreviousActiveWaypoint()) {
+                let prevWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint();
+                prevWaypointIdent = new String(fmc.flightPlanManager.getPreviousActiveWaypoint().ident);
+                prevWaypointDist = new Number(Avionics.Utils.computeDistance(currPos, prevWaypoint.infos.coordinates));
+            }
+
+            //current active waypoint data
+            if (fmc.flightPlanManager.getActiveWaypoint()) {
+                let activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
+                activeWaypointIdent = new String(fmc.flightPlanManager.getActiveWaypoint().ident);
+                activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
+                activeWaypointEte = groundSpeed < 50 ? new String("-:--")
+                    : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
+            }
+
+            //next waypoint data
+            if (fmc.flightPlanManager.getNextActiveWaypoint()) {
+                let nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint();
+                nextWaypointIdent = new String(fmc.flightPlanManager.getNextActiveWaypoint().ident);
+                nextWaypointDist = new Number(activeWaypointDist + Avionics.Utils.computeDistance(fmc.flightPlanManager.getActiveWaypoint().infos.coordinates, nextWaypoint.infos.coordinates));
+                nextWaypointEte = groundSpeed < 50 ? new String("-:--")
+                    : new Date(this.calcETEseconds(nextWaypointDist, groundSpeed) * 1000).toISOString().substr(11, 5);
+            }
+
+            //destination data
+            if (fmc.flightPlanManager.getDestination()) {
+                destination = fmc.flightPlanManager.getDestination();
+                destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
+                let destinationDistanceDirect = Avionics.Utils.computeDistance(currPos, destination.infos.coordinates);
+                let destinationDistanceFlightplan = 0;
+                destinationDistance = destinationDistanceDirect;
+                if (activeWaypoint) {
+                    destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - activeWaypoint.cumulativeDistanceInFP + activeWaypointDist);
+                }
+                else {
+                    destinationDistanceFlightplan = destination.cumulativeDistanceInFP;
+                }
+                destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
+                    : destinationDistanceFlightplan;
+            }
+
+            let setHeading = dtk;
+            //let vsDeviation = desiredVerticalSpeed < 0 ? desiredVerticalSpeed - apCurrentVerticalSpeed
+            //    :desiredVerticalSpeed > 0 ? apCurrentVerticalSpeed - desiredVerticalSpeed
+            //    :apCurrentVerticalSpeed;
+            
+            let vnavTargetDistance = 0;
+
+            //FETCH WAYPOINTS WITH CONSTRAINTS
+            if (fmc.flightPlanManager.getWaypointsWithAltitudeConstraints()) {
+                waypoints = fmc.flightPlanManager.getWaypointsWithAltitudeConstraints();
+            }
+
+            //IF THERE ARE NO CONSTRAINTS
+            if (waypoints.length == 0 && destination) {
+                console.log("waypoints.length == 0 && destination");
+                let runways = destination.infos.oneWayRunways;
+                let destinationElevation = runways[0].elevation * 3.28;
+                let vnavTargetAltitude = destinationElevation + 1500;
+                let topOfDescent = 10 + ((altitude - destinationElevation + 1500) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
+                vnavTargetDistance = destinationDistance - 10;
+
+            }
+
+
+
+
+            //PREPARE VNAV VARIABLES
+            let desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(desiredFPA * (Math.PI / 180));
+            let desiredAltitude = vnavTargetAltitude + (Math.tan(desiredFPA * (Math.PI / 180)) * vnavTargetDistance * 6076.12);
+            let altDeviation = altitude - desiredAltitude;
+            let setVerticalSpeed = desiredVerticalSpeed;
+
+
+
+            if (altDeviation >= 500) {
+                setVerticalSpeed = desiredVerticalSpeed * 1.5;
+            }
+            else if (altDeviation <= -500) {
+                setVerticalSpeed = desiredVerticalSpeed * 0;
+            }
+            else if (altDeviation >= 400) {
+                setVerticalSpeed = desiredVerticalSpeed * 1.4;
+            }
+            else if (altDeviation <= -400) {
+                setVerticalSpeed = desiredVerticalSpeed * 0;
+            }
+            else if (altDeviation >= 300) {
+                setVerticalSpeed = desiredVerticalSpeed * 1.3;
+            }
+            else if (altDeviation <= -300) {
+                setVerticalSpeed = desiredVerticalSpeed * 0.25;
+            }
+            else if (altDeviation >= 200) {
+                setVerticalSpeed = desiredVerticalSpeed * 1.2;
+            }
+            else if (altDeviation <= -200) {
+                setVerticalSpeed = desiredVerticalSpeed * 0.5;
+            }
+            else if (altDeviation >= 100) {
+                setVerticalSpeed = desiredVerticalSpeed * 1.1;
+            }
+            else if (altDeviation <= -100) {
+                setVerticalSpeed = desiredVerticalSpeed * 0.8;
+            }
+            else if (altDeviation >= 50) {
+                setVerticalSpeed = desiredVerticalSpeed * 1.05;
+            }
+            else if (altDeviation <= -50) {
+                setVerticalSpeed = desiredVerticalSpeed * 0.9;
+            }
+            else {
+                setVerticalSpeed = desiredVerticalSpeed;
+            }
+            console.log(setVerticalSpeed.toFixed(0));
+            //SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading.toFixed(0));
+
+            let deltaVS = setVerticalSpeed - apCurrentVerticalSpeed;
+            let iMax = deltaVS > 0 ? Math.min(deltaVS / 100)
+                :deltaVS < 0 ? Math.max(deltaVS / 100)
+                : 0;
+            let iMaxAbs = Math.abs(iMax);
+            for (let i = 0; i < iMaxAbs; i++) {
+                if (deltaVS < 0) {
+                    SimVar.SetSimVarValue("K:AP_VS_VAR_DEC", "number", 0);
+                }
+                else if (deltaVS > 0) {
+                    SimVar.SetSimVarValue("K:AP_VS_VAR_INC", "number", 0);
+                }
+            }
+
+            //SimVar.SetSimVarValue("K:AP_VS_VAR_SELECT", "feet per minute", setVerticalSpeed.toFixed(0));
+
+            
 
             fmc._templateRenderer.setTemplateRaw([
-                ["DL[blue]", "1/2[blue]", "DATALINK MENU[blue]"],
+                ["", "", "CWB MANUAL VNAV" + "[blue]"],
                 [""],
-                ["<RCVD MSGS[disabled]", "ATS LOG>[disabled]"],
-                [""],
-                ["<SEND MSGS[disabled]", "DEPART CLX>[disabled]"],
-                [""],
-                ["<WEATHER[disabled]", "OCEANIC CLX>[disabled]"],
-                [""],
-                ["<TWIP[disabled]"],
-                [""],
-                ["<ATIS[disabled]"],
-                ["        NO COMM[green s-text]"],
-                ["<RETURN [white]" + hourspad + "[blue s-text]" + ":[blue s-text]" + minutesspad + "[blue s-text]"]
+                [" target altitude[blue]", "target distance [blue]"],
+                [activeWaypointTargetAltitude.toFixed(0) + "ft", activeWaypointDistance.toFixed(1) + "nm"],
+                [" altitude[blue]", "ground speed [blue]"],
+                [altitude.toFixed(0) + "ft", groundSpeed.toFixed(0) + ""],
+                [" target FPA[blue]", "target VS [blue]"],
+                [desiredFPA.toFixed(0) + "°", desiredVerticalSpeed.toFixed(0) + "fpm"],
+                [" alt dev[blue]", "ap vs [blue]"],
+                [altDeviation.toFixed(0) + "ft", apCurrentVerticalSpeed.toFixed(0) + "fpm"],
+                [" set vertical speed[blue]", ""],
+                [setVerticalSpeed.toFixed(0) + "fpm[green]", ""],
+                ["<RETURN"]
             ]);
-            fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
-            fmc.updateSideButtonActiveStatus();
+            //fmc.setTemplate([
+            //    ["CWB MANUAL VNAV" + "[color]blue"],
+            //    [""],
+            //    ["currCrosswind", "groundSpeed"],
+            //    [currCrosswind.toFixed(0) + "", groundSpeed.toFixed(0) + ""],
+            //    ["xtk", "dtk"],
+            //    [xtk.toFixed(2) + "", dtk.toFixed(0) + ""],
+            //    ["windCorrection", "setHeading"],
+            //    [windCorrection.toFixed(0) + "", setHeading.toFixed(0) + ""],
+            //    ["currTrack", "apCurrentHeading"],
+            //    [currTrack.toFixed(0) + "", apCurrentHeading.toFixed(0) + ""],
+            //    [""],
+            //    [""],
+            //    ["<RETURN"]
+            //]);
+            //fmc.setTemplate([
+            //    ["DL    DATALINK MENU" + "[color]blue"],
+            //    [""],
+            //    ["<RCVD MSGS", "ATS LOG>"],
+            //    [""],
+            //    ["<SEND MSGS", "DEPART CLX>"],
+            //    [""],
+            //    ["<WEATHER", "OCEANIC CLX>"],
+            //    [""],
+            //    ["<TWIP"],
+            //    [""],
+            //    ["<ATIS"],
+            //    [""],
+            //    ["<RETURN"]
+            //]);
+
         }, 1000, true);
+
+
+        fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.updateSideButtonActiveStatus();
     }
 }
 //# sourceMappingURL=CJ4_FMC_InitRefIndexPage.js.map

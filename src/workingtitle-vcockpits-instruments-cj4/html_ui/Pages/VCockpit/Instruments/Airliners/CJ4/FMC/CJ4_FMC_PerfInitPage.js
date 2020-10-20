@@ -154,6 +154,14 @@ class CJ4_FMC_PerfInitPage {
     }
     static ShowPage5(fmc) { //VNAV SETUP Page 3
         fmc.clearDisplay();
+
+        let vnavDescentIas = fmc.vnavDescentIas;
+        let vnavDescentMach = fmc.vnavDescentMach;
+        let vpa = fmc.vpa;
+        let arrivalSpeedLimit = fmc.arrivalSpeedLimit;
+        let arrivalSpeedLimitAltitude = fmc.arrivalSpeedLimitAltitude;
+        let arrivalTransitionFl = fmc.arrivalTransitionFl;
+
         fmc._templateRenderer.setTemplateRaw([
             [" ACT VNAV DESCENT[blue]", "3/3[blue]"],
             [" TGT SPEED[blue]", "TRANS FL [blue]"],
@@ -172,6 +180,61 @@ class CJ4_FMC_PerfInitPage {
         fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage4(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
+
+        fmc.onLeftInput[0] = () => {
+            let value = fmc.inOut.split("/");
+            if (value.length == 2 && value[0] >= 0.5 && value[0] <= 0.77 && value[1] >= 110 && value[1] <= 300) {
+                fmc.vnavDescentMach = new Number(value[0].toPrecision(2));
+                fmc.vnavDescentIas = new Number(Math.trunc(value[1]));
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            fmc.clearUserInput();
+            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+        };
+
+
+        fmc.onLeftInput[1] = () => {
+            let value = fmc.inOut.split("/");
+            if (value.length == 2 && value[0] > 0 && value[0] <= 300 && value[1] > 0 && value[1] < 30000) {
+                fmc.arrivalSpeedLimit = new Number(Math.trunc(value[0]));
+                fmc.arrivalSpeedLimitAltitude = new Number(Math.trunc(value[1]));
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            fmc.clearUserInput();
+            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+        };
+
+        fmc.onRightInput[0] = () => {
+            let value = new Number(fmc.inOut);
+            if (value > 0 && value < 450) {
+                fmc.arrivalTransitionFl = value;
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            fmc.clearUserInput();
+            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+        };
+
+        fmc.onRightInput[2] = () => {
+            let value = new Number(fmc.inOut);
+            if (value > 0 && value <= 5) {
+                fmc.vpa = value.toPrecision(2);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            fmc.clearUserInput();
+            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+        };
+        
+        
+        
+        
         fmc.updateSideButtonActiveStatus();
     }
 
