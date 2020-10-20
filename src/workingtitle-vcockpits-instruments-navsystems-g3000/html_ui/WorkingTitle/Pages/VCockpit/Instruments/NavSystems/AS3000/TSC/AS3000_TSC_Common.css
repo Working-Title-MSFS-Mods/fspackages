@@ -304,6 +304,39 @@
       transform: translateY(-50%);
       width: 100%; }
 
+#PFDSettings .scrollContainer {
+    position: absolute;
+    border-radius: 4px;
+    overflow-y: scroll; }
+  #PFDSettings .scrollContainer::-webkit-scrollbar {
+    width: 1vw; }
+  #PFDSettings .scrollContainer::-webkit-scrollbar-track {
+    background: none; }
+  #PFDSettings .scrollContainer::-webkit-scrollbar-thumb {
+    background: white; }
+  #PFDSettings .buttonsContainer {
+    display: grid;
+    grid-template-columns: 1fr; }
+    #PFDSettings .buttonsContainer .line {
+      height: 100%;
+      border: 1px solid #454b4e;
+      border-radius: 4px;
+      display: grid;
+      grid-template-rows: 1fr; }
+      #PFDSettings .buttonsContainer .line .lineTitle {
+        margin: auto;
+        width: 98%; }
+      #PFDSettings .buttonsContainer .line .gradientButton {
+        justify-self: end;
+        width: 98%;
+        height: 98%;
+        margin: 0; }
+        #PFDSettings .buttonsContainer .line .gradientButton .mainValue {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #67e8ef; }
+
 .MapSettings .MapSettingsLeft {
   display: flex;
   flex-flow: column nowrap;

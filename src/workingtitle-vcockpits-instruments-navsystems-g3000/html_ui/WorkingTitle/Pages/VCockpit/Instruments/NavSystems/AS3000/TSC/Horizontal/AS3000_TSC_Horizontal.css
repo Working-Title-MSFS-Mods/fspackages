@@ -259,45 +259,22 @@ as3000-tsc-horizontal-element {
           width: 80%;
           height: 80%;
           bottom: 0%; }
+
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .scrollContainer {
-        position: absolute;
         top: 2%;
         right: 5%;
         width: 60%;
-        height: 90%;
-        border-radius: 4px;
-        overflow-y: scroll; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .scrollContainer::-webkit-scrollbar {
-          width: 1vw; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .scrollContainer::-webkit-scrollbar-track {
-          background: none; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .scrollContainer::-webkit-scrollbar-thumb {
-          background: white; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer {
-            height: 100%;
-            width: 97%;
-            padding: 1vh;
-            display: grid;
-            grid-auto-rows: 24%;
-            grid-template-columns: 1fr;
-            grid-gap: 0.5vh 0; }
+        height: 90%; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer {
+          height: 100%;
+          width: 97%;
+          padding: 1vh;
+          grid-auto-rows: 24%;
+          grid-gap: 0.5vh 0; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer .line {
-            height: 100%;
-            line-height: 12vh; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer .line .gradientButton .mainValue {
-              color: aqua; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .SelectionMenu {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        font-size: 3.5vh;
-        line-height: 15vh;
-        background-color: black; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .SelectionMenu .gradientButton {
-          width: 100%;
-          height: 15vh; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .SelectionMenu[state=Inactive] {
-          display: none; }
+            grid-template-columns: 40% 60%; }
+            as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer .line .lineTitle {
+              font-size: 5vh; }
 
       as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft {
         position: absolute;
@@ -2097,6 +2074,7 @@ as3000-tsc-horizontal-element {
             top: 0%; }
       as3000-tsc-horizontal-element #Electricity #insertBeforeWaypointWindow .Container .EndButtonLine {
         height: 17vh; }
+
     as3000-tsc-horizontal-element #Electricity #minimumSource .WindowTitle {
       background-color: black; }
     as3000-tsc-horizontal-element #Electricity #minimumSource .Container {

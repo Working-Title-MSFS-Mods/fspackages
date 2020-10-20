@@ -394,47 +394,21 @@
           height: 79%;
           bottom: 1%; }
 
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer {
-        position: absolute;
-        top: 10%;
-        width: 60%;
+      as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .scrollContainer {
+        top: 2%;
         right: 5%;
-        font-size: 3.5vh;
-        line-height: 12vh;
-        border: 0.4vh solid grey; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer .line {
-          position: relative;
-          height: 15vh;
-          border-bottom: 0.4vh solid grey; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer .line .lineTitle {
-            position: absolute;
-            left: 0%;
-            width: 30%;
-            height: 100%;
-            line-height: 12vh; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer .line .lineTitle span {
-              vertical-align: middle;
-              display: inline-block;
-              line-height: 3.5vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer .line .gradientButton {
-            position: absolute;
-            right: 0%;
-            width: 70%;
-            height: 100%; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer .line .gradientButton .mainValue {
-              color: aqua; }
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .SelectionMenu {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        font-size: 3.5vh;
-        line-height: 15vh;
-        background-color: black; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .SelectionMenu .gradientButton {
-          width: 100%;
-          height: 15vh; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .SelectionMenu[state=Inactive] {
-          display: none; }
+        width: 60%;
+        height: 90%; }
+        as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer {
+          height: 100%;
+          width: 97%;
+          padding: 1vh;
+          grid-auto-rows: 24%;
+          grid-gap: 0.5vh 0; }
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer .line {
+            grid-template-columns: 40% 60%; }
+            as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer .line .lineTitle {
+              font-size: 3vh; }
 
       as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft {
         position: absolute;
