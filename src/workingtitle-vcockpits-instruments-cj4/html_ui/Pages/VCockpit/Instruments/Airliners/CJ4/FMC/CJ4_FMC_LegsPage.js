@@ -156,9 +156,10 @@ class CJ4_FMC_LegsPage {
                     this._rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident : "USR"];
                 }
 
-                if (!isFromWpt)
-                    this._rows[2 * i][1] = this.getAltRestriction2(waypoint);
+                if (!isFromWpt) {
+                    this._rows[2 * i][1] = this.getAltRestriction2(waypoint) + "[s-text green]";
                     this._rows[2 * i + 1][1] = this.getAltSpeedRestriction(waypoint);
+                }
             }
 
         }
@@ -446,7 +447,6 @@ class CJ4_FMC_LegsPage {
 
     getAltRestriction2(waypoint) {
         let altitudeConstraint2 = "";
-
 
         if (waypoint.legAltitudeDescription && waypoint.legAltitudeDescription > 0) {
             if (waypoint.legAltitudeDescription === 4 && waypoint.legAltitude1 > 100) {
