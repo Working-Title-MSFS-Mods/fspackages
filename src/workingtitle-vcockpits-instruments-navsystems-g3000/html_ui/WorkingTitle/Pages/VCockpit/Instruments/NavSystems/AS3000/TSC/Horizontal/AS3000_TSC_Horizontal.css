@@ -2075,8 +2075,6 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #insertBeforeWaypointWindow .Container .EndButtonLine {
         height: 17vh; }
 
-    as3000-tsc-horizontal-element #Electricity #minimumSource .WindowTitle {
-      background-color: black; }
     as3000-tsc-horizontal-element #Electricity #minimumSource .Container {
       position: absolute;
       width: 30%;
