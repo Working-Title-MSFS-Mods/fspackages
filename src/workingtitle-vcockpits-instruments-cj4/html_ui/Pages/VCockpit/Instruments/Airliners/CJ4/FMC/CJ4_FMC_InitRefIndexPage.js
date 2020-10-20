@@ -1453,7 +1453,7 @@ class CJ4_FMC_InitRefIndexPage {
             let distanceToTod = vnavTargetDistance > topOfDescent ? vnavTargetDistance - topOfDescent : "N/A";
 
             fmc._templateRenderer.setTemplateRaw([
-                ["", "", "CWB MANUAL VNAV" + "[blue]"],
+                ["", "", "WORKING TITLE VNAV" + "[blue]"],
                 [" target altitude[blue]", "target distance [blue]"],
                 [vnavTargetAltitude.toFixed(0) + "ft", vnavTargetDistance.toFixed(1) + "nm"],
                 [" VNAV Target[blue]", "ground speed [blue]"],
