@@ -214,7 +214,7 @@ class CJ4_FMC_LegsPage {
                 if (waypoint === "EMPTY" && this._fmc.selectMode !== CJ4_FMC_LegsPage.SELECT_MODE.NEW) return;
 
                 switch (this._fmc.selectMode) {
-                    case CJ4_FMC_LegsPage.SELECT_MODE.NONE:
+                    case CJ4_FMC_LegsPage.SELECT_MODE.NONE: {
                         // CANT SELECT MAGENTA OR BLUE ON PAGE 1
                         if (((i > 1 && this._currentPage == 1) || (this._currentPage > 1))) {
                             // SELECT EXISTING WAYPOINT FROM FLIGHT PLAN
@@ -236,6 +236,7 @@ class CJ4_FMC_LegsPage {
                             this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.EXISTING;
                         }
                         break;
+                    }
                     case CJ4_FMC_LegsPage.SELECT_MODE.EXISTING: {
                         if ((i >= 1 && this._currentPage == 1) || this._currentPage > 1) {
 
@@ -305,8 +306,15 @@ class CJ4_FMC_LegsPage {
                         }
                         break;
                     }
-                    case CJ4_FMC_LegsPage.SELECT_MODE.NEW:
+                    case CJ4_FMC_LegsPage.SELECT_MODE.NEW: {
                         if (this._fmc.flightPlanManager.isActiveApproach()) {
+                            this._fmc.showErrorMessage("UNABLE MOD APPROACH");
+                            return;
+                        }
+
+
+                        let tempWp = this._wayPointsToRender[selectedWpIndex];
+                        if (this.isApproachWaypoint(tempWp)) {
                             this._fmc.showErrorMessage("UNABLE MOD APPROACH");
                             return;
                         }
@@ -331,8 +339,15 @@ class CJ4_FMC_LegsPage {
                             });
                         }
                         break;
-                    case CJ4_FMC_LegsPage.SELECT_MODE.DELETE:
+                    }
+                    case CJ4_FMC_LegsPage.SELECT_MODE.DELETE: {
                         if (this._fmc.flightPlanManager.isActiveApproach()) {
+                            this._fmc.showErrorMessage("UNABLE MOD APPROACH");
+                            return;
+                        }
+
+                        let tempWp = this._wayPointsToRender[selectedWpIndex];
+                        if (this.isApproachWaypoint(tempWp)) {
                             this._fmc.showErrorMessage("UNABLE MOD APPROACH");
                             return;
                         }
@@ -350,9 +365,16 @@ class CJ4_FMC_LegsPage {
                             this._fmc.showErrorMessage("UNABLE MOD FROM WPT");
                         }
                         break;
+                    }
                 }
             };
         }
+    }
+
+    isApproachWaypoint(wp) {
+        this._approachWaypoints = this._fmc.flightPlanManager.getApproachWaypoints();
+        let approachWpIndex = this._approachWaypoints.indexOf(wp);
+        return (approachWpIndex >= 0);
     }
 
     resetAfterOp() {
