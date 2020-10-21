@@ -12,7 +12,7 @@ class AS3000_PFD extends NavSystem {
                 new AS3000_PFD_MainPage()
             ]),
         ];
-        this.addIndependentElementContainer(new NavSystemElementContainer("InnerMap", "InnerMap", new AS3000_PFD_InnerMap("_PFD")));
+        this.addIndependentElementContainer(new NavSystemElementContainer("InnerMap", "InnerMap", new AS3000_PFD_InnerMap("PFD")));
         this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new PFD_WindData()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", new PFD_Warnings()));
         this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(AS3000_PFD_SoftKeyHtmlElement)));
@@ -346,13 +346,13 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 
     toggleTerrain() {
         if (this.innerMap.isEnabled()) {
-            AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT, this.innerMap.simVarNameID,
-                    (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.innerMap.simVarNameID, "number") + 1) % AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT.length);
+            AS3000_MapElement.setSyncedSettingVar(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT, this.innerMap.simVarNameID,
+                    (SimVar.GetSimVarValue(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT + this.innerMap.simVarNameID, "number") + 1) % AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT.length);
         }
     }
 
     terrainStatus() {
-        return AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.innerMap.simVarNameID, "number")];
+        return AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT[SimVar.GetSimVarValue(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT + this.innerMap.simVarNameID, "number")];
     }
 
     toggleWX() {
