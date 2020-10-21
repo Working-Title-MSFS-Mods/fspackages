@@ -16,7 +16,7 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         this.middleKnobText = this.getChildById("SoftKey_2");
         this.bottomKnobText = this.getChildById("SoftKey_3");
         this.addIndependentElementContainer(new NavSystemElementContainer("NavCom", "NavComLeft", new AS3000_TSC_Vertical_NavComHome()));
-        this.getElementOfType(AS3000_TSC_ActiveFPL).setArrowSizes(18, 20, 10, 4, 8);
+        this.getElementOfType(AS3000_TSC_ActiveFPL).setArrowSizes(5, 20, 10, 4, 8);
     }
 
     setMiddleKnobText(_text, _fromPopUp = false) {
@@ -41,6 +41,14 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
                 this.SwitchToMenuName(pageGroup[0].textContent);
             }
         }
+    }
+
+    setArrowSizes(_leftOffset, _topOffset, _lineDistance, _lineWidth, _headWidth) {
+        this.arrowLeftOffset = _leftOffset;
+        this.arrowTopOffset = _topOffset;
+        this.arrowLineDistance = _lineDistance;
+        this.arrowLineWidth = _lineWidth;
+        this.arrowHeadWidth = _headWidth;
     }
 }
 class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {

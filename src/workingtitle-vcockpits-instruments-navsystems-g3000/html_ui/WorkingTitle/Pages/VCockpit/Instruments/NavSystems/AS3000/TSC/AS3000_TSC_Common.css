@@ -500,6 +500,118 @@
             width: 100%;
             color: white; }
 
+#ActiveFlightPlan #flightPlan .HalfMenu {
+  visibility: hidden; }
+#ActiveFlightPlan #flightPlan[displayedMenu=Waypoint] #AFPL_WaypointButtonsTable,
+#ActiveFlightPlan #flightPlan[displayedMenu=Destination] #AFPL_DestinationButtonsTable,
+#ActiveFlightPlan #flightPlan[displayedMenu=Origin] #AFPL_OriginButtonsTable {
+  visibility: visible;
+  animation: flightplanMenuEnter 0.5s; }
+#ActiveFlightPlan #flightPlan #AFPL_WayPointsTable {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-collapse: collapse; }
+  #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable thead {
+    display: block;
+    color: white;
+    width: 100%;
+    border-bottom: 2px solid white; }
+  #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody {
+    display: block;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody::-webkit-scrollbar {
+      width: 1vw; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody::-webkit-scrollbar-track {
+      background: none; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody::-webkit-scrollbar-thumb {
+      background: white; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state="Selected"] {
+      background-color: #0093d0; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=Inactive] {
+      display: none; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .Waypoint .mainValue, #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .Waypoint .title {
+      color: magenta !important; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .DTK, #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .DIS {
+      color: magenta; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr, #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody td {
+      position: relative; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton {
+      height: auto;
+      width: auto; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue {
+        position: absolute;
+        width: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #67e8ef; }
+        #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue[altitudeMode=Manual] {
+          color: #67e8ef; }
+        #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue[altitudeMode=Subdued] {
+          color: darkcyan;
+          -webkit-mask: url(/Pages/VCockpit/Instruments/NavSystems/Shared/Images/SubduedMask.png);
+          -webkit-mask-repeat: repeat; }
+        #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable .phaseHeader[state=SelectedWP] .gradientButton {
+          background: linear-gradient(#7dddff, #008cb4 2vh); }
+          #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable .phaseHeader[state=SelectedWP] .gradientButton .mainValue {
+            color: black; }
+        #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .mainValue {
+          color: #67e8ef; }
+        #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .title {
+          overflow-x: scroll;
+          overflow-y: hidden; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .DTK {
+        color: white;
+        text-align: right; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .DIS {
+        color: white;
+        text-align: right; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody #CurrentLegArrowSVG {
+        position: absolute;
+        left: 0%;
+        top: 0%;
+        height: 100%;
+        width: 100%;
+        z-index: 1; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody #AFPL_EnRouteAdd[state="Inactive"] {
+        display: none; }
+          #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable #SizeSetter, #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable #SizeSetter td {
+            border: none;
+            height: 2px;
+            overflow: visible; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable #SizeSetter #CurrentLegArrowSVG {
+        overflow: visible; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable td {
+        border: 2px solid #2c3032; }
+#ActiveFlightPlan #flightPlan .HalfMenu {
+  position: absolute; }
+  #ActiveFlightPlan #flightPlan .HalfMenu tbody {
+    height: 100%; }
+    #ActiveFlightPlan #flightPlan .HalfMenu tr td {
+      border: none; }
+
+#Procedures .gradientButton .value {
+        width: 100%;
+        color: #67e8ef; }
+  .ProcSelection .gradientButton .value {
+    color: #67e8ef;
+    width: 100%;
+    text-align: center; }
+  .ProcSelection .ProcAirport .ident {
+    color: #67e8ef;
+    width: 100%;
+    text-align: center; }
+  .ProcSelection .ProcAirport .name {
+    width: 100%;
+    overflow: hidden;
+    text-align: center; }
+  .ProcSelection .ProcSequence .content {
+    width: 100%;
+    overflow-y: scroll; }
+
 #LightingConfig #LightingValueDisplay {
   text-align: center;
   color: white; }

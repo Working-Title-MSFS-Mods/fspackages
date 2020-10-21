@@ -380,24 +380,6 @@ as3000-tsc-horizontal-element {
               left: 30%;
               width: 39%; }
 
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #leftBar {
-        position: absolute;
-        left: 1%;
-        height: 98%;
-        width: 15%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #leftBar .gradientButton {
-          height: 17%;
-          margin-bottom: 17%;
-          width: 100%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #leftBar #AFPL_StbyFpl .mainText, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #leftBar #AFPL_FplOptions .mainText {
-          font-size: 3.3vh; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan {
-        position: absolute;
-        height: 97%;
-        left: 22%;
-        width: 75%;
-        border: 0.4vh solid white; }
-
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay {
           position: absolute;
           top: 20%;
@@ -461,77 +443,40 @@ as3000-tsc-horizontal-element {
     right: -29.5vw;
     visibility: hidden; } }
 
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu {
-          visibility: hidden; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan[displayedMenu=Waypoint] #AFPL_WaypointButtonsTable,
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan[displayedMenu=Destination] #AFPL_DestinationButtonsTable,
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan[displayedMenu=Origin] #AFPL_OriginButtonsTable {
-          visibility: visible;
-          animation: flightplanMenuEnter 0.5s; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable {
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #leftBar {
+        position: absolute;
+        left: 1%;
+        height: 98%;
+        width: 15%; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #leftBar .gradientButton {
+          height: 17%;
           width: 100%;
-          height: 100%;
-          border: none;
-          border-collapse: collapse; }
+          margin: 1vh 0; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #leftBar #AFPL_StbyFpl .mainText, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #leftBar #AFPL_FplOptions .mainText {
+          font-size: 3.3vh; }
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan {
+        position: absolute;
+        height: 97%;
+        left: 17%;
+        width: 80%; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable thead {
-            display: block;
-            color: white;
             font-size: 4vh;
             height: 7vh;
-            width: 100%;
-            border-bottom: 0.4vh solid white;
             padding-right: 3%; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody {
-            display: block;
-            overflow-y: scroll;
-            overflow-x: hidden;
             height: 80vh;
-            width: 100%;
-            position: relative;
             padding-right: 1.75%; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody::-webkit-scrollbar {
-              width: 1vw; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody::-webkit-scrollbar-track {
-              background: none; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody::-webkit-scrollbar-thumb {
-              background: white; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state="Selected"] {
-              background-color: #0093d0; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=Inactive] {
-              display: none; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .Waypoint .mainValue, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .Waypoint .title {
-              color: magenta !important; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .DTK, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .DIS {
-              color: magenta; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody td {
-              height: 16vh;
-              position: relative; }
+              height: 16vh; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton {
               position: absolute;
               top: 0.4vh;
               left: 0.4vh;
               bottom: 0.4vh;
               right: 0.4vh;
-              height: auto;
-              width: auto;
               margin: 0.25vh; }
               as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue {
-                position: absolute;
-                width: 100%;
-                top: 50%;
-                transform: translateY(-50%);
-                font-size: 5vh;
-                color: #67e8ef; }
-                as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue[altitudeMode=Manual] {
-                  color: #67e8ef; }
-                as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue[altitudeMode=Subdued] {
-                  color: darkcyan;
-                  -webkit-mask: url(/Pages/VCockpit/Instruments/NavSystems/Shared/Images/SubduedMask.png);
-                  -webkit-mask-repeat: repeat; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable .phaseHeader[state=SelectedWP] .gradientButton {
-              background: linear-gradient(#7dddff, #008cb4 15%); }
-              as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable .phaseHeader[state=SelectedWP] .gradientButton .mainValue {
-                color: black; }
+                font-size: 5vh; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .mainValue {
               position: absolute;
               width: auto;
@@ -539,17 +484,14 @@ as3000-tsc-horizontal-element {
               transform: none;
               left: 10%;
               top: 10%;
-              font-size: 6vh;
-              color: #67e8ef; }
+              font-size: 6vh; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .title {
               position: absolute;
               text-align: left;
               left: 10%;
               bottom: 0%;
               width: 80%;
-              font-size: 3vh;
-              overflow-x: scroll;
-              overflow-y: hidden; }
+              font-size: 3vh; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .symbol {
               position: absolute;
               right: 0%;
@@ -558,51 +500,26 @@ as3000-tsc-horizontal-element {
               position: absolute;
               right: 5%;
               top: 10%;
-              font-size: 5vh;
-              color: white;
-              text-align: right; }
+              font-size: 5vh; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .DIS {
               position: absolute;
               right: 5%;
               bottom: 10%;
-              font-size: 5vh;
-              color: white;
-              text-align: right; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody #CurrentLegArrowSVG {
-              position: absolute;
-              left: 0%;
-              top: 0%;
-              height: 100%;
-              width: 100%;
-              z-index: 1; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody #AFPL_EnRouteAdd[state="Inactive"] {
-              display: none; }
+              font-size: 5vh; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable thead tr th:nth-child(1), as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr:first-child td:nth-child(1) {
             width: 35vw; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable thead tr th:nth-child(2), as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr:first-child td:nth-child(2) {
             width: 20vw; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable thead tr th:nth-child(3), as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr:first-child td:nth-child(3) {
             width: 20vw; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable #SizeSetter, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable #SizeSetter td {
-            border: none;
-            height: 2px;
-            overflow: visible; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable #SizeSetter #CurrentLegArrowSVG {
-            overflow: visible; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable td {
-            border: 0.4vh solid #2c3032; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu {
-          position: absolute;
           right: -1%;
           top: 0%;
           height: 100%;
           width: 31.25vw; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu tbody {
-            height: 100%; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu tr {
             height: 20%; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu tr td {
-              border: none;
               height: 20%;
               width: 50%; }
               as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu tr td .gradientButton {
@@ -614,6 +531,7 @@ as3000-tsc-horizontal-element {
                 as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan .HalfMenu tr td .gradientButton .mainText {
                   font-size: 3.5vh;
                   line-height: 4vh; }
+
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #Procedures .gradientButton .title {
         top: 10%;
         font-size: 4.5vh;
@@ -621,8 +539,6 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #Procedures .gradientButton .value {
         position: absolute;
         bottom: 10%;
-        width: 100%;
-        color: #67e8ef;
         font-size: 5.5vh; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #Procedures #Procedures_Departure {
         position: absolute;
@@ -660,69 +576,77 @@ as3000-tsc-horizontal-element {
         height: 20%;
         left: 70%;
         top: 80%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection .gradientButton .title {
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .gradientButton .title {
         top: 10%;
         font-size: 4.5vh; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection .gradientButton .value {
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .gradientButton .value {
         position: absolute;
         bottom: 15%;
-        color: #67e8ef;
-        font-size: 5.5vh;
-        width: 100%;
-        text-align: center; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Airport {
+        font-size: 5.5vh; }
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .ProcAirport {
         position: absolute;
         top: 5%;
         left: 2.5%;
         width: 30%;
         height: 20%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Airport .ident {
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .ProcAirport .ident {
           position: absolute;
           bottom: 25%;
-          color: #67e8ef;
-          font-size: 5.5vh;
-          width: 100%;
-          text-align: center; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Airport .name {
+          font-size: 5.5vh; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .ProcAirport .name {
           position: absolute;
           bottom: 5%;
-          font-size: 3vh;
-          width: 100%;
-          overflow: hidden;
-          text-align: center; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Departure {
+          font-size: 3vh; }
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .ProcIdentifier {
         position: absolute;
         top: 5%;
         left: 35%;
         right: 35%;
         width: auto;
         height: 20%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Transition {
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .ProcTransition {
         position: absolute;
         top: 5%;
         right: 2.5%;
         width: 30%;
         height: 20%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Runway {
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .ProcRunway {
         position: absolute;
         width: 30%;
         height: 20%;
         left: 17.5%;
         top: 27.5%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Options {
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .ProcOptions {
         position: absolute;
         width: 62.5%;
         left: 2.5%;
         height: 50%;
         top: 50%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Options .title {
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .ProcOptions .title {
           position: absolute;
           top: 2%;
           width: 100%;
           text-align: center;
           font-size: 4.5vh; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Options .gradientButton .title {
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .ProcOptions .gradientButton .title {
           top: 15%; }
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .ProcSequence {
+        position: absolute;
+        right: 3%;
+        width: 30%;
+        top: 27.5%;
+        height: 72.5%; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .ProcSequence .title {
+          position: absolute;
+          width: 100%;
+          font-size: 4.5vh;
+          text-align: center; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .ProcSequence .content {
+          position: absolute;
+          top: 10%;
+          height: 90%;
+          font-size: 3.5vh;
+          margin-left: 0.5vh; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Options #Departure_Preview {
           position: absolute;
           top: 17.5%;
@@ -747,88 +671,6 @@ as3000-tsc-horizontal-element {
           right: 2.5%;
           height: 40%;
           width: 42.5%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Sequence {
-        position: absolute;
-        right: 3%;
-        width: 30%;
-        top: 27.5%;
-        height: 72.5%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Sequence .title {
-          position: absolute;
-          width: 100%;
-          font-size: 4.5vh;
-          text-align: center; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection #Departure_Sequence .content {
-          position: absolute;
-          top: 10%;
-          width: 100%;
-          height: 90%;
-          font-size: 3.5vh;
-          margin-left: 0.5vh;
-          overflow-y: scroll; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection .gradientButton .title {
-        top: 10%;
-        font-size: 4.5vh; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection .gradientButton .value {
-        position: absolute;
-        bottom: 15%;
-        color: #67e8ef;
-        font-size: 5.5vh;
-        width: 100%;
-        text-align: center; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Airport {
-        position: absolute;
-        top: 5%;
-        left: 2.5%;
-        width: 30%;
-        height: 20%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Airport .ident {
-          position: absolute;
-          bottom: 25%;
-          color: #67e8ef;
-          font-size: 5.5vh;
-          width: 100%;
-          text-align: center; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Airport .name {
-          position: absolute;
-          bottom: 5%;
-          font-size: 3vh;
-          width: 100%;
-          overflow: hidden;
-          text-align: center; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Arrival {
-        position: absolute;
-        top: 5%;
-        left: 35%;
-        right: 35%;
-        width: auto;
-        height: 20%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Transition {
-        position: absolute;
-        top: 5%;
-        right: 2.5%;
-        width: 30%;
-        height: 20%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Runway {
-        position: absolute;
-        width: 30%;
-        height: 20%;
-        left: 17.5%;
-        top: 27.5%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Options {
-        position: absolute;
-        width: 62.5%;
-        left: 2.5%;
-        height: 50%;
-        top: 50%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Options .title {
-          position: absolute;
-          top: 2%;
-          width: 100%;
-          text-align: center;
-          font-size: 4.5vh; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Options .gradientButton .title {
-          top: 15%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Options #Arrival_Preview {
           position: absolute;
           top: 17.5%;
@@ -853,68 +695,6 @@ as3000-tsc-horizontal-element {
           right: 2.5%;
           height: 40%;
           width: 42.5%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Sequence {
-        position: absolute;
-        right: 3%;
-        width: 30%;
-        top: 27.5%;
-        height: 72.5%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Sequence .title {
-          position: absolute;
-          width: 100%;
-          font-size: 4.5vh;
-          text-align: center; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection #Arrival_Sequence .content {
-          position: absolute;
-          top: 10%;
-          width: 100%;
-          height: 90%;
-          font-size: 3.5vh;
-          margin-left: 0.5vh;
-          overflow-y: scroll; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection .gradientButton .title {
-        top: 10%;
-        font-size: 4.5vh; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection .gradientButton .value {
-        position: absolute;
-        bottom: 15%;
-        color: #67e8ef;
-        font-size: 5.5vh;
-        width: 100%;
-        text-align: center; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Airport {
-        position: absolute;
-        top: 5%;
-        left: 2.5%;
-        width: 30%;
-        height: 20%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Airport .ident {
-          position: absolute;
-          bottom: 25%;
-          color: #67e8ef;
-          font-size: 5.5vh;
-          width: 100%;
-          text-align: center; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Airport .name {
-          position: absolute;
-          bottom: 5%;
-          font-size: 3vh;
-          width: 100%;
-          overflow: hidden;
-          text-align: center; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Approach {
-        position: absolute;
-        top: 5%;
-        left: 35%;
-        right: 35%;
-        width: auto;
-        height: 20%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Transition {
-        position: absolute;
-        top: 5%;
-        right: 2.5%;
-        width: 30%;
-        height: 20%; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Minimums {
         position: absolute;
         width: 30%;
@@ -937,20 +717,6 @@ as3000-tsc-horizontal-element {
         top: 27.5%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_PrimaryFrequency .value {
           color: white; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Options {
-        position: absolute;
-        width: 62.5%;
-        left: 2.5%;
-        height: 50%;
-        top: 50%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Options .title {
-          position: absolute;
-          top: 2%;
-          width: 100%;
-          text-align: center;
-          font-size: 4.5vh; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Options .gradientButton .title {
-          top: 15%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Options #Approach_Preview {
           position: absolute;
           top: 17.5%;
@@ -976,25 +742,6 @@ as3000-tsc-horizontal-element {
           right: 2.5%;
           height: 40%;
           width: 30%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Sequence {
-        position: absolute;
-        right: 3%;
-        width: 30%;
-        top: 27.5%;
-        height: 72.5%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Sequence .title {
-          position: absolute;
-          width: 100%;
-          font-size: 4.5vh;
-          text-align: center; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection #Approach_Sequence .content {
-          position: absolute;
-          top: 10%;
-          width: 100%;
-          height: 90%;
-          font-size: 3.5vh;
-          margin-left: 0.5vh;
-          overflow-y: scroll; }
 
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig .backgroundBox {
         position: absolute;

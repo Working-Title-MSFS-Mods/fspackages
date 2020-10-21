@@ -863,7 +863,7 @@
                             <div class="mainText">Flight Plan Options</div>
                         </div>
                     </div>
-                    <div id="flightPlan" displayedMenu="None">
+                    <div class="backgroundBox" id="flightPlan" displayedMenu="None">
                         <table id="AFPL_WayPointsTable">
                             <thead>
                                 <tr>
@@ -882,7 +882,7 @@
                                     <td></td>
                                     <td></td>
                                 </tr>
-                                <tr id="AFPL_Origin">
+                                <tr class="phaseHeader" id="AFPL_Origin">
                                     <td colspan="3">
                                         <div class="gradientButton">
                                             <div class="mainValue"></div>
@@ -901,7 +901,7 @@
                                     <td></td>
                                     <td></td>
                                 </tr>
-                                <tr id="AFPL_EnRoute">
+                                <tr class="phaseHeader" id="AFPL_EnRoute">
                                     <td colspan="3">
                                         <div class="gradientButton">
                                             <div class="mainValue">Enroute</div>
@@ -921,7 +921,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <tr id="AFPL_Destination">
+                                <tr class="phaseHeader" id="AFPL_Destination">
                                     <td colspan="3">
                                         <div class="gradientButton">
                                             <div class="mainValue"></div>
@@ -957,7 +957,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <table id="AFPL_WaypointButtonsTable" class="HalfMenu" state="Active">
+                        <table id="AFPL_WaypointButtonsTable" class="backgroundBox HalfMenu" state="Active">
                             <tr>
                                 <td>
                                     <div class="gradientButton" id="AFPL_InsertBefore_Button">
@@ -1020,7 +1020,7 @@
                                 </td>
                             </tr>
                         </table>
-                        <table id="AFPL_DestinationButtonsTable" class="HalfMenu" state="Active">
+                        <table id="AFPL_DestinationButtonsTable" class="backgroundBox HalfMenu" state="Active">
                             <tr>
                                 <td>
                                     <div class="gradientButton" id="AFPL_SelectDest_Button">
@@ -1066,7 +1066,7 @@
                                 <td></td>
                             </tr>
                         </table>
-                        <table id="AFPL_OriginButtonsTable" class="HalfMenu" state="Active">
+                        <table id="AFPL_OriginButtonsTable" class="backgroundBox HalfMenu" state="Active">
                             <tr>
                                 <td>
                                     <div class="gradientButton" id="AFPL_SelectOrigin_Button">
@@ -1133,26 +1133,26 @@
                         <div class="title">Activate Missed Approach</div>
                     </div>
                 </div>
-                <div id="DepartureSelection">
-                    <div class="gradientButton" id="Departure_Airport">
-                        <div class="title">Airport</div>
+                <div class="ProcSelection" id="DepartureSelection">
+                    <div class="gradientButton ProcAirport" id="Departure_Airport">
+                        <div class="upperTitle">Airport</div>
                         <div class="ident">____</div>
                         <div class="name">____</div>
                         <img class="logo" />
                     </div>
-                    <div class="gradientButton" id="Departure_Departure">
-                        <div class="title">Departure</div>
+                    <div class="gradientButton ProcIdentifier" id="Departure_Departure">
+                        <div class="upperTitle">Departure</div>
                         <div class="value">____</div>
                     </div>
-                    <div class="gradientButton" id="Departure_Transition">
-                        <div class="title">Transition</div>
+                    <div class="gradientButton ProcTransition" id="Departure_Transition">
+                        <div class="upperTitle">Transition</div>
                         <div class="value">____</div>
                     </div>
-                    <div class="gradientButton" id="Departure_Runway">
-                        <div class="title">Runway</div>
+                    <div class="gradientButton ProcRunway" id="Departure_Runway">
+                        <div class="upperTitle">Runway</div>
                         <div class="value">____</div>
                     </div>
-                    <div id="Departure_Options">
+                    <div class="backgroundBox ProcOptions" id="Departure_Options">
                         <div class="title">Departure Options</div>
                         <div class="gradientButton" id="Departure_Preview" state="Hidden">
                             <div class="title">Preview</div>
@@ -1163,37 +1163,37 @@
                             <div class="value">Runway</div>
                         </div>
                         <div class="gradientButton" id="Departure_Remove">
-                            <div class="title">Remove</div>
+                            <div class="mainText">Remove</div>
                         </div>
                         <div class="gradientButton" id="Departure_Load">
-                            <div class="title">Load</div>
+                            <div class="mainText">Load</div>
                         </div>
                     </div>
-                    <div id="Departure_Sequence">
+                    <div class="backgroundBox ProcSequence" id="Departure_Sequence">
                         <div class="title">Sequence</div>
                         <div class="content"></div>
                     </div>
                 </div>
-                <div id="ArrivalSelection">
-                    <div class="gradientButton" id="Arrival_Airport">
-                        <div class="title">Airport</div>
+                <div class="ProcSelection" id="ArrivalSelection">
+                    <div class="gradientButton ProcAirport" id="Arrival_Airport">
+                        <div class="upperTitle">Airport</div>
                         <div class="ident">____</div>
                         <div class="name">____</div>
                         <img class="logo" />
                     </div>
-                    <div class="gradientButton" id="Arrival_Arrival">
-                        <div class="title">Arrival</div>
+                    <div class="gradientButton ProcIdentifier" id="Arrival_Arrival">
+                        <div class="upperTitle">Arrival</div>
                         <div class="value">____</div>
                     </div>
-                    <div class="gradientButton" id="Arrival_Transition">
-                        <div class="title">Transition</div>
+                    <div class="gradientButton ProcTransition" id="Arrival_Transition">
+                        <div class="upperTitle">Transition</div>
                         <div class="value">____</div>
                     </div>
-                    <div class="gradientButton" id="Arrival_Runway">
-                        <div class="title">Runway</div>
+                    <div class="gradientButton ProcRunway" id="Arrival_Runway">
+                        <div class="upperTitle">Runway</div>
                         <div class="value">____</div>
                     </div>
-                    <div id="Arrival_Options">
+                    <div class="backgroundBox ProcOptions" id="Arrival_Options">
                         <div class="title">Arrival Options</div>
                         <div class="gradientButton" id="Arrival_Preview" state="Hidden">
                             <div class="title">Preview</div>
@@ -1204,58 +1204,58 @@
                             <div class="value">Runway</div>
                         </div>
                         <div class="gradientButton" id="Arrival_Remove">
-                            <div class="title">Remove</div>
+                            <div class="mainText">Remove</div>
                         </div>
                         <div class="gradientButton" id="Arrival_Load">
-                            <div class="title">Load</div>
+                            <div class="mainText">Load</div>
                         </div>
                     </div>
-                    <div id="Arrival_Sequence">
+                    <div class="backgroundBox ProcSequence" id="Arrival_Sequence">
                         <div class="title">Sequence</div>
                         <div class="content"></div>
                     </div>
                 </div>
-                <div id="ApproachSelection">
-                    <div class="gradientButton" id="Approach_Airport">
-                        <div class="title">Airport</div>
+                <div class="ProcSelection" id="ApproachSelection">
+                    <div class="gradientButton ProcAirport" id="Approach_Airport">
+                        <div class="upperTitle">Airport</div>
                         <div class="ident">____</div>
                         <div class="name">____</div>
                         <img class="logo" />
                     </div>
-                    <div class="gradientButton" id="Approach_Approach">
-                        <div class="title">Approach</div>
+                    <div class="gradientButton ProcIdentifier" id="Approach_Approach">
+                        <div class="upperTitle">Approach</div>
                         <div class="value">____</div>
                     </div>
-                    <div class="gradientButton" id="Approach_Transition">
-                        <div class="title">Transition</div>
+                    <div class="gradientButton ProcTransition" id="Approach_Transition">
+                        <div class="upperTitle">Transition</div>
                         <div class="value">____</div>
                     </div>
                     <div class="gradientButton" id="Approach_Minimums" state="Hidden">
-                        <div class="title">Minimums</div>
+                        <div class="upperTitle">Minimums</div>
                         <div class="state">Off</div>
                         <div class="value">_____M</div>
                     </div>
                     <div class="gradientButton" id="Approach_PrimaryFrequency" state="Hidden">
-                        <div class="title">Primary Frequency</div>
+                        <div class="upperTitle">Primary Frequency</div>
                         <div class="value">BD 110.30</div>
                     </div>
-                    <div id="Approach_Options">
+                    <div class="backgroundBox ProcOptions" id="Approach_Options">
                         <div class="title">Approach Options</div>
                         <div class="gradientButton" id="Approach_Preview" state="Hidden">
                             <div class="title">Preview</div>
                             <div class="value">Off</div>
                         </div>
                         <div class="gradientButton" id="Approach_Remove">
-                            <div class="title">Remove</div>
+                            <div class="mainText">Remove</div>
                         </div>
                         <div class="gradientButton" id="Approach_Load">
-                            <div class="title">Load</div>
+                            <div class="mainText">Load</div>
                         </div>
                         <div class="gradientButton" id="Approach_LoadAndActivate">
-                            <div class="title">Load &amp; Activate</div>
+                            <div class="mainText">Load &amp; Activate</div>
                         </div>
                     </div>
-                    <div id="Approach_Sequence">
+                    <div class="backgroundBox ProcSequence" id="Approach_Sequence">
                         <div class="title">Sequence</div>
                         <div class="content"></div>
                     </div>
