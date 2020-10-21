@@ -3,7 +3,7 @@ class WT_MapElement extends MapInstrumentElement {
     constructor(_varNameID, _settings = []) {
         super();
         this.varNameID = _varNameID;
-        
+
         this._settings = Array.from(_settings);
         this._settingsToSync = [];
         for (let setting of this._settings) {
@@ -12,59 +12,59 @@ class WT_MapElement extends MapInstrumentElement {
             }
         }
     }
-    
+
     addSetting(_setting) {
         this._settings.push(_setting);
         if (_setting.toSync) {
             this._settingsToSync.push(_setting);
         }
     }
-    
+
     callSettingsOnTemplateLoaded() {
         for (let setting of this._settings) {
             setting.onTemplateLoaded();
         }
     }
-    
+
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
-        
+
         let initID = WT_MapElement.getSettingVar(WT_MapElement.VARNAME_SYNC_INIT_ROOT_DEFAULT, WT_MapElement.VARNAME_SYNC_ALL_ID, "");
         if (initID == this.varNameID) {
             this.syncMasterToAllSettings();
             WT_MapElement.setSettingVar(WT_MapElement.VARNAME_SYNC_INIT_ROOT_DEFAULT, WT_MapElement.VARNAME_SYNC_ALL_ID, "");
             WT_MapElement.setSettingVar(WT_MapElement.VARNAME_SYNC_ROOT, WT_MapElement.VARNAME_SYNC_ALL_ID, WT_MapElement.Sync.ALL);
         }
-        
+
         let sync = WT_MapElement.getSettingVar(WT_MapElement.VARNAME_SYNC_ROOT, WT_MapElement.VARNAME_SYNC_ALL_ID);
         if (sync == WT_MapElement.Sync.ALL) {
             for (let setting of this._settingsToSync) {
                 setting.syncFrom(WT_MapElement.VARNAME_SYNC_ALL_ID);
             }
         }
-        
+
         for (let setting of this._settings) {
             setting.onUpdate();
         }
     }
-    
+
     syncMasterToAllSettings() {
         for (let setting of this._settingsToSync) {
             setting.syncTo(WT_MapElement.VARNAME_SYNC_ALL_ID);
         }
     }
-    
+
     static setSyncedSettingVar(_root, _id, _val) {
         WT_MapElement.setSettingVar(_root, _id, _val);
         if (WT_MapElement.getSettingVar(WT_MapElement.VARNAME_SYNC_ROOT, WT_MapElement.VARNAME_SYNC_ALL_ID) == 1) {
             WT_MapElement.setSettingVar(_root, WT_MapElement.VARNAME_SYNC_ALL_ID, _val);
         }
     }
-    
+
     static setSettingVar(_root, _id, _val) {
         WTDataStore.set(`${_id}.${_root}`, _val);
     }
-    
+
     static getSettingVar(_root, _id, _default = 0) {
         return WTDataStore.get(`${_id}.${_root}`, _default);
     }
@@ -86,11 +86,11 @@ class WT_MapSetting {
         this.defaultValue = _defaultValue;
         this.useStorage = _useStorage;
     }
-    
+
     get toSync() {
         return this._toSync;
     }
-    
+
     setValue(_val, _skipSync = false) {
         if (this.toSync && !_skipSync) {
             WT_MapElement.setSyncedSettingVar(this.varNameRoot, this.mapElement.varNameID, _val);
@@ -98,23 +98,23 @@ class WT_MapSetting {
             WT_MapElement.setSettingVar(this.varNameRoot, this.mapElement.varNameID, _val);
         }
     }
-    
+
     getValue() {
         return WT_MapElement.getSettingVar(this.varNameRoot, this.mapElement.varNameID, this.defaultValue);
     }
-    
+
     syncTo(_syncID) {
         WT_MapElement.setSettingVar(this.varNameRoot, _syncID, this.getValue());
     }
-    
+
     syncFrom(_syncID) {
         let newVal = WT_MapElement.getSettingVar(this.varNameRoot, _syncID);
         this.setValue(newVal, true);
     }
-    
+
     onTemplateLoaded() {
     }
-    
+
     onUpdate() {
     }
 }
@@ -125,26 +125,26 @@ class WT_MapSettingGroup {
     constructor(_mapElement, _toSync, _settings = []) {
         this.mapElement = _mapElement;
         this._toSync = _toSync;
-        
+
         this._settings = Array.from(_settings);
     }
-    
+
     get varNameRoot() {
         return Array.from(this._settings, setting => setting.varNameRoot);
     }
-    
+
     get toSync() {
         return this._toSync;
     }
-    
+
     getValue() {
         return Array.from(this._settings, setting => setting.getValue());
     }
-    
+
     addSetting(_setting) {
         this._settings.push(_setting);
     }
-    
+
     syncTo(_syncID) {
         for (let setting of this._settings) {
             if (setting.toSync) {
@@ -152,7 +152,7 @@ class WT_MapSettingGroup {
             }
         }
     }
-    
+
     syncFrom(_syncID) {
         for (let setting of this._settings) {
             if (setting.toSync) {
@@ -160,13 +160,13 @@ class WT_MapSettingGroup {
             }
         }
     }
-    
+
     onTemplateLoaded() {
         for (let setting of this._settings) {
             setting.onTemplateLoaded();
         }
     }
-    
+
     onUpdate() {
         for (let setting of this._settings) {
             setting.onUpdate();
@@ -178,7 +178,7 @@ class WT_MapOrientationSetting extends WT_MapSetting {
     constructor(_mapElement, _varNameRoot = WT_MapOrientationSetting.VARNAME_ROOT_DEFAULT, _toSync = true) {
         super(_mapElement, _varNameRoot, _toSync);
     }
-    
+
     onTemplateLoaded() {
         super.onTemplateLoaded();
         this.mapElement.instrument.rotationHandler = this;
@@ -190,7 +190,7 @@ class WT_MapTerrainModeSetting extends WT_MapSetting {
     constructor(_mapElement, _varNameRoot = WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT, _toSync = true) {
         super(_mapElement, _varNameRoot, _toSync);
     }
-    
+
     onUpdate() {
         let mode = this.getValue();
         if (mode == WT_MapTerrainModeSetting.Mode.RELATIVE && SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
@@ -219,7 +219,7 @@ class WT_MapDcltrSetting extends WT_MapSetting {
      */
     constructor(_mapElement, _dcltrDefinitions, _varNameRoot = WT_MapDcltrSetting.VARNAME_ROOT_DEFAULT, _toSync = true) {
         super(_mapElement, _varNameRoot, _toSync);
-        
+
         this.dcltrLevels = [];
         for (let levelDef of _dcltrDefinitions) {
             let dcltrLevel = new Map(WT_MapDcltrSetting.DCLTR_DEFINITION_DEFAULT);
@@ -231,7 +231,7 @@ class WT_MapDcltrSetting extends WT_MapSetting {
             this.dcltrLevels.push(dcltrLevel);
         }
     }
-    
+
     getDeclutterLevel() {
         return this.dcltrLevels[this.getValue()];
     }
@@ -251,11 +251,11 @@ WT_MapDcltrSetting.DCLTR_DEFINITION_DEFAULT = new Map([
 class WT_MapSymbolVisSetting extends WT_MapSetting {
     constructor(_mapElement, _attrName, _varNameRoot, _dcltrSetting = null, _toSync = true, _defaultValue = 1) {
         super(_mapElement, _varNameRoot, _toSync, _defaultValue);
-        
+
         this.attrName = _attrName;
         this.dcltrSetting = _dcltrSetting;
     }
-    
+
     onUpdate() {
         let show = (this.getValue() == 1)
         if (this.dcltrSetting) {
@@ -268,10 +268,10 @@ class WT_MapSymbolVisSetting extends WT_MapSetting {
 class WT_MapSymbolVisSettingGroup extends WT_MapSettingGroup {
     constructor(_mapElement, _dcltrSetting, _toSync = true) {
         super(_mapElement, _toSync);
-        
+
         this.dcltrSetting = _dcltrSetting;
         this.addSetting(_dcltrSetting);
-        
+
         for (let [attrName, varNameRoot] of WT_MapSymbolVisSettingGroup.VARNAME_ATTRIBUTES_ROOT) {
             this.addSetting(new WT_MapSymbolVisSetting(_mapElement, attrName, varNameRoot, this.dcltrSetting));
         }
@@ -293,7 +293,7 @@ class WTMapSymbolRangeSetting extends WT_MapSetting {
         super(_mapElement, _varNameRoot, _toSync, _mapElement.instrument.zoomRanges.indexOf(_defaultRange));
         this.attrName = _attrName;
     }
-    
+
     onUpdate() {
         this.mapElement.instrument[this.attrName] = this.getValue();
     }
@@ -302,17 +302,17 @@ class WTMapSymbolRangeSetting extends WT_MapSetting {
 class WT_MapAutoNorthUpSetting extends WT_MapSettingGroup {
     constructor(_mapElement, _defaultRange, _toSync = true) {
         super(_mapElement, _toSync);
-        
+
         this.activeSetting = new WT_MapSetting(_mapElement, WT_MapAutoNorthUpSetting.VARNAME_ACTIVE_ROOT, _toSync);
         this.rangeSetting = new WT_MapSetting(_mapElement, WT_MapAutoNorthUpSetting.VARNAME_RANGE_ROOT, _toSync, _mapElement.instrument.zoomRanges.indexOf(_defaultRange));
         this.addSetting(this.activeSetting);
         this.addSetting(this.rangeSetting);
     }
-    
+
     isActive() {
         return this.activeSetting.getValue() == 1;
     }
-    
+
     getRangeIndex() {
         return this.rangeSetting.getValue();
     }
@@ -323,20 +323,20 @@ WT_MapAutoNorthUpSetting.VARNAME_RANGE_ROOT = "L:WT_Map_NorthUpAbove_Range";
 class WT_MapTrackVectorSetting extends WT_MapSettingGroup {
     constructor(_mapElement, _lookaheadValues = WT_MapTrackVectorSetting.LOOKAHEAD_VALUES_DEFAULT, _lookaheadDefault = WT_MapTrackVectorSetting.LOOKAHEAD_DEFAULT, _toSync = true) {
         super(_mapElement, _toSync);
-        
+
         this.lookaheadValues = _lookaheadValues;
         this.activeSetting = new WT_MapSetting(_mapElement, WT_MapTrackVectorSetting.VARNAME_SHOW_ROOT, _toSync);
         this.lookaheadSetting = new WT_MapSetting(_mapElement, WT_MapTrackVectorSetting.VARNAME_LOOKAHEAD_ROOT, _toSync, this.lookaheadValues.indexOf(_lookaheadDefault));
         this.addSetting(this.activeSetting);
         this.addSetting(this.lookaheadSetting);
     }
-    
+
     onUpdate() {
         super.onUpdate();
-        
+
         let show = this.activeSetting.getValue() == 1;
         let lookahead = this.lookaheadValues[this.lookaheadSetting.getValue()];
-        
+
         this.mapElement.instrument.showTrackVector = show;
         this.mapElement.instrument.trackVectorElement.lookahead = lookahead;
     }
@@ -349,20 +349,20 @@ WT_MapTrackVectorSetting.LOOKAHEAD_VALUES_DEFAULT = [30, 60, 120, 300, 600, 1200
 class WT_MapFuelRingSetting extends WT_MapSettingGroup {
     constructor(_mapElement, _reserveDefault = WT_MapFuelRingSetting.VARNAME_RESERVE_DEFAULT, _toSync = true) {
         super(_mapElement, _toSync);
-        
+
         this.activeSetting = new WT_MapSetting(_mapElement, WT_MapFuelRingSetting.VARNAME_SHOW_ROOT, _toSync);
         this.reserveSetting = new WT_MapSetting(_mapElement, WT_MapFuelRingSetting.VARNAME_RESERVE_ROOT, _toSync, _reserveDefault);
         this.addSetting(this.activeSetting);
         this.addSetting(this.reserveSetting);
     }
-    
+
     onUpdate() {
         super.onUpdate();
-        
+
         if (this.mapElement.instrument.fuelRingElement) {
             let show = this.activeSetting.getValue() == 1;
             let reserveTime = this.reserveSetting.getValue();
-            
+
             this.mapElement.instrument.showFuelRing = show;
             this.mapElement.instrument.fuelRingElement.reserveFuelTime = reserveTime;
         }
@@ -376,7 +376,7 @@ class WT_MapAltitudeInterceptSetting extends WT_MapSetting {
     constructor(_mapElement, _varNameRoot = WT_MapAltitudeInterceptSetting.VARNAME_SHOW_ROOT_DEFAULT, _toSync = true) {
         super(_mapElement, _varNameRoot, _toSync);
     }
-    
+
     onUpdate() {
         this.mapElement.instrument.showAltitudeIntercept = (this.getValue() == 1);
     }
