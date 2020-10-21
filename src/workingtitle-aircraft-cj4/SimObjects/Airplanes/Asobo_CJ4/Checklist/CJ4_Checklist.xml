@@ -131,7 +131,8 @@
 
             <Page SubjectTT="BEFORE TAXI">
                 <Checkpoint ReferenceId="CJ4_CLIMATE_CONTROL_SELECTOR_NORM"/>
-                <Checkpoint ReferenceId="CJ4_PASSENGERS_LIGHTS_SAFETY_BUTTON_ON"/>
+                <Checkpoint ReferenceId="CJ4_PASSENGER_LIGHTS_SAFETY_ON"/>
+                <!-- Um... What are we supposed to do with trims here again? -->
                 <Checkpoint ReferenceId="CJ4_TRIMS_CHECK"/>
                 <Checkpoint ReferenceId="CJ4_FLIGHT_CONTROLS_CHECK"/>
                 <Checkpoint ReferenceId="CJ4_SPEEDBRAKES_GROUND_SPOILERS_CHECK"/>
@@ -177,7 +178,7 @@
                 <Checkpoint ReferenceId="CJ4_ICE_PROTECTION_SYSTEMS_BEFORE_TO"/>
                 <Checkpoint ReferenceId="CJ4_RUDDER_BIAS_SYSTEMS_CHECK"/>
                 <Checkpoint ReferenceId="CJ4_SEATS_UP"/>
-                <Checkpoint ReferenceId="CJ4_FLAPS_CHECKSET"/>
+                <Checkpoint ReferenceId="CJ4_FLAPS_SET_15"/>
                 <Checkpoint ReferenceId="CJ4_SPEEDBRAKES_DISENGAGE"/>
                 <Checkpoint ReferenceId="CJ4_TRIMS_CHECK_FOR_TO"/>
                 <Checkpoint ReferenceId="CJ4_CREW_BRIEFING"/>
@@ -216,7 +217,9 @@
 
             <Page SubjectTT="AFTER TAKEOFF/CLIMB">
                 <Checkpoint ReferenceId="CJ4_LANDING_GEAR_UP"/>
-                <Checkpoint ReferenceId="CJ4_FLAPS_SET_CLIMB"/>
+                <Checkpoint ReferenceId="CJ4_FLAPS_SET_0">
+                    <Clue name="Clear of obstacles and V2+10"/>
+                </Checkpoint>
                 <Checkpoint ReferenceId="CJ4_THROTTLES_CLB"/>
                 <Checkpoint ReferenceId="CJ4_YAW_DAMPER_ON"/>
                 <Checkpoint ReferenceId="CJ4_AUTOPILOT_ASREQUIRED"/>
@@ -287,7 +290,9 @@
                 <Checkpoint ReferenceId="CJ4_PITCH_ALTITUDE_GOAROUND"/>
                 <Checkpoint ReferenceId="CJ4_FLAPS_SET_15"/>
                 <Checkpoint ReferenceId="CJ4_LANDING_GEAR_UP"/>
-                <Checkpoint ReferenceId="CJ4_FLAPS_GOAROUND"/>
+                <Checkpoint ReferenceId="CJ4_FLAPS_CHECKSET">
+                    <Clue name="For 0deg flaps : vAPP+10 knots"/>
+                </Checkpoint>
                 <Checkpoint ReferenceId="CJ4_AIRSPEED_ASREQUIRED"/>
                 <Checkpoint ReferenceId="CJ4_THROTTLES_ASREQUIRED"/>
                 <Checkpoint ReferenceId="CJ4_YAW_DAMPER_ON"/>
@@ -316,7 +321,9 @@
                 <Checkpoint ReferenceId="CJ4_AVIONICS_SWITCH_OFF"/>
                 <Checkpoint ReferenceId="CJ4_ICE_PROTECTION_SYSTEMS_OFF"/>
                 <Checkpoint ReferenceId="CJ4_THROTTLES_IDLE"/>
-                <Checkpoint ReferenceId="CJ4_ENGINES_SHUTDOWN"/>
+                <Checkpoint ReferenceId="CJ4_ENGINES_SHUTDOWN">
+                    <Clue name="Engine should be at ground idle for at least 2 minutes prior to shutdown to allow hot section temperatures to equalize"/>
+                </Checkpoint>
                 <Checkpoint ReferenceId="CJ4_EXTERIOR_LIGHTS_OFF"/>
                 <Checkpoint ReferenceId="CJ4_BATTERY_SWITCH_OFF"/>
                 <Checkpoint ReferenceId="CJ4_CONTROL_LOCK"/>

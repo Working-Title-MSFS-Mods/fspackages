@@ -21,6 +21,7 @@
             <Instrument Id="LIGHTING_SWITCH_Light_Navigation"/>
             <Instrument Id="LIGHTING_SWITCH_Light_Landing"/>
             <Instrument Id="LIGHTING_Push_Light_Strobe"/>
+            <Instrument Id="LIGHTING_PUSH_LIGHT_RECOGNITION"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_EXTERIOR_LIGHTS_TAXI">
             <CheckpointDesc SubjectTT="Exterior lights" ExpectationTT="As required"/>
@@ -53,12 +54,99 @@
         </Checkpoint>
         <Checkpoint Id="CJ4_DIMMING_KNOB_SET">
             <CheckpointDesc SubjectTT="Dimming PANEL Knob" ExpectationTT="As desired"/>
-            <ForceCamera name="Instrument02"/>
+            <ForceCamera name="Instrument03"/>
+            <Instrument Id="LIGHTING_KNOB_MASTER"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_CHECK_LIGHTS">
             <ForceCamera name="Instrument05"/>
             <CheckpointDesc SubjectTT="Lights" ExpectationTT="On/Check/Off"/>
             <Clue name="Exterior lights, Passenger/safety lights, Emergency lights, Glareshield ice detect lights"/>
+            <!-- 
+                <Instrument Id="LIGHTING_SWITCH_Light_Landing"/>
+                <Instrument Id="LIGHTING_Push_Light_Strobe"/>
+                <Instrument Id="LIGHTING_PUSH_LIGHT_SAFETY"/>
+                <Instrument Id="LIGHTING_Push_Light_Logo"/>
+            -->
+            <Sequence SeqType="Unordered">
+                <Sequence SeqType="Ordered">
+                    <Test>
+                        <Duration Value="0.1" Cumulative="False"/>
+                        <Once>TRUE</Once>
+                        <TestValue>
+                            <Operator OpType="AND">
+                                <Val SimVarName="LIGHT TAXI ON" Units="Boolean"/>
+                                <Val SimVarName="LIGHT TAXI" Units="Boolean"/>
+                            </Operator>
+                        </TestValue>
+                    </Test>
+                    <Test>
+                        <TestValue>
+                            <Operator OpType="NOT">
+                                <Val SimVarName="LIGHT TAXI" Units="Boolean"/>
+                            </Operator>
+                        </TestValue>
+                    </Test>
+                    <Instrument Id="LIGHTING_SWITCH_Light_Taxi"/>
+                </Sequence>
+                <Sequence SeqType="Ordered">
+                    <Test>
+                        <Duration Value="0.1" Cumulative="False"/>
+                        <Once>TRUE</Once>
+                        <TestValue>
+                            <Val SimVarName="LIGHT WING" Units="Boolean"/>
+                        </TestValue>
+                        <Instrument Id="LIGHTING_Push_Light_Wing_1"/>
+                    </Test>
+                    <Test>
+                        <TestValue>
+                            <Operator OpType="NOT">
+                                <Val SimVarName="LIGHT WING" Units="Boolean"/>
+                            </Operator>
+                        </TestValue>
+                    </Test>
+                    <Instrument Id="LIGHTING_PUSH_LIGHT_WING"/>
+                </Sequence>
+                <Sequence SeqType="Ordered">
+                    <Test>
+                        <Duration Value="0.1" Cumulative="False"/>
+                        <Once>TRUE</Once>
+                        <TestValue>
+                            <Operator OpType="AND">
+                                <Val SimVarName="LIGHT BEACON ON" Units="Boolean"/>
+                                <Val SimVarName="LIGHT BEACON" Units="Boolean"/>
+                            </Operator>
+                        </TestValue>
+                    </Test>
+                    <Test>
+                        <TestValue>
+                            <Operator OpType="NOT">
+                                <Val SimVarName="LIGHT BEACON" Units="Boolean"/>
+                            </Operator>
+                        </TestValue>
+                    </Test>
+                    <Instrument Id="LIGHTING_Push_Light_Beacon"/>
+                </Sequence>
+                <Sequence SeqType="Ordered">
+                    <Test>
+                        <Duration Value="0.1" Cumulative="False"/>
+                        <Once>TRUE</Once>
+                        <TestValue>
+                            <Operator OpType="AND">
+                                <Val SimVarName="LIGHT NAV ON" Units="Boolean"/>
+                                <Val SimVarName="LIGHT NAV" Units="Boolean"/>
+                            </Operator>
+                        </TestValue>
+                    </Test>
+                    <Test>
+                        <TestValue>
+                            <Operator OpType="NOT">
+                                <Val SimVarName="LIGHT NAV" Units="Boolean"/>
+                            </Operator>
+                        </TestValue>
+                    </Test>
+                    <Instrument Id="LIGHTING_SWITCH_Light_Navigation"/>
+                </Sequence>
+            </Sequence>
         </Checkpoint>
 
         <!--  -->
@@ -67,19 +155,47 @@
         <Checkpoint Id="CJ4_BATTERY_SWITCH_OFF">
             <CheckpointDesc SubjectTT="BATTERY switch" ExpectationTT="OFF"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="ELECTRICAL_SWITCH_BATTERY_MASTER"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="NOT">
+                        <Val SimVarName="ELECTRICAL MASTER BATTERY" Units="Boolean"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="ELECTRICAL_SWITCH_BATTERY_MASTER"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_BATTERY_SWITCH_ON">
             <CheckpointDesc SubjectTT="BATTERY switch" ExpectationTT="ON"/>
             <Clue name="STBY FLT DISPLAY Switch amber light extinguished"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="ELECTRICAL_SWITCH_BATTERY_MASTER"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="AND">
+                        <Val Code="(L:XMLVAR_Essential_Bus_ON) 0 =="/>
+                        <Val SimVarName="ELECTRICAL MASTER BATTERY" Units="Boolean"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="ELECTRICAL_SWITCH_BATTERY_MASTER"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_BATTERY_SWITCH_EMER">
-            <CheckpointDesc SubjectTT="BATTERY switch" ExpectationTT="ON"/>
+            <CheckpointDesc SubjectTT="BATTERY switch" ExpectationTT="EMER"/>
             <Clue name="Verify emergency bus items"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="ELECTRICAL_SWITCH_BATTERY_MASTER"/>
+            <Feedback name="Verify emergency bus items. %.1f" DurationTimer="True"/>
+            <Test>
+                <Duration Value="2" Cumulative="False"/>
+                <TestValue>
+                    <Operator OpType="AND">
+                        <Val SimVarName="ELECTRICAL MASTER BATTERY" Units="Boolean"/>
+                        <Operator OpType="EQUAL">
+                            <Val Code="(L:XMLVAR_Essential_Bus_ON)"/>
+                            <Val Value="1"/>
+                        </Operator>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="ELECTRICAL_Switch_Battery_Master"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_EMERGENCY_LIGHTS_SWITCH_ARMED">
             <CheckpointDesc SubjectTT="EMERGENCY LIGHTS switch" ExpectationTT="ARMED"/>
@@ -92,17 +208,43 @@
         <Checkpoint Id="CJ4_AVIONICS_SWITCH_ON">
             <CheckpointDesc SubjectTT="AVIONICS switch" ExpectationTT="ON"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="ELECTRICAL_Switch_Avionics_Master"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="AND">
+                        <Val SimVarName="CIRCUIT AVIONICS ON" Units="Boolean"/>
+                        <Val Code="(L:XMLVAR_AVIONICS_IsComposite) 0 =="/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="ELECTRICAL_Switch_Avionics_Master"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_AVIONICS_SWITCH_OFF">
             <CheckpointDesc SubjectTT="AVIONICS switch" ExpectationTT="OFF"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="ELECTRICAL_Switch_Avionics_Master"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="AND">
+                        <Val Code="(L:XMLVAR_AVIONICS_IsComposite) 0 =="/>
+                        <Operator OpType="NOT">
+                            <Val SimVarName="AVIONICS MASTER SWITCH" Units="Boolean"/>
+                        </Operator>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="ELECTRICAL_Switch_Avionics_Master"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_AVIONICS_SWITCH_DISPATCH">
-            <CheckpointDesc SubjectTT="AVIONICS swicth" ExpectationTT="DISPATCH"/>
+            <CheckpointDesc SubjectTT="AVIONICS switch" ExpectationTT="DISPATCH"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="ELECTRICAL_Switch_Avionics_Master"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="AND">
+                        <Val Code="(L:XMLVAR_AVIONICS_IsComposite) 1 =="/>
+                        <Val SimVarName="CIRCUIT AVIONICS ON" Units="Boolean"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="ELECTRICAL_Switch_Avionics_Master"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_EMERGENCY_LIGHTS_SWITCH_OFF">
             <CheckpointDesc SubjectTT="EMERGENCY LIGHTS switch" ExpectationTT="OFF"/>
@@ -117,12 +259,29 @@
             <Clue name="If both engines running"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_ELECTRICAL_SWITCHES_ALL_OFF">
-            <ForceCamera name="Instrument02"/>
             <CheckpointDesc SubjectTT="ELECTRICAL POWER Panel Switches (all)" ExpectationTT="OFF"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="ELECTRICAL_SWITCH_ALTERNATOR"/>
-            <Instrument Id="ELECTRICAL_SWITCH_BATTERY_MASTER"/>
-            <Instrument Id="ELECTRICAL_SWITCH_AVIONICS_MASTER"/>
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <TestValue>
+                        <Operator OpType="NOT">
+                            <Val SimVarName="ELECTRICAL MASTER BATTERY" Units="Boolean"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="ELECTRICAL_SWITCH_BATTERY_MASTER"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="AND">
+                            <Val Code="(L:XMLVAR_AVIONICS_IsComposite) 0 =="/>
+                            <Operator OpType="NOT">
+                                <Val SimVarName="AVIONICS MASTER SWITCH" Units="Boolean"/>
+                            </Operator>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="ELECTRICAL_Switch_Avionics_Master"/>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_INT_MASTER_ON">
             <CheckpointDesc SubjectTT="INT MASTER Button" ExpectationTT="NORM"/>
@@ -138,7 +297,12 @@
         <Checkpoint Id="CJ4_PRESSURE_SOURCE_NORM">
             <CheckpointDesc SubjectTT="PRESSURIZATION SOURCE Selector" ExpectationTT="NORM"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="KNOB_PRESSSOURCE"/>
+            <Test>
+                <TestValue>
+                    <Val Code="(L:PRESSOURCE) 2 =="/>
+                </TestValue>
+                <Instrument Id="KNOB_PRESSSOURCE"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_STBY_FLT_DISPLAY_TEST">
             <CheckpointDesc SubjectTT="STBY FLT DISPLAY Switch" ExpectationTT="TEST"/>
@@ -152,8 +316,20 @@
         </Checkpoint>
         <Checkpoint Id="CJ4_GENERATORS_ON">
             <CheckpointDesc SubjectTT="GEN Switches (both)" ExpectationTT="ON"/>
-            <Instrument Id="ELECTRICAL_SWITCH_ALTERNATOR1"/>
-            <Instrument Id="ELECTRICAL_SWITCH_ALTERNATOR2"/>
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <TestValue>
+                        <Val SimVarName="GENERAL ENG MASTER ALTERNATOR:1" Units="Boolean"/>
+                    </TestValue>
+                    <Instrument Id="ELECTRICAL_SWITCH_ALTERNATOR1"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Val SimVarName="GENERAL ENG MASTER ALTERNATOR:2" Units="Boolean"/>
+                    </TestValue>
+                    <Instrument Id="ELECTRICAL_SWITCH_ALTERNATOR2"/>
+                </Test>
+            </Sequence>
         </Checkpoint>
 
         <!--  -->
@@ -162,46 +338,114 @@
         <Checkpoint Id="CJ4_ICE_PROTECTION_SYSTEMS_OFF">
             <CheckpointDesc SubjectTT="Ice protection system" ExpectationTT="OFF"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="DEICE_SWITCH_PITOTHEAT"/>
-            <Instrument Id="DEICE_ENGINE"/>
-            <Instrument Id="DEICE_ENGINE1"/>
-            <Instrument Id="DEICE_ENGINE2"/>
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <TestValue>
+                        <Operator OpType="AND">
+                            <Val Code="(A:ENG ANTI ICE:1, bool) 1"/>
+                            <Val Code="(A:ENG ANTI ICE:2, bool) 1"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="DEICE_ENGINE"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Val Code="(L:XMLVAR_Pitot_1) ! (L:XMLVAR_Pitot_2) ! and"/>
+                    </TestValue>
+                    <Instrument Id="DEICE_Switch_PitotHeat"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="NOT">
+                            <Val SimVarName="STRUCTURAL DEICE SWITCH" Units="Bool"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="DEICE_PUSH_AIRFRAME_1"/>
+                    <Instrument Id="DEICE_PUSH_AIRFRAME_2"/>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_ICE_PROTECTION_SYSTEMS_FLIGHT">
             <CheckpointDesc SubjectTT="Ice protection system" ExpectationTT="As required"/>
             <Clue name="Do not operate TAIL DEICE when SAT is below -30deg C"/>
             <ForceCamera name="Instrument02"/>
-            <!-- TODO: Fix highlighting for all ice protection buttons and add them here -->
+            <Instrument Id="DEICE_PUSH_AIRFRAME_1"/>
+            <Instrument Id="DEICE_PUSH_AIRFRAME_2"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_PITOT_HEAT_ON">
             <CheckpointDesc SubjectTT="Pitot/Static heat buttons" ExpectationTT="ON"/>
             <Clue name="Limit ground operation of pitot/static heat to 2 minutes to prevent damage to the pitot/static heaters"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="DEICE_SWITCH_PITOTHEAT"/>
+            <Test>
+                <Once>True</Once>
+                <Duration Value="30" Cumulative="True"/>
+                <TestValue>
+                    <Val Code="(L:XMLVAR_Pitot_1) (L:XMLVAR_Pitot_2) and"/>
+                </TestValue>
+                <Instrument Id="DEICE_SWITCH_PITOTHEAT"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_ENGINE_ONLY_ANTI_ICE_ASREQUIRED">
             <CheckpointDesc SubjectTT="ENGINE ONLY ANTI-ICE buttons" ExpectationTT="As required"/>
             <ForceCamera name="Instrument02"/>
             <Instrument Id="DEICE_ENGINE"/>
-            <Instrument Id="DEICE_ENGINE1"/>
-            <Instrument Id="DEICE_ENGINE2"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_ICE_PROTECTION_SYSTEMS_AFTER_LANDING">
             <CheckpointDesc SubjectTT="Ice protection systems" ExpectationTT="OFF"/>
             <Clue name="PITOT heat - OFF, WING/ENG heat - OFF, TAIL heat - OFF&#xA;ENG ONLY heat - as requred"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="DEICE_SWITCH_PITOTHEAT"/>
-            <!-- TODO: Fix highlighting for all ice protection buttons and add them here -->
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <TestValue>
+                        <Val Value="1"/>
+                    </TestValue>
+                    <Instrument Id="DEICE_ENGINE"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Val Code="(L:XMLVAR_Pitot_1) ! (L:XMLVAR_Pitot_2) ! and"/>
+                    </TestValue>
+                    <Instrument Id="DEICE_Switch_PitotHeat"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="NOT">
+                            <Val SimVarName="STRUCTURAL DEICE SWITCH" Units="Bool"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="DEICE_PUSH_AIRFRAME_1"/>
+                    <Instrument Id="DEICE_PUSH_AIRFRAME_2"/>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_ICE_PROTECTION_SYSTEMS_BEFORE_TO">
             <CheckpointDesc SubjectTT="Ice Protection systems" ExpectationTT="As Required"/>
             <Clue name="Do not operate WING/ENG ANTI-ICE on the ground at high engine rpm after anti-ice messages have cleared.&#xA;Do not operate TAIL DEICE when SAT is below -30deg C"/>
             <ForceCamera name="Instrument02"/>
-            <!-- TODO: Fix highlighting for all ice protection buttons and add them here -->
+            <Instrument Id="DEICE_ENGINE"/>
+            <Instrument Id="DEICE_PUSH_AIRFRAME_1"/>
+            <Instrument Id="DEICE_PUSH_AIRFRAME_2"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_PITOT_TEST">
             <ForceCamera name="Instrument02"/>
             <CheckpointDesc SubjectTT="PITOT/STATIC HEAT Buttons (both)" ExpectationTT="On/CAS Message Clears then After 30 Seconds, Off"/>
+            <Feedback name="Turn OFF after %.1f seconds" DurationTimer="True"/>
+            <Sequence SeqType="Ordered">
+                <Test>
+                    <Once>True</Once>
+                    <Duration Value="30" Cumulative="True"/>
+                    <TestValue>
+                        <Val Code="(L:XMLVAR_Pitot_1) (L:XMLVAR_Pitot_2) and"/>
+                    </TestValue>
+                    <Instrument Id="DEICE_SWITCH_PITOTHEAT"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Val Code="(L:XMLVAR_Pitot_1) ! (L:XMLVAR_Pitot_2) ! and"/>
+                    </TestValue>
+                    <Instrument Id="DEICE_SWITCH_PITOTHEAT"/>
+                </Test>
+            </Sequence>
         </Checkpoint>
 
         <!--  -->
@@ -210,57 +454,168 @@
         <Checkpoint Id="CJ4_ROTATE">
             <CheckpointDesc SubjectTT="Control wheel" ExpectationTT="Rotate at vR"/>
             <Clue name="To achieve 10deg initial pitch&#xA;Use flight director TO mode"/>
-            <Instrument Id="HANDLING_Yoke"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="GREATER">
+                        <Val SimVarName="YOKE Y POSITION" Units="percent"/>
+                        <Val Value="10"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="HANDLING_Yoke1"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_ENGINES_SHUTDOWN">
             <CheckpointDesc SubjectTT="ENGINE RUN/STOP buttons" ExpectationTT="STOP"/>
-            <Clue name="Engine should be at ground idle for at least 2 minutes prior to shutdown to allow hot section temperatures to equalize"/>
             <ForceCamera name="Instrument05"/>
-            <Instrument id="FUEL_RUNSTOP_2"/>
-            <Instrument id="FUEL_PUSH_RUNSTOP1"/>
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <TestValue>
+                        <Operator OpType="AND">
+                            <Operator OpType="EQUAL" Tolerance="2">
+                                <Val SimVarName="GENERAL ENG MIXTURE LEVER POSITION:2" Units="percent"/>
+                                <Val Value="0"/>
+                            </Operator>
+                            <Operator OpType="NOT">
+                                <Val SimVarName="GENERAL ENG FUEL VALVE:2" Units="Boolean"/>
+                            </Operator>
+                        </Operator>
+                    </TestValue>
+                    <Instrument id="FUEL_RUNSTOP_2"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="AND">
+                            <Operator OpType="EQUAL" Tolerance="2">
+                                <Val SimVarName="GENERAL ENG MIXTURE LEVER POSITION:1" Units="percent"/>
+                                <Val Value="0"/>
+                            </Operator>
+                            <Operator OpType="NOT">
+                                <Val SimVarName="GENERAL ENG FUEL VALVE:1" Units="Boolean"/>
+                            </Operator>
+                        </Operator>
+                    </TestValue>
+                    <Instrument id="FUEL_PUSH_RUNSTOP1"/>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_LANDING_GEAR_UP">
             <CheckpointDesc SubjectTT="Landing gear (positive climb)" ExpectationTT="UP"/>
             <ForceCamera name="Instrument01"/>
-            <Instrument Id="LANDING_GEAR_LEVER_GEAR"/>
-            <Instrument Id="LANDING_GEAR_LIGHT"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="NOT">
+                        <Val SimVarName="GEAR HANDLE POSITION" Units="Boolean"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="LANDING_GEAR_LEVER_GEAR"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_LANDING_GEAR_DOWN">
-            <CheckpointDesc SubjectTT="Landing gear (positive climb)" ExpectationTT="Down (3 Green)"/>
+            <CheckpointDesc SubjectTT="Landing gear" ExpectationTT="Down (3 Green)"/>
             <ForceCamera name="Instrument01"/>
-            <Instrument Id="LANDING_GEAR_LEVER_GEAR"/>
-            <Instrument Id="LANDING_GEAR_LIGHT"/>
+            <Test>
+                <TestValue>
+                    <Val SimVarName="GEAR HANDLE POSITION" Units="Boolean"/>
+                </TestValue>
+                <Instrument Id="LANDING_GEAR_LEVER_GEAR"/>
+                <Instrument Id="LANDING_GEAR_LIGHT"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_GA_BUTTON">
             <CheckpointDesc SubjectTT="GA button" ExpectationTT="Push"/>
+            <ForceCamera name="Instrument05"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE1"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_PARKING_BRAKE_SET">
             <CheckpointDesc SubjectTT="Parking brake" ExpectationTT="Set"/>
             <ForceCamera name="Instrument04"/>
-            <Instrument Id="LANDING_GEAR_Switch_ParkingBrake"/>
+            <Test>
+                <TestValue>
+                    <Val SimVarName="BRAKE PARKING POSITION" Units="Boolean"/>
+                </TestValue>
+                <Instrument Id="LANDING_GEAR_Switch_ParkingBrake"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_PARKING_BRAKE_RELEASE">
             <CheckpointDesc SubjectTT="Parking brake" ExpectationTT="Release"/>
             <ForceCamera name="Instrument04"/>
-            <Instrument Id="LANDING_GEAR_Switch_ParkingBrake"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="NOT">
+                        <Val SimVarName="BRAKE PARKING POSITION" Units="Boolean"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="LANDING_GEAR_Switch_ParkingBrake"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_THROTTLES_IDLE">
             <CheckpointDesc SubjectTT="Throttles" ExpectationTT="IDLE"/>
             <ForceCamera name="Instrument05"/>
-            <Instrument Id="ENGINE_LEVER_THROTTLE1"/>
-            <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <TestValue>
+                        <Operator OpType="EQUAL">
+                            <Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:1" Units="Percent"/>
+                            <Val Value="0"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="ENGINE_LEVER_THROTTLE1"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="EQUAL">
+                            <Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:2" Units="Percent"/>
+                            <Val Value="0"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_THROTTLES_TO">
             <CheckpointDesc SubjectTT="Throttles" ExpectationTT="TO"/>
-            <ForceCamera name="Instrument05"/>
-            <Instrument Id="ENGINE_LEVER_THROTTLE1"/>
-            <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
+            <Sequence SeqType="Unordered">
+                <!-- Is (Throttle > 90%) okay here? -->
+                <Test>
+                    <TestValue>
+                        <Operator OpType="GREATER_OR_EQUAL">
+                            <Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:1" Units="Percent"/>
+                            <Val Value="90"/>
+                        </Operator>
+                    </TestValue>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="GREATER_OR_EQUAL">
+                            <Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:2" Units="Percent"/>
+                            <Val Value="90"/>
+                        </Operator>
+                    </TestValue>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_THROTTLES_CLB">
             <CheckpointDesc SubjectTT="Throttles" ExpectationTT="CLB"/>
-            <ForceCamera name="Instrument05"/>
-            <Instrument Id="ENGINE_LEVER_THROTTLE1"/>
-            <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
+            <Sequence SeqType="Unordered">
+                <!-- Is (Throttle < 90%) okay here? -->
+                <Test>
+                    <TestValue>
+                        <Operator OpType="LESS_OR_EQUAL">
+                            <Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:1" Units="Percent"/>
+                            <Val Value="90"/>
+                        </Operator>
+                    </TestValue>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="LESS_OR_EQUAL">
+                            <Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:2" Units="Percent"/>
+                            <Val Value="90"/>
+                        </Operator>
+                    </TestValue>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_THROTTLES_ASREQUIRED">
             <CheckpointDesc SubjectTT="Throttles" ExpectationTT="As required"/>
@@ -271,48 +626,197 @@
         <Checkpoint Id="CJ4_ENGINE2_STARTER_BUTTON_PUSH">
             <CheckpointDesc SubjectTT="ENGINE STARTER button" ExpectationTT="Push"/>
             <Clue name="Verify button illuminates"/>
-            <Instrument id="ENGINE_Switch_Starter2"/>
             <ForceCamera name="Instrument06"/>
+            <Test>
+                <TestValue>
+                    <Operator optype ="EQUAL">
+                        <Val SimVarName="GENERAL ENG STARTER:2" Units="Boolean"/>
+                        <Val Value="1"/>
+                    </Operator>
+                </TestValue>
+                <Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_STARTER2"/>
+                <Instrument id="ENGINE_Switch_Starter2"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_ENGINE1_STARTER_BUTTON_PUSH">
             <CheckpointDesc SubjectTT="ENGINE STARTER button" ExpectationTT="Push"/>
-            <Instrument id="ENGINE_Switch_Starter1"/>
             <Clue name="Verify button illuminates"/>
             <ForceCamera name="Instrument06"/>
+            <Test>
+                <TestValue>
+                    <Operator optype ="EQUAL">
+                        <Val SimVarName="GENERAL ENG STARTER:1" Units="Boolean"/>
+                        <Val Value="1"/>
+                    </Operator>
+                </TestValue>
+                <Instrument id="ENGINE_Switch_Starter1"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_ENGINE2_RUN_STOP_BUTTON_RUN">
             <CheckpointDesc SubjectTT="ENGINE RUN/STOP button" ExpectationTT="RUN"/>
             <ForceCamera name="Instrument05"/>
-            <Instrument id="FUEL_RUNSTOP_2"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="AND">
+                        <Operator OpType="EQUAL" Tolerance="2">
+                            <Val SimVarName="GENERAL ENG MIXTURE LEVER POSITION:2" Units="percent"/>
+                            <Val Value="100"/>
+                        </Operator>
+                        <Val SimVarName="GENERAL ENG FUEL VALVE:2" Units="Boolean"/>
+                    </Operator>
+                </TestValue>
+                <Instrument id="FUEL_RUNSTOP_2"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_ENGINE1_RUN_STOP_BUTTON_RUN">
             <CheckpointDesc SubjectTT="ENGINE RUN/STOP button" ExpectationTT="RUN"/>
             <ForceCamera name="Instrument05"/>
-            <Instrument id="FUEL_PUSH_RUNSTOP1"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="AND">
+                        <Operator OpType="EQUAL" Tolerance="2">
+                            <Val SimVarName="GENERAL ENG MIXTURE LEVER POSITION:1" Units="percent"/>
+                            <Val Value="100"/>
+                        </Operator>
+                        <Val SimVarName="GENERAL ENG FUEL VALVE:1" Units="Boolean"/>
+                    </Operator>
+                </TestValue>
+                <Instrument id="FUEL_PUSH_RUNSTOP1"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_START_OPPOSITE_ENGINE">
             <CheckpointDesc SubjectTT="Opposite engine (optional)" ExpectationTT="Start"/>
-            <Clue name="Repeat steps 2 through 5&#xA;Caution: Do not start second engine with operating engine generator off. "/>
+            <Clue name="Repeat steps 2 through 5&#xA;Caution: Do not start second engine with operating engine generator off"/>
             <ForceCamera name="Instrument06"/>
-            <Instrument id="ENGINE_Switch_Starter1"/>
-            <Instrument id="FUEL_PUSH_RUNSTOP1"/>
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <!-- @HACK -->
+                    <Duration Value="30" Cumulative="False"/>
+                    <TestValue>
+                        <Operator optype ="EQUAL">
+                            <Val SimVarName="GENERAL ENG STARTER:1" Units="Boolean"/>
+                            <Val Value="1"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument id="ENGINE_Switch_Starter1"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="AND">
+                            <Operator OpType="EQUAL" Tolerance="2">
+                                <Val SimVarName="GENERAL ENG MIXTURE LEVER POSITION:1" Units="percent"/>
+                                <Val Value="100"/>
+                            </Operator>
+                            <Val SimVarName="GENERAL ENG FUEL VALVE:1" Units="Boolean"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument id="FUEL_PUSH_RUNSTOP1"/>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_TRIMS_CHECK">
             <CheckpointDesc SubjectTT="Trims" ExpectationTT="Check/Set"/>
             <Instrument Id="HANDLING_SWITCH_AILERONTRIM_LR"/>
             <Instrument Id="HANDLING_KNOB_RUDDERTRIM"/>
-            <Instrument Id="HANDLING_SWITCH_ELEVATORTRIM"/>
+            <Instrument Id="HANDLING_YOKE_SWITCH_ELEVATORTRIM_1"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_TRIMS_CHECK_FOR_TO">
             <CheckpointDesc SubjectTT="Trims (3)" ExpectationTT="Set For Takeoff"/>
-            <Instrument Id="HANDLING_SWITCH_AILERONTRIM_LR"/>
-            <Instrument Id="HANDLING_KNOB_RUDDERTRIM"/>
-            <Instrument Id="HANDLING_SWITCH_ELEVATORTRIM"/>
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <TestValue>
+                        <Operator OpType="EQUAL" Tolerance="1">
+                            <Val SimVarName="AILERON TRIM PCT" Units="percent"/>
+                            <Val Value="0"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="HANDLING_SWITCH_AILERONTRIM_LR"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="EQUAL" Tolerance="1">
+                            <Val SimVarName="RUDDER TRIM PCT" Units="percent"/>
+                            <Val Value="0"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="HANDLING_KNOB_RUDDERTRIM"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="EQUAL" Tolerance="15">
+                            <Val SimVarName="ELEVATOR TRIM PCT" Units="percent"/>
+                            <Val Value="27"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="HANDLING_YOKE_SWITCH_ELEVATORTRIM_1"/>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_FLIGHT_CONTROLS_CHECK">
             <CheckpointDesc SubjectTT="Flight Controls" ExpectationTT="Free/Correct"/>
-            <Instrument Id="HANDLING_Yoke"/>
-            <Instrument Id="HANDLING_RudderPedals"/>
+            <Sequence SeqType="Unordered">
+                <Sequence SeqType="Unordered">
+                    <Test>
+                        <Once>True</Once>
+                        <TestValue>
+                            <Operator OpType="LESS">
+                                <Val SimVarName="YOKE X POSITION" Units="percent"/>
+                                <Val Value="-80"/>
+                            </Operator>
+                        </TestValue>
+                        <Instrument Id="HANDLING_Yoke"/>
+                    </Test>
+                    <Test>
+                        <Once>True</Once>
+                        <TestValue>
+                            <Operator OpType="GREATER">
+                                <Val SimVarName="YOKE X POSITION" Units="percent"/>
+                                <Val Value="80"/>
+                            </Operator>
+                        </TestValue>
+                    </Test>
+                    <Test>
+                        <Once>True</Once>
+                        <TestValue>
+                            <Operator OpType="LESS">
+                                <Val SimVarName="YOKE Y POSITION" Units="percent"/>
+                                <Val Value="-80"/>
+                            </Operator>
+                        </TestValue>
+                    </Test>
+                    <Test>
+                        <Once>True</Once>
+                        <TestValue>
+                            <Operator OpType="GREATER">
+                                <Val SimVarName="YOKE Y POSITION" Units="percent"/>
+                                <Val Value="80"/>
+                            </Operator>
+                        </TestValue>
+                    </Test>
+                </Sequence>
+                <Sequence SeqType="Unordered">
+                    <Test>
+                        <Once>True</Once>
+                        <TestValue>
+                            <Operator OpType="LESS">
+                                <Val SimVarName="RUDDER POSITION" Units="percent"/>
+                                <Val Value="-66"/>
+                            </Operator>
+                        </TestValue>
+                        <Instrument Id="HANDLING_RudderPedals"/>
+                    </Test>
+                    <Test>
+                        <Once>True</Once>
+                        <TestValue>
+                            <Operator OpType="GREATER">
+                                <Val SimVarName="RUDDER POSITION" Units="percent"/>
+                                <Val Value="66"/>
+                            </Operator>
+                        </TestValue>
+                        <Instrument Id="HANDLING_RudderPedals"/>
+                    </Test>
+                </Sequence>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_SPEEDBRAKES_GROUND_SPOILERS_CHECK">
             <CheckpointDesc SubjectTT="Speedbrakes/Ground spoilers" ExpectationTT="Check"/>
@@ -321,65 +825,183 @@
         </Checkpoint>
         <Checkpoint Id="CJ4_GROUND_SPOILERS_ENGAGE">
             <CheckpointDesc SubjectTT="Ground Spoilers" ExpectationTT="Extend"/>
-            <Instrument Id="HANDLING_LEVER_SPOILERS"/>
             <ForceCamera name="Instrument05"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="GREATER">
+                        <Val SimVarName="SPOILERS HANDLE POSITION" Units="percent"/>
+                        <Val Value="99"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="HANDLING_LEVER_SPOILERS"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_SPEEDBRAKES_DISENGAGE">
             <CheckpointDesc SubjectTT="Speed brakes" ExpectationTT="0%"/>
-            <Instrument Id="HANDLING_LEVER_SPOILERS"/>
             <ForceCamera name="Instrument05"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="LESS">
+                        <Val SimVarName="SPOILERS HANDLE POSITION" Units="percent"/>
+                        <Val Value="1"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="HANDLING_LEVER_SPOILERS"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_FLAPS_CHECKSET">
             <CheckpointDesc SubjectTT="Flaps" ExpectationTT="Check/Set"/>
-            <Instrument Id="HANDLING_LEVER_FLAPS"/>
             <ForceCamera name="Instrument05"/>
-        </Checkpoint>
-        <Checkpoint Id="CJ4_FLAPS_SET_CLIMB">
-            <CheckpointDesc SubjectTT="Flaps" ExpectationTT="0 deg"/>
-            <Clue name="Clear of obstacles and V2+10"/>
             <Instrument Id="HANDLING_LEVER_FLAPS"/>
-            <ForceCamera name="Instrument05"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_FLAPS_SET_0">
             <CheckpointDesc SubjectTT="Flaps" ExpectationTT="0 deg"/>
-            <Instrument Id="HANDLING_LEVER_FLAPS"/>
             <ForceCamera name="Instrument05"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="EQUAL">
+                        <Val SimVarName="FLAPS HANDLE INDEX" Units="Number"/>
+                        <Val Value="0"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="HANDLING_LEVER_FLAPS"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_FLAPS_SET_15">
             <CheckpointDesc SubjectTT="Flaps" ExpectationTT="15 deg"/>
-            <Instrument Id="HANDLING_LEVER_FLAPS"/>
             <ForceCamera name="Instrument05"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="EQUAL">
+                        <Val SimVarName="FLAPS HANDLE INDEX" Units="Number"/>
+                        <Val Value="1"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="HANDLING_LEVER_FLAPS"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_FLAPS_SET_35">
             <CheckpointDesc SubjectTT="Flaps" ExpectationTT="35 deg"/>
-            <Instrument Id="HANDLING_LEVER_FLAPS"/>
             <ForceCamera name="Instrument05"/>
-        </Checkpoint>
-        <Checkpoint Id="CJ4_FLAPS_GOAROUND">
-            <CheckpointDesc SubjectTT="Flaps" ExpectationTT="As required"/>
-            <Clue name="For 0deg flaps : vAPP+10 knots"/>
-            <Instrument Id="HANDLING_LEVER_FLAPS"/>
-            <ForceCamera name="Instrument05"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="EQUAL">
+                        <Val SimVarName="FLAPS HANDLE INDEX" Units="Number"/>
+                        <Val Value="2"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="HANDLING_LEVER_FLAPS"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_NOSEWHEEL_STEERING_CHECK">
             <CheckpointDesc SubjectTT="Nosewheel steering" ExpectationTT="Check"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="OR">
+                        <Operator OpType="LESS">
+                            <Val SimVarName="GEAR CENTER STEER ANGLE" Units="percent"/>
+                            <Val Value="-10"/>
+                        </Operator>
+                        <Operator OpType="GREATER">
+                            <Val SimVarName="GEAR CENTER STEER ANGLE" Units="percent"/>
+                            <Val Value="10"/>
+                        </Operator>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="HANDLING_RudderPedals"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_BRAKES_HOLD">
             <CheckpointDesc SubjectTT="Brakes" ExpectationTT="Apply/Hold"/>
-            <Instrument Id="HANDLING_RudderPedals"/>
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <Duration Value="0.5" Cumulative="False"/>
+                    <TestValue>
+                        <Operator OpType="GREATER">
+                            <Val SimVarName="BRAKE LEFT POSITION EX1" Units="percent"/>
+                            <Val Value="50"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="HANDLING_RudderPedals"/>
+                </Test>
+                <Test>
+                    <Duration Value="0.5" Cumulative="False"/>
+                    <TestValue>
+                        <Operator OpType="GREATER">
+                            <Val SimVarName="BRAKE RIGHT POSITION EX1" Units="percent"/>
+                            <Val Value="50"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="HANDLING_RudderPedals"/>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_BRAKES_APPLY_TOUCHDOWN">
             <CheckpointDesc SubjectTT="Brakes (after nose touchdown)" ExpectationTT="Apply"/>
-            <Instrument Id="HANDLING_RudderPedals"/>
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <Duration Value="0.5" Cumulative="False"/>
+                    <TestValue>
+                        <Operator OpType="GREATER">
+                            <Val SimVarName="BRAKE LEFT POSITION EX1" Units="percent"/>
+                            <Val Value="50"/>
+                        </Operator>
+                    </TestValue>
+                </Test>
+                <Test>
+                    <Duration Value="0.5" Cumulative="False"/>
+                    <TestValue>
+                        <Operator OpType="GREATER">
+                            <Val SimVarName="BRAKE RIGHT POSITION EX1" Units="percent"/>
+                            <Val Value="50"/>
+                        </Operator>
+                    </TestValue>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_BRAKES_RELEASE">
             <CheckpointDesc SubjectTT="Brakes" ExpectationTT="Release"/>
-            <Instrument Id="HANDLING_RudderPedals"/>
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <TestValue>
+                        <Operator OpType="LESS">
+                            <Val SimVarName="BRAKE LEFT POSITION" Units="percent"/>
+                            <Val Value="10"/>
+                        </Operator>
+                    </TestValue>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="LESS">
+                            <Val SimVarName="BRAKE RIGHT POSITION" Units="percent"/>
+                            <Val Value="10"/>
+                        </Operator>
+                    </TestValue>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_BRAKES_CHECK">
             <CheckpointDesc SubjectTT="Brakes" ExpectationTT="Check"/>
             <Clue name="If a no braking condition is encountered during taxi, use the emergency brake. If the emergency brake is used, maintenance is required before flight"/>
             <Instrument Id="HANDLING_RudderPedals"/>
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <TestValue>
+                        <Operator OpType="GREATER">
+                            <Val SimVarName="BRAKE LEFT POSITION" Units="percent"/>
+                            <Val Value="20"/>
+                        </Operator>
+                    </TestValue>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="GREATER">
+                            <Val SimVarName="BRAKE RIGHT POSITION" Units="percent"/>
+                            <Val Value="20"/>
+                        </Operator>
+                    </TestValue>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_RUDDER_BIAS_SYSTEMS_CHECK">
             <CheckpointDesc SubjectTT="Rudder bias system" ExpectationTT="Check"/>
@@ -393,17 +1015,44 @@
             <ForceCamera name="Instrument04"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_AILERON_TRIM_NEUTRAL">
-            <ForceCamera name="Instrument01"/>
             <CheckpointDesc SubjectTT="Aileron Trim" ExpectationTT="Neutral"/>
+            <ForceCamera name="Instrument06"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="EQUAL" Tolerance="1">
+                        <Val SimVarName="AILERON TRIM PCT" Units="percent"/>
+                        <Val Value="0"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="HANDLING_SWITCH_AILERONTRIM_LR"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_RUDDER_TRIM_NEUTRAL">
-            <ForceCamera name="Instrument01"/>
             <CheckpointDesc SubjectTT="Rudder Trim" ExpectationTT="Neutral"/>
+            <ForceCamera name="Instrument06"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="EQUAL" Tolerance="1">
+                        <Val SimVarName="RUDDER TRIM PCT" Units="percent"/>
+                        <Val Value="0"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="HANDLING_KNOB_RUDDERTRIM"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_ELEVATOR_TRIM_TO">
-            <ForceCamera name="Instrument01"/>
             <CheckpointDesc SubjectTT="Elevator Trim" ExpectationTT="Set for Takeoff"/>
             <Clue name="Indicator within TO band"/>
+            <ForceCamera name="Instrument01"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="EQUAL" Tolerance="15">
+                        <Val SimVarName="ELEVATOR TRIM PCT" Units="percent"/>
+                        <Val Value="27"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="HANDLING_YOKE_SWITCH_ELEVATORTRIM_1"/>
+            </Test>
         </Checkpoint>
 
         <!--  -->
@@ -427,6 +1076,8 @@
         </Checkpoint>
         <Checkpoint Id="CJ4_PASSENGER_BRIEFING">
             <CheckpointDesc SubjectTT="Passenger briefing" ExpectationTT="Complete"/>
+            <ForceCamera name="Instrument02"/>
+            <!-- <Instrument Id="CCP_PUSH_PASSBRIEF_1"/> -->
         </Checkpoint>
         <Checkpoint Id="CJ4_AFT_DIVIDER_DOORS">
             <CheckpointDesc SubjectTT="Aft divider doors" ExpectationTT="Latched open"/>
@@ -437,15 +1088,21 @@
         <Checkpoint Id="CJ4_CLEADER_FOR_TO">
             <CheckpointDesc SubjectTT="Cleared/ready for takeoff" ExpectationTT="Check"/>
         </Checkpoint>
-        <Checkpoint Id="CJ4_PASSENGERS_LIGHTS_SAFETY_BUTTON_ON">
-            <CheckpointDesc SubjectTT="PASSENGERS LIGHTS SAFETY button" ExpectationTT="ON"/>
-            <ForceCamera name="Instrument03"/>
-        </Checkpoint>
         <Checkpoint Id="CJ4_PASSENGER_LIGHTS_ASREQUIRED">
             <CheckpointDesc SubjectTT="PASS LIGHTS buttons" ExpectationTT="As required"/>
+            <ForceCamera name="Instrument03"/>
+            <Instrument Id="LIGHTING_PUSH_LIGHT_SEATBELT"/>
+            <Instrument Id="LIGHTING_PUSH_LIGHT_SAFETY"/>
         </Checkpoint>
-        <Checkpoint Id="CJ4_PASSENGER_LIGHTS_ON">
+        <Checkpoint Id="CJ4_PASSENGER_LIGHTS_SAFETY_ON">
             <CheckpointDesc SubjectTT="PASS LIGHTS SAFETY button" ExpectationTT="ON"/>
+            <ForceCamera name="Instrument03"/>
+            <!-- <Test>
+                <TestValue>
+                    <Val Code="(L:SAFETY_LIGHT_ON, Bool)"/>
+                </TestValue>
+                <Instrument Id="LIGHTING_PUSH_LIGHT_SAFETY"/>
+            </Test> -->
         </Checkpoint>
         <Checkpoint Id="CJ4_OIL_LEVEL_CHECK">
             <CheckpointDesc SubjectTT="Engine Oil Level" ExpectationTT="Check"/>
@@ -566,7 +1223,7 @@
             <CheckpointDesc SubjectTT="Fuselage Left Side" ExpectationTT="Check"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_PREFLIGHT_CHECKS_DONE">
-            <CheckpointDesc SubjectTT="Prefight inspection" ExpectationTT="Complete"/>
+            <CheckpointDesc SubjectTT="Preflight inspection" ExpectationTT="Complete"/>
         </Checkpoint>
 
         <!--  -->
@@ -581,7 +1238,14 @@
         <Checkpoint Id="CJ4_ITT_CHECK">
             <CheckpointDesc SubjectTT="ITT" ExpectationTT="Check for rise"/>
             <Clue name="Abort start if ITT rapidly approaches 1000deg C or shows no rise within 10 seconds. Abort start if N1 does not indicate rotation by 25% N2"/>
-            <ForceCamera name="Instrument01"/>
+            <Instrument Id="ENGINE_PUSH_STARTER_DISENGAGE_1"/>
+            <Test>
+                <!-- @HACK -->
+                <Duration Value="30" Cumulative="False"/>
+                <TestValue>
+                    <Val Value="1"/>
+                </TestValue>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_HYDRAULIC_PRESSURE_CHECK">
             <CheckpointDesc SubjectTT="Hydraulic pressure" ExpectationTT="Check"/>
@@ -631,18 +1295,35 @@
             <CheckpointDesc SubjectTT="Altimeters" ExpectationTT="Set/Check"/>
             <Clue name="Pilot, copilot, and standby: Within 50 feet of departure field elevation and within 75 feet of each other"/>
             <ForceCamera name="Instrument01"/>
-            <Instrument Id="AUTOPILOT_KNOB_BARO"/>
-            <Instrument Id="AUTOPILOT_KNOB_BARO1"/>
-            <Instrument Id="AUTOPILOT_KNOB_BARO2"/>
-            <Instrument Id="AUTOPILOT_KNOB_BARO3"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="EQUAL" Tolerance="50">
+                        <Val SimVarName="PLANE ALTITUDE" Units="Feet"/>
+                        <Val SimVarName="INDICATED ALTITUDE" Units="Feet"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="AUTOPILOT_KNOB_BARO"/>
+                <Instrument Id="AUTOPILOT_KNOB_BARO1"/>
+                <Instrument Id="AUTOPILOT_KNOB_BARO2"/>
+                <Instrument Id="AUTOPILOT_KNOB_BARO3"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_ALTIMETERS_STD">
-            <CheckpointDesc SubjectTT="Altimeters" ExpectationTT="Set STD/Crosscheck "/>
+            <CheckpointDesc SubjectTT="Altimeters" ExpectationTT="Set STD/Crosscheck"/>
             <ForceCamera name="Instrument01"/>
-            <Instrument Id="AUTOPILOT_KNOB_BARO"/>
-            <Instrument Id="AUTOPILOT_KNOB_BARO1"/>
-            <Instrument Id="AUTOPILOT_KNOB_BARO2"/>
-            <Instrument Id="AUTOPILOT_KNOB_BARO3"/>
+            <!-- @HACK (blame Asobo) -->
+            <Test>
+                <TestValue>
+                    <Operator OpType="EQUAL" Tolerance="50">
+                        <Val SimVarName="PLANE ALTITUDE" Units="Feet"/>
+                        <Val SimVarName="INDICATED ALTITUDE" Units="Feet"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="AUTOPILOT_KNOB_BARO"/>
+                <Instrument Id="AUTOPILOT_KNOB_BARO1"/>
+                <Instrument Id="AUTOPILOT_KNOB_BARO2"/>
+                <Instrument Id="AUTOPILOT_KNOB_BARO3"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_ALTIMETER_CHECK_DESCENT">
             <CheckpointDesc SubjectTT="Altimeters (transition flight level)" ExpectationTT="Set/Crosscheck"/>
@@ -702,12 +1383,30 @@
         <Checkpoint Id="CJ4_FUEL_TRANSFER_OFF">
             <CheckpointDesc SubjectTT="Fuel Transfer Selector" ExpectationTT="Off"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="FUEL_Switch_Crossfeed"/>
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <TestValue>
+                        <Val Code="(A:CIRCUIT SWITCH ON:45, Bool) !"/>
+                    </TestValue>
+                    <Instrument Id="FUEL_Switch_Crossfeed"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Val Code="(A:CIRCUIT SWITCH ON:46, Bool) !"/>
+                    </TestValue>
+                    <Instrument Id="FUEL_Switch_Crossfeed"/>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_CLIMATE_CONTROL_SELECTOR_OFF">
             <CheckpointDesc SubjectTT="CLIMATE CONTROL selector" ExpectationTT="OFF"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="PASSENGER_KNOB_CLIMATECONTROL_1"/>
+            <Test>
+                <TestValue>
+                    <Val Code="(L:CLIMATE_CONTROL) 0 =="/>
+                </TestValue>
+                <Instrument Id="PASSENGER_KNOB_CLIMATECONTROL_1"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_CLIMATE_CONTROL_SELECTOR_ASDESIRED">
             <CheckpointDesc SubjectTT="CLIMATE CONTROL selector" ExpectationTT="As desired"/>
@@ -718,18 +1417,43 @@
             <CheckpointDesc SubjectTT="CLIMATE CONTROL selector" ExpectationTT="NORM"/>
             <Clue name="For single-engine operation, selecting CLIMATE CONTROL to NORM or COMP ON may cause a generator overcurrent if the battery charging amps are greater than 100"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="PASSENGER_KNOB_CLIMATECONTROL_1"/>
+            <Test>
+                <TestValue>
+                    <Val Code="(L:CLIMATE_CONTROL) 1 =="/>
+                </TestValue>
+                <Instrument Id="PASSENGER_KNOB_CLIMATECONTROL_1"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_AUTOPILOT_TEST">
             <CheckpointDesc SubjectTT="Autopilot" ExpectationTT="Engage/Disconnect"/>
             <ForceCamera name="Instrument01"/>
-            <Instrument Id="AUTOPILOT_Push_Autopilot"/>
+            <Sequence SeqType="Ordered">
+                <Test>
+                    <Duration Value="0.5" Cumulative="False"/>
+                    <Once>TRUE</Once>
+                    <TestValue>
+                        <Val SimVarName="AUTOPILOT MASTER" Units="Boolean"/>
+                    </TestValue>
+                    <Instrument Id="AUTOPILOT_Push_Autopilot"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="NOT">
+                            <Val SimVarName="AUTOPILOT MASTER" Units="Boolean"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="AUTOPILOT_Push_Autopilot"/>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_YAW_DAMPER_ON">
             <CheckpointDesc SubjectTT="Yaw damper" ExpectationTT="ON"/>
-            <ForceCamera name="Instrument01"/>
-            <Instrument Id="AUTOPILOT_PUSH_YAWDAMPER"/>
-            <Instrument Id="AUTOPILOT_PUSH_YAWDAMPER1"/>
+            <Test>
+                <TestValue>
+                    <Val SimVarName="AUTOPILOT YAW DAMPER" Units="Boolean"/>
+                </TestValue>
+                <Instrument Id="AUTOPILOT_PUSH_YAWDAMPER"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_AUTOPILOT_ASREQUIRED">
             <CheckpointDesc SubjectTT="Autopilot" ExpectationTT="As required"/>
@@ -741,9 +1465,24 @@
         <Checkpoint Id="CJ4_DISENGAGE_AUTOPILOT_AND_YAW">
             <CheckpointDesc SubjectTT="Autopilot and Yaw damper" ExpectationTT="Disengage"/>
             <ForceCamera name="Instrument01"/>
-            <Instrument Id="AUTOPILOT_PUSH_YAWDAMPER"/>
-            <Instrument Id="AUTOPILOT_PUSH_YAWDAMPER1"/>
-            <Instrument Id="AUTOPILOT_Push_Autopilot"/>
+            <Sequence SeqType="Unordered">
+                <Test>
+                    <TestValue>
+                        <Operator OpType="NOT">
+                            <Val SimVarName="AUTOPILOT MASTER" Units="Boolean"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="AUTOPILOT_Push_Autopilot"/>
+                </Test>
+                <Test>
+                    <TestValue>
+                        <Operator OpType="NOT">
+                            <Val SimVarName="AUTOPILOT YAW DAMPER" Units="Boolean"/>
+                        </Operator>
+                    </TestValue>
+                    <Instrument Id="AUTOPILOT_PUSH_YAWDAMPER"/>
+                </Test>
+            </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_AVIONICS_CHECK_SET">
             <CheckpointDesc SubjectTT="Avionics" ExpectationTT="Check/Set"/>
@@ -759,6 +1498,7 @@
         <Checkpoint Id="CJ4_TEST_RECORDER">
             <CheckpointDesc SubjectTT="Cockpit Voice Recorder TEST Button" ExpectationTT="Test"/>
             <Clue name="Push and Hold for 5 seconds - TEST light illuminates"/>
+            <ForceCamera name="Copilot"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_ALLBUTTONS_OK">
             <CheckpointDesc SubjectTT="All other switches and buttons" ExpectationTT="As Required"/>
@@ -767,7 +1507,14 @@
         <Checkpoint Id="CJ4_PRESSURE_DUMP_OFF">
             <CheckpointDesc SubjectTT="CABIN PRESSURE DUMP Button" ExpectationTT="OFF"/>
             <ForceCamera name="Instrument02"/>
-            <Instrument Id="PRESSURIZATION_Push_Dump"/>
+            <Test>
+                <TestValue>
+                    <Operator OpType="NOT">
+                        <Val SimVarName="PRESSURIZATION DUMP SWITCH" Units="Boolean"/>
+                    </Operator>
+                </TestValue>
+                <Instrument Id="PRESSURIZATION_Push_Dump"/>
+            </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_OXYGEN_MASK_MIC_TEST">
             <CheckpointDesc SubjectTT="OXYGEN MASK MIC Buttons" ExpectationTT="Verify Operation"/>
