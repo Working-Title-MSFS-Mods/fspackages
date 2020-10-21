@@ -1333,29 +1333,29 @@
                             <div class="mainText">SELECT AIRPORT</div>
                             <div class="mainValue"></div>
                             <div class="title"></div>
-                            <img class="waypointSymbol" />
+                            <img class="waypointSymbol"/>
                         </div>
                         <div class="gradientButton" id="AirportInfo_Options">
                             <div class="mainText">Waypoint Options</div>
                         </div>
                     </div>
-                    <div class="mainPart">
-                        <div class="LeftTabs">
-                            <div class="gradientButton" id="AirportInfo_InfoTab" state="White">
+                    <div class="tabContainer">
+                        <div class="tabSelect LeftTabs">
+                            <div class="tabButton tabButtonLeft" id="AirportInfo_InfoTab" state="Highlight">
                                 <div class="mainText">Info</div>
                             </div>
-                            <div class="gradientButton" id="AirportInfo_FreqsTab">
+                            <div class="tabButton tabButtonLeft" id="AirportInfo_FreqsTab" state="">
                                 <div class="mainText">Freqs</div>
                             </div>
-                            <div class="gradientButton" id="AirportInfo_WeatherTab" state="Hidden">
+                            <div class="tabButton tabButtonLeft" id="AirportInfo_WeatherTab" state="Disabled">
                                 <div class="mainText">Weather</div>
                             </div>
-                            <div class="gradientButton" id="AirportInfo_AptDirTab" state="Hidden">
+                            <div class="tabButton tabButtonLeft" id="AirportInfo_AptDirTab" state="Disabled">
                                 <div class="mainText">APT DIR</div>
                             </div>
                         </div>
-                        <div class="CenterDisplay" state="Info">
-                            <div class="Info">
+                        <div class="tabContentContainer CenterDisplay">
+                            <div class="tabContent Info" state="Active">
                                 <div class="section">
                                     <div class="city"></div>
                                     <div class="region"></div>
@@ -1392,24 +1392,32 @@
                                     <div class="privacy"></div>
                                 </div>
                             </div>
-                            <div class="Freqs">
-
+                            <div class="tabContent Freqs" state="Inactive">
                             </div>
-                            <div class="Runways">
-
+                            <div class="tabContent Weather" state="Inactive">
+                            </div>
+                            <div class="tabContent APTDIR" state="Inactive">
+                            </div>
+                            <div class="tabContent Charts" state="Inactive">
+                            </div>
+                            <div class="tabContent Runways" state="Inactive">
+                            </div>
+                            <div class="tabContent NOTAMs" state="Inactive">
+                            </div>
+                            <div class="tabContent Proc" state="Inactive">
                             </div>
                         </div>
-                        <div class="RightTabs">
-                            <div class="gradientButton" id="AirportInfo_ChartsTab" state="Hidden">
+                        <div class="tabSelect RightTabs">
+                            <div class="tabButton tabButtonRight" id="AirportInfo_ChartsTab" state="Disabled">
                                 <div class="mainText">Charts</div>
                             </div>
-                            <div class="gradientButton" id="AirportInfo_RunwaysTab">
+                            <div class="tabButton tabButtonRight" id="AirportInfo_RunwaysTab" state="">
                                 <div class="mainText">Runways</div>
                             </div>
-                            <div class="gradientButton" id="AirportInfo_ChartNotamsTab" state="Hidden">
+                            <div class="tabButton tabButtonRight" id="AirportInfo_ChartNotamsTab" state="Disabled">
                                 <div class="mainText">Chart NOTAMs</div>
                             </div>
-                            <div class="gradientButton" id="AirportInfo_ProcTab" state="Hidden">
+                            <div class="tabButton tabButtonRight" id="AirportInfo_ProcTab" state="Disabled">
                                 <div class="mainText">Proc</div>
                             </div>
                         </div>
@@ -2339,15 +2347,15 @@
                 </div>
             </div>
             <div class="PopUpWindow Transparent" id="WaypointInfo_WaypointOptions" state="Inactive">
+                <div class="WindowTitle">Waypoint Options</div>
                 <div class="content">
-                    <div class="title">Waypoint Options</div>
                     <div class="gradientButton drctButon">
                         <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" />
                     </div>
                     <div class="gradientButton flightPlanButon">
                         <div class="mainText">Insert in Flight Plan</div>
                     </div>
-                    <div class="gradientButton showOnMapButon">
+                    <div class="gradientButton statusToggleButton showOnMapButon">
                         <div class="mainText">Show On Map</div>
                         <div class="statusBar"></div>
                     </div>

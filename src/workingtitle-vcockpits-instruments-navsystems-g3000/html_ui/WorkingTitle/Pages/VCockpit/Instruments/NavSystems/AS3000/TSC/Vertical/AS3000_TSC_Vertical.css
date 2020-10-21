@@ -857,142 +857,98 @@
             height: 10vh; }
 
       as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo #AirportInfo_SelectedWaypoint {
-        width: 30%;
-        height: 9vh; }
+        width: 50%;
+        height: 10vh; }
         as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo #AirportInfo_SelectedWaypoint .mainValue {
           position: absolute;
-          text-align: left;
           left: 5%;
           top: 5%;
-          color: white;
-          font-size: 3vh; }
+          font-size: 4vh; }
         as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo #AirportInfo_SelectedWaypoint .title {
           position: absolute;
-          text-align: left;
           left: 5%;
-          bottom: 5%;
+          bottom: 0%;
           width: 90%;
-          height: 4.2vh;
-          overflow: hidden; }
+          font-size: 2vh; }
         as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo #AirportInfo_SelectedWaypoint .waypointSymbol {
           position: absolute;
+          height: 50%;
           right: 0%;
           top: 0%; }
       as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo #AirportInfo_Options {
         width: 20%;
-        height: 9vh; }
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart {
-        position: relative;
-        height: 42vh;
-        width: 100%; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .LeftTabs {
-          position: absolute;
-          left: 5%;
-          right: 75%;
-          height: 100%; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .LeftTabs .gradientButton {
-            width: 100%;
-            height: 25%; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .RightTabs {
-          position: absolute;
-          right: 5%;
-          left: 75%;
-          height: 100%; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .RightTabs .gradientButton {
-            width: 100%;
-            height: 25%; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay {
-          position: absolute;
-          left: 25%;
-          right: 25%;
-          height: 100%;
-          border: 0.3vh solid white;
+        height: 10vh; }
+      as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer {
+        position: absolute;
+        left: 1%;
+        top: 18%;
+        width: 96%;
+        height: 80%; }
+        as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .tabButton {
+            height: 10vh;
+            margin: 1.5vh 0; }
+        as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay {
+          width: 70%;
           font-size: 3vh;
-          line-height: 3vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Info, as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Freqs, as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Runways {
-            display: none; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay[state=Info] .Info,
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay[state=Freqs] .Freqs,
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay[state=Runways] .Runways {
-            display: block; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Info .city {
+          line-height: 3vh;
+          margin: 0 -0.5vh; }
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .city {
             padding-left: 5%;
             width: 95%;
             height: 3vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Info .section {
-            width: 100%;
-            border-top: 0.3vh solid white;
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .section {
             padding-top: 1.2vh;
             padding-bottom: 1.2vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Info .line {
-            width: 100%;
-            display: flex; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Info .region {
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .region {
             padding-left: 5%;
             width: 95%;
             height: 3vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Info .bearing {
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .bearing {
             width: 45%;
             text-align: center;
             height: 6vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Info .distance {
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .distance {
             width: 45%;
             text-align: center;
             height: 6vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Info .latitude {
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .latitude {
             width: 100%;
             text-align: center;
             height: 3vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Info .longitude {
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .longitude {
             width: 100%;
             text-align: center;
             height: 3vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Info .elev {
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .elev {
             width: 45%;
             text-align: center;
             height: 6vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Info .time {
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .time {
             width: 45%;
             right: 0%;
             text-align: center;
             height: 6vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Info .fuel {
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .fuel {
             width: 45%;
             text-align: center;
             height: 6vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Info .privacy {
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .privacy {
             width: 45%;
             right: 0%;
             text-align: center;
             height: 6vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Freqs {
-            width: 100%;
-            height: 100%;
-            overflow-y: scroll;
-            overflow-x: hidden;
-            position: relative; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Freqs::-webkit-scrollbar {
-              width: 0.5vw; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Freqs::-webkit-scrollbar-track {
-              background: none; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Freqs::-webkit-scrollbar-thumb {
-              background: white; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Freqs .line {
-              position: relative;
-              display: flex;
-              height: 25%;
-              border-bottom: 0.3vh solid white; }
-              as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Freqs .line .frequencyName {
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Freqs .line {
+              height: 25%; }
+              as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Freqs .line .frequencyName {
                 position: absolute;
                 width: 50%;
-                height: 100%;
-                border-right: 0.3vh solid white; }
-              as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Freqs .line .buttonContainer {
+                height: 100%; }
+              as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Freqs .line .buttonContainer {
                 position: absolute;
                 width: 50%;
                 height: 100%;
                 right: 0%; }
-                as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Freqs .line .buttonContainer .gradientButton {
+                as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Freqs .line .buttonContainer .gradientButton {
                   position: absolute;
                   top: 0.15vh;
                   bottom: 0.15vh;
@@ -1000,45 +956,30 @@
                   left: 0.15vh;
                   width: auto;
                   height: auto; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Runways {
-            width: 100%;
-            height: 100%;
-            overflow-y: scroll;
-            overflow-x: hidden;
-            position: relative; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Runways::-webkit-scrollbar {
-              width: 0.5vw; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Runways::-webkit-scrollbar-track {
-              background: none; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Runways::-webkit-scrollbar-thumb {
-              background: white; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Runways .line {
-              position: relative;
-              display: flex;
-              height: 33.33%;
-              border-bottom: 0.3vh solid white; }
-              as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Runways .line .name {
+          as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Runways .line {
+              height: 33.33%; }
+              as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Runways .line .name {
                 position: absolute;
                 top: 2%;
                 width: 100%;
                 height: 30%;
                 font-size: 3.6vh;
                 color: white; }
-              as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Runways .line .size {
+              as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Runways .line .size {
                 position: absolute;
                 top: 32%;
                 width: 100%;
                 height: 20%;
                 font-size: 3vh;
                 color: white; }
-              as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Runways .line .surface {
+              as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Runways .line .surface {
                 position: absolute;
                 top: 62%;
                 width: 50%;
                 height: 20%;
                 font-size: 3vh;
                 color: white; }
-              as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .mainPart .CenterDisplay .Runways .line .lighting {
+              as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Runways .line .lighting {
                 position: absolute;
                 top: 62%;
                 right: 0%;
@@ -1046,6 +987,7 @@
                 height: 20%;
                 font-size: 3vh;
                 color: white; }
+
       as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer {
         width: 100%;
         height: 98%;
@@ -1731,49 +1673,28 @@
         right: 20%;
         height: 15%;
         width: auto; }
+
     as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content {
-      position: absolute;
-      background-color: black;
-      right: 5%;
+      left: 25%;
       top: 10%;
       bottom: 2%;
-      height: auto;
-      width: 27vh;
-      border: 0.3vh solid white; }
-      as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content .title {
-        font-size: 3vh;
-        width: 100%;
-        text-align: center; }
-      as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content .drctButon {
-        position: absolute;
-        top: 10%;
-        height: 30%;
-        width: 26.28vh;
-        padding: 0.3vh;
-        border-top: 0.3vh solid white; }
-      as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content .flightPlanButon {
-        position: absolute;
-        top: 40%;
-        height: 30%;
-        width: 26.28vh;
-        padding: 0.3vh;
-        border-top: 0.3vh solid white; }
-      as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content .showOnMapButon {
-        position: absolute;
-        top: 70%;
-        height: 30%;
-        width: 26.28vh;
-        padding: 0.3vh;
-        border-top: 0.3vh solid white;
-        border-top: 0.3vh solid white; }
-    as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow {
-      color: white;
-      font-size: 2.7vh;
-      position: relative; }
-      as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow .WindowTitle {
+      width: 50%; }
+      as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content .gradientButton {
         width: 70%;
-        padding-left: 15%;
-        background-color: black; }
+        height: 12vh; }
+
+    as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow {
+      font-size: 3vh; }
+      as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow .Container {
+        position: absolute;
+        top: 8%;
+        left: 1%;
+        height: 90%;
+        width: 98%;
+        padding: 0.5vh; }
+      as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow #WPDup_SearchTitle {
+        position: relative;
+        left: 1%; }
       as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow thead tr th:nth-child(1), as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow tbody tr:first-child td:nth-child(1) {
         width: 40vw; }
       as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow thead tr th:nth-child(2), as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow tbody tr:first-child td:nth-child(2) {
@@ -1781,40 +1702,16 @@
       as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow thead tr th:nth-child(3), as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow tbody tr:first-child td:nth-child(3) {
         width: 30vw; }
       as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table {
-        position: absolute;
         width: 100%;
-        height: 80%;
-        top: 15%;
-        bottom: 0%;
-        left: 0%;
-        right: 0%;
-        border: 0.3vh solid white;
-        border-collapse: collapse;
-        color: white;
-        text-align: center;
-        font-size: 3vh; }
+        height: 90%;
+        font-size: 3vh;
+        padding: 0.5vh; }
         as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table thead {
-          display: block;
-          color: white;
           font-size: 3vh;
-          height: 4.2vh;
-          width: 97%;
-          border: 0.3vh solid white;
-          padding-right: 3%; }
+          height: 4.2vh; }
         as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody {
-          display: block;
-          overflow-y: scroll;
-          overflow-x: hidden;
-          height: 27vh;
-          width: 97%;
-          position: relative;
-          padding-right: 1.75%; }
-          as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody::-webkit-scrollbar {
-            width: 0.5vw; }
-          as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody::-webkit-scrollbar-track {
-            background: none; }
-          as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody::-webkit-scrollbar-thumb {
-            background: white; }
+          height: 92%;
+          padding: 0.5vh; }
           as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody #SizeSetter, as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody #SizeSetter td {
             border: none;
             height: 0vh; }
@@ -1822,51 +1719,37 @@
             height: 11.4vh;
             position: relative; }
             as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody tr .gradientButton, as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody td .gradientButton {
-              position: absolute;
-              top: 0.6vh;
-              left: 0.6vh;
-              right: 0.6vh;
-              bottom: 0.6vh;
-              width: auto;
-              height: auto; }
+              width: 100%;
+              height: 100%;
+              margin: 0.25vh; }
               as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody tr .gradientButton .Ident, as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody td .gradientButton .Ident {
                 position: absolute;
-                top: 0.6vh;
-                left: 0.6vh;
+                top: 0%;
+                left: 1vh;
                 font-size: 3vh; }
               as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody tr .gradientButton .Logo, as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody td .gradientButton .Logo {
                 position: absolute;
-                top: 0.6vh;
-                right: 0.6vh;
-                height: 3vh; }
+                top: 1vh;
+                right: 1vh;
+                height: 5vh; }
               as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody tr .gradientButton .Name, as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody td .gradientButton .Name {
                 position: absolute;
-                top: 3.9vh;
+                top: 4vh;
                 left: 0.6vh;
-                font-size: 2.1vh;
+                font-size: 2vh;
                 white-space: pre-line;
                 text-align: left; }
               as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody tr .gradientButton .City, as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody td .gradientButton .City {
                 position: absolute;
                 top: 6vh;
                 left: 0.6vh;
-                font-size: 2.1vh;
+                font-size: 2vh;
                 white-space: nowrap; }
-          as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody tr[state=Inactive] {
-            display: none; }
-          as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody td {
-            border-top: 0.3vh solid white;
-            border-bottom: 0.3vh solid white; }
-            as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody td[state=Inactive] {
-              display: none; }
-          as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow table tbody tr td:first-child {
-            border-left: 0.3vh solid white;
-            border-right: 0.3vh solid white; }
       as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow .BearingArrow {
         position: absolute;
         left: 10%;
         top: 20%;
-        height: 3.6vh; }
+        height: 3.5vh; }
       as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow .BearingText {
         position: absolute;
         top: 20%;
@@ -1875,6 +1758,7 @@
         position: absolute;
         top: 20%;
         left: 30%; }
+
     as3000-tsc-vertical-element #Electricity #MapPointerControl #TouchPad {
       position: absolute;
       left: 3vh;
