@@ -9,6 +9,8 @@
 				<WorkUnit Name="Ambience" ID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" PersistMode="Reference"/>
 				<WorkUnit Name="Aural" ID="{9F2DA274-CC3E-4FCB-9204-266F88D59B5D}" PersistMode="Reference"/>
 				<WorkUnit Name="Warnings" ID="{A2476568-8A3D-4287-AA7D-D5CE4405BC8F}" PersistMode="Reference"/>
+				<WorkUnit Name="Wind" ID="{AC9E2451-3589-439A-B1E1-3E0DCD89678F}" PersistMode="Reference"/>
+				<WorkUnit Name="Gear" ID="{578E8A29-4A61-44C9-8BCD-ED68E7432571}" PersistMode="Reference"/>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

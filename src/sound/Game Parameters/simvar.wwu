@@ -560,7 +560,7 @@ Unit : Knots</Comment>
 								<Property Name="FilterTimeDown" Type="Real64" Value="3"/>
 								<Property Name="FilterTimeUp" Type="Real64" Value="3"/>
 								<Property Name="InitialValue" Type="Real64" Value="0"/>
-								<Property Name="Max" Type="Real64" Value="1000"/>
+								<Property Name="Max" Type="Real64" Value="500"/>
 							</PropertyList>
 						</GameParameter>
 						<GameParameter Name="SIMVAR_ROTATION_VELOCITY_BODY_Z" ID="{9970D6C2-20EF-4E4B-A40D-0181AB8EA25B}">
@@ -760,7 +760,7 @@ Unit : Knots</Comment>
 								<Property Name="FilterTimeDown" Type="Real64" Value="3"/>
 								<Property Name="FilterTimeUp" Type="Real64" Value="3"/>
 								<Property Name="InitialValue" Type="Real64" Value="0"/>
-								<Property Name="Max" Type="Real64" Value="1000"/>
+								<Property Name="Max" Type="Real64" Value="305"/>
 							</PropertyList>
 						</GameParameter>
 						<Folder Name="derived" ID="{4D3B3343-E4D3-4E75-8155-DA9E0DC84C99}" ShortID="600110436">
@@ -856,6 +856,7 @@ Unit : Percent Over 100</Comment>
 Unit : Percentage</Comment>
 							<PropertyList>
 								<Property Name="InitialValue" Type="Real64" Value="0"/>
+								<Property Name="Max" Type="Real64" Value="1"/>
 							</PropertyList>
 						</GameParameter>
 						<Folder Name="derived" ID="{F6FF84AA-24EB-4F7D-B252-BAFB1F2ED399}" ShortID="763764561">
