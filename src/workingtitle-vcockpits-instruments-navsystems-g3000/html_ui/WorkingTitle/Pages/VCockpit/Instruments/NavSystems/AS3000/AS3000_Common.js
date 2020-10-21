@@ -54,23 +54,6 @@ class AS3000_MapElement extends WT_MapElement {
 
         this.callSettingsOnTemplateLoaded();
     }
-
-    onUpdate(_deltaTime) {
-        if (this.revertToDefault) {
-            if (this.instrumentLoaded) {
-                this.instrument.update();
-                if (this.weatherTexts) {
-                    let range = this.instrument.getWeatherRange();
-                    let ratio = 1.0 / this.weatherTexts.length;
-                    for (let i = 0; i < this.weatherTexts.length; i++) {
-                        this.weatherTexts[i].textContent = fastToFixed(range * ratio * (i + 1), 2) + "NM";
-                    }
-                }
-            }
-        } else {
-            super.onUpdate(_deltaTime);
-        }
-    }
 }
 AS3000_MapElement.ZOOM_RANGES_DEFAULT = [250 / 6076, 500 / 6076, 750 / 6076, 1000 / 6076, 0.25, 0.5, 0.75, 1, 1.5, 2.5, 4, 5, 7.5, 10, 15, 25, 40, 50, 75, 100, 150, 250, 400, 500, 750, 1000]; // NM
 AS3000_MapElement.ZOOM_RANGE_DEFAULT = 5;
