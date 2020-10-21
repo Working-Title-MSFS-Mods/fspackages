@@ -420,6 +420,10 @@ class CJ4_FMC_LegsPage {
     getAltSpeedRestriction(waypoint) {
         let speedConstraint = "---";
         let altitudeConstraint = "----- ";
+        console.log("wpt " + waypoint.ident);
+        console.log("legAltitudeDescription " + waypoint.legAltitudeDescription);
+        console.log("legAltitude1 " + waypoint.legAltitude1);
+        console.log("legAltitude2 " + waypoint.legAltitude2);
 
         if (waypoint.speedConstraint && waypoint.speedConstraint > 100) {
             speedConstraint = waypoint.speedConstraint;
