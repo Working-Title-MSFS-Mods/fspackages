@@ -39,19 +39,19 @@ class AS3000_MapElement extends WT_MapElement {
         ]);
         this.addSetting(new WT_MapSymbolVisSettingGroup(this, dcltrSetting));
 
-        this.addSetting(new WTMapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT, "airspaceMaxRangeIndex", AS3000_MapElement.AIRSPACE_RANGE_DEFAULT));
-        this.addSetting(new WTMapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT, "smallAirportMaxRangeIndex", AS3000_MapElement.AIRPORT_SMALL_RANGE_DEFAULT));
-        this.addSetting(new WTMapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT, "medAirportMaxRangeIndex", AS3000_MapElement.AIRPORT_MEDIUM_RANGE_DEFAULT));
-        this.addSetting(new WTMapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT, "largeAirportMaxRangeIndex", AS3000_MapElement.AIRPORT_LARGE_RANGE_DEFAULT));
-        this.addSetting(new WTMapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_VOR_RANGE_ROOT, "vorMaxRangeIndex", AS3000_MapElement.VOR_RANGE_DEFAULT));
-        this.addSetting(new WTMapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_INT_RANGE_ROOT, "intMaxRangeIndex", AS3000_MapElement.INT_RANGE_DEFAULT));
-        this.addSetting(new WTMapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_NDB_RANGE_ROOT, "ndbMaxRangeIndex", AS3000_MapElement.NDB_RANGE_DEFAULT));
-        this.addSetting(new WTMapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT, "roadHighwayMaxRangeIndex", AS3000_MapElement.ROAD_HIGHWAY_RANGE_DEFAULT));
-        this.addSetting(new WTMapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT, "roadTrunkMaxRangeIndex", AS3000_MapElement.ROAD_TRUNK_RANGE_DEFAULT));
-        this.addSetting(new WTMapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT, "roadPrimaryMaxRangeIndex", AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT));
-        this.addSetting(new WTMapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_CITY_SMALL_RANGE_ROOT, "smallCityMaxRangeIndex", AS3000_MapElement.CITY_SMALL_RANGE_DEFAULT));
-        this.addSetting(new WTMapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_CITY_MEDIUM_RANGE_ROOT, "medCityMaxRangeIndex", AS3000_MapElement.CITY_MEDIUM_RANGE_DEFAULT));
-        this.addSetting(new WTMapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_CITY_LARGE_RANGE_ROOT, "largeCityMaxRangeIndex", AS3000_MapElement.CITY_LARGE_RANGE_DEFAULT));
+        this.addSetting(new WT_MapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT, "airspaceMaxRangeIndex", AS3000_MapElement.AIRSPACE_RANGE_DEFAULT));
+        this.addSetting(new WT_MapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT, "smallAirportMaxRangeIndex", AS3000_MapElement.AIRPORT_SMALL_RANGE_DEFAULT));
+        this.addSetting(new WT_MapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT, "medAirportMaxRangeIndex", AS3000_MapElement.AIRPORT_MEDIUM_RANGE_DEFAULT));
+        this.addSetting(new WT_MapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT, "largeAirportMaxRangeIndex", AS3000_MapElement.AIRPORT_LARGE_RANGE_DEFAULT));
+        this.addSetting(new WT_MapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_VOR_RANGE_ROOT, "vorMaxRangeIndex", AS3000_MapElement.VOR_RANGE_DEFAULT));
+        this.addSetting(new WT_MapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_INT_RANGE_ROOT, "intMaxRangeIndex", AS3000_MapElement.INT_RANGE_DEFAULT));
+        this.addSetting(new WT_MapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_NDB_RANGE_ROOT, "ndbMaxRangeIndex", AS3000_MapElement.NDB_RANGE_DEFAULT));
+        this.addSetting(new WT_MapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT, "roadHighwayMaxRangeIndex", AS3000_MapElement.ROAD_HIGHWAY_RANGE_DEFAULT));
+        this.addSetting(new WT_MapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT, "roadTrunkMaxRangeIndex", AS3000_MapElement.ROAD_TRUNK_RANGE_DEFAULT));
+        this.addSetting(new WT_MapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT, "roadPrimaryMaxRangeIndex", AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT));
+        this.addSetting(new WT_MapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_CITY_SMALL_RANGE_ROOT, "smallCityMaxRangeIndex", AS3000_MapElement.CITY_SMALL_RANGE_DEFAULT));
+        this.addSetting(new WT_MapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_CITY_MEDIUM_RANGE_ROOT, "medCityMaxRangeIndex", AS3000_MapElement.CITY_MEDIUM_RANGE_DEFAULT));
+        this.addSetting(new WT_MapSymbolRangeSetting(this, AS3000_MapElement.VARNAME_CITY_LARGE_RANGE_ROOT, "largeCityMaxRangeIndex", AS3000_MapElement.CITY_LARGE_RANGE_DEFAULT));
 
         // "Sensor" settings
         this.addSetting(new WT_MapTerrainModeSetting(this));

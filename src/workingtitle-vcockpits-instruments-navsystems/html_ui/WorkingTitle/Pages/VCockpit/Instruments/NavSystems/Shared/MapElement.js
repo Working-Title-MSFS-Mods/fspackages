@@ -475,7 +475,7 @@ WT_MapSymbolVisSettingGroup.VARNAME_ATTRIBUTES_ROOT = new Map([
  * * medCityMaxRangeIndex
  * * largeCityMaxRangeIndex
  */
-class WTMapSymbolRangeSetting extends WT_MapSetting {
+class WT_MapSymbolRangeSetting extends WT_MapSetting {
     /**
      * @param {WT_MapElement} _mapElement - the WT_MapElement object to associate the new setting with.
      * @param {string} _varNameRoot - the identifier of new setting.
