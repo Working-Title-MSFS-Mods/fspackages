@@ -174,7 +174,7 @@
 												<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
 												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
 												<Property Name="TrimBegin" Type="Real64" Value="0.0503396594817276"/>
-												<Property Name="TrimEnd" Type="Real64" Value="4.83965271832192"/>
+												<Property Name="TrimEnd" Type="Real64" Value="5.10145634823458"/>
 											</PropertyList>
 											<Language>SFX</Language>
 											<AudioFile>Ambience\Master On Run and Off.WAV</AudioFile>

@@ -9,7 +9,7 @@
 						<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 						<Property Name="CenterPercentage" Type="int32">
 							<ValueList>
-								<Value>100</Value>
+								<Value>87</Value>
 							</ValueList>
 						</Property>
 						<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
@@ -18,17 +18,29 @@
 								<Value>-4</Value>
 							</ValueList>
 						</Property>
+						<Property Name="Highpass" Type="int16">
+							<ValueList>
+								<Value>37</Value>
+							</ValueList>
+						</Property>
+						<Property Name="OverridePositioning" Type="bool" Value="True"/>
 						<Property Name="Priority" Type="int16">
 							<ValueList>
 								<Value>100</Value>
 							</ValueList>
 						</Property>
 						<Property Name="RandomAvoidRepeating" Type="bool" Value="False"/>
+						<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="76"/>
 						<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>-7</Value>
+							</ValueList>
+						</Property>
 					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Attenuation">
-							<ObjectRef Name="aircraft_player_inside_3m_spread15" ID="{F5FBB6BB-1F86-4FA7-99C5-7D1DAE906FF9}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+							<ObjectRef Name="aircraft_player_inside_3m" ID="{538CDAF5-4564-463A-A841-C73D21967E20}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
 						</Reference>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>

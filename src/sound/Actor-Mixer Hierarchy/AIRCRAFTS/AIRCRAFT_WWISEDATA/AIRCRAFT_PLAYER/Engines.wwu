@@ -567,7 +567,7 @@
 								<Property Name="BlendBehavior" Type="int16" Value="1"/>
 								<Property Name="CenterPercentage" Type="int32">
 									<ValueList>
-										<Value>83</Value>
+										<Value>55</Value>
 									</ValueList>
 								</Property>
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
@@ -647,9 +647,6 @@
 									</ValueList>
 								</Property>
 								<Property Name="Volume" Type="Real64">
-									<ValueList>
-										<Value>-2</Value>
-									</ValueList>
 									<RTPCList>
 										<RTPC Name="" ID="{9A1DB55C-C6A2-4A52-B8ED-A6AF3DC7193B}" ShortID="276767436">
 											<ReferenceList>
@@ -766,7 +763,7 @@
 								<Property Name="BlendBehavior" Type="int16" Value="1"/>
 								<Property Name="CenterPercentage" Type="int32">
 									<ValueList>
-										<Value>80</Value>
+										<Value>55</Value>
 									</ValueList>
 								</Property>
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
@@ -780,9 +777,6 @@
 									</ValueList>
 								</Property>
 								<Property Name="Volume" Type="Real64">
-									<ValueList>
-										<Value>-2</Value>
-									</ValueList>
 									<RTPCList>
 										<RTPC Name="" ID="{787C2924-9C66-4AEA-A510-7087915EB9AC}" ShortID="812824869">
 											<ReferenceList>
@@ -939,6 +933,11 @@
 								<Property Name="Priority" Type="int16">
 									<ValueList>
 										<Value>100</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>2</Value>
 									</ValueList>
 								</Property>
 							</PropertyList>
