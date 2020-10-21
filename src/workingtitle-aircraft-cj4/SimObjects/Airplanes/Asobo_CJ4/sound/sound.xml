@@ -73,12 +73,14 @@
     <Sound WwiseEvent="JetWhine" WwiseData="true" EngineIndex="2" RPMMin="1"/>
 
     <!-- WT ENGINES -->
-    <Sound WwiseEvent="Starter" CustomSuffix="wt" RPMMin="500" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="1" /> 
-    <Sound WwiseEvent="Starter" CustomSuffix="wt" RPMMin="500" WwiseData="true" EngineIndex="2" FadeOutType="2" FadeOutTime="1" /> 
-    <Sound WwiseEvent="Combustion" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="0.1" /> 
-    <Sound WwiseEvent="Combustion" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="2" FadeOutType="2" FadeOutTime="0.1" /> 
-    <Sound WwiseEvent="Shutdown" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="5" /> 
-    <Sound WwiseEvent="Shutdown" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="2" FadeOutType="2" FadeOutTime="5" /> 
+    <Sound WwiseEvent="Starter" CustomSuffix="wt" RPMMin="500" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="1" />
+    <Sound WwiseEvent="Starter" CustomSuffix="wt" RPMMin="500" WwiseData="true" EngineIndex="2" FadeOutType="2" FadeOutTime="1" />
+    <Sound WwiseEvent="CombustionStart" CustomSuffix="wt" ConeHeading="180" WwiseData="true" EngineIndex="1" />
+    <Sound WwiseEvent="CombustionStart" CustomSuffix="wt" ConeHeading="180" WwiseData="true" EngineIndex="2" />
+    <Sound WwiseEvent="Combustion" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="0.1" />
+    <Sound WwiseEvent="Combustion" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="2" FadeOutType="2" FadeOutTime="0.1" />
+    <Sound WwiseEvent="Shutdown" CustomSuffix="wt" RPMMin="19500" ConeHeading="180" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="5" />
+    <Sound WwiseEvent="Shutdown" CustomSuffix="wt" RPMMin="19500" ConeHeading="180" WwiseData="true" EngineIndex="2" FadeOutType="2" FadeOutTime="5" />
   </EngineSoundPresets>
 
   <!-- SimvarSounds ========================================================================================== -->
