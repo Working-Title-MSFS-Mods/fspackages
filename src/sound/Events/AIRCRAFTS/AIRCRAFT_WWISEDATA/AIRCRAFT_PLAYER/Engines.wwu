@@ -15,6 +15,16 @@
 								</Reference>
 							</ReferenceList>
 						</Action>
+						<Action Name="" ID="{3ACA5EC0-069D-45CC-91DD-5391BF0657AB}" ShortID="469436662">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="starter_outside" ID="{30596C7F-F313-42D1-AD88-168AADB81880}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
 					</ChildrenList>
 				</Event>
 				<Event Name="Play_Asobo_CJ4_eng1_shutdown_wt" ID="{1E10D9F3-1B15-42F5-A52E-945CE30386D6}">
@@ -26,6 +36,16 @@
 							<ReferenceList>
 								<Reference Name="Target">
 									<ObjectRef Name="shutdown_inside" ID="{69EC2F71-B690-4087-B1CE-E95A0C2786AF}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{14DAC51B-A276-4ED8-BFF4-6545A530CC77}" ShortID="519735255">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="shutdown_outside" ID="{D3C0F242-76AE-4804-AF9A-4170CC8A7614}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
@@ -43,6 +63,16 @@
 								</Reference>
 							</ReferenceList>
 						</Action>
+						<Action Name="" ID="{B8F39CAC-6424-4FF7-9DD9-563723D87A8D}" ShortID="425257193">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="combustion_outside" ID="{AA8FBF52-4643-4CB3-9C8A-4FA98CD07D8F}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
 					</ChildrenList>
 				</Event>
 				<Event Name="Play_Asobo_CJ4_eng2_starter_wt" ID="{77008765-9220-4521-80CD-FDD7C30757F4}">
@@ -54,6 +84,16 @@
 							<ReferenceList>
 								<Reference Name="Target">
 									<ObjectRef Name="starter_inside" ID="{40C3A2F6-16DC-46C6-A355-58E850032F3B}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{7220F910-66C5-4C31-8320-A063BD4D7511}" ShortID="709754943">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="starter_outside" ID="{30596C7F-F313-42D1-AD88-168AADB81880}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
@@ -71,6 +111,16 @@
 								</Reference>
 							</ReferenceList>
 						</Action>
+						<Action Name="" ID="{C2F281DD-EEAB-449A-B16B-1250FFFB0960}" ShortID="593633351">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="combustion_outside" ID="{AA8FBF52-4643-4CB3-9C8A-4FA98CD07D8F}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
 					</ChildrenList>
 				</Event>
 				<Event Name="Play_Asobo_CJ4_eng2_shutdown_wt" ID="{4352C42B-7AC5-4A79-8480-02360AD22530}">
@@ -85,6 +135,16 @@
 								</Reference>
 							</ReferenceList>
 						</Action>
+						<Action Name="" ID="{30CD8027-FD9C-4911-92E0-5A94120BC6D0}" ShortID="523497997">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="shutdown_outside" ID="{D3C0F242-76AE-4804-AF9A-4170CC8A7614}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
 					</ChildrenList>
 				</Event>
 				<Event Name="Play_Asobo_CJ4_eng2_combustion_start_wt" ID="{35026A50-AB4D-4291-BDDB-53F178148946}">
@@ -95,7 +155,17 @@
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="combustion_start" ID="{C1185FD1-C1AE-44A0-9687-516AE74AA5AA}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+									<ObjectRef Name="combustion_start_inside" ID="{C1185FD1-C1AE-44A0-9687-516AE74AA5AA}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{186058FE-8E2D-4ACB-A184-366B56A4CB4E}" ShortID="114922498">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="combustion_start_outside" ID="{4F9C0BB7-0610-4705-9B9A-51755EDE3C6A}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
@@ -109,7 +179,17 @@
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="combustion_start" ID="{C1185FD1-C1AE-44A0-9687-516AE74AA5AA}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+									<ObjectRef Name="combustion_start_inside" ID="{C1185FD1-C1AE-44A0-9687-516AE74AA5AA}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{C8915941-ECEC-4BD2-822C-B6832A6AB8FC}" ShortID="129821957">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="combustion_start_outside" ID="{4F9C0BB7-0610-4705-9B9A-51755EDE3C6A}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
