@@ -52,6 +52,11 @@
 								<Property Name="3DSpatialization" Type="int16" Value="2"/>
 								<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 								<Property Name="BlendBehavior" Type="int16" Value="1"/>
+								<Property Name="CenterPercentage" Type="int32">
+									<ValueList>
+										<Value>48</Value>
+									</ValueList>
+								</Property>
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 								<Property Name="Lowpass" Type="int16">
 									<RTPCList>
@@ -245,6 +250,11 @@
 								<Property Name="3DSpatialization" Type="int16" Value="2"/>
 								<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 								<Property Name="BlendBehavior" Type="int16" Value="1"/>
+								<Property Name="CenterPercentage" Type="int32">
+									<ValueList>
+										<Value>50</Value>
+									</ValueList>
+								</Property>
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 								<Property Name="OverrideAnalysis" Type="bool" Value="True"/>
 								<Property Name="OverrideOutput" Type="bool" Value="True"/>
@@ -370,6 +380,11 @@
 								<Property Name="3DSpatialization" Type="int16" Value="2"/>
 								<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 								<Property Name="BlendBehavior" Type="int16" Value="1"/>
+								<Property Name="CenterPercentage" Type="int32">
+									<ValueList>
+										<Value>34</Value>
+									</ValueList>
+								</Property>
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 								<Property Name="OverrideAnalysis" Type="bool" Value="True"/>
 								<Property Name="OverrideOutput" Type="bool" Value="True"/>
@@ -459,6 +474,11 @@
 								<Property Name="3DSpatialization" Type="int16" Value="2"/>
 								<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 								<Property Name="BlendBehavior" Type="int16" Value="1"/>
+								<Property Name="CenterPercentage" Type="int32">
+									<ValueList>
+										<Value>51</Value>
+									</ValueList>
+								</Property>
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 								<Property Name="OverrideOutput" Type="bool" Value="True"/>
 								<Property Name="OverridePositioning" Type="bool" Value="True"/>
@@ -468,7 +488,7 @@
 										<Value>100</Value>
 									</ValueList>
 								</Property>
-								<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="85"/>
+								<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="58"/>
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Attenuation">
@@ -693,7 +713,7 @@
 									<ObjectRef Name="NoDCOffset_Conversion_Settings" ID="{2463764E-1C92-49C9-B7B9-69C9CD89583D}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 								</Reference>
 								<Reference Name="OutputBus">
-									<ObjectRef Name="combustion_outside_turbine" ID="{24D53CF2-7067-47DC-869A-A05F2F17C02A}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+									<ObjectRef Name="combustion_outside_generic" ID="{7FF9CAE6-1D75-4441-8E63-E1F32BD1EEC0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 								</Reference>
 								<Reference Name="UserAuxSend0">
 									<ObjectRef Name="rev_outdoor_aircraft" ID="{3070D14E-37F3-4DB4-8C7E-262318A02693}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
@@ -923,7 +943,7 @@
 								<Property Name="BlendBehavior" Type="int16" Value="1"/>
 								<Property Name="CenterPercentage" Type="int32">
 									<ValueList>
-										<Value>86</Value>
+										<Value>51</Value>
 									</ValueList>
 								</Property>
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
@@ -1056,7 +1076,7 @@
 								<Property Name="BlendBehavior" Type="int16" Value="1"/>
 								<Property Name="CenterPercentage" Type="int32">
 									<ValueList>
-										<Value>83</Value>
+										<Value>59</Value>
 									</ValueList>
 								</Property>
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
@@ -1076,7 +1096,7 @@
 								</Property>
 								<Property Name="Volume" Type="Real64">
 									<ValueList>
-										<Value>-10</Value>
+										<Value>-8</Value>
 									</ValueList>
 								</Property>
 							</PropertyList>
@@ -1098,7 +1118,7 @@
 								</Reference>
 							</ReferenceList>
 							<ChildrenList>
-								<Sound Name="Williams FJ44-4A Shutdown Exterior" ID="{75FEB33F-30F8-437C-8AE8-883B2B4F15C2}" ShortID="728514904">
+								<Sound Name="Williams FJ44-4A Shutdown Exterior_edit" ID="{ADD76001-F7DF-4CEC-AFEC-3687180E689F}" ShortID="146167410">
 									<ReferenceList>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
@@ -1108,20 +1128,20 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<AudioFileSource Name="Williams FJ44-4A Shutdown Exterior" ID="{D1B45CA5-CD7E-4EC0-8D55-B9735209D898}">
+										<AudioFileSource Name="Williams FJ44-4A Shutdown Exterior_edit" ID="{4544FA1C-6B42-438E-B73E-0886548AF3DE}">
 											<PropertyList>
 												<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
 												<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
 												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-												<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
+												<Property Name="TrimBegin" Type="Real64" Value="0.823216993631598"/>
 												<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
 											</PropertyList>
 											<Language>SFX</Language>
-											<AudioFile>Williams FJ44-4A Shutdown Exterior.wav</AudioFile>
+											<AudioFile>Engines\Williams FJ44-4A Shutdown Exterior_edit.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
 									<ActiveSourceList>
-										<ActiveSource Name="Williams FJ44-4A Shutdown Exterior" ID="{D1B45CA5-CD7E-4EC0-8D55-B9735209D898}" Platform="Linked"/>
+										<ActiveSource Name="Williams FJ44-4A Shutdown Exterior_edit" ID="{4544FA1C-6B42-438E-B73E-0886548AF3DE}" Platform="Linked"/>
 									</ActiveSourceList>
 								</Sound>
 							</ChildrenList>
