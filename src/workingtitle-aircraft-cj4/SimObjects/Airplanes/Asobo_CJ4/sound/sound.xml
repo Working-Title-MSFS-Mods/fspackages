@@ -131,6 +131,7 @@
 
     <Sound WwiseData="true" WwiseEvent="WT_battery_on" NodeName="MFD_SCREEN_1" ContinuousStopDelay="0.1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
       <Range LowerBound="1.0" />
+      <WwiseRTPC SimVar="GENERAL ENG RPM" Units="rpm" Index="1" RTPCName="SIMVAR_GENERAL_ENG_RPM"/>
     </Sound>
 
     <Sound WwiseData="true" WwiseEvent="WT_battery_off" Continuous="false" NodeName="MFD_SCREEN_1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
