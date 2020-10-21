@@ -247,8 +247,44 @@
 										<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="80"/>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>-4</Value>
+												<Value>-2</Value>
 											</ValueList>
+											<RTPCList>
+												<RTPC Name="" ID="{C7340813-7C05-4316-B20B-C8D9DAE54ABA}" ShortID="283307356">
+													<ReferenceList>
+														<Reference Name="ControlInput">
+															<ObjectRef Name="SIMVAR_GENERAL_ENG_RPM" ID="{2A2495B6-0158-4F47-8261-D625910D546D}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+														</Reference>
+													</ReferenceList>
+													<Curve Name="" ID="{FEDBD38A-8FEA-41FE-93AA-287B9E92BDEC}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="3"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>0</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>19600</XPos>
+																<YPos>0</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>26823.52941</XPos>
+																<YPos>-13.58234</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>40000</XPos>
+																<YPos>-200</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</RTPC>
+											</RTPCList>
 										</Property>
 									</PropertyList>
 									<ReferenceList>
@@ -280,7 +316,7 @@
 													<PropertyList>
 														<Property Name="CrossfadeDuration" Type="Real64" Value="5"/>
 														<Property Name="CrossfadeShape" Type="int16" Value="2"/>
-														<Property Name="FadeOutDuration" Type="Real64" Value="4.70165368150685"/>
+														<Property Name="FadeOutDuration" Type="Real64" Value="5.24415218321918"/>
 														<Property Name="LoopBegin" Type="Real64" Value="48.7315"/>
 														<Property Name="LoopEnd" Type="Real64" Value="52.55439"/>
 														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
