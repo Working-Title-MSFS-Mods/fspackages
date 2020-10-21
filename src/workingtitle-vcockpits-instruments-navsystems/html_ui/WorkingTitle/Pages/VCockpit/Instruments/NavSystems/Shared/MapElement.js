@@ -34,12 +34,12 @@ class WT_MapElement extends MapInstrumentElement {
             this.syncMasterToAllSettings();
             WT_MapElement.setSettingVar(WT_MapElement.VARNAME_SYNC_INIT_ROOT_DEFAULT, WT_MapElement.VARNAME_SYNC_ALL_ID, "");
             WT_MapElement.setSettingVar(WT_MapElement.VARNAME_SYNC_ROOT, WT_MapElement.VARNAME_SYNC_ALL_ID, WT_MapElement.Sync.ALL);
-        }
-
-        let sync = WT_MapElement.getSettingVar(WT_MapElement.VARNAME_SYNC_ROOT, WT_MapElement.VARNAME_SYNC_ALL_ID);
-        if (sync == WT_MapElement.Sync.ALL) {
-            for (let setting of this._settingsToSync) {
-                setting.syncFrom(WT_MapElement.VARNAME_SYNC_ALL_ID);
+        } else {
+            let sync = WT_MapElement.getSettingVar(WT_MapElement.VARNAME_SYNC_ROOT, WT_MapElement.VARNAME_SYNC_ALL_ID);
+            if (sync == WT_MapElement.Sync.ALL) {
+                for (let setting of this._settingsToSync) {
+                    setting.syncFrom(WT_MapElement.VARNAME_SYNC_ALL_ID);
+                }
             }
         }
 
