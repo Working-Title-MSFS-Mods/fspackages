@@ -128,23 +128,27 @@ class FlightPlanManager {
                 wp.infos.airwayIdentInFP = waypointData.airwayIdent;
                 wp.speedConstraint = waypointData.speedConstraint;
                 wp.transitionLLas = waypointData.transitionLLas;
-                if (wp.speedConstraint > 0) {
-                }
-                if (wp.speedConstraint > 400) {
-                    wp.speedConstraint = -1;
-                }
-                if ((ii > 0 && ii <= this.getDepartureWaypointsCount()) && (wp.altitudeinFP >= 500)) {
-                    wp.legAltitudeDescription = 2;
-                    wp.legAltitude1 = wp.altitudeinFP;
-                }
-                else if ((ii < (data.length - 1) && ii >= (data.length - 1 - this.getArrivalWaypointsCount())) && (wp.altitudeinFP >= 500)) {
-                    wp.legAltitudeDescription = 2;
-                    wp.legAltitude1 = wp.altitudeinFP;
-                }
-                else if (ii > 0 && ii < data.length - 1) {
-                    wp.legAltitudeDescription = 1;
-                    wp.legAltitude1 = wp.altitudeinFP;
-                }
+                wp.legAltitudeDescription = waypointData.legAltitudeDescription;
+                wp.legAltitude1 = waypointData.legAltitude1;
+                wp.legAltitude2 = waypointData.legAltitude2;
+
+                //if (wp.speedConstraint > 0) {
+                //}
+                //if (wp.speedConstraint > 400) {
+                //    wp.speedConstraint = -1;
+                //}
+                //if ((ii > 0 && ii <= this.getDepartureWaypointsCount()) && (wp.altitudeinFP >= 500)) {
+                //    wp.legAltitudeDescription = 2;
+                //    wp.legAltitude1 = wp.altitudeinFP;
+                //}
+                //else if ((ii < (data.length - 1) && ii >= (data.length - 1 - this.getArrivalWaypointsCount())) && (wp.altitudeinFP >= 500)) {
+                //    wp.legAltitudeDescription = 2;
+                //    wp.legAltitude1 = wp.altitudeinFP;
+                //}
+                //else if (ii > 0 && ii < data.length - 1) {
+                //    wp.legAltitudeDescription = 1;
+                //    wp.legAltitude1 = wp.altitudeinFP;
+                //}
                 this.addHardCodedConstraints(wp);
                 waypoints[ii] = wp;
                 done++;
@@ -169,23 +173,26 @@ class FlightPlanManager {
                     v.infos.airwayIdentInFP = waypointData.airwayIdent;
                     v.speedConstraint = waypointData.speedConstraint;
                     v.transitionLLas = waypointData.transitionLLas;
+                    v.legAltitudeDescription = waypointData.legAltitudeDescription;
+                    v.legAltitude1 = waypointData.legAltitude1;
+                    v.legAltitude2 = waypointData.legAltitude2;
                     if (v.speedConstraint > 0) {
                     }
                     if (v.speedConstraint > 400) {
                         v.speedConstraint = -1;
                     }
-                    if ((ii > 0 && ii <= this.getDepartureWaypointsCount()) && (v.altitudeinFP >= 500)) {
-                        v.legAltitudeDescription = 2;
-                        v.legAltitude1 = v.altitudeinFP;
-                    }
-                    else if ((ii < (data.length - 1) && ii >= (data.length - 1 - this.getArrivalWaypointsCount())) && (v.altitudeinFP >= 500)) {
-                        v.legAltitudeDescription = 3;
-                        v.legAltitude1 = v.altitudeinFP;
-                    }
-                    else if (ii > 0 && ii < data.length - 1) {
-                        v.legAltitudeDescription = 1;
-                        v.legAltitude1 = v.altitudeinFP;
-                    }
+                    //if ((ii > 0 && ii <= this.getDepartureWaypointsCount()) && (v.altitudeinFP >= 500)) {
+                    //    v.legAltitudeDescription = 2;
+                    //    v.legAltitude1 = v.altitudeinFP;
+                    //}
+                    //else if ((ii < (data.length - 1) && ii >= (data.length - 1 - this.getArrivalWaypointsCount())) && (v.altitudeinFP >= 500)) {
+                    //    v.legAltitudeDescription = 3;
+                    //    v.legAltitude1 = v.altitudeinFP;
+                    //}
+                    //else if (ii > 0 && ii < data.length - 1) {
+                    //    v.legAltitudeDescription = 1;
+                    //    v.legAltitude1 = v.altitudeinFP;
+                    //}
                     this.addHardCodedConstraints(v);
                     done++;
                 }
@@ -220,23 +227,27 @@ class FlightPlanManager {
                             v.infos.airwayIdentInFP = waypointData.airwayIdent;
                             v.speedConstraint = waypointData.speedConstraint;
                             v.transitionLLas = waypointData.transitionLLas;
-                            if (v.speedConstraint > 0) {
-                            }
-                            if (v.speedConstraint > 400) {
-                                v.speedConstraint = -1;
-                            }
-                            if ((ii > 0 && ii <= this.getDepartureWaypointsCount()) && (v.altitudeinFP >= 500)) {
-                                v.legAltitudeDescription = 2;
-                                v.legAltitude1 = v.altitudeinFP;
-                            }
-                            else if ((ii < (data.length - 1) && ii >= (data.length - 1 - this.getArrivalWaypointsCount())) && (v.altitudeinFP >= 500)) {
-                                v.legAltitudeDescription = 3;
-                                v.legAltitude1 = v.altitudeinFP;
-                            }
-                            else if (ii > 0 && ii < data.length - 1) {
-                                v.legAltitudeDescription = 1;
-                                v.legAltitude1 = v.altitudeinFP;
-                            }
+                            wp.legAltitudeDescription = waypointData.legAltitudeDescription;
+                            wp.legAltitude1 = waypointData.legAltitude1;
+                            wp.legAltitude2 = waypointData.legAltitude2;
+            
+//                            if (v.speedConstraint > 0) {
+//                            }
+//                            if (v.speedConstraint > 400) {
+//                                v.speedConstraint = -1;
+//                            }
+//                            if ((ii > 0 && ii <= this.getDepartureWaypointsCount()) && (v.altitudeinFP >= 500)) {
+//                                v.legAltitudeDescription = 2;
+//                                v.legAltitude1 = v.altitudeinFP;
+//                            }
+//                            else if ((ii < (data.length - 1) && ii >= (data.length - 1 - this.getArrivalWaypointsCount())) && (v.altitudeinFP >= 500)) {
+//                                v.legAltitudeDescription = 3;
+//                                v.legAltitude1 = v.altitudeinFP;
+//                            }
+//                            else if (ii > 0 && ii < data.length - 1) {
+//                                v.legAltitudeDescription = 1;
+//                                v.legAltitude1 = v.altitudeinFP;
+//                            }
                             this.addHardCodedConstraints(v);
                         }
                     });
@@ -783,6 +794,9 @@ class FlightPlanManager {
                             let wp = new WayPoint(this.instrument);
                             wp.icao = enRouteTransition.legs[i].fixIcao;
                             wp.ident = wp.icao.substr(7);
+                            wp.legAltitudeDescription = enRouteTransition.legs[i].altDesc;
+                            wp.legAltitude1 = enRouteTransition.legs[i].altitude1;
+                            wp.legAltitude2 = enRouteTransition.legs[i].altitude2;
                             arrivalWaypoints.push(wp);
                         }
                     }
@@ -791,6 +805,9 @@ class FlightPlanManager {
                             let wp = new WayPoint(this.instrument);
                             wp.icao = arrival.commonLegs[i].fixIcao;
                             wp.ident = wp.icao.substr(7);
+                            wp.legAltitudeDescription = arrival.commonLegs[i].altDesc;
+                            wp.legAltitude1 = arrival.commonLegs[i].altitude1;
+                            wp.legAltitude2 = arrival.commonLegs[i].altitude2;
                             arrivalWaypoints.push(wp);
                         }
                     }
@@ -802,6 +819,9 @@ class FlightPlanManager {
                             let wp = new WayPoint(this.instrument);
                             wp.icao = runwayTransition.legs[i].fixIcao;
                             wp.ident = wp.icao.substr(7);
+                            wp.legAltitudeDescription = runwayTransition.legs[i].altDesc;
+                            wp.legAltitude1 = runwayTransition.legs[i].altitude1;
+                            wp.legAltitude2 = runwayTransition.legs[i].altitude2;
                             arrivalWaypoints.push(wp);
                         }
                     }

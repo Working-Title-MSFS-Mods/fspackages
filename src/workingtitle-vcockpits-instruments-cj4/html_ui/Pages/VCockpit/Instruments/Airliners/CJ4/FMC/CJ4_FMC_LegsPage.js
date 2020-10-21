@@ -171,6 +171,15 @@ class CJ4_FMC_LegsPage {
 
     render() {
         // console.log("RENDER LEGS");
+        let arrivalWaypoints = this._fmc.flightPlanManager.getArrivalWaypoints();
+        console.log("arrivalWaypoints " + arrivalWaypoints.length);
+        for (i = 0; i < arrivalWaypoints.length; i++) {
+            console.log("ident " + arrivalWaypoints[i].ident);
+            console.log("icao " + arrivalWaypoints[i].icao);
+            console.log("legAltitude1 " + arrivalWaypoints[i].legAltitude1);
+            console.log("legAltitude2 " + arrivalWaypoints[i].legAltitude2);
+            console.log("legAltitudeDescription " + arrivalWaypoints[i].legAltitudeDescription);
+        }
 
         this._lsk6Field = "";
         if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
@@ -420,10 +429,11 @@ class CJ4_FMC_LegsPage {
     getAltSpeedRestriction(waypoint) {
         let speedConstraint = "---";
         let altitudeConstraint = "----- ";
-        console.log("wpt " + waypoint.ident);
-        console.log("legAltitudeDescription " + waypoint.legAltitudeDescription);
-        console.log("legAltitude1 " + waypoint.legAltitude1);
-        console.log("legAltitude2 " + waypoint.legAltitude2);
+        //console.log("wpt " + waypoint.ident);
+        //console.log("legAltitudeDescription " + waypoint.legAltitudeDescription);
+        //console.log("legAltitude1 " + waypoint.legAltitude1);
+        //console.log("legAltitude2 " + waypoint.legAltitude2);
+        //console.log()
 
         if (waypoint.speedConstraint && waypoint.speedConstraint > 100) {
             speedConstraint = waypoint.speedConstraint;
