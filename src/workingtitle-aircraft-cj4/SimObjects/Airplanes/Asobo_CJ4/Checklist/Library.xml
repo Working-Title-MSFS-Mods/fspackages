@@ -1,0 +1,781 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SimBase.Document Type="CheckpointLibrary" version="1,0">
+    <Checklist.CheckpointLibrary>
+        <!--  -->
+        <!-- LIGHTS -->
+        <!--  -->
+        <Checkpoint Id="CJ4_EXTERIOR_LIGHTS_DESCENT">
+            <CheckpointDesc SubjectTT="Exterior lights" ExpectationTT="As required"/>
+            <ForceCamera name="Instrument03"/>
+            <Instrument Id="LIGHTING_SWITCH_Light_Landing"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_LIGHTS_APPROACH">
+            <CheckpointDesc SubjectTT="Exterior lights" ExpectationTT="As required"/>
+            <ForceCamera name="Instrument03"/>
+            <Instrument Id="LIGHTING_SWITCH_Light_Landing"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_LIGHTS_BEFORE_TO">
+            <CheckpointDesc SubjectTT="Exterior lights" ExpectationTT="As required"/>
+            <ForceCamera name="Instrument03"/>
+            <Instrument Id="LIGHTING_Push_Light_Beacon"/>
+            <Instrument Id="LIGHTING_SWITCH_Light_Navigation"/>
+            <Instrument Id="LIGHTING_SWITCH_Light_Landing"/>
+            <Instrument Id="LIGHTING_Push_Light_Strobe"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_LIGHTS_TAXI">
+            <CheckpointDesc SubjectTT="Exterior lights" ExpectationTT="As required"/>
+            <ForceCamera name="Instrument03"/>
+            <Instrument Id="LIGHTING_Push_Light_Beacon"/>
+            <Instrument Id="LIGHTING_SWITCH_Light_Navigation"/>
+            <Instrument Id="LIGHTING_SWITCH_Light_Taxi"/>
+            <Instrument Id="LIGHTING_Push_Light_Logo"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_LIGHTS_PREFLIGHT">
+            <CheckpointDesc SubjectTT="Exterior lights" ExpectationTT="As required"/>
+            <ForceCamera name="Instrument03"/>
+            <Instrument Id="LIGHTING_Push_Light_Beacon"/>
+            <Instrument Id="LIGHTING_SWITCH_Light_Navigation"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_LANDING_LIGHTS">
+            <CheckpointDesc SubjectTT="LANDING LIGHTS button" ExpectationTT="As required"/>
+            <ForceCamera name="Instrument03"/>
+            <Instrument Id="LIGHTING_SWITCH_Light_Landing"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_LIGHTS_OFF">
+            <CheckpointDesc SubjectTT="Exterior lights" ExpectationTT="OFF"/>
+            <ForceCamera name="Instrument03"/>
+            <Instrument Id="LIGHTING_Push_Light_Beacon"/>
+            <Instrument Id="LIGHTING_SWITCH_Light_Navigation"/>
+            <Instrument Id="LIGHTING_SWITCH_Light_Landing"/>
+            <Instrument Id="LIGHTING_Push_Light_Strobe"/>
+            <Instrument Id="LIGHTING_SWITCH_Light_Taxi"/>
+            <Instrument Id="LIGHTING_Push_Light_Logo"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_DIMMING_KNOB_SET">
+            <CheckpointDesc SubjectTT="Dimming PANEL Knob" ExpectationTT="As desired"/>
+            <ForceCamera name="Instrument02"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_LIGHTS">
+            <ForceCamera name="Instrument05"/>
+            <CheckpointDesc SubjectTT="Lights" ExpectationTT="On/Check/Off"/>
+            <Clue name="Exterior lights, Passenger/safety lights, Emergency lights, Glareshield ice detect lights"/>
+        </Checkpoint>
+
+        <!--  -->
+        <!-- ELECTRICAL SYSTEMS -->
+        <!--  -->
+        <Checkpoint Id="CJ4_BATTERY_SWITCH_OFF">
+            <CheckpointDesc SubjectTT="BATTERY switch" ExpectationTT="OFF"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="ELECTRICAL_SWITCH_BATTERY_MASTER"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_BATTERY_SWITCH_ON">
+            <CheckpointDesc SubjectTT="BATTERY switch" ExpectationTT="ON"/>
+            <Clue name="STBY FLT DISPLAY Switch amber light extinguished"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="ELECTRICAL_SWITCH_BATTERY_MASTER"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_BATTERY_SWITCH_EMER">
+            <CheckpointDesc SubjectTT="BATTERY switch" ExpectationTT="ON"/>
+            <Clue name="Verify emergency bus items"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="ELECTRICAL_SWITCH_BATTERY_MASTER"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EMERGENCY_LIGHTS_SWITCH_ARMED">
+            <CheckpointDesc SubjectTT="EMERGENCY LIGHTS switch" ExpectationTT="ARMED"/>
+            <ForceCamera name="Instrument02"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_STANDBY_FLIGHT_DISPLAY_SWITCH_ON">
+            <CheckpointDesc SubjectTT="STANDBY FLIGHT DISPLAY switch" ExpectationTT="ON"/>
+            <ForceCamera name="Instrument02"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_AVIONICS_SWITCH_ON">
+            <CheckpointDesc SubjectTT="AVIONICS switch" ExpectationTT="ON"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="ELECTRICAL_Switch_Avionics_Master"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_AVIONICS_SWITCH_OFF">
+            <CheckpointDesc SubjectTT="AVIONICS switch" ExpectationTT="OFF"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="ELECTRICAL_Switch_Avionics_Master"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_AVIONICS_SWITCH_DISPATCH">
+            <CheckpointDesc SubjectTT="AVIONICS swicth" ExpectationTT="DISPATCH"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="ELECTRICAL_Switch_Avionics_Master"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EMERGENCY_LIGHTS_SWITCH_OFF">
+            <CheckpointDesc SubjectTT="EMERGENCY LIGHTS switch" ExpectationTT="OFF"/>
+            <ForceCamera name="Instrument02"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_STANDBY_FLIGHT_DISPLAY_SWITCH_OFF">
+            <CheckpointDesc SubjectTT="STANDBY FLIGHT DISPLAY switch" ExpectationTT="ON"/>
+            <ForceCamera name="Instrument02"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ELECTRICAL_SYSTEM_CHECK">
+            <CheckpointDesc SubjectTT="Electrical system" ExpectationTT="Check"/>
+            <Clue name="If both engines running"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ELECTRICAL_SWITCHES_ALL_OFF">
+            <ForceCamera name="Instrument02"/>
+            <CheckpointDesc SubjectTT="ELECTRICAL POWER Panel Switches (all)" ExpectationTT="OFF"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="ELECTRICAL_SWITCH_ALTERNATOR"/>
+            <Instrument Id="ELECTRICAL_SWITCH_BATTERY_MASTER"/>
+            <Instrument Id="ELECTRICAL_SWITCH_AVIONICS_MASTER"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_INT_MASTER_ON">
+            <CheckpointDesc SubjectTT="INT MASTER Button" ExpectationTT="NORM"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_DISC_TEST_1">
+            <CheckpointDesc SubjectTT="BATT DISC Button" ExpectationTT="DISC"/>
+            <Clue name="No displays powered&#xA;(External power MUST be disconnected)"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_DISC_TEST_2">
+            <CheckpointDesc SubjectTT="BATT DISC Button" ExpectationTT="NORM"/>
+            <Clue name="Minimum BATT VOLT 24&#xA;(External power MUST be disconnected)"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PRESSURE_SOURCE_NORM">
+            <CheckpointDesc SubjectTT="PRESSURIZATION SOURCE Selector" ExpectationTT="NORM"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="KNOB_PRESSSOURCE"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_STBY_FLT_DISPLAY_TEST">
+            <CheckpointDesc SubjectTT="STBY FLT DISPLAY Switch" ExpectationTT="TEST"/>
+            <Clue name="Cyan light illuminated"/>
+            <ForceCamera name="Instrument02"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_STBY_FLT_DISPLAY_ON">
+            <CheckpointDesc SubjectTT="STBY FLT DISPLAY Switch" ExpectationTT="ON"/>
+            <Clue name="Amber light illuminated"/>
+            <ForceCamera name="Instrument02"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_GENERATORS_ON">
+            <CheckpointDesc SubjectTT="GEN Switches (both)" ExpectationTT="ON"/>
+            <Instrument Id="ELECTRICAL_SWITCH_ALTERNATOR1"/>
+            <Instrument Id="ELECTRICAL_SWITCH_ALTERNATOR2"/>
+        </Checkpoint>
+
+        <!--  -->
+        <!-- DEICE -->
+        <!--  -->
+        <Checkpoint Id="CJ4_ICE_PROTECTION_SYSTEMS_OFF">
+            <CheckpointDesc SubjectTT="Ice protection system" ExpectationTT="OFF"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="DEICE_SWITCH_PITOTHEAT"/>
+            <Instrument Id="DEICE_ENGINE"/>
+            <Instrument Id="DEICE_ENGINE1"/>
+            <Instrument Id="DEICE_ENGINE2"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ICE_PROTECTION_SYSTEMS_FLIGHT">
+            <CheckpointDesc SubjectTT="Ice protection system" ExpectationTT="As required"/>
+            <Clue name="Do not operate TAIL DEICE when SAT is below -30deg C"/>
+            <ForceCamera name="Instrument02"/>
+            <!-- TODO: Fix highlighting for all ice protection buttons and add them here -->
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PITOT_HEAT_ON">
+            <CheckpointDesc SubjectTT="Pitot/Static heat buttons" ExpectationTT="ON"/>
+            <Clue name="Limit ground operation of pitot/static heat to 2 minutes to prevent damage to the pitot/static heaters"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="DEICE_SWITCH_PITOTHEAT"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ENGINE_ONLY_ANTI_ICE_ASREQUIRED">
+            <CheckpointDesc SubjectTT="ENGINE ONLY ANTI-ICE buttons" ExpectationTT="As required"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="DEICE_ENGINE"/>
+            <Instrument Id="DEICE_ENGINE1"/>
+            <Instrument Id="DEICE_ENGINE2"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ICE_PROTECTION_SYSTEMS_AFTER_LANDING">
+            <CheckpointDesc SubjectTT="Ice protection systems" ExpectationTT="OFF"/>
+            <Clue name="PITOT heat - OFF, WING/ENG heat - OFF, TAIL heat - OFF&#xA;ENG ONLY heat - as requred"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="DEICE_SWITCH_PITOTHEAT"/>
+            <!-- TODO: Fix highlighting for all ice protection buttons and add them here -->
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ICE_PROTECTION_SYSTEMS_BEFORE_TO">
+            <CheckpointDesc SubjectTT="Ice Protection systems" ExpectationTT="As Required"/>
+            <Clue name="Do not operate WING/ENG ANTI-ICE on the ground at high engine rpm after anti-ice messages have cleared.&#xA;Do not operate TAIL DEICE when SAT is below -30deg C"/>
+            <ForceCamera name="Instrument02"/>
+            <!-- TODO: Fix highlighting for all ice protection buttons and add them here -->
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PITOT_TEST">
+            <ForceCamera name="Instrument02"/>
+            <CheckpointDesc SubjectTT="PITOT/STATIC HEAT Buttons (both)" ExpectationTT="On/CAS Message Clears then After 30 Seconds, Off"/>
+        </Checkpoint>
+
+        <!--  -->
+        <!-- FLIGHT CONTROLS -->
+        <!--  -->
+        <Checkpoint Id="CJ4_ROTATE">
+            <CheckpointDesc SubjectTT="Control wheel" ExpectationTT="Rotate at vR"/>
+            <Clue name="To achieve 10deg initial pitch&#xA;Use flight director TO mode"/>
+            <Instrument Id="HANDLING_Yoke"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ENGINES_SHUTDOWN">
+            <CheckpointDesc SubjectTT="ENGINE RUN/STOP buttons" ExpectationTT="STOP"/>
+            <Clue name="Engine should be at ground idle for at least 2 minutes prior to shutdown to allow hot section temperatures to equalize"/>
+            <ForceCamera name="Instrument05"/>
+            <Instrument id="FUEL_RUNSTOP_2"/>
+            <Instrument id="FUEL_PUSH_RUNSTOP1"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_LANDING_GEAR_UP">
+            <CheckpointDesc SubjectTT="Landing gear (positive climb)" ExpectationTT="UP"/>
+            <ForceCamera name="Instrument01"/>
+            <Instrument Id="LANDING_GEAR_LEVER_GEAR"/>
+            <Instrument Id="LANDING_GEAR_LIGHT"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_LANDING_GEAR_DOWN">
+            <CheckpointDesc SubjectTT="Landing gear (positive climb)" ExpectationTT="Down (3 Green)"/>
+            <ForceCamera name="Instrument01"/>
+            <Instrument Id="LANDING_GEAR_LEVER_GEAR"/>
+            <Instrument Id="LANDING_GEAR_LIGHT"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_GA_BUTTON">
+            <CheckpointDesc SubjectTT="GA button" ExpectationTT="Push"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PARKING_BRAKE_SET">
+            <CheckpointDesc SubjectTT="Parking brake" ExpectationTT="Set"/>
+            <ForceCamera name="Instrument04"/>
+            <Instrument Id="LANDING_GEAR_Switch_ParkingBrake"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PARKING_BRAKE_RELEASE">
+            <CheckpointDesc SubjectTT="Parking brake" ExpectationTT="Release"/>
+            <ForceCamera name="Instrument04"/>
+            <Instrument Id="LANDING_GEAR_Switch_ParkingBrake"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_THROTTLES_IDLE">
+            <CheckpointDesc SubjectTT="Throttles" ExpectationTT="IDLE"/>
+            <ForceCamera name="Instrument05"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE1"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_THROTTLES_TO">
+            <CheckpointDesc SubjectTT="Throttles" ExpectationTT="TO"/>
+            <ForceCamera name="Instrument05"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE1"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_THROTTLES_CLB">
+            <CheckpointDesc SubjectTT="Throttles" ExpectationTT="CLB"/>
+            <ForceCamera name="Instrument05"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE1"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_THROTTLES_ASREQUIRED">
+            <CheckpointDesc SubjectTT="Throttles" ExpectationTT="As required"/>
+            <ForceCamera name="Instrument05"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE1"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ENGINE2_STARTER_BUTTON_PUSH">
+            <CheckpointDesc SubjectTT="ENGINE STARTER button" ExpectationTT="Push"/>
+            <Clue name="Verify button illuminates"/>
+            <Instrument id="ENGINE_Switch_Starter2"/>
+            <ForceCamera name="Instrument06"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ENGINE1_STARTER_BUTTON_PUSH">
+            <CheckpointDesc SubjectTT="ENGINE STARTER button" ExpectationTT="Push"/>
+            <Instrument id="ENGINE_Switch_Starter1"/>
+            <Clue name="Verify button illuminates"/>
+            <ForceCamera name="Instrument06"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ENGINE2_RUN_STOP_BUTTON_RUN">
+            <CheckpointDesc SubjectTT="ENGINE RUN/STOP button" ExpectationTT="RUN"/>
+            <ForceCamera name="Instrument05"/>
+            <Instrument id="FUEL_RUNSTOP_2"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ENGINE1_RUN_STOP_BUTTON_RUN">
+            <CheckpointDesc SubjectTT="ENGINE RUN/STOP button" ExpectationTT="RUN"/>
+            <ForceCamera name="Instrument05"/>
+            <Instrument id="FUEL_PUSH_RUNSTOP1"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_START_OPPOSITE_ENGINE">
+            <CheckpointDesc SubjectTT="Opposite engine (optional)" ExpectationTT="Start"/>
+            <Clue name="Repeat steps 2 through 5&#xA;Caution: Do not start second engine with operating engine generator off. "/>
+            <ForceCamera name="Instrument06"/>
+            <Instrument id="ENGINE_Switch_Starter1"/>
+            <Instrument id="FUEL_PUSH_RUNSTOP1"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_TRIMS_CHECK">
+            <CheckpointDesc SubjectTT="Trims" ExpectationTT="Check/Set"/>
+            <Instrument Id="HANDLING_SWITCH_AILERONTRIM_LR"/>
+            <Instrument Id="HANDLING_KNOB_RUDDERTRIM"/>
+            <Instrument Id="HANDLING_SWITCH_ELEVATORTRIM"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_TRIMS_CHECK_FOR_TO">
+            <CheckpointDesc SubjectTT="Trims (3)" ExpectationTT="Set For Takeoff"/>
+            <Instrument Id="HANDLING_SWITCH_AILERONTRIM_LR"/>
+            <Instrument Id="HANDLING_KNOB_RUDDERTRIM"/>
+            <Instrument Id="HANDLING_SWITCH_ELEVATORTRIM"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_FLIGHT_CONTROLS_CHECK">
+            <CheckpointDesc SubjectTT="Flight Controls" ExpectationTT="Free/Correct"/>
+            <Instrument Id="HANDLING_Yoke"/>
+            <Instrument Id="HANDLING_RudderPedals"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_SPEEDBRAKES_GROUND_SPOILERS_CHECK">
+            <CheckpointDesc SubjectTT="Speedbrakes/Ground spoilers" ExpectationTT="Check"/>
+            <Instrument Id="HANDLING_LEVER_SPOILERS"/>
+            <ForceCamera name="Instrument05"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_GROUND_SPOILERS_ENGAGE">
+            <CheckpointDesc SubjectTT="Ground Spoilers" ExpectationTT="Extend"/>
+            <Instrument Id="HANDLING_LEVER_SPOILERS"/>
+            <ForceCamera name="Instrument05"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_SPEEDBRAKES_DISENGAGE">
+            <CheckpointDesc SubjectTT="Speed brakes" ExpectationTT="0%"/>
+            <Instrument Id="HANDLING_LEVER_SPOILERS"/>
+            <ForceCamera name="Instrument05"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_FLAPS_CHECKSET">
+            <CheckpointDesc SubjectTT="Flaps" ExpectationTT="Check/Set"/>
+            <Instrument Id="HANDLING_LEVER_FLAPS"/>
+            <ForceCamera name="Instrument05"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_FLAPS_SET_CLIMB">
+            <CheckpointDesc SubjectTT="Flaps" ExpectationTT="0 deg"/>
+            <Clue name="Clear of obstacles and V2+10"/>
+            <Instrument Id="HANDLING_LEVER_FLAPS"/>
+            <ForceCamera name="Instrument05"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_FLAPS_SET_0">
+            <CheckpointDesc SubjectTT="Flaps" ExpectationTT="0 deg"/>
+            <Instrument Id="HANDLING_LEVER_FLAPS"/>
+            <ForceCamera name="Instrument05"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_FLAPS_SET_15">
+            <CheckpointDesc SubjectTT="Flaps" ExpectationTT="15 deg"/>
+            <Instrument Id="HANDLING_LEVER_FLAPS"/>
+            <ForceCamera name="Instrument05"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_FLAPS_SET_35">
+            <CheckpointDesc SubjectTT="Flaps" ExpectationTT="35 deg"/>
+            <Instrument Id="HANDLING_LEVER_FLAPS"/>
+            <ForceCamera name="Instrument05"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_FLAPS_GOAROUND">
+            <CheckpointDesc SubjectTT="Flaps" ExpectationTT="As required"/>
+            <Clue name="For 0deg flaps : vAPP+10 knots"/>
+            <Instrument Id="HANDLING_LEVER_FLAPS"/>
+            <ForceCamera name="Instrument05"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_NOSEWHEEL_STEERING_CHECK">
+            <CheckpointDesc SubjectTT="Nosewheel steering" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_BRAKES_HOLD">
+            <CheckpointDesc SubjectTT="Brakes" ExpectationTT="Apply/Hold"/>
+            <Instrument Id="HANDLING_RudderPedals"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_BRAKES_APPLY_TOUCHDOWN">
+            <CheckpointDesc SubjectTT="Brakes (after nose touchdown)" ExpectationTT="Apply"/>
+            <Instrument Id="HANDLING_RudderPedals"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_BRAKES_RELEASE">
+            <CheckpointDesc SubjectTT="Brakes" ExpectationTT="Release"/>
+            <Instrument Id="HANDLING_RudderPedals"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_BRAKES_CHECK">
+            <CheckpointDesc SubjectTT="Brakes" ExpectationTT="Check"/>
+            <Clue name="If a no braking condition is encountered during taxi, use the emergency brake. If the emergency brake is used, maintenance is required before flight"/>
+            <Instrument Id="HANDLING_RudderPedals"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_RUDDER_BIAS_SYSTEMS_CHECK">
+            <CheckpointDesc SubjectTT="Rudder bias system" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CONTROL_LOCK">
+            <CheckpointDesc SubjectTT="Control Lock" ExpectationTT="As required"/>
+            <Clue name="Towing airplane with control lock engaged may damage nosewheel steering mechanism"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CONTROL_LOCK_RELEASE">
+            <CheckpointDesc SubjectTT="CTRL LOCK Handle" ExpectationTT="Released"/>
+            <ForceCamera name="Instrument04"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_AILERON_TRIM_NEUTRAL">
+            <ForceCamera name="Instrument01"/>
+            <CheckpointDesc SubjectTT="Aileron Trim" ExpectationTT="Neutral"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_RUDDER_TRIM_NEUTRAL">
+            <ForceCamera name="Instrument01"/>
+            <CheckpointDesc SubjectTT="Rudder Trim" ExpectationTT="Neutral"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ELEVATOR_TRIM_TO">
+            <ForceCamera name="Instrument01"/>
+            <CheckpointDesc SubjectTT="Elevator Trim" ExpectationTT="Set for Takeoff"/>
+            <Clue name="Indicator within TO band"/>
+        </Checkpoint>
+
+        <!--  -->
+        <!-- ROLEPLAY -->
+        <!--  -->
+        <Checkpoint Id="CJ4_SEATS_UP">
+            <CheckpointDesc SubjectTT="Seats" ExpectationTT="Upright/Outboard"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_SEATS_BELTS">
+            <CheckpointDesc SubjectTT="Seat belts/Shoulder harnesses" ExpectationTT="Adjust/Secure"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_SEATS_BELTS_PEDALS_ADJUST">
+            <CheckpointDesc SubjectTT="Seats/Belts/Harnesses/Pedals" ExpectationTT="Adjust/Secure"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_WHEEL_CHOCKS_REMOVE">
+            <CheckpointDesc SubjectTT="Wheel chocks" ExpectationTT="Remove"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CABIN_DOOR_CLOSED">
+            <CheckpointDesc SubjectTT="Cabin Door" ExpectationTT="Closed"/>
+            <Clue name="CHECK indicators for proper door pin position, no CABIN DOOR message and handle latched"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PASSENGER_BRIEFING">
+            <CheckpointDesc SubjectTT="Passenger briefing" ExpectationTT="Complete"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_AFT_DIVIDER_DOORS">
+            <CheckpointDesc SubjectTT="Aft divider doors" ExpectationTT="Latched open"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CREW_BRIEFING">
+            <CheckpointDesc SubjectTT="Crew briefing" ExpectationTT="Complete"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CLEADER_FOR_TO">
+            <CheckpointDesc SubjectTT="Cleared/ready for takeoff" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PASSENGERS_LIGHTS_SAFETY_BUTTON_ON">
+            <CheckpointDesc SubjectTT="PASSENGERS LIGHTS SAFETY button" ExpectationTT="ON"/>
+            <ForceCamera name="Instrument03"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PASSENGER_LIGHTS_ASREQUIRED">
+            <CheckpointDesc SubjectTT="PASS LIGHTS buttons" ExpectationTT="As required"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PASSENGER_LIGHTS_ON">
+            <CheckpointDesc SubjectTT="PASS LIGHTS SAFETY button" ExpectationTT="ON"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_OIL_LEVEL_CHECK">
+            <CheckpointDesc SubjectTT="Engine Oil Level" ExpectationTT="Check"/>
+            <Clue name="At least 10 minutes after shutdown"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_INSTALL_ENGINE_COVERS">
+            <CheckpointDesc SubjectTT="Engine Covers" ExpectationTT="Install"/>
+            <Clue name="After engines have cooled"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_REMOVE_ENGINE_COVERS">
+            <CheckpointDesc SubjectTT="Engine Covers (4)" ExpectationTT="Remove"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_REMOVE_PITOT_COVERS">
+            <CheckpointDesc SubjectTT="Pitot Covers (3)" ExpectationTT="Remove"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_REMOVE_STAITC_WICK_COVERS">
+            <CheckpointDesc SubjectTT="Static Wick Covers (7)" ExpectationTT="Remove"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CONNECT_BATTERY">
+            <CheckpointDesc SubjectTT="Battery" ExpectationTT="Connect"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_DISCONNECT_EXTERNAL_BATTERY_TEST">
+            <CheckpointDesc SubjectTT="External Power" ExpectationTT="Disconnect"/>
+            <Clue name="For BATT DISC check in Cockpit/Cabin Inspection"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERNAL_POWER_DISCONNECT">
+            <CheckpointDesc SubjectTT="External power (if used)" ExpectationTT="Disconnected"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_EMER_EXIT">
+            <CheckpointDesc SubjectTT="Emergency Exit" ExpectationTT="Check"/>
+            <Clue name="Secure/Clear/Lock Pin Removed/Cover In Place"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_CABIN_EXTINGUISHER">
+            <CheckpointDesc SubjectTT="Portable Fire Extinguisher" ExpectationTT="Serviced/Secure"/>
+            <Clue name="Behind aft left passenger seat"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_SEATS_BELTS_CONDITION">
+            <CheckpointDesc SubjectTT="Seats/Belts" ExpectationTT="Upright/Outboard/Condition"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_VESTS">
+            <CheckpointDesc SubjectTT="Life Vests (if required)" ExpectationTT="Stowed"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_DOOR_LIGHTS">
+            <CheckpointDesc SubjectTT="Door Entry Lights" ExpectationTT="Off"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_EXIT_PLACARDS">
+            <CheckpointDesc SubjectTT="Exit Placards" ExpectationTT="Secure"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EQUIPMENT_SERVICED">
+            <CheckpointDesc SubjectTT="Required Equipment" ExpectationTT="On board/Serviced"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_DOCS_ONBOARD_1">
+            <CheckpointDesc SubjectTT="Airworthiness and Registration Certificates" ExpectationTT="On board/displayed"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_DOCS_ONBOARD_2">
+            <CheckpointDesc SubjectTT="Transmitter License(s)" ExpectationTT="On board/displayed"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_DOCS_ONBOARD_1">
+            <CheckpointDesc SubjectTT="FAA Approved Airplane Flight Manual" ExpectationTT="On board"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_DOCS_ONBOARD_2">
+            <CheckpointDesc SubjectTT="Collins Pro Line 21 Avionics System Pilots Guide for CJ4" ExpectationTT="On board"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_DOCS_ONBOARD_3">
+            <CheckpointDesc SubjectTT="Collins FMS-3000 Pilots Guide" ExpectationTT="On board"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_DOCS_ONBOARD_4">
+            <CheckpointDesc SubjectTT="Other applicable manuals" ExpectationTT="On board"/>
+            <Clue name="As required in AFM Section II, Operating Limitations, or applicable AFM supplement"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_AUX_GEAR_HANDLE">
+            <CheckpointDesc SubjectTT="AUXILIARY GEAR CONTROL Handle" ExpectationTT="Stowed"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_EXTINGUISHER">
+            <CheckpointDesc SubjectTT="Portable Fire Extinguisher" ExpectationTT="Serviced/Secure *"/>
+            <Clue name="Iinboard side of copilot seat"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_OXYMASKS">
+            <CheckpointDesc SubjectTT="Crew Oxygen Masks/Headsets" ExpectationTT="Connected"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_OXYMASK_PRESSURE">
+            <CheckpointDesc SubjectTT="Oxygen Masks" ExpectationTT="Test/Set to 100&#37;/Stowed"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_SMOKE_GOGGLES">
+            <CheckpointDesc SubjectTT="Smoke Goggles" ExpectationTT="Stowed"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_CIRCUIT_BREAKERS">
+            <CheckpointDesc SubjectTT="Circuit Breakers" ExpectationTT="In (both sides)"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_CHECKS_HOT_ITEMS">
+            <CheckpointDesc SubjectTT="Hot Items/Lights" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_CHECKS_LEFT_NOSE">
+            <CheckpointDesc SubjectTT="Left Nose" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_CHECKS_RIGHT_NOSE">
+            <CheckpointDesc SubjectTT="Right Nose/Forward Fuselage" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_CHECKS_RIGHT_WING">
+            <CheckpointDesc SubjectTT="Right Wing/Aft Fuselage" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_CHECKS_RIGHT_NACELLE">
+            <CheckpointDesc SubjectTT="Right Nacelle" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_CHECKS_EMPENNAGE">
+            <CheckpointDesc SubjectTT="Empennage" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_CHECKS_LEFT_NACELLE">
+            <CheckpointDesc SubjectTT="Left Nacelle" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_CHECKS_TAILCONE">
+            <CheckpointDesc SubjectTT="Tailcone/Aft Compartment" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_CHECKS_LEFT_WING">
+            <CheckpointDesc SubjectTT="Left Wing" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_EXTERIOR_CHECKS_LEFT_SIDE">
+            <CheckpointDesc SubjectTT="Fuselage Left Side" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PREFLIGHT_CHECKS_DONE">
+            <CheckpointDesc SubjectTT="Prefight inspection" ExpectationTT="Complete"/>
+        </Checkpoint>
+
+        <!--  -->
+        <!-- DISPLAYS AND CDU -->
+        <!--  -->
+        <Checkpoint Id="CJ4_EICAS_CHECK">
+            <CheckpointDesc SubjectTT="EICAS" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_FMS">
+            <CheckpointDesc SubjectTT="FMS" ExpectationTT="Check/Set"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ITT_CHECK">
+            <CheckpointDesc SubjectTT="ITT" ExpectationTT="Check for rise"/>
+            <Clue name="Abort start if ITT rapidly approaches 1000deg C or shows no rise within 10 seconds. Abort start if N1 does not indicate rotation by 25% N2"/>
+            <ForceCamera name="Instrument01"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_HYDRAULIC_PRESSURE_CHECK">
+            <CheckpointDesc SubjectTT="Hydraulic pressure" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_BATTERY_AMPS_OK">
+            <CheckpointDesc SubjectTT="Battery amps" ExpectationTT="Verify 20 Or Less"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PRESSURIZATION_CHECK">
+            <CheckpointDesc SubjectTT="Pressurization" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PRESSURIZATION_SET">
+            <CheckpointDesc SubjectTT="Pressurization" ExpectationTT="Verify/Set landing elevation"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PRESSURIZATION_SET_APPROACH">
+            <CheckpointDesc SubjectTT="Pressurization" ExpectationTT="Differential &#60; 0.5 PSI by touchdown"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CDU_XPRD_CHECK">
+            <CheckpointDesc SubjectTT="CDU TUNE (1/2 page)" ExpectationTT="Check for XPRD FAIL"/>
+            <Clue name="If ADS-B Out required"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_MINIMUMS_SET">
+            <CheckpointDesc SubjectTT="Minimums" ExpectationTT="Set"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_AVIONICS_INSTRUMENTS_CHECK">
+            <CheckpointDesc SubjectTT="Avionics/Flight instruments" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PITCH_ALTITUDE_GOAROUND">
+            <CheckpointDesc SubjectTT="PITCH ALTITUDE" ExpectationTT="7.5 deg, then as requied"/>
+            <Clue name="Use flight director GA mode"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_TAKEOFF_DATA_CHECK">
+            <Clue name="v1, vR, v2, vENR (vT), takeoff field length and weight limits"/>
+            <CheckpointDesc SubjectTT="Takeoff Data" ExpectationTT="Confirm/Set"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_LANDING_DATA">
+            <CheckpointDesc SubjectTT="Landing data" ExpectationTT="Confirm"/>
+            <!-- Does anyone know how to to whitespace or tab characters in XML? -->
+            <Clue name="Airspeed: vREF Minimum&#xA;____________ 10500 _ 12000 _ 13500 _ 14500 _ 15660 _ 17110&#xA;vAPP 15deg ___ 98 ___ 105 ____ 111 ___ 115 ___ 120 ___ 125&#xA;vREF 35deg ___ 92 _____ 98 ___ 104 ____ 108 ___ 113 ___ 118"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_AIRSPEED_VREF">
+            <CheckpointDesc SubjectTT="Airspeed" ExpectationTT="vREF"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_AIRSPEED_ASREQUIRED">
+            <CheckpointDesc SubjectTT="Airspeed" ExpectationTT="As required"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ALTIMETER_CHECK_BEFORE_TAXI">
+            <CheckpointDesc SubjectTT="Altimeters" ExpectationTT="Set/Check"/>
+            <Clue name="Pilot, copilot, and standby: Within 50 feet of departure field elevation and within 75 feet of each other"/>
+            <ForceCamera name="Instrument01"/>
+            <Instrument Id="AUTOPILOT_KNOB_BARO"/>
+            <Instrument Id="AUTOPILOT_KNOB_BARO1"/>
+            <Instrument Id="AUTOPILOT_KNOB_BARO2"/>
+            <Instrument Id="AUTOPILOT_KNOB_BARO3"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ALTIMETERS_STD">
+            <CheckpointDesc SubjectTT="Altimeters" ExpectationTT="Set STD/Crosscheck "/>
+            <ForceCamera name="Instrument01"/>
+            <Instrument Id="AUTOPILOT_KNOB_BARO"/>
+            <Instrument Id="AUTOPILOT_KNOB_BARO1"/>
+            <Instrument Id="AUTOPILOT_KNOB_BARO2"/>
+            <Instrument Id="AUTOPILOT_KNOB_BARO3"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ALTIMETER_CHECK_DESCENT">
+            <CheckpointDesc SubjectTT="Altimeters (transition flight level)" ExpectationTT="Set/Crosscheck"/>
+            <ForceCamera name="Instrument01"/>
+            <Instrument Id="AUTOPILOT_KNOB_BARO"/>
+            <Instrument Id="AUTOPILOT_KNOB_BARO1"/>
+            <Instrument Id="AUTOPILOT_KNOB_BARO2"/>
+            <Instrument Id="AUTOPILOT_KNOB_BARO3"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_TCAS">
+            <CheckpointDesc SubjectTT="Tcas" ExpectationTT="TA/RA"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_RADAR_ASREQUIRED">
+            <CheckpointDesc SubjectTT="Radar" ExpectationTT="As Required"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_RADAR_STBY">
+            <CheckpointDesc SubjectTT="Radar" ExpectationTT="Standby"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_N1_BUGS_GREEN">
+            <CheckpointDesc SubjectTT="N1 Command Bugs" ExpectationTT="Green chevron"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_FLIGHT_INSTRUMENTS_CHECK">
+            <CheckpointDesc SubjectTT="Flight instruments" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_AVIONICS_CHECK_SET">
+            <CheckpointDesc SubjectTT="Avionics" ExpectationTT="Check/Set"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PRESSURIZATION_SET">
+            <CheckpointDesc SubjectTT="Pressurization" ExpectationTT="Verify/Set"/>
+            <Clue name="Set landing field elevation "/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_INCREASE_TO_DISTANCE">
+            <CheckpointDesc SubjectTT="Computed takeoff distance" ExpectationTT="Add 500 feet"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_BATT_VOLT">
+            <ForceCamera name="Instrument01"/>
+            <CheckpointDesc SubjectTT="BATT VOLT (If External Power is re-connected)" ExpectationTT="28-29 Volts"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_FUELQTY">
+            <CheckpointDesc SubjectTT="Fuel Quantity" ExpectationTT="As Required/Balanced"/>
+            <ForceCamera name="Instrument01"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_BATT_TEMP">
+            <CheckpointDesc SubjectTT="Battery Temperature" ExpectationTT="Check"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_TEST_TCAS">
+            <CheckpointDesc SubjectTT="TCAS" ExpectationTT="Test"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_SYS_TEST_MFD">
+            <CheckpointDesc SubjectTT="SYS TEST (MFD LWR MENU)" ExpectationTT="All Items Checked"/>
+        </Checkpoint>
+
+
+        <!--  -->
+        <!-- OTHER SYSTEMS -->
+        <!--  -->
+        <Checkpoint Id="CJ4_FUEL_TRANSFER_OFF">
+            <CheckpointDesc SubjectTT="Fuel Transfer Selector" ExpectationTT="Off"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="FUEL_Switch_Crossfeed"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CLIMATE_CONTROL_SELECTOR_OFF">
+            <CheckpointDesc SubjectTT="CLIMATE CONTROL selector" ExpectationTT="OFF"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="PASSENGER_KNOB_CLIMATECONTROL_1"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CLIMATE_CONTROL_SELECTOR_ASDESIRED">
+            <CheckpointDesc SubjectTT="CLIMATE CONTROL selector" ExpectationTT="As desired"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="PASSENGER_KNOB_CLIMATECONTROL_1"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CLIMATE_CONTROL_SELECTOR_NORM">
+            <CheckpointDesc SubjectTT="CLIMATE CONTROL selector" ExpectationTT="NORM"/>
+            <Clue name="For single-engine operation, selecting CLIMATE CONTROL to NORM or COMP ON may cause a generator overcurrent if the battery charging amps are greater than 100"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="PASSENGER_KNOB_CLIMATECONTROL_1"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_AUTOPILOT_TEST">
+            <CheckpointDesc SubjectTT="Autopilot" ExpectationTT="Engage/Disconnect"/>
+            <ForceCamera name="Instrument01"/>
+            <Instrument Id="AUTOPILOT_Push_Autopilot"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_YAW_DAMPER_ON">
+            <CheckpointDesc SubjectTT="Yaw damper" ExpectationTT="ON"/>
+            <ForceCamera name="Instrument01"/>
+            <Instrument Id="AUTOPILOT_PUSH_YAWDAMPER"/>
+            <Instrument Id="AUTOPILOT_PUSH_YAWDAMPER1"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_AUTOPILOT_ASREQUIRED">
+            <CheckpointDesc SubjectTT="Autopilot" ExpectationTT="As required"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_TRANSPONDER_ATC2">
+            <CheckpointDesc SubjectTT="Transponder" ExpectationTT="ATC2 On"/>
+            <Clue name="If ADS-B Out is required"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_DISENGAGE_AUTOPILOT_AND_YAW">
+            <CheckpointDesc SubjectTT="Autopilot and Yaw damper" ExpectationTT="Disengage"/>
+            <ForceCamera name="Instrument01"/>
+            <Instrument Id="AUTOPILOT_PUSH_YAWDAMPER"/>
+            <Instrument Id="AUTOPILOT_PUSH_YAWDAMPER1"/>
+            <Instrument Id="AUTOPILOT_Push_Autopilot"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_AVIONICS_CHECK_SET">
+            <CheckpointDesc SubjectTT="Avionics" ExpectationTT="Check/Set"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_OXYGEN_SUPPLY_PUSH">
+            <CheckpointDesc SubjectTT="OXYGEN SUPPLY Handle" ExpectationTT="PUSH"/>
+            <ForceCamera name="Instrument02"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_CHECK_OXYGEN_PRESSURE">
+            <ForceCamera name="Instrument01"/>
+            <CheckpointDesc SubjectTT="Oxygen Pressure" ExpectationTT="In Green Band/As Required"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_TEST_RECORDER">
+            <CheckpointDesc SubjectTT="Cockpit Voice Recorder TEST Button" ExpectationTT="Test"/>
+            <Clue name="Push and Hold for 5 seconds - TEST light illuminates"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_ALLBUTTONS_OK">
+            <CheckpointDesc SubjectTT="All other switches and buttons" ExpectationTT="As Required"/>
+            <ForceCamera name="Instrument01"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_PRESSURE_DUMP_OFF">
+            <CheckpointDesc SubjectTT="CABIN PRESSURE DUMP Button" ExpectationTT="OFF"/>
+            <ForceCamera name="Instrument02"/>
+            <Instrument Id="PRESSURIZATION_Push_Dump"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_OXYGEN_MASK_MIC_TEST">
+            <CheckpointDesc SubjectTT="OXYGEN MASK MIC Buttons" ExpectationTT="Verify Operation"/>
+            <ForceCamera name="Instrument02"/>
+        </Checkpoint>
+        <Checkpoint Id="CJ4_OXYGEN_CONTROL_SELECTOR_NORM">
+            <CheckpointDesc SubjectTT="OXYGEN CONTROL Selector" ExpectationTT="NORM"/>
+            <ForceCamera name="Instrument02"/>
+        </Checkpoint>
+    </Checklist.CheckpointLibrary>
+</SimBase.Document>

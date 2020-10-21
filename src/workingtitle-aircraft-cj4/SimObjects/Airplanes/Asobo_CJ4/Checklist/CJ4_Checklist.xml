@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<SimBase.Document Type="Checklist" version="1,0">
+    <Checklist.Checklist>
+
+        <IncludeCheckpointLibrary FileName="SimObjects\\Airplanes\\Asobo_CJ4\\Checklist\\Library.xml"/>
+
+        <Step ChecklistStepId="PREFLIGHT_GATE">
+            <Page SubjectTT="PRELIMINARY EXTERIOR INSPECTION">
+                <Checkpoint ReferenceId="CJ4_REMOVE_ENGINE_COVERS"/>
+                <Checkpoint ReferenceId="CJ4_REMOVE_PITOT_COVERS"/>
+                <Checkpoint ReferenceId="CJ4_REMOVE_STAITC_WICK_COVERS"/>
+                <Checkpoint ReferenceId="CJ4_CONNECT_BATTERY"/>
+                <Checkpoint ReferenceId="CJ4_DISCONNECT_EXTERNAL_BATTERY_TEST"/>
+            </Page>
+
+            <Page SubjectTT="COCKPIT/CABIN INSPECTION">
+                <Block SubjectTT="Documents/Manuals/Charts">
+                    <Checkpoint ReferenceId="CJ4_DOCS_ONBOARD_1"/>
+                    <Checkpoint ReferenceId="CJ4_DOCS_ONBOARD_2"/>
+                    <Checkpoint ReferenceId="CJ4_DOCS_ONBOARD_1"/>
+                    <Checkpoint ReferenceId="CJ4_DOCS_ONBOARD_2"/>
+                    <Checkpoint ReferenceId="CJ4_DOCS_ONBOARD_3"/>
+                    <Checkpoint ReferenceId="CJ4_DOCS_ONBOARD_4"/>
+                </Block>
+                <Checkpoint ReferenceId="CJ4_EQUIPMENT_SERVICED"/>
+                <Block SubjectTT="Cabin checks">
+                    <Checkpoint ReferenceId="CJ4_CHECK_EMER_EXIT"/>
+                    <Checkpoint ReferenceId="CJ4_CHECK_CABIN_EXTINGUISHER"/>
+                    <Checkpoint ReferenceId="CJ4_CHECK_SEATS_BELTS_CONDITION"/>
+                    <Checkpoint ReferenceId="CJ4_CHECK_VESTS"/>
+                    <Checkpoint ReferenceId="CJ4_CHECK_DOOR_LIGHTS"/>
+                    <Checkpoint ReferenceId="CJ4_CHECK_EXIT_PLACARDS"/>
+                </Block>
+                <Checkpoint ReferenceId="CJ4_CHECK_AUX_GEAR_HANDLE"/>
+                <Checkpoint ReferenceId="CJ4_CHECK_EXTINGUISHER"/>
+                <Checkpoint ReferenceId="CJ4_CHECK_OXYMASKS"/>
+                <Checkpoint ReferenceId="CJ4_OXYGEN_SUPPLY_PUSH"/>
+                <Checkpoint ReferenceId="CJ4_CHECK_OXYMASK_PRESSURE"/>
+                <Checkpoint ReferenceId="CJ4_CHECK_SMOKE_GOGGLES"/>
+                <Checkpoint ReferenceId="CJ4_CHECK_CIRCUIT_BREAKERS"/>
+                <Checkpoint ReferenceId="CJ4_DIMMING_KNOB_SET"/>
+                <Checkpoint ReferenceId="CJ4_CONTROL_LOCK_RELEASE"/>
+                <Checkpoint ReferenceId="CJ4_CLIMATE_CONTROL_SELECTOR_ASDESIRED"/>
+                <Checkpoint ReferenceId="CJ4_ELECTRICAL_SWITCHES_ALL_OFF"/>
+                <Checkpoint ReferenceId="CJ4_BATTERY_SWITCH_ON"/>
+                <Checkpoint ReferenceId="CJ4_INT_MASTER_ON"/>
+                <Checkpoint ReferenceId="CJ4_DISC_TEST_1"/>
+                <Checkpoint ReferenceId="CJ4_DISC_TEST_2"/>
+                <Checkpoint ReferenceId="CJ4_CHECK_BATT_VOLT"/>
+                <Checkpoint ReferenceId="CJ4_CHECK_FUELQTY"/>
+                <Checkpoint ReferenceId="CJ4_AILERON_TRIM_NEUTRAL"/>
+                <Checkpoint ReferenceId="CJ4_RUDDER_TRIM_NEUTRAL"/>
+                <Checkpoint ReferenceId="CJ4_ELEVATOR_TRIM_TO"/>
+                <Checkpoint ReferenceId="CJ4_CHECK_OXYGEN_PRESSURE"/>
+                <Checkpoint ReferenceId="CJ4_LANDING_GEAR_DOWN"/>
+                <Checkpoint ReferenceId="CJ4_PITOT_TEST"/>
+                <Checkpoint ReferenceId="CJ4_CHECK_LIGHTS"/>
+                <Checkpoint ReferenceId="CJ4_ENGINES_SHUTDOWN"/>
+            </Page>
+
+            <Page SubjectTT="EXTERIOR INSPECTION">
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_HOT_ITEMS"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_LEFT_NOSE"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_RIGHT_NOSE"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_RIGHT_WING"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_RIGHT_NACELLE"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_EMPENNAGE"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_LEFT_NACELLE"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_TAILCONE"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_LEFT_WING"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_LEFT_SIDE"/>
+            </Page>
+
+            <Page SubjectTT="Cockpit preparation">
+                <Checkpoint ReferenceId="CJ4_PREFLIGHT_CHECKS_DONE"/>
+                <Checkpoint ReferenceId="CJ4_CHECK_CIRCUIT_BREAKERS"/>
+                <Checkpoint ReferenceId="CJ4_GENERATORS_ON"/>
+                <Checkpoint ReferenceId="CJ4_BATTERY_SWITCH_OFF"/>
+                <Checkpoint ReferenceId="CJ4_EMERGENCY_LIGHTS_SWITCH_ARMED"/>
+                <Checkpoint ReferenceId="CJ4_STBY_FLT_DISPLAY_TEST"/>
+                <Checkpoint ReferenceId="CJ4_STBY_FLT_DISPLAY_ON"/>
+                <Checkpoint ReferenceId="CJ4_BATTERY_SWITCH_ON"/>
+                <Checkpoint ReferenceId="CJ4_AVIONICS_SWITCH_ON"/>
+                <Checkpoint ReferenceId="CJ4_PARKING_BRAKE_SET"/>
+                <Checkpoint ReferenceId="CJ4_OXYGEN_CONTROL_SELECTOR_NORM"/>
+                <Checkpoint ReferenceId="CJ4_OXYGEN_MASK_MIC_TEST"/>
+                <Checkpoint ReferenceId="CJ4_FUEL_TRANSFER_OFF"/>
+                <Checkpoint ReferenceId="CJ4_PRESSURE_SOURCE_NORM"/>
+                <Checkpoint ReferenceId="CJ4_PRESSURE_DUMP_OFF"/>
+                <Checkpoint ReferenceId="CJ4_SYS_TEST_MFD"/>
+                <Checkpoint ReferenceId="CJ4_TEST_TCAS"/>
+                <Checkpoint ReferenceId="CJ4_CHECK_BATT_TEMP"/>
+                <Checkpoint ReferenceId="CJ4_BATTERY_SWITCH_EMER"/>
+                <Checkpoint ReferenceId="CJ4_BATTERY_SWITCH_ON"/>
+                <Checkpoint ReferenceId="CJ4_AVIONICS_SWITCH_DISPATCH"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_LIGHTS_PREFLIGHT"/>
+                <Checkpoint ReferenceId="CJ4_ALLBUTTONS_OK"/>
+                <Checkpoint ReferenceId="CJ4_LANDING_GEAR_DOWN"/>
+                <Checkpoint ReferenceId="CJ4_CHECK_FUELQTY"/>
+                <Checkpoint ReferenceId="CJ4_TEST_RECORDER"/>
+            </Page>
+
+            <Page SubjectTT="BEFORE STARTING ENGINES">
+                <Checkpoint ReferenceId="CJ4_BATTERY_SWITCH_ON"/>
+                <Checkpoint ReferenceId="CJ4_EMERGENCY_LIGHTS_SWITCH_ARMED"/>
+                <Checkpoint ReferenceId="CJ4_STANDBY_FLIGHT_DISPLAY_SWITCH_ON"/>
+                <Checkpoint ReferenceId="CJ4_AVIONICS_SWITCH_DISPATCH"/>
+                <Checkpoint ReferenceId="CJ4_PARKING_BRAKE_SET"/>
+                <Checkpoint ReferenceId="CJ4_WHEEL_CHOCKS_REMOVE"/>
+                <Checkpoint ReferenceId="CJ4_CABIN_DOOR_CLOSED"/>
+                <Checkpoint ReferenceId="CJ4_PASSENGER_BRIEFING"/>
+                <Checkpoint ReferenceId="CJ4_SEATS_BELTS_PEDALS_ADJUST"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_LIGHTS_PREFLIGHT"/>
+                <Checkpoint ReferenceId="CJ4_EICAS_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_FMS"/>
+                <Checkpoint ReferenceId="CJ4_CLIMATE_CONTROL_SELECTOR_OFF"/>
+            </Page>
+
+            <Page SubjectTT="STARTING ENGINE(S)">
+                <Checkpoint ReferenceId="CJ4_THROTTLES_IDLE"/>
+                <Checkpoint ReferenceId="CJ4_ENGINE2_STARTER_BUTTON_PUSH"/>
+                <Checkpoint ReferenceId="CJ4_ENGINE2_RUN_STOP_BUTTON_RUN"/>
+                <Checkpoint ReferenceId="CJ4_ITT_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_EICAS_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_AVIONICS_SWITCH_ON"/>
+                <Checkpoint ReferenceId="CJ4_START_OPPOSITE_ENGINE"/>
+                <Checkpoint ReferenceId="CJ4_EXTERNAL_POWER_DISCONNECT"/>
+                <Checkpoint ReferenceId="CJ4_ELECTRICAL_SYSTEM_CHECK"/>
+            </Page>
+
+            <Page SubjectTT="BEFORE TAXI">
+                <Checkpoint ReferenceId="CJ4_CLIMATE_CONTROL_SELECTOR_NORM"/>
+                <Checkpoint ReferenceId="CJ4_PASSENGERS_LIGHTS_SAFETY_BUTTON_ON"/>
+                <Checkpoint ReferenceId="CJ4_TRIMS_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_FLIGHT_CONTROLS_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_SPEEDBRAKES_GROUND_SPOILERS_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_FLAPS_CHECKSET"/>
+                <Checkpoint ReferenceId="CJ4_HYDRAULIC_PRESSURE_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_ENGINE_ONLY_ANTI_ICE_ASREQUIRED"/>
+                <Checkpoint ReferenceId="CJ4_TAKEOFF_DATA_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_TRANSPONDER_ATC2"/>
+                <Checkpoint ReferenceId="CJ4_AVIONICS_CHECK_SET"/>
+                <Checkpoint ReferenceId="CJ4_AUTOPILOT_TEST"/>
+                <Checkpoint ReferenceId="CJ4_ALTIMETER_CHECK_BEFORE_TAXI"/>
+                <Checkpoint ReferenceId="CJ4_PRESSURIZATION_SET"/>
+                <Checkpoint ReferenceId="CJ4_EICAS_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_AFT_DIVIDER_DOORS"/>
+            </Page>
+        </Step>
+
+        <Step ChecklistStepId="PREFLIGHT_TAXI_OUT">
+            <Page SubjectTT="TAXI">
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_LIGHTS_TAXI"/>
+                <Checkpoint ReferenceId="CJ4_BRAKES_HOLD"/>
+                <Checkpoint ReferenceId="CJ4_PARKING_BRAKE_RELEASE"/>
+                <Checkpoint ReferenceId="CJ4_BRAKES_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_NOSEWHEEL_STEERING_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_FLIGHT_INSTRUMENTS_CHECK"/>
+            </Page>
+        </Step>
+
+        <Step ChecklistStepId="FLIGHT_RUNWAY">
+            <Page SubjectTT="SECOND ENGINE START AFTER TAXI (OPTIONAL)">
+                <Checkpoint ReferenceId="CJ4_PARKING_BRAKE_SET"/>
+                <Checkpoint ReferenceId="CJ4_ENGINE1_STARTER_BUTTON_PUSH"/>
+                <Checkpoint ReferenceId="CJ4_ENGINE1_RUN_STOP_BUTTON_RUN"/>
+                <Checkpoint ReferenceId="CJ4_ITT_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_EICAS_CHECK">
+                    <Clue name="Takeoff is prohibited until at least 2 minutes have elapsed after second engine start"/>
+                </Checkpoint>
+                <Checkpoint ReferenceId="CJ4_HYDRAULIC_PRESSURE_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_ELECTRICAL_SYSTEM_CHECK"/>
+            </Page>
+
+            <Page SubjectTT="BEFORE TAKEOFF">
+                <Checkpoint ReferenceId="CJ4_ICE_PROTECTION_SYSTEMS_BEFORE_TO"/>
+                <Checkpoint ReferenceId="CJ4_RUDDER_BIAS_SYSTEMS_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_SEATS_UP"/>
+                <Checkpoint ReferenceId="CJ4_FLAPS_CHECKSET"/>
+                <Checkpoint ReferenceId="CJ4_SPEEDBRAKES_DISENGAGE"/>
+                <Checkpoint ReferenceId="CJ4_TRIMS_CHECK_FOR_TO"/>
+                <Checkpoint ReferenceId="CJ4_CREW_BRIEFING"/>
+                <Checkpoint ReferenceId="CJ4_TCAS"/>
+                <Checkpoint ReferenceId="CJ4_RADAR_ASREQUIRED"/>
+                <Checkpoint ReferenceId="CJ4_GA_BUTTON"/>
+                <Checkpoint ReferenceId="CJ4_BATTERY_AMPS_OK"/>
+                <Checkpoint ReferenceId="CJ4_CLEADER_FOR_TO"/>
+                <Checkpoint ReferenceId="CJ4_ICE_PROTECTION_SYSTEMS_FLIGHT"/>
+                <Checkpoint ReferenceId="CJ4_PITOT_HEAT_ON"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_LIGHTS_BEFORE_TO"/>
+                <Checkpoint ReferenceId="CJ4_EICAS_CHECK"/>
+            </Page>
+        </Step>
+
+        <Step ChecklistStepId="FLIGHT_TAKEOFF">
+            <Page SubjectTT="TAKEOFF (STATIC)">
+                <Checkpoint ReferenceId="CJ4_THROTTLES_TO">
+                    <Clue name="FADEC Mode Indicator - Green TO"/>
+                </Checkpoint>
+                <Checkpoint ReferenceId="CJ4_N1_BUGS_GREEN"/>
+                <Checkpoint ReferenceId="CJ4_BRAKES_RELEASE"/>
+                <Checkpoint ReferenceId="CJ4_ROTATE"/>
+            </Page>
+
+            <Page SubjectTT="TAKEOFF (ROLLING)">
+                <Checkpoint ReferenceId="CJ4_INCREASE_TO_DISTANCE"/>
+                <Checkpoint ReferenceId="CJ4_THROTTLES_TO">
+                    <CheckpointDesc SubjectTT="Throttles" ExpectationTT="TO within 500 ft"/>
+                    <Clue name="FADEC Mode Indicator - Green TO"/>
+                </Checkpoint>
+                <Checkpoint ReferenceId="CJ4_N1_BUGS_GREEN"/>
+                <Checkpoint ReferenceId="CJ4_BRAKES_RELEASE"/>
+                <Checkpoint ReferenceId="CJ4_ROTATE"/>
+            </Page>
+
+            <Page SubjectTT="AFTER TAKEOFF/CLIMB">
+                <Checkpoint ReferenceId="CJ4_LANDING_GEAR_UP"/>
+                <Checkpoint ReferenceId="CJ4_FLAPS_SET_CLIMB"/>
+                <Checkpoint ReferenceId="CJ4_THROTTLES_CLB"/>
+                <Checkpoint ReferenceId="CJ4_YAW_DAMPER_ON"/>
+                <Checkpoint ReferenceId="CJ4_AUTOPILOT_ASREQUIRED"/>
+                <Checkpoint ReferenceId="CJ4_ICE_PROTECTION_SYSTEMS_FLIGHT"/>
+                <Checkpoint ReferenceId="CJ4_PASSENGER_LIGHTS_ASREQUIRED"/>
+                <Checkpoint ReferenceId="CJ4_LANDING_LIGHTS"/>
+                <Checkpoint ReferenceId="CJ4_PRESSURIZATION_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_ALTIMETERS_STD"/>
+            </Page>
+        </Step>
+
+        <Step ChecklistStepId="FLIGHT_CRUISE">
+            <Page SubjectTT="CRUISE">
+                <Checkpoint ReferenceId="CJ4_THROTTLES_ASREQUIRED"/>
+                <Checkpoint ReferenceId="CJ4_PRESSURIZATION_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_ICE_PROTECTION_SYSTEMS_FLIGHT"/>
+            </Page>
+        </Step>
+
+        <Step ChecklistStepId="FLIGHT_DESCENT">
+            <Page SubjectTT="DESCENT">
+                <Checkpoint ReferenceId="CJ4_PRESSURIZATION_SET"/>
+                <Checkpoint ReferenceId="CJ4_ICE_PROTECTION_SYSTEMS_FLIGHT"/>
+                <Checkpoint ReferenceId="CJ4_ALTIMETER_CHECK_DESCENT"/>
+                <Checkpoint ReferenceId="CJ4_CDU_XPRD_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_LIGHTS_DESCENT"/>
+            </Page>
+        </Step>
+
+        <Step ChecklistStepId="LANDING_APPROACH">
+            <Page SubjectTT="APPROACH">
+                <Checkpoint ReferenceId="CJ4_LANDING_DATA"/>
+                <Checkpoint ReferenceId="CJ4_CREW_BRIEFING"/>
+                <Checkpoint ReferenceId="CJ4_AVIONICS_INSTRUMENTS_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_MINIMUMS_SET"/>
+                <Checkpoint ReferenceId="CJ4_FUEL_TRANSFER_OFF"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_LIGHTS_APPROACH"/>
+                <Checkpoint ReferenceId="CJ4_ICE_PROTECTION_SYSTEMS_FLIGHT"/>
+                <Checkpoint ReferenceId="CJ4_FLAPS_SET_15"/>
+                <Checkpoint ReferenceId="CJ4_PASSENGER_BRIEFING"/>
+                <Checkpoint ReferenceId="CJ4_SEATS_UP"/>
+                <Checkpoint ReferenceId="CJ4_SEATS_BELTS"/>
+                <Checkpoint ReferenceId="CJ4_PASSENGER_LIGHTS_ON"/>
+                <Checkpoint ReferenceId="CJ4_EICAS_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_PRESSURIZATION_SET_APPROACH"/>
+            </Page>
+
+            <Page SubjectTT="BEFORE LANDING">
+                <Checkpoint ReferenceId="CJ4_LANDING_GEAR_DOWN"/>
+                <Checkpoint ReferenceId="CJ4_FLAPS_SET_35"/>
+                <Checkpoint ReferenceId="CJ4_SPEEDBRAKES_DISENGAGE"/>
+                <Checkpoint ReferenceId="CJ4_AIRSPEED_VREF"/>
+                <Checkpoint ReferenceId="CJ4_DISENGAGE_AUTOPILOT_AND_YAW"/>
+            </Page>
+        </Step>
+
+        <Step ChecklistStepId="LANDING_TOUCHDOWN">
+            <Page SubjectTT="LANDING">
+                <Checkpoint ReferenceId="CJ4_THROTTLES_IDLE"/>
+                <Checkpoint ReferenceId="CJ4_BRAKES_APPLY_TOUCHDOWN"/>
+                <Checkpoint ReferenceId="CJ4_GROUND_SPOILERS_ENGAGE"/>
+            </Page>
+
+            <!-- In this step to keep manual's checklist order -->
+            <Page SubjectTT="ALL ENGINE GO-AROUND">
+                <Checkpoint ReferenceId="CJ4_GA_BUTTON"/>
+                <Checkpoint ReferenceId="CJ4_THROTTLES_TO"/>
+                <Checkpoint ReferenceId="CJ4_PITCH_ALTITUDE_GOAROUND"/>
+                <Checkpoint ReferenceId="CJ4_FLAPS_SET_15"/>
+                <Checkpoint ReferenceId="CJ4_LANDING_GEAR_UP"/>
+                <Checkpoint ReferenceId="CJ4_FLAPS_GOAROUND"/>
+                <Checkpoint ReferenceId="CJ4_AIRSPEED_ASREQUIRED"/>
+                <Checkpoint ReferenceId="CJ4_THROTTLES_ASREQUIRED"/>
+                <Checkpoint ReferenceId="CJ4_YAW_DAMPER_ON"/>
+                <Checkpoint ReferenceId="CJ4_AUTOPILOT_ASREQUIRED"/>
+            </Page>
+        </Step>
+
+        <Step ChecklistStepId="LANDING_GROUNDROLL">
+            <Page SubjectTT="AFTER LANDING">
+                <Checkpoint ReferenceId="CJ4_SPEEDBRAKES_DISENGAGE"/>
+                <Checkpoint ReferenceId="CJ4_FLAPS_SET_0"/>
+                <Checkpoint ReferenceId="CJ4_ICE_PROTECTION_SYSTEMS_AFTER_LANDING"/>
+                <Checkpoint ReferenceId="CJ4_RADAR_STBY"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_LIGHTS_TAXI"/>
+            </Page>
+        </Step>
+
+        <Step ChecklistStepId="LANDING_TAXI_IN">
+        </Step>
+
+        <Step ChecklistStepId="LANDING_GATE">
+            <Page SubjectTT="Shutdown">
+                <Checkpoint ReferenceId="CJ4_PARKING_BRAKE_SET"/>
+                <Checkpoint ReferenceId="CJ4_EMERGENCY_LIGHTS_SWITCH_OFF"/>
+                <Checkpoint ReferenceId="CJ4_STANDBY_FLIGHT_DISPLAY_SWITCH_OFF"/>
+                <Checkpoint ReferenceId="CJ4_AVIONICS_SWITCH_OFF"/>
+                <Checkpoint ReferenceId="CJ4_ICE_PROTECTION_SYSTEMS_OFF"/>
+                <Checkpoint ReferenceId="CJ4_THROTTLES_IDLE"/>
+                <Checkpoint ReferenceId="CJ4_ENGINES_SHUTDOWN"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_LIGHTS_OFF"/>
+                <Checkpoint ReferenceId="CJ4_BATTERY_SWITCH_OFF"/>
+                <Checkpoint ReferenceId="CJ4_CONTROL_LOCK"/>
+                <Checkpoint ReferenceId="CJ4_OIL_LEVEL_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_INSTALL_ENGINE_COVERS"/>
+            </Page>
+        </Step>
+    </Checklist.Checklist>
+</SimBase.Document>
