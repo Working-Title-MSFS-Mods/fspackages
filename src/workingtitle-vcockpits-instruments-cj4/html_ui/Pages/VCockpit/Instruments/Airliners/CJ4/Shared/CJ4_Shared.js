@@ -735,7 +735,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             trimGroup.appendChild(rect);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
-            rect.setAttribute("y", (gaugeStartY + gaugeHeight * 0.30).toString());
+            rect.setAttribute("y", (gaugeStartY + gaugeHeight * 0.25).toString());
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", (gaugeHeight * 0.25).toString());
             rect.setAttribute("fill", "green");
@@ -759,7 +759,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.setAttribute("alignment-baseline", "top");
             trimGroup.appendChild(text);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "NU";
+            text.textContent = "ND";
             text.setAttribute("x", (gaugeStartX - 8).toString());
             text.setAttribute("y", (gaugeStartY + gaugeHeight).toString());
             text.setAttribute("fill", "white");
@@ -1596,7 +1596,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.setAttribute("alignment-baseline", "top");
             trimGroup.appendChild(text);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "NU";
+            text.textContent = "ND";
             text.setAttribute("x", (gaugeStartX - 8).toString());
             text.setAttribute("y", (startPosY + gaugeHeight * 0.5).toString());
             text.setAttribute("fill", "white");
