@@ -741,8 +741,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("fill", "green");
             trimGroup.appendChild(rect);
             this.ElevatorCursorX = gaugeStartX + gaugeWidth;
-            this.ElevatorCursorY1 = gaugeStartY + gaugeHeight;
-            this.ElevatorCursorY2 = gaugeStartY;
+            this.ElevatorCursorY1 = gaugeStartY ;
+            this.ElevatorCursorY2 = gaugeStartY + gaugeHeight;
             this.ElevatorCursor = document.createElementNS(Avionics.SVG.NS, "path");
             this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + this.ElevatorCursorY2 + ")");
             this.ElevatorCursor.setAttribute("fill", "white");
@@ -759,7 +759,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.setAttribute("alignment-baseline", "top");
             trimGroup.appendChild(text);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "NU";
+            text.textContent = "ND";
             text.setAttribute("x", (gaugeStartX - 8).toString());
             text.setAttribute("y", (gaugeStartY + gaugeHeight).toString());
             text.setAttribute("fill", "white");
@@ -1596,7 +1596,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.setAttribute("alignment-baseline", "top");
             trimGroup.appendChild(text);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "NU";
+            text.textContent = "ND";
             text.setAttribute("x", (gaugeStartX - 8).toString());
             text.setAttribute("y", (startPosY + gaugeHeight * 0.5).toString());
             text.setAttribute("fill", "white");
