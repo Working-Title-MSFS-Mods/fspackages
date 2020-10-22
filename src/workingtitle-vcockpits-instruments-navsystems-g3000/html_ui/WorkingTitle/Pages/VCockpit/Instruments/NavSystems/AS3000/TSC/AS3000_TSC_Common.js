@@ -1900,12 +1900,14 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         if (this.inputIndex != -1) {
             this.comFreqCancel();
         }
+        this.gps.transponderWindow.element.setContext("NavCom", "NAV/COM Home");
         this.gps.switchToPopUpPage(this.gps.transponderWindow);
     }
     openAudioRadios() {
         if (this.inputIndex != -1) {
             this.comFreqCancel();
         }
+        this.gps.audioRadioWindow.element.setContext("NavCom", "NAV/COM Home");
         this.gps.switchToPopUpPage(this.gps.audioRadioWindow);
     }
     xpdrIdent() {
@@ -1920,20 +1922,27 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
     }
 }
 class AS3000_TSC_Transponder extends NavSystemTouch_Transponder {
+    setContext(_homePageParent, _homePageName) {
+        this.homePageParent = _homePageParent;
+        this.homePageName = _homePageName;
+    }
+
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Cancel", this.cancelCode.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.cancelCode.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Cancel", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
         this.gps.activateNavButton(6, "Enter", this.validateCode.bind(this), true, "Icons/ICON_MAP_ENTER.png");
         this.gps.setTopKnobText("Data Entry Push: Enter", true);
         this.gps.setBottomKnobText("", true);
     }
+
     onExit() {
         super.onExit();
         this.gps.deactivateNavButton(1, true);
         this.gps.deactivateNavButton(2, true);
         this.gps.deactivateNavButton(6, true);
     }
+
     onEvent(_event) {
         super.onEvent(_event);
         switch (_event) {
@@ -1975,6 +1984,15 @@ class AS3000_TSC_Transponder extends NavSystemTouch_Transponder {
                 break;
         }
         this.inputChanged = true;
+    }
+
+    back() {
+        this.gps.goBack();
+    }
+
+    backHome() {
+        this.gps.closePopUpElement();
+        this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
     }
 }
 class AS3000_TSC_AudioRadios_Line {
@@ -2033,10 +2051,16 @@ class AS3000_TSC_AudioRadios extends NavSystemElement {
             this.gps.makeButton(this.lines[i].lineElement, this.setSelectedLine.bind(this, i));
         }
     }
+
+    setContext(_homePageParent, _homePageName) {
+        this.homePageParent = _homePageParent;
+        this.homePageName = _homePageName;
+    }
+
     onEnter() {
         this.window.setAttribute("state", "Active");
-        this.gps.activateNavButton(1, "Back", this.closeWindow.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.closeWindow.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
         this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), true, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
         this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), true, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
         this.gps.setTopKnobText(this.lines[this.selectedLine].topKnobText, true);
@@ -2071,9 +2095,7 @@ class AS3000_TSC_AudioRadios extends NavSystemElement {
     onEvent(_event) {
         this.lines[this.selectedLine].eventCallback(_event);
     }
-    closeWindow() {
-        this.gps.closePopUpElement();
-    }
+
     scrollUp() {
         this.scrollElement.scrollUp();
     }
@@ -2081,7 +2103,7 @@ class AS3000_TSC_AudioRadios extends NavSystemElement {
         this.scrollElement.scrollDown();
     }
     openFrequencyKeyboard(_title, _minFreq, _maxFreq, _activeSimVar, _StbySimVar, _endCallBack, _frequencySpacingModeSimvar, _adf) {
-        this.gps.frequencyKeyboard.element.setContext(_title, _minFreq, _maxFreq, _activeSimVar, _StbySimVar, _endCallBack, "NavCom", "NAV/COM Home", _frequencySpacingModeSimvar, _adf);
+        this.gps.frequencyKeyboard.element.setContext(_title, _minFreq, _maxFreq, _activeSimVar, _StbySimVar, _endCallBack, this.homePageParent, this.homePageName, _frequencySpacingModeSimvar, _adf);
         this.gps.switchToPopUpPage(this.gps.frequencyKeyboard);
     }
 
@@ -2244,6 +2266,15 @@ class AS3000_TSC_AudioRadios extends NavSystemElement {
     musicEventCallback(_event) {
     }
     clicksEventCallback(_event) {
+    }
+
+    back() {
+        this.gps.goBack();
+    }
+
+    backHome() {
+        this.gps.closePopUpElement();
+        this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
     }
 }
 

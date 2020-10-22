@@ -8,6 +8,10 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         return new AS3000_TSC_Vertical_SpeedBugs();
     }
 
+    createAudioRadioWindow() {
+        return new AS3000_TSC_Vertical_AudioRadios();
+    }
+
     get templateID() { return "AS3000_TSC_Vertical"; }
 
     connectedCallback() {
@@ -74,20 +78,44 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
         this.selectedCom = _id;
         this.setSoftkeysNames();
         let callback = _id == 1 ? this.setCom1Freq.bind(this) : this.setCom2Freq.bind(this);
-        this.gps.frequencyKeyboard.element.setContext(title, 118, 136.99, activeFreqSimVar, stdbyFreqSimVar, callback, this.gps.getCurrentPageGroup().name, this.gps.getCurrentPage().name, spacingSimVar, false);
+        let homePageGroup = this.gps.getCurrentPageGroup().name;
+        let homePageName = homePageGroup + " Home";
+        this.gps.frequencyKeyboard.element.setContext(title, 118, 136.99, activeFreqSimVar, stdbyFreqSimVar, callback, homePageGroup, homePageName, spacingSimVar, false);
         this.gps.switchToPopUpPage(this.gps.frequencyKeyboard);
     }
+
     setCom1Freq(_newFreq, _swap) {
         SimVar.SetSimVarValue("K:COM_STBY_RADIO_SET_HZ", "Hz", _newFreq);
         if (_swap) {
             SimVar.SetSimVarValue("K:COM_STBY_RADIO_SWAP", "Bool", 1);
         }
     }
+
     setCom2Freq(_newFreq, _swap) {
         SimVar.SetSimVarValue("K:COM2_STBY_RADIO_SET_HZ", "Hz", _newFreq);
         if (_swap) {
             SimVar.SetSimVarValue("K:COM2_RADIO_SWAP", "Bool", 1);
         }
+    }
+
+    openTransponder() {
+        if (this.inputIndex != -1) {
+            this.comFreqCancel();
+        }
+        let homePageGroup = this.gps.getCurrentPageGroup().name;
+        let homePageName = homePageGroup + " Home";
+        this.gps.transponderWindow.element.setContext(homePageGroup, homePageName);
+        this.gps.switchToPopUpPage(this.gps.transponderWindow);
+    }
+
+    openAudioRadios() {
+        if (this.inputIndex != -1) {
+            this.comFreqCancel();
+        }
+        let homePageGroup = this.gps.getCurrentPageGroup().name;
+        let homePageName = homePageGroup + " Home";
+        this.gps.audioRadioWindow.element.setContext(homePageGroup, homePageName);
+        this.gps.switchToPopUpPage(this.gps.audioRadioWindow);
     }
 }
 
