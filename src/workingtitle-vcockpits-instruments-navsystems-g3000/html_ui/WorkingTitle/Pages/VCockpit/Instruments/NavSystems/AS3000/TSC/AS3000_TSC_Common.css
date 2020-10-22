@@ -672,13 +672,6 @@
       #LightingConfig #LightingControls .slider::-webkit-slider-runnable-track {
         width: 100%;
         background: transparent; }
-      #LightingConfig #LightingControls #LightingConfigSliderWrapper .img {
-        position: absolute;
-        top: 0%;
-        left: 0%;
-        width: 100%;
-        height: 100%;
-        -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 
 #AirportInfo #AirportInfo_SelectedWaypoint .mainValue {
   text-align: left;
