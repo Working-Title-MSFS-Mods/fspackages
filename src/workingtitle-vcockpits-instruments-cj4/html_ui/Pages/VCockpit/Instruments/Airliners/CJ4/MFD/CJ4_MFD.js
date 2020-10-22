@@ -237,9 +237,6 @@ class CJ4_MFD extends BaseAirliners {
             case "Lwr_Push_MEM1_1":
                 this.activeMemoryFunction(1);
                 break;
-            case "Lwr_Push_MEM1_1":
-                this.activeMemoryFunction(1);
-                break;
             case "Lwr_Hold_MEM1_1":
                 this.mem1.setMemoryState(this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource, this.showTerrain, this.showWeather, this.showGwx, this.isExtended);
                 this.activeMemoryFunction(1);
