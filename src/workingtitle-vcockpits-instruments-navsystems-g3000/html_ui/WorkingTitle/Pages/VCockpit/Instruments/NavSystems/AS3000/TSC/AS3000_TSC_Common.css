@@ -722,9 +722,6 @@
   flex-flow: column nowrap;
   align-items: center; }
 
-#WaypointDuplicateWindow {
-  color: white;
-  position: relative; }
   #WaypointDuplicateWindow .Container {
     position: absolute;
     background: black;

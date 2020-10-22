@@ -1319,8 +1319,6 @@
         width: 60%;
         left: 20%; }
 
-    as3000-tsc-vertical-element #Electricity #timeKeyboard, as3000-tsc-vertical-element #Electricity #speedKeyboard, as3000-tsc-vertical-element #Electricity #altitudeKeyboard {
-      position: relative; }
       as3000-tsc-vertical-element #Electricity #timeKeyboard #TK_Bksp, as3000-tsc-vertical-element #Electricity #speedKeyboard #SK_Bksp, as3000-tsc-vertical-element #Electricity #altitudeKeyboard #AK_Bksp {
         position: absolute;
         height: 10vh;
