@@ -736,9 +736,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             var percent = (-Simplane.getTrimNeutral() + 1.0) * 0.5;
             percent = Math.min(1, Math.max(0, percent));
-            // var posY = gaugeStartY + (((gaugeStartY + gaugeHeight) - gaugeStartY) * percent) - (gaugeHeight * 0.5);
             var posY = ((gaugeStartY+gaugeHeight) - (gaugeHeight * percent)) - ((gaugeHeight*0.18)/2);
-            // posY = Math.min(gaugeStartY - gaugeHeight, Math.max((gaugeStartY + gaugeHeight), posY));
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
             rect.setAttribute("y", (posY).toString());

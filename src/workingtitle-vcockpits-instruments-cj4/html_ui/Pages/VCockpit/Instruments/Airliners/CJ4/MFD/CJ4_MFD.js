@@ -1212,9 +1212,12 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 rect.setAttribute("stroke", "white");
                 rect.setAttribute("stroke-width", "2");
                 trimGroup.appendChild(rect);
+                var percent = (-Simplane.getTrimNeutral() + 1.0) * 0.5;
+                percent = Math.min(1, Math.max(0, percent));
+                var posY = ((gaugeStartY+gaugeHeight) - (gaugeHeight * percent)) - ((gaugeHeight*0.18)/2);
                 var rect = document.createElementNS(Avionics.SVG.NS, "rect");
                 rect.setAttribute("x", gaugeStartX.toString());
-                rect.setAttribute("y", (gaugeStartY + gaugeHeight * 0.25).toString());
+                rect.setAttribute("y", posY.toString());
                 rect.setAttribute("width", gaugeWidth.toString());
                 rect.setAttribute("height", (gaugeHeight * 0.25).toString());
                 rect.setAttribute("fill", "green");
