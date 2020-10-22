@@ -1238,61 +1238,20 @@ as3000-tsc-horizontal-element {
       top: 9%;
       left: 1%;
       height: 90%;
-      width: 97%;
-      display: flex;
-      flex-flow: column nowrap; }
+      width: 97%; }
       as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabSelect {
-        display: flex;
-        flex-flow: row nowrap;
-        height: 15vh;
-        justify-content: flex-start;
-        width: 100%; }
+        height: 15vh; }
         as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabSelect .tabButton {
           height: 15vh;
           margin: 0 1vh; }
         as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer {
           position: relative;
-          height: 85%;
-          background-color: black;
-          border-radius: 4px;
-          border: 0.6vh solid #d3eaf9; }
-        as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table {
-          width: 100%;
-          height: 100%;
-          border-spacing: 0; }
+          height: 85%; }
           as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table thead {
-            display: block;
-            color: white;
             font-size: 4vh;
-            height: 7vh;
-            width: 100%; }
+            height: 7vh; }
           as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody {
-            display: block;
-            overflow-y: scroll;
-            height: 66vh;
-            width: 100%; }
-            as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody::-webkit-scrollbar {
-              width: 1vw; }
-            as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody::-webkit-scrollbar-track {
-              background: black; }
-            as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody::-webkit-scrollbar-thumb {
-              background: white; }
-            as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody tr td {
-              border-top: 1vh solid rgba(0, 0, 0, 0);
-              border-bottom: 1vh solid rgba(0, 0, 0, 0); }
-            as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody tr td:first-child {
-              border-left: 1vh solid rgba(0, 0, 0, 0);
-              border-radius: 4px 0 0 4px; }
-            as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody tr td:last-child {
-              border-right: 1vh solid rgba(0, 0, 0, 0);
-              border-radius: 0 4px 4px 0; }
-            as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody tr[state="Selected"] td {
-              border-top: 1vh solid #67e8ef;
-              border-bottom: 1vh solid #67e8ef; }
-            as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody tr[state="Selected"] td:first-child {
-              border-left: 1vh solid #67e8ef; }
-            as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody tr[state="Selected"] td:last-child {
-              border-right: 1vh solid #67e8ef; }
+            height: 66vh; }
           as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table thead tr th:nth-child(1), as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody tr:first-child td:nth-child(1),
           as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table thead tr th:nth-child(3), as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody tr:first-child td:nth-child(3) {
             width: 22vw; }
@@ -1302,36 +1261,19 @@ as3000-tsc-horizontal-element {
           margin: 0.25vh;
           width: auto;
           height: 15vh; }
+          as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer .gradientButton .frequencyDisplay {
+            position: absolute;
+            left: 0; }
           as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer .gradientButton .mainNumber {
-            font-size: 5.5vh;
-            text-align: left; }
+            font-size: 5.5vh; }
           as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer .gradientButton .standbyFreq {
-            font-size: 4.5vh;
-            color: #67e8ef; }
-          as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer #Nav1_Frequencies, as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer #Nav2_Frequencies, as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer #Com1_Frequencies, as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer #Com2_Frequencies {
-            display: flex;
-            flex-flow: row nowrap;
-            justify-content: space-between;
-            align-items: flex-start; }
+            font-size: 4.5vh; }
           as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer .gradientButton .activeNavID {
             position: absolute;
             top: 5%;
             right: 5%;
-            color: white;
-            text-align: right;
             font-size: 4vh; }
-        as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer #Adf_Frequencies .activeFreq {
-          position: absolute;
-          left: 0%;
-          top: 5%;
-          font-size: 5.5vh;
-          color: white; }
-        as3000-tsc-horizontal-element #Electricity #AudioRadiosWindow .tabContentContainer #Adf_Frequencies .standbyFreq {
-          position: absolute;
-          left: 0%;
-          bottom: 5%;
-          font-size: 4.5vh;
-          color: #67e8ef; }
+
     as3000-tsc-horizontal-element #Electricity #frequencyKeyboard {
       position: relative; }
       as3000-tsc-horizontal-element #Electricity #frequencyKeyboard #topLine {

@@ -53,28 +53,39 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
 }
 class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
     setSelectedCom(_id) {
+        let title = `COM${_id} Standby`;
+        let activeFreqSimVar = `COM ACTIVE FREQUENCY:${_id}`;
+        let stdbyFreqSimVar = `COM STANDBY FREQUENCY:${_id}`;
+        let spacingSimVar = `COM SPACING MODE:${_id}`;
+        if (this.gps.popUpElement == this.gps.frequencyKeyboard) {
+            if (this.gps.frequencyKeyboard.element.activeFreqSimVar == activeFreqSimVar) {
+                // keyboard already open and set to the right COM; don't need to open it again
+                return;
+            }
+
+            // keyboard already open but set to another COM, we need to close the existing keyboard before opening a new one
+            // to avoid weird stuff with the back button
+            this.gps.goBack();
+        }
+
         if (this.inputIndex != -1) {
             this.comFreqValidate();
         }
         this.selectedCom = _id;
         this.setSoftkeysNames();
-        if (_id == 1) {
-            this.gps.frequencyKeyboard.getElementOfType(AS3000_TSC_FrequencyKeyboard).setContext("COM1 Standby", 118, 136.99, "COM ACTIVE FREQUENCY:1", "COM STANDBY FREQUENCY:1", this.setCom1Freq.bind(this), this.container, "COM SPACING MODE:1");
-        }
-        else {
-            this.gps.frequencyKeyboard.getElementOfType(AS3000_TSC_FrequencyKeyboard).setContext("COM2 Standby", 118, 136.99, "COM ACTIVE FREQUENCY:2", "COM STANDBY FREQUENCY:2", this.setCom2Freq.bind(this), this.container, "COM SPACING MODE:2");
-        }
+        let callback = _id == 1 ? this.setCom1Freq.bind(this) : this.setCom2Freq.bind(this);
+        this.gps.frequencyKeyboard.element.setContext(title, 118, 136.99, activeFreqSimVar, stdbyFreqSimVar, callback, this.gps.getCurrentPageGroup().name, this.gps.getCurrentPage().name, spacingSimVar, false);
         this.gps.switchToPopUpPage(this.gps.frequencyKeyboard);
     }
-    setCom1Freq(_newFreq, swap) {
+    setCom1Freq(_newFreq, _swap) {
         SimVar.SetSimVarValue("K:COM_STBY_RADIO_SET_HZ", "Hz", _newFreq);
-        if (swap) {
+        if (_swap) {
             SimVar.SetSimVarValue("K:COM_STBY_RADIO_SWAP", "Bool", 1);
         }
     }
-    setCom2Freq(_newFreq, swap) {
+    setCom2Freq(_newFreq, _swap) {
         SimVar.SetSimVarValue("K:COM2_STBY_RADIO_SET_HZ", "Hz", _newFreq);
-        if (swap) {
+        if (_swap) {
             SimVar.SetSimVarValue("K:COM2_RADIO_SWAP", "Bool", 1);
         }
     }

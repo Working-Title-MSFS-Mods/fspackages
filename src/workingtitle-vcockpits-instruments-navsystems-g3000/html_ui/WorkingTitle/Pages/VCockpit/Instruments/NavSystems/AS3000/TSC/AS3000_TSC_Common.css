@@ -822,5 +822,85 @@
   width: 100%;
   height: 100%; }
 #NearestNDB {
- width: 100%;
- height: 100%; }
+  width: 100%;
+  height: 100%; }
+
+#AudioRadiosWindow .tabContainer {
+  display: flex;
+  flex-flow: column nowrap; }
+#AudioRadiosWindow .tabSelect {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  width: 100%; }
+#AudioRadiosWindow .tabContentContainer {
+  position: relative; }
+  #AudioRadiosWindow .tabContentContainer table {
+    width: 100%;
+    height: 100%;
+    border-spacing: 0; }
+    #AudioRadiosWindow .tabContentContainer table thead {
+      display: block;
+      color: white;
+      width: 100%; }
+    #AudioRadiosWindow .tabContentContainer table tbody {
+      display: block;
+      overflow-y: scroll;
+      width: 100%; }
+      #AudioRadiosWindow .tabContentContainer table tbody::-webkit-scrollbar {
+        width: 1vw; }
+      #AudioRadiosWindow .tabContentContainer table tbody::-webkit-scrollbar-track {
+        background: black; }
+      #AudioRadiosWindow .tabContentContainer table tbody::-webkit-scrollbar-thumb {
+        background: white; }
+        #AudioRadiosWindow .tabContentContainer table tbody tr td {
+          border-top: 5px solid rgba(0, 0, 0, 0);
+          border-bottom: 5px solid rgba(0, 0, 0, 0); }
+        #AudioRadiosWindow .tabContentContainer table tbody tr td:first-child {
+          border-left: 5px solid rgba(0, 0, 0, 0);
+          border-radius: 4px 0 0 4px; }
+        #AudioRadiosWindow .tabContentContainer table tbody tr td:last-child {
+          border-right: 5px solid rgba(0, 0, 0, 0);
+          border-radius: 0 4px 4px 0; }
+        #AudioRadiosWindow .tabContentContainer table tbody tr[state="Selected"] td {
+          border-top: 5px solid #67e8ef;
+          border-bottom: 5px solid #67e8ef; }
+        #AudioRadiosWindow .tabContentContainer table tbody tr[state="Selected"] td:first-child {
+          border-left: 5px solid #67e8ef; }
+        #AudioRadiosWindow .tabContentContainer table tbody tr[state="Selected"] td:last-child {
+          border-right: 5px solid #67e8ef; }
+          #AudioRadiosWindow .tabContentContainer .gradientButton .mainNumber {
+            text-align: left; }
+          #AudioRadiosWindow .tabContentContainer .gradientButton .standbyFreq {
+            color: #67e8ef; }
+          #AudioRadiosWindow .tabContentContainer .gradientButton .activeNavID {
+            color: white;
+            text-align: right; }
+
+#frequencyKeyboard #topLine {
+  position: absolute;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  width: 100%; }
+  #frequencyKeyboard #topLine #FK_ActiveFreqLine {
+    color: white;
+    width: 100%;
+    text-align: center; }
+  #frequencyKeyboard #topLine #FK_FreqDisplay {
+    background-color: grey;
+    text-align: center; }
+    #frequencyKeyboard #topLine #FK_FreqDisplay .StbyFreq {
+      background-color: #67e8ef;
+      color: black; }
+    #frequencyKeyboard #topLine #FK_FreqDisplay .Writed {
+      background-color: none;
+      color: #67e8ef; }
+    #frequencyKeyboard #topLine #FK_FreqDisplay .ToWrite {
+      background-color: none;
+      color: dimgray; }
+    #frequencyKeyboard #topLine #FK_FreqDisplay .Writing {
+      animation: SelectedCharBlinkFreqEdit 1s infinite;
+      display: inline-block; }
+    #frequencyKeyboard #topLine #FK_FreqDisplay .Fixed {
+      background-color: #67e8ef; }

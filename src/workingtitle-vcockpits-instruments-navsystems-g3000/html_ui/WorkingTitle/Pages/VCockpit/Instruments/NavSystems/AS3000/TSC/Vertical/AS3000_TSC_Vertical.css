@@ -134,8 +134,9 @@
         bottom: -25%;
         height: 40%;
         z-index: 2; }
-    as3000-tsc-vertical-element #Electricity #PageContainer {
-      margin-top: 1px;
+    as3000-tsc-vertical-element #Electricity #PageBorder {
+      position: absolute;
+      top: 18%;
       height: 68%;
       width: 100%;
       background-color: black;
@@ -1197,6 +1198,48 @@
       position: absolute;
       right: 2%;
       bottom: 0%; }
+
+    as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContainer {
+      position: absolute;
+      top: 9%;
+      left: 1%;
+      height: 90%;
+      width: 98%; }
+      as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabSelect {
+        height: 10vh; }
+        as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabSelect .tabButton {
+          height: 10vh;
+          margin: 0 1vh; }
+        as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer {
+          position: relative;
+          height: 85%; }
+          as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer table thead {
+            font-size: 2.5vh;
+            height: 4vh; }
+          as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody {
+            height: 46vh; }
+          as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer table thead tr th:nth-child(1), as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody tr:first-child td:nth-child(1),
+          as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer table thead tr th:nth-child(3), as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody tr:first-child td:nth-child(3) {
+            width: 30vw; }
+          as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer table thead tr th:nth-child(2), as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer table tbody tr:first-child td:nth-child(2) {
+            width: 35vw; }
+        as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer .gradientButton {
+          margin: 0.25vh;
+          width: auto;
+          height: 10vh; }
+          as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer .gradientButton .frequencyDisplay {
+            position: absolute;
+            left: 0; }
+          as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer .gradientButton .mainNumber {
+            font-size: 3.5vh; }
+          as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer .gradientButton .standbyFreq {
+            font-size: 3vh; }
+          as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContentContainer .gradientButton .activeNavID {
+            position: absolute;
+            top: 5%;
+            right: 5%;
+            font-size: 2.5vh; }
+
     as3000-tsc-vertical-element #Electricity #AudioRadiosWindow #tabSelectors {
       display: flex;
       height: 9vh; }
@@ -1253,53 +1296,29 @@
       font-size: 3vh;
       color: aqua; }
 
-    as3000-tsc-vertical-element #Electricity #frequencyKeyboard {
-      position: relative; }
       as3000-tsc-vertical-element #Electricity #frequencyKeyboard #topLine {
-        position: absolute;
-        display: flex;
-        flex-flow: row nowrap;
-        justify-content: space-between;
-        width: 100%;
         padding: 0 1vh; }
         as3000-tsc-vertical-element #Electricity #frequencyKeyboard #topLine .gradientButton {
           height: 10vh;
           width: 20%; }
         as3000-tsc-vertical-element #Electricity #frequencyKeyboard #topLine #FK_ActiveFreqLine {
-          color: white;
-          font-size: 2.1vh;
-          width: 100%;
-          text-align: center; }
+          font-size: 2.1vh; }
         as3000-tsc-vertical-element #Electricity #frequencyKeyboard #topLine #FK_FreqDisplay {
-          background-color: grey;
           margin: 0.6vh;
           padding-top: 0.6vh;
           height: 5.4vh;
           width: 30vw;
-          text-align: center;
           font-size: 3.6vh; }
-          as3000-tsc-vertical-element #Electricity #frequencyKeyboard #topLine #FK_FreqDisplay .StbyFreq {
-            background-color: aqua;
-            color: black; }
-          as3000-tsc-vertical-element #Electricity #frequencyKeyboard #topLine #FK_FreqDisplay .Writed {
-            background-color: none;
-            color: aqua; }
-          as3000-tsc-vertical-element #Electricity #frequencyKeyboard #topLine #FK_FreqDisplay .ToWrite {
-            background-color: none;
-            color: dimgray; }
           as3000-tsc-vertical-element #Electricity #frequencyKeyboard #topLine #FK_FreqDisplay .Writing {
-            animation: SelectedCharBlinkFreqEdit 1s infinite;
             min-width: 0.5vw;
-            min-height: 3.6vh;
-            display: inline-block; }
-          as3000-tsc-vertical-element #Electricity #frequencyKeyboard #topLine #FK_FreqDisplay .Fixed {
-            background-color: aqua; }
+            min-height: 3.6vh; }
       as3000-tsc-vertical-element #Electricity #frequencyKeyboard #KeyBoard {
         position: absolute;
         top: 25%;
         height: 75%;
         width: 60%;
         left: 20%; }
+
     as3000-tsc-vertical-element #Electricity #timeKeyboard, as3000-tsc-vertical-element #Electricity #speedKeyboard, as3000-tsc-vertical-element #Electricity #altitudeKeyboard {
       position: relative; }
       as3000-tsc-vertical-element #Electricity #timeKeyboard #TK_Bksp, as3000-tsc-vertical-element #Electricity #speedKeyboard #SK_Bksp, as3000-tsc-vertical-element #Electricity #altitudeKeyboard #AK_Bksp {
