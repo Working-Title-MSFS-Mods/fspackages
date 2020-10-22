@@ -228,10 +228,17 @@
     .tabButton[state=Disabled] .mainText {
       color: gray;}
 
+  .Waypoint .mainValue {
+    text-align: left; }
   .Waypoint .title {
+    text-align: left;
     white-space: nowrap;
     overflow-x: scroll;
     overflow-y: hidden; }
+  .Waypoint .symbol {
+    position: absolute;
+    top: 0;
+    right: 0; }
 .Waypoint[state=SelectedWP] {
   border-color: #7dddff !important;
   background: linear-gradient(#7dddff 0.4vh, #008cb4 2vh) !important; }
@@ -759,3 +766,61 @@
       #WaypointDuplicateWindow table tbody tr td:last-child {
         border-right: 2px solid grey;
         border-radius: 0 6px 6px 0; }
+
+.NrstContainer .NearestList {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  color: white;
+  text-align: center;
+  border-spacing: 0; }
+  .NrstContainer .NearestList .gradientButton .mainValue {
+    color: white; }
+  .NrstContainer .NearestList thead {
+    display: block;
+    color: white;
+    width: 100%;
+    border-bottom: 2px solid white; }
+  .NrstContainer .NearestList tbody {
+    display: block;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative; }
+    .NrstContainer .NearestList tbody::-webkit-scrollbar {
+      width: 1vw; }
+    .NrstContainer .NearestList tbody::-webkit-scrollbar-track {
+      background: none; }
+    .NrstContainer .NearestList tbody::-webkit-scrollbar-thumb {
+      background: white; }
+    .NrstContainer .NearestList tbody tr td {
+      border-top: 2px solid grey;
+      border-bottom: 2px solid grey; }
+    .NrstContainer .NearestList tbody tr td:first-child {
+      border-radius: 6px 0 0 6px;
+      border-left: 2px solid grey; }
+    .NrstContainer .NearestList tbody tr td:last-child {
+      border-radius: 0 6px 6px 0;
+      border-right: 2px solid grey; }
+    .NrstContainer .NearestList tbody tr[state=Inactive] {
+      display: none; }
+.NrstContainer .SelectionMenu {
+  background-color: black;
+  border: 2px solid white; }
+.NrstContainer .SelectionMenu[state=Inactive] {
+  display: none; }
+.NrstContainer .SelectionMenu[state=Active] {
+  animation: nearestMenuEnter 0.5s 1; }
+
+#NearestAirport {
+  width: 100%;
+  height: 100%; }
+#NearestIntersection {
+  width: 100%;
+  height: 100%; }
+#NearestVOR {
+  width: 100%;
+  height: 100%; }
+#NearestNDB {
+ width: 100%;
+ height: 100%; }

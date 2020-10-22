@@ -480,22 +480,16 @@ as3000-tsc-horizontal-element {
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .mainValue {
               position: absolute;
               width: auto;
-              text-align: left;
               transform: none;
               left: 10%;
               top: 10%;
               font-size: 6vh; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .title {
               position: absolute;
-              text-align: left;
               left: 10%;
               bottom: 0%;
               width: 80%;
               font-size: 3vh; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .symbol {
-              position: absolute;
-              right: 0%;
-              top: 0%; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .DTK {
               position: absolute;
               right: 5%;
@@ -918,41 +912,22 @@ as3000-tsc-horizontal-element {
         position: relative;
         padding: 0.5vh; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          color: white;
-          text-align: center;
-          font-size: 4vh;
-          border-spacing: 0; }
+          font-size: 4vh; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList .gradientButton {
-            position: absolute;
-            top: 0.4vh;
-            left: 0.4vh;
-            bottom: 0.4vh;
-            right: 0.4vh;
-            height: auto;
-            width: auto;
-            margin: 0.25vh; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList .gradientButton .mainValue {
+            height: 98%;
+            width: 98%;
+            margin: auto; }
+            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList .Waypoint .mainValue {
               position: absolute;
-              text-align: left;
               left: 2%;
               top: 0%;
-              color: white;
               font-size: 6vh; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList .gradientButton .title {
+            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList .Waypoint .title {
               position: absolute;
-              text-align: left;
               left: 2%;
               bottom: 0%;
               width: 90%;
-              font-size: 3vh;
-              overflow-x: scroll; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList .gradientButton .symbol {
-              position: absolute;
-              right: 0%;
-              top: 0%; }
+              font-size: 3vh; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList .gradientButton .mainNumber {
               font-size: 4vh;
               padding: 0%;
@@ -960,40 +935,12 @@ as3000-tsc-horizontal-element {
               margin-top: 3vh;
               width: 100%;
               text-align: center; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList .gradientButton[state=SelectedWP] {
-              background-color: #0093d0; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList thead {
-            display: block;
-            color: white;
             font-size: 4vh;
             height: 7%;
-            width: 100%;
-            border-bottom: 0.4vh solid white;
             padding-right: 3%; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody {
-            display: block;
-            overflow-y: scroll;
-            overflow-x: hidden;
-            height: 93%;
-            width: 100%;
-            position: relative; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody::-webkit-scrollbar {
-              width: 1vw; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody::-webkit-scrollbar-track {
-              background: none; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody::-webkit-scrollbar-thumb {
-              background: white; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody tr td {
-              border-top: 0.2vh solid grey;
-              border-bottom: 0.2vh solid grey; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody tr td:first-child {
-              border-radius: 6px 0 0 6px;
-              border-left: 0.2vh solid grey; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody tr td:last-child {
-              border-radius: 0 6px 6px 0;
-              border-right: 0.2vh solid grey; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody tr[state=Inactive] {
-              display: none; }
+            height: 93%; }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody tr, as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody td {
               height: 15.4vh;
               position: relative; }
@@ -1001,44 +948,6 @@ as3000-tsc-horizontal-element {
             border: none;
             height: 0vh;
             overflow: visible; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .SelectionMenu {
-          position: absolute;
-          height: 100%;
-          width: 30%;
-          top: 0%;
-          right: -0.75%;
-          bottom: 0%;
-          background-color: black;
-          border: 0.4vh solid white; }
-
-@keyframes rightEnter {
-  0% {
-    right: -100%; }
-  100% {
-    right: 2%; } }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .SelectionMenu {
-              position: absolute;
-              right: 2%;
-          }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .SelectionMenu[state=Inactive] {
-            display: none; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .SelectionMenu[state=Active] {
-            animation: rightEnter 0.5s 1; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .SelectionMenu tr, as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .SelectionMenu td {
-            width: 100%;
-            height: 20%;
-            position: relative; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .SelectionMenu tr .gradientButton, as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .SelectionMenu td .gradientButton {
-              position: absolute;
-              height: auto;
-              width: auto;
-              top: 2%;
-              left: 2%;
-              right: 2%;
-              bottom: 2%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestAirport {
-        width: 100%;
-        height: 100%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestAirport .NearestList thead tr th:nth-child(1), as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestAirport .NearestList tbody tr:first-child td:nth-child(1) {
           width: 35vw; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestAirport .NearestList thead tr th:nth-child(2), as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestAirport .NearestList tbody tr:first-child td:nth-child(2) {
@@ -1047,18 +956,12 @@ as3000-tsc-horizontal-element {
           width: 20vw; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestAirport .NearestList thead tr th:nth-child(4), as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestAirport .NearestList tbody tr:first-child td:nth-child(4) {
           width: 20vw; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestIntersection {
-        width: 100%;
-        height: 100%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestIntersection .NearestList thead tr th:nth-child(1), as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestIntersection .NearestList tbody tr:first-child td:nth-child(1) {
           width: 35vw; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestIntersection .NearestList thead tr th:nth-child(2), as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestIntersection .NearestList tbody tr:first-child td:nth-child(2) {
           width: 20vw; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestIntersection .NearestList thead tr th:nth-child(3), as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestIntersection .NearestList tbody tr:first-child td:nth-child(3) {
           width: 40vw; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestVOR {
-        width: 100%;
-        height: 100%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestVOR .NearestList thead tr th:nth-child(1), as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestVOR .NearestList tbody tr:first-child td:nth-child(1) {
           width: 35vw; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestVOR .NearestList thead tr th:nth-child(2), as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestVOR .NearestList tbody tr:first-child td:nth-child(2) {
@@ -1067,9 +970,6 @@ as3000-tsc-horizontal-element {
           width: 20vw; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestVOR .NearestList thead tr th:nth-child(4), as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestVOR .NearestList tbody tr:first-child td:nth-child(4) {
           width: 20vw; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestNDB {
-        width: 100%;
-        height: 100%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestNDB .NearestList thead tr th:nth-child(1), as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestNDB .NearestList tbody tr:first-child td:nth-child(1) {
           width: 35vw; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestNDB .NearestList thead tr th:nth-child(2), as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestNDB .NearestList tbody tr:first-child td:nth-child(2) {
@@ -1078,6 +978,27 @@ as3000-tsc-horizontal-element {
           width: 20vw; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestNDB .NearestList thead tr th:nth-child(4), as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestNDB .NearestList tbody tr:first-child td:nth-child(4) {
           width: 20vw; }
+
+@keyframes nearestMenuEnter {
+  0% {
+    right: -100%; }
+  100% {
+    right: -0.75%; } }
+
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .SelectionMenu {
+          position: absolute;
+          height: 100%;
+          width: 30%;
+          top: 0%;
+          right: -0.75%; }
+          as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .SelectionMenu tr, as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .SelectionMenu td {
+            width: 100%;
+            height: 20%;
+            position: relative; }
+            as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .SelectionMenu tr .gradientButton, as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer .SelectionMenu td .gradientButton {
+              height: 98%;
+              width: 98%;
+              margin: auto; }
 
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome {
         position: absolute;
