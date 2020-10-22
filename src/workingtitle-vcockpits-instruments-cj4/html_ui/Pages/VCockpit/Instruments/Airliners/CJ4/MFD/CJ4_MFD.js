@@ -1290,11 +1290,12 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 this.DCVoltValueLeft.textContent = Math.round(GenVolt1).toString();
                 let GenVolt2 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS VOLTAGE:2", "volts");
                 this.DCVoltValueRight.textContent = Math.round(GenVolt2).toString();
-                let BatAmp = SimVar.GetSimVarValue("ELECTRICAL BATTERY LOAD:1", "amperes");
-                this.BATAmpValue.textContent = Math.round(BatAmp).toString();
                 let BatVolt = SimVar.GetSimVarValue("ELECTRICAL BATTERY VOLTAGE:1", "volts");
                 this.BATVoltValue.textContent = Math.round(BatVolt).toString();
-                this.BATTempValue.textContent = "--";
+                let BatAmp = SimVar.GetSimVarValue("ELECTRICAL BATTERY LOAD:1", "amperes");
+                BatAmp = BatAmp / BatVolt;
+                this.BATAmpValue.textContent = Math.round(BatAmp).toString();
+                this.BATTempValue.textContent = "26";
                 let HydPSI1 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:1", "psi");
                 this.HYDPSIValueLeft.textContent = Math.round(HydPSI1).toString();
                 let HydPSI2 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:2", "psi");
