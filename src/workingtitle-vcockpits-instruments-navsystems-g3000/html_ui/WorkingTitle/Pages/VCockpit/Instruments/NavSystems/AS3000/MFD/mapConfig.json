@@ -30,7 +30,7 @@
   "cityIconFillColor": "#7b8083",
   "cityIconStrokeColor": "#3f3f3f",
   "cityIconStrokeWidth": 3,
-  
+
   "obstacleIconSize": 90,
 
   "airplaneIconSize": 80,
@@ -87,7 +87,7 @@
       "color": "#000000"
     }
   ],
-  
+
   "netBingAltitudeColors2": [],
   "netBingWaterColor2": "#184b77",
   "netBingHeightColor2": [
@@ -128,7 +128,7 @@
       "color": "#c8c8c8"
     }
   ],
-  
+
   "netBingAltitudeColors3": [],
   "netBingWaterColor3": "#0000ff",
   "netBingHeightColor3": [
