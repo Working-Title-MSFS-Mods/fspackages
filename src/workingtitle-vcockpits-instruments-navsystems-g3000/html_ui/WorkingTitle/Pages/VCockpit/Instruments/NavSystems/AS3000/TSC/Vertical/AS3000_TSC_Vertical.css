@@ -1107,7 +1107,11 @@
       bottom: 5%;
       width: 100%;
       height: 9%;
-      background-color: #212121; }
+      background: linear-gradient(#41585f, #2c4952);
+      border-top: 1px solid grey;
+      border-left: 1px solid grey;
+      border-right: 1px solid grey;
+      border-radius: 4px 4px 0 0; }
       as3000-tsc-vertical-element #Electricity #NavigationBar .gradientButton {
         height: 98%;
         left: 8%;
@@ -1121,13 +1125,13 @@
       width: 100%;
       height: 5%;
       background-color: #212121;
-      color: #3F4751;
+      color: black;
       font-size: 2.1vh;
       display: flex; }
       as3000-tsc-vertical-element #Electricity #SoftKeys div {
         height: 100%;
         text-align: center;
-        background-color: white;
+        background-color: #a5bcc7;
         margin-left: 0.4vh;
         margin-right: 0.4vh;
         display: table;
@@ -1138,7 +1142,7 @@
           vertical-align: middle;
           text-align: center;
           padding-right: 2%;
-          color: #3F4751;
+          color: black;
           font-size: 2.1vh;
           line-height: 2.28vh; }
     as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_ModeSelect {
