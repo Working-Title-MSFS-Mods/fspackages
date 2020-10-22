@@ -35,7 +35,7 @@
 
   <WindSounds>
     <!-- <Sound WwiseEvent="wind_sound" WwiseData="true" /> -->
-	<Sound WwiseEvent="wind_sound" CustomSuffix="wt" WwiseData="true" />
+    <Sound WwiseEvent="wind_sound" CustomSuffix="wt" WwiseData="true" />
   </WindSounds>
 
   <GroundSounds>
@@ -74,12 +74,16 @@
     <Sound WwiseEvent="JetWhine" WwiseData="true" EngineIndex="2" RPMMin="1"/>
 
     <!-- WT ENGINES -->
-    <Sound WwiseEvent="Starter" CustomSuffix="wt" RPMMin="1" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="1" /> 
-    <Sound WwiseEvent="Starter" CustomSuffix="wt" RPMMin="1" WwiseData="true" EngineIndex="2" FadeOutType="2" FadeOutTime="1" /> 
-    <Sound WwiseEvent="Combustion" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="0.1" /> 
-    <Sound WwiseEvent="Combustion" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="2" FadeOutType="2" FadeOutTime="0.1" /> 
-    <Sound WwiseEvent="Shutdown" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="5" /> 
-    <Sound WwiseEvent="Shutdown" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="2" FadeOutType="2" FadeOutTime="5" /> 
+    <Sound WwiseEvent="Starter" CustomSuffix="wt" RPMMin="1" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="1" />
+    <Sound WwiseEvent="Starter" CustomSuffix="wt" RPMMin="1" WwiseData="true" EngineIndex="2" FadeOutType="2" FadeOutTime="1" />
+    <Sound WwiseEvent="Combustion" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="0.1">
+      <WwiseRTPC SimVar="AIRSPEED INDICATED" Units="KNOTS" Index="0" RTPCName="SIMVAR_AIRSPEED_INDICATED" />
+    </Sound>
+    <Sound WwiseEvent="Combustion" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="2" FadeOutType="2" FadeOutTime="0.1">
+      <WwiseRTPC SimVar="AIRSPEED INDICATED" Units="KNOTS" Index="0" RTPCName="SIMVAR_AIRSPEED_INDICATED" />
+    </Sound>
+    <Sound WwiseEvent="Shutdown" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="5" />
+    <Sound WwiseEvent="Shutdown" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="2" FadeOutType="2" FadeOutTime="5" />
   </EngineSoundPresets>
 
   <!-- SimvarSounds ========================================================================================== -->
@@ -132,6 +136,7 @@
 
     <Sound WwiseData="true" WwiseEvent="WT_battery_on" NodeName="MFD_SCREEN_1" ContinuousStopDelay="0.1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
       <Range LowerBound="1.0" />
+      <WwiseRTPC SimVar="AIRSPEED INDICATED" Units="KNOTS" Index="0" RTPCName="SIMVAR_AIRSPEED_INDICATED" />
     </Sound>
 
     <Sound WwiseData="true" WwiseEvent="WT_battery_off" Continuous="false" NodeName="MFD_SCREEN_1" SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
@@ -303,19 +308,19 @@
 
 
 
-	<Sound WwiseData="true" WwiseEvent="WT_wind_inside" SimVar="AIRSPEED TRUE" Units="KNOTS" Index="0">
+    <Sound WwiseData="true" WwiseEvent="WT_wind_inside" SimVar="AIRSPEED TRUE" Units="KNOTS" Index="0">
       <WwiseRTPC SimVar="AIRSPEED TRUE" Units="KNOTS" Index="0" RTPCName="SIMVAR_AIRSPEED_TRUE"/>
     </Sound>
-	
-	<Sound WwiseEvent="WT_gear_down" WwiseData="true" FadeOutType="2" Continuous="false" FadeOutTime="1" SimVar="GEAR HANDLE POSITION" Units="NUMBER">
-            <Range LowerBound="1" />
-        </Sound>
-		
-	<Sound WwiseData="true" WwiseEvent="WT_gear_drag" Continuous="true" FadeOutType="2" FadeOutTime="1" SimVar="GEAR TOTAL PCT EXTENDED" Units="PERCENT" Index="0">
-            <Range LowerBound="0.1" />
-            <WwiseRTPC SimVar="AIRSPEED INDICATED" Units="KNOTS" Index="0" RTPCName="SIMVAR_AIRSPEED_INDICATED" />
-			<WwiseRTPC SimVar="GEAR TOTAL PCT EXTENDED" Units="PERCENT" Index="0" RTPCName="SIMVAR_GEAR_TOTAL_PCT_EXTENDED" />
-        </Sound>
+
+    <Sound WwiseEvent="WT_gear_down" WwiseData="true" FadeOutType="2" Continuous="false" FadeOutTime="1" SimVar="GEAR HANDLE POSITION" Units="NUMBER">
+      <Range LowerBound="1" />
+    </Sound>
+
+    <Sound WwiseData="true" WwiseEvent="WT_gear_drag" Continuous="true" FadeOutType="2" FadeOutTime="1" SimVar="GEAR TOTAL PCT EXTENDED" Units="PERCENT" Index="0">
+      <Range LowerBound="0.1" />
+      <WwiseRTPC SimVar="AIRSPEED INDICATED" Units="KNOTS" Index="0" RTPCName="SIMVAR_AIRSPEED_INDICATED" />
+      <WwiseRTPC SimVar="GEAR TOTAL PCT EXTENDED" Units="PERCENT" Index="0" RTPCName="SIMVAR_GEAR_TOTAL_PCT_EXTENDED" />
+    </Sound>
 
 
 
@@ -460,7 +465,7 @@
     <Sound WwiseData="true" WwiseEvent="as3000_push_button_on" ViewPoint="Inside"/>
     <Sound WwiseData="true" WwiseEvent="as3000_push_button_off" ViewPoint="Inside"/>
     <Sound WwiseData="true" WwiseEvent="as3000_joystick" ViewPoint="Inside"/>
-	
+
 
   </AnimationSounds>
 
