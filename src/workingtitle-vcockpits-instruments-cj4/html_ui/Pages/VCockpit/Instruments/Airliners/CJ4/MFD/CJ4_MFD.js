@@ -77,6 +77,29 @@ class CJ4_MFD extends BaseAirliners {
             else {
                 this.map.setMode(this.mapDisplayMode);
                 this.mapOverlay.setMode(this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource);
+
+                //Hack to correct the map compass size until we separate it out
+                //fully from the default shared code
+                if (this.mapDisplayMode !== this.previousMapDisplayMode || this.mapNavigationSource !== this.previousMapNavigationSource) {
+                    const el = document.querySelector('#NDCompass svg');
+                    if (el) {
+                        this.previousMapDisplayMode = this.mapDisplayMode;
+                        this.previousMapNavigationSource = this.mapNavigationSource;
+    
+                        if (this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {
+                            el.setAttribute('width', '122%');
+                            el.setAttribute('height', '122%');
+                            el.style = 'transform: translate(-84px, -56px)';
+                        }
+    
+                        if (this.mapDisplayMode === Jet_NDCompass_Display.ARC) {
+                            el.setAttribute('width', '108%');
+                            el.setAttribute('height', '108%');
+                            el.style = 'transform: translate(-30px, -18px)';
+                        }
+                    }
+                }
+
                 if (this.showTerrain) {
                     this.map.showTerrain(true);
                     this.mapOverlay.showTerrain(true);
