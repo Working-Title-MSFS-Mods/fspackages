@@ -260,23 +260,17 @@ class CJ4_FMC_LegsPage {
                                         });
                                     };
                                     let index = this._approachWaypoints.findIndex(w => { return w.infos && w.infos.icao === this._fmc.selectedWaypoint.icao; });
-                                    if (this._fmc.flightPlanManager.isActiveApproach()) {
-                                        setApproachIndex(index);
-                                    } else {
-                                        this._fmc.activateDirectToWaypoint(this._fmc.selectedWaypoint, () => {
-                                            this._fmc.flightPlanManager.activateApproach(() => {
-                                                index = this._approachWaypoints.findIndex(w => { return w.infos && w.infos.icao === this._fmc.selectedWaypoint.icao; }); // find index again after activating everything
-                                                setApproachIndex(index + 1);
-                                            });
+                                    this._fmc.activateDirectToWaypoint(this._fmc.selectedWaypoint, () => {
+                                        this._fmc.flightPlanManager.activateApproach(() => {
+                                            index = this._approachWaypoints.findIndex(w => { return w.infos && w.infos.icao === this._fmc.selectedWaypoint.icao; }); // find index again after activating everything
+                                            setApproachIndex(index + 1);
                                         });
-
-                                    }
-
+                                    });
                                 } else {
-                                    this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                        this._fmc.activateDirectToWaypoint(this._fmc.selectedWaypoint, () => {
-                                            this.resetAfterOp();
-                                        });
+                                    // this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                    this._fmc.activateDirectToWaypoint(this._fmc.selectedWaypoint, () => {
+                                        this.resetAfterOp();
+                                        // });
 
                                     });
                                 }
