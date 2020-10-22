@@ -47,20 +47,21 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         }
     }
 
-    setArrowSizes(_leftOffset, _topOffset, _lineDistance, _lineWidth, _headWidth) {
-        this.arrowLeftOffset = _leftOffset;
-        this.arrowTopOffset = _topOffset;
-        this.arrowLineDistance = _lineDistance;
-        this.arrowLineWidth = _lineWidth;
-        this.arrowHeadWidth = _headWidth;
+    setArrowSizes(leftOffset, topOffset, lineDistance, lineWidth, headWidth) {
+        this.arrowLeftOffset = leftOffset;
+        this.arrowTopOffset = topOffset;
+        this.arrowLineDistance = lineDistance;
+        this.arrowLineWidth = lineWidth;
+        this.arrowHeadWidth = headWidth;
     }
 }
+
 class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
-    setSelectedCom(_id) {
-        let title = `COM${_id} Standby`;
-        let activeFreqSimVar = `COM ACTIVE FREQUENCY:${_id}`;
-        let stdbyFreqSimVar = `COM STANDBY FREQUENCY:${_id}`;
-        let spacingSimVar = `COM SPACING MODE:${_id}`;
+    setSelectedCom(id) {
+        let title = `COM${id} Standby`;
+        let activeFreqSimVar = `COM ACTIVE FREQUENCY:${id}`;
+        let stdbyFreqSimVar = `COM STANDBY FREQUENCY:${id}`;
+        let spacingSimVar = `COM SPACING MODE:${id}`;
         if (this.gps.popUpElement == this.gps.frequencyKeyboard) {
             if (this.gps.frequencyKeyboard.element.activeFreqSimVar == activeFreqSimVar) {
                 // keyboard already open and set to the right COM; don't need to open it again
@@ -75,25 +76,25 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
         if (this.inputIndex != -1) {
             this.comFreqValidate();
         }
-        this.selectedCom = _id;
+        this.selectedCom = id;
         this.setSoftkeysNames();
-        let callback = _id == 1 ? this.setCom1Freq.bind(this) : this.setCom2Freq.bind(this);
+        let callback = id == 1 ? this.setCom1Freq.bind(this) : this.setCom2Freq.bind(this);
         let homePageGroup = this.gps.getCurrentPageGroup().name;
         let homePageName = homePageGroup + " Home";
         this.gps.frequencyKeyboard.element.setContext(title, 118, 136.99, activeFreqSimVar, stdbyFreqSimVar, callback, homePageGroup, homePageName, spacingSimVar, false);
         this.gps.switchToPopUpPage(this.gps.frequencyKeyboard);
     }
 
-    setCom1Freq(_newFreq, _swap) {
-        SimVar.SetSimVarValue("K:COM_STBY_RADIO_SET_HZ", "Hz", _newFreq);
-        if (_swap) {
+    setCom1Freq(newFreq, swap) {
+        SimVar.SetSimVarValue("K:COM_STBY_RADIO_SET_HZ", "Hz", newFreq);
+        if (swap) {
             SimVar.SetSimVarValue("K:COM_STBY_RADIO_SWAP", "Bool", 1);
         }
     }
 
-    setCom2Freq(_newFreq, _swap) {
-        SimVar.SetSimVarValue("K:COM2_STBY_RADIO_SET_HZ", "Hz", _newFreq);
-        if (_swap) {
+    setCom2Freq(newFreq, swap) {
+        SimVar.SetSimVarValue("K:COM2_STBY_RADIO_SET_HZ", "Hz", newFreq);
+        if (swap) {
             SimVar.SetSimVarValue("K:COM2_RADIO_SWAP", "Bool", 1);
         }
     }
@@ -120,9 +121,9 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
 }
 
 class AS3000_TSC_Vertical_AirspeedReference extends AS3000_TSC_AirspeedReference {
-    constructor(_valueButton, _statusElem, _refSpeed, _displayName, _tab) {
-        super(_valueButton, _statusElem, _refSpeed, _displayName);
-        this.tab = _tab;
+    constructor(valueButton, statusElem, refSpeed, displayName, tab) {
+        super(valueButton, statusElem, refSpeed, displayName);
+        this.tab = tab;
     }
 }
 
@@ -132,9 +133,9 @@ class AS3000_TSC_Vertical_SpeedBugs extends AS3000_TSC_SpeedBugs {
         this.tabbedContent = new AS3000_TSC_TabbedContent(this);
     }
 
-    initAirspeedReference(_valueButton, _statusButton, _refSpeed, _name, _tab) {
-        if (_valueButton && _statusButton) {
-            this.references.push(new AS3000_TSC_Vertical_AirspeedReference(_valueButton, _statusButton, _refSpeed == null ? -1 : _refSpeed, _name, _tab));
+    initAirspeedReference(valueButton, statusButton, refSpeed, name, tab) {
+        if (valueButton && statusButton) {
+            this.references.push(new AS3000_TSC_Vertical_AirspeedReference(valueButton, statusButton, refSpeed == null ? -1 : refSpeed, name, tab));
         }
     }
 
