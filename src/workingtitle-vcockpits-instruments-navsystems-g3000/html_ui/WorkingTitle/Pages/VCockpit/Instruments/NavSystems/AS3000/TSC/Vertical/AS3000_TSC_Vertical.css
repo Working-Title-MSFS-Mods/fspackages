@@ -1725,28 +1725,19 @@
       border-radius: 1.8vh;
       background-size: 6vh 6vh;
       background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px); }
-    as3000-tsc-vertical-element #Electricity #SelectionList .content {
+
+    as3000-tsc-vertical-element #Electricity #SelectionList .contentContainer {
       position: absolute;
+      top: 15;
       left: 10%;
-      right: 10%;
-      width: auto;
-      top: 15%;
+      width: 80%;
       height: 85%;
-      overflow-y: scroll;
-      overflow-x: hidden; }
-      as3000-tsc-vertical-element #Electricity #SelectionList .content::-webkit-scrollbar {
-        width: 0.5vw; }
-      as3000-tsc-vertical-element #Electricity #SelectionList .content::-webkit-scrollbar-track {
-        background: none; }
-      as3000-tsc-vertical-element #Electricity #SelectionList .content::-webkit-scrollbar-thumb {
-        background: white; }
+      padding: 1px 10px; }
       as3000-tsc-vertical-element #Electricity #SelectionList .content .gradientButton {
-        height: 20%;
-        width: 100%; }
+        height: 20%; }
         as3000-tsc-vertical-element #Electricity #SelectionList .content .gradientButton .value {
           font-size: 2.5vh; }
-        as3000-tsc-vertical-element #Electricity #SelectionList .content .gradientButton[state=Inactive] {
-          display: none; }
+
     as3000-tsc-vertical-element #Electricity .PopUpWindow {
       top: 18%;
       width: 100%;

@@ -287,6 +287,29 @@
     background-image: none;
     background-color: rgba(0, 0, 0, 0.8); }
 
+#SelectionList .content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 1%;
+  overflow-y: scroll;
+  overflow-x: hidden; }
+  #SelectionList .content::-webkit-scrollbar {
+    width: 1vw; }
+  #SelectionList .content::-webkit-scrollbar-track {
+    background: none; }
+  #SelectionList .content::-webkit-scrollbar-thumb {
+    background: white; }
+  #SelectionList .content .gradientButton {
+    width: 100%; }
+  #SelectionList .content .gradientButton[state=Inactive] {
+    display: none; }
+    #SelectionList .content .gradientButton .value {
+      position: absolute;
+      width: 100%;
+      top: 50%;
+      transform: translateY(-50%); }
+
 .SelectionListWindow .content {
       position: absolute;
       background-color: black;
