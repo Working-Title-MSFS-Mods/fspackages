@@ -120,7 +120,7 @@
 													</Point>
 													<Point>
 														<XPos>40000</XPos>
-														<YPos>70</YPos>
+														<YPos>40</YPos>
 														<Flags>37</Flags>
 													</Point>
 												</PointList>
@@ -139,6 +139,40 @@
 										<Value>-4</Value>
 									</ValueList>
 									<RTPCList>
+										<RTPC Name="" ID="{C7EE8A1A-7F64-4631-81D9-362629E92E35}" ShortID="478451094">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="SIMVAR_AIRSPEED_TRUE" ID="{23F33E5A-B0EE-4CD5-AE2C-178797545D5C}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{93AA0BDD-589C-4A31-92CB-AB7227E341A2}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="3"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>0</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>140</XPos>
+														<YPos>0</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>280</XPos>
+														<YPos>-3</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>500</XPos>
+														<YPos>-4.1903</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
 										<RTPC Name="" ID="{5759802F-DA10-439B-AF16-EF02CAB9DDB5}" ShortID="781379852">
 											<ReferenceList>
 												<Reference Name="ControlInput">
@@ -653,7 +687,7 @@
 													</Point>
 													<Point>
 														<XPos>40000</XPos>
-														<YPos>70</YPos>
+														<YPos>40</YPos>
 														<Flags>37</Flags>
 													</Point>
 												</PointList>

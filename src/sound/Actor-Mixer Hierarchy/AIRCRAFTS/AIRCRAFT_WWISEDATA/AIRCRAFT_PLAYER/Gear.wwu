@@ -12,13 +12,6 @@
 						</Property>
 						<Property Name="OverrideOutput" Type="bool" Value="True"/>
 						<Property Name="OverridePositioning" Type="bool" Value="True"/>
-						<Property Name="Volume" Type="Real64">
-							<RTPCList>
-								<RTPC Name="" ID="{39726329-6C01-4D44-949F-9673E18C4E72}" ShortID="405919778">
-									<ReferenceList/>
-								</RTPC>
-							</RTPCList>
-						</Property>
 					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Conversion">
