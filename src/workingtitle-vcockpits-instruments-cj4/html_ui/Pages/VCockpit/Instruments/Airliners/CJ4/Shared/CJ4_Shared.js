@@ -1606,7 +1606,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.setAttribute("alignment-baseline", "bottom");
             trimGroup.appendChild(text);
             this.ElevatorCursorX = gaugeStartX + gaugeWidth;
-            this.ElevatorCursorY1 = startPosY + gaugeHeight * 0.5;
+            this.ElevatorCursorY1 = startPosY;
             this.ElevatorCursorY2 = startPosY - gaugeHeight * 0.5;
             this.ElevatorCursor = document.createElementNS(Avionics.SVG.NS, "path");
             this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + this.ElevatorCursorY1 + ")");
