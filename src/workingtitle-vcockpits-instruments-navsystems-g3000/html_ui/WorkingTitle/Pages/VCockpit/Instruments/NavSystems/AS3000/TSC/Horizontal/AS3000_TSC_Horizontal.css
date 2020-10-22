@@ -557,19 +557,19 @@ as3000-tsc-horizontal-element {
         width: 20%;
         height: 20%;
         left: 10%;
-        top: 80%; }
+        bottom: 1%; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #Procedures #Procedures_ActivateVectorsToFinal {
         position: absolute;
         width: 20%;
         height: 20%;
         left: 40%;
-        top: 80%; }
+        bottom: 1%; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #Procedures #Procedures_ActivateMissedApproach {
         position: absolute;
         width: 20%;
         height: 20%;
         left: 70%;
-        top: 80%; }
+        bottom: 1%; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay .ProcSelection .gradientButton .title {
         top: 10%;
         font-size: 4.5vh; }
