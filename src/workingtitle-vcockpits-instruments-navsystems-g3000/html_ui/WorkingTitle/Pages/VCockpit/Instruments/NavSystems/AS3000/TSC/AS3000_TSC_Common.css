@@ -901,3 +901,26 @@
       display: inline-block; }
     #frequencyKeyboard #topLine #FK_FreqDisplay .Fixed {
       background-color: #67e8ef; }
+
+#TransponderWindow #transponder_ModeSelect #transponder_ModeSelectTitle {
+  color: white; }
+#TransponderWindow #transponder_CodeDisplay {
+  background-color: grey;
+  text-align: center; }
+  #TransponderWindow #transponder_CodeDisplay #transponder_Code {
+    color: black; }
+    #TransponderWindow #transponder_CodeDisplay #transponder_Code .Writed,
+    #TransponderWindow #transponder_CodeDisplay #transponder_Code .ToWrite {
+      background-color: none;
+      color: #67e8ef; }
+    #TransponderWindow #transponder_CodeDisplay #transponder_Code .Writing {
+      animation: SelectedCharBlinkFreqEdit 1s infinite;
+      display: inline-block; }
+    #TransponderWindow #transponder_CodeDisplay #transponder_Code .Fixed {
+      background-color: #67e8ef; }
+#TransponderWindow #transponder_NumberKeyboard {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  justify-items: center;
+  align-items: center; }

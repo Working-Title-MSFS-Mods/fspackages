@@ -1146,50 +1146,38 @@
           color: black;
           font-size: 2.1vh;
           line-height: 2.28vh; }
+
     as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_ModeSelect {
       position: absolute;
-      left: 2%;
-      top: 0%; }
+      left: 1%;
+      top: 10%; }
       as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_ModeSelect #transponder_ModeSelectTitle {
-        color: white;
         font-size: 3vh; }
-      as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_ModeSelect .mainText {
-        font-size: 2.1vh; }
+      as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_ModeSelect .gradientButton {
+        height: 12vh; }
     as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_CodeDisplay {
       position: absolute;
       right: 25%;
       top: 10%;
-      background-color: #212121;
       height: 11%;
-      width: 40%;
-      text-align: center; }
+      width: 40%; }
       as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_CodeDisplay #transponder_Code {
-        font-size: 4.8vh;
-        color: black; }
-        as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_CodeDisplay #transponder_Code .Writed, as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_CodeDisplay #transponder_Code .ToWrite {
-          background-color: none;
-          color: aqua; }
+        font-size: 5vh; }
         as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_CodeDisplay #transponder_Code .Writing {
-          animation: SelectedCharBlinkFreqEdit 1s infinite;
           min-width: 0.5vw;
-          min-height: 4.8vh;
-          display: inline-block; }
-        as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_CodeDisplay #transponder_Code .Fixed {
-          background-color: aqua; }
+          min-height: 5vh; }
     as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_Bksp {
       position: absolute;
       right: 2%;
-      top: 0%; }
+      top: 5%;
+      width: 11vh;
+      height: 11vh; }
     as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_NumberKeyboard {
       position: absolute;
       right: 2%;
-      top: 25%; }
-      as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_NumberKeyboard .roundButton {
-        width: 12vh;
-        height: 12vh;
-        line-height: 12vh;
-        display: inline-block;
-        margin: 0.4vh; }
+      top: 30%;
+      height: 40%;
+      width: 70%; }
     as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_ActiveTransponder {
       position: absolute;
       left: 25%;
@@ -1197,7 +1185,8 @@
     as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_Vfr {
       position: absolute;
       right: 2%;
-      bottom: 0%; }
+      bottom: 0%;
+      height: 11vh; }
 
     as3000-tsc-vertical-element #Electricity #AudioRadiosWindow .tabContainer {
       position: absolute;

@@ -1177,12 +1177,12 @@ as3000-tsc-horizontal-element {
             color: white; }
           as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkey[state="Selected"] .softkeyArrow {
             background-color: green; }
+
     as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_ModeSelect {
       position: absolute;
       left: 2%;
       top: 1%; }
       as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_ModeSelect #transponder_ModeSelectTitle {
-        color: white;
         font-size: 5vh;
         margin: 1vh; }
       as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_ModeSelect .gradientButton {
@@ -1191,23 +1191,13 @@ as3000-tsc-horizontal-element {
       position: absolute;
       right: 25%;
       top: 10%;
-      background-color: #212121;
       height: 11%;
-      width: 40%;
-      text-align: center; }
+      width: 40%; }
       as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_CodeDisplay #transponder_Code {
-        font-size: 8vh;
-        color: black; }
-        as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_CodeDisplay #transponder_Code .Writed, as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_CodeDisplay #transponder_Code .ToWrite {
-          background-color: none;
-          color: #67e8ef; }
+        font-size: 8vh; }
         as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_CodeDisplay #transponder_Code .Writing {
-          animation: SelectedCharBlinkFreqEdit 1s infinite;
           min-width: 0.5vw;
-          min-height: 8vh;
-          display: inline-block; }
-        as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_CodeDisplay #transponder_Code .Fixed {
-          background-color: #67e8ef; }
+          min-height: 8vh; }
     as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_Bksp {
       position: absolute;
       right: 2%;
@@ -1218,12 +1208,7 @@ as3000-tsc-horizontal-element {
       right: 2%;
       top: 25%;
       height: 40%;
-      width: 70%;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      justify-items: center;
-      align-items: center; }
+      width: 70%; }
     as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_ActiveTransponder {
       position: absolute;
       left: 25%;
