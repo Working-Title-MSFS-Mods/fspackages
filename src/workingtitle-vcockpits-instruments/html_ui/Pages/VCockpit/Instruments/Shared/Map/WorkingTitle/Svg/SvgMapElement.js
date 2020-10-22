@@ -41,7 +41,7 @@ class SvgMapElement {
             }
         }
     }
-    
+
     draw(map) {
         let t0 = 0;
         if (SvgMap.LOG_PERFS) {
@@ -74,17 +74,25 @@ class SvgMapElement {
         }
         return this.svgElement;
     }
-    
+
     appendToMap(map) {
         map.appendChild(this.svgElement, map.flightPlanLayer);
     }
-    
+
+    setPropertyFromConfig(_config, _property) {
+        let val = _config ? _config[_property] : undefined;
+        if (val !== undefined) {
+            this[_property] = val;
+        }
+    }
+
     static padEnd(text, pad, length) {
         while (text.length < length) {
             text += pad;
         }
         return text;
     }
+
     static logPerformances() {
         console.log("-----------------------------------------------");
         SvgMapElement.probes.forEach((probe, name) => {

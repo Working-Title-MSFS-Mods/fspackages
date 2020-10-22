@@ -30,7 +30,7 @@
   "cityIconFillColor": "#7b8083",
   "cityIconStrokeColor": "#3f3f3f",
   "cityIconStrokeWidth": 6,
-  
+
   "obstacleIconSize": 90,
 
   "airplaneIconSize": 250,
@@ -74,6 +74,24 @@
   "railwayWidth": 2,
   "railwayDashLength": 6,
 
+  "rangeRing" : {
+    "strokeWidth": 5,
+    "showLabel": false
+  },
+
+  "rangeCompass" : {
+    "arcStrokeWidth": 5,
+    "bearingTickMinorStrokeWidth": 5,
+    "bearingTickMinorLength": 10,
+    "bearingTickMajorStrokeWidth": 5,
+    "bearingTickMajorLength": 20,
+    "bearingLabelFontSize": 50,
+    "bearingLabelFontOutlineWidth": 20,
+    "hdgTrkTickStrokeWidth": 5,
+    "hdgTrkTickLength": 20,
+    "showLabel": false
+  },
+
   "netBingTextureResolution": 1024,
   "netBingAltitudeColors1": [],
   "netBingWaterColor1": "#0000ff",
@@ -87,7 +105,7 @@
       "color": "#000000"
     }
   ],
-  
+
   "netBingAltitudeColors2": [],
   "netBingWaterColor2": "#184b77",
   "netBingHeightColor2": [
@@ -128,7 +146,7 @@
       "color": "#c8c8c8"
     }
   ],
-    
+
   "netBingAltitudeColors3": [],
   "netBingWaterColor3": "#0000ff",
   "netBingHeightColor3": [
