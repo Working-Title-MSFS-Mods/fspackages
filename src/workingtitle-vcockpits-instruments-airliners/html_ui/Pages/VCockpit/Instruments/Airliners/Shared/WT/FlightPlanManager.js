@@ -227,9 +227,9 @@ class FlightPlanManager {
                             v.infos.airwayIdentInFP = waypointData.airwayIdent;
                             v.speedConstraint = waypointData.speedConstraint;
                             v.transitionLLas = waypointData.transitionLLas;
-                            wp.legAltitudeDescription = waypointData.legAltitudeDescription;
-                            wp.legAltitude1 = waypointData.legAltitude1;
-                            wp.legAltitude2 = waypointData.legAltitude2;
+                            v.legAltitudeDescription = waypointData.legAltitudeDescription;
+                            v.legAltitude1 = waypointData.legAltitude1;
+                            v.legAltitude2 = waypointData.legAltitude2;
             
 //                            if (v.speedConstraint > 0) {
 //                            }
@@ -330,6 +330,7 @@ class FlightPlanManager {
             this._arrivalWaypointSize = Math.max(0, flightPlanData.arrivalWaypointsSize);
             this._arrivalProcIndex = flightPlanData.arrivalProcIndex;
             this._arrivalTransitionIndex = flightPlanData.arrivalEnRouteTransitionIndex;
+            this._arrivalRunwayIndex = flightPlanData.arrivalRunwayTransitionIndex;
             this._arrivalDiscontinuity = flightPlanData.arrivalDiscontinuity;
             this._approachIndex = flightPlanData.approachIndex;
             this._approachTransitionIndex = flightPlanData.approachTransitionIndex;
@@ -730,6 +731,9 @@ class FlightPlanManager {
                             let wp = new WayPoint(this.instrument);
                             wp.icao = runwayTransition.legs[i].fixIcao;
                             wp.ident = wp.icao.substr(7);
+                            wp.legAltitudeDescription = runwayTransition.legs[i].altDesc;
+                            wp.legAltitude1 = runwayTransition.legs[i].altitude1 * 3.28084;
+                            wp.legAltitude2 = runwayTransition.legs[i].altitude2 * 3.28084;
                             departureWaypoints.push(wp);
                         }
                     }
@@ -738,18 +742,24 @@ class FlightPlanManager {
                             let wp = new WayPoint(this.instrument);
                             wp.icao = departure.commonLegs[i].fixIcao;
                             wp.ident = wp.icao.substr(7);
+                            wp.legAltitudeDescription = departure.commonLegs[i].altDesc;
+                            wp.legAltitude1 = departure.commonLegs[i].altitude1 * 3.28084;
+                            wp.legAltitude2 = departure.commonLegs[i].altitude2 * 3.28084;
                             departureWaypoints.push(wp);
                         }
                     }
                     let enRouteTransition = departure.enRouteTransitions[0];
                     if (departure.enRouteTransitions.length > 0) {
-                        enRouteTransition = departure.enRouteTransitions[this._departureRunwayIndex];
+                        enRouteTransition = departure.enRouteTransitions[this._departureEnRouteTransitionIndex];
                     }
                     if (enRouteTransition && enRouteTransition.legs) {
                         for (let i = 0; i < enRouteTransition.legs.length; i++) {
                             let wp = new WayPoint(this.instrument);
                             wp.icao = enRouteTransition.legs[i].fixIcao;
                             wp.ident = wp.icao.substr(7);
+                            wp.legAltitudeDescription = enRouteTransition.legs[i].altDesc;
+                            wp.legAltitude1 = enRouteTransition.legs[i].altitude1 * 3.28084;
+                            wp.legAltitude2 = enRouteTransition.legs[i].altitude2 * 3.28084;
                             departureWaypoints.push(wp);
                         }
                     }
@@ -781,6 +791,7 @@ class FlightPlanManager {
     getArrivalWaypoints() {
         let arrivalWaypoints = [];
         let destination = this.getDestination();
+        this.getWTArrivalRunwayIndex();
         if (destination) {
             let destinationInfos = destination.infos;
             if (destinationInfos instanceof AirportInfo) {
@@ -788,15 +799,16 @@ class FlightPlanManager {
                 if (arrival) {
                     let enRouteTransition = arrival.enRouteTransitions[0];
                     if (arrival.enRouteTransitions.length > 0) {
+                        enRouteTransition = arrival.enRouteTransitions[this._arrivalTransitionIndex];
                     }
-                    if (enRouteTransition && enRouteTransition.legs) {
+                    if (arrival && enRouteTransition) {
                         for (let i = 0; i < enRouteTransition.legs.length; i++) {
                             let wp = new WayPoint(this.instrument);
                             wp.icao = enRouteTransition.legs[i].fixIcao;
                             wp.ident = wp.icao.substr(7);
                             wp.legAltitudeDescription = enRouteTransition.legs[i].altDesc;
-                            wp.legAltitude1 = enRouteTransition.legs[i].altitude1;
-                            wp.legAltitude2 = enRouteTransition.legs[i].altitude2;
+                            wp.legAltitude1 = enRouteTransition.legs[i].altitude1 * 3.28084;
+                            wp.legAltitude2 = enRouteTransition.legs[i].altitude2 * 3.28084;
                             arrivalWaypoints.push(wp);
                         }
                     }
@@ -806,22 +818,27 @@ class FlightPlanManager {
                             wp.icao = arrival.commonLegs[i].fixIcao;
                             wp.ident = wp.icao.substr(7);
                             wp.legAltitudeDescription = arrival.commonLegs[i].altDesc;
-                            wp.legAltitude1 = arrival.commonLegs[i].altitude1;
-                            wp.legAltitude2 = arrival.commonLegs[i].altitude2;
+                            wp.legAltitude1 = arrival.commonLegs[i].altitude1 * 3.28084;
+                            wp.legAltitude2 = arrival.commonLegs[i].altitude2 * 3.28084;
                             arrivalWaypoints.push(wp);
                         }
                     }
+                    console.log("this._arrivalRunwayIndex: " + this._arrivalRunwayIndex);
                     let runwayTransition = arrival.runwayTransitions[0];
                     if (arrival.runwayTransitions.length > 0) {
+                        runwayTransition = arrival.runwayTransitions[this._arrivalRunwayIndex];
+                        //console.log("runwaytransitionlength: " + runwayTransition.legs.length);
+                        //console.log("runwayTransition: " + runwayTransition.name);
                     }
-                    if (runwayTransition && runwayTransition.legs) {
+                    if (arrival && runwayTransition) {
+                        console.log("runwaytransition exists");
                         for (let i = 0; i < runwayTransition.legs.length; i++) {
                             let wp = new WayPoint(this.instrument);
                             wp.icao = runwayTransition.legs[i].fixIcao;
                             wp.ident = wp.icao.substr(7);
                             wp.legAltitudeDescription = runwayTransition.legs[i].altDesc;
-                            wp.legAltitude1 = runwayTransition.legs[i].altitude1;
-                            wp.legAltitude2 = runwayTransition.legs[i].altitude2;
+                            wp.legAltitude1 = runwayTransition.legs[i].altitude1 * 3.28084;
+                            wp.legAltitude2 = runwayTransition.legs[i].altitude2 * 3.28084;
                             arrivalWaypoints.push(wp);
                         }
                     }
@@ -829,6 +846,45 @@ class FlightPlanManager {
             }
         }
         return arrivalWaypoints;
+    }
+    getApproachConstraints() {
+        let approachWaypoints = [];
+        let destination = this.getDestination();
+        if (destination) {
+            let destinationInfos = destination.infos;
+            if (destinationInfos instanceof AirportInfo) {
+                let approach = destinationInfos.approaches[this.getApproachIndex];
+                if (approach) {
+                    let approachTransition = approach.transitions[0];
+                    if (approach.transitions.length > 0) {
+                        approachTransition = this._approachTransitionIndex;
+                    }
+                    if (approach && approach.commonLegs) {
+                        for (let i = 0; i < approach.commonLegs.length; i++) {
+                            let wp = new WayPoint(this.instrument);
+                            wp.icao = approach.commonLegs[i].fixIcao;
+                            wp.ident = wp.icao.substr(7);
+                            wp.legAltitudeDescription = approach.commonLegs[i].altDesc;
+                            wp.legAltitude1 = approach.commonLegs[i].altitude1 * 3.28084;
+                            wp.legAltitude2 = approach.commonLegs[i].altitude2 * 3.28084;
+                            approachWaypoints.push(wp);
+                        }
+                    }
+                    if (approachTransition && approachTransition.legs) {
+                        for (let i = 0; i < approachTransition.legs.length; i++) {
+                            let wp = new WayPoint(this.instrument);
+                            wp.icao = approachTransition.legs[i].fixIcao;
+                            wp.ident = wp.icao.substr(7);
+                            wp.legAltitudeDescription = approachTransition.legs[i].altDesc;
+                            wp.legAltitude1 = approachTransition.legs[i].altitude1 * 3.28084;
+                            wp.legAltitude2 = approachTransition.legs[i].altitude2 * 3.28084;
+                            approachWaypoints.push(wp);
+                        }
+                    }
+                }
+            }
+        }
+        return approachWaypoints;
     }
     getArrivalWaypointsMap() {
         let arrivalWaypoints = [];
@@ -1076,6 +1132,13 @@ class FlightPlanManager {
     setArrivalRunwayIndex(index, callback = () => { }) {
         Coherent.call("SET_ARRIVAL_RUNWAY_INDEX", index).then(() => {
             this.updateFlightPlan(callback);
+        });
+    }
+    getWTArrivalRunwayIndex() {
+        console.log("running getArrivalRunwayIndex");
+        Coherent.call("GET_ARRIVAL_RUNWAY_INDEX").then((arrivalRunwayIndex) => {
+            console.log("coherent arrival runway index: " + arrivalRunwayIndex);
+            this._arrivalRunwayIndex = arrivalRunwayIndex;
         });
     }
     getApproachIndex() {

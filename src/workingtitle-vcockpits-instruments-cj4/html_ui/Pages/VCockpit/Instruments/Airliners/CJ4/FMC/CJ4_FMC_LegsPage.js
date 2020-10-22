@@ -171,15 +171,6 @@ class CJ4_FMC_LegsPage {
 
     render() {
         // console.log("RENDER LEGS");
-        let arrivalWaypoints = this._fmc.flightPlanManager.getArrivalWaypoints();
-        console.log("arrivalWaypoints " + arrivalWaypoints.length);
-        for (i = 0; i < arrivalWaypoints.length; i++) {
-            console.log("ident " + arrivalWaypoints[i].ident);
-            console.log("icao " + arrivalWaypoints[i].icao);
-            console.log("legAltitude1 " + arrivalWaypoints[i].legAltitude1);
-            console.log("legAltitude2 " + arrivalWaypoints[i].legAltitude2);
-            console.log("legAltitudeDescription " + arrivalWaypoints[i].legAltitudeDescription);
-        }
 
         this._lsk6Field = "";
         if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
@@ -429,32 +420,54 @@ class CJ4_FMC_LegsPage {
     getAltSpeedRestriction(waypoint) {
         let speedConstraint = "---";
         let altitudeConstraint = "----- ";
-        //console.log("wpt " + waypoint.ident);
-        //console.log("legAltitudeDescription " + waypoint.legAltitudeDescription);
-        //console.log("legAltitude1 " + waypoint.legAltitude1);
-        //console.log("legAltitude2 " + waypoint.legAltitude2);
-        //console.log()
+        let wpt = undefined;
 
         if (waypoint.speedConstraint && waypoint.speedConstraint > 100) {
             speedConstraint = waypoint.speedConstraint;
         }
+        let constraintIndex = this._wayPointsToRender.indexOf(waypoint);
+        console.log(waypoint.ident + " " + constraintIndex);
+        console.log("departure waypoint size " + this._fmc.flightPlanManager._departureWaypointSize);
+        console.log("arrival waypoint index " + (this._wayPointsToRender.length - this._approachWaypoints.length - this._fmc.flightPlanManager.getArrivalWaypointsCount() - 1));
+        console.log("approach waypoint index " + (this._wayPointsToRender.length - this._approachWaypoints.length - 1));
 
-        if (waypoint.legAltitudeDescription && waypoint.legAltitudeDescription > 0) {
-            if (waypoint.legAltitudeDescription == 1 && waypoint.legAltitude1 > 100) {
-                altitudeConstraint = waypoint.legAltitude1.toFixed(0) >= 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100
-                    : waypoint.legAltitude1.toFixed(0);
+        if (this._fmc.flightPlanManager.getDeparture() && constraintIndex <= this._fmc.flightPlanManager._departureWaypointSize) {
+            console.log("departure waypoint");
+            let departureWaypoints = this._fmc.flightPlanManager.getDepartureWaypoints();
+            //wpt = departureWaypoints.find(wp => icao == this._wayPointsToRender[constraintIndex].icao);
+            wpt = departureWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
+            console.log(wpt != undefined ? "match: " + wpt.icao : "no match" + this._wayPointsToRender[constraintIndex].icao);
+        }
+        else if (this._fmc.flightPlanManager.getApproach() && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - 1)) {
+            console.log("approach waypoint");
+            let approachWaypoints = this._fmc.flightPlanManager.getApproachConstraints();
+            //wpt = arrivalWaypoints.find(icao == this._wayPointsToRender[constraintIndex].icao);
+            wpt = approachWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
+            console.log(wpt != undefined ? "match: " + wpt.icao : "no match" + this._wayPointsToRender[constraintIndex].icao);
+        }
+        else if (this._fmc.flightPlanManager.getArrival() && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - this._fmc.flightPlanManager.getArrivalWaypointsCount() - 1)) {
+            console.log("arrival waypoint");
+            let arrivalWaypoints = this._fmc.flightPlanManager.getArrivalWaypoints();
+            //wpt = arrivalWaypoints.find(icao == this._wayPointsToRender[constraintIndex].icao);
+            wpt = arrivalWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
+            console.log(wpt != undefined ? "match: " + wpt.icao : "no match" + this._wayPointsToRender[constraintIndex].icao);
+        }
+        if (wpt && wpt.legAltitudeDescription && wpt.legAltitudeDescription > 0) {
+            if (wpt.legAltitudeDescription == 1 && wpt.legAltitude1 > 100) {
+                altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100
+                    : wpt.legAltitude1.toFixed(0);
             }
-            else if (waypoint.legAltitudeDescription == 2 && waypoint.legAltitude1 > 100) {
-                altitudeConstraint = waypoint.legAltitude1.toFixed(0) >= 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100 + "A"
-                    : waypoint.legAltitude1.toFixed(0) + "A";
+            else if (wpt.legAltitudeDescription == 2 && wpt.legAltitude1 > 100) {
+                altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "A"
+                    : wpt.legAltitude1.toFixed(0) + "A";
             }
-            else if (waypoint.legAltitudeDescription == 3 && waypoint.legAltitude1 > 100) {
-                altitudeConstraint = waypoint.legAltitude1.toFixed(0) >= 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100 + "B"
-                    : waypoint.legAltitude1.toFixed(0) + "B";
+            else if (wpt.legAltitudeDescription == 3 && wpt.legAltitude1 > 100) {
+                altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
+                    : wpt.legAltitude1.toFixed(0) + "B";
             }
-            else if (waypoint.legAltitudeDescription == 4 && waypoint.legAltitude2 > 100) {
-                let altitudeConstraintA = waypoint.legAltitude2.toFixed(0) >= 18000 ? "FL" + waypoint.legAltitude2.toFixed(0) / 100 + "A"
-                    : waypoint.legAltitude2.toFixed(0) + "A";
+            else if (wpt.legAltitudeDescription == 4 && wpt.legAltitude2 > 100) {
+                let altitudeConstraintA = wpt.legAltitude2.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude2.toFixed(0) / 100 + "A"
+                    : wpt.legAltitude2.toFixed(0) + "A";
                 altitudeConstraint = altitudeConstraintA;
             }
 
@@ -465,11 +478,34 @@ class CJ4_FMC_LegsPage {
 
     getAltRestrictionBelow(waypoint) {
         let altitudeConstraintBelow = "";
+        let constraintIndex = this._wayPointsToRender.indexOf(waypoint);
+        let wpt = undefined;
 
-        if (waypoint.legAltitudeDescription && waypoint.legAltitudeDescription > 0) {
-            if (waypoint.legAltitudeDescription == 4 && waypoint.legAltitude1 > 100) {
-                let altitudeConstraintB = waypoint.legAltitude1.toFixed(0) >= 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100 + "B"
-                    : waypoint.legAltitude1.toFixed(0) + "B";
+        if (this._fmc.flightPlanManager.getDeparture() && constraintIndex <= this._fmc.flightPlanManager._departureWaypointSize) {
+            console.log("departure waypoint");
+            let departureWaypoints = this._fmc.flightPlanManager.getDepartureWaypoints();
+            //wpt = departureWaypoints.find(wp => icao == this._wayPointsToRender[constraintIndex].icao);
+            wpt = departureWaypoints.find(wp => { return (wp && wp.icao == this._wayPointsToRender[constraintIndex].icao); })
+            console.log(wpt != undefined ? "match: " + wpt.icao : "no match");
+        }
+        else if (this._fmc.flightPlanManager.getApproach() && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - 1)) {
+            console.log("approach waypoint");
+            let approachWaypoints = this._fmc.flightPlanManager.getApproachConstraints();
+            //wpt = arrivalWaypoints.find(icao == this._wayPointsToRender[constraintIndex].icao);
+            wpt = approachWaypoints.find(wp => { return (wp && wp.icao == this._wayPointsToRender[constraintIndex].icao); })
+            console.log(wpt != undefined ? "match: " + wpt.icao : "no match");
+        }
+        else if (this._fmc.flightPlanManager.getArrival() && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - this._fmc.flightPlanManager.getArrivalWaypointsCount() - 1)) {
+            console.log("arrival waypoint");
+            let arrivalWaypoints = this._fmc.flightPlanManager.getArrivalWaypoints();
+            //wpt = arrivalWaypoints.find(icao == this._wayPointsToRender[constraintIndex].icao);
+            wpt = arrivalWaypoints.find(wp => { return (wp && wp.icao == this._wayPointsToRender[constraintIndex].icao); })
+            console.log(wpt != undefined ? "match: " + wpt.icao : "no match");
+        }
+        if (wpt && wpt.legAltitudeDescription && wpt.legAltitudeDescription > 0) {
+            if (wpt.legAltitudeDescription == 4 && wpt.legAltitude1 > 100) {
+                let altitudeConstraintB = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
+                    : wpt.legAltitude1.toFixed(0) + "B";
                 altitudeConstraintBelow = altitudeConstraintB;
             }
 

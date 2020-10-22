@@ -282,6 +282,42 @@ class CJ4_FMC extends FMCMainDisplay {
             });
         });
     }
+    //function added to set arrival runway transition index
+    setArrivalRunwayTransitionIndex(arrivalRunwayTransitionIndex, callback = EmptyCallback.Boolean) {
+        this.ensureCurrentFlightPlanIsTemporary(() => {
+            this.flightPlanManager.setArrivalRunwayIndex(arrivalRunwayTransitionIndex, () => {
+                callback(true);
+            });
+        });
+    }
+    //function added to set arrival and runway transition
+    setArrivalAndRunwayIndex(arrivalIndex, enrouteTransitionIndex, callback = EmptyCallback.Boolean) {
+        this.ensureCurrentFlightPlanIsTemporary(() => {
+            console.log("Setting Landing Runway");
+            let landingRunway = this.flightPlanManager.getApproachRunway();
+            console.log("Set Landing Runway");
+            this.flightPlanManager.setArrivalProcIndex(arrivalIndex, () => {
+                console.log("Set Arrival Procedure Index");
+                this.flightPlanManager.setArrivalEnRouteTransitionIndex(enrouteTransitionIndex, () => {
+                    console.log("Set Enroute Transition Index");
+                    if (landingRunway) {
+                        console.log("If Landing Runway");
+                        let arrival = this.flightPlanManager.getArrival();
+                        let arrivalRunwayIndex = arrival.runwayTransitions.findIndex(t => {
+                            return t.name.indexOf(landingRunway.designation) != -1;
+                        });
+                        if (arrivalRunwayIndex >= -1) {
+                            console.log("Setting Arrival Runway Index");
+                            return this.flightPlanManager.setArrivalRunwayIndex(arrivalRunwayIndex, () => {
+                                return callback(true);
+                            });
+                        }
+                    }
+                    return callback(true);
+                });
+            });
+        });
+    }
     updateAutopilot() {
         let now = performance.now();
         let dt = now - this._lastUpdateAPTime;
