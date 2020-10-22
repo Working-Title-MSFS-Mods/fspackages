@@ -678,3 +678,35 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 #VORDMENavaid_Right #ID {
   padding-left: 4px;
 }
+
+#VSpeeds text {
+  font-size: 22px;
+}
+
+#Airspeed #CursorGroup text {
+  font-size: 38px;
+}
+
+#Airspeed #CursorGroup path {
+  transform: translateY(-1px)
+}
+
+#Altimeter #CenterGroup #graduationGroup > text[font-size="25"] {
+  font-size: 38px;
+  letter-spacing: 0px;
+}
+
+#Altimeter #CenterGroup #graduationGroup > text[font-size="18"] {
+  font-size: 24px;
+  letter-spacing: 0px; 
+}
+
+#Altimeter #CenterGroup #CursorGroup > text[font-size="31.25"] {
+  font-size: 40px;
+  letter-spacing: 0px; 
+}
+
+#Altimeter #CenterGroup #CursorGroup > text[font-size="23.75"] {
+  font-size: 26px;
+  letter-spacing: 0px; 
+}
