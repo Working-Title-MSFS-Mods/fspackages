@@ -1171,7 +1171,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 text.textContent = "ELEV";
                 text.setAttribute("x", (blockPosX - 80).toString());
                 text.setAttribute("y", blockPosY.toString());
-                text.setAttribute("fill", "white");
+                text.setAttribute("fill", "white");""
                 text.setAttribute("font-size", "22");
                 text.setAttribute("font-family", "Roboto-Light");
                 text.setAttribute("text-anchor", "middle");
