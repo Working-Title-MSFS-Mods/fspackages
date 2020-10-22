@@ -155,7 +155,7 @@ class AS3000_MFD_WindData extends MFD_WindData {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.mapElement.simVarNameID, "number") == 0) {
+        if (WT_MapElement.getSettingVar(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT, this.mapElement.varNameID) == 0) {
             this.svg.setAttribute("wind-mode", "0");
         } else {
             if (SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
