@@ -1018,7 +1018,7 @@ as3000-tsc-horizontal-element {
             border-radius: 10px;
             background: linear-gradient(#1f3445, black 10%);
             background-color: black;
-            border: 0.4vh solid #454b4e;
+            border: 2px solid #454b4e;
             padding: 1%; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome #NavComLeft .cutBot {
             border-bottom: 0; }

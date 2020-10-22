@@ -37,9 +37,12 @@
       font-size: 3vh;
       text-align: center; }
     as3000-tsc-vertical-element #Electricity #NavComHome {
-      position: absolute;
+      position: relative;
       width: 100%;
-      height: 18vh; }
+      height: 18vh;
+      background: linear-gradient(#437687, #a4bcc7);
+      border: 1px solid grey;
+      border-radius: 4px; }
       as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft {
         position: absolute;
         height: 18vh;
@@ -50,9 +53,14 @@
           color: lawngreen; }
         as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft #Mic, as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft #Mon {
           text-align: center; }
+          as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft .symbol {
+            position: absolute;
+            left: 10%;
+            width: 80%;
+            bottom: 15%;
+            height: 4vh; }
         as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft td {
-          border: 0.3vh solid white;
-          padding: 1%;
+          padding: 0 1%;
           height: 9vh; }
         as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft .cutBot {
           border-bottom: 0; }
@@ -69,7 +77,10 @@
         as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft tbody tr:first-child td:nth-child(2), as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft tbody tr:first-child td:nth-child(4) {
           width: 28vw; }
       as3000-tsc-vertical-element #Electricity #NavComHome .gradient {
-        background: linear-gradient(#0093d0, rgba(0, 147, 208, 0) 60%);
+        background: linear-gradient(#5f7283 0.4vh, #1f3445, black 2vh);
+        border: 1px solid grey;
+        border-radius: 4px;
+        background-color: black;
         height: 100%;
         width: 100%;
         color: white;
@@ -87,11 +98,11 @@
           font-size: 1.8vh; }
         as3000-tsc-vertical-element #Electricity #NavComHome .gradient .statusBar {
           position: absolute;
-          width: 80%;
+          width: 50%;
           height: 5%;
           background-color: grey;
-          left: 10%;
-          bottom: 30%; }
+          left: 25%;
+          bottom: 15%; }
         as3000-tsc-vertical-element #Electricity #NavComHome .gradient[state=Active] .mainNumber {
           color: lawngreen; }
         as3000-tsc-vertical-element #Electricity #NavComHome .gradient[state=Active] .statusBar {
@@ -120,16 +131,22 @@
       as3000-tsc-vertical-element #Electricity #NavComHome .doubleArrowFreq {
         position: absolute;
         right: 5%;
-        bottom: -35%;
+        bottom: -25%;
         height: 40%;
         z-index: 2; }
+    as3000-tsc-vertical-element #Electricity #PageContainer {
+      margin-top: 1px;
+      height: 68%;
+      width: 100%;
+      background-color: black;
+      border: 1px solid grey;
+      border-radius: 4px; }
     as3000-tsc-vertical-element #Electricity #PagesDisplay {
       position: absolute;
       height: 62%;
       width: 100%;
       left: 0%;
-      bottom: 14%;
-      background-color: black; }
+      bottom: 14%; }
       as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDHome,
       as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs,
       as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers,
