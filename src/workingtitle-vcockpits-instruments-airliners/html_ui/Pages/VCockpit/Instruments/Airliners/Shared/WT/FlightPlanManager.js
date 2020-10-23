@@ -791,7 +791,6 @@ class FlightPlanManager {
     getArrivalWaypoints() {
         let arrivalWaypoints = [];
         let destination = this.getDestination();
-        this.getWTArrivalRunwayIndex();
         if (destination) {
             let destinationInfos = destination.infos;
             if (destinationInfos instanceof AirportInfo) {
