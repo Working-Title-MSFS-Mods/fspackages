@@ -1524,10 +1524,10 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                         this.targetAltitudeIndicatorSVG.setAttribute("visibility", "hidden");
                     }
                     else {
-                        this.targetAltitudeTextSVG1.setAttribute("visibility", (textAlwaysVisible) ? "visible" : "hidden");
-                        this.targetAltitudeTextSVG2.setAttribute("visibility", (textAlwaysVisible) ? "visible" : "hidden");
-                        if (this.targetAltitudeBgSVG)
-                            this.targetAltitudeBgSVG.setAttribute("visibility", (textAlwaysVisible) ? "visible" : "hidden");
+                        // this.targetAltitudeTextSVG1.setAttribute("visibility", (textAlwaysVisible) ? "visible" : "hidden");
+                        // this.targetAltitudeTextSVG2.setAttribute("visibility", (textAlwaysVisible) ? "visible" : "hidden");
+                        // if (this.targetAltitudeBgSVG)
+                        //     this.targetAltitudeBgSVG.setAttribute("visibility", (textAlwaysVisible) ? "visible" : "hidden");
                         var offsetY = this.valueToSvg(currentAltitude, targetAltitude);
                         offsetY -= 48;
                         this.targetAltitudeIndicatorSVG.setAttribute("y", offsetY.toString());
