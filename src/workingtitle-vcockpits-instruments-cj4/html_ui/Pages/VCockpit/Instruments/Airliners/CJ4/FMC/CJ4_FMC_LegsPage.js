@@ -157,9 +157,9 @@ class CJ4_FMC_LegsPage {
                 }
 
                 if (!isFromWpt) {
-                    this._rows[2 * i][1] = this.getAltRestrictionBelow(waypoint);
+                    //this._rows[2 * i][1] = this.getAltRestrictionBelow(waypoint);
                     this._rows[2 * i + 1][1] = this.getAltSpeedRestriction(waypoint);
-                    console.log("this.getAltRestrictionBelow" + this.getAltRestrictionBelow(waypoint));
+                    //console.log("this.getAltRestrictionBelow" + this.getAltRestrictionBelow(waypoint));
                     console.log("this.getAltSpeedRestriction" + this.getAltSpeedRestriction(waypoint));
                     
 
@@ -465,53 +465,17 @@ class CJ4_FMC_LegsPage {
                 altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
                     : wpt.legAltitude1.toFixed(0) + "B";
             }
-            else if (wpt.legAltitudeDescription == 4 && wpt.legAltitude2 > 100) {
+            else if (wpt.legAltitudeDescription == 4 && wpt.legAltitude2 > 100 && wpt.legAltitude1 > 100) {
                 let altitudeConstraintA = wpt.legAltitude2.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude2.toFixed(0) / 100 + "A"
                     : wpt.legAltitude2.toFixed(0) + "A";
-                altitudeConstraint = altitudeConstraintA;
+                let altitudeConstraintB = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
+                    : wpt.legAltitude1.toFixed(0) + "B";
+                altitudeConstraint = altitudeConstraintB + altitudeConstraintA;
             }
 
             altitudeConstraint = altitudeConstraint.padStart(6, " ");
         }
         return speedConstraint + "/" + altitudeConstraint + "[green]";
-    }
-
-    getAltRestrictionBelow(waypoint) {
-        let altitudeConstraintBelow = "";
-        let constraintIndex = this._wayPointsToRender.indexOf(waypoint);
-        let wpt = undefined;
-
-        if (this._fmc.flightPlanManager.getDeparture() && constraintIndex <= this._fmc.flightPlanManager._departureWaypointSize) {
-            console.log("departure waypoint");
-            let departureWaypoints = this._fmc.flightPlanManager.getDepartureWaypoints();
-            //wpt = departureWaypoints.find(wp => icao == this._wayPointsToRender[constraintIndex].icao);
-            wpt = departureWaypoints.find(wp => { return (wp && wp.icao == this._wayPointsToRender[constraintIndex].icao); })
-            console.log(wpt != undefined ? "match: " + wpt.icao : "no match");
-        }
-        else if (this._fmc.flightPlanManager.getApproach() && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - 1)) {
-            console.log("approach waypoint");
-            let approachWaypoints = this._fmc.flightPlanManager.getApproachConstraints();
-            //wpt = arrivalWaypoints.find(icao == this._wayPointsToRender[constraintIndex].icao);
-            wpt = approachWaypoints.find(wp => { return (wp && wp.icao == this._wayPointsToRender[constraintIndex].icao); })
-            console.log(wpt != undefined ? "match: " + wpt.icao : "no match");
-        }
-        else if (this._fmc.flightPlanManager.getArrival() && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - this._fmc.flightPlanManager.getArrivalWaypointsCount() - 1)) {
-            console.log("arrival waypoint");
-            let arrivalWaypoints = this._fmc.flightPlanManager.getArrivalWaypoints();
-            //wpt = arrivalWaypoints.find(icao == this._wayPointsToRender[constraintIndex].icao);
-            wpt = arrivalWaypoints.find(wp => { return (wp && wp.icao == this._wayPointsToRender[constraintIndex].icao); })
-            console.log(wpt != undefined ? "match: " + wpt.icao : "no match");
-        }
-        if (wpt && wpt.legAltitudeDescription && wpt.legAltitudeDescription > 0) {
-            if (wpt.legAltitudeDescription == 4 && wpt.legAltitude1 > 100) {
-                let altitudeConstraintB = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
-                    : wpt.legAltitude1.toFixed(0) + "B";
-                altitudeConstraintBelow = altitudeConstraintB;
-            }
-
-            altitudeConstraintBelow = altitudeConstraintBelow.padStart(6, " ");
-        }
-        return altitudeConstraintBelow + "[green]";
     }
 
     static ShowPage1(fmc) {

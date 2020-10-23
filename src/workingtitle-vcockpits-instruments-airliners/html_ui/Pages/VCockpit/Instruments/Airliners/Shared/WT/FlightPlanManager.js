@@ -52,6 +52,7 @@ class FlightPlanManager {
         this._approachActivated = false;
         FlightPlanManager.DEBUG_INSTANCE = this;
         this.instrument = _instrument;
+        this._arrivalRunwayIndex = -1;
         setInterval(this._update, 1000);
     }
     addHardCodedConstraints(wp) {
@@ -330,7 +331,6 @@ class FlightPlanManager {
             this._arrivalWaypointSize = Math.max(0, flightPlanData.arrivalWaypointsSize);
             this._arrivalProcIndex = flightPlanData.arrivalProcIndex;
             this._arrivalTransitionIndex = flightPlanData.arrivalEnRouteTransitionIndex;
-            this._arrivalRunwayIndex = flightPlanData.arrivalRunwayTransitionIndex;
             this._arrivalDiscontinuity = flightPlanData.arrivalDiscontinuity;
             this._approachIndex = flightPlanData.approachIndex;
             this._approachTransitionIndex = flightPlanData.approachTransitionIndex;
@@ -1131,16 +1131,17 @@ class FlightPlanManager {
     }
     setArrivalRunwayIndex(index, callback = () => { }) {
         Coherent.call("SET_ARRIVAL_RUNWAY_INDEX", index).then(() => {
+            this._arrivalRunwayIndex = index;
             this.updateFlightPlan(callback);
         });
     }
-    getWTArrivalRunwayIndex() {
-        console.log("running getArrivalRunwayIndex");
-        Coherent.call("GET_ARRIVAL_RUNWAY_INDEX").then((arrivalRunwayIndex) => {
-            console.log("coherent arrival runway index: " + arrivalRunwayIndex);
-            this._arrivalRunwayIndex = arrivalRunwayIndex;
-        });
-    }
+    //getWTArrivalRunwayIndex() {
+    //    console.log("running getArrivalRunwayIndex");
+    //    Coherent.call("GET_ARRIVAL_RUNWAY_INDEX").then((arrivalRunwayIndex) => {
+    //        console.log("coherent arrival runway index: " + arrivalRunwayIndex);
+    //        this._arrivalRunwayIndex = arrivalRunwayIndex;
+    //    });
+    //}
     getApproachIndex() {
         return this._approachIndex;
     }
@@ -1290,6 +1291,7 @@ class FlightPlanManager {
     }
     removeArrival(callback = () => { }) {
         Coherent.call("REMOVE_ARRIVAL_PROC").then(() => {
+            this._arrivalRunwayIndex = -1;
             this.updateFlightPlan(callback);
         });
     }

@@ -72,9 +72,6 @@ class CJ4_FMC_ModSettingsPageOne {
             this.pilotId = idValue == "CLR" ? "" : idValue;
             this._fmc.clearUserInput();
         };
-        this._fmc.onLeftInput[2] = () => {
-            this._fmc.flightPlanManager.getWTArrivalRunwayIndex();
-        };
         this._fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(this._fmc); };
     }
 
