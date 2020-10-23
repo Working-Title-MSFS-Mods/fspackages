@@ -830,15 +830,11 @@ class FlightPlanManager {
                             arrivalWaypoints.push(wp);
                         }
                     }
-                    console.log("this._arrivalRunwayIndex: " + this._arrivalRunwayIndex);
                     let runwayTransition = arrival.runwayTransitions[0];
                     if (arrival.runwayTransitions.length > 0) {
                         runwayTransition = arrival.runwayTransitions[this._arrivalRunwayIndex];
-                        //console.log("runwaytransitionlength: " + runwayTransition.legs.length);
-                        //console.log("runwayTransition: " + runwayTransition.name);
                     }
                     if (arrival && runwayTransition) {
-                        console.log("runwaytransition exists");
                         for (let i = 0; i < runwayTransition.legs.length; i++) {
                             let wp = new WayPoint(this.instrument);
                             wp.icao = runwayTransition.legs[i].fixIcao;
@@ -856,46 +852,37 @@ class FlightPlanManager {
     }
     async getApproachConstraints() {
         let approachWaypoints = [];
-        //let destination = this.getDestination();
         let destination = await this.instrument.facilityLoader.getFacilityRaw(this.getDestination().icao);
         if (destination) {
-            //let destinationInfos = destination.infos;
-            //let destinationInfos = this.instrument.facilityLoader.getFacilityRaw(destination.icao);
-            //if (destinationInfos instanceof AirportInfo) {
-                //let approach = destinationInfos.approaches[this._approachIndex];
-                let approach = destination.approaches[this._approachIndex];
-                console.log("approach name: " + approach.name);
-                if (approach) {
-                    let approachTransition = approach.transitions[0];
-                    if (approach.transitions.length > 0) {
-                        approachTransition = approach.transitions[this._approachTransitionIndex];
-                    }
-                    if (approach && approach.finalLegs) {
-                        for (let i = 0; i < approach.finalLegs.length; i++) {
-                            let wp = new WayPoint(this.instrument);
-                            wp.icao = approach.finalLegs[i].fixIcao;
-                            wp.ident = wp.icao.substr(7);
-                            console.log("get approach constraints: " + wp.icao);
-                            wp.legAltitudeDescription = approach.finalLegs[i].altDesc;
-                            wp.legAltitude1 = approach.finalLegs[i].altitude1 * 3.28084;
-                            wp.legAltitude2 = approach.finalLegs[i].altitude2 * 3.28084;
-                            approachWaypoints.push(wp);
-                        }
-                    }
-                    if (approachTransition && approachTransition.legs) {
-                        for (let i = 0; i < approachTransition.legs.length; i++) {
-                            let wp = new WayPoint(this.instrument);
-                            wp.icao = approachTransition.legs[i].fixIcao;
-                            wp.ident = wp.icao.substr(7);
-                            console.log("get approach constraints: " + wp.icao);
-                            wp.legAltitudeDescription = approachTransition.legs[i].altDesc;
-                            wp.legAltitude1 = approachTransition.legs[i].altitude1 * 3.28084;
-                            wp.legAltitude2 = approachTransition.legs[i].altitude2 * 3.28084;
-                            approachWaypoints.push(wp);
-                        }
+            let approach = destination.approaches[this._approachIndex];
+            if (approach) {
+                let approachTransition = approach.transitions[0];
+                if (approach.transitions.length > 0) {
+                    approachTransition = approach.transitions[this._approachTransitionIndex];
+                }
+                if (approach && approach.finalLegs) {
+                    for (let i = 0; i < approach.finalLegs.length; i++) {
+                        let wp = new WayPoint(this.instrument);
+                        wp.icao = approach.finalLegs[i].fixIcao;
+                        wp.ident = wp.icao.substr(7);
+                        wp.legAltitudeDescription = approach.finalLegs[i].altDesc;
+                        wp.legAltitude1 = approach.finalLegs[i].altitude1 * 3.28084;
+                        wp.legAltitude2 = approach.finalLegs[i].altitude2 * 3.28084;
+                        approachWaypoints.push(wp);
                     }
                 }
-            //}
+                if (approachTransition && approachTransition.legs) {
+                    for (let i = 0; i < approachTransition.legs.length; i++) {
+                        let wp = new WayPoint(this.instrument);
+                        wp.icao = approachTransition.legs[i].fixIcao;
+                        wp.ident = wp.icao.substr(7);
+                        wp.legAltitudeDescription = approachTransition.legs[i].altDesc;
+                        wp.legAltitude1 = approachTransition.legs[i].altitude1 * 3.28084;
+                        wp.legAltitude2 = approachTransition.legs[i].altitude2 * 3.28084;
+                        approachWaypoints.push(wp);
+                    }
+                }
+            }
         }
         return approachWaypoints;
     }
