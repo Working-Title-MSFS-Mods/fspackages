@@ -438,7 +438,23 @@ class CJ4_FMC_LegsPage {
             wpt = departureWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
             console.log(wpt != undefined ? "match: " + wpt.icao : "no match" + this._wayPointsToRender[constraintIndex].icao);
         }
-        else if (this._fmc.flightPlanManager.getApproach() && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - 1)) {
+        else if (this._fmc.flightPlanManager.getApproach() && constraintIndex == (this._wayPointsToRender.length - this._approachWaypoints.length - 1)) {
+            console.log("first approach waypoint");
+            let approachWaypoints = this._fmc.flightPlanManager.getApproachConstraints();
+            let arrivalWaypoints = this._fmc.flightPlanManager.getArrivalWaypoints();
+            //wpt = arrivalWaypoints.find(icao == this._wayPointsToRender[constraintIndex].icao);
+            wptapp = approachWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
+            wptarr = arrivalWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
+            if (wptapp.legAltitudeDescription > 0 && wptapp.legAltitudeDescription < 5 && wptapp.legAltitude1 > 100) {
+                wpt = wptapp;
+                console.log("approach waypoint used");
+            }
+            else {
+                wpt = wptarr;
+                console.log("arrival waypoint used");
+            }
+        }
+        else if (this._fmc.flightPlanManager.getApproach() && constraintIndex > (this._wayPointsToRender.length - this._approachWaypoints.length - 1)) {
             console.log("approach waypoint");
             let approachWaypoints = this._fmc.flightPlanManager.getApproachConstraints();
             //wpt = arrivalWaypoints.find(icao == this._wayPointsToRender[constraintIndex].icao);

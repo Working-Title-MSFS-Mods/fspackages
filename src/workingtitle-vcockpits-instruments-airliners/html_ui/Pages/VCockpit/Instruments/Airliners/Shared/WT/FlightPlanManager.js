@@ -864,16 +864,16 @@ class FlightPlanManager {
                 if (approach) {
                     let approachTransition = approach.transitions[0];
                     if (approach.transitions.length > 0) {
-                        approachTransition = this._approachTransitionIndex;
+                        approachTransition = approach.transitions[this._approachTransitionIndex];
                     }
-                    if (approach && approach.commonLegs) {
-                        for (let i = 0; i < approach.commonLegs.length; i++) {
+                    if (approach && approach.finalLegs) {
+                        for (let i = 0; i < approach.finalLegs.length; i++) {
                             let wp = new WayPoint(this.instrument);
-                            wp.icao = approach.commonLegs[i].fixIcao;
+                            wp.icao = approach.finalLegs[i].fixIcao;
                             wp.ident = wp.icao.substr(7);
-                            wp.legAltitudeDescription = approach.commonLegs[i].altDesc;
-                            wp.legAltitude1 = approach.commonLegs[i].altitude1 * 3.28084;
-                            wp.legAltitude2 = approach.commonLegs[i].altitude2 * 3.28084;
+                            wp.legAltitudeDescription = approach.finalLegs[i].altDesc;
+                            wp.legAltitude1 = approach.finalLegs[i].altitude1 * 3.28084;
+                            wp.legAltitude2 = approach.finalLegs[i].altitude2 * 3.28084;
                             approachWaypoints.push(wp);
                         }
                     }
