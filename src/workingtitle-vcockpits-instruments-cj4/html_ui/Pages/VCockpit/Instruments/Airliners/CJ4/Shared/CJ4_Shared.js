@@ -1859,10 +1859,15 @@ class CJ4_SystemElectrics extends NavSystemElement {
         BatAmp = BatAmp / BatVolt;
         this.BATAmpValue.textContent = Math.round(BatAmp).toString();
         this.BATTempValue.textContent = "26";
-        let HydPSI1 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:1", "psi");
+		
+		let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
+		let HydPSI1 = N2Eng1 >= 20 ? 3000 : N2Eng1 * 150;
         this.HYDPSIValueLeft.textContent = Math.round(HydPSI1).toString();
-        let HydPSI2 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:2", "psi");
+				
+		let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
+		let HydPSI2 = N2Eng2 >= 20 ? 3000 : N2Eng2 * 150;
         this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
+		
         let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
         this.FUELPPHValueLeft.textContent = Math.round(PPHEng1).toString();
         let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
