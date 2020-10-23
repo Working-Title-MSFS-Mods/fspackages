@@ -21,10 +21,17 @@ class CJ4_FMC_LegsPage {
 
         this._wayPointsToRender = [];
         this._approachWaypoints = [];
+        this._rawApproachWaypoints = [];
     }
 
     prepare() {
         // Noop as there is no preparation with this
+        if (this._fmc.flightPlanManager.getApproach()) {
+            this._fmc.flightPlanManager.getApproachConstraints().then(rawApproachWaypoints => {
+                [this._rawApproachWaypoints] = [...rawApproachWaypoints];
+                console.log("raw approach waypoints loaded");
+            });
+        }
     }
 
     update(forceUpdate = false) {
@@ -464,15 +471,10 @@ class CJ4_FMC_LegsPage {
 //                console.log("arrival waypoint used");
 //            }
 //        }
-        else if (this._fmc.flightPlanManager.getApproach() && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - 1)) {
+        else if (this._fmc.flightPlanManager.getApproach() && this._rawApproachWaypoints && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - 1)) {
             console.log("approach waypoint");
-            //let approachWaypoints = this._fmc.flightPlanManager.getApproachConstraints();
-            let approachWaypoints = this._fmc.flightPlanManager.getApproachConstraints().then(approachWaypoints => {
-                wpt = approachWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); });
-                console.log(wpt != undefined ? "match: " + wpt.icao : "no match" + this._wayPointsToRender[constraintIndex].icao);
-            });
-            //wpt = approachWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
-            //console.log(wpt != undefined ? "match: " + wpt.icao : "no match" + this._wayPointsToRender[constraintIndex].icao);
+            wpt = this._rawApproachWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
+            console.log(wpt != undefined ? "match: " + wpt.icao : "no match" + this._wayPointsToRender[constraintIndex].icao);
         }
         else if (this._fmc.flightPlanManager.getArrival() && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - this._fmc.flightPlanManager.getArrivalWaypointsCount() - 1)) {
             console.log("arrival waypoint");
