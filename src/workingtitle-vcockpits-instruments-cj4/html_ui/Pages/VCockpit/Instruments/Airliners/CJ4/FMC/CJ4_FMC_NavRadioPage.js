@@ -111,7 +111,7 @@ class CJ4_FMC_NavRadioPageOne {
             });
         }
         else if (value.length === 0) {
-            this._fmc.radioNav.swapVHFFrequencies(this._fmc.instrumentIndex, 1);
+            this._fmc.radioNav.swapVHFFrequencies(this._fmc.instrumentIndex, index);
             this._fmc.requestCall(() => {
                 this.update();
             });
