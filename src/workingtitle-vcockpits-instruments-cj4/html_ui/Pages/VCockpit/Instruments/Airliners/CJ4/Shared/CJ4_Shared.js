@@ -3124,6 +3124,30 @@ class CJ4_NavBarContainer extends NavSystemElementContainer {
             else
                 this.ratElement.textContent = 0;
         }
+        // Add to track Diff Pressure 144 to convert PsF to PSI
+	if (this.diffElement) {
+            var prediff1 = Math.trunc(SimVar.GetSimVarValue("PRESSURIZATION PRESSURE DIFFERENTIAL", "Pounds per square foot"));
+            prediff1 = prediff1 / 144;
+            if (prediff1)
+                this.diffElement.textContent = prediff1.toFixed(1);
+            else
+                this.diffElement.textContent = "0";
+        }
+// add to track Cabin Altitude
+	if (this.cabElement) {
+            var cabpre1 = Math.trunc(SimVar.GetSimVarValue("PRESSURIZATION CABIN ALTITUDE", "Feet"));
+            if (cabpre1 >= 1)
+                this.cabElement.textContent = cabpre1.toFixed(0);
+            else
+                this.cabElement.textContent = "0";
+        }
+	if (this.rateElement) {
+            var cabrate1 = Math.trunc(SimVar.GetSimVarValue("PRESSURIZATION CABIN ALTITUDE RATE", "Feet per second"));
+            if (cabrate1)
+                this.rateElement.textContent = cabrate1.toFixed(0);
+            else
+                this.rateElement.textContent = "0";
+        }
         if (this.utcElement) {
             let utcTime = "";
             const value = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
