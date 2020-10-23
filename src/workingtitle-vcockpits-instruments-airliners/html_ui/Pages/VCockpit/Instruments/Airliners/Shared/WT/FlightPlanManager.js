@@ -854,13 +854,17 @@ class FlightPlanManager {
         }
         return arrivalWaypoints;
     }
-    getApproachConstraints() {
+    async getApproachConstraints() {
         let approachWaypoints = [];
-        let destination = this.getDestination();
+        //let destination = this.getDestination();
+        let destination = await this.instrument.facilityLoader.getFacilityRaw(this.getDestination().icao);
         if (destination) {
-            let destinationInfos = destination.infos;
-            if (destinationInfos instanceof AirportInfo) {
-                let approach = destinationInfos.approaches[this.getApproachIndex];
+            //let destinationInfos = destination.infos;
+            //let destinationInfos = this.instrument.facilityLoader.getFacilityRaw(destination.icao);
+            //if (destinationInfos instanceof AirportInfo) {
+                //let approach = destinationInfos.approaches[this._approachIndex];
+                let approach = destination.approaches[this._approachIndex];
+                console.log("approach name: " + approach.name);
                 if (approach) {
                     let approachTransition = approach.transitions[0];
                     if (approach.transitions.length > 0) {
@@ -871,6 +875,7 @@ class FlightPlanManager {
                             let wp = new WayPoint(this.instrument);
                             wp.icao = approach.finalLegs[i].fixIcao;
                             wp.ident = wp.icao.substr(7);
+                            console.log("get approach constraints: " + wp.icao);
                             wp.legAltitudeDescription = approach.finalLegs[i].altDesc;
                             wp.legAltitude1 = approach.finalLegs[i].altitude1 * 3.28084;
                             wp.legAltitude2 = approach.finalLegs[i].altitude2 * 3.28084;
@@ -882,6 +887,7 @@ class FlightPlanManager {
                             let wp = new WayPoint(this.instrument);
                             wp.icao = approachTransition.legs[i].fixIcao;
                             wp.ident = wp.icao.substr(7);
+                            console.log("get approach constraints: " + wp.icao);
                             wp.legAltitudeDescription = approachTransition.legs[i].altDesc;
                             wp.legAltitude1 = approachTransition.legs[i].altitude1 * 3.28084;
                             wp.legAltitude2 = approachTransition.legs[i].altitude2 * 3.28084;
@@ -889,7 +895,7 @@ class FlightPlanManager {
                         }
                     }
                 }
-            }
+            //}
         }
         return approachWaypoints;
     }
