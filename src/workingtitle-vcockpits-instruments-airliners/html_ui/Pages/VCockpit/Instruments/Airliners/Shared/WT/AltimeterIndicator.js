@@ -272,8 +272,8 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     this.targetAltitudeIndicatorSVGShape = document.createElementNS(Avionics.SVG.NS, "path");
                 this.targetAltitudeIndicatorSVGShape.setAttribute("fill", "none");
                 this.targetAltitudeIndicatorSVGShape.setAttribute("stroke", "cyan");
-                this.targetAltitudeIndicatorSVGShape.setAttribute("stroke-width", "2");
-                this.targetAltitudeIndicatorSVGShape.setAttribute("d", "M 10 10 L 40 10 L 40 90 L 10 90 L 10 58 L 18 50 L 10 42 Z");
+                this.targetAltitudeIndicatorSVGShape.setAttribute("stroke-width", "3");
+                this.targetAltitudeIndicatorSVGShape.setAttribute("d", "M 12 10 L 39 10 L 39 30 L 24 50 L 39 70 L 39 90 L 12 90");
                 this.targetAltitudeIndicatorSVG.appendChild(this.targetAltitudeIndicatorSVGShape);
             }
             this.centerSVG.appendChild(this.targetAltitudeIndicatorSVG);
@@ -292,7 +292,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.targetAltitudeTextSVG1.setAttribute("x", "82");
         this.targetAltitudeTextSVG1.setAttribute("y", (posY - 10).toString());
         this.targetAltitudeTextSVG1.setAttribute("fill", "cyan");
-        this.targetAltitudeTextSVG1.setAttribute("font-size", (this.fontSize * 1.5).toString());
+        this.targetAltitudeTextSVG1.setAttribute("font-size", (this.fontSize * 1.4).toString());
         this.targetAltitudeTextSVG1.setAttribute("font-family", "Roboto-Light");
         this.targetAltitudeTextSVG1.setAttribute("letter-spacing", "2.3");
         this.targetAltitudeTextSVG1.setAttribute("text-anchor", "end");
@@ -308,6 +308,17 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.targetAltitudeTextSVG2.setAttribute("text-anchor", "start");
         this.targetAltitudeTextSVG2.setAttribute("alignment-baseline", "bottom");
         this.rootGroup.appendChild(this.targetAltitudeTextSVG2);
+
+        let borderline = document.createElementNS(Avionics.SVG.NS, "line");
+        let blx = "140";
+        borderline.setAttribute("x1", blx);
+        borderline.setAttribute("y1", "37");
+        borderline.setAttribute("x2", blx);
+        borderline.setAttribute("y2", "453");
+        borderline.setAttribute("stroke", "#909090");
+        borderline.setAttribute("stroke-width", "3");
+        this.rootGroup.appendChild(borderline);
+
         this.rootSVG.appendChild(this.rootGroup);
         this.appendChild(this.rootSVG);
     }
