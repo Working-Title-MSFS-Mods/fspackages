@@ -311,18 +311,11 @@ class CJ4_PFD extends BaseAirliners {
         this.radioSrc2 = _dict.get(CJ4_PopupMenu_Key.BRG_PTR2_SRC);
 
         if (this.radioSrc1 !== 'OFF') {
-            this.radioNav.setRADIONAVActive(1, true);
             if (this.radioSrc1 == "VOR1") {
                 SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_1', 'number', 2);
-
-                let freq = parseFloat(_dict.get(CJ4_PopupMenu_Key.BRG_VOR1_FREQ));
-                this.radioNav.setVORActiveFrequency(1, freq);
             }
             else if (this.radioSrc1 == "ADF1") {
                 SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_1', 'number', 3);
-
-                let freq = parseInt(_dict.get(CJ4_PopupMenu_Key.BRG_ADF1_FREQ));
-                this.radioNav.setADFActiveFrequency(1, freq);
             }
             else {
                 SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_1', 'number', 1);
@@ -333,18 +326,11 @@ class CJ4_PFD extends BaseAirliners {
         }
 
         if (this.radioSrc2 !== 'OFF') {
-            this.radioNav.setRADIONAVActive(2, true);
             if (this.radioSrc2 == "VOR2") {
                 SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_2', 'number', 2);
-
-                let freq = parseFloat(_dict.get(CJ4_PopupMenu_Key.BRG_VOR2_FREQ));
-                this.radioNav.setVORActiveFrequency(2, freq);
             }
             else if (this.radioSrc2 == "ADF2") {
                 SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_2', 'number', 3);
-
-                let freq = parseInt(_dict.get(CJ4_PopupMenu_Key.BRG_ADF2_FREQ));
-                this.radioNav.setADFActiveFrequency(2, freq);
             }
             else {
                 SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_2', 'number', 1);

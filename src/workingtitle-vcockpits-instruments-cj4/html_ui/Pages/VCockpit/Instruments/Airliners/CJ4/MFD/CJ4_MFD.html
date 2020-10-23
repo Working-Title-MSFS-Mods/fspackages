@@ -157,6 +157,84 @@
                             </div>
                         </div>
 
+                        <div id="VORDMENavaids">
+                            <div id="VORDMENavaid_Left" style="display:none">
+                                <div class='bearing-pointer'>
+                                    <svg viewBox='0 0 200 200'>
+                                        <defs>
+                                            <clipPath id='arc'>
+                                                <path d="M10,56 A100 100 0 0 1 190 56 L190,158 L10,158 L10,56" />
+                                            </clipPath>
+                                            <clipPath id='rose'>
+                                                <circle cx="100" cy="100" r="100" />
+                                            </clipPath>
+                                        </defs>
+                                        <g class='bearing-pointer-clip' clip-path='url(#arc)'>
+                                            <g class='bearing-pointer-needle'>
+                                                <path d="M100,-100 L100,50 M100,22 L105,30 M100,22 L95,30" />
+                                                <path d="M100,149 L100,300 M100,166 L105,174 M100,166 L95,174" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class='bearing-block-arrow'>
+                                        <svg viewBox='-6 0 12 20'>
+                                            <path id="Arrow" d="M0,0 L0,6 L4,12 L0,6 L-4,12 L0,6 L0,20"/>
+                                        </svg>
+                                    </div>
+                                    <div class='bearing-block-dist'>
+                                        <div>
+                                            <span id='State'>FMS</span>1
+                                        </div>
+                                        <div>
+                                            <span id='Distance'>-.-</span><span id='Unit'> NM</span>
+                                        </div>
+                                    </div>
+                                    <div style='clear: both;'></div>
+                                </div>
+                                <div id='ID'>---</div>
+                            </div>
+    
+                            <div id="VORDMENavaid_Right" style="display:none">
+                                <div class='bearing-pointer arc'>
+                                    <svg viewBox='0 0 200 200'>
+                                        <defs>
+                                            <clipPath id='arc'>
+                                                <path d="M10,56 A100 100 0 0 1 190 56 L190,158 L10,158 L10,56" />
+                                            </clipPath>
+                                            <clipPath id='rose'>
+                                                <circle cx="100" cy="100" r="100" />
+                                            </clipPath>
+                                        </defs>
+                                        <g class='bearing-pointer-clip' clip-path='url(#arc)'>
+                                            <g class='bearing-pointer-needle'>
+                                                <path d="M100,-100 L100,22 M98,25 L98,52 M102,25 L102,52 M100,22 L105,30 M100,22 L95,30" />
+                                                <path d="M98,149 L98,169 M102,149 L102,169 M100,166 L105,174 M100,166 L95,174 M100,166 L100,300" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>            
+                                <div>
+                                    <div class='bearing-block-arrow'>
+                                        <svg viewBox='-6 0 12 20'>
+                                            <path id="Arrow" d="M0,0 L0,6 L4,12 L1.2,8 L1.2,30 L1.2,8 L0,6 L-4,12 L-1.2,8 L-1.2,30 L-1.2,8 L0,6"/>
+                                        </svg>
+                                    </div>
+                                    <div class='bearing-block-dist'>
+                                        <div>
+                                            <span id='State'>FMS</span>2
+                                        </div>
+                                        <div>
+                                            <span id='Distance'>-.-</span><span id='Unit'> NM</span>
+                                        </div>
+                                    </div>
+                                    <div style='clear: both;'></div>
+                                </div>
+                                <div id='ID'>---</div>
+                            </div>
+                        </div>
+
                         <div id="Symbols">
                             <svg>
                                 <text id="WX" x="100%" y="50%" alignment-baseline="baseline">WX</text>

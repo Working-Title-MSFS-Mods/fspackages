@@ -3408,16 +3408,16 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addTitle("BRG PTR 1", this.textSize, 0.5);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
                 this.addRadio("FMS1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
-                this.addRadioRange("VOR1", this.textSize, 108, 117.95, 0.005, [CJ4_PopupMenu_Key.BRG_PTR1_SRC, CJ4_PopupMenu_Key.BRG_VOR1_FREQ]);
-                this.addRadioRange("ADF1", this.textSize, 100, 1799, 1, [CJ4_PopupMenu_Key.BRG_PTR1_SRC, CJ4_PopupMenu_Key.BRG_ADF1_FREQ]);
+                this.addRadio("VOR1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
+                this.addRadio("ADF1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
             }
             this.endSection();
             this.beginSection();
             {
                 this.addTitle("BRG PTR 2", this.textSize, 0.5);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
-                this.addRadioRange("VOR2", this.textSize, 108, 117.95, 0.005, [CJ4_PopupMenu_Key.BRG_PTR2_SRC, CJ4_PopupMenu_Key.BRG_VOR2_FREQ]);
-                this.addRadioRange("ADF2", this.textSize, 100, 1799, 1, [CJ4_PopupMenu_Key.BRG_PTR2_SRC, CJ4_PopupMenu_Key.BRG_ADF2_FREQ]);
+                this.addRadio("VOR2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
+                this.addRadio("ADF2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
             }
             this.endSection();
         }
