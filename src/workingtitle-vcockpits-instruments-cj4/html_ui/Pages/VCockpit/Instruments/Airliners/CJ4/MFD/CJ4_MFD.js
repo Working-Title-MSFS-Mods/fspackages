@@ -98,6 +98,7 @@ class CJ4_MFD extends BaseAirliners {
                             el.style = 'transform: translate(-30px, -18px)';
                         }
                     }
+                    this.mapOverlay.infos.root.onDisplayChange(this.mapDisplayMode);
                 }
 
                 if (this.showTerrain) {

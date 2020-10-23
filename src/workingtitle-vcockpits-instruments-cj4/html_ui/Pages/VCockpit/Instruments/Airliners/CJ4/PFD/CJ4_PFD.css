@@ -672,6 +672,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 
 .bearing-pointer-needle {
   transform-origin: 100px 100px;
+  transition: transform .1s ease-in;
 }
 
 #VORDMENavaid_Left #ID,
