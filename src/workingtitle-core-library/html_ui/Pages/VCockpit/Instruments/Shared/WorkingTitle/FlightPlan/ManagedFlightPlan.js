@@ -86,8 +86,8 @@ class ManagedFlightPlan {
   /**
    * Clears the flight plan.
    */
-  clearPlan() {
-    this._waypoints = [];
+  async clearPlan() {
+    
     this._hasOrigin = false;
     this._hasDestination = false;
 
@@ -101,6 +101,12 @@ class ManagedFlightPlan {
     
     this.procedureDetails = new ProcedureDetails();
     this.directTo = new DirectTo();
+
+    for (var i = 0; i < this._waypoints.length; i++) {
+      await SimVar.SetSimVarValue('C:fs9gps:FlightPlanDeleteWaypoint', 'number', i);
+    }
+
+    this._waypoints = [];
   }
 
   /**
@@ -111,7 +117,7 @@ class ManagedFlightPlan {
    * @param {Boolean} replace Whether or not to replace the waypoint at the specified index
    * instead of inserting or appending.
    */
-  addWaypoint(waypoint, index) {
+  async addWaypoint(waypoint, index) {
 
     const mappedWaypoint = RawDataMapper.toWaypoint(waypoint, this._parentInstrument);
 
@@ -121,6 +127,11 @@ class ManagedFlightPlan {
     }
     else {
       this._waypoints.splice(index, 0, mappedWaypoint);
+    }
+
+    if (mappedWaypoint.icao && mappedWaypoint.icao.trim() !== '') {
+      await SimVar.SetSimVarValue('C:fs9gps:FlightPlanNewWaypointICAO', 'string', waypoint.icao);
+      await SimVar.SetSimVarValue('C:fs9gps:FlightPlanAddWaypoint', 'number', index);
     }
     
     this._shiftSegmentIndexes(mappedWaypoint, index);
@@ -323,7 +334,7 @@ class ManagedFlightPlan {
    * Removes a waypoint from the flight plan.
    * @param {Number} index The index of the waypoint to remove.
    */
-  removeWaypoint(index) {
+  async removeWaypoint(index) {
     let waypoint;
 
     if (index === undefined || index >= this._waypoints.length) {
@@ -334,6 +345,8 @@ class ManagedFlightPlan {
       waypoint = this._waypoints[index];
       this._waypoints.splice(index, 1);
     }
+
+    await SimVar.SetSimVarValue('C:fs9gps:FlightPlanDeleteWaypoint', 'number', index);
     
     this._unshiftSegmentIndexes(waypoint, index);
     this._reflowDistances();
@@ -407,7 +420,7 @@ class ManagedFlightPlan {
     if (this.hasOrigin) {
       const origin = this._waypoints[0];
 
-      if (index >= 0 && index < origin.infos.departures.length && this.procedureDetails.departureRunwayIndex !== -1) {
+      if (index >= 0 && index < origin.infos.departures.length) {
         this.procedureDetails.departureIndex = index;
 
         if (this.procedureDetails.departureRunwayIndex !== -1) {
@@ -449,7 +462,7 @@ class ManagedFlightPlan {
 
       for (var i = 0; i < runwayTransition.legs.length; i++) {
         if (runwayTransition.legs[i].fixIcao.trim() !== "") {
-          const legWaypoint = await this._parentInstrument.facilityLoader.getFacility(runwayTransition.legs[i].fixIcao);
+          const legWaypoint = await this._parentInstrument.facilityLoader.getFacilityRaw(runwayTransition.legs[i].fixIcao);
           legs.push(legWaypoint);
         }
       }
@@ -559,6 +572,34 @@ ManagedFlightPlan.fromObject = (flightPlanObject, parentInstrument) => {
 
   plan.directTo = Object.assign(new DirectTo(), plan.directTo);
 
+
+  const mapObject = (obj, parentType) => {
+    if (obj&& obj.infos) {
+      obj = Object.assign(new WayPoint(parentInstrument), obj);          
+    }
+
+    if(obj && obj.coordinates) {
+      switch (parentType) {
+        case 'A':
+          obj = Object.assign(new AirportInfo(parentInstrument), obj);
+          break;
+        case 'W':
+          obj = Object.assign(new IntersectionInfo(parentInstrument), obj);
+          break;
+        case 'V':
+          obj = Object.assign(new VORInfo(parentInstrument), obj);
+          break;
+        case 'N':
+          obj = Object.assign(new NDBInfo(parentInstrument), obj);
+          break;
+      }
+      
+      obj.coordinates = Object.assign(new LatLongAlt(), obj.coordinates);
+    }
+
+    return obj;
+  };
+
   const visitObject = (obj) => {
     for(var key in obj) {
       if (typeof obj[key] === 'object' && obj[key] && obj[key].scroll === undefined) {
@@ -569,42 +610,21 @@ ManagedFlightPlan.fromObject = (flightPlanObject, parentInstrument) => {
           visitObject(obj[key]);
         }
 
-        if (obj[key] && obj[key].infos) {
-          obj[key] = Object.assign(new WayPoint(parentInstrument), obj[key]);          
-        }
-
-        if(obj[key] && obj[key].coordinates) {
-          switch (obj.type) {
-            case 'A':
-              obj[key] = Object.assign(new AirportInfo(parentInstrument), obj[key]);
-              break;
-            case 'W':
-              obj[key] = Object.assign(new IntersectionInfo(parentInstrument), obj[key]);
-              break;
-            case 'V':
-              obj[key] = Object.assign(new VORInfo(parentInstrument), obj[key]);
-              break;
-            case 'N':
-              obj[key] = Object.assign(new NDBInfo(parentInstrument), obj[key]);
-              break;
-          }
-          
-          obj[key].coordinates = Object.assign(new LatLongAlt(), obj[key].coordinates);
-        }
+        obj[key] = mapObject(obj[key], obj.type);
       }
-
-      
     }
   };
 
   const visitArray = (array) => {
-    array.forEach(item => {
+    array.forEach((item, index) => {
       if (Array.isArray(item)) {
-        visitArray(item);
+        visitArray(item);      
       }
       else if (typeof item === 'object') {
         visitObject(item);
       }
+
+      array[index] = mapObject(item);
     });
   };
 

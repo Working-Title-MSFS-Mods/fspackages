@@ -160,8 +160,8 @@ class FlightPlanManager {
    * Clears the currently active flight plan.
    * @param {() => void} callback A callback to call when the operation has completed.
    */
-  clearFlightPlan(callback = EmptyCallback.Void) {
-    this._flightPlans[this._currentFlightPlanIndex].clearPlan();
+  async clearFlightPlan(callback = EmptyCallback.Void) {
+    await this._flightPlans[this._currentFlightPlanIndex].clearPlan();
     this._updateFlightPlanVersion();
     
     callback();
@@ -188,8 +188,8 @@ class FlightPlanManager {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     const airport = await this._parentInstrument.facilityLoader.getFacilityRaw(icao);
 
-    currentFlightPlan.clearPlan();
-    currentFlightPlan.addWaypoint(airport, 0);
+    await currentFlightPlan.clearPlan();
+    await currentFlightPlan.addWaypoint(airport, 0);
     this._updateFlightPlanVersion();
 
     callback();
