@@ -2,19 +2,23 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
     constructor() {
         super();
 
-        this.rangeRingStrokeInnerColor = SvgFuelRingElement.RANGE_RING_STROKE_INNER_COLOR_DEFAULT;
-        this.rangeRingStrokeInnerWidth = SvgFuelRingElement.RANGE_RING_STROKE_INNER_WIDTH_DEFAULT;
-        this.rangeRingStrokeInnerDash = SvgFuelRingElement.RANGE_RING_STROKE_INNER_DASH_DEFAULT;
-        this.rangeRingStrokeOuterColor = SvgFuelRingElement.RANGE_RING_STROKE_OUTER_COLOR_DEFAULT;
-        this.rangeRingStrokeOuterWidth = SvgFuelRingElement.RANGE_RING_STROKE_OUTER_WIDTH_DEFAULT;
+        this.innerRingStrokeColor = SvgFuelRingElement.INNER_RING_STROKE_COLOR_DEFAULT;
+        this.innerRingStrokeWidth = SvgFuelRingElement.INNER_RING_STROKE_WIDTH_DEFAULT;
+        this.innerRingStrokeDash = SvgFuelRingElement.INNER_RING_STROKE_DASH_DEFAULT;
+        this.innerRingOutlineColor = SvgFuelRingElement.INNER_RING_OUTLINE_COLOR_DEFAULT;
+        this.innerRingOutlineWidth = SvgFuelRingElement.INNER_RING_OUTLINE_WIDTH_DEFAULT;
 
-        this.rangeRingOuterStrokeInnerColor = SvgFuelRingElement.RANGE_RING_OUTER_STROKE_INNER_COLOR_DEFAULT;
-        this.rangeRingOuterStrokeInnerReserveColor = SvgFuelRingElement.RANGE_RING_OUTER_STROKE_INNER_COLOR_RESERVE_DEFAULT;
-        this.rangeRingOuterStrokeInnerWidth = SvgFuelRingElement.RANGE_RING_OUTER_STROKE_INNER_WIDTH_DEFAULT;
-        this.rangeRingOuterStrokeOuterColor = SvgFuelRingElement.RANGE_RING_OUTER_STROKE_OUTER_COLOR_DEFAULT;
-        this.rangeRingOuterStrokeOuterWidth = SvgFuelRingElement.RANGE_RING_OUTER_STROKE_OUTER_WIDTH_DEFAULT;
+        this.outerRingStrokeColor = SvgFuelRingElement.OUTER_RING_STROKE_COLOR_DEFAULT;
+        this.outerRingStrokeReserveColor = SvgFuelRingElement.OUTER_RING_STROKE_COLOR_RESERVE_DEFAULT;
+        this.outerRingStrokeWidth = SvgFuelRingElement.OUTER_RING_STROKE_WIDTH_DEFAULT;
+        this.outerRingOutlineColor = SvgFuelRingElement.OUTER_RING_OUTLINE_COLOR_DEFAULT;
+        this.outerRingOutlineWidth = SvgFuelRingElement.OUTER_RING_OUTLINE_WIDTH_DEFAULT;
 
-        this.labelPosAngle = SvgFuelRingElement.LABEL_ANGLE_DEFAULT;
+        this.labelFont = SvgFuelTimeLabelElement.FONT_DEFAULT;
+        this.labelFontSize = SvgFuelTimeLabelElement.FONT_SIZE_DEFAULT;
+        this.labelFontColor = SvgFuelTimeLabelElement.FONT_COLOR_DEFAULT;
+        this.labelAngle = SvgFuelRingElement.LABEL_ANGLE_DEFAULT;
+
         this.smoothingConstant = SvgFuelRingElement.SMOOTHING_CONSTANT_DEFAULT;
 
         this.radiusOuter = 300;
@@ -34,6 +38,23 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
     }
 
     createDraw(map) {
+        this.setPropertyFromConfig(map.config.fuelRing, "innerRingStrokeColor");
+        this.setPropertyFromConfig(map.config.fuelRing, "innerRingStrokeWidth");
+        this.setPropertyFromConfig(map.config.fuelRing, "innerRingStrokeDash");
+        this.setPropertyFromConfig(map.config.fuelRing, "innerRingOutlineColor");
+        this.setPropertyFromConfig(map.config.fuelRing, "innerRingOutlineWidth");
+
+        this.setPropertyFromConfig(map.config.fuelRing, "outerRingStrokeColor");
+        this.setPropertyFromConfig(map.config.fuelRing, "outerRingStrokeReserveColor");
+        this.setPropertyFromConfig(map.config.fuelRing, "outerRingStrokeWidth");
+        this.setPropertyFromConfig(map.config.fuelRing, "outerRingOutlineColor");
+        this.setPropertyFromConfig(map.config.fuelRing, "outerRingOutlineWidth");
+
+        this.setPropertyFromConfig(map.config.fuelRing, "labelFont");
+        this.setPropertyFromConfig(map.config.fuelRing, "labelFontSize");
+        this.setPropertyFromConfig(map.config.fuelRing, "labelFontColor");
+        this.setPropertyFromConfig(map.config.fuelRing, "labelAngle");
+
         let container = super.createDraw(map);
 
         this.rangeRingOuter = this.createRingOuter(map);
@@ -57,17 +78,17 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
 
         this.rangeRingOutline = document.createElementNS(Avionics.SVG.NS, "circle");
         this.rangeRingOutline.setAttribute("fill-opacity", "0");
-        this.rangeRingOutline.setAttribute("stroke", this.rangeRingStrokeOuterColor);
-        this.rangeRingOutline.setAttribute("stroke-width", this.rangeRingStrokeOuterWidth);
+        this.rangeRingOutline.setAttribute("stroke", this.innerRingOutlineColor);
+        this.rangeRingOutline.setAttribute("stroke-width", this.innerRingOutlineWidth);
         this.rangeRingOutline.setAttribute("stroke-opacity", "1");
         ring.appendChild(this.rangeRingOutline);
 
         // the game doesn't support dasharray for circles, so we need to use path instead
         this.rangeRingCore = document.createElementNS(Avionics.SVG.NS, "path");
         this.rangeRingCore.setAttribute("fill-opacity", "0");
-        this.rangeRingCore.setAttribute("stroke", this.rangeRingStrokeInnerColor);
-        this.rangeRingCore.setAttribute("stroke-width", this.rangeRingStrokeInnerWidth);
-        this.rangeRingCore.setAttribute("stroke-dasharray", this.rangeRingStrokeInnerDash);
+        this.rangeRingCore.setAttribute("stroke", this.innerRingStrokeColor);
+        this.rangeRingCore.setAttribute("stroke-width", this.innerRingStrokeWidth);
+        this.rangeRingCore.setAttribute("stroke-dasharray", this.innerRingStrokeDash);
         this.rangeRingCore.setAttribute("vector-effect", "non-scaling-stroke");
         this.rangeRingCore.setAttribute("stroke-opacity", "1");
         this.rangeRingCore.setAttribute("d", "M 0 -1 A 1 1 0 0 1 0 1 A 1 1 0 0 1 0 -1 Z");
@@ -82,15 +103,15 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
 
         this.rangeRingOuterOutline = document.createElementNS(Avionics.SVG.NS, "circle");
         this.rangeRingOuterOutline.setAttribute("fill-opacity", "0");
-        this.rangeRingOuterOutline.setAttribute("stroke", this.rangeRingOuterStrokeOuterColor);
-        this.rangeRingOuterOutline.setAttribute("stroke-width", this.rangeRingOuterStrokeOuterWidth);
+        this.rangeRingOuterOutline.setAttribute("stroke", this.outerRingOutlineColor);
+        this.rangeRingOuterOutline.setAttribute("stroke-width", this.outerRingOutlineWidth);
         this.rangeRingOuterOutline.setAttribute("stroke-opacity", "1");
         ring.appendChild(this.rangeRingOuterOutline);
 
         this.rangeRingOuterCore = document.createElementNS(Avionics.SVG.NS, "circle");
         this.rangeRingOuterCore.setAttribute("fill-opacity", "0");
-        this.rangeRingOuterCore.setAttribute("stroke", this.rangeRingOuterStrokeInnerColor);
-        this.rangeRingOuterCore.setAttribute("stroke-width", this.rangeRingOuterStrokeInnerWidth);
+        this.rangeRingOuterCore.setAttribute("stroke", this.outerRingStrokeColor);
+        this.rangeRingOuterCore.setAttribute("stroke-width", this.outerRingStrokeWidth);
         this.rangeRingOuterCore.setAttribute("stroke-opacity", "1");
         ring.appendChild(this.rangeRingOuterCore);
 
@@ -98,7 +119,7 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
     }
 
     createLabel(map) {
-        this.reserveTimeLabelElement = new SvgFuelTimeLabelElement();
+        this.reserveTimeLabelElement = new SvgFuelTimeLabelElement(this.labelFont, this.labelFontSize, this.labelFontColor);
         return this.reserveTimeLabelElement.createDraw(map);
     }
 
@@ -138,11 +159,11 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
             this.showLabel = true;
             this.radius = timeToReserve * groundSpeed / 60 / map.NMWidth * 1000;
             this.reserveTimeLabelElement.time = timeToReserve;
-            this.rangeRingOuterCore.setAttribute("stroke", this.rangeRingOuterStrokeInnerColor);
+            this.rangeRingOuterCore.setAttribute("stroke", this.outerRingStrokeColor);
         } else {
             this.showRing = false;
             this.showLabel = false;
-            this.rangeRingOuterCore.setAttribute("stroke", this.rangeRingOuterStrokeInnerReserveColor);
+            this.rangeRingOuterCore.setAttribute("stroke", this.outerRingStrokeReserveColor);
         }
 
         this.radiusOuter = fuelTimeRemaining * groundSpeed / 60 / map.NMWidth * 1000;
@@ -215,27 +236,27 @@ class SvgFuelRingElement extends SvgLabeledRingElement {
         return new Vec2(_center.x + _radius * Math.sin(_angle), _center.y - _radius * Math.cos(_angle));
     }
 }
-SvgFuelRingElement.RANGE_RING_STROKE_INNER_COLOR_DEFAULT = "#63aa59";
-SvgFuelRingElement.RANGE_RING_STROKE_INNER_WIDTH_DEFAULT = 3;
-SvgFuelRingElement.RANGE_RING_STROKE_INNER_DASH_DEFAULT = "5";
-SvgFuelRingElement.RANGE_RING_STROKE_OUTER_COLOR_DEFAULT = "black";
-SvgFuelRingElement.RANGE_RING_STROKE_OUTER_WIDTH_DEFAULT = 3;
+SvgFuelRingElement.INNER_RING_STROKE_COLOR_DEFAULT = "#63aa59";
+SvgFuelRingElement.INNER_RING_STROKE_WIDTH_DEFAULT = 3;
+SvgFuelRingElement.INNER_RING_STROKE_DASH_DEFAULT = "5";
+SvgFuelRingElement.INNER_RING_OUTLINE_COLOR_DEFAULT = "black";
+SvgFuelRingElement.INNER_RING_OUTLINE_WIDTH_DEFAULT = 3;
 
-SvgFuelRingElement.RANGE_RING_OUTER_STROKE_INNER_COLOR_DEFAULT = "#63aa59";
-SvgFuelRingElement.RANGE_RING_OUTER_STROKE_INNER_COLOR_RESERVE_DEFAULT = "yellow";
-SvgFuelRingElement.RANGE_RING_OUTER_STROKE_INNER_WIDTH_DEFAULT = 3;
-SvgFuelRingElement.RANGE_RING_OUTER_STROKE_OUTER_COLOR_DEFAULT = "black";
-SvgFuelRingElement.RANGE_RING_OUTER_STROKE_OUTER_WIDTH_DEFAULT = 4;
+SvgFuelRingElement.OUTER_RING_STROKE_COLOR_DEFAULT = "#63aa59";
+SvgFuelRingElement.OUTER_RING_STROKE_COLOR_RESERVE_DEFAULT = "yellow";
+SvgFuelRingElement.OUTER_RING_STROKE_WIDTH_DEFAULT = 3;
+SvgFuelRingElement.OUTER_RING_OUTLINE_COLOR_DEFAULT = "black";
+SvgFuelRingElement.OUTER_RING_OUTLINE_WIDTH_DEFAULT = 4;
 
 SvgFuelRingElement.LABEL_ANGLE_DEFAULT = 0;
 SvgFuelRingElement.SMOOTHING_CONSTANT_DEFAULT = 120;
 
 class SvgFuelTimeLabelElement {
-    constructor() {
+    constructor(_font, _fontSize, _fontColor) {
         this.time = 0;
-        this.font = SvgFuelTimeLabelElement.FONT_DEFAULT;
-        this.fontSize = SvgFuelTimeLabelElement.FONT_SIZE_DEFAULT;
-        this.fontColor = SvgFuelTimeLabelElement.FONT_COLOR_DEFAULT;
+        this.font = _font;
+        this.fontSize = _fontSize;
+        this.fontColor = _fontColor;
     }
 
     createDraw(map) {

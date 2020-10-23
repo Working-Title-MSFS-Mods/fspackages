@@ -734,15 +734,19 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("stroke-width", "2");
             trimGroup.appendChild(rect);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            var percent = (-Simplane.getTrimNeutral() + 1.0) * 0.5;
+            percent = Math.min(1, Math.max(0, percent));
+            var posY = ((gaugeStartY+gaugeHeight) - (gaugeHeight * percent)) - ((gaugeHeight*0.18)/2);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
-            rect.setAttribute("y", (gaugeStartY + gaugeHeight * 0.25).toString());
+            rect.setAttribute("y", (posY).toString());
             rect.setAttribute("width", gaugeWidth.toString());
-            rect.setAttribute("height", (gaugeHeight * 0.25).toString());
-            rect.setAttribute("fill", "#11d011");
+            rect.setAttribute("height", (gaugeHeight * 0.20).toString());
+            rect.setAttribute("fill", "green");
             trimGroup.appendChild(rect);
             this.ElevatorCursorX = gaugeStartX + gaugeWidth;
-            this.ElevatorCursorY1 = gaugeStartY + gaugeHeight;
-            this.ElevatorCursorY2 = gaugeStartY;
+            this.ElevatorCursorY1 = gaugeStartY;
+            this.ElevatorCursorY2 = gaugeStartY + gaugeHeight;
             this.ElevatorCursor = document.createElementNS(Avionics.SVG.NS, "path");
             this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + this.ElevatorCursorY2 + ")");
             this.ElevatorCursor.setAttribute("fill", "white");
@@ -1578,9 +1582,13 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             trimGroup.appendChild(rect);
+            // elev trim expanded bar
+            var percent = (-Simplane.getTrimNeutral() + 1.0) * 0.5;
+            percent = Math.min(1, Math.max(0, percent));
+            var posY = startPosY;
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
-            rect.setAttribute("y", (startPosY - gaugeHeight * 0.25).toString());
+            rect.setAttribute("y", posY.toString());
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", (gaugeHeight * 0.25).toString());
             rect.setAttribute("fill", "#11d011");
@@ -1606,10 +1614,10 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.setAttribute("alignment-baseline", "bottom");
             trimGroup.appendChild(text);
             this.ElevatorCursorX = gaugeStartX + gaugeWidth;
-            this.ElevatorCursorY1 = startPosY + gaugeHeight * 0.5;
-            this.ElevatorCursorY2 = startPosY - gaugeHeight * 0.5;
+            this.ElevatorCursorY1 = startPosY - gaugeHeight * 0.5;
+            this.ElevatorCursorY2 = startPosY + gaugeHeight * 0.5;
             this.ElevatorCursor = document.createElementNS(Avionics.SVG.NS, "path");
-            this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + this.ElevatorCursorY1 + ")");
+            this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + this.ElevatorCursorY2 + ")");
             this.ElevatorCursor.setAttribute("fill", "white");
             this.ElevatorCursor.setAttribute("d", "M0 0 l15 -5 l0 10 l-15 -5 Z");
             trimGroup.appendChild(this.ElevatorCursor);
@@ -1853,15 +1861,21 @@ class CJ4_SystemElectrics extends NavSystemElement {
         this.DCVoltValueLeft.textContent = Math.round(GenVolt1).toString();
         let GenVolt2 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS VOLTAGE:2", "volts");
         this.DCVoltValueRight.textContent = Math.round(GenVolt2).toString();
-        let BatAmp = SimVar.GetSimVarValue("ELECTRICAL BATTERY LOAD:1", "amperes");
-        this.BATAmpValue.textContent = Math.round(BatAmp).toString();
         let BatVolt = SimVar.GetSimVarValue("ELECTRICAL BATTERY VOLTAGE:1", "volts");
         this.BATVoltValue.textContent = Math.round(BatVolt).toString();
-        this.BATTempValue.textContent = "--";
-        let HydPSI1 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:1", "psi");
+        let BatAmp = SimVar.GetSimVarValue("ELECTRICAL BATTERY LOAD:1", "amperes");
+        BatAmp = BatAmp / BatVolt;
+        this.BATAmpValue.textContent = Math.round(BatAmp).toString();
+        this.BATTempValue.textContent = "26";
+		
+		let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
+		let HydPSI1 = N2Eng1 >= 20 ? 3000 : N2Eng1 * 150;
         this.HYDPSIValueLeft.textContent = Math.round(HydPSI1).toString();
-        let HydPSI2 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:2", "psi");
+				
+		let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
+		let HydPSI2 = N2Eng2 >= 20 ? 3000 : N2Eng2 * 150;
         this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
+		
         let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
         this.FUELPPHValueLeft.textContent = Math.round(PPHEng1).toString();
         let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
@@ -2885,7 +2899,7 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
         if (!this.root) {
             console.log("Root component expected!");
         }
-        else{
+        else {
             this.elapsedTime = this.root.querySelector("#ElapsedTime");
             this.elapsedTimeValue = this.root.querySelector("#ET_Value");
         }
@@ -2955,7 +2969,7 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
         if (this.elapsedTime) {
             if (this._showET) {
                 if (this._chronoStarted) {
-                    if(this._timeCounterStarted == 0){
+                    if (this._timeCounterStarted == 0) {
                         this._timeCounterStarted = Number.parseInt(SimVar.GetGlobalVarValue("ZULU TIME", "seconds"));
                     }
                     this._chronoValue = Number.parseInt(SimVar.GetGlobalVarValue("ZULU TIME", "seconds")) - this._timeCounterStarted;
@@ -3137,10 +3151,22 @@ class CJ4_NavBarContainer extends NavSystemElementContainer {
         }
         if (this.isaElement) {
             var altitude = Math.trunc(SimVar.GetSimVarValue("PLANE ALTITUDE", "feet"));
-            var isaTemp = 15 - Math.trunc(2 * (altitude / 1000));
+            let tmpAlt = (altitude / 1000);
+            // until 36k
+            var isaTemp = Math.trunc(Math.min(tmpAlt, 36) * 2);
+            if (tmpAlt > 65) {
+                // above 65k
+                tmpAlt -= 65;
+                isaTemp += Math.trunc(tmpAlt * 0.3);
+            }
+
+            // calc isa
+            isaTemp = 15 - isaTemp;
+
+            // calc dev
             var isa = sat - isaTemp;
             if (isa)
-                this.isaElement.textContent = isa;
+                this.isaElement.textContent = (isa<=0?"":"+") + isa;
         }
     }
 }
@@ -3737,7 +3763,7 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
         if (!this.root) {
             console.log("Root component expected!");
         }
-        else{
+        else {
             this.handler = new CJ4_MFDChecklist(this.root, this.dictionary, this.checklist);
         }
     }
@@ -3751,10 +3777,10 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
             this.isVisible = _value;
             this.root.setAttribute("visible", (_value) ? "true" : "false");
 
-            if(this.isVisible == true){
+            if (this.isVisible == true) {
                 this.handler.expand();
             }
-            else if(this.isVisible == false){
+            else if (this.isVisible == false) {
                 this.handler.minimise();
             }
         }
@@ -3765,10 +3791,10 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onActivate();
-                        if(this.handler.highlightItem){
-                            if(this.handler.onChecklistItemPage && this.handler.highlightItem.checkboxVal){
+                        if (this.handler.highlightItem) {
+                            if (this.handler.onChecklistItemPage && this.handler.highlightItem.checkboxVal) {
                                 this.handler.highlight(this.handler.highlightId + 1);
                                 this.handler.changeCurrentSelectionIndex(1);
                             }
@@ -3777,26 +3803,26 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
                     break;
                 case "Upr_DATA_DEC":
                 case "Lwr_DATA_DEC":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onDataDec();
                     }
                     break;
                 case "Upr_DATA_INC":
                 case "Lwr_DATA_INC":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onDataInc();
                     }
                     break;
                 case "Upr_MENU_ADV_DEC":
                 case "Lwr_MENU_ADV_DEC":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onMenuDec();
                         this.handler.changeCurrentSelectionIndex(-1);
                     }
                     break;
                 case "Upr_MENU_ADV_INC":
                 case "Lwr_MENU_ADV_INC":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onMenuInc();
                         this.handler.changeCurrentSelectionIndex(1);
                     }
@@ -3835,41 +3861,41 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
         this.showMainPage();
     }
     refreshPage() {
-        if(this.currentMenu){
+        if (this.currentMenu) {
             this.currentMenu();
         }
     }
-    changeCurrentSelectionIndex(_delta, _override = false){
+    changeCurrentSelectionIndex(_delta, _override = false) {
         // Menu scrolling
-        if((this.currentItemIndex + _delta) >= 0 && (this.currentItemIndex + _delta < this.totalSectionItems)){
-            if(_override == true){
+        if ((this.currentItemIndex + _delta) >= 0 && (this.currentItemIndex + _delta < this.totalSectionItems)) {
+            if (_override == true) {
                 this.currentItemIndex = _delta;
             }
-            else{
+            else {
                 this.currentItemIndex += _delta;
             }
 
             // Handle page transition
             let startAtLastPageItem = false;
             const newPage = Math.ceil((this.currentItemIndex + 1) / this.maximumItemsPerPage);
-            if(newPage != this.currentPage && newPage >= 1){
-                if(newPage < this.currentPage) startAtLastPageItem = true;
+            if (newPage != this.currentPage && newPage >= 1) {
+                if (newPage < this.currentPage) startAtLastPageItem = true;
                 this.currentPage = newPage;
                 this.refreshPage();
-                if(startAtLastPageItem) this.highlight(6); // Starts selection highlight on last item of previous page
+                if (startAtLastPageItem) this.highlight(6); // Starts selection highlight on last item of previous page
             }
 
-            if(_override){
+            if (_override) {
                 let pageIndex = this.currentItemIndex;
-                if(this.currentItemIndex > 6){
+                if (this.currentItemIndex > 6) {
                     pageIndex -= this.maximumItemsPerPage * (this.currentPage - 1);
                 }
-                 //= Math.abs(this.currentItemIndex - this.currentPage * (this.maximumItemsPerPage - 1)  Math.ceil(this.currentItemIndex / (this.maximumItemsPerPage - 1));
-                if((this.totalPages == this.currentPage && pageIndex == 6) || (pageIndex == 0 && this.currentPage == 1)){
+                //= Math.abs(this.currentItemIndex - this.currentPage * (this.maximumItemsPerPage - 1)  Math.ceil(this.currentItemIndex / (this.maximumItemsPerPage - 1));
+                if ((this.totalPages == this.currentPage && pageIndex == 6) || (pageIndex == 0 && this.currentPage == 1)) {
                     this.highlight(pageIndex);
                     console.log(pageIndex + "+0");
                 }
-                else{
+                else {
                     this.highlight(pageIndex + 1);
                     console.log(pageIndex + "+1");
                 }
@@ -3895,14 +3921,14 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addSubMenu(this.checklist.name, this.textSize, (() => {this.showChecklistSections(this.checklist); this.changeCurrentSelectionIndex(this.checklist.findCurrentSectionIndex(), true);}).bind(this));
+                this.addSubMenu(this.checklist.name, this.textSize, (() => { this.showChecklistSections(this.checklist); this.changeCurrentSelectionIndex(this.checklist.findCurrentSectionIndex(), true); }).bind(this));
                 this.addSubMenu("CHECKLIST/PASS BRIEF CONFIG MENU", this.textSize, null);
-                if(this.checklist.hasProgress()) this.addSubMenu("RESET CHECKLIST", this.textSize, (() => {this.checklist.resetChecklistState(); this.currentItemIndex = 0; this.refreshPage()}).bind(this));
+                if (this.checklist.hasProgress()) this.addSubMenu("RESET CHECKLIST", this.textSize, (() => { this.checklist.resetChecklistState(); this.currentItemIndex = 0; this.refreshPage() }).bind(this));
             }
             this.endSection();
         }
         this.closeMenu();
-        this.escapeCbk = () => {};
+        this.escapeCbk = () => { };
         this.highlight(_highlight);
         page.appendChild(sectionRoot);
         Utils.RemoveAllChildren(this.root);
@@ -3932,8 +3958,8 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
                 let startingSection = (this.currentPage * this.maximumItemsPerPage) - this.maximumItemsPerPage;
                 let endSection = Math.min(_checklist.sections.length, startingSection + this.maximumItemsPerPage);
 
-                for(let i = startingSection; i < endSection; i++){
-                    this.addSubMenu(_checklist.sections[i].name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, i)}).bind(this), _checklist.isSectionComplete(i) ? "#11d011" : "white");
+                for (let i = startingSection; i < endSection; i++) {
+                    this.addSubMenu(_checklist.sections[i].name, this.textSize, (() => { this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, i) }).bind(this), _checklist.isSectionComplete(i) ? "#11d011" : "white");
                 }
 
             }
@@ -3951,7 +3977,7 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
         this.currentMenu = this.showChecklistSection.bind(this, _checklist, _section_id);
         this.totalPages = Math.ceil(_checklist.sections[_section_id].checklistItems.length / this.maximumItemsPerPage);
         this.totalSectionItems = _checklist.sections[_section_id].checklistItems.length;
-        if(_checklist.sections[_section_id].checklistItems.length % 7 == 0){
+        if (_checklist.sections[_section_id].checklistItems.length % 7 == 0) {
             this.totalPages += 1;
             this.totalSectionItems += 1;
         }
@@ -3966,7 +3992,7 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
             this.beginSection();
             {
                 this.addChecklistTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
-                this.addChecklistTitle(_checklist.sections[_section_id].name, this.titleSize, 1.0, undefined, undefined,"left");
+                this.addChecklistTitle(_checklist.sections[_section_id].name, this.titleSize, 1.0, undefined, undefined, "left");
             }
             this.endSection();
             this.beginSection();
@@ -3974,20 +4000,20 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
                 let checklistItems = _checklist.sections[_section_id].checklistItems;
                 let startingItem = (this.currentPage * this.maximumItemsPerPage) - this.maximumItemsPerPage;
                 let endItem = Math.min(checklistItems.length, startingItem + this.maximumItemsPerPage);
-                for(let i = startingItem; i < endItem; i++){
-                    if(checklistItems[i]){
+                for (let i = startingItem; i < endItem; i++) {
+                    if (checklistItems[i]) {
                         this.addChecklistItem(_checklist.sections[_section_id].checklistItems[i], this.textSize);
                     }
                 }
 
-                if(endItem == checklistItems.length && _section_id < _checklist.sections.length - 1){
-                    if(checklistItems.length % 7 != 0){
+                if (endItem == checklistItems.length && _section_id < _checklist.sections.length - 1) {
+                    if (checklistItems.length % 7 != 0) {
                         this.addChecklistTitle("", this.titleSize, 1.0);
-                        this.addSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1);}).bind(this));
+                        this.addSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => { this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1); }).bind(this));
                     }
-                    else{
-                        if(this.currentPage == this.totalPages){
-                            this.addSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1);}).bind(this));
+                    else {
+                        if (this.currentPage == this.totalPages) {
+                            this.addSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => { this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1); }).bind(this));
                         }
                     }
                 }
@@ -3995,15 +4021,15 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
             this.endSection();
         }
         this.closeMenu();
-        this.escapeCbk = (() => {this.showChecklistSections(_checklist); this.currentItemIndex = 0; this.changeCurrentSelectionIndex(this.checklist.findCurrentSectionIndex(), true);}).bind(this);
+        this.escapeCbk = (() => { this.showChecklistSections(_checklist); this.currentItemIndex = 0; this.changeCurrentSelectionIndex(this.checklist.findCurrentSectionIndex(), true); }).bind(this);
         page.appendChild(sectionRoot);
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
-    minimise(){
+    minimise() {
         this.root.setAttribute("visible", "false");
     }
-    expand(){
+    expand() {
         this.root.setAttribute("visible", "true");
     }
 }
@@ -4031,10 +4057,10 @@ class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
             this.isVisible = _value;
             this.root.setAttribute("visible", (_value) ? "true" : "false");
 
-            if(this.isVisible == true){
+            if (this.isVisible == true) {
                 this.handler = new CJ4_PassengerBrief(this.root, this.dictionary);
             }
-            else if(this.isVisible == false){
+            else if (this.isVisible == false) {
                 Utils.RemoveAllChildren(this.root);
                 this.handler = null;
             }
@@ -4046,29 +4072,29 @@ class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onActivate();
                     }
                     break;
                 case "Upr_DATA_DEC":
                 case "Lwr_DATA_DEC":
-                    if(!this.otherMenusOpen)
+                    if (!this.otherMenusOpen)
                         this.handler.onDataDec();
                     break;
                 case "Upr_DATA_INC":
                 case "Lwr_DATA_INC":
-                    if(!this.otherMenusOpen)
+                    if (!this.otherMenusOpen)
                         this.handler.onDataInc();
                     break;
                 case "Upr_MENU_ADV_DEC":
                 case "Lwr_MENU_ADV_DEC":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onMenuDec();
                     }
                     break;
                 case "Upr_MENU_ADV_INC":
                 case "Lwr_MENU_ADV_INC":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onMenuInc();
                     }
                     break;
@@ -4097,7 +4123,7 @@ class CJ4_PassengerBrief extends WTMenu.PassengerBrief_Menu_Handler {
         this.showMainPage();
     }
     refreshPage() {
-        if(this.currentMenu){
+        if (this.currentMenu) {
             this.currentMenu();
         }
     }
@@ -4126,7 +4152,7 @@ class CJ4_PassengerBrief extends WTMenu.PassengerBrief_Menu_Handler {
             this.endSection();
         }
         this.closeMenu();
-        this.escapeCbk = () => {};
+        this.escapeCbk = () => { };
         this.highlight(_highlight);
         page.appendChild(sectionRoot);
         Utils.RemoveAllChildren(this.root);

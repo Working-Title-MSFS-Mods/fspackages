@@ -77,6 +77,29 @@ class CJ4_MFD extends BaseAirliners {
             else {
                 this.map.setMode(this.mapDisplayMode);
                 this.mapOverlay.setMode(this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource);
+
+                //Hack to correct the map compass size until we separate it out
+                //fully from the default shared code
+                if (this.mapDisplayMode !== this.previousMapDisplayMode || this.mapNavigationSource !== this.previousMapNavigationSource) {
+                    const el = document.querySelector('#NDCompass svg');
+                    if (el) {
+                        this.previousMapDisplayMode = this.mapDisplayMode;
+                        this.previousMapNavigationSource = this.mapNavigationSource;
+    
+                        if (this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {
+                            el.setAttribute('width', '122%');
+                            el.setAttribute('height', '122%');
+                            el.style = 'transform: translate(-84px, -56px)';
+                        }
+    
+                        if (this.mapDisplayMode === Jet_NDCompass_Display.ARC) {
+                            el.setAttribute('width', '108%');
+                            el.setAttribute('height', '108%');
+                            el.style = 'transform: translate(-30px, -18px)';
+                        }
+                    }
+                }
+
                 if (this.showTerrain) {
                     this.map.showTerrain(true);
                     this.mapOverlay.showTerrain(true);
@@ -1190,9 +1213,12 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 rect.setAttribute("stroke", "#52504d");
                 rect.setAttribute("stroke-width", "2");
                 trimGroup.appendChild(rect);
+                var percent = (-Simplane.getTrimNeutral() + 1.0) * 0.5;
+                percent = Math.min(1, Math.max(0, percent));
+                var posY = ((gaugeStartY+gaugeHeight) - (gaugeHeight * percent)) - ((gaugeHeight*0.18)/2);
                 var rect = document.createElementNS(Avionics.SVG.NS, "rect");
                 rect.setAttribute("x", gaugeStartX.toString());
-                rect.setAttribute("y", (gaugeStartY + gaugeHeight * 0.25).toString());
+                rect.setAttribute("y", posY.toString());
                 rect.setAttribute("width", gaugeWidth.toString());
                 rect.setAttribute("height", (gaugeHeight * 0.25).toString());
                 rect.setAttribute("fill", "#11d011");
@@ -1200,8 +1226,8 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
 
 
                 this.ElevatorCursorRX = gaugeStartX + gaugeWidth;
-                this.ElevatorCursorRY1 = gaugeStartY + gaugeHeight;
-                this.ElevatorCursorRY2 = gaugeStartY;
+                this.ElevatorCursorRY1 = gaugeStartY ;
+                this.ElevatorCursorRY2 = gaugeStartY + gaugeHeight;
                 this.ElevatorCursorR = document.createElementNS(Avionics.SVG.NS, "path");
                 this.ElevatorCursorR.setAttribute("transform", "translate (" + this.ElevatorCursorRX + " " + this.ElevatorCursorRY2 + ")");
                 this.ElevatorCursorR.setAttribute("fill", "white");
@@ -1221,7 +1247,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
 
 
                 this.ElevatorCursorLX = (gaugeStartX - gaugeWidth) + 11;
-                this.ElevatorCursorLY2 = gaugeStartY;
+                this.ElevatorCursorLY2 = gaugeStartY + gaugeHeight;
                 this.ElevatorCursorL = document.createElementNS(Avionics.SVG.NS, "path");
                 this.ElevatorCursorL.setAttribute("transform", "translate (" + this.ElevatorCursorLX + " " + this.ElevatorCursorLY2 + ")");
                 this.ElevatorCursorL.setAttribute("fill", "white");
@@ -1268,15 +1294,21 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 this.DCVoltValueLeft.textContent = Math.round(GenVolt1).toString();
                 let GenVolt2 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS VOLTAGE:2", "volts");
                 this.DCVoltValueRight.textContent = Math.round(GenVolt2).toString();
-                let BatAmp = SimVar.GetSimVarValue("ELECTRICAL BATTERY LOAD:1", "amperes");
-                this.BATAmpValue.textContent = Math.round(BatAmp).toString();
                 let BatVolt = SimVar.GetSimVarValue("ELECTRICAL BATTERY VOLTAGE:1", "volts");
                 this.BATVoltValue.textContent = Math.round(BatVolt).toString();
-                this.BATTempValue.textContent = "--";
-                let HydPSI1 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:1", "psi");
+                let BatAmp = SimVar.GetSimVarValue("ELECTRICAL BATTERY LOAD:1", "amperes");
+                BatAmp = BatAmp / BatVolt;
+                this.BATAmpValue.textContent = Math.round(BatAmp).toString();
+                this.BATTempValue.textContent = "26";
+				
+				let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
+				let HydPSI1 = N2Eng1 >= 20 ? 3000 : N2Eng1 * 150;
                 this.HYDPSIValueLeft.textContent = Math.round(HydPSI1).toString();
-                let HydPSI2 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:2", "psi");
+				
+				let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
+				let HydPSI2 = N2Eng2 >= 20 ? 3000 : N2Eng2 * 150;
                 this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
+				
                 let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
                 this.FUELPPHValueLeft.textContent = Math.round(PPHEng1).toString();
                 let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
