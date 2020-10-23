@@ -70,9 +70,14 @@ class CJ4_FMC_FplnRecallPage {
                     // should be a normal waypoint then
                     icao = routeArr[idx];
                     console.log("adding as waypoint " + icao);
-                    fmc.insertWaypoint(icao, wptIndex, () => {
+                    fmc.insertWaypoint(icao, wptIndex, (res) => {
                         CJ4_FMC_InitRefIndexPage.ShowPage17(fmc);
-                        addWaypoint();
+                        if (res) {
+                            addWaypoint();
+                        }
+                        else {
+                            fmc.showErrorMessage("ERROR WPT " + icao + "[red]");
+                        }
                     });
                 } else {
                     // probably an airway
@@ -87,10 +92,14 @@ class CJ4_FMC_FplnRecallPage {
                             if (airway) {	                                    // Load the fixes of the selected airway and their infos.airways
                                 // set the outgoing airway of the last enroute or departure waypoint of the flightplan
                                 lastWaypoint.infos.airwayOut = airway.name;
-                                CJ4_FMC_RoutePage.insertWaypointsAlongAirway(fmc, exitWpt, wptIndex - 1, icao, () => {
+                                CJ4_FMC_RoutePage.insertWaypointsAlongAirway(fmc, exitWpt, wptIndex - 1, icao, (res) => {
                                     idx++;
                                     CJ4_FMC_InitRefIndexPage.ShowPage17(fmc);
-                                    addWaypoint();
+                                    if (res) {
+                                        addWaypoint();
+                                    } else {
+                                        fmc.showErrorMessage("ERROR AIRWAY " + icao + "[red]");
+                                    }
                                 });
                             }
                             else {

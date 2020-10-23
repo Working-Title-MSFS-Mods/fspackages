@@ -415,43 +415,30 @@ cj4-pfd-element {
           font-size: 18px;
           fill: magenta;
           text-anchor: end; }
-      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids div {
-        top: 87%;
-        width: 25%;
-        height: 13%;
-        position: absolute;
-        background-color: black; }
       cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids svg {
         width: 100%;
         height: 100%; }
-      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Left {
-        left: 2.5%; }
-      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Right {
-        right: 2.5%; }
-      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids text {
-        font-family: 'Collins ProLine';
-        text-align: center;
-        text-anchor: middle; }
-      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #State {
-        font-size: calc( 3 * 1vh * var(--bodyHeightScale));
-        fill: white; }
-      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #ID {
-        font-size: calc( 3 * 1vh * var(--bodyHeightScale));
-        fill: white; }
-      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Mode {
-        font-size: calc( 3 * 1vh * var(--bodyHeightScale));
-        fill: white;
-        text-decoration: underline; }
-      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Distance {
-        font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
-        fill: green; }
       cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Unit {
-        font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
-        fill: cyan; }
+        font-size: 22px; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Left {
+        color: cyan;
+        stroke: cyan; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Right {
+        color: white;
+        stroke: white; }
+      #VORDMENavaids {
+        font-size: 28px;
+        position: absolute;
+        top: 400px;
+        top: 320px;
+        height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
       cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Arrow {
         fill: none;
-        stroke: white;
-        stroke-width: 6px; }
+        stroke-width: 1px; }
       cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Symbols {
         top: 85%;
         left: 87%;
@@ -656,4 +643,70 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 #Airspeed > text:last-child {
   fill: #11d011;
   font-size: 30px;
+}
+
+.bearing-block-arrow {
+  width: 25px;
+  padding-top: 8px;
+  float: left;
+}
+
+.bearing-block-dist {
+  float: left;
+}
+
+.bearing-pointer.arc {
+  position: absolute;
+  left: 86px;
+  top: -268px;
+  width: 600px;
+}
+
+.bearing-pointer.rose {
+  position: absolute;
+  left: 156px;
+  top: -260px;
+  width: 460px;
+  stroke-width: 1.4;
+}
+
+.bearing-pointer-needle {
+  transform-origin: 100px 100px;
+}
+
+#VORDMENavaid_Left #ID,
+#VORDMENavaid_Right #ID {
+  padding-left: 4px;
+}
+
+#VSpeeds text {
+  font-size: 22px;
+}
+
+#Airspeed #CursorGroup text {
+  font-size: 38px;
+}
+
+#Airspeed #CursorGroup path {
+  transform: translateY(-1px)
+}
+
+#Altimeter #CenterGroup #graduationGroup > text[font-size="25"] {
+  font-size: 38px;
+  letter-spacing: 0px;
+}
+
+#Altimeter #CenterGroup #graduationGroup > text[font-size="18"] {
+  font-size: 24px;
+  letter-spacing: 0px; 
+}
+
+#Altimeter #CenterGroup #CursorGroup > text[font-size="31.25"] {
+  font-size: 40px;
+  letter-spacing: 0px; 
+}
+
+#Altimeter #CenterGroup #CursorGroup > text[font-size="23.75"] {
+  font-size: 26px;
+  letter-spacing: 0px; 
 }
