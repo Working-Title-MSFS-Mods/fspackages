@@ -6,10 +6,10 @@ class CJ4_FMC_NavRadioPageOne {
         this._fmc = fmc;
         this._isDirty = true;
 
-        this._transponderMode = 0;
+        this._transponderMode = 1;
         let modeValue = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "Enum");
         if (modeValue == 4) {
-            this._transponderMode = 1;
+            this._transponderMode = 0;
         }
 
         this._freqMap = {
@@ -42,7 +42,7 @@ class CJ4_FMC_NavRadioPageOne {
 
         // set simvar
         let modeValue = 1;
-        if (value == 1) modeValue = 4;
+        if (value == 0) modeValue = 4;
 
         SimVar.SetSimVarValue("TRANSPONDER STATE:1", "Enum", modeValue);
 
