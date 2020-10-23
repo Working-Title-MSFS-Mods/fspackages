@@ -6,11 +6,7 @@ class CJ4_FMC_NavRadioPageOne {
         this._fmc = fmc;
         this._isDirty = true;
 
-        this._transponderMode = 0;
-        let modeValue = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "Enum");
-        if (modeValue == 4) {
-            this._transponderMode = 1;
-        }
+        this._transponderIsActive = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "Enum") == 4;
 
         this._freqMap = {
             vhf1: "[]",
@@ -35,17 +31,13 @@ class CJ4_FMC_NavRadioPageOne {
         });
     }
 
-    get transponderMode() { return this._transponderMode; }
-    set transponderMode(value) {
-        if (value == 2) value = 0;
-        this._transponderMode = value;
-
-        // set simvar
-        let modeValue = 1;
-        if (value == 1) modeValue = 4;
-
-        SimVar.SetSimVarValue("TRANSPONDER STATE:1", "Enum", modeValue);
-
+    toggleTransponder() {
+        this._transponderIsActive = !this._transponderIsActive;
+        if (this._transponderIsActive) {
+            SimVar.SetSimVarValue("TRANSPONDER STATE:1", "Enum", 4);
+        } else {
+            SimVar.SetSimVarValue("TRANSPONDER STATE:1", "Enum", 1);
+        }
         this.invalidate();
     }
 
@@ -79,7 +71,7 @@ class CJ4_FMC_NavRadioPageOne {
 
     render() {
         // console.log("Render Nav");
-        const tcasModeSwitch = this._fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], this.transponderMode, "blue");
+        const tcasModeSwitch = this._fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], this._transponderIsActive ? 0 : 1, "blue");
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/2[blue]", "TUNE[blue]"],
@@ -195,7 +187,7 @@ class CJ4_FMC_NavRadioPageOne {
             }
         };
 
-        this._fmc.onRightInput[4] = () => { this.transponderMode = this.transponderMode + 1; };
+        this._fmc.onRightInput[4] = () => { this.toggleTransponder(); };
 
         this._fmc.onRightInput[5] = () => { CJ4_FMC_NavRadioPage.ShowPage3(this._fmc); };
         this._fmc.onPrevPage = () => { CJ4_FMC_NavRadioPage.ShowPage2(this._fmc); };
