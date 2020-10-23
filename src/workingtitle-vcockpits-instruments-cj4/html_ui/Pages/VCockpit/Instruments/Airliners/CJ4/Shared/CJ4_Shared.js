@@ -734,10 +734,14 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("stroke-width", "2");
             trimGroup.appendChild(rect);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            var percent = (-Simplane.getTrimNeutral() + 1.0) * 0.5;
+            percent = Math.min(1, Math.max(0, percent));
+            var posY = ((gaugeStartY+gaugeHeight) - (gaugeHeight * percent)) - ((gaugeHeight*0.18)/2);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
-            rect.setAttribute("y", (gaugeStartY + gaugeHeight * 0.25).toString());
+            rect.setAttribute("y", (posY).toString());
             rect.setAttribute("width", gaugeWidth.toString());
-            rect.setAttribute("height", (gaugeHeight * 0.25).toString());
+            rect.setAttribute("height", (gaugeHeight * 0.20).toString());
             rect.setAttribute("fill", "green");
             trimGroup.appendChild(rect);
             this.ElevatorCursorX = gaugeStartX + gaugeWidth;
@@ -759,7 +763,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.setAttribute("alignment-baseline", "top");
             trimGroup.appendChild(text);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "ND";
+            text.textContent = "NU";
             text.setAttribute("x", (gaugeStartX - 8).toString());
             text.setAttribute("y", (gaugeStartY + gaugeHeight).toString());
             text.setAttribute("fill", "white");
@@ -1578,9 +1582,13 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("stroke", "white");
             rect.setAttribute("stroke-width", "2");
             trimGroup.appendChild(rect);
+            // elev trim expanded bar
+            var percent = (-Simplane.getTrimNeutral() + 1.0) * 0.5;
+            percent = Math.min(1, Math.max(0, percent));
+            var posY = startPosY;
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
-            rect.setAttribute("y", (startPosY - gaugeHeight * 0.25).toString());
+            rect.setAttribute("y", posY.toString());
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", (gaugeHeight * 0.25).toString());
             rect.setAttribute("fill", "green");
@@ -1596,7 +1604,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.setAttribute("alignment-baseline", "top");
             trimGroup.appendChild(text);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "ND";
+            text.textContent = "NU";
             text.setAttribute("x", (gaugeStartX - 8).toString());
             text.setAttribute("y", (startPosY + gaugeHeight * 0.5).toString());
             text.setAttribute("fill", "white");
@@ -1606,10 +1614,10 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.setAttribute("alignment-baseline", "bottom");
             trimGroup.appendChild(text);
             this.ElevatorCursorX = gaugeStartX + gaugeWidth;
-            this.ElevatorCursorY1 = startPosY + gaugeHeight * 0.5;
-            this.ElevatorCursorY2 = startPosY - gaugeHeight * 0.5;
+            this.ElevatorCursorY1 = startPosY - gaugeHeight * 0.5;
+            this.ElevatorCursorY2 = startPosY + gaugeHeight * 0.5;
             this.ElevatorCursor = document.createElementNS(Avionics.SVG.NS, "path");
-            this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + this.ElevatorCursorY1 + ")");
+            this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + this.ElevatorCursorY2 + ")");
             this.ElevatorCursor.setAttribute("fill", "white");
             this.ElevatorCursor.setAttribute("d", "M0 0 l15 -5 l0 10 l-15 -5 Z");
             trimGroup.appendChild(this.ElevatorCursor);

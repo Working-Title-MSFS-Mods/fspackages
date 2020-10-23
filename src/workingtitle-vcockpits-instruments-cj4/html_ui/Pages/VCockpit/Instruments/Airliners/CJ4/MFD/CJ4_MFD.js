@@ -1171,7 +1171,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 text.textContent = "ELEV";
                 text.setAttribute("x", (blockPosX - 80).toString());
                 text.setAttribute("y", blockPosY.toString());
-                text.setAttribute("fill", "white");
+                text.setAttribute("fill", "white");""
                 text.setAttribute("font-size", "22");
                 text.setAttribute("font-family", "Roboto-Light");
                 text.setAttribute("text-anchor", "middle");
@@ -1190,7 +1190,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 trimGroup.appendChild(this.AileronRadians);
 
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = "NU";
+                text.textContent = "ND";
                 text.setAttribute("x", (blockPosX + 6).toString());
                 text.setAttribute("y", blockPosY.toString());
                 text.setAttribute("fill", "white");
@@ -1212,9 +1212,12 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 rect.setAttribute("stroke", "white");
                 rect.setAttribute("stroke-width", "2");
                 trimGroup.appendChild(rect);
+                var percent = (-Simplane.getTrimNeutral() + 1.0) * 0.5;
+                percent = Math.min(1, Math.max(0, percent));
+                var posY = ((gaugeStartY+gaugeHeight) - (gaugeHeight * percent)) - ((gaugeHeight*0.18)/2);
                 var rect = document.createElementNS(Avionics.SVG.NS, "rect");
                 rect.setAttribute("x", gaugeStartX.toString());
-                rect.setAttribute("y", (gaugeStartY + gaugeHeight * 0.25).toString());
+                rect.setAttribute("y", posY.toString());
                 rect.setAttribute("width", gaugeWidth.toString());
                 rect.setAttribute("height", (gaugeHeight * 0.25).toString());
                 rect.setAttribute("fill", "green");
@@ -1262,7 +1265,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 trimGroup.appendChild(this.ElevatorTextL);
 
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = "ND";
+                text.textContent = "NU";
                 text.setAttribute("x", (blockPosX + 18).toString());
                 text.setAttribute("y", (gaugeStartY + gaugeHeight + 28).toString());
                 text.setAttribute("fill", "white");
