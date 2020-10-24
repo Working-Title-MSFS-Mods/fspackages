@@ -58,6 +58,8 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Fixed pitch trim indicator (was backward) and adjusted default trim position for better takeoff attitudes (Danice737)
 * Fixed ISA temp deviation calculations (Temps should level off at 36,000 at the tropopause)
 * FIxed battery amps displays so it's not -500 anymore (Electrical system still WIP) (Danice737)
+* Added hydraulic pumps tied to N2 so they reach full normal pressure by 20% N2.
+
 
 
 ## Known Issues
