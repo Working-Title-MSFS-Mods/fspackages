@@ -467,6 +467,7 @@ class CJ4_FMC_DepArrPage {
                     lastApproachIndex = i;
                 } 
             }
+            let firstMatchingRunway = true;
             for (let k = 0; k < runways.length; k++) {
                 let runway = runways[k];
                 let appendRow = false;
@@ -485,8 +486,8 @@ class CJ4_FMC_DepArrPage {
                     }
                 }
                 if (appendRow) {
-                    displayableApproachesCount++;
-                    if (k == 0) {
+                    displayableRunwaysCount++;
+                    if (firstMatchingRunway) {
                         lastApproachPage = pageIndex + 1;
                     }
                     if (rowIndex === 5) {
@@ -498,9 +499,10 @@ class CJ4_FMC_DepArrPage {
                         text: "RW" + Avionics.Utils.formatRunway(runway.designation).trim() + "[s-text]",
                         approachIndex: k + approaches.length
                     };
-                    if (k == 0) {
+                    if (firstMatchingRunway) {
                         firstRunwayPage = pageIndex + 1;
                     }
+                    firstMatchingRunway = false;
                     rowIndex++;
                 } 
             }
