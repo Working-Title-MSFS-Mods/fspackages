@@ -440,7 +440,7 @@ class CJ4_AOA extends NavSystemElement {
         this.aoa.setAttribute("angle", angle);
         let flap35Active = SimVar.GetSimVarValue("TRAILING EDGE FLAPS LEFT PERCENT", "Percent");
         let aoaActive = SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number");
-        console.log("AOA: " + SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number"));
+        // console.log("AOA: " + SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number"));
         if ((flap35Active == 100 && aoaActive !== 2) || aoaActive == 1) {
             this.aoa.style = "";
         }
