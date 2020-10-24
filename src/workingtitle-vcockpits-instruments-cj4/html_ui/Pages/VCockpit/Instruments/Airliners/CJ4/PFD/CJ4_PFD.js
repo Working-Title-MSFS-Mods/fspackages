@@ -602,7 +602,7 @@ class CJ4_APDisplay extends NavSystemElement {
         else if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean")) {
             Avionics.Utils.diffAndSet(this.AP_VerticalActive, "FLC");
             if (Simplane.getAutoPilotMachModeActive()) {
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 3));
+                Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2));
             }
             else {
                 Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0) + "KT");
@@ -610,7 +610,7 @@ class CJ4_APDisplay extends NavSystemElement {
         }
         else if (SimVar.GetSimVarValue("AUTOPILOT MACH HOLD", "Boolean")) {
             Avionics.Utils.diffAndSet(this.AP_VerticalActive, "FLC");
-            Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 3));
+            Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2));
         }
         else if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean")) {
             if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean")) {
