@@ -431,7 +431,17 @@ class CJ4_FMC_DepArrPage {
                 }
                 else {
                     for (let j = 0; j < selectedArrival.runwayTransitions.length; j++) {
-                        if (selectedArrival.runwayTransitions[j].name.replace("RW", "") === approach.runway.trim()) {
+                        let matchingApproachRunways;
+                        if (approach.runway.endsWith(" ")) {
+                            // Approach runways ending with a space are wildcard approches: They are compatible with all matching arrivals 
+                            // e.g. approach runway "4 " is compatible with arrival runwayTransitions "RW4", "RW4L", "RW4R" and "RW4C"
+                            matchingApproachRunways = [approach.runway.trim(), approach.runway.trim() + "L", approach.runway.trim() + "R", approach.runway.trim() + "C"];
+                        } else {
+                            // Specific Approach runways not ending with a space are compatible only with that specific arrival
+                            // e.g. approach runway "4L" is compatible only with arrival runwayTransition "RW4L"
+                            matchingApproachRunways = [approach.runway];
+                        }
+                        if (matchingApproachRunways.includes(selectedArrival.runwayTransitions[j].name.replace("RW", ""))) {
                             appendRow = true;
                             displayableApproachesCount++;
                             break;
@@ -622,10 +632,18 @@ class CJ4_FMC_DepArrPage {
                 }
                 else {
                     for (let j = 0; j < arrival.runwayTransitions.length; j++) {
-                        if (selectedApproach && arrival.runwayTransitions[j].name.replace("RW", "") == selectedApproach.runway.trim()) {
-                            appendRow = true;
-                            displayableArrivalsCount++;
-                            break;
+                        if (selectedApproach) {
+                            let matchingApproachRunways;
+                            if (selectedApproach.runway.endsWith(" ")) {
+                                matchingApproachRunways = [selectedApproach.runway.trim(), selectedApproach.runway.trim() + "L", selectedApproach.runway.trim() + "R", selectedApproach.runway.trim() + "C"];
+                            } else {
+                                matchingApproachRunways = [selectedApproach.runway];
+                            }                        
+                            if (matchingApproachRunways.includes(arrival.runwayTransitions[j].name.replace("RW", ""))) {
+                                appendRow = true;
+                                displayableArrivalsCount++;
+                                break;
+                            }
                         }
                         else if (selectedRunway && arrival.runwayTransitions[j].name == "RW" + selectedRunway.designation.trim()) {
                             appendRow = true;
