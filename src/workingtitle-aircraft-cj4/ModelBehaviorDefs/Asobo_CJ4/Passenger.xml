@@ -30,6 +30,31 @@
 		</Component>
 	</Template>
 
+    <Template Name="ASOBO_PASSENGER_Switch_Oxygen_Template">
+        <Component ID="#NODE_ID#" Node="#NODE_ID#">
+            <UseTemplate Name="ASOBO_GT_Update">
+                <UPDATE_ONCE>True</UPDATE_ONCE>
+                <UPDATE_CODE>
+                    1 (&gt;L:SAFETY_Knob_Oxygen) <!-- Set default -->
+                </UPDATE_CODE>
+            </UseTemplate>
+            <UseTemplate Name="ASOBO_GT_Switch_3States">
+                <SWITCH_POSITION_VAR>SAFETY_Knob_Oxygen</SWITCH_POSITION_VAR>
+                <SWITCH_POSITION_TYPE>L</SWITCH_POSITION_TYPE>
+                <COUNT>3</COUNT>
+                <CODE_POS_0>
+                    (* CREW ONLY *) 0
+                </CODE_POS_0>
+                <CODE_POS_1>
+                    (* NORM *) 1
+                </CODE_POS_1>
+                <CODE_POS_2>
+                    (* DROP MASK *) 2
+                </CODE_POS_2>
+            </UseTemplate>
+        </Component>
+    </Template>
+
 	<Template Name="ASOBO_PASSENGER_Switch_PRESSOURCE_Template">
 	<Component ID="#NODE_ID#" Node="#NODE_ID#">
         <UseTemplate Name="ASOBO_GT_Update">
