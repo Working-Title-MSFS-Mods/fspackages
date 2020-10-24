@@ -238,8 +238,11 @@ class CJ4_FMC_DepArrPage {
             }
         }
 
-        let rowsCount = Math.max(displayableRunwaysCount, displayableDeparturesCount);
-        let pageCount = Math.max(Math.ceil(rowsCount / 5), 1);
+        let rowsCountOf5RowsPerPageData = Math.max(displayableRunwaysCount, displayableDeparturesCount);
+        let rowsCountOf4RowsPerPageData = displayableDpEnrouteTransitionsCount;
+        let pageCountOf5RowsPerPageData = Math.ceil(rowsCountOf5RowsPerPageData / 5);
+        let pageCountOf4RowsPerPageData = Math.ceil(rowsCountOf4RowsPerPageData / 4);
+        let pageCount = Math.max(Math.max(pageCountOf5RowsPerPageData, pageCountOf4RowsPerPageData), 1);
 
 
         //start of CWB EXEC handling
@@ -664,8 +667,11 @@ class CJ4_FMC_DepArrPage {
             }
         }
 
-        let rowsCount = Math.max(Math.max(displayableApproachesCount + displayableRunwaysCount, displayableArrivalsCount), Math.max(displayableTransitionsCount, displayableEnrouteTransitionsCount));
-        let pageCount = Math.max(Math.ceil(rowsCount / 5), 1);
+        let rowsCountOf5RowsPerPageData = Math.max(displayableApproachesCount + displayableRunwaysCount, displayableArrivalsCount);
+        let rowsCountOf4RowsPerPageData = Math.max(displayableTransitionsCount, displayableEnrouteTransitionsCount);
+        let pageCountOf5RowsPerPageData = Math.ceil(rowsCountOf5RowsPerPageData / 5);
+        let pageCountOf4RowsPerPageData = Math.ceil(rowsCountOf4RowsPerPageData / 4);
+        let pageCount = Math.max(Math.max(pageCountOf5RowsPerPageData, pageCountOf4RowsPerPageData), 1);
 
         //start of CWB EXEC handling
         let rsk6Field = "";
