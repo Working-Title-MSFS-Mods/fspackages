@@ -1,0 +1,35 @@
+﻿<script type="text/html" id="CJ4_SAI">
+    <div id="Mainframe">
+        <div id="Electricity" state="off">
+            <glasscockpit-highlight id="Highlight" style="position:absolute; width: 100%; height:100%;"></glasscockpit-highlight>
+            <cj4-sai-airspeed-indicator id="Airspeed"></cj4-sai-airspeed-indicator>
+            <cj4-sai-altimeter-indicator id="Altimeter"></cj4-sai-altimeter-indicator>
+            <cj4-sai-compass-indicator id="Compass"></cj4-sai-compass-indicator>
+            <cj4-sai-attitude-indicator id="Horizon" background="true"></cj4-sai-attitude-indicator>
+        </div>
+    </div>
+</script>
+
+<link rel="stylesheet" href="CJ4_SAI.css" />
+
+<script type="text/html" import-script="/JS/SimPlane.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Utils/RadioNav.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/highlight.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/FlightPlan.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/FlightPlanManager.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/Waypoint.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/NearestWaypoint.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/Approach.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/Runway.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/GeoCalc.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/SelectableElement.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/SearchField.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/BaseAirliners.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/SAI/CJ4_SAI.js"></script>
