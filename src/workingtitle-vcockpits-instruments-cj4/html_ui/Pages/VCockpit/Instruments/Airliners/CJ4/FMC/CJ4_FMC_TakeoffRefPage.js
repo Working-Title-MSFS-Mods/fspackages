@@ -20,8 +20,13 @@ class CJ4_FMC_TakeoffRefPage {
             depRunwayElevation = new Number(depRunway.elevation * 3.28);
             depRunwayLength = new Number((depRunway.length) * 3.28);
         }
-		
-		fmc.takeoffQnh = isNaN(fmc.takeoffQnh) ? SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg").toFixed(2) : fmc.takeoffQnh;
+        
+        /// Uncomment this if we want to show currently set qnh instead of "□□.□□"
+        // if (isNaN(fmc.takeoffQnh)) {
+        //     fmc.takeoffQnhIsInHPA = SimVar.GetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool") == true
+        //     const altimeterSetting = SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg");
+        //     fmc.takeoffQnh = fmc.takeoffQnhIsInHPA ? fastToFixed(parseFloat(altimeterSetting) * 33.8639, 0) : fastToFixed(altimeterSetting, 2)
+        // }
 
         let headwind = "";
         let crosswind = "";
@@ -73,7 +78,7 @@ class CJ4_FMC_TakeoffRefPage {
             [" RWY WIND[blue]", "OAT[blue] "],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", fmc.takeoffOat + "\xB0C"],
             [" RWY LENGTH[blue]", "QNH[blue] "],
-            [Math.round(depRunwayLength) + " FT[s-text]", fmc.takeoffQnh + "[s-text]"],
+            [Math.round(depRunwayLength) + " FT[s-text]", fmc.takeoffQnh + (fmc.takeoffQnhIsInHPA ? " HPA[s-text]" : " IN[s-text]")],
             [" RWY SLOPE[blue]", "P ALT[blue] "],
             ["--.-%[s-text]", fmc.takeoffPressAlt + " FT[s-text]"],
             [" RWY COND[blue]"],
@@ -109,29 +114,41 @@ class CJ4_FMC_TakeoffRefPage {
             { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
         };
         fmc.onRightInput[2] = () => {
-            let qnhInput = Number(fmc.inOut);
-            if (!isNaN(qnhInput)) {
-                if (qnhInput > 28 && qnhInput < 32) {
-                    fmc.takeoffQnh = qnhInput.toFixed(2);
-                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
-                }
-                else if (qnhInput > 280 && qnhInput < 320) {
-                    let qnhParse = qnhInput / 10;
-                    fmc.takeoffQnh = qnhParse.toFixed(2);
-                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
-                }
-                else if (qnhInput > 2800 && qnhInput < 3200) {
-                    let qnhParse = qnhInput / 100;
-                    fmc.takeoffQnh = qnhParse.toFixed(2);
-                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
-                }
-                else {
+            // parsing the scratchpad:
+            let orderOfMag = 1;
+            let inputInHPA = false;
+            let input = Number(fmc.inOut);
+            switch (true) {
+                case (28 < input && input < 32):
+                    break;
+                case (280 < input && input < 320):
+                    orderOfMag = 0.1;
+                    break;
+                case (2800 < input && input < 3200):
+                    orderOfMag = 0.01;
+                    break;
+                case (948 < input && input < 1084):
+                    inputInHPA = true;
+                    break;
+                default:
                     fmc.showErrorMessage("INVALID");
-                }
+                    fmc.clearUserInput();
+                    return;
             }
-            else {
-                fmc.showErrorMessage("INVALID");
+
+            if (inputInHPA) {
+                fmc.takeoffQnh = (input * orderOfMag).toFixed(0);
+                fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh/33.8639) * 1000) + depRunwayElevation)));
+            } else {
+                fmc.takeoffQnh = (input * orderOfMag).toFixed(2);
+                fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
             }
+            
+            if (fmc.takeoffQnhIsInHPA != inputInHPA) {
+                fmc.takeoffQnhIsInHPA = inputInHPA == true
+                SimVar.SetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool", inputInHPA ? 1 : 0); // updates PFD (and probably other systems)
+            }
+
             fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
             fmc.clearUserInput();
             CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);

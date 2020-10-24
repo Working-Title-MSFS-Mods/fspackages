@@ -70,7 +70,7 @@ class CJ4_FMC_ApproachRefPage {
             [" RWY ID[blue]", "OAT [blue]"],
             [arrRunwayOutput + " [s-text]", fmc.landingOat + "\xB0C"],
             [" RWY WIND[blue]", "QNH [blue]"],
-            [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", fmc.landingQnh + "[s-text]"],
+            [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", fmc.landingQnh + (fmc.landingQnhIsInHPA ? " HPA[s-text]" : " IN[s-text]")],
             [" RUNWAY LENGTH[blue]", "P ALT [blue]"],
             [Math.round(arrRunwayLength) + " FT[s-text]", fmc.landingPressAlt + " FT[s-text]"],
             [" RWY SLOPE[blue]"],
@@ -110,31 +110,43 @@ class CJ4_FMC_ApproachRefPage {
         };
 
         fmc.onRightInput[2] = () => {
-            let qnhInput = Number(fmc.inOut);
-            if (!isNaN(qnhInput)) {
-                if (qnhInput > 28 && qnhInput < 32) {
-                    fmc.landingQnh = qnhInput.toFixed(2);
-                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
-                }
-                else if (qnhInput > 280 && qnhInput < 320) {
-                    let qnhParse = qnhInput / 10;
-                    fmc.landingQnh = qnhParse.toFixed(2);
-                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
-                }
-                else if (qnhInput > 2800 && qnhInput < 3200) {
-                    let qnhParse = qnhInput / 100;
-                    fmc.landingQnh = qnhParse.toFixed(2);
-                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
-                }
-                else {
+            // parsing the scratchpad:
+            let orderOfMag = 1;
+            let inputInHPA = false;
+            let input = Number(fmc.inOut);
+            switch (true) {
+                case (28 < input && input < 32):
+                    break;
+                case (280 < input && input < 320):
+                    orderOfMag = 0.1;
+                    break;
+                case (2800 < input && input < 3200):
+                    orderOfMag = 0.01;
+                    break;
+                case (948 < input && input < 1084):
+                    inputInHPA = true;
+                    break;
+                default:
                     fmc.showErrorMessage("INVALID");
-                }
+                    fmc.clearUserInput();
+                    return;
             }
-            else {
-                fmc.showErrorMessage("INVALID");
+
+            if (inputInHPA) {
+                fmc.landingQnh = (input * orderOfMag).toFixed(0);
+                fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh/33.8639) * 1000) + arrRunwayElevation)));
+            } else {
+                fmc.landingQnh = (input * orderOfMag).toFixed(2);
+                fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
             }
-            fmc.clearUserInput();
+            
+            if (fmc.landingQnhIsInHPA != inputInHPA) {
+                fmc.landingQnhIsInHPA = inputInHPA == true
+                SimVar.SetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool", inputInHPA ? 1 : 0); // updates PFD (and probably other systems)
+            }
+            
             fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
+            fmc.clearUserInput();
             CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
         };
         fmc.onLeftInput[5] = () => {
