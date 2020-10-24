@@ -24,17 +24,14 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ### LEGS Page
 *
 
-### PERF Page
-*
-
-### ARR DATA Page
-* 
+### TUNE Page
+* Fixed a bug where swapping COM2 would swap COM1 instead
 
 ### PFD/MFD
-*
+* Better readability of target altitude
+* Changed the target altitude bug to look like in the real plane
+* Baro setting is now easiert to read
 
-### Lighting
-* 
 
 ## Known Issues
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
