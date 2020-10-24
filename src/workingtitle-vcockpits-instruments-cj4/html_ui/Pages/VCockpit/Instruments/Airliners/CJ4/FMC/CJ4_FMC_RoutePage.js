@@ -34,6 +34,12 @@ class CJ4_FMC_RoutePage {
         };
 
         let setOriginFunc = (icao) => {
+            if(!SimVar.GetSimVarValue("SIM ON GROUND", "boolean"))
+            {
+                fmc.showErrorMessage("NOT ON GROUND");
+                return;
+            }
+
             fmc.tmpDestination = undefined;
             fmc.flightPlanManager.createNewFlightPlan(() => {
                 fmc.updateRouteOrigin(icao, (result) => {
