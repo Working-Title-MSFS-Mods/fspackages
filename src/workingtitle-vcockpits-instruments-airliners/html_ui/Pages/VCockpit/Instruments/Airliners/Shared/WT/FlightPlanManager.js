@@ -276,8 +276,8 @@ class FlightPlanManager {
                     this.decelWaypoint.ident = "TOD";
                     this.decelWaypoint.infos.ident = this.decelWaypoint.ident;
 
-                    //added code to make decel waypoing Top of Descent
-                    let altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
+                    //added code to make decel waypoint Top of Descent
+                    let altitude = SimVar.GetSimVarValue("L:AIRLINER_CRUISE_ALTITUDE", "number");
                     let runways = destination.infos.oneWayRunways;
                     let destinationElevation = runways[0].elevation * 3.28;
                     let desiredFPA = 3;
