@@ -21,7 +21,7 @@ class CJ4_FMC_TakeoffRefPage {
             depRunwayLength = new Number((depRunway.length) * 3.28);
         }
 		
-		fmc.takeoffQnh = SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg");
+		fmc.takeoffQnh = isNaN(fmc.takeoffQnh) ? SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg").toFixed(2) : fmc.takeoffQnh;
 
         let headwind = "";
         let crosswind = "";
@@ -73,7 +73,7 @@ class CJ4_FMC_TakeoffRefPage {
             [" RWY WIND[blue]", "OAT[blue] "],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", fmc.takeoffOat + "\xB0C"],
             [" RWY LENGTH[blue]", "QNH[blue] "],
-            [Math.round(depRunwayLength) + " FT[s-text]", fmc.takeoffQnh.toFixed(2) + "[s-text]"],
+            [Math.round(depRunwayLength) + " FT[s-text]", fmc.takeoffQnh + "[s-text]"],
             [" RWY SLOPE[blue]", "P ALT[blue] "],
             ["--.-%[s-text]", fmc.takeoffPressAlt + " FT[s-text]"],
             [" RWY COND[blue]"],
