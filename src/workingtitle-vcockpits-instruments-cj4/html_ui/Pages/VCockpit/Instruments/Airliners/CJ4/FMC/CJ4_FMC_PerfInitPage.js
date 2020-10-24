@@ -30,7 +30,7 @@ class CJ4_FMC_PerfInitPage {
 		
         let crzAltCell = "□□□□□";
 		let zFW = 0;
-		let paxNumber = "/170[d-text]LB[s-text]";
+		let paxNumber = fmc.cj4Units == 1 ? "/77[d-text]KG[s-text]" : "/170[d-text]LB[s-text]";
 		let bow = 10280;
         if (fmc.cruiseFlightLevel) {
             crzAltCell = fmc.cruiseFlightLevel;
@@ -45,8 +45,7 @@ class CJ4_FMC_PerfInitPage {
         let fuelQuantityLeft = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
         let fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
         let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft;
-        let fuelCell = Math.trunc(fuelQuantityTotal);
-
+        
 		if (fmc.zFWActive == 1) {
 			zFW = fmc.zFWPilotInput;
 			bow = "-----";
@@ -56,40 +55,39 @@ class CJ4_FMC_PerfInitPage {
 		} else {
 			zFW = 10280 + (fmc.paxNumber * 170) + fmc.cargoWeight;
 		}
-		fmc.grossWeight = zFW + fuelCell;
-		
-		if (zFW > 12500) {
-			zFW = zFW + "[yellow]";
-		}
-		
-		
+        fmc.grossWeight = zFW + fuelQuantityTotal;
+        
+        const zfwText = zFW > 12500 ? Math.trunc(zFW * fmc.cj4Weight) + "[yellow]" : Math.trunc(zFW * fmc.cj4Weight);
+        const unitText = fmc.cj4Units == 1 ? "KG[s-text]" : "LB[s-text]";
+        const cargoWeightText = Math.trunc(fmc.cargoWeight * fmc.cj4Weight);
+        const fuelText = Math.trunc(fuelQuantityTotal * fmc.cj4Weight);
+        const grossWeightText = Math.trunc(fmc.grossWeight * fmc.cj4Weight);
+        const bowText = Math.trunc(bow * fmc.cj4Weight);
 
         fmc._templateRenderer.setTemplateRaw([
             [" ACT PERF INIT[blue]","",""],
             [" BOW[blue]", "CRZ ALT[blue] "],
-            [bow + "[d-text]LB[s-text]", "FL" + crzAltCell],
+            [bowText + "[d-text]" + unitText, "FL" + crzAltCell],
             [" PASS/WT[blue]"],
             [" " + fmc.paxNumber + paxNumber],
             [" CARGO[blue]", "= ZFW[blue] "],
-            [" " + fmc.cargoWeight + "[d-text] LB[s-text]", zFW + " LB[s-text]"],
+            [" " + cargoWeightText + "[d-text] " + unitText, zfwText + " " + unitText],
             [" SENSED FUEL[blue]", "= GWT[blue] "],
-            [" " + fuelCell + "[d-text] LB[s-text]", fmc.grossWeight + " LB[s-text]"],
+            [" " + fuelText + "[d-text] " + unitText, grossWeightText + " " + unitText],
             ["------------------------[blue]"],
             ["", "TAKEOFF>"],
             ["", ""],
             ["", "VNAV SETUP>"]
         ]);
         fmc.onLeftInput[1] = () => {
-            fmc.paxNumber = fmc.inOut;
-            zFW = ((fmc.inOut * 170) + fmc.cargoWeight + fmc.basicOperatingWeight) / 2200;
+            fmc.paxNumber = parseInt(fmc.inOut);
             fmc.clearUserInput();
-            { CJ4_FMC_PerfInitPage.ShowPage2(fmc); }
+            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
         fmc.onLeftInput[2] = () => {
-            fmc.cargoWeight = parseInt(fmc.inOut); //ParseInt changes from string to number
-            zFW = (fmc.cargoWeight + (fmc.paxNumber * 170) + fmc.basicOperatingWeight) / 2200;
+            fmc.cargoWeight = parseInt(fmc.inOut) / fmc.cj4Weight; //ParseInt changes from string to number
             fmc.clearUserInput();
-            { CJ4_FMC_PerfInitPage.ShowPage2(fmc); }
+            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
 		fmc.onRightInput[2] = () => {
 			if (fmc.inOut == FMCMainDisplay.clrValue){
@@ -97,8 +95,8 @@ class CJ4_FMC_PerfInitPage {
 				fmc.paxNumber = 0;
 				fmc.cargoWeight = 0;
 			} else {
-            zFW = parseInt(fmc.inOut);
-			fmc.zFWPilotInput = parseInt(fmc.inOut);
+            zFW = parseInt(fmc.inOut) / fmc.cj4Weight;
+			fmc.zFWPilotInput = zFW;
 			fmc.zFWActive = 1;
 			}
 			fmc.clearUserInput();
@@ -178,6 +176,12 @@ class CJ4_FMC_PerfInitPage {
     static ShowPage12(fmc) { //FLIGHT LOG
         fmc.clearDisplay();
 
+        let fuelUsed = "---";
+        let avgTas = "---";
+        let avgGs = "---";
+        let airDis = "---";
+        let gndDis = "---";
+
         // Set takeoff time
         let toTime = "---";
         const takeOffTime = SimVar.GetSimVarValue("L:TAKEOFF_TIME", "seconds");
@@ -214,17 +218,24 @@ class CJ4_FMC_PerfInitPage {
             eteTime = hoursString + ":" + minutesString;
         }
 
-        let fuelUsed = "---";
-        let avgTas = "---";
-        let avgGs = "---";
-        let airDis = "---";
-        let gndDis = "---";
+        // Calculate fuel used
+        const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
+
+        let fuelQuantityLeft = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
+        let fuelQuantityRight = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
+        let fuelBurnedLeft = fmc.initialFuelLeft - fuelQuantityLeft;
+        let fuelBurnedRight = fmc.initialFuelRight - fuelQuantityRight;
+        let fuelBurnedTotal = fuelBurnedRight + fuelBurnedLeft;
+
+        const fuelBurnedDisplay = fmc.cj4Units == 1 ? Math.trunc(fuelBurnedTotal * fmc.cj4Weight) + "KG"
+            : Math.trunc(fuelBurnedTotal) + "LB";
+
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "FLIGHT LOG[blue]"],
             [" T/O[s-text blue]", "LDG [s-text blue]", "EN ROUTE[s-text blue]"],
             [toTime, ldgTime, eteTime],
             [" FUEL USED[blue]", "AVG TAS/GS [blue]"],
-            [fuelUsed, avgTas + "/" + avgGs],
+            [fuelBurnedDisplay, avgTas + "/" + avgGs],
             [" AIR DIST[blue]", "GND DIST [blue]"],
             [airDis, gndDis],
             ["     NM[s-text]", "NM[s-text]"],

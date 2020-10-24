@@ -16,6 +16,9 @@ class CJ4_MFD extends BaseAirliners {
         this.showSystemOverlay = 0;
         this.modeChangeTimer = -1;
         this.initDuration = 11000;
+        this.cj4Units = SimVar.GetSimVarValue("L:WT_CJ4_Units", "Enum");
+        this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
+        this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters 
     }
     get templateID() { return "CJ4_MFD"; }
     get IsGlassCockpit() { return true; }
@@ -54,6 +57,9 @@ class CJ4_MFD extends BaseAirliners {
     }
     Update() {
         super.Update();
+        this.cj4Units = SimVar.GetSimVarValue("L:WT_CJ4_Units", "Enum");
+        this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
+        this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters 
         if (this.allContainersReady()) {
             SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
             if (this.modeChangeMask && this.modeChangeTimer >= 0) {
@@ -870,7 +876,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             var rectHeight = 30;
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "PPH";
+            titleText.textContent = this.cj4Units == 1 ? "KG/H" : "PPH";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -1311,9 +1317,10 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
 				
                 let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
-                this.FUELPPHValueLeft.textContent = Math.round(PPHEng1).toString();
+                this.FUELPPHValueLeft.textContent = this.cj4Units == 1 ? Math.round(PPHEng1 * this.cj4Weight).toString() : Math.round(PPHEng1).toString();
                 let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
-                this.FUELPPHValueRight.textContent = Math.round(PPHEng2).toString();
+                this.FUELPPHValueRight.textContent = this.cj4Units == 1 ? Math.round(PPHEng2 * this.cj4Weight).toString() : Math.round(PPHEng2).toString();
+
                 this.FUELTempValueLeft.textContent = "--";
                 this.FUELTempValueRight.textContent = "--";
             }

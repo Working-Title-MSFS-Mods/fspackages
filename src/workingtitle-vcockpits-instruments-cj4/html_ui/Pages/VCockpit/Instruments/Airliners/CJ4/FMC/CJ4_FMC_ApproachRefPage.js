@@ -24,7 +24,7 @@ class CJ4_FMC_ApproachRefPage {
             arrRunwayOutput = "RW" + fmc.getRunwayDesignation(arrRunway);
             arrRunwayDirection = new Number(arrRunway.direction);
             arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
-            arrRunwayLength = new Number((arrRunway.length) * 3.28);
+            arrRunwayLength = new Number(arrRunway.length);
             runwayLoaded = true;
         }
         else if (fmc.vfrLandingRunway) {
@@ -32,7 +32,7 @@ class CJ4_FMC_ApproachRefPage {
             arrRunwayOutput = "RW" + Avionics.Utils.formatRunway(arrRunway.designation).trim();
             arrRunwayDirection = new Number(arrRunway.direction);
             arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
-            arrRunwayLength = new Number((arrRunway.length) * 3.28);
+            arrRunwayLength = new Number(arrRunway.length);
             runwayLoaded = true;
         }
         else {
@@ -63,6 +63,9 @@ class CJ4_FMC_ApproachRefPage {
 
         let selAptValue = destinationIdent ? destinationIdent + "[green]/[white]" + originIdent + "[s-text]" : "----";
 
+        const arrRunwayLengthText = fmc.cj4Units == 1 ? Math.round(arrRunwayLength) + " M[s-text]" : Math.round(fmc.cj4Length * arrRunwayLength) + " FT[s-text]";
+        const landingQnhText = fmc.cj4Units == 1 ? Math.round(fmc.landingQnh * fmc.cj4Qnh) : fmc.landingQnh.toFixed(2);
+
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "1/3 [blue]", "APPROACH REF[blue]"],
             [" SEL APT[blue]", "WIND [blue]"],
@@ -70,9 +73,9 @@ class CJ4_FMC_ApproachRefPage {
             [" RWY ID[blue]", "OAT [blue]"],
             [arrRunwayOutput + " [s-text]", fmc.landingOat + "\xB0C"],
             [" RWY WIND[blue]", "QNH [blue]"],
-            [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", fmc.landingQnh + "[s-text]"],
+            [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", landingQnhText + "[s-text]"],
             [" RUNWAY LENGTH[blue]", "P ALT [blue]"],
-            [Math.round(arrRunwayLength) + " FT[s-text]", fmc.landingPressAlt + " FT[s-text]"],
+            [arrRunwayLengthText, fmc.landingPressAlt + " FT[s-text]"],
             [" RWY SLOPE[blue]"],
             ["--.-%"],
             [" RWY COND[blue]"],
@@ -126,6 +129,11 @@ class CJ4_FMC_ApproachRefPage {
                     fmc.landingQnh = qnhParse.toFixed(2);
                     fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
                 }
+                else if (qnhInput > 940 && qnhInput < 1090) { //parse hPA input
+                    let qnhParse = qnhInput / 33.864;
+                    fmc.landingQnh = qnhParse.toFixed(2);
+                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
+                }
                 else {
                     fmc.showErrorMessage("INVALID");
                 }
@@ -168,12 +176,7 @@ class CJ4_FMC_ApproachRefPage {
     }
     static ShowPage2(fmc) { //APPROACH REF Page 2
         fmc.clearDisplay();
-        let grWtCell = "";
-        let grossWeightValue = fmc.getWeight();
-        if (isFinite(grossWeightValue)) {
-            grWtCell = (grossWeightValue * 2200).toFixed(0);
-        }
-
+        let grossWeightValue = SimVar.GetSimVarValue("TOTAL WEIGHT", "kg") * 2.205;
         let arrRunwayDirection = "";
         let arrRunwayElevation = "";
         let arrRunwayLength = "";
@@ -229,9 +232,7 @@ class CJ4_FMC_ApproachRefPage {
         let eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
             : 0;
         let fuelBurn = eteToDestination * totalFuelFlow;
-        let ldgWt = fmc.grossWeight - fuelBurn;
-        let ldgWtCell = (fmc.grossWeight - fuelBurn) == 0 ? "-----"
-            : Math.trunc(ldgWt);
+        let ldgWt = grossWeightValue - fuelBurn;
 
         let vRef = ((ldgWt - 10500) * .00393) + 92; //V Speeds based on weight at 0C
         let vApp = ((ldgWt - 10500) * .00408) + 98;
@@ -271,20 +272,29 @@ class CJ4_FMC_ApproachRefPage {
             ldgFieldLength = ldgFieldLength * ((fmc.landingPressAlt * .0001025) + 1.21875); //Determines a factor to multiply with dependent on pressure altitude.  Sea level being 1.21x landing distance
         }
 
-        if (ldgWtCell > 15660) { //Turn the landing weight yellow if it exceeds the maximum landing weight
-            ldgWtCell = ldgWtCell + "[yellow]";
+        let vspeedSendMsg = "";
+        if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.INPROGRESS) {
+            vspeedSendMsg = "IN PROGRESS";
+        }
+        else if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT) {
+            vspeedSendMsg = "COMPLETE";
+        }
+        let vspeedColor = "";
+        if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT) {
+            vspeedColor = "blue";
         }
 
-        let vspeedSendMsg = "";
-        if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.INPROGRESS)
-            vspeedSendMsg = "IN PROGRESS";
-        else if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT)
-            vspeedSendMsg = "COMPLETE";
+        function formatNumber(num, pad = 3) {
+            return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
+            }
 
-        let vspeedColor = "";
-        if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT)
-            vspeedColor = "blue";
-
+        const ldgWtText = ldgWt < 10300 ? "-----"
+            : ldgWt > 15660 ? Math.round(ldgWt * fmc.cj4Weight) + "[yellow]"
+            : Math.round(ldgWt * fmc.cj4Weight);
+        const grossWeightText = fmc.cj4Units == 1 ? Math.round(grossWeightValue * fmc.cj4Weight) + "/7103 KG[s-text]" : Math.round(grossWeightValue * fmc.cj4Weight) + "/15660 LB[s-text]";
+        const landingDistText = fmc.cj4Units == 1 ? formatNumber((ldgFieldLength / 3.28), 4) : formatNumber(ldgFieldLength, 4);
+        const arrRunwayLengthText = fmc.cj4Units == 1 ? formatNumber((arrRunwayLength / 3.28), 4) + " M[s-text]" : formatNumber(arrRunwayLength, 4) + " FT[s-text]";
+    
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "2/3 [blue]", "APPROACH REF[blue]"],
             [" A/I[blue]"],
@@ -292,9 +302,9 @@ class CJ4_FMC_ApproachRefPage {
             ["", "V[d-text blue]REF:[s-text blue] " + vRef.toFixed(0) + "[s-text + " + vspeedColor + "]"],
             [""],
             [" LW / GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + vApp.toFixed(0) + "[s-text + " + vspeedColor + "]"],
-            [ldgWtCell + "/" + fmc.grossWeight + "/15660[s-text]"],
+            [ldgWtText + " / " + grossWeightText],
             [" LFL / " + arrRunwayOutput + "[blue]"],
-            [ldgFieldLength.toFixed(0) + " / " + Math.trunc(arrRunwayLength) + " FT[s-text]"],
+            [landingDistText + " / " + arrRunwayLengthText],
             [" LDG FACTOR[blue]"],
             ["1.0[green]" + "/[white]1.25[s-text]" + "/[white]1.67[s-text]" + "/[white]1.92[s-text]"],
             ["", vspeedSendMsg + " [s-text]"],
@@ -326,11 +336,7 @@ class CJ4_FMC_ApproachRefPage {
     static ShowPage3(fmc) { //APPROACH REF Page 3
         fmc.clearDisplay();
 
-        let grWtCell = "";
-        let grossWeightValue = fmc.getWeight();
-        if (isFinite(grossWeightValue)) {
-            grWtCell = (grossWeightValue * 2200).toFixed(0);
-        }
+        let grossWeightValue = SimVar.GetSimVarValue("TOTAL WEIGHT", "kg") * 2.205;
 
         let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
             + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
@@ -360,24 +366,26 @@ class CJ4_FMC_ApproachRefPage {
         let eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
             : 0;
         let fuelBurn = eteToDestination * totalFuelFlow;
-        let ldgWt = grWtCell - fuelBurn;
-        let ldgWtCell = (grWtCell - fuelBurn) == 0 ? "-----"
-            : Math.trunc(ldgWt);
+        let ldgWt = grossWeightValue - fuelBurn;
 
-        if (ldgWtCell > 15660) { //Turn the landing weight yellow if it exceeds the maximum landing weight
-            ldgWtCell = ldgWtCell + "[yellow]";
-        }
+        const ldgWtText = ldgWt < 10300 ? "-----"
+            : ldgWt > 15660 ? Math.round(ldgWt * fmc.cj4Weight) + "[yellow]"
+            : Math.round(ldgWt * fmc.cj4Weight);
+        
+        const mlwText = fmc.cj4Units == 1 ? "7103 KG" : "15660 LB";
+        const perfLimText = fmc.cj4Units == 1 ? "7059 KG" : "15563 LB";
+        const rwLimText = fmc.cj4Units == 1 ? "7760 KG" : "17110 LB";
 
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "3/3 [blue]", "APPROACH REF[blue]"],
             [" LW /MLW[blue]"],
-            [ldgWtCell + "/15660"],
+            [ldgWtText + "/" + mlwText],
             ["", "STRUCTURAL LIMIT [blue]"],
-            ["", "15660"],
+            ["", mlwText],
             ["", "PERFORMANCE LIMIT [blue]"],
-            ["", "15563"],
+            ["", perfLimText],
             ["", "RUNWAY LENGTH LIMIT [blue]"],
-            ["", "17110"],
+            ["", rwLimText],
             [""],
             [""],
             [""],

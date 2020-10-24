@@ -202,27 +202,24 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage32(fmc) { //IDENT
         fmc.clearDisplay();
-        let model = SimVar.GetSimVarValue("ATC MODEL", "string", "FMC");
-        if (!model) {
-            model = "unkn.";
-        }
-        [" MODEL[blue]", "ENGINES [blue]"],
-            ["525C-001", "FJ44-4A"],
-            fmc._templateRenderer.setTemplateRaw([
-                ["", "2/2[blue]", "IDENT[blue]"],
-                [" MODEL[blue]", "VARIANT [blue]"],
-                ["525C-001", "CJ4"],
-                [" MTOW[blue]", "ENGINES [blue]"],
-                ["17110 LB", "FJ44-4A"],
-                [""],
-                [""],
-                [" VSPD DATA BASE[blue]"],
-                ["096-0891-003"],
-                [""],
-                [""],
-                ["--------------------------[blue]"],
-                ["<INDEX", "POS INIT>"]
-            ]);
+        let mtow = fmc.cj4Units == 1 ? "7761 KG" : "17110 LB"
+        
+        fmc._templateRenderer.setTemplateRaw([
+            ["", "2/2[blue]", "IDENT[blue]"],
+            [" MODEL[blue]", "VARIANT [blue]"],
+            ["525C-001", "CJ4"],
+            [" MTOW[blue]", "ENGINES [blue]"],
+            [mtow, "FJ44-4A"],
+            [""],
+            [""],
+            [" VSPD DATA BASE[blue]"],
+            ["096-0891-003"],
+            [""],
+            [""],
+            ["--------------------------[blue]"],
+            ["<INDEX", "POS INIT>"]
+        ]);
+
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PosInitPage.ShowPage1(fmc); };
         fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage5(fmc); };
@@ -390,12 +387,13 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage13(fmc) { //PROG Pg 1
         fmc.clearDisplay();
+        const fuelHeading = fmc.cj4Units == 1 ? " FUEL-KG[s-text blue]" : " FUEL-LB[s-text blue]";
 
         fmc.registerPeriodicPageRefresh(() => {
 
             fmc._templateRenderer.setTemplateRaw([
                 [" PROGRESS[blue]", "1/2[blue] "],
-                [" LAST[s-text blue]", "DIST ETE FUEL-LB[s-text blue]"],
+                [" LAST[s-text blue]", "DIST  ETE" + fuelHeading],
                 ["----", "---      ----- [s-text blue]"],
                 [" TO[s-text blue]",],
                 ["-----[s-text]", "--- -:-- ----- [s-text]"],
@@ -412,6 +410,11 @@ class CJ4_FMC_InitRefIndexPage {
 
                 let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
                 let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+                let fuelQuantityLeft = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
+                let fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
+                let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft;
+                let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
+                + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
 
                 //default values
                 let prevWaypointIdent = "-----";
@@ -425,6 +428,9 @@ class CJ4_FMC_InitRefIndexPage {
                 let destinationIdent = "----";
                 let destinationDistance = "----";
                 let destinationEte = "-:--";
+                let activeWaypointFuel = "-----";
+                let nextWaypointFuel = "-----";
+                let destinationFuel = "-----";
 
                 //previous waypoint data
                 if (fmc.flightPlanManager.getPreviousActiveWaypoint()) {
@@ -440,6 +446,8 @@ class CJ4_FMC_InitRefIndexPage {
                     activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
                     activeWaypointEte = groundSpeed < 50 ? new String("-:--")
                         : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
+                    activeWaypointFuel = groundSpeed < 50 ? new String("-----")
+                        : (fuelQuantityTotal - (totalFuelFlow * activeWaypointDist / groundSpeed)) * fmc.cj4Weight;
                 }
 
                 //next waypoint data
@@ -449,6 +457,8 @@ class CJ4_FMC_InitRefIndexPage {
                     nextWaypointDist = new Number(activeWaypointDist + Avionics.Utils.computeDistance(fmc.flightPlanManager.getActiveWaypoint().infos.coordinates, nextWaypoint.infos.coordinates));
                     nextWaypointEte = groundSpeed < 50 ? new String("-:--")
                         : new Date(this.calcETEseconds(nextWaypointDist, groundSpeed) * 1000).toISOString().substr(11, 5);
+                    nextWaypointFuel = groundSpeed < 50 ? new String("-----")
+                        : (fuelQuantityTotal - (totalFuelFlow * nextWaypointDist / groundSpeed)) * fmc.cj4Weight;
                 }
 
                 //destination data
@@ -468,23 +478,28 @@ class CJ4_FMC_InitRefIndexPage {
                         : destinationDistanceFlightplan;
                     destinationEte = groundSpeed < 50 || destinationDistance <= 0.1 ? new String("-:--")
                         : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                    destinationFuel = groundSpeed < 50 ? new String("-----")
+                        : (fuelQuantityTotal - (totalFuelFlow * destinationDistance / groundSpeed)) * fmc.cj4Weight;
                 }
 
                 const prevWaypointDistanceConst = prevWaypointDist >= 100 ? prevWaypointDist.toFixed(0) : prevWaypointDist.toFixed(1);
                 const activeWaypointDistanceConst = activeWaypointDist >= 100 ? activeWaypointDist.toFixed(0) : activeWaypointDist.toFixed(1);
                 const nextWaypointDistanceConst = nextWaypointDist >= 100 ? nextWaypointDist.toFixed(0) : nextWaypointDist.toFixed(1);
                 const destWaypointDistanceConst = destinationDistance >= 100 ? destinationDistance.toFixed(0) : destinationDistance.toFixed(1);
+                const activeWaypointFuelConst = activeWaypointFuel.toFixed(0).padStart(5, " ");
+                const nextWaypointFuelConst = nextWaypointFuel.toFixed(0).padStart(5, " ");
+                const destinationFuelConst = destinationFuel.toFixed(0).padStart(5, " ");
 
                 fmc._templateRenderer.setTemplateRaw([
                     [" PROGRESS[blue]", "1/2[blue] "],
-                    [" LAST[s-text blue]", "DIST   ETE FUEL-LB[s-text blue]"],
+                    [" LAST[s-text blue]", "DIST  ETE" + fuelHeading],
                     [prevWaypointIdent + "[blue]", prevWaypointDistanceConst + "        ----- [s-text blue]"],
                     [" TO[s-text blue]",],
-                    [activeWaypointIdent + "[s-text magenta]", activeWaypointDistanceConst + "  " + activeWaypointEte + " ----- [s-text magenta]"],
+                    [activeWaypointIdent + "[s-text magenta]", activeWaypointDistanceConst + "  " + activeWaypointEte + " " + activeWaypointFuelConst + " [s-text magenta]"],
                     [" NEXT[s-text blue]"],
-                    [nextWaypointIdent + "[s-text]", nextWaypointDistanceConst + "  " + nextWaypointEte + " ----- [s-text]"],
+                    [nextWaypointIdent + "[s-text]", nextWaypointDistanceConst + "  " + nextWaypointEte + " " + nextWaypointFuelConst + " [s-text]"],
                     [" DEST[s-text blue]"],
-                    [destinationIdent + "[s-text]", destWaypointDistanceConst + "  " + destinationEte + " ----- [s-text]"],
+                    [destinationIdent + "[s-text]", destWaypointDistanceConst + "  " + destinationEte + " " + destinationFuelConst + " [s-text]"],
                     [" ALTN[s-text blue]"],
                     ["-----[s-text]", "----  -:-- ----- [s-text]"],
                     [" NAVIGATION[s-text blue]"],
@@ -676,6 +691,8 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage19(fmc, databaseWaypoint) { //DATABASE AIRPORT
         fmc.clearDisplay();
+
+        let runwayUnits = fmc.cj4Units;
         let airportIdent = databaseWaypoint.ident;
         let runways = databaseWaypoint.infos.oneWayRunways;
         let longestRunway = runways[0];
@@ -732,17 +749,23 @@ class CJ4_FMC_InitRefIndexPage {
         let lonNum = new Number(wptCoordinatesAlt.substring(longIndex + 5, altIndex - 2));
         let lonText = lonNum < 0 ? "W " + Math.abs(lonNum)
             : "E " + lonNum;
+        
+        const longestRunwayDisplay = runwayUnits == 1 ? Math.trunc(longestRunwayLength) + " M" : Math.trunc(longestRunwayLengthFeet) + " FT";
+        const elevationDisplay = fmc.cj4Units == 1 ? Math.trunc(longestRunway.elevation) + " M" : Math.trunc(longestRunwayElevation) + " FT";
+
+
+        let runwayLengthSwitch = fmc.templateRenderer.renderSwitch(["FEET", "METERS"], runwayUnits);
 
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "DATA BASE[blue]"],
             [" IDENT[blue]", "LONG RWY [blue]"],
-            [airportIdent + " AIRPORT", Math.trunc(longestRunwayLengthFeet) + " FT"],
+            [airportIdent + " AIRPORT", longestRunwayDisplay + ""],
             [" ARP LOCATION[blue]", "MAG VAR[blue]"],
             [latText + "/" + lonText, "N/A"],
             [" NAME[blue]"],
             [databaseWaypoint.infos.name + ""],
             ["RUNWAY LENGTH[blue]", "ELEV[blue]"],
-            ["<[white]" + "FEET[green]" + "/METERS[white]", Math.trunc(longestRunwayElevation) + " FT"],
+            ["<[white]" + runwayLengthSwitch, elevationDisplay + ""],
             ["-----------------------[blue]"],
             ["<LOCALIZERS"],
             [""],
@@ -776,7 +799,7 @@ class CJ4_FMC_InitRefIndexPage {
                 });
             }
         };
-
+        fmc.onLeftInput[3] = () => { runwayUnits = runwayUnits == 1 ? 0 : 1; };
         //fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
         fmc.updateSideButtonActiveStatus();
     }
@@ -1128,7 +1151,7 @@ class CJ4_FMC_InitRefIndexPage {
 
                 approachText = approach.name || "RW" + Avionics.Utils.formatRunway(fmc.vfrLandingRunway.designation);
                 let approachRunway = fmc.flightPlanManager.getApproachRunway() || fmc.vfrLandingRunway;
-                rwyThresholdAltText = Math.trunc(approachRunway.elevation * 3.28) + " FT";
+                rwyThresholdAltText = fmc.cj4Units == 1 ? Math.trunc(approachRunway.elevation) + " M" : Math.trunc(approachRunway.elevation * 3.28) + " FT";
                 if (approach.name.startsWith("ILS")) {
                     freqText = fmc.flightPlanManager.getApproachNavFrequency().toFixed(2);
                     locTrueBrgText = Math.trunc(approachRunway.direction).toString().padStart(3, "0") + "T";

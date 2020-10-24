@@ -81,6 +81,10 @@ class CJ4_SystemEngines extends NavSystemElement {
     }
     init(_root) {
         this.root = _root.querySelector(".SystemEngines");
+        this.cj4Units = WTDataStore.get('WT_CJ4_Units', 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_Units", "Enum", this.cj4Units); //0 = imperial; 1 = metric
+        this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
+        this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters 
         this.construct();
     }
     onEnter() {
@@ -491,7 +495,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.setAttribute("alignment-baseline", "central");
             fuelGroup.appendChild(text);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "LBS";
+            text.textContent = this.cj4Units == 1 ? "KGS" : "LBS";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", (startPosY + 10).toString());
             text.setAttribute("fill", "#cccac8");
@@ -1333,7 +1337,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             fuelGroup.appendChild(text);
             startPosY += spacingY;
             text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "PPH";
+            text.textContent = this.cj4Units == 1 ? "KG/H" : "PPH";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", startPosY.toString());
             text.setAttribute("fill", "#cccac8");
@@ -1395,7 +1399,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             fuelGroup.appendChild(this.FuelTempRightValue);
             startPosY += spacingY;
             text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "LBS";
+            text.textContent = this.cj4Units == 1 ? "KGS" : "LBS";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", startPosY.toString());
             text.setAttribute("fill", "#cccac8");
@@ -1674,6 +1678,9 @@ class CJ4_SystemEngines extends NavSystemElement {
     onUpdate(_deltaTime) {
         if (!this.root)
             return;
+        this.cj4Units = SimVar.GetSimVarValue("L:WT_CJ4_Units", "Enum"); //0 = imperial; 1 = metric
+        this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
+        this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters 
         this.updateN1();
         this.updateN2();
         this.updateITT();
@@ -1775,16 +1782,16 @@ class CJ4_SystemEngines extends NavSystemElement {
     updateFuel() {
         let gallonToLBS = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "lbs");
         {
-            let LBSEng1 = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * gallonToLBS;
+            let LBSEng1 = this.cj4Weight * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * gallonToLBS;
             this.FuelLBSLeftValue.textContent = Math.round(LBSEng1).toString();
-            let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
+            let PPHEng1 = this.cj4Weight * SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
             this.FuelPPHLeftValue.textContent = Math.round(PPHEng1).toString();
             this.FuelTempLeftValue.textContent = "--";
         }
         {
-            let LBSEng2 = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * gallonToLBS;
+            let LBSEng2 = this.cj4Weight * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * gallonToLBS;
             this.FuelLBSRightValue.textContent = Math.round(LBSEng2).toString();
-            let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
+            let PPHEng2 = this.cj4Weight * SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
             this.FuelPPHRightValue.textContent = Math.round(PPHEng2).toString();
             this.FuelTempRightValue.textContent = "--";
         }
@@ -2279,7 +2286,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             var rectHeight = 30;
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "PPH";
+            titleText.textContent = this.cj4Units == 1 ? "KG/H" : "PPH";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
@@ -2553,17 +2560,19 @@ class CJ4_SystemFMS extends NavSystemElement {
 
                         // Set expected fuel and gross weight
                         if (groundSpeed >= 50) {
-                            const fuelFlow = (SimVar.GetSimVarValue("CJ4 FUEL FLOW:1", "Pounds per hour") + SimVar.GetSimVarValue("CJ4 FUEL FLOW:2", "Pounds per hour")) / 2;
+                            const fuelFlow = SimVar.GetSimVarValue("CJ4 FUEL FLOW:1", "Pounds per hour") + SimVar.GetSimVarValue("CJ4 FUEL FLOW:2", "Pounds per hour");
                             const expectedFuelUsage = (fuelFlow * (this.calcETEseconds(destinationDistance, groundSpeed) / 3600)).toFixed(0);
                             const currentFuel = (SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds") * SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons")).toFixed(0);
-                            const expectedFuelAtDestination = (currentFuel - expectedFuelUsage).toFixed(0) < 0 ? 0 : (currentFuel - expectedFuelUsage).toFixed(0);
-                            const grossWeight = SimVar.GetSimVarValue("MAX GROSS WEIGHT", "pounds");
+                            const expectedFuelAtDestination = (currentFuel - expectedFuelUsage) < 0 ? 0 : (currentFuel - expectedFuelUsage);
+                            const grossWeight = SimVar.GetSimVarValue("TOTAL WEIGHT", "kg") * 2.205;
                             // const oilQuantity = SimVar.GetSimVarValue("OIL AMOUNT", "pounds")
-                            const expectedGrossWeight = expectedFuelAtDestination == 0 ? (grossWeight / 1000).toFixed(2) : ((grossWeight - expectedFuelUsage) / 1000).toFixed(2);
+                            const expectedGrossWeight = expectedFuelAtDestination == 0 ? (grossWeight / 1000) : ((grossWeight - expectedFuelUsage) / 1000);
+                            const weightsTextContent = this.cj4Units == 1 ? (this.cj4Weight * expectedFuelAtDestination).toFixed(0) + " KG " + (this.cj4Weight * expectedGrossWeight).toFixed(2) + " GW"
+                                : expectedFuelAtDestination.toFixed(0) + " LB " + expectedGrossWeight.toFixed(2) + " GW";
 
                             this._destinationWaypointContainer
                                 .querySelector(".cj4x-navigation-data-waypoint-expected-fuel")
-                                .textContent = expectedFuelAtDestination + " LB " + expectedGrossWeight + " GW";
+                                .textContent = weightsTextContent;
 
                         }
 

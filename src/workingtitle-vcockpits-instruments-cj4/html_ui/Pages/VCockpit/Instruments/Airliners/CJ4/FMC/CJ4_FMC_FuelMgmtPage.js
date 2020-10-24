@@ -69,14 +69,24 @@ class CJ4_FMC_FuelMgmtPageOne {
     render() {
         console.log("Render Fuel");
 
+        const fuelQuantityTotalText = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelQuantityTotal).toFixed(0).padStart(4, " ") + "[d-text] KG[s-text]"
+            : this._fuelQuantityTotal.toFixed(0).padStart(4, " ") + "[d-text] LB[s-text]";
+        const totalFuelFlowText = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._totalFuelFlow).toFixed(0).padStart(4, " ") + "[d-text] KG/HR[s-text]"
+            : this._totalFuelFlow.toFixed(0).padStart(4, " ") + "[d-text] LB/HR[s-text]";
+        const reserveFuelText = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fmc.reserveFuel).toString.padStart(4, " ") + " KG"
+            : this._fmc.reserveFuel.toString().padStart(4, " ") + " LB";
+        const spRangeText = fmc.cj4Units == 1 ? (this._spRng / this._fmc.cj4Weight).toFixed(2) + "[d-text]NM/KG[s-text]"
+            : this._spRng + "[d-text]NM/LB[s-text]";
+
+
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/3[blue] ", "FUEL MGMT[blue]"],
             [" FUEL[blue]", "TIME TO RESV[blue] "],
-            [" " + this._fuelQuantityTotal.toFixed(0).padStart(4, " ") + "[d-text] LB[s-text]", this._hours + ":" + this._minutes],
+            [" " + fuelQuantityTotalText, this._hours + ":" + this._minutes],
             [" FUEL FLOW[blue]", "RNG TO RESV[blue] "],
-            [" " + this._totalFuelFlow.toFixed(0).padStart(4, " ") + "[d-text] LB/HR[s-text]", this._rngToResv + "[d-text]NM[s-text]"],
+            [" " + totalFuelFlowText, this._rngToResv + "[d-text]NM[s-text]"],
             [" RESERVES[blue]", "SP RNG[blue] "],
-            [" " + this._fmc.reserveFuel.toString().padStart(4, " ") + " LB", this._spRng + "[d-text]NM/LB[s-text]"],
+            [" " + reserveFuelText, spRangeText],
             [" GND SPD[blue]"],
             [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString()],
             [""],
@@ -131,6 +141,7 @@ class CJ4_FMC_FuelMgmtPageTwo {
     update() {
         // TODO i think this could be optimized
         const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
+        console.log("fuel weight constant: " + fuelWeight);
 
         this._fuelQuantityLeft = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
         this._fuelQuantityRight = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
@@ -171,13 +182,28 @@ class CJ4_FMC_FuelMgmtPageTwo {
     render() {
         console.log("Render Fuel2");
 
+        const fuelBurned1Text = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelBurnedLeftDisplay).toString().padStart(4, " ") + " [d-text]"
+            : this._fuelBurnedLeftDisplay.toString().padStart(4, " ") + " [d-text]";
+        const fuelFlow1Text = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelFlowLeft).toString().padStart(4, " ") + "[d-text]"
+            : this._fuelFlowLeft.toString().padStart(4, " ") + "[d-text]";
+        const fuelBurned2Text = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelBurnedRightDisplay).toString().padStart(4, " ") + " [d-text]"
+            : this._fuelBurnedRightDisplay.toString().padStart(4, " ") + " [d-text]";
+        const fuelFlow2Text = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelFlowRight).toString().padStart(4, " ") + "[d-text]"
+            : this._fuelFlowRight.toString().padStart(4, " ") + "[d-text]";
+        const fuelBurnedTotalText = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelBurnedTotalDisplay).toString().padStart(4, " ") + " [d-text]"
+            : this._fuelBurnedTotalDisplay.toString().padStart(4, " ") + " [d-text]";
+        const fuelFlowTotalText = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._totalFuelFlow).toString().padStart(4, " ") + "[d-text]"
+            : this._totalFuelFlow.toString().padStart(4, " ") + "[d-text]";
+        const fuelBurnedHead = fmc.cj4Units == 1 ? "KG  [s-text]" : "LB  [s-text]";
+        const fuelFlowHead = fmc.cj4Units == 1 ? "KG/HR[s-text]" : "LB/HR[s-text]";
+
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "2/3[blue] ", "FUEL MGMT[blue]"],
             [" ENGINE[blue s-text]", "FLOW-FUEL-USED[blue s-text] ", ""],
-            ["", "LB  [s-text]", "LB/HR[s-text]"],
-            ["   1[d-text]", this._fuelBurnedLeftDisplay.toString().padStart(4, " ") + " [d-text]", this._fuelFlowLeft.toString().padStart(4, " ") + "[d-text]"],
-            ["   2[d-text]", this._fuelBurnedRightDisplay.toString().padStart(4, " ") + " [d-text]", this._fuelFlowRight.toString().padStart(4, " ") + "[d-text]"],
-            [" TOTAL[d-text]", this._fuelBurnedTotalDisplay.toString().padStart(4, " ") + " [d-text]", this._totalFuelFlow.toString().padStart(4, " ") + "[d-text]"],
+            ["", fuelBurnedHead, fuelFlowHead],
+            ["   1[d-text]", fuelBurned1Text, fuelFlow1Text],
+            ["   2[d-text]", fuelBurned2Text, fuelFlow2Text],
+            [" TOTAL[d-text]", fuelBurnedTotalText, fuelFlowTotalText],
             [""],
             [""],
             [""],
@@ -236,6 +262,10 @@ class CJ4_FMC_FuelMgmtPage {
         fmc.clearDisplay();
         let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
             + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
+        
+        const fuelFlowTotalText = fmc.cj4Units == 1 ? (fmc.cj4Weight * totalFuelFlow).toFixed(0).padStart(4, " ") + "[d-text] KG/HR[s-text]"
+            : totalFuelFlow.toFixed(0).padStart(4, " ") + "[d-text] LB/HR[s-text]";
+
         fmc._templateRenderer.setTemplateRaw([
             ["", "3/3[blue]", "PERF TRIP[blue]"],
             [" FROM[blue s-text]"],
@@ -245,7 +275,7 @@ class CJ4_FMC_FuelMgmtPage {
             [" DIST[blue s-text]"],
             ["----[d-text] NM[s-text]"],
             [" GND SPD[blue s-text]", "FUEL FLOW[blue s-text] "],
-            [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString() + "[d-text] KTS[s-text]", totalFuelFlow + "[d-text] LB/HR[s-text]"],
+            [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString() + "[d-text] KTS[s-text]", fuelFlowTotalText],
             [" ETE[blue s-text]", "FUEL REQ[blue s-text] "],
             ["", "---[d-text] LB[s-text]"],
             ["------------------------[blue]"],

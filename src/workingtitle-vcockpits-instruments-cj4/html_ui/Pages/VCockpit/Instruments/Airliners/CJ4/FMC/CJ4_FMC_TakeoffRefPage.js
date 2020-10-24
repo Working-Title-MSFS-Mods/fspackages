@@ -1,5 +1,5 @@
 class CJ4_FMC_TakeoffRefPage {
-    static ShowPage1(fmc) { //TAKEOFF REF Page 1
+    static ShowPage1(fmc, manualQnh) { //TAKEOFF REF Page 1 + added ability to keep manually set QNH by passing var manualQnh
         fmc.clearDisplay();
         let originIdent = "";
         let origin = fmc.flightPlanManager.getOrigin();
@@ -18,10 +18,10 @@ class CJ4_FMC_TakeoffRefPage {
             console.log("depRunwayOutput: " + depRunwayOutput);
             depRunwayDirection = new Number(depRunway.direction);
             depRunwayElevation = new Number(depRunway.elevation * 3.28);
-            depRunwayLength = new Number((depRunway.length) * 3.28);
+            depRunwayLength = new Number(depRunway.length);
         }
 		
-		fmc.takeoffQnh = SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg");
+		fmc.takeoffQnh = manualQnh ? manualQnh : SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg");
 
         let headwind = "";
         let crosswind = "";
@@ -66,6 +66,9 @@ class CJ4_FMC_TakeoffRefPage {
         //console.log("Current Runway: " + depRunwayDesignation);
         //console.log("Current Runway Elevation: " + depRunwayElevation);
 
+        const depRunwayLengthText = fmc.cj4Units == 1 ? Math.round(depRunwayLength) + " M[s-text]" : Math.round(fmc.cj4Length * depRunwayLength) + " FT[s-text]";
+        const takeoffQnhText = fmc.cj4Units == 1 ? Math.round(fmc.takeoffQnh * fmc.cj4Qnh) : fmc.takeoffQnh.toFixed(2);
+
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "1/3[blue] ", "TAKEOFF REF[blue]"],
             [" RWY ID[blue]", "WIND[blue] "],
@@ -73,7 +76,7 @@ class CJ4_FMC_TakeoffRefPage {
             [" RWY WIND[blue]", "OAT[blue] "],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", fmc.takeoffOat + "\xB0C"],
             [" RWY LENGTH[blue]", "QNH[blue] "],
-            [Math.round(depRunwayLength) + " FT[s-text]", fmc.takeoffQnh.toFixed(2) + "[s-text]"],
+            [depRunwayLengthText, takeoffQnhText + "[s-text]"],
             [" RWY SLOPE[blue]", "P ALT[blue] "],
             ["--.-%[s-text]", fmc.takeoffPressAlt + " FT[s-text]"],
             [" RWY COND[blue]"],
@@ -125,6 +128,11 @@ class CJ4_FMC_TakeoffRefPage {
                     fmc.takeoffQnh = qnhParse.toFixed(2);
                     fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
                 }
+                else if (qnhInput > 940 && qnhInput < 1090) { //parse hPA input
+                    let qnhParse = qnhInput / 33.864;
+                    fmc.takeoffQnh = qnhParse.toFixed(2);
+                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                }
                 else {
                     fmc.showErrorMessage("INVALID");
                 }
@@ -134,7 +142,7 @@ class CJ4_FMC_TakeoffRefPage {
             }
             fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
             fmc.clearUserInput();
-            CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);
+            CJ4_FMC_TakeoffRefPage.ShowPage1(fmc, fmc.takeoffQnh); //added ability to keep manually set QNH by passing var
         };
 
         fmc.onLeftInput[4] = () => {
@@ -165,7 +173,6 @@ class CJ4_FMC_TakeoffRefPage {
 		let mtow = 17110;
 		let vT = 140;
 		let sendVS = "SEND>"
-		let feetShow = "";
         let depRunway = "";
         let depRunwayLength = null;
         let selectedRunway = fmc.flightPlanManager.getDepartureRunway();
@@ -245,10 +252,6 @@ class CJ4_FMC_TakeoffRefPage {
         let takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
             : "OFF[s-text]/[white]ON[green]";
 
-        if (tow > 17110) { //Turn the takeoff weight yellow if it exceeds the maximum takeoff weight
-            tow = tow + "[yellow]";
-        }
-
         let vspeedSendMsg = "";
         if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.INPROGRESS)
             vspeedSendMsg = "IN PROGRESS";
@@ -259,9 +262,6 @@ class CJ4_FMC_TakeoffRefPage {
         if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT)
             vspeedColor = "blue";
 		
-		if (fmc.flightPlanManager.getDepartureRunway()) {
-			feetShow = " FT";
-		}
 		if (fmc.flightPlanManager.getDepartureRunway() && fmc.takeoffOat != "□□□") {
 		} else {
                 mtow = "";
@@ -276,7 +276,12 @@ class CJ4_FMC_TakeoffRefPage {
 		function formatNumber(num, pad = 3) {
 		return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
 		}
-		
+        
+        const towText = tow > 17110 ? Math.round(tow * fmc.cj4Weight) + "[yellow]" : Math.round(tow * fmc.cj4Weight);
+        const grossWeightText = fmc.grossWeight * fmc.cj4Weight;
+        const mtowText = mtow * fmc.cj4Weight;
+        const takeoffDistText = fmc.cj4Units == 1 ? formatNumber((fmc.endTakeoffDist / 3.28), 4) : formatNumber(fmc.endTakeoffDist, 4);
+        const depRunwayLengthText = fmc.cj4Units == 1 ? formatNumber((depRunwayLength / 3.28), 4) + " M[s-text]" : formatNumber(depRunwayLength, 4) + " FT[s-text]";
 
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "2/3[blue] ", "TAKEOFF REF[blue]"],
@@ -284,10 +289,10 @@ class CJ4_FMC_TakeoffRefPage {
             [takeoffAntiIceActive],
             [" T/O FLAPS[blue]", "V[d-text blue]R:[s-text blue] " + formatNumber(vR) + "[s-text " + vspeedColor + "]"],
             [takeoffFlapsActive],
-            [" TOW/ GWT/MTOW[blue]", "V[d-text blue]2:[s-text blue] " + formatNumber(v2) + "[s-text " + vspeedColor + "]"],
-            [tow + "/" + fmc.grossWeight + "/" + mtow + "[s-text]"],
+            [" TOW/GWT/MTOW[blue]", "V[d-text blue]2:[s-text blue] " + formatNumber(v2) + "[s-text " + vspeedColor + "]"],
+            [towText + "/" + grossWeightText + "/" + mtowText + "[s-text]"],
             [" TOFL/ " + depRunway + "[blue]", "V[d-text blue]T:[s-text blue] " + formatNumber(vT) + "[s-text " + vspeedColor + "]"],
-            [formatNumber(fmc.endTakeoffDist, 4) + " / " + formatNumber(depRunwayLength) + feetShow + "[s-text]"],
+            [takeoffDistText + " / " + depRunwayLengthText],
             [""],
             [""],
             ["", vspeedSendMsg + " [s-text]"],
@@ -347,26 +352,20 @@ class CJ4_FMC_TakeoffRefPage {
         if (origin) {
             originIdent = origin.ident;
         }
-        let grWtCell = "";
-        let grossWeightValue = fmc.getWeight();
-        if (isFinite(grossWeightValue)) {
-            grWtCell = (grossWeightValue * 2200).toFixed(0);
-        }
-        let tow = (grWtCell - 100);
+        let tow = (fmc.grossWeight - 100);
+        const towText = tow > 17110 ? (Math.trunc(fmc.cj4Weight * tow)) + "[yellow]" : Math.trunc(fmc.cj4Weight * tow);
+        const mtowText = fmc.cj4Units == 1 ? "/7761 KG" : "/17110 LB"
 
-        if (tow > 17110) { //Turn the takeoff weight yellow if it exceeds the maximum takeoff weight
-            tow = tow + "[yellow]";
-        }
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "3/3[blue] ", "TAKEOFF REF[blue]"],
             ["TOW/MTOW[blue]"],
-            [tow + "/17110"],
+            [towText + mtowText],
             ["", "STRUCTURAL LIMIT[blue]"],
-            ["", "17110[s-text]"],
+            ["", mtowText + "[s-text]"],
             ["", "PERFORMANCE LIMIT[blue]"],
-            ["", "17110[s-text]"],
+            ["", mtowText + "[s-text]"],
             ["", "RUNWAY LENGTH LIMIT[blue]"],
-            ["", "17110[s-text]"],
+            ["", mtowText + "[s-text]"],
             [""],
             [""],
             [""],
