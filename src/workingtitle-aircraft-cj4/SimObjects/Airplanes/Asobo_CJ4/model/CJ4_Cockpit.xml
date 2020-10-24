@@ -489,9 +489,6 @@
 			<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Wing_Template">
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>SAFETY_Knob_Oxygen</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>PASSENGER_Knob_Heat_1</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
@@ -788,6 +785,22 @@
 				<ANIMTIP_4>Set Source to FRESH</ANIMTIP_4>
 			</UseTemplate>
 
+            <UseTemplate Name="ASOBO_PASSENGER_Switch_OXYGEN_Template">
+                <ANIM_NAME>SAFETY_Knob_Oxygen</ANIM_NAME>
+                <NODE_ID>SAFETY_Knob_Oxygen</NODE_ID>
+                <WWISE_EVENT>fuel_crossfeed_switch</WWISE_EVENT>
+                <SWITCH_DIRECTION>Horizontal</SWITCH_DIRECTION>
+                <LEFTARROW>TurnLeft</LEFTARROW>
+                <RIGHTARROW>TurnRight</RIGHTARROW>
+                <ANIMREF_ID>0</ANIMREF_ID>
+                <ANIMTIP_0_ON_PERCENT>0</ANIMTIP_0_ON_PERCENT>
+                <ANIMTIP_1_ON_PERCENT>0.5</ANIMTIP_1_ON_PERCENT>
+                <ANIMTIP_2_ON_PERCENT>1</ANIMTIP_2_ON_PERCENT>
+                <ANIMTIP_0>Set Oxygen Control to CREW ONLY</ANIMTIP_0>
+                <ANIMTIP_1>Set Oxygen Control to NORM</ANIMTIP_1>
+                <ANIMTIP_2>Set Oxygen Control to DROP MASK</ANIMTIP_2>
+            </UseTemplate>
+
 			<!--HEAT KNOBS-->
 			<UseTemplate Name="ASOBO_PASSENGER_Switch_Cabin_Heat_Template">
 				<KNOB_NAME>PASSENGER_KNOB_HEAT_1</KNOB_NAME>
@@ -932,12 +945,6 @@
 		</Component>
 
 		<!-- MISC -->
-		<Component ID="ANIM_SETUP">
-			<UseTemplate Name="ASOBO_GT_Anim_Setup">
-				<ANIM_NAME>SAFETY_KNOB_OXYGEN</ANIM_NAME>
-				<PERCENT>50</PERCENT>
-			</UseTemplate>
-		</Component>
 		<Component ID="TT_INOP">
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>push_pilot_DCP_CCPMENU</NODE_ID>
