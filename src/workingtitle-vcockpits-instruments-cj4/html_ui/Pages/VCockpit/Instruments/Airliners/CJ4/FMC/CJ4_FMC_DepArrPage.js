@@ -552,8 +552,9 @@ class CJ4_FMC_DepArrPage {
                                         return t.name.indexOf("RW" + landingRunway.designation) != -1;
                                     });
                                     if (arrivalRunwayIndex >= -1) {
-                                        return this.flightPlanManager.setArrivalRunwayIndex(arrivalRunwayIndex, () => {
-                                            return callback(true);
+                                        fmc.flightPlanManager.setArrivalRunwayIndex(arrivalRunwayIndex, () => {
+                                            fmc.setMsg();
+                                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                                         });
                                     }
                                 }
