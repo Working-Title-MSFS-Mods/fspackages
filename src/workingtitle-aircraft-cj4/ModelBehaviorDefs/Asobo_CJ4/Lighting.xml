@@ -36,6 +36,58 @@
         </UseTemplate>
     </Template>
 
+    <Template Name="ASOBO_LIGHTING_Switch_Light_Oxygen_Mask_Mic_Template">
+        <DefaultTemplateParameters>
+            <ANIM_NAME>push_pilot_oxygenMask_mic</ANIM_NAME>
+            <NODE_ID>push_pilot_oxygenMask_mic</NODE_ID>
+            <TOOLTIPID>%((L:OXYGEN_MASK_MIC_ON, Bool))%{if}Turn OFF Oxygen Mask Mic%{else}Turn ON Oxygen Mask Mic</TOOLTIPID>
+            <WWISE_EVENT_1>logo_light_switch_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>logo_light_switch_off</WWISE_EVENT_2>
+            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+        </DefaultTemplateParameters>
+        <UseTemplate Name="ASOBO_GT_Push_Button_Airliner">
+            <LEFT_SINGLE_CODE>(L:OXYGEN_MASK_MIC_ON) ! (&gt;L:OXYGEN_MASK_MIC_ON)</LEFT_SINGLE_CODE>
+            <ONLY_SEQ1/>
+            <SEQ1_EMISSIVE_CODE>(L:OXYGEN_MASK_MIC_ON, Bool)</SEQ1_EMISSIVE_CODE>
+        </UseTemplate>
+    </Template>
+
+    <Template Name="ASOBO_LIGHTING_Switch_Light_Oxygen_Mask_Mic_2_Template">
+        <DefaultTemplateParameters>
+            <ANIM_NAME>push_oxygenMask</ANIM_NAME>
+            <NODE_ID>push_oxygenMask</NODE_ID>
+            <TOOLTIPID>%((L:OXYGEN_MASK_MIC_2_ON, Bool))%{if}Turn OFF Oxygen Mask Mic%{else}Turn ON Oxygen Mask Mic</TOOLTIPID>
+            <WWISE_EVENT_1>logo_light_switch_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>logo_light_switch_off</WWISE_EVENT_2>
+            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+        </DefaultTemplateParameters>
+        <UseTemplate Name="ASOBO_GT_Push_Button_Airliner">
+            <LEFT_SINGLE_CODE>(L:OXYGEN_MASK_MIC_2_ON) ! (&gt;L:OXYGEN_MASK_MIC_2_ON)</LEFT_SINGLE_CODE>
+            <ONLY_SEQ1/>
+            <SEQ1_EMISSIVE_CODE>(L:OXYGEN_MASK_MIC_2_ON, Bool)</SEQ1_EMISSIVE_CODE>
+        </UseTemplate>
+    </Template>
+
+    <Template Name="ASOBO_LIGHTING_Switch_Light_Cockpit_Speaker_Mute_Template">
+        <DefaultTemplateParameters>
+            <ANIM_NAME>push_Ckpt_Spkr_mute</ANIM_NAME>
+            <NODE_ID>push_Ckpt_Spkr_mute</NODE_ID>
+            <PART_ID>push_Ckpt_Spkr_mute</PART_ID>
+            <TOOLTIPID>%((L:push_Ckpt_Spkr_mute, Bool))%{if}UNMUTE Cockpit Speaker%{else}MUTE Cockpit Speaker</TOOLTIPID>
+            <WWISE_EVENT_1>logo_light_switch_on</WWISE_EVENT_1>
+            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+            <WWISE_EVENT_2>logo_light_switch_off</WWISE_EVENT_2>
+            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+        </DefaultTemplateParameters>
+        <UseTemplate Name="ASOBO_GT_Push_Button_Airliner">
+            <LEFT_SINGLE_CODE>(L:push_Ckpt_Spkr_mute) ! (&gt;L:push_Ckpt_Spkr_mute)</LEFT_SINGLE_CODE>
+            <ONLY_SEQ1/>
+            <SEQ1_EMISSIVE_CODE>(L:push_Ckpt_Spkr_mute, Bool)</SEQ1_EMISSIVE_CODE>
+        </UseTemplate>
+    </Template>
+
     <Template Name="ASOBO_DEICE_Switch_Tail_Template">
         <DefaultTemplateParameters>
             <ID>1</ID>
