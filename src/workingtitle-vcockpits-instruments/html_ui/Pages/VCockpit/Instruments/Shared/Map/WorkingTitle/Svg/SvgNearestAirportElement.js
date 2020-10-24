@@ -7,24 +7,24 @@ class SvgNearestAirportElement extends SvgWaypointElement {
             return this.source.airportClass;
         }
     }
-    
+
     set airportClass(v) {
         this._airportClass = v;
     }
-    
+
     id(map) {
         return "nrst-airport-" + this.ident + "-map-" + map.index;
     }
-    
+
     class() {
         return "map-nrst-airport";
     }
-    
+
     constructor(source) {
         super(source);
         this.sortIndex = 3;
     }
-    
+
     imageFileName() {
         if (this.source && this.source.imageFileName) {
             return this.source.imageFileName();
@@ -50,7 +50,7 @@ class SvgNearestAirportElement extends SvgWaypointElement {
         }
         return fName.replace(".svg", ".png");
     }
-    
+
     getIconSize(map) {
         if (this.source && this.source.getClassSize) {
             if (this.source.airportClass >= 2 && map.config.waypointAirportClass2IconSize) {
@@ -59,10 +59,10 @@ class SvgNearestAirportElement extends SvgWaypointElement {
                 return map.config.waypointIconSize;
             }
         }
-        
+
         return super.getIconSize(map);
     }
-    
+
     getLabelFontSize(map) {
         if (this.source && this.source.getClassSize) {
             if (this.source.getClassSize() == AirportSize.Large && map.config.waypointAirportLargeLabelFontSize) {
@@ -71,8 +71,12 @@ class SvgNearestAirportElement extends SvgWaypointElement {
                 return map.config.waypointLabelFontSize;
             }
         }
-        
+
         return super.getLabelFontSize(map);
+    }
+
+    getLabelPriority() {
+        return 0 + this.airportClass;
     }
 }
 //# sourceMappingURL=SvgNearestAirportElement.js.map
