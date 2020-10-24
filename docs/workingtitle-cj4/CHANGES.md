@@ -19,21 +19,46 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
 ## Key Features
-*
+* Overhauled PFD/MFD for better readability
+* Added bearing pointers to PFD
+* Mach number climbs work
+* Transponder works
+* Simbrief import fixes and error messages with database issues
+* Proper altitude constraints (No VNAV yet) and arrival/approach sequencing.
+
+### FMS
+* Added proper input detection for Takeoff Ref Page
+* QNH now automatically pulls from the PFD so there's no need to type it in
+* Takeoff v-speeds and field length won't show if temperature or runway is not inputted
+* Error messages for when the simbrief flight plan waypoint can't be found in sim database
+
 
 ### LEGS Page
-*
+* Proper altitude constraints for arrivals and approaches will be shown
+* Adding an approach to an arrival should not put in 2 of the same fixes.
 
 ### TUNE Page
 * Fixed a bug where swapping COM2 would swap COM1 instead
+* Transponder now works (You must select it from the TCAS mode from STBY to TA/RA)
 
-### PFD/MFD
+### PFD
 * Better readability of target altitude
 * Changed the target altitude bug to look like in the real plane
-* Baro setting is now easiert to read
+* The altitude select bug won't disappear when within 300ft of current altitude
+* Baro setting is now easier to read
+* Mach number will show correct value and 2 decimal places. (M0.71 vs M0.714)
+* Mach number readout below airspeed tape is now easier to read.
+* Added bearing pointers for FMS/VOR/ADF and accompanying data block
+
+### MFD
+* Overhauled font, sizing, and positioning of upper engine readout displays for better readability and accuracy
+* Fixed pitch trim indicator (was backward) and adjusted default trim position for better takeoff attitudes (Danice737)
+* Fixed ISA temp deviation calculations (Temps should level off at 36,000 at the tropopause)
+* FIxed battery amps displays so it's not -500 anymore (Electrical system still WIP) (Danice737)
 
 
 ## Known Issues
+* The speed constraints on arrivals may not show correctly because of database issues.
 * After using Direct-To, the navigation will not always automatically sequence to the next fix and may enter ROL mode. You can re-activate NAV to navigate to the next fix if you encounter this issue.
 * The aircraft is still using the built-in MSFS autopilot (for now). All the existing limitations of that still apply. It does behave a bit better with the various enhancements applied.
 * Some flight plan distances may still be misreported when the approach is activated. Please log an issue if you encounter this with details.
