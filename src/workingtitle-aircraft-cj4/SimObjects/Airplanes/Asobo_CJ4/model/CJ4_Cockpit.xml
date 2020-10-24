@@ -312,6 +312,12 @@
 					</UseTemplate>
                     <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Safety_Template">
                     </UseTemplate>
+                    <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Cockpit_Speaker_Mute_Template">
+                    </UseTemplate>
+                    <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Oxygen_Mask_Mic_Template">
+                    </UseTemplate>
+                    <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Oxygen_Mask_Mic_2_Template">
+                    </UseTemplate>
 				</Component>
 				<Component ID="LIGHTING_Knobs">
 					<UseTemplate Name="ASOBO_LIGHTING_Knob_Panel_Template">
@@ -1034,9 +1040,6 @@
 				<NODE_ID>lever_pilot_oxygenSupply</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>push_pilot_oxygenMask_mic</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>lock_pilot_HYDShutoff_L</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
@@ -1064,16 +1067,10 @@
 				<NODE_ID>push_taws_GScancel</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>push_Ckpt_Spkr_mute</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>push_eventMarker</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>push_com1Tune</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>push_oxygenMask</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>CCP_PUSH_CURSR</NODE_ID>
