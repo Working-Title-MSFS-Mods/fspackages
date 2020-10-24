@@ -3,7 +3,7 @@ let ModSettingsPage1Instance = undefined;
 class CJ4_FMC_ModSettingsPageOne {
     constructor(fmc) {
         this._fmc = fmc;
-        
+
         this._pilotDefault = "--------";
         this._pilotId = WTDataStore.get('simbriefPilotId', this._pilotDefault);
 
@@ -25,11 +25,8 @@ class CJ4_FMC_ModSettingsPageOne {
         this._lightMode = value;
 
         // set simvar
-        let potValue = 100;
-        if (value == CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF) potValue = 0;
-        else if (value == CJ4_FMC_ModSettingsPage.LIGHT_MODE.DIM) potValue = 5;
-
-        SimVar.SetSimVarValue("K:LIGHT_POTENTIOMETER_28_SET", "number", potValue);
+        CJ4_FMC_ModSettingsPage.setPassCabinLights(value);
+        WTDataStore.set('passCabinLights', value);
 
         this.invalidate();
     }
@@ -83,6 +80,14 @@ class CJ4_FMC_ModSettingsPageOne {
 }
 
 class CJ4_FMC_ModSettingsPage {
+    static setPassCabinLights(value) {
+        let potValue = 100;
+        if (value == CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF) potValue = 0;
+        else if (value == CJ4_FMC_ModSettingsPage.LIGHT_MODE.DIM) potValue = 5;
+
+        SimVar.SetSimVarValue("K:LIGHT_POTENTIOMETER_28_SET", "number", potValue);
+    }
+
     static ShowPage1(fmc) {
         fmc.clearDisplay();
 
