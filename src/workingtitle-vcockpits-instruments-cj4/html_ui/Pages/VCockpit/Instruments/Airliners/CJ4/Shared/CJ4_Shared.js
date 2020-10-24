@@ -2720,13 +2720,16 @@ class CJ4_MapContainer extends NavSystemElementContainer {
     showWeather(_value) {
         if (this.isWeatherVisible != _value) {
             this.isWeatherVisible = _value;
+            let radarbug = document.querySelector("#weather_radar_bug");
             if (this.isWeatherVisible) {
                 this.showTerrain(false);
                 this.showGwx(false);
+                radarbug.style.display = "";
                 this.map.instrument.showWeatherWithGPS(EWeatherRadar.HORIZONTAL, Math.PI * 2.0);
                 this.map.instrument.setBingMapStyle("8%", "0%", "100%", "80%");
             }
             else {
+                radarbug.style.display = "none";
                 this.map.instrument.showWeather(EWeatherRadar.OFF);
             }
             this.refreshLayout();
