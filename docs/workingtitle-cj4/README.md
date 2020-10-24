@@ -36,6 +36,7 @@ This list is incomplete, but thanks to everyone that contributed from inside and
 * cwburnett
 * kaosfere
 * dga711
+* tscharlii
 * musurca
 * uwajimaya
 * AND others!
