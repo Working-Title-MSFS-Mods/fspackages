@@ -1190,8 +1190,8 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilPSI1Value = document.createElementNS(Avionics.SVG.NS, "text");
                 this.OilPSI1Value.textContent = "0";
                 this.OilPSI1Value.setAttribute("x", (this.OilPSI1CursorX + gaugeWidth * 0.5).toString());
-                this.OilPSI1Value.setAttribute("y", (this.OilPSI1CursorY1 + 10).toString());
-                this.OilPSI1Value.setAttribute("fill", "none");
+                this.OilPSI1Value.setAttribute("y", (this.OilPSI1CursorY1 + 15).toString());
+                this.OilPSI1Value.setAttribute("fill", "#11d011");
                 this.OilPSI1Value.setAttribute("font-size", "22");
                 this.OilPSI1Value.setAttribute("font-family", "Roboto-Bold");
                 this.OilPSI1Value.setAttribute("text-anchor", "middle");
@@ -1221,8 +1221,8 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilPSI2Value = document.createElementNS(Avionics.SVG.NS, "text");
                 this.OilPSI2Value.textContent = "0";
                 this.OilPSI2Value.setAttribute("x", (this.OilPSI2CursorX + gaugeWidth * 0.5).toString());
-                this.OilPSI2Value.setAttribute("y", (this.OilPSI2CursorY1 + 10).toString());
-                this.OilPSI2Value.setAttribute("fill", "none");
+                this.OilPSI2Value.setAttribute("y", (this.OilPSI2CursorY1 + 15).toString());
+                this.OilPSI2Value.setAttribute("fill", "#11d011");
                 this.OilPSI2Value.setAttribute("font-size", "22");
                 this.OilPSI2Value.setAttribute("font-family", "Roboto-Bold");
                 this.OilPSI2Value.setAttribute("text-anchor", "middle");
@@ -1266,8 +1266,8 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilTemp1Value = document.createElementNS(Avionics.SVG.NS, "text");
                 this.OilTemp1Value.textContent = "0";
                 this.OilTemp1Value.setAttribute("x", (this.OilTemp1CursorX + gaugeWidth * 0.5).toString());
-                this.OilTemp1Value.setAttribute("y", (this.OilTemp1CursorY1 + 10).toString());
-                this.OilTemp1Value.setAttribute("fill", "none");
+                this.OilTemp1Value.setAttribute("y", (this.OilTemp1CursorY1 + 15).toString());
+                this.OilTemp1Value.setAttribute("fill", "#11d011");
                 this.OilTemp1Value.setAttribute("font-size", "22");
                 this.OilTemp1Value.setAttribute("font-family", "Roboto-Bold");
                 this.OilTemp1Value.setAttribute("text-anchor", "middle");
@@ -1297,8 +1297,8 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilTemp2Value = document.createElementNS(Avionics.SVG.NS, "text");
                 this.OilTemp2Value.textContent = "0";
                 this.OilTemp2Value.setAttribute("x", (this.OilTemp2CursorX + gaugeWidth * 0.5).toString());
-                this.OilTemp2Value.setAttribute("y", (this.OilTemp2CursorY1 + 10).toString());
-                this.OilTemp2Value.setAttribute("fill", "none");
+                this.OilTemp2Value.setAttribute("y", (this.OilTemp2CursorY1 + 15).toString());
+                this.OilTemp2Value.setAttribute("fill", "#11d011");
                 this.OilTemp2Value.setAttribute("font-size", "22");
                 this.OilTemp2Value.setAttribute("font-family", "Roboto-Bold");
                 this.OilTemp2Value.setAttribute("text-anchor", "middle");
