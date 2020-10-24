@@ -320,6 +320,8 @@
                     </UseTemplate>
                     <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Oxygen_Mask_Mic_2_Template">
                     </UseTemplate>
+                    <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Com1Tune_Template">
+                    </UseTemplate>
 				</Component>
 				<Component ID="LIGHTING_Knobs">
 					<UseTemplate Name="ASOBO_LIGHTING_Knob_Panel_Template">
@@ -420,6 +422,11 @@
 			</Component>
 			<CameraTitle>Instrument04</CameraTitle>
 		</Component>
+
+        <Component ID="HOSKY">
+            <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Cockpit_Speaker_Mute_Template">
+            </UseTemplate>
+        </Component>
 
 		<!-- HANDLING #############################################################################################################-->
 		<Component ID="HANDLING">
@@ -1085,9 +1092,6 @@
 				<NODE_ID>push_eventMarker</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>push_com1Tune</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>CCP_PUSH_CURSR</NODE_ID>
 				<CONTAINER_COUNT>2</CONTAINER_COUNT>
 			</UseTemplate>
@@ -1323,9 +1327,21 @@
 				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 					<NODE_ID>LIGHTING_Push_Light_SeatBelt</NODE_ID>
 				</UseTemplate>
+                <UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+                    <NODE_ID>push_Ckpt_Spkr_mute</NODE_ID>
+                </UseTemplate>
+                <UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+                    <NODE_ID>com1Tune</NODE_ID>
+                </UseTemplate>
 				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-					<NODE_ID>PRESSURIZATION_Push_Control</NODE_ID>
+					<NODE_ID>push_oxygenMask</NODE_ID>
 				</UseTemplate>
+                <UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+                    <NODE_ID>push_pilot_oxygenMask_mic</NODE_ID>
+                </UseTemplate>
+                <UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+                    <NODE_ID>PRESSURIZATION_Push_Control</NODE_ID>
+                </UseTemplate>
 
 				<!-- PANELS -->
 				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
