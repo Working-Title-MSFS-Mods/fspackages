@@ -7,7 +7,9 @@ class SvgMap {
         this.configLoaded = false;
         this.rotateWithPlane = false;
         this.mapElements = [];
-        this._elementsWithTextBox = [];
+
+        this.textManager = new SvgTextManager(this);
+        this.elementsWithTextBox = new Set();
 
         this.svgLayersToUpdate = [];
 
@@ -331,9 +333,15 @@ class SvgMap {
         if (this.lineCanvas) {
             this.lineCanvas.getContext("2d").clearRect(0, 0, this.lineCanvas.width, this.lineCanvas.height);
         }
+
+        let newElementsWithTextBox = new Set();
         for (let i = 0; i < this.mapElements.length; i++) {
             let svgElement = this.mapElements[i].draw(this);
             svgElement.setAttribute("needDeletion", "false");
+
+            if (this.mapElements[i].hasTextBox) {
+                newElementsWithTextBox.add(this.mapElements[i]);
+            }
         }
         for (let svgLayer of this.svgLayersToUpdate) {
             let i = 0;
@@ -356,19 +364,28 @@ class SvgMap {
                 }
             }
         }
+
         if (this.config.preventLabelOverlap) {
-            this._elementsWithTextBox = [];
-            for (let i = 0; i < this.mapElements.length; i++) {
-                let e = this.mapElements[i];
-                if (e.hasTextBox) {
-                    this._elementsWithTextBox.push(e);
+            let toRemove = [];
+            for (let e of this.elementsWithTextBox) {
+                if (newElementsWithTextBox.has(e)) {
+                    newElementsWithTextBox.delete(e);
+                } else {
+                    toRemove.push(e);
                 }
             }
-            if (!this.textManager) {
-                this.textManager = new SvgTextManager();
+            for (let e of toRemove) {
+                this.textManager.remove(e.getLabelElement());
+                this.elementsWithTextBox.delete(e);
             }
-            this.textManager.update(this, this._elementsWithTextBox);
+            for (let e of newElementsWithTextBox) {
+                this.elementsWithTextBox.add(e);
+                this.textManager.add(e.getLabelElement());
+            }
+
+            this.textManager.update();
         }
+
         if (SvgMap.LOG_PERFS) {
             let dt = performance.now() - t0;
             this._iterations += 1;

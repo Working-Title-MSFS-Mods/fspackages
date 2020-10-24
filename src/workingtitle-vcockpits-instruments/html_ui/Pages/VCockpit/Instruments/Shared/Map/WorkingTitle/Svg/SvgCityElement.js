@@ -4,15 +4,13 @@ var CitySize;
     CitySize[CitySize["Medium"] = 1] = "Medium";
     CitySize[CitySize["Small"] = 2] = "Small";
 })(CitySize || (CitySize = {}));
-class SvgCityElement extends SvgMapElement {
+class SvgCityElement {
     constructor(_city) {
-        super();
-        this.hasTextBox = true;
         this.city = _city;
         this._lastX = 0;
         this._lastY = 0;
-        this.showText = true;
         this.idRoot = "city-" + this.name.toLowerCase().replace(/[^a-z]/g, "") + "-" + (this.lat + "-" + this.long).replace(/\./g, "_");
+        this._labelFontSize = 0;
 
         this.shouldDraw = false;
         this.isDrawn = false;
@@ -39,23 +37,26 @@ class SvgCityElement extends SvgMapElement {
         return this.city.long;
     }
 
-    appendToMap(map) {
-        map.appendChild(this._label, map.textLayer);
-    }
-
-    removeFromMap(map) {
-        map.textLayer.removeChild(this._label);
-    }
-
-    createDraw(map) {
-        this.createLabel(map);
+    getLabel() {
         return this._label;
+    }
+
+    getLabelPriority() {
+        return 100 + this.size;
+    }
+
+    getLabelRect() {
+        return {
+            top: parseFloat(this._label.getAttribute("y")) - this._labelFontSize,
+            left: parseFloat(this._label.getAttribute("x")) - this._labelFontSize * this.name.length * 0.3,
+            bottom: parseFloat(this._label.getAttribute("y")),
+            right: parseFloat(this._label.getAttribute("x")) + this._labelFontSize * this.name.length * 0.3
+        };
     }
 
     updateDraw(map) {
         if (!this._label) {
             this.createLabel(map);
-            this.appendToMap(map);
         }
         map.latLongToXYToRef(this.lat, this.long, this);
         if (isFinite(this.x) && isFinite(this.y)) {
@@ -68,6 +69,8 @@ class SvgCityElement extends SvgMapElement {
     }
 
     createLabel(map) {
+        this._labelFontSize = map.config.cityLabelFontSize;
+
         this._label = document.createElementNS(Avionics.SVG.NS, "text");
         this._label.id = this.id(map);
         this._label.textContent = this.name;
@@ -227,9 +230,6 @@ class SvgCityElementCanvas extends SvgMapElement {
             }
 
             cityElement.shouldDraw = shouldDraw;
-            if (cityElement.isDrawn) {
-                map.mapElements.push(cityElement);
-            }
             if (!shouldDraw && currentTime - cityElement.lastDrawnTime >= this.elementCleanUpTime) {
                 this.cityElements.delete(cityElement.city);
             }
@@ -264,7 +264,7 @@ class SvgCityElementCanvas extends SvgMapElement {
                 this.backBufferContext.arc(Math.round(offset + pos.x), Math.round(offset + pos.y), radius, 0, 2 * Math.PI);
                 this.backBufferContext.fill();
                 this.backBufferContext.stroke();
-                map.mapElements.push(cityElement);
+                map.textManager.add(cityElement);
                 cityElement.lastDrawnTime = currentTime;
                 cityElement.isDrawn = true;
                 if (++drawCount > this.redraw.limit) {
@@ -272,7 +272,7 @@ class SvgCityElementCanvas extends SvgMapElement {
                 }
             } else {
                 if (cityElement.isDrawn) {
-                    cityElement.removeFromMap(map);
+                    map.textManager.remove(cityElement);
                 }
                 cityElement.isDrawn = false;
             }
