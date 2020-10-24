@@ -25,12 +25,14 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Transponder works
 * Simbrief import fixes and error messages with database issues
 * Proper altitude constraints (No VNAV yet) and arrival/approach sequencing.
+* Added approach transitions for arrivals
 
 ### FMS
 * Added proper input detection for Takeoff Ref Page
 * QNH now automatically pulls from the PFD so there's no need to type it in
 * Takeoff v-speeds and field length won't show if temperature or runway is not inputted
 * Error messages for when the simbrief flight plan waypoint can't be found in sim database
+* Added approach transitions for arrivals
 
 
 ### LEGS Page
