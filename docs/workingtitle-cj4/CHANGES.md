@@ -49,6 +49,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Mach number will show correct value and 2 decimal places. (M0.71 vs M0.714)
 * Mach number readout below airspeed tape is now easier to read.
 * Added bearing pointers for FMS/VOR/ADF and accompanying data block
+* Tuning radio from PFD was removed
 
 ### MFD
 * Overhauled font, sizing, and positioning of upper engine readout displays for better readability and accuracy
