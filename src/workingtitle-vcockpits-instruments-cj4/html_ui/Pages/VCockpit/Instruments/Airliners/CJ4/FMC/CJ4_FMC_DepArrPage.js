@@ -527,13 +527,13 @@ class CJ4_FMC_DepArrPage {
                                     if (arrivalRunwayIndex >= -1) {
                                         fmc.flightPlanManager.setArrivalRunwayIndex(arrivalRunwayIndex, () => {
                                             fmc.setMsg();
-                                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
+                                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                                         });
                                     }
                                 }
                             }
                             fmc.setMsg();
-                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
+                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                         });
                     }
                     else if (approachIndex > lastApproachIndex) {
@@ -561,7 +561,7 @@ class CJ4_FMC_DepArrPage {
                             }
                             console.log("completed setting vfrLandingRunway");
                             fmc.setMsg();
-                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
+                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                             });
                     }
 
