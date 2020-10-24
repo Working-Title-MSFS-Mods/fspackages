@@ -408,12 +408,10 @@ class CJ4_FMC_DepArrPage {
                     fmc.deletedVfrLandingRunway = selectedRunway;
                     fmc.vfrLandingRunway = undefined;
                     fmc.modVfrRunway = true;
-                    if (selectedArrival) {
-                        fmc.flightPlanManager.setArrivalRunwayIndex(-1, () => {
-                            fmc.setMsg();
-                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
-                        });
-                    }
+                    fmc.flightPlanManager.setArrivalRunwayIndex(-1, () => {
+                        fmc.setMsg();
+                        CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
+                    });
                 });
             };
         }
