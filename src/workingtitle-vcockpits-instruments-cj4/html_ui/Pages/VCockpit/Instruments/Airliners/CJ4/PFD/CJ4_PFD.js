@@ -212,6 +212,10 @@ class CJ4_PFD extends BaseAirliners {
         return true;
     }
     onModeChanged() {
+        //temp CRS KNOB FIX (see also CJ4_Cockput.xml line 87)
+        let wtGetRadioNavSource = this.radioNav.getRADIONAVSource() == 1 ? 1 : this.radioNav.getRADIONAVSource() - 1;
+        SimVar.SetSimVarValue("L:WT_NAV_Selected", "Number", wtGetRadioNavSource);
+        //end of temp CRS KNOB FIX
         SimVar.SetSimVarValue("L:CJ4_MAP_MODE", "number", this.mapDisplayMode);
         SimVar.SetSimVarValue("L:FMC_UPDATE_CURRENT_PAGE", "number", 1);
         if (this.modeChangeMask) {
