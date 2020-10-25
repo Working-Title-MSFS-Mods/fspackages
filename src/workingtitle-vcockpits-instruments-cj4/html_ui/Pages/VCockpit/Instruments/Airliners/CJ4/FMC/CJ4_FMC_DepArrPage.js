@@ -303,7 +303,7 @@ class CJ4_FMC_DepArrPage {
             ["-----------------------[blue]"],
             ["<DEP/ARR IDX", rsk6Field]
         ]);
-        fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowPage1(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowIndexPage(fmc); };
 
         //start of CWB CANCEL MOD handling
         fmc.onRightInput[5] = () => {
@@ -726,7 +726,7 @@ class CJ4_FMC_DepArrPage {
             ["-----------------------[blue]"],
             ["<DEP/ARR IDX", rsk6Field]
         ]);
-        fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowPage1(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowIndexPage(fmc); };
 
         //start of CWB CANCEL MOD handling
         fmc.onRightInput[5] = () => {
