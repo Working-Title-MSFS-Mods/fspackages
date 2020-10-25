@@ -135,9 +135,11 @@ class FlightPlanManager {
    * @param {Number} index The index to copy the currently active flight plan into.
    * @param {() => void} callback A callback to call when the operation has completed.
    */
-  copyCurrentFlightPlanInto(index, callback = EmptyCallback.Void) {
+  async copyCurrentFlightPlanInto(index, callback = EmptyCallback.Void) {
     const copiedFlightPlan = this._flightPlans[this._currentFlightPlanIndex].copy();
     this._flightPlans[index] = copiedFlightPlan;
+
+    await copiedFlightPlan.syncToGPS();
 
     this._updateFlightPlanVersion();
     callback();
@@ -148,9 +150,11 @@ class FlightPlanManager {
    * @param {Number} index The index to copy into the currently active flight plan.
    * @param {() => void} callback A callback to call when the operation has completed.
    */
-  copyFlightPlanIntoCurrent(index, callback = EmptyCallback.Void) {
+  async copyFlightPlanIntoCurrent(index, callback = EmptyCallback.Void) {
     const copiedFlightPlan = this._flightPlans[index].copy();
     this._flightPlans[this._currentFlightPlanIndex] = copiedFlightPlan;
+
+    await copiedFlightPlan.syncToGPS();
 
     this._updateFlightPlanVersion();
     callback();
@@ -392,6 +396,43 @@ class FlightPlanManager {
     }
 
     return undefined;
+  }
+
+  async getApproachConstraints() {
+    let approachWaypoints = [];
+    let destination = await this._parentInstrument.facilityLoader.getFacilityRaw(this.getDestination().icao);
+    if (destination) {
+        let approach = destination.approaches[this._approachIndex];
+        if (approach) {
+            let approachTransition = approach.transitions[0];
+            if (approach.transitions.length > 0) {
+                approachTransition = approach.transitions[this._approachTransitionIndex];
+            }
+            if (approach && approach.finalLegs) {
+                for (let i = 0; i < approach.finalLegs.length; i++) {
+                    let wp = new WayPoint(this._parentInstrument);
+                    wp.icao = approach.finalLegs[i].fixIcao;
+                    wp.ident = wp.icao.substr(7);
+                    wp.legAltitudeDescription = approach.finalLegs[i].altDesc;
+                    wp.legAltitude1 = approach.finalLegs[i].altitude1 * 3.28084;
+                    wp.legAltitude2 = approach.finalLegs[i].altitude2 * 3.28084;
+                    approachWaypoints.push(wp);
+                }
+            }
+            if (approachTransition && approachTransition.legs) {
+                for (let i = 0; i < approachTransition.legs.length; i++) {
+                    let wp = new WayPoint(this._parentInstrument);
+                    wp.icao = approachTransition.legs[i].fixIcao;
+                    wp.ident = wp.icao.substr(7);
+                    wp.legAltitudeDescription = approachTransition.legs[i].altDesc;
+                    wp.legAltitude1 = approachTransition.legs[i].altitude1 * 3.28084;
+                    wp.legAltitude2 = approachTransition.legs[i].altitude2 * 3.28084;
+                    approachWaypoints.push(wp);
+                }
+            }
+        }
+    }
+    return approachWaypoints;
   }
 
   /**

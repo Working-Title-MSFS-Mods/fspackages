@@ -102,11 +102,28 @@ class ManagedFlightPlan {
     this.procedureDetails = new ProcedureDetails();
     this.directTo = new DirectTo();
 
+    await GPS.clearPlan();
+    this._waypoints = [];
+  }
+
+  /**
+   * Syncs the flight plan to FS9GPS.
+   */
+  async syncToGPS() {
+    await GPS.clearPlan();
     for (var i = 0; i < this._waypoints.length; i++) {
-      await SimVar.SetSimVarValue('C:fs9gps:FlightPlanDeleteWaypoint', 'number', i);
+      const waypoint = this._waypoints[i];
+
+      if (waypoint.icao && waypoint.icao.trim() !== '') {
+        await GPS.addIcaoWaypoint(waypoint.icao, i);
+      }
+      else {
+        await GPS.addUserWaypoint(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long, i, waypoint.ident);
+      }
     }
 
-    this._waypoints = [];
+    await GPS.setActiveWaypoint(this.activeWaypointIndex);
+    await GPS.logCurrentPlan();
   }
 
   /**
@@ -119,7 +136,7 @@ class ManagedFlightPlan {
    */
   async addWaypoint(waypoint, index) {
 
-    const mappedWaypoint = RawDataMapper.toWaypoint(waypoint, this._parentInstrument);
+    const mappedWaypoint = (waypoint instanceof WayPoint) ? waypoint : RawDataMapper.toWaypoint(waypoint, this._parentInstrument);
 
     if (index === undefined || index >= this._waypoints.length) {
       this._waypoints.push(mappedWaypoint);
@@ -130,11 +147,35 @@ class ManagedFlightPlan {
     }
 
     if (mappedWaypoint.icao && mappedWaypoint.icao.trim() !== '') {
-      await SimVar.SetSimVarValue('C:fs9gps:FlightPlanNewWaypointICAO', 'string', waypoint.icao);
-      await SimVar.SetSimVarValue('C:fs9gps:FlightPlanAddWaypoint', 'number', index);
+      await GPS.addIcaoWaypoint(waypoint.icao, index);
+    }
+    else {
+      await GPS.addUserWaypoint(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long, index);
     }
     
     this._shiftSegmentIndexes(mappedWaypoint, index);
+    this._reflowDistances();
+  }
+
+  /**
+   * Removes a waypoint from the flight plan.
+   * @param {Number} index The index of the waypoint to remove.
+   */
+  async removeWaypoint(index) {
+    let waypoint;
+
+    if (index === undefined || index >= this._waypoints.length) {
+      index = this._waypoints.length;
+      waypoint = this._waypoints.pop()
+    }
+    else {
+      waypoint = this._waypoints[index];
+      this._waypoints.splice(index, 1);
+    }
+
+    await GPS.deleteWaypoint(index);
+    
+    this._unshiftSegmentIndexes(waypoint, index);
     this._reflowDistances();
   }
 
@@ -160,16 +201,16 @@ class ManagedFlightPlan {
       this._hasOrigin = true;
       this.departureStart = 1;
       this.enrouteStart++;
-      this.arrivalStart++;
-      this.approachStart++;
+      this.arrivalStart = Math.max(this.enrouteStart + 1, this.arrivalStart + 1);
+      this.approachStart = Math.max(this.arrivalStart, this.approachStart + 1);
     }
     else if (index === this._waypoints.length - 1 && this._waypoints.length > 1 && waypoint.type === 'A') {
       this._hasDestination = true;
     }
     else {
-      if (index <= this.approachStart) this.approachStart++;
-      if (index <= this.arrivalStart) this.arrivalStart++;
       if (index < this.enrouteStart) this.enrouteStart++;
+      if (index <= this.arrivalStart) this.arrivalStart = Math.max(this.enrouteStart + 1, this.arrivalStart + 1);
+      if (index <= this.approachStart) this.approachStart = Math.max(this.arrivalStart, this.approachStart + 1);  
     }
 
     if (index < this.activeWaypointIndex) this.activeWaypointIndex++;
@@ -330,27 +371,7 @@ class ManagedFlightPlan {
     this.addWaypoint(radiusWaypoint, index);
   }
 
-  /**
-   * Removes a waypoint from the flight plan.
-   * @param {Number} index The index of the waypoint to remove.
-   */
-  async removeWaypoint(index) {
-    let waypoint;
-
-    if (index === undefined || index >= this._waypoints.length) {
-      index = this._waypoints.length;
-      waypoint = this._waypoints.pop()
-    }
-    else {
-      waypoint = this._waypoints[index];
-      this._waypoints.splice(index, 1);
-    }
-
-    await SimVar.SetSimVarValue('C:fs9gps:FlightPlanDeleteWaypoint', 'number', index);
-    
-    this._unshiftSegmentIndexes(waypoint, index);
-    this._reflowDistances();
-  }
+  
 
   /**
    * Copies a sanitized version of the flight plan for shared data storage.
@@ -631,6 +652,90 @@ ManagedFlightPlan.fromObject = (flightPlanObject, parentInstrument) => {
   visitObject(plan);
   return plan;
 };
+
+/**
+ * Methods for interacting with the FS9GPS subsystem.
+ */
+class GPS {
+
+  /**
+   * Clears the FS9GPS flight plan.
+   */
+  static async clearPlan() {
+    const totalGpsWaypoints = SimVar.GetSimVarValue('C:fs9gps:FlightPlanWaypointsNumber', 'number');
+    for (var i = 0; i < totalGpsWaypoints; i++) {
+
+      //Always remove waypoint 0 here, which shifts the rest of the waypoints down one
+      await GPS.deleteWaypoint(0);
+    }
+  }
+
+  /**
+   * Adds a waypoint to the FS9GPS flight plan by ICAO designation.
+   * @param {String} icao The MSFS ICAO to add to the flight plan.
+   * @param {Number} index The index of the waypoint to add in the flight plan.
+   */
+  static async addIcaoWaypoint(icao, index) {
+    await SimVar.SetSimVarValue('C:fs9gps:FlightPlanNewWaypointICAO', 'string', icao);
+    await SimVar.SetSimVarValue('C:fs9gps:FlightPlanAddWaypoint', 'number', index);
+  }
+
+  /**
+   * Adds a user waypoint to the FS9GPS flight plan.
+   * @param {Number} lat The latitude of the user waypoint.
+   * @param {Number} lon The longitude of the user waypoint.
+   * @param {Number} index The index of the waypoint to add in the flight plan.
+   * @param {String} ident The ident of the waypoint.
+   */
+  static async addUserWaypoint(lat, lon, index, ident) {
+    await SimVar.SetSimVarValue('C:fs9gps:FlightPlanNewWaypointLatitude', 'number', lat);
+    await SimVar.SetSimVarValue('C:fs9gps:FlightPlanNewWaypointLongitude', 'number', lon);
+
+    if (ident) {
+      await SimVar.SetSimVarValue('C:fs9gps:FlightPlanNewWaypointIdent', 'string', ident);
+    }
+
+    await SimVar.SetSimVarValue('C:fs9gps:FlightPlanAddWaypoint', 'number', index); 
+  }
+
+  /**
+   * Deletes a waypoint from the FS9GPS flight plan.
+   * @param {Number} index The index of the waypoint in the flight plan to delete.
+   */
+  static async deleteWaypoint(index) {
+    await SimVar.SetSimVarValue('C:fs9gps:FlightPlanDeleteWaypoint', 'number', index);
+  }
+
+  /**
+   * Sets the active FS9GPS waypoint.
+   * @param {Number} index The index of the waypoint to set active.
+   */
+  static async setActiveWaypoint(index) {
+    await SimVar.SetSimVarValue('C:fs9gps:FlightPlanActiveWaypoint', 'number', index); 
+  }
+
+  /**
+   * Gets the active FS9GPS waypoint.
+   */
+  static getActiveWaypoint() {
+    return SimVar.GetSimVarValue('C:fs9gps:FlightPlanActiveWaypoint', 'number'); 
+  }
+
+  /**
+   * Logs the current FS9GPS flight plan.
+   */
+  static async logCurrentPlan() {
+    const waypointIdents = [];
+    const totalGpsWaypoints = SimVar.GetSimVarValue('C:fs9gps:FlightPlanWaypointsNumber', 'number');
+
+    for (var i = 0; i < totalGpsWaypoints; i++) {
+      await SimVar.SetSimVarValue('C:fs9gps:FlightPlanWaypointIndex', 'number', i);
+      waypointIdents.push(SimVar.GetSimVarValue('C:fs9gps:FlightPlanWaypointIdent', 'string'));
+    }
+
+    console.log(`GPS Plan: ${waypointIdents.join(' ')}`);
+  }
+}
 
 /**
  * The details of procedures selected in the flight plan.
