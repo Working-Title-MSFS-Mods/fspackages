@@ -495,7 +495,8 @@ class CJ4_FMC_DepArrPage {
                     }
                     approachPages[pageIndex][rowIndex] = {
                         text: "RW" + Avionics.Utils.formatRunway(runway.designation).trim() + "[s-text]",
-                        approachIndex: k + approaches.length
+                        approachIndex: k + approaches.length,
+                        runwayIndex: k
                     };
                     if (firstMatchingRunway) {
                         firstRunwayPage = pageIndex + 1;
@@ -539,7 +540,7 @@ class CJ4_FMC_DepArrPage {
                     else if (approachIndex > lastApproachIndex) {
                         console.log("approachIndex > lastApproachIndex");
                         fmc.setMsg("Working...");
-                        let runwayApproachIndex = (approachPages[displayedPageIndex][i].approachIndex) - lastApproachIndex - 1;
+                        let runwayApproachIndex = approachPages[displayedPageIndex][i].runwayIndex;
                         console.log("approachIndex " + approachIndex);
                         fmc.ensureCurrentFlightPlanIsTemporary(() => {
                             console.log("starting to set vfrLandingRunway");
