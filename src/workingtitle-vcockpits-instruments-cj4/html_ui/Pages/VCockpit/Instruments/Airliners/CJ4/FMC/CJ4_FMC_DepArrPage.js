@@ -1,5 +1,10 @@
 class CJ4_FMC_DepArrPage {
     static ShowPage1(fmc) {
+        if (fmc.previousInput === "DEPARR") {
+             CJ4_FMC_DepArrPage.ShowIndexPage(fmc);
+             return;
+        }
+        
         let origin = fmc.flightPlanManager.getOrigin();
         let destination = fmc.flightPlanManager.getDestination();
         let airborne = !SimVar.GetSimVarValue("SIM ON GROUND", "boolean");
