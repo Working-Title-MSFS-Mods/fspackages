@@ -453,6 +453,9 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
         super(_name, _root, null);
         this.isVisible = undefined;
         this.currentPage = 1;
+        this.cj4Units = SimVar.GetSimVarValue("L:WT_CJ4_Units", "Enum");
+        this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
+        this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters 
     }
     init() {
         super.init();
@@ -1293,6 +1296,9 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
 
         if (this.isVisible) {
             if (this.currentPage == 1) {
+                this.cj4Units = SimVar.GetSimVarValue("L:WT_CJ4_Units", "Enum");
+                this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
+                this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters 
                 let GenAmp1 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS AMPS:1", "amperes");
                 this.DCAmpValueLeft.textContent = Math.round(GenAmp1).toString();
                 let GenAmp2 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS AMPS:2", "amperes");

@@ -277,9 +277,9 @@ class CJ4_FMC_TakeoffRefPage {
 		return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
 		}
         
-        const towText = tow > 17110 ? Math.round(tow * fmc.cj4Weight) + "[yellow]" : Math.round(tow * fmc.cj4Weight);
-        const grossWeightText = fmc.grossWeight * fmc.cj4Weight;
-        const mtowText = mtow * fmc.cj4Weight;
+        const towText = tow > 17110 ? formatNumber(tow * fmc.cj4Weight, 5) + "[yellow]" : formatNumber(tow * fmc.cj4Weight, 5);
+        const grossWeightText = formatNumber(fmc.grossWeight * fmc.cj4Weight, 5);
+        const mtowText = formatNumber(mtow * fmc.cj4Weight, 5);
         const takeoffDistText = fmc.cj4Units == 1 ? formatNumber((fmc.endTakeoffDist / 3.28), 4) : formatNumber(fmc.endTakeoffDist, 4);
         const depRunwayLengthText = fmc.cj4Units == 1 ? formatNumber((depRunwayLength / 3.28), 4) + " M[s-text]" : formatNumber(depRunwayLength, 4) + " FT[s-text]";
 
@@ -354,12 +354,12 @@ class CJ4_FMC_TakeoffRefPage {
         }
         let tow = (fmc.grossWeight - 100);
         const towText = tow > 17110 ? (Math.trunc(fmc.cj4Weight * tow)) + "[yellow]" : Math.trunc(fmc.cj4Weight * tow);
-        const mtowText = fmc.cj4Units == 1 ? "/7761 KG" : "/17110 LB"
+        const mtowText = fmc.cj4Units == 1 ? "7761 KG" : "17110 LB"
 
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "3/3[blue] ", "TAKEOFF REF[blue]"],
             ["TOW/MTOW[blue]"],
-            [towText + mtowText],
+            [towText + "/" + mtowText],
             ["", "STRUCTURAL LIMIT[blue]"],
             ["", mtowText + "[s-text]"],
             ["", "PERFORMANCE LIMIT[blue]"],

@@ -69,13 +69,14 @@ class CJ4_FMC_FuelMgmtPageOne {
     render() {
         console.log("Render Fuel");
 
-        const fuelQuantityTotalText = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelQuantityTotal).toFixed(0).padStart(4, " ") + "[d-text] KG[s-text]"
+        const fuelQuantityTotalText = this._fmc.cj4Units == 1 ? (Math.round(this._fmc.cj4Weight * this._fuelQuantityTotal)).toString().padStart(4, " ") + "[d-text] KG[s-text]"
             : this._fuelQuantityTotal.toFixed(0).padStart(4, " ") + "[d-text] LB[s-text]";
-        const totalFuelFlowText = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._totalFuelFlow).toFixed(0).padStart(4, " ") + "[d-text] KG/HR[s-text]"
+        const totalFuelFlowText = this._fmc.cj4Units == 1 ? (Math.round(this._fmc.cj4Weight * this._totalFuelFlow)).toString().padStart(4, " ") + "[d-text] KG/HR[s-text]"
             : this._totalFuelFlow.toFixed(0).padStart(4, " ") + "[d-text] LB/HR[s-text]";
-        const reserveFuelText = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fmc.reserveFuel).toString.padStart(4, " ") + " KG"
+        const reserveFuelText = this._fmc.cj4Units == 1 ? (Math.round(this._fmc.cj4Weight * this._fmc.reserveFuel)).toString().padStart(4, " ") + " KG"
             : this._fmc.reserveFuel.toString().padStart(4, " ") + " LB";
-        const spRangeText = fmc.cj4Units == 1 ? (this._spRng / this._fmc.cj4Weight).toFixed(2) + "[d-text]NM/KG[s-text]"
+        const spRangeText = this._spRng == ".----" ? ".----"
+            : this._fmc.cj4Units == 1 ? (this._spRng / this._fmc.cj4Weight).toFixed(2) + "[d-text]NM/KG[s-text]"
             : this._spRng + "[d-text]NM/LB[s-text]";
 
 
@@ -182,20 +183,20 @@ class CJ4_FMC_FuelMgmtPageTwo {
     render() {
         console.log("Render Fuel2");
 
-        const fuelBurned1Text = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelBurnedLeftDisplay).toString().padStart(4, " ") + " [d-text]"
+        const fuelBurned1Text = this._fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelBurnedLeftDisplay).toFixed(0).padStart(4, " ") + " [d-text]"
             : this._fuelBurnedLeftDisplay.toString().padStart(4, " ") + " [d-text]";
-        const fuelFlow1Text = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelFlowLeft).toString().padStart(4, " ") + "[d-text]"
+        const fuelFlow1Text = this._fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelFlowLeft).toFixed(0).padStart(4, " ") + "[d-text]"
             : this._fuelFlowLeft.toString().padStart(4, " ") + "[d-text]";
-        const fuelBurned2Text = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelBurnedRightDisplay).toString().padStart(4, " ") + " [d-text]"
+        const fuelBurned2Text = this._fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelBurnedRightDisplay).toFixed(0).padStart(4, " ") + " [d-text]"
             : this._fuelBurnedRightDisplay.toString().padStart(4, " ") + " [d-text]";
-        const fuelFlow2Text = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelFlowRight).toString().padStart(4, " ") + "[d-text]"
+        const fuelFlow2Text = this._fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelFlowRight).toFixed(0).padStart(4, " ") + "[d-text]"
             : this._fuelFlowRight.toString().padStart(4, " ") + "[d-text]";
-        const fuelBurnedTotalText = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelBurnedTotalDisplay).toString().padStart(4, " ") + " [d-text]"
+        const fuelBurnedTotalText = this._fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelBurnedTotalDisplay).toFixed(0).padStart(4, " ") + " [d-text]"
             : this._fuelBurnedTotalDisplay.toString().padStart(4, " ") + " [d-text]";
-        const fuelFlowTotalText = fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._totalFuelFlow).toString().padStart(4, " ") + "[d-text]"
+        const fuelFlowTotalText = this._fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._totalFuelFlow).toFixed(0).padStart(4, " ") + "[d-text]"
             : this._totalFuelFlow.toString().padStart(4, " ") + "[d-text]";
-        const fuelBurnedHead = fmc.cj4Units == 1 ? "KG  [s-text]" : "LB  [s-text]";
-        const fuelFlowHead = fmc.cj4Units == 1 ? "KG/HR[s-text]" : "LB/HR[s-text]";
+        const fuelBurnedHead = this._fmc.cj4Units == 1 ? "KG  [s-text]" : "LB  [s-text]";
+        const fuelFlowHead = this._fmc.cj4Units == 1 ? "KG/HR[s-text]" : "LB/HR[s-text]";
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "2/3[blue] ", "FUEL MGMT[blue]"],

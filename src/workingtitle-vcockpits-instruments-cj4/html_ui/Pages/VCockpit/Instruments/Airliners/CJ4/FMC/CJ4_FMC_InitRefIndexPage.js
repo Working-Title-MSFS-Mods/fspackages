@@ -486,9 +486,9 @@ class CJ4_FMC_InitRefIndexPage {
                 const activeWaypointDistanceConst = activeWaypointDist >= 100 ? activeWaypointDist.toFixed(0) : activeWaypointDist.toFixed(1);
                 const nextWaypointDistanceConst = nextWaypointDist >= 100 ? nextWaypointDist.toFixed(0) : nextWaypointDist.toFixed(1);
                 const destWaypointDistanceConst = destinationDistance >= 100 ? destinationDistance.toFixed(0) : destinationDistance.toFixed(1);
-                const activeWaypointFuelConst = activeWaypointFuel.toFixed(0).padStart(5, " ");
-                const nextWaypointFuelConst = nextWaypointFuel.toFixed(0).padStart(5, " ");
-                const destinationFuelConst = destinationFuel.toFixed(0).padStart(5, " ");
+                const activeWaypointFuelConst = activeWaypointFuel == "-----" ? "-----" : activeWaypointFuel.toFixed(0).padStart(5, " ");
+                const nextWaypointFuelConst = nextWaypointFuel == "-----" ? "-----" : nextWaypointFuel.toFixed(0).padStart(5, " ");
+                const destinationFuelConst = destinationFuel == "-----" ? "-----" : destinationFuel.toFixed(0).padStart(5, " ");
 
                 fmc._templateRenderer.setTemplateRaw([
                     [" PROGRESS[blue]", "1/2[blue] "],
@@ -689,10 +689,10 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage19(fmc, databaseWaypoint) { //DATABASE AIRPORT
+    static ShowPage19(fmc, databaseWaypoint, runwayUnitsReload) { //DATABASE AIRPORT
         fmc.clearDisplay();
 
-        let runwayUnits = fmc.cj4Units;
+        let runwayUnits = runwayUnitsReload === 0 || runwayUnitsReload === 1 ? runwayUnitsReload : fmc.cj4Units;
         let airportIdent = databaseWaypoint.ident;
         let runways = databaseWaypoint.infos.oneWayRunways;
         let longestRunway = runways[0];
@@ -749,12 +749,10 @@ class CJ4_FMC_InitRefIndexPage {
         let lonNum = new Number(wptCoordinatesAlt.substring(longIndex + 5, altIndex - 2));
         let lonText = lonNum < 0 ? "W " + Math.abs(lonNum)
             : "E " + lonNum;
-        
+
         const longestRunwayDisplay = runwayUnits == 1 ? Math.trunc(longestRunwayLength) + " M" : Math.trunc(longestRunwayLengthFeet) + " FT";
         const elevationDisplay = fmc.cj4Units == 1 ? Math.trunc(longestRunway.elevation) + " M" : Math.trunc(longestRunwayElevation) + " FT";
-
-
-        let runwayLengthSwitch = fmc.templateRenderer.renderSwitch(["FEET", "METERS"], runwayUnits);
+        let runwayLengthSwitch = fmc._templateRenderer.renderSwitch(["FEET", "METERS"], runwayUnits);
 
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "DATA BASE[blue]"],
@@ -781,7 +779,7 @@ class CJ4_FMC_InitRefIndexPage {
                     fmc.setMsg();
                     if (w) {
                         if (w.icao.slice(0, 1) == "A") {
-                            CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w);
+                            CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, w, runwayUnits);
                         }
                         else if (w.icao.slice(0, 1) == "V") {
                             CJ4_FMC_InitRefIndexPage.ShowPage20(fmc, w);
@@ -799,7 +797,10 @@ class CJ4_FMC_InitRefIndexPage {
                 });
             }
         };
-        fmc.onLeftInput[3] = () => { runwayUnits = runwayUnits == 1 ? 0 : 1; };
+        fmc.onLeftInput[3] = () => {
+            runwayUnits = runwayUnits == 1 ? 0 : 1;
+            CJ4_FMC_InitRefIndexPage.ShowPage19(fmc, databaseWaypoint, runwayUnits);
+        };
         //fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage18(fmc, databaseWaypoint); };
         fmc.updateSideButtonActiveStatus();
     }

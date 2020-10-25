@@ -78,13 +78,12 @@ class CJ4_SystemEngines extends NavSystemElement {
         this.OilTempMax = 160;
         this.Flaps_Table_Values = [0, 15, 35];
         this.Flaps_Table_Angles = [0, 25, 60];
+        this.cj4Units = SimVar.GetSimVarValue("L:WT_CJ4_Units", "Enum"); //0 = imperial; 1 = metric
+        this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
+        this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters 
     }
     init(_root) {
         this.root = _root.querySelector(".SystemEngines");
-        this.cj4Units = WTDataStore.get('WT_CJ4_Units', 0);
-        SimVar.SetSimVarValue("L:WT_CJ4_Units", "Enum", this.cj4Units); //0 = imperial; 1 = metric
-        this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
-        this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters 
         this.construct();
     }
     onEnter() {
@@ -1853,6 +1852,9 @@ class CJ4_SystemEngines extends NavSystemElement {
 class CJ4_SystemElectrics extends NavSystemElement {
     init(_root) {
         this.root = _root.querySelector(".SystemElectrics");
+        this.cj4Units = SimVar.GetSimVarValue("L:WT_CJ4_Units", "Enum"); //0 = imperial; 1 = metric
+        this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
+        this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters 
         this.constructSVG();
     }
     onEnter() {
@@ -1860,6 +1862,9 @@ class CJ4_SystemElectrics extends NavSystemElement {
     onUpdate(_deltaTime) {
         if (!this.root)
             return;
+        this.cj4Units = SimVar.GetSimVarValue("L:WT_CJ4_Units", "Enum"); //0 = imperial; 1 = metric
+        this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
+        this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters 
         let GenAmp1 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS AMPS:1", "amperes");
         this.DCAmpValueLeft.textContent = Math.round(GenAmp1).toString();
         let GenAmp2 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS AMPS:2", "amperes");
@@ -1884,9 +1889,10 @@ class CJ4_SystemElectrics extends NavSystemElement {
         this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
 		
         let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
-        this.FUELPPHValueLeft.textContent = Math.round(PPHEng1).toString();
+        this.FUELPPHValueLeft.textContent = this.cj4Units == 1 ? Math.round(PPHEng1 * this.cj4Weight).toString() : Math.round(PPHEng1).toString();
         let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
-        this.FUELPPHValueRight.textContent = Math.round(PPHEng2).toString();
+        this.FUELPPHValueRight.textContent = this.cj4Units == 1 ? Math.round(PPHEng2 * this.cj4Weight).toString() : Math.round(PPHEng2).toString();
+
         this.FUELTempValueLeft.textContent = "--";
         this.FUELTempValueRight.textContent = "--";
     }
