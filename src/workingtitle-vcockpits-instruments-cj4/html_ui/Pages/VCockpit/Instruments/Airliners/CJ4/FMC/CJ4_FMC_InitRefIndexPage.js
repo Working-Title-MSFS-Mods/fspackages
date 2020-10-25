@@ -751,7 +751,7 @@ class CJ4_FMC_InitRefIndexPage {
             : "E " + lonNum;
 
         const longestRunwayDisplay = runwayUnits == 1 ? Math.trunc(longestRunwayLength) + " M" : Math.trunc(longestRunwayLengthFeet) + " FT";
-        const elevationDisplay = fmc.cj4Units == 1 ? Math.trunc(longestRunway.elevation) + " M" : Math.trunc(longestRunwayElevation) + " FT";
+        const elevationDisplay = Math.trunc(longestRunwayElevation) + " FT";
         let runwayLengthSwitch = fmc._templateRenderer.renderSwitch(["FEET", "METERS"], runwayUnits);
 
         fmc._templateRenderer.setTemplateRaw([
