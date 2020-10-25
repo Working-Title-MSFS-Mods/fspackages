@@ -11,7 +11,7 @@
     *   Over 40 screens/pages of the FMS have been developed
     *   Route planning complete with departure and arrival procedures, airways and direct waypoints, including many procedures and procedure types missing from the default aircraft
     *   Performance init pages including complete takeoff and approach performance calculations, with field lengths and Vspeeds
-    *   Custom developed and implemented a flight plan import directly from Simbrief via the FMS, allowing users to spawn without a flight plan, then load a Simbrief OFP/Flight Plan directly over the web (requires internet connection); this feature also makes it easier to fly multiple legs without existing the simulation session
+    *   Custom developed and implemented a flight plan import directly from Simbrief via the FMS, allowing users to spawn without a flight plan, then load a Simbrief OFP/Flight Plan directly over the web (requires internet connection); this feature also makes it easier to fly multiple legs without exiting the simulation session
     *   Improved performance of FMS by streamlining data access behind the code
     *   Added custom mechanism for saving and storing default settings to remain persistent between sim sessions
     *   Added transponder functionality and completely redesigned the TUN page for radio tuning
