@@ -311,7 +311,7 @@ class CJ4_FMC_DepArrPage {
                 if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     fmc.eraseTemporaryFlightPlan(() => {
                         fmc.fpHasChanged = false;
-                        fmc.onDepArr();
+                        CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
                     });
                 }
             }
