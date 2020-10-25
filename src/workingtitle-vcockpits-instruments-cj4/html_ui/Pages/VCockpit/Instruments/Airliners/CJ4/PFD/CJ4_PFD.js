@@ -134,18 +134,24 @@ class CJ4_PFD extends BaseAirliners {
                     this.radioNav.setRADIONAVSource(NavSource.VOR1);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
                     this.mapNavigationSource = 1;
+                    //temp CRS KNOB FIX (see also CJ4_Cockput.xml line 87)
+                    SimVar.SetSimVarValue("L:WT_NAV_Selected", "Number", this.mapNavigationSource);
                     this.onModeChanged();
                 }
                 else if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1) {
                     this.radioNav.setRADIONAVSource(NavSource.VOR2);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
                     this.mapNavigationSource = 2;
+                    //temp CRS KNOB FIX (see also CJ4_Cockput.xml line 87)
+                    SimVar.SetSimVarValue("L:WT_NAV_Selected", "Number", this.mapNavigationSource);
                     this.onModeChanged();
                 }
                 else if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 2) {
                     this.radioNav.setRADIONAVSource(NavSource.GPS);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
                     this.mapNavigationSource = 0;
+                    //temp CRS KNOB FIX (see also CJ4_Cockput.xml line 87)
+                    SimVar.SetSimVarValue("L:WT_NAV_Selected", "Number", 1);
                     this.onModeChanged();
                 }
                 break;
@@ -212,10 +218,6 @@ class CJ4_PFD extends BaseAirliners {
         return true;
     }
     onModeChanged() {
-        //temp CRS KNOB FIX (see also CJ4_Cockput.xml line 87)
-        let wtGetRadioNavSource = this.radioNav.getRADIONAVSource() == 1 ? 1 : this.radioNav.getRADIONAVSource() - 1;
-        SimVar.SetSimVarValue("L:WT_NAV_Selected", "Number", wtGetRadioNavSource);
-        //end of temp CRS KNOB FIX
         SimVar.SetSimVarValue("L:CJ4_MAP_MODE", "number", this.mapDisplayMode);
         SimVar.SetSimVarValue("L:FMC_UPDATE_CURRENT_PAGE", "number", 1);
         if (this.modeChangeMask) {
