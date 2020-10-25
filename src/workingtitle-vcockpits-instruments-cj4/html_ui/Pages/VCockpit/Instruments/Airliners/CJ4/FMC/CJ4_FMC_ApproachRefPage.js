@@ -58,6 +58,10 @@ class CJ4_FMC_ApproachRefPage {
             crosswind = Math.abs(crosswind);
         }
 
+        if (isNaN(fmc.landingQnh)) {
+            fmc.landingQnh = SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg");
+        }
+
         let arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY[green]/[white]WET[s-text]"
             : "DRY[s-text]/[white]WET[green]";
 
@@ -257,7 +261,7 @@ class CJ4_FMC_ApproachRefPage {
             ldgFieldLength = ldgFieldLength + (((ldgWt - 10500) * .000903) + 5.33) * fmc.landingOat;
         }
 
-        if (fmc.landingWindDir != "---") {
+        if (fmc.landingWindDir != "---" && arrRunway != "") {
             let headwind = Math.trunc(fmc.landingWindSpeed * (Math.cos((arrRunwayDirection * Math.PI / 180) - (fmc.landingWindDir * Math.PI / 180))));
             if (headwind > 0) {
                 let headwindFactor = (fmc.landingPressAlt * .00683) + 15;

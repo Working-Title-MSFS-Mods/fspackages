@@ -238,7 +238,7 @@ class CJ4_FMC_TakeoffRefPage {
 
         let tailWindFactor = (((((tow - 11000) * .00000159) + .00275)) * fmc.takeoffPressAlt) + (((tow - 11000) * .0065) + 60); // Number of feet per 1kt of tailwind to add based on weight and altitude
 
-        if (fmc.takeoffWindDir != "---") {
+        if (fmc.takeoffWindDir != "---" && selectedRunway) {
             let depRunwayDirection = new Number(selectedRunway.direction);
             let headwind = Math.trunc(fmc.takeoffWindSpeed * (Math.cos((depRunwayDirection * Math.PI / 180) - (fmc.takeoffWindDir * Math.PI / 180))));
             if (headwind > 0) {

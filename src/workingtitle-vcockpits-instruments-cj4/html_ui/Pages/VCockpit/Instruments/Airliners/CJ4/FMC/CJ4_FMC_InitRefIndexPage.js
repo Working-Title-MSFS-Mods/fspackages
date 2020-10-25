@@ -1153,7 +1153,7 @@ class CJ4_FMC_InitRefIndexPage {
                 approachText = approach.name || "RW" + Avionics.Utils.formatRunway(fmc.vfrLandingRunway.designation);
                 let approachRunway = fmc.flightPlanManager.getApproachRunway() || fmc.vfrLandingRunway;
                 rwyThresholdAltText = fmc.cj4Units == 1 ? Math.trunc(approachRunway.elevation) + " M" : Math.trunc(approachRunway.elevation * 3.28) + " FT";
-                if (approach.name.startsWith("ILS")) {
+                if (approachText.trim().startsWith("ILS")) {
                     freqText = fmc.flightPlanManager.getApproachNavFrequency().toFixed(2);
                     locTrueBrgText = Math.trunc(approachRunway.direction).toString().padStart(3, "0") + "T";
                     gsAngleText = "3.00°";
