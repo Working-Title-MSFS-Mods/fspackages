@@ -764,7 +764,7 @@ class MemoryState {
 
     }
 
-    setMemoryState(_systemPage1, systemPage2, _showChecklist, _showPassengerBrief, _mapDisplayMode, _mapNavigationMode, _mapNavigationSource, _showTerrain, _showWeather, _showGwx, _isExtended){
+    setMemoryState(membutton, _systemPage1, systemPage2, _showChecklist, _showPassengerBrief, _mapDisplayMode, _mapNavigationMode, _mapNavigationSource, _showTerrain, _showWeather, _showGwx, _isExtended){
         // Set system pages
         this.systemPage1 = _systemPage1;
         this.systemPage2 = systemPage2;
@@ -780,5 +780,24 @@ class MemoryState {
         this.showGwx = _showGwx;
         this.isExtended = _isExtended;
 
+        const memoryStateStorageName = "WT_CJ4_MFD_Mem_" + membutton;
+        const memoryStateSettings = {
+            systemPage1: _systemPage1,
+            systemPage2: systemPage2,
+            showChecklist: _showChecklist,
+            showPassengerBrief: _showPassengerBrief,
+            mapDisplayMode: _mapDisplayMode,
+            mapNavigationMode: _mapNavigationMode,
+            mapNavigationSource: _mapNavigationSource,
+            showTerrain: _showTerrain,
+            showWeather: _showWeather,
+            showGwx: _showGwx,
+            isExtended: _isExtended
+        };
+
+        //_systemPage1 + "," + systemPage2 + "," + _showChecklist + "," + _showPassengerBrief + "," + _mapDisplayMode + "," + _mapNavigationMode + "," + _mapNavigationSource + "," + _showTerrain + "," + _showWeather + "," + _showGwx + "," + _isExtended);
+        console.log("memoryStateStorageName: " + memoryStateStorageName);
+        console.log("memoryStateSettings: " + JSON.stringify(memoryStateSettings));
+        WTDataStore.set(memoryStateStorageName, JSON.stringify(memoryStateSettings));
     }
 }
