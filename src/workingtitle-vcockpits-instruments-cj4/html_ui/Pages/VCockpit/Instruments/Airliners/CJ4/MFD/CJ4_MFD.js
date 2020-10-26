@@ -262,21 +262,21 @@ class CJ4_MFD extends BaseAirliners {
                 this.activeMemoryFunction(1);
                 break;
             case "Lwr_Hold_MEM1_1":
-                this.mem1.setMemoryState(1, this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource, this.showSystemOverlay, this.showTerrain, this.showWeather, this.showGwx, this.isExtended);
+                this.mem1.setMemoryState(1, this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource, this.showTerrain, this.showWeather, this.showGwx, this.isExtended);
                 this.activeMemoryFunction(1);
                 break;
             case "Lwr_Push_MEM2_1":
                 this.activeMemoryFunction(2);
                 break;
             case "Lwr_Hold_MEM2_1":
-                this.mem2.setMemoryState(2, this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource, this.showSystemOverlay, this.showTerrain, this.showWeather, this.showGwx, this.isExtended);
+                this.mem2.setMemoryState(2, this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource, this.showTerrain, this.showWeather, this.showGwx, this.isExtended);
                 this.activeMemoryFunction(2);
                 break;
             case "Lwr_Push_MEM3_1":
                 this.activeMemoryFunction(3);
                 break;
             case "Lwr_Hold_MEM3_1":
-                this.mem3.setMemoryState(3, this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource, this.showSystemOverlay, this.showTerrain, this.showWeather, this.showGwx, this.isExtended);
+                this.mem3.setMemoryState(3, this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource, this.showTerrain, this.showWeather, this.showGwx, this.isExtended);
                 this.activeMemoryFunction(3);
                 break;
             case "Lwr_Push_ESC":
@@ -312,7 +312,7 @@ class CJ4_MFD extends BaseAirliners {
             this.mapDisplayMode = getParsedMemoryStateSettings.mapDisplayMode;
             this.mapNavigationMode = getParsedMemoryStateSettings.mapNavigationMode;
             this.mapNavigationSource = getParsedMemoryStateSettings.mapNavigationSource;
-            this.showSystemOverlay = getParsedMemoryStateSettings.showSystemOverlay;
+            //this.showSystemOverlay = getParsedMemoryStateSettings.showSystemOverlay;
             this.showTerrain = getParsedMemoryStateSettings.showTerrain;
             this.showWeather = getParsedMemoryStateSettings.showWeather;
             this.showGwx = getParsedMemoryStateSettings.showGwx;

@@ -722,7 +722,7 @@ class MemoryState {
             this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
             this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
             this.mapNavigationSource = 0;
-            this.showSystemOverlay = 0;
+            //this.showSystemOverlay = 0;
             this.showTerrain = false;
             this.showWeather = false;
             this.showGwx = false;
@@ -739,7 +739,7 @@ class MemoryState {
             this.mapDisplayMode = Jet_NDCompass_Display.PLAN;
             this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
             this.mapNavigationSource = 0;
-            this.showSystemOverlay = 0;
+            //this.showSystemOverlay = 0;
             this.showTerrain = false;
             this.showWeather = false;
             this.showGwx = false;
@@ -764,7 +764,7 @@ class MemoryState {
 
     }
 
-    setMemoryState(membutton, _systemPage1, systemPage2, _showChecklist, _showPassengerBrief, _mapDisplayMode, _mapNavigationMode, _mapNavigationSource, _showSystemOverlay, _showTerrain, _showWeather, _showGwx, _isExtended){
+    setMemoryState(membutton, _systemPage1, systemPage2, _showChecklist, _showPassengerBrief, _mapDisplayMode, _mapNavigationMode, _mapNavigationSource, _showTerrain, _showWeather, _showGwx, _isExtended){
         // Set system pages
         this.systemPage1 = _systemPage1;
         this.systemPage2 = systemPage2;
@@ -775,7 +775,7 @@ class MemoryState {
         this.mapDisplayMode = _mapDisplayMode;
         this.mapNavigationMode = _mapNavigationMode;
         this.mapNavigationSource = _mapNavigationSource;
-        this.showSystemOverlay = _showSystemOverlay;
+        //this.showSystemOverlay = _showSystemOverlay;
         this.showTerrain = _showTerrain;
         this.showWeather = _showWeather;
         this.showGwx = _showGwx;
@@ -790,7 +790,7 @@ class MemoryState {
             mapDisplayMode: _mapDisplayMode,
             mapNavigationMode: _mapNavigationMode,
             mapNavigationSource: _mapNavigationSource,
-            showSystemOverlay: _showSystemOverlay,
+            //showSystemOverlay: _showSystemOverlay,
             showTerrain: _showTerrain,
             showWeather: _showWeather,
             showGwx: _showGwx,
