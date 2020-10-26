@@ -194,25 +194,32 @@ as3000-mfd-element {
           width: 80%;
           right: 0%;
           position: absolute; }
-          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #TopRight {
+          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBar {
             position: absolute;
             top: 0%;
             width: 100%;
             height: 4%;
-            display: flex;
-            font-size: 2.5vh;
-            line-height: 4vh;
-            background-color: #1a1d21; }
-            as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #TopRight .title {
-              width: 4%;
-              color: white; }
-            as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #TopRight .value {
-              width: 8%;
+            background-color: #1a1d21;
+            padding: 0 1vw 0.25vh;
+            display: grid;
+            grid-template-columns: repeat(8, 12.5%);
+            grid-template-rows: 1fr; }
+            as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBar .navDataField {
+              display: flex;
+              flex-flow: row nowrap;
+              align-items: flex-end; }
+            as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBar .title {
+              font-size: 2vh;
+              color: white;
+              margin-right: 0.25vw;
+              margin-bottom: 0.2vh; }
+            as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBar .value {
+              font-size: 2.5vh;
               color: #d12bc7; }
-            as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #TopRight #MSA {
-              width: 8.5%; }
-            as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #TopRight #ETA {
-              width: 11%; }
+            as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBar .number {
+              font-size: 2.5vh; }
+            as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBar .unit {
+              font-size: 2vh; }
           as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map {
             position: absolute;
             height: 96%;
@@ -237,7 +244,7 @@ as3000-mfd-element {
               as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #WindData .svg {
                 position: absolute;
                 top: 0%;
-                height: 100%; 
+                height: 100%;
                 width: 100%; }
             as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #MapRange {
               position: absolute;
@@ -269,4 +276,3 @@ as3000-mfd-element {
     left: 0;
     top: -11.5%;
     width: 100%; }
-
