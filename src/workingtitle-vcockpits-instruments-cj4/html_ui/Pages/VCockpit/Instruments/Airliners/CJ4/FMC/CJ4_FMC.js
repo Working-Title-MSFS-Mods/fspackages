@@ -226,6 +226,50 @@ class CJ4_FMC extends FMCMainDisplay {
         return false;
     }
 
+    //Overwrite of FMCMainDisplay to disable always settings nav hold to GPS mode
+    updateRadioNavState() {
+        if (this.isPrimary) {
+            let radioNavOn = this.isRadioNavActive();
+            if (radioNavOn != this._radioNavOn) {
+                this._radioNavOn = radioNavOn;
+                if (!radioNavOn)
+                    this.initRadioNav(false);
+                if (this.refreshPageCallback)
+                    this.refreshPageCallback();
+            }
+            let apNavIndex = 1;
+            let gpsDriven = true;
+            let apprHold = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool");
+            if (apprHold) {
+                if (this.canSwitchToNav()) {
+                    let navid = 0;
+                    let ils = this.radioNav.getBestILSBeacon();
+                    if (ils.id > 0) {
+                        navid = ils.id;
+                    }
+                    else {
+                        let vor = this.radioNav.getBestVORBeacon();
+                        if (vor.id > 0) {
+                            navid = vor.id;
+                        }
+                    }
+                    if (navid > 0) {
+                        apNavIndex = navid;
+                        let hasFlightplan = Simplane.getAutopilotGPSActive();
+                        let apprCaptured = Simplane.getAutoPilotAPPRCaptured();
+                        if (apprCaptured || !hasFlightplan) {
+                            gpsDriven = false;
+                        }
+                    }
+                }
+            }
+            if (apNavIndex != this._apNavIndex) {
+                SimVar.SetSimVarValue("K:AP_NAV_SELECT_SET", "number", apNavIndex);
+                this._apNavIndex = apNavIndex;
+            }
+        }
+    }
+
     setMsg(value = "") {
         this._msg = value;
         this._templateRenderer.setMsg(value);
