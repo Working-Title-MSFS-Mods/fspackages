@@ -3568,15 +3568,25 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR]);
                 this.addRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2]);
                 this.addRange("VT", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VT]);
-                this.addRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF]);
-                this.addRange("VAP", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VAP]);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("RA/BARO MIN", this.textSize, 0.6);
+                this.addRange("VAP", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VAP]);
+                this.addRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("MINIMUMS", this.textSize, 0.6);
+                this.addRadio("OFF", this.textSize, null)
                 this.addRadioRange("RA", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
                 this.addRadioRange("BARO", this.textSize, 0, 12100, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addPlainItem("DEST ELV", this.textSize, null)
             }
             this.endSection();
         }
