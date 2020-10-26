@@ -1,18 +1,18 @@
 class WT_ValueAndUnit {
-    constructor(value, unit){
+    constructor(value, unit) {
         this._value = value;
         this._unit = unit;
     }
-    
+
     get Value() {
         return this._value;
     }
 
     get Unit() {
-        return this._unit;        
+        return this._unit;
     }
 
-    getString (seperator = " ") {
+    getString(seperator = " ") {
         return this._value + seperator + this._unit;
     }
 }
@@ -34,7 +34,7 @@ class WT_Units {
 class WT_ConvertUnit {
 
     static isMetric() {
-        return WTDataStore.get('WT_CJ4_Units', 0);
+        return Boolean(WTDataStore.get('WT_CJ4_Units', 0));
     }
 
     static getWeight(value, imperial = "LB", metric = "KG") {
@@ -61,8 +61,7 @@ class WT_ConvertUnit {
     }
 
     static getLength(value) {
-        let isMetric = WTDataStore.get('WT_CJ4_Units', 0);
-        if (isMetric == 1) {
+        if (WT_ConvertUnit.isMetric()) {
             return value;
         }
         else {
@@ -110,7 +109,7 @@ class WT_ConvertUnit {
     //         return "LB";
     //     }
     // }
-    
+
     // static weightUnits() {
     //     let isMetric = WTDataStore.get('WT_CJ4_Units', 0);
     //     if (isMetric == 1) {
