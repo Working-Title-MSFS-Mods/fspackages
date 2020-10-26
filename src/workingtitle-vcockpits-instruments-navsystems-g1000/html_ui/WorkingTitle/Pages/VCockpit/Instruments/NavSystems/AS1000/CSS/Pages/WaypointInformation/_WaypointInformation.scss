@@ -1,0 +1,28 @@
+%waypoint-information-page {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 100%;
+    grid-template-areas: "map sidebar";
+
+    height: 100%;
+    width: 100%;
+    background: $page_background_color;
+    color: $input_color;
+
+    .map-container {
+        -webkit-transform: rotateX(0deg);
+        height: 100%;
+        width: 100%;
+        grid-area: map;
+        display: block;
+        position: relative;
+        border-right: $border_width_thin solid #fff;
+    }
+
+    .sidebar {
+        grid-area: sidebar;
+        height: 100%;
+        padding: 0 2vh;
+        background: $page_background_color;
+    }
+}

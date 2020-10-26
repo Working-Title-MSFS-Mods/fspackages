@@ -1,0 +1,81 @@
+g1000-duplicate-waypoints {
+    @extend %floating-pane;
+    position: absolute;
+    right: 2vh;
+    top: 20vh;
+    padding: 0 1.5vh;
+    z-index: 1000;
+
+    .ident {
+        color: $input_color;
+        font-family: $font_family_mono;
+    }
+
+    .duplicates {
+        color: $input_color;
+        height: 5 * 1.5em;
+        overflow-y: scroll;
+
+        li {
+            display: grid;
+            grid-gap: 2vh;
+            grid-template-columns: 20% 3ch 1fr;
+            align-items: center;
+        }
+
+        .icon img {
+            display: block !important;
+            width: 2ch;
+            height: 2ch;
+        }
+    }
+
+    .city {
+        @extend %animated-selection;
+    }
+
+    .units {
+        font-size: 0.8em;
+    }
+
+    .information {
+        color: $input_color;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto auto;
+        grid-template-areas:
+            "name name"
+            "city city"
+            "coordinatesLat bearing"
+            "coordinatesLong distance";
+
+        .name {
+            grid-area: name;
+        }
+
+        .city {
+            grid-area: city;
+        }
+
+        .bearing {
+            grid-area: bearing;
+        }
+
+        .distance {
+            grid-area: distance;
+        }
+
+        .coordinatesLat {
+            grid-area: coordinatesLat;
+        }
+
+        .coordinatesLong {
+            grid-area: coordinatesLong;
+        }
+
+        .coordinatesLat,
+        .coordinatesLong {
+            //text-align: right;
+        }
+    }
+}

@@ -48,9 +48,9 @@ class WT_Toggle_Switch extends HTMLElement {
         }
     }
     connectedCallback() {
-        if (this.initialised)
+        if (this.hasInitialised)
             return;
-        this.initialised = true;
+        this.hasInitialised = true;        
 
         this.elements.text = document.createElement("div");
         this.appendChild(this.elements.text);

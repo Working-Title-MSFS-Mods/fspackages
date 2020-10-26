@@ -9,8 +9,8 @@ toggle-switch {
 
     div {
         flex: 1;
-        line-height: 1;
         text-align: center;
+        margin: 0 1.5vh;
     }
 
     &[state="Selected"] {

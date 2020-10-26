@@ -3,6 +3,12 @@ class WT_Nearest_Waypoints_Repository {
         this.airports = new Subject([], false);
         this.nearestAirportList = new NearestAirportList(gps);
 
+        this.vors = new Subject([], false);
+        this.nearestVorList = new NearestVORList(gps);
+
+        this.ndbs = new Subject([], false);
+        this.nearestNdbList = new NearestNDBList(gps);
+
         this.filters = {
             airports: {
                 type: "all",
@@ -10,8 +16,8 @@ class WT_Nearest_Waypoints_Repository {
             }
         };
         this.loadOptions = {
-            count: 50,
-            distance: 200
+            count: 25,
+            distance: 60
         };
 
         this.updateTimer = 0;
@@ -46,6 +52,24 @@ class WT_Nearest_Waypoints_Repository {
                 return a.distance - b.distance
             });
     }
+    updateNearestVors() {
+        this.nearestVorList.Update(this.loadOptions.count, this.loadOptions.distance);
+
+        this.vors.value = this.nearestVorList.vors.sort((a, b) => {
+            return a.distance - b.distance
+        });
+    }
+    updateNearestNdbs() {
+        try {
+            this.nearestNdbList.Update(this.loadOptions.count, this.loadOptions.distance);
+
+            this.ndbs.value = this.nearestNdbList.ndbs.sort((a, b) => {
+                return a.distance - b.distance
+            });
+        } catch (e) {
+            console.error(e.message);
+        }
+    }
     update(dt) {
         this.updateTimer += dt;
         if (this.updateTimer < this.updateFrequency) {
@@ -55,6 +79,12 @@ class WT_Nearest_Waypoints_Repository {
 
         if (this.airports.hasSubscribers()) {
             this.updateNearestAirports();
+        }
+        if (this.vors.hasSubscribers()) {
+            this.updateNearestVors();
+        }
+        if (this.ndbs.hasSubscribers()) {
+            this.updateNearestNdbs();
         }
     }
 }

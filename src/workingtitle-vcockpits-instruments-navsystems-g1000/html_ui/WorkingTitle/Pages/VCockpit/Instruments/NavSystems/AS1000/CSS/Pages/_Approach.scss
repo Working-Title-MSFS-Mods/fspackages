@@ -1,4 +1,4 @@
-g1000-approach-page {
+g1000-procedures-page {
     display: grid;
     grid-template-columns: 60% 1fr;
     grid-template-rows: 100%;
@@ -14,13 +14,6 @@ g1000-approach-page {
         grid-area: map;
         display: block;
         position: relative;
-        width: 100%;
-        height: 100%;
-
-        bing-map {
-            width: 100%;
-            height: 100%;
-        }
     }
 
     .sidebar {
@@ -48,7 +41,9 @@ g1000-approach-page {
             animation: SelectionBlink 0.5s infinite !important;
         }
     }
+}
 
+g1000-approach-page {
     .load-or-activate {
         display: grid;
         margin: 0 4vh;
@@ -65,4 +60,8 @@ g1000-approach-page {
             font-size: $font_size_extra_large;
         }
     }
+}
+
+g1000-sequence-list {
+    display: block;
 }

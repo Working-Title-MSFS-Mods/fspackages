@@ -27,7 +27,7 @@ class WT_Credits_Model extends WT_Model {
     }
     initCredits() {
         this.credits.value = `
-        <div style="display:grid; grid-template-columns:50% 50%; gap:5vh">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5vh; margin:0 2vh;">
             <article class="article">
                 <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/Garmin.svg" style="width:100%;"/>
                 <h1>Working Title</h1>

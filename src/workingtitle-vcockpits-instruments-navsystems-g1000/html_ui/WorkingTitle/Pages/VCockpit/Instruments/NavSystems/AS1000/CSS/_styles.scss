@@ -28,6 +28,7 @@ $font_family_normal: "Roboto-Regular";
 $font_family_mono: "Roboto-Mono";
 
 html {
+    background-color: #000;
     font-size: calc(2 * 1vh * var(--bodyHeightScale));
     font-family: $font_family_normal;
 
@@ -66,6 +67,26 @@ ul {
 %animated-selection {
     &[state="Selected"] {
         animation: SelectionBlink 0.5s infinite !important;
+    }
+}
+
+%floating-pane {
+    background: lighten($page_background_color, 10%);
+    border: 1vh outset #111;
+    box-shadow: 0px 0px 0px $border_width_thick $border_color;
+
+    .title {
+        margin: 1vh 0;
+        font-size: 1.1em;
+        font-weight: bold;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    footer {
+        text-align: center;
+        font-size: 1.1em;
+        margin: 2vh 0;
     }
 }
 

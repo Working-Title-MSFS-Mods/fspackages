@@ -68,7 +68,7 @@ class WT_MFD_Nav_Box_Model {
             }
             case "ETE": {
                 if (SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean")) {
-                    let ete = SimVar.GetSimVarValue("GPS ETE", "seconds");
+                    let ete = SimVar.GetSimVarValue("GPS WP ETE", "seconds");
                     return this.secondsToDuration(ete);
                 } else {
                     return "__:__";

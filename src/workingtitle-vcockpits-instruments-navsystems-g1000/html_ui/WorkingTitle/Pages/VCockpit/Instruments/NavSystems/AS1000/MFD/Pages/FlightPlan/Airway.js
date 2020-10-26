@@ -63,7 +63,7 @@ class WT_Airway_Selector_Model {
         this.selectedExit.value = this.exits.value[index];
     }
     getWaypoints() {
-        return this.sequence.value;
+        return this.sequence.value.filter(waypoint => waypoint.icao != this.waypoint.icao);
     }
 }
 
@@ -94,6 +94,7 @@ class WT_Flight_Plan_Waypoints {
     isActiveApproach() { return false; };
     getLastIndexBeforeApproach() { return this.waypoints.length; };
 }
+WT_Flight_Plan_Waypoints.index = 100;
 
 class WT_Airway_Selector_View extends WT_HTML_View {
     constructor(map, softKeyController) {

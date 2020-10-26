@@ -1,24 +1,39 @@
 class WT_Direct_To_Model extends WT_Model {
-    constructor(type, gps, softKeyController) {
+    constructor(gps, type, waypointRepository) {
         super();
-        this.type = type;
         this.gps = gps;
-        this.facilityLoader = this.gps.facilityLoader;
-        this.softKeyController = softKeyController;
+        this.type = type;
+        this.waypointRepository = waypointRepository;
 
-        this.waypoint = new Subject();
-        this.bearing = new Subject();
-        this.distance = new Subject();
+        this.waypoint = new Subject(null);
+        this.bearing = new Subject(null);
+        this.distance = new Subject(null);
+        this.name = new Subject(null);
+        this.city = new Subject(null);
     }
-    setIcao(icao) {
-        let waypoint = new WayPoint(this.gps);
-        waypoint.icao = icao;
-        this.facilityLoader.getFacilityDataCB(waypoint.icao, (data) => {
-            if (data) {
-                waypoint.SetFromIFacility(data, () => console.log(JSON.stringify(waypoint.infos.airways.map(aw => aw.name))));
-                this.waypoint.value = waypoint;
-            }
-        });
+    async setIcao(icao) {
+        let waypoint = await this.waypointRepository.load(icao);
+
+        if (waypoint && waypoint.infos) {
+            this.waypoint.value = waypoint;
+            let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+            let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+            let planeCoordinates = new LatLong(lat, long);
+            this.bearing.value = Avionics.Utils.computeGreatCircleHeading(planeCoordinates, waypoint.infos.coordinates);
+            let distance = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, waypoint.infos.coordinates);
+            this.distance.value = distance;
+            this.name.value = waypoint.infos.name;
+            this.city.value = waypoint.infos.city;
+        } else {
+            this.waypoint.value = null;
+            this.bearing.value = null;
+            this.distance.value = null;
+            this.name.value = null;
+            this.city.value = null;
+        }
+    }
+    cancelDirectTo() {
+        this.gps.revertToFlightPlan();
     }
 }
 
@@ -26,6 +41,9 @@ class WT_Direct_To_Input_Layer extends Selectables_Input_Layer {
     constructor(view) {
         super(new Selectables_Input_Layer_Dynamic_Source(view))
         this.view = view;
+    }
+    onMenuPush() {
+        this.view.showMenu();
     }
     onDirectTo() {
         this.view.cancel();
@@ -36,19 +54,30 @@ class WT_Direct_To_Input_Layer extends Selectables_Input_Layer {
     onNavigationPush() {
         this.view.cancel();
     }
-    onRangeInc() {
-        this.view.zoomMapIn();
-    }
-    onRangeDec() {
-        this.view.zoomMapOut();
+}
+
+class WT_Direct_To_Page_Menu extends WT_Page_Menu_Model {
+    /**
+     * @param {WT_Direct_To_Model} model 
+     */
+    constructor(model) {
+        super([
+            new WT_Page_Menu_Option("Cancel Direct-To NAV", () => model.cancelDirectTo()),
+            new WT_Page_Menu_Option("Clear Vertical Restraints"),
+            new WT_Page_Menu_Option("Edit Hold"),
+            new WT_Page_Menu_Option("Hold At Present Position"),
+        ])
     }
 }
 
 class WT_Direct_To_View extends WT_HTML_View {
-    constructor() {
+    constructor(softKeyController, waypointQuickSelect, gps) {
         super();
-
+        this.softKeyController = softKeyController;
+        this.waypointQuickSelect = waypointQuickSelect;
+        this.gps = gps;
         this.inputLayer = new WT_Direct_To_Input_Layer(this);
+        this.userSelectedCourse = false;
     }
     connectedCallback() {
         let template = document.getElementById('direct-to-pane');
@@ -58,67 +87,59 @@ class WT_Direct_To_View extends WT_HTML_View {
 
         super.connectedCallback();
 
-        this.elements.icaoInput.addEventListener("change", (e) => this.icaoChanged(e.target.icao))
-        this.elements.icaoInput.addEventListener("input", (e) => this.icaoInput(e.target.icao))
+        this.elements.icaoInput.addEventListener("change", e => this.icaoChanged(e.target.icao))
+        this.elements.icaoInput.addEventListener("input", DOMUtilities.debounce(e => this.icaoInput(e.target.icao), 500, false))
+        this.elements.course.addEventListener("change", e => this.userSelectedCourse = true)
+    }
+    disconnectedCallback() {
+        if (this.closeMenuHandler) {
+            this.closeMenuHandler.close();
+            this.closeMenuHandler = null;
+        }
     }
     icaoInput(icao) {
         this.model.setIcao(icao);
     }
     icaoChanged(icao) {
         this.model.setIcao(icao);
-        /*this.exit();
-        this.resolve(icao);*/
     }
-    getMap() {
-        return this.querySelector("map-instrument");
+    centerOnCoordinates(coordinates) {
+        this.map.setCenter(coordinates, 0);
     }
     /**
      * @param {WT_Direct_To_Model} model 
      */
     setModel(model) {
         this.model = model;
-        this.elements.icaoInput.setQuickSelect(this.model.gps.waypointQuickSelect);
+        this.elements.icaoInput.setQuickSelect(this.waypointQuickSelect);
         this.model.waypoint.subscribe(waypoint => {
-            let name = null;
-            let city = null;
-            if (waypoint && waypoint.infos) {
+            if (waypoint) {
                 this.elements.icaoInput.icao = waypoint.icao;
-                let infos = waypoint.infos;
-                let map = this.getMap();
-                map.setCenter(infos.coordinates, 0);
-
-                name = infos.name;
-                city = infos.city;
-
-                let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
-                let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-                let planeCoordinates = new LatLong(lat, long);
-                this.elements.bearing.innerHTML = `${Avionics.Utils.computeGreatCircleHeading(planeCoordinates, infos.coordinates).toFixed(0)}°`;
-                let distance = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, infos.coordinates);
-                this.elements.distance.innerHTML = `${distance.toFixed(distance < 100 ? 1 : 0)}<span class="units">NM</span>`;
-            } else {
-                this.elements.bearing.innerHTML = `___°`;
-                this.elements.distance.innerHTML = `__._<span class="units">NM</span>`;
+                this.centerOnCoordinates(waypoint.infos.coordinates);
             }
-            this.elements.icaoName.innerHTML = name ? name : `__________________`;
-            this.elements.icaoCity.innerHTML = city ? city : `__________________`;
         });
+        this.model.name.subscribe(name => this.elements.icaoName.innerHTML = `${name === null ? `__________________` : name}`);
+        this.model.city.subscribe(city => this.elements.icaoCity.innerHTML = `${city === null ? `__________________` : city}`);
+        this.model.bearing.subscribe(bearing => {
+            this.elements.bearing.innerHTML = `${bearing === null ? `___` : bearing.toFixed(0)}°`;
+            this.userSelectedCourse = false;
+            this.elements.course.value = Math.round(bearing);
+        });
+        this.model.distance.subscribe(distance => this.elements.distance.innerHTML = `${distance === null ? `__._` : distance.toFixed(distance < 100 ? 1 : 0)}<span class="units">NM</span>°`);
     }
     setMap(map) {
+        this.map = map;
         this.elements.mapContainer.appendChild(map);
         map.setZoom(7); //20nm
     }
-    zoomMapIn() {
-        this.getMap().zoomIn();
-    }
-    zoomMapOut() {
-        this.getMap().zoomOut();
+    showMenu() {
+        this.closeMenuHandler = this.gps.showPageMenu(new WT_Direct_To_Page_Menu(this.model));
     }
     enter(inputStack) {
-        this.inputStackHandler = inputStack.push(new WT_Map_Input_Layer(this.getMap(), false));
+        this.inputStackHandler = inputStack.push(new WT_Map_Input_Layer(this.map, false));
         inputStack.push(this.inputLayer);
-        this.storedMenu = this.model.softKeyController.currentMenu;
-        this.model.softKeyController.setMenu(new WT_Soft_Key_Menu());
+        this.storedMenu = this.softKeyController.currentMenu;
+        this.softKeyController.setMenu(new WT_Soft_Key_Menu());
         return new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
@@ -130,13 +151,16 @@ class WT_Direct_To_View extends WT_HTML_View {
     }
     exit() {
         this.inputStackHandler.pop();
-        this.model.softKeyController.setMenu(this.storedMenu);
+        this.softKeyController.setMenu(this.storedMenu);
+    }
+    hold() {
+        this.gps.revertToFlightPlan();
     }
     activateDirectTo() {
         this.exit();
         this.resolve({
             waypoint: this.model.waypoint.value,
-            course: this.elements.course.value
+            course: this.userSelectedCourse ? this.elements.course.value : null
         });
     }
 }

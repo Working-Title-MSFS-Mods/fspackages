@@ -1,0 +1,13 @@
+g1000-nearest-ndbs-page {
+    @extend %g1000-nearest-waypoints-page;
+
+    .information {
+        display: grid;
+        grid-template-columns: 100%;
+        grid-auto-rows: auto;
+    }
+
+    .sidebar {
+        grid-template-rows: minmax(0, 1fr) 20% auto;
+    }
+}

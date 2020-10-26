@@ -502,7 +502,6 @@ class NearestNDBList {
                 SimVar.SetSimVarValue("C:fs9gps:NearestNdbMaximumItems", "number", this.nbMax, instrId);
                 SimVar.SetSimVarValue("C:fs9gps:NearestNdbMaximumDistance", "nautical miles", this.milesDistance, instrId);
                 SimVar.GetSimVarArrayValues(this.ndbLinesBatch, function (_Values) {
-                    this.ndbs = [];
                     for (var i = 0; i < _Values.length; i++) {
                         if (i > this.ndbs.length - 1) {
                             this.ndbs.push(new NearestNDB(this.instrument));
@@ -516,18 +515,21 @@ class NearestNDBList {
                     }
                     while (this.ndbs.length > _Values.length) {
                         this.ndbs.pop();
+                        console.log("popped ndb");
                     }
                     this.loadState++;
+                    this.loadState++;
                 }.bind(this), instrId);
-                SimVar.GetSimVarArrayValues(this.ndbSelectedBatch, function (_Values) {
+                /*SimVar.GetSimVarArrayValues(this.ndbSelectedBatch, function (_Values) {
                     for (var i = 0; i < _Values.length; i++) {
                         if (i > this.ndbs.length - 1) {
-                            this.ndbs.push(new NearestVOR(this.instrument));
+                            console.log("pushed ndb 2");
+                            this.ndbs.push(new NearestNDB(this.instrument));
                         }
                         this.ndbs[i].name = Utils.Translate(_Values[i][0]);
                     }
                     this.loadState++;
-                }.bind(this), instrId);
+                }.bind(this), instrId);*/
                 this.loadState++;
         }
     }
@@ -643,8 +645,9 @@ class NearestVORList {
                         this.vors.pop();
                     }
                     this.loadState++;
+                    this.loadState++;
                 }.bind(this), instrId);
-                SimVar.GetSimVarArrayValues(this.vorSelectedBatch, function (_Values) {
+                /*SimVar.GetSimVarArrayValues(this.vorSelectedBatch, function (_Values) {
                     for (var i = 0; i < _Values.length; i++) {
                         if (i > this.vors.length - 1) {
                             this.vors.push(new NearestVOR(this.instrument));
@@ -652,7 +655,7 @@ class NearestVORList {
                         this.vors[i].name = Utils.Translate(_Values[i][0]);
                     }
                     this.loadState++;
-                }.bind(this), instrId);
+                }.bind(this), instrId);*/
                 this.loadState++;
                 break;
         }

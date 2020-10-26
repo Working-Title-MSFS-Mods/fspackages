@@ -1167,8 +1167,16 @@ class WT_HTML_View extends HTMLElement {
     bindElements() {
         let elements = this.querySelectorAll("[data-element]");
         for (let element of elements) {
-            this.elements[element.getAttribute("data-element")] = element;
-            //element.removeAttribute("data-element");
+            let el = element;
+            // We only want to collect elements that aren't in another view already
+            while (el = el.parentNode) {
+                if (el == this) {
+                    this.elements[element.getAttribute("data-element")] = element;
+                    break;
+                } else if (el instanceof WT_HTML_View) {
+                    break;
+                }
+            }
         }
     }
     connectedCallback() {

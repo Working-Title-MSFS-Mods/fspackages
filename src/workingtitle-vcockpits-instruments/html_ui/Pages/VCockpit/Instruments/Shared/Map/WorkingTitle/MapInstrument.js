@@ -465,6 +465,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.tmpFlightPlanElement.source = this.flightPlanManager;
             this.tmpFlightPlanElement.flightPlanIndex = 1;
             this.flightPlanElements = [];
+            this.procedureElement = null;
             this.directToElement = new SvgBackOnTrackElement();
             Coherent.call("RESET_ROAD_ITERATOR");
             this.addEventListener("mousedown", this.OnMouseDown.bind(this));
@@ -816,6 +817,34 @@ class MapInstrument extends ISvgMapRootElement {
                 for (let flightPlanElement of this.flightPlanElements) {
                     this.navMap.mapElements.push(flightPlanElement);
                     for (let waypoint of flightPlanElement.source.getWaypoints()) {
+                        if (waypoint && waypoint instanceof WayPoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
+                            if (waypoint.getSvgElement(this.navMap.index)) {
+                                if (!this.navMap.mapElements.find(w => {
+                                    return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
+                                })) {
+                                    this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (this.procedureElement) {
+                    this.navMap.mapElements.push(this.procedureElement);
+                    for (let sequenceEntry of this.procedureElement.procedure.getSequence()) {
+                        let waypoint = sequenceEntry.waypoint;
+                        if (waypoint && waypoint instanceof WayPoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
+                            if (waypoint.getSvgElement(this.navMap.index)) {
+                                if (!this.navMap.mapElements.find(w => {
+                                    return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
+                                })) {
+                                    this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
+                                }
+                            }
+                        }
+                    }
+                    for (let transition of this.procedureElement.procedure.procedure.getTransitions()) {
+                        let waypoint = transition.waypoints[0];
                         if (waypoint && waypoint instanceof WayPoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
                             if (waypoint.getSvgElement(this.navMap.index)) {
                                 if (!this.navMap.mapElements.find(w => {
@@ -1331,9 +1360,17 @@ class MapInstrument extends ISvgMapRootElement {
             }
         }
     }
-    centerOnCoordinate(coordinate, coordinates, minDistance = 0, maxDistance = Infinity) {
-        if (coordinates.length == 0)
+    centerOnCoordinate(coordinate, coordinates = [], minDistance = 0, maxDistance = Infinity) {
+        if (coordinates.length == 0) {
+            this.setCenter(coordinate, 0);
+            for (let i = 0; i < this.zoomRanges.length; i++) {
+                if (this.zoomRanges[i] >= minDistance || (i == this.zoomRanges.length - 1)) {
+                    this.setZoom(i);
+                    break;
+                }
+            }
             return;
+        }
         let min = null;
         let max = null;
         let allInFrame = true;

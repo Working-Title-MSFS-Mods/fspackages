@@ -1,0 +1,54 @@
+g1000-runway-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    grid-gap: 0vh 2vh;
+    overflow: visible;
+
+    grid-template-areas:
+        "selector surface"
+        "length width";
+
+    toggle-switch {
+        grid-area: selector;
+    }
+
+    .surface {
+        grid-area: surface;
+    }
+
+    .width {
+        grid-area: width;
+    }
+
+    .length {
+        grid-area: length;
+    }
+
+    .operating-time {
+        display: none;
+    }
+
+    &[expanded] {
+        grid-template-rows: auto auto auto auto;
+        grid-template-areas:
+            "selector blank"
+            "length width"
+            "surface surface"
+            "operating operating";
+
+        .operating-time {
+            display: block;
+            grid-area: operating;
+        }
+    }
+
+    toggle-switch {
+        font-family: $font_family_mono;
+        margin: 0;
+    }
+
+    .units {
+        font-size: 0.8em;
+    }
+}

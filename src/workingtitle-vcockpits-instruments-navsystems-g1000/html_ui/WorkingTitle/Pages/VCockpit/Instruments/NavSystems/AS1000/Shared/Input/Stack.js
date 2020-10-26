@@ -33,7 +33,7 @@ class Input_Stack {
     processEvent(_event) {
         //console.log(_event);
         if (!this.currentLayer)
-            return;
+            return false;
         let i = this.stack.length - 1;
         while (i >= 0) {
             let layer = this.stack[i];

@@ -43,7 +43,7 @@ class Selectables_Input_Layer_Element_Source {
 }
 
 class Selectables_Input_Layer_Dynamic_Source {
-    constructor(element, selector = "numeric-input, drop-down-selector, time-input, selectable-button, toggle-switch, .selectable, icao-input") {
+    constructor(element, selector = "numeric-input, drop-down-selector, time-input, selectable-button, toggle-switch, .selectable, icao-input, scrollable-container") {
         this.element = element;
         this.selector = selector;
     }
@@ -63,6 +63,10 @@ class Selectables_Input_Layer_Dynamic_Source {
         let elements = this.elements;
         if (elements.length == 0)
             return null;
+        if (iterator.element == null) {
+            iterator.element = elements[0];
+            return;
+        }
         let selected = null;//elements[0];
         let chooseNext = false;
         for (let element of elements) {
@@ -82,14 +86,18 @@ class Selectables_Input_Layer_Dynamic_Source {
         let elements = this.elements;
         if (elements.length == 0)
             return null;
+        if (iterator.element == null) {
+            iterator.element = elements[elements.length - 1];
+            return;
+        }
         let selected = null;//elements[elements.length - 1];
         let previous = null;//elements[elements.length - 1];
         for (let element of elements) {
+            if (element == iterator.element) {
+                selected = previous;
+                break;
+            }
             if (element.offsetParent) {
-                if (element == iterator.element) {
-                    selected = previous;
-                    break;
-                }
                 previous = element;
             }
         }
@@ -119,8 +127,9 @@ class Selectables_Input_Layer extends Input_Layer {
         this.source = source;
     }
     set selectedElement(element) {
-        if (this.selectedElement)
+        if (this.selectedElement) {
             this.selectedElement.removeAttribute("state");
+        }
 
         this._selectedElement = element;
         if (this.selectedElement) {
@@ -154,6 +163,9 @@ class Selectables_Input_Layer extends Input_Layer {
     }
     get selectedElement() {
         return this._selectedElement;
+    }
+    refreshSelected() {
+        this.selectedElement = this._source.current(this.iterator);
     }
     selectElement(element) {
         if (this.iterator) {

@@ -3,13 +3,22 @@ class WT_Page {
         this.title = title;
         this.viewFactory = viewFactory;
         this.modelFactory = modelFactory;
+
+        this.model = null;
+        this.view = null;
     }
     initialise(container) {
-        let view = this.viewFactory();
-        container.appendChild(view);
-        let model = this.modelFactory();
-        view.setModel(model);
-        return view;
+        this.model = null;
+        this.view = null;
+        if (this.view === null) {
+            this.view = this.viewFactory();
+        }
+        container.appendChild(this.view);
+        if (this.model === null) {
+            this.model = this.modelFactory();
+            this.view.setModel(this.model);
+        }
+        return this.view;
     }
 }
 
@@ -53,6 +62,15 @@ class WT_Page_Controller {
         this.currentPageEntered = false;
 
         this.pageSelection = new Subject();
+
+        this.debounceShowPage = DOMUtilities.debounce(() => {
+            let page = this.selectedPage;
+            if (this.currentPage == page)
+                return;
+            this.showPage(page);
+
+            this.pageTitle.value = `${this.selectedGroup.name} - ${page.title}`;
+        }, 300, false);
     }
     get numGroups() {
         return this.pageGroups.length;
@@ -100,12 +118,7 @@ class WT_Page_Controller {
         return this.currentPageView;
     }
     showSelectedPage() {
-        let page = this.selectedPage;
-        if (this.currentPage == page)
-            return;
-        this.showPage(page);
-
-        this.pageTitle.value = `${this.selectedGroup.name} - ${page.title}`;
+        this.debounceShowPage();
 
         this.pageSelection.value = {
             groups: this.pageGroups,

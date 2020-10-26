@@ -19,29 +19,29 @@
                 display: block;
                 height: 10px;
                 background: $category_box_background_color;
-                border-top: 1px solid $category_box_outline_color;
+                border-top: $border_width_thin solid $category_box_outline_color;
                 position: relative;
-                top: 1px;
+                top: $border_width_thin;
             }
 
             &:before {
                 margin-right: 1vh;
                 width: 2vh;
                 border-top-left-radius: 1vh;
-                border-left: 1px solid $category_box_outline_color;
+                border-left: $border_width_thin solid $category_box_outline_color;
             }
             &:after {
                 margin-left: 1vh;
                 flex: 1;
                 border-top-right-radius: 1vh;
-                border-right: 1px solid $category_box_outline_color;
+                border-right: $border_width_thin solid $category_box_outline_color;
             }
         }
 
         .content {
             text-align: left;
             background-color: $category_box_background_color;
-            border: 1.5px solid $category_box_outline_color;
+            border: $border_width_thin solid $category_box_outline_color;
             border-top: none;
             padding: 1vh;
             line-height: 1.8em;
@@ -77,7 +77,7 @@
             display: flex;
             align-items: flex-end;
             color: #fff;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: $border_width_thin solid var(--border-color);
             padding: 0;
             width: auto;
             line-height: 1.5em;
@@ -88,13 +88,13 @@
             &:after {
                 content: " ";
                 display: block;
-                height: 10px;
+                height: 0.8em;
                 background: $category_box_background_color;
-                border-top: 1px solid var(--border-color);
+                border-top: $border_width_thin solid var(--border-color);
                 position: relative;
-                top: 1px;
-                border-right: 1px solid var(--border-color);
-                border-left: 1px solid var(--border-color);
+                top: $border_width_thin;
+                border-right: $border_width_thin solid var(--border-color);
+                border-left: $border_width_thin solid var(--border-color);
             }
 
             &:before {
@@ -110,7 +110,7 @@
         .content {
             text-align: left;
             background-color: $category_box_background_color;
-            border: 1.5px solid var(--border-color);
+            border: $border_width_thin solid var(--border-color);
             border-top: none;
             padding: 1vh;
             line-height: 1.8em;
@@ -137,15 +137,15 @@
             --border-color: #fff;
 
             h1 {
-                margin-bottom: -10px;
+                margin-bottom: -0.8em;
                 border-bottom: none;
-                z-index: 100;
+                z-index: 2;
                 position: relative;
 
                 > div {
                     padding: 0 1vh;
                     background: lighten($page_background_color, 10%);
-                    border-bottom: 1px solid var(--border-color);
+                    border-bottom: $border_width_thin solid var(--border-color);
                 }
 
                 &:before,
@@ -169,8 +169,6 @@
         grid-template-rows: auto minmax(0, 1fr);
 
         .content {
-            height: 100%;
-            overflow: auto;
         }
     }
 }

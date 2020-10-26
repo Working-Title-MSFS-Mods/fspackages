@@ -3,6 +3,9 @@ class WT_Drop_Down_Selector_Input_Layer extends Selectables_Input_Layer {
         super(source, true);
         this.dropDown = dropDown;
     }
+    onCLR() {
+        this.dropDown.cancel();
+    }
     onHighlightedElement(element) {
         if (this.dropDown)
             this.dropDown.selectionUpdated(element.getAttribute("value"));
@@ -91,6 +94,9 @@ class WT_Drop_Down_Selector extends HTMLElement {
         return this.hasAttribute("updateOnSelection");
     }
     back() {
+        this.exit();
+    }
+    cancel() {
         this.exit();
     }
     enter(e) {

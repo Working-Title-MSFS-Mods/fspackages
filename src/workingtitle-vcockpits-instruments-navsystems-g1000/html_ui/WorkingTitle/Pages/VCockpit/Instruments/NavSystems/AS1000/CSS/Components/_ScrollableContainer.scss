@@ -1,4 +1,5 @@
-.scrollable-container {
+.scrollable-container,
+scrollable-container {
     &::-webkit-scrollbar {
         width: 0.5vh;
         display: block;
@@ -13,4 +14,8 @@
         border-radius: 0;
         background: #fff;
     }
+}
+
+scrollable-container {
+    display: block;
 }

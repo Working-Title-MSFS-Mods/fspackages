@@ -1,8 +1,10 @@
+$arrow_width: 2ch;
+
 g1000-nav-box {
     transform: rotateX(0);
     grid-area: nav;
     display: grid;
-    grid-template-columns: 27% 1fr 25%;
+    grid-template-columns: 28% 1fr 25%;
     grid-template-rows: 100%;
     border-bottom: $border_width_thick solid $border_color;
     background: $page_background_color;
@@ -90,7 +92,8 @@ g1000-com-frequencies {
     .arrow {
         grid-area: arrow;
         visibility: hidden;
-        width: 1.5ch;
+        width: $arrow_width;
+        color: $input_color;
     }
 
     .volume {
@@ -105,12 +108,12 @@ g1000-com-frequencies {
         display: grid;
         grid-gap: 1vh;
         align-items: center;
-        grid-template-columns: 3.5ch 6ch 1.5ch 6ch 4ch;
+        grid-template-columns: 3.5ch 6ch $arrow_width 6ch 4ch;
         grid-template-areas: "name standby arrow active ident";
         font-size: $font_size_large;
 
         &[mode="volume"] {
-            grid-template-columns: 3.5ch 6ch 1.5ch 6ch 4ch;
+            grid-template-columns: 3.5ch 6ch $arrow_width 6ch 4ch;
             grid-template-areas: "name volume arrow active ident";
 
             .standby {
@@ -157,11 +160,11 @@ g1000-com-frequencies {
 g1000-com-frequencies {
     .radio-1,
     .radio-2 {
-        grid-template-columns: 7ch 1.5ch 7ch 3.5ch;
+        grid-template-columns: 7ch $arrow_width 7ch 3.5ch;
         grid-template-areas: "active arrow standby name";
 
         &[mode="volume"] {
-            grid-template-columns: 7ch 1.5ch 7ch 3.5ch;
+            grid-template-columns: 7ch $arrow_width 7ch 3.5ch;
             grid-template-areas: "active arrow volume name";
         }
     }

@@ -1,4 +1,11 @@
 class WT_Nearest_Airports_Model extends WT_Model {
+    /**
+     * @param {AS1000_MFD} gps 
+     * @param {WT_Unit_Chooser} unitChooser 
+     * @param {MapInstrument} map 
+     * @param {WT_Soft_Key_Controller} softKeyController 
+     * @param {WT_Nearest_Waypoints_Repository} nearestWaypoints 
+     */
     constructor(gps, unitChooser, map, softKeyController, nearestWaypoints) {
         super();
         this.gps = gps;
@@ -15,6 +22,12 @@ class WT_Nearest_Airports_Model extends WT_Model {
 
         this.subscriptions = new Subscriptions();
         this.subscriptions.add(nearestWaypoints.airports.subscribe(airports => this.airports.value = airports));
+
+        this.setIcao = DOMUtilities.debounce((icao) => this.currentWaypoint.SetICAO(icao, () => {
+            this.selectedAirport.value = {
+                airport: this.currentWaypoint
+            };
+        }, false), 200, false);
     }
     filterAirport(airport) {
         if (this.filter.length) {
@@ -36,16 +49,14 @@ class WT_Nearest_Airports_Model extends WT_Model {
         return true;
     }
     setSelectedAirport(icao) {
-        console.log("Selected " + icao);
-        this.currentWaypoint.SetICAO(icao, () => {
-            console.log("Loaded " + icao);
-            this.selectedAirport.value = {
-                airport: this.currentWaypoint
-            };
-        }, true);
+        this.setIcao(icao);
     }
-    directTo(icao) {
-        this.gps.showDirectTo(null, icao);
+    directTo() {
+        if (this.selectedAirport.value)
+            this.gps.showDirectTo(null, this.selectedAirport.value.icao);
+    }
+    selectFrequency(frequency) {
+        this.comFrequencies.selectFrequency(frequency);
     }
     unsubscribe() {
         this.subscriptions.unsubscribe();

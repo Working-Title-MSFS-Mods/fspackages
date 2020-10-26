@@ -42,7 +42,7 @@ class WT_Icao_Input extends HTMLElement {
         this.addEventListener("decrement", e => {
             this.showQuickSelect(e.detail.inputStack).then((icao) => {
                 this.icao = icao;
-                this.confirm();
+                this.confirm(false);
             });
         });
 
@@ -76,10 +76,7 @@ class WT_Icao_Input extends HTMLElement {
     }
     setEditingSimVars() {
         SimVar.SetSimVarValue("C:fs9gps:IcaoSearchInitialIcao", "string", this.icao, this.instrumentIdentifier);
-        if (this.type !== null)
-            SimVar.SetSimVarValue("C:fs9gps:IcaoSearchStartCursor", "string", this.type, this.instrumentIdentifier);
-        else
-            SimVar.SetSimVarValue("C:fs9gps:IcaoSearchStartCursor", "string", "AWNV", this.instrumentIdentifier);
+        SimVar.SetSimVarValue("C:fs9gps:IcaoSearchStartCursor", "string", this.type, this.instrumentIdentifier);
     }
     /**
      * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
@@ -93,7 +90,7 @@ class WT_Icao_Input extends HTMLElement {
     }
     updateDisplay() {
         let value = this._ident ? this._ident : "";
-        for (let i = 0; i < value.length; i++) {
+        for (let i = 0; i < value.length && i < this.elements.characters.length; i++) {
             this.elements.characters[i].textContent = value[i] == " " ? "_" : value[i];
         }
         for (let i = value.length; i < this.elements.characters.length; i++) {
@@ -111,6 +108,7 @@ class WT_Icao_Input extends HTMLElement {
     }
     updateFromSimVars() {
         let icao = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCurrentIcao", "string", this.instrumentIdentifier);
+        
         if (this._icao != icao) {
             this._icao = icao;
             let evt = document.createEvent("HTMLEvents");
@@ -122,6 +120,10 @@ class WT_Icao_Input extends HTMLElement {
         this.selectEditingPosition(SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCursorPosition", "number", this.instrumentIdentifier));
     }
     connectedCallback() {
+        if (this.hasInitialised)
+            return;
+        this.hasInitialised = true;
+
         for (let i = 0; i < this.getAttribute("characters"); i++) {
             let character = document.createElement("span");
             character.className = "character";
@@ -129,9 +131,14 @@ class WT_Icao_Input extends HTMLElement {
             this.appendChild(character);
         }
         this.icao = this.getAttribute("value");
-        if (this.hasAttribute("type"))
-            this.type = this.getAttribute("type");
+        this.type = this.hasAttribute("type") ? this.getAttribute("type") : "AWNV";
         this.updateDisplay();
+    }
+    disconnectedCallback() {
+        if (this.cancelDuplicates) {
+            this.cancelDuplicates();
+            this.cancelDuplicates = null;
+        }
     }
     back() {
         this.exit();
@@ -154,12 +161,39 @@ class WT_Icao_Input extends HTMLElement {
 
         this.updateDisplay();
     }
-    confirm() {
-        this.active = false;
-
+    async confirm(checkDupes = true) {
+        let batch = new SimVar.SimVarBatch("C:fs9gps:IcaoSearchMatchedIcaosNumber", "C:fs9gps:IcaoSearchMatchedIcao");
+        batch.add("C:fs9gps:IcaoSearchCurrentIcaoType", "string", "string");
+        batch.add("C:fs9gps:IcaoSearchCurrentIcao", "string", "string");
+        batch.add("C:fs9gps:IcaoSearchCurrentIdent", "string", "string");
+        let numberOfDuplicates = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchMatchedIcaosNumber", "number", this.instrumentIdentifier);
+        if (numberOfDuplicates > 1 && checkDupes) {
+            let duplicates = await new Promise(resolve => {
+                SimVar.GetSimVarArrayValues(batch, (_Values) => {
+                    let duplicates = [];
+                    for (var i = 0; i < _Values.length; i++) {
+                        duplicates.push(_Values[i][1]);
+                    }
+                    SimVar.SetSimVarValue("C:fs9gps:IcaoSearchMatchedIcao", "number", 0, this.instrumentIdentifier);
+                    resolve(duplicates);
+                }, this.instrumentIdentifier);
+            });
+            console.log(JSON.stringify(duplicates));
+            try {
+                let t = this.waypointQuickSelect.gps.showDuplicates(duplicates);
+                this.cancelDuplicates = t.cancel;
+                let icao = await t.promise;
+                this.cancelDuplicates = null;
+                this.icao = icao;
+            } catch (e) {
+                console.log("Cancelled duplicate selection");
+                return;
+            }
+        }
         if (this.waypointQuickSelect) {
             this.waypointQuickSelect.addRecentWaypoint(this.icao);
         }
+        this.active = false;
 
         let evt = document.createEvent("HTMLEvents");
         evt.initEvent("change", true, true);
@@ -220,6 +254,10 @@ class WT_Waypoint_Quick_Select_View extends WT_HTML_View {
         this.currentList = null;
     }
     connectedCallback() {
+        if (this.hasInitialised)
+            return;
+        this.hasInitialised = true;
+
         let template = document.getElementById('waypoint-quick-select');
         let templateContent = template.content;
 
@@ -237,12 +275,7 @@ class WT_Waypoint_Quick_Select_View extends WT_HTML_View {
      */
     async setWaypointQuickSelect(waypointQuickSelect, type) {
         let waypoints = await waypointQuickSelect.getWaypoints(type);
-        let mapWaypoint = waypoint => {
-            if (false && waypoint.distance)
-                return `<li class="selectable" data-icao="${waypoint.icao}"><span class="ident">${waypoint.ident}</span><span class="distance">${waypoint.distance.toFixed(0)}<span class="units">nm</span></span></li>`;
-            else
-                return `<li class="selectable" data-icao="${waypoint.icao}">${waypoint.ident}</li>`;
-        }
+        let mapWaypoint = waypoint => `<li class="selectable" data-icao="${waypoint.icao}">${waypoint.ident}</li>`;
         this.elements.nrst.innerHTML = waypoints.nearest.map(mapWaypoint).join("");
         this.elements.fpl.innerHTML = waypoints.flightPlan.map(mapWaypoint).join("");
         this.elements.recent.innerHTML = waypoints.recent.map(mapWaypoint).join("");

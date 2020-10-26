@@ -19,7 +19,7 @@
                     <map-instrument id="MapInstrument" bing-id="MFD" config-path="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/" hide-flightplan-if-bushtrip="true"></map-instrument>
                     <glasscockpit-wind-data id="WindData" style="display:none !important;"></glasscockpit-wind-data>
                 </div>
-                <map-instrument id="MiniMap" bing-id="MiniMap" config-path="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/"></map-instrument>
+                <map-instrument id="MiniMap" bing-id="MiniMap" config-path="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/MiniMapConfig/"></map-instrument>
             </div>
 
             <div class="page-container" id="PageContainer"></div>
@@ -34,7 +34,7 @@
                         <div class="name">NAV1</div>
                         <div data-element="radio1volume" class="volume"></div>
                         <div data-element="radio1standby" class="standby">--</div>
-                        <img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Misc/DoubleArrow.svg" class="arrow" />
+                        <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg?2" class="arrow" />
                         <div data-element="radio1active" class="active">--</div>
                         <div data-element="radio1ident" class="ident"></div>
                     </section>
@@ -42,7 +42,7 @@
                         <div class="name">NAV2</div>
                         <div data-element="radio2volume" class="volume"></div>
                         <div data-element="radio2standby" class="standby">--</div>
-                        <img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Misc/DoubleArrow.svg" class="arrow" />
+                        <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg?2" class="arrow" />
                         <div data-element="radio2active" class="active">--</div>
                         <div data-element="radio2ident" class="ident"></div>
                     </section>
@@ -69,14 +69,14 @@
                         <div class="name">COM1</div>
                         <div data-element="radio1volume" class="volume"></div>
                         <div data-element="radio1standby" class="standby">--</div>
-                        <img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Misc/DoubleArrow.svg" class="arrow" />
+                        <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg?2" class="arrow" />
                         <div data-element="radio1active" class="active">--</div>
                     </section>
                     <section class="radio-2" data-element="radio2">
                         <div class="name">COM2</div>
                         <div data-element="radio2volume" class="volume"></div>
                         <div data-element="radio2standby" class="standby">--</div>
-                        <img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Misc/DoubleArrow.svg" class="arrow" />
+                        <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg?2" class="arrow" />
                         <div data-element="radio2active" class="active">--</div>
                     </section>
                 </g1000-com-frequencies>
@@ -140,6 +140,431 @@
         <footer>
             Press the FMS CRSR knob to return to base page
         </footer>
+    </template>
+
+    <!-- Panes -->
+
+    <template id="procedures-pane">
+        <h1 class="title">Procedures</h1>
+        <div class="category">
+            <h1>Options</h1>
+            <section class="content">
+                <selectable-button disabled>ACTIVATE VECTOR-TO-FINAL</selectable-button>
+                <selectable-button disabled>ACTIVATE APPROACH</selectable-button>
+                <selectable-button disabled>ACTIVATE MISSED APPROACH</selectable-button>
+                <selectable-button data-click="selectApproach">SELECT APPROACH</selectable-button>
+                <selectable-button data-click="selectArrival">SELECT ARRIVAL</selectable-button>
+                <selectable-button data-click="selectDeparture">SELECT DEPARTURE</selectable-button>
+            </section>
+        </div>
+        <div class="category">
+            <h1>Loaded</h1>
+            <section class="content">
+                <div class="label">Approach:</div>
+                <div class="element" data-id="loadedApproach"></div>
+                <div class="label">Arrival:</div>
+                <div class="element" data-id="loadedArrival"></div>
+                <div class="label">Departure:</div>
+                <div class="element" data-id="loadedDeparture"></div>
+            </section>
+        </div>
+    </template>
+
+    <template id="nearest-airports-page">
+        <section class="map-container" data-element="map"></section>
+        <section class="sidebar">
+            <section class="category category-fill-container">
+                <h1>Nearest Airports</h1>
+                <g1000-nearest-waypoint-list class="content scrollable-container airport-list" data-element="waypointList"></g1000-nearest-waypoint-list>
+            </section>
+            <section class="category category-fill-container">
+                <h1>Information</h1>
+                <section class="content information">
+                    <span class="name" data-element="facilityName"></span>
+                    <span class="city" data-element="city"></span>
+                    <span class="elevation" data-element="elevation"></span>
+                </section>
+            </section>
+            <section class="category category-fill-container">
+                <h1>Runways</h1>
+                <g1000-runway-selector data-element="runwaySelector" class="content"></g1000-runway-selector>
+            </section>
+            <section class="category category-fill-container">
+                <h1>Frequencies</h1>
+                <g1000-frequency-list data-element="frequencyList" class="content scrollable-container"></g1000-frequency-list>
+            </section>
+            <section class="category category-fill-container">
+                <h1>Approaches</h1>
+                <ul class="content scrollable-container approach-list" data-element="approachList"></ul>
+            </section>
+        </section>
+    </template>
+
+    <template id="nearest-ndbs-page">
+        <section class="map-container" data-element="map"></section>
+        <section class="sidebar">
+            <section class="category category-fill-container">
+                <h1>Nearest NDB</h1>
+                <g1000-nearest-waypoint-list class="content scrollable-container" data-element="waypointList"></g1000-nearest-waypoint-list>
+            </section>
+            <section class="category category-fill-container">
+                <h1>Information</h1>
+                <section class="content information">
+                    <span class="name" data-element="facilityName"></span>
+                    <span class="city" data-element="city"></span>
+                    <span class="ndb-type" data-element="ndbType"></span>
+                    <span class="latitude" data-element="latitude"></span>
+                    <span class="longitude" data-element="longitude"></span>
+                </section>
+            </section>
+            <section class="category category-fill-container">
+                <h1>Frequency</h1>
+                <section class="content">
+                    <div data-element="frequency"></div>
+                </section>
+            </section>
+        </section>
+    </template>
+
+    <template id="nearest-vors-page">
+        <section class="map-container" data-element="map"></section>
+        <section class="sidebar">
+            <section class="category category-fill-container">
+                <h1>Nearest VOR</h1>
+                <g1000-nearest-waypoint-list class="content scrollable-container" data-element="waypointList"></g1000-nearest-waypoint-list>
+            </section>
+            <section class="category category-fill-container">
+                <h1>Information</h1>
+                <section class="content information">
+                    <span class="name" data-element="facilityName"></span>
+                    <span class="city" data-element="city"></span>
+                    <span class="vor-type" data-element="vorType"></span>
+                    <span class="latitude" data-element="latitude"></span>
+                    <span class="longitude" data-element="longitude"></span>
+                </section>
+            </section>
+            <section class="category category-fill-container">
+                <h1>Frequency</h1>
+                <section class="content">
+                    <div data-element="frequency"></div>
+                </section>
+            </section>
+        </section>
+    </template>
+
+    <template id="waypoint-selector-pane">
+        <h1 class="title">Waypoint Information</h1>
+        <div class="category">
+            <h1>Ident, Facility, City</h1>
+            <section class="content waypoint-info">
+                <!--<string-input characters="10" value="EGLL"></string-input>-->
+                <icao-input data-element="icaoInput" characters="6"></icao-input>
+                <div data-element="icaoName"></div>
+                <div data-element="icaoCity"></div>
+            </section>
+        </div>
+        <div class="category map-category">
+            <h1><div>Map</div></h1>
+            <section class="content">
+                <div data-element="mapContainer" class="waypoint-map"></div>
+            </section>
+        </div>
+        <div class="category">
+            <h1>Location</h1>
+            <section class="content">
+                <div class="location">
+                    <label>BRG</label>
+                    <div class="bearing" data-element="bearing"></div>
+                    <div class="country" data-element="country"></div>
+                    <label>DIS</label>
+                    <div class="distance" data-element="distance"></div>
+                    <div class="city" data-element="city"></div>
+                </div>
+            </section>
+        </div>
+        <div class="enter-accept">Press "ENT" to accept</div>
+    </template>
+
+    <template id="direct-to-pane">
+        <h1 class="title">Direct To</h1>
+        <section class="category">
+            <h1>Ident, Facility, City</h1>
+            <section class="content waypoint-info">
+                <icao-input data-element="icaoInput" characters="6"></icao-input>
+                <div data-element="icaoName"></div>
+                <div data-element="icaoCity"></div>
+            </section>
+        </section>
+        <section class="category">
+            <h1>VNV</h1>
+            <section class="content vnav">
+                <numeric-input digits="5" units="FT" value="0"></numeric-input>
+                <numeric-input units="NM" min="-21" max="0" value="0"></numeric-input>
+            </section>
+        </section>        
+        <section class="category map-category">
+            <h1><div>Map</div></h1>
+            <section class="content">
+                <div data-element="mapContainer" class="waypoint-map"></div>
+            </section>
+        </section>
+        <section class="category">
+            <h1>Location</h1>
+            <section class="content">
+                <div class="location">
+                    <label>BRG</label>
+                    <div class="bearing" data-element="bearing"></div>
+                    <label>DIS</label>
+                    <div class="distance" data-element="distance"></div>
+                </div>
+            </section>
+        </section>
+        <footer>
+            <section class="category">
+                <h1>Course</h1>
+                <section class="content">
+                    <numeric-input units="°" min="0" max="360" value="0" data-element="course"></numeric-input>
+                </section>
+            </section>
+            <section class="buttons">
+                <selectable-button data-click="activateDirectTo">Activate?</selectable-button>
+                <selectable-button data-click="hold">Hold?</selectable-button>
+            </section>
+        </footer>
+    </template>
+
+    <!-- Dialogs -->
+
+    <template id="confirm-dialog"> 
+        <div class="dialog">
+            <div class="message" data-element="message"></div>
+            <div class="buttons">
+                <selectable-button data-click="confirm">OK</selectable-button>
+                <selectable-button data-click="cancel">Cancel</selectable-button>
+            </div>
+        </div>
+    </template>
+
+    <template id="menu-screen">
+        <h1 class="title">Page Menu</h1>
+        <div class="category">
+            <h1>Options</h1>
+            <ul class="content options scrollable-container" data-element="options"></ul>
+        </div>
+        <footer>Press the FMS CRSR knob to return to the base page</footer>
+    </template>
+
+    <template id="duplicate-waypoints">
+        <h1 class="title">Duplicate Waypoints</h1>
+        <section class="category">
+            <h1>Waypoint</h1>
+            <section class="content">
+                <div class="ident" data-element="ident"></div>
+            </section>
+        </section>
+        <section class="category">
+            <h1>Duplicates</h1>
+            <ul class="content duplicates scrollable-container" data-element="duplicates"></ul>
+        </section>
+        <section class="category">
+            <h1>Information</h1>
+            <section class="content information">
+                <div class="name" data-element="name">___</div>
+                <div class="city" data-element="city">___</div>
+                <div class="coordinatesLat" data-element="coordinatesLat">___</div>
+                <div class="coordinatesLong" data-element="coordinatesLong">___</div>
+                <div class="bearing" data-element="bearing">___</div>
+                <div class="distance" data-element="distance">___</div>
+            </section>
+        </section>
+        <footer>
+            Press "ENT" to select duplicate or "CLR" to cancel
+        </footer>
+    </template>
+
+    <!-- Procedure Page -->
+
+    <template id="procedure-page">
+        <section class="map" data-element="map">
+        </section>
+        <section class="sidebar">
+            <div class="category">
+                <h1>Airport</h1>
+                <section class="content">
+                    <icao-input data-element="icaoInput" characters="6" data-change="updateIcao"></icao-input>
+                    <airport-selector></airport-selector>
+                </section>
+            </div>
+            <g1000-approach-page data-element="approachPage"></g1000-approach-page>
+        </section>
+    </template>
+
+    <template id="approach-page">
+        <div class="category">
+            <h1>Approach</h1>
+            <section class="content">
+                <div class="element"><drop-down-selector data-element="procedureSelector" updateOnSelection></drop-down-selector></div>
+            </section>
+        </div>
+        <div class="category">
+            <h1>Transition</h1>
+            <section class="content">
+                <div class="element"><drop-down-selector data-element="transitionSelector" updateOnSelection></drop-down-selector></div>
+            </section>
+        </div>
+        <div class="category">
+            <h1>Minimums</h1>
+            <section class="content">
+                <div class="element">
+                    <toggle-switch value="0" data-element="minimumsMode"></toggle-switch>
+                    <numeric-input digits="5" min="0" max="35000" class="value" value="0" units="FT"></numeric-input>
+                </div>
+            </section>
+        </div>
+        <div class="category">
+            <h1>Primary Frequency</h1>
+            <section class="content">
+                <div class="element">
+                    <div class="name" data-element="primaryFrequencyName"></div>
+                    <div class="value selectable" data-element="primaryFrequencyHz"></div>
+                </div>
+            </section>
+        </div>
+        <div class="category">
+            <h1>Sequence</h1>
+            <g1000-sequence-list class="content sequence scrollable-container" data-element="sequenceList"></g1000-sequence-list>
+        </div>
+        <div class="load-or-activate">
+            <selectable-button data-element="loadApproach" data-click="loadProcedure">LOAD?</selectable-button>
+            <span>OR</span>
+            <selectable-button data-element="activateApproach" data-click="activateProcedure">ACTIVATE</selectable-button>
+        </div>
+    </template>
+
+    <!-- UI Elements -->
+
+    <template id="runway-selector">
+        <toggle-switch data-element="runwaySelector"></toggle-switch>
+        <span class="surface" data-element="runwaySurface"></span>
+        <span class="length" data-element="runwayLength"></span>
+        <span class="width" data-element="runwayWidth"></span>
+        <span class="operating-time" data-element="runwayOperatingTime">FULL TIME</span>
+    </template>
+
+    <!-- Pages -->
+
+    <template id="airport-information-page">
+        <section class="map-container" data-element="map"></section>
+        <section class="sidebar">
+            <section class="category category-fill-container">
+                <h1>Airport</h1>
+                <section class="content information">
+                    <icao-input data-element="icaoInput" characters="4" type="A"></icao-input><airport-icon data-element="icon"></airport-icon><span class="public" data-element="public"></span>
+                    <span data-element="name" class="name"></span>
+                    <span data-element="city" class="city"></span>
+                    <span data-element="country" class="country"></span><span data-element="elevation" class="elevation"></span>
+                    <span data-element="timezone" class="timezone"></span>
+                </section>
+            </section>
+            <section class="runways-container category category-fill-container">
+                <h1>Runways</h1>
+                <section class="content">
+                    <g1000-runway-selector data-element="runwaySelector" expanded></g1000-runway-selector>
+                </section>
+            </section>
+            <section class="frequencies-container category category-fill-container">
+                <h1>Frequencies</h1>
+                <g1000-frequency-list data-element="frequencyList" class="content frequencies scrollable-container"></g1000-frequency-list>
+            </section>
+        </section>
+        <section class="directory" data-element="directory" style="padding-top:1.5vh; padding-bottom:1.5vh;">
+            <section class="category category-fill-container" style="margin:0;">
+                <h1>Airport Directory</h1>
+                <scrollable-container data-element="directoryInformation" class="content" style="height:100%;">
+                    <article class="article">
+                        <p>Narrator:	According to all known laws of aviation, there is no way that a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyway because bees don't care what humans think is impossible.
+                        cut to Barry's room, where he's picking out what to wear</p>
+                        <p>Barry:	Yellow, black. Yellow, black. Yellow, black. Yellow, black. Ooh, black and yellow! Yeah, let's shake it up a little.</p>
+                        <p>(Janet Benson):	(calling from downstairs:) Barry! Breakfast is ready!</p>
+                        <p>Barry:	Coming! (phone rings) Oh, hang on a second. (adjusts his antennas into a headset) Hello?</p>
+                        <p>Adam Flayman:	(on phone:) Barry?</p>
+                        <p>Barry:	Adam?</p>
+                        <p>Adam:	Can you believe this is happening?</p>
+                        <p>Barry:	I can't believe it. I'll pick you up. (hangs up, sharpens his stinger) Lookin' sharp. (flies downstairs)</p>
+                        <p>Mom:	Barry, why don't you use the stairs? Your father paid good money for those.</p>
+                        <p>Barry:	Sorry. I'm excited.</p>
+                        <p>Dad (Martin Benson):	Here's the graduate. We're very proud of you, son. And a perfect report card, all B's.</p>
+                        <p>Mom:	Very proud. (touches Barry's hair)</p>
+                        <p>Barry:	Ma! I got a thing going here.</p>
+                        <p>Mom:	Ah, you got some lint on your fuzz.</p>
+                        <p>Barry:	Ow! That's me!</p>
+                        <p>Dad:	Wave to us! We'll be in row 118,000.</p>
+                        <p>Barry:	Bye! (flies off)</p>
+                        <p>Mom:	Barry, I told you, stop flying in the house!</p>
+ 	                    <p>(Barry drives his car to pick up his classmate. Adam's outside his house, reading the Hive Today newspaper. The front page headline reads "FRISBEE HITS HIVE ! Internet Down. Bee: 'I heard sound, then Wham-o!'")</p>
+                        <p>Barry:	Hey, Adam.</p>
+                        <p>Adam:	Hey, Barry. Is that fuzz gel?</p>
+                        <p>Barry:	A little. It's a special day, finally graduating.</p>
+                        <p>Adam:	Never thought I'd make it.</p>
+                        <p>Barry:	Yeah, three days grade school, three days high school.</p>
+                        <p>Adam:	Those were so awkward.</p>
+                        <p>Barry:	Three days college. I'm glad I took off one day in the middle and just hitchhiked around the hive.</p>
+                        <p>Adam:	You did come back different.</p>
+ 	                    <p>(a bee calls out as they drive past)</p>
+                        <p>Bee:	Hi, Barry.</p>
+                        <p>Barry:	Hey Artie, growing a mustache? Looks good.</p>
+                        <p>Adam:	Hey, did you hear about Frankie?</p>
+                        <p>Barry:	Yeah.</p>
+                        <p>Adam:	You goin' to his funeral?</p>
+                        <p>Barry:	No, I'm not goin' to his funeral. Everybody knows you sting someone, you die. You don't waste it on a squirrel. He was such a hothead.</p>
+                        <p>Adam:	Yeah, I guess he could have just gotten out of the way.</p>
+                        <p>(They make various noises as the car goes up and down some hills and does a loop on the road.)</p>
+                        <p>Adam:	I love this incorporating an amusement park right into our regular day.</p>
+                        <p>Barry:	I guess that's why they say we don't need a vacation.</p>
+                        <p>(They arrive, fly in and take their seats.)</p>
+                        <p>Barry:	Boy, quite a bit of pomp... under the circumstances.</p>
+                        <p>Barry:	Well, Adam, today we are men.</p>
+                        <p>Adam:	We are!</p>
+                        <p>Barry:	Bee-men.</p>
+                        <p>Adam:	Amen!</p>
+                        <p>both together:	Hallelujah!</p>
+                        <p>Announcer:	Students, faculty, distinguished bees, please welcome Dean Buzzwell.</p>
+                        <p>Dean Buzzwell walks onto the stage and taps the microphone.</p>
+                    </article>
+                </scrollable-container>
+            </section>
+        </section>
+    </template>
+
+    <template id="intersection-information-page">
+        <section class="map-container" data-element="map"></section>
+        <section class="sidebar">
+            <section class="category">
+                <h1>Intersection</h1>
+                <section class="content information">
+                    <icao-input data-element="icaoInput" characters="6" type="W"></icao-input>
+                </section>
+            </section>
+            <section class="category">
+                <h1>Information</h1>
+                <section class="content information">
+                    <div data-element="country"></div>
+                    <div data-element="lat"></div>
+                    <div data-element="long"></div>
+                </section>
+            </section>
+            <section class="category">
+                <h1>Nearest VOR</h1>
+                <section class="content vor-information">
+                    <div data-element="vor"></div>
+                    <span><img data-element="vorIcon" /></span>
+                    <label>Rad</label>
+                    <div data-element="vorRadial"></div>
+                    <label>Dis</label>
+                    <div data-element="vorDistance"></div>
+                </section>
+            </section>
+        </section>
     </template>
 
     <template id="aux-settings">
@@ -422,208 +847,6 @@
         </section>
     </template>
 
-    <template id="procedures-pane">
-        <h1 class="title">Procedures</h1>
-        <div class="category">
-            <h1>Options</h1>
-            <section class="content">
-                <selectable-button disabled>ACTIVATE VECTOR-TO-FINAL</selectable-button>
-                <selectable-button disabled>ACTIVATE APPROACH</selectable-button>
-                <selectable-button disabled>ACTIVATE MISSED APPROACH</selectable-button>
-                <selectable-button data-click="selectApproach">SELECT APPROACH</selectable-button>
-                <selectable-button data-click="selectArrival">SELECT ARRIVAL</selectable-button>
-                <selectable-button data-click="selectDeparture">SELECT DEPARTURE</selectable-button>
-            </section>
-        </div>
-        <div class="category">
-            <h1>Loaded</h1>
-            <section class="content">
-                <div class="label">Approach:</div>
-                <div class="element" data-id="loadedApproach"></div>
-                <div class="label">Arrival:</div>
-                <div class="element" data-id="loadedArrival"></div>
-                <div class="label">Departure:</div>
-                <div class="element" data-id="loadedDeparture"></div>
-            </section>
-        </div>
-    </template>
-
-    <template id="approach-page">
-        <section class="map-container" data-element="map">
-            <!--<bing-map data-element="bingMap"></bing-map>-->
-            <div data-element="map" class="map"></div>
-            <svg data-element="waypointSvg" viewBox="0 0 1000 1000" style="position:absolute; left:0; right:0; top:0; bottom:0;">
-                <path data-element="allTransitionsPath" stroke="#aaaaaa" stroke-width="6" fill="none"></path>
-                <path data-element="selectedApproachPath" stroke="magenta" stroke-width="10" fill="none"></path>
-                <g data-element="selectedApproachWaypoints"></g>
-            </svg>
-        </section>
-        <section class="sidebar">
-            <div class="category">
-                <h1>Airport</h1>
-                <section class="content">
-                    <!--<string-input characters="10" value="EGLL"></string-input>-->
-                    <icao-input data-element="icaoInput" characters="6" data-change="updateIcao"></icao-input>
-                    <airport-selector></airport-selector>
-                </section>
-            </div>
-            <div class="category">
-                <h1 data-element="procedureType">Approach</h1>
-                <section class="content">
-                    <div class="element"><drop-down-selector data-element="procedureSelector" updateOnSelection></drop-down-selector></div>
-                </section>
-            </div>
-            <div class="category">
-                <h1>Transition</h1>
-                <section class="content">
-                    <div class="element"><drop-down-selector data-element="transitionSelector" updateOnSelection></drop-down-selector></div>
-                </section>
-            </div>
-            <div class="category">
-                <h1>Minimums</h1>
-                <section class="content">
-                    <div class="element">
-                        <toggle-switch value="0" data-element="minimumsMode"></toggle-switch>
-                        <numeric-input digits="5" min="0" max="35000" class="value" value="0" units="FT"></numeric-input>
-                    </div>
-                </section>
-            </div>
-            <div class="category">
-                <h1>Primary Frequency</h1>
-                <section class="content">
-                    <div class="element">
-                        <div class="name" data-element="primaryFrequencyName"></div>
-                        <div class="value selectable" data-element="primaryFrequencyHz"></div>
-                    </div>
-                </section>
-            </div>
-            <div class="category">
-                <h1>Sequence</h1>
-                <section class="content sequence scrollable-container" data-element="sequenceList"></section>
-            </div>
-            <div class="load-or-activate">
-                <selectable-button data-element="loadApproach" data-click="loadProcedure">LOAD?</selectable-button>
-                <span>OR</span>
-                <selectable-button data-element="activateApproach" data-click="activateProcedure">ACTIVATE</selectable-button>
-            </div>
-        </section>
-    </template>
-
-    <template id="nearest-airports-page">
-        <section class="map-container" data-element="map"></section>
-        <section class="sidebar">
-            <div class="category category-fill-container">
-                <h1>Nearest Airports</h1>
-                <ul class="content scrollable-container airport-list" data-element="airportList" data-element-selector="li"></ul>
-            </div>
-            <div class="category category-fill-container">
-                <h1>Information</h1>
-                <div class="content">
-                    <div class="element"><span data-element="facilityName"></span></div>
-                    <div class="element"><span data-element="city"></span><span data-element="elevation"></span></div>
-                </div>
-            </div>
-            <div class="category category-fill-container">
-                <h1>Runways</h1>
-                <div class="content runways" data-element="runways">
-                    <toggle-switch data-element="runwaySelector"></toggle-switch>
-                    <span class="surface" data-element="runwaySurface"></span>
-                    <span class="length" data-element="runwayLength"></span>
-                    <span class="width" data-element="runwayWidth"></span>
-                </div>
-            </div>
-            <div class="category category-fill-container">
-                <h1>Frequencies</h1>
-                <ul class="content scrollable-container frequency-list" data-element="frequencyList"></ul>
-            </div>
-            <div class="category category-fill-container">
-                <h1>Approaches</h1>
-                <ul class="content scrollable-container approach-list" data-element="approachList"></ul>
-            </div>
-        </section>
-    </template>
-
-    <template id="waypoint-selector-pane">
-        <h1 class="title">Waypoint Information</h1>
-        <div class="category">
-            <h1>Ident, Facility, City</h1>
-            <section class="content waypoint-info">
-                <!--<string-input characters="10" value="EGLL"></string-input>-->
-                <icao-input data-element="icaoInput" characters="6"></icao-input>
-                <div data-element="icaoName"></div>
-                <div data-element="icaoCity"></div>
-            </section>
-        </div>
-        <div class="category map-category">
-            <h1><div>Map</div></h1>
-            <section class="content">
-                <div data-element="mapContainer" class="waypoint-map"></div>
-            </section>
-        </div>
-        <div class="category">
-            <h1>Location</h1>
-            <section class="content">
-                <div class="location">
-                    <label>BRG</label>
-                    <div class="bearing" data-element="bearing"></div>
-                    <div class="country" data-element="country"></div>
-                    <label>DIS</label>
-                    <div class="distance" data-element="distance"></div>
-                    <div class="city" data-element="city"></div>
-                </div>
-            </section>
-        </div>
-        <div class="enter-accept">Press "ENT" to accept</div>
-    </template>
-
-    <template id="direct-to-pane">
-        <h1 class="title">Direct To</h1>
-        <section class="category">
-            <h1>Ident, Facility, City</h1>
-            <section class="content waypoint-info">
-                <icao-input data-element="icaoInput" characters="6"></icao-input>
-                <div data-element="icaoName"></div>
-                <div data-element="icaoCity"></div>
-            </section>
-        </section>
-        <section class="category">
-            <h1>VNV</h1>
-            <section class="content vnav">
-                <numeric-input digits="5" units="FT" value="0"></numeric-input>
-                <numeric-input units="NM" min="-21" max="0" value="0"></numeric-input>
-            </section>
-        </section>        
-        <section class="category map-category">
-            <h1><div>Map</div></h1>
-            <section class="content">
-                <div data-element="mapContainer" class="waypoint-map"></div>
-            </section>
-        </section>
-        <section class="category">
-            <h1>Location</h1>
-            <section class="content">
-                <div class="location">
-                    <label>BRG</label>
-                    <div class="bearing" data-element="bearing"></div>
-                    <label>DIS</label>
-                    <div class="distance" data-element="distance"></div>
-                </div>
-            </section>
-        </section>
-        <footer>
-            <section class="category">
-                <h1>Course</h1>
-                <section class="content">
-                    <numeric-input units="°" min="0" max="360" value="0" data-element="course"></numeric-input>
-                </section>
-            </section>
-            <section class="buttons">
-                <selectable-button data-click="activateDirectTo">Activate?</selectable-button>
-                <selectable-button data-click="hold">Hold?</selectable-button>
-            </section>
-        </footer>
-    </template>
-
     <template id="flight-plan-page">
         <section class="map-container" data-element="map">
         </section>
@@ -766,25 +989,6 @@
          </svg>
     </template>
 
-    <template id="confirm-dialog"> 
-        <div class="dialog">
-            <div class="message" data-element="message"></div>
-            <div class="buttons">
-                <selectable-button data-click="confirm">OK</selectable-button>
-                <selectable-button data-click="cancel">Cancel</selectable-button>
-            </div>
-        </div>
-    </template>
-
-    <template id="menu-screen"> 
-        <h1 class="title">Page Menu</h1>
-        <div class="category">
-            <h1>Options</h1>
-            <ul class="content options scrollable-container" data-element="options"></ul>
-        </div>
-        <footer>Press the FMS CRSR knob to return to the base page</footer>
-    </template>
-
     <template id="page-selector-template"> 
         <ul class="page-list" data-element="pageList"></ul>
         <ul class="group-list" data-element="groupList"></ul>
@@ -846,24 +1050,37 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/ComFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/NavFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/PageMenu.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/AirportDatabase.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/NearestWaypoints.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Procedures.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/WaypointQuickSelect.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/OBS.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Libs/CSV.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/Navigation/DirectTo.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/Navigation/FlightPlan.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/Navigation/OBS.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/Coordinates.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/WaypointRepository.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/AirportIcon.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/Confirm.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/DropDownSelector.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/IcaoInput.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/NumericInput.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/ScrollableContainer.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/StringInput.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/SoftKeys.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/ToggleSwitch.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/DuplicateWaypoints.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/NearestAirports.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/FuelUsed.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Observables.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Settings.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UnitChooser.js"></script>
 
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Components/FrequencyList.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Components/NavBox.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Components/NearestWaypointList.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Components/RunwaySelector.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Components/SequenceList.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Page.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/Credits.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/ModSettings.js"></script>
@@ -872,8 +1089,14 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/FlightPlan/FlightPlan.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Map/Map.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Map/MapSetup.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Nearest/Nearest.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Nearest/Airports.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Nearest/NDBs.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Nearest/VORs.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Procedures/Procedure.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Procedures/Approach.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/WaypointInformation/Airport.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/WaypointInformation/Intersection.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Panes/DirectTo.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Panes/Procedures.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Panes/WaypointSelector.js"></script>

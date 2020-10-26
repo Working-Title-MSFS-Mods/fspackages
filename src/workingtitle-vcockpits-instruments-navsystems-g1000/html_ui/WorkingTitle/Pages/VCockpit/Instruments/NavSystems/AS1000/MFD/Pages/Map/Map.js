@@ -78,7 +78,6 @@ class WT_Map_View extends WT_HTML_View {
      */
     setModel(model) {
         this.model = model;
-        this.appendChild(this.model.mapElement);
         /*if (this.model.mapElement.isInit())
             this.model.mapElement.centerOnPlane();*/
 
@@ -106,6 +105,7 @@ class WT_Map_View extends WT_HTML_View {
         this.inputStackHandle = inputStack.push(this.inputLayer);
         this.storedMenu = this.softKeyController.currentMenu;
         this.softKeyController.setMenu(this.menus.main);
+        this.appendChild(this.model.mapElement);
     }
     deactivate() {
         this.softKeyController.setMenu(this.storedMenu);

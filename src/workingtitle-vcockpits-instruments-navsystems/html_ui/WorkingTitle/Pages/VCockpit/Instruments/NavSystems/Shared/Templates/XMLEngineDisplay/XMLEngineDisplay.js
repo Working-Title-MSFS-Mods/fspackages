@@ -451,18 +451,18 @@ class XMLHeader extends HTMLElement {
     }
     connectedCallback() {
         let container = document.createElement("div");
-        container.setAttribute("style", "display:flex; width:100%; align-items: center; padding:5px;");
+        container.setAttribute("style", "margin:0.3em 0.5em; font-weight:bold; font-size:1.0rem; display:flex; align-items: center;");
 
         let line = document.createElement("div");
-        line.setAttribute("style", "height:2px; background:#777; flex:1;");
+        line.setAttribute("style", "height:0.3vh; background:#777; flex:1;");
         container.appendChild(line);
 
         this.textElement = document.createElement("div");
-        this.textElement.setAttribute("style", "padding:5px; color:#fff; font-family:Roboto-Bold; font-size:14px;");
+        this.textElement.setAttribute("style", "padding:0 0.5em; color:#fff;");
         container.appendChild(this.textElement);
 
         line = document.createElement("div");
-        line.setAttribute("style", "height:2px; background:#777; flex:1;");
+        line.setAttribute("style", "height:0.3vh; background:#777; flex:1;");
         container.appendChild(line);
 
         this.appendChild(container);

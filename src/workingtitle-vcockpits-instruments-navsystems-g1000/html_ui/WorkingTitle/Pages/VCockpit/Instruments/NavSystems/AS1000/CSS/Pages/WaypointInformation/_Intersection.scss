@@ -1,0 +1,25 @@
+g1000-intersection-information-page {
+    @extend %waypoint-information-page;
+
+    color: $input_color;
+
+    .vor-information {
+        display: grid;
+        grid-template-columns: 5em 1fr;
+        grid-auto-rows: auto;
+
+        label {
+            color: #fff;
+        }
+
+        img {
+            display: block;
+            width: 3ch;
+            height: 3ch;
+        }
+    }
+
+    .units {
+        font-size:0.8em;
+    }
+}

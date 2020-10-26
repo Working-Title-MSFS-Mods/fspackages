@@ -1,4 +1,3 @@
-
 class WT_Nav_Frequencies_Model extends WT_Radio_Frequencies_Model {
     constructor() {
         super();
@@ -31,6 +30,13 @@ class WT_Nav_Frequencies_Model extends WT_Radio_Frequencies_Model {
     }
     transferActive() {
         SimVar.SetSimVarValue(`${this.simVarPrefix}_RADIO_SWAP`, "number", 0);
+    }
+    /**
+     * @param {Number} bcd 
+     */
+    selectFrequency(bcd) {
+        SimVar.SetSimVarValue(`${this.simVarPrefix}_RADIO_SWAP`, "number", 0);
+        SimVar.SetSimVarValue(`${this.simVarPrefix}_RADIO_SET`, "Frequency BCD16", bcd);
     }
     update(dt) {
         for (let i = 1; i <= 2; i++) {

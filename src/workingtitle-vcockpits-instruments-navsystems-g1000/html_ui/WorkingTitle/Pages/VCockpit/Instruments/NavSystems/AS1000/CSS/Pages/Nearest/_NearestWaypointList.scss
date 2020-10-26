@@ -1,0 +1,44 @@
+g1000-nearest-waypoint-list {
+    -webkit-transform: rotateX(0deg);
+    overflow-y: scroll;
+
+    li {
+        display: grid;
+        grid-gap: 2vh;
+        grid-template-columns: 2ch 1fr 2.5ch 4ch 7ch;
+        align-items: center;
+        margin: 0;
+
+        .arrow {
+            display: block;
+            width: 2ch;
+            height: 2ch;
+
+            img,
+            svg,
+            div {
+                display: block;
+                width: 2ch;
+                height: 2ch;
+            }
+        }
+
+        .distance {
+            text-align: right;
+        }
+
+        .ident {
+            font-family: $font_family_mono;
+            font-weight: bold;
+
+            &[state="Selected"] {
+                animation: SelectionBlink 0.5s infinite !important;
+            }
+        }
+
+        airport-icon {
+            width: 2.5ch;
+            height: 2.5ch;
+        }
+    }
+}

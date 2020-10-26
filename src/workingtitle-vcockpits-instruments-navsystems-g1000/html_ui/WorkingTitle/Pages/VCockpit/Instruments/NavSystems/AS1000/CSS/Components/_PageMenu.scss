@@ -4,6 +4,7 @@ g1000-page-menu {
     top: 2vh;
     width: 35vh;
     padding: 0 1.5vh;
+    z-index: 100;
     background: lighten($page_background_color, 10%);
     border: 1vh outset #111;
     box-shadow: 0px 0px 0px $border_width_thick $border_color;
@@ -17,7 +18,7 @@ g1000-page-menu {
     }
 
     .options {
-        height: 30vh;
+        max-height: 30vh;
         overflow-y: scroll;
         color: $input_color;
 

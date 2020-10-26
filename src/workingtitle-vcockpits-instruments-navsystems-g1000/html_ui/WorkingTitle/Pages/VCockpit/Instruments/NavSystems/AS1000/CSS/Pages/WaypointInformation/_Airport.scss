@@ -1,0 +1,134 @@
+g1000-airport-information-page {
+    @extend %waypoint-information-page;
+
+    .sidebar {
+        display: grid;
+        grid-gap: 1.5vh;
+        padding: 1.5vh 2vh;
+        grid-template-rows: auto 22% minmax(0, 1fr);
+
+        .category {
+            margin: 0;
+        }
+    }
+
+    .directory {
+        display: none;
+        grid-area: directory;
+        padding: 0 2vh;
+
+        .content {
+            overflow-y: scroll;
+        }
+
+        &[highlighted] {
+            .category {
+                --border-color: #00ffff;
+            }
+        }
+    }
+
+    .information {
+        display: grid;
+        grid-template-columns: 1fr 3ch 1fr;
+        grid-template-rows: auto auto auto auto auto auto;
+        grid-gap: 0vh 2vh;
+        grid-template-areas:
+            "icao airport-icon public"
+            "name name name"
+            "city city city"
+            "country country elevation"
+            "a a a"
+            "timezone timezone timezone";
+
+        icao-input {
+            grid-area: icao;
+        }
+
+        airport-icon {
+            grid-area: airport-icon;
+        }
+
+        .public {
+            grid-area: public;
+        }
+
+        .name {
+            grid-area: name;
+        }
+
+        .city {
+            grid-area: city;
+        }
+
+        .country {
+            grid-area: country;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .elevation {
+            grid-area: elevation;
+        }
+
+        .timezone {
+            grid-area: timezone;
+        }
+    }
+
+    .frequencies {
+        max-height: 100%;
+        overflow-y: scroll;
+    }
+
+    .units {
+        font-size: 0.8em;
+    }
+
+    &[mode="Info-2"] {
+        .directory {
+            display: block;
+        }
+
+        .runways-container,
+        .frequencies-container {
+            display: none;
+        }
+
+        .map-container {
+            border-top: $border_width_thin solid #fff;
+        }
+
+        .sidebar {
+            padding-right: 0;
+        }
+
+        .information {
+            grid-template-rows: auto auto auto;
+            grid-gap: 0vh 2vh;
+            grid-template-areas:
+                "icao airport-icon public"
+                "name name name"
+                "city city city";
+
+            .country {
+                display: none;
+            }
+
+            .elevation {
+                display: none;
+            }
+
+            .timezone {
+                display: none;
+            }
+        }
+
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto minmax(0, 1fr);
+        grid-template-areas:
+            "sidebar directory"
+            "map directory";
+    }
+}

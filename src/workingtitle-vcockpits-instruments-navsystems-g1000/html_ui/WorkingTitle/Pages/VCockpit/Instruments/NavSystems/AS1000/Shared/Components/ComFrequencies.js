@@ -34,6 +34,13 @@ class WT_Com_Frequencies_Model extends WT_Radio_Frequencies_Model {
     setEmergencyFrequency() {
         SimVar.SetSimVarValue(`${this.simVarPrefix}_RADIO_SET`, "Frequency BCD16", this.make_bcd16(121500000));
     }
+    /**
+     * @param {Number} bcd 
+     */
+    selectFrequency(bcd) {
+        SimVar.SetSimVarValue(`K:COM${this.selected.value == 1 ? "_STBY" : "2"}_RADIO_SWAP`, "number", 0);
+        SimVar.SetSimVarValue(`${this.simVarPrefix}_RADIO_SET`, "Frequency BCD16", bcd);
+    }
     update(dt) {
         for (let i = 1; i <= 2; i++) {
             let radio = this[`radio${i}`];

@@ -2,8 +2,10 @@
 
 @import "Components/Category";
 @import "Components/ConfirmDialog";
+@import "Components/FrequencyList";
 @import "Components/PageMenu";
 @import "Components/NavBox";
+@import "Components/RunwaySelector";
 @import "Components/ScrollableContainer";
 @import "Components/SoftKeys";
 
@@ -17,10 +19,18 @@
 @import "Pages/AirwaySelector";
 @import "Pages/Approach";
 @import "Pages/DirectTo";
+@import "Pages/DuplicateWaypoints";
 @import "Pages/FlightPlan";
 @import "Pages/MapSetup";
-@import "Pages/NearestAirports";
+@import "Pages/Nearest/NearestWaypointList";
+@import "Pages/Nearest/NearestPage";
+@import "Pages/Nearest/Airports";
+@import "Pages/Nearest/NDBs";
+@import "Pages/Nearest/VORs";
 @import "Pages/Settings";
+@import "Pages/WaypointInformation/WaypointInformation";
+@import "Pages/WaypointInformation/Airport";
+@import "Pages/WaypointInformation/Intersection";
 @import "Pages/WaypointSelector";
 
 as1000-mfd-element {
@@ -134,24 +144,8 @@ as1000-mfd-element #Mainframe #Electricity {
     right: 1vh;
     top: 1vh;
     bottom: 1vh;
-    background: lighten($page_background_color, 10%);
-    border: 1vh outset #111;
-    box-shadow: 0px 0px 0px $border_width_thick $border_color;
-    //border-left: $border_width_thick solid $border_color;
 
-    .title {
-        margin: 1vh 0;
-        font-size: 1.1em;
-        font-weight: bold;
-        text-align: center;
-        text-transform: uppercase;
-    }
-
-    footer {
-        text-align: center;
-        font-size: 1.1em;
-        margin: 2vh 0;
-    }
+    @extend %floating-pane;
 
     &:empty {
         display: none;
@@ -183,7 +177,6 @@ airport-icon {
 .article {
     font-size: 1em;
     line-height: 1.5em;
-    margin: 0 1.5em;
 
     h1 {
         font-size: 2em;
@@ -219,7 +212,7 @@ g1000-map-page {
     position: absolute;
     right: 0;
     bottom: 0;
-    width: 25vh;
+    width: 30vh;
     font-size: 1rem;
     color: #666;
     text-transform: uppercase;

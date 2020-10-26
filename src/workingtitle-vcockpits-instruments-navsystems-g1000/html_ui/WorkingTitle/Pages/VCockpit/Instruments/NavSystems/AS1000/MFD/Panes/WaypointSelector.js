@@ -306,12 +306,13 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
         super.connectedCallback();
 
         this.elements.icaoInput.addEventListener("change", (e) => this.icaoChanged(e.target.icao))
-        this.elements.icaoInput.addEventListener("input", (e) => this.icaoInput(e.target.icao))
+        this.elements.icaoInput.addEventListener("input", DOMUtilities.debounce(e => this.icaoInput(e.target.icao), 500, false))
     }
     icaoInput(icao) {
         this.model.setIcao(icao);
     }
     icaoChanged(icao) {
+        this.model.setIcao(icao);
         this.exit();
         this.resolve(icao);
     }

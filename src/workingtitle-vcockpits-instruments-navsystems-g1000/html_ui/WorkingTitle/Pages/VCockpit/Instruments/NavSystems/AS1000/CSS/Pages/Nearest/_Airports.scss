@@ -1,0 +1,46 @@
+g1000-nearest-airports-page {
+    @extend %g1000-nearest-waypoints-page;
+
+    .information {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        grid-template-rows: auto auto;
+        grid-gap: 0vh 2vh;
+        grid-template-areas:
+            "name name"
+            "city elevation";
+
+        .name {
+            grid-area: name;
+        }
+
+        .city {
+            grid-area: city;
+        }
+
+        .elevation {
+            grid-area: elevation;
+            text-align: right;
+        }
+    }
+
+    .sidebar {
+        grid-template-rows: minmax(0, 1fr) 14% 14% 18% 18%;
+    }
+
+    .units {
+        font-size: 0.8em;
+    }
+
+    g1000-frequency-list {
+        overflow-y: scroll;
+    }
+
+    .approach-list {
+        overflow-y: scroll;
+
+        li {
+            @extend %animated-selection;
+        }
+    }
+}

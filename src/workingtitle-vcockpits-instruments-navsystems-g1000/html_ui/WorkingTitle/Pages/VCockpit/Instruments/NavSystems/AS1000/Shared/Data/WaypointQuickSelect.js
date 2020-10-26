@@ -29,16 +29,17 @@ class WT_Waypoint_Quick_Select {
         }
         return wps;
     }
-    getFlightPlanWaypoints() {
-        return this.flightPlanManager.getWaypoints();
+    getFlightPlanWaypoints(type) {
+        return this.flightPlanManager.getWaypoints().filter(wp => {
+            return type.includes(wp.icao[0]);
+        });
     }
     async getNearestList(list) {
-        list.Update(15, 100);
         let i = 0;
         await new Promise(resolve => {
             let frame = () => {
                 if (i++ < 10) {
-                    list.Update(15, 100); // This is so mind bogglingly stupid it hurts
+                    list.Update(30, 100); // This is so mind bogglingly stupid it hurts
                     requestAnimationFrame(frame);
                 } else {
                     resolve();
@@ -47,29 +48,45 @@ class WT_Waypoint_Quick_Select {
             requestAnimationFrame(frame);
         });
     }
-    async getNearestWaypoints(dt) {
-        await this.getNearestList(this.nearestAirportList);
-        await this.getNearestList(this.nearestNdbsList);
-        await this.getNearestList(this.nearestVorsList);
+    async getNearestWaypoints(type) {
         let wps = [];
-        wps.push(...this.nearestAirportList.airports);
-        wps.push(...this.nearestNdbsList.ndbs);
-        wps.push(...this.nearestVorsList.vors);
+        if (type.includes("A")) {
+            await this.getNearestList(this.nearestAirportList);
+            wps.push(...this.nearestAirportList.airports);
+        }
+        if (type.includes("N")) {
+            await this.getNearestList(this.nearestNdbsList);
+            wps.push(...this.nearestNdbsList.ndbs);
+        }
+        if (type.includes("V")) {
+            await this.getNearestList(this.nearestVorsList);
+            wps.push(...this.nearestVorsList.vors);
+        }
         wps.sort((a, b) => {
             return a.distance - b.distance;
         });
         return wps;
     }
+    /**
+     * @param {String} type 
+     */
     async getWaypoints(type) {
+        console.log(type);
         let filter = waypoint => {
             /*if (type)
                 return waypoint.type == type;*/
             return true;
         };
-        return {
-            nearest: (await this.getNearestWaypoints(type)).filter(filter),
-            flightPlan: [],//this.getFlightPlanWaypoints(type).filter(filter),
-            recent: (await this.loadWaypoints(this.recentWaypoints)).filter(filter),
+        try {
+            return {
+                nearest: (await this.getNearestWaypoints(type)).filter(filter),
+                flightPlan: this.getFlightPlanWaypoints(type).filter(filter),
+                recent: (await this.loadWaypoints(this.recentWaypoints.filter(wp => {
+                    return type.includes(wp[0]);
+                }))).filter(filter),
+            }
+        } catch (e) {
+            console.log(e.message);
         }
     }
 }

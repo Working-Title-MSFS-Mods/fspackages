@@ -407,9 +407,9 @@ class WT_Flight_Plan_Page_View extends WT_HTML_View {
             this.model.createNewWaypoint(e.detail.element.parentNode.index + 1);
         });
 
-        DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line", WT_Flight_Plan_Waypoint_Line.EVENT_WAYPOINT_SELECTED, e => {
+        DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line", WT_Flight_Plan_Waypoint_Line.EVENT_WAYPOINT_SELECTED, DOMUtilities.debounce(e => {
             this.model.setSelectedWaypointIndex(e.detail.waypointIndex);
-        });
+        }, 500, false));
     }
     /**
      * @param {WT_Flight_Plan_Page_Model} model 
