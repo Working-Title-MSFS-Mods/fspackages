@@ -298,9 +298,9 @@ class CJ4_MFD extends BaseAirliners {
         }
         //load stored settings
         const getMemoryStateStorageName = "WT_CJ4_MFD_Mem_" + _memoryFunction;
-        const getMemoryStateSettings = WTDataStore.get(getMemoryStateStorageName, 0);
+        const getMemoryStateSettings = JSON.parse(WTDataStore.get(getMemoryStateStorageName, 'none'));
 
-        if (dataStoreGetValue != 0) {
+        if (getMemoryStateSettings != "none") {
             // Update system pages
             this.systemPage1 = getMemoryStateSettings.systemPage1;
             this.systemPage2 = getMemoryStateSettings.systemPage2;
