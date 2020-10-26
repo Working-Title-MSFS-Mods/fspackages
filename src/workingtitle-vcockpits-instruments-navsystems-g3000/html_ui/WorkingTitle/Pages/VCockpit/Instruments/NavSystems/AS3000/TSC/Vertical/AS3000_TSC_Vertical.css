@@ -148,32 +148,6 @@
       width: 100%;
       left: 0%;
       bottom: 14%; }
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDHome,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #Minimums,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDMapSettings,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #MFDHome,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #MFDMapSettings,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #WeatherSelection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #DirectTo,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #ActiveFlightPlan,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #NavComHome,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #WaypointsInfo,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #Nearest,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestIntersection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestVOR,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestNDB,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #Procedures,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #DepartureSelection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #ArrivalSelection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #ApproachSelection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #AircraftSystems,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #LightingConfig {
-        display: none; }
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=NavComHome] #NavComHome,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=PFDHome] #PFDHome,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=SpeedBugs] #SpeedBugs,
@@ -198,7 +172,10 @@
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=ArrivalSelection] #ArrivalSelection,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=ApproachSelection] #ApproachSelection,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=AircraftSystems] #AircraftSystems,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=LightingConfig] #LightingConfig {
+      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=LightingConfig] #LightingConfig,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=Utilities] #Utilities,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=UtilitiesSetup] #UtilitiesSetup,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=AvionicsSettings] #AvionicsSettings {
         display: block; }
       as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDHome {
         position: absolute;

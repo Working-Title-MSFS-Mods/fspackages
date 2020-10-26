@@ -42,32 +42,6 @@ as3000-tsc-horizontal-element {
       bottom: 0%;
       background-image: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/BACKGROUND.png");
       background-color: #141619; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #Timers,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #Minimums,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDMapSettings,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDHome,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDMapSettings,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #WeatherSelection,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #DirectTo,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #WaypointsInfo,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #Nearest,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestAirport,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestIntersection,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestVOR,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestNDB,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #Procedures,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #AircraftSystems,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig {
-        display: none; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=NavComHome] #NavComHome,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=PFDHome] #PFDHome,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=SpeedBugs] #SpeedBugs,
@@ -92,7 +66,10 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=ArrivalSelection] #ArrivalSelection,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=ApproachSelection] #ApproachSelection,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=AircraftSystems] #AircraftSystems,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=LightingConfig] #LightingConfig {
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=LightingConfig] #LightingConfig,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=Utilities] #Utilities,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=UtilitiesSetup] #UtilitiesSetup,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=AvionicsSettings] #AvionicsSettings {
         display: block; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome {
         position: absolute;
@@ -428,6 +405,39 @@ as3000-tsc-horizontal-element {
             width: 100%;
             height: 15vh;
             -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings .tabContainer {
+        position: absolute;
+        top: 1%;
+        left: 1%;
+        height: 98%;
+        width: 95%;
+        display: flex;
+        flex-flow: row nowrap; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings .tabSelect .tabButton {
+            height: 15vh;
+            margin: 2vh 0; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings #MFDFieldsTab .buttonsContainer {
+            position: absolute;
+            top: 1%;
+            bottom: 1%;
+            left: 1%;
+            right: 1%;
+            width: auto;
+            height: auto;
+            padding: 1vh;
+            grid-template-rows: repeat(8, 20vh);
+            grid-gap: 1vh 0; }
+            as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings #MFDFieldsTab .row {
+              padding: 0.5vh;
+              grid-template-columns: 1fr 2fr; }
+              as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings #MFDFieldsTab .rowLabel {
+                font-size: 4vh; }
+              as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings #MFDFieldsTab .gradientButton {
+                height: 98%;
+                width: 98%; }
+                as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings #MFDFieldsTab .longName {
+                  font-size: 4vh; }
 
 @keyframes flightplanMenuEnter {
   0% {
@@ -1590,13 +1600,16 @@ as3000-tsc-horizontal-element {
     as3000-tsc-horizontal-element #Electricity .StatusButtonSelectionListWindow .content .gradientButton .statusText {
       font-size: 5vh; }
 
-    as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content {
+    as3000-tsc-horizontal-element #Electricity .dynamicSelectionListWindow .content {
       width: 50%;
       left: 25%;
       height: 80%;
       bottom: 5%; }
-        as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content .gradientButton .value {
+        as3000-tsc-horizontal-element #Electricity .dynamicSelectionListWindow .content .gradientButton .value {
           font-size: 5vh; }
+
+      as3000-tsc-horizontal-element #Electricity .navDataBarDynamicSelectionListWindow .longName {
+        font-size: 4vh; }
 
     as3000-tsc-horizontal-element #Electricity .MapDetailSelect .Container {
       bottom: 5%;
