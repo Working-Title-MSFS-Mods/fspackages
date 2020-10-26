@@ -210,7 +210,7 @@ class ManagedFlightPlan {
     else {
       if (index < this.enrouteStart) this.enrouteStart++;
       if (index <= this.arrivalStart) this.arrivalStart = Math.max(this.enrouteStart + 1, this.arrivalStart + 1);
-      if (index <= this.approachStart) this.approachStart = Math.max(this.arrivalStart, this.approachStart + 1);  
+      if (index <= this.approachStart) this.approachStart = Math.max(this.arrivalStart, this.approachStart + 1);
     }
 
     if (index < this.activeWaypointIndex) this.activeWaypointIndex++;
@@ -220,9 +220,9 @@ class ManagedFlightPlan {
   }
 
   /**
-   * Shifts waypoint segment indexes down after a waypoint addition.
-   * @param {WayPoint} waypoint The waypoint that is being added.
-   * @param {Number} index The index that the waypoint is being added at.
+   * Shifts waypoint segment indexes down after a waypoint removal.
+   * @param {WayPoint} waypoint The waypoint that is being removed.
+   * @param {Number} index The index that the waypoint is being removed at.
    */
   _unshiftSegmentIndexes(waypoint, index) {
     if (index === 0 && waypoint.type === 'A') {
@@ -236,12 +236,12 @@ class ManagedFlightPlan {
       this._hasDestination = false;
     }
     else {
-      if (index >= this.approachStart) this.approachStart--;
-      if (index >= this.arrivalStart) this.arrivalStart--;
-      if (index > this.enrouteStart) this.enrouteStart--;
+      if (index < this.approachStart) this.approachStart--;
+      if (index < this.arrivalStart) this.arrivalStart--;
+      if (index < this.enrouteStart) this.enrouteStart--;
     }
 
-    if (index <= this.activeWaypointIndex) this.activeWaypointIndex--;
+    if (index < this.activeWaypointIndex) this.activeWaypointIndex--;
     if (this.directTo.isActive && this.directTo.waypointIsInFlightPlan && index < this.directTo.waypointIndex) {
       this.directTo.waypointIndex--;
     }
