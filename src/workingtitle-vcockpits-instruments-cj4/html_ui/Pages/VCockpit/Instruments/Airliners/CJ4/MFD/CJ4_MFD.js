@@ -298,23 +298,24 @@ class CJ4_MFD extends BaseAirliners {
         }
         //load stored settings
         const getMemoryStateStorageName = "WT_CJ4_MFD_Mem_" + _memoryFunction;
-        const getMemoryStateSettings = JSON.parse(WTDataStore.get(getMemoryStateStorageName, 'none'));
+        const getMemoryStateSettings = WTDataStore.get(getMemoryStateStorageName, 'none');
 
         if (getMemoryStateSettings != "none") {
+            const getParsedMemoryStateSettings = JSON.parse(getMemoryStateSettings);
             // Update system pages
-            this.systemPage1 = getMemoryStateSettings.systemPage1;
-            this.systemPage2 = getMemoryStateSettings.systemPage2;
-            this.showChecklist = getMemoryStateSettings.showChecklist;
-            this.showPassengerBrief = getMemoryStateSettings.showPassengerBrief;
+            this.systemPage1 = getParsedMemoryStateSettings.systemPage1;
+            this.systemPage2 = getParsedMemoryStateSettings.systemPage2;
+            this.showChecklist = getParsedMemoryStateSettings.showChecklist;
+            this.showPassengerBrief = getParsedMemoryStateSettings.showPassengerBrief;
 
             // Update map
-            this.mapDisplayMode = getMemoryStateSettings.mapDisplayMode;
-            this.mapNavigationMode = getMemoryStateSettings.mapNavigationMode;
-            this.mapNavigationSource = getMemoryStateSettings.mapNavigationSource;
-            this.showTerrain = getMemoryStateSettings.showTerrain;
-            this.showWeather = getMemoryStateSettings.showWeather;
-            this.showGwx = getMemoryStateSettings.showGwx;
-            this.isExtended = getMemoryStateSettings.isExtended;
+            this.mapDisplayMode = getParsedMemoryStateSettings.mapDisplayMode;
+            this.mapNavigationMode = getParsedMemoryStateSettings.mapNavigationMode;
+            this.mapNavigationSource = getParsedMemoryStateSettings.mapNavigationSource;
+            this.showTerrain = getParsedMemoryStateSettings.showTerrain;
+            this.showWeather = getParsedMemoryStateSettings.showWeather;
+            this.showGwx = getParsedMemoryStateSettings.showGwx;
+            this.isExtended = getParsedMemoryStateSettings.isExtended;
         }
         else {
             // Update system pages
