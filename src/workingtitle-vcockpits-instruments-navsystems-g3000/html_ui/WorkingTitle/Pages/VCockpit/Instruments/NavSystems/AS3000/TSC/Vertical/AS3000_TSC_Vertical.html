@@ -93,7 +93,7 @@
             <div id="PageBorder"></div>
             <div id="PageTitle">PFD HOME</div>
             <div id="PagesDisplay" state="DirectTo">
-                <div id="PFDHome">
+                <div class="tscPage" id="PFDHome">
                     <div class="line">
                         <div class="gradientButton" id="NavSourceButton">
                             <div class="lowerValue">FMS</div>
@@ -157,7 +157,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="SpeedBugs">
+                <div class="tscPage" id="SpeedBugs">
                     <div class="tabContainer">
                         <div class="tabSelect">
                             <div class="tabButton tabButtonLeft" state="Highlight">
@@ -252,7 +252,7 @@
                         <div class="mainText">Restore All Defaults</div>
                     </div>
                 </div>
-                <div id="Timers">
+                <div class="tscPage" id="Timers">
                     <div class="gradientButton" id="TimerZone">
                         <div class="sectionTitle">Time</div>
                         <div id="TMR_Timer">00:00:00</div>
@@ -278,7 +278,7 @@
                         <div class="mainText">Start</div>
                     </div>
                 </div>
-                <div id="Minimums">
+                <div class="tscPage" id="Minimums">
                     <div class="gradientButton valueButton" id="min_typeButton">
                         <div class="upperTitle">Minimums</div>
                         <div class="lowerValue">Baro</div>
@@ -311,7 +311,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="MapSettings" id="PFDMapSettings">
+                <div class="tscPage MapSettings" id="PFDMapSettings">
                     <div class="MapSettingsLeft" id="PFDMapSettingsLeft">
                         <div class="gradientButton valueButton" id="PFDMapOrientationButton">
                             <div class="upperTitle">Orientation</div>
@@ -485,7 +485,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="PFDSettings">
+                <div class="tscPage" id="PFDSettings">
                     <div class="backgroundBox scrollContainer">
                         <div class="buttonsContainer">
                             <div class="line">
@@ -509,7 +509,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="MFDHome">
+                <div class="tscPage" id="MFDHome">
                     <div class="line">
                         <div class="gradientButton" id="MapButton">
                             <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png" />
@@ -561,7 +561,7 @@
                             <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_MUSIC_1.png" />
                             <div class="label">Music</div>
                         </div>
-                        <div class="gradientButton" id="UtilitiesButton" state="Greyed">
+                        <div class="gradientButton" id="UtilitiesButton">
                             <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_UTILITIES.png" />
                             <div class="label">Utilities</div>
                         </div>
@@ -581,7 +581,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="MapSettings" id="MFDMapSettings">
+                <div class="tscPage MapSettings" id="MFDMapSettings">
                     <div class="MapSettingsLeft" id="MFDMapSettingsLeft">
                         <div class="gradientButton valueButton" id="MFDMapOrientationButton">
                             <div class="upperTitle">Orientation</div>
@@ -755,7 +755,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="WeatherSelection">
+                <div class="tscPage" id="WeatherSelection">
                     <div class="line">
                         <div class="gradientButton" id="NexradButton">
                             <img class="img" src="" />
@@ -771,7 +771,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="DirectTo">
+                <div class="tscPage" id="DirectTo">
                     <div class="tabContainer">
                         <div class="tabSelect">
                             <div class="tabButton tabButtonLeft" id="Waypoint_Select" state="Highlight">
@@ -846,7 +846,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="ActiveFlightPlan">
+                <div class="tscPage" id="ActiveFlightPlan">
                     <div id="leftBar">
                         <div class="gradientButton" id="AFPL_Drct">
                             <div class="mainText"><img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
@@ -1111,7 +1111,7 @@
                         </table>
                     </div>
                 </div>
-                <div id="Procedures">
+                <div class="tscPage" id="Procedures">
                     <div class="gradientButton" id="Procedures_Departure">
                         <div class="title">Departure</div>
                         <div class="value">____</div>
@@ -1134,7 +1134,7 @@
                         <div class="title">Activate Missed Approach</div>
                     </div>
                 </div>
-                <div class="ProcSelection" id="DepartureSelection">
+                <div class="tscPage ProcSelection" id="DepartureSelection">
                     <div class="gradientButton ProcAirport" id="Departure_Airport">
                         <div class="upperTitle">Airport</div>
                         <div class="ident">____</div>
@@ -1175,7 +1175,7 @@
                         <div class="content"></div>
                     </div>
                 </div>
-                <div class="ProcSelection" id="ArrivalSelection">
+                <div class="tscPage ProcSelection" id="ArrivalSelection">
                     <div class="gradientButton ProcAirport" id="Arrival_Airport">
                         <div class="upperTitle">Airport</div>
                         <div class="ident">____</div>
@@ -1216,7 +1216,7 @@
                         <div class="content"></div>
                     </div>
                 </div>
-                <div class="ProcSelection" id="ApproachSelection">
+                <div class="tscPage ProcSelection" id="ApproachSelection">
                     <div class="gradientButton ProcAirport" id="Approach_Airport">
                         <div class="upperTitle">Airport</div>
                         <div class="ident">____</div>
@@ -1261,7 +1261,7 @@
                         <div class="content"></div>
                     </div>
                 </div>
-                <div id="AircraftSystems">
+                <div class="tscPage" id="AircraftSystems">
                     <div class="line">
                         <div class="gradientButton" id="LightingConfigButton">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SYSTEM_TESTS.png" />
@@ -1269,7 +1269,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="LightingConfig">
+                <div class="tscPage" id="LightingConfig">
                     <div class="backgroundBox">
                         <div id="LightingValueDisplay">
                             <div class="title">Master</div>
@@ -1295,7 +1295,100 @@
                         </div>
                     </div>
                 </div>
-                <div id="WaypointsInfo">
+
+                <div class="tscPage" id="Utilities">
+                    <div class="line">
+                        <div class="gradientButton" id="SetupButton">
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_SETUP.png" />
+                            <div class="label">Setup</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tscPage" id="UtilitiesSetup">
+                    <div class="line">
+                        <div class="gradientButton" id="AvionicsSettingsButton">
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_AVIONICS_SETTINGS.png" />
+                            <div class="label">Avionics Settings</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tscPage" id="AvionicsSettings">
+                    <div class="tabContainer">
+                        <div class="tabSelect">
+                            <div class="tabButton tabButtonLeft" state="Disabled">
+                                <div class="mainText">System</div>
+                            </div>
+                            <div class="tabButton tabButtonLeft" state="Disabled">
+                                <div class="mainText">Units</div>
+                            </div>
+                            <div class="tabButton tabButtonLeft" state="Disabled">
+                                <div class="mainText">Alerts</div>
+                            </div>
+                            <div class="tabButton tabButtonLeft" state="Highlight">
+                                <div class="mainText">MFD Fields</div>
+                            </div>
+                            <div class="tabButton tabButtonLeft" state="Disabled">
+                                <div class="mainText">Audio</div>
+                            </div>
+                        </div>
+                        <div class="tabContentContainer">
+                            <div class="tabContent" id="MFDFieldsTab">
+                                <div class="buttonsContainer">
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 1</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 2</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 3</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 4</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 5</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 6</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 7</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 8</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tscPage" id="WaypointsInfo">
                     <div class="line">
                         <div class="gradientButton" id="WPInfoAirport_Btn">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_AIRPORT.png" />
@@ -1328,7 +1421,7 @@
                     </div>
                 </div>
 
-                <div id="AirportInfo">
+                <div class="tscPage" id="AirportInfo">
                     <div class="line">
                         <div class="gradientButton" id="AirportInfo_SelectedWaypoint">
                             <div class="mainText">SELECT AIRPORT</div>
@@ -1425,7 +1518,7 @@
                     </div>
                 </div>
 
-                <div id="Nearest">
+                <div class="tscPage" id="Nearest">
                     <div class="line">
                         <div class="gradientButton" id="NrstAirport_Btn">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_AIRPORT.png" />
@@ -1469,7 +1562,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="NearestAirport">
+                <div class="tscPage" id="NearestAirport">
                     <div class="NrstContainer">
                         <table class="NearestList">
                             <thead>
@@ -1529,7 +1622,7 @@
                         </table>
                     </div>
                 </div>
-                <div id="NearestIntersection">
+                <div class="tscPage" id="NearestIntersection">
                     <div class="NrstContainer">
                         <table class="NearestList">
                             <thead>
@@ -1580,7 +1673,7 @@
                         </table>
                     </div>
                 </div>
-                <div id="NearestVOR">
+                <div class="tscPage" id="NearestVOR">
                     <div class="NrstContainer">
                         <table class="NearestList">
                             <thead>
@@ -1633,7 +1726,7 @@
                         </table>
                     </div>
                 </div>
-                <div id="NearestNDB">
+                <div class="tscPage" id="NearestNDB">
                     <div class="NrstContainer">
                         <table class="NearestList">
                             <thead>
@@ -2385,7 +2478,7 @@
                     </div>
                 </div>
             </div>
-            <div class="PopUpWindow Transparent DynamicSelectionListWindow" id="DynamicSelectionListWindow" state="Inactive">
+            <div class="PopUpWindow Transparent dynamicSelectionListWindow" id="DynamicSelectionListWindow" state="Inactive">
                 <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
                 <div class="content">
                 </div>
@@ -2540,7 +2633,9 @@
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/TouchDynamicSelectionListWindow.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/MapElement.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/NavDataBar.js"></script>
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/AS3000_Common.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>
