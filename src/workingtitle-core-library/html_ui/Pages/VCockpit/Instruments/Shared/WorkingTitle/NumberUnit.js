@@ -39,10 +39,9 @@ class WT_NumberUnit {
     }
 }
 
-class WT_FormattedNumber {
-    constructor(numberUnit, opts = {}) {
-        this._numberUnit = numberUnit;
-        this.options = WT_FormattedNumber.OPTIONS;
+class WT_NumberFormatter {
+    constructor(opts = {}) {
+        this.options = WT_NumberFormatter.OPTIONS;
 
         this.options = opts;
     }
@@ -132,7 +131,7 @@ class WT_FormattedNumber {
     }
 
     _getAllowedOptions() {
-        return WT_FormattedNumber.OPTIONS;
+        return WT_NumberFormatter.OPTIONS;
     }
 
     _formatNumber(number) {
@@ -200,19 +199,19 @@ class WT_FormattedNumber {
         return formatted;
     }
 
-    getFormattedString() {
-        return this._formatNumber(this.numberUnit.number) + this._formatUnit(this.numberUnit.number, this.numberUnit.unit);
+    getFormattedString(numberUnit) {
+        return this._formatNumber(numberUnit.number) + this._formatUnit(numberUnit.number, numberUnit.unit);
     }
 
-    getFormattedNumber() {
-        return this._formatNumber(this.numberUnit.number);
+    getFormattedNumber(numberUnit) {
+        return this._formatNumber(numberUnit.number);
     }
 
-    getFormattedUnit() {
-        return this._formatUnit(this.numberUnit.number, this.numberUnit.unit).trim();
+    getFormattedUnit(numberUnit) {
+        return this._formatUnit(numberUnit.number, numberUnit.unit).trim();
     }
 }
-WT_FormattedNumber.OPTIONS = {
+WT_NumberFormatter.OPTIONS = {
     precision: 0,
     round: 0,
     maxDigits: Infinity,
@@ -225,9 +224,9 @@ WT_FormattedNumber.OPTIONS = {
 };
 
 
-class WT_FormattedTime extends WT_FormattedNumber {
-    constructor(numberUnit, opts = {}) {
-        super(numberUnit, WT_FormattedTime.OPTIONS);
+class WT_TimeFormatter extends WT_NumberFormatter {
+    constructor(opts = {}) {
+        super(WT_TimeFormatter.OPTIONS);
 
         this.options = opts;
     }
@@ -241,26 +240,26 @@ class WT_FormattedTime extends WT_FormattedNumber {
     }
 
     _getAllowedOptions() {
-        return WT_FormattedTime.OPTIONS;
+        return WT_TimeFormatter.OPTIONS;
     }
 
-    _formatHours() {
-        let hours = Math.floor(this.numberUnit.refUnit.convert(this.numberUnit.refNumber, WT_Unit.HOUR));
+    _formatHours(numberUnit) {
+        let hours = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.HOUR));
         let hoursText = hours.toFixed(0);
         hoursText = hoursText.padStart(this.pad, "0");
         hoursText += this._formatUnit(hours, WT_Unit.HOUR);
         return {number: hours, text: hoursText}
     }
 
-    getFormattedNumber() {
+    getFormattedNumber(numberUnit) {
         let savedUnitShow = this.unitShow;
         this.unitShow = false;
-        let formatted = this.getFormattedString();
+        let formatted = this.getFormattedString(numberUnit);
         this.unitShow = savedUnitShow;
         return formatted;
     }
 
-    getFormattedString() {
+    getFormattedString(numberUnit) {
         let hours;
         let min;
         let sec;
@@ -268,9 +267,9 @@ class WT_FormattedTime extends WT_FormattedNumber {
         let minText;
         let secText;
         let formatted = "";
-        if (this.timeFormat != WT_FormattedTime.Format.MM_SS) {
-            let hoursInfo = this._formatHours();
-            if (!(this.timeFormat == WT_FormattedTime.Format.HH_MM_OR_MM_SS && hoursInfo.number == 0)) {
+        if (this.timeFormat != WT_TimeFormatter.Format.MM_SS) {
+            let hoursInfo = this._formatHours(numberUnit);
+            if (!(this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hoursInfo.number == 0)) {
                 hours = hoursInfo.number;
                 hoursText = hoursInfo.text;
                 formatted += hoursText + ":";
@@ -281,19 +280,19 @@ class WT_FormattedTime extends WT_FormattedNumber {
         if (hours) {
             hourSubtract = hours;
         }
-        if (this.timeFormat == WT_FormattedTime.Format.HH_MM || (this.timeFormat == WT_FormattedTime.Format.HH_MM_OR_MM_SS && hours)) {
-            min = this.numberUnit.refUnit.convert(this.numberUnit.refNumber, WT_Unit.MINUTE) - hourSubtract * 60;
+        if (this.timeFormat == WT_TimeFormatter.Format.HH_MM || (this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hours)) {
+            min = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.MINUTE) - hourSubtract * 60;
             minText = this._formatNumber(min);
             minText += this._formatUnit(min, WT_Unit.MINUTE);
             formatted += minText;
         } else {
-            min = Math.floor(this.numberUnit.refUnit.convert(this.numberUnit.refNumber, WT_Unit.MINUTE) - hourSubtract * 60);
+            min = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.MINUTE) - hourSubtract * 60);
             minText = min.toFixed(0);
             minText = minText.padStart(this._pad, "0");
             minText += this._formatUnit(min, WT_Unit.MINUTE);
             formatted += minText + ":";
 
-            sec = this.numberUnit.refUnit.convert(this.numberUnit.refNumber, WT_Unit.SECOND) - hourSubtract * 3600 - min * 60;
+            sec = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.SECOND) - hourSubtract * 3600 - min * 60;
             secText = this._formatNumber(sec);
             secText += this._formatUnit(sec, WT_Unit.SECOND);
             formatted += secText;
@@ -302,13 +301,13 @@ class WT_FormattedTime extends WT_FormattedNumber {
         return formatted;
     }
 }
-WT_FormattedTime.Format = {
+WT_TimeFormatter.Format = {
     HH_MM_SS: 0,
     HH_MM: 1,
     MM_SS: 2,
     HH_MM_OR_MM_SS: 3
 };
-WT_FormattedTime.OPTIONS = {
+WT_TimeFormatter.OPTIONS = {
     precision: 1,
     round: 1,
     digits: Infinity,
@@ -318,7 +317,7 @@ WT_FormattedTime.OPTIONS = {
     unitSpaceBefore: true,
     unitLong: false,
     unitCaps: false,
-    timeFormat: WT_FormattedTime.Format.HH_MM_SS
+    timeFormat: WT_TimeFormatter.Format.HH_MM_SS
 };
 
 class WT_Unit {

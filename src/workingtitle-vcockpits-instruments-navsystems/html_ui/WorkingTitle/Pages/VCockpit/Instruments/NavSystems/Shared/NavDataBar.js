@@ -5,36 +5,46 @@ class WT_NavDataBar extends NavSystemElement {
     }
 
     init(root) {
-        let formattedNumberGetter = {getFormattedNumber: (unit, opts) => new WT_FormattedNumber(new WT_NumberUnit(0, unit), opts)};
-        let formattedTimeGetter = {getFormattedNumber: (unit, opts) => new WT_FormattedTime(new WT_NumberUnit(0, unit), opts)};
         let bearingOpts = {
             precision: 1,
             unitSpaceBefore: false
         };
+        let bearingFormatter = new WT_NumberFormatter(bearingOpts);
+
         let distanceOpts = {
             precision: 0.1,
             maxDigits: 3,
             unitSpaceBefore: false,
             unitCaps: true
         }
+        let distanceFormatter = new WT_NumberFormatter(distanceOpts);
+
         let volumeOpts = {
             precision: 0.1,
             maxDigits: 3,
             unitSpaceBefore: false,
             unitCaps: true
         }
+        let volumeFormatter = new WT_NumberFormatter(volumeOpts);
+
         let speedOpts = {
             precision: 1,
             unitSpaceBefore: false,
             unitCaps: true
         }
+        let speedFormatter = new WT_NumberFormatter(speedOpts);
+
+        let timeOpts = {
+            timeFormat: WT_TimeFormatter.Format.HH_MM_OR_MM_SS
+        }
+        let timeFormatter = new WT_TimeFormatter(timeOpts);
 
         let flightPlanManager = this.gps.currFlightPlanManager;
 
         this._infos = [
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[0], "PLANE HEADING DEGREES MAGNETIC", "degree", WT_Unit.DEGREE, bearingOpts, formattedNumberGetter, "", {showDefault:val=>false}),
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[1], "GPS WP DISTANCE", "nautical miles", WT_Unit.NMILE, distanceOpts, formattedNumberGetter, "", {showDefault:val=>false}),
-            new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION[2], {
+            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[0], new WT_NumberUnit(0, WT_Unit.DEGREE), "PLANE HEADING DEGREES MAGNETIC", "degree", bearingFormatter, "", {showDefault:val=>false}),
+            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[1], new WT_NumberUnit(0, WT_Unit.NMILE), "GPS WP DISTANCE", "nautical miles", distanceFormatter, "", {showDefault:val=>false}),
+            new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION[2], new WT_NumberUnit(0, WT_Unit.NMILE), {
                     getCurrentValue: function() {
                         let currentWaypoint = flightPlanManager.getActiveWaypoint();
                         let destination = flightPlanManager.getDestination();
@@ -44,10 +54,10 @@ class WT_NavDataBar extends NavSystemElement {
 
                         return destination.cumulativeDistanceInFP - currentWaypoint.cumulativeDistanceInFP + flightPlanManager.getDistanceToActiveWaypoint();
                     }
-                }, WT_Unit.NMILE, distanceOpts, formattedNumberGetter, "", {showDefault:val=>false}),
+                }, distanceFormatter, "", {showDefault:val=>false}),
 
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[3], "GPS WP DESIRED TRACK", "degree", WT_Unit.DEGREE, bearingOpts, formattedNumberGetter, "", {showDefault:val=>false}),
-            new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION[4], {
+            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[3], new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS WP DESIRED TRACK", "degree", bearingFormatter, "", {showDefault:val=>false}),
+            new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION[4], new WT_NumberUnit(0, WT_Unit.HOUR), {
                     getCurrentValue: function() {
                         let fuelRemaining = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons");
 
@@ -62,20 +72,20 @@ class WT_NavDataBar extends NavSystemElement {
                             return fuelRemaining / fuelFlow;
                         }
                     }
-                }, WT_Unit.HOUR, {timeFormat: WT_FormattedTime.Format.HH_MM_OR_MM_SS}, formattedTimeGetter, "__:__", {showDefault:val=>val==0}),
+                }, timeFormatter, "__:__", {showDefault:val=>val==0}),
 
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[5], "GPS ETE", "seconds", WT_Unit.SECOND, {timeFormat: WT_FormattedTime.Format.HH_MM_OR_MM_SS}, formattedTimeGetter, "__:__", {showDefault:val=>val==0}),
-            new WT_NavInfoUTCTime(WT_NavDataBar.INFO_DESCRIPTION[6], {
+            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[5], new WT_NumberUnit(0, WT_Unit.SECOND),"GPS ETE", "seconds", timeFormatter, "__:__", {showDefault:val=>val==0}),
+            new WT_NavInfoUTCTime(WT_NavDataBar.INFO_DESCRIPTION[6], new WT_NumberUnit(0, WT_Unit.SECOND), {
                     getCurrentValue: function() {
                         let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
                         let ete = SimVar.GetSimVarValue("GPS WP ETE", "seconds");
                         return (currentTime + ete) % (24 * 3600);
                     }
-                }, WT_Unit.SECOND, {timeFormat: WT_FormattedTime.Format.HH_MM}, formattedTimeGetter, "__:__", {showDefault:val=>false}),
+                }, timeFormatter, "__:__", {showDefault:val=>false}),
 
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[7], "GPS WP ETE", "seconds", WT_Unit.SECOND, {timeFormat: WT_FormattedTime.Format.HH_MM_OR_MM_SS}, formattedTimeGetter, "__:__", {showDefault:val=>val==0}),
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[8], "FUEL TOTAL QUANTITY", "gallons", WT_Unit.GALLON, volumeOpts, formattedNumberGetter, "", {showDefault:val=>false}),
-            new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION[9], {
+            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[7], new WT_NumberUnit(0, WT_Unit.SECOND), "GPS WP ETE", "seconds", timeFormatter, "__:__", {showDefault:val=>val==0}),
+            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[8], new WT_NumberUnit(0, WT_Unit.GALLON), "FUEL TOTAL QUANTITY", "gallons", volumeFormatter, "", {showDefault:val=>false}),
+            new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION[9], new WT_NumberUnit(0, WT_Unit.GALLON), {
                     getCurrentValue: function() {
                         let fuelRemaining = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons");
                         let enr = SimVar.GetSimVarValue("GPS ETE", "seconds") / 3600;
@@ -87,21 +97,21 @@ class WT_NavDataBar extends NavSystemElement {
                         }
                         return fuelRemaining - enr * fuelFlow;
                     }
-                }, WT_Unit.GALLON, volumeOpts, formattedNumberGetter, "", {showDefault:val=>false}),
+                }, volumeFormatter, "", {showDefault:val=>false}),
 
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[10], "GPS GROUND SPEED", "knots", WT_CompoundUnit.KNOT, speedOpts, formattedNumberGetter, "", {showDefault:val=>false}),
-            new WT_NavInfoUTCTime(WT_NavDataBar.INFO_DESCRIPTION[11], {
+            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[10], new WT_NumberUnit(0, WT_CompoundUnit.KNOT), "GPS GROUND SPEED", "knots", speedFormatter, "", {showDefault:val=>false}),
+            new WT_NavInfoUTCTime(WT_NavDataBar.INFO_DESCRIPTION[11], new WT_NumberUnit(0, WT_Unit.SECOND), {
                     getCurrentValue: function() {
                         let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
                         let enr = SimVar.GetSimVarValue("GPS ETE", "seconds");
                         return (currentTime + enr) % (24 * 3600);
                     }
-                }, WT_Unit.SECOND, {timeFormat: WT_FormattedTime.Format.HH_MM}, formattedTimeGetter, "__:__", {showDefault:val=>false}),
+                }, timeFormatter, "__:__", {showDefault:val=>false}),
 
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[12], "AIRSPEED TRUE", "knots", WT_CompoundUnit.KNOT, speedOpts, formattedNumberGetter, "", {showDefault:val=>false}),
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[13], "GPS WP TRACK ANGLE ERROR", "degree", WT_Unit.DEGREE, bearingOpts, formattedNumberGetter, "", {showDefault:val=>false}),
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[14], "GPS GROUND MAGNETIC TRACK", "degree", WT_Unit.DEGREE, bearingOpts, formattedNumberGetter, "", {showDefault:val=>false}),
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[15], "GPS WP CROSS TRK", "meters", WT_Unit.METER, distanceOpts, formattedNumberGetter, "", {showDefault:val=>false}, [WT_Unit.NMILE]),
+            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[12], new WT_NumberUnit(0, WT_CompoundUnit.KNOT), "AIRSPEED TRUE", "knots", speedFormatter, "", {showDefault:val=>false}),
+            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[13], new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS WP TRACK ANGLE ERROR", "degree", bearingFormatter, "", {showDefault:val=>false}),
+            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[14], new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS GROUND MAGNETIC TRACK", "degree", bearingFormatter, "", {showDefault:val=>false}),
+            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[15], new WT_NumberUnit(0, WT_Unit.METER), "GPS WP CROSS TRK", "meters", distanceFormatter, "", {showDefault:val=>false}, [WT_Unit.NMILE]),
         ];
 
         this.dataFields = [];
@@ -162,51 +172,52 @@ WT_NavDataBar.INFO_DESCRIPTION = [
 ];
 
 class WT_NavInfo {
-    constructor(description, valueGetter, unit, numberDisplayOpts, formattedNumberGetter, defaultText, defaultChecker, displayUnits = []) {
+    constructor(description, value, valueGetter, numberFormatter, defaultText, defaultChecker, displayUnits = []) {
         this.shortName = description.shortName;
         this.longName = description.longName;
-        this._value = formattedNumberGetter.getFormattedNumber(unit, numberDisplayOpts);
+        this._value = value;
+        this._numberFormatter = numberFormatter;
         this.valueGetter = valueGetter;
         this.defaultText = defaultText;
         this.defaultChecker = defaultChecker;
         this._displayUnits = Array.from(displayUnits);
         if (this._displayUnits.length == 0) {
-            this._displayUnits[0] = unit;
+            this._displayUnits[0] = value.refUnit;
         }
-        this._value.numberUnit.unit = this._displayUnits[0];
+        this._value.unit = this._displayUnits[0];
     }
 
     get value() {
-        return this._value.numberUnit.number;
+        return this._value.number;
     }
 
     get unit() {
-        return this._value.numberUnit.unit;
+        return this._value.unit;
     }
 
     set unit(val) {
-        this._value.numberUnit.unit = val;
+        this._value.unit = val;
     }
 
     getDisplayNumber() {
-        this._value.numberUnit.refNumber = this.valueGetter.getCurrentValue();
+        this._value.refNumber = this.valueGetter.getCurrentValue();
         let displayText;
-        if (this.defaultChecker.showDefault(this._value.numberUnit.number)) {
+        if (this.defaultChecker.showDefault(this._value.number)) {
             displayText = this.defaultText;
         } else {
-            displayText = this._value.getFormattedNumber();
+            displayText = this._numberFormatter.getFormattedNumber(this._value);
         }
         return displayText;
     }
 
     getDisplayUnit() {
-        return this._value.getFormattedUnit();
+        return this._numberFormatter.getFormattedUnit(this._value);
     }
 }
 
 class WT_NavInfoSimVar extends WT_NavInfo {
-    constructor(description, simVarName, simVarUnit, unit, numberDisplayOpts, formattedNumberGetter, defaultText, defaultChecker, displayUnits = []) {
-        super(description, {getCurrentValue:()=>SimVar.GetSimVarValue(this.simVarName, this.simVarUnit)}, unit, numberDisplayOpts, formattedNumberGetter, defaultText, defaultChecker, displayUnits);
+    constructor(description, value, simVarName, simVarUnit, numberFormatter, defaultText, defaultChecker, displayUnits = []) {
+        super(description, value, {getCurrentValue:()=>SimVar.GetSimVarValue(this.simVarName, this.simVarUnit)}, numberFormatter, defaultText, defaultChecker, displayUnits);
         this.simVarName = simVarName;
         this.simVarUnit = simVarUnit;
     }
