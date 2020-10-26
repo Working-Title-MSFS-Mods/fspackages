@@ -57,23 +57,30 @@ class CJ4_FMC_PerfInitPage {
 		}
         fmc.grossWeight = zFW + fuelQuantityTotal;
         
-        const zfwText = zFW > 12500 ? Math.trunc(zFW * fmc.cj4Weight) + "[yellow]" : Math.trunc(zFW * fmc.cj4Weight);
-        const unitText = fmc.cj4Units == 1 ? "KG[s-text]" : "LB[s-text]";
-        const cargoWeightText = Math.trunc(fmc.cargoWeight * fmc.cj4Weight);
-        const fuelText = Math.trunc(fuelQuantityTotal * fmc.cj4Weight);
-        const grossWeightText = Math.trunc(fmc.grossWeight * fmc.cj4Weight);
-        const bowText = Math.trunc(bow * fmc.cj4Weight);
+        // const zfwText = zFW > 12500 ? Math.trunc(zFW * fmc.cj4Weight) + "[yellow]" : Math.trunc(zFW * fmc.cj4Weight);
+        // const unitText = fmc.cj4Units == 1 ? "KG[s-text]" : "LB[s-text]";
+        // const cargoWeightText = Math.trunc(fmc.cargoWeight * fmc.cj4Weight);
+        // const fuelText = Math.trunc(fuelQuantityTotal * fmc.cj4Weight);
+        // const grossWeightText = Math.trunc(fmc.grossWeight * fmc.cj4Weight);
+        // const bowText = Math.trunc(bow * fmc.cj4Weight);
+
+        const unitText = WT_Units.Weight() + "[s-text]";
+        const zfwText = WT_ConvertUnit.getWeight(zFW).getString() + (zFW > 12500 ? "[yellow]" : "");
+        const cargoWeightText =  WT_ConvertUnit.getWeight(fmc.cargoWeight).Value + "[d-text]" + unitText;
+        const fuelText = WT_ConvertUnit.getWeight(fuelQuantityTotal).Value + "[d-text]" + unitText;
+        const grossWeightText = WT_ConvertUnit.getWeight(fmc.grossWeight).getString();
+        const bowText = WT_ConvertUnit.getWeight(bow).Value + "[d-text]" + unitText;
 
         fmc._templateRenderer.setTemplateRaw([
             [" ACT PERF INIT[blue]","",""],
             [" BOW[blue]", "CRZ ALT[blue] "],
-            [bowText + "[d-text]" + unitText, "FL" + crzAltCell],
+            [bowText, "FL" + crzAltCell],
             [" PASS/WT[blue]"],
             [" " + fmc.paxNumber + paxNumber],
             [" CARGO[blue]", "= ZFW[blue] "],
-            [" " + cargoWeightText + "[d-text] " + unitText, zfwText + " " + unitText],
+            [" " + cargoWeightText, zfwText],
             [" SENSED FUEL[blue]", "= GWT[blue] "],
-            [" " + fuelText + "[d-text] " + unitText, grossWeightText + " " + unitText],
+            [" " + fuelText, grossWeightText],
             ["------------------------[blue]"],
             ["", "TAKEOFF>"],
             ["", ""],

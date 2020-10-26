@@ -19,6 +19,7 @@ class CJ4_MFD extends BaseAirliners {
         this.cj4Units = SimVar.GetSimVarValue("L:WT_CJ4_Units", "Enum");
         this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
         this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters 
+        this.isMetric = WT_ConvertUnit.isMetric();
     }
     get templateID() { return "CJ4_MFD"; }
     get IsGlassCockpit() { return true; }
@@ -55,12 +56,55 @@ class CJ4_MFD extends BaseAirliners {
     }
     disconnectedCallback() {
     }
+
+    onUnitSystemChanged() {
+        // this.systems1 = new CJ4_SystemContainer("System1", "SystemInfos1");
+        // this.systems2 = new CJ4_SystemContainer("System2", "SystemInfos2");
+        // this.systemOverlay = new CJ4_SystemOverlayContainer("SystemOverlay", "SystemOverlay");
+        // this.map = new CJ4_MapContainer("Map", "Map");
+        // this.mapOverlay = new CJ4_MapOverlayContainer("MapInfos", "MapOverlay");
+        // //this.fms = new CJ4_FMSContainer("Fms", "FMSInfos");
+        // this.checklist = new CJ4_Checklist_Container("Checklist", "Checklist");
+        // this.passengerBrief = new CJ4_PassengerBrief_Container("PassengerBrief", "PassengerBrief");
+        // this.navBar = new CJ4_NavBarContainer("Nav", "NavBar");
+        // this.popup = new CJ4_PopupMenuContainer("Menu", "PopupMenu");      
+
+        this.IndependentsElements = [];
+        this.systems1 = new CJ4_SystemContainer("System1", "SystemInfos1");
+        this.systems2 = new CJ4_SystemContainer("System2", "SystemInfos2");
+        this.systemOverlay = new CJ4_SystemOverlayContainer("SystemOverlay", "SystemOverlay");
+        this.map = new CJ4_MapContainer("Map", "Map");
+        this.mapOverlay = new CJ4_MapOverlayContainer("MapInfos", "MapOverlay");
+        //this.fms = new CJ4_FMSContainer("Fms", "FMSInfos");
+        this.checklist = new CJ4_Checklist_Container("Checklist", "Checklist");
+        this.passengerBrief = new CJ4_PassengerBrief_Container("PassengerBrief", "PassengerBrief");
+        this.navBar = new CJ4_NavBarContainer("Nav", "NavBar");
+        this.popup = new CJ4_PopupMenuContainer("Menu", "PopupMenu");
+        this.addIndependentElementContainer(this.systems1);
+        this.addIndependentElementContainer(this.systems2);
+        this.addIndependentElementContainer(this.systemOverlay);
+        this.addIndependentElementContainer(this.map);
+        this.addIndependentElementContainer(this.mapOverlay);
+        this.addIndependentElementContainer(this.navBar);
+        //this.addIndependentElementContainer(this.fms);
+        this.addIndependentElementContainer(this.checklist);
+        this.addIndependentElementContainer(this.passengerBrief);
+        this.addIndependentElementContainer(this.popup);
+    }
+
     Update() {
         super.Update();
         this.cj4Units = SimVar.GetSimVarValue("L:WT_CJ4_Units", "Enum");
         this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
         this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters 
         if (this.allContainersReady()) {
+
+            // check for unit system change
+            if(WT_ConvertUnit.isMetric() !== this.isMetric) {
+                this.onUnitSystemChanged();
+                return;
+            }
+
             SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
             if (this.modeChangeMask && this.modeChangeTimer >= 0) {
                 this.modeChangeTimer -= this.deltaTime / 1000;

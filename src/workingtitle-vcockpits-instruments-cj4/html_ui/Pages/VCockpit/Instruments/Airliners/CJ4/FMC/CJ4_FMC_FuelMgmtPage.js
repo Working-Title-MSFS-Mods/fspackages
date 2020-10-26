@@ -183,20 +183,26 @@ class CJ4_FMC_FuelMgmtPageTwo {
     render() {
         console.log("Render Fuel2");
 
-        const fuelBurned1Text = this._fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelBurnedLeftDisplay).toFixed(0).padStart(4, " ") + " [d-text]"
-            : this._fuelBurnedLeftDisplay.toString().padStart(4, " ") + " [d-text]";
-        const fuelFlow1Text = this._fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelFlowLeft).toFixed(0).padStart(4, " ") + "[d-text]"
-            : this._fuelFlowLeft.toString().padStart(4, " ") + "[d-text]";
-        const fuelBurned2Text = this._fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelBurnedRightDisplay).toFixed(0).padStart(4, " ") + " [d-text]"
-            : this._fuelBurnedRightDisplay.toString().padStart(4, " ") + " [d-text]";
-        const fuelFlow2Text = this._fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelFlowRight).toFixed(0).padStart(4, " ") + "[d-text]"
-            : this._fuelFlowRight.toString().padStart(4, " ") + "[d-text]";
-        const fuelBurnedTotalText = this._fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._fuelBurnedTotalDisplay).toFixed(0).padStart(4, " ") + " [d-text]"
-            : this._fuelBurnedTotalDisplay.toString().padStart(4, " ") + " [d-text]";
-        const fuelFlowTotalText = this._fmc.cj4Units == 1 ? (this._fmc.cj4Weight * this._totalFuelFlow).toFixed(0).padStart(4, " ") + "[d-text]"
-            : this._totalFuelFlow.toString().padStart(4, " ") + "[d-text]";
-        const fuelBurnedHead = this._fmc.cj4Units == 1 ? "KG  [s-text]" : "LB  [s-text]";
-        const fuelFlowHead = this._fmc.cj4Units == 1 ? "KG/HR[s-text]" : "LB/HR[s-text]";
+        const fuelBurnedLeft = WT_ConvertUnit.getWeight(this._fuelBurnedLeftDisplay);
+        const fuelBurned1Text = fuelBurnedLeft.Value.toFixed(0).padStart(4, " ") + " [d-text]";
+
+        const fuelFlowLeft = WT_ConvertUnit.getFuelFlow(this._fuelFlowLeft);
+        const fuelFlow1Text = fuelFlowLeft.Value.toFixed(0).padStart(4, " ") + "[d-text]";
+
+        const fuelBurnedRight = WT_ConvertUnit.getWeight(this._fuelBurnedRightDisplay);
+        const fuelBurned2Text = fuelBurnedRight.Value.toFixed(0).padStart(4, " ") + " [d-text]";
+
+        const fuelFlowRight = WT_ConvertUnit.getFuelFlow(this._fuelFlowRight);
+        const fuelFlow2Text = fuelFlowRight.Value.toFixed(0).padStart(4, " ") + "[d-text]";
+
+        const fuelBurnedTotal = WT_ConvertUnit.getWeight(this._fuelBurnedTotalDisplay);
+        const fuelBurnedTotalText = fuelBurnedTotal.Value.toFixed(0).padStart(4, " ") + " [d-text]"
+
+        const fuelFlowTotal = WT_ConvertUnit.getFuelFlow(this._totalFuelFlow);
+        const fuelFlowTotalText = fuelFlowTotal.Value.toFixed(0).padStart(4, " ") + "[d-text]";
+        
+        const fuelBurnedHead = WT_Units.Weights() + " [s-text]";
+        const fuelFlowHead = WT_Units.FuelFlow() + "[s-text]";
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "2/3[blue] ", "FUEL MGMT[blue]"],
