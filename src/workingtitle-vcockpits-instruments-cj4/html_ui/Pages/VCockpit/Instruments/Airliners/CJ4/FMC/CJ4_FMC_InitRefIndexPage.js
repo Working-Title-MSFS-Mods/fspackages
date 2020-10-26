@@ -202,7 +202,7 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage32(fmc) { //IDENT
         fmc.clearDisplay();
-        let mtow = fmc.cj4Units == 1 ? "7761 KG" : "17110 LB"
+        const mtow = WT_ConvertUnit.getWeight(1, "17110 LB", "7761 KG").Unit;
         
         fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue]", "IDENT[blue]"],
@@ -387,7 +387,7 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage13(fmc) { //PROG Pg 1
         fmc.clearDisplay();
-        const fuelHeading = fmc.cj4Units == 1 ? " FUEL-KG[s-text blue]" : " FUEL-LB[s-text blue]";
+        const fuelHeading = WT_ConvertUnit.getWeight(1, " FUEL-KG[s-text blue]", " FUEL-LB[s-text blue]").Unit;
 
         fmc.registerPeriodicPageRefresh(() => {
 
@@ -442,12 +442,12 @@ class CJ4_FMC_InitRefIndexPage {
                 //current active waypoint data
                 if (fmc.flightPlanManager.getActiveWaypoint()) {
                     let activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
-                    activeWaypointIdent = new String(fmc.flightPlanManager.getActiveWaypoint().ident);
+                    activeWaypointIdent = new String(activeWaypoint.ident);
                     activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
                     activeWaypointEte = groundSpeed < 50 ? new String("-:--")
                         : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
                     activeWaypointFuel = groundSpeed < 50 ? new String("-----")
-                        : (fuelQuantityTotal - (totalFuelFlow * activeWaypointDist / groundSpeed)) * fmc.cj4Weight;
+                        : WT_ConvertUnit.getWeight(fuelQuantityTotal - (totalFuelFlow * activeWaypointDist / groundSpeed)).Value;
                 }
 
                 //next waypoint data
@@ -458,7 +458,7 @@ class CJ4_FMC_InitRefIndexPage {
                     nextWaypointEte = groundSpeed < 50 ? new String("-:--")
                         : new Date(this.calcETEseconds(nextWaypointDist, groundSpeed) * 1000).toISOString().substr(11, 5);
                     nextWaypointFuel = groundSpeed < 50 ? new String("-----")
-                        : (fuelQuantityTotal - (totalFuelFlow * nextWaypointDist / groundSpeed)) * fmc.cj4Weight;
+                        : WT_ConvertUnit.getWeight(fuelQuantityTotal - (totalFuelFlow * nextWaypointDist / groundSpeed)).Value;
                 }
 
                 //destination data
@@ -479,7 +479,7 @@ class CJ4_FMC_InitRefIndexPage {
                     destinationEte = groundSpeed < 50 || destinationDistance <= 0.1 ? new String("-:--")
                         : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
                     destinationFuel = groundSpeed < 50 ? new String("-----")
-                        : (fuelQuantityTotal - (totalFuelFlow * destinationDistance / groundSpeed)) * fmc.cj4Weight;
+                        : WT_ConvertUnit.getWeight(fuelQuantityTotal - (totalFuelFlow * destinationDistance / groundSpeed)).Value;
                 }
 
                 const prevWaypointDistanceConst = prevWaypointDist >= 100 ? prevWaypointDist.toFixed(0) : prevWaypointDist.toFixed(1);
@@ -692,7 +692,8 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage19(fmc, databaseWaypoint, runwayUnitsReload) { //DATABASE AIRPORT
         fmc.clearDisplay();
 
-        let runwayUnits = runwayUnitsReload === 0 || runwayUnitsReload === 1 ? runwayUnitsReload : fmc.cj4Units;
+        const systemUnits = WT_ConvertUnit.isMetric() ? 1 : 0;
+        let runwayUnits = runwayUnitsReload === 0 || runwayUnitsReload === 1 ? runwayUnitsReload : systemUnits;
         let airportIdent = databaseWaypoint.ident;
         let runways = databaseWaypoint.infos.oneWayRunways;
         let longestRunway = runways[0];
@@ -1152,7 +1153,7 @@ class CJ4_FMC_InitRefIndexPage {
 
                 approachText = approach.name || "RW" + Avionics.Utils.formatRunway(fmc.vfrLandingRunway.designation);
                 let approachRunway = fmc.flightPlanManager.getApproachRunway() || fmc.vfrLandingRunway;
-                rwyThresholdAltText = fmc.cj4Units == 1 ? Math.trunc(approachRunway.elevation) + " M" : Math.trunc(approachRunway.elevation * 3.28) + " FT";
+                rwyThresholdAltText = Math.trunc(approachRunway.elevation * 3.28) + " FT";
                 if (approachText.trim().startsWith("ILS")) {
                     freqText = fmc.flightPlanManager.getApproachNavFrequency().toFixed(2);
                     locTrueBrgText = Math.trunc(approachRunway.direction).toString().padStart(3, "0") + "T";

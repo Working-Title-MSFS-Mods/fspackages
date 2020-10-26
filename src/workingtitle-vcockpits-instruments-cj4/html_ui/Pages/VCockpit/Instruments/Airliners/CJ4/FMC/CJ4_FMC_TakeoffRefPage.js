@@ -15,7 +15,7 @@ class CJ4_FMC_TakeoffRefPage {
         if (fmc.flightPlanManager.getDepartureRunway()) {
             depRunway = fmc.flightPlanManager.getDepartureRunway();
             depRunwayOutput = "RW" + fmc.getRunwayDesignation(depRunway);
-            console.log("depRunwayOutput: " + depRunwayOutput);
+            //console.log("depRunwayOutput: " + depRunwayOutput);
             depRunwayDirection = new Number(depRunway.direction);
             depRunwayElevation = new Number(depRunway.elevation * 3.28);
             depRunwayLength = new Number(depRunway.length);
@@ -66,8 +66,8 @@ class CJ4_FMC_TakeoffRefPage {
         //console.log("Current Runway: " + depRunwayDesignation);
         //console.log("Current Runway Elevation: " + depRunwayElevation);
 
-        const depRunwayLengthText = fmc.cj4Units == 1 ? Math.round(depRunwayLength) + " M[s-text]" : Math.round(fmc.cj4Length * depRunwayLength) + " FT[s-text]";
-        const takeoffQnhText = fmc.cj4Units == 1 ? Math.round(fmc.takeoffQnh * fmc.cj4Qnh) : fmc.takeoffQnh.toFixed(2);
+        const depRunwayLengthText = WT_ConvertUnit.getLength(depRunwayLength).getString(0, " ", "[s-text]");
+        const takeoffQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.takeoffQnh).toFixed(0) : WT_ConvertUnit.getQnh(fmc.takeoffQnh).toFixed(2);
 
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "1/3[blue] ", "TAKEOFF REF[blue]"],
@@ -76,7 +76,7 @@ class CJ4_FMC_TakeoffRefPage {
             [" RWY WIND[blue]", "OAT[blue] "],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", fmc.takeoffOat + "\xB0C"],
             [" RWY LENGTH[blue]", "QNH[blue] "],
-            [Math.round(depRunwayLength) + " FT[s-text]", fmc.takeoffQnh + "[s-text]"],
+            [depRunwayLengthText, takeoffQnhText + "[s-text]"],
             [" RWY SLOPE[blue]", "P ALT[blue] "],
             ["--.-%[s-text]", fmc.takeoffPressAlt + " FT[s-text]"],
             [" RWY COND[blue]"],
@@ -277,11 +277,11 @@ class CJ4_FMC_TakeoffRefPage {
 		return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
 		}
         
-        const towText = tow > 17110 ? formatNumber(tow * fmc.cj4Weight, 5) + "[yellow]" : formatNumber(tow * fmc.cj4Weight, 5);
-        const grossWeightText = formatNumber(fmc.grossWeight * fmc.cj4Weight, 5);
-        const mtowText = formatNumber(mtow * fmc.cj4Weight, 5);
-        const takeoffDistText = fmc.cj4Units == 1 ? formatNumber((fmc.endTakeoffDist / 3.28), 4) : formatNumber(fmc.endTakeoffDist, 4);
-        const depRunwayLengthText = fmc.cj4Units == 1 ? formatNumber((depRunwayLength / 3.28), 4) + " M[s-text]" : formatNumber(depRunwayLength, 4) + " FT[s-text]";
+        const towText = formatNumber(WT_ConvertUnit.getWeight(tow).Value, 5) + (tow > 17110 ? "[yellow]" : "");
+        const grossWeightText = formatNumber(WT_ConvertUnit.getWeight(fmc.grossWeight).Value, 5);
+        const mtowText = formatNumber(WT_ConvertUnit.getWeight(mtow).Value, 5);
+        const takeoffDistText = formatNumber(WT_ConvertUnit.getLength(fmc.endTakeoffDist / 3.28).Value, 4);
+        const depRunwayLengthText = WT_ConvertUnit.getLength(depRunwayLength / 3.28).getString(0, " ", "[s-text]");
 
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "2/3[blue] ", "TAKEOFF REF[blue]"],
@@ -353,8 +353,8 @@ class CJ4_FMC_TakeoffRefPage {
             originIdent = origin.ident;
         }
         let tow = (fmc.grossWeight - 100);
-        const towText = tow > 17110 ? (Math.trunc(fmc.cj4Weight * tow)) + "[yellow]" : Math.trunc(fmc.cj4Weight * tow);
-        const mtowText = fmc.cj4Units == 1 ? "7761 KG" : "17110 LB"
+        const towText = WT_ConvertUnit.getWeight(tow, "", "").getString(0, "") + (tow > 17110 ? "[yellow]" : "");
+        const mtowText = WT_ConvertUnit.isMetric() ? "7761 KG" : "17110 LB";
 
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "3/3[blue] ", "TAKEOFF REF[blue]"],

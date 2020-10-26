@@ -69,16 +69,12 @@ class CJ4_FMC_FuelMgmtPageOne {
     render() {
         console.log("Render Fuel");
 
-        const fuelQuantityTotalText = this._fmc.cj4Units == 1 ? (Math.round(this._fmc.cj4Weight * this._fuelQuantityTotal)).toString().padStart(4, " ") + "[d-text] KG[s-text]"
-            : this._fuelQuantityTotal.toFixed(0).padStart(4, " ") + "[d-text] LB[s-text]";
-        const totalFuelFlowText = this._fmc.cj4Units == 1 ? (Math.round(this._fmc.cj4Weight * this._totalFuelFlow)).toString().padStart(4, " ") + "[d-text] KG/HR[s-text]"
-            : this._totalFuelFlow.toFixed(0).padStart(4, " ") + "[d-text] LB/HR[s-text]";
-        const reserveFuelText = this._fmc.cj4Units == 1 ? (Math.round(this._fmc.cj4Weight * this._fmc.reserveFuel)).toString().padStart(4, " ") + " KG"
-            : this._fmc.reserveFuel.toString().padStart(4, " ") + " LB";
+        const fuelQuantityTotalText = WT_ConvertUnit.getWeight(this._fuelQuantityTotal).toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? "[d-text] KG[s-text]" : "[d-text] LB[s-text]");
+        const totalFuelFlowText = WT_ConvertUnit.getWeight(this._totalFuelFlow).toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? "[d-text] KG/HR[s-text]" : "[d-text] LB/HR[s-text]");
+        const reserveFuelText = WT_ConvertUnit.getWeight(this._fmc.reserveFuel).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? " KG" : " LB");
         const spRangeText = this._spRng == ".----" ? ".----"
-            : this._fmc.cj4Units == 1 ? (this._spRng / this._fmc.cj4Weight).toFixed(2) + "[d-text]NM/KG[s-text]"
+            : WT_ConvertUnit.isMetric() ? (this._spRng / this._fmc.cj4Weight).toFixed(2) + "[d-text]NM/KG[s-text]"
             : this._spRng + "[d-text]NM/LB[s-text]";
-
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/3[blue] ", "FUEL MGMT[blue]"],
@@ -195,14 +191,14 @@ class CJ4_FMC_FuelMgmtPageTwo {
         const fuelFlowRight = WT_ConvertUnit.getFuelFlow(this._fuelFlowRight);
         const fuelFlow2Text = fuelFlowRight.Value.toFixed(0).padStart(4, " ") + "[d-text]";
 
-        const fuelBurnedTotal = WT_ConvertUnit.getWeight(this._fuelBurnedTotalDisplay);
+        const fuelBurnedTotal = WT_ConvertUnit.getWeight(this._fuelBurnedTotalDisplay, "LBS [s-text]", "KGS [s-text]");
         const fuelBurnedTotalText = fuelBurnedTotal.Value.toFixed(0).padStart(4, " ") + " [d-text]"
 
-        const fuelFlowTotal = WT_ConvertUnit.getFuelFlow(this._totalFuelFlow);
+        const fuelFlowTotal = WT_ConvertUnit.getFuelFlow(this._totalFuelFlow, "PPH[s-text]", "KG/H[s-text]");
         const fuelFlowTotalText = fuelFlowTotal.Value.toFixed(0).padStart(4, " ") + "[d-text]";
         
-        const fuelBurnedHead = WT_Units.Weights() + " [s-text]";
-        const fuelFlowHead = WT_Units.FuelFlow() + "[s-text]";
+        const fuelBurnedHead = fuelBurnedTotal.Unit;
+        const fuelFlowHead = fuelFlowTotal.Unit;
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "2/3[blue] ", "FUEL MGMT[blue]"],
@@ -267,11 +263,11 @@ class CJ4_FMC_FuelMgmtPage {
 
     static ShowPage3(fmc) { //FUEL MGMT Page 3
         fmc.clearDisplay();
-        let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
-            + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
+        let totalFuelFlow = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour")
+            + SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
         
-        const fuelFlowTotalText = fmc.cj4Units == 1 ? (fmc.cj4Weight * totalFuelFlow).toFixed(0).padStart(4, " ") + "[d-text] KG/HR[s-text]"
-            : totalFuelFlow.toFixed(0).padStart(4, " ") + "[d-text] LB/HR[s-text]";
+        const fuelFlowTotal = WT_ConvertUnit.getFuelFlow(totalFuelFlow, "PPH[s-text]", "KG/H[s-text]");
+        const fuelFlowTotalText = fuelFlowTotal.Value.toFixed(0) + "[d-text] " + fuelFlowTotal.Unit;
 
         fmc._templateRenderer.setTemplateRaw([
             ["", "3/3[blue]", "PERF TRIP[blue]"],

@@ -67,8 +67,8 @@ class CJ4_FMC_ApproachRefPage {
 
         let selAptValue = destinationIdent ? destinationIdent + "[green]/[white]" + originIdent + "[s-text]" : "----";
 
-        const arrRunwayLengthText = fmc.cj4Units == 1 ? Math.round(arrRunwayLength) + " M[s-text]" : Math.round(fmc.cj4Length * arrRunwayLength) + " FT[s-text]";
-        const landingQnhText = fmc.cj4Units == 1 ? Math.round(fmc.landingQnh * fmc.cj4Qnh) : fmc.landingQnh.toFixed(2);
+        const arrRunwayLengthText = WT_ConvertUnit.getLength(arrRunwayLength).getString(0, " ", "[s-text]");
+        const landingQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.landingQnh).toFixed(0) : WT_ConvertUnit.getQnh(fmc.takeoffQnh).toFixed(2);
 
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "1/3 [blue]", "APPROACH REF[blue]"],
@@ -292,23 +292,21 @@ class CJ4_FMC_ApproachRefPage {
             return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
             }
 
-        const ldgWtText = ldgWt < 10300 ? "-----"
-            : ldgWt > 15660 ? Math.round(ldgWt * fmc.cj4Weight) + "[yellow]"
-            : Math.round(ldgWt * fmc.cj4Weight);
-        const grossWeightText = fmc.cj4Units == 1 ? Math.round(grossWeightValue * fmc.cj4Weight) + "/7103 KG[s-text]" : Math.round(grossWeightValue * fmc.cj4Weight) + "/15660 LB[s-text]";
-        const landingDistText = fmc.cj4Units == 1 ? formatNumber((ldgFieldLength / 3.28), 4) : formatNumber(ldgFieldLength, 4);
-        const arrRunwayLengthText = fmc.cj4Units == 1 ? formatNumber((arrRunwayLength / 3.28), 4) + " M[s-text]" : formatNumber(arrRunwayLength, 4) + " FT[s-text]";
-    
+        const ldgWtText = ldgWt < 10300 ? "-----" : formatNumber(WT_ConvertUnit.getWeight(ldgWt).Value, (WT_ConvertUnit.isMetric() ? 4 : 5)) + (ldgWt > 15660 ? "[yellow]" : "");
+        const grossWeightText = formatNumber(WT_ConvertUnit.getWeight(grossWeightValue).Value, (WT_ConvertUnit.isMetric() ? 4 : 5))  + (WT_ConvertUnit.isMetric() ? "/7103 KG[s-text]" : "/15660 LB[s-text]");
+        const landingDistText = WT_ConvertUnit.isMetric() ? formatNumber((ldgFieldLength / 3.28), 4) : formatNumber(ldgFieldLength, 4);
+        const arrRunwayLengthText = WT_ConvertUnit.getLength(arrRunwayLength / 3.28).getString(0, " ", "[s-text]");
+
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "2/3 [blue]", "APPROACH REF[blue]"],
             [" A/I[blue]"],
             ["OFF[green]/[white]ON[s-text]"],
             ["", "V[d-text blue]REF:[s-text blue] " + vRef.toFixed(0) + "[s-text + " + vspeedColor + "]"],
             [""],
-            [" LW / GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + vApp.toFixed(0) + "[s-text + " + vspeedColor + "]"],
-            [ldgWtText + " / " + grossWeightText],
-            [" LFL / " + arrRunwayOutput + "[blue]"],
-            [landingDistText + " / " + arrRunwayLengthText],
+            [" LW/GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + vApp.toFixed(0) + "[s-text + " + vspeedColor + "]"],
+            [ldgWtText + "/" + grossWeightText],
+            [" LFL/" + arrRunwayOutput + "[blue]"],
+            [landingDistText + "/" + arrRunwayLengthText],
             [" LDG FACTOR[blue]"],
             ["1.0[green]" + "/[white]1.25[s-text]" + "/[white]1.67[s-text]" + "/[white]1.92[s-text]"],
             ["", vspeedSendMsg + " [s-text]"],
@@ -373,16 +371,15 @@ class CJ4_FMC_ApproachRefPage {
         let ldgWt = grossWeightValue - fuelBurn;
 
         const ldgWtText = ldgWt < 10300 ? "-----"
-            : ldgWt > 15660 ? Math.round(ldgWt * fmc.cj4Weight) + "[yellow]"
-            : Math.round(ldgWt * fmc.cj4Weight);
-        
-        const mlwText = fmc.cj4Units == 1 ? "7103 KG" : "15660 LB";
-        const perfLimText = fmc.cj4Units == 1 ? "7059 KG" : "15563 LB";
-        const rwLimText = fmc.cj4Units == 1 ? "7760 KG" : "17110 LB";
+            : WT_ConvertUnit.getWeight(ldgWt, "", "").getString(0, "") + (ldgWt > 15660 ? "[yellow]" : "");
+           
+        const mlwText = WT_ConvertUnit.isMetric() ? "7103 KG" : "15660 LB";
+        const perfLimText = WT_ConvertUnit.isMetric() ? "7059 KG" : "15563 LB";
+        const rwLimText = WT_ConvertUnit.isMetric() ? "7760 KG" : "17110 LB";
 
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "3/3 [blue]", "APPROACH REF[blue]"],
-            [" LW /MLW[blue]"],
+            [" LW/MLW[blue]"],
             [ldgWtText + "/" + mlwText],
             ["", "STRUCTURAL LIMIT [blue]"],
             ["", mlwText],

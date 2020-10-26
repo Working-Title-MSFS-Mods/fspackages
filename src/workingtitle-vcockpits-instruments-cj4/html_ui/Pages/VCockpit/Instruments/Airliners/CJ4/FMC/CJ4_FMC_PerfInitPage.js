@@ -57,19 +57,12 @@ class CJ4_FMC_PerfInitPage {
 		}
         fmc.grossWeight = zFW + fuelQuantityTotal;
         
-        // const zfwText = zFW > 12500 ? Math.trunc(zFW * fmc.cj4Weight) + "[yellow]" : Math.trunc(zFW * fmc.cj4Weight);
-        // const unitText = fmc.cj4Units == 1 ? "KG[s-text]" : "LB[s-text]";
-        // const cargoWeightText = Math.trunc(fmc.cargoWeight * fmc.cj4Weight);
-        // const fuelText = Math.trunc(fuelQuantityTotal * fmc.cj4Weight);
-        // const grossWeightText = Math.trunc(fmc.grossWeight * fmc.cj4Weight);
-        // const bowText = Math.trunc(bow * fmc.cj4Weight);
-
-        const unitText = WT_Units.Weight() + "[s-text]";
-        const zfwText = WT_ConvertUnit.getWeight(zFW).getString() + (zFW > 12500 ? "[yellow]" : "");
-        const cargoWeightText =  WT_ConvertUnit.getWeight(fmc.cargoWeight).Value + "[d-text]" + unitText;
-        const fuelText = WT_ConvertUnit.getWeight(fuelQuantityTotal).Value + "[d-text]" + unitText;
-        const grossWeightText = WT_ConvertUnit.getWeight(fmc.grossWeight).getString();
-        const bowText = WT_ConvertUnit.getWeight(bow).Value + "[d-text]" + unitText;
+        const unitText = WT_ConvertUnit.getWeight(1).Unit + "[s-text]";
+        const zfwText = WT_ConvertUnit.getWeight(zFW).getString(0, "", "[s-text]") + (zFW > 12500 ? "[yellow]" : "");
+        const cargoWeightText =  WT_ConvertUnit.getWeight(fmc.cargoWeight).Value.toFixed(0) + "[d-text]" + unitText;
+        const fuelText = WT_ConvertUnit.getWeight(fuelQuantityTotal).Value.toFixed(0) + "[d-text]" + unitText;
+        const grossWeightText = WT_ConvertUnit.getWeight(fmc.grossWeight).getString(0, "");
+        const bowText = WT_ConvertUnit.getWeight(bow).Value.toFixed(0) + "[d-text]" + unitText;
 
         fmc._templateRenderer.setTemplateRaw([
             [" ACT PERF INIT[blue]","",""],
@@ -92,7 +85,7 @@ class CJ4_FMC_PerfInitPage {
             CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
         fmc.onLeftInput[2] = () => {
-            fmc.cargoWeight = parseInt(fmc.inOut) / fmc.cj4Weight; //ParseInt changes from string to number
+            fmc.cargoWeight = WT_ConvertUnit.setWeight(parseInt(fmc.inOut)); //ParseInt changes from string to number
             fmc.clearUserInput();
             CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
@@ -102,7 +95,7 @@ class CJ4_FMC_PerfInitPage {
 				fmc.paxNumber = 0;
 				fmc.cargoWeight = 0;
 			} else {
-            zFW = parseInt(fmc.inOut) / fmc.cj4Weight;
+            zFW = WT_ConvertUnit.setWeight(parseInt(fmc.inOut));
 			fmc.zFWPilotInput = zFW;
 			fmc.zFWActive = 1;
 			}
@@ -226,16 +219,13 @@ class CJ4_FMC_PerfInitPage {
         }
 
         // Calculate fuel used
-        const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
-
-        let fuelQuantityLeft = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
-        let fuelQuantityRight = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
+        
+        let fuelQuantityLeft = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
+        let fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
         let fuelBurnedLeft = fmc.initialFuelLeft - fuelQuantityLeft;
         let fuelBurnedRight = fmc.initialFuelRight - fuelQuantityRight;
         let fuelBurnedTotal = fuelBurnedRight + fuelBurnedLeft;
-
-        const fuelBurnedDisplay = fmc.cj4Units == 1 ? Math.trunc(fuelBurnedTotal * fmc.cj4Weight) + "KG"
-            : Math.trunc(fuelBurnedTotal) + "LB";
+        const fuelBurnedDisplay = WT_ConvertUnit.getWeight(fuelBurnedTotal).getString(0, "");
 
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "FLIGHT LOG[blue]"],
