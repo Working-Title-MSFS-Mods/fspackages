@@ -961,7 +961,7 @@ class AS3000_TSC_AvionicsMFDFieldsTab {
         let elementHandler = new AS3000_TSC_NavInfoFieldSelectionElementHandler(WT_NavDataBar.INFO_DESCRIPTION, index);
         let context = {
             title: "Select MFD Data Bar Field",
-            subClass: "navDataBarDynamicSelectionListWindow",
+            subclass: "navDataBarDynamicSelectionListWindow",
             closeOnSelect: true,
             callback: this.setFieldInfo.bind(this),
             callbackData: index,
@@ -1010,7 +1010,7 @@ class AS3000_TSC_NavInfoFieldSelectionElementHandler {
         return elem;
     }
 
-    update(elem) {
+    update(index, elem) {
     }
 
     getCurrentIndex() {
@@ -4129,7 +4129,7 @@ class AS3000_TSC_MapSettingsSensorTab extends AS3000_TSC_MapSettingsTab {
 
         let context = {
             title: "Map Terrain Displayed",
-            subClass: "standardDynamicSelectionListWindow",
+            subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
             callback: this.setTerrainMode.bind(this),
             elementConstructor: elementHandler,
@@ -4206,7 +4206,7 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
         let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.AIRSPACE_RANGE_MAX));
         let context = {
             title: "Map Airspace Range",
-            subClass: "standardDynamicSelectionListWindow",
+            subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
             callback: this.setAirspaceRange.bind(this),
             elementConstructor: elementHandler,
@@ -4234,7 +4234,7 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
         let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(this.getAirportTypeRangeValues(index));
         let context = {
             title: this.airportTypeRangeSelectTitles[index],
-            subClass: "standardDynamicSelectionListWindow",
+            subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
             callback: this.setAirportTypeRange.bind(this),
             callbackData: this.airportTypeSimVarRoots[index],
@@ -4271,7 +4271,7 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
         let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.VOR_RANGE_MAX));
         let context = {
             title: "Map VOR Range",
-            subClass: "standardDynamicSelectionListWindow",
+            subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
             callback: this.setVORRange.bind(this),
             elementConstructor: elementHandler,
@@ -4288,7 +4288,7 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
         let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.INT_RANGE_MAX));
         let context = {
             title: "Map INT Range",
-            subClass: "standardDynamicSelectionListWindow",
+            subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
             callback: this.setINTRange.bind(this),
             elementConstructor: elementHandler,
@@ -4305,7 +4305,7 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
         let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.NDB_RANGE_MAX));
         let context = {
             title: "Map NDB Range",
-            subClass: "standardDynamicSelectionListWindow",
+            subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
             callback: this.setNDBRange.bind(this),
             elementConstructor: elementHandler,
@@ -4388,7 +4388,7 @@ class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
         let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(this.getRoadTypeRangeValues(index));
         let context = {
             title: this.roadTypeRangeSelectTitles[index],
-            subClass: "standardDynamicSelectionListWindow",
+            subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
             callback: this.setSettingVar.bind(this),
             callbackData: this.roadTypeSimVarRoots[index],
@@ -4426,7 +4426,7 @@ class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
         let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(this.getCityTypeRangeValues(index));
         let context = {
             title: this.cityTypeRangeSelectTitles[index],
-            subClass: "standardDynamicSelectionListWindow",
+            subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
             callback: this.setSettingVar.bind(this),
             callbackData: this.cityTypeSimVarRoots[index],
@@ -4493,7 +4493,7 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
         let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.ZOOM_RANGES_DEFAULT[AS3000_MapElement.ZOOM_RANGES_DEFAULT.length - 1]));
         let context = {
             title: "Map North Up Above",
-            subClass: "standardDynamicSelectionListWindow",
+            subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
             callback: this.setNorthUpRange.bind(this),
             elementConstructor: elementHandler,
@@ -4521,7 +4521,7 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
         let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(values);
         let context = {
             title: "Map Track Vector",
-            subClass: "standardDynamicSelectionListWindow",
+            subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
             callback: this.setTrackVectorLookahead.bind(this),
             elementConstructor: elementHandler,
