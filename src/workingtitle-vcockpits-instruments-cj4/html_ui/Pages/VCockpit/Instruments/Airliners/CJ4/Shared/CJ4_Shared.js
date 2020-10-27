@@ -3252,7 +3252,7 @@ class CJ4_PopupMenuContainer extends NavSystemElementContainer {
             Utils.RemoveAllChildren(this.root);
             switch (_mode) {
                 case CJ4_PopupMenu.PFD:
-                    this.handler = new CJ4_PopupMenu_PFD(this.root, this.dictionary);
+                    this.handler = new CJ4_PopupMenu_PFD(this.root, this.dictionary, this.gps);
                     break;
                 case CJ4_PopupMenu.REFS:
                     this.handler = new CJ4_PopupMenu_REF(this.root, this.dictionary);
@@ -3312,7 +3312,7 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["AOA"] = 28] = "AOA";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
-    constructor(_root, _dictionary) {
+    constructor(_root, _dictionary, _gps) {
         super();
         this.titleSize = 15;
         this.textSize = 13;
@@ -3321,6 +3321,7 @@ class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
         this.menuTop = 217;
         this.menuWidth = 145;
         this.dictionary = _dictionary;
+        this.gps = _gps;
         this.showMainPage();
     }
     reset() {
@@ -3490,7 +3491,15 @@ class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addPlainItem("DEST ELV", this.textSize, null)
+                let flightPlanManager = this.gps.currFlightPlanManager;
+                if(flightPlanManager.getDestination()){
+                    const destinationElevation = flightPlanManager.getDestination().infos.runways[0].elevation;
+                    this.addDestinationElevationItem(true, destinationElevation.toFixed(0), this.textSize);
+                }
+                else{
+                    this.addDestinationElevationItem(true, undefined, this.textSize);
+                }
+
             }
             this.endSection();
         }
