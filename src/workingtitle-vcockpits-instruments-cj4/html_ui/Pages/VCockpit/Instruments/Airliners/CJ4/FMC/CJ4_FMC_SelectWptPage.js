@@ -65,11 +65,11 @@ class CJ4_FMC_SelectWptPage {
                 rows[4 * i] = [w.ident.padEnd(5, " ") + t + freq + "[d-text]", region + "[d-text]"];
                 rows[4 * i + 1] = ["  " + w.infos.coordinates.toDegreeString() + "[d-text]"];
                 fmc.onLeftInput[i] = () => {
-                    fmc.setMsg("WORKING...");
+                    //fmc.setMsg("WORKING...");
                     callback(w);
                 };
                 fmc.onRightInput[i] = () => {
-                    fmc.setMsg("WORKING...");
+                    //fmc.setMsg("WORKING...");
                     callback(w);
                 };
             }
