@@ -52,6 +52,7 @@ class CJ4_FMC extends FMCMainDisplay {
         SimVar.SetSimVarValue("TRANSPONDER STATE:1", "number", 1);
         this.currentInput = undefined;
         this.previousInput = undefined;
+        this._frameUpdates = 0;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -78,9 +79,6 @@ class CJ4_FMC extends FMCMainDisplay {
                 });
             });
         }
-
-        // TODO should go somewhere else later
-        CJ4_FMC_ModSettingsPage.setPassCabinLights(WTDataStore.get('passCabinLights', CJ4_FMC_ModSettingsPage.LIGHT_MODE.ON));
     }
 
     Init() {
@@ -174,6 +172,10 @@ class CJ4_FMC extends FMCMainDisplay {
         this.updateAutopilot();
         this.adjustFuelConsumption();
         this.updateFlightLog();
+        this.updateCabinLights();
+
+        this._frameUpdates++;
+        if (this._frameUpdates > 64000) this._frameUpdates = 0;
     }
     onInputAircraftSpecific(input) {
         console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
@@ -621,6 +623,18 @@ class CJ4_FMC extends FMCMainDisplay {
             if (activeFPWaypoints[i].infos && temporaryFPWaypoints[i] && activeFPWaypoints[i].icao === temporaryFPWaypoints[i].icao && temporaryFPWaypoints[i].infos) {
                 activeFPWaypoints[i].infos.airwayIn = temporaryFPWaypoints[i].infos.airwayIn;
                 activeFPWaypoints[i].infos.airwayOut = temporaryFPWaypoints[i].infos.airwayOut;
+            }
+        }
+    }
+
+    updateCabinLights() {
+        if (this._frameUpdates % 100 == 0) {
+            // TODO should go somewhere else later
+            let batteryOn = SimVar.GetSimVarValue("ELECTRICAL MASTER BATTERY", "bool");
+            if (!batteryOn) {
+                CJ4_FMC_ModSettingsPage.setPassCabinLights(CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF);
+            } else {
+                CJ4_FMC_ModSettingsPage.setPassCabinLights(WTDataStore.get('passCabinLights', CJ4_FMC_ModSettingsPage.LIGHT_MODE.ON));
             }
         }
     }
