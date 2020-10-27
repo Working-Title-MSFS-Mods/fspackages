@@ -134,18 +134,33 @@ class CJ4_PFD extends BaseAirliners {
                     this.radioNav.setRADIONAVSource(NavSource.VOR1);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
                     this.mapNavigationSource = 1;
+
+                    const apOnGPS = SimVar.GetSimVarValue('GPS DRIVES NAV1', 'Bool');
+                    if (apOnGPS) {
+                        SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0)
+                            .then(() => SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 1));
+                    }
+
                     this.onModeChanged();
                 }
                 else if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1) {
                     this.radioNav.setRADIONAVSource(NavSource.VOR2);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
                     this.mapNavigationSource = 2;
+
+                    SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 2);
                     this.onModeChanged();
                 }
                 else if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 2) {
                     this.radioNav.setRADIONAVSource(NavSource.GPS);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
                     this.mapNavigationSource = 0;
+
+                    const apOnGPS = SimVar.GetSimVarValue('GPS DRIVES NAV1', 'Bool');
+                    if (!apOnGPS) {
+                        SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0)
+                    }
+
                     this.onModeChanged();
                 }
                 break;

@@ -79,7 +79,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     let dot = document.createElementNS(Avionics.SVG.NS, "rect");
                     dot.setAttribute("width", "16");
                     dot.setAttribute("height", "6");
-                    // dot.setAttribute("r", 5);
+                    dot.setAttribute("id", "weather_radar_bug");
                     dot.setAttribute("fill", "#36c8d2");
                     dot.setAttribute("fill-opacity", "1");
                     dot.setAttribute("stroke", "blue");
