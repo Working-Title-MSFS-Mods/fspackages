@@ -54,7 +54,7 @@ private:
 	{
 		printf("Registering throttle events...\r\n");
 
-		SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottleSet, "AXIS_THROTTLE_SET");
+		SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottleSet, "THROTTLE_AXIS_SET_EX1");
 		SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottle1Set, "AXIS_THROTTLE1_SET");
 		SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::DecreaseThrottle, "INCREASE_THROTTLE");
 		SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::IncreaseThrottle, "DECREASE_THROTTLE");
