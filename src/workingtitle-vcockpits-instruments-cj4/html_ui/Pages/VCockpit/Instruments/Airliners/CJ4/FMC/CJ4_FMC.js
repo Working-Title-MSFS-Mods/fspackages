@@ -50,11 +50,6 @@ class CJ4_FMC extends FMCMainDisplay {
         this.selectedWaypoint = undefined;
         this.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
         SimVar.SetSimVarValue("TRANSPONDER STATE:1", "Enum", 1);
-        this.cj4Units = WTDataStore.get('WT_CJ4_Units', 0);
-        SimVar.SetSimVarValue("L:WT_CJ4_Units", "Enum", this.cj4Units); //0 = imperial; 1 = metric
-        this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
-        this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters
-        this.cj4Qnh = this.cj4Units == 1 ? 33.864 : 1; //default sim value for pressure is inHG
     }
     get templateID() { return "CJ4_FMC"; }
 
