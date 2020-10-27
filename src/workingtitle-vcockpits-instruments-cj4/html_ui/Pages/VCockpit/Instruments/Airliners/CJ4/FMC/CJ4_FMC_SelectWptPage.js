@@ -14,7 +14,6 @@ class CJ4_FMC_SelectWptPage {
             [""],
             [""],
             [""],
-            [""],
             [""]
         ];
         //console.log("search ident: " + ident);
@@ -42,8 +41,8 @@ class CJ4_FMC_SelectWptPage {
         });
         //console.log("after sort: " + waypoints[0].icao + ", " + waypoints[1].icao + ", " + waypoints[2].icao + ", " + waypoints[3].icao);
 
-        for (let i = 0; i < 5; i++) {
-            let w = waypointsFiltered[i + 5 * page];
+        for (let i = 0; i < 3; i++) {
+            let w = waypointsFiltered[i + 3 * page];
             if (w) {
                 let t = "";
                 let freq = "      ";
@@ -63,8 +62,8 @@ class CJ4_FMC_SelectWptPage {
                     t = " AIRPORT ";
                     region = w.infos.region;
                 }
-                rows[2 * i] = [w.ident.padEnd(5, " ") + t + freq + "[d-text]", region + "[d-text]"];
-                rows[2 * i + 1] = ["  " + w.infos.coordinates.toDegreeString() + "[d-text]"];
+                rows[4 * i] = [w.ident.padEnd(5, " ") + t + freq + "[d-text]", region + "[d-text]"];
+                rows[4 * i + 1] = ["  " + w.infos.coordinates.toDegreeString() + "[d-text]"];
                 fmc.onLeftInput[i] = () => {
                     fmc.setMsg("WORKING...");
                     callback(w);
@@ -76,7 +75,8 @@ class CJ4_FMC_SelectWptPage {
             }
         }
         fmc._templateRenderer.setTemplateRaw([
-            ["       SELECT WPT[blue]", (page + 1).toFixed(0) + "/" + Math.ceil((waypointsFiltered.length / 5)).toFixed(0) + "[blue] "],
+            ["       SELECT WPT[blue]", (page + 1).toFixed(0) + "/" + Math.ceil((waypointsFiltered.length / 3)).toFixed(0) + "[blue] "],
+            [""],
             ...rows,
             [""]
         ]);
