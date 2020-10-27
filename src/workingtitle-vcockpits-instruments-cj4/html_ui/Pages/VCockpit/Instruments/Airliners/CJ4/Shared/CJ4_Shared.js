@@ -2711,6 +2711,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
                 break;
         }
         this.map.instrument.zoomRanges = this.getAdaptiveRanges();
+        this.setWxRadarBug();
     }
     showTerrain(_value) {
         if (this.isTerrainVisible != _value) {
@@ -2725,16 +2726,13 @@ class CJ4_MapContainer extends NavSystemElementContainer {
     showWeather(_value) {
         if (this.isWeatherVisible != _value) {
             this.isWeatherVisible = _value;
-            let radarbug = document.querySelector("#weather_radar_bug");
             if (this.isWeatherVisible) {
                 this.showTerrain(false);
                 this.showGwx(false);
-                radarbug.style.display = "";
                 this.map.instrument.showWeatherWithGPS(EWeatherRadar.HORIZONTAL, Math.PI * 2.0);
                 this.map.instrument.setBingMapStyle("8%", "0%", "100%", "80%");
             }
             else {
-                radarbug.style.display = "none";
                 this.map.instrument.showWeather(EWeatherRadar.OFF);
             }
             this.refreshLayout();
@@ -2824,7 +2822,14 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             ranges[i] *= this.zoomFactor;
         return ranges;
     }
+    setWxRadarBug() {
+        let radarbug = document.querySelector("#weather_radar_bug");
+        if (radarbug) {
+            radarbug.style.display = (this.isWeatherVisible) ? "" : "none";
+        }
+    }
     refreshLayout() {
+        this.setWxRadarBug();
         if (this.isTerrainVisible || this.isGwxVisible) {
             this.map.instrument.mapConfigId = 1;
             this.map.instrument.bingMapRef = EBingReference.SEA;

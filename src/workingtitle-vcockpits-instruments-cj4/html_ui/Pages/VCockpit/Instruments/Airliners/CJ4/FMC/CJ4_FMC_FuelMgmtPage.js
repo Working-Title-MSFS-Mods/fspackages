@@ -258,6 +258,7 @@ class CJ4_FMC_FuelMgmtPage {
         // register refresh and bind to update which will only render on changes
         fmc.registerPeriodicPageRefresh(() => {
             FuelMgmtPage2Instance.update();
+            return true;
         }, 1000, true);
     }
 

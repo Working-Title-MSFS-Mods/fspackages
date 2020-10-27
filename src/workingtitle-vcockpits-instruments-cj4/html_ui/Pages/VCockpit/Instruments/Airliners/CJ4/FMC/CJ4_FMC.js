@@ -16,9 +16,9 @@ class CJ4_FMC extends FMCMainDisplay {
         this.paxNumber = 0;
         this.cargoWeight = 0;
         this.basicOperatingWeight = 10280;
-    	this.grossWeight = 10280;
-		this.zFWActive = 0;
-		this.zFWPilotInput = 0;
+        this.grossWeight = 10280;
+        this.zFWActive = 0;
+        this.zFWPilotInput = 0;
         this.takeoffOat = "□□□";
         this.landingOat = "□□□";
         this.takeoffQnh = "□□.□□";
@@ -49,7 +49,9 @@ class CJ4_FMC extends FMCMainDisplay {
         this.deletedVfrLandingRunway = undefined;
         this.selectedWaypoint = undefined;
         this.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
-        SimVar.SetSimVarValue("TRANSPONDER STATE:1", "Enum", 1);
+        SimVar.SetSimVarValue("TRANSPONDER STATE:1", "number", 1);
+        this.currentInput = undefined;
+        this.previousInput = undefined;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -76,7 +78,11 @@ class CJ4_FMC extends FMCMainDisplay {
                 });
             });
         }
+
+        // TODO should go somewhere else later
+        CJ4_FMC_ModSettingsPage.setPassCabinLights(WTDataStore.get('passCabinLights', CJ4_FMC_ModSettingsPage.LIGHT_MODE.ON));
     }
+
     Init() {
         super.Init();
 
@@ -175,6 +181,8 @@ class CJ4_FMC extends FMCMainDisplay {
     }
     onInputAircraftSpecific(input) {
         console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
+        this.previousInput = this.currentInput;
+        this.currentInput = input;
         if (input === "LEGS") {
             if (this.onLegs) {
                 this.onLegs();
@@ -228,6 +236,50 @@ class CJ4_FMC extends FMCMainDisplay {
         }
 
         return false;
+    }
+
+    //Overwrite of FMCMainDisplay to disable always settings nav hold to GPS mode
+    updateRadioNavState() {
+        if (this.isPrimary) {
+            let radioNavOn = this.isRadioNavActive();
+            if (radioNavOn != this._radioNavOn) {
+                this._radioNavOn = radioNavOn;
+                if (!radioNavOn)
+                    this.initRadioNav(false);
+                if (this.refreshPageCallback)
+                    this.refreshPageCallback();
+            }
+            let apNavIndex = 1;
+            let gpsDriven = true;
+            let apprHold = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool");
+            if (apprHold) {
+                if (this.canSwitchToNav()) {
+                    let navid = 0;
+                    let ils = this.radioNav.getBestILSBeacon();
+                    if (ils.id > 0) {
+                        navid = ils.id;
+                    }
+                    else {
+                        let vor = this.radioNav.getBestVORBeacon();
+                        if (vor.id > 0) {
+                            navid = vor.id;
+                        }
+                    }
+                    if (navid > 0) {
+                        apNavIndex = navid;
+                        let hasFlightplan = Simplane.getAutopilotGPSActive();
+                        let apprCaptured = Simplane.getAutoPilotAPPRCaptured();
+                        if (apprCaptured || !hasFlightplan) {
+                            gpsDriven = false;
+                        }
+                    }
+                }
+            }
+            if (apNavIndex != this._apNavIndex) {
+                SimVar.SetSimVarValue("K:AP_NAV_SELECT_SET", "number", apNavIndex);
+                this._apNavIndex = apNavIndex;
+            }
+        }
     }
 
     setMsg(value = "") {
@@ -546,11 +598,11 @@ class CJ4_FMC extends FMCMainDisplay {
                 if (pphLeft > 0) {
                     leftCorrectionFactor = leftFuelFlow / pphLeft;
                 }
-                
+
                 if (pphRight > 0) {
                     rightCorrectionFactor = rightFuelFlow / pphRight;
                 }
-                
+
                 const newLeftFuelQty = this.previousLeftFuelQty - (leftFuelUsed * leftCorrectionFactor);
                 const newRightFuelQty = this.previousRightFuelQty - (rightFuelUsed * rightCorrectionFactor);
 
@@ -566,7 +618,7 @@ class CJ4_FMC extends FMCMainDisplay {
             }
         }
     }
-    
+
     // Copy airway selections from temporary to active flightplan
     copyAirwaySelections() {
         let temporaryFPWaypoints = this.flightPlanManager.getWaypoints(1);
@@ -578,8 +630,8 @@ class CJ4_FMC extends FMCMainDisplay {
             }
         }
     }
-    
-    updateFlightLog(){
+
+    updateFlightLog() {
         const takeOffTime = SimVar.GetSimVarValue("L:TAKEOFF_TIME", "seconds");
         const landingTime = SimVar.GetSimVarValue("L:LANDING_TIME", "seconds");
         const onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
@@ -587,16 +639,16 @@ class CJ4_FMC extends FMCMainDisplay {
         const zuluTime = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
 
         // Update takeoff time
-        if(!takeOffTime){
-            if (!onGround && altitude > 15){
-                if(zuluTime){
+        if (!takeOffTime) {
+            if (!onGround && altitude > 15) {
+                if (zuluTime) {
                     SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
                 }
             }
         }
-        else if (takeOffTime && takeOffTime > 0 && landingTime && landingTime > 0){
-            if (!onGround && altitude > 15){
-                if(zuluTime){
+        else if (takeOffTime && takeOffTime > 0 && landingTime && landingTime > 0) {
+            if (!onGround && altitude > 15) {
+                if (zuluTime) {
                     SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
                 }
                 SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", 0); // Reset landing time
@@ -604,16 +656,16 @@ class CJ4_FMC extends FMCMainDisplay {
             }
         }
 
-        
-        if(takeOffTime && takeOffTime > 0){
+
+        if (takeOffTime && takeOffTime > 0) {
             // Update landing time
-            if(onGround && (!landingTime || landingTime == 0)){
-                if(zuluTime){
+            if (onGround && (!landingTime || landingTime == 0)) {
+                if (zuluTime) {
                     SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", zuluTime);
                 }
             }
             // Update enroute time
-            if(!landingTime || landingTime == 0){
+            if (!landingTime || landingTime == 0) {
                 const enrouteTime = zuluTime - takeOffTime;
                 SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", enrouteTime);
             }

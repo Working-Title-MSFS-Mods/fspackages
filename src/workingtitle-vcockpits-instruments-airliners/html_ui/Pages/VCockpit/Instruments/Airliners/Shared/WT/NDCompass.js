@@ -211,29 +211,29 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     {
                         this.courseColor = "";
                         if (this.navigationMode == Jet_NDCompass_Navigation.ILS) {
-                            this.courseColor = "#ff00ff";
+                            this.courseColor = "#11d011";
                         }
                         else if (this.navigationMode == Jet_NDCompass_Navigation.VOR) {
-                            this.courseColor = "#00ffff";
+                            this.courseColor = "#11d011";
                         }
                         this.courseTO = document.createElementNS(Avionics.SVG.NS, "path");
-                        this.courseTO.setAttribute("d", "M46 110 l8 0 l0 25 l-4 5 l-4 -5 l0 -25 Z");
-                        this.courseTO.setAttribute("fill", "none");
+                        this.courseTO.setAttribute("d", "M 35.5 150 l 30.5 0 l -15.25 28 l -15.25 -28 Z");
+                        //this.courseTO.setAttribute("fill", "none");
                         this.courseTO.setAttribute("transform", "rotate(180 50 50)");
                         this.courseTO.setAttribute("stroke", this.courseColor.toString());
-                        this.courseTO.setAttribute("stroke-width", "1");
+                        this.courseTO.setAttribute("stroke-width", ".5");
                         this.course.appendChild(this.courseTO);
                         this.courseTOLine = document.createElementNS(Avionics.SVG.NS, "path");
-                        this.courseTOLine.setAttribute("d", "M50 140 l0 " + (circleRadius - 90) + " Z");
+                        this.courseTOLine.setAttribute("d", "M 50 342 l -11 0 l 11 41 l 11 -41 l -11 0 l 0 -121 Z");
                         this.courseTOLine.setAttribute("transform", "rotate(180 50 50)");
                         this.courseTOLine.setAttribute("stroke", this.courseColor.toString());
-                        this.courseTOLine.setAttribute("stroke-width", "1");
+                        this.courseTOLine.setAttribute("stroke-width", "6");
                         this.course.appendChild(this.courseTOLine);
                         this.courseDeviation = document.createElementNS(Avionics.SVG.NS, "rect");
                         this.courseDeviation.setAttribute("x", "45");
-                        this.courseDeviation.setAttribute("y", "-10");
-                        this.courseDeviation.setAttribute("width", "10");
-                        this.courseDeviation.setAttribute("height", "125");
+                        this.courseDeviation.setAttribute("y", "-119");
+                        this.courseDeviation.setAttribute("width", "6");
+                        this.courseDeviation.setAttribute("height", "338");
                         this.courseDeviation.setAttribute("fill", this.courseColor.toString());
                         this.course.appendChild(this.courseDeviation);
                         this.courseFROM = document.createElementNS(Avionics.SVG.NS, "path");
@@ -244,11 +244,11 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         this.courseFROM.setAttribute("stroke-width", "1");
                         this.course.appendChild(this.courseFROM);
                         this.courseFROMLine = document.createElementNS(Avionics.SVG.NS, "path");
-                        this.courseFROMLine.setAttribute("d", "M50 -35 l0 " + (-circleRadius + 85) + " Z");
+                        this.courseFROMLine.setAttribute("d", "M50 -121 l0 -178 Z");
                         this.courseFROMLine.setAttribute("fill", "none");
                         this.courseFROMLine.setAttribute("transform", "rotate(180 50 50)");
                         this.courseFROMLine.setAttribute("stroke", this.courseColor.toString());
-                        this.courseFROMLine.setAttribute("stroke-width", "1");
+                        this.courseFROMLine.setAttribute("stroke-width", "6");
                         this.course.appendChild(this.courseFROMLine);
                         let circlePosition = [-80, -40, 40, 80];
                         for (let i = 0; i < circlePosition.length; i++) {
@@ -2529,13 +2529,13 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 {
                     this.courseColor = "";
                     if (this.navigationMode == Jet_NDCompass_Navigation.ILS) {
-                        this.courseColor = "#ff00ff";
+                        this.courseColor = "#11d011";
                     }
                     else if (this.navigationMode == Jet_NDCompass_Navigation.VOR) {
-                        this.courseColor = "#00ffff";
+                        this.courseColor = "#11d011";
                     }
                     this.courseTO = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.courseTO.setAttribute("d", "M497 666 L503 666 L503 696 L523 696 L523 702 L503 702 L503 826 L497 826 L497 702 L477 702 L477 696 L497 696 L497 666 Z");
+                    this.courseTO.setAttribute("d", "M 496 670 L 503 670 L 503 779 L 516 779 L 500 828 L 483 779 L 496 779 L 496 670 Z");
                     this.courseTO.setAttribute("fill", "none");
                     this.courseTO.setAttribute("transform", "rotate(180 500 500)");
                     this.courseTO.setAttribute("stroke", this.courseColor.toString());
@@ -2544,15 +2544,15 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     this.courseDeviation = document.createElementNS(Avionics.SVG.NS, "rect");
                     this.courseDeviation.setAttribute("x", "495");
                     this.courseDeviation.setAttribute("y", "333");
-                    this.courseDeviation.setAttribute("width", "10");
+                    this.courseDeviation.setAttribute("width", "8");
                     this.courseDeviation.setAttribute("height", "333");
                     this.courseDeviation.setAttribute("fill", this.courseColor.toString());
                     this.course.appendChild(this.courseDeviation);
                     this.courseFROM = document.createElementNS(Avionics.SVG.NS, "rect");
                     this.courseFROM.setAttribute("x", "497");
                     this.courseFROM.setAttribute("y", "166");
-                    this.courseFROM.setAttribute("width", "6");
-                    this.courseFROM.setAttribute("height", "166");
+                    this.courseFROM.setAttribute("width", "8");
+                    this.courseFROM.setAttribute("height", "163");
                     this.courseFROM.setAttribute("fill", "none");
                     this.courseFROM.setAttribute("transform", "rotate(180 500 500)");
                     this.courseFROM.setAttribute("stroke", this.courseColor.toString());
