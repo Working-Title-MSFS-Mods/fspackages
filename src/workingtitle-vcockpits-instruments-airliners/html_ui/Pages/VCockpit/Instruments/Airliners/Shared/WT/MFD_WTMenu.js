@@ -1253,22 +1253,11 @@ var WTMenu;
         get isOnMainPage() {
             return this._isOnMainPage;
         }
-        addPlainItem(_title, _textSize, _value) {
+        addDestinationElevationItem(_FMSSet = true, _elevation, _textSize) {
             let enabled = true;
-            let tick = document.createElementNS(Avionics.SVG.NS, "text");
-            tick.textContent = "-";
-            tick.setAttribute("x", (this.columnLeft1 + this.textMarginX).toString());
-            tick.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            tick.setAttribute("fill", "white");
-            tick.setAttribute("visibility", "hidden");
-            tick.setAttribute("font-size", _textSize.toString());
-            tick.setAttribute("font-family", this.textStyle);
-            tick.setAttribute("alignment-baseline", "central");
-            this.sectionRoot.appendChild(tick);
-
             let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _title;
-            text.setAttribute("x", (this.columnLeft2 - 7).toString());
+            text.textContent = "DEST ELEV";
+            text.setAttribute("x", (this.columnLeft1 + 7).toString());
             text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
             text.setAttribute("font-size", _textSize.toString());
@@ -1277,22 +1266,32 @@ var WTMenu;
             this.sectionRoot.appendChild(text);
 
             let value = document.createElementNS(Avionics.SVG.NS, "text");
-            value.textContent = _title;
-            value.setAttribute("x", (this.columnLeft3 - 7).toString());
+            value.textContent = "FMS";
+            value.setAttribute("x", (this.columnLeft3).toString());
             value.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            value.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
+            value.setAttribute("fill", (_FMSSet) ? "magenta" : "cyan");
             value.setAttribute("font-size", _textSize.toString());
             value.setAttribute("font-family", this.textStyle);
             value.setAttribute("alignment-baseline", "central");
             this.sectionRoot.appendChild(value);
 
-            let item = new Menu_Item(Menu_ItemType.TITLE, this.section, this.section.endY, this.lineHeight);
-            item.checkboxTickElem = tick;
+            let feet = document.createElementNS(Avionics.SVG.NS, "text");
+            feet.textContent = (_elevation) ? _elevation + " FT" : "-- FT";
+            feet.setAttribute("x", (this.columnLeft3).toString());
+            feet.setAttribute("y", (this.section.endY + ((this.lineHeight * 0.5) + 15)).toString());
+            feet.setAttribute("fill", "white");
+            feet.setAttribute("font-size", _textSize.toString());
+            feet.setAttribute("font-family", this.textStyle);
+            feet.setAttribute("alignment-baseline", "central");
+            this.sectionRoot.appendChild(feet);
+
+            let item = new Menu_Item(Menu_ItemType.TITLE, this.section, this.section.endY, this.lineHeight * 2);
             item.text = text;
             item.value = value;
+            item.feet = feet;
             this.section.items.push(item);
             this.registerWithMouse(item);
-            this.section.endY += this.lineHeight;
+            this.section.endY += this.lineHeight * 2;
         }
     }
 
