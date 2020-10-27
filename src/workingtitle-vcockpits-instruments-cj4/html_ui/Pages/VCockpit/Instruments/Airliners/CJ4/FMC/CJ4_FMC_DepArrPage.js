@@ -271,8 +271,11 @@ class CJ4_FMC_DepArrPage {
             }
         }
 
-        let rowsCount = Math.max(displayableRunwaysCount, displayableDeparturesCount);
-        let pageCount = Math.max(Math.ceil(rowsCount / 5), 1);
+        let rowsCountOf5RowsPerPageData = Math.max(displayableRunwaysCount, displayableDeparturesCount);
+        let rowsCountOf4RowsPerPageData = displayableDpEnrouteTransitionsCount;
+        let pageCountOf5RowsPerPageData = Math.ceil(rowsCountOf5RowsPerPageData / 5);
+        let pageCountOf4RowsPerPageData = Math.ceil(rowsCountOf4RowsPerPageData / 4);
+        let pageCount = Math.max(Math.max(pageCountOf5RowsPerPageData, pageCountOf4RowsPerPageData), 1);
 
 
         //start of CWB EXEC handling
@@ -438,12 +441,10 @@ class CJ4_FMC_DepArrPage {
                     fmc.deletedVfrLandingRunway = selectedRunway;
                     fmc.vfrLandingRunway = undefined;
                     fmc.modVfrRunway = true;
-                    if (selectedArrival) {
-                        fmc.flightPlanManager.setArrivalRunwayIndex(-1, () => {
-                            fmc.setMsg();
-                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
-                        });
-                    }
+                    fmc.flightPlanManager.setArrivalRunwayIndex(-1, () => {
+                        fmc.setMsg();
+                        CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
+                    });
                 });
             };
         }
@@ -461,7 +462,17 @@ class CJ4_FMC_DepArrPage {
                 }
                 else {
                     for (let j = 0; j < selectedArrival.runwayTransitions.length; j++) {
-                        if (selectedArrival.runwayTransitions[j].name.replace("RW", "") === approach.runway.trim()) {
+                        let matchingApproachRunways;
+                        if (approach.runway.endsWith(" ")) {
+                            // Approach runways ending with a space are wildcard approches: They are compatible with all matching arrivals 
+                            // e.g. approach runway "4 " is compatible with arrival runwayTransitions "RW4", "RW4L", "RW4R" and "RW4C"
+                            matchingApproachRunways = [approach.runway.trim(), approach.runway.trim() + "L", approach.runway.trim() + "R", approach.runway.trim() + "C"];
+                        } else {
+                            // Specific Approach runways not ending with a space are compatible only with that specific arrival
+                            // e.g. approach runway "4L" is compatible only with arrival runwayTransition "RW4L"
+                            matchingApproachRunways = [approach.runway];
+                        }
+                        if (matchingApproachRunways.includes(selectedArrival.runwayTransitions[j].name.replace("RW", ""))) {
                             appendRow = true;
                             displayableApproachesCount++;
                             break;
@@ -487,6 +498,7 @@ class CJ4_FMC_DepArrPage {
                     lastApproachIndex = i;
                 } 
             }
+            let firstMatchingRunway = true;
             for (let k = 0; k < runways.length; k++) {
                 let runway = runways[k];
                 let appendRow = false;
@@ -505,8 +517,8 @@ class CJ4_FMC_DepArrPage {
                     }
                 }
                 if (appendRow) {
-                    displayableApproachesCount++;
-                    if (k == 0) {
+                    displayableRunwaysCount++;
+                    if (firstMatchingRunway) {
                         lastApproachPage = pageIndex + 1;
                     }
                     if (rowIndex === 5) {
@@ -516,11 +528,13 @@ class CJ4_FMC_DepArrPage {
                     }
                     approachPages[pageIndex][rowIndex] = {
                         text: "RW" + Avionics.Utils.formatRunway(runway.designation).trim() + "[s-text]",
-                        approachIndex: k + approaches.length
+                        approachIndex: k + approaches.length,
+                        runwayIndex: k
                     };
-                    if (k == 0) {
+                    if (firstMatchingRunway) {
                         firstRunwayPage = pageIndex + 1;
                     }
+                    firstMatchingRunway = false;
                     rowIndex++;
                 } 
             }
@@ -547,19 +561,19 @@ class CJ4_FMC_DepArrPage {
                                     if (arrivalRunwayIndex >= -1) {
                                         fmc.flightPlanManager.setArrivalRunwayIndex(arrivalRunwayIndex, () => {
                                             fmc.setMsg();
-                                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
+                                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                                         });
                                     }
                                 }
                             }
                             fmc.setMsg();
-                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
+                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                         });
                     }
                     else if (approachIndex > lastApproachIndex) {
                         console.log("approachIndex > lastApproachIndex");
                         fmc.setMsg("Working...");
-                        let runwayApproachIndex = (approachPages[displayedPageIndex][i].approachIndex) - lastApproachIndex - 1;
+                        let runwayApproachIndex = approachPages[displayedPageIndex][i].runwayIndex;
                         console.log("approachIndex " + approachIndex);
                         fmc.ensureCurrentFlightPlanIsTemporary(() => {
                             console.log("starting to set vfrLandingRunway");
@@ -572,15 +586,16 @@ class CJ4_FMC_DepArrPage {
                                         return t.name.indexOf("RW" + landingRunway.designation) != -1;
                                     });
                                     if (arrivalRunwayIndex >= -1) {
-                                        return this.flightPlanManager.setArrivalRunwayIndex(arrivalRunwayIndex, () => {
-                                            return callback(true);
+                                        fmc.flightPlanManager.setArrivalRunwayIndex(arrivalRunwayIndex, () => {
+                                            fmc.setMsg();
+                                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                                         });
                                     }
                                 }
                             }
                             console.log("completed setting vfrLandingRunway");
                             fmc.setMsg();
-                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
+                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                             });
                     }
 
@@ -652,10 +667,18 @@ class CJ4_FMC_DepArrPage {
                 }
                 else {
                     for (let j = 0; j < arrival.runwayTransitions.length; j++) {
-                        if (selectedApproach && arrival.runwayTransitions[j].name.replace("RW", "") == selectedApproach.runway.trim()) {
-                            appendRow = true;
-                            displayableArrivalsCount++;
-                            break;
+                        if (selectedApproach) {
+                            let matchingApproachRunways;
+                            if (selectedApproach.runway.endsWith(" ")) {
+                                matchingApproachRunways = [selectedApproach.runway.trim(), selectedApproach.runway.trim() + "L", selectedApproach.runway.trim() + "R", selectedApproach.runway.trim() + "C"];
+                            } else {
+                                matchingApproachRunways = [selectedApproach.runway];
+                            }                        
+                            if (matchingApproachRunways.includes(arrival.runwayTransitions[j].name.replace("RW", ""))) {
+                                appendRow = true;
+                                displayableArrivalsCount++;
+                                break;
+                            }
                         }
                         else if (selectedRunway && arrival.runwayTransitions[j].name == "RW" + selectedRunway.designation.trim()) {
                             appendRow = true;
@@ -697,8 +720,11 @@ class CJ4_FMC_DepArrPage {
             }
         }
 
-        let rowsCount = Math.max(Math.max(displayableApproachesCount + displayableRunwaysCount, displayableArrivalsCount), Math.max(displayableTransitionsCount, displayableEnrouteTransitionsCount));
-        let pageCount = Math.max(Math.ceil(rowsCount / 5), 1);
+        let rowsCountOf5RowsPerPageData = Math.max(displayableApproachesCount + displayableRunwaysCount, displayableArrivalsCount);
+        let rowsCountOf4RowsPerPageData = Math.max(displayableTransitionsCount, displayableEnrouteTransitionsCount);
+        let pageCountOf5RowsPerPageData = Math.ceil(rowsCountOf5RowsPerPageData / 5);
+        let pageCountOf4RowsPerPageData = Math.ceil(rowsCountOf4RowsPerPageData / 4);
+        let pageCount = Math.max(Math.max(pageCountOf5RowsPerPageData, pageCountOf4RowsPerPageData), 1);
 
         //start of CWB EXEC handling
         let rsk6Field = "";
