@@ -3215,7 +3215,7 @@ class CJ4_PopupMenuContainer extends NavSystemElementContainer {
                     this.handler = new CJ4_PopupMenu_PFD(this.root, this.dictionary, this.gps);
                     break;
                 case CJ4_PopupMenu.REFS:
-                    this.handler = new CJ4_PopupMenu_REF(this.root, this.dictionary);
+                    this.handler = new CJ4_PopupMenu_REF(this.root, this.dictionary, this.gps);
                     break;
                 case CJ4_PopupMenu.UPPER:
                     this.handler = new CJ4_PopupMenu_UPPER(this.root, this.dictionary);
@@ -3471,7 +3471,7 @@ class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
     }
 }
 class CJ4_PopupMenu_REF extends WTMenu.Popup_Menu_Handler {
-    constructor(_root, _dictionary) {
+    constructor(_root, _dictionary, _gps) {
         super();
         this.titleSize = 15;
         this.textSize = 13;
@@ -3480,6 +3480,7 @@ class CJ4_PopupMenu_REF extends WTMenu.Popup_Menu_Handler {
         this.menuTop = 217;
         this.menuWidth = 145;
         this.dictionary = _dictionary;
+        this.gps = _gps;
         this.showMainPage();
     }
     reset() {
@@ -3494,7 +3495,12 @@ class CJ4_PopupMenu_REF extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("REFS", this.titleSize, 1.0, "blue");
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("REFS", this.titleSize, 1.0, "blue", true);
             }
             this.endSection();
             this.beginSection();
@@ -3508,15 +3514,29 @@ class CJ4_PopupMenu_REF extends WTMenu.Popup_Menu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF]);
                 this.addRange("VAP", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VAP]);
+                this.addRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF]);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("RA/BARO MIN", this.textSize, 0.6);
+                this.addTitle("MINIMUMS", this.textSize, 0.6);
+                this.addRadio("OFF", this.textSize, null)
                 this.addRadioRange("RA", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
                 this.addRadioRange("BARO", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                let flightPlanManager = this.gps.currFlightPlanManager;
+                if(flightPlanManager.getDestination()){
+                    const destinationElevation = flightPlanManager.getDestination().infos.runways[0].elevation;
+                    this.addDestinationElevationItem(true, destinationElevation.toFixed(0), this.textSize);
+                }
+                else{
+                    this.addDestinationElevationItem(true, undefined, this.textSize);
+                }
+
             }
             this.endSection();
         }
