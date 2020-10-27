@@ -21,14 +21,15 @@ class CJ4_FMC_SelectWptPage {
             let w = waypoints[i + 5 * page];
             if (w) {
                 let t = "";
+                let ICAOReg = w.icao.slice(1,3);
                 if (w.icao[0] === "V") {
-                    t = " VOR";
+                    t = " VOR  " + ICAOReg;
                 }
                 else if (w.icao[0] === "N") {
-                    t = " NDB";
+                    t = " NDB  " + ICAOReg;
                 }
                 else if (w.icao[0] === "A") {
-                    t = " AIRPORT";
+                    t = " AIRPORT   " + ICAOReg;
                 }
                 rows[2 * i] = [w.ident + t];
                 rows[2 * i + 1] = [w.infos.coordinates.toDegreeString()];
