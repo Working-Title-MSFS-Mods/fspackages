@@ -1,5 +1,38 @@
 class CJ4_FMC_DepArrPage {
     static ShowPage1(fmc) {
+        if (fmc.previousInput === "DEPARR") {
+             CJ4_FMC_DepArrPage.ShowIndexPage(fmc);
+             return;
+        }
+        
+        let origin = fmc.flightPlanManager.getOrigin();
+        let destination = fmc.flightPlanManager.getDestination();
+        let airborne = !SimVar.GetSimVarValue("SIM ON GROUND", "boolean");
+        let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+        let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+        let aircraftPosition = new LatLong(lat, long);
+        let distanceToOrigin = (origin && origin.infos && origin.infos.coordinates) ? Avionics.Utils.computeDistance(aircraftPosition, origin.infos.coordinates) : undefined;
+        let distanceToDestination = (destination && destination.infos && destination.infos.coordinates) ? Avionics.Utils.computeDistance(aircraftPosition, destination.infos.coordinates) : undefined;
+        let aircraftMovedMoreThanHalfwayToDestination = distanceToOrigin && distanceToDestination && distanceToOrigin > distanceToDestination;
+        
+        let directEntryPage = CJ4_FMC_DepArrPage.ShowIndexPage;
+        if (origin) {
+            if (!airborne) {
+                directEntryPage = CJ4_FMC_DepArrPage.ShowDeparturePage;
+            }
+            else if (distanceToOrigin <= 50 && (!destination || !aircraftMovedMoreThanHalfwayToDestination)) {
+                directEntryPage = CJ4_FMC_DepArrPage.ShowDeparturePage;
+            }
+            else if (destination) {
+                if (distanceToOrigin > 50 || aircraftMovedMoreThanHalfwayToDestination) {
+                    directEntryPage = CJ4_FMC_DepArrPage.ShowArrivalPage;
+                }
+            }
+        }
+        directEntryPage(fmc);            
+    }
+    
+    static ShowIndexPage(fmc) {
         fmc.clearDisplay();
         let rowOrigin = [""];
         let origin = fmc.flightPlanManager.getOrigin();
@@ -275,7 +308,7 @@ class CJ4_FMC_DepArrPage {
             ["-----------------------[blue]"],
             ["<DEP/ARR IDX", rsk6Field]
         ]);
-        fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowPage1(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowIndexPage(fmc); };
 
         //start of CWB CANCEL MOD handling
         fmc.onRightInput[5] = () => {
@@ -283,7 +316,7 @@ class CJ4_FMC_DepArrPage {
                 if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     fmc.eraseTemporaryFlightPlan(() => {
                         fmc.fpHasChanged = false;
-                        fmc.onDepArr();
+                        CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
                     });
                 }
             }
@@ -698,7 +731,7 @@ class CJ4_FMC_DepArrPage {
             ["-----------------------[blue]"],
             ["<DEP/ARR IDX", rsk6Field]
         ]);
-        fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowPage1(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_DepArrPage.ShowIndexPage(fmc); };
 
         //start of CWB CANCEL MOD handling
         fmc.onRightInput[5] = () => {

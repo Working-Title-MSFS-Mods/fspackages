@@ -50,6 +50,8 @@ class CJ4_FMC extends FMCMainDisplay {
         this.selectedWaypoint = undefined;
         this.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
         SimVar.SetSimVarValue("TRANSPONDER STATE:1", "Enum", 1);
+        this.currentInput = undefined;
+        this.previousInput = undefined;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -171,6 +173,8 @@ class CJ4_FMC extends FMCMainDisplay {
     }
     onInputAircraftSpecific(input) {
         console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
+        this.previousInput = this.currentInput;
+        this.currentInput = input;
         if (input === "LEGS") {
             if (this.onLegs) {
                 this.onLegs();
