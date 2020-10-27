@@ -61,6 +61,8 @@ class CJ4_FMC_ApproachRefPage {
         if (isNaN(fmc.landingQnh)) {
             fmc.landingQnh = SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg");
         }
+                
+        fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
 
         let arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY[green]/[white]WET[s-text]"
             : "DRY[s-text]/[white]WET[green]";
@@ -68,7 +70,7 @@ class CJ4_FMC_ApproachRefPage {
         let selAptValue = destinationIdent ? destinationIdent + "[green]/[white]" + originIdent + "[s-text]" : "----";
 
         const arrRunwayLengthText = WT_ConvertUnit.getLength(arrRunwayLength).getString(0, " ", "[s-text]");
-        const landingQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.landingQnh).toFixed(0) : WT_ConvertUnit.getQnh(fmc.takeoffQnh).toFixed(2);
+        const landingQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.landingQnh).toFixed(0) : fmc.takeoffQnh.toFixed(2);
 
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "1/3 [blue]", "APPROACH REF[blue]"],
@@ -120,23 +122,16 @@ class CJ4_FMC_ApproachRefPage {
             let qnhInput = Number(fmc.inOut);
             if (!isNaN(qnhInput)) {
                 if (qnhInput > 28 && qnhInput < 32) {
-                    fmc.landingQnh = qnhInput.toFixed(2);
-                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
+                    fmc.landingQnh = qnhInput;
                 }
                 else if (qnhInput > 280 && qnhInput < 320) {
-                    let qnhParse = qnhInput / 10;
-                    fmc.landingQnh = qnhParse.toFixed(2);
-                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
+                    fmc.landingQnh = qnhInput / 10;
                 }
                 else if (qnhInput > 2800 && qnhInput < 3200) {
-                    let qnhParse = qnhInput / 100;
-                    fmc.landingQnh = qnhParse.toFixed(2);
-                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
+                    fmc.landingQnh = qnhInput / 100;
                 }
                 else if (qnhInput > 940 && qnhInput < 1090) { //parse hPA input
-                    let qnhParse = qnhInput / 33.864;
-                    fmc.landingQnh = qnhParse.toFixed(2);
-                    fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
+                    fmc.landingQnh = qnhInput / 33.864;
                 }
                 else {
                     fmc.showErrorMessage("INVALID");

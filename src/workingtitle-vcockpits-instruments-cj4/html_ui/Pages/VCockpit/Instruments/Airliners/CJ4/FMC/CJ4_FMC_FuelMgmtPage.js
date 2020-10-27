@@ -69,9 +69,9 @@ class CJ4_FMC_FuelMgmtPageOne {
     render() {
         console.log("Render Fuel");
 
-        const fuelQuantityTotalText = WT_ConvertUnit.getWeight(this._fuelQuantityTotal).toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? "[d-text] KG[s-text]" : "[d-text] LB[s-text]");
-        const totalFuelFlowText = WT_ConvertUnit.getWeight(this._totalFuelFlow).toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? "[d-text] KG/HR[s-text]" : "[d-text] LB/HR[s-text]");
-        const reserveFuelText = WT_ConvertUnit.getWeight(this._fmc.reserveFuel).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? " KG" : " LB");
+        const fuelQuantityTotalText = WT_ConvertUnit.getWeight(this._fuelQuantityTotal).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? "[d-text] KG[s-text]" : "[d-text] LB[s-text]");
+        const totalFuelFlowText = WT_ConvertUnit.getWeight(this._totalFuelFlow).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? "[d-text] KG/HR[s-text]" : "[d-text] LB/HR[s-text]");
+        const reserveFuelText = WT_ConvertUnit.getWeight(this._fmc.reserveFuel).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? " KG[s-text]" : " LB[s-text]");
         const spRangeText = this._spRng == ".----" ? ".----"
             : WT_ConvertUnit.isMetric() ? (this._spRng / this._fmc.cj4Weight).toFixed(2) + "[d-text]NM/KG[s-text]"
             : this._spRng + "[d-text]NM/LB[s-text]";
@@ -137,8 +137,8 @@ class CJ4_FMC_FuelMgmtPageTwo {
 
     update() {
         // TODO i think this could be optimized
-        const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
-        console.log("fuel weight constant: " + fuelWeight);
+        const fuelWeight = 6.7;
+        //console.log("fuel weight constant: " + fuelWeight);
 
         this._fuelQuantityLeft = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
         this._fuelQuantityRight = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
@@ -263,27 +263,69 @@ class CJ4_FMC_FuelMgmtPage {
 
     static ShowPage3(fmc) { //FUEL MGMT Page 3
         fmc.clearDisplay();
-        let totalFuelFlow = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour")
-            + SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
-        
-        const fuelFlowTotal = WT_ConvertUnit.getFuelFlow(totalFuelFlow, "PPH[s-text]", "KG/H[s-text]");
-        const fuelFlowTotalText = fuelFlowTotal.Value.toFixed(0) + "[d-text] " + fuelFlowTotal.Unit;
+        let destination = false;
+        let origin = false;
+        let destinationIdent = false;
+        let destinationDistance = false;
+        let destinationEte = false;
+        let destinationFuel = false;
 
-        fmc._templateRenderer.setTemplateRaw([
-            ["", "3/3[blue]", "PERF TRIP[blue]"],
-            [" FROM[blue s-text]"],
-            ["-----", "PPOS>"],
-            [" TO[blue s-text]"],
-            ["-----"],
-            [" DIST[blue s-text]"],
-            ["----[d-text] NM[s-text]"],
-            [" GND SPD[blue s-text]", "FUEL FLOW[blue s-text] "],
-            [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString() + "[d-text] KTS[s-text]", fuelFlowTotalText],
-            [" ETE[blue s-text]", "FUEL REQ[blue s-text] "],
-            ["", "---[d-text] LB[s-text]"],
-            ["------------------------[blue]"],
-            ["<CLEAR", "PERF MENU>"]
-        ]);
+        fmc.registerPeriodicPageRefresh(() => {
+
+            let totalFuelFlow = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour")
+                + SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
+            let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+            
+            //destination data
+            if (fmc.flightPlanManager.getDestination() && fmc.flightPlanManager.getOrigin()) {
+                let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+                destination = fmc.flightPlanManager.getDestination();
+                destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
+                let destinationDistanceDirect = Avionics.Utils.computeDistance(currPos, destination.infos.coordinates);
+                let destinationDistanceFlightplan = 0;
+                destinationDistance = destinationDistanceDirect;
+                if (fmc.flightPlanManager.getActiveWaypoint()) {
+                    let activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
+                    destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+                }
+                else {
+                    destinationDistanceFlightplan = destination.cumulativeDistanceInFP;
+                }
+                destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
+                    : destinationDistanceFlightplan;
+                destinationEte = groundSpeed < 50 || destinationDistance <= 0.1 ? new String("-:--")
+                    : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                destinationFuel = groundSpeed < 50 ? new String("-----")
+                    : WT_ConvertUnit.getWeight(fuelQuantityTotal - (totalFuelFlow * destinationDistance / groundSpeed)).Value;
+                origin = fmc.flightPlanManager.getOrigin();
+            }
+            
+            const fuelFlowTotal = WT_ConvertUnit.getFuelFlow(totalFuelFlow, "PPH[s-text]", "KG/H[s-text]");
+            const fuelFlowTotalText = totalFuelFlow > 100 ? fuelFlowTotal.Value.toFixed(0) + "[d-text] " + fuelFlowTotal.Unit : "----[d-text] " + fuelFlowTotal.Unit;
+            const eteText = destination ? destinationEte.padStart(4, " ") : "-:--";
+            const fuelRequiredText = (destination && groundSpeed > 100) ? WT_ConvertUnit.getWeight(totalFuelFlow * destinationDistance / groundSpeed).getString(0, "[d-text] ", "[s-text]")
+                : "---[d-text] " + (WT_ConvertUnit.isMetric() ? "KG[s-text]" : "LB[s-text]");
+            const distText = destination ? (destinationDistance >= 100 ? destinationDistance.toFixed(0) : destinationDistance.toFixed(1)) + "[d-text] NM[s-text]"
+                : "----[d-text] NM[s-text]";
+            const fromText = origin ? origin.ident : "-----";
+            const toText = destination ? destinationIdent : "-----";
+
+            fmc._templateRenderer.setTemplateRaw([
+                ["", "3/3[blue]", "PERF TRIP[blue]"],
+                [" FROM[blue s-text]"],
+                [fromText, "PPOS>"],
+                [" TO[blue s-text]"],
+                [toText],
+                [" DIST[blue s-text]"],
+                [distText],
+                [" GND SPD[blue s-text]", "FUEL FLOW[blue s-text] "],
+                [Math.round(groundSpeed).toString() + "[d-text] KTS[s-text]", fuelFlowTotalText],
+                [" ETE[blue s-text]", "FUEL REQ[blue s-text] "],
+                [eteText + "", fuelRequiredText],
+                ["------------------------[blue]"],
+                ["<CLEAR", "PERF MENU>"]
+            ]);
+        }, 1000, true);
         fmc.onPrevPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage2(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage1(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage1(fmc); };

@@ -387,7 +387,7 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage13(fmc) { //PROG Pg 1
         fmc.clearDisplay();
-        const fuelHeading = WT_ConvertUnit.getWeight(1, " FUEL-KG[s-text blue]", " FUEL-LB[s-text blue]").Unit;
+        const fuelHeading = WT_ConvertUnit.getWeight(1, " FUEL-LB[s-text blue]", " FUEL-KG[s-text blue]").Unit;
 
         fmc.registerPeriodicPageRefresh(() => {
 
@@ -493,7 +493,7 @@ class CJ4_FMC_InitRefIndexPage {
                 fmc._templateRenderer.setTemplateRaw([
                     [" PROGRESS[blue]", "1/2[blue] "],
                     [" LAST[s-text blue]", "DIST  ETE" + fuelHeading],
-                    [prevWaypointIdent + "[blue]", prevWaypointDistanceConst + "        ----- [s-text blue]"],
+                    [prevWaypointIdent + "[blue]", prevWaypointDistanceConst + "       ----- [s-text blue]"],
                     [" TO[s-text blue]",],
                     [activeWaypointIdent + "[s-text magenta]", activeWaypointDistanceConst + "  " + activeWaypointEte + " " + activeWaypointFuelConst + " [s-text magenta]"],
                     [" NEXT[s-text blue]"],
@@ -535,7 +535,7 @@ class CJ4_FMC_InitRefIndexPage {
             let track = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees");
             let tas = Math.trunc(SimVar.GetSimVarValue("AIRSPEED TRUE", "knots"));
             let xtk = SimVar.GetSimVarValue("GPS WP CROSS TRK", "meters") * (0.000539957); //meters to NM conversion
-            console.log("xtk:" + xtk)
+            //console.log("xtk:" + xtk)
 
             let isaDev = Math.trunc(this.calcISADEV(sat, SimVar.GetSimVarValue("PLANE ALTITUDE", "feet")));
             let isaDevDisp = isaDev >= 0 ? "+" + isaDev : isaDev;
@@ -637,9 +637,9 @@ class CJ4_FMC_InitRefIndexPage {
 
         if (databaseWaypoint) {
             databaseIdentCell = databaseWaypoint.ident;
-            console.log("icao: " + databaseWaypoint.icao);
+            //console.log("icao: " + databaseWaypoint.icao);
             databaseWaypointType = databaseWaypoint.icao.slice(0, 1);
-            console.log("databaseWaypointType: " + databaseWaypointType);
+            //console.log("databaseWaypointType: " + databaseWaypointType);
         }
 
         fmc.onLeftInput[0] = () => {
@@ -828,8 +828,8 @@ class CJ4_FMC_InitRefIndexPage {
         let vorCoordinatesAlt = new String(databaseWaypoint.infos.coordinates);
         let vorIndex = vorCoordinatesAlt.indexOf("alt");
         let vorCoordinates = vorCoordinatesAlt.substring(0, vorIndex);
-        console.log("vorIndex:" + vorIndex);
-        console.log("vorCoordinatesAlt:" + vorCoordinatesAlt);
+        //console.log("vorIndex:" + vorIndex);
+        //console.log("vorCoordinatesAlt:" + vorCoordinatesAlt);
 
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "DATA BASE[blue]"],
@@ -886,7 +886,7 @@ class CJ4_FMC_InitRefIndexPage {
         let wptCoordinatesAlt = new String(databaseWaypoint.infos.coordinates);
         let wptIndex = wptCoordinatesAlt.indexOf("alt");
         let wptCoordinates = wptCoordinatesAlt.substring(0, wptIndex);
-        console.log("region: " + databaseWaypoint.infos.region);
+        //console.log("region: " + databaseWaypoint.infos.region);
 
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "DATA BASE[blue]"],

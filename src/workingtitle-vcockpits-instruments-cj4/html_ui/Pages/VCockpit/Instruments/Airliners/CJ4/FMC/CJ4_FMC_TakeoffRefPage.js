@@ -20,8 +20,15 @@ class CJ4_FMC_TakeoffRefPage {
             depRunwayElevation = new Number(depRunway.elevation * 3.28);
             depRunwayLength = new Number(depRunway.length);
         }
-		
-		fmc.takeoffQnh = isNaN(fmc.takeoffQnh) ? SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg").toFixed(2) : fmc.takeoffQnh;
+        
+        if (manualQnh && manualQnh > 0) {
+            fmc.takeoffQnh = manualQnh;
+        }
+        else {
+            fmc.takeoffQnh = SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg");
+        }
+        
+        fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
 
         let headwind = "";
         let crosswind = "";
@@ -67,7 +74,7 @@ class CJ4_FMC_TakeoffRefPage {
         //console.log("Current Runway Elevation: " + depRunwayElevation);
 
         const depRunwayLengthText = WT_ConvertUnit.getLength(depRunwayLength).getString(0, " ", "[s-text]");
-        const takeoffQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.takeoffQnh).toFixed(0) : WT_ConvertUnit.getQnh(fmc.takeoffQnh).toFixed(2);
+        const takeoffQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.takeoffQnh).toFixed(0) : fmc.takeoffQnh.toFixed(2);
 
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "1/3[blue] ", "TAKEOFF REF[blue]"],
@@ -115,23 +122,16 @@ class CJ4_FMC_TakeoffRefPage {
             let qnhInput = Number(fmc.inOut);
             if (!isNaN(qnhInput)) {
                 if (qnhInput > 28 && qnhInput < 32) {
-                    fmc.takeoffQnh = qnhInput.toFixed(2);
-                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                    fmc.takeoffQnh = qnhInput;
                 }
                 else if (qnhInput > 280 && qnhInput < 320) {
-                    let qnhParse = qnhInput / 10;
-                    fmc.takeoffQnh = qnhParse.toFixed(2);
-                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                    fmc.takeoffQnh = qnhInput / 10;
                 }
                 else if (qnhInput > 2800 && qnhInput < 3200) {
-                    let qnhParse = qnhInput / 100;
-                    fmc.takeoffQnh = qnhParse.toFixed(2);
-                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                    fmc.takeoffQnh = qnhInput / 100;
                 }
                 else if (qnhInput > 940 && qnhInput < 1090) { //parse hPA input
-                    let qnhParse = qnhInput / 33.864;
-                    fmc.takeoffQnh = qnhParse.toFixed(2);
-                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                    fmc.takeoffQnh = qnhInput / 33.864;
                 }
                 else {
                     fmc.showErrorMessage("INVALID");
@@ -277,10 +277,10 @@ class CJ4_FMC_TakeoffRefPage {
 		return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
 		}
         
-        const towText = formatNumber(WT_ConvertUnit.getWeight(tow).Value, 5) + (tow > 17110 ? "[yellow]" : "");
-        const grossWeightText = formatNumber(WT_ConvertUnit.getWeight(fmc.grossWeight).Value, 5);
-        const mtowText = formatNumber(WT_ConvertUnit.getWeight(mtow).Value, 5);
-        const takeoffDistText = formatNumber(WT_ConvertUnit.getLength(fmc.endTakeoffDist / 3.28).Value, 4);
+        const towText = formatNumber(WT_ConvertUnit.getWeight(tow).Value, 4) + (tow > 17110 ? "[yellow]" : "");
+        const grossWeightText = formatNumber(WT_ConvertUnit.getWeight(fmc.grossWeight).Value, 4);
+        const mtowText = formatNumber(WT_ConvertUnit.getWeight(mtow).Value, 4) + (WT_ConvertUnit.isMetric() ? " KG[s-text]" : " LB[s-text]");
+        const takeoffDistText = formatNumber(WT_ConvertUnit.getLength(fmc.endTakeoffDist / 3.28).Value, 3);
         const depRunwayLengthText = WT_ConvertUnit.getLength(depRunwayLength / 3.28).getString(0, " ", "[s-text]");
 
         fmc._templateRenderer.setTemplateRaw([
