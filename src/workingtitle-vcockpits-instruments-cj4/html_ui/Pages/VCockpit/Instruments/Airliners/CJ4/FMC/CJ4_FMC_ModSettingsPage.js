@@ -18,7 +18,7 @@ class CJ4_FMC_ModSettingsPageOne {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF;
         }
 
-        this._cj4Units = this._fmc.cj4Units;
+        this._cj4Units = WTDataStore.get('WT_CJ4_Units', 0);
 
 
     }
@@ -50,20 +50,16 @@ class CJ4_FMC_ModSettingsPageOne {
         if (value == 2) value = 0;
         this._cj4Units = value;
 
-        // set simvar
-        SimVar.SetSimVarValue("L:WT_CJ4_Units", "Enum", value);
+        // set datastore
         WTDataStore.set('WT_CJ4_Units', value);
+
         this.invalidate();
     }
-
+    
     render() {
         let lightSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "DIM", "ON"], this.lightMode);
         let pilotIdDisplay = (this.pilotId !== this._pilotDefault) ? this.pilotId + "[green]" : this._pilotDefault;
         let unitsSwitch = this._fmc._templateRenderer.renderSwitch(["IMPERIAL", "METRIC"], this.cj4Units);
-        //temp logs to verify correct behavior
-        console.log("this.cj4Units: " + this.cj4Units);
-        console.log("L:WT_CJ4_Units: " + SimVar.GetSimVarValue("L:WT_CJ4_Units", "Enum"));
-        console.log("Datastore WT_CJ4_Units: " + WTDataStore.get('WT_CJ4_Units', "none"));
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/1[blue] ", "WT MOD SETTINGS[yellow]"],
