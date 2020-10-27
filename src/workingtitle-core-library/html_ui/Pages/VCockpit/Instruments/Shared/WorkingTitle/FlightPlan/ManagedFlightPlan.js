@@ -196,10 +196,11 @@ class ManagedFlightPlan {
    * @param {WayPoint} waypoint The waypoint that is being added.
    * @param {Number} index The index that the waypoint is being added at.
    */
-  _shiftSegmentIndexes(waypoint, index) {
+  async _shiftSegmentIndexes(waypoint, index) {
     if (index === 0 && waypoint.type === 'A') {
       this._hasOrigin = true;
       this.departureStart = 1;
+
       this.enrouteStart++;
       this.arrivalStart = Math.max(this.enrouteStart + 1, this.arrivalStart + 1);
       this.approachStart = Math.max(this.arrivalStart, this.approachStart + 1);
@@ -480,25 +481,17 @@ class ManagedFlightPlan {
       const transitionIndex = this.procedureDetails.departureTransitionIndex;
 
       const runwayTransition = origin.infos.departures[departureIndex].runwayTransitions[runwayIndex];
-
-      for (var i = 0; i < runwayTransition.legs.length; i++) {
-        if (runwayTransition.legs[i].fixIcao.trim() !== "") {
-          const legWaypoint = await this._parentInstrument.facilityLoader.getFacilityRaw(runwayTransition.legs[i].fixIcao);
-          legs.push(legWaypoint);
-        }
+      for (var i = this.departureStart; i < this.enrouteStart; i++) {
+        await this.removeWaypoint(i);
       }
 
-      this._waypoints.splice(1, this.enrouteStart - 1, ...legs);
-      const numWaypointsDiff = legs.length - (this.enrouteStart - this.departureStart);
-
-      this.enrouteStart += numWaypointsDiff;
-      this.arrivalStart += numWaypointsDiff;
-      this.approachStart += numWaypointsDiff;
+      const procedure = new LegsProcedure(runwayTransition.legs, this._waypoints[0], this._parentInstrument);
+      while (procedure.hasNext()) {
+        await this.addWaypoint(await procedure.getNext())
+      }
       
       this.procedureDetails.departureSelected = true;
       this.procedureDetails.departureFromOriginData = true;
-
-      this._reflowDistances();
   }
 
   /**
@@ -613,6 +606,8 @@ ManagedFlightPlan.fromObject = (flightPlanObject, parentInstrument) => {
         case 'N':
           obj = Object.assign(new NDBInfo(parentInstrument), obj);
           break;
+        default:
+          obj = Object.assign(new WayPointInfo(parentInstrument), obj);
       }
       
       obj.coordinates = Object.assign(new LatLongAlt(), obj.coordinates);
@@ -688,8 +683,8 @@ class GPS {
    * @param {String} ident The ident of the waypoint.
    */
   static async addUserWaypoint(lat, lon, index, ident) {
-    await SimVar.SetSimVarValue('C:fs9gps:FlightPlanNewWaypointLatitude', 'number', lat);
-    await SimVar.SetSimVarValue('C:fs9gps:FlightPlanNewWaypointLongitude', 'number', lon);
+    await SimVar.SetSimVarValue('C:fs9gps:FlightPlanNewWaypointLatitude', 'degrees', lat);
+    await SimVar.SetSimVarValue('C:fs9gps:FlightPlanNewWaypointLongitude', 'degrees', lon);
 
     if (ident) {
       await SimVar.SetSimVarValue('C:fs9gps:FlightPlanNewWaypointIdent', 'string', ident);
@@ -1101,42 +1096,156 @@ class LegsProcedure {
     /**
      * The starting point for the procedure.
      */
-    this._startingPoint = startingPoint;
+    this._previousFix = startingPoint;
 
     /**
      * The instrument that is attached to the flight plan.
      */
     this._instrument = instrument;
+
+    /**
+     * The current index in the procedure.
+     */
+    this._currentIndex = 0;
   }
 
-  [Symbol.iterator]() {
-    let index = 0;
-    let prevFix = this._startingPoint;
+  hasNext() {
+    return this._currentIndex < this._legs.length;
+  }
 
-    return {
-      next: () => {
-        while (true) {
-          if (index < this._legs.length) {
-            const leg = this._legs[index];
-            index++;
-  
-            switch (leg.type) {
-              case 2:
-                break;
-              case 3:
-                prevFix = this.mapHeadingForDistance(leg, prevFix);
-                return {value: prevFix, done: false};
-            }
-          }
-          else {
-            return {done: true};
-          }         
-        }
+  async getNext() {
+    const currentLeg = this._legs[this._currentIndex];
+    let isLegMappable = false;
+    let mappedLeg;
+
+    while (!isLegMappable) {
+      isLegMappable = true;
+
+      switch (currentLeg.type) {
+        case 3:
+          mappedLeg = await this.mapHeadingUntilDistanceFromOrigin(currentLeg, this._previousFix);
+          break;
+        case 4:
+          mappedLeg = await this.mapOriginRadialForDistance(currentLeg, this._previousFix);
+          break;
+        case 5:
+          mappedLeg = await this.mapHeadingToIntercept(currentLeg, this._previousFix, this._legs[this._currentIndex + 1]);
+          break;
+        case 9:
+          mappedLeg = await this.mapBearingAndDistanceFromOrigin(currentLeg, this._previousFix);
+          break;
+        case 18:
+          mappedLeg = await this.mapExactFix(currentLeg, this._previousFix);
+          break;
+        default:
+          isLegMappable = false;
+          break;
       }
-    };
+
+      this._currentIndex++;
+    }
+
+    this._previousFix = mappedLeg;
+    return mappedLeg;
   }
 
-  mapHeadingForDistance(leg, prevFix) {
+  async mapHeadingUntilDistanceFromOrigin(leg, prevFix) {
+    const origin = await this._instrument.facilityLoader.getFacilityRaw(leg.originIcao);
+    const originIdent = origin.icao.substring(7, 12).trim();
+
+    const bearingToOrigin = Avionics.Utils.computeGreatCircleHeading(prevFix.infos.coordinates, new LatLongAlt(origin.lat, origin.lon));
+    const distanceToOrigin = Avionics.Utils.computeGreatCircleDistance(prevFix.infos.coordinates, new LatLongAlt(origin.lat, origin.lon));
+
+    const distanceAngle = Math.asin((Math.sin(distanceToOrigin) * Math.sin(bearingToOrigin)) / Math.sin(leg.distance));
+    const legDistance = 2 * Math.atan(Math.tan(0.5 * (leg.distance - distanceToOrigin)) * (Math.sin(0.5 * (bearingToOrigin + distanceAngle)) / Math.sin(0.5 * (bearingToOrigin - distanceAngle))));
+
+    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, legDistance, prevFix.infos.coordinates.lat, prevFix.infos.coordinates.long);
+
+    const waypoint = new WayPoint(this._instrument);
+    waypoint.type = 'W';
+
+    waypoint.infos = new IntersectionInfo(this._instrument);
+    waypoint.infos.coordinates = coordinates;
+
+    const ident = `${originIdent}${Math.trunc(legDistance)}`;
+    waypoint.ident = ident;
+    waypoint.infos.ident = ident;
+
+    return waypoint;
+  }
+
+  async mapBearingAndDistanceFromOrigin(currentLeg, prevFix) {
+    const origin = await this._instrument.facilityLoader.getFacilityRaw(currentLeg.originIcao);
+    const originIdent = origin.icao.substring(7, 12).trim();
+    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(currentLeg.course, currentLeg.distance / 1852, origin.lat, origin.lon);
+
+    const waypoint = new WayPoint(this._instrument);
+    waypoint.type = 'W';
+
+    waypoint.infos = new IntersectionInfo(this._instrument);
+    waypoint.infos.coordinates = coordinates;
+
+    const ident = `${originIdent}${Math.trunc(currentLeg.distance / 1852)}`;
+    waypoint.ident = ident;
+    waypoint.infos.ident = ident;
+
+    return waypoint;
+  }
+
+  async mapOriginRadialForDistance(currentLeg, prevFix) {
+    if (currentLeg.fixIcao.trim() !== '') {
+      return RawDataMapper.toWaypoint(await this._instrument.facilityLoader.getFacilityRaw(currentLeg.fixIcao), this._instrument);
+    }
+    else {
+      const origin = await this._instrument.facilityLoader.getFacilityRaw(currentLeg.originIcao);
+      const originIdent = origin.icao.substring(7, 12).trim();
+      const coordinates = Avionics.Utils.bearingDistanceToCoordinates(currentLeg.course, currentLeg.distance / 1852, prevFix.infos.coordinates.lat, prevFix.infos.coordinates.long);
+
+      const distanceFromOrigin = Avionics.Utils.computeGreatCircleDistance(new LatLongAlt(origin.lat, origin.lon), coordinates);
+
+      const waypoint = new WayPoint(this._instrument);
+      waypoint.type = 'W';
+
+      waypoint.infos = new IntersectionInfo(this._instrument);
+      waypoint.infos.coordinates = coordinates;
+
+      const ident = `${originIdent}${Math.trunc(distanceFromOrigin / 1852)}`;
+      waypoint.ident = ident;
+      waypoint.infos.ident = ident;
+
+      return waypoint;
+    }
+  }
+
+  async mapHeadingToIntercept(currentLeg, prevFix, nextLeg) {
+    const nextOrigin = await this._instrument.facilityLoader.getFacilityRaw(nextLeg.originIcao);
+    const nextOriginIdent = nextOrigin.icao.substring(7, 12).trim();
     
+    const distanceFromOrigin = Avionics.Utils.computeGreatCircleDistance(prevFix.infos.coordinates, new LatLongAlt(nextOrigin.lat, nextOrigin.lon));
+    const bearingToOrigin = Avionics.Utils.computeGreatCircleHeading(prevFix.infos.coordinates, new LatLongAlt(nextOrigin.lat, nextOrigin.lon));
+    const bearingFromOrigin = Avionics.Utils.computeGreatCircleHeading(new LatLongAlt(nextOrigin.lat, nextOrigin.lon), prevFix.infos.coordinates);
+
+    let ang1 = bearingToOrigin - currentLeg.course;
+    let ang2 = bearingFromOrigin - nextLeg.course;
+    let ang3 = Math.acos(Math.sin(ang1) * Math.sin(ang2) * Math.sin(distanceFromOrigin) - Math.cos(ang1) * Math.cos(ang2));
+
+    let legDistance = Math.acos((Math.cos(ang1) + Math.cos(ang2) * Math.cos(ang3)) / Math.sin(ang1) * Math.sin(ang3));
+    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(currentLeg.course, legDistance, prevFix.infos.coordinates.lat, prevFix.infos.coordinates.long);
+
+    const waypoint = new WayPoint(this._instrument);
+    waypoint.type = 'W';
+
+    waypoint.infos = new IntersectionInfo(this._instrument);
+    waypoint.infos.coordinates = coordinates;
+
+    const ident = `T${currentLeg.course}${nextOriginIdent}`;
+    waypoint.ident = ident;
+    waypoint.infos.ident = ident;
+
+    return waypoint;
+  }
+
+  async mapExactFix(currentLeg, prevFix) {
+    return RawDataMapper.toWaypoint(await this._instrument.facilityLoader.getFacilityRaw(currentLeg.fixIcao), this._instrument);
   }
 }
