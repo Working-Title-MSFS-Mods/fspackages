@@ -105,7 +105,7 @@ class WT_NavDataBar extends NavSystemElement {
                     }
                 }, volumeFormatter),
 
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[10], new WT_NumberUnit(0, WT_CompoundUnit.KNOT), "GPS GROUND SPEED", "knots", speedFormatter),
+            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[10], new WT_NumberUnit(0, WT_Unit.KNOT), "GPS GROUND SPEED", "knots", speedFormatter),
             new WT_NavInfoUTCTime(WT_NavDataBar.INFO_DESCRIPTION[11], new WT_NumberUnit(0, WT_Unit.SECOND), {
                     getCurrentValue: function() {
                         let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
@@ -114,7 +114,7 @@ class WT_NavDataBar extends NavSystemElement {
                     }
                 }, timeFormatter),
 
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[12], new WT_NumberUnit(0, WT_CompoundUnit.KNOT), "AIRSPEED TRUE", "knots", speedFormatter),
+            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[12], new WT_NumberUnit(0, WT_Unit.KNOT), "AIRSPEED TRUE", "knots", speedFormatter),
             new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[13], new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS WP TRACK ANGLE ERROR", "degree", bearingFormatter),
             new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[14], new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS GROUND MAGNETIC TRACK", "degree", bearingFormatter),
             new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[15], new WT_NumberUnit(0, WT_Unit.METER), "GPS WP CROSS TRK", "meters", distanceFormatter),
