@@ -736,7 +736,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             var percent = (-Simplane.getTrimNeutral() + 1.0) * 0.5;
             percent = Math.min(1, Math.max(0, percent));
-            var posY = ((gaugeStartY+gaugeHeight) - (gaugeHeight * percent)) - ((gaugeHeight*0.18)/2);
+            var posY = ((gaugeStartY + gaugeHeight) - (gaugeHeight * percent)) - ((gaugeHeight * 0.18) / 2);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
             rect.setAttribute("y", (posY).toString());
@@ -1867,15 +1867,15 @@ class CJ4_SystemElectrics extends NavSystemElement {
         BatAmp = BatAmp / BatVolt;
         this.BATAmpValue.textContent = Math.round(BatAmp).toString();
         this.BATTempValue.textContent = "26";
-		
-		let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
-		let HydPSI1 = N2Eng1 >= 20 ? 3000 : N2Eng1 * 150;
+
+        let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
+        let HydPSI1 = N2Eng1 >= 20 ? 3000 : N2Eng1 * 150;
         this.HYDPSIValueLeft.textContent = Math.round(HydPSI1).toString();
-				
-		let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
-		let HydPSI2 = N2Eng2 >= 20 ? 3000 : N2Eng2 * 150;
+
+        let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
+        let HydPSI2 = N2Eng2 >= 20 ? 3000 : N2Eng2 * 150;
         this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
-		
+
         let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
         this.FUELPPHValueLeft.textContent = Math.round(PPHEng1).toString();
         let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
@@ -2130,7 +2130,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             var gaugeHeight = 125;
             this.OXYCursorX = gaugeStartX + gaugeWidth;
             //this.OXYCursorY1 = gaugeStartY + gaugeHeight;
-			this.OXYCursorY1 = 86;
+            this.OXYCursorY1 = 86;
             this.OXYCursorY2 = gaugeStartY;
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
@@ -2706,6 +2706,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
                 break;
         }
         this.map.instrument.zoomRanges = this.getAdaptiveRanges();
+        this.setWxRadarBug();
     }
     showTerrain(_value) {
         if (this.isTerrainVisible != _value) {
@@ -2720,16 +2721,13 @@ class CJ4_MapContainer extends NavSystemElementContainer {
     showWeather(_value) {
         if (this.isWeatherVisible != _value) {
             this.isWeatherVisible = _value;
-            let radarbug = document.querySelector("#weather_radar_bug");
             if (this.isWeatherVisible) {
                 this.showTerrain(false);
                 this.showGwx(false);
-                radarbug.style.display = "";
                 this.map.instrument.showWeatherWithGPS(EWeatherRadar.HORIZONTAL, Math.PI * 2.0);
                 this.map.instrument.setBingMapStyle("8%", "0%", "100%", "80%");
             }
             else {
-                radarbug.style.display = "none";
                 this.map.instrument.showWeather(EWeatherRadar.OFF);
             }
             this.refreshLayout();
@@ -2819,7 +2817,14 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             ranges[i] *= this.zoomFactor;
         return ranges;
     }
+    setWxRadarBug() {
+        let radarbug = document.querySelector("#weather_radar_bug");
+        if (radarbug) {
+            radarbug.style.display = (this.isWeatherVisible) ? "" : "none";
+        }
+    }
     refreshLayout() {
+        this.setWxRadarBug();
         if (this.isTerrainVisible || this.isGwxVisible) {
             this.map.instrument.mapConfigId = 1;
             this.map.instrument.bingMapRef = EBingReference.SEA;
@@ -3169,7 +3174,7 @@ class CJ4_NavBarContainer extends NavSystemElementContainer {
             // calc dev
             var isa = sat - isaTemp;
             if (isa)
-                this.isaElement.textContent = (isa<=0?"":"+") + isa;
+                this.isaElement.textContent = (isa <= 0 ? "" : "+") + isa;
         }
     }
 }
