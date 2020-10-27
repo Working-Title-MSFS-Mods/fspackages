@@ -3271,35 +3271,7 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 27] = "SYS_SRC";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["AOA"] = 28] = "AOA";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
-class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
-    constructor() {
-        super(...arguments);
-        this._isOnMainPage = false;
-    }
-    get isOnMainPage() {
-        return this._isOnMainPage;
-    }
-    reactsOnEvent(_event) {
-        switch (_event) {
-            case "Upr_DATA_PUSH":
-            case "Upr_DATA_DEC":
-            case "Upr_DATA_INC":
-            case "Upr_MENU_ADV_DEC":
-            case "Upr_MENU_ADV_INC":
-            case "Upr_Push_ESC":
-                return true;
-            case "Lwr_DATA_PUSH":
-            case "Lwr_DATA_DEC":
-            case "Lwr_DATA_INC":
-            case "Lwr_MENU_ADV_DEC":
-            case "Lwr_MENU_ADV_INC":
-            case "Lwr_Push_ESC":
-                return true;
-        }
-        return false;
-    }
-}
-class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
+class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
     constructor(_root, _dictionary) {
         super();
         this.titleSize = 15;
@@ -3489,7 +3461,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
         this.root.appendChild(page);
     }
 }
-class CJ4_PopupMenu_REF extends CJ4_PopupMenu_Handler {
+class CJ4_PopupMenu_REF extends WTMenu.Popup_Menu_Handler {
     constructor(_root, _dictionary) {
         super();
         this.titleSize = 15;
@@ -3545,7 +3517,7 @@ class CJ4_PopupMenu_REF extends CJ4_PopupMenu_Handler {
         this.root.appendChild(page);
     }
 }
-class CJ4_PopupMenu_UPPER extends CJ4_PopupMenu_Handler {
+class CJ4_PopupMenu_UPPER extends WTMenu.Popup_Menu_Handler {
     constructor(_root, _dictionary) {
         super();
         this.titleSize = 15;
@@ -3589,7 +3561,7 @@ class CJ4_PopupMenu_UPPER extends CJ4_PopupMenu_Handler {
         this.root.appendChild(page);
     }
 }
-class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
+class CJ4_PopupMenu_LOWER extends WTMenu.Popup_Menu_Handler {
     constructor(_root, _dictionary) {
         super();
         this.titleSize = 15;
