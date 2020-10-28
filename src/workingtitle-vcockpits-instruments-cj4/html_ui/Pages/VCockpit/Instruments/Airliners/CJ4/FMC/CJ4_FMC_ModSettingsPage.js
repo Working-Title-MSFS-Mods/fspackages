@@ -17,6 +17,11 @@ class CJ4_FMC_ModSettingsPageOne {
         else {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF;
         }
+
+        this._gpuSetting = SimVar.GetSimVarValue("EXTERNAL POWER ON", "Bool");
+        //console.log("EXTERNAL POWER AVAILABLE" + SimVar.GetSimVarValue("EXTERNAL POWER AVAILABLE", "Bool"));
+        //console.log("EXTERNAL POWER ON" + SimVar.GetSimVarValue("EXTERNAL POWER ON", "Bool"));
+
     }
 
     get lightMode() { return this._lightMode; }
@@ -41,18 +46,30 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
+    get gpuSetting() { return this._gpuSetting; }
+    set gpuSetting(value) {
+        if (value == 2) value = 0;
+        this._gpuSetting = value;
+
+        // set simvar
+        SimVar.SetSimVarValue("K:TOGGLE_EXTERNAL_POWER", "number", value);
+
+        this.invalidate();
+    }
+
     render() {
         let lightSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "DIM", "ON"], this.lightMode);
         let pilotIdDisplay = (this.pilotId !== this._pilotDefault) ? this.pilotId + "[green]" : this._pilotDefault;
+        let gpuSettingSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.gpuSetting);
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/1[blue] ", "WT MOD SETTINGS[yellow]"],
             [" CABIN LIGHTS[blue]"],
             [lightSwitch],
             [" SIMBRIEF PILOT ID[blue]"],
-            [pilotIdDisplay, ""],
-            [""],
-            ["", ""],
+            [pilotIdDisplay],
+            [" GPU[blue]"],
+            [gpuSettingSwitch],
             [""],
             ["", ""],
             [""],
@@ -69,6 +86,7 @@ class CJ4_FMC_ModSettingsPageOne {
             this.pilotId = idValue == "CLR" ? "" : idValue;
             this._fmc.clearUserInput();
         };
+        this._fmc.onLeftInput[2] = () => { this.gpuSetting = this.gpuSetting + 1; };
         this._fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(this._fmc); };
     }
 
