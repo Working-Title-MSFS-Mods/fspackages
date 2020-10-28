@@ -152,51 +152,6 @@ class WT_SimpleUnit extends WT_Unit {
         return NaN;
     }
 }
-WT_Unit.Family = {
-    DISTANCE: "distance",
-    ANGLE: "angle",
-    TIME: "time",
-    WEIGHT: "weight",
-    VOLUME: "volume",
-    TEMP: "temperature"
-};
-WT_SimpleUnit.Conversions = {
-    distance:
-    [//         feet        meter       km          mile        NM
-    /*feet*/   [1,          0.3048,     0.0003048,  1/5280,     1/6076.12],
-    /*meter*/  [1/.3048,    1,          0.001,      1/1609.34,  1/1852],
-    /*km*/     [3280.84,    1000,       1,          1/1.60934,  1/1.852],
-    /*mile*/   [5280,       1609.34,    1.60934,    1,          1/1.15078],
-    /*NM*/     [6076.12,    1852,       1.852,      1.15078,    1]
-    ],
-
-    angle:
-    [//         degree          radian
-    /*degree*/ [1,              Math.PI/180],
-    /*radian*/ [180/Math.PI,    1]
-    ],
-
-    time:
-    [//         second      minute      hour
-    /*second*/ [1,          1/60,       1/3600],
-    /*minute*/ [60,         1,          1/60],
-    /*hour*/   [3600,       60,         1]
-    ],
-
-    weight:
-    [//         pound       kg          ton         tonne
-    /*pound*/  [1,          1/2.20462,  0.0005,     1/2204.62],
-    /*kg*/     [2.20462,    1,          1/907.185,  0.001],
-    /*ton*/    [2000,       907.185,    1,          0.907185],
-    /*tonne*/  [2204.62,    1000,       1.10231,    1]
-    ],
-
-    volume:
-    [//         gallon      liter
-    /*gallon*/ [1,          3.78541],
-    /*liter*/  [1/3.78541,  1]
-    ]
-};
 
 /**
  * A unit of temperature.
@@ -319,6 +274,15 @@ class WT_CompoundUnit extends WT_Unit {
         return NaN;
     }
 }
+
+WT_Unit.Family = {
+    DISTANCE: "distance",
+    ANGLE: "angle",
+    TIME: "time",
+    WEIGHT: "weight",
+    VOLUME: "volume",
+    TEMP: "temperature"
+};
 
 WT_Unit.METER = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 1, "meter", "meters", "m");
 WT_Unit.FOOT = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 0.3048, "foot", "feet", "ft");
@@ -577,7 +541,7 @@ class WT_NumberFormatter {
 
     /**
      * Gets a string representation of the unit part of a NumberUnit.
-     * @param {WT_NumberUnit} numberUnit
+     * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
      */
     getFormattedUnit(numberUnit) {
         return this._formatUnit(numberUnit.number, numberUnit.unit).trim();
@@ -778,16 +742,28 @@ class WT_NumberHTMLFormatter {
         return classText;
     }
 
+    /**
+     * Gets a html string for displaying the number part of the text representation of a WT_NumberUnit object.
+     * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
+     */
     getFormattedNumberHTML(numberUnit) {
         let classText = this._generateClassText(this.classGetter.getNumberClassList(numberUnit));
         return `<span${classText}>${this.numberFormatter.getFormattedNumber(numberUnit)}</span>`;
     }
 
+    /**
+     * Gets a html string for displaying the unit part of the text representation of a WT_NumberUnit object.
+     * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
+     */
     getFormattedUnitHTML(numberUnit) {
         let classText = this._generateClassText(this.classGetter.getUnitClassList(numberUnit));
         return `<span${classText}>${this.numberFormatter.getFormattedUnit(numberUnit)}</span>`;
     }
 
+    /**
+     * Gets a html string for displaying the full text representation of a WT_NumberUnit object.
+     * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
+     */
     getFormattedHTML(numberUnit) {
         return this.getFormattedNumberHTML(numberUnit) + (this.numberFormatter.unitShow ? this.numberUnitDelim + this.getFormattedUnitHTML(numberUnit) : "");
     }
