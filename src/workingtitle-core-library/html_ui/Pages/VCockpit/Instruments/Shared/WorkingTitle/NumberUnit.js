@@ -421,12 +421,11 @@ class WT_Unit {
 
     /**
      * @readonly
-     * @property {*} - the type of this unit. This data type of this property is unrestricted,
-     *                 however a.type === b.type must be true if and only if conversions between
-     *                 a and b are valid.
+     * @property {string} - the family this unit belongs to. a.family === b.family
+     *                      must be true if and only if conversions between a and b are valid.
      */
-    get type() {
-        return this._type;
+    get family() {
+        return this._family;
     }
 
     /**
@@ -471,43 +470,36 @@ class WT_Unit {
 }
 
 /**
- *
+ * A unit that can be converted to another unit of the same type through multiplication by a conversion factor.
  */
 class WT_SimpleUnit extends WT_Unit {
     /**
-     * @param {number} type - an integer value representing the type of the unit.
-     * @param {number} id - index id of the unit used for conversion table lookup.
+     * @param {string} family - the family the unit belongs to.
+     * @param {number} scaleFactor - the relative scale of one unit of the new unit compared to one unit of the standard unit of the same family.
      * @param {string} fullNameSingular - the name of the unit in singular form.
      * @param {string} fullNameMultiple - the name of the unit in multiple form.
      * @param {string} abbrevName - the abbreviated name of the unit.
      */
-    constructor(type, id, fullNameSingular, fullNameMultiple, abbrevName) {
+    constructor(family, scaleFactor, fullNameSingular, fullNameMultiple, abbrevName) {
         super(fullNameSingular, fullNameMultiple, abbrevName);
-        this._type = type;
-        this._id = id;
-    }
-
-    /**
-     * @readonly
-     * @property {number} - the index id of this unit used for conversion table lookup
-     */
-    get id() {
-        return this._id;
+        this._family = family;
+        this._scaleFactor = scaleFactor;
     }
 
     getConversionFactor(otherUnit) {
-        if (this.type === otherUnit.type) {
-            return WT_SimpleUnit.Conversions[this._type][this.id][otherUnit.id];
+        if (this.family === otherUnit.family) {
+            return this._scaleFactor / otherUnit._scaleFactor;
         }
         return NaN;
     }
 }
-WT_SimpleUnit.Type = {
+WT_Unit.Family = {
     DISTANCE: "distance",
     ANGLE: "angle",
     TIME: "time",
     WEIGHT: "weight",
-    VOLUME: "volume"
+    VOLUME: "volume",
+    TEMP: "temperature"
 };
 WT_SimpleUnit.Conversions = {
     distance:
@@ -556,11 +548,11 @@ class WT_TempUnit extends WT_Unit {
      * @param {string} fullNameMultiple - the name of the unit in multiple form.
      * @param {string} abbrevName - the abbreviated name of the unit.
      * @param {number} zeroOffset - the offset from absolute zero in the new temperature unit's scale.
-     * @param {number} scaleFactor - the factor to multiply to one unit Kelvin to equal one unit of the new temperature unit.
+     * @param {number} scaleFactor - the relative scale of one unit of the new unit compared to one unit Kelvin.
      */
     constructor(fullNameSingular, fullNameMultiple, abbrevName, zeroOffset, scaleFactor) {
         super(fullNameSingular, fullNameMultiple, abbrevName);
-        this._type = "temperature";
+        this._family = WT_Unit.TEMP;
         this._zeroOffset = zeroOffset;
         this._scaleFactor = scaleFactor;
     }
@@ -570,7 +562,7 @@ class WT_TempUnit extends WT_Unit {
     }
 
     convert(value, otherUnit) {
-        if (this.type === otherUnit.type) {
+        if (this.family === otherUnit.family) {
             if (this.id === otherUnit.id) {
                 return value;
             }
@@ -647,15 +639,15 @@ class WT_CompoundUnit extends WT_Unit {
             }
         }
 
-        this._numerator.sort((a, b) => a.type - b.type);
-        this._denominator.sort((a, b) => a.type - b.type);
+        this._numerator.sort((a, b) => a.family - b.family);
+        this._denominator.sort((a, b) => a.family - b.family);
 
-        this._type = this._numerator.map(e => e.type) + "";
-        this._type += this._denominator.length > 0 ? "/" + this._denominator.map(e => e.type) + "" : "";
+        this._family = this._numerator.map(e => e.family) + "";
+        this._family += this._denominator.length > 0 ? "/" + this._denominator.map(e => e.family) + "" : "";
     }
 
     getConversionFactor(otherUnit) {
-        if (this.type === otherUnit.type) {
+        if (this.family === otherUnit.family) {
             let factor = 1;
             for (let i = 0; i < this._numerator.length; i++) {
                 factor *= this._numerator[i].getConversionFactor(otherUnit._numerator[i]);
@@ -669,29 +661,29 @@ class WT_CompoundUnit extends WT_Unit {
     }
 }
 
-WT_Unit.FOOT = new WT_SimpleUnit(WT_SimpleUnit.Type.DISTANCE, 0, "foot", "feet", "ft");
-WT_Unit.METER = new WT_SimpleUnit(WT_SimpleUnit.Type.DISTANCE, 1, "meter", "meters", "m");
-WT_Unit.KILOMETER = new WT_SimpleUnit(WT_SimpleUnit.Type.DISTANCE, 2, "kilometer", "kilometers", "km");
-WT_Unit.MILE = new WT_SimpleUnit(WT_SimpleUnit.Type.DISTANCE, 3, "mile", "miles", "m");
-WT_Unit.NMILE = new WT_SimpleUnit(WT_SimpleUnit.Type.DISTANCE, 4, "nautical mile", "nautical miles", "nm");
+WT_Unit.METER = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 1, "meter", "meters", "m");
+WT_Unit.FOOT = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 0.3048, "foot", "feet", "ft");
+WT_Unit.KILOMETER = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 1000, "kilometer", "kilometers", "km");
+WT_Unit.MILE = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 1609.34, "mile", "miles", "m");
+WT_Unit.NMILE = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 1852, "nautical mile", "nautical miles", "nm");
 
-WT_Unit.DEGREE = new WT_SimpleUnit(WT_SimpleUnit.Type.ANGLE, 0, "degree", "degrees", "°");
-WT_Unit.RADIAN = new WT_SimpleUnit(WT_SimpleUnit.Type.ANGLE, 1, "radian", "radians", "rad");
+WT_Unit.RADIAN = new WT_SimpleUnit(WT_Unit.Family.ANGLE, 1, "radian", "radians", "rad");
+WT_Unit.DEGREE = new WT_SimpleUnit(WT_Unit.Family.ANGLE, Math.PI/180, "degree", "degrees", "°");
 
-WT_Unit.SECOND = new WT_SimpleUnit(WT_SimpleUnit.Type.TIME, 0, "second", "seconds", "s");
-WT_Unit.MINUTE = new WT_SimpleUnit(WT_SimpleUnit.Type.TIME, 1, "minute", "minutes", "m");
-WT_Unit.HOUR = new WT_SimpleUnit(WT_SimpleUnit.Type.TIME, 2, "hour", "hours", "h");
+WT_Unit.SECOND = new WT_SimpleUnit(WT_Unit.Family.TIME, 1, "second", "seconds", "s");
+WT_Unit.MINUTE = new WT_SimpleUnit(WT_Unit.Family.TIME, 60, "minute", "minutes", "m");
+WT_Unit.HOUR = new WT_SimpleUnit(WT_Unit.Family.TIME, 3600, "hour", "hours", "h");
 
-WT_Unit.POUND = new WT_SimpleUnit(WT_SimpleUnit.Type.WEIGHT, 0, "pound", "pounds", "lb");
-WT_Unit.KILOGRAM = new WT_SimpleUnit(WT_SimpleUnit.Type.WEIGHT, 1, "kilogram", "kilograms", "kg");
-WT_Unit.TON = new WT_SimpleUnit(WT_SimpleUnit.Type.WEIGHT, 2, "ton", "tons", "tn");
-WT_Unit.TONNE = new WT_SimpleUnit(WT_SimpleUnit.Type.WEIGHT, 3, "tonne", "tonnes", "tn");
+WT_Unit.KILOGRAM = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 1, "kilogram", "kilograms", "kg");
+WT_Unit.POUND = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 0.453592, "pound", "pounds", "lb");
+WT_Unit.TON = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 907.185, "ton", "tons", "tn");
+WT_Unit.TONNE = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 1000, "tonne", "tonnes", "tn");
 
-WT_Unit.GALLON = new WT_SimpleUnit(WT_SimpleUnit.Type.VOLUME, 0, "gallon", "gallons", "gal");
-WT_Unit.LITER = new WT_SimpleUnit(WT_SimpleUnit.Type.VOLUME, 1, "liter", "liters", "l");
+WT_Unit.LITER = new WT_SimpleUnit(WT_Unit.Family.VOLUME, 1, "liter", "liters", "l");
+WT_Unit.GALLON = new WT_SimpleUnit(WT_Unit.Family.VOLUME, 3.78541, "gallon", "gallons", "gal");
 
-WT_Unit.CELSIUS = new WT_TempUnit(0, "° Celsius", "° Celsius", "°C", 273.15, 1);
-WT_Unit.FAHRENHEIT = new WT_TempUnit(1, "° Fahrenheit", "° Fahrenheit", "°F", 459.67, 5/9);
+WT_Unit.CELSIUS = new WT_TempUnit("° Celsius", "° Celsius", "°C", 273.15, 1);
+WT_Unit.FAHRENHEIT = new WT_TempUnit("° Fahrenheit", "° Fahrenheit", "°F", 459.67, 5/9);
 
 WT_Unit.KNOT = new WT_CompoundUnit([WT_Unit.NMILE], [WT_Unit.HOUR], "knot", "knots", "kt");
 WT_Unit.KPH = new WT_CompoundUnit([WT_Unit.KILOMETER], [WT_Unit.HOUR], null, null, "kph");
