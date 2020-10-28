@@ -937,6 +937,8 @@ class AS3000_TSC_AvionicsMFDFieldsTab {
     constructor(parentElement, elementId) {
         this.parentElement = parentElement;
         this.elementId = elementId;
+
+        this.infoIDs = ["BRG", "DIS", "DTG", "DTK", "END", "ENR", "ETA", "ETE", "FOB", "FOD", "GS", "LDG", "TAS", "TKE", "TRK", "XTK"];
     }
 
     init(container) {
@@ -958,13 +960,12 @@ class AS3000_TSC_AvionicsMFDFieldsTab {
     }
 
     onButtonClick(index) {
-        let elementHandler = new AS3000_TSC_NavInfoFieldSelectionElementHandler(WT_NavDataBar.INFO_DESCRIPTION, index);
+        let elementHandler = new AS3000_TSC_NavInfoFieldSelectionElementHandler(this.infoIDs.map(id => WT_NavDataBar.INFO_DESCRIPTION[id]), index);
         let context = {
             title: "Select MFD Data Bar Field",
             subclass: "navDataBarDynamicSelectionListWindow",
             closeOnSelect: true,
-            callback: this.setFieldInfo.bind(this),
-            callbackData: index,
+            callback: this.setFieldInfo.bind(this, index),
             elementConstructor: elementHandler,
             elementUpdater: elementHandler,
             currentIndexGetter: elementHandler,
@@ -975,8 +976,8 @@ class AS3000_TSC_AvionicsMFDFieldsTab {
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
 
-    setFieldInfo(infoIndex, fieldIndex) {
-        WT_NavDataBar.setFieldInfoIndex(fieldIndex, infoIndex);
+    setFieldInfo(fieldIndex, infoIndex) {
+        WT_NavDataBar.setFieldInfoIndex(fieldIndex, this.infoIDs[infoIndex]);
     }
 }
 
@@ -1014,7 +1015,7 @@ class AS3000_TSC_NavInfoFieldSelectionElementHandler {
     }
 
     getCurrentIndex() {
-        return WT_NavDataBar.getFieldInfoIndex(this.fieldIndex);
+        return this.descriptions.indexOf(WT_NavDataBar.getFieldInfoIndex(this.fieldIndex));
     }
 }
 

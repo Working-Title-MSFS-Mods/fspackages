@@ -47,10 +47,10 @@ class WT_NavDataBar extends NavSystemElement {
 
         let flightPlanManager = this.gps.currFlightPlanManager;
 
-        this._infos = [
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[0], new WT_NumberUnit(0, WT_Unit.DEGREE), "PLANE HEADING DEGREES MAGNETIC", "degree", bearingFormatter),
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[1], new WT_NumberUnit(0, WT_Unit.NMILE), "GPS WP DISTANCE", "nautical miles", distanceFormatter),
-            new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION[2], new WT_NumberUnit(0, WT_Unit.NMILE), {
+        this._infos = {
+            BRG: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.BRG, new WT_NumberUnit(0, WT_Unit.DEGREE), "PLANE HEADING DEGREES MAGNETIC", "degree", bearingFormatter),
+            DIS: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.DIS, new WT_NumberUnit(0, WT_Unit.NMILE), "GPS WP DISTANCE", "nautical miles", distanceFormatter),
+            DTG: new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION.DTG, new WT_NumberUnit(0, WT_Unit.NMILE), {
                     getCurrentValue: function() {
                         let currentWaypoint = flightPlanManager.getActiveWaypoint();
                         let destination = flightPlanManager.getDestination();
@@ -62,8 +62,8 @@ class WT_NavDataBar extends NavSystemElement {
                     }
                 }, distanceFormatter),
 
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[3], new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS WP DESIRED TRACK", "degree", bearingFormatter),
-            new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION[4], new WT_NumberUnit(0, WT_Unit.HOUR), {
+            DTK: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.DTK, new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS WP DESIRED TRACK", "degree", bearingFormatter),
+            END: new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION.END, new WT_NumberUnit(0, WT_Unit.HOUR), {
                     getCurrentValue: function() {
                         let fuelRemaining = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons");
 
@@ -80,8 +80,8 @@ class WT_NavDataBar extends NavSystemElement {
                     }
                 }, timeFormatter, {showDefault: number => number == 0 ? "__:__" : null}),
 
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[5], new WT_NumberUnit(0, WT_Unit.SECOND),"GPS ETE", "seconds", timeFormatter, {showDefault: number => number == 0 ? "__:__" : null}),
-            new WT_NavInfoUTCTime(WT_NavDataBar.INFO_DESCRIPTION[6], new WT_NumberUnit(0, WT_Unit.SECOND), {
+            ENR: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.ENR, new WT_NumberUnit(0, WT_Unit.SECOND),"GPS ETE", "seconds", timeFormatter, {showDefault: number => number == 0 ? "__:__" : null}),
+            ETA: new WT_NavInfoUTCTime(WT_NavDataBar.INFO_DESCRIPTION.ETA, new WT_NumberUnit(0, WT_Unit.SECOND), {
                     getCurrentValue: function() {
                         let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
                         let ete = SimVar.GetSimVarValue("GPS WP ETE", "seconds");
@@ -89,9 +89,9 @@ class WT_NavDataBar extends NavSystemElement {
                     }
                 }, timeFormatter),
 
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[7], new WT_NumberUnit(0, WT_Unit.SECOND), "GPS WP ETE", "seconds", timeFormatter, {showDefault: number => number == 0 ? "__:__" : null}),
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[8], new WT_NumberUnit(0, WT_Unit.GALLON), "FUEL TOTAL QUANTITY", "gallons", volumeFormatter),
-            new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION[9], new WT_NumberUnit(0, WT_Unit.GALLON), {
+            ETE: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.ETE, new WT_NumberUnit(0, WT_Unit.SECOND), "GPS WP ETE", "seconds", timeFormatter, {showDefault: number => number == 0 ? "__:__" : null}),
+            FOB: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.FOB, new WT_NumberUnit(0, WT_Unit.GALLON), "FUEL TOTAL QUANTITY", "gallons", volumeFormatter),
+            FOD: new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION.FOD, new WT_NumberUnit(0, WT_Unit.GALLON), {
                     getCurrentValue: function() {
                         let fuelRemaining = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons");
                         let enr = SimVar.GetSimVarValue("GPS ETE", "seconds") / 3600;
@@ -105,8 +105,8 @@ class WT_NavDataBar extends NavSystemElement {
                     }
                 }, volumeFormatter),
 
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[10], new WT_NumberUnit(0, WT_Unit.KNOT), "GPS GROUND SPEED", "knots", speedFormatter),
-            new WT_NavInfoUTCTime(WT_NavDataBar.INFO_DESCRIPTION[11], new WT_NumberUnit(0, WT_Unit.SECOND), {
+            GS: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.GS, new WT_NumberUnit(0, WT_Unit.KNOT), "GPS GROUND SPEED", "knots", speedFormatter),
+            LDG: new WT_NavInfoUTCTime(WT_NavDataBar.INFO_DESCRIPTION.LDG, new WT_NumberUnit(0, WT_Unit.SECOND), {
                     getCurrentValue: function() {
                         let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
                         let enr = SimVar.GetSimVarValue("GPS ETE", "seconds");
@@ -114,12 +114,12 @@ class WT_NavDataBar extends NavSystemElement {
                     }
                 }, timeFormatter),
 
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[12], new WT_NumberUnit(0, WT_Unit.KNOT), "AIRSPEED TRUE", "knots", speedFormatter),
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[13], new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS WP TRACK ANGLE ERROR", "degree", bearingFormatter),
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[14], new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS GROUND MAGNETIC TRACK", "degree", bearingFormatter),
-            new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION[15], new WT_NumberUnit(0, WT_Unit.METER), "GPS WP CROSS TRK", "meters", distanceFormatter),
-        ];
-        this._infos[15].unit = WT_Unit.NMILE;
+            TAS: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.TAS, new WT_NumberUnit(0, WT_Unit.KNOT), "AIRSPEED TRUE", "knots", speedFormatter),
+            TKE: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.TKE, new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS WP TRACK ANGLE ERROR", "degree", bearingFormatter),
+            TRK: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.TRK, new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS GROUND MAGNETIC TRACK", "degree", bearingFormatter),
+            XTK: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.XTK, new WT_NumberUnit(0, WT_Unit.METER), "GPS WP CROSS TRK", "meters", distanceFormatter),
+        };
+        this._infos.XTK.unit = WT_Unit.NMILE;
 
         this.dataFields = [];
     }
@@ -150,9 +150,9 @@ class WT_NavDataBar extends NavSystemElement {
      * Gets the index of the nav info assigned to a specific data field from the data store.
      * @param {number} fieldIndex - the index of the field to query.
      * @param {number} [defaultValue=0] - the default value to return if no value can be retrieved from the data store.
-     * @returns {number} the index of the nav info assigned to the data field at index fieldIndex.
+     * @returns {string} the identifier of the nav info assigned to the data field at index fieldIndex.
      */
-    static getFieldInfoIndex(fieldIndex, defaultValue = 0) {
+    static getFieldInfoIndex(fieldIndex, defaultValue = "BRG") {
         return WTDataStore.get(`${WT_NavDataBar.VARNAME_FIELD_INFO}.${fieldIndex}`, defaultValue);
     }
 
@@ -169,31 +169,31 @@ class WT_NavDataBar extends NavSystemElement {
     /**
      * Sets the nav info assigned to a specific data field through the data store.
      * @param {number} fieldIndex - the index of the field to change.
-     * @param {number} infoIndex - the index of the nav info to assign.
+     * @param {string} infoID - the identifier of the nav info to assign.
      */
-    static setFieldInfoIndex(fieldIndex, infoIndex) {
-        WTDataStore.set(`${WT_NavDataBar.VARNAME_FIELD_INFO}.${fieldIndex}`, infoIndex);
+    static setFieldInfoIndex(fieldIndex, infoID) {
+        WTDataStore.set(`${WT_NavDataBar.VARNAME_FIELD_INFO}.${fieldIndex}`, infoID);
     }
 }
 WT_NavDataBar.VARNAME_FIELD_INFO = "NavBar_Field_Info";
-WT_NavDataBar.INFO_DESCRIPTION = [
-    {shortName: "BRG", longName: "Bearing"},
-    {shortName: "DIS", longName: "Distance to Next Waypoint"},
-    {shortName: "DTG", longName: "Distance to Destination"},
-    {shortName: "DTK", longName: "Desired Track"},
-    {shortName: "END", longName: "Endurance"},
-    {shortName: "ENR", longName: "ETE To Destination"},
-    {shortName: "ETA", longName: "Estimated Time of Arrival"},
-    {shortName: "ETE", longName: "Estimated Time Enroute"},
-    {shortName: "FOB", longName: "Fuel Onboard"},
-    {shortName: "FOD", longName: "Fuel over Destination"},
-    {shortName: "GS", longName: "Groundspeed"},
-    {shortName: "LDG", longName: "ETA at Final Destination"},
-    {shortName: "TAS", longName: "True Airspeed"},
-    {shortName: "TKE", longName: "Track Angle Error"},
-    {shortName: "TRK", longName: "Track"},
-    {shortName: "XTK", longName: "Cross-track Error"},
-];
+WT_NavDataBar.INFO_DESCRIPTION = {
+    BRG: {shortName: "BRG", longName: "Bearing"},
+    DIS: {shortName: "DIS", longName: "Distance to Next Waypoint"},
+    DTG: {shortName: "DTG", longName: "Distance to Destination"},
+    DTK: {shortName: "DTK", longName: "Desired Track"},
+    END: {shortName: "END", longName: "Endurance"},
+    ENR: {shortName: "ENR", longName: "ETE To Destination"},
+    ETA: {shortName: "ETA", longName: "Estimated Time of Arrival"},
+    ETE: {shortName: "ETE", longName: "Estimated Time Enroute"},
+    FOB: {shortName: "FOB", longName: "Fuel Onboard"},
+    FOD: {shortName: "FOD", longName: "Fuel over Destination"},
+    GS: {shortName: "GS", longName: "Groundspeed"},
+    LDG: {shortName: "LDG", longName: "ETA at Final Destination"},
+    TAS: {shortName: "TAS", longName: "True Airspeed"},
+    TKE: {shortName: "TKE", longName: "Track Angle Error"},
+    TRK: {shortName: "TRK", longName: "Track"},
+    XTK: {shortName: "XTK", longName: "Cross-track Error"},
+};
 
 /**
  * This class represents a type of nav info that can be assigned to a data field on the navigational data bar.
