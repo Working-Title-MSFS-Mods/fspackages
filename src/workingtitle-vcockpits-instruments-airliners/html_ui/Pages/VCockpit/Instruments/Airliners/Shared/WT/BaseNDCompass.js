@@ -325,25 +325,20 @@ class Jet_NDCompass extends HTMLElement {
                     let selectedHeading = simSelectedHeading;
                     let roundedSelectedHeading = fastToFixed(selectedHeading, 3);
                     this.setAttribute("selected_heading_bug_rotation", roundedSelectedHeading);
-                    if (this.navigationMode == Jet_NDCompass_Navigation.NAV) {
-                        if (this.selectedHeadingGroup)
-                            this.selectedHeadingGroup.classList.toggle('hide', false);
-                        if (this.selectedHeadingLine) {
-                            if (this.aircraft == Aircraft.CJ4 && this.displayMode == Jet_NDCompass_Display.ARC) {
-                                let CompassAngle = this.degreeToArc(compass);
-                                let selectedAngle = this.degreeToArc(simSelectedHeading);
-                                let delta = Math.abs(CompassAngle - selectedAngle);
-                                this.selectedHeadingLine.classList.toggle('hide', (delta > 65) ? false : true);
-                                this.selectedHeadingBug.classList.toggle('hide', (delta > 90) ? true : false);
-                            }
-                            else
-                                this.selectedHeadingLine.classList.toggle('hide', false);
+                    if (this.selectedHeadingGroup)
+                        this.selectedHeadingGroup.classList.toggle('hide', false);
+                    if (this.selectedHeadingLine) {
+                        if (this.aircraft == Aircraft.CJ4) {
+                            let CompassAngle = this.degreeToArc(compass);
+                            let selectedAngle = this.degreeToArc(simSelectedHeading);
+                            let delta = Math.abs(CompassAngle - selectedAngle);
+                            this.selectedHeadingLine.classList.toggle('hide', (delta > 65) ? false : true);
+                            this.selectedHeadingBug.classList.toggle('hide', (delta > 90) ? true : false);
                         }
+                        else
+                            this.selectedHeadingLine.classList.toggle('hide', false);
                     }
-                    else {
-                        if (this.selectedHeadingGroup)
-                            this.selectedHeadingGroup.classList.toggle('hide', true);
-                    }
+
                     if (this.selectedTrackGroup)
                         this.selectedTrackGroup.classList.toggle('hide', true);
                     if (this.selectedRefGroup) {
