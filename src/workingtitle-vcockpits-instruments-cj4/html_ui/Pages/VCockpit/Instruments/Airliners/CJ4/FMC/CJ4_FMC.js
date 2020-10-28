@@ -163,6 +163,9 @@ class CJ4_FMC extends FMCMainDisplay {
             this.initializeStandbyRadios(_boot);
         };
 
+        // set persisted heading
+        SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', WTDataStore.get("AP_HEADING", Simplane.getHeadingMagnetic()));
+
         const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
         this.initialFuelLeft = Math.trunc(SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * fuelWeight);
         this.initialFuelRight = Math.trunc(SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * fuelWeight);
@@ -173,6 +176,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.adjustFuelConsumption();
         this.updateFlightLog();
         this.updateCabinLights();
+        this.updatePersistentHeading();
 
         this._frameUpdates++;
         if (this._frameUpdates > 64000) this._frameUpdates = 0;
@@ -373,7 +377,7 @@ class CJ4_FMC extends FMCMainDisplay {
         });
     }
     //function added to convert FMS units between metric and imperial
-    
+
     updateAutopilot() {
         let now = performance.now();
         let dt = now - this._lastUpdateAPTime;
@@ -626,6 +630,12 @@ class CJ4_FMC extends FMCMainDisplay {
                 activeFPWaypoints[i].infos.airwayIn = temporaryFPWaypoints[i].infos.airwayIn;
                 activeFPWaypoints[i].infos.airwayOut = temporaryFPWaypoints[i].infos.airwayOut;
             }
+        }
+    }
+
+    updatePersistentHeading() {
+        if (this._frameUpdates % 500 == 499) {
+            WTDataStore.set("AP_HEADING", SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degree"));
         }
     }
 

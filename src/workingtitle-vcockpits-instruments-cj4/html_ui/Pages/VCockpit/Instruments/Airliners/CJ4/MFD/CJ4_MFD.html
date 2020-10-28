@@ -137,8 +137,9 @@
                         <div id="TopBox">
                             <div id="Speed">
                                 <svg>
-                                    <text id="Wind_Strength" class="Wind" x="130px" y="-40px" alignment-baseline="baseline">--</text>
-                                    <polygon id="Wind_Arrow" points="-5 20, 5 20, 5 -20, 15 -20, 0 -40, -15 -20, -5 -20" transform="translate(125 -15) scale(0.40) rotate(0)" fill="magenta" display="none" />
+                                    <text id="Wind_Strength" class="Wind" x="140px" y="-40px" alignment-baseline="baseline">--</text>
+                                    <path id="Wind_Arrow" d="M 1 60 L -1 60 L 0 -40 L 15 -10 L 0 -40 L -15 -10 L 0 -40 Z" transform="translate(125 -3) scale(0.40) rotate(0)" stroke="magenta"
+                                    stroke-width="3" fill="none" display="none" />
                                 </svg>
                             </div>
 
@@ -349,7 +350,7 @@
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/BaseAirliners.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/MFD_WTMenu.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/BaseNDCompass.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/BaseNDCompass.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/NDCompass.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/NDInfo.js"></script>

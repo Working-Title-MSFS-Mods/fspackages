@@ -350,17 +350,17 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             }
             viewBox.appendChild(this.currentRefGroup);
             this.selectedRefGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            this.selectedRefGroup.setAttribute("id", "selectedRefGroup");
+            this.selectedRefGroup.setAttribute("id", "selectedRefGroup_arc");
             {
                 let centerX = -150;
-                let centerY = -355;
+                let centerY = -340;
                 let spaceX = 5;
                 this.selectedRefMode = document.createElementNS(Avionics.SVG.NS, "text");
                 this.selectedRefMode.textContent = "HDG";
                 this.selectedRefMode.setAttribute("x", (centerX - spaceX).toString());
                 this.selectedRefMode.setAttribute("y", centerY.toString());
                 this.selectedRefMode.setAttribute("fill", "#00F2FF");
-                this.selectedRefMode.setAttribute("font-size", "18");
+                this.selectedRefMode.setAttribute("font-size", "26");
                 this.selectedRefMode.setAttribute("font-family", "Roboto-Bold");
                 this.selectedRefMode.setAttribute("text-anchor", "end");
                 this.selectedRefMode.setAttribute("alignment-baseline", "central");
@@ -370,7 +370,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 this.selectedRefValue.setAttribute("x", (centerX + spaceX).toString());
                 this.selectedRefValue.setAttribute("y", centerY.toString());
                 this.selectedRefValue.setAttribute("fill", "#00F2FF");
-                this.selectedRefValue.setAttribute("font-size", "23");
+                this.selectedRefValue.setAttribute("font-size", "36");
                 this.selectedRefValue.setAttribute("font-family", "Roboto-Bold");
                 this.selectedRefValue.setAttribute("text-anchor", "start");
                 this.selectedRefValue.setAttribute("alignment-baseline", "central");
@@ -1528,7 +1528,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 this.selectedRefValue.setAttribute("alignment-baseline", "central");
                 this.selectedRefGroup.appendChild(this.selectedRefValue);
             }
-            this.root.appendChild(this.selectedRefGroup);
+            // this.root.appendChild(this.selectedRefGroup);
         }
     }
     constructRose() {
@@ -2703,18 +2703,18 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
         }
         this.root.appendChild(this.currentRefGroup);
         this.selectedRefGroup = document.createElementNS(Avionics.SVG.NS, "g");
-        this.selectedRefGroup.setAttribute("id", "selectedRefGroup");
-        this.selectedRefGroup.setAttribute("transform", "scale(1.5)");
+        this.selectedRefGroup.setAttribute("id", "selectedRefGroup_rose");
+        this.selectedRefGroup.setAttribute("transform", "scale(1.27)");
         {
-            let centerX = 180;
-            let centerY = 62;
+            let centerX = 195;
+            let centerY = 85;
             let spaceX = 5;
             this.selectedRefMode = document.createElementNS(Avionics.SVG.NS, "text");
             this.selectedRefMode.textContent = "HDG";
             this.selectedRefMode.setAttribute("x", (centerX - spaceX).toString());
             this.selectedRefMode.setAttribute("y", centerY.toString());
             this.selectedRefMode.setAttribute("fill", "#00F2FF");
-            this.selectedRefMode.setAttribute("font-size", "18");
+            this.selectedRefMode.setAttribute("font-size", "26");
             this.selectedRefMode.setAttribute("font-family", "Roboto-Bold");
             this.selectedRefMode.setAttribute("text-anchor", "end");
             this.selectedRefMode.setAttribute("alignment-baseline", "central");
@@ -2724,7 +2724,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             this.selectedRefValue.setAttribute("x", (centerX + spaceX).toString());
             this.selectedRefValue.setAttribute("y", centerY.toString());
             this.selectedRefValue.setAttribute("fill", "#00F2FF");
-            this.selectedRefValue.setAttribute("font-size", "23");
+            this.selectedRefValue.setAttribute("font-size", "36");
             this.selectedRefValue.setAttribute("font-family", "Roboto-Bold");
             this.selectedRefValue.setAttribute("text-anchor", "start");
             this.selectedRefValue.setAttribute("alignment-baseline", "central");

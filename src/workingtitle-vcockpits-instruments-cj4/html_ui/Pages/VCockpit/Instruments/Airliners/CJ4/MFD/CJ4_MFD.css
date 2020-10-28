@@ -569,17 +569,21 @@ cj4-mfd-element #Mainframe #MapOverlay #NDInfo #TopBox text.Wind {
   font-size: 20px;
 }
 
-#MapOverlay #selectedRefGroup text:first-child {
+/* #MapOverlay #selectedRefGroup text:first-child {
   font-size: 28px;
 }
 
 #MapOverlay #selectedRefGroup text:last-child {
   font-size: 40px;
+} */
+
+/* #MapOverlay g#selectedRefGroup_arc {
+  transform: translate(0px, 15px);
 }
 
-#MapOverlay g#selectedRefGroup {
-  transform: scale(1.25) translate(84px, 30px);
-}
+#MapOverlay g#selectedRefGroup_rose {
+  transform: scale(1.5) translate(0px, -10px);
+} */
 
 #MapOverlay #NDCompass #currentRefGroup text {
   font-size: 34px;
