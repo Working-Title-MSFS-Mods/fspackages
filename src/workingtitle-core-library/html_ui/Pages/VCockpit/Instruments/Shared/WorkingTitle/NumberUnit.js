@@ -658,7 +658,7 @@ class WT_TimeFormatter extends WT_NumberFormatter {
             hourSubtract = hours;
         }
         if (this.timeFormat == WT_TimeFormatter.Format.HH_MM || (this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hours)) {
-            min = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.MINUTE) - hourSubtract * 60;
+            min = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.MINUTE) % 60;
             minText = this._formatNumber(min);
             minText += this._formatUnit(min, WT_Unit.MINUTE);
             formatted += minText;
@@ -669,7 +669,7 @@ class WT_TimeFormatter extends WT_NumberFormatter {
             minText += this._formatUnit(min, WT_Unit.MINUTE);
             formatted += minText + ":";
 
-            sec = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.SECOND) - hourSubtract * 3600 - min * 60;
+            sec = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.SECOND) % 60;
             secText = this._formatNumber(sec);
             secText += this._formatUnit(sec, WT_Unit.SECOND);
             formatted += secText;
