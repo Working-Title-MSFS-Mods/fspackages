@@ -309,7 +309,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     return callback(waypoints[0]);
                 });
             } else {
-                CJ4_FMC_SelectWptPage.ShowPage(this, waypoints, selectedWaypoint => {
+                CJ4_FMC_SelectWptPage.ShowPage(this, waypoints, ident, selectedWaypoint => {
                     this.facilityLoader.UpdateFacilityInfos(selectedWaypoint).then(() => {
                         return callback(selectedWaypoint);
                     });
@@ -372,6 +372,8 @@ class CJ4_FMC extends FMCMainDisplay {
             });
         });
     }
+    //function added to convert FMS units between metric and imperial
+    
     updateAutopilot() {
         let now = performance.now();
         let dt = now - this._lastUpdateAPTime;

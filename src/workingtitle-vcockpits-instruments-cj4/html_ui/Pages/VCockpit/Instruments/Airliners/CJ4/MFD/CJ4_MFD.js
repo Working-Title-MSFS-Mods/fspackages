@@ -16,6 +16,7 @@ class CJ4_MFD extends BaseAirliners {
         this.showSystemOverlay = 0;
         this.modeChangeTimer = -1;
         this.initDuration = 11000;
+        this.isMetric = WT_ConvertUnit.isMetric();
     }
     get templateID() { return "CJ4_MFD"; }
     get IsGlassCockpit() { return true; }
@@ -52,9 +53,44 @@ class CJ4_MFD extends BaseAirliners {
     }
     disconnectedCallback() {
     }
+
+    onUnitSystemChanged() {
+
+        this.IndependentsElements = [];
+        this.systems1 = new CJ4_SystemContainer("System1", "SystemInfos1");
+        this.systems2 = new CJ4_SystemContainer("System2", "SystemInfos2");
+        this.systemOverlay = new CJ4_SystemOverlayContainer("SystemOverlay", "SystemOverlay");
+        this.map = new CJ4_MapContainer("Map", "Map");
+        this.mapOverlay = new CJ4_MapOverlayContainer("MapInfos", "MapOverlay");
+        //this.fms = new CJ4_FMSContainer("Fms", "FMSInfos");
+        this.checklist = new CJ4_Checklist_Container("Checklist", "Checklist");
+        this.passengerBrief = new CJ4_PassengerBrief_Container("PassengerBrief", "PassengerBrief");
+        this.navBar = new CJ4_NavBarContainer("Nav", "NavBar");
+        this.popup = new CJ4_PopupMenuContainer("Menu", "PopupMenu");
+        this.addIndependentElementContainer(this.systems1);
+        this.addIndependentElementContainer(this.systems2);
+        this.addIndependentElementContainer(this.systemOverlay);
+        this.addIndependentElementContainer(this.map);
+        this.addIndependentElementContainer(this.mapOverlay);
+        this.addIndependentElementContainer(this.navBar);
+        //this.addIndependentElementContainer(this.fms);
+        this.addIndependentElementContainer(this.checklist);
+        this.addIndependentElementContainer(this.passengerBrief);
+        this.addIndependentElementContainer(this.popup);
+        this.maxUpdateBudget = 12;
+    }
+
     Update() {
         super.Update();
         if (this.allContainersReady()) {
+
+            // check for unit system change
+            if (WT_ConvertUnit.isMetric() !== this.isMetric) {
+                this.isMetric = WT_ConvertUnit.isMetric();
+                this.onUnitSystemChanged();
+                return;
+            }
+
             SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
             if (this.modeChangeMask && this.modeChangeTimer >= 0) {
                 this.modeChangeTimer -= this.deltaTime / 1000;
@@ -85,13 +121,13 @@ class CJ4_MFD extends BaseAirliners {
                     if (el) {
                         this.previousMapDisplayMode = this.mapDisplayMode;
                         this.previousMapNavigationSource = this.mapNavigationSource;
-    
+
                         if (this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {
                             el.setAttribute('width', '122%');
                             el.setAttribute('height', '122%');
                             el.style = 'transform: translate(-84px, -56px)';
                         }
-    
+
                         if (this.mapDisplayMode === Jet_NDCompass_Display.ARC) {
                             el.setAttribute('width', '108%');
                             el.setAttribute('height', '108%');
@@ -285,15 +321,15 @@ class CJ4_MFD extends BaseAirliners {
                 break;
         }
     }
-    activeMemoryFunction(_memoryFunction){
+    activeMemoryFunction(_memoryFunction) {
         let memoryFunction = this.mem1;
-        if(_memoryFunction == 1){
+        if (_memoryFunction == 1) {
             memoryFunction = this.mem1;
         }
-        else if (_memoryFunction == 2){
+        else if (_memoryFunction == 2) {
             memoryFunction = this.mem2;
         }
-        else if (_memoryFunction == 3){
+        else if (_memoryFunction == 3) {
             memoryFunction = this.mem3;
         }
         //load stored settings
@@ -741,7 +777,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             var gaugeHeight = 125;
             this.OXYCursorX = gaugeStartX + gaugeWidth;
             //this.OXYCursorY1 = gaugeStartY + gaugeHeight;
-			this.OXYCursorY1 = 86;
+            this.OXYCursorY1 = 86;
             this.OXYCursorY2 = gaugeStartY;
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
@@ -890,7 +926,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             var rectHeight = 30;
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "PPH";
+            titleText.textContent = WT_ConvertUnit.isMetric() ? "KG/H" : "PPH";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -1236,7 +1272,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 trimGroup.appendChild(rect);
                 var percent = (-Simplane.getTrimNeutral() + 1.0) * 0.5;
                 percent = Math.min(1, Math.max(0, percent));
-                var posY = ((gaugeStartY+gaugeHeight) - (gaugeHeight * percent)) - ((gaugeHeight*0.18)/2);
+                var posY = ((gaugeStartY + gaugeHeight) - (gaugeHeight * percent)) - ((gaugeHeight * 0.18) / 2);
                 var rect = document.createElementNS(Avionics.SVG.NS, "rect");
                 rect.setAttribute("x", gaugeStartX.toString());
                 rect.setAttribute("y", posY.toString());
@@ -1247,7 +1283,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
 
 
                 this.ElevatorCursorRX = gaugeStartX + gaugeWidth;
-                this.ElevatorCursorRY1 = gaugeStartY ;
+                this.ElevatorCursorRY1 = gaugeStartY;
                 this.ElevatorCursorRY2 = gaugeStartY + gaugeHeight;
                 this.ElevatorCursorR = document.createElementNS(Avionics.SVG.NS, "path");
                 this.ElevatorCursorR.setAttribute("transform", "translate (" + this.ElevatorCursorRX + " " + this.ElevatorCursorRY2 + ")");
@@ -1321,19 +1357,20 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 BatAmp = BatAmp / BatVolt;
                 this.BATAmpValue.textContent = Math.round(BatAmp).toString();
                 this.BATTempValue.textContent = "26";
-				
-				let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
-				let HydPSI1 = N2Eng1 >= 20 ? 3000 : N2Eng1 * 150;
+
+                let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
+                let HydPSI1 = N2Eng1 >= 20 ? 3000 : N2Eng1 * 150;
                 this.HYDPSIValueLeft.textContent = Math.round(HydPSI1).toString();
-				
-				let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
-				let HydPSI2 = N2Eng2 >= 20 ? 3000 : N2Eng2 * 150;
+
+                let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
+                let HydPSI2 = N2Eng2 >= 20 ? 3000 : N2Eng2 * 150;
                 this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
-				
+
                 let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
-                this.FUELPPHValueLeft.textContent = Math.round(PPHEng1).toString();
+                this.FUELPPHValueLeft.textContent = Math.round(WT_ConvertUnit.getFuelFlow(PPHEng1).Value);
                 let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
-                this.FUELPPHValueRight.textContent = Math.round(PPHEng2).toString();
+                this.FUELPPHValueRight.textContent = Math.round(WT_ConvertUnit.getFuelFlow(PPHEng2).Value);
+
                 this.FUELTempValueLeft.textContent = "--";
                 this.FUELTempValueRight.textContent = "--";
             }
