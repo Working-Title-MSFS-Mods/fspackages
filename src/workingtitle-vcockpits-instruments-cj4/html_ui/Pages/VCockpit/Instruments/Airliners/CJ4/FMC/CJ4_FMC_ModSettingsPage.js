@@ -17,6 +17,10 @@ class CJ4_FMC_ModSettingsPageOne {
         else {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF;
         }
+
+        this._cj4Units = WTDataStore.get('WT_CJ4_Units', 0);
+
+
     }
 
     get lightMode() { return this._lightMode; }
@@ -41,9 +45,21 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
+    get cj4Units() { return this._cj4Units; }
+    set cj4Units(value) {
+        if (value == 2) value = 0;
+        this._cj4Units = value;
+
+        // set datastore
+        WTDataStore.set('WT_CJ4_Units', value);
+
+        this.invalidate();
+    }
+    
     render() {
         let lightSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "DIM", "ON"], this.lightMode);
         let pilotIdDisplay = (this.pilotId !== this._pilotDefault) ? this.pilotId + "[green]" : this._pilotDefault;
+        let unitsSwitch = this._fmc._templateRenderer.renderSwitch(["IMPERIAL", "METRIC"], this.cj4Units);
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/1[blue] ", "WT MOD SETTINGS[yellow]"],
@@ -51,8 +67,8 @@ class CJ4_FMC_ModSettingsPageOne {
             [lightSwitch],
             [" SIMBRIEF PILOT ID[blue]"],
             [pilotIdDisplay, ""],
-            [""],
-            ["", ""],
+            [" FMS/MFD UNITS[blue]"],
+            [unitsSwitch],
             [""],
             ["", ""],
             [""],
@@ -69,6 +85,7 @@ class CJ4_FMC_ModSettingsPageOne {
             this.pilotId = idValue == "CLR" ? "" : idValue;
             this._fmc.clearUserInput();
         };
+        this._fmc.onLeftInput[2] = () => { this.cj4Units = this.cj4Units + 1; };
         this._fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(this._fmc); };
     }
 

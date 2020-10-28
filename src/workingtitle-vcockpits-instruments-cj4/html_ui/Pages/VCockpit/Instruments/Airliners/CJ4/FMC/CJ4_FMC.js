@@ -174,6 +174,10 @@ class CJ4_FMC extends FMCMainDisplay {
         this.updateAutopilot();
         this.adjustFuelConsumption();
         this.updateFlightLog();
+        this.cj4Units = SimVar.GetSimVarValue("L:WT_CJ4_Units", "Enum");
+        this.cj4Weight = this.cj4Units == 1 ? 0.453592 : 1; //default sim value for weight is lbs
+        this.cj4Length = this.cj4Units == 1 ? 1 : 3.28084; //default sim value for length is meters
+        this.cj4Qnh = this.cj4Units == 1 ? 33.864 : 1; //default sim value for pressure is inHG
     }
     onInputAircraftSpecific(input) {
         console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
@@ -370,6 +374,8 @@ class CJ4_FMC extends FMCMainDisplay {
             });
         });
     }
+    //function added to convert FMS units between metric and imperial
+    
     updateAutopilot() {
         let now = performance.now();
         let dt = now - this._lastUpdateAPTime;

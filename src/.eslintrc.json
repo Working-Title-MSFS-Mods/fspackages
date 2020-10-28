@@ -39,6 +39,7 @@
         "WTUtils": "readonly",
         "WT_FMC_Renderer": "readonly",
         "Utils": "readonly",
+        "WT_ConvertUnit": "readonly",
         "Jet_NDCompass_Display": "readonly",
         "NearestAirspace": "readonly",
         "FacilityLoader": "readonly",
