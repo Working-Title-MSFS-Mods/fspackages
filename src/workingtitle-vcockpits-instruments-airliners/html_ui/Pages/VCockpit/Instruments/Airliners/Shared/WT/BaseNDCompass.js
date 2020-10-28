@@ -304,7 +304,7 @@ class Jet_NDCompass extends HTMLElement {
                 }
             }
             else {
-                let showSelectedHeading = Simplane.getAutoPilotHeadingLockActive();
+                let showSelectedHeading = true; // Simplane.getAutoPilotHeadingLockActive();
                 if (!showSelectedHeading) {
                     if (headingChanged) {
                         showSelectedHeading = true;
