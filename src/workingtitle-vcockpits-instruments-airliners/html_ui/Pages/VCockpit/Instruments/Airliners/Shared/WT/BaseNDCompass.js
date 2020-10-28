@@ -304,11 +304,11 @@ class Jet_NDCompass extends HTMLElement {
                 }
             }
             else {
-                let showSelectedHeading = true; // Simplane.getAutoPilotHeadingLockActive();
+                let showSelectedHeading = Simplane.getAutoPilotHeadingLockActive();
                 if (!showSelectedHeading) {
                     if (headingChanged) {
                         showSelectedHeading = true;
-                        this.showSelectedHeadingTimer = 5;
+                        this.showSelectedHeadingTimer = 3;
                     }
                     else if (this.showSelectedHeadingTimer > 0) {
                         this.showSelectedHeadingTimer -= _deltaTime / 1000;
@@ -321,39 +321,34 @@ class Jet_NDCompass extends HTMLElement {
                 else {
                     this.showSelectedHeadingTimer = 0;
                 }
-                if (showSelectedHeading) {
-                    let selectedHeading = simSelectedHeading;
-                    let roundedSelectedHeading = fastToFixed(selectedHeading, 3);
-                    this.setAttribute("selected_heading_bug_rotation", roundedSelectedHeading);
-                    if (this.selectedHeadingGroup)
-                        this.selectedHeadingGroup.classList.toggle('hide', false);
-                    if (this.selectedHeadingLine) {
-                        if (this.aircraft == Aircraft.CJ4) {
-                            let CompassAngle = this.degreeToArc(compass);
-                            let selectedAngle = this.degreeToArc(simSelectedHeading);
-                            let delta = Math.abs(CompassAngle - selectedAngle);
-                            this.selectedHeadingLine.classList.toggle('hide', (delta > 65) ? false : true);
-                            this.selectedHeadingBug.classList.toggle('hide', (delta > 90) ? true : false);
-                        }
-                        else
-                            this.selectedHeadingLine.classList.toggle('hide', false);
-                    }
 
-                    if (this.selectedTrackGroup)
-                        this.selectedTrackGroup.classList.toggle('hide', true);
-                    if (this.selectedRefGroup) {
-                        if (this.selectedRefValue)
-                            this.selectedRefValue.textContent = selectedHeading.toString();
-                        this.selectedRefGroup.classList.toggle('hide', false);
+                let selectedHeading = simSelectedHeading;
+                let roundedSelectedHeading = fastToFixed(selectedHeading, 3);
+                this.setAttribute("selected_heading_bug_rotation", roundedSelectedHeading);
+                if (this.selectedHeadingGroup)
+                    this.selectedHeadingGroup.classList.toggle('hide', false);
+                if (this.selectedHeadingLine) {
+                    if (this.aircraft == Aircraft.CJ4) {
+                        let CompassAngle = this.degreeToArc(compass);
+                        let selectedAngle = this.degreeToArc(simSelectedHeading);
+                        let delta = Math.abs(CompassAngle - selectedAngle);
+                        this.selectedHeadingLine.classList.toggle('hide', (delta > 65) ? false : true);
+                        this.selectedHeadingBug.classList.toggle('hide', (delta > 90) ? true : false);
+
+                        if (showSelectedHeading) {
+                            this.selectedHeadingLine.classList.toggle('hide', false);
+                        }
                     }
+                    else
+                        this.selectedHeadingLine.classList.toggle('hide', false);
                 }
-                else {
-                    if (this.selectedHeadingGroup)
-                        this.selectedHeadingGroup.classList.toggle('hide', true);
-                    if (this.selectedTrackGroup)
-                        this.selectedTrackGroup.classList.toggle('hide', true);
-                    if (this.selectedRefGroup)
-                        this.selectedRefGroup.classList.toggle('hide', true);
+
+                if (this.selectedTrackGroup)
+                    this.selectedTrackGroup.classList.toggle('hide', true);
+                if (this.selectedRefGroup) {
+                    if (this.selectedRefValue)
+                        this.selectedRefValue.textContent = selectedHeading.toString();
+                    this.selectedRefGroup.classList.toggle('hide', false);
                 }
             }
         }
