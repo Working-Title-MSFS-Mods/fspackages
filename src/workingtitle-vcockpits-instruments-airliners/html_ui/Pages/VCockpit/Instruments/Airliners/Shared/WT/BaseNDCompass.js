@@ -285,7 +285,7 @@ class Jet_NDCompass extends HTMLElement {
                 }
                 let roundedSelectedHeading = fastToFixed(selectedHeading, 3);
                 this.setAttribute("selected_heading_bug_rotation", roundedSelectedHeading);
-                if (this.navigationMode == Jet_NDCompass_Navigation.NAV) {
+                if (this.navigationMode !== Jet_NDCompass_Navigation.PLAN) {
                     if (this.selectedHeadingGroup)
                         this.selectedHeadingGroup.classList.toggle('hide', false);
                     if (this.selectedHeadingLine)
