@@ -274,6 +274,9 @@
   .tabContentContainer .tabContent[state="Inactive"] {
     display: none; }
 
+.tscPage {
+  display: none; }
+
 .PopUpWindow {
   position: absolute;
   background-color: black;
@@ -326,22 +329,22 @@
     width: 100%;
     margin-bottom: 5%; }
 
-.DynamicSelectionListWindow .content {
+.dynamicSelectionListWindow .content {
   position: absolute;
   background-color: black;
   border: 0.4vh solid white;
   padding: 2%;
   overflow-y: scroll; }
-  .DynamicSelectionListWindow .content::-webkit-scrollbar {
+  .dynamicSelectionListWindow .content::-webkit-scrollbar {
     width: 1vw; }
-  .DynamicSelectionListWindow .content::-webkit-scrollbar-track {
+  .dynamicSelectionListWindow .content::-webkit-scrollbar-track {
     background: none; }
-  .DynamicSelectionListWindow .content::-webkit-scrollbar-thumb {
+  .dynamicSelectionListWindow .content::-webkit-scrollbar-thumb {
     background: white; }
-  .DynamicSelectionListWindow .content .gradientButton {
+  .dynamicSelectionListWindow .content .gradientButton {
     width: 100%;
     margin-bottom: 5%; }
-    .DynamicSelectionListWindow .content .gradientButton .value {
+    .dynamicSelectionListWindow .content .gradientButton .value {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
@@ -672,6 +675,33 @@
       #LightingConfig #LightingControls .slider::-webkit-slider-runnable-track {
         width: 100%;
         background: transparent; }
+
+#AvionicsSettings .tabContainer {
+  display: flex;
+  flex-flow: row nowrap; }
+  #AvionicsSettings #MFDFieldsTab .buttonsContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    overflow-x: hidden;
+    overflow-y: scroll; }
+    #AvionicsSettings #MFDFieldsTab .buttonsContainer::-webkit-scrollbar {
+      width: 1vw; }
+    #AvionicsSettings #MFDFieldsTab .buttonsContainer::-webkit-scrollbar-track {
+      background: none; }
+    #AvionicsSettings #MFDFieldsTab .buttonsContainer::-webkit-scrollbar-thumb {
+      background: white; }
+      #AvionicsSettings #MFDFieldsTab .row {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border: 1px solid grey;
+        border-radius: 4px;
+        display: grid;
+        grid-template-rows: 1fr;
+        justify-items: center;
+        align-items: center; }
+        #AvionicsSettings #MFDFieldsTab .rowLabel {
+          text-align: center; }
 
 #AirportInfo #AirportInfo_SelectedWaypoint .mainValue {
   text-align: left;

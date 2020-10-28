@@ -111,7 +111,10 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Nearest NDB", "NearestNDB", new AS3000_TSC_NRST_NDB()),
                 new NavSystemPage("Speed Bugs", "SpeedBugs", this.speedBugs),
                 new NavSystemPage("Aircraft Systems", "AircraftSystems", new AS3000_TSC_AircraftSystems()),
-                new NavSystemPage("Lighting Configuration", "LightingConfig", new AS3000_TSC_LightingConfig())
+                new NavSystemPage("Lighting Configuration", "LightingConfig", new AS3000_TSC_LightingConfig()),
+                new NavSystemPage("Utilities", "Utilities", new AS3000_TSC_Utilities()),
+                new NavSystemPage("Setup", "UtilitiesSetup", new AS3000_TSC_UtilitiesSetup()),
+                new NavSystemPage("Avionics Settings", "AvionicsSettings", new AS3000_TSC_AvionicsSettings())
             ]),
             new NavSystemPageGroup("NavCom", this, [
                 new NavSystemPage("NAV/COM Home", "NavComHome", new AS3000_TSC_NavComHome()),
@@ -437,6 +440,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.speedBugsButton = this.gps.getChildById("SpeedBugsButton_MFD");
         this.WaypointsInfoButton = this.gps.getChildById("WaypointInfoButton");
         this.aircraftSystemsButton = this.gps.getChildById("AircraftSystemsButton");
+        this.utilitiesButton = this.gps.getChildById("UtilitiesButton");
         this.updateMapButtons();
         this.gps.makeButton(this.mapButton, this.mapSwitch.bind(this, 0));
         this.gps.makeButton(this.weatherButton, this.mapSwitch.bind(this, 2));
@@ -449,6 +453,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.gps.makeButton(this.speedBugsButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Speed Bugs"));
         this.gps.makeButton(this.WaypointsInfoButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Waypoint Info"));
         this.gps.makeButton(this.aircraftSystemsButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Aircraft Systems"));
+        this.gps.makeButton(this.utilitiesButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Utilities"));
     }
     mapSwitch(_mapIndex) {
         let currMap = SimVar.GetSimVarValue("L:AS3000_MFD_Current_Map", "number");
@@ -727,7 +732,6 @@ class AS3000_TSC_ApproachSelection extends NavSystemTouch_ApproachSelection {
 class AS3000_TSC_AircraftSystems extends NavSystemElement {
     init(root) {
         this.lightingButton = this.gps.getChildById("LightingConfigButton");
-        this.lightingButton_text = this.lightingButton.getElementsByClassName("title")[0];
 
         this.gps.makeButton(this.lightingButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Lighting Configuration"));
     }
@@ -805,6 +809,213 @@ class AS3000_TSC_LightingConfig extends NavSystemElement {
     }
     changeLighting(_delta) {
         SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", Math.min(Math.max(SimVar.GetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number") + _delta, 0.01), 1));
+    }
+}
+
+/*
+ * Utilities Page (via MFD Home)
+ */
+class AS3000_TSC_Utilities extends NavSystemElement {
+    init(root) {
+        this.setupButton = this.gps.getChildById("SetupButton");
+
+        this.gps.makeButton(this.setupButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Setup"));
+    }
+
+    onEnter() {
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+    }
+
+    onUpdate(_deltaTime) {
+    }
+
+    onExit() {
+        this.gps.deactivateNavButton(1);
+        this.gps.deactivateNavButton(2);
+    }
+
+    onEvent(_event) {
+    }
+
+    back() {
+        this.gps.goBack();
+        return true;
+    }
+
+    backHome() {
+        this.gps.SwitchToPageName("MFD", "MFD Home");
+        return true;
+    }
+}
+
+/*
+ * Setup Page (via Utilities)
+ */
+class AS3000_TSC_UtilitiesSetup extends NavSystemElement {
+    init(root) {
+        this.avionicsSettingsButton = this.gps.getChildById("AvionicsSettingsButton");
+
+        this.gps.makeButton(this.avionicsSettingsButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Avionics Settings"));
+    }
+
+    onEnter() {
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+    }
+
+    onUpdate(_deltaTime) {
+    }
+
+    onExit() {
+        this.gps.deactivateNavButton(1);
+        this.gps.deactivateNavButton(2);
+    }
+
+    onEvent(_event) {
+    }
+
+    back() {
+        this.gps.goBack();
+        return true;
+    }
+
+    backHome() {
+        this.gps.SwitchToPageName("MFD", "MFD Home");
+        return true;
+    }
+}
+
+/*
+ * Avionics Settings Page (via Utilities Setup)
+ */
+class AS3000_TSC_AvionicsSettings extends NavSystemElement {
+    constructor() {
+        super();
+        this._tabs = [
+            new AS3000_TSC_AvionicsMFDFieldsTab(this, "MFDFieldsTab")
+        ];
+    }
+
+    init(root) {
+        for (let tab of this._tabs) {
+            tab.init(this.gps.getChildById(tab.elementId));
+        }
+    }
+
+    onEnter() {
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+    }
+
+    onUpdate(_deltaTime) {
+        for (let tab of this._tabs) {
+            tab.update();
+        }
+    }
+
+    onExit() {
+        this.gps.deactivateNavButton(1);
+        this.gps.deactivateNavButton(2);
+    }
+
+    onEvent(_event) {
+    }
+
+    back() {
+        this.gps.goBack();
+        return true;
+    }
+
+    backHome() {
+        this.gps.SwitchToPageName("MFD", "MFD Home");
+        return true;
+    }
+}
+
+class AS3000_TSC_AvionicsMFDFieldsTab {
+    constructor(parentElement, elementId) {
+        this.parentElement = parentElement;
+        this.elementId = elementId;
+
+        this.infoIDs = ["BRG", "DIS", "DTG", "DTK", "END", "ENR", "ETA", "ETE", "FOB", "FOD", "GS", "LDG", "TAS", "TKE", "TRK", "XTK"];
+    }
+
+    init(container) {
+        this._buttons = Array.from(container.getElementsByClassName("gradientButton"));
+        this._shortNameText = this._buttons.map(button => button.getElementsByClassName("shortName")[0]);
+        this._longNameText = this._buttons.map(button => button.getElementsByClassName("longName")[0]);
+
+        for (let i = 0; i < this._buttons.length; i++) {
+            this.parentElement.gps.makeButton(this._buttons[i], this.onButtonClick.bind(this, i));
+        }
+    }
+
+    update() {
+        for (let i = 0; i < this._buttons.length; i++) {
+            let description = WT_NavDataBar.getFieldInfoDescription(i);
+            Avionics.Utils.diffAndSet(this._shortNameText[i], description.shortName);
+            Avionics.Utils.diffAndSet(this._longNameText[i], description.longName);
+        }
+    }
+
+    onButtonClick(index) {
+        let elementHandler = new AS3000_TSC_NavInfoFieldSelectionElementHandler(this.infoIDs.map(id => WT_NavDataBar.INFO_DESCRIPTION[id]), index);
+        let context = {
+            title: "Select MFD Data Bar Field",
+            subclass: "navDataBarDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: this.setFieldInfo.bind(this, index),
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: elementHandler,
+            homePageParent: this.parentElement.homePageParent,
+            homePageName: this.parentElement.homePageName
+        };
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(context);
+        this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
+    }
+
+    setFieldInfo(fieldIndex, infoIndex) {
+        WT_NavDataBar.setFieldInfoIndex(fieldIndex, this.infoIDs[infoIndex]);
+    }
+}
+
+class AS3000_TSC_NavInfoFieldSelectionElementHandler {
+    constructor(descriptions, fieldIndex) {
+        this.descriptions = descriptions;
+        this.fieldIndex = fieldIndex;
+    }
+
+    nextElement(index) {
+        if (index >= this.descriptions.length) {
+            return null;
+        }
+
+        let elem = {
+            button: document.createElement("div"),
+            mainText: document.createElement("div"),
+            shortNameText: document.createElement("span"),
+            longNameText: document.createElement("span")
+        };
+        elem.button.setAttribute("class", "gradientButton");
+        elem.mainText.setAttribute("class", "mainText");
+        elem.shortNameText.setAttribute("class", "shortName");
+        elem.longNameText.setAttribute("class", "longName");
+        Avionics.Utils.diffAndSet(elem.shortNameText, this.descriptions[index].shortName);
+        Avionics.Utils.diffAndSet(elem.longNameText, this.descriptions[index].longName);
+        elem.mainText.appendChild(elem.shortNameText);
+        elem.mainText.appendChild(document.createElement("br"));
+        elem.mainText.appendChild(elem.longNameText);
+        elem.button.appendChild(elem.mainText);
+        return elem;
+    }
+
+    update(index, elem) {
+    }
+
+    getCurrentIndex() {
+        return this.descriptions.indexOf(WT_NavDataBar.getFieldInfoIndex(this.fieldIndex));
     }
 }
 
@@ -3915,7 +4126,20 @@ class AS3000_TSC_MapSettingsSensorTab extends AS3000_TSC_MapSettingsTab {
     // terrain helpers
 
     openTerrainModeWindow() {
-        this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map Terrain Displayed", this.setTerrainMode.bind(this), WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT, this.parentElement.varNameID, AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT, this.parentElement.homePageParent, this.parentElement.homePageName);
+        let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT);
+
+        let context = {
+            title: "Map Terrain Displayed",
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: this.setTerrainMode.bind(this),
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: new AS3000_TSC_MapSettingIndexGetter(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT, this.parentElement.varNameID),
+            homePageParent: this.parentElement.homePageParent,
+            homePageName: this.parentElement.homePageName
+        };
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(context);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
 
@@ -3980,9 +4204,19 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
     // airspace helpers
 
     openAirspaceRangeWindow() {
-        let values = AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.AIRSPACE_RANGE_MAX);
-
-        this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map Airspace Range", this.setAirspaceRange.bind(this), AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT, this.parentElement.varNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
+        let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.AIRSPACE_RANGE_MAX));
+        let context = {
+            title: "Map Airspace Range",
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: this.setAirspaceRange.bind(this),
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: new AS3000_TSC_MapSettingIndexGetter(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT, this.parentElement.varNameID),
+            homePageParent: this.parentElement.homePageParent,
+            homePageName: this.parentElement.homePageName
+        };
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(context);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
 
@@ -3997,8 +4231,21 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.mapAirportRangeTypeSelect);
     }
 
-    openAirportRangeWindow(_index) {
-        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(this.airportTypeRangeSelectTitles[_index], this.setAirportTypeRange.bind(this), this.airportTypeSimVarRoots[_index], this.parentElement.varNameID, this.getAirportTypeRangeValues(_index), this.parentElement.homePageParent, this.parentElement.homePageName, this.airportTypeSimVarRoots[_index]);
+    openAirportRangeWindow(index) {
+        let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(this.getAirportTypeRangeValues(index));
+        let context = {
+            title: this.airportTypeRangeSelectTitles[index],
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: this.setAirportTypeRange.bind(this),
+            callbackData: this.airportTypeSimVarRoots[index],
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: new AS3000_TSC_MapSettingIndexGetter(this.airportTypeSimVarRoots[index], this.parentElement.varNameID),
+            homePageParent: this.parentElement.homePageParent,
+            homePageName: this.parentElement.homePageName
+        };
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(context);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
 
@@ -4022,23 +4269,53 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
     // VOR/INT/NDB helpers
 
     openVORRangeWindow() {
-        let values = AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.VOR_RANGE_MAX);
-
-        this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map VOR Range", this.setVORRange.bind(this), AS3000_MapElement.VARNAME_VOR_RANGE_ROOT, this.parentElement.varNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
+        let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.VOR_RANGE_MAX));
+        let context = {
+            title: "Map VOR Range",
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: this.setVORRange.bind(this),
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: new AS3000_TSC_MapSettingIndexGetter(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT, this.parentElement.varNameID),
+            homePageParent: this.parentElement.homePageParent,
+            homePageName: this.parentElement.homePageName
+        };
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(context);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
 
     openINTRangeWindow() {
-        let values = AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.INT_RANGE_MAX);
-
-        this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map INT Range", this.setINTRange.bind(this), AS3000_MapElement.VARNAME_INT_RANGE_ROOT, this.parentElement.varNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
+        let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.INT_RANGE_MAX));
+        let context = {
+            title: "Map INT Range",
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: this.setINTRange.bind(this),
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: new AS3000_TSC_MapSettingIndexGetter(AS3000_MapElement.VARNAME_INT_RANGE_ROOT, this.parentElement.varNameID),
+            homePageParent: this.parentElement.homePageParent,
+            homePageName: this.parentElement.homePageName
+        };
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(context);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
 
     openNDBRangeWindow() {
-        let values = AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.NDB_RANGE_MAX);
-
-        this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map NDB Range", this.setNDBRange.bind(this), AS3000_MapElement.VARNAME_NDB_RANGE_ROOT, this.parentElement.varNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
+        let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.NDB_RANGE_MAX));
+        let context = {
+            title: "Map NDB Range",
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: this.setNDBRange.bind(this),
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: new AS3000_TSC_MapSettingIndexGetter(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT, this.parentElement.varNameID),
+            homePageParent: this.parentElement.homePageParent,
+            homePageName: this.parentElement.homePageName
+        };
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(context);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
 
@@ -4108,8 +4385,21 @@ class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.mapRoadRangeTypeSelect);
     }
 
-    openRoadRangeWindow(_index) {
-        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(this.roadTypeRangeSelectTitles[_index], this.setSettingVar.bind(this), this.roadTypeSimVarRoots[_index], this.parentElement.varNameID, this.getRoadTypeRangeValues(_index), this.parentElement.homePageParent, this.parentElement.homePageName, this.roadTypeSimVarRoots[_index]);
+    openRoadRangeWindow(index) {
+        let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(this.getRoadTypeRangeValues(index));
+        let context = {
+            title: this.roadTypeRangeSelectTitles[index],
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: this.setSettingVar.bind(this),
+            callbackData: this.roadTypeSimVarRoots[index],
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: new AS3000_TSC_MapSettingIndexGetter(this.roadTypeSimVarRoots[index], this.parentElement.varNameID),
+            homePageParent: this.parentElement.homePageParent,
+            homePageName: this.parentElement.homePageName
+        };
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(context);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
 
@@ -4133,8 +4423,21 @@ class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.mapCityRangeTypeSelect);
     }
 
-    openCityRangeWindow(_index) {
-        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(this.roadTypeRangeSelectTitles[_index], this.setSettingVar.bind(this), this.cityTypeSimVarRoots[_index], this.parentElement.varNameID, this.getCityTypeRangeValues(_index), this.parentElement.homePageParent, this.parentElement.homePageName, this.cityTypeSimVarRoots[_index]);
+    openCityRangeWindow(index) {
+        let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(this.getCityTypeRangeValues(index));
+        let context = {
+            title: this.cityTypeRangeSelectTitles[index],
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: this.setSettingVar.bind(this),
+            callbackData: this.cityTypeSimVarRoots[index],
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: new AS3000_TSC_MapSettingIndexGetter(this.cityTypeSimVarRoots[index], this.parentElement.varNameID),
+            homePageParent: this.parentElement.homePageParent,
+            homePageName: this.parentElement.homePageName
+        };
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(context);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
 
@@ -4188,9 +4491,19 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
     // auto north up helpers
 
     openNorthUpRangeWindow() {
-        let values = AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.ZOOM_RANGES_DEFAULT[AS3000_MapElement.ZOOM_RANGES_DEFAULT.length - 1]);
-
-        this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map North Up Above", this.setNorthUpRange.bind(this), WT_MapAutoNorthUpSetting.VARNAME_RANGE_ROOT, this.parentElement.varNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
+        let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(AS3000_TSC_MapSettings.getRangeValuesDisplayToMax(AS3000_MapElement.ZOOM_RANGES_DEFAULT[AS3000_MapElement.ZOOM_RANGES_DEFAULT.length - 1]));
+        let context = {
+            title: "Map North Up Above",
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: this.setNorthUpRange.bind(this),
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: new AS3000_TSC_MapSettingIndexGetter(WT_MapAutoNorthUpSetting.VARNAME_RANGE_ROOT, this.parentElement.varNameID),
+            homePageParent: this.parentElement.homePageParent,
+            homePageName: this.parentElement.homePageName
+        };
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(context);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
 
@@ -4206,7 +4519,19 @@ class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {
             values[i] = AS3000_TSC_MapSettingsOtherTab.getTrackVectorLookaheadText(i);
         }
 
-        this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map Track Vector", this.setTrackVectorLookahead.bind(this), WT_MapTrackVectorSetting.VARNAME_LOOKAHEAD_ROOT, this.parentElement.varNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
+        let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(values);
+        let context = {
+            title: "Map Track Vector",
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: this.setTrackVectorLookahead.bind(this),
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: new AS3000_TSC_MapSettingIndexGetter(WT_MapTrackVectorSetting.VARNAME_LOOKAHEAD_ROOT, this.parentElement.varNameID),
+            homePageParent: this.parentElement.homePageParent,
+            homePageName: this.parentElement.homePageName
+        };
+        this.parentElement.gps.dynamicSelectionListWindow.element.setContext(context);
         this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
     }
 
@@ -4358,27 +4683,11 @@ class AS3000_TSC_StatusButtonSelectionListWindow extends AS3000_TSC_SelectionLis
     }
 }
 
-class AS3000_TSC_DynamicSelectionListWindow extends NavSystemTouch_SelectionList {
-    constructor(_closeOnSelect = true) {
-        super();
-        this.closeOnSelect = _closeOnSelect;
-    }
-
+class AS3000_TSC_DynamicSelectionListWindow extends WT_TouchDynamicSelectionListWindow {
     onEnter() {
         super.onEnter();
-        this.setElements(this.tempTitle, this.tempElements, this.tempCallback);
-        this.scrollToHighlightedButton();
         this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
         this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-    }
-
-    onUpdate(_deltaTime) {
-        let currentVarValue = WT_MapElement.getSettingVar(this.varNameRoot, this.varNameID);
-        for (let i = 0; i < this.buttons.length; i++) {
-            if (this.buttons[i].state != "Inactive") {
-                Avionics.Utils.diffAndSetAttribute(this.buttons[i].button, "state", (currentVarValue == i) ? "Highlight" : "Active");
-            }
-        }
     }
 
     onExit() {
@@ -4387,44 +4696,24 @@ class AS3000_TSC_DynamicSelectionListWindow extends NavSystemTouch_SelectionList
         super.onExit();
     }
 
-    setElements(_title, _elements, _callback) {
-        super.setElements(_title, _elements, _callback);
-        while (this.buttons.length > _elements.length) {
-            this.content.removeChild(this.buttons.pop().button);
-        }
-    }
-
-    setContext(_title, _callback, _varNameRoot, _varNameID, _elements, _homePageParent, _homePageName, _callbackData = null) {
-        this.tempTitle = _title;
-        this.tempCallback = _callback;
-        this.tempElements = _elements;
-        this.homePageParent = _homePageParent;
-        this.homePageName = _homePageName;
-        this.varNameRoot = _varNameRoot;
-        this.varNameID = _varNameID;
-        this.callbackData = _callbackData;
-    }
-
-    onElemClick(_id) {
-        this.callbackData == null ? this.callback(_id) : this.callback(_id, this.callbackData);
-        if (this.closeOnSelect) {
-            this.gps.goBack();
-        }
-    }
-
     back() {
         this.gps.goBack();
     }
 
     backHome() {
         this.gps.closePopUpElement();
-        this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
+        this.gps.SwitchToPageName(this.context.homePageParent, this.contex.homePageName);
+    }
+}
+
+class AS3000_TSC_MapSettingIndexGetter {
+    constructor(varNameRoot, varNameID) {
+        this.varNameRoot = varNameRoot;
+        this.varNameID = varNameID;
     }
 
-    scrollToHighlightedButton() {
-        let target = this.buttons[WT_MapElement.getSettingVar(this.varNameRoot, this.varNameID)].button;
-        let pos = target.offsetTop - this.content.clientHeight / 2 + target.clientHeight / 2;
-        this.content.scrollTop = pos;
+    getCurrentIndex() {
+        return WT_MapElement.getSettingVar(this.varNameRoot, this.varNameID);
     }
 }
 
