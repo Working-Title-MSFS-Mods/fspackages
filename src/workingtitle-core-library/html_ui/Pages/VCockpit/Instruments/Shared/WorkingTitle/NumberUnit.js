@@ -63,347 +63,6 @@ class WT_NumberUnit {
 }
 
 /**
- * Generates formatted strings from WT_NumberUnit objects.
- */
-class WT_NumberFormatter {
-    constructor(opts = {}) {
-        this.setOptions(WT_NumberFormatter.OPTIONS);
-
-        this.setOptions(opts);
-    }
-
-    /**
-     * @property {number} - the precision to which this formatter will round when generating the string representation.
-     *                      A value of 0 indicates infinite precision (no rounding).
-     */
-    get precision() {
-        return this._precision;
-    }
-
-    set precision(val) {
-        this._precision = val;
-    }
-
-    /**
-     * @property {number} - determines the rounding behavior of this formatter. A value of 0 indicates normal rounding.
-     *                      A positive value indicates always round up. A negative value indicates always round down.
-     */
-    get round() {
-        return this._round;
-    }
-
-    set round(val) {
-        this._round = val;
-
-        switch (Math.sign(this.round)) {
-            case 1:
-                this._roundFunc = Math.ceil;
-                break;
-            case -1:
-                this._roundFunc = Math.floor;
-                break;
-            default:
-                this._roundFunc = Math.round;
-        }
-    }
-
-    /**
-     * @property {number} - determines the maximum number of digits shown in the number string representation. Digits to the
-     *                      right of the decimal point will be removed (via rounding) until the total number of digits is less
-     *                      than or equal to the value of this property. Digits to the left of the decimal point will never be
-     *                      removed.
-     *
-     */
-    get maxDigits() {
-        return this._maxDigits;
-    }
-
-    set maxDigits(val) {
-        this._maxDigits = val;
-    }
-
-    /**
-     * @property {boolean} - indicates whether to show ending zeroes to the right of the decimal point. If this value is true,
-     *                       ending zeroes will be added up to the least significant non-zero digit in the value of the
-     *                       .precision property.
-     */
-    get forceDecimalZeroes() {
-        return this._forceDecimalZeroes;
-    }
-
-    set forceDecimalZeroes(val) {
-        this._forceDecimalZeroes = val;
-    }
-
-    /**
-     * @property {number} - determines the number of leading zeroes to the left of the decimal point. Leading zeroes will be
-     *                      added until the number of digits to the left of the decimal point is greater than or equal to
-     *                      the value of this property.
-     */
-    get pad() {
-        return this._pad;
-    }
-
-    set pad(val) {
-        this._pad = val;
-    }
-
-    /**
-     * @property {boolean} - indicates whether to include the unit string representation in the full string representation.
-     */
-    get unitShow() {
-        return this._unitShow;
-    }
-
-    set unitShow(val) {
-        this._unitShow = val;
-    }
-
-    /**
-     * @property {boolean} - indicates whether to include a space before the number and unit string representations in the full string
-     *                       representation.
-     */
-    get unitSpaceBefore() {
-        return this._unitSpaceBefore;
-    }
-
-    set unitSpaceBefore(val) {
-        this._unitSpaceBefore = val;
-    }
-
-    /**
-     * @property {boolean} - indicates whether to use the full name of the unit when creating the unit string representation.
-     */
-    get unitLong() {
-        return this._unitLong;
-    }
-
-    set unitLong(val) {
-        this._unitLong = val;
-    }
-
-    /**
-     * @property {boolean} - indicates whether to use all capital letters when creating the unit string representation.
-     */
-    get unitCaps() {
-        return this._unitCaps;
-    }
-
-    set unitCaps(val) {
-        this._unitCaps = val;
-    }
-
-    /**
-     * Sets this formatter's options en bloc using an options definition object.
-     * @param {object} opts - options definition object containing properties to copy to this formatter.
-     */
-    setOptions(opts) {
-        for (let opt in opts) {
-            if (this._getAllowedOptions()[opt] !== undefined) {
-                this[opt] = opts[opt];
-            }
-        }
-    }
-
-    _getAllowedOptions() {
-        return WT_NumberFormatter.OPTIONS;
-    }
-
-    _formatNumber(number) {
-        let formatted = number;
-        if (this.precision != 0) {
-            formatted = this._roundFunc(number / this.precision) * this.precision;
-            let precisionString = this.precision + "";
-            if (precisionString.indexOf(".") >= 0) {
-                formatted = formatted.toFixed(precisionString.length - precisionString.indexOf(".") - 1);
-            }
-        }
-        formatted = formatted + "";
-
-        let decimalIndex = formatted.indexOf(".");
-        if (!this.forceDecimalZeroes && decimalIndex >= 0) {
-            formatted = formatted.replace(/0+\b/, "");
-            if (formatted.indexOf(".") == formatted.length - 1) {
-                formatted = formatted.substring(0, formatted.length - 1);
-            }
-        }
-
-        decimalIndex = formatted.indexOf(".");
-        if (decimalIndex >= 0 && formatted.length - 1 > this.maxDigits) {
-            let shift = Math.max(this.maxDigits - decimalIndex, 0);
-            let precision = Math.pow(0.1, shift);
-            formatted = this._roundFunc(number / precision) * precision;
-            formatted = formatted.toFixed(shift);
-        }
-        formatted = formatted + "";
-
-        if (this.pad == 0) {
-            formatted = formatted.replace(/\b0\./, ".");
-        }
-        decimalIndex = formatted.indexOf(".");
-        if (decimalIndex < 0) {
-            decimalIndex = formatted.length;
-        }
-        let wholePart = formatted.substring(0, decimalIndex);
-        wholePart = wholePart.padStart(this.pad, "0");
-        formatted = wholePart + formatted.substring(decimalIndex);
-
-        return formatted;
-    }
-
-    _formatUnit(number, unit) {
-        let formatted = "";
-        if (this.unitShow) {
-            formatted = this.unitSpaceBefore ? " " : "";
-            if (this.unitLong) {
-                formatted += number == 1 ? unit.fullNameSingular : unit.fullNameMultiple;
-            } else {
-                formatted += unit.abbrevName;
-            }
-
-            if (this.unitCaps) {
-                formatted = formatted.toUpperCase();
-            }
-        }
-        return formatted;
-    }
-
-    /**
-     * Gets a complete formatted string representation of a NumberUnit.
-     * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
-     */
-    getFormattedString(numberUnit) {
-        return this._formatNumber(numberUnit.number) + this._formatUnit(numberUnit.number, numberUnit.unit);
-    }
-
-    /**
-     * Gets a string representation of the number part of a NumberUnit.
-     * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
-     */
-    getFormattedNumber(numberUnit) {
-        return this._formatNumber(numberUnit.number);
-    }
-
-    /**
-     * Gets a string representation of the unit part of a NumberUnit.
-     * @param {WT_NumberUnit} numberUnit
-     */
-    getFormattedUnit(numberUnit) {
-        return this._formatUnit(numberUnit.number, numberUnit.unit).trim();
-    }
-}
-WT_NumberFormatter.OPTIONS = {
-    precision: 0,
-    round: 0,
-    maxDigits: Infinity,
-    forceDecimalZeroes: true,
-    pad: 1,
-    unitShow: true,
-    unitSpaceBefore: true,
-    unitLong: false,
-    unitCaps: false
-};
-
-/**
- * Generates formatted strings of the HH:MM:SS variety from WT_NumberUnit objects with time unit types.
- */
-class WT_TimeFormatter extends WT_NumberFormatter {
-    constructor(opts = {}) {
-        super(WT_TimeFormatter.OPTIONS);
-
-        this.setOptions(opts);
-    }
-
-    get timeFormat() {
-        return this._timeFormat;
-    }
-
-    set timeFormat(val) {
-        this._timeFormat = val;
-    }
-
-    _getAllowedOptions() {
-        return WT_TimeFormatter.OPTIONS;
-    }
-
-    _formatHours(numberUnit) {
-        let hours = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.HOUR));
-        let hoursText = hours.toFixed(0);
-        hoursText = hoursText.padStart(this.pad, "0");
-        hoursText += this._formatUnit(hours, WT_Unit.HOUR);
-        return {number: hours, text: hoursText}
-    }
-
-    getFormattedNumber(numberUnit) {
-        let savedUnitShow = this.unitShow;
-        this.unitShow = false;
-        let formatted = this.getFormattedString(numberUnit);
-        this.unitShow = savedUnitShow;
-        return formatted;
-    }
-
-    getFormattedString(numberUnit) {
-        let hours;
-        let min;
-        let sec;
-        let hoursText;
-        let minText;
-        let secText;
-        let formatted = "";
-        if (this.timeFormat != WT_TimeFormatter.Format.MM_SS) {
-            let hoursInfo = this._formatHours(numberUnit);
-            if (!(this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hoursInfo.number == 0)) {
-                hours = hoursInfo.number;
-                hoursText = hoursInfo.text;
-                formatted += hoursText + ":";
-            }
-        }
-
-        let hourSubtract = 0;
-        if (hours) {
-            hourSubtract = hours;
-        }
-        if (this.timeFormat == WT_TimeFormatter.Format.HH_MM || (this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hours)) {
-            min = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.MINUTE) - hourSubtract * 60;
-            minText = this._formatNumber(min);
-            minText += this._formatUnit(min, WT_Unit.MINUTE);
-            formatted += minText;
-        } else {
-            min = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.MINUTE) - hourSubtract * 60);
-            minText = min.toFixed(0);
-            minText = minText.padStart(this._pad, "0");
-            minText += this._formatUnit(min, WT_Unit.MINUTE);
-            formatted += minText + ":";
-
-            sec = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.SECOND) - hourSubtract * 3600 - min * 60;
-            secText = this._formatNumber(sec);
-            secText += this._formatUnit(sec, WT_Unit.SECOND);
-            formatted += secText;
-        }
-
-        return formatted;
-    }
-}
-WT_TimeFormatter.Format = {
-    HH_MM_SS: 0,
-    HH_MM: 1,
-    MM_SS: 2,
-    HH_MM_OR_MM_SS: 3
-};
-WT_TimeFormatter.OPTIONS = {
-    precision: 1,
-    round: 1,
-    digits: Infinity,
-    forceDecimalZeroes: true,
-    pad: 2,
-    unitShow: false,
-    unitSpaceBefore: true,
-    unitLong: false,
-    unitCaps: false,
-    timeFormat: WT_TimeFormatter.Format.HH_MM_SS
-};
-
-/**
  * A unit of measurement.
  * @interface
  */
@@ -690,3 +349,435 @@ WT_Unit.KPH = new WT_CompoundUnit([WT_Unit.KILOMETER], [WT_Unit.HOUR], null, nul
 WT_Unit.FPM = new WT_CompoundUnit([WT_Unit.FOOT], [WT_Unit.MINUTE], null, null, "fpm");
 WT_Unit.PPH = new WT_CompoundUnit([WT_Unit.POUND], [WT_Unit.HOUR], null, null, "pph");
 WT_Unit.GPH = new WT_CompoundUnit([WT_Unit.GALLON], [WT_Unit.HOUR], null, null, "gph");
+
+/**
+ * Generates formatted strings from WT_NumberUnit objects.
+ */
+class WT_NumberFormatter {
+    /**
+     * @param {object} opts - options definition object containing properties to initialize to the new formatter.
+     */
+    constructor(opts = {}) {
+        this.setOptions(WT_NumberFormatter.OPTIONS);
+
+        this.setOptions(opts);
+    }
+
+    /**
+     * @property {number} - the precision to which this formatter will round when generating the string representation.
+     *                      A value of 0 indicates infinite precision (no rounding).
+     */
+    get precision() {
+        return this._precision;
+    }
+
+    set precision(val) {
+        this._precision = val;
+    }
+
+    /**
+     * @property {number} - determines the rounding behavior of this formatter. A value of 0 indicates normal rounding.
+     *                      A positive value indicates always round up. A negative value indicates always round down.
+     */
+    get round() {
+        return this._round;
+    }
+
+    set round(val) {
+        this._round = val;
+
+        switch (Math.sign(this.round)) {
+            case 1:
+                this._roundFunc = Math.ceil;
+                break;
+            case -1:
+                this._roundFunc = Math.floor;
+                break;
+            default:
+                this._roundFunc = Math.round;
+        }
+    }
+
+    /**
+     * @property {number} - determines the maximum number of digits shown in the number string representation. Digits to the
+     *                      right of the decimal point will be removed (via rounding) until the total number of digits is less
+     *                      than or equal to the value of this property. Digits to the left of the decimal point will never be
+     *                      removed.
+     *
+     */
+    get maxDigits() {
+        return this._maxDigits;
+    }
+
+    set maxDigits(val) {
+        this._maxDigits = val;
+    }
+
+    /**
+     * @property {boolean} - indicates whether to show ending zeroes to the right of the decimal point. If this value is true,
+     *                       ending zeroes will be added up to the least significant non-zero digit in the value of the
+     *                       .precision property.
+     */
+    get forceDecimalZeroes() {
+        return this._forceDecimalZeroes;
+    }
+
+    set forceDecimalZeroes(val) {
+        this._forceDecimalZeroes = val;
+    }
+
+    /**
+     * @property {number} - determines the number of leading zeroes to the left of the decimal point. Leading zeroes will be
+     *                      added until the number of digits to the left of the decimal point is greater than or equal to
+     *                      the value of this property.
+     */
+    get pad() {
+        return this._pad;
+    }
+
+    set pad(val) {
+        this._pad = val;
+    }
+
+    /**
+     * @property {boolean} - indicates whether to include the unit string representation in the full string representation.
+     */
+    get unitShow() {
+        return this._unitShow;
+    }
+
+    set unitShow(val) {
+        this._unitShow = val;
+    }
+
+    /**
+     * @property {boolean} - indicates whether to include a space before the number and unit string representations in the full string
+     *                       representation.
+     */
+    get unitSpaceBefore() {
+        return this._unitSpaceBefore;
+    }
+
+    set unitSpaceBefore(val) {
+        this._unitSpaceBefore = val;
+    }
+
+    /**
+     * @property {boolean} - indicates whether to use the full name of the unit when creating the unit string representation.
+     */
+    get unitLong() {
+        return this._unitLong;
+    }
+
+    set unitLong(val) {
+        this._unitLong = val;
+    }
+
+    /**
+     * @property {boolean} - indicates whether to use all capital letters when creating the unit string representation.
+     */
+    get unitCaps() {
+        return this._unitCaps;
+    }
+
+    set unitCaps(val) {
+        this._unitCaps = val;
+    }
+
+    /**
+     * Sets this formatter's options en bloc using an options definition object.
+     * @param {object} opts - options definition object containing properties to copy to this formatter.
+     */
+    setOptions(opts) {
+        for (let opt in opts) {
+            if (this._getAllowedOptions()[opt] !== undefined) {
+                this[opt] = opts[opt];
+            }
+        }
+    }
+
+    _getAllowedOptions() {
+        return WT_NumberFormatter.OPTIONS;
+    }
+
+    _formatNumber(number) {
+        let formatted = number;
+        if (this.precision != 0) {
+            formatted = this._roundFunc(number / this.precision) * this.precision;
+            let precisionString = this.precision + "";
+            if (precisionString.indexOf(".") >= 0) {
+                formatted = formatted.toFixed(precisionString.length - precisionString.indexOf(".") - 1);
+            }
+        }
+        formatted = formatted + "";
+
+        let decimalIndex = formatted.indexOf(".");
+        if (!this.forceDecimalZeroes && decimalIndex >= 0) {
+            formatted = formatted.replace(/0+\b/, "");
+            if (formatted.indexOf(".") == formatted.length - 1) {
+                formatted = formatted.substring(0, formatted.length - 1);
+            }
+        }
+
+        decimalIndex = formatted.indexOf(".");
+        if (decimalIndex >= 0 && formatted.length - 1 > this.maxDigits) {
+            let shift = Math.max(this.maxDigits - decimalIndex, 0);
+            let precision = Math.pow(0.1, shift);
+            formatted = this._roundFunc(number / precision) * precision;
+            formatted = formatted.toFixed(shift);
+        }
+        formatted = formatted + "";
+
+        if (this.pad == 0) {
+            formatted = formatted.replace(/\b0\./, ".");
+        }
+        decimalIndex = formatted.indexOf(".");
+        if (decimalIndex < 0) {
+            decimalIndex = formatted.length;
+        }
+        let wholePart = formatted.substring(0, decimalIndex);
+        wholePart = wholePart.padStart(this.pad, "0");
+        formatted = wholePart + formatted.substring(decimalIndex);
+
+        return formatted;
+    }
+
+    _formatUnit(number, unit) {
+        let formatted = "";
+        if (this.unitShow) {
+            formatted = this.unitSpaceBefore ? " " : "";
+            if (this.unitLong) {
+                formatted += number == 1 ? unit.fullNameSingular : unit.fullNameMultiple;
+            } else {
+                formatted += unit.abbrevName;
+            }
+
+            if (this.unitCaps) {
+                formatted = formatted.toUpperCase();
+            }
+        }
+        return formatted;
+    }
+
+    /**
+     * Gets a complete formatted string representation of a NumberUnit.
+     * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
+     */
+    getFormattedString(numberUnit) {
+        return this._formatNumber(numberUnit.number) + this._formatUnit(numberUnit.number, numberUnit.unit);
+    }
+
+    /**
+     * Gets a string representation of the number part of a NumberUnit.
+     * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
+     */
+    getFormattedNumber(numberUnit) {
+        return this._formatNumber(numberUnit.number);
+    }
+
+    /**
+     * Gets a string representation of the unit part of a NumberUnit.
+     * @param {WT_NumberUnit} numberUnit
+     */
+    getFormattedUnit(numberUnit) {
+        return this._formatUnit(numberUnit.number, numberUnit.unit).trim();
+    }
+}
+WT_NumberFormatter.OPTIONS = {
+    precision: 0,
+    round: 0,
+    maxDigits: Infinity,
+    forceDecimalZeroes: true,
+    pad: 1,
+    unitShow: true,
+    unitSpaceBefore: true,
+    unitLong: false,
+    unitCaps: false
+};
+
+/**
+ * Generates formatted strings of the HH:MM:SS variety from WT_NumberUnit objects with time unit types.
+ */
+class WT_TimeFormatter extends WT_NumberFormatter {
+    /**
+     * @param {object} opts - options definition object containing properties to initialize to the new formatter.
+     */
+    constructor(opts = {}) {
+        super(WT_TimeFormatter.OPTIONS);
+
+        this.setOptions(opts);
+    }
+
+    get timeFormat() {
+        return this._timeFormat;
+    }
+
+    set timeFormat(val) {
+        this._timeFormat = val;
+    }
+
+    _getAllowedOptions() {
+        return WT_TimeFormatter.OPTIONS;
+    }
+
+    _formatHours(numberUnit) {
+        let hours = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.HOUR));
+        let hoursText = hours.toFixed(0);
+        hoursText = hoursText.padStart(this.pad, "0");
+        hoursText += this._formatUnit(hours, WT_Unit.HOUR);
+        return {number: hours, text: hoursText}
+    }
+
+    getFormattedNumber(numberUnit) {
+        let savedUnitShow = this.unitShow;
+        this.unitShow = false;
+        let formatted = this.getFormattedString(numberUnit);
+        this.unitShow = savedUnitShow;
+        return formatted;
+    }
+
+    getFormattedString(numberUnit) {
+        let hours;
+        let min;
+        let sec;
+        let hoursText;
+        let minText;
+        let secText;
+        let formatted = "";
+        if (this.timeFormat != WT_TimeFormatter.Format.MM_SS) {
+            let hoursInfo = this._formatHours(numberUnit);
+            if (!(this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hoursInfo.number == 0)) {
+                hours = hoursInfo.number;
+                hoursText = hoursInfo.text;
+                formatted += hoursText + ":";
+            }
+        }
+
+        let hourSubtract = 0;
+        if (hours) {
+            hourSubtract = hours;
+        }
+        if (this.timeFormat == WT_TimeFormatter.Format.HH_MM || (this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hours)) {
+            min = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.MINUTE) - hourSubtract * 60;
+            minText = this._formatNumber(min);
+            minText += this._formatUnit(min, WT_Unit.MINUTE);
+            formatted += minText;
+        } else {
+            min = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.MINUTE) - hourSubtract * 60);
+            minText = min.toFixed(0);
+            minText = minText.padStart(this._pad, "0");
+            minText += this._formatUnit(min, WT_Unit.MINUTE);
+            formatted += minText + ":";
+
+            sec = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.SECOND) - hourSubtract * 3600 - min * 60;
+            secText = this._formatNumber(sec);
+            secText += this._formatUnit(sec, WT_Unit.SECOND);
+            formatted += secText;
+        }
+
+        return formatted;
+    }
+}
+WT_TimeFormatter.Format = {
+    HH_MM_SS: 0,
+    HH_MM: 1,
+    MM_SS: 2,
+    HH_MM_OR_MM_SS: 3
+};
+WT_TimeFormatter.OPTIONS = {
+    precision: 1,
+    round: 1,
+    digits: Infinity,
+    forceDecimalZeroes: true,
+    pad: 2,
+    unitShow: false,
+    unitSpaceBefore: true,
+    unitLong: false,
+    unitCaps: false,
+    timeFormat: WT_TimeFormatter.Format.HH_MM_SS
+};
+
+/**
+ * Generates formatted html strings from WT_NumberUnit objects in which the number and unit parts are contained in their own <span>.
+ */
+class WT_NumberHTMLFormatter {
+    /**
+     * @param {WT_NumberFormatter} numberFormatter - the formatter to use to generate the raw string representations of the WT_NumberUnit objects.
+     * @param {object} opts - options definition object containing properties to initialize to the new formatter.
+     */
+    constructor(numberFormatter, opts) {
+        this.numberFormatter = numberFormatter;
+        this.setOptions(WT_NumberHTMLFormatter.OPTIONS);
+        this.setOptions(opts);
+    }
+
+    /**
+     * @property {*} - An object that generates a class list for the number- and unit-containing span elements given a WT_NumberUnit object
+     *                 by implementing the .getNumberClassList(numberUnit) and .getUnitClassList(numberUnit) methods.
+     */
+    get classGetter() {
+        return this._classGetter;
+    }
+
+    set classGetter(val) {
+        this._classGetter = val;
+    }
+
+    /**
+     * @property {string} - A valid html string to be placed between the number and unit-containing span elements.
+     */
+    get numberUnitDelim() {
+        return this._numberUnitDelim;
+    }
+
+    set numberUnitDelim(val) {
+        this._numberUnitDelim = val;
+    }
+
+    /**
+     * Sets this formatter's options en bloc using an options definition object.
+     * @param {object} opts - options definition object containing properties to copy to this formatter.
+     */
+    setOptions(opts) {
+        for (let opt in opts) {
+            if (this._getAllowedOptions()[opt] !== undefined) {
+                this[opt] = opts[opt];
+            }
+        }
+    }
+
+    _getAllowedOptions() {
+        return WT_NumberHTMLFormatter.OPTIONS;
+    }
+
+    _generateClassText(classList) {
+        let classText = "";
+        if (classList.length > 0) {
+            let i = 0;
+            classText = ` class="${classList[i]}`;
+            while (++i < classList.length) {
+                classText += ` ${classList[i]}`;
+            }
+            classText += `"`;
+        }
+        return classText;
+    }
+
+    getFormattedNumberHTML(numberUnit) {
+        let classText = this._generateClassText(this.classGetter.getNumberClassList(numberUnit));
+        return `<span${classText}>${this.numberFormatter.getFormattedNumber(numberUnit)}</span>`;
+    }
+
+    getFormattedUnitHTML(numberUnit) {
+        let classText = this._generateClassText(this.classGetter.getUnitClassList(numberUnit));
+        return `<span${classText}>${this.numberFormatter.getFormattedUnit(numberUnit)}</span>`;
+    }
+
+    getFormattedHTML(numberUnit) {
+        return this.getFormattedNumberHTML(numberUnit) + (this.numberFormatter.unitShow ? this.numberUnitDelim + this.getFormattedUnitHTML(numberUnit) : "");
+    }
+}
+WT_NumberHTMLFormatter.OPTIONS = {
+    classGetter: {getNumberClassList: numberUnit => [], getUnitClassList: numberUnit => []},
+    numberUnitDelim: " "
+};
