@@ -360,7 +360,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 this.selectedRefMode.setAttribute("x", (centerX - spaceX).toString());
                 this.selectedRefMode.setAttribute("y", centerY.toString());
                 this.selectedRefMode.setAttribute("fill", "#00F2FF");
-                this.selectedRefMode.setAttribute("font-size", "18");
+                this.selectedRefMode.setAttribute("font-size", "26");
                 this.selectedRefMode.setAttribute("font-family", "Roboto-Bold");
                 this.selectedRefMode.setAttribute("text-anchor", "end");
                 this.selectedRefMode.setAttribute("alignment-baseline", "central");
@@ -370,7 +370,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 this.selectedRefValue.setAttribute("x", (centerX + spaceX).toString());
                 this.selectedRefValue.setAttribute("y", centerY.toString());
                 this.selectedRefValue.setAttribute("fill", "#00F2FF");
-                this.selectedRefValue.setAttribute("font-size", "23");
+                this.selectedRefValue.setAttribute("font-size", "36");
                 this.selectedRefValue.setAttribute("font-family", "Roboto-Bold");
                 this.selectedRefValue.setAttribute("text-anchor", "start");
                 this.selectedRefValue.setAttribute("alignment-baseline", "central");
@@ -2706,15 +2706,15 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
         this.selectedRefGroup.setAttribute("id", "selectedRefGroup");
         this.selectedRefGroup.setAttribute("transform", "scale(1.5)");
         {
-            let centerX = 180;
-            let centerY = 62;
+            let centerX = 170;
+            let centerY = 80;
             let spaceX = 5;
             this.selectedRefMode = document.createElementNS(Avionics.SVG.NS, "text");
             this.selectedRefMode.textContent = "HDG";
             this.selectedRefMode.setAttribute("x", (centerX - spaceX).toString());
             this.selectedRefMode.setAttribute("y", centerY.toString());
             this.selectedRefMode.setAttribute("fill", "#00F2FF");
-            this.selectedRefMode.setAttribute("font-size", "18");
+            this.selectedRefMode.setAttribute("font-size", "22");
             this.selectedRefMode.setAttribute("font-family", "Roboto-Bold");
             this.selectedRefMode.setAttribute("text-anchor", "end");
             this.selectedRefMode.setAttribute("alignment-baseline", "central");
@@ -2724,7 +2724,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             this.selectedRefValue.setAttribute("x", (centerX + spaceX).toString());
             this.selectedRefValue.setAttribute("y", centerY.toString());
             this.selectedRefValue.setAttribute("fill", "#00F2FF");
-            this.selectedRefValue.setAttribute("font-size", "23");
+            this.selectedRefValue.setAttribute("font-size", "30");
             this.selectedRefValue.setAttribute("font-family", "Roboto-Bold");
             this.selectedRefValue.setAttribute("text-anchor", "start");
             this.selectedRefValue.setAttribute("alignment-baseline", "central");
