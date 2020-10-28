@@ -640,16 +640,19 @@ class WT_TimeFormatter extends WT_NumberFormatter {
         let hours;
         let min;
         let sec;
-        let hoursText;
-        let minText;
-        let secText;
-        let formatted = "";
+        let hoursText = "";
+        let minText = "";
+        let secText = "";
+        let hoursUnitText = "";
+        let minUnitText = "";
+        let secUnitText = "";
         if (this.timeFormat != WT_TimeFormatter.Format.MM_SS) {
             let hoursInfo = this._formatHours(numberUnit);
             if (!(this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hoursInfo.number == 0)) {
-                hours = hoursInfo.number;
-                hoursText = hoursInfo.text;
-                formatted += hoursText + ":";
+                hours = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.HOUR));
+                hoursText = hours.toFixed(0);
+                hoursText = hoursText.padStart(this.pad, "0");
+                hoursUnitText = this._formatUnit(hours, WT_Unit.HOUR) + ":";
             }
         }
 
@@ -660,22 +663,34 @@ class WT_TimeFormatter extends WT_NumberFormatter {
         if (this.timeFormat == WT_TimeFormatter.Format.HH_MM || (this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hours)) {
             min = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.MINUTE) % 60;
             minText = this._formatNumber(min);
-            minText += this._formatUnit(min, WT_Unit.MINUTE);
-            formatted += minText;
+            minUnitText = this._formatUnit(min, WT_Unit.MINUTE);
         } else {
             min = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.MINUTE) - hourSubtract * 60);
             minText = min.toFixed(0);
             minText = minText.padStart(this._pad, "0");
-            minText += this._formatUnit(min, WT_Unit.MINUTE);
-            formatted += minText + ":";
+            minUnitText = this._formatUnit(min, WT_Unit.MINUTE) + ":";
 
             sec = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.SECOND) % 60;
             secText = this._formatNumber(sec);
-            secText += this._formatUnit(sec, WT_Unit.SECOND);
-            formatted += secText;
+            secUnitText = this._formatUnit(sec, WT_Unit.SECOND);
         }
 
-        return formatted;
+        if (secText.replace(/\b0+/, "").substring(0, 2) == "60") {
+            secText = this._formatNumber(parseFloat(secText) - 60);
+            minText = `${parseInt(minText) + 1}`;
+            minText = minText.padStart(this._pad, "0");
+        }
+        if (minText.replace(/\b0+/, "").substring(0, 2) == "60" && hoursText) {
+            if (secText) {
+                minText = "00";
+            } else {
+                minText = this._formatNumber(parseFloat(minText) - 60);
+            }
+            hoursText = `${(parseInt(hoursText) + 1)}`;
+            hoursText = hoursText.padStart(this._pad, "0");
+        }
+
+        return hoursText + hoursUnitText + minText + minUnitText + secText + secUnitText;
     }
 }
 WT_TimeFormatter.Format = {
@@ -691,7 +706,7 @@ WT_TimeFormatter.OPTIONS = {
     forceDecimalZeroes: true,
     pad: 2,
     unitShow: false,
-    unitSpaceBefore: true,
+    unitSpaceBefore: false,
     unitLong: false,
     unitCaps: false,
     timeFormat: WT_TimeFormatter.Format.HH_MM_SS
