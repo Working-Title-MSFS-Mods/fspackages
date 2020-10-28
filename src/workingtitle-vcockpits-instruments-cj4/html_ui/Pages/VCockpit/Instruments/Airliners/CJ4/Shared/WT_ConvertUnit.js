@@ -66,6 +66,7 @@ class WT_ConvertUnit {
 
     static getLength(value, imperial = "FT", metric = "M") {
         if (WT_ConvertUnit.isMetric()) {
+            value = value ? value : 0;
             return new WT_ValueAndUnit(value, metric);;
         }
         else {

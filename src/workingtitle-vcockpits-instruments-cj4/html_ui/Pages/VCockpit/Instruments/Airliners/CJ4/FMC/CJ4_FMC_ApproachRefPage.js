@@ -70,7 +70,7 @@ class CJ4_FMC_ApproachRefPage {
         let selAptValue = destinationIdent ? destinationIdent + "[green]/[white]" + originIdent + "[s-text]" : "----";
 
         const arrRunwayLengthText = WT_ConvertUnit.getLength(arrRunwayLength).getString(0, " ", "[s-text]");
-        const landingQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.landingQnh).toFixed(0) : fmc.takeoffQnh.toFixed(2);
+        const landingQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.landingQnh).toFixed(0) : isNaN(fmc.takeoffQnh) ? SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg").toFixed(2) : fmc.takeoffQnh.toFixed(2);
 
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "1/3 [blue]", "APPROACH REF[blue]"],
@@ -160,7 +160,7 @@ class CJ4_FMC_ApproachRefPage {
                 CJ4_FMC_ApproachRefPage.ShowPage3(fmc);
             }
             else {
-                fmc.showErrorMessage("INVALID");
+                fmc.setMsg("INVALID");
             }
         };
         fmc.onNextPage = () => {
@@ -168,7 +168,7 @@ class CJ4_FMC_ApproachRefPage {
                 CJ4_FMC_ApproachRefPage.ShowPage2(fmc);
             }
             else {
-                fmc.showErrorMessage("INVALID");
+                fmc.setMsg("INVALID");
             }
         };
         fmc.updateSideButtonActiveStatus();

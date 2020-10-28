@@ -158,8 +158,22 @@ class CJ4_FMC_TakeoffRefPage {
             { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
         };
 
-        fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage3(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
+        fmc.onPrevPage = () => {
+            if (depRunway && fmc.takeoffQnh > 28 && fmc.takeoffQnh < 32 && fmc.takeoffOat && fmc.takeoffWindDir >= 0 && fmc.takeoffWindDir <= 360) {
+                CJ4_FMC_TakeoffRefPage.ShowPage3(fmc);
+            }
+            else {
+                fmc.setMsg("INVALID");
+            }
+        };
+        fmc.onNextPage = () => {
+            if (depRunway && fmc.takeoffQnh > 28 && fmc.takeoffQnh < 32 && fmc.takeoffOat && fmc.takeoffWindDir >= 0 && fmc.takeoffWindDir <= 360) {
+                CJ4_FMC_TakeoffRefPage.ShowPage2(fmc);
+            }
+            else {
+                fmc.setMsg("INVALID");
+            }
+        };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage2(fmc) { //TAKEOFF REF Page 2
