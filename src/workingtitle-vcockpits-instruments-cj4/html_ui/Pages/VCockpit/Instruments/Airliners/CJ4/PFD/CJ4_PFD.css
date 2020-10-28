@@ -630,6 +630,14 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
   transform: translateY(18px);
 } */
 
+/* #NDMapOverlay g#selectedRefGroup_arc {
+  transform: translateY(15px);
+}
+
+#NDMapOverlay g#selectedRefGroup_rose {
+  transform: translateY(0px);
+} */
+
 #VerticalSpeed #CenterGroup > text {
   fill: #11d011;
   font-size: 22px;
