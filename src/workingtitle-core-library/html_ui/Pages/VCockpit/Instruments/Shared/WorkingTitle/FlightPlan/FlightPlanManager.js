@@ -139,8 +139,10 @@ class FlightPlanManager {
     const copiedFlightPlan = this._flightPlans[this._currentFlightPlanIndex].copy();
     this._flightPlans[index] = copiedFlightPlan;
 
-    await copiedFlightPlan.syncToGPS();
-
+    if (index === 0) {
+      await copiedFlightPlan.syncToGPS();
+    }
+    
     this._updateFlightPlanVersion();
     callback();
   }
@@ -154,7 +156,9 @@ class FlightPlanManager {
     const copiedFlightPlan = this._flightPlans[index].copy();
     this._flightPlans[this._currentFlightPlanIndex] = copiedFlightPlan;
 
-    await copiedFlightPlan.syncToGPS();
+    if (this._currentFlightPlanIndex === 0) {
+      await copiedFlightPlan.syncToGPS();
+    }
 
     this._updateFlightPlanVersion();
     callback();
@@ -356,7 +360,7 @@ class FlightPlanManager {
 
     if (origin) {
       let originInfos = origin.infos;
-      if (originInfos.departures !== undefined && currentFlightPlan.procedureDetails.departureSelected) {
+      if (originInfos.departures !== undefined && currentFlightPlan.procedureDetails.departureIndex !== -1) {
           return originInfos.departures[currentFlightPlan.procedureDetails.departureIndex];
       }
     }
@@ -373,7 +377,7 @@ class FlightPlanManager {
 
     if (destination) {
       let originInfos = destination.infos;
-      if (originInfos.arrivals !== undefined && currentFlightPlan.arrivalIndex !== undefined) {
+      if (originInfos.arrivals !== undefined && currentFlightPlan.arrivalIndex !== -1) {
           return originInfos.arrivals[currentFlightPlan.arrivalIndex];
       }
     }
@@ -390,7 +394,7 @@ class FlightPlanManager {
 
     if (destination) {
       let originInfos = destination.infos;
-      if (originInfos.approaches !== undefined && currentFlightPlan.approachIndex !== undefined) {
+      if (originInfos.approaches !== undefined && currentFlightPlan.approachIndex !== -1) {
           return originInfos.approaches[currentFlightPlan.approachIndex];
       }
     }
@@ -756,11 +760,7 @@ class FlightPlanManager {
    */
   getDepartureProcIndex() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    if (currentFlightPlan.procedureDetails.departureSelected) {
-      return currentFlightPlan.procedureDetails.departureIndex;
-    }
-
-    return -1;
+    return currentFlightPlan.procedureDetails.departureIndex;
   }
 
   /**
@@ -769,12 +769,10 @@ class FlightPlanManager {
    * @param {() => void} callback A callback to call when the operation completes.
    */
   async setDepartureProcIndex(index, callback = () => { }) {
-    if (index === -1) {
-      this._flightPlans[this._currentFlightPlanIndex].clearDeparture();
-    }
-    else {
-      await this._flightPlans[this._currentFlightPlanIndex].setDepartureFromIndex(index);    
-    }
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+
+    currentFlightPlan.procedureDetails.departureIndex = index;
+    currentFlightPlan.buildDeparture();  
 
     this._updateFlightPlanVersion();
     callback();
@@ -786,7 +784,10 @@ class FlightPlanManager {
    * @param {() => void} callback A callback to call when the operation completes.
    */
   setDepartureRunwayIndex(index, callback = EmptyCallback.Void) {
-    this._flightPlans[this._currentFlightPlanIndex].procedureDetails.departureRunwayIndex = index;
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+
+    currentFlightPlan.procedureDetails.departureRunwayIndex = index;
+    currentFlightPlan.buildDeparture();
 
     this._updateFlightPlanVersion();
     callback();
@@ -806,11 +807,7 @@ class FlightPlanManager {
    */
   getDepartureEnRouteTransitionIndex() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    if (currentFlightPlan.procedureDetails.departureSelected) {
-      return currentFlightPlan.procedureDetails.departureTransitionIndex;
-    }
-
-    return -1;
+    return currentFlightPlan.procedureDetails.departureTransitionIndex;
   }
 
   /**
@@ -820,9 +817,9 @@ class FlightPlanManager {
    */
   setDepartureEnRouteTransitionIndex(index, callback = EmptyCallback.Void) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    if (currentFlightPlan.procedureDetails.departureSelected) {
-      currentFlightPlan.procedureDetails.departureTransitionIndex = index;
-    }
+
+    currentFlightPlan.procedureDetails.departureTransitionIndex = index;
+    currentFlightPlan.buildDeparture();
 
     this._updateFlightPlanVersion();
     callback();
@@ -858,11 +855,7 @@ class FlightPlanManager {
    */
   getArrivalProcIndex() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    if (currentFlightPlan.procedureDetails.arrivalSelected) {
-      return currentFlightPlan.procedureDetails.arrivalIndex;
-    }
-
-    return -1;
+    return currentFlightPlan.procedureDetails.arrivalIndex;
   }
 
   /**
@@ -870,11 +863,7 @@ class FlightPlanManager {
    */
   getArrivalTransitionIndex() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    if (currentFlightPlan.procedureDetails.arrivalSelected) {
-      return currentFlightPlan.procedureDetails.arrivalTransitionIndex;
-    }
-
-    return -1;
+    return currentFlightPlan.procedureDetails.arrivalTransitionIndex;
   }
 
   /**
@@ -883,12 +872,10 @@ class FlightPlanManager {
    * @param {() => void} callback A callback to call when the operation completes.
    */
   setArrivalProcIndex(index, callback = () => { }) {
-    if (index === -1) {
-      this._flightPlans[this._currentFlightPlanIndex].clearArrival();
-    }
-    else {
-      this._flightPlans[this._currentFlightPlanIndex].setArrivalFromIndex(index);
-    }
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+
+    currentFlightPlan.procedureDetails.arrivalIndex = index;
+    currentFlightPlan.buildArrival();
     
     this._updateFlightPlanVersion();
     callback();
@@ -916,9 +903,8 @@ class FlightPlanManager {
   setArrivalEnRouteTransitionIndex(index, callback = () => { }) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
-    if (currentFlightPlan.procedureDetails.arrivalSelected) {
-      currentFlightPlan.procedureDetails.arrivalTransitionIndex = index;
-    }
+    currentFlightPlan.procedureDetails.arrivalTransitionIndex = index;
+    currentFlightPlan.buildArrival();
 
     this._updateFlightPlanVersion();
     callback();
@@ -930,7 +916,10 @@ class FlightPlanManager {
    * @param {() => void} callback A callback to call when the operation completes.
    */
   setArrivalRunwayIndex(index, callback = () => { }) {
-    this._flightPlans[this._currentFlightPlanIndex].procedureDetails.arrivalRunwayIndex = index;
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+
+    currentFlightPlan.procedureDetails.arrivalRunwayIndex = index;
+    currentFlightPlan.buildArrival();
 
     this._updateFlightPlanVersion();
     callback();
@@ -941,11 +930,7 @@ class FlightPlanManager {
    */
   getApproachIndex() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    if (currentFlightPlan.procedureDetails.approachSelected) {
-      return currentFlightPlan.procedureDetails.approachIndex;
-    }
-
-    return -1;
+    return currentFlightPlan.procedureDetails.approachIndex;
   }
 
   /**
@@ -954,10 +939,11 @@ class FlightPlanManager {
    * @param {() => void} callback A callback to call when the operation has completed.
    * @param {Number} transition The approach transition index to set in the approach information. 
    */
-  setApproachIndex(index, callback = () => { }, transition = 0) {
+  setApproachIndex(index, callback = () => { }, transition = -1) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    currentFlightPlan.setApproachFromIndex(index);
-    currentFlightPlan.procedureDetails.approachTransitionIndex = transition;
+
+    currentFlightPlan.procedureDetails.approachIndex = index;
+    currentFlightPlan.buildApproach();
 
     this._updateFlightPlanVersion();
     callback();
@@ -1025,11 +1011,7 @@ class FlightPlanManager {
    */
   getApproachTransitionIndex() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    if (currentFlightPlan.procedureDetails.approachSelected) {
-      return currentFlightPlan.procedureDetails.approachTransitionIndex;
-    }
-
-    return -1;
+    return currentFlightPlan.procedureDetails.approachTransitionIndex;
   }
 
   /**
@@ -1046,9 +1028,13 @@ class FlightPlanManager {
    */
   getApproachRunway() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    if (currentFlightPlan.procedureDetails.approachSelected && currentFlightPlan.hasDestination) {
-      const waypoints = currentFlightPlan.waypoints;
-      return waypoints[waypoints.length - 1].infos.oneWayRunways[currentFlightPlan.procedureDetails.arrivalRunwayIndex];
+    
+    if (currentFlightPlan.hasDestination && currentFlightPlan.procedureDetails.approachIndex !== -1) {
+      const destination = currentFlightPlan.waypoints[currentFlightPlan.waypoints.length - 1];
+      const approachRunwayName = destination.infos.approaches[currentFlightPlan.procedureDetails.approachIndex].runway.trim();
+
+      const runway = destination.infos.oneWayRunways.find(rw => rw.designation === approachRunwayName);
+      return runway;
     }
 
     return undefined;
@@ -1068,7 +1054,9 @@ class FlightPlanManager {
    */
   setApproachTransitionIndex(index, callback = () => { }) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+
     currentFlightPlan.procedureDetails.approachTransitionIndex = index;
+    currentFlightPlan.buildApproach();
 
     this._updateFlightPlanVersion();
     callback();
@@ -1079,7 +1067,13 @@ class FlightPlanManager {
    * @param {() => void} callback A callback to call when the operation completes.
    */
   removeArrival(callback = () => { }) {
-    this._flightPlans[this._currentFlightPlanIndex].clearApproach();
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+
+    currentFlightPlan.procedureDetails.arrivalIndex = -1;
+    currentFlightPlan.procedureDetails.arrivalRunwayIndex = -1;
+    currentFlightPlan.procedureDetails.arrivalTransitionIndex = -1;
+
+    currentFlightPlan.buildArrival();
     
     this._updateFlightPlanVersion();
     callback();

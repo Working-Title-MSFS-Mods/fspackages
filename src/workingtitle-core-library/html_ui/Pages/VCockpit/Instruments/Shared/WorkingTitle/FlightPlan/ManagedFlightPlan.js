@@ -24,16 +24,16 @@ class ManagedFlightPlan {
     this._hasDestination = false;
 
     /** The index where the departure segment starts in the flight plan. */
-    this.departureStart = 0;
+    this.departureStart = -1;
 
     /** The index where the enroute segment starts in the flight plan. */
-    this.enrouteStart = 0;
+    this.enrouteStart = -1;
 
     /** The index where the arrival begins in the flight plan. */
-    this.arrivalStart = 0;
+    this.arrivalStart = -1;
 
     /** The index where the approach starts in the flight plan. */
-    this.approachStart = 0;
+    this.approachStart = -1;
 
     /** The cruise altitude for this flight plan. */
     this.cruiseAltitude = 0;
@@ -91,10 +91,10 @@ class ManagedFlightPlan {
     this._hasOrigin = false;
     this._hasDestination = false;
 
-    this.arrivalStart = 0;
-    this.enrouteStart = 0;
-    this.approachStart = 0;
-    this.departureStart = 0;
+    this.arrivalStart = -1;
+    this.enrouteStart = -1;
+    this.approachStart = -1;
+    this.departureStart = -1;
 
     this.cruiseAltitude = 0;
     this.activeWaypointIndex = 0;
@@ -145,13 +145,6 @@ class ManagedFlightPlan {
     else {
       this._waypoints.splice(index, 0, mappedWaypoint);
     }
-
-    if (mappedWaypoint.icao && mappedWaypoint.icao.trim() !== '') {
-      await GPS.addIcaoWaypoint(waypoint.icao, index);
-    }
-    else {
-      await GPS.addUserWaypoint(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long, index);
-    }
     
     this._shiftSegmentIndexes(mappedWaypoint, index);
     this._reflowDistances();
@@ -172,8 +165,6 @@ class ManagedFlightPlan {
       waypoint = this._waypoints[index];
       this._waypoints.splice(index, 1);
     }
-
-    await GPS.deleteWaypoint(index);
     
     this._unshiftSegmentIndexes(waypoint, index);
     this._reflowDistances();
@@ -435,44 +426,9 @@ class ManagedFlightPlan {
   }
 
   /**
-   * Sets the departure from an index in the origin airport departure information.
-   * @param {Number} index The index of the departure in the origin departures information.
+   * Builds a departure into the flight plan from indexes in the departure airport information.
    */
-  async setDepartureFromIndex(index) {
-    if (this.hasOrigin) {
-      const origin = this._waypoints[0];
-
-      if (index >= 0 && index < origin.infos.departures.length) {
-        this.procedureDetails.departureIndex = index;
-
-        if (this.procedureDetails.departureRunwayIndex !== -1) {
-          await this._insertDepartureFromIndexes();
-        }
-      }
-    }
-  }
-
-  /**
-   * Sets the departure runway transition from an index in the origin airport departure information.
-   * @param {Number} index The index of the runway transition in the origin departures information.
-   */
-  async setDepartureRunwayFromIndex(index) {
-    if (this.hasOrigin) {
-      const origin = this._waypoints[0];
-      if (index >= 0 && index < origin.infos.oneWayRunways.length) {
-        this.procedureDetails.departureRunwayIndex = index;
-
-        if (this.procedureDetails.departureIndex !== -1) {
-          await this._insertDepartureFromIndexes();
-        }
-      }
-    }
-  }
-
-  /**
-   * Inserts a departure into the flight plan from indexes in the departure airport information.
-   */
-  async _insertDepartureFromIndexes() {
+  async buildDeparture() {
       const legs = [];
       const origin = this._waypoints[0];
 
@@ -480,106 +436,106 @@ class ManagedFlightPlan {
       const runwayIndex = this.procedureDetails.departureRunwayIndex;
       const transitionIndex = this.procedureDetails.departureTransitionIndex;
 
-      const runwayTransition = origin.infos.departures[departureIndex].runwayTransitions[runwayIndex];
+      if (departureIndex !== -1 && runwayIndex !== -1) {
+        const runwayTransition = origin.infos.departures[departureIndex].runwayTransitions[runwayIndex];
+        legs.push(...runwayTransition.legs);
+      }
+
+      if (departureIndex !== -1) {
+        legs.push(...origin.infos.departures[departureIndex].commonLegs);
+      }
+
+      if (transitionIndex !== -1) {
+        const transition = origin.infos.enRouteTransitions[transitionIndex].legs;
+        legs.push(...transition);
+      }
+
       for (var i = this.departureStart; i < this.enrouteStart; i++) {
         await this.removeWaypoint(i);
       }
 
-      const procedure = new LegsProcedure(runwayTransition.legs, this._waypoints[0], this._parentInstrument);
+      const procedure = new LegsProcedure(legs, this._waypoints[0], this._parentInstrument);
+      let waypointIndex = this.departureStart;
       while (procedure.hasNext()) {
-        await this.addWaypoint(await procedure.getNext())
+        await this.addWaypoint(await procedure.getNext(), ++waypointIndex);
       }
-      
-      this.procedureDetails.departureSelected = true;
-      this.procedureDetails.departureFromOriginData = true;
   }
 
   /**
-   * Clears the departure from the flight plan.
+   * Builds an arrival into the flight plan from indexes in the arrival airport information.
    */
-  clearDeparture() {
-    if (this.procedureDetails.departureSelected === true) {
-      this._waypoints.splice(1, this.enrouteStart - 1);
+  async buildArrival() {
+    const legs = [];
+    const destination = this._waypoints[this._waypoints.length - 1];
 
-      this.procedureDetails.departureSelected = false;
-      this.procedureDetails.departureFromOriginData = false;
-      this.procedureDetails.departureIndex = -1;
-      this.procedureDetails.departureTransitionIndex = -1;
-      this.procedureDetails.departureRunwayIndex = -1;
+    const arrivalIndex = this.procedureDetails.arrivalIndex;
+    const arrivalRunwayIndex = this.procedureDetails.arrivalRunwayIndex;
+    const arrivalTransitionIndex = this.procedureDetails.arrivalTransitionIndex;
+
+    if (arrivalIndex !== -1 && arrivalTransitionIndex !== -1) {
+      const transition = destination.infos.arrivals[arrivalIndex].enRouteTransitions[arrivalTransitionIndex].legs;
+      legs.push(...transition);
+    }
+
+    if (arrivalIndex !== -1) {
+      legs.push(...destination.infos.arrivals[arrivalIndex].commonLegs);
+    }
+
+    if (arrivalIndex !== -1 && arrivalRunwayIndex !== -1) {
+      const runwayTransition = destination.infos.arrivals[arrivalIndex].runwayTransitions[arrivalRunwayIndex];
+      legs.push(...runwayTransition.legs);
+    }
+
+    for (var i = this.arrivalStart; i < this.approachStart; i++) {
+      await this.removeWaypoint(i);
+    }
+
+    const procedure = new LegsProcedure(legs, this._waypoints[0], this._parentInstrument);
+    let waypointIndex = this.arrivalStart;
+
+    while (procedure.hasNext()) {
+      await this.addWaypoint(await procedure.getNext(), ++waypointIndex);
     }
   }
 
   /**
-   * Sets the arrival from an index in the destination airport arrival information.
-   * @param {Number} index The index of the arrival in the destination arrivals information.
+   * Builds an approach into the flight plan from indexes in the arrival airport information.
    */
-  setArrivalFromIndex(index) {
-    if (this.hasDestination) {
-      const destination = this._waypoints[this._waypoints.length - 1];
-      if (index >= 0 && index < destination.infos.arrivals.length) {
-        this._waypoints.splice(this.arrivalStart, this.approachStart - this.arrivalStart, destination.infos.arrivals[index]);
+  async buildApproach() {
+    const legs = [];
+    const destination = this._waypoints[this._waypoints.length - 1];
 
-        this.procedureDetails.arrivalSelected = true;
-        this.procedureDetails.arrivalFromDestinationData = true;
-        this.procedureDetails.arrivalIndex = index;
-      }
+    const approachIndex = this.procedureDetails.approachIndex;
+    const approachTransitionIndex = this.procedureDetails.approachTransitionIndex;
+
+    if (approachIndex !== -1 && approachTransitionIndex !== -1) {
+      const transition = destination.infos.approaches[approachIndex].transitions[approachTransitionIndex].legs;
+      legs.push(...transition);
     }
-  }
 
-  /**
-   * Clears the arrival from the flight plan.
-   */
-  clearArrival() {
-    if (this.procedureDetails.arrivalSelected === true) {
-      this._waypoints.splice(this.arrivalStart, this.approachStart - this.arrivalStart);
-
-      this.procedureDetails.arrivalSelected = false;
-      this.procedureDetails.arrivalFromDestinationData = false;
-      this.procedureDetails.arrivalIndex = -1;
-      this.procedureDetails.arrivalTransitionIndex = -1;
+    if (approachIndex !== -1) {
+      legs.push(...destination.infos.approaches[approachIndex].finalLegs);
     }
-  }
 
-  /**
-   * Sets the approach from an index in the destination airport arrival information.
-   * @param {Number} index The index of the approach in the destination approaches information.
-   */
-  setApproachFromIndex(index) {
-    if (this.hasDestination) {
-      const destination = this._waypoints[this._waypoints.length - 1];
-      if (index >= 0 && index < destination.infos.approaches.length) {
-
-        const fixCache = new Map();
-        for (var leg of destination.infos.approaches[index].legs) {
-
-        }
-
-        this._waypoints.splice(this.approachStart, this._waypoints.length - this.approachStart - 2, ...destination.infos.approaches[index].wayPoints);
-
-        this.procedureDetails.approachSelected = true;
-        this.procedureDetails.approachFromDestinationData = true;
-        this.procedureDetails.approachIndex = index;
-
-        this._reflowDistances();
-      }
+    for (var i = this.approachStart; i < this._waypoints.length - 2; i++) {
+      await this.removeWaypoint(i);
     }
-  }
 
-  /**
-   * Clears the approach from the flight plan.
-   */
-  clearApproach() {
-    if (this.procedureDetails.approachSelected === true) {
-      this._waypoints.splice(this.approachStart, this._waypoints.length - this.approachStart - 2);
+    const procedure = new LegsProcedure(legs, this._waypoints[0], this._parentInstrument);
+    let waypointIndex = this.approachStart;
 
-      this.procedureDetails.approachSelected = false;
-      this.procedureDetails.approachFromDestinationData = false;
-      this.procedureDetails.approachIndex = -1;
-      this.procedureDetails.approachTransitionIndex = -1;
-      this.procedureDetails.arrivalRunwayIndex = -1;
+    while (procedure.hasNext()) {
+      await this.addWaypoint(await procedure.getNext(), ++waypointIndex);
     }
   }
 }
+
+/**
+ * Converts a plain object into a ManagedFlightPlan.
+ * @param {*} flightPlanObject The object to convert.
+ * @param {BaseInstrument} parentInstrument The parent instrument attached to this flight plan.
+ * @returns {ManagedFlightPlan} The converted ManagedFlightPlan.
+ */
 ManagedFlightPlan.fromObject = (flightPlanObject, parentInstrument) => {
   let plan = Object.assign(new ManagedFlightPlan(), flightPlanObject);
   plan.setParentInstrument(parentInstrument);
@@ -738,12 +694,6 @@ class GPS {
 class ProcedureDetails {
 
   constructor() {
-    /** Whether or not a departure has been selected for the flight plan. */
-    this.departureSelected = false;
-
-    /** Whether or not the departure has been taken from origin airport information. */
-    this.departureFromOriginData = false;
-
     /** The index of the departure in the origin airport information. */
     this.departureIndex = -1;
 
@@ -753,12 +703,6 @@ class ProcedureDetails {
     /** The index of the selected runway in the original airport departure information. */
     this.departureRunwayIndex = -1;
 
-    /** Whether or not an arrival has been selected for the flight plan. */
-    this.arrivalSelected = false;
-
-    /** Whether or not the arrival has been taken from destination airport information. */
-    this.arrivalFromDestinationData = false;
-
     /** The index of the arrival in the destination airport information. */
     this.arrivalIndex = -1;
 
@@ -767,12 +711,6 @@ class ProcedureDetails {
 
     /** The index of the selected runway at the destination airport. */
     this.arrivalRunwayIndex = -1;
-
-    /** Whether or not an approach has been selected for the flight plan. */
-    this.approachSelected = false;
-
-    /** Whether or not the approach has been taken from destination airport information. */
-    this.approachFromDestinationData = false;
 
     /** The index of the apporach in the destination airport information.*/
     this.approachIndex = -1;
@@ -984,8 +922,8 @@ RawDataMapper.toWaypoint = (facility, instrument) => {
       waypoint.infos = new AirportInfo(instrument);
 
       waypoint.infos.approaches = facility.approaches;
-      //waypoint.infos.approaches.forEach(approach => 
-      //  approach.runwayTransitions.forEach(trans => trans.name = RawDataMapper.generateRunwayTransitionName(trans)));
+      waypoint.infos.approaches.forEach(approach => 
+        approach.transitions.forEach(trans => trans.name = trans.legs[0].fixIcao.substring(7, 12).trim()));
 
       waypoint.infos.departures = facility.departures;
       waypoint.infos.departures.forEach(departure => 
@@ -1109,10 +1047,18 @@ class LegsProcedure {
     this._currentIndex = 0;
   }
 
+  /**
+   * Checks whether or not there are any legs remaining in the procedure.
+   * @returns {Boolean} True if there is a next leg, false otherwise.
+   */
   hasNext() {
     return this._currentIndex < this._legs.length;
   }
 
+  /**
+   * Gets the next mapped leg from the procedure.
+   * @returns {WayPoint} The mapped waypoint from the leg of the procedure.
+   */
   async getNext() {
     const currentLeg = this._legs[this._currentIndex];
     let isLegMappable = false;
@@ -1134,6 +1080,8 @@ class LegsProcedure {
         case 9:
           mappedLeg = await this.mapBearingAndDistanceFromOrigin(currentLeg, this._previousFix);
           break;
+        case 15:
+        case 17:
         case 18:
           mappedLeg = await this.mapExactFix(currentLeg, this._previousFix);
           break;
@@ -1149,17 +1097,23 @@ class LegsProcedure {
     return mappedLeg;
   }
 
-  async mapHeadingUntilDistanceFromOrigin(leg, prevFix) {
+  /**
+   * Maps a heading until distance from origin leg.
+   * @param {*} leg The procedure leg to map. 
+   * @param {WayPoint} prevLeg The previously mapped waypoint in the procedure.
+   * @returns {WayPoint} The mapped leg.
+   */
+  async mapHeadingUntilDistanceFromOrigin(leg, prevLeg) {
     const origin = await this._instrument.facilityLoader.getFacilityRaw(leg.originIcao);
     const originIdent = origin.icao.substring(7, 12).trim();
 
-    const bearingToOrigin = Avionics.Utils.computeGreatCircleHeading(prevFix.infos.coordinates, new LatLongAlt(origin.lat, origin.lon));
-    const distanceToOrigin = Avionics.Utils.computeGreatCircleDistance(prevFix.infos.coordinates, new LatLongAlt(origin.lat, origin.lon));
+    const bearingToOrigin = Avionics.Utils.computeGreatCircleHeading(prevLeg.infos.coordinates, new LatLongAlt(origin.lat, origin.lon));
+    const distanceToOrigin = Avionics.Utils.computeGreatCircleDistance(prevLeg.infos.coordinates, new LatLongAlt(origin.lat, origin.lon));
 
     const distanceAngle = Math.asin((Math.sin(distanceToOrigin) * Math.sin(bearingToOrigin)) / Math.sin(leg.distance));
     const legDistance = 2 * Math.atan(Math.tan(0.5 * (leg.distance - distanceToOrigin)) * (Math.sin(0.5 * (bearingToOrigin + distanceAngle)) / Math.sin(0.5 * (bearingToOrigin - distanceAngle))));
 
-    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, legDistance, prevFix.infos.coordinates.lat, prevFix.infos.coordinates.long);
+    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, legDistance, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
 
     const waypoint = new WayPoint(this._instrument);
     waypoint.type = 'W';
@@ -1174,10 +1128,15 @@ class LegsProcedure {
     return waypoint;
   }
 
-  async mapBearingAndDistanceFromOrigin(currentLeg, prevFix) {
-    const origin = await this._instrument.facilityLoader.getFacilityRaw(currentLeg.originIcao);
+  /**
+   * Maps a bearing/distance fix in the procedure.
+   * @param {*} leg The procedure leg to map.
+   * @returns {WayPoint} The mapped leg.
+   */
+  async mapBearingAndDistanceFromOrigin(leg) {
+    const origin = await this._instrument.facilityLoader.getFacilityRaw(leg.originIcao);
     const originIdent = origin.icao.substring(7, 12).trim();
-    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(currentLeg.course, currentLeg.distance / 1852, origin.lat, origin.lon);
+    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, leg.distance / 1852, origin.lat, origin.lon);
 
     const waypoint = new WayPoint(this._instrument);
     waypoint.type = 'W';
@@ -1185,21 +1144,27 @@ class LegsProcedure {
     waypoint.infos = new IntersectionInfo(this._instrument);
     waypoint.infos.coordinates = coordinates;
 
-    const ident = `${originIdent}${Math.trunc(currentLeg.distance / 1852)}`;
+    const ident = `${originIdent}${Math.trunc(leg.distance / 1852)}`;
     waypoint.ident = ident;
     waypoint.infos.ident = ident;
 
     return waypoint;
   }
 
-  async mapOriginRadialForDistance(currentLeg, prevFix) {
-    if (currentLeg.fixIcao.trim() !== '') {
-      return RawDataMapper.toWaypoint(await this._instrument.facilityLoader.getFacilityRaw(currentLeg.fixIcao), this._instrument);
+  /**
+   * Maps a radial on the origin for a specified distance leg in the procedure.
+   * @param {*} leg The procedure leg to map.
+   * @param {WayPoint} prevLeg The previously mapped leg.
+   * @returns {Waypoint} The mapped leg.
+   */
+  async mapOriginRadialForDistance(leg, prevLeg) {
+    if (leg.fixIcao.trim() !== '') {
+      return await this.mapExactFix(leg);
     }
     else {
-      const origin = await this._instrument.facilityLoader.getFacilityRaw(currentLeg.originIcao);
+      const origin = await this._instrument.facilityLoader.getFacilityRaw(leg.originIcao);
       const originIdent = origin.icao.substring(7, 12).trim();
-      const coordinates = Avionics.Utils.bearingDistanceToCoordinates(currentLeg.course, currentLeg.distance / 1852, prevFix.infos.coordinates.lat, prevFix.infos.coordinates.long);
+      const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, leg.distance / 1852, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
 
       const distanceFromOrigin = Avionics.Utils.computeGreatCircleDistance(new LatLongAlt(origin.lat, origin.lon), coordinates);
 
@@ -1217,20 +1182,27 @@ class LegsProcedure {
     }
   }
 
-  async mapHeadingToIntercept(currentLeg, prevFix, nextLeg) {
+  /**
+   * Maps a heading turn to intercept leg in the procedure.
+   * @param {*} leg The procedure leg to map. 
+   * @param {WayPoint} prevLeg The previously mapped leg.
+   * @param {*} nextLeg The next leg in the procedure to intercept.
+   * @returns {WayPoint} The mapped leg.
+   */
+  async mapHeadingToIntercept(leg, prevLeg, nextLeg) {
     const nextOrigin = await this._instrument.facilityLoader.getFacilityRaw(nextLeg.originIcao);
     const nextOriginIdent = nextOrigin.icao.substring(7, 12).trim();
     
-    const distanceFromOrigin = Avionics.Utils.computeGreatCircleDistance(prevFix.infos.coordinates, new LatLongAlt(nextOrigin.lat, nextOrigin.lon));
-    const bearingToOrigin = Avionics.Utils.computeGreatCircleHeading(prevFix.infos.coordinates, new LatLongAlt(nextOrigin.lat, nextOrigin.lon));
-    const bearingFromOrigin = Avionics.Utils.computeGreatCircleHeading(new LatLongAlt(nextOrigin.lat, nextOrigin.lon), prevFix.infos.coordinates);
+    const distanceFromOrigin = Avionics.Utils.computeGreatCircleDistance(prevLeg.infos.coordinates, new LatLongAlt(nextOrigin.lat, nextOrigin.lon));
+    const bearingToOrigin = Avionics.Utils.computeGreatCircleHeading(prevLeg.infos.coordinates, new LatLongAlt(nextOrigin.lat, nextOrigin.lon));
+    const bearingFromOrigin = Avionics.Utils.computeGreatCircleHeading(new LatLongAlt(nextOrigin.lat, nextOrigin.lon), prevLeg.infos.coordinates);
 
-    let ang1 = bearingToOrigin - currentLeg.course;
+    let ang1 = bearingToOrigin - leg.course;
     let ang2 = bearingFromOrigin - nextLeg.course;
     let ang3 = Math.acos(Math.sin(ang1) * Math.sin(ang2) * Math.sin(distanceFromOrigin) - Math.cos(ang1) * Math.cos(ang2));
 
     let legDistance = Math.acos((Math.cos(ang1) + Math.cos(ang2) * Math.cos(ang3)) / Math.sin(ang1) * Math.sin(ang3));
-    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(currentLeg.course, legDistance, prevFix.infos.coordinates.lat, prevFix.infos.coordinates.long);
+    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, legDistance, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
 
     const waypoint = new WayPoint(this._instrument);
     waypoint.type = 'W';
@@ -1238,14 +1210,40 @@ class LegsProcedure {
     waypoint.infos = new IntersectionInfo(this._instrument);
     waypoint.infos.coordinates = coordinates;
 
-    const ident = `T${currentLeg.course}${nextOriginIdent}`;
+    const ident = `T${leg.course}${nextOriginIdent}`;
     waypoint.ident = ident;
     waypoint.infos.ident = ident;
 
     return waypoint;
   }
 
-  async mapExactFix(currentLeg, prevFix) {
-    return RawDataMapper.toWaypoint(await this._instrument.facilityLoader.getFacilityRaw(currentLeg.fixIcao), this._instrument);
+  /**
+   * Maps an exact fix leg in the procedure.
+   * @param {*} leg The procedure leg to map.
+   * @returns {WayPoint} The mapped leg.
+   */
+  async mapExactFix(leg) {
+    const facility = await this._instrument.facilityLoader.getFacilityRaw(leg.fixIcao);
+    if (facility) {
+      return RawDataMapper.toWaypoint(facility, this._instrument);
+    }
+    else {
+      const origin = await this._instrument.facilityLoader.getFacilityRaw(leg.originIcao);
+      const originIdent = origin.icao.substring(7, 12).trim();
+
+      const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.theta, leg.rho / 1852, origin.lat, origin.lon);
+
+      const waypoint = new WayPoint(this._instrument);
+      waypoint.type = 'W';
+
+      waypoint.infos = new IntersectionInfo(this._instrument);
+      waypoint.infos.coordinates = coordinates;
+
+      const ident = `${originIdent}${Math.trunc(leg.rho / 1852)}`;
+      waypoint.ident = ident;
+      waypoint.infos.ident = ident;
+
+      return waypoint;
+    }
   }
 }
