@@ -3241,7 +3241,7 @@ class CJ4_PopupMenuContainer extends NavSystemElementContainer {
 }
 var CJ4_PopupMenu_Key;
 (function (CJ4_PopupMenu_Key) {
-    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_FORMAT"] = 0] = "MAP_FORMAT";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["PFD_MAP_FORMAT"] = 0] = "PFD_MAP_FORMAT";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SRC"] = 1] = "MAP_SRC";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_RANGE"] = 2] = "MAP_RANGE";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_CONSTRAINTS"] = 3] = "MAP_SYMBOL_CONSTRAINTS";
@@ -3270,6 +3270,7 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_RADIO_VAL"] = 26] = "MIN_ALT_RADIO_VAL";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 27] = "SYS_SRC";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["AOA"] = 28] = "AOA";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MFD_MAP_FORMAT"] = 29] = "MFD_MAP_FORMAT";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
     constructor(_root, _dictionary, _gps) {
@@ -3281,7 +3282,6 @@ class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
         this.menuTop = 223;
         this.menuWidth = 145;
         this.dictionary = _dictionary;
-        console.log(this.dictionary.items[0].value);
         this.gps = _gps;
         this.showMainPage();
     }
@@ -3297,14 +3297,14 @@ class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("PFD MENU", this.titleSize, 1.0, "#6495ED");
+                this.addTitle("PFD MENU", this.titleSize, 1.0, this.headerColour);
             }
             this.endSection();
             this.beginSection();
             {
                 this.addTitle("FORMAT", this.textSize, 0.4);
-                this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
-                this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
+                this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT], "L:WT_PFD_MAP_FORMAT");
+                this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT], "L:WT_PFD_MAP_FORMAT");
                 this.addRadio("PPOS", this.textSize, null);
             }
             this.endSection();
@@ -3342,12 +3342,12 @@ class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+                this.addTitle("PFD MENU", this.titleSize, 1.0, this.previousHeaderColour);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("BRG SRC", this.titleSize, 1.0, "#6495ED", true);
+                this.addTitle("BRG SRC", this.titleSize, 1.0, this.headerColour, true);
             }
             this.endSection();
             this.beginSection();
@@ -3383,12 +3383,12 @@ class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+                this.addTitle("PFD MENU", this.titleSize, 1.0, this.previousHeaderColour);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("CONFIG", this.titleSize, 1.0, "#6495ED", true);
+                this.addTitle("CONFIG", this.titleSize, 1.0, this.headerColour, true);
             }
             this.endSection();
             this.beginSection();
@@ -3419,12 +3419,12 @@ class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+                this.addTitle("PFD MENU", this.titleSize, 1.0, this.previousHeaderColour);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("REFS", this.titleSize, 1.0, "#6495ED", true);
+                this.addTitle("REFS", this.titleSize, 1.0, this.headerColour, true);
             }
             this.endSection();
             this.beginSection();
@@ -3496,7 +3496,7 @@ class CJ4_PopupMenu_REF extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("REFS", this.titleSize, 1.0, "#6495ED");
+                this.addTitle("REFS", this.titleSize, 1.0, this.headerColour);
             }
             this.endSection();
             this.beginSection();
@@ -3566,7 +3566,7 @@ class CJ4_PopupMenu_UPPER extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("UPR MENU", this.titleSize, 1.0, "#6495ED");
+                this.addTitle("UPR MENU", this.titleSize, 1.0, this.headerColour);
             }
             this.endSection();
             this.beginSection();
@@ -3596,7 +3596,6 @@ class CJ4_PopupMenu_LOWER extends WTMenu.Popup_Menu_Handler {
         this.menuTop = 245;
         this.menuWidth = 145;
         this.dictionary = _dictionary;
-        console.log(this.dictionary.items[0].value);
         this.showMainPage();
     }
     reset() {
@@ -3611,16 +3610,16 @@ class CJ4_PopupMenu_LOWER extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("LWR MENU", this.titleSize, 1.0, "#6495ED");
+                this.addTitle("LWR MENU", this.titleSize, 1.0, this.headerColour);
             }
             this.endSection();
             this.beginSection();
             {
                 this.addTitle("FORMAT", this.textSize, 0.45);
-                this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
-                this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
+                this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT], "L:WT_MFD_MAP_FORMAT");
+                this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT], "L:WT_MFD_MAP_FORMAT");
                 this.addRadio("PPOS", this.textSize, null);
-                this.addRadio("PLAN", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
+                this.addRadio("PLAN", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT], "L:WT_MFD_MAP_FORMAT");
                 this.addRadio("GWX", this.textSize, null);
                 this.addRadio("TCAS", this.textSize, null);
             }
@@ -3662,19 +3661,19 @@ class CJ4_PopupMenu_LOWER extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("LOWER MENU", this.titleSize, 1.0, "grey");
+                this.addTitle("LOWER MENU", this.titleSize, 1.0, this.previousHeaderColour);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("L PFD MENU", this.titleSize, 1.0, "#6495ED", true);
+                this.addTitle("L PFD MENU", this.titleSize, 1.0, this.headerColour, true);
             }
             this.endSection();
             this.beginSection();
             {
                 this.addTitle("FORMAT", this.textSize, 0.4);
-                this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
-                this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
+                this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_FORMAT], "L:WT_PFD_MAP_FORMAT");
+                this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_FORMAT],"L:WT_PFD_MAP_FORMAT");
                 this.addRadio("PPOS", this.textSize, null);
             }
             this.endSection();
@@ -3713,12 +3712,12 @@ class CJ4_PopupMenu_LOWER extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+                this.addTitle("PFD MENU", this.titleSize, 1.0, this.previousHeaderColour);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("BRG SRC", this.titleSize, 1.0, "#6495ED", true);
+                this.addTitle("BRG SRC", this.titleSize, 1.0, this.headerColour, true);
             }
             this.endSection();
             this.beginSection();
@@ -3754,12 +3753,12 @@ class CJ4_PopupMenu_LOWER extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+                this.addTitle("PFD MENU", this.titleSize, 1.0, this.previousHeaderColour);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("CONFIG", this.titleSize, 1.0, "#6495ED", true);
+                this.addTitle("CONFIG", this.titleSize, 1.0, this.headerColour, true);
             }
             this.endSection();
             this.beginSection();
@@ -3790,17 +3789,17 @@ class CJ4_PopupMenu_LOWER extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("LOWER MENU", this.titleSize, 1.0, "grey");
+                this.addTitle("LOWER MENU", this.titleSize, 1.0, this.previousHeaderColour);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("L PFD MENU", this.titleSize, 1.0, "grey", true);
+                this.addTitle("L PFD MENU", this.titleSize, 1.0, this.previousHeaderColour, true);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("REFS", this.titleSize, 1.0, "#6495ED", true);
+                this.addTitle("REFS", this.titleSize, 1.0, this.headerColour, true);
             }
             this.endSection();
             this.beginSection();
@@ -3851,12 +3850,12 @@ class CJ4_PopupMenu_LOWER extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("LWR MENU", this.titleSize, 1.0, "grey");
+                this.addTitle("LWR MENU", this.titleSize, 1.0, this.previousHeaderColour);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("MAP SYMBOLS", this.titleSize, 1.0, "#6495ED", true);
+                this.addTitle("MAP SYMBOLS", this.titleSize, 1.0, this.headerColour, true);
             }
             this.endSection();
             this.beginSection();
@@ -3885,12 +3884,12 @@ class CJ4_PopupMenu_LOWER extends WTMenu.Popup_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("LWR MENU", this.titleSize, 1.0, "grey");
+                this.addTitle("LWR MENU", this.titleSize, 1.0, this.previousHeaderColour);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("SYS TEST", this.titleSize, 1.0, "#6495ED", true);
+                this.addTitle("SYS TEST", this.titleSize, 1.0, this.headerColour, true);
             }
             this.endSection();
             this.beginSection();

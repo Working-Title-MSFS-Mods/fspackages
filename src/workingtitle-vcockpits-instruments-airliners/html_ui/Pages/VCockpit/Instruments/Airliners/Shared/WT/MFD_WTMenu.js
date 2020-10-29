@@ -49,6 +49,10 @@ var WTMenu;
         }
     }
     class Core_Menu {
+        constructor() {
+            this.headerColour = "#2468E5";
+            this.previousHeaderColour = "#656767";
+        }
         get height() {
             let height = 0;
             for (let i = 0; i < this.allSections.length; i++) {
@@ -216,8 +220,10 @@ var WTMenu;
             this.highlightElem.setAttribute("stroke", this.highlightColor);
             this.highlightElem.setAttribute("stroke-width", (this.sectionBorderSize + 1).toString());
             this.sectionRoot.appendChild(this.highlightElem);
-            if (this.dictionary)
-                this.dictionary.changed = false;
+            if (this.dictionary){
+                // SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", false);
+                // SimVar.SetSimVarValue("L:Update_MFD_Menu", "Bool", false);
+            }
         }
         beginSection(_defaultRadio = true) {
             this.section = new Menu_Section();
@@ -332,7 +338,7 @@ var WTMenu;
             this.section.items.push(item);
             this.section.endY += this.lineHeight;
         }
-        addList(_text, _textSize, _values, _dictKeys) {
+        addList(_text, _textSize, _values, _dictKeys, _useLVar) {
             let enabled = (_dictKeys != null) ? true : false;
             let text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = _text;
@@ -407,7 +413,7 @@ var WTMenu;
             this.section.items.push(item);
             this.section.endY += this.lineHeight;
         }
-        addRadio(_text, _textSize, _dictKeys) {
+        addRadio(_text, _textSize, _dictKeys, _LVar = undefined) {
             let enabled = (_dictKeys != null) ? true : false;
             let cx = this.columnLeft1 + (this.columnLeft2 - this.columnLeft1) * 0.5;
             let cy = this.section.endY + this.lineHeight * 0.5;
@@ -456,6 +462,7 @@ var WTMenu;
             text.setAttribute("alignment-baseline", "central");
             this.sectionRoot.appendChild(text);
             let item = new Menu_Item(Menu_ItemType.RADIO, this.section, this.section.endY, this.lineHeight);
+            item.lvar = _LVar;
             item.dictKeys = _dictKeys;
             item.radioElem = shape;
             item.radioName = _text;
@@ -837,7 +844,28 @@ var WTMenu;
                         let found = false;
                         for (let i = 0; i < _item.section.items.length; i++) {
                             if (_item.section.items[i].radioVal) {
-                                this.dictionary.set(_item.dictKeys[0], _item.radioName);
+                                if(_item.lvar){
+                                    switch (_item.radioName) {
+                                        case "ROSE":
+                                            SimVar.SetSimVarValue(_item.lvar, "number", 1);
+                                            break;
+                                        case "ARC":
+                                            SimVar.SetSimVarValue(_item.lvar, "number", 2);
+                                            break;
+                                        case "PLAN":
+                                            SimVar.SetSimVarValue(_item.lvar, "number", 3);
+                                            break;
+                                        default:
+                                            SimVar.SetSimVarValue(_item.lvar, "number", 1);
+                                            console.log("NOOOOOOO");
+                                            break;
+                                    }
+                                    SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", true);
+                                    SimVar.SetSimVarValue("L:Update_MFD_Menu", "Bool", true);
+                                }
+                                else{
+                                    this.dictionary.set(_item.dictKeys[0], _item.radioName);
+                                }
                                 found = true;
                                 break;
                             }
@@ -1299,3 +1327,73 @@ var WTMenu;
     WTMenu.Checklist_Menu_Handler = Checklist_Menu_Handler;
     WTMenu.Popup_Menu_Handler = PopupMenu_Handler;
 })(WTMenu || (WTMenu = {}));
+
+// Allows PFD and MFD to share the same dictionary so PFD menus can change things on MFD and so on.
+var GlassCockpitDictionarySingleton = (function () {
+    let instance;
+
+    return {
+        getInstance() {
+            if (!instance) {
+                instance = new Dictionary();
+            }
+            return instance;
+        }
+    };
+})();
+
+class DictionaryItem {
+}
+class Dictionary {
+    constructor() {
+        this.items = new Array();
+        SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", false);
+        SimVar.SetSimVarValue("L:Update_MFD_Menu", "Bool", false);
+    }
+    set(_key, _value) {
+        if (_key != undefined) {
+            for (let i = 0; i < this.items.length; i++) {
+                if (this.items[i].key === _key) {
+                    if (this.items[i].value != _value) {
+                        this.items[i].value = _value;
+                        SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", true);
+                        SimVar.SetSimVarValue("L:Update_MFD_Menu", "Bool", true);
+                    }
+                    return;
+                }
+            }
+            let item = new DictionaryItem();
+            item.key = _key;
+            item.value = _value;
+            this.items.push(item);
+            SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", true);
+            SimVar.SetSimVarValue("L:Update_MFD_Menu", "Bool", true);
+        }
+    }
+    get(_key) {
+        for (let i = 0; i < this.items.length; i++) {
+            if (this.items[i].key === _key) {
+                return this.items[i].value;
+            }
+        }
+        return undefined;
+    }
+    remove(_key) {
+        for (let i = 0; i < this.items.length; i++) {
+            if (this.items[i].key === _key) {
+                this.items.splice(i, 1);
+                SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", true);
+                SimVar.SetSimVarValue("L:Update_MFD_Menu", "Bool", true);
+                return;
+            }
+        }
+    }
+    exists(_key) {
+        for (let i = 0; i < this.items.length; i++) {
+            if (this.items[i].key === _key) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
