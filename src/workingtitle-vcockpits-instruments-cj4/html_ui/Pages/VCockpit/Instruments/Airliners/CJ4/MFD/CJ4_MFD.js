@@ -79,9 +79,8 @@ class CJ4_MFD extends BaseAirliners {
         this.addIndependentElementContainer(this.popup);
         this.maxUpdateBudget = 12;
     }
-
-    Update() {
-        super.Update();
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
         if (this.allContainersReady()) {
 
             // check for unit system change
