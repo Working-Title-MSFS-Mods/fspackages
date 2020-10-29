@@ -12,8 +12,12 @@ class WT_ValueAndUnit {
         return this._unit;
     }
 
-    getString(precision = 0, seperator = " ", cssFormat = "") {
-        return this._value.toFixed(precision) + seperator + this._unit + cssFormat;
+    getString(precision = 0, seperator = " ", cssFormat = "", emptyValue = "") {
+        if (typeof this._value == 'number') {
+            return this._value.toFixed(precision) + seperator + this._unit + cssFormat;
+        } else {
+            return emptyValue;
+        }
     }
 }
 
@@ -66,7 +70,7 @@ class WT_ConvertUnit {
 
     static getLength(value, imperial = "FT", metric = "M") {
         if (WT_ConvertUnit.isMetric()) {
-            return new WT_ValueAndUnit(value, metric);;
+            return new WT_ValueAndUnit(value, metric);
         }
         else {
             return new WT_ValueAndUnit(value * 3.28084, imperial);

@@ -61,7 +61,7 @@ class CJ4_FMC_ApproachRefPage {
         if (isNaN(fmc.landingQnh)) {
             fmc.landingQnh = SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg");
         }
-                
+
         fmc.landingPressAlt = Number(Math.trunc((((29.92 - fmc.landingQnh) * 1000) + arrRunwayElevation)));
 
         let arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY[green]/[white]WET[s-text]"
@@ -70,18 +70,19 @@ class CJ4_FMC_ApproachRefPage {
         let selAptValue = destinationIdent ? destinationIdent + "[green]/[white]" + originIdent + "[s-text]" : "----";
 
         const arrRunwayLengthText = WT_ConvertUnit.getLength(arrRunwayLength).getString(0, " ", "[s-text]");
-        const landingQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.landingQnh).toFixed(0) : fmc.takeoffQnh.toFixed(2);
+        const landingQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.landingQnh).toFixed(0) : fmc.landingQnh.toFixed(2);
+
 
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "1/3 [blue]", "APPROACH REF[blue]"],
             [" SEL APT[blue]", "WIND [blue]"],
-            [selAptValue, fmc.landingWindDir + "\xB0/" + fmc.landingWindSpeed],
+            [selAptValue, fmc.landingWindDir + "\xB0/" + fmc.landingWindSpeed + "[s-text]"],
             [" RWY ID[blue]", "OAT [blue]"],
-            [arrRunwayOutput + " [s-text]", fmc.landingOat + "\xB0C"],
+            [arrRunwayOutput + " [s-text]", (fmc.landingOat >= 0 ? "+" : "") + fmc.landingOat + "\xB0C" + "[s-text]"],
             [" RWY WIND[blue]", "QNH [blue]"],
             [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", landingQnhText + "[s-text]"],
             [" RUNWAY LENGTH[blue]", "P ALT [blue]"],
-            [arrRunwayLengthText, fmc.landingPressAlt + " FT[s-text]"],
+            [arrRunwayLengthText + "[s-text]", fmc.landingPressAlt + " FT[s-text]"],
             [" RWY SLOPE[blue]"],
             ["--.-%"],
             [" RWY COND[blue]"],
@@ -156,20 +157,10 @@ class CJ4_FMC_ApproachRefPage {
             CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
         };
         fmc.onPrevPage = () => {
-            if (runwayLoaded == true && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
-                CJ4_FMC_ApproachRefPage.ShowPage3(fmc);
-            }
-            else {
-                fmc.showErrorMessage("INVALID");
-            }
+            CJ4_FMC_ApproachRefPage.ShowPage3(fmc);
         };
         fmc.onNextPage = () => {
-            if (runwayLoaded == true && fmc.landingQnh > 28 && fmc.landingQnh < 32 && fmc.landingOat && fmc.landingWindDir >= 0 && fmc.landingWindDir <= 360) {
-                CJ4_FMC_ApproachRefPage.ShowPage2(fmc);
-            }
-            else {
-                fmc.showErrorMessage("INVALID");
-            }
+            CJ4_FMC_ApproachRefPage.ShowPage2(fmc);
         };
         fmc.updateSideButtonActiveStatus();
     }
@@ -283,12 +274,19 @@ class CJ4_FMC_ApproachRefPage {
             vspeedColor = "blue";
         }
 
+        if (!fmc.flightPlanManager.getApproachRunway() || fmc.landingOat === "□□□") {
+            ldgFieldLength = 0;
+            vRef = null;
+            vApp = null;
+            vspeedSendMsg = "";
+        }
+
         function formatNumber(num, pad = 3) {
             return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
-            }
+        }
 
         const ldgWtText = ldgWt < 10300 ? "-----" : formatNumber(WT_ConvertUnit.getWeight(ldgWt).Value, (WT_ConvertUnit.isMetric() ? 4 : 5)) + (ldgWt > 15660 ? "[yellow]" : "");
-        const grossWeightText = formatNumber(WT_ConvertUnit.getWeight(grossWeightValue).Value, (WT_ConvertUnit.isMetric() ? 4 : 5))  + (WT_ConvertUnit.isMetric() ? "/7103 KG[s-text]" : "/15660 LB[s-text]");
+        const grossWeightText = formatNumber(WT_ConvertUnit.getWeight(grossWeightValue).Value, (WT_ConvertUnit.isMetric() ? 4 : 5)) + (WT_ConvertUnit.isMetric() ? "/7103[s-text]" : "/15660[s-text]");
         const landingDistText = WT_ConvertUnit.isMetric() ? formatNumber((ldgFieldLength / 3.28), 4) : formatNumber(ldgFieldLength, 4);
         const arrRunwayLengthText = WT_ConvertUnit.getLength(arrRunwayLength / 3.28).getString(0, " ", "[s-text]");
 
@@ -296,12 +294,12 @@ class CJ4_FMC_ApproachRefPage {
             [destinationIdent, "2/3 [blue]", "APPROACH REF[blue]"],
             [" A/I[blue]"],
             ["OFF[green]/[white]ON[s-text]"],
-            ["", "V[d-text blue]REF:[s-text blue] " + vRef.toFixed(0) + "[s-text + " + vspeedColor + "]"],
+            ["", "V[d-text blue]REF:[s-text blue] " + formatNumber(vRef) + "[s-text + " + vspeedColor + "]"],
             [""],
-            [" LW/GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + vApp.toFixed(0) + "[s-text + " + vspeedColor + "]"],
-            [ldgWtText + "/" + grossWeightText],
+            [" LW/GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + formatNumber(vApp) + "[s-text + " + vspeedColor + "]"],
+            [ldgWtText + "/" + grossWeightText + "[s-text]"],
             [" LFL/" + arrRunwayOutput + "[blue]"],
-            [landingDistText + "/" + arrRunwayLengthText],
+            [landingDistText + "/" + arrRunwayLengthText + "[s-text]"],
             [" LDG FACTOR[blue]"],
             ["1.0[green]" + "/[white]1.25[s-text]" + "/[white]1.67[s-text]" + "/[white]1.92[s-text]"],
             ["", vspeedSendMsg + " [s-text]"],
@@ -367,21 +365,21 @@ class CJ4_FMC_ApproachRefPage {
 
         const ldgWtText = ldgWt < 10300 ? "-----"
             : WT_ConvertUnit.getWeight(ldgWt, "", "").getString(0, "") + (ldgWt > 15660 ? "[yellow]" : "");
-           
-        const mlwText = WT_ConvertUnit.isMetric() ? "7103 KG" : "15660 LB";
-        const perfLimText = WT_ConvertUnit.isMetric() ? "7059 KG" : "15563 LB";
-        const rwLimText = WT_ConvertUnit.isMetric() ? "7760 KG" : "17110 LB";
+
+        const mlwText = WT_ConvertUnit.isMetric() ? "7103" : "15660";
+        const perfLimText = WT_ConvertUnit.isMetric() ? "7059" : "15563";
+        const rwLimText = WT_ConvertUnit.isMetric() ? "7760" : "17110";
 
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "3/3 [blue]", "APPROACH REF[blue]"],
             [" LW/MLW[blue]"],
-            [ldgWtText + "/" + mlwText],
+            [ldgWtText + "/" + mlwText + "[s-text]"],
             ["", "STRUCTURAL LIMIT [blue]"],
-            ["", mlwText],
+            ["", mlwText + "[s-text]"],
             ["", "PERFORMANCE LIMIT [blue]"],
-            ["", perfLimText],
+            ["", perfLimText + "[s-text]"],
             ["", "RUNWAY LENGTH LIMIT [blue]"],
-            ["", rwLimText],
+            ["", rwLimText + "[s-text]"],
             [""],
             [""],
             [""],
