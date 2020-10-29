@@ -101,9 +101,9 @@ class CJ4_MFD extends BaseAirliners {
                 }
             }
             let dict = this.popup.dictionary;
-            if (dict.changed) {
+            if (SimVar.GetSimVarValue("L:Update_MFD_Menu", "Bool")) {
                 this.readDictionary(dict);
-                dict.changed = false;
+                SimVar.SetSimVarValue("L:Update_MFD_Menu", "Bool", false);
             }
             if (this.showGwx)
                 this.showWeather = false;
@@ -443,31 +443,36 @@ class CJ4_MFD extends BaseAirliners {
     }
     readDictionary(_dict) {
         let modeChanged = false;
-        let format = _dict.get(CJ4_PopupMenu_Key.MAP_FORMAT);
-        if (format == "ROSE") {
+        let format = SimVar.GetSimVarValue("L:WT_MFD_MAP_FORMAT", "number");
+        // ROSE
+        if (format == 1) {
             if (this.mapDisplayMode != Jet_NDCompass_Display.ROSE) {
                 this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
                 modeChanged = true;
             }
         }
-        else if (format == "ARC" || format == "TCAS") {
-            if (this.mapDisplayMode != Jet_NDCompass_Display.ARC) {
-                this.mapDisplayMode = Jet_NDCompass_Display.ARC;
-                modeChanged = true;
-            }
-        }
-        else if (format == "PPOS") {
+        // PPOS
+        else if (format == 3) {
             if (this.mapDisplayMode != Jet_NDCompass_Display.PPOS) {
                 this.mapDisplayMode = Jet_NDCompass_Display.PPOS;
                 modeChanged = true;
             }
         }
-        else if (format == "PLAN") {
+        // PLAN
+        else if (format == 4) {
             if (this.mapDisplayMode != Jet_NDCompass_Display.PLAN) {
                 this.mapDisplayMode = Jet_NDCompass_Display.PLAN;
                 modeChanged = true;
             }
         }
+        // ARC, TCAS
+        else {
+            if (this.mapDisplayMode != Jet_NDCompass_Display.ARC) {
+                this.mapDisplayMode = Jet_NDCompass_Display.ARC;
+                modeChanged = true;
+            }
+        }
+
         let navSrc = _dict.get(CJ4_PopupMenu_Key.NAV_SRC);
         if (navSrc == "FMS1") {
             if (this.mapNavigationMode != Jet_NDCompass_Navigation.NAV) {
@@ -529,14 +534,26 @@ class CJ4_MFD extends BaseAirliners {
             this.onModeChanged();
     }
     fillDictionary(_dict) {
-        if (this.mapDisplayMode == Jet_NDCompass_Display.ROSE)
-            _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "ROSE");
-        else if (this.mapDisplayMode == Jet_NDCompass_Display.ARC)
-            _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "ARC");
-        else if (this.mapDisplayMode == Jet_NDCompass_Display.PPOS)
-            _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "PPOS");
-        else if (this.mapDisplayMode == Jet_NDCompass_Display.PLAN)
-            _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "PLAN");
+        const MFDMapFormat = SimVar.GetSimVarValue("L:WT_MFD_MAP_FORMAT", "number");
+        if (MFDMapFormat == 1)
+            _dict.set(CJ4_PopupMenu_Key.MFD_MAP_FORMAT, "ROSE");
+        else if (MFDMapFormat == 2)
+            _dict.set(CJ4_PopupMenu_Key.MFD_MAP_FORMAT, "ARC");
+        else if (MFDMapFormat == 3)
+            _dict.set(CJ4_PopupMenu_Key.MFD_MAP_FORMAT, "PPOS");
+        else if (MFDMapFormat == 4)
+            _dict.set(CJ4_PopupMenu_Key.MFD_MAP_FORMAT, "PLAN");
+
+        const PFDMapFormat = SimVar.GetSimVarValue("L:WT_PFD_MAP_FORMAT", "number");
+        if (PFDMapFormat  == 1)
+            _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ROSE");
+        else if (PFDMapFormat  == 2)
+            _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ARC");
+        else if (PFDMapFormat  == 3)
+            _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "PPOS");
+        else if (PFDMapFormat  == 4)
+            _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "PLAN");
+
         if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1)
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "VOR1");
         else if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 2)

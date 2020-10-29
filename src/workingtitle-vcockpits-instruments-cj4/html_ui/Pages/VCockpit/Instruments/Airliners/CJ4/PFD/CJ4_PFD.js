@@ -67,9 +67,10 @@ class CJ4_PFD extends BaseAirliners {
                 }
             }
             let dict = this.popup.dictionary;
-            if (dict.changed) {
+            if (SimVar.GetSimVarValue("L:Update_PFD_Menu", "Bool")) {
                 this.readDictionary(dict);
-                dict.changed = false;
+                console.log("update PFD menu");
+                SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", false);
             }
 			
 			if (this.mapNavigationMode === Jet_NDCompass_Navigation.VOR) {
@@ -292,14 +293,14 @@ class CJ4_PFD extends BaseAirliners {
     }
     readDictionary(_dict) {
         let modeChanged = false;
-        let format = _dict.get(CJ4_PopupMenu_Key.MAP_FORMAT);
-        if (format == "ROSE") {
+        let format = SimVar.GetSimVarValue("L:WT_PFD_MAP_FORMAT", "number");
+        if(format == 1) {
             if (this.mapDisplayMode != Jet_NDCompass_Display.ROSE) {
                 this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
                 modeChanged = true;
             }
         }
-        else if (format == "ARC") {
+        else if (format == 2) {
             if (this.mapDisplayMode != Jet_NDCompass_Display.ARC) {
                 this.mapDisplayMode = Jet_NDCompass_Display.ARC;
                 modeChanged = true;
@@ -311,6 +312,8 @@ class CJ4_PFD extends BaseAirliners {
                 modeChanged = true;
              }
         }
+
+
         let range = _dict.get(CJ4_PopupMenu_Key.MAP_RANGE);
         this.map.range = parseInt(range);
         let navSrc = _dict.get(CJ4_PopupMenu_Key.NAV_SRC);
@@ -421,12 +424,14 @@ class CJ4_PFD extends BaseAirliners {
             this.onModeChanged();
     }
     fillDictionary(_dict) {
-        if (this.mapDisplayMode == Jet_NDCompass_Display.ROSE)
-            _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "ROSE");
-        else if (this.mapDisplayMode == Jet_NDCompass_Display.ARC)
-            _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "ARC");
-        else if (this.mapDisplayMode == Jet_NDCompass_Display.PPOS)
-            _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "PPOS");
+        const mapFormat = SimVar.GetSimVarValue("L:WT_PFD_MAP_FORMAT", "number");
+        if (mapFormat == 1)
+            _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ROSE");
+        else if (mapFormat == 3)
+            _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "PPOS");
+        else
+            _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ARC");
+
         _dict.set(CJ4_PopupMenu_Key.MAP_RANGE, this.map.range.toString());
         if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1)
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "VOR1");
@@ -467,7 +472,7 @@ class CJ4_PFD extends BaseAirliners {
         _dict.set(CJ4_PopupMenu_Key.BRG_PTR2_SRC, this.radioSrc2);
         _dict.set(CJ4_PopupMenu_Key.BRG_VOR2_FREQ, this.radioNav.getVORActiveFrequency(2).toFixed(3));
         _dict.set(CJ4_PopupMenu_Key.BRG_ADF2_FREQ, this.radioNav.getADFActiveFrequency(2).toFixed(0));
-        _dict.changed = false;
+        SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", false)
     }
 }
 class CJ4_HorizonContainer extends NavSystemElementContainer {
