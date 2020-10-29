@@ -56,7 +56,7 @@ class AS3X_Touch extends NavSystemTouch {
         this.pageMenu = new NavSystemElementContainer("Page menu", "PageMenu", new AS3X_Touch_PageMenu());
         this.pageMenu.setGPS(this);
         this.mapMenu = new NavSystemElementContainer("Map menu", "MapMenu", new AS3X_Touch_MapMenu());
-        this.mapMenu.setGPS(this);        
+        this.mapMenu.setGPS(this);
         this.fullKeyboard = new NavSystemElementContainer("Full Keyboard", "fullKeyboard", new AS3X_Touch_FullKeyboard());
         this.fullKeyboard.setGPS(this);
         this.duplicateWaypointSelection = new NavSystemElementContainer("Waypoint Duplicates", "WaypointDuplicateWindow", new AS3X_Touch_DuplicateWaypointSelection());
@@ -193,8 +193,8 @@ class AS3X_Touch extends NavSystemTouch {
         super.disconnectedCallback();
     }
 
-    Update() {
-        super.Update();
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
         if (this.autoPitotHeat) {
             let temp = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius");
             let pitotHeat = SimVar.GetSimVarValue("PITOT HEAT", "bool");
@@ -1065,7 +1065,7 @@ class AS3X_Touch_NavSystemPage extends NavSystemPage {
     onEvent(_event) {
         if (_event == 'Menu_Push' && this._menuCb) {
             this._menuCb();
-        }            
+        }
     }
     onEnter() {
         super.onEnter();
@@ -1190,7 +1190,7 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         }
     }
     timer_Reset() {
-        this.timerStartTime = -1; 
+        this.timerStartTime = -1;
         this.pauseTime = 0;
         this.isTimerOn = false;
         this.timerStartStop_action.textContent = "Start";
