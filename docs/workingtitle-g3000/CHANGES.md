@@ -1,5 +1,9 @@
 # Changelog
 
+### v0.2.2
+**Fixes**
+- \[Compatibility\] Now compatible with game patch 1.10.7.0 (Update 5).
+
 ### v0.2.1
 **Fixes**
 - \[Compatibility\] Fixed issue that caused gigantic obstacle icons to be displayed on the G1000 navigational map if the WT G1000 mod is concurrently installed.
