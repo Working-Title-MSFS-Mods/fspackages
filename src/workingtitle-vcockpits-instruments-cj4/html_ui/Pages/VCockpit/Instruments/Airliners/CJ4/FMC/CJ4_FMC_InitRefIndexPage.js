@@ -1434,20 +1434,22 @@ class CJ4_FMC_InitRefIndexPage {
             console.log(setVerticalSpeed.toFixed(0));
             //SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading.toFixed(0));
 
-            let deltaVS = setVerticalSpeed - apCurrentVerticalSpeed;
-            let iMax = deltaVS > 0 ? Math.min(deltaVS / 100)
-                :deltaVS < 0 ? Math.max(deltaVS / 100)
-                : 0;
-            let iMaxAbs = Math.abs(iMax);
-            for (let i = 0; i < iMaxAbs; i++) {
-                if (deltaVS < 0) {
-                    SimVar.SetSimVarValue("K:AP_VS_VAR_DEC", "number", 0);
-                }
-                else if (deltaVS > 0) {
-                    SimVar.SetSimVarValue("K:AP_VS_VAR_INC", "number", 0);
-                }
-            }
+            // let deltaVS = setVerticalSpeed - apCurrentVerticalSpeed;
+            // let iMax = deltaVS > 0 ? Math.min(deltaVS / 100)
+            //     : deltaVS < 0 ? Math.max(deltaVS / 100)
+            //         : 0;
+            // let iMaxAbs = Math.abs(iMax);
+            // for (let i = 0; i < iMaxAbs; i++) {
+            //     if (deltaVS < 0) {
+            //         SimVar.SetSimVarValue("K:AP_VS_VAR_DEC", "number", 0);
+            //     }
+            //     else if (deltaVS > 0) {
+            //         SimVar.SetSimVarValue("K:AP_VS_VAR_INC", "number", 0);
+            //     }
+            // }
             //SimVar.SetSimVarValue("K:AP_VS_VAR_SELECT", "feet per minute", setVerticalSpeed.toFixed(0));
+            Coherent.call("AP_VS_VAR_SET_ENGLISH", 0, setVerticalSpeed);
+
 
             let distanceToTod = vnavTargetDistance > topOfDescent ? vnavTargetDistance - topOfDescent : "N/A";
             fmc._templateRenderer.setTemplateRaw([
