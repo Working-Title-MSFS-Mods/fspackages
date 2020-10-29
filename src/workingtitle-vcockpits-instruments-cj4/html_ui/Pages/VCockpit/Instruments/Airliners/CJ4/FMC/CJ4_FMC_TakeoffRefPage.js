@@ -20,14 +20,14 @@ class CJ4_FMC_TakeoffRefPage {
             depRunwayElevation = new Number(depRunway.elevation * 3.28);
             depRunwayLength = new Number(depRunway.length);
         }
-        
+
         if (manualQnh && manualQnh > 0) {
             fmc.takeoffQnh = manualQnh;
         }
         else {
             fmc.takeoffQnh = SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg");
         }
-        
+
         fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
 
         let headwind = "";
@@ -170,9 +170,9 @@ class CJ4_FMC_TakeoffRefPage {
             originIdent = origin.ident;
         }
         let tow = (fmc.grossWeight - 100);
-		let mtow = 17110;
-		let vT = 140;
-		let sendVS = "SEND>"
+        let mtow = 17110;
+        let vT = 140;
+        let sendVS = "SEND>"
         let depRunway = "";
         let depRunwayLength = null;
         let selectedRunway = fmc.flightPlanManager.getDepartureRunway();
@@ -261,22 +261,20 @@ class CJ4_FMC_TakeoffRefPage {
         let vspeedColor = "";
         if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT)
             vspeedColor = "blue";
-		
-		if (fmc.flightPlanManager.getDepartureRunway() && fmc.takeoffOat != "□□□") {
-		} else {
-                mtow = "";
-				fmc.endTakeoffDist = null;
-				v1 = null;
-				vR = null;
-				v2 = null;
-				vT = null;	
-				sendVS = "";
-            }
-		
-		function formatNumber(num, pad = 3) {
-		return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
-		}
-        
+
+        if (!fmc.flightPlanManager.getDepartureRunway() || fmc.takeoffOat === "□□□") {
+            fmc.endTakeoffDist = null;
+            v1 = null;
+            vR = null;
+            v2 = null;
+            vT = null;
+            sendVS = "";
+        }
+
+        function formatNumber(num, pad = 3) {
+            return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
+        }
+
         const towText = formatNumber(WT_ConvertUnit.getWeight(tow).Value, 4) + (tow > 17110 ? "[yellow]" : "");
         const grossWeightText = formatNumber(WT_ConvertUnit.getWeight(fmc.grossWeight).Value, 4);
         const mtowText = formatNumber(WT_ConvertUnit.getWeight(mtow).Value, 4) + (WT_ConvertUnit.isMetric() ? " KG[s-text]" : " LB[s-text]");
