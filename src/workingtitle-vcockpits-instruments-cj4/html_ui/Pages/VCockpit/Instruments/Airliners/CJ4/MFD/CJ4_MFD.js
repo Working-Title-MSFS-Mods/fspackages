@@ -52,8 +52,8 @@ class CJ4_MFD extends BaseAirliners {
     }
     disconnectedCallback() {
     }
-    Update() {
-        super.Update();
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
         if (this.allContainersReady()) {
             SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
             if (this.modeChangeMask && this.modeChangeTimer >= 0) {
