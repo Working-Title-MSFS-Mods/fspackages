@@ -29,6 +29,9 @@ class WT_FMC_Renderer {
         this._fmc.renderHeader = this.renderHeader.bind(fmc);
         this._fmc.parseContent = this.parseContent.bind(fmc);
 
+        this._fmc._errorMessage = "";
+        this._fmc.isDisplayingErrorMessage = false;
+
         // init layout
         // this._fmc.renderHeader();
         // this.renderScratchpad();
@@ -178,9 +181,13 @@ class WT_FMC_Renderer {
             n.childNodes[0].textContent = "";
         });
 
-        // get inout
-        let inout = this._fmc.inOut;
-        this.renderLetters(" " + inout, row);
+        if (this._fmc.isDisplayingErrorMessage) {
+            this.renderLetters(this._fmc._errorMessage, row, "center");
+        } else {
+            // get inout
+            let inout = this._fmc.inOut;
+            this.renderLetters(" " + inout, row);
+        }
 
         // render hacky brackets        
         row.childNodes[0].childNodes[0].classList.add("blue");
@@ -214,18 +221,16 @@ class WT_FMC_Renderer {
     }
 
     showErrorMessage(message) {
-        const magicNumber = 22; // width of the scratchpad in characters
 
         // in case someone didn't call "clearUserInput()" before calling this function
         if (this.inOut.length > 0) {
-            this.lastUserInput = this.inOut.toString()
-            this.inOut = ""
+            this.lastUserInput = this.inOut.toString();
+            this.inOut = "";
         }
 
-        const whitespace = Math.floor((magicNumber - message.length) / 2);
-        const error_message = " ".repeat(whitespace) + message + " ".repeat(whitespace);
+        const error_message = message;
         this.isDisplayingErrorMessage = true;
-        this.inOut = error_message;
+        this._errorMessage = error_message;
 
         // if you remove this, scratchpad sometimes will not be rendered.
         // Because "renderScratchpadRaw()" will be called before "showErrorMessage()".
@@ -236,11 +241,11 @@ class WT_FMC_Renderer {
     onClr() {
         if (this.isDisplayingErrorMessage) {
             this.inOut = this.lastUserInput;
-            this.lastUserInput = ""
+            this.lastUserInput = "";
             this.isDisplayingErrorMessage = false;
         } else if (this.inOut === FMCMainDisplay.clrValue) {
             this.inOut = "";
-            this.lastUserInput = ""
+            this.lastUserInput = "";
         } else if (this.inOut.length > 0) {
             this.inOut = this.inOut.substr(0, this.inOut.length - 1);
         } else {
@@ -266,11 +271,13 @@ class WT_FMC_Renderer {
                     this.onClr();
                     return true;
                 }
-            case input.length == 2 && (input[0] == "L" || input[0] == "R"):
-                if (this.isDisplayingErrorMessage) {
-                    // ignore user's attempts to plug error message into one of the fields
-                    return true;
-                }
+            // eslint-disable-next-line no-fallthrough
+            // case input.length == 2 && (input[0] == "L" || input[0] == "R"):
+            //     if (this.isDisplayingErrorMessage) {
+            //         // ignore user's attempts to plug error message into one of the fields
+            //         return true;
+            //     }
+            // eslint-disable-next-line no-fallthrough
             default: // (switching pages)
                 if (this.isDisplayingErrorMessage) {
                     this.onClr();
@@ -278,7 +285,7 @@ class WT_FMC_Renderer {
                 this.setMsg();
                 break;
         }
-        this.legacyOnInputAircraftSpecific(input)
+        this.legacyOnInputAircraftSpecific(input);
     }
 
     setMsg(msg) {
