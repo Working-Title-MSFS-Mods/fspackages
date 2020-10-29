@@ -274,7 +274,7 @@ class CJ4_FMC_ApproachRefPage {
             vspeedColor = "blue";
         }
 
-        if (!fmc.flightPlanManager.getApproachRunway() || fmc.landingOat === "□□□") {
+        if (!arrRunway || fmc.landingOat === "□□□") {
             ldgFieldLength = 0;
             vRef = null;
             vApp = null;
