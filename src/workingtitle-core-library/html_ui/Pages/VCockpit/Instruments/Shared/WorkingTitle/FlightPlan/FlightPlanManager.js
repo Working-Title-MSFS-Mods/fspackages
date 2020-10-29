@@ -180,11 +180,7 @@ class FlightPlanManager {
    */
   getOrigin() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    if (currentFlightPlan.hasOrigin) {
-      return currentFlightPlan.waypoints[0];
-    }
-    
-    return undefined;
+    return currentFlightPlan.originAirfield;
   }
 
   /**
@@ -344,11 +340,7 @@ class FlightPlanManager {
    */
   getDestination() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    if (currentFlightPlan.hasDestination) {
-      return currentFlightPlan.getWaypoint(currentFlightPlan.length - 1);
-    }
-
-    return undefined;
+    return currentFlightPlan.destinationAirfield;
   }
 
   /**
@@ -377,8 +369,8 @@ class FlightPlanManager {
 
     if (destination) {
       let originInfos = destination.infos;
-      if (originInfos.arrivals !== undefined && currentFlightPlan.arrivalIndex !== -1) {
-          return originInfos.arrivals[currentFlightPlan.arrivalIndex];
+      if (originInfos.arrivals !== undefined && currentFlightPlan.procedureDetails.arrivalIndex !== -1) {
+          return originInfos.arrivals[currentFlightPlan.procedureDetails.arrivalIndex];
       }
     }
 
@@ -461,8 +453,8 @@ class FlightPlanManager {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     const enrouteSegment = currentFlightPlan.enroute;
 
-    if (outFPIndex) {
-      for (var i = 0; i < enrouteSegment.waypoints.length; i++) {
+    if (enrouteSegment !== FlightPlanSegment.Empty) {
+      for (let i = 0; i < enrouteSegment.waypoints.length; i++) {
         outFPIndex.push(enrouteSegment.offset + i);
       }
     }
@@ -1028,7 +1020,7 @@ class FlightPlanManager {
    */
   getApproachRunway() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    
+
     if (currentFlightPlan.hasDestination && currentFlightPlan.procedureDetails.approachIndex !== -1) {
       const destination = currentFlightPlan.waypoints[currentFlightPlan.waypoints.length - 1];
       const approachRunwayName = destination.infos.approaches[currentFlightPlan.procedureDetails.approachIndex].runway.trim();
