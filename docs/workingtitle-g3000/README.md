@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.2.1
+### Latest version: v0.2.2
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000. The goal is to bring functionality closer to the real-life G3000, with a focus on both features and layout/UI. Most of development and testing was done with the TBM 930, and the TBM 930 version of the G3000 pilot's guide was used as the primary reference.
@@ -12,14 +12,17 @@ This mod was created with cross-compatibility in mind. It modifies the minimum n
 ### Installation
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
-### Release Highlights (v0.2.1)
+### Release Highlights (v0.2.2)
 Please refer to the changelog for a more detailed description of updates.
 
+- Now compatible with game patch 1.10.7.0 (Update 5).
+
+**Highlights for v0.2.1 release**
 - Fixed several compatibility issues with the WT G1000 mod.
 - You can now change PFD wind options while on the ground.
 - Performance optimizations.
 
-**Highlights for original v0.2.0 release**
+**Highlights for v0.2.0 release**
 - The G3000 mod is now integrated with the WorkingTitle ecosystem! This has allowed the addition of the following features:
   - Certain G3000 settings (including all newly added ones) are now saved across flights.
   - SVT toggle for the PFD.
