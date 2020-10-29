@@ -110,6 +110,8 @@ class CJ4_FMC_InitRefIndexPage {
 
         fmc.registerPeriodicPageRefresh(() => {
 
+            const navDataRange = SimVar.GetGameVarValue('FLIGHT NAVDATA DATE RANGE', 'string');
+
             let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
             let hours = new String(Math.trunc(simtime / 3600));
             let minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
@@ -183,7 +185,7 @@ class CJ4_FMC_InitRefIndexPage {
                 [" NAV DATA[blue]"],
                 ["WORLD"],
                 [" ACTIVE DATA BASE[blue]"],
-                [formatDate(startDate) + " " + formatDate(endDate)],
+                [navDataRange],
                 [" SEC DATA BASE[blue]"],
                 [formatDate(secEndDate) + " " + formatDate(secStartDate)],
                 [" UTC[blue]", "DATE[blue] "],
