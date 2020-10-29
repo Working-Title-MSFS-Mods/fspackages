@@ -178,7 +178,7 @@ class SvgMapConfig {
         if (this[`${SvgMapConfig.BING_HEIGHT_COLOR_ROOT}${id + 1}`]) {
             let config = new BingMapsConfig();
             if (this[`${SvgMapConfig.BING_ALTITUDE_COLOR_ROOT}${id + 1}`]) {
-                config.heightColors = this[`${SvgMapConfig.BING_ALTITUDE_COLOR_ROOT}${id + 1}`].map((hex, i) => SvgMapConfig.hexaToRGB(hex, i));
+                config.heightColors = this[`${SvgMapConfig.BING_ALTITUDE_COLOR_ROOT}${id + 1}`].map(hex => SvgMapConfig.hexaToRGB(hex));
             }
             config.aspectRatio = 1;
             config.resolution = this.netBingTextureResolution;
@@ -266,7 +266,7 @@ class SvgMapConfig {
         color += newB.toString(16).padStart(2, "0");
         return color;
     }
-    static hexaToRGB(_hexa, i) {
+    static hexaToRGB(_hexa) {
         let hexStringColor = _hexa;
         let offset = 0;
         if (hexStringColor[0] === "#") {
