@@ -79,9 +79,9 @@ class CJ4_FMC_TakeoffRefPage {
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "1/3[blue] ", "TAKEOFF REF[blue]"],
             [" RWY ID[blue]", "WIND[blue] "],
-            [depRunwayOutput + "[s-text]", fmc.takeoffWindDir.toString().padStart(3, "0") + "\xB0/" + fmc.takeoffWindSpeed.toString().padStart(3, " ")],
+            [depRunwayOutput + "[s-text]", fmc.takeoffWindDir.toString().padStart(3, "0") + "\xB0/" + fmc.takeoffWindSpeed.toString().padStart(3, " ") + "[s-text]"],
             [" RWY WIND[blue]", "OAT[blue] "],
-            [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", fmc.takeoffOat + "\xB0C"],
+            [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", (fmc.takeoffOat >= 0 ? "+" : "") + fmc.takeoffOat + "\xB0C" + "[s-text]"],
             [" RWY LENGTH[blue]", "QNH[blue] "],
             [depRunwayLengthText, takeoffQnhText + "[s-text]"],
             [" RWY SLOPE[blue]", "P ALT[blue] "],
@@ -277,8 +277,8 @@ class CJ4_FMC_TakeoffRefPage {
 
         const towText = formatNumber(WT_ConvertUnit.getWeight(tow).Value, 4) + (tow > 17110 ? "[yellow]" : "");
         const grossWeightText = formatNumber(WT_ConvertUnit.getWeight(fmc.grossWeight).Value, 4);
-        const mtowText = formatNumber(WT_ConvertUnit.getWeight(mtow).Value, 4) + (WT_ConvertUnit.isMetric() ? " KG[s-text]" : " LB[s-text]");
-        const takeoffDistText = formatNumber(WT_ConvertUnit.getLength(fmc.endTakeoffDist / 3.28).Value, 3);
+        const mtowText = formatNumber(WT_ConvertUnit.getWeight(mtow).Value, 4);
+        const takeoffDistText = formatNumber(WT_ConvertUnit.getLength(fmc.endTakeoffDist / 3.28).Value, 4);
         const depRunwayLengthText = WT_ConvertUnit.getLength(depRunwayLength / 3.28).getString(0, " ", "[s-text]");
 
         fmc._templateRenderer.setTemplateRaw([
@@ -352,12 +352,12 @@ class CJ4_FMC_TakeoffRefPage {
         }
         let tow = (fmc.grossWeight - 100);
         const towText = WT_ConvertUnit.getWeight(tow, "", "").getString(0, "") + (tow > 17110 ? "[yellow]" : "");
-        const mtowText = WT_ConvertUnit.isMetric() ? "7761 KG" : "17110 LB";
+        const mtowText = WT_ConvertUnit.isMetric() ? "7761" : "17110";
 
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "3/3[blue] ", "TAKEOFF REF[blue]"],
             ["TOW/MTOW[blue]"],
-            [towText + "/" + mtowText],
+            [towText + "/" + mtowText + "[s-text]"],
             ["", "STRUCTURAL LIMIT[blue]"],
             ["", mtowText + "[s-text]"],
             ["", "PERFORMANCE LIMIT[blue]"],
