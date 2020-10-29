@@ -123,8 +123,10 @@ class CJ4_FMC_FplnRecallPage {
             //    fmc.showErrorMessage("WRONG PILOTID");
             //    return;
             //}
-
-            let flightNo = json.general.icao_airline + json.general.flight_number;
+            let flightNo = json.general.flight_number;
+            if (typeof json.general.icao_airline === "string") {
+                flightNo += json.general.icao_airline;
+            }
             fmc.setMsg("LOAD FPLN...FLIGHTNO[green]" + flightNo);
             fmc.updateFlightNo(flightNo);
             let crz = json.general.initial_altitude;
