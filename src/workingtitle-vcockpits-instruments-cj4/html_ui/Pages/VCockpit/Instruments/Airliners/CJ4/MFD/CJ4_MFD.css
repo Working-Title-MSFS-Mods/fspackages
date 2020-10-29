@@ -393,43 +393,30 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
               font-size: 18px;
               fill: magenta;
               text-anchor: end; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids div {
-            top: 87%;
-            width: 25%;
-            height: 13%;
-            position: absolute;
-            background-color: black; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids svg {
+          cj4-mfd-element #Mainframe #MapOverlay #NDInfo #VORDMENavaids svg {
             width: 100%;
             height: 100%; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Left {
-            left: 2.5%; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Right {
-            right: 2.5%; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids text {
-            font-family: 'Collins ProLine';
-            text-align: center;
-            text-anchor: middle; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids #State {
-            font-size: calc( 3 * 1vh * var(--bodyHeightScale));
-            fill: white; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids #ID {
-            font-size: calc( 3 * 1vh * var(--bodyHeightScale));
-            fill: white; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids #Mode {
-            font-size: calc( 3 * 1vh * var(--bodyHeightScale));
-            fill: white;
-            text-decoration: underline; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids #Distance {
-            font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
-            fill: green; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids #Unit {
-            font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
-            fill: cyan; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #VORDMENavaids #Arrow {
+          cj4-mfd-element #Mainframe #MapOverlay #NDInfo #VORDMENavaids #Unit {
+            font-size: 22px; }
+          cj4-mfd-element #Mainframe #MapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Left {
+            color: cyan;
+            stroke: cyan; }
+          cj4-mfd-element #Mainframe #MapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Right {
+            color: white;
+            stroke: white; }
+          #VORDMENavaids {
+            font-size: 28px;
+            position: absolute;
+            top: 400px;
+            top: 320px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+          }
+          cj4-mfd-element #Mainframe #MapOverlay #NDInfo #VORDMENavaids #Arrow {
             fill: none;
-            stroke: white;
-            stroke-width: 6px; }
+            stroke-width: 1px; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #Symbols {
             top: 85%;
             left: 87%;
@@ -582,17 +569,21 @@ cj4-mfd-element #Mainframe #MapOverlay #NDInfo #TopBox text.Wind {
   font-size: 20px;
 }
 
-#MapOverlay #selectedRefGroup text:first-child {
+/* #MapOverlay #selectedRefGroup text:first-child {
   font-size: 28px;
 }
 
 #MapOverlay #selectedRefGroup text:last-child {
   font-size: 40px;
+} */
+
+/* #MapOverlay g#selectedRefGroup_arc {
+  transform: translate(0px, 15px);
 }
 
-#MapOverlay g#selectedRefGroup {
-  transform: translateY(18px);
-}
+#MapOverlay g#selectedRefGroup_rose {
+  transform: scale(1.5) translate(0px, -10px);
+} */
 
 #MapOverlay #NDCompass #currentRefGroup text {
   font-size: 34px;
@@ -646,4 +637,44 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay .SystemBody 
 }
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay[visible=false] {
   display: none; }
-            
+
+.bearing-block-arrow {
+  width: 25px;
+  padding-top: 8px;
+  float: left;
+}
+
+.bearing-block-dist {
+  float: left;
+}
+
+.bearing-pointer.arc {
+  position: absolute;
+  left: 86px;
+  top: -268px;
+  width: 600px;
+}
+
+.bearing-pointer.rose {
+  position: absolute;
+  left: 156px;
+  top: -260px;
+  width: 460px;
+  stroke-width: 1.4;
+}
+
+.bearing-pointer-needle {
+  transform-origin: 100px 100px;
+  transition: transform .1s ease-in;
+}
+
+#VORDMENavaid_Left #ID,
+#VORDMENavaid_Right #ID {
+  padding-left: 4px;
+}
+
+div#VORDMENavaid_Left,
+div#VORDMENavaid_Right {
+  text-align: left;
+}
+

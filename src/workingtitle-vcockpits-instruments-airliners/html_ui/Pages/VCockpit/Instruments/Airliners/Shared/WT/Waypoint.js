@@ -233,6 +233,7 @@ class AirportInfo extends WayPointInfo {
     constructor(_instrument) {
         super(_instrument);
         this.frequencies = [];
+        this.namedFrequencies = [];
         this.departures = [];
         this.approaches = [];
         this.arrivals = [];
@@ -566,6 +567,11 @@ class AirportInfo extends WayPointInfo {
             }
         }
     }
+    async UpdateNamedFrequencies() {
+        if (this.namedFrequencies.length === 0) {
+            this.namedFrequencies = await this.instrument.facilityLoader.GetAirportNamedFrequencies(this.icao);
+        }
+    } 
 }
 class VORInfo extends WayPointInfo {
     constructor(_instrument) {

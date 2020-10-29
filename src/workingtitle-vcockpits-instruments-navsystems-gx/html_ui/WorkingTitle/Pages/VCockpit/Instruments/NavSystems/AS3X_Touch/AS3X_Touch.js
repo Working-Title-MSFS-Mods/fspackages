@@ -203,8 +203,8 @@ class AS3X_Touch extends NavSystemTouch {
         super.disconnectedCallback();
     }
 
-    Update() {
-        super.Update();
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
         if (this.autoPitotHeat) {
             let temp = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius");
             let pitotHeat = SimVar.GetSimVarValue("PITOT HEAT", "bool");

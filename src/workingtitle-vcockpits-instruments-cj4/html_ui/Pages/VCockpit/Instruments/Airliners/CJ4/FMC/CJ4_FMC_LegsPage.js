@@ -21,10 +21,18 @@ class CJ4_FMC_LegsPage {
 
         this._wayPointsToRender = [];
         this._approachWaypoints = [];
+        this._rawApproachWaypoints = [];
+        this.prepare();
     }
 
     prepare() {
         // Noop as there is no preparation with this
+        if (this._fmc.flightPlanManager.getApproach()) {
+            this._fmc.flightPlanManager.getApproachConstraints().then(rawApproachWaypoints => {
+                this._rawApproachWaypoints = [...rawApproachWaypoints];
+                console.log("raw approach waypoints loaded");
+            });
+        }
     }
 
     update(forceUpdate = false) {
@@ -156,8 +164,14 @@ class CJ4_FMC_LegsPage {
                     this._rows[2 * i + 1] = [waypoint.ident != "" ? waypoint.ident : "USR"];
                 }
 
-                if (!isFromWpt)
+                if (!isFromWpt) {
+                    //this._rows[2 * i][1] = this.getAltRestrictionBelow(waypoint);
                     this._rows[2 * i + 1][1] = this.getAltSpeedRestriction(waypoint);
+                    //console.log("this.getAltRestrictionBelow" + this.getAltRestrictionBelow(waypoint));
+                    console.log("this.getAltSpeedRestriction" + this.getAltSpeedRestriction(waypoint));
+                    
+
+                }
             }
 
         }
@@ -191,6 +205,11 @@ class CJ4_FMC_LegsPage {
 
                 if (!waypoint) return;
 
+                if (waypoint.ident === "USR") {
+                    this._fmc.showErrorMessage("UNABLE MOD USR");
+                    return;
+                }
+
                 let value = this._fmc.inOut;
                 let selectedWpIndex = this._currentPage == 1 ? this._fmc.flightPlanManager.getActiveWaypointIndex() + i - 1
                     : (this._currentPage - 1) * 5 + this._fmc.flightPlanManager.getActiveWaypointIndex() + i - 1;
@@ -214,15 +233,10 @@ class CJ4_FMC_LegsPage {
                 if (waypoint === "EMPTY" && this._fmc.selectMode !== CJ4_FMC_LegsPage.SELECT_MODE.NEW) return;
 
                 switch (this._fmc.selectMode) {
-                    case CJ4_FMC_LegsPage.SELECT_MODE.NONE:
+                    case CJ4_FMC_LegsPage.SELECT_MODE.NONE: {
                         // CANT SELECT MAGENTA OR BLUE ON PAGE 1
                         if (((i > 1 && this._currentPage == 1) || (this._currentPage > 1))) {
                             // SELECT EXISTING WAYPOINT FROM FLIGHT PLAN
-                            if (waypoint.ident === "USR") {
-                                this._fmc.showErrorMessage("UNABLE MOD USR");
-                                return;
-                            }
-
                             this._approachWaypoints = this._fmc.flightPlanManager.getApproachWaypoints();
                             if (this._approachWaypoints.length > 0) {
                                 if (waypoint.ident === this._approachWaypoints[this._approachWaypoints.length - 1].ident) {
@@ -236,6 +250,7 @@ class CJ4_FMC_LegsPage {
                             this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.EXISTING;
                         }
                         break;
+                    }
                     case CJ4_FMC_LegsPage.SELECT_MODE.EXISTING: {
                         if ((i >= 1 && this._currentPage == 1) || this._currentPage > 1) {
 
@@ -259,23 +274,17 @@ class CJ4_FMC_LegsPage {
                                         });
                                     };
                                     let index = this._approachWaypoints.findIndex(w => { return w.infos && w.infos.icao === this._fmc.selectedWaypoint.icao; });
-                                    if (this._fmc.flightPlanManager.isActiveApproach()) {
-                                        setApproachIndex(index);
-                                    } else {
-                                        this._fmc.activateDirectToWaypoint(this._fmc.selectedWaypoint, () => {
-                                            this._fmc.flightPlanManager.activateApproach(() => {
-                                                index = this._approachWaypoints.findIndex(w => { return w.infos && w.infos.icao === this._fmc.selectedWaypoint.icao; }); // find index again after activating everything
-                                                setApproachIndex(index + 1);
-                                            });
+                                    this._fmc.activateDirectToWaypoint(this._fmc.selectedWaypoint, () => {
+                                        this._fmc.flightPlanManager.activateApproach(() => {
+                                            index = this._approachWaypoints.findIndex(w => { return w.infos && w.infos.icao === this._fmc.selectedWaypoint.icao; }); // find index again after activating everything
+                                            setApproachIndex(index + 1);
                                         });
-
-                                    }
-
+                                    });
                                 } else {
-                                    this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                        this._fmc.activateDirectToWaypoint(this._fmc.selectedWaypoint, () => {
-                                            this.resetAfterOp();
-                                        });
+                                    // this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                    this._fmc.activateDirectToWaypoint(this._fmc.selectedWaypoint, () => {
+                                        this.resetAfterOp();
+                                        // });
 
                                     });
                                 }
@@ -305,8 +314,13 @@ class CJ4_FMC_LegsPage {
                         }
                         break;
                     }
-                    case CJ4_FMC_LegsPage.SELECT_MODE.NEW:
+                    case CJ4_FMC_LegsPage.SELECT_MODE.NEW: {
                         if (this._fmc.flightPlanManager.isActiveApproach()) {
+                            this._fmc.showErrorMessage("UNABLE MOD APPROACH");
+                            return;
+                        }
+
+                        if (this.isApproachWaypoint(selectedWpIndex)) {
                             this._fmc.showErrorMessage("UNABLE MOD APPROACH");
                             return;
                         }
@@ -331,8 +345,14 @@ class CJ4_FMC_LegsPage {
                             });
                         }
                         break;
-                    case CJ4_FMC_LegsPage.SELECT_MODE.DELETE:
+                    }
+                    case CJ4_FMC_LegsPage.SELECT_MODE.DELETE: {
                         if (this._fmc.flightPlanManager.isActiveApproach()) {
+                            this._fmc.showErrorMessage("UNABLE MOD APPROACH");
+                            return;
+                        }
+
+                        if (this.isApproachWaypoint(selectedWpIndex)) {
                             this._fmc.showErrorMessage("UNABLE MOD APPROACH");
                             return;
                         }
@@ -350,9 +370,17 @@ class CJ4_FMC_LegsPage {
                             this._fmc.showErrorMessage("UNABLE MOD FROM WPT");
                         }
                         break;
+                    }
                 }
             };
         }
+    }
+
+    isApproachWaypoint(idx) {
+        let wp = this._wayPointsToRender[idx];
+        this._approachWaypoints = this._fmc.flightPlanManager.getApproachWaypoints();
+        let approachWpIndex = this._approachWaypoints.indexOf(wp);
+        return (approachWpIndex >= 0);
     }
 
     resetAfterOp() {
@@ -414,26 +442,49 @@ class CJ4_FMC_LegsPage {
     getAltSpeedRestriction(waypoint) {
         let speedConstraint = "---";
         let altitudeConstraint = "----- ";
+        let wpt = undefined;
 
         if (waypoint.speedConstraint && waypoint.speedConstraint > 100) {
             speedConstraint = waypoint.speedConstraint;
         }
+        let constraintIndex = this._wayPointsToRender.indexOf(waypoint);
+        //console.log(waypoint.ident + " " + constraintIndex);
+        //console.log("departure waypoint size " + this._fmc.flightPlanManager._departureWaypointSize);
+        //console.log("arrival waypoint index " + (this._wayPointsToRender.length - this._approachWaypoints.length - this._fmc.flightPlanManager.getArrivalWaypointsCount() - 1));
+        //console.log("approach waypoint index " + (this._wayPointsToRender.length - this._approachWaypoints.length - 1));
 
-        if (waypoint.legAltitudeDescription && waypoint.legAltitudeDescription !== 0) {
-            if (waypoint.legAltitudeDescription === 2 && waypoint.legAltitude1 > 100) {
-                altitudeConstraint = waypoint.legAltitude1.toFixed(0) > 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100 + "A"
-                    : waypoint.legAltitude1.toFixed(0) + "A";
+        if (this._fmc.flightPlanManager.getDeparture() && constraintIndex <= this._fmc.flightPlanManager._departureWaypointSize) {
+            //console.log("departure waypoint");
+            let departureWaypoints = this._fmc.flightPlanManager.getDepartureWaypoints();
+            wpt = departureWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
+            //console.log(wpt != undefined ? "match: " + wpt.icao : "no match" + this._wayPointsToRender[constraintIndex].icao);
+        }
+        else if (this._fmc.flightPlanManager.getApproach() && this._rawApproachWaypoints && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - 1)) {
+            wpt = this._rawApproachWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
+        }
+        else if (this._fmc.flightPlanManager.getArrival() && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - this._fmc.flightPlanManager.getArrivalWaypointsCount() - 1)) {
+            let arrivalWaypoints = this._fmc.flightPlanManager.getArrivalWaypoints();
+            wpt = arrivalWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
+        }
+        if (wpt && wpt.legAltitudeDescription && wpt.legAltitudeDescription > 0) {
+            if (wpt.legAltitudeDescription == 1 && wpt.legAltitude1 > 100) {
+                altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100
+                    : wpt.legAltitude1.toFixed(0);
             }
-            else if (waypoint.legAltitudeDescription === 3 && waypoint.legAltitude1 > 100) {
-                altitudeConstraint = waypoint.legAltitude1.toFixed(0) > 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100 + "B"
-                    : waypoint.legAltitude1.toFixed(0) + "B";
+            else if (wpt.legAltitudeDescription == 2 && wpt.legAltitude1 > 100) {
+                altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "A"
+                    : wpt.legAltitude1.toFixed(0) + "A";
             }
-            else if (waypoint.legAltitudeDescription === 4 && waypoint.legAltitude1 > 100) {
-                let altitudeConstraintA = waypoint.legAltitude1.toFixed(0) > 18000 ? "FL" + waypoint.legAltitude1.toFixed(0) / 100 + "A"
-                    : waypoint.legAltitude1.toFixed(0) + "A";
-                let altitudeConstraintB = waypoint.legAltitude2.toFixed(0) > 18000 ? "FL" + waypoint.legAltitude2.toFixed(0) / 100 + "B"
-                    : waypoint.legAltitude2.toFixed(0) + "B";
-                altitudeConstraint = altitudeConstraintA + "/" + altitudeConstraintB;
+            else if (wpt.legAltitudeDescription == 3 && wpt.legAltitude1 > 100) {
+                altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
+                    : wpt.legAltitude1.toFixed(0) + "B";
+            }
+            else if (wpt.legAltitudeDescription == 4 && wpt.legAltitude2 > 100 && wpt.legAltitude1 > 100) {
+                let altitudeConstraintA = wpt.legAltitude2.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude2.toFixed(0) / 100 + "A"
+                    : wpt.legAltitude2.toFixed(0) + "A";
+                let altitudeConstraintB = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
+                    : wpt.legAltitude1.toFixed(0) + "B";
+                altitudeConstraint = altitudeConstraintB + altitudeConstraintA;
             }
 
             altitudeConstraint = altitudeConstraint.padStart(6, " ");

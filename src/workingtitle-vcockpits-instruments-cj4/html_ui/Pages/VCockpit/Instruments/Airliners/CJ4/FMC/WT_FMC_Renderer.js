@@ -13,8 +13,13 @@ class WT_FMC_Renderer {
         this._fmc.setLine = this.setLine;
         this._fmc.legacyOnEvent = fmc.onEvent;
         this._fmc.onEvent = this.onEvent;
-        this._fmc.showErrorMessage = this.showErrorMessage;
         // this._fmc.clearDisplay = this.clearDisplay.bind(fmc); // only for prototype
+        FMCMainDisplay.clrValue = "DELETE";
+        this._fmc.legacyOnInputAircraftSpecific = fmc.onInputAircraftSpecific;
+        this._fmc.onInputAircraftSpecific = this.onInputAircraftSpecific;
+        this._fmc.clearUserInput = this.clearUserInput;
+        this._fmc.onClr = this.onClr;
+        this._fmc.showErrorMessage = this.showErrorMessage;
 
         // bind own methods to fmc
         // this._fmc.setTemplateRaw = this.setTemplateRaw; // just a prototype
@@ -106,6 +111,8 @@ class WT_FMC_Renderer {
         let charCount = 0;
         // count all letters
         cnt.forEach(x => { charCount += x.textContent.length; });
+
+        charCount = Math.min(charCount, 24);
 
         // set start pos
         let ci = 0;
@@ -199,9 +206,79 @@ class WT_FMC_Renderer {
         }
     }
 
+    clearUserInput() {
+        if (!this.isDisplayingErrorMessage) {
+            this.lastUserInput = this.inOut.toString();
+            this.inOut = "";
+        }
+    }
+
     showErrorMessage(message) {
+        const magicNumber = 22; // width of the scratchpad in characters
+
+        // in case someone didn't call "clearUserInput()" before calling this function
+        if (this.inOut.length > 0) {
+            this.lastUserInput = this.inOut.toString()
+            this.inOut = ""
+        }
+
+        const whitespace = Math.floor((magicNumber - message.length) / 2);
+        const error_message = " ".repeat(whitespace) + message + " ".repeat(whitespace);
         this.isDisplayingErrorMessage = true;
-        this._templateRenderer.setMsg(message);
+        this.inOut = error_message;
+
+        // if you remove this, scratchpad sometimes will not be rendered.
+        // Because "renderScratchpadRaw()" will be called before "showErrorMessage()".
+        // I could not figure another way...
+        this.onEvent("trigger renderScratchpadRaw");
+    }
+
+    onClr() {
+        if (this.isDisplayingErrorMessage) {
+            this.inOut = this.lastUserInput;
+            this.lastUserInput = ""
+            this.isDisplayingErrorMessage = false;
+        } else if (this.inOut === FMCMainDisplay.clrValue) {
+            this.inOut = "";
+            this.lastUserInput = ""
+        } else if (this.inOut.length > 0) {
+            this.inOut = this.inOut.substr(0, this.inOut.length - 1);
+        } else {
+            this.inOut = FMCMainDisplay.clrValue;
+        }
+    }
+
+    onInputAircraftSpecific(input) {
+        switch (true) {
+            case input == "CLR":
+                break;
+            case FMCMainDisplay._AvailableKeys.indexOf(input) !== -1:
+            case input == "SP":
+            case input == "DIV":
+            case input == "DOT":
+            case input == "PLUSMINUS":
+                if (this.isDisplayingErrorMessage) {
+                    // Say user tried to put invalid value (for example "OMG") in one of the fields,
+                    // "INVALID ENTRY" will be shown in the scratchpad.
+                    // Then user taps one of the symbol buttons on the cdu (for example "1"),
+                    // "INVALID ENTRY" will be replaced with "OMG1" (prevoius input of "OMG" plus new input "1")
+                    // This stops "1" from apprearing. I think it's more intuitive that way.
+                    this.onClr();
+                    return true;
+                }
+            case input.length == 2 && (input[0] == "L" || input[0] == "R"):
+                if (this.isDisplayingErrorMessage) {
+                    // ignore user's attempts to plug error message into one of the fields
+                    return true;
+                }
+            default: // (switching pages)
+                if (this.isDisplayingErrorMessage) {
+                    this.onClr();
+                }
+                this.setMsg();
+                break;
+        }
+        this.legacyOnInputAircraftSpecific(input)
     }
 
     setMsg(msg) {

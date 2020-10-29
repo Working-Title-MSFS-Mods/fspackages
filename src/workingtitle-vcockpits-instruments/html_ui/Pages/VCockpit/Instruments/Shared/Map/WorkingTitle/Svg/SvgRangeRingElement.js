@@ -2,9 +2,15 @@ class SvgRangeRingElement extends SvgLabeledRingElement {
     constructor() {
         super();
 
-        this.rangeRingStrokeColor = SvgRangeRingElement.RANGE_RING_STROKE_COLOR_DEFAULT;
-        this.rangeRingStrokeWidth = SvgRangeRingElement.RANGE_RING_STROKE_WIDTH_DEFAULT;
-        this.labelPosAngle = SvgRangeRingElement.RANGE_DISPLAY_ANGLE_DEFAULT;
+        this.strokeColor = SvgRangeRingElement.STROKE_COLOR_DEFAULT;
+        this.strokeWidth = SvgRangeRingElement.STROKE_WIDTH_DEFAULT;
+        this.labelAngle = SvgRangeRingElement.RANGE_DISPLAY_ANGLE_DEFAULT;
+
+        this.labelFont = SvgRangeLabelElement.FONT_DEFAULT;
+        this.labelValueFontSize = SvgRangeLabelElement.VALUE_FONT_SIZE_DEFAULT;
+        this.labelUnitFontSize = SvgRangeLabelElement.UNIT_FONT_SIZE_DEFAULT;
+        this.labelAutoFontSize = SvgRangeLabelElement.AUTO_FONT_SIZE_DEFAULT;
+        this.labelFontColor = SvgRangeLabelElement.FONT_COLOR_DEFAULT;
     }
 
     id(map) {
@@ -15,16 +21,32 @@ class SvgRangeRingElement extends SvgLabeledRingElement {
         map.appendChild(this.svgElement, map.rangeRingLayer);
     }
 
+    createDraw(map) {
+        this.setPropertyFromConfig(map.config.rangeRing, "strokeColor");
+        this.setPropertyFromConfig(map.config.rangeRing, "strokeWidth");
+
+        this.setPropertyFromConfig(map.config.rangeRing, "labelFont");
+        this.setPropertyFromConfig(map.config.rangeRing, "labelValueFontSize");
+        this.setPropertyFromConfig(map.config.rangeRing, "labelUnitFontSize");
+        this.setPropertyFromConfig(map.config.rangeRing, "labelAutoFontSize");
+        this.setPropertyFromConfig(map.config.rangeRing, "labelFontColor");
+        this.setPropertyFromConfig(map.config.rangeRing, "labelAngle");
+        this.setPropertyFromConfig(map.config.rangeRing, "showLabel");
+
+        return super.createDraw(map);
+    }
+
     createRing(map) {
         let rangeRing = super.createRing(map);
-        rangeRing.setAttribute("stroke", this.rangeRingStrokeColor);
-        rangeRing.setAttribute("stroke-width", this.rangeRingStrokeWidth);
+
+        rangeRing.setAttribute("stroke", this.strokeColor);
+        rangeRing.setAttribute("stroke-width", this.strokeWidth);
         rangeRing.setAttribute("stroke-opacity", "1");
         return rangeRing;
     }
 
     createLabel(map) {
-        this.rangeLabelElement = new SvgRangeLabelElement();
+        this.rangeLabelElement = new SvgRangeLabelElement(this.labelFont, this.labelValueFontSize, this.labelUnitFontSize, this.labelAutoFontSize, this.labelFontColor);
         return this.rangeLabelElement.createDraw(map);
     }
 
@@ -40,18 +62,18 @@ class SvgRangeRingElement extends SvgLabeledRingElement {
         super.updateLabel(map);
     }
 }
-SvgRangeRingElement.RANGE_RING_STROKE_COLOR_DEFAULT = "white";
-SvgRangeRingElement.RANGE_RING_STROKE_WIDTH_DEFAULT = 2;
+SvgRangeRingElement.STROKE_COLOR_DEFAULT = "white";
+SvgRangeRingElement.STROKE_WIDTH_DEFAULT = 2;
 SvgRangeRingElement.RANGE_DISPLAY_ANGLE_DEFAULT = -45;
 
 class SvgRangeLabelElement {
-    constructor() {
-        this.range;
-        this.font = SvgRangeLabelElement.FONT_DEFAULT;
-        this.valueFontSize = SvgRangeLabelElement.VALUE_FONT_SIZE_DEFAULT;
-        this.unitFontSize = SvgRangeLabelElement.UNIT_FONT_SIZE_DEFAULT;
-        this.autoFontSize = SvgRangeLabelElement.AUTO_FONT_SIZE_DEFAULT;
-        this.fontColor = SvgRangeLabelElement.FONT_COLOR_DEFAULT;
+    constructor(_font, _valueFontSize, _unitFontSize, _autoFontSize, _fontColor) {
+        this.range = 0;
+        this.font = _font;
+        this.valueFontSize = _valueFontSize;
+        this.unitFontSize = _unitFontSize;
+        this.autoFontSize = _autoFontSize;
+        this.fontColor = _fontColor;
     }
 
     createDraw(map) {

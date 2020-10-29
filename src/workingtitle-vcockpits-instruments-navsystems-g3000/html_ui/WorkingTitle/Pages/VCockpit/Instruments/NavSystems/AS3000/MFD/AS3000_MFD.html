@@ -32,23 +32,39 @@
                     <as3000-engine-display id="ED"></as3000-engine-display>
                 </div>
                 <div id="RightInfos">
-                    <div id="TopRight">
-                        <div class="title">GS</div>
-                        <div class="value" id="GS">___KT</div>
-                        <div class="title">DTK</div>
-                        <div class="value" id="DTK">___°</div>
-                        <div class="title">TRK</div>
-                        <div class="value" id="TRK">___°</div>
-                        <div class="title">ETE</div>
-                        <div class="value" id="ETE">__:__</div>
-                        <div class="title">BRG</div>
-                        <div class="value" id="BRG">___°</div>
-                        <div class="title">DIS</div>
-                        <div class="value" id="DIS">__._NM</div>
-                        <div class="title">MSA</div>
-                        <div class="value" id="MSA">____FT</div>
-                        <div class="title">ETA</div>
-                        <div class="value" id="ETA">__:__UTC</div>
+                    <div id="NavDataBar">
+                        <div class="navDataField">
+                            <div class="title"></div>
+                            <div class="value"><span class="number"></span><span class="unit"></span></div>
+                        </div>
+                        <div class="navDataField">
+                            <div class="title"></div>
+                            <div class="value"><span class="number"></span><span class="unit"></div>
+                        </div>
+                        <div class="navDataField">
+                            <div class="title"></div>
+                            <div class="value"><span class="number"></span><span class="unit"></div>
+                        </div>
+                        <div class="navDataField">
+                            <div class="title"></div>
+                            <div class="value"><span class="number"></span><span class="unit"></div>
+                        </div>
+                        <div class="navDataField">
+                            <div class="title"></div>
+                            <div class="value"><span class="number"></span><span class="unit"></div>
+                        </div>
+                        <div class="navDataField">
+                            <div class="title"></div>
+                            <div class="value"><span class="number"></span><span class="unit"></div>
+                        </div>
+                        <div class="navDataField">
+                            <div class="title"></div>
+                            <div class="value"><span class="number"></span><span class="unit"></div>
+                        </div>
+                        <div class="navDataField">
+                            <div class="title"></div>
+                            <div class="value"><span class="number"></span><span class="unit"></div>
+                        </div>
                     </div>
                     <div id="Map">
                         <map-instrument id="MapInstrument" bing-id="MFD" config-path="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/" hide-flightplan-if-bushtrip="true"></map-instrument>
@@ -64,6 +80,8 @@
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 <script type="text/html" import-script="/JS/dataStorage.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/NumberUnit.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/highlight.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/WindDataDisplay/WindDataDisplay.js"></script>
@@ -89,6 +107,8 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/MapElement.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/NavDataBar.js"></script>
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/AS3000_Common.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/AS3000_MFD.js"></script>

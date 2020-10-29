@@ -3,8 +3,11 @@ class AS3000_PFD extends NavSystem {
         super();
         this.initDuration = 7000;
     }
+
     get IsGlassCockpit() { return true; }
+
     get templateID() { return "AS3000_PFD"; }
+
     connectedCallback() {
         super.connectedCallback();
         this.pageGroups = [
@@ -12,21 +15,23 @@ class AS3000_PFD extends NavSystem {
                 new AS3000_PFD_MainPage()
             ]),
         ];
-        this.addIndependentElementContainer(new NavSystemElementContainer("InnerMap", "InnerMap", new AS3000_PFD_InnerMap("_PFD")));
+        this.addIndependentElementContainer(new NavSystemElementContainer("InnerMap", "InnerMap", new AS3000_PFD_InnerMap("PFD")));
         this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new PFD_WindData()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", new PFD_Warnings()));
         this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(AS3000_PFD_SoftKeyHtmlElement)));
         this.maxUpdateBudget = 12;
 
-        //Include.addScript("/JS/debug.js", function () {
-        //    g_modDebugMgr.AddConsole(null);
-        //});
+        Include.addScript("/JS/debug.js", function () {
+            g_modDebugMgr.AddConsole(null);
+        });
     }
+
     disconnectedCallback() {
         super.disconnectedCallback();
     }
-    Update() {
-        super.Update();
+
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
     }
 }
 class AS3000_PFD_SoftKeyElement extends SoftKeyElement {
@@ -79,22 +84,6 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
 
     onTemplateLoaded() {
         super.onTemplateLoaded();
-
-        if (this.revertToDefault) {
-            return;
-        }
-
-        this.instrument.rangeRingElement.showLabel = false;
-        this.instrument.rangeRingElement.rangeRingStrokeWidth = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH;
-
-        this.instrument.rangeCompassElement.showRangeDisplay = false;
-        this.instrument.rangeCompassElement.arcStrokeWidth = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH;
-        this.instrument.rangeCompassElement.bearingTickMinorStrokeWidth = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH;
-        this.instrument.rangeCompassElement.bearingTickMinorLength = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_BEARING_TICK_MINOR_LENGTH;
-        this.instrument.rangeCompassElement.bearingTickMajorStrokeWidth = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH;
-        this.instrument.rangeCompassElement.bearingTickMajorLength = AS3000_PFD_InnerMap.RANGE_RING_COMPASS_BEARING_TICK_MAJOR_LENGTH;
-        this.instrument.rangeCompassElement.bearingLabelFontSize = AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_SIZE;
-        this.instrument.rangeCompassElement.bearingLabelStrokeWidth = AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_STROKE_WIDTH;
     }
 
     onUpdate(_deltaTime) {
@@ -126,11 +115,6 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
         return this.enabled;
     }
 }
-AS3000_PFD_InnerMap.RANGE_RING_COMPASS_STROKE_WIDTH = 5;
-AS3000_PFD_InnerMap.RANGE_RING_COMPASS_BEARING_TICK_MAJOR_LENGTH = 20;
-AS3000_PFD_InnerMap.RANGE_RING_COMPASS_BEARING_TICK_MINOR_LENGTH = 10;
-AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_SIZE = 50;
-AS3000_PFD_InnerMap.RANGE_COMPASS_BEARING_LABEL_FONT_STROKE_WIDTH = 20;
 
 class AS3000_PFD_MainPage extends NavSystemPage {
     constructor() {
@@ -346,13 +330,13 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 
     toggleTerrain() {
         if (this.innerMap.isEnabled()) {
-            AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT, this.innerMap.simVarNameID,
-                    (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.innerMap.simVarNameID, "number") + 1) % AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT.length);
+            AS3000_MapElement.setSyncedSettingVar(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT, this.innerMap.simVarNameID,
+                    (SimVar.GetSimVarValue(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT + this.innerMap.simVarNameID, "number") + 1) % AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT.length);
         }
     }
 
     terrainStatus() {
-        return AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_TERRAIN_MODE_ROOT + this.innerMap.simVarNameID, "number")];
+        return AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT[SimVar.GetSimVarValue(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT + this.innerMap.simVarNameID, "number")];
     }
 
     toggleWX() {

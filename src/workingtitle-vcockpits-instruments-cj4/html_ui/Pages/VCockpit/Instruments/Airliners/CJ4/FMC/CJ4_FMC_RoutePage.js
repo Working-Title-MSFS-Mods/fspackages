@@ -17,6 +17,41 @@ class CJ4_FMC_RoutePage {
         //end temp
         let lsk6Field = "<SEC FPLN";
 
+        let setDestinationFunc = (icao) => {
+            fmc.updateRouteDestination(icao, (result) => {
+                if (result) {
+                    fmc.flightPlanManager.setApproachTransitionIndex(-1, () => {
+                        fmc.flightPlanManager.setArrivalProcIndex(-1, () => {
+                            fmc.flightPlanManager.setApproachIndex(-1, () => {
+                                fmc.setMsg();
+                                fmc.fpHasChanged = true;
+                                CJ4_FMC_RoutePage.ShowPage1(fmc);
+                            });
+                        });
+                    });
+                }
+            });
+        };
+
+        let setOriginFunc = (icao) => {
+            if(!SimVar.GetSimVarValue("SIM ON GROUND", "boolean"))
+            {
+                fmc.showErrorMessage("NOT ON GROUND");
+                return;
+            }
+
+            fmc.tmpDestination = undefined;
+            fmc.flightPlanManager.createNewFlightPlan(() => {
+                fmc.updateRouteOrigin(icao, (result) => {
+                    if (result) {
+                        fmc.setMsg();
+                        fmc.fpHasChanged = true;
+                        CJ4_FMC_RoutePage.ShowPage1(fmc);
+                    }
+                });
+            });
+        };
+
         let originCell = "□□□□";
         if (fmc && fmc.flightPlanManager) {
             let origin = fmc.flightPlanManager.getOrigin();
@@ -31,14 +66,9 @@ class CJ4_FMC_RoutePage {
             fmc.setMsg("Working...");
             let value = fmc.inOut;
             fmc.clearUserInput();
-            fmc.updateRouteOrigin(value, (result) => {
-                fmc.setMsg();
-                if (result) {
-                    fmc.fpHasChanged = true;
-                    CJ4_FMC_RoutePage.ShowPage1(fmc);
-                }
-            });
+            setOriginFunc(value);
         };
+
         let destinationCell = "□□□□";
         if (fmc && fmc.flightPlanManager) {
             let destination = fmc.flightPlanManager.getDestination();
@@ -53,15 +83,7 @@ class CJ4_FMC_RoutePage {
             fmc.setMsg("Working...");
             let value = fmc.inOut;
             fmc.clearUserInput();
-            fmc.flightPlanManager.setArrivalProcIndex(-1, () => {
-                fmc.updateRouteDestination(value, (result) => {
-                    fmc.setMsg();
-                    if (result) {
-                        fmc.fpHasChanged = true;
-                        CJ4_FMC_RoutePage.ShowPage1(fmc);
-                    }
-                });
-            });
+            setDestinationFunc(value);
         };
         let distanceCell = "----";
         if (fmc.flightPlanManager.getDestination() && fmc.flightPlanManager.getOrigin()) {
@@ -282,10 +304,6 @@ class CJ4_FMC_RoutePage {
                 rows[i] = allRows.rows[i + offset];
                 let fpIndex = allRows.fpIndexes[i + offset];
 
-                // TODO this is just a quickfix for index when departure is loaded, its ugly though
-                // let departure = fmc.flightPlanManager.getDeparture();
-                // if (departure) { fpIndex--; }
-
                 // DELETE WAYPOINT
                 fmc.onRightInput[i] = () => {
                     fmc.setMsg("Working...");
@@ -325,9 +343,6 @@ class CJ4_FMC_RoutePage {
                                 if (isSuccess) {
                                     fmc.setMsg();
                                     CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
-                                } else {
-                                    fmc.fpHasChanged = false;
-                                    fmc.eraseTemporaryFlightPlan(() => { CJ4_FMC_RoutePage.ShowPage2(fmc, offset); });
                                 }
                             });
                         } else

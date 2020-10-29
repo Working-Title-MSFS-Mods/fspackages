@@ -102,6 +102,16 @@ class Jet_MFD_NDInfo extends HTMLElement {
             }
         }
     }
+
+    /**
+     * Handles when the map display style is changed.
+     * @param {Jet_NDCompass_Display} style The map compass display style. 
+     */
+    onDisplayChange(style) {
+        this.VORLeft.onDisplayChange(style);
+        this.VORRight.onDisplayChange(style);
+    }
+    
     updateSpeeds() {
         this.setGroundSpeed(Math.round(Simplane.getGroundSpeed()));
         this.setTrueAirSpeed(Math.round(Simplane.getTrueSpeed()));
@@ -255,10 +265,10 @@ class Jet_MFD_NDInfo extends HTMLElement {
     }
     updateVOR() {
         if (this.VORLeft != null) {
-            this.VORLeft.update(this.gps, this.aircraft);
+            this.VORLeft.update(this.gps, this.aircraft, this._navMode, this._navSource);
         }
         if (this.VORRight != null) {
-            this.VORRight.update(this.gps, this.aircraft);
+            this.VORRight.update(this.gps, this.aircraft, this._navMode, this._navSource);
         }
     }
     updateApproach() {
@@ -480,130 +490,266 @@ class Jet_MFD_NDInfo extends HTMLElement {
 }
 Jet_MFD_NDInfo.MIN_WIND_STRENGTH_FOR_ARROW_DISPLAY = 2;
 class VORDMENavAid {
+
     constructor(_parent, _index) {
         this.parent = _parent;
         this.index = _index;
+
         if (this.parent != null) {
-            this.stateText = _parent.querySelector("#State");
+            this.navTypeText = _parent.querySelector("#State");
             this.idText = _parent.querySelector("#ID");
-            this.modeText = _parent.querySelector("#Mode");
             this.distanceText = _parent.querySelector("#Distance");
-            this.unitText = _parent.querySelector("#Unit");
-            this.arrowShape = _parent.querySelector("#Arrow");
+            this.distanceUnits = _parent.querySelector("#Unit");
+            this.pointer = _parent.querySelector('.bearing-pointer');
+            this.pointerNeedle = _parent.querySelector('.bearing-pointer .bearing-pointer-needle');
         }
-        this.setState(NAV_AID_STATE.OFF, true);
+
+        this.setMode(BearingPointerMode.Off, true);
         this.setIDValue(0, true);
-        this.setMode(NAV_AID_MODE.NONE, true);
         this.setDistanceValue(0, true);
+        this.hasNav = undefined;
     }
-    update(_gps, _aircraft) {
+
+    update(_gps, _aircraft, _parentMode, _parentSource) {
         this.gps = _gps;
         this.aircraft = _aircraft;
-        let state = Simplane.getAutoPilotNavAidState(1, this.index);
-        if (_aircraft == Aircraft.B747_8) {
-            state--;
-            if (state < 0)
-                state = 2;
+        let mode = SimVar.GetSimVarValue(`L:WT.CJ4.BearingPointerMode_${this.index}`, 'number');
+
+        this.setMode(mode);
+        switch (this.currentMode) {
+            case BearingPointerMode.VOR: {              
+                this.handleVORModeUpdate(_parentMode, _parentSource);
+                break;
+            }
+            case BearingPointerMode.ADF: {
+                this.handleADFModeUpdate();
+                break;
+            }
+            case BearingPointerMode.FMS: {
+                this.handleFMSModeUpdate(_parentMode);
+                break;
+            }
+        }    
+    }
+
+    /**
+     * Handles the update of bearing pointer needle and info block
+     * for VOR mode.
+     * @param {Jet_NDCompass_Navigation} parentNavMode The navigation mode of the parent PFD/MFD map.
+     * @param {Number} parentRadioIndex The radio index of the parent radio system selection.
+     */
+    handleVORModeUpdate(parentNavMode, parentRadioIndex) {
+        const ident = SimVar.GetSimVarValue("NAV IDENT:" + this.index, "string");
+        const hasNav = SimVar.GetSimVarValue("NAV HAS NAV:" + this.index, "Bool");
+
+        if (this.hasNav !== hasNav) {
+            this.pointer.style = hasNav ? '' : 'display: none';
+            this.hasNav = hasNav;
         }
-        this.setState(state);
-        if (this.currentState != NAV_AID_STATE.OFF) {
-            if (this.currentState == NAV_AID_STATE.VOR) {
-                this.setIDValue(this.gps.radioNav.getVORActiveFrequency(this.index));
+
+        let hideDistance = (parentNavMode === Jet_NDCompass_Navigation.VOR || parentNavMode === Jet_NDCompass_Navigation.ILS) && parentRadioIndex === this.index;
+        this.setDistanceValue(hideDistance ? 0 : this.getDMEDistance(this.index));
+
+        if (hasNav) {
+            const navRadial = (SimVar.GetSimVarValue("NAV RADIAL:" + this.index, "degrees") + 180) % 360;
+            const planeHeading = Simplane.getHeadingMagnetic() % 360;
+            let rotation = (navRadial - planeHeading) % 360;
+            if (rotation < 0) {
+                rotation += 360;
             }
-            else {
-                this.setIDValue(this.gps.radioNav.getADFActiveFrequency(this.index));
+
+            this.pointerNeedle.style = `transform: rotate(${rotation}deg);`;
+            this.setIDValue(ident);
+        }
+        else {
+            this.setDistanceValue(0);
+            this.setIDValue(0);
+        }
+    }
+
+    /**
+     * Handles the update of the bearing pointer needle and info block
+     * for ADF mode.
+     */
+    handleADFModeUpdate() {
+        const hasNav = SimVar.GetSimVarValue("ADF SIGNAL:" + this.index, "number");
+        this.setIDValue(this.gps.radioNav.getADFActiveFrequency(this.index).toFixed(0));
+
+        if (this.hasNav !== hasNav) {
+            this.pointer.style = hasNav ? '' : 'display: none';
+            this.hasNav = hasNav;
+        }
+
+        if (hasNav) {
+            const adfDiff = SimVar.GetSimVarValue("ADF RADIAL:" + this.index, "degrees") % 360;
+            this.pointerNeedle.style = `transform: rotate(${adfDiff}deg);`;
+        }
+
+        this.setDistanceValue(0);
+    }
+
+    /**
+     * Handles the update of the bearing pointer needle and info block
+     * for FMS mode.
+     * @param {Jet_NDCompass_Navigation} parentNavMode The navigation mode of the parent PFD/MFD map.
+     */
+    handleFMSModeUpdate(parentNavMode) {
+        const waypointName = Simplane.getNextWaypointName();
+        const hasNav = waypointName !== null && waypointName !== undefined && waypointName !== '';
+
+        if (this.hasNav !== hasNav) {
+            this.pointer.style = hasNav ? '' : 'display: none';
+            this.hasNav = hasNav;
+        }
+
+        let hideDistance = parentNavMode === Jet_NDCompass_Navigation.NAV;
+        this.setDistanceValue(hideDistance ? 0 : Simplane.getNextWaypointDistance());
+
+        if (hasNav) {
+            const waypointBearing = Simplane.getNextWaypointTrack();
+            const planeHeading = Simplane.getHeadingMagnetic();
+            let rotation = (waypointBearing - planeHeading) % 360;
+            if (rotation < 0) {
+                rotation += 360;
             }
-            this.setMode(NAV_AID_MODE.MANUAL);
+
+            this.pointerNeedle.style = `transform: rotate(${rotation}deg);`;
+            this.setIDValue(waypointName);
+        }
+        else {
+            this.setIDValue(0);
             this.setDistanceValue(0);
         }
     }
-    setState(_state, _force = false) {
-        if ((_state != this.currentState) || _force) {
-            this.currentState = _state;
-            var show = false;
-            var type = "";
-            switch (this.currentState) {
-                case NAV_AID_STATE.ADF:
-                    {
-                        type = "ADF";
-                        if (this.aircraft == Aircraft.A320_NEO || this.aircraft == Aircraft.CJ4)
-                            type += this.index.toString();
-                        else if (this.index == 1)
-                            type += " L";
-                        else
-                            type += " R";
-                        show = true;
-                        break;
+
+    /**
+     * Handles when the map display style is changed.
+     * @param {Jet_NDCompass_Display} style The map compass display style. 
+     */
+    onDisplayChange(style) {
+        if (this.currentStyle !== style) {
+            this.currentStyle = style;
+            switch (this.currentStyle) {
+                case Jet_NDCompass_Display.ARC: {
+                    const clipSection = this.pointer && this.pointer.querySelector('.bearing-pointer-clip');
+                    if (clipSection) {
+                        clipSection.setAttribute('clip-path', 'url(#arc)');
+                        this.pointer.className = 'bearing-pointer arc';
                     }
-                case NAV_AID_STATE.VOR:
-                    {
-                        type = "VOR";
-                        if (this.aircraft == Aircraft.A320_NEO || this.aircraft == Aircraft.CJ4)
-                            type += this.index.toString();
-                        else if (this.index == 1)
-                            type += " L";
-                        else
-                            type += " R";
-                        show = true;
-                        break;
+                    break;
+                }
+                case Jet_NDCompass_Display.ROSE: {
+                    const clipSection = this.pointer && this.pointer.querySelector('.bearing-pointer-clip');
+                    if (clipSection) {
+                        clipSection.setAttribute('clip-path', 'url(#rose)');
+                        this.pointer.className = 'bearing-pointer rose';
                     }
-            }
-            if (this.parent != null) {
-                this.parent.style.display = show ? "block" : "none";
-            }
-            if (this.stateText != null) {
-                this.stateText.textContent = type;
+                    break;
+                }
             }
         }
     }
+
+    setMode(_mode, _force = false) {
+        if ((_mode != this.currentMode) || _force) {
+
+            this.currentMode = _mode;
+            var show = false;
+            var type = "";
+
+            switch (this.currentMode) {
+                case BearingPointerMode.ADF:
+                    type = "ADF";
+                    show = true;
+                    break;
+                case BearingPointerMode.VOR:
+                    type = "VOR";
+                    show = true;
+                    break;
+                case BearingPointerMode.FMS:
+                    type = "FMS";
+                    show = true;
+                    break;
+                default:
+                    show = false;
+                    break;
+            }
+
+            if (this.parent != null) {
+                this.parent.style.display = show ? "block" : "none";
+            }
+
+            if (this.navTypeText != null) {
+                this.navTypeText.textContent = type;
+            }
+        }
+    }
+
     setIDValue(_value, _force = false) {
         if ((_value != this.idValue) || _force) {
+
             this.idValue = _value;
+
             if (this.idText != null) {
                 if (this.idValue == 0)
                     this.idText.textContent = "---";
                 else
-                    this.idText.textContent = fastToFixed(this.idValue, 1);
+                    this.idText.textContent = this.idValue;
             }
         }
     }
-    setMode(_state, _force = false) {
-        if ((_state != this.currentMode) || _force) {
-            this.currentMode = _state;
-            var mode = "";
-            switch (this.currentMode) {
-                case NAV_AID_MODE.MANUAL:
-                    {
-                        mode = "M";
-                        break;
-                    }
-                case NAV_AID_MODE.REMOTE:
-                    {
-                        mode = "R";
-                        break;
-                    }
-            }
-            if (this.modeText != null) {
-                this.modeText.textContent = mode;
-            }
-        }
-    }
+
     setDistanceValue(_value, _force = false) {
         if ((_value != this.distanceValue) || _force) {
+
             this.distanceValue = _value;
             var showDistance = (this.distanceValue > 0);
-            var displayStr = showDistance ? "block" : "none";
+
             if (this.distanceText != null) {
                 if (showDistance) {
-                    this.distanceText.textContent = fastToFixed(this.distanceValue, 0);
+                    this.distanceText.style = '';
+                    this.distanceUnits.style = '';
+
+                    this.distanceText.textContent = fastToFixed(this.distanceValue, this.distanceValue < 100 ? 1 : 0);
                 }
-                this.distanceText.style.display = displayStr;
-            }
-            if (this.unitText != null) {
-                this.unitText.style.display = displayStr;
+                else {
+                    this.distanceText.style = 'visibility: hidden;';
+                    this.distanceUnits.style = 'visibility: hidden;';
+                }
             }
         }
     }
+
+    /**
+     * Gets the DME distance for a given tuned nav radio index.
+     * @param {Number} navRadioIndex The current nav radio index to use.
+     */
+    getDMEDistance(navRadioIndex) {
+        let distance = undefined;
+
+        const hasDME = SimVar.GetSimVarValue("NAV HAS DME:" + navRadioIndex, "bool");
+        if (hasDME) {
+            distance = Math.abs(parseFloat(SimVar.GetSimVarValue("NAV DME:" + navRadioIndex, "Nautical miles")));
+        }
+
+        const hasCloseDME = SimVar.GetSimVarValue("NAV HAS CLOSE DME:" + navRadioIndex, "bool");
+        if (hasCloseDME) {
+            distance = Math.abs(parseFloat(SimVar.GetSimVarValue("NAV CLOSE DME:" + navRadioIndex, "Nautical miles")));
+        }
+
+        return distance;
+    }
 }
+
+/**
+ * A mode that the bearing pointer is set to.
+ */
+var BearingPointerMode = {
+    Off: 0,
+    FMS: 1,
+    VOR: 2,
+    ADF: 3
+};
+
 customElements.define("jet-mfd-nd-info", Jet_MFD_NDInfo);
 //# sourceMappingURL=NDInfo.js.map

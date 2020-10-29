@@ -5,6 +5,7 @@ class CJ4_PFD extends BaseAirliners {
         this.showTerrain = false;
         this.showWeather = false;
         this.mapDisplayMode = Jet_NDCompass_Display.ARC;
+        this.previousMapDisplayMode = undefined;
         this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
         this.mapNavigationSource = 0;
         this.systemPage = CJ4_SystemPage.ANNUNCIATIONS;
@@ -72,6 +73,30 @@ class CJ4_PFD extends BaseAirliners {
             }
             this.map.setMode(this.mapDisplayMode);
             this.mapOverlay.setMode(this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource);
+
+            //Hack to correct the map compass size until we separate it out
+            //fully from the default shared code
+            if (this.mapDisplayMode !== this.previousMapDisplayMode || this.mapNavigationSource !== this.previousMapNavigationSource) {
+                const el = document.querySelector('#NDCompass svg');
+                if (el) {
+                    this.previousMapDisplayMode = this.mapDisplayMode;
+                    this.previousMapNavigationSource = this.mapNavigationSource;
+
+                    if (this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {
+                        el.setAttribute('width', '122%');
+                        el.setAttribute('height', '122%');
+                        el.style = 'transform: translate(-84px, -56px)';
+                    }
+
+                    if (this.mapDisplayMode === Jet_NDCompass_Display.ARC) {
+                        el.setAttribute('width', '108%');
+                        el.setAttribute('height', '108%');
+                        el.style = 'transform: translate(-30px, -18px)';
+                    }
+                }
+                this.mapOverlay.infos.root.onDisplayChange(this.mapDisplayMode);
+            }
+
             if (this.showTerrain) {
                 this.map.showTerrain(true);
                 this.mapOverlay.showTerrain(true);
@@ -109,18 +134,33 @@ class CJ4_PFD extends BaseAirliners {
                     this.radioNav.setRADIONAVSource(NavSource.VOR1);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
                     this.mapNavigationSource = 1;
+
+                    const apOnGPS = SimVar.GetSimVarValue('GPS DRIVES NAV1', 'Bool');
+                    if (apOnGPS) {
+                        SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0)
+                            .then(() => SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 1));
+                    }
+
                     this.onModeChanged();
                 }
                 else if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1) {
                     this.radioNav.setRADIONAVSource(NavSource.VOR2);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
                     this.mapNavigationSource = 2;
+
+                    SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 2);
                     this.onModeChanged();
                 }
                 else if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 2) {
                     this.radioNav.setRADIONAVSource(NavSource.GPS);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
                     this.mapNavigationSource = 0;
+
+                    const apOnGPS = SimVar.GetSimVarValue('GPS DRIVES NAV1', 'Bool');
+                    if (!apOnGPS) {
+                        SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0)
+                    }
+
                     this.onModeChanged();
                 }
                 break;
@@ -284,36 +324,37 @@ class CJ4_PFD extends BaseAirliners {
         }
         this.radioSrc1 = _dict.get(CJ4_PopupMenu_Key.BRG_PTR1_SRC);
         this.radioSrc2 = _dict.get(CJ4_PopupMenu_Key.BRG_PTR2_SRC);
-        if (this.radioSrc1 != "OFF") {
-            this.radioNav.setRADIONAVActive(1, true);
+
+        if (this.radioSrc1 !== 'OFF') {
             if (this.radioSrc1 == "VOR1") {
-                let freq = parseFloat(_dict.get(CJ4_PopupMenu_Key.BRG_VOR1_FREQ));
-                this.radioNav.setVORActiveFrequency(1, freq);
+                SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_1', 'number', 2);
             }
             else if (this.radioSrc1 == "ADF1") {
-                let freq = parseInt(_dict.get(CJ4_PopupMenu_Key.BRG_ADF1_FREQ));
-                this.radioNav.setADFActiveFrequency(1, freq);
+                SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_1', 'number', 3);
             }
             else {
-                let freq = SimVar.GetSimVarValue("L:FMC_VOR_FREQUENCY:1", "MHz");
-                this.radioNav.setVORActiveFrequency(1, freq);
-            }
-            if (this.radioSrc2 == "VOR2") {
-                let freq = parseFloat(_dict.get(CJ4_PopupMenu_Key.BRG_VOR2_FREQ));
-                this.radioNav.setVORActiveFrequency(2, freq);
-            }
-            else if (this.radioSrc2 == "ADF2") {
-                let freq = parseInt(_dict.get(CJ4_PopupMenu_Key.BRG_ADF2_FREQ));
-                this.radioNav.setADFActiveFrequency(2, freq);
-            }
-            else {
-                let freq = SimVar.GetSimVarValue("L:FMC_VOR_FREQUENCY:2", "MHz");
-                this.radioNav.setVORActiveFrequency(2, freq);
+                SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_1', 'number', 1);
             }
         }
         else {
-            this.radioNav.setRADIONAVActive(1, false);
+            SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_1', 'number', 0);
         }
+
+        if (this.radioSrc2 !== 'OFF') {
+            if (this.radioSrc2 == "VOR2") {
+                SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_2', 'number', 2);
+            }
+            else if (this.radioSrc2 == "ADF2") {
+                SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_2', 'number', 3);
+            }
+            else {
+                SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_2', 'number', 1);
+            }
+        }
+        else {
+            SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_2', 'number', 0);
+        }
+
         if (modeChanged)
             this.onModeChanged();
     }
@@ -414,7 +455,6 @@ class CJ4_AOA extends NavSystemElement {
         this.aoa.setAttribute("angle", angle);
         let flap35Active = SimVar.GetSimVarValue("TRAILING EDGE FLAPS LEFT PERCENT", "Percent");
         let aoaActive = SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number");
-        console.log("AOA: " + SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number"));
         if ((flap35Active == 100 && aoaActive !== 2) || aoaActive == 1) {
             this.aoa.style = "";
         }
@@ -576,7 +616,7 @@ class CJ4_APDisplay extends NavSystemElement {
         else if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean")) {
             Avionics.Utils.diffAndSet(this.AP_VerticalActive, "FLC");
             if (Simplane.getAutoPilotMachModeActive()) {
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "mach"), 3));
+                Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2));
             }
             else {
                 Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0) + "KT");
@@ -584,7 +624,7 @@ class CJ4_APDisplay extends NavSystemElement {
         }
         else if (SimVar.GetSimVarValue("AUTOPILOT MACH HOLD", "Boolean")) {
             Avionics.Utils.diffAndSet(this.AP_VerticalActive, "FLC");
-            Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 3));
+            Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2));
         }
         else if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean")) {
             if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean")) {

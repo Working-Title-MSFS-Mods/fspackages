@@ -51,7 +51,7 @@ class CJ4_FMC_PosInitPageOne {
         };
         this._fmc.onLeftInput[2] = () => {
             let value = this._fmc.inOut;
-            this._fmc.inOut = "";
+            this._fmc.clearUserInput();
             if (this._fmc.tryUpdateRefAirport(value)) {
                 this._isDirty = true;
                 this.update(); // TODO hmm, i think invalidate() would be the more right thing to call but...
@@ -65,7 +65,7 @@ class CJ4_FMC_PosInitPageOne {
         };
         this._fmc.onRightInput[4] = () => {
             let value = this._fmc.inOut;
-            this._fmc.inOut = "";
+            this._fmc.clearUserInput();
             if (this._fmc.tryUpdateIrsCoordinatesDisplay(value)) {
                 this._isDirty = true;
                 this.update();

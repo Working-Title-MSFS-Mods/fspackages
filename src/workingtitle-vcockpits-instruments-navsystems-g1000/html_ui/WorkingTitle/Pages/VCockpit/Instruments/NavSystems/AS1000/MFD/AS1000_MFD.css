@@ -9,6 +9,20 @@
   0%, 100% {
     visibility: hidden; } }
 
+html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden; }
+  html body {
+    -webkit-user-select: none;
+    font-family: Roboto-Regular;
+    font-size: calc(var(--viewportHeightRatio) * (36px / 21.6) * var(--currentPageHeight) / 100);
+    color: white;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0; }
+
 #highlight {
   position: absolute;
   height: 100%;
@@ -263,7 +277,7 @@ as1000-mfd-element {
 				width: 10vw;
 				height: calc( 2.5 * 1vh * var(--bodyHeightScale));
 				background-color: #1a1d21;
-				color: #8ed0d5; 
+				color: #8ed0d5;
 				border: solid 1px white; }
               as1000-mfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #Map #WindData {
                 position: absolute;
@@ -281,7 +295,7 @@ as1000-mfd-element {
 				display: flex;
 				justify-content: flex-end;
 				align-items: flex-end;
-				text-align: center; 
+				text-align: center;
 				border: solid 1px white; }
 				as1000-mfd-element #Mainframe #Electricity #CenterDisplay #MainDisplayArea #RightInfos #Map #MapRange .range {
 				  font-size: calc( 3 * 1vh * var(--bodyHeightScale));
