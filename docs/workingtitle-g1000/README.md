@@ -1,6 +1,6 @@
 # Documentation for the Working Title G1000
 
-_Applies to version: v0.3.0_
+_Applies to version: v0.3.2_
 
 Welcome to the latest version of the Working Title G1000 for Microsoft Flight Simulator.  This mod provides a raft of bug-fixes and enhancements to the stock G1000 used in many of the sim's general aviation planes.   Version 0.3.0 is developed for version 1.9.3.0 of the base sim, the version released on 29 September 2020.  Previous versions of the G1000 mod will not work with this version of the sim.
 
@@ -28,7 +28,7 @@ This version fixes what was perhaps the single most loathed behavior of the stoc
 
 ### Persistent settings
 
-We had a breakthrough during the development of this version when [@tavip](https://github.com/tavip) sent us a PR which demonstrated how to use a new in-sim data store that we had not yet had time to play with.  By using this we have been able to finally answer peoples' wish for a way to save their G1000 settings.  With this version numerous settings, including map orientation and brightness, will be saved between sessions.  No more changing the same thing every time you load a plane.   Amazing. 
+We had a breakthrough during the development of this version when [@tavip](https://github.com/tavip) sent us a PR which demonstrated how to use a new in-sim data store that we had not yet had time to play with.  By using this we have been able to finally answer peoples' wish for a way to save their G1000 settings.  With this version numerous settings, including map orientation and brightness, will be saved between sessions.  No more changing the same thing every time you load a plane.   Amazing.
 
 ### Extensible engine pages
 

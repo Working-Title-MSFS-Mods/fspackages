@@ -1,3 +1,6 @@
+# Changes in v0.3.2
+* Compatibility fix for 1.10.7.
+
 # Changes in v0.3.1
 
 * Keep the G1000 from breaking synthetic vision on the G3000 and G3Xes
