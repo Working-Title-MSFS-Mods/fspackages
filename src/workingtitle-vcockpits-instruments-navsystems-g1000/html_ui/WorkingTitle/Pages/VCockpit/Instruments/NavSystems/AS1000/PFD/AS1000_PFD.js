@@ -70,6 +70,15 @@ class AS1000_PFD extends BaseAS1000 {
     }
 
     onUpdate(_deltaTime) {
+        if (this.handleReversionaryMode) {
+            this.reversionaryMode = false;
+            if (document.body.hasAttribute("reversionary")) {
+                var attr = document.body.getAttribute("reversionary");
+                if (attr == "true") {
+                    this.reversionaryMode = true;
+                }
+            }
+        }
         if (this._pfdConfigDone) {
             let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
             if (avionicsKnobValueNow != this.avionicsKnobValue) {
@@ -77,7 +86,7 @@ class AS1000_PFD extends BaseAS1000 {
                 this.setBrightness("MFD", avionicsKnobValueNow);
                 this.avionicsKnobValue = avionicsKnobValueNow;
             }
-        } 
+        }
     }
 
     onEvent(_event) {
@@ -129,19 +138,6 @@ class AS1000_PFD extends BaseAS1000 {
 
     disconnectedCallback() {
         super.disconnectedCallback();
-    }
-
-    Update() {
-        super.Update();
-        if (this.handleReversionaryMode) {
-            this.reversionaryMode = false;
-            if (document.body.hasAttribute("reversionary")) {
-                var attr = document.body.getAttribute("reversionary");
-                if (attr == "true") {
-                    this.reversionaryMode = true;
-                }
-            }
-        }
     }
 }
 class AS1000_PFD_MainPage extends NavSystemPage {
@@ -285,7 +281,7 @@ class AS1000_PFD_MainPage extends NavSystemPage {
             new SoftKeyElement(""),
             new SoftKeyElement("BACK", this.switchToMenu.bind(this, this.pfdMenu)),
             this.alertSoftkey,
-        ];           
+        ];
         this.windMenu.elements = [
             new SoftKeyElement(""),
             new SoftKeyElement(""),
@@ -328,7 +324,7 @@ class AS1000_PFD_MainPage extends NavSystemPage {
     }
     softkeyBaroStatus(_state) {
         return this.gps.getElementOfType(PFD_Altimeter).getCurrentBaroMode() == _state ? "White" : "None";
-    }    
+    }
     softkeyHsiStatus(_arc) {
         return (SimVar.GetSimVarValue("L:Glasscockpit_HSI_Arc", "number") == 0) == _arc ? "None" : "White";
     }
@@ -352,9 +348,9 @@ class AS1000_PFD_MainPage extends NavSystemPage {
     toggleSyntheticVision() {
         this.setSyntheticVision(!this.syntheticVision);
     }
-    setSyntheticVision(enabled) { 
+    setSyntheticVision(enabled) {
         this.syntheticVision = enabled;
-        this.attitude.setSyntheticVisionEnabled(this.syntheticVision);        
+        this.attitude.setSyntheticVisionEnabled(this.syntheticVision);
         this.gps.getChildById("SyntheticVision").setAttribute("show-bing-map", this.syntheticVision ? "true" : "false");
         this.gps.getChildById("SyntheticVision").style.display = this.syntheticVision ? "block" : "none";
     }
@@ -636,7 +632,7 @@ class AS1000_PFD_ConfigMenu extends NavSystemElement {
     }
     onUpdate(_deltaTime) {
         this.pfdBrightLevel.textContent = this.gps.getBrightness("PFD") + "%";
-        this.mfdBrightLevel.textContent = this.gps.getBrightness("MFD") + "%";        
+        this.mfdBrightLevel.textContent = this.gps.getBrightness("MFD") + "%";
     }
     onExit() {
         this.pfdConfWindow.setAttribute("state", "Inactive");

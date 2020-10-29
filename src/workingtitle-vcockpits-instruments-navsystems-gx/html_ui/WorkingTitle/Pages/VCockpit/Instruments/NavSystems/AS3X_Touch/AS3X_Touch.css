@@ -9,6 +9,20 @@
   0%, 100% {
     visibility: hidden; } }
 
+html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden; }
+  html body {
+    -webkit-user-select: none;
+    font-family: Roboto-Regular;
+    font-size: calc(var(--viewportHeightRatio) * (36px / 21.6) * var(--currentPageHeight) / 100);
+    color: white;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0; }
+
 #highlight {
   position: absolute;
   height: 100%;
@@ -2388,7 +2402,7 @@ as3x-touch-element {
     top: 0%;
     text-align: center;
     font-size: 3vh; }
-        
+
   as3x-touch-element #MFD #MapMenu .subpart {
     position: absolute;
     border: 0.4vh solid white; }
@@ -2424,7 +2438,7 @@ as3x-touch-element #MFD #MapMenu #orientation {
   left: 5%;
   width: 90%;
   height: 21%; }
-  
+
   as3x-touch-element #MFD #MapMenu #MapMenu_Orient_North {
     left: 4%;
     width: 28%}
@@ -2446,8 +2460,8 @@ as3x-touch-element #MFD #MapMenu #features {
   as3x-touch-element #MFD #MapMenu #MapMenu_Weather {
     top: 19%;
     left: 4%;
-    width: 44%;}   
- 
+    width: 44%;}
+
   as3x-touch-element #MFD #MapMenu #MapMenu_Topo {
     top: 19%;
     left: 52%;
@@ -2456,12 +2470,12 @@ as3x-touch-element #MFD #MapMenu #features {
   as3x-touch-element #MFD #MapMenu #MapMenu_RangeRing {
     left: 4%;
     width: 44%;
-    bottom: .5vh;}   
- 
+    bottom: .5vh;}
+
   as3x-touch-element #MFD #MapMenu #MapMenu_Arc {
     left: 52%;
     width: 44%;
-    bottom: .5vh;}    
+    bottom: .5vh;}
 
 as3x-touch-element #MFD #MapMenu #range {
   top: 73%;
