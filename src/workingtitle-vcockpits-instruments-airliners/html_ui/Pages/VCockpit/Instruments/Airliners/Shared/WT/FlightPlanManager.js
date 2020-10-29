@@ -279,6 +279,7 @@ class FlightPlanManager {
                     //added code to make decel waypoint Top of Descent
                     let altitude = SimVar.GetSimVarValue("L:AIRLINER_CRUISE_ALTITUDE", "number");
                     let runways = destination.infos.oneWayRunways;
+                    if(runways.length < 1) return;
                     let destinationElevation = runways[0].elevation * 3.28;
                     let desiredFPA = 3;
                     let topOfDescent = 10 + ((altitude - destinationElevation + 1500) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
