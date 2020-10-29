@@ -10,6 +10,8 @@ This mod was created with cross-compatibility in mind. It modifies the minimum n
 **NOTE:** This version of the mod primarily makes changes to the TBM 930 for now. The Longitude, which also uses the G3000 codebase, will get some of the cosmetic improvements included in the mod (such as updated terrain colors, map font size, etc), but as of now none of the new functionality. We hope to add full compatibility with the Longitude in the future.
 
 ### Installation
+Download `workingtitle-g3000-v0.2.2.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
 ### Release Highlights (v0.2.2)
