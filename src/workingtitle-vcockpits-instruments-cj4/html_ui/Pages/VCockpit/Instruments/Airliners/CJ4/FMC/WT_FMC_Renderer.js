@@ -216,9 +216,6 @@ class WT_FMC_Renderer {
     showErrorMessage(message) {
         const magicNumber = 22; // width of the scratchpad in characters
 
-        console.log("sh1 current: " + this.inOut);
-        console.log("sh1 last   : " + this.lastUserInput);
-
         // in case someone didn't call "clearUserInput()" before calling this function
         if (this.inOut.length > 0) {
             this.lastUserInput = this.inOut.toString()
@@ -229,9 +226,6 @@ class WT_FMC_Renderer {
         const error_message = " ".repeat(whitespace) + message + " ".repeat(whitespace);
         this.isDisplayingErrorMessage = true;
         this.inOut = error_message;
-
-        console.log("sh current: " + this.inOut);
-        console.log("sh last   : " + this.lastUserInput);
 
         // if you remove this, scratchpad sometimes will not be rendered.
         // Because "renderScratchpadRaw()" will be called before "showErrorMessage()".
@@ -255,7 +249,6 @@ class WT_FMC_Renderer {
     }
 
     onInputAircraftSpecific(input) {
-        console.log(input)
         switch (true) {
             case input == "CLR":
                 break;
