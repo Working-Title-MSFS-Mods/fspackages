@@ -130,7 +130,7 @@ class SvgMapConfig {
                     this.cityLabelBackgroundPaddingRight = parseFloat(this.cityLabelBackgroundPadding.split(" ")[1]);
                     this.cityLabelBackgroundPaddingBottom = parseFloat(this.cityLabelBackgroundPadding.split(" ")[2]);
                     this.cityLabelBackgroundPaddingLeft = parseFloat(this.cityLabelBackgroundPadding.split(" ")[3]);
-                    
+
                     let i = 1;
                     let heightColors = this[SvgMapConfig.BING_HEIGHT_COLOR_ROOT + i];
                     while (heightColors && heightColors.length > 0) {
@@ -150,7 +150,7 @@ class SvgMapConfig {
                             this[SvgMapConfig.BING_WATER_COLOR_ROOT + i] = waterColor;
                         }
                         altitudeColors[0] = waterColor;
-                        
+
                         let curve = new Avionics.Curve();
                         curve.interpolationFunction = Avionics.CurveTool.StringColorRGBInterpolation;
                         for (let j = 0; j < heightColors.length; j++) {
@@ -160,8 +160,8 @@ class SvgMapConfig {
                             let color = curve.evaluate(j * 30000 / 60);
                             altitudeColors[j + 1] = color;
                         }
-                        
-                        
+
+
                         heightColors = this[SvgMapConfig.BING_HEIGHT_COLOR_ROOT + (++i)];
                     }
                 }
@@ -173,6 +173,21 @@ class SvgMapConfig {
         request.open("GET", path + "mapConfig.json");
         request.send();
     }
+
+    generateBing(id) {
+        if (this[`${SvgMapConfig.BING_HEIGHT_COLOR_ROOT}${id + 1}`]) {
+            let config = new BingMapsConfig();
+            if (this[`${SvgMapConfig.BING_ALTITUDE_COLOR_ROOT}${id + 1}`]) {
+                config.heightColors = this[`${SvgMapConfig.BING_ALTITUDE_COLOR_ROOT}${id + 1}`].map(hex => SvgMapConfig.hexaToRGB(hex));
+            }
+            config.aspectRatio = 1;
+            config.resolution = this.netBingTextureResolution;
+            config.clearColor = SvgMapConfig.hexaToRGB(this[`${SvgMapConfig.BING_SKY_COLOR_ROOT}${id + 1}`]);
+            return config;
+        }
+        return null;
+    }
+
     convertColor(_color) {
         let r = parseInt(_color.substr(1, 2), 16) / 255;
         let g = parseInt(_color.substr(3, 2), 16) / 255;

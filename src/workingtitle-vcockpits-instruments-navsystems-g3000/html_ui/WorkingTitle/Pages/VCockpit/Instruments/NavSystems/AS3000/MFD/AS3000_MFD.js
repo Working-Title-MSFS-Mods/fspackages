@@ -17,7 +17,7 @@ class AS3000_MFD extends NavSystem {
                 new AS3000_MFD_MainMap()
             ]),
         ];
-        
+
         //Include.addScript("/JS/debug.js", function () {
         //    g_modDebugMgr.AddConsole(null);
         //});
@@ -30,8 +30,8 @@ class AS3000_MFD extends NavSystem {
             this.acknowledgeInit();
         }
     }
-    Update() {
-        super.Update();
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
     }
 }
 
@@ -43,11 +43,11 @@ class AS3000_MFD_WindDataDisplay extends HTMLElement {
             "wind-strength",
         ];
     }
-    
+
     constructor() {
         super();
     }
-    
+
     connectedCallback() {
         this.root = document.createElementNS(Avionics.SVG.NS, "svg");
         this.root.setAttribute("viewBox", "0 0 150 50");
@@ -60,16 +60,16 @@ class AS3000_MFD_WindDataDisplay extends HTMLElement {
         this.windDataBackground.setAttribute("fill", "#1a1d21");
         this.windDataBackground.setAttribute("style", "fill:#1a1d21; stroke:white; stroke-width:1");
         this.root.appendChild(this.windDataBackground);
-        
+
         // shorter, thicker arrow than the default
         this.windData = document.createElementNS(Avionics.SVG.NS, "g");
         this.root.appendChild(this.windData);
-        
+
         this.arrow = document.createElementNS(Avionics.SVG.NS, "path");
         this.arrow.setAttribute("d", "M25 2.5 L10.75 20 L19.75 20 L19.75 47.5 L30.25 47.5 L30.25 20 L39.25 20 Z");
         this.arrow.setAttribute("fill", "white");
         this.windData.appendChild(this.arrow);
-        
+
         this.valueText = document.createElementNS(Avionics.SVG.NS, "text");
         this.valueText.setAttribute("text-align", "right");
         this.valueText.setAttribute("fill", "white");
@@ -87,7 +87,7 @@ class AS3000_MFD_WindDataDisplay extends HTMLElement {
         this.unitText.setAttribute("font-size", "20");
         this.unitText.setAttribute("font-family", "Roboto");
         this.windData.appendChild(this.unitText);
-        
+
         this.noData = document.createElementNS(Avionics.SVG.NS, "g");
         this.root.appendChild(this.noData);
         let noDataText = document.createElementNS(Avionics.SVG.NS, "text");
@@ -104,7 +104,7 @@ class AS3000_MFD_WindDataDisplay extends HTMLElement {
         if (oldValue == newValue) {
             return;
         }
-        
+
         switch (name) {
             case "wind-mode":
                 let backgroundDisplay = "inherit";
@@ -162,10 +162,10 @@ class AS3000_MFD_WindData extends MFD_WindData {
                 this.svg.setAttribute("wind-mode", "4")
             } else {
                 var wind = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180; // fix for MFD wind direction bug
-                
+
                 // compensate for map rotation
                 wind = fastToFixed((wind + this.mapElement.instrument.rotation) % 360, 0);
-                
+
                 if (wind != this.windValue) {
                     this.svg.setAttribute("wind-direction", wind);
                     this.windValue = wind;
@@ -192,14 +192,14 @@ class AS3000_MFD_MapElement extends AS3000_MapElement {
         this.lastMapMode = 0;
         this.lastWeatherMapMode = 0;
     }
-    
+
     onTemplateLoaded() {
         super.onTemplateLoaded();
         if (!this.revertToDefault) {
             this.instrument.showRangeDisplay = false;
         }
     }
-    
+
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         let isPositionOverride = SimVar.GetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number") != 0;
@@ -294,14 +294,14 @@ class AS3000_MFD_NavInfos extends NavSystemElement {
             Avionics.Utils.diffAndSet(this.ETE, Math.floor(ete / 3600).toFixed(0) + (min < 10 ? "+0" : "+") + min.toFixed(0));
         }
         Avionics.Utils.diffAndSet(this.BRG, fastToFixed(this.gps.currFlightPlanManager.getBearingToActiveWaypoint(), 0) + "°");
-        
+
         let distance = this.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
         if (distance >= 100) {
             distance = fastToFixed(distance, 0);
         } else {
             distance = fastToFixed(distance, 1);
         }
-        
+
         Avionics.Utils.diffAndSet(this.DIS, distance + "NM");
         Avionics.Utils.diffAndSet(this.MSA, "____FT");
         if (ete == 0) {
