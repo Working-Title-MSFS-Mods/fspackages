@@ -831,30 +831,14 @@ class MapInstrument extends ISvgMapRootElement {
 
                 if (this.procedureElement) {
                     this.navMap.mapElements.push(this.procedureElement);
-                    for (let sequenceEntry of this.procedureElement.procedure.getSequence()) {
-                        let waypoint = sequenceEntry.waypoint;
-                        if (waypoint && waypoint instanceof WayPoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
-                            if (waypoint.getSvgElement(this.navMap.index)) {
-                                if (!this.navMap.mapElements.find(w => {
-                                    return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
-                                })) {
-                                    this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
-                                }
-                            }
+                    /*let waypoint = this.procedureElement.procedure.getAirport();
+                    if (waypoint.getSvgElement(this.navMap.index)) {
+                        if (!this.navMap.mapElements.find(w => {
+                            return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
+                        })) {
+                            this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
                         }
-                    }
-                    for (let transition of this.procedureElement.procedure.procedure.getTransitions()) {
-                        let waypoint = transition.waypoints[0];
-                        if (waypoint && waypoint instanceof WayPoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
-                            if (waypoint.getSvgElement(this.navMap.index)) {
-                                if (!this.navMap.mapElements.find(w => {
-                                    return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
-                                })) {
-                                    this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
-                                }
-                            }
-                        }
-                    }
+                    }*/
                 }
 
                 if (this.flightPlanManager && this.bIsFlightPlanVisible) {
@@ -949,9 +933,9 @@ class MapInstrument extends ISvgMapRootElement {
             let setConfig = () => {
                 if (this.navMap.configLoaded) {
                     for (let i = 0; i < 3; i++) {
-                        let bingConfig = new BingMapsConfig();
-                        if (bingConfig.load(this.navMap.config, i))
-                            this.bingMap.addConfig(bingConfig);
+                        let conf = this.navMap.config.generateBing(i);
+                        if (conf)
+                            this.bingMap.addConfig(conf);
                     }
                     this.bingMap.setConfig(this.bingMapConfigId);
                 }
@@ -977,12 +961,12 @@ class MapInstrument extends ISvgMapRootElement {
             };
             loadSVGConfig();
             let setBingConfig = () => {
-                if (svgConfigLoaded && (!this.gps || this.gps.isComputingAspectRatio())) {
+                if (svgConfigLoaded && this.instrument.isComputingAspectRatio()) {
                     for (let i = 0; i < 3; i++) {
-                        let bingConfig = new BingMapsConfig();
-                        if (bingConfig.load(svgConfig, i)) {
-                            bingConfig.aspectRatio = (this.gps && this.gps.isAspectRatioForced()) ? this.gps.getForcedScreenRatio() : 1.0;
-                            this.bingMap.addConfig(bingConfig);
+                        let conf = svgConfig.generateBing(i);
+                        if (conf) {
+                            conf.aspectRatio = (this.instrument.isAspectRatioForced()) ? this.instrument.getForcedScreenRatio() : 1.0;
+                            this.bingMap.addConfig(conf);
                         }
                     }
                     this.bingMap.setConfig(this.bingMapConfigId);

@@ -238,6 +238,56 @@ class SvgMapConfig {
         request.open("GET", path + "mapConfig.json");
         request.send();
     }
+    generateBing(_id) {
+        switch (_id) {
+            case 0:
+                if (this.netBingHeightColor1) {
+                    let config = new BingMapsConfig();
+                    if (this.netBingAltitudeColors1) {
+                        config.heightColors = [];
+                        for (let i = 0; i < this.netBingAltitudeColors1.length; i++) {
+                            config.heightColors[i] = this.hexaToRGB(this.netBingAltitudeColors1[i]);
+                        }
+                    }
+                    config.aspectRatio = 1;
+                    config.resolution = this.netBingTextureResolution;
+                    config.clearColor = this.hexaToRGB(this.netBingSkyColor1);
+                    return config;
+                }
+                break;
+            case 1:
+                if (this.netBingHeightColor2) {
+                    let config = new BingMapsConfig();
+                    if (this.netBingAltitudeColors2) {
+                        config.heightColors = [];
+                        for (let i = 0; i < this.netBingAltitudeColors2.length; i++) {
+                            config.heightColors[i] = this.hexaToRGB(this.netBingAltitudeColors2[i]);
+                        }
+                    }
+                    config.aspectRatio = 1;
+                    config.resolution = this.netBingTextureResolution;
+                    config.clearColor = this.hexaToRGB(this.netBingSkyColor2);
+                    return config;
+                }
+                break;
+            case 2:
+                if (this.netBingHeightColor3) {
+                    let config = new BingMapsConfig();
+                    if (this.netBingAltitudeColors3) {
+                        config.heightColors = [];
+                        for (let i = 0; i < this.netBingAltitudeColors3.length; i++) {
+                            config.heightColors[i] = this.hexaToRGB(this.netBingAltitudeColors3[i]);
+                        }
+                    }
+                    config.aspectRatio = 1;
+                    config.resolution = this.netBingTextureResolution;
+                    config.clearColor = this.hexaToRGB(this.netBingSkyColor3);
+                    return config;
+                }
+                break;
+        }
+        return null;
+    }
     convertColor(_color) {
         console.log(_color);
         return _color;
@@ -318,7 +368,7 @@ class SvgMapConfig {
         color += newB.toString(16).padStart(2, "0");
         return color;
     }
-    static hexaToRGB(_hexa) {
+    hexaToRGB(_hexa) {
         let hexStringColor = _hexa;
         let offset = 0;
         if (hexStringColor[0] === "#") {

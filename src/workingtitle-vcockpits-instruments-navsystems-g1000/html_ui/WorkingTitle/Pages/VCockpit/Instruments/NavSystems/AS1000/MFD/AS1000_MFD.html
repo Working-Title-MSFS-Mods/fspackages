@@ -1,5 +1,5 @@
 ﻿<script>
-    Include.addScript("/JS/debug.js", function () {
+    Include.addScript("/JS/debug.js?19", function () {
         g_modDebugMgr.AddConsole(null);
     });
 </script>
@@ -396,6 +396,8 @@
                 </section>
             </div>
             <g1000-approach-page data-element="approachPage"></g1000-approach-page>
+            <g1000-departure-page data-element="departurePage"></g1000-departure-page>
+            <g1000-arrival-page data-element="arrivalPage"></g1000-departure-page>
         </section>
     </template>
 
@@ -414,11 +416,9 @@
         </div>
         <div class="category">
             <h1>Minimums</h1>
-            <section class="content">
-                <div class="element">
-                    <toggle-switch value="0" data-element="minimumsMode"></toggle-switch>
-                    <numeric-input digits="5" min="0" max="35000" class="value" value="0" units="FT"></numeric-input>
-                </div>
+            <section class="content minimums">                
+                <toggle-switch value="0" data-element="minimumsMode"></toggle-switch>
+                <numeric-input digits="5" min="0" max="35000" class="value" value="0" units="FT" style="text-align:right;"></numeric-input>                
             </section>
         </div>
         <div class="category">
@@ -438,6 +438,62 @@
             <selectable-button data-element="loadApproach" data-click="loadProcedure">LOAD?</selectable-button>
             <span>OR</span>
             <selectable-button data-element="activateApproach" data-click="activateProcedure">ACTIVATE</selectable-button>
+        </div>
+    </template>
+
+    <template id="departure-page">
+        <div class="category">
+            <h1>Departure</h1>
+            <section class="content">
+                <div class="element"><drop-down-selector data-element="procedureSelector" updateOnSelection></drop-down-selector></div>
+            </section>
+        </div>
+        <div class="category">
+            <h1>Runway</h1>
+            <section class="content">
+                <div class="element"><drop-down-selector data-element="runwayTransitionSelector" updateOnSelection></drop-down-selector></div>
+            </section>
+        </div>
+        <div class="category">
+            <h1>Transition</h1>
+            <section class="content">
+                <div class="element"><drop-down-selector data-element="enRouteTransitionSelector" updateOnSelection></drop-down-selector></div>
+            </section>
+        </div>
+        <div class="category">
+            <h1>Sequence</h1>
+            <g1000-sequence-list class="content sequence scrollable-container" data-element="sequenceList"></g1000-sequence-list>
+        </div>
+        <div class="load-or-activate">
+            <selectable-button data-click="loadProcedure">LOAD?</selectable-button>
+        </div>
+    </template>
+
+    <template id="arrival-page">
+        <div class="category">
+            <h1>Arrival</h1>
+            <section class="content">
+                <div class="element"><drop-down-selector data-element="procedureSelector" updateOnSelection></drop-down-selector></div>
+            </section>
+        </div>        
+        <div class="category">
+            <h1>Transition</h1>
+            <section class="content">
+                <div class="element"><drop-down-selector data-element="enRouteTransitionSelector" updateOnSelection></drop-down-selector></div>
+            </section>
+        </div>
+        <div class="category">
+            <h1>Runway</h1>
+            <section class="content">
+                <div class="element"><drop-down-selector data-element="runwayTransitionSelector" updateOnSelection></drop-down-selector></div>
+            </section>
+        </div>
+        <div class="category">
+            <h1>Sequence</h1>
+            <g1000-sequence-list class="content sequence scrollable-container" data-element="sequenceList"></g1000-sequence-list>
+        </div>
+        <div class="load-or-activate">
+            <selectable-button data-click="loadProcedure">LOAD?</selectable-button>
         </div>
     </template>
 
@@ -1052,7 +1108,10 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/PageMenu.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/AirportDatabase.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/NearestWaypoints.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Procedures.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Procedures/Procedures.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Procedures/Arrival.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Procedures/Approach.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Procedures/Departure.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/WaypointQuickSelect.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Libs/CSV.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/Navigation/DirectTo.js"></script>
@@ -1095,6 +1154,8 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Nearest/VORs.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Procedures/Procedure.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Procedures/Approach.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Procedures/Arrival.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Procedures/Departure.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/WaypointInformation/Airport.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/WaypointInformation/Intersection.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Panes/DirectTo.js"></script>

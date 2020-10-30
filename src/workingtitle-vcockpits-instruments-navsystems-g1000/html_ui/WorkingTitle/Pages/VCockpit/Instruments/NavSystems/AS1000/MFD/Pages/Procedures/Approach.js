@@ -34,10 +34,14 @@ class WT_Approach_Page_View extends WT_HTML_View {
      * @param {Subject} airport 
      */
     setAirport(airport) {
-        airport.subscribe(airport => {
-            if (airport)
-                this.procedures.value = airport.approaches.map((approach, i) => new WT_Approach_Procedure(airport, approach, i));
-        });
+        if (this.airportSubscription) {
+            this.airportSubscription = this.airportSubscription();
+        }
+        if (airport) {
+            this.airportSubscription = airport.subscribe(async airport => {
+                this.procedures.value = airport ? await airport.getApproaches() : [];
+            });
+        }
     }
     /**
      * @param {WT_Approach_Procedure[]} procedures 
@@ -46,6 +50,7 @@ class WT_Approach_Page_View extends WT_HTML_View {
         this.elements.procedureSelector.clearOptions();
         let i = 0;
         for (let procedure of procedures) {
+            i == 0 ? this.setProcedure(i) : null;
             this.elements.procedureSelector.addOption(i++, procedure.name);
         }
     }
@@ -66,6 +71,7 @@ class WT_Approach_Page_View extends WT_HTML_View {
         if (transitions) {
             let i = 0;
             for (let transition of transitions) {
+                i == 0 ? this.setTransition(i) : null;
                 this.elements.transitionSelector.addOption(i++, transition.name);
             }
         }

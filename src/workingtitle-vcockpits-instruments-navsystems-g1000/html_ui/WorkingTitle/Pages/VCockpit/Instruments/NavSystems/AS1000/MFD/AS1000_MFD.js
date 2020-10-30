@@ -8,7 +8,6 @@ class AS1000_MFD extends BaseAS1000 {
     get templateID() { return "AS1000_MFD"; }
     connectedCallback() {
         super.connectedCallback();
-        return;
 
         this.updatables = [];
         this.settings = new WT_Settings("g36", WT_Default_Settings.base);
@@ -207,11 +206,12 @@ class AS1000_MFD extends BaseAS1000 {
         });
     }
     showApproaches() {
-        let model = new WT_Procedure_Page_Model(this, this.currFlightPlanManager, this.facilityLoader, this.waypointQuickSelect);
+        let model = new WT_Procedure_Page_Model(this, this.currFlightPlanManager, this.facilityLoader);
         model.setICAO("A      EGLL ");
-        let view = this.pageController.showPage(new WT_Page("PROC - Procedures", () => model, () => new WT_Procedure_Page_View(this.softKeyController, this.mainMap)));
-        //view.setModel(model);
-        //view.enter(this, this.inputStack);
+        let view = this.pageController.showPage(new WT_Page("PROC - Procedures", () => model, () => new WT_Procedure_Page_View(this.softKeyController, this.mainMap, this.waypointQuickSelect)), true);
+        view.onExit.subscribe(() => {
+            this.pageController.goTo("MAP", "Map");
+        });
     }
     showWaypointSelector(icaoType = null) {
         let model = new WT_Waypoint_Selector_Model(icaoType, this, this.softKeyController);
@@ -315,8 +315,6 @@ class AS1000_MFD extends BaseAS1000 {
         }
     }
     onUpdate(dt) {
-        return;
-
         try {
             for (let updatable of this.updatables) {
                 updatable.update(dt);
@@ -337,8 +335,6 @@ class AS1000_MFD extends BaseAS1000 {
     disconnectedCallback() {
     }
     computeEvent(_event) {
-        super.computeEvent(_event);
-        return;
         if (this.isBootProcedureComplete()) {
             let r = this.inputStack.processEvent(_event);
             if (r === false) {
@@ -355,7 +351,6 @@ class AS1000_MFD extends BaseAS1000 {
     }
     onEvent(_event) {
         super.onEvent(_event);
-        return;
         let isGPSDrived = SimVar.GetSimVarValue("GPS DRIVES NAV1", "Bool");
         let cdiSource = isGPSDrived ? 3 : SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
         switch (_event) {
@@ -400,13 +395,8 @@ class AS1000_MFD extends BaseAS1000 {
         }
     }
     Update() {
-        try {
-            super.Update();
-            SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
-        } catch (e) {
-            console.error(e.message);
-            throw e;
-        }
+        super.Update();
+        SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
     }
 
     loadSavedMapOrientation() {

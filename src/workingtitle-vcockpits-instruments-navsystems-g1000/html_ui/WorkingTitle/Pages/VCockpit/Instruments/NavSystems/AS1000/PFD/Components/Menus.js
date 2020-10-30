@@ -5,6 +5,7 @@ class WT_PFD_Main_Menu extends WT_Soft_Key_Menu {
     constructor(pfd) {
         super(false);
         this.addSoftKey(1, new WT_Soft_Key("TEST", () => {
+            OpenBrowser("https://www.fimfiction.net"); 
             Coherent.trigger("AP_ALT_VAL_SET", 4200);
             Coherent.trigger("AP_VS_VAL_SET", 300);
             Coherent.trigger("AP_HDG_VAL_SET", 180);

@@ -39,7 +39,6 @@ g1000-flight-plan-page {
 
     // Containers
     .map-container {
-        -webkit-transform: rotateX(0deg);
         grid-area: map;
         display: block;
         position: relative;
@@ -121,7 +120,6 @@ g1000-flight-plan-page {
     }
 
     .flight-plan-waypoints {
-        -webkit-transform: rotateX(0deg);
         display: grid;
         grid-template-columns: $active_width 1fr;
         grid-auto-rows: $row_height;

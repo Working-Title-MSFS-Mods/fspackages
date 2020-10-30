@@ -1,12 +1,12 @@
 class WT_Sequence_List_View extends WT_HTML_View {
-    updateSequence(waypoints) {
-        if (waypoints) {
-            this.innerHTML = waypoints.map((waypoint) => {
+    updateSequence(sequence) {
+        if (sequence) {
+            this.innerHTML = sequence.map((waypoint) => {
                 return `
                     <div class="sequence-entry">
-                        <span class="ident">${waypoint.ident ? waypoint.ident : "USR"}</span>
+                        <span class="ident">${waypoint.name ? waypoint.name : "USR"}</span>
                         <span class="bearing">${waypoint.bearing}°</span>
-                        <span class="distance">${(waypoint.distance).toFixed(waypoint.distance < 10 ? 1 : 0)}NM</span>
+                        <span class="distance">${waypoint.distance.toFixed(waypoint.distance < 10 ? 1 : 0)}NM</span>
                     </div>`;
             }).join("");
         } else {

@@ -37,6 +37,13 @@ as1000-mfd-element {
     font-family: $font_family_normal;
 }
 
+html { 
+}
+
+as1000-mfd-element {
+    //display:none !important;
+}
+
 as1000-mfd-element #Mainframe #Electricity {
     height: 100%;
     display: grid;
@@ -52,7 +59,7 @@ as1000-mfd-element #Mainframe #Electricity {
 
     #MapSVG,
     #road-network-canvas {
-        transform: rotateX(0);
+        //transform: rotateX(0);
     }
     #WindData {
         position: absolute;
@@ -61,7 +68,7 @@ as1000-mfd-element #Mainframe #Electricity {
         right: 10%;
     }
     #Map bing-map {
-        transform: rotateX(0);
+        //transform: rotateX(0);
     }
     #MapInstrument {
         transform: rotateX(0);
@@ -72,7 +79,7 @@ as1000-mfd-element #Mainframe #Electricity {
     }
 
     #RightInfos {
-        transform: rotateX(0);
+        //transform: rotateX(0);
         grid-area: main;
         position: relative;
         display: none;

@@ -43,7 +43,22 @@ g1000-procedures-page {
     }
 }
 
+g1000-approach-page,
+g1000-departure-page,
+g1000-arrival-page {
+    display: none;
+
+    &[visible] {
+        display: block;
+    }
+}
+
 g1000-approach-page {
+    .minimums {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
     .load-or-activate {
         display: grid;
         margin: 0 4vh;
