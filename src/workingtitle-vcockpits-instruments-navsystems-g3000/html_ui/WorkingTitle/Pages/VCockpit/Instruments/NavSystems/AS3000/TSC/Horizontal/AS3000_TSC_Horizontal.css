@@ -71,10 +71,22 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=UtilitiesSetup] #UtilitiesSetup,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=AvionicsSettings] #AvionicsSettings {
         display: block; }
+
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome {
         position: absolute;
         width: 100%;
         height: 100%; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome #Bearing1Button .centerImg,
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome #Bearing2Button .centerImg {
+          position: absolute;
+          top: 25%;
+          left: 25%;
+          width: 50%;
+          height: 50%; }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome #Bearing1Button .lowerValue,
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome #Bearing2Button .lowerValue {
+          top: 65%; }
+
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDHome .gradientButton .active, as3000-tsc-horizontal-element #Electricity #PagesDisplay #WeatherSelection .gradientButton .active {
         display: none; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDHome .gradientButton[state="Active"], as3000-tsc-horizontal-element #Electricity #PagesDisplay #WeatherSelection .gradientButton[state="Active"] {
