@@ -64,11 +64,15 @@ class CJ4_FMC_SelectWptPage {
                 }
                 rows[4 * i] = [w.ident.padEnd(5, " ") + t + freq + "[d-text]", region + "[d-text]"];
                 rows[4 * i + 1] = ["  " + w.infos.coordinates.toDegreeString() + "[d-text]"];
-                fmc.onLeftInput[i] = () => {
+				let BHold = i;
+				if (i != 0 ) { 
+					BHold = i + i;
+				}
+                fmc.onLeftInput[BHold] = () => {
                     //fmc.setMsg("WORKING...");
                     callback(w);
                 };
-                fmc.onRightInput[i] = () => {
+                fmc.onRightInput[BHold] = () => {
                     //fmc.setMsg("WORKING...");
                     callback(w);
                 };
