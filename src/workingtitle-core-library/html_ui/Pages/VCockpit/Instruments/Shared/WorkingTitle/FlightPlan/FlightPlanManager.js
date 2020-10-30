@@ -31,13 +31,17 @@ class FlightPlanManager {
     this.__currentFlightPlanIndex = value;
   }
 
-  addHardCodedConstraints(wp) {
+  update(_deltaTime) {
+
   }
 
-  /**
-   * Registers the FlightPlanManager with various game listeners.
-   */
+  onCurrentGameFlightLoaded(_callback) {
+    _callback();
+  }
   registerListener() {
+  }
+
+  addHardCodedConstraints(wp) {
   }
 
   /**
