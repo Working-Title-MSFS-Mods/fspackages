@@ -49,8 +49,8 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "knots", 0);
     }
-    Update() {
-        super.Update();
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
         this.reversionaryMode = false;
         if (document.body.hasAttribute("reversionary")) {
             var attr = document.body.getAttribute("reversionary");
@@ -631,7 +631,7 @@ class CJ4_APDisplay extends NavSystemElement {
                 Avionics.Utils.diffAndSet(this.AP_VerticalActive, "ALTS");
             }
             else {
-                let delta = Math.abs(Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feets"));
+                let delta = Math.abs(Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feet"));
                 if (delta < 50) {
                     Avionics.Utils.diffAndSet(this.AP_VerticalActive, "ALT CAP");
                 }

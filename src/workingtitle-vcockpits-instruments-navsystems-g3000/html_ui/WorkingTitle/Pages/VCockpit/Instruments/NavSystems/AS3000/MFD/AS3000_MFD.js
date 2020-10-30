@@ -4,8 +4,11 @@ class AS3000_MFD extends NavSystem {
         this.initDuration = 5500;
         this.needValidationAfterInit = true;
     }
+
     get IsGlassCockpit() { return true; }
+
     get templateID() { return "AS3000_MFD"; }
+
     connectedCallback() {
         super.connectedCallback();
         this.pagesContainer = this.getChildById("RightInfos");
@@ -22,16 +25,19 @@ class AS3000_MFD extends NavSystem {
             g_modDebugMgr.AddConsole(null);
         });
     }
+
     disconnectedCallback() {
     }
+
     onEvent(_event) {
         super.onEvent(_event);
         if (_event == "SOFTKEYS_12") {
             this.acknowledgeInit();
         }
     }
-    Update() {
-        super.Update();
+
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
     }
 }
 

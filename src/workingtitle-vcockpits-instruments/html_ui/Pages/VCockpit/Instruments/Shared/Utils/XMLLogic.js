@@ -690,8 +690,8 @@ class DistanceFromOriginXMLElement extends LogicXMLElement {
     }
     getValue(_context) {
         let origin = null;
-        if (this.gps instanceof NavSystem) {
-            origin = this.gps.currFlightPlanManager.getOrigin();
+        if (this.gps.flightPlanManager) {
+            origin = this.gps.flightPlanManager.getOrigin();
         }
         let position = new LatLong();
         position.lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degrees");
@@ -724,8 +724,8 @@ class DistanceToDestinationXMLElement extends LogicXMLElement {
     }
     getValue(_context) {
         let destination = null;
-        if (this.gps instanceof NavSystem) {
-            destination = this.gps.currFlightPlanManager.getDestination();
+        if (this.gps.flightPlanManager) {
+            destination = this.gps.flightPlanManager.getDestination();
         }
         let position = new LatLong();
         this.destinationPosition.lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degrees");
@@ -774,7 +774,7 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
         if (format) {
             this.format = format;
         }
-        
+
         let s = this.format;
         this.tokens = [];
         while (s.length > 0) {
@@ -784,7 +784,7 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
                 return;
             } else {
                 switch(m[0]) {
-                    case ":": 
+                    case ":":
                         this.tokens.push({
                             type: "string",
                             value: m[0]
@@ -794,16 +794,16 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
                         this.tokens.push({
                             type: "variable",
                             variable: m[0][0],
-                            length: m[0].length							
+                            length: m[0].length
                         });
                         break;
                 }
             }
-            
+
             s = s.substr(m[0].length);
         }
     }
-    
+
     getHours(v) {
         return v/3600;
     }
@@ -815,13 +815,13 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
     getSeconds(v) {
         return v % 60;
     }
-    
+
     getValue(_context) {
         let value = 0;
         for (let i = 0; i < this.childrens.length; i++) {
             value = this.childrens[i].getValue(_context);
         }
-        
+
         let result = "";
         let isValidValue = !isNaN(value) && value < 86400; // A day is probably more than worth showing...
         for(let i = 0; i < this.tokens.length; i++) {
@@ -830,7 +830,7 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
                 case "string":
                     result += token.value;
                     break;
-                case "variable": 
+                case "variable":
                     if (isValidValue) {
                         result += this.getVariable(token.variable, token.length, value);
                     } else {
@@ -839,11 +839,11 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
                     break;
             }
         }
-        
+
         return result;
     }
-    
-    getVariable(variable, length, value) {        
+
+    getVariable(variable, length, value) {
         let v = 0;
         switch(variable) {
             case "h" : v = this.getHours(value); break;
@@ -853,7 +853,7 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
         v = Math.floor(v);
         return this.pad(v, length);
     }
-    
+
     pad(num, size) {
         var s = num+"";
         while (s.length < size) s = "0" + s;

@@ -12,6 +12,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._apHasDeactivated = false;
         this._hasReachedTopOfDescent = false;
         this._apCooldown = 500;
+        this._wasInAltMode = false;
         this.reserveFuel = 750;
         this.paxNumber = 0;
         this.cargoWeight = 0;
@@ -170,8 +171,8 @@ class CJ4_FMC extends FMCMainDisplay {
         this.initialFuelLeft = Math.trunc(SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * fuelWeight);
         this.initialFuelRight = Math.trunc(SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * fuelWeight);
     }
-    Update() {
-        super.Update();
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
         this.updateAutopilot();
         this.adjustFuelConsumption();
         this.updateFlightLog();
@@ -399,8 +400,12 @@ class CJ4_FMC extends FMCMainDisplay {
             let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean");
             let currentAltitude = Simplane.getAltitude();
             let groundSpeed = Simplane.getGroundSpeed();
+            let apTargetAltitude = Simplane.getAutoPilotAltitudeLockValue("feet");
+            let planeHeading = Simplane.getHeadingMagnetic();
             let planeCoordinates = new LatLong(SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude"), SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude"));
             if (isVNAVActivate) {
+                let isInAltMode = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number") == 3;
+                this._wasInAltMode = isInAltMode || this._wasInAltMode;
                 let prevWaypoint = this.flightPlanManager.getPreviousActiveWaypoint();
                 let nextWaypoint = this.flightPlanManager.getActiveWaypoint();
                 if (nextWaypoint && (nextWaypoint.legAltitudeDescription === 3 || nextWaypoint.legAltitudeDescription === 4)) {
@@ -444,17 +449,24 @@ class CJ4_FMC extends FMCMainDisplay {
                         }
                     }
                     if (!constraintRespected) {
-                        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 0);
+                        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", this._wasInAltMode ? 3 : 0);
                         SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
+                        this._wasInAltMode = false;
                     }
                 }
                 else {
-                    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 0);
+                    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", this._wasInAltMode ? 3 : 0);
                     SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
                 }
             }
-            else {
-                SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 0);
+            else if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number") != 3) {
+                if (this._wasInAltMode) {
+                    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
+                    this._wasInAltMode = false;
+                }
+                else {
+                    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 0);
+                }
                 SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
             }
             if (!this.flightPlanManager.isActiveApproach()) {

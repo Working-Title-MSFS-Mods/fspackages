@@ -58,7 +58,7 @@ class AS1000_MFD extends BaseAS1000 {
                 new AS1000_MFD_MainMap(this.engineDisplay),
                 new AS1000_MFD_Radar()
             ]);
-        } 
+        }
     }
     disconnectedCallback() {
     }
@@ -107,8 +107,8 @@ class AS1000_MFD extends BaseAS1000 {
                 break;
         }
     }
-    Update() {
-        super.Update();
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
         SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
     }
 
@@ -422,7 +422,7 @@ class AS1000_MFD_ApproachWaypointLine extends MFD_ApproachWaypointLine {
             new SoftKeyElement("ACT LEG", this.element.activateLeg.bind(this.element, this.index, true)),
             new SoftKeyElement(""),
             new SoftKeyElement(""),
-        ];        
+        ];
         this.mapMenu.init(this, this.element.gps);
     }
 }
@@ -581,7 +581,7 @@ class AS1000_MFD_AirportInfos1 extends NavSystemElement {
             }
             if ("designation" in infos.runways[this.selectedRunway]) {
                 this.runwayNameElement.textContent = infos.runways[this.selectedRunway].designation;
-            } 
+            }
             this.runwaySizeElement.textContent = Math.round(infos.runways[this.selectedRunway].length * 3.28084) + "FT x " + Math.round(infos.runways[this.selectedRunway].width * 3.28084) + "FT";
             switch (infos.runways[this.selectedRunway].surface) {
                 case 0:
@@ -752,7 +752,7 @@ class AS1000_MFD_AirportInfos2 extends NavSystemElement {
         this.rootElement.setAttribute("state", "Infos2");
         this.mapContainer.appendChild(this.mapElement);
         this.mapElement.setAttribute("bing-mode", "vfr");
-        this.gps.mapElement.instrument.setTrackUpDisabled(true);        
+        this.gps.mapElement.instrument.setTrackUpDisabled(true);
     }
     onUpdate(_deltaTime) {
         this.icaoSearchField.Update();
@@ -1137,7 +1137,7 @@ class AS1000_MapMenu {
                     break;
                 }
         }
-                return "None";    
+                return "None";
     }
 }
 class AS1000_EngineMenu {
@@ -1165,7 +1165,7 @@ class AS1000_EngineMenu {
 
         for(let i = 0; i < extraElements.length; i++) {
             elements[i + numEngineDisplayPages + 1] = extraElements[i];
-        }        
+        }
 
         elements[10] = new SoftKeyElement("BACK", this.close.bind(this));
 
@@ -1178,7 +1178,7 @@ class AS1000_EngineMenu {
         this.switchMenu(this.getSoftKeyMenu(page.buttons.map(button => new SoftKeyElement(button.text, this.performSubAction.bind(this,button)))));
     }
     performSubAction(button) {
-        
+
     }
     open() {
         this.originalMenu = Object.assign({}, this.owner.softKeys);

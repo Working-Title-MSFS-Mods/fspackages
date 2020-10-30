@@ -3,8 +3,11 @@ class AS3000_PFD extends NavSystem {
         super();
         this.initDuration = 7000;
     }
+
     get IsGlassCockpit() { return true; }
+
     get templateID() { return "AS3000_PFD"; }
+
     connectedCallback() {
         super.connectedCallback();
         this.pageGroups = [
@@ -22,11 +25,13 @@ class AS3000_PFD extends NavSystem {
             g_modDebugMgr.AddConsole(null);
         });
     }
+
     disconnectedCallback() {
         super.disconnectedCallback();
     }
-    Update() {
-        super.Update();
+
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
     }
 }
 class AS3000_PFD_SoftKeyElement extends SoftKeyElement {
