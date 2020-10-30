@@ -1,5 +1,5 @@
 as3000-tsc-horizontal-element {
-  font-family: Tahoma;
+  font-family: "Roboto";
   width: 100%;
   height: 100%;
   position: fixed; }
@@ -1180,7 +1180,7 @@ as3000-tsc-horizontal-element {
             text-align: center;
             color: black;
             font-size: 4vh;
-            font-family: Tahoma-Bold; }
+            font-weight: bold; }
           as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkeyArrow {
             width: 4vh;
             height: 4vh;
@@ -1848,11 +1848,6 @@ as3000-tsc-horizontal-element {
     max-height: 21vh;
     margin: 1vh;
     font-size: 5vh; }
-    as3000-tsc-horizontal-element .gradientButton .centerImg {
-      position: relative;
-      top: 25%;
-      height: 40%;
-      max-width: 60%; }
     as3000-tsc-horizontal-element .gradientButton .lowerValue {
       position: absolute;
       top: 55%;

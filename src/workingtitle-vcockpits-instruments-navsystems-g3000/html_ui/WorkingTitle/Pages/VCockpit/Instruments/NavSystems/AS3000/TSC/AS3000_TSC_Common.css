@@ -23,31 +23,13 @@
 
 @font-face {
   font-family: "Roboto";
-  src: url("/Fonts/RobotoMono-Medium.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal; }
-
-@font-face {
-  font-family: "Roboto-Light";
-  src: url("/Fonts/RobotoMono-Light.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal; }
-
-@font-face {
-  font-family: "Roboto-Bold";
-  src: url("/Fonts/RobotoMono-Bold.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal; }
-
-@font-face {
-  font-family: "Tahoma";
-  src: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/tahoma.ttf") format("truetype");
+  src: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/Roboto-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal; }
 @font-face {
-  font-family: "Tahoma-Bold";
-  src: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/tahomabd.ttf") format("truetype");
-  font-weight: normal;
+  font-family: "Roboto";
+  src: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/Roboto-Bold.ttf") format("truetype");
+  font-weight: bold;
   font-style: normal; }
 
 @keyframes SelectedCharBlinkFreqEdit {
@@ -195,7 +177,7 @@
   background: radial-gradient(#55e8f5, #018cb5 60%, #0285ac 90%); }
 
 .tabButton {
-    font-family: Tahoma-Bold;
+    font-weight: bold;
     position: relative;
     margin: 0.5vh;
     text-align: center;
