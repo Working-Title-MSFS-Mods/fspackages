@@ -1,12 +1,17 @@
 class Jet_MFD_NDCompass extends Jet_NDCompass {
     constructor() {
         super();
+        this.hudTopOrigin = NaN;
     }
     connectedCallback() {
         super.connectedCallback();
     }
     init() {
         super.init();
+    }
+    destroyLayout() {
+        super.destroyLayout();
+        this.hudTopOrigin = NaN;
     }
     constructArc() {
         super.constructArc();
@@ -2731,6 +2736,20 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             this.selectedRefGroup.appendChild(this.selectedRefValue);
         }
         this.root.appendChild(this.selectedRefGroup);
+    }
+    update(_deltaTime) {
+        super.update(_deltaTime);
+        if (this.isHud) {
+            if (!isFinite(this.hudTopOrigin)) {
+                let clientRect = this.getBoundingClientRect();
+                if (clientRect.width > 0)
+                    this.hudTopOrigin = clientRect.top;
+            }
+            else {
+                let ySlide = B787_10_HUD_Compass.getYSlide();
+                this.style.top = this.hudTopOrigin + ySlide + "px";
+            }
+        }
     }
 }
 customElements.define("jet-mfd-nd-compass", Jet_MFD_NDCompass);

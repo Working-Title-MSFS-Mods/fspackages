@@ -9,39 +9,10 @@ class FlightPlanManager {
         this.decelPrevIndex = -1;
         this._lastDistanceToPreviousActiveWaypoint = 0;
         this._isGoingTowardPreviousActiveWaypoint = false;
-        this._update = () => {
-            let prevWaypoint = this.getPreviousActiveWaypoint();
-            if (prevWaypoint) {
-                let planeCoordinates = new LatLong(SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude"), SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude"));
-                if (isFinite(planeCoordinates.lat) && isFinite(planeCoordinates.long)) {
-                    let dist = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, prevWaypoint.infos.coordinates);
-                    if (isFinite(dist)) {
-                        if (dist < this._lastDistanceToPreviousActiveWaypoint) {
-                            this._isGoingTowardPreviousActiveWaypoint = true;
-                        }
-                        else {
-                            this._isGoingTowardPreviousActiveWaypoint = false;
-                        }
-                        this._lastDistanceToPreviousActiveWaypoint = dist;
-                        if (this._activeWaypointIdentHasChanged || this._gpsActiveWaypointIndexHasChanged) {
-                            setTimeout(() => {
-                                this._activeWaypointIdentHasChanged = false;
-                                this._gpsActiveWaypointIndexHasChanged = false;
-                            }, 3000);
-                        }
-                        return;
-                    }
-                }
-            }
-            if (this._activeWaypointIdentHasChanged || this._gpsActiveWaypointIndexHasChanged) {
-                setTimeout(() => {
-                    this._activeWaypointIdentHasChanged = false;
-                    this._gpsActiveWaypointIndexHasChanged = false;
-                }, 3000);
-            }
-            this._isGoingTowardPreviousActiveWaypoint = false;
-        };
+        this._resetTimer = 0;
+        this._updateTimer = 0;
         this._isRegistered = false;
+        this._isRegisteredAndLoaded = false;
         this._currentFlightPlanIndex = 0;
         this._activeWaypointIdentHasChanged = false;
         this._timeLastSimVarCall = 0;
@@ -53,7 +24,7 @@ class FlightPlanManager {
         FlightPlanManager.DEBUG_INSTANCE = this;
         this.instrument = _instrument;
         this._arrivalRunwayIndex = -1;
-        setInterval(this._update, 1000);
+        this.registerListener();
     }
     addHardCodedConstraints(wp) {
         return;
@@ -83,6 +54,51 @@ class FlightPlanManager {
             wp.legAltitude1 = 1900;
         }
     }
+    update(_deltaTime) {
+        if (this._resetTimer > 0) {
+            this._resetTimer -= _deltaTime;
+            if (this._resetTimer <= 0) {
+                this._resetTimer = 0;
+                this._activeWaypointIdentHasChanged = false;
+                this._gpsActiveWaypointIndexHasChanged = false;
+            }
+        }
+        this._updateTimer += _deltaTime;
+        if (this._updateTimer >= 1000) {
+            this._updateTimer = 0;
+            let prevWaypoint = this.getPreviousActiveWaypoint();
+            if (prevWaypoint) {
+                let planeCoordinates = new LatLong(SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude"), SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude"));
+                if (isFinite(planeCoordinates.lat) && isFinite(planeCoordinates.long)) {
+                    let dist = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, prevWaypoint.infos.coordinates);
+                    if (isFinite(dist)) {
+                        if (dist < this._lastDistanceToPreviousActiveWaypoint) {
+                            this._isGoingTowardPreviousActiveWaypoint = true;
+                        }
+                        else {
+                            this._isGoingTowardPreviousActiveWaypoint = false;
+                        }
+                        this._lastDistanceToPreviousActiveWaypoint = dist;
+                        if ((this._activeWaypointIdentHasChanged || this._gpsActiveWaypointIndexHasChanged) && this._resetTimer <= 0) {
+                            this._resetTimer = 3000;
+                        }
+                        return;
+                    }
+                }
+            }
+            if ((this._activeWaypointIdentHasChanged || this._gpsActiveWaypointIndexHasChanged) && this._resetTimer <= 0) {
+                this._resetTimer = 3000;
+            }
+            this._isGoingTowardPreviousActiveWaypoint = false;
+        }
+    }
+    onCurrentGameFlightLoaded(_callback) {
+        if (this._isRegisteredAndLoaded) {
+            _callback();
+            return;
+        }
+        this._onCurrentGameFlightLoaded = _callback;
+    }
     registerListener() {
         if (this._isRegistered) {
             return;
@@ -92,11 +108,12 @@ class FlightPlanManager {
         setTimeout(() => {
             Coherent.call("LOAD_CURRENT_GAME_FLIGHT");
             Coherent.call("LOAD_CURRENT_ATC_FLIGHTPLAN");
-            if (this.onCurrentGameFlightLoaded) {
-                setTimeout(() => {
-                    this.onCurrentGameFlightLoaded();
-                }, 200);
-            }
+            setTimeout(() => {
+                this._isRegisteredAndLoaded = true;
+                if (this._onCurrentGameFlightLoaded) {
+                    this._onCurrentGameFlightLoaded();
+                }
+            }, 200);
         }, 200);
     }
     _loadWaypoints(data, currentWaypoints, callback) {
