@@ -70,6 +70,7 @@ class CJ4_FMC_FplnRecallPage {
                     icao = routeArr[idx];
                     console.log("adding as waypoint " + icao);
                     fmc.insertWaypoint(icao, wptIndex, (res) => {
+                        idx++;
                         CJ4_FMC_InitRefIndexPage.ShowPage17(fmc);
                         if (res) {
                             addWaypoint();
@@ -77,6 +78,7 @@ class CJ4_FMC_FplnRecallPage {
                         else {
                             fmc.setMsg("ERROR WPT " + icao + "[red]");
                         }
+
                     });
                 } else {
                     // probably an airway
