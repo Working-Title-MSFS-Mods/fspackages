@@ -107,15 +107,15 @@ class CJ4_FMC_RoutePage {
         // if (fmc.coRoute) {
         //     coRouteCell = fmc.coRoute;
         // }
-        fmc.onRightInput[2] = () => {
-            let value = fmc.inOut;
-            fmc.clearUserInput();
-            fmc.updateCoRoute(value, (result) => {
-                if (result) {
-                    CJ4_FMC_RoutePage.ShowPage1(fmc);
-                }
-            });
-        };
+        // fmc.onRightInput[2] = () => {
+        //     let value = fmc.inOut;
+        //     fmc.clearUserInput();
+        //     fmc.updateCoRoute(value, (result) => {
+        //         if (result) {
+        //             CJ4_FMC_RoutePage.ShowPage1(fmc);
+        //         }
+        //     });
+        // };
         let allRows = CJ4_FMC_RoutePage._GetAllRows(fmc);
         let pageCount = (Math.floor(allRows.rows.length / 4) + 2);
         let activateCell = "";
