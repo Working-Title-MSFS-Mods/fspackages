@@ -262,22 +262,13 @@ class WT_FMC_Renderer {
             case input == "DIV":
             case input == "DOT":
             case input == "PLUSMINUS":
+            case input.length == 2 && (input[0] == "L" || input[0] == "R"):
                 if (this.isDisplayingErrorMessage) {
-                    // Say user tried to put invalid value (for example "OMG") in one of the fields,
-                    // "INVALID ENTRY" will be shown in the scratchpad.
-                    // Then user taps one of the symbol buttons on the cdu (for example "1"),
-                    // "INVALID ENTRY" will be replaced with "OMG1" (prevoius input of "OMG" plus new input "1")
-                    // This stops "1" from apprearing. I think it's more intuitive that way.
+                    // return previous user input into scratchpad and stop.
                     this.onClr();
                     return true;
                 }
-            // eslint-disable-next-line no-fallthrough
-            // case input.length == 2 && (input[0] == "L" || input[0] == "R"):
-            //     if (this.isDisplayingErrorMessage) {
-            //         // ignore user's attempts to plug error message into one of the fields
-            //         return true;
-            //     }
-            // eslint-disable-next-line no-fallthrough
+                break;
             default: // (switching pages)
                 if (this.isDisplayingErrorMessage) {
                     this.onClr();
