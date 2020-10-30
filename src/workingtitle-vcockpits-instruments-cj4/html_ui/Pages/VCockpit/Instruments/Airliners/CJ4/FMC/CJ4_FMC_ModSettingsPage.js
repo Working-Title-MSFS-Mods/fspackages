@@ -95,7 +95,7 @@ class CJ4_FMC_ModSettingsPageOne {
         this._fmc.onLeftInput[0] = () => { this.lightMode = this.lightMode + 1; };
         this._fmc.onLeftInput[1] = () => {
             let idValue = this._fmc.inOut;
-            this.pilotId = idValue == "CLR" ? "" : idValue;
+            this.pilotId = idValue == FMCMainDisplay.clrValue ? "" : idValue;
             this._fmc.clearUserInput();
         };
         this._fmc.onLeftInput[2] = () => { this.cj4Units = this.cj4Units + 1; };
