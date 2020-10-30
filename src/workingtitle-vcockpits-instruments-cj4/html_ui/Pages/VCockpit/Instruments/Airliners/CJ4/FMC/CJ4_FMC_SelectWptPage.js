@@ -83,12 +83,12 @@ class CJ4_FMC_SelectWptPage {
         fmc.setMsg();
         fmc.onPrevPage = () => {
             if (page > 0) {
-                CJ4_FMC_SelectWptPage.ShowPage(fmc, waypointsFiltered, callback, page - 1);
+                CJ4_FMC_SelectWptPage.ShowPage(fmc, waypoints, ident, callback, page - 1);
             }
         };
         fmc.onNextPage = () => {
-            if (page < Math.floor(waypoints.length / 5)) {
-                CJ4_FMC_SelectWptPage.ShowPage(fmc, waypointsFiltered, callback, page + 1);
+              if (page < Math.floor(waypoints.length / 3)) {
+				CJ4_FMC_SelectWptPage.ShowPage(fmc, waypoints, ident, callback, page + 1);
             }
         };
     }
