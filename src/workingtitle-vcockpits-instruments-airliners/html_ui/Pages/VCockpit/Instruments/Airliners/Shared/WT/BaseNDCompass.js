@@ -4,6 +4,7 @@ let Jet_NDCompass_Display;
     Jet_NDCompass_Display[Jet_NDCompass_Display["ROSE"] = 1] = "ROSE";
     Jet_NDCompass_Display[Jet_NDCompass_Display["ARC"] = 2] = "ARC";
     Jet_NDCompass_Display[Jet_NDCompass_Display["PLAN"] = 3] = "PLAN";
+    Jet_NDCompass_Display[Jet_NDCompass_Display["PPOS"] = 4] = "PPOS";
 })(Jet_NDCompass_Display || (Jet_NDCompass_Display = {}));
 let Jet_NDCompass_Navigation;
 (function (Jet_NDCompass_Navigation) {
@@ -122,6 +123,9 @@ class Jet_NDCompass extends HTMLElement {
             else if (modeValue === "plan") {
                 this._displayMode = Jet_NDCompass_Display.PLAN;
             }
+            else if (modeValue === "ppos") {
+                this._displayMode = Jet_NDCompass_Display.PPOS;
+            }
             else {
                 this._displayMode = Jet_NDCompass_Display.NONE;
             }
@@ -153,6 +157,7 @@ class Jet_NDCompass extends HTMLElement {
                     this.constructRose();
                     break;
                 }
+            case Jet_NDCompass_Display.PPOS:
             case Jet_NDCompass_Display.ARC:
                 {
                     this.constructArc();

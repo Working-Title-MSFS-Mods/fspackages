@@ -201,7 +201,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N1LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N1LeftValue.textContent = "0.0";
             this.N1LeftValue.setAttribute("x", (startPosX - halfWidth - rectOffsetX + rectWidth * 0.95).toString());
-            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.58).toString());
+            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.62).toString());
             this.N1LeftValue.setAttribute("fill", "#11d011");
             this.N1LeftValue.setAttribute("font-size", "32");
             this.N1LeftValue.setAttribute("font-family", "Roboto-Bold");
@@ -220,7 +220,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N1RightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N1RightValue.textContent = "0.0";
             this.N1RightValue.setAttribute("x", (startPosX + halfWidth + rectOffsetX - rectWidth * 0.05).toString());
-            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.58).toString());
+            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.62).toString());
             this.N1RightValue.setAttribute("fill", "#11d011");
             this.N1RightValue.setAttribute("font-size", "32");
             this.N1RightValue.setAttribute("font-family", "Roboto-Bold");
@@ -373,7 +373,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N2LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N2LeftValue.textContent = "0.0";
             this.N2LeftValue.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
-            this.N2LeftValue.setAttribute("y", startPosY.toString());
+            this.N2LeftValue.setAttribute("y", 51);
             this.N2LeftValue.setAttribute("fill", "#11d011");
             this.N2LeftValue.setAttribute("font-size", "28");
             this.N2LeftValue.setAttribute("font-family", "Roboto-Bold");
@@ -392,7 +392,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N2RightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N2RightValue.textContent = "0.0";
             this.N2RightValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
-            this.N2RightValue.setAttribute("y", startPosY.toString());
+            this.N2RightValue.setAttribute("y", 51);
             this.N2RightValue.setAttribute("fill", "#11d011");
             this.N2RightValue.setAttribute("font-size", "28");
             this.N2RightValue.setAttribute("font-family", "Roboto-Bold");
@@ -512,7 +512,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.FuelLBSLeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.FuelLBSLeftValue.textContent = "2910";
             this.FuelLBSLeftValue.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
-            this.FuelLBSLeftValue.setAttribute("y", startPosY.toString());
+            this.FuelLBSLeftValue.setAttribute("y", 167);
             this.FuelLBSLeftValue.setAttribute("fill", "#11d011");
             this.FuelLBSLeftValue.setAttribute("font-size", "28");
             this.FuelLBSLeftValue.setAttribute("font-family", "Roboto-Bold");
@@ -531,7 +531,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.FuelLBSRightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.FuelLBSRightValue.textContent = "2910";
             this.FuelLBSRightValue.setAttribute("x", (startPosX + 33 + rectWidth * 0.95).toString());
-            this.FuelLBSRightValue.setAttribute("y", startPosY.toString());
+            this.FuelLBSRightValue.setAttribute("y", 167);
             this.FuelLBSRightValue.setAttribute("fill", "#11d011");
             this.FuelLBSRightValue.setAttribute("font-size", "28");
             this.FuelLBSRightValue.setAttribute("font-family", "Roboto-Bold");
@@ -742,7 +742,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("y", (posY).toString());
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", (gaugeHeight * 0.20).toString());
-            rect.setAttribute("fill", "green");
+            rect.setAttribute("fill", "#11d011");
             trimGroup.appendChild(rect);
             this.ElevatorCursorX = gaugeStartX + gaugeWidth;
             this.ElevatorCursorY1 = gaugeStartY;
@@ -922,7 +922,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N1LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N1LeftValue.textContent = "0.0";
             this.N1LeftValue.setAttribute("x", (startPosX - halfWidth - rectOffsetX + rectWidth * 0.95).toString());
-            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.58).toString());
+            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.62).toString());
             this.N1LeftValue.setAttribute("fill", "#11d011");
             this.N1LeftValue.setAttribute("font-size", "32");
             this.N1LeftValue.setAttribute("font-family", "Roboto-Bold");
@@ -941,7 +941,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N1RightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N1RightValue.textContent = "0.0";
             this.N1RightValue.setAttribute("x", (startPosX + halfWidth + rectOffsetX - rectWidth * 0.05).toString());
-            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.58).toString());
+            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.62).toString());
             this.N1RightValue.setAttribute("fill", "#11d011");
             this.N1RightValue.setAttribute("font-size", "32");
             this.N1RightValue.setAttribute("font-family", "Roboto-Bold");
@@ -1105,7 +1105,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N2LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N2LeftValue.textContent = "0.0";
             this.N2LeftValue.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
-            this.N2LeftValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.58).toString());
+            this.N2LeftValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.65).toString());
             this.N2LeftValue.setAttribute("fill", "#11d011");
             this.N2LeftValue.setAttribute("font-size", "28");
             this.N2LeftValue.setAttribute("font-family", "Roboto-Bold");
@@ -1124,7 +1124,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N2RightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N2RightValue.textContent = "0.0";
             this.N2RightValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
-            this.N2RightValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.58).toString());
+            this.N2RightValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.65).toString());
             this.N2RightValue.setAttribute("fill", "#11d011");
             this.N2RightValue.setAttribute("font-size", "28");
             this.N2RightValue.setAttribute("font-family", "Roboto-Bold");
@@ -1416,7 +1416,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.FuelLBSLeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.FuelLBSLeftValue.textContent = "2910";
             this.FuelLBSLeftValue.setAttribute("x", (startPosX - spacingX - 5).toString());
-            this.FuelLBSLeftValue.setAttribute("y", startPosY.toString());
+            this.FuelLBSLeftValue.setAttribute("y", 312);
             this.FuelLBSLeftValue.setAttribute("fill", "#11d011");
             this.FuelLBSLeftValue.setAttribute("font-size", "28");
             this.FuelLBSLeftValue.setAttribute("font-family", "Roboto-Bold");
@@ -1435,7 +1435,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.FuelLBSRightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.FuelLBSRightValue.textContent = "2910";
             this.FuelLBSRightValue.setAttribute("x", (startPosX + spacingX + rectWidth - 5).toString());
-            this.FuelLBSRightValue.setAttribute("y", startPosY.toString());
+            this.FuelLBSRightValue.setAttribute("y", 312);
             this.FuelLBSRightValue.setAttribute("fill", "#11d011");
             this.FuelLBSRightValue.setAttribute("font-size", "28");
             this.FuelLBSRightValue.setAttribute("font-family", "Roboto-Bold");
@@ -1552,7 +1552,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             var text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = "RUD";
             text.setAttribute("x", startPosX.toString());
-            text.setAttribute("y", startPosY.toString());
+            text.setAttribute("y", 122);
             text.setAttribute("fill", "#cccac8");
             text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
@@ -2706,6 +2706,9 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             case Jet_NDCompass_Display.PLAN:
                 this.zoomFactor = 4.1;
                 break;
+            case Jet_NDCompass_Display.PPOS:
+                this.zoomFactor = 2.8;
+                break;
             default:
                 this.zoomFactor = 1.0;
                 break;
@@ -2856,6 +2859,7 @@ class CJ4_Map extends MapInstrumentElement {
                     this.instrument.setPlaneScale(2.5);
                     break;
                 }
+            case Jet_NDCompass_Display.PPOS:
             case Jet_NDCompass_Display.ARC:
                 {
                     this.instrument.style.top = "6%";
@@ -3371,7 +3375,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addTitle("FORMAT", this.textSize, 0.4);
                 this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
                 this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
-                this.addRadio("PPOS", this.textSize, null);
+                this.addRadio("PPOS", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
             }
             this.endSection();
             this.beginSection();
@@ -3651,7 +3655,7 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
                 this.addTitle("FORMAT", this.textSize, 0.45);
                 this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
                 this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
-                this.addRadio("PPOS", this.textSize, null);
+                this.addRadio("PPOS", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
                 this.addRadio("PLAN", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
                 this.addRadio("GWX", this.textSize, null);
                 this.addRadio("TCAS", this.textSize, null);
