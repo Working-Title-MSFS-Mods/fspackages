@@ -22,24 +22,9 @@ g1000-procedures-page {
         padding: 0 2vh;
     }
 
-    .sequence {
+    g1000-sequence-list {
         max-height: 20vh;
         overflow-y: scroll;
-    }
-
-    .sequence-entry {
-        color: $input_color;
-        display: grid;
-        grid-template-columns: 50% 25% 25%;
-
-        .bearing,
-        .distance {
-            text-align: right;
-        }
-
-        &[state="Selected"] {
-            animation: SelectionBlink 0.5s infinite !important;
-        }
     }
 }
 
@@ -72,11 +57,30 @@ g1000-approach-page {
         selectable-button {
             text-align: center;
             display: inline-block;
-            font-size: $font_size_extra_large;
+            font-size: $font_size_large;
         }
     }
 }
 
 g1000-sequence-list {
     display: block;
+
+    li {
+        color: $input_color;
+        display: grid;
+        grid-template-columns: 50% 25% 25%;
+
+        .bearing,
+        .distance {
+            text-align: right;
+        }
+
+        &[state="Selected"] {
+            animation: SelectionBlink 0.5s infinite !important;
+        }
+
+        .units {
+            font-size: 0.7em;
+        }
+    }
 }

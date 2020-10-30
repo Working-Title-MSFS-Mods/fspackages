@@ -12,15 +12,27 @@ class WT_Departure_Procedure extends WT_Procedure {
     getCommonLegs() {
         return this.commonLegs;
     }
+    /**
+    * @returns {WT_Runway_Transition}
+    */
     getRunwayTransition(transitionIndex) {
         return this.runwayTransitions[transitionIndex];
     }
+    /**
+     * @returns {WT_Runway_Transition[]}
+     */
     getRunwayTransitions() {
         return this.runwayTransitions;
     }
+    /**
+     * @returns {WT_EnRoute_Transition}
+     */
     getEnRouteTransition(transitionIndex) {
         return this.enRouteTransitions[transitionIndex];
     }
+    /**
+     * @returns {WT_EnRoute_Transition[]}
+     */
     getEnRouteTransitions() {
         return this.enRouteTransitions;
     }
@@ -52,16 +64,7 @@ class WT_Selected_Departure_Procedure extends WT_Selected_Procedure {
      * @returns {WT_Procedure_Waypoints[]}
      */
     getAllTransitionLegs() {
-        let transitions = [];
-        console.log(`${this.procedure.getEnRouteTransitions().length} transitions`);
-        for (let transition of this.procedure.getEnRouteTransitions()) {
-            let legs = [];
-            legs.push(this.getAirportLeg());
-            legs.push(...transition.legs);
-            let waypoints = new WT_Procedure_Waypoints(legs);
-            transitions.push(waypoints);
-        }
-        return transitions;
+        return this.procedure.getEnRouteTransitions().map(transition => new WT_Procedure_Waypoints([this.getAirportLeg(), ...transition.legs]));
     }
     getAirportLeg() {
         let leg = new WT_Procedure_Leg({
@@ -92,38 +95,16 @@ class WT_Selected_Departure_Procedure extends WT_Selected_Procedure {
         let waypointCollection = new WT_Procedure_Waypoints(legs);
         let waypoints = waypointCollection.waypoints;
 
-        let header = ` ID  TYPE ORGIN /   FIX   DIST   Θ     ρ  BRG TURN`;
-        let headerText = `${this.procedure.name} / ${this.runwayTransitionIndex} / ${this.enRouteTransitionIndex}`;
-        let str = `${"".padStart((header.length - headerText.length - 2) / 2, "-")} ${headerText} ${"".padStart(Math.ceil((header.length - headerText.length - 2) / 2), "-")}\n`;
-        str += header + "\n";
-        str += "".padStart(header.length, "-") + "\n";
-        let i = 0;
-        str += waypoints.map(waypoint => {//${waypoint.coordinates.lat.toFixed(4)},${waypoint.coordinates.long.toFixed(4)}
-            let vars = [
-                `[${(i++).toFixed(0).padStart(2, " ")}]`,
-                "-",
-                waypoint.leg.type.toFixed(0).padStart(2, " "),
-                waypoint.leg.origin ? waypoint.leg.origin.ident.padStart(6, " ") : "     ",
-                "/",
-                waypoint.leg.fix ? waypoint.leg.fix.ident.padStart(5, " ") : "     ",
-                waypoint.leg.distance.toFixed(1).padStart(4, " ") + "ɴᴍ",
-                waypoint.leg.theta.toFixed(0).padStart(3, " "),
-                waypoint.leg.rho.toFixed(0).padStart(5, " "),
-                `${waypoint.leg.bearing.toFixed(0).padStart(3, " ")}°`,
-                (waypoint.leg.turnDirection ? waypoint.leg.turnDirection : 0).toFixed(0).padStart(4, " ")
-            ]
-            return vars.join(" ") + "\n";
-        }).join("");
-        str += "".padStart(header.length, "-") + "\n";
-        console.log(str);
-
-        //console.log(JSON.stringify(waypoints, null, 2));
+        this.outputWaypointsToConsole(waypoints);
 
         return waypoints;
     }
     getAirport() {
         return this.procedure.airport;
     }
-    load(flightPlan) {
+    /**
+     * @param {FlightPlanManager} flightPlan 
+     */
+    async load(flightPlan) {
     }
 }

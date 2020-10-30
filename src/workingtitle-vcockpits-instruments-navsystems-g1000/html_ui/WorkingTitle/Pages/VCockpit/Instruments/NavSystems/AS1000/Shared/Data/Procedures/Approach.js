@@ -1,4 +1,12 @@
 class WT_Approach_Procedure extends WT_Procedure {
+    /**
+     * @param {number} index 
+     * @param {string} name 
+     * @param {*} runway 
+     * @param {Frequency} frequency 
+     * @param {WT_Procedure_Leg[]} finalLegs 
+     * @param {WT_Approach_Transition[]} transitions 
+     */
     constructor(index, name, runway, frequency, finalLegs, transitions) {
         super(name, index);
         this.runway = runway;
@@ -12,12 +20,21 @@ class WT_Approach_Procedure extends WT_Procedure {
     getFinalLegs() {
         return this.finalLegs;
     }
+    /**
+     * @returns {WT_Approach_Transition}
+     */
     getTransition(transitionIndex) {
         return this.transitions[transitionIndex];
     }
+    /**
+     * @returns {WT_Approach_Transition[]}
+     */
     getTransitions() {
         return this.transitions;
     }
+    /**
+     * @returns {Frequency}
+     */
     getPrimaryFrequency() {
         return this.primaryFrequency;
     }
@@ -48,11 +65,7 @@ class WT_Selected_Approach_Procedure extends WT_Selected_Procedure {
      * @returns {WT_Procedure_Waypoints[]}
      */
     getAllTransitionLegs() {
-        let transitions = [];
-        for (let transition of this.procedure.getTransitions()) {
-            transitions.push(new WT_Procedure_Waypoints(transition.legs));
-        }
-        return transitions;
+        return this.procedure.getTransitions().map(transition => new WT_Procedure_Waypoints(transition.legs));
     }
     getSequence() {
         let waypoints = [];
@@ -61,39 +74,14 @@ class WT_Selected_Approach_Procedure extends WT_Selected_Procedure {
         }
         waypoints.push(...this.finalLegsWaypoints.waypoints);
 
-        let header = ` ID  TYPE ORGIN /   FIX   DIST   Θ     ρ  BRG TURN`;
-        let headerText = `${this.procedure.name} / ${this.transitionIndex}`;
-        let str = `${"".padStart((header.length - headerText.length - 2) / 2, "-")} ${headerText} ${"".padStart(Math.ceil((header.length - headerText.length - 2) / 2), "-")}\n`;
-        str += header + "\n";
-        str += "".padStart(header.length, "-") + "\n";
-        let i = 0;
-        str += waypoints.map(waypoint => {//${waypoint.coordinates.lat.toFixed(4)},${waypoint.coordinates.long.toFixed(4)}
-            let vars = [
-                `[${(i++).toFixed(0).padStart(2, " ")}]`,
-                "-",
-                waypoint.leg.type.toFixed(0).padStart(2, " "),
-                waypoint.leg.origin ? waypoint.leg.origin.ident.padStart(6, " ") : "     ",
-                "/",
-                waypoint.leg.fix ? waypoint.leg.fix.ident.padStart(5, " ") : "     ",
-                waypoint.leg.distance.toFixed(1).padStart(4, " ") + "ɴᴍ",
-                waypoint.leg.theta.toFixed(0).padStart(3, " "),
-                waypoint.leg.rho.toFixed(0).padStart(5, " "),
-                `${waypoint.leg.bearing.toFixed(0).padStart(3, " ")}°`,
-                (waypoint.leg.turnDirection ? waypoint.leg.turnDirection : 0).toFixed(0).padStart(4, " ")
-            ]
-            return vars.join(" ") + "\n";
-        }).join("");
-        str += "".padStart(header.length, "-") + "\n";
-        console.log(str);
-
-        //console.log(JSON.stringify(waypoints, null, 2));
+        this.outputWaypointsToConsole(waypoints);
 
         return waypoints;
     }
     getAirport() {
         return this.procedure.airport;
     }
-    load(flightPlan) {
+    async load(flightPlan) {
         return new Promise(resolve => {
             console.log(`Setting destination to ${this.procedure.icao}...`);
             flightPlan.setDestination(this.procedure.icao, () => {

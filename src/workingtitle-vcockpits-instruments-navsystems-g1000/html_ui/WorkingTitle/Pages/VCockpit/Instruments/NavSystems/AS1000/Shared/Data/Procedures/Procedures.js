@@ -24,6 +24,44 @@ class WT_Selected_Procedure {
     getAirport() {
         throw new Error("getAirport not implemented");
     }
+    /**
+     * @param {FlightPlanManager} flightPlan 
+     */
+    load(flightPlan) {
+        throw new Error("Selected procedure does not support loading");
+    }
+    /**
+     * @param {FlightPlanManager} flightPlan 
+     */
+    activate(flightPlan) {
+        throw new Error("Selected procedure does not support activating");
+    }
+    outputWaypointsToConsole(waypoints) {
+        let header = ` ID  TYPE ORGIN /   FIX   DIST   Θ     ρ  BRG TURN`;
+        let headerText = `${this.procedure.name} / ${this.runwayTransitionIndex} / ${this.enRouteTransitionIndex}`;
+        let str = `${"".padStart((header.length - headerText.length - 2) / 2, "-")} ${headerText} ${"".padStart(Math.ceil((header.length - headerText.length - 2) / 2), "-")}\n`;
+        str += header + "\n";
+        str += "".padStart(header.length, "-") + "\n";
+        let i = 0;
+        str += waypoints.map(waypoint => {//${waypoint.coordinates.lat.toFixed(4)},${waypoint.coordinates.long.toFixed(4)}
+            let vars = [
+                `[${(i++).toFixed(0).padStart(2, " ")}]`,
+                "-",
+                waypoint.leg.type.toFixed(0).padStart(2, " "),
+                waypoint.leg.origin ? waypoint.leg.origin.ident.padStart(6, " ") : "     ",
+                "/",
+                waypoint.leg.fix ? waypoint.leg.fix.ident.padStart(5, " ") : "     ",
+                waypoint.leg.distance.toFixed(1).padStart(4, " ") + "ɴᴍ",
+                waypoint.leg.theta.toFixed(0).padStart(3, " "),
+                waypoint.leg.rho.toFixed(0).padStart(5, " "),
+                `${waypoint.leg.bearing.toFixed(0).padStart(3, " ")}°`,
+                (waypoint.leg.turnDirection ? waypoint.leg.turnDirection : 0).toFixed(0).padStart(4, " ")
+            ]
+            return vars.join(" ") + "\n";
+        }).join("");
+        str += "".padStart(header.length, "-") + "\n";
+        console.log(str);
+    }
 }
 
 class WT_Procedure_Leg {
@@ -38,6 +76,26 @@ class WT_Procedure_Leg {
     setOrigin(origin) {
         this.origin = origin;
     }
+}
+
+class WT_Procedure_Transition {
+    constructor(index, name, legs) {
+        this.index = index;
+        this.name = name;
+        this.legs = legs;
+    }
+}
+
+class WT_Approach_Transition extends WT_Procedure_Transition {
+
+}
+
+class WT_Runway_Transition extends WT_Procedure_Transition {
+
+}
+
+class WT_EnRoute_Transition extends WT_Procedure_Transition {
+
 }
 
 class WT_Procedure_Facility {
@@ -82,6 +140,9 @@ class WT_Procedure_Facility {
             });
         }
     }
+    /**
+     * @returns {WT_Approach_Procedure[]}
+     */
     async getApproaches() {
         if (this._approaches === null) {
             let promises = {};
@@ -97,27 +158,22 @@ class WT_Procedure_Facility {
                     processLeg(leg, legData.fixIcao, legData.originIcao);
                     return leg;
                 }
-                let approach = new WT_Approach_Procedure(
+                return new WT_Approach_Procedure(
                     index,
                     approachData.name,
                     approachData.runway,
                     frequencyData ? new Frequency(frequencyData.name, frequencyData.freqMHz, frequencyData.freqBCD16) : null,
                     approachData.finalLegs.map(mapLegs),
-                    approachData.transitions.map((data, index) => {
-                        return {
-                            index: index,
-                            name: data.legs[0].fixIcao.substr(7, 5).trim(),
-                            legs: data.legs.map(mapLegs),
-                        }
-                    }),
+                    approachData.transitions.map((data, index) => new WT_Approach_Transition(index, data.legs[0].fixIcao.substr(7, 5).trim(), data.legs.map(mapLegs))),
                 );
-
-                return approach;
             });
             await Promise.all(Object.values(promises));
         }
         return this._approaches;
     }
+    /**
+     * @returns {WT_Departure_Procedure[]}
+     */
     async getDepartures() {
         if (this._departures === null) {
             let promises = {};
@@ -132,27 +188,14 @@ class WT_Procedure_Facility {
                     processLeg(leg, legData.fixIcao, legData.originIcao);
                     return leg;
                 }
-                let procedure = new WT_Departure_Procedure(
+                return new WT_Departure_Procedure(
                     index,
                     data.name,
                     new LatLong(rawData.lat, rawData.lon),
-                    data.runwayTransitions.map((data, index) => {
-                        return {
-                            index: index,
-                            name: data.name,
-                            legs: data.legs.map(mapLegs),
-                        }
-                    }),
+                    data.runwayTransitions.map((data, index) => new WT_Runway_Transition(index, data.name, data.legs.map(mapLegs))),
                     data.commonLegs.map(mapLegs),
-                    data.enRouteTransitions.map((data, index) => {
-                        return {
-                            index: index,
-                            name: data.legs[0].fixIcao.substr(7, 5).trim(),
-                            legs: data.legs.map(mapLegs),
-                        }
-                    }),
+                    data.enRouteTransitions.map((data, index) => new WT_EnRoute_Transition(index, data.legs[0].fixIcao.substr(7, 5).trim(), data.legs.map(mapLegs))),
                 );
-                return procedure;
             });
             try {
                 await Promise.all(Object.values(promises));
@@ -162,6 +205,9 @@ class WT_Procedure_Facility {
         }
         return this._departures;
     }
+    /**
+     * @returns {WT_Arrival_Procedure[]}
+     */
     async getArrivals() {
         if (this._arrivals === null) {
             let promises = {};
@@ -176,28 +222,15 @@ class WT_Procedure_Facility {
                     processLeg(leg, legData.fixIcao, legData.originIcao);
                     return leg;
                 }
-                let procedure = new WT_Arrival_Procedure(
+                return new WT_Arrival_Procedure(
                     index,
                     data.name,
                     new LatLong(rawData.lat, rawData.lon),
                     rawData.icao.substr(7, 5).trim(),
-                    data.runwayTransitions.map((data, index) => {
-                        return {
-                            index: index,
-                            name: data.name,
-                            legs: data.legs.map(mapLegs),
-                        }
-                    }),
+                    data.runwayTransitions.map((data, index) => new WT_Runway_Transition(index, data.name, data.legs.map(mapLegs))),
                     data.commonLegs.map(mapLegs),
-                    data.enRouteTransitions.map((data, index) => {
-                        return {
-                            index: index,
-                            name: data.legs[0].fixIcao.substr(7, 5).trim(),
-                            legs: data.legs.map(mapLegs),
-                        }
-                    }),
+                    data.enRouteTransitions.map((data, index) => new WT_EnRoute_Transition(index, data.legs[0].fixIcao.substr(7, 5).trim(), data.legs.map(mapLegs))),
                 );
-                return procedure;
             });
             await Promise.all(Object.values(promises));
         }
@@ -213,16 +246,9 @@ class WT_Procedure_Waypoints {
         let i = 0;
         this.waypoints = [];
         for (let leg of legs) {
-            const f = (21639 / 2) * Math.PI;
-            let sin = Math.sin;
-            let asin = Math.asin;
-            let cos = Math.cos;
-            let acos = Math.acos;
-            let tan = Math.tan;
-            let atan = Math.atan;
-            let abs = Math.abs;
-            let greatCircleDistance = Avionics.Utils.computeGreatCircleDistance;
-            let greatCircleHeading = Avionics.Utils.computeGreatCircleHeading;
+            const f = (21639 / 2) * Math.PI, sin = Math.sin, asin = Math.asin, cos = Math.cos, acos = Math.acos, tan = Math.tan, atan = Math.atan, abs = Math.abs;
+            const greatCircleDistance = Avionics.Utils.computeGreatCircleDistance;
+            const greatCircleHeading = Avionics.Utils.computeGreatCircleHeading;
             function deltaAngle(a, b) {
                 let delta = a - b;
                 delta = Avionics.Utils.fmod(delta + 180, 360) - 180;
@@ -237,7 +263,7 @@ class WT_Procedure_Waypoints {
                     const bearingToOrigin = greatCircleHeading(this.last.coordinates, leg.origin.coordinates);
                     const distanceToOrigin = greatCircleDistance(this.last.coordinates, leg.origin.coordinates);
 
-                    let beta = deltaAngle(bearingToOrigin, leg.bearing);
+                    const beta = deltaAngle(bearingToOrigin, leg.bearing);
                     const b = leg.distance / f;
                     const c = distanceToOrigin / f;
 
@@ -264,12 +290,12 @@ class WT_Procedure_Waypoints {
                     const coordinatesToOrigin = greatCircleHeading(this.last.coordinates, leg.origin.coordinates);
                     const distanceToOrigin = greatCircleDistance(this.last.coordinates, leg.origin.coordinates);
 
-                    let alpha = deltaAngle(coordinatesToOrigin, leg.bearing);
-                    let beta = deltaAngle(originToCoordinates, leg.theta);
-                    let c = distanceToOrigin / f;
+                    const alpha = deltaAngle(coordinatesToOrigin, leg.bearing);
+                    const beta = deltaAngle(originToCoordinates, leg.theta);
+                    const c = distanceToOrigin / f;
 
                     const gamma = acos(sin(alpha) * sin(beta) * cos(c) - cos(alpha) * cos(beta));
-                    let b = acos((cos(beta) + cos(alpha) * cos(gamma)) / (sin(alpha) * sin(gamma)));
+                    const b = acos((cos(beta) + cos(alpha) * cos(gamma)) / (sin(alpha) * sin(gamma)));
                     const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.bearing, b * f, this.last.coordinates.lat, this.last.coordinates.long);
 
                     this.add(leg, `${leg.origin.ident}${leg.distance.toFixed(0)}`, coordinates, leg.distance, leg.bearing);
@@ -306,6 +332,7 @@ class WT_Procedure_Waypoints {
     add(leg, name, coordinates, distance, bearing) {
         if (this.waypoints.length > 0) {
             distance = Avionics.Utils.computeGreatCircleDistance(this.last.coordinates, coordinates);
+            bearing = Avionics.Utils.computeGreatCircleHeading(this.last.coordinates, coordinates);
         }
         this.waypoints.push({
             leg: leg,

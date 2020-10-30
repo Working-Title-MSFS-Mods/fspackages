@@ -6,9 +6,8 @@ class WT_Approach_Page_View extends WT_HTML_View {
         this.selectedProcedure = new Subject(null);
         this.primaryFrequency = new Subject(null);
 
-        this.onSelectFrequency = new WT_Event();
-        this.onLoadApproach = new WT_Event();
-        this.onActivateApproach = new WT_Event();
+        this.onLoadProcedure = new WT_Event();
+        this.onActivateProcedure = new WT_Event();
     }
     connectedCallback() {
         let template = document.getElementById('approach-page');
@@ -28,7 +27,11 @@ class WT_Approach_Page_View extends WT_HTML_View {
 
         this.elements.procedureSelector.addEventListener("change", e => this.setProcedure(e.target.value));
         this.elements.transitionSelector.addEventListener("input", DOMUtilities.debounce(e => this.setTransition(e.target.value), 200, false));
-        this.elements.primaryFrequencyHz.addEventListener("selected", e => this.onSelectFrequency.fire(this.primaryFrequency.value));
+        this.elements.primaryFrequencyHz.addEventListener("selected", e => this.selectFrequency(this.primaryFrequency.value));
+    }
+    selectFrequency(frequency) {
+        SimVar.SetSimVarValue("K:NAV1_RADIO_SWAP", "number", 0);
+        SimVar.SetSimVarValue("K:NAV1_RADIO_SET_HZ", "hertz", Math.floor(parseFloat(frequency.mhValue) * 1000000));
     }
     /**
      * @param {Subject} airport 
@@ -66,6 +69,9 @@ class WT_Approach_Page_View extends WT_HTML_View {
             this.elements.primaryFrequencyHz.textContent = "___.__";
         }
     }
+    /**
+     * @param {WT_Approach_Transition[]} transitions 
+     */
     updateTransitions(transitions) {
         this.elements.transitionSelector.clearOptions();
         if (transitions) {
@@ -88,10 +94,10 @@ class WT_Approach_Page_View extends WT_HTML_View {
         }
     }
     loadProcedure() {
-        this.onLoadApproach.fire(this.selectedProcedure.value);
+        this.onLoadProcedure.fire(this.selectedProcedure.value);
     }
     activateProcedure() {
-        this.onActivateApproach.fire(this.selectedProcedure.value);
+        this.onActivateProcedure.fire(this.selectedProcedure.value);
     }
 }
 customElements.define("g1000-approach-page", WT_Approach_Page_View);
