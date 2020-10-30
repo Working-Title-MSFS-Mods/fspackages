@@ -55,8 +55,10 @@ class CJ4_MFD extends BaseAirliners {
     }
 
     onUnitSystemChanged() {
-
+        this.modeChangeTimer = -1;
+        this.initDuration = 11000;
         this.IndependentsElements = [];
+        Utils.RemoveAllChildren(this.querySelector("#MapSVG"));
         this.systems1 = new CJ4_SystemContainer("System1", "SystemInfos1");
         this.systems2 = new CJ4_SystemContainer("System2", "SystemInfos2");
         this.systemOverlay = new CJ4_SystemOverlayContainer("SystemOverlay", "SystemOverlay");
