@@ -322,7 +322,7 @@ class Jet_NDCompass extends HTMLElement {
                     this.showSelectedHeadingTimer = 0;
                 }
 
-                let selectedHeading = simSelectedHeading;
+                let selectedHeading = Math.round(simSelectedHeading);
                 let roundedSelectedHeading = fastToFixed(selectedHeading, 3);
                 this.setAttribute("selected_heading_bug_rotation", roundedSelectedHeading);
                 if (this.selectedHeadingGroup)
