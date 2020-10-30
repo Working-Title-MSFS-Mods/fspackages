@@ -73,7 +73,7 @@ class CJ4_FMC_FuelMgmtPageOne {
         const totalFuelFlowText = WT_ConvertUnit.getWeight(this._totalFuelFlow).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? "[d-text] KG/HR[s-text]" : "[d-text] LB/HR[s-text]");
         const reserveFuelText = WT_ConvertUnit.getWeight(this._fmc.reserveFuel).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? " KG[s-text]" : " LB[s-text]");
         const spRangeText = this._spRng == ".----" ? ".----"
-            : WT_ConvertUnit.isMetric() ? (this._spRng / this._fmc.cj4Weight).toFixed(2) + "[d-text]NM/KG[s-text]"
+            : WT_ConvertUnit.isMetric() ? (this._spRng / 0.453592).toFixed(2) + "[d-text]NM/KG[s-text]"
             : this._spRng + "[d-text]NM/LB[s-text]";
 
         this._fmc._templateRenderer.setTemplateRaw([
@@ -276,6 +276,12 @@ class CJ4_FMC_FuelMgmtPage {
             let totalFuelFlow = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour")
                 + SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
             let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+            const fuelWeight = 6.7;
+            //console.log("fuel weight constant: " + fuelWeight);
+    
+            let fuelQuantityLeft = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
+            let fuelQuantityRight = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
+            let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft;
             
             //destination data
             if (fmc.flightPlanManager.getDestination() && fmc.flightPlanManager.getOrigin()) {
@@ -295,7 +301,7 @@ class CJ4_FMC_FuelMgmtPage {
                 destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
                     : destinationDistanceFlightplan;
                 destinationEte = groundSpeed < 50 || destinationDistance <= 0.1 ? new String("-:--")
-                    : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                    : new Date((destinationDistance/groundSpeed) * 3600000).toISOString().substr(11, 5);
                 destinationFuel = groundSpeed < 50 ? new String("-----")
                     : WT_ConvertUnit.getWeight(fuelQuantityTotal - (totalFuelFlow * destinationDistance / groundSpeed)).Value;
                 origin = fmc.flightPlanManager.getOrigin();
