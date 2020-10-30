@@ -409,22 +409,30 @@ class PFD_Compass extends NavSystemElement {
         }
         else {
             this.ifTimer -= this.gps.deltaTime;
-        }        
+        }
         if (this.gps.currFlightPlanManager.isActiveApproach() && this.gps.currFlightPlanManager.getActiveWaypointIndex() != -1 && Simplane.getAutoPilotApproachType() == 4) {
-                if (((this.ifIcao && this.ifIcao != "" && this.ifIcao == this.gps.currFlightPlanManager.getActiveWaypoint().icao) || (this.gps.currFlightPlanManager.getActiveWaypointIndex() >= this.gps.currFlightPlanManager.getApproachWaypoints().length - 2)) && !this.hasLocBeenEntered) {
+            let approachWPNb = this.gps.currFlightPlanManager.getApproachWaypoints().length;
+            let activeWP = this.gps.currFlightPlanManager.getActiveWaypoint();
+            if (((this.ifIcao && this.ifIcao != "" && activeWP && this.ifIcao == activeWP.icao) || (approachWPNb > 0 && this.gps.currFlightPlanManager.getActiveWaypointIndex() >= approachWPNb - 2)) && !this.hasLocBeenEntered) {
                     let approachFrequency = this.gps.currFlightPlanManager.getApproachNavFrequency();
                     if (!isNaN(approachFrequency)) {
                         SimVar.SetSimVarValue("K:NAV1_RADIO_SWAP", "number", 0);
                         SimVar.SetSimVarValue("K:NAV1_RADIO_SET_HZ", "hertz", approachFrequency * 1000000);
                     }
                     this.hasLocBeenEntered = true;
+            } else {
+                let approachWP;
+                let wpIndex = this.gps.currFlightPlanManager.getActiveWaypointIndex() - 1;
+                if (wpIndex >= 0 && wpIndex < approachWPNb) {
+                    approachWP = this.gps.currFlightPlanManager.getApproachWaypoints()[wpIndex];
                 }
-                else if (((this.ifIcao && this.ifIcao != "" && this.ifIcao == this.gps.currFlightPlanManager.getApproachWaypoints()[this.gps.currFlightPlanManager.getActiveWaypointIndex() - 1].icao && this.hasLocBeenEntered) || (this.gps.currFlightPlanManager.getActiveWaypointIndex() == this.gps.currFlightPlanManager.getApproachWaypoints().length - 1)) && !this.hasLocBeenActivated) {
-                if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "boolean")) {
-                    SimVar.SetSimVarValue("K:TOGGLE_GPS_DRIVES_NAV1", "number", 0);
+                if (((this.ifIcao && this.ifIcao != "" && approachWP && this.ifIcao == approachWP.icao && this.hasLocBeenEntered) || (approachWPNb > 0 && this.gps.currFlightPlanManager.getActiveWaypointIndex() == approachWPNb - 1)) && !this.hasLocBeenActivated) {
+                    if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "boolean")) {
+                        SimVar.SetSimVarValue("K:TOGGLE_GPS_DRIVES_NAV1", "number", 0);
+                    }
+                    SimVar.SetSimVarValue("K:AP_NAV_SELECT_SET", "number", 1);
+                    this.hasLocBeenActivated = true;
                 }
-                SimVar.SetSimVarValue("K:AP_NAV_SELECT_SET", "number", 1);
-                this.hasLocBeenActivated = true;
             }
         }
         else {
@@ -516,7 +524,7 @@ class PFD_NavStatus extends NavSystemElement {
             if (this.gps.currFlightPlanManager.getIsDirectTo()) {
                 if (this.legSymbol != 1) {
                     if (this.currentLegSymbol)
-                        this.currentLegSymbol.innerHTML = '<img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to.bmp" class="imgSizeM"/>';
+                        this.currentLegSymbol.innerHTML = '<img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to.png" class="imgSizeM"/>';
                     if (this.currentLegFrom)
                         this.currentLegFrom.textContent = "";
                     this.legSymbol = 1;
@@ -533,7 +541,7 @@ class PFD_NavStatus extends NavSystemElement {
                 }
                 if (this.legSymbol != 2) {
                     if (this.currentLegSymbol)
-                        this.currentLegSymbol.innerHTML = '<img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/course_to.bmp" class="imgSizeM"/>';
+                        this.currentLegSymbol.innerHTML = '<img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/course_to.png" class="imgSizeM"/>';
                     this.legSymbol = 2;
                 }
             }
@@ -1094,7 +1102,7 @@ class PFD_WindData extends NavSystemElement {
     }
     init(root) {
         this.svg = root;
-        SimVar.SetSimVarValue("L:Glasscockpit_AOA_Mode", "number", this.mode);
+        SimVar.SetSimVarValue("L:Glasscockpit_Wind_Mode", "number", this.mode);
     }
     getCurrentMode() {
         return this.mode;
@@ -1120,7 +1128,7 @@ class PFD_WindData extends NavSystemElement {
                     this.svg.setAttribute("wind-strength", windSpd);
                     break;
             }
-        }   
+        }
     }
     onExit() {
     }
@@ -2078,11 +2086,17 @@ class MFD_ActiveFlightPlan_Element extends NavSystemElement {
     activateLeg(_index, _approach = false) {
         console.log("CommonPFD_MFD.ts > Activate leg for index " + _index);
         if (_approach) {
-            let icao = this.gps.currFlightPlanManager.getApproachWaypoints()[_index].icao;
-            this.gps.currFlightPlanManager.activateApproach(() => {
-                let index = this.gps.currFlightPlanManager.getApproachWaypoints().findIndex(w => { return w.infos && w.infos.icao === icao; });
-                this.gps.currFlightPlanManager.setActiveWaypointIndex(index);
-            });
+            let approachWPNb = this.gps.currFlightPlanManager.getApproachWaypoints().length;
+            if (_index >= 0 && _index < approachWPNb) {
+                let approachWP = this.gps.currFlightPlanManager.getApproachWaypoints()[_index];
+                if (approachWP) {
+                    let icao = approachWP.icao;
+                    this.gps.currFlightPlanManager.activateApproach(() => {
+                        let index = this.gps.currFlightPlanManager.getApproachWaypoints().findIndex(w => { return w.infos && w.infos.icao === icao; });
+                        this.gps.currFlightPlanManager.setActiveWaypointIndex(index);
+                    });
+                }
+            }
         }
         else {
             this.gps.currFlightPlanManager.setActiveWaypointIndex(_index);

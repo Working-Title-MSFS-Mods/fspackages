@@ -218,7 +218,7 @@ class SvgCityManager {
     
     findNearestCitiesNearPosHelper(_pos, _radius, _node, _cities, _numCities) {
         let city = this.cities.cities[_node];
-        let side = _pos.get(city.axis) - city[city.axis];
+        let side = _pos[city.axis] - city[city.axis];
         
         if (side < 0) {
             if (city.lesser >= 0) {
@@ -230,13 +230,13 @@ class SvgCityManager {
             }
         }
         
-        if (SvgCityManager.getDistanceSquared(_pos.get("x"), _pos.get("y"), _pos.get("z"), city.x, city.y, city.z) > _radius * _radius) {
+        if (SvgCityManager.getDistanceSquared(_pos.x, _pos.y, _pos.z, city.x, city.y, city.z) > _radius * _radius) {
             return;
         }
         
         if (!this.excludeFromSearch.has(city)) {
             SvgCityManager.insertInOrder(city, _cities, function (_val) {
-                return SvgCityManager.getDistanceSquared(_pos.get("x"), _pos.get("y"), _pos.get("z"), _val.x, _val.y, _val.z);
+                return SvgCityManager.getDistanceSquared(_pos.x, _pos.y, _pos.z, _val.x, _val.y, _val.z);
             });
             if (_cities.length > _numCities) {
                 _cities.pop();
@@ -257,10 +257,10 @@ class SvgCityManager {
                 distanceSquared = _radius * _radius;
             } else {
                 let farthest = _cities[_cities.length - 1];
-                distanceSquared = SvgCityManager.getDistanceSquared(_pos.get("x"), _pos.get("y"), _pos.get("z"), farthest.x, farthest.y, farthest.z);
+                distanceSquared = SvgCityManager.getDistanceSquared(_pos.x, _pos.y, _pos.z, farthest.x, farthest.y, farthest.z);
             }
             let otherCity = this.cities.cities[other];
-            let distanceToSplit = _pos.get(city.axis) - otherCity[city.axis];
+            let distanceToSplit = _pos[city.axis] - otherCity[city.axis];
             if (distanceSquared >= distanceToSplit * distanceToSplit) {
                 this.findNearestCitiesNearPosHelper(_pos, _radius, other, _cities, _numCities);
             }
@@ -277,16 +277,16 @@ class SvgCityManager {
         let city = this.cities.cities[_node];
         
         if (!this.excludeFromSearch.has(city)) {
-            let distanceSquared = SvgCityManager.getDistanceSquared(_pos.get("x"), _pos.get("y"), _pos.get("z"), city.x, city.y, city.z);
+            let distanceSquared = SvgCityManager.getDistanceSquared(_pos.x, _pos.y, _pos.z, city.x, city.y, city.z);
             if (distanceSquared <= _radius * _radius) {
                 _cities.push(city);
             }
         }
         
-        if ((city.lesser >= 0) && (_pos.get(city.axis) + _radius >= city.least) && (_pos.get(city.axis) - _radius <= city[city.axis])) {
+        if ((city.lesser >= 0) && (_pos[city.axis] + _radius >= city.least) && (_pos[city.axis] - _radius <= city[city.axis])) {
             this.findAllCitiesNearPosHelper(_pos, _radius, city.lesser, _cities);
         }
-        if ((city.greater >= 0) && (_pos.get(city.axis) + _radius >= city[city.axis]) && (_pos.get(city.axis) - _radius <= city.greatest)) {
+        if ((city.greater >= 0) && (_pos[city.axis] + _radius >= city[city.axis]) && (_pos[city.axis] - _radius <= city.greatest)) {
             this.findAllCitiesNearPosHelper(_pos, _radius, city.greater, _cities);
         }
     }
@@ -308,7 +308,7 @@ class SvgCityManager {
         let posX = Math.cos(lat) * Math.cos(long);
         let posY = Math.cos(lat) * Math.sin(long);
         let posZ = Math.sin(lat);
-        return new Map([["x", posX],["y", posY], ["z", posZ]]);
+        return {x: posX, y: posY, z: posZ};
     }
     
     static getDistanceSquared(x1, y1, z1, x2, y2, z2) {

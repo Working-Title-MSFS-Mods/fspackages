@@ -130,7 +130,7 @@ class CJ4_FMC_DirectToPage {
         fmc._templateRenderer.setTemplateRaw([
             [" " + modStr + " DIRECT-TO[blue]", "1/1[blue]", ""],
             [""],
-            ["<" + directWaypointCell, "NEAREST APTS>",],
+            ["<" + directWaypointCell, "NEAREST APTS>[disabled]",],
             [""],
             [waypointsCell[0]],
             [""],

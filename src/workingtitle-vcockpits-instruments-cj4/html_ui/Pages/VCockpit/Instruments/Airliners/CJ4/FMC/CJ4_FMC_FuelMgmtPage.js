@@ -69,14 +69,21 @@ class CJ4_FMC_FuelMgmtPageOne {
     render() {
         console.log("Render Fuel");
 
+        const fuelQuantityTotalText = WT_ConvertUnit.getWeight(this._fuelQuantityTotal).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? "[d-text] KG[s-text]" : "[d-text] LB[s-text]");
+        const totalFuelFlowText = WT_ConvertUnit.getWeight(this._totalFuelFlow).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? "[d-text] KG/HR[s-text]" : "[d-text] LB/HR[s-text]");
+        const reserveFuelText = WT_ConvertUnit.getWeight(this._fmc.reserveFuel).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? " KG[s-text]" : " LB[s-text]");
+        const spRangeText = this._spRng == ".----" ? ".----"
+            : WT_ConvertUnit.isMetric() ? (this._spRng / this._fmc.cj4Weight).toFixed(2) + "[d-text]NM/KG[s-text]"
+            : this._spRng + "[d-text]NM/LB[s-text]";
+
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/3[blue] ", "FUEL MGMT[blue]"],
             [" FUEL[blue]", "TIME TO RESV[blue] "],
-            [" " + this._fuelQuantityTotal.toFixed(0).padStart(4, " ") + "[d-text] LB[s-text]", this._hours + ":" + this._minutes],
+            [" " + fuelQuantityTotalText, this._hours + ":" + this._minutes],
             [" FUEL FLOW[blue]", "RNG TO RESV[blue] "],
-            [" " + this._totalFuelFlow.toFixed(0).padStart(4, " ") + "[d-text] LB/HR[s-text]", this._rngToResv + "[d-text]NM[s-text]"],
+            [" " + totalFuelFlowText, this._rngToResv + "[d-text]NM[s-text]"],
             [" RESERVES[blue]", "SP RNG[blue] "],
-            [" " + this._fmc.reserveFuel.toString().padStart(4, " ") + " LB", this._spRng + "[d-text]NM/LB[s-text]"],
+            [" " + reserveFuelText, spRangeText],
             [" GND SPD[blue]"],
             [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString()],
             [""],
@@ -92,6 +99,7 @@ class CJ4_FMC_FuelMgmtPageOne {
             this._fmc.clearUserInput();
             console.log(this._fmc.reserve);
             this.invalidate();
+            this.update();
         };
         this._fmc.onPrevPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage3(this._fmc); };
         this._fmc.onNextPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage2(this._fmc); };
@@ -102,7 +110,6 @@ class CJ4_FMC_FuelMgmtPageOne {
     invalidate() {
         this._isDirty = true;
         this._fmc.clearDisplay();
-        // this.prepare();
         this.render();
         this.bindEvents(); // TODO could only call this once on init, but fmc.clearDisplay() clears events
         this._isDirty = false;
@@ -130,7 +137,8 @@ class CJ4_FMC_FuelMgmtPageTwo {
 
     update() {
         // TODO i think this could be optimized
-        const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
+        const fuelWeight = 6.7;
+        //console.log("fuel weight constant: " + fuelWeight);
 
         this._fuelQuantityLeft = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
         this._fuelQuantityRight = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
@@ -171,13 +179,34 @@ class CJ4_FMC_FuelMgmtPageTwo {
     render() {
         console.log("Render Fuel2");
 
+        const fuelBurnedLeft = WT_ConvertUnit.getWeight(this._fuelBurnedLeftDisplay);
+        const fuelBurned1Text = fuelBurnedLeft.Value.toFixed(0).padStart(4, " ") + " [d-text]";
+
+        const fuelFlowLeft = WT_ConvertUnit.getFuelFlow(this._fuelFlowLeft);
+        const fuelFlow1Text = fuelFlowLeft.Value.toFixed(0).padStart(4, " ") + "[d-text]";
+
+        const fuelBurnedRight = WT_ConvertUnit.getWeight(this._fuelBurnedRightDisplay);
+        const fuelBurned2Text = fuelBurnedRight.Value.toFixed(0).padStart(4, " ") + " [d-text]";
+
+        const fuelFlowRight = WT_ConvertUnit.getFuelFlow(this._fuelFlowRight);
+        const fuelFlow2Text = fuelFlowRight.Value.toFixed(0).padStart(4, " ") + "[d-text]";
+
+        const fuelBurnedTotal = WT_ConvertUnit.getWeight(this._fuelBurnedTotalDisplay, "LBS [s-text]", "KGS [s-text]");
+        const fuelBurnedTotalText = fuelBurnedTotal.Value.toFixed(0).padStart(4, " ") + " [d-text]"
+
+        const fuelFlowTotal = WT_ConvertUnit.getFuelFlow(this._totalFuelFlow, "PPH[s-text]", "KG/H[s-text]");
+        const fuelFlowTotalText = fuelFlowTotal.Value.toFixed(0).padStart(4, " ") + "[d-text]";
+        
+        const fuelBurnedHead = fuelBurnedTotal.Unit;
+        const fuelFlowHead = fuelFlowTotal.Unit;
+
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "2/3[blue] ", "FUEL MGMT[blue]"],
             [" ENGINE[blue s-text]", "FLOW-FUEL-USED[blue s-text] ", ""],
-            ["", "LB  [s-text]", "LB/HR[s-text]"],
-            ["   1[d-text]", this._fuelBurnedLeftDisplay.toString().padStart(4, " ") + " [d-text]", this._fuelFlowLeft.toString().padStart(4, " ") + "[d-text]"],
-            ["   2[d-text]", this._fuelBurnedRightDisplay.toString().padStart(4, " ") + " [d-text]", this._fuelFlowRight.toString().padStart(4, " ") + "[d-text]"],
-            [" TOTAL[d-text]", this._fuelBurnedTotalDisplay.toString().padStart(4, " ") + " [d-text]", this._totalFuelFlow.toString().padStart(4, " ") + "[d-text]"],
+            ["", fuelBurnedHead, fuelFlowHead],
+            ["   1[d-text]", fuelBurned1Text, fuelFlow1Text],
+            ["   2[d-text]", fuelBurned2Text, fuelFlow2Text],
+            [" TOTAL[d-text]", fuelBurnedTotalText, fuelFlowTotalText],
             [""],
             [""],
             [""],
@@ -229,28 +258,75 @@ class CJ4_FMC_FuelMgmtPage {
         // register refresh and bind to update which will only render on changes
         fmc.registerPeriodicPageRefresh(() => {
             FuelMgmtPage2Instance.update();
+            return true;
         }, 1000, true);
     }
 
     static ShowPage3(fmc) { //FUEL MGMT Page 3
         fmc.clearDisplay();
-        let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
-            + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
-        fmc._templateRenderer.setTemplateRaw([
-            ["", "3/3[blue]", "PERF TRIP[blue]"],
-            [" FROM[blue s-text]"],
-            ["-----", "PPOS>"],
-            [" TO[blue s-text]"],
-            ["-----"],
-            [" DIST[blue s-text]"],
-            ["----[d-text] NM[s-text]"],
-            [" GND SPD[blue s-text]", "FUEL FLOW[blue s-text] "],
-            [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString() + "[d-text] KTS[s-text]", totalFuelFlow + "[d-text] LB/HR[s-text]"],
-            [" ETE[blue s-text]", "FUEL REQ[blue s-text] "],
-            ["", "---[d-text] LB[s-text]"],
-            ["------------------------[blue]"],
-            ["<CLEAR", "PERF MENU>"]
-        ]);
+        let destination = false;
+        let origin = false;
+        let destinationIdent = false;
+        let destinationDistance = false;
+        let destinationEte = false;
+        let destinationFuel = false;
+
+        fmc.registerPeriodicPageRefresh(() => {
+
+            let totalFuelFlow = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour")
+                + SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
+            let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+            
+            //destination data
+            if (fmc.flightPlanManager.getDestination() && fmc.flightPlanManager.getOrigin()) {
+                let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+                destination = fmc.flightPlanManager.getDestination();
+                destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
+                let destinationDistanceDirect = Avionics.Utils.computeDistance(currPos, destination.infos.coordinates);
+                let destinationDistanceFlightplan = 0;
+                destinationDistance = destinationDistanceDirect;
+                if (fmc.flightPlanManager.getActiveWaypoint()) {
+                    let activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
+                    destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+                }
+                else {
+                    destinationDistanceFlightplan = destination.cumulativeDistanceInFP;
+                }
+                destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
+                    : destinationDistanceFlightplan;
+                destinationEte = groundSpeed < 50 || destinationDistance <= 0.1 ? new String("-:--")
+                    : new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                destinationFuel = groundSpeed < 50 ? new String("-----")
+                    : WT_ConvertUnit.getWeight(fuelQuantityTotal - (totalFuelFlow * destinationDistance / groundSpeed)).Value;
+                origin = fmc.flightPlanManager.getOrigin();
+            }
+            
+            const fuelFlowTotal = WT_ConvertUnit.getFuelFlow(totalFuelFlow, "PPH[s-text]", "KG/H[s-text]");
+            const fuelFlowTotalText = totalFuelFlow > 100 ? fuelFlowTotal.Value.toFixed(0) + "[d-text] " + fuelFlowTotal.Unit : "----[d-text] " + fuelFlowTotal.Unit;
+            const eteText = destination ? destinationEte.padStart(4, " ") : "-:--";
+            const fuelRequiredText = (destination && groundSpeed > 100) ? WT_ConvertUnit.getWeight(totalFuelFlow * destinationDistance / groundSpeed).getString(0, "[d-text] ", "[s-text]")
+                : "---[d-text] " + (WT_ConvertUnit.isMetric() ? "KG[s-text]" : "LB[s-text]");
+            const distText = destination ? (destinationDistance >= 100 ? destinationDistance.toFixed(0) : destinationDistance.toFixed(1)) + "[d-text] NM[s-text]"
+                : "----[d-text] NM[s-text]";
+            const fromText = origin ? origin.ident : "-----";
+            const toText = destination ? destinationIdent : "-----";
+
+            fmc._templateRenderer.setTemplateRaw([
+                ["", "3/3[blue]", "PERF TRIP[blue]"],
+                [" FROM[blue s-text]"],
+                [fromText, "PPOS>"],
+                [" TO[blue s-text]"],
+                [toText],
+                [" DIST[blue s-text]"],
+                [distText],
+                [" GND SPD[blue s-text]", "FUEL FLOW[blue s-text] "],
+                [Math.round(groundSpeed).toString() + "[d-text] KTS[s-text]", fuelFlowTotalText],
+                [" ETE[blue s-text]", "FUEL REQ[blue s-text] "],
+                [eteText + "", fuelRequiredText],
+                ["------------------------[blue]"],
+                ["<CLEAR", "PERF MENU>"]
+            ]);
+        }, 1000, true);
         fmc.onPrevPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage2(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage1(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage1(fmc); };

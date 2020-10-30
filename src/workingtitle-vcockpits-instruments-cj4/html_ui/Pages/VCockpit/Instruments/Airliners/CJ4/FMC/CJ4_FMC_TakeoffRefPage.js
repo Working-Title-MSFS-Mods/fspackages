@@ -1,5 +1,5 @@
 class CJ4_FMC_TakeoffRefPage {
-    static ShowPage1(fmc) { //TAKEOFF REF Page 1
+    static ShowPage1(fmc, manualQnh) { //TAKEOFF REF Page 1 + added ability to keep manually set QNH by passing var manualQnh
         fmc.clearDisplay();
         let originIdent = "";
         let origin = fmc.flightPlanManager.getOrigin();
@@ -15,14 +15,20 @@ class CJ4_FMC_TakeoffRefPage {
         if (fmc.flightPlanManager.getDepartureRunway()) {
             depRunway = fmc.flightPlanManager.getDepartureRunway();
             depRunwayOutput = "RW" + fmc.getRunwayDesignation(depRunway);
-            console.log("depRunwayOutput: " + depRunwayOutput);
+            //console.log("depRunwayOutput: " + depRunwayOutput);
             depRunwayDirection = new Number(depRunway.direction);
             depRunwayElevation = new Number(depRunway.elevation * 3.28);
-            depRunwayLength = new Number((depRunway.length) * 3.28);
+            depRunwayLength = new Number(depRunway.length);
+        }
+
+        if (manualQnh && manualQnh > 0) {
+            fmc.takeoffQnh = manualQnh;
         }
         else {
-            depRunwayOutput = "NO TAKEOFF RW";
+            fmc.takeoffQnh = SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg");
         }
+
+        fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
 
         let headwind = "";
         let crosswind = "";
@@ -67,16 +73,19 @@ class CJ4_FMC_TakeoffRefPage {
         //console.log("Current Runway: " + depRunwayDesignation);
         //console.log("Current Runway Elevation: " + depRunwayElevation);
 
+        const depRunwayLengthText = WT_ConvertUnit.getLength(depRunwayLength).getString(0, " ", "[s-text]");
+        const takeoffQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.takeoffQnh).toFixed(0) : fmc.takeoffQnh.toFixed(2);
+
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "1/3[blue] ", "TAKEOFF REF[blue]"],
             [" RWY ID[blue]", "WIND[blue] "],
-            [depRunwayOutput + "[s-text]", fmc.takeoffWindDir.toString().padStart(3,"0") + "\xB0/" + fmc.takeoffWindSpeed.toString().padStart(3, " ")],
+            [depRunwayOutput + "[s-text]", fmc.takeoffWindDir.toString().padStart(3, "0") + "\xB0/" + fmc.takeoffWindSpeed.toString().padStart(3, " ") + "[s-text]"],
             [" RWY WIND[blue]", "OAT[blue] "],
-            [headwindDirection + headwind + " " + crosswindDirection + crosswind, fmc.takeoffOat + "\xB0C"],
+            [headwindDirection + headwind + " " + crosswindDirection + crosswind + "[s-text]", (fmc.takeoffOat >= 0 ? "+" : "") + fmc.takeoffOat + "\xB0C" + "[s-text]"],
             [" RWY LENGTH[blue]", "QNH[blue] "],
-            [Math.round(depRunwayLength) + " FT", fmc.takeoffQnh + ""],
+            [depRunwayLengthText, takeoffQnhText + "[s-text]"],
             [" RWY SLOPE[blue]", "P ALT[blue] "],
-            ["--.-%", fmc.takeoffPressAlt + " FT"],
+            ["--.-%[s-text]", fmc.takeoffPressAlt + " FT[s-text]"],
             [" RWY COND[blue]"],
             [depRunwayConditionActive],
             [""],
@@ -84,9 +93,10 @@ class CJ4_FMC_TakeoffRefPage {
         ]);
         fmc.onRightInput[0] = () => {
             let windIn = fmc.inOut.split("/");
-            if (windIn.length == 2 && windIn[0] <= 360 && windIn[0] >= 0 && windIn[1] >= 0){
+            if (windIn.length == 2 && windIn[0] <= 360 && windIn[0] >= 0 && windIn[1] >= 0) {
                 fmc.takeoffWindDir = new Number(windIn[0]);
                 fmc.takeoffWindSpeed = new Number(windIn[1]);
+                fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
                 fmc.clearUserInput();
             }
             else {
@@ -95,12 +105,12 @@ class CJ4_FMC_TakeoffRefPage {
             { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
         };
         fmc.onRightInput[1] = () => {
-            let tempIn = parseFloat(fmc.inOut);
-            if (tempIn && isNaN(tempIn)) {
+            let tempIn = fmc.inOut;
+            if (tempIn && isNaN(tempIn) || tempIn < -54 || tempIn > 54) {
                 fmc.showErrorMessage("INVALID");
             }
             else if (tempIn) {
-                fmc.takeoffOat = Math.trunc(tempIn);
+                fmc.takeoffOat = tempIn;
             }
             else {
                 fmc.showErrorMessage("INVALID");
@@ -110,20 +120,18 @@ class CJ4_FMC_TakeoffRefPage {
         };
         fmc.onRightInput[2] = () => {
             let qnhInput = Number(fmc.inOut);
-            if (qnhInput !== NaN) {
-                if (qnhInput > 28 && qnhInput < 32){
-                    fmc.takeoffQnh = qnhInput.toFixed(2);
-                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+            if (!isNaN(qnhInput)) {
+                if (qnhInput > 28 && qnhInput < 32) {
+                    fmc.takeoffQnh = qnhInput;
                 }
-                else if (qnhInput > 280 && qnhInput < 320){
-                    let qnhParse = qnhInput / 10
-                    fmc.takeoffQnh = qnhParse.toFixed(2);
-                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                else if (qnhInput > 280 && qnhInput < 320) {
+                    fmc.takeoffQnh = qnhInput / 10;
                 }
-                else if (qnhInput > 2800 && qnhInput < 3200){
-                    let qnhParse = qnhInput / 100
-                    fmc.takeoffQnh = qnhParse.toFixed(2);
-                    fmc.takeoffPressAlt = Number(Math.trunc((((29.92 - fmc.takeoffQnh) * 1000) + depRunwayElevation)));
+                else if (qnhInput > 2800 && qnhInput < 3200) {
+                    fmc.takeoffQnh = qnhInput / 100;
+                }
+                else if (qnhInput > 940 && qnhInput < 1090) { //parse hPA input
+                    fmc.takeoffQnh = qnhInput / 33.864;
                 }
                 else {
                     fmc.showErrorMessage("INVALID");
@@ -132,8 +140,9 @@ class CJ4_FMC_TakeoffRefPage {
             else {
                 fmc.showErrorMessage("INVALID");
             }
+            fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
             fmc.clearUserInput();
-            CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);
+            CJ4_FMC_TakeoffRefPage.ShowPage1(fmc, fmc.takeoffQnh); //added ability to keep manually set QNH by passing var
         };
 
         fmc.onLeftInput[4] = () => {
@@ -144,26 +153,13 @@ class CJ4_FMC_TakeoffRefPage {
             }
             depRunwayConditionActive = fmc.depRunwayCondition == 0 ? "DRY"
                 : "WET";
+            fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
             fmc.clearUserInput();
             { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
         };
 
-        fmc.onPrevPage = () => {
-            if (fmc.flightPlanManager.getDepartureRunway() && fmc.takeoffQnh > 28 && fmc.takeoffQnh < 32 && fmc.takeoffOat && fmc.takeoffWindDir >= 0 && fmc.takeoffWindDir <= 360) {
-                CJ4_FMC_TakeoffRefPage.ShowPage3(fmc);
-            }
-            else {
-                fmc.showErrorMessage("INVALID");
-            }
-            };
-        fmc.onNextPage = () => {
-            if (fmc.flightPlanManager.getDepartureRunway() && fmc.takeoffQnh > 28 && fmc.takeoffQnh < 32 && fmc.takeoffOat && fmc.takeoffWindDir >= 0 && fmc.takeoffWindDir <= 360) {
-                CJ4_FMC_TakeoffRefPage.ShowPage2(fmc);
-            }
-            else {
-                fmc.showErrorMessage("INVALID");
-            }
-            };
+        fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage3(fmc); };
+        fmc.onNextPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage2(fmc) { //TAKEOFF REF Page 2
@@ -174,8 +170,11 @@ class CJ4_FMC_TakeoffRefPage {
             originIdent = origin.ident;
         }
         let tow = (fmc.grossWeight - 100);
+        let mtow = 17110;
+        let vT = 140;
+        let sendVS = "SEND>"
         let depRunway = "";
-        let depRunwayLength = "";
+        let depRunwayLength = null;
         let selectedRunway = fmc.flightPlanManager.getDepartureRunway();
         if (selectedRunway) {
             depRunway = "RW" + Avionics.Utils.formatRunway(selectedRunway.designation);
@@ -239,7 +238,7 @@ class CJ4_FMC_TakeoffRefPage {
 
         let tailWindFactor = (((((tow - 11000) * .00000159) + .00275)) * fmc.takeoffPressAlt) + (((tow - 11000) * .0065) + 60); // Number of feet per 1kt of tailwind to add based on weight and altitude
 
-        if (fmc.takeoffWindDir != "---") {
+        if (fmc.takeoffWindDir != "---" && selectedRunway) {
             let depRunwayDirection = new Number(selectedRunway.direction);
             let headwind = Math.trunc(fmc.takeoffWindSpeed * (Math.cos((depRunwayDirection * Math.PI / 180) - (fmc.takeoffWindDir * Math.PI / 180))));
             if (headwind > 0) {
@@ -253,24 +252,49 @@ class CJ4_FMC_TakeoffRefPage {
         let takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
             : "OFF[s-text]/[white]ON[green]";
 
-		if (tow > 17110) { //Turn the takeoff weight yellow if it exceeds the maximum takeoff weight
-			tow = tow + "[yellow]";
-		}
+        let vspeedSendMsg = "";
+        if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.INPROGRESS)
+            vspeedSendMsg = "IN PROGRESS";
+        else if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT)
+            vspeedSendMsg = "COMPLETE";
+
+        let vspeedColor = "";
+        if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT)
+            vspeedColor = "blue";
+
+        if (!fmc.flightPlanManager.getDepartureRunway() || fmc.takeoffOat === "□□□") {
+            fmc.endTakeoffDist = null;
+            v1 = null;
+            vR = null;
+            v2 = null;
+            vT = null;
+            sendVS = "";
+        }
+
+        function formatNumber(num, pad = 3) {
+            return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
+        }
+
+        const towText = formatNumber(WT_ConvertUnit.getWeight(tow).Value, 4) + (tow > 17110 ? "[yellow]" : "");
+        const grossWeightText = formatNumber(WT_ConvertUnit.getWeight(fmc.grossWeight).Value, 4);
+        const mtowText = formatNumber(WT_ConvertUnit.getWeight(mtow).Value, 4);
+        const takeoffDistText = formatNumber(WT_ConvertUnit.getLength(fmc.endTakeoffDist / 3.28).Value, 4);
+        const depRunwayLengthText = WT_ConvertUnit.getLength(depRunwayLength / 3.28).getString(0, " ", "[s-text]");
 
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "2/3[blue] ", "TAKEOFF REF[blue]"],
-            [" A/I[blue]", "V[d-text blue]1:[s-text blue] " + v1.toFixed(0).padStart(3, " ") + "[s-text]"],
+            [" A/I[blue]", "V[d-text blue]1:[s-text blue] " + formatNumber(v1) + "[s-text " + vspeedColor + "]"],
             [takeoffAntiIceActive],
-            [" T/O FLAPS[blue]", "V[d-text blue]R:[s-text blue] " + vR.toFixed(0).padStart(3, " ") + "[s-text]"],
+            [" T/O FLAPS[blue]", "V[d-text blue]R:[s-text blue] " + formatNumber(vR) + "[s-text " + vspeedColor + "]"],
             [takeoffFlapsActive],
-            [" TOW/ GWT/MTOW[blue]", "V[d-text blue]2:[s-text blue] " + v2.toFixed(0).padStart(3, " ") + "[s-text]"],
-            [tow + "/" + fmc.grossWeight + "/17110"],
-            [" TOFL / " + depRunway + "[blue]", "V[d-text blue]T:[s-text blue] 140[s-text]"],
-            [fmc.endTakeoffDist.toFixed(0) + " / " + Math.round(depRunwayLength) + " FT"],
+            [" TOW/GWT/MTOW[blue]", "V[d-text blue]2:[s-text blue] " + formatNumber(v2) + "[s-text " + vspeedColor + "]"],
+            [towText + "/" + grossWeightText + "/" + mtowText + "[s-text]"],
+            [" TOFL/ " + depRunway + "[blue]", "V[d-text blue]T:[s-text blue] " + formatNumber(vT) + "[s-text " + vspeedColor + "]"],
+            [takeoffDistText + " / " + depRunwayLengthText],
             [""],
             [""],
-            [""],
-            ["", "SEND>[s-text]"]
+            ["", vspeedSendMsg + " [s-text]"],
+            ["", sendVS + "[s-text]"]
         ]);
         fmc.onLeftInput[0] = () => {
             if (fmc.takeoffAntiIce == 0) {
@@ -279,7 +303,7 @@ class CJ4_FMC_TakeoffRefPage {
                 fmc.takeoffAntiIce = 0;
             }
             takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
-            : "OFF[s-text]/[white]ON[green]";
+                : "OFF[s-text]/[white]ON[green]";
             fmc.clearUserInput();
             { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); }
         };
@@ -294,17 +318,27 @@ class CJ4_FMC_TakeoffRefPage {
             fmc.clearUserInput();
             { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); }
         };
-        fmc.onRightInput[5] = () => {
-            //added custom LVARS for all v speeds and FMC Set
-            SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots", v1);
-            SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots", vR);
-            SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots", v2);
-            SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots", 140);
-            SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
-            SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
-            SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
-            SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
-        };
+
+        if (fmc.toVSpeedStatus !== CJ4_FMC.VSPEED_STATUS.INPROGRESS) {
+            fmc.onRightInput[5] = () => {
+                fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.INPROGRESS;
+                setTimeout(() => {
+                    //added custom LVARS for all v speeds and FMC Set
+                    SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots", v1);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots", vR);
+                    SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots", v2);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots", 140);
+                    SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
+                    SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
+                    fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.SENT;
+                    CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); // TODO: this will probably send us back to this page even when user navigated away, find better solution
+                }, 2000);
+                CJ4_FMC_TakeoffRefPage.ShowPage2(fmc);
+            };
+        }
+
         fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage3(fmc); };
         fmc.updateSideButtonActiveStatus();
@@ -316,26 +350,20 @@ class CJ4_FMC_TakeoffRefPage {
         if (origin) {
             originIdent = origin.ident;
         }
-        let grWtCell = "";
-        let grossWeightValue = fmc.getWeight();
-        if (isFinite(grossWeightValue)) {
-            grWtCell = (grossWeightValue * 2200).toFixed(0);
-        }
-        let tow = (grWtCell - 100);
-		
-		if (tow > 17110) { //Turn the takeoff weight yellow if it exceeds the maximum takeoff weight
-			tow = tow + "[yellow]";
-		}
+        let tow = (fmc.grossWeight - 100);
+        const towText = WT_ConvertUnit.getWeight(tow, "", "").getString(0, "") + (tow > 17110 ? "[yellow]" : "");
+        const mtowText = WT_ConvertUnit.isMetric() ? "7761" : "17110";
+
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "3/3[blue] ", "TAKEOFF REF[blue]"],
             ["TOW/MTOW[blue]"],
-            [tow + "/17110"],
+            [towText + "/" + mtowText + "[s-text]"],
             ["", "STRUCTURAL LIMIT[blue]"],
-            ["", "17110[s-text]"],
+            ["", mtowText + "[s-text]"],
             ["", "PERFORMANCE LIMIT[blue]"],
-            ["", "17110[s-text]"],
+            ["", mtowText + "[s-text]"],
             ["", "RUNWAY LENGTH LIMIT[blue]"],
-            ["", "17110[s-text]"],
+            ["", mtowText + "[s-text]"],
             [""],
             [""],
             [""],

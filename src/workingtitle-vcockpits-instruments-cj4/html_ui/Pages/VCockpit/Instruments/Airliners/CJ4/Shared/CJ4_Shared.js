@@ -115,8 +115,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             titleText.textContent = "N1%";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
+            titleText.setAttribute("fill", "#cccac8");
+            titleText.setAttribute("font-size", "24");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -133,8 +133,8 @@ class CJ4_SystemEngines extends NavSystemElement {
                     text.textContent = gradValues[i].toString();
                     text.setAttribute("x", startPosX.toString());
                     text.setAttribute("y", posY.toString());
-                    text.setAttribute("fill", "white");
-                    text.setAttribute("font-size", "18");
+                    text.setAttribute("fill", "#cccac8");
+                    text.setAttribute("font-size", "24");
                     text.setAttribute("font-family", "Roboto-Light");
                     text.setAttribute("text-anchor", "middle");
                     text.setAttribute("alignment-baseline", "central");
@@ -145,7 +145,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 1) ? "red" : "white");
+                line.setAttribute("stroke", (i == 1) ? "red" : "#52504d");
                 line.setAttribute("stroke-width", "2");
                 n1Group.appendChild(line);
                 var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -153,7 +153,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX + halfWidth).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 1) ? "red" : "white");
+                line.setAttribute("stroke", (i == 1) ? "red" : "#52504d");
                 line.setAttribute("stroke-width", "2");
                 n1Group.appendChild(line);
                 posY += gradSpacing[i];
@@ -166,7 +166,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", this.N1LeftZoneY1.toString());
             line.setAttribute("x2", this.N1LeftZoneX.toString());
             line.setAttribute("y2", this.N1LeftZoneY2.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             n1Group.appendChild(line);
             this.N1RightZoneX = startPosX + halfWidth;
@@ -177,7 +177,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", this.N1RightZoneY1.toString());
             line.setAttribute("x2", this.N1RightZoneX.toString());
             line.setAttribute("y2", this.N1RightZoneY2.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             n1Group.appendChild(line);
             this.N1LeftCursor = document.createElementNS(Avionics.SVG.NS, "path");
@@ -188,22 +188,22 @@ class CJ4_SystemEngines extends NavSystemElement {
             n1Group.appendChild(this.N1RightCursor);
             var rectOffsetX = 15;
             var rectWidth = 95;
-            var rectHeight = 30;
+            var rectHeight = 40;
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", (startPosX - halfWidth - rectOffsetX).toString());
             rect.setAttribute("y", posY.toString());
             rect.setAttribute("width", rectWidth.toString());
             rect.setAttribute("height", rectHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             n1Group.appendChild(rect);
             this.N1LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N1LeftValue.textContent = "0.0";
             this.N1LeftValue.setAttribute("x", (startPosX - halfWidth - rectOffsetX + rectWidth * 0.95).toString());
-            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.5).toString());
-            this.N1LeftValue.setAttribute("fill", "green");
-            this.N1LeftValue.setAttribute("font-size", "28");
+            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.58).toString());
+            this.N1LeftValue.setAttribute("fill", "#11d011");
+            this.N1LeftValue.setAttribute("font-size", "32");
             this.N1LeftValue.setAttribute("font-family", "Roboto-Bold");
             this.N1LeftValue.setAttribute("text-anchor", "end");
             this.N1LeftValue.setAttribute("alignment-baseline", "central");
@@ -214,15 +214,15 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("width", rectWidth.toString());
             rect.setAttribute("height", rectHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             n1Group.appendChild(rect);
             this.N1RightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N1RightValue.textContent = "0.0";
             this.N1RightValue.setAttribute("x", (startPosX + halfWidth + rectOffsetX - rectWidth * 0.05).toString());
-            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.5).toString());
-            this.N1RightValue.setAttribute("fill", "green");
-            this.N1RightValue.setAttribute("font-size", "28");
+            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.58).toString());
+            this.N1RightValue.setAttribute("fill", "#11d011");
+            this.N1RightValue.setAttribute("font-size", "32");
             this.N1RightValue.setAttribute("font-family", "Roboto-Bold");
             this.N1RightValue.setAttribute("text-anchor", "end");
             this.N1RightValue.setAttribute("alignment-baseline", "central");
@@ -238,8 +238,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             titleText.textContent = "ITT°C";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
+            titleText.setAttribute("fill", "#cccac8");
+            titleText.setAttribute("font-size", "24");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -256,8 +256,8 @@ class CJ4_SystemEngines extends NavSystemElement {
                     text.textContent = gradValues[i].toString();
                     text.setAttribute("x", startPosX.toString());
                     text.setAttribute("y", posY.toString());
-                    text.setAttribute("fill", "white");
-                    text.setAttribute("font-size", "18");
+                    text.setAttribute("fill", "#cccac8");
+                    text.setAttribute("font-size", "24");
                     text.setAttribute("font-family", "Roboto-Light");
                     text.setAttribute("text-anchor", "middle");
                     text.setAttribute("alignment-baseline", "central");
@@ -268,7 +268,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 3) ? "red" : "white");
+                line.setAttribute("stroke", (i == 3) ? "red" : "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -276,7 +276,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX + halfWidth).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 4) ? "red" : "white");
+                line.setAttribute("stroke", (i == 4) ? "red" : "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 posY += gradSpacing[i];
@@ -286,7 +286,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", posY.toString());
             line.setAttribute("x2", (startPosX - halfWidth).toString());
             line.setAttribute("y2", posY.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             ittGroup.appendChild(line);
             var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -294,7 +294,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", posY.toString());
             line.setAttribute("x2", (startPosX + halfWidth + 12).toString());
             line.setAttribute("y2", posY.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             ittGroup.appendChild(line);
             this.ITTLeftZoneX = startPosX - halfWidth;
@@ -305,7 +305,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", this.ITTLeftZoneY1.toString());
             line.setAttribute("x2", this.ITTLeftZoneX.toString());
             line.setAttribute("y2", this.ITTLeftZoneY2.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             ittGroup.appendChild(line);
             this.ITTRightZoneX = startPosX + halfWidth;
@@ -316,7 +316,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", this.ITTRightZoneY1.toString());
             line.setAttribute("x2", this.ITTRightZoneX.toString());
             line.setAttribute("y2", this.ITTRightZoneY2.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             ittGroup.appendChild(line);
             var cursorWidth = 10;
@@ -352,49 +352,49 @@ class CJ4_SystemEngines extends NavSystemElement {
             titleTextTop.textContent = "N2 %";
             titleTextTop.setAttribute("x", startPosX.toString());
             titleTextTop.setAttribute("y", startPosY.toString());
-            titleTextTop.setAttribute("fill", "white");
-            titleTextTop.setAttribute("font-size", "18");
+            titleTextTop.setAttribute("fill", "#cccac8");
+            titleTextTop.setAttribute("font-size", "22");
             titleTextTop.setAttribute("font-family", "Roboto-Light");
             titleTextTop.setAttribute("text-anchor", "middle");
             titleTextTop.setAttribute("alignment-baseline", "central");
             n2Group.appendChild(titleTextTop);
             var rectMarginX = 40;
-            var rectWidth = 80;
-            var rectHeight = 30;
+            var rectWidth = 85;
+            var rectHeight = 32;
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", (startPosX - rectMarginX - rectWidth).toString());
-            rect.setAttribute("y", (startPosY - rectHeight * 0.5).toString());
+            rect.setAttribute("y", (startPosY - rectHeight * 0.6).toString());
             rect.setAttribute("width", rectWidth.toString());
             rect.setAttribute("height", rectHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             n2Group.appendChild(rect);
             this.N2LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N2LeftValue.textContent = "0.0";
             this.N2LeftValue.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
             this.N2LeftValue.setAttribute("y", startPosY.toString());
-            this.N2LeftValue.setAttribute("fill", "green");
-            this.N2LeftValue.setAttribute("font-size", "25");
+            this.N2LeftValue.setAttribute("fill", "#11d011");
+            this.N2LeftValue.setAttribute("font-size", "28");
             this.N2LeftValue.setAttribute("font-family", "Roboto-Bold");
             this.N2LeftValue.setAttribute("text-anchor", "end");
             this.N2LeftValue.setAttribute("alignment-baseline", "central");
             n2Group.appendChild(this.N2LeftValue);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", (startPosX + rectMarginX).toString());
-            rect.setAttribute("y", (startPosY - rectHeight * 0.5).toString());
+            rect.setAttribute("y", (startPosY - rectHeight * 0.6).toString());
             rect.setAttribute("width", rectWidth.toString());
             rect.setAttribute("height", rectHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             n2Group.appendChild(rect);
             this.N2RightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N2RightValue.textContent = "0.0";
             this.N2RightValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.N2RightValue.setAttribute("y", startPosY.toString());
-            this.N2RightValue.setAttribute("fill", "green");
-            this.N2RightValue.setAttribute("font-size", "25");
+            this.N2RightValue.setAttribute("fill", "#11d011");
+            this.N2RightValue.setAttribute("font-size", "28");
             this.N2RightValue.setAttribute("font-family", "Roboto-Bold");
             this.N2RightValue.setAttribute("text-anchor", "end");
             this.N2RightValue.setAttribute("alignment-baseline", "central");
@@ -413,18 +413,18 @@ class CJ4_SystemEngines extends NavSystemElement {
             titleTextLeft.textContent = "OIL °C";
             titleTextLeft.setAttribute("x", startPosX.toString());
             titleTextLeft.setAttribute("y", startPosY.toString());
-            titleTextLeft.setAttribute("fill", "white");
-            titleTextLeft.setAttribute("font-size", "18");
+            titleTextLeft.setAttribute("fill", "#cccac8");
+            titleTextLeft.setAttribute("font-size", "22");
             titleTextLeft.setAttribute("font-family", "Roboto-Light");
             titleTextLeft.setAttribute("text-anchor", "middle");
             titleTextLeft.setAttribute("alignment-baseline", "central");
             oilGroup.appendChild(titleTextLeft);
             this.OilTemp1Value = document.createElementNS(Avionics.SVG.NS, "text");
             this.OilTemp1Value.textContent = "15";
-            this.OilTemp1Value.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.OilTemp1Value.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.2).toString());
             this.OilTemp1Value.setAttribute("y", startPosY.toString());
-            this.OilTemp1Value.setAttribute("fill", "green");
-            this.OilTemp1Value.setAttribute("font-size", "25");
+            this.OilTemp1Value.setAttribute("fill", "#11d011");
+            this.OilTemp1Value.setAttribute("font-size", "28");
             this.OilTemp1Value.setAttribute("font-family", "Roboto-Bold");
             this.OilTemp1Value.setAttribute("text-anchor", "end");
             this.OilTemp1Value.setAttribute("alignment-baseline", "central");
@@ -433,8 +433,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.OilTemp2Value.textContent = "15";
             this.OilTemp2Value.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.OilTemp2Value.setAttribute("y", startPosY.toString());
-            this.OilTemp2Value.setAttribute("fill", "green");
-            this.OilTemp2Value.setAttribute("font-size", "25");
+            this.OilTemp2Value.setAttribute("fill", "#11d011");
+            this.OilTemp2Value.setAttribute("font-size", "28");
             this.OilTemp2Value.setAttribute("font-family", "Roboto-Bold");
             this.OilTemp2Value.setAttribute("text-anchor", "end");
             this.OilTemp2Value.setAttribute("alignment-baseline", "central");
@@ -444,18 +444,18 @@ class CJ4_SystemEngines extends NavSystemElement {
             titleTextLeft.textContent = "OIL PSI";
             titleTextLeft.setAttribute("x", startPosX.toString());
             titleTextLeft.setAttribute("y", startPosY.toString());
-            titleTextLeft.setAttribute("fill", "white");
-            titleTextLeft.setAttribute("font-size", "18");
+            titleTextLeft.setAttribute("fill", "#cccac8");
+            titleTextLeft.setAttribute("font-size", "22");
             titleTextLeft.setAttribute("font-family", "Roboto-Light");
             titleTextLeft.setAttribute("text-anchor", "middle");
             titleTextLeft.setAttribute("alignment-baseline", "central");
             oilGroup.appendChild(titleTextLeft);
             this.OilPSI1Value = document.createElementNS(Avionics.SVG.NS, "text");
             this.OilPSI1Value.textContent = "0";
-            this.OilPSI1Value.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.OilPSI1Value.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.2).toString());
             this.OilPSI1Value.setAttribute("y", startPosY.toString());
-            this.OilPSI1Value.setAttribute("fill", "green");
-            this.OilPSI1Value.setAttribute("font-size", "25");
+            this.OilPSI1Value.setAttribute("fill", "#11d011");
+            this.OilPSI1Value.setAttribute("font-size", "28");
             this.OilPSI1Value.setAttribute("font-family", "Roboto-Bold");
             this.OilPSI1Value.setAttribute("text-anchor", "end");
             this.OilPSI1Value.setAttribute("alignment-baseline", "central");
@@ -464,8 +464,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.OilPSI2Value.textContent = "0";
             this.OilPSI2Value.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.OilPSI2Value.setAttribute("y", startPosY.toString());
-            this.OilPSI2Value.setAttribute("fill", "green");
-            this.OilPSI2Value.setAttribute("font-size", "25");
+            this.OilPSI2Value.setAttribute("fill", "#11d011");
+            this.OilPSI2Value.setAttribute("font-size", "28");
             this.OilPSI2Value.setAttribute("font-family", "Roboto-Bold");
             this.OilPSI2Value.setAttribute("text-anchor", "end");
             this.OilPSI2Value.setAttribute("alignment-baseline", "central");
@@ -478,62 +478,62 @@ class CJ4_SystemEngines extends NavSystemElement {
             var startPosX = 580;
             var startPosY = 165;
             var rectMarginX = 40;
-            var rectWidth = 80;
-            var rectHeight = 30;
+            var rectWidth = 75;
+            var rectHeight = 35;
             var text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = "FUEL";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", (startPosY - 10).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
             fuelGroup.appendChild(text);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "LBS";
+            text.textContent = WT_ConvertUnit.isMetric() ? "KGS" : "LBS";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", (startPosY + 10).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
             fuelGroup.appendChild(text);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
-            rect.setAttribute("x", (startPosX - rectMarginX - rectWidth).toString());
-            rect.setAttribute("y", (startPosY - rectHeight * 0.5).toString());
+            rect.setAttribute("x", (startPosX - rectMarginX - 72).toString());
+            rect.setAttribute("y", (startPosY - rectHeight * 0.55).toString());
             rect.setAttribute("width", rectWidth.toString());
             rect.setAttribute("height", rectHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             fuelGroup.appendChild(rect);
             this.FuelLBSLeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.FuelLBSLeftValue.textContent = "2910";
             this.FuelLBSLeftValue.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
             this.FuelLBSLeftValue.setAttribute("y", startPosY.toString());
-            this.FuelLBSLeftValue.setAttribute("fill", "green");
-            this.FuelLBSLeftValue.setAttribute("font-size", "25");
+            this.FuelLBSLeftValue.setAttribute("fill", "#11d011");
+            this.FuelLBSLeftValue.setAttribute("font-size", "28");
             this.FuelLBSLeftValue.setAttribute("font-family", "Roboto-Bold");
             this.FuelLBSLeftValue.setAttribute("text-anchor", "end");
             this.FuelLBSLeftValue.setAttribute("alignment-baseline", "central");
             fuelGroup.appendChild(this.FuelLBSLeftValue);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
-            rect.setAttribute("x", (startPosX + rectMarginX).toString());
-            rect.setAttribute("y", (startPosY - rectHeight * 0.5).toString());
+            rect.setAttribute("x", (startPosX + 35).toString());
+            rect.setAttribute("y", (startPosY - rectHeight * 0.55).toString());
             rect.setAttribute("width", rectWidth.toString());
             rect.setAttribute("height", rectHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             fuelGroup.appendChild(rect);
             this.FuelLBSRightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.FuelLBSRightValue.textContent = "2910";
-            this.FuelLBSRightValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
+            this.FuelLBSRightValue.setAttribute("x", (startPosX + 33 + rectWidth * 0.95).toString());
             this.FuelLBSRightValue.setAttribute("y", startPosY.toString());
-            this.FuelLBSRightValue.setAttribute("fill", "green");
-            this.FuelLBSRightValue.setAttribute("font-size", "25");
+            this.FuelLBSRightValue.setAttribute("fill", "#11d011");
+            this.FuelLBSRightValue.setAttribute("font-size", "28");
             this.FuelLBSRightValue.setAttribute("font-family", "Roboto-Bold");
             this.FuelLBSRightValue.setAttribute("text-anchor", "end");
             this.FuelLBSRightValue.setAttribute("alignment-baseline", "central");
@@ -553,7 +553,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", blockPosY.toString());
             line.setAttribute("x2", (blockPosX + lineSize).toString());
             line.setAttribute("y2", blockPosY.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             trimGroup.appendChild(line);
             var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -561,7 +561,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", blockPosY.toString());
             line.setAttribute("x2", blockPosX.toString());
             line.setAttribute("y2", (blockPosY + lineSize).toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             trimGroup.appendChild(line);
             var textStartY = blockPosY + lineSize + 15;
@@ -570,8 +570,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "T";
             text.setAttribute("x", blockPosX.toString());
             text.setAttribute("y", (textStartY + textSpacingY * 0).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -580,8 +580,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "R";
             text.setAttribute("x", blockPosX.toString());
             text.setAttribute("y", (textStartY + textSpacingY * 1).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -590,8 +590,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "I";
             text.setAttribute("x", blockPosX.toString());
             text.setAttribute("y", (textStartY + textSpacingY * 2).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -600,8 +600,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "M";
             text.setAttribute("x", blockPosX.toString());
             text.setAttribute("y", (textStartY + textSpacingY * 3).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -612,7 +612,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", lineStartY.toString());
             line.setAttribute("x2", blockPosX.toString());
             line.setAttribute("y2", (lineStartY + lineSize).toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             trimGroup.appendChild(line);
             var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -620,7 +620,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", (lineStartY + lineSize).toString());
             line.setAttribute("x2", (blockPosX + lineSize).toString());
             line.setAttribute("y2", (lineStartY + lineSize).toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             trimGroup.appendChild(line);
             blockPosX = startPosX + 80;
@@ -629,8 +629,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "AIL";
             text.setAttribute("x", blockPosX.toString());
             text.setAttribute("y", blockPosY.toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -644,15 +644,15 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", gaugeHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             trimGroup.appendChild(rect);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = "L";
             text.setAttribute("x", (blockPosX - gaugeWidth * 0.5 - 10).toString());
             text.setAttribute("y", (blockPosY + gaugeHeight * 0.5).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "end");
             text.setAttribute("alignment-baseline", "central");
@@ -661,8 +661,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "R";
             text.setAttribute("x", (blockPosX + gaugeWidth * 0.5 + 10).toString());
             text.setAttribute("y", (blockPosY + gaugeHeight * 0.5).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "start");
             text.setAttribute("alignment-baseline", "central");
@@ -672,14 +672,14 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("y", blockPosY.toString());
             rect.setAttribute("width", (gaugeWidth * 0.15).toString());
             rect.setAttribute("height", gaugeHeight.toString());
-            rect.setAttribute("fill", "green");
+            rect.setAttribute("fill", "#11d011");
             trimGroup.appendChild(rect);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", blockPosX.toString());
             rect.setAttribute("y", blockPosY.toString());
             rect.setAttribute("width", (gaugeWidth * 0.15).toString());
             rect.setAttribute("height", gaugeHeight.toString());
-            rect.setAttribute("fill", "green");
+            rect.setAttribute("fill", "#11d011");
             trimGroup.appendChild(rect);
             this.AileronCursorX1 = blockPosX - gaugeWidth * 0.5;
             this.AileronCursorX2 = blockPosX + gaugeWidth * 0.5;
@@ -702,8 +702,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "RUD";
             text.setAttribute("x", blockPosX.toString());
             text.setAttribute("y", blockPosY.toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -714,8 +714,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "ELEV";
             text.setAttribute("x", blockPosX.toString());
             text.setAttribute("y", blockPosY.toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -730,19 +730,23 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", gaugeHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             trimGroup.appendChild(rect);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
+            var percent = (-Simplane.getTrimNeutral() + 1.0) * 0.5;
+            percent = Math.min(1, Math.max(0, percent));
+            var posY = ((gaugeStartY + gaugeHeight) - (gaugeHeight * percent)) - ((gaugeHeight * 0.18) / 2);
+            var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
-            rect.setAttribute("y", (gaugeStartY + gaugeHeight * 0.25).toString());
+            rect.setAttribute("y", (posY).toString());
             rect.setAttribute("width", gaugeWidth.toString());
-            rect.setAttribute("height", (gaugeHeight * 0.25).toString());
+            rect.setAttribute("height", (gaugeHeight * 0.20).toString());
             rect.setAttribute("fill", "green");
             trimGroup.appendChild(rect);
             this.ElevatorCursorX = gaugeStartX + gaugeWidth;
-            this.ElevatorCursorY1 = gaugeStartY + gaugeHeight;
-            this.ElevatorCursorY2 = gaugeStartY;
+            this.ElevatorCursorY1 = gaugeStartY;
+            this.ElevatorCursorY2 = gaugeStartY + gaugeHeight;
             this.ElevatorCursor = document.createElementNS(Avionics.SVG.NS, "path");
             this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + this.ElevatorCursorY2 + ")");
             this.ElevatorCursor.setAttribute("fill", "white");
@@ -752,8 +756,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "ND";
             text.setAttribute("x", (gaugeStartX - 8).toString());
             text.setAttribute("y", (gaugeStartY + 14).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "end");
             text.setAttribute("alignment-baseline", "top");
@@ -762,8 +766,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "NU";
             text.setAttribute("x", (gaugeStartX - 8).toString());
             text.setAttribute("y", (gaugeStartY + gaugeHeight).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "end");
             text.setAttribute("alignment-baseline", "bottom");
@@ -774,8 +778,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "FLAPS";
             text.setAttribute("x", blockPosX.toString());
             text.setAttribute("y", blockPosY.toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -801,15 +805,15 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", startY.toString());
                 line.setAttribute("x2", endX.toString());
                 line.setAttribute("y2", endY.toString());
-                line.setAttribute("stroke", "white");
+                line.setAttribute("stroke", "#52504d");
                 line.setAttribute("stroke-width", "2");
                 trimGroup.appendChild(line);
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
                 text.textContent = this.Flaps_Table_Values[i].toString();
                 text.setAttribute("x", textX.toString());
                 text.setAttribute("y", textY.toString());
-                text.setAttribute("fill", "white");
-                text.setAttribute("font-size", "16");
+                text.setAttribute("fill", "#cccac8");
+                text.setAttribute("font-size", "22");
                 text.setAttribute("font-family", "Roboto-Light");
                 text.setAttribute("text-anchor", "middle");
                 text.setAttribute("alignment-baseline", "central");
@@ -832,8 +836,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             titleText.textContent = "N1%";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
+            titleText.setAttribute("fill", "#cccac8");
+            titleText.setAttribute("font-size", "24");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -850,8 +854,8 @@ class CJ4_SystemEngines extends NavSystemElement {
                     text.textContent = gradValues[i].toString();
                     text.setAttribute("x", startPosX.toString());
                     text.setAttribute("y", posY.toString());
-                    text.setAttribute("fill", "white");
-                    text.setAttribute("font-size", "18");
+                    text.setAttribute("fill", "#cccac8");
+                    text.setAttribute("font-size", "24");
                     text.setAttribute("font-family", "Roboto-Light");
                     text.setAttribute("text-anchor", "middle");
                     text.setAttribute("alignment-baseline", "central");
@@ -862,7 +866,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 1) ? "red" : "white");
+                line.setAttribute("stroke", (i == 1) ? "red" : "#52504d");
                 line.setAttribute("stroke-width", "2");
                 n1Group.appendChild(line);
                 var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -870,7 +874,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX + halfWidth).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 1) ? "red" : "white");
+                line.setAttribute("stroke", (i == 1) ? "red" : "#52504d");
                 line.setAttribute("stroke-width", "2");
                 n1Group.appendChild(line);
                 posY += gradSpacing[i];
@@ -883,7 +887,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", this.N1LeftZoneY1.toString());
             line.setAttribute("x2", this.N1LeftZoneX.toString());
             line.setAttribute("y2", this.N1LeftZoneY2.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             n1Group.appendChild(line);
             this.N1RightZoneX = startPosX + halfWidth;
@@ -894,7 +898,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", this.N1RightZoneY1.toString());
             line.setAttribute("x2", this.N1RightZoneX.toString());
             line.setAttribute("y2", this.N1RightZoneY2.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             n1Group.appendChild(line);
             this.N1LeftCursor = document.createElementNS(Avionics.SVG.NS, "path");
@@ -912,15 +916,15 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("width", rectWidth.toString());
             rect.setAttribute("height", rectHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             n1Group.appendChild(rect);
             this.N1LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N1LeftValue.textContent = "0.0";
             this.N1LeftValue.setAttribute("x", (startPosX - halfWidth - rectOffsetX + rectWidth * 0.95).toString());
-            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.5).toString());
-            this.N1LeftValue.setAttribute("fill", "green");
-            this.N1LeftValue.setAttribute("font-size", "28");
+            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.58).toString());
+            this.N1LeftValue.setAttribute("fill", "#11d011");
+            this.N1LeftValue.setAttribute("font-size", "32");
             this.N1LeftValue.setAttribute("font-family", "Roboto-Bold");
             this.N1LeftValue.setAttribute("text-anchor", "end");
             this.N1LeftValue.setAttribute("alignment-baseline", "central");
@@ -931,15 +935,15 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("width", rectWidth.toString());
             rect.setAttribute("height", rectHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             n1Group.appendChild(rect);
             this.N1RightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N1RightValue.textContent = "0.0";
             this.N1RightValue.setAttribute("x", (startPosX + halfWidth + rectOffsetX - rectWidth * 0.05).toString());
-            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.5).toString());
-            this.N1RightValue.setAttribute("fill", "green");
-            this.N1RightValue.setAttribute("font-size", "28");
+            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.58).toString());
+            this.N1RightValue.setAttribute("fill", "#11d011");
+            this.N1RightValue.setAttribute("font-size", "32");
             this.N1RightValue.setAttribute("font-family", "Roboto-Bold");
             this.N1RightValue.setAttribute("text-anchor", "end");
             this.N1RightValue.setAttribute("alignment-baseline", "central");
@@ -955,8 +959,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             titleText.textContent = "ITT°C";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
+            titleText.setAttribute("fill", "#cccac8");
+            titleText.setAttribute("font-size", "24");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -973,8 +977,8 @@ class CJ4_SystemEngines extends NavSystemElement {
                     text.textContent = gradValues[i].toString();
                     text.setAttribute("x", startPosX.toString());
                     text.setAttribute("y", posY.toString());
-                    text.setAttribute("fill", "white");
-                    text.setAttribute("font-size", "18");
+                    text.setAttribute("fill", "#cccac8");
+                    text.setAttribute("font-size", "24");
                     text.setAttribute("font-family", "Roboto-Light");
                     text.setAttribute("text-anchor", "middle");
                     text.setAttribute("alignment-baseline", "central");
@@ -985,7 +989,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 4) ? "red" : "white");
+                line.setAttribute("stroke", (i == 4) ? "red" : "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -993,7 +997,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX + halfWidth).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 4) ? "red" : "white");
+                line.setAttribute("stroke", (i == 4) ? "red" : "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 posY += gradSpacing[i];
@@ -1003,7 +1007,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", posY.toString());
             line.setAttribute("x2", (startPosX - halfWidth).toString());
             line.setAttribute("y2", posY.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             ittGroup.appendChild(line);
             var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -1011,7 +1015,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", posY.toString());
             line.setAttribute("x2", (startPosX + halfWidth + 12).toString());
             line.setAttribute("y2", posY.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             ittGroup.appendChild(line);
             this.ITTLeftZoneX = startPosX - halfWidth;
@@ -1022,7 +1026,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", this.ITTLeftZoneY1.toString());
             line.setAttribute("x2", this.ITTLeftZoneX.toString());
             line.setAttribute("y2", this.ITTLeftZoneY2.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             ittGroup.appendChild(line);
             this.ITTRightZoneX = startPosX + halfWidth;
@@ -1033,7 +1037,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", this.ITTRightZoneY1.toString());
             line.setAttribute("x2", this.ITTRightZoneX.toString());
             line.setAttribute("y2", this.ITTRightZoneY2.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             ittGroup.appendChild(line);
             var cursorWidth = 10;
@@ -1069,7 +1073,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             titleTextTop.textContent = "N2";
             titleTextTop.setAttribute("x", startPosX.toString());
             titleTextTop.setAttribute("y", startPosY.toString());
-            titleTextTop.setAttribute("fill", "white");
+            titleTextTop.setAttribute("fill", "#cccac8");
             titleTextTop.setAttribute("font-size", "22");
             titleTextTop.setAttribute("font-family", "Roboto-Light");
             titleTextTop.setAttribute("text-anchor", "middle");
@@ -1079,31 +1083,31 @@ class CJ4_SystemEngines extends NavSystemElement {
             titleTextBottom.textContent = "%";
             titleTextBottom.setAttribute("x", startPosX.toString());
             titleTextBottom.setAttribute("y", (startPosY + 20).toString());
-            titleTextBottom.setAttribute("fill", "white");
-            titleTextBottom.setAttribute("font-size", "22");
+            titleTextBottom.setAttribute("fill", "#cccac8");
+            titleTextBottom.setAttribute("font-size", "24");
             titleTextBottom.setAttribute("font-family", "Roboto-Light");
             titleTextBottom.setAttribute("text-anchor", "middle");
             titleTextBottom.setAttribute("alignment-baseline", "central");
             n2Group.appendChild(titleTextBottom);
             var rectMarginX = 22;
             var rectMarginY = -3;
-            var rectWidth = 80;
-            var rectHeight = 30;
+            var rectWidth = 85;
+            var rectHeight = 32;
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", (startPosX - rectMarginX - rectWidth).toString());
             rect.setAttribute("y", (startPosY + rectMarginY).toString());
             rect.setAttribute("width", rectWidth.toString());
             rect.setAttribute("height", rectHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             n2Group.appendChild(rect);
             this.N2LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N2LeftValue.textContent = "0.0";
             this.N2LeftValue.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
-            this.N2LeftValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.5).toString());
-            this.N2LeftValue.setAttribute("fill", "green");
-            this.N2LeftValue.setAttribute("font-size", "25");
+            this.N2LeftValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.58).toString());
+            this.N2LeftValue.setAttribute("fill", "#11d011");
+            this.N2LeftValue.setAttribute("font-size", "28");
             this.N2LeftValue.setAttribute("font-family", "Roboto-Bold");
             this.N2LeftValue.setAttribute("text-anchor", "end");
             this.N2LeftValue.setAttribute("alignment-baseline", "central");
@@ -1114,15 +1118,15 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("width", rectWidth.toString());
             rect.setAttribute("height", rectHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             n2Group.appendChild(rect);
             this.N2RightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N2RightValue.textContent = "0.0";
             this.N2RightValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
-            this.N2RightValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.5).toString());
-            this.N2RightValue.setAttribute("fill", "green");
-            this.N2RightValue.setAttribute("font-size", "25");
+            this.N2RightValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.58).toString());
+            this.N2RightValue.setAttribute("fill", "#11d011");
+            this.N2RightValue.setAttribute("font-size", "28");
             this.N2RightValue.setAttribute("font-family", "Roboto-Bold");
             this.N2RightValue.setAttribute("text-anchor", "end");
             this.N2RightValue.setAttribute("alignment-baseline", "central");
@@ -1141,7 +1145,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", startPosY.toString());
             line.setAttribute("x2", (startPosX + halfWidth * 1.8).toString());
             line.setAttribute("y2", startPosY.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             oilGroup.appendChild(line);
             var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -1149,7 +1153,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", (startPosY + fullHeight).toString());
             line.setAttribute("x2", (startPosX + halfWidth * 1.8).toString());
             line.setAttribute("y2", (startPosY + fullHeight).toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             oilGroup.appendChild(line);
             var gaugeWidth = 8;
@@ -1158,15 +1162,15 @@ class CJ4_SystemEngines extends NavSystemElement {
             titleTextLeft.textContent = "OIL PSI";
             titleTextLeft.setAttribute("x", (startPosX - halfWidth).toString());
             titleTextLeft.setAttribute("y", (startPosY + 16).toString());
-            titleTextLeft.setAttribute("fill", "white");
-            titleTextLeft.setAttribute("font-size", "18");
+            titleTextLeft.setAttribute("fill", "#cccac8");
+            titleTextLeft.setAttribute("font-size", "22");
             titleTextLeft.setAttribute("font-family", "Roboto-Light");
             titleTextLeft.setAttribute("text-anchor", "middle");
             titleTextLeft.setAttribute("alignment-baseline", "central");
             oilGroup.appendChild(titleTextLeft);
             {
                 var psiRects = [0.1, 0.1, 0.6, 0.1, 0.1];
-                var psiColors = ["red", "yellow", "green", "yellow", "red"];
+                var psiColors = ["red", "yellow", "#11d011", "yellow", "red"];
                 this.OilPSI1CursorX = startPosX - halfWidth * 1.4;
                 this.OilPSI1CursorY2 = startPosY + fullHeight * 0.25;
                 this.OilPSI1CursorY1 = this.OilPSI1CursorY2 + gaugeHeight;
@@ -1186,16 +1190,16 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilPSI1Value = document.createElementNS(Avionics.SVG.NS, "text");
                 this.OilPSI1Value.textContent = "0";
                 this.OilPSI1Value.setAttribute("x", (this.OilPSI1CursorX + gaugeWidth * 0.5).toString());
-                this.OilPSI1Value.setAttribute("y", (this.OilPSI1CursorY1 + 10).toString());
-                this.OilPSI1Value.setAttribute("fill", "green");
-                this.OilPSI1Value.setAttribute("font-size", "20");
+                this.OilPSI1Value.setAttribute("y", (this.OilPSI1CursorY1 + 15).toString());
+                this.OilPSI1Value.setAttribute("fill", "#11d011");
+                this.OilPSI1Value.setAttribute("font-size", "22");
                 this.OilPSI1Value.setAttribute("font-family", "Roboto-Bold");
                 this.OilPSI1Value.setAttribute("text-anchor", "middle");
                 this.OilPSI1Value.setAttribute("alignment-baseline", "central");
                 oilGroup.appendChild(this.OilPSI1Value);
                 this.OilPSI1Cursor = document.createElementNS(Avionics.SVG.NS, "path");
                 this.OilPSI1Cursor.setAttribute("transform", "translate (" + this.OilPSI1CursorX + " " + this.OilPSI1CursorY1 + ")");
-                this.OilPSI1Cursor.setAttribute("fill", "green");
+                this.OilPSI1Cursor.setAttribute("fill", "#11d011");
                 this.OilPSI1Cursor.setAttribute("d", "M0 0 l-15 5 l0 -10 l15 5 Z");
                 oilGroup.appendChild(this.OilPSI1Cursor);
                 this.OilPSI2CursorX = startPosX - halfWidth * 0.7;
@@ -1217,16 +1221,16 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilPSI2Value = document.createElementNS(Avionics.SVG.NS, "text");
                 this.OilPSI2Value.textContent = "0";
                 this.OilPSI2Value.setAttribute("x", (this.OilPSI2CursorX + gaugeWidth * 0.5).toString());
-                this.OilPSI2Value.setAttribute("y", (this.OilPSI2CursorY1 + 10).toString());
-                this.OilPSI2Value.setAttribute("fill", "green");
-                this.OilPSI2Value.setAttribute("font-size", "20");
+                this.OilPSI2Value.setAttribute("y", (this.OilPSI2CursorY1 + 15).toString());
+                this.OilPSI2Value.setAttribute("fill", "#11d011");
+                this.OilPSI2Value.setAttribute("font-size", "22");
                 this.OilPSI2Value.setAttribute("font-family", "Roboto-Bold");
                 this.OilPSI2Value.setAttribute("text-anchor", "middle");
                 this.OilPSI2Value.setAttribute("alignment-baseline", "central");
                 oilGroup.appendChild(this.OilPSI2Value);
                 this.OilPSI2Cursor = document.createElementNS(Avionics.SVG.NS, "path");
                 this.OilPSI2Cursor.setAttribute("transform", "translate (" + this.OilPSI2CursorX + " " + this.OilPSI2CursorY1 + ")");
-                this.OilPSI2Cursor.setAttribute("fill", "green");
+                this.OilPSI2Cursor.setAttribute("fill", "#11d011");
                 this.OilPSI2Cursor.setAttribute("d", "M0 0 l-15 5 l0 -10 l15 5 Z");
                 oilGroup.appendChild(this.OilPSI2Cursor);
             }
@@ -1234,15 +1238,15 @@ class CJ4_SystemEngines extends NavSystemElement {
             titleTextRight.textContent = "OIL °C";
             titleTextRight.setAttribute("x", (startPosX + halfWidth).toString());
             titleTextRight.setAttribute("y", (startPosY + 16).toString());
-            titleTextRight.setAttribute("fill", "white");
-            titleTextRight.setAttribute("font-size", "18");
+            titleTextRight.setAttribute("fill", "#cccac8");
+            titleTextRight.setAttribute("font-size", "22");
             titleTextRight.setAttribute("font-family", "Roboto-Light");
             titleTextRight.setAttribute("text-anchor", "middle");
             titleTextRight.setAttribute("alignment-baseline", "central");
             oilGroup.appendChild(titleTextRight);
             {
                 var tempRects = [0.1, 0.1, 0.6, 0.1, 0.1];
-                var tempColors = ["red", "yellow", "green", "yellow", "red"];
+                var tempColors = ["red", "yellow", "#11d011", "yellow", "red"];
                 this.OilTemp1CursorX = startPosX + halfWidth * 0.7;
                 this.OilTemp1CursorY2 = startPosY + fullHeight * 0.25;
                 this.OilTemp1CursorY1 = this.OilTemp1CursorY2 + gaugeHeight;
@@ -1262,16 +1266,16 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilTemp1Value = document.createElementNS(Avionics.SVG.NS, "text");
                 this.OilTemp1Value.textContent = "0";
                 this.OilTemp1Value.setAttribute("x", (this.OilTemp1CursorX + gaugeWidth * 0.5).toString());
-                this.OilTemp1Value.setAttribute("y", (this.OilTemp1CursorY1 + 10).toString());
-                this.OilTemp1Value.setAttribute("fill", "green");
-                this.OilTemp1Value.setAttribute("font-size", "20");
+                this.OilTemp1Value.setAttribute("y", (this.OilTemp1CursorY1 + 15).toString());
+                this.OilTemp1Value.setAttribute("fill", "#11d011");
+                this.OilTemp1Value.setAttribute("font-size", "22");
                 this.OilTemp1Value.setAttribute("font-family", "Roboto-Bold");
                 this.OilTemp1Value.setAttribute("text-anchor", "middle");
                 this.OilTemp1Value.setAttribute("alignment-baseline", "central");
                 oilGroup.appendChild(this.OilTemp1Value);
                 this.OilTemp1Cursor = document.createElementNS(Avionics.SVG.NS, "path");
                 this.OilTemp1Cursor.setAttribute("transform", "translate (" + this.OilTemp1CursorX + " " + this.OilTemp1CursorY1 + ")");
-                this.OilTemp1Cursor.setAttribute("fill", "green");
+                this.OilTemp1Cursor.setAttribute("fill", "#11d011");
                 this.OilTemp1Cursor.setAttribute("d", "M0 0 l-15 5 l0 -10 l15 5 Z");
                 oilGroup.appendChild(this.OilTemp1Cursor);
                 this.OilTemp2CursorX = startPosX + halfWidth * 1.4;
@@ -1293,16 +1297,16 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilTemp2Value = document.createElementNS(Avionics.SVG.NS, "text");
                 this.OilTemp2Value.textContent = "0";
                 this.OilTemp2Value.setAttribute("x", (this.OilTemp2CursorX + gaugeWidth * 0.5).toString());
-                this.OilTemp2Value.setAttribute("y", (this.OilTemp2CursorY1 + 10).toString());
-                this.OilTemp2Value.setAttribute("fill", "green");
-                this.OilTemp2Value.setAttribute("font-size", "20");
+                this.OilTemp2Value.setAttribute("y", (this.OilTemp2CursorY1 + 15).toString());
+                this.OilTemp2Value.setAttribute("fill", "#11d011");
+                this.OilTemp2Value.setAttribute("font-size", "22");
                 this.OilTemp2Value.setAttribute("font-family", "Roboto-Bold");
                 this.OilTemp2Value.setAttribute("text-anchor", "middle");
                 this.OilTemp2Value.setAttribute("alignment-baseline", "central");
                 oilGroup.appendChild(this.OilTemp2Value);
                 this.OilTemp2Cursor = document.createElementNS(Avionics.SVG.NS, "path");
                 this.OilTemp2Cursor.setAttribute("transform", "translate (" + this.OilTemp2CursorX + " " + this.OilTemp2CursorY1 + ")");
-                this.OilTemp2Cursor.setAttribute("fill", "green");
+                this.OilTemp2Cursor.setAttribute("fill", "#11d011");
                 this.OilTemp2Cursor.setAttribute("d", "M0 0 l-15 5 l0 -10 l15 5 Z");
                 oilGroup.appendChild(this.OilTemp2Cursor);
             }
@@ -1315,25 +1319,25 @@ class CJ4_SystemEngines extends NavSystemElement {
             var startPosY = 220;
             var spacingX = 35;
             var spacingY = 30;
-            var rectWidth = 65;
-            var rectHeight = spacingX * 0.8;
+            var rectWidth = 75;
+            var rectHeight = 35;
             var text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = "FUEL";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", startPosY.toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
             fuelGroup.appendChild(text);
             startPosY += spacingY;
             text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "PPH";
+            text.textContent = WT_ConvertUnit.isMetric() ? "KG/H" : "PPH";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", startPosY.toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -1342,8 +1346,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.FuelPPHLeftValue.textContent = "2910";
             this.FuelPPHLeftValue.setAttribute("x", (startPosX - spacingX - 5).toString());
             this.FuelPPHLeftValue.setAttribute("y", startPosY.toString());
-            this.FuelPPHLeftValue.setAttribute("fill", "green");
-            this.FuelPPHLeftValue.setAttribute("font-size", "18");
+            this.FuelPPHLeftValue.setAttribute("fill", "#11d011");
+            this.FuelPPHLeftValue.setAttribute("font-size", "28");
             this.FuelPPHLeftValue.setAttribute("font-family", "Roboto-Bold");
             this.FuelPPHLeftValue.setAttribute("text-anchor", "end");
             this.FuelPPHLeftValue.setAttribute("alignment-baseline", "central");
@@ -1352,8 +1356,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.FuelPPHRightValue.textContent = "2910";
             this.FuelPPHRightValue.setAttribute("x", (startPosX + spacingX + rectWidth - 5).toString());
             this.FuelPPHRightValue.setAttribute("y", startPosY.toString());
-            this.FuelPPHRightValue.setAttribute("fill", "green");
-            this.FuelPPHRightValue.setAttribute("font-size", "18");
+            this.FuelPPHRightValue.setAttribute("fill", "#11d011");
+            this.FuelPPHRightValue.setAttribute("font-size", "28");
             this.FuelPPHRightValue.setAttribute("font-family", "Roboto-Bold");
             this.FuelPPHRightValue.setAttribute("text-anchor", "end");
             this.FuelPPHRightValue.setAttribute("alignment-baseline", "central");
@@ -1363,8 +1367,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "°C";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", startPosY.toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -1373,8 +1377,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.FuelTempLeftValue.textContent = "2910";
             this.FuelTempLeftValue.setAttribute("x", (startPosX - spacingX - 5).toString());
             this.FuelTempLeftValue.setAttribute("y", startPosY.toString());
-            this.FuelTempLeftValue.setAttribute("fill", "green");
-            this.FuelTempLeftValue.setAttribute("font-size", "18");
+            this.FuelTempLeftValue.setAttribute("fill", "#11d011");
+            this.FuelTempLeftValue.setAttribute("font-size", "28");
             this.FuelTempLeftValue.setAttribute("font-family", "Roboto-Bold");
             this.FuelTempLeftValue.setAttribute("text-anchor", "end");
             this.FuelTempLeftValue.setAttribute("alignment-baseline", "central");
@@ -1383,57 +1387,57 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.FuelTempRightValue.textContent = "2910";
             this.FuelTempRightValue.setAttribute("x", (startPosX + spacingX + rectWidth - 5).toString());
             this.FuelTempRightValue.setAttribute("y", startPosY.toString());
-            this.FuelTempRightValue.setAttribute("fill", "green");
-            this.FuelTempRightValue.setAttribute("font-size", "18");
+            this.FuelTempRightValue.setAttribute("fill", "#11d011");
+            this.FuelTempRightValue.setAttribute("font-size", "28");
             this.FuelTempRightValue.setAttribute("font-family", "Roboto-Bold");
             this.FuelTempRightValue.setAttribute("text-anchor", "end");
             this.FuelTempRightValue.setAttribute("alignment-baseline", "central");
             fuelGroup.appendChild(this.FuelTempRightValue);
             startPosY += spacingY;
             text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "LBS";
+            text.textContent = WT_ConvertUnit.isMetric() ? "KGS" : "LBS";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", startPosY.toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
             fuelGroup.appendChild(text);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", (startPosX - spacingX - rectWidth).toString());
-            rect.setAttribute("y", (startPosY - rectHeight * 0.5).toString());
+            rect.setAttribute("y", (startPosY - rectHeight * 0.55).toString());
             rect.setAttribute("width", rectWidth.toString());
             rect.setAttribute("height", rectHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             fuelGroup.appendChild(rect);
             this.FuelLBSLeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.FuelLBSLeftValue.textContent = "2910";
             this.FuelLBSLeftValue.setAttribute("x", (startPosX - spacingX - 5).toString());
             this.FuelLBSLeftValue.setAttribute("y", startPosY.toString());
-            this.FuelLBSLeftValue.setAttribute("fill", "green");
-            this.FuelLBSLeftValue.setAttribute("font-size", "18");
+            this.FuelLBSLeftValue.setAttribute("fill", "#11d011");
+            this.FuelLBSLeftValue.setAttribute("font-size", "28");
             this.FuelLBSLeftValue.setAttribute("font-family", "Roboto-Bold");
             this.FuelLBSLeftValue.setAttribute("text-anchor", "end");
             this.FuelLBSLeftValue.setAttribute("alignment-baseline", "central");
             fuelGroup.appendChild(this.FuelLBSLeftValue);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", (startPosX + spacingX).toString());
-            rect.setAttribute("y", (startPosY - rectHeight * 0.5).toString());
+            rect.setAttribute("y", (startPosY - rectHeight * 0.55).toString());
             rect.setAttribute("width", rectWidth.toString());
             rect.setAttribute("height", rectHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             fuelGroup.appendChild(rect);
             this.FuelLBSRightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.FuelLBSRightValue.textContent = "2910";
             this.FuelLBSRightValue.setAttribute("x", (startPosX + spacingX + rectWidth - 5).toString());
             this.FuelLBSRightValue.setAttribute("y", startPosY.toString());
-            this.FuelLBSRightValue.setAttribute("fill", "green");
-            this.FuelLBSRightValue.setAttribute("font-size", "18");
+            this.FuelLBSRightValue.setAttribute("fill", "#11d011");
+            this.FuelLBSRightValue.setAttribute("font-size", "28");
             this.FuelLBSRightValue.setAttribute("font-family", "Roboto-Bold");
             this.FuelLBSRightValue.setAttribute("text-anchor", "end");
             this.FuelLBSRightValue.setAttribute("alignment-baseline", "central");
@@ -1449,8 +1453,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "TRIM";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", startPosY.toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -1460,7 +1464,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", startPosY.toString());
             line.setAttribute("x2", (startPosX - 30).toString());
             line.setAttribute("y2", startPosY.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             trimGroup.appendChild(line);
             var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -1468,7 +1472,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("y1", startPosY.toString());
             line.setAttribute("x2", (startPosX + 90).toString());
             line.setAttribute("y2", startPosY.toString());
-            line.setAttribute("stroke", "white");
+            line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             trimGroup.appendChild(line);
             startPosY += 25;
@@ -1476,8 +1480,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "AIL";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", startPosY.toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -1491,15 +1495,15 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", gaugeHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             trimGroup.appendChild(rect);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = "L";
             text.setAttribute("x", (startPosX - gaugeWidth * 0.5 - 10).toString());
             text.setAttribute("y", (startPosY + gaugeHeight * 0.5).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "end");
             text.setAttribute("alignment-baseline", "central");
@@ -1508,8 +1512,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "R";
             text.setAttribute("x", (startPosX + gaugeWidth * 0.5 + 10).toString());
             text.setAttribute("y", (startPosY + gaugeHeight * 0.5).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "start");
             text.setAttribute("alignment-baseline", "central");
@@ -1519,14 +1523,14 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("y", startPosY.toString());
             rect.setAttribute("width", (gaugeWidth * 0.15).toString());
             rect.setAttribute("height", gaugeHeight.toString());
-            rect.setAttribute("fill", "green");
+            rect.setAttribute("fill", "#11d011");
             trimGroup.appendChild(rect);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", startPosX.toString());
             rect.setAttribute("y", startPosY.toString());
             rect.setAttribute("width", (gaugeWidth * 0.15).toString());
             rect.setAttribute("height", gaugeHeight.toString());
-            rect.setAttribute("fill", "green");
+            rect.setAttribute("fill", "#11d011");
             trimGroup.appendChild(rect);
             this.AileronCursorX1 = startPosX - gaugeWidth * 0.5;
             this.AileronCursorX2 = startPosX + gaugeWidth * 0.5;
@@ -1549,8 +1553,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "RUD";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", startPosY.toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -1560,8 +1564,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "ELEV";
             text.setAttribute("x", (startPosX - 50).toString());
             text.setAttribute("y", startPosY.toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -1575,22 +1579,26 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", gaugeHeight.toString());
             rect.setAttribute("fill", "black");
-            rect.setAttribute("stroke", "white");
+            rect.setAttribute("stroke", "#52504d");
             rect.setAttribute("stroke-width", "2");
             trimGroup.appendChild(rect);
+            // elev trim expanded bar
+            var percent = (-Simplane.getTrimNeutral() + 1.0) * 0.5;
+            percent = Math.min(1, Math.max(0, percent));
+            var posY = startPosY;
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
-            rect.setAttribute("y", (startPosY - gaugeHeight * 0.25).toString());
+            rect.setAttribute("y", posY.toString());
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", (gaugeHeight * 0.25).toString());
-            rect.setAttribute("fill", "green");
+            rect.setAttribute("fill", "#11d011");
             trimGroup.appendChild(rect);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = "ND";
             text.setAttribute("x", (gaugeStartX - 8).toString());
             text.setAttribute("y", (startPosY - gaugeHeight * 0.5 + 14).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "end");
             text.setAttribute("alignment-baseline", "top");
@@ -1599,17 +1607,17 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "NU";
             text.setAttribute("x", (gaugeStartX - 8).toString());
             text.setAttribute("y", (startPosY + gaugeHeight * 0.5).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "end");
             text.setAttribute("alignment-baseline", "bottom");
             trimGroup.appendChild(text);
             this.ElevatorCursorX = gaugeStartX + gaugeWidth;
-            this.ElevatorCursorY1 = startPosY + gaugeHeight * 0.5;
-            this.ElevatorCursorY2 = startPosY - gaugeHeight * 0.5;
+            this.ElevatorCursorY1 = startPosY - gaugeHeight * 0.5;
+            this.ElevatorCursorY2 = startPosY + gaugeHeight * 0.5;
             this.ElevatorCursor = document.createElementNS(Avionics.SVG.NS, "path");
-            this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + this.ElevatorCursorY1 + ")");
+            this.ElevatorCursor.setAttribute("transform", "translate (" + this.ElevatorCursorX + " " + this.ElevatorCursorY2 + ")");
             this.ElevatorCursor.setAttribute("fill", "white");
             this.ElevatorCursor.setAttribute("d", "M0 0 l15 -5 l0 10 l-15 -5 Z");
             trimGroup.appendChild(this.ElevatorCursor);
@@ -1618,8 +1626,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.textContent = "FLAPS";
             text.setAttribute("x", (startPosX - 45).toString());
             text.setAttribute("y", startPosY.toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "18");
+            text.setAttribute("fill", "#cccac8");
+            text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("alignment-baseline", "central");
@@ -1647,15 +1655,15 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", startY.toString());
                 line.setAttribute("x2", endX.toString());
                 line.setAttribute("y2", endY.toString());
-                line.setAttribute("stroke", "white");
+                line.setAttribute("stroke", "#52504d");
                 line.setAttribute("stroke-width", "2");
                 trimGroup.appendChild(line);
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
                 text.textContent = flapTexts[i];
                 text.setAttribute("x", textX.toString());
                 text.setAttribute("y", textY.toString());
-                text.setAttribute("fill", "white");
-                text.setAttribute("font-size", "16");
+                text.setAttribute("fill", "#cccac8");
+                text.setAttribute("font-size", "22");
                 text.setAttribute("font-family", "Roboto-Light");
                 text.setAttribute("text-anchor", "middle");
                 text.setAttribute("alignment-baseline", "central");
@@ -1767,16 +1775,16 @@ class CJ4_SystemEngines extends NavSystemElement {
     updateFuel() {
         let gallonToLBS = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "lbs");
         {
-            let LBSEng1 = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * gallonToLBS;
+            let LBSEng1 = WT_ConvertUnit.getWeight(SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * gallonToLBS).Value;
             this.FuelLBSLeftValue.textContent = Math.round(LBSEng1).toString();
-            let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
+            let PPHEng1 = WT_ConvertUnit.getFuelFlow(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour")).Value;
             this.FuelPPHLeftValue.textContent = Math.round(PPHEng1).toString();
             this.FuelTempLeftValue.textContent = "--";
         }
         {
-            let LBSEng2 = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * gallonToLBS;
+            let LBSEng2 = WT_ConvertUnit.getWeight(SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * gallonToLBS).Value;
             this.FuelLBSRightValue.textContent = Math.round(LBSEng2).toString();
-            let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
+            let PPHEng2 = WT_ConvertUnit.getFuelFlow(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour")).Value;
             this.FuelPPHRightValue.textContent = Math.round(PPHEng2).toString();
             this.FuelTempRightValue.textContent = "--";
         }
@@ -1853,19 +1861,26 @@ class CJ4_SystemElectrics extends NavSystemElement {
         this.DCVoltValueLeft.textContent = Math.round(GenVolt1).toString();
         let GenVolt2 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS VOLTAGE:2", "volts");
         this.DCVoltValueRight.textContent = Math.round(GenVolt2).toString();
-        let BatAmp = SimVar.GetSimVarValue("ELECTRICAL BATTERY LOAD:1", "amperes");
-        this.BATAmpValue.textContent = Math.round(BatAmp).toString();
         let BatVolt = SimVar.GetSimVarValue("ELECTRICAL BATTERY VOLTAGE:1", "volts");
         this.BATVoltValue.textContent = Math.round(BatVolt).toString();
-        this.BATTempValue.textContent = "--";
-        let HydPSI1 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:1", "psi");
+        let BatAmp = SimVar.GetSimVarValue("ELECTRICAL BATTERY LOAD:1", "amperes");
+        BatAmp = BatAmp / BatVolt;
+        this.BATAmpValue.textContent = Math.round(BatAmp).toString();
+        this.BATTempValue.textContent = "26";
+
+        let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
+        let HydPSI1 = N2Eng1 >= 20 ? 3000 : N2Eng1 * 150;
         this.HYDPSIValueLeft.textContent = Math.round(HydPSI1).toString();
-        let HydPSI2 = SimVar.GetSimVarValue("ENG HYDRAULIC PRESSURE:2", "psi");
+
+        let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
+        let HydPSI2 = N2Eng2 >= 20 ? 3000 : N2Eng2 * 150;
         this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
+
         let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
-        this.FUELPPHValueLeft.textContent = Math.round(PPHEng1).toString();
+        this.FUELPPHValueLeft.textContent = Math.round(WT_ConvertUnit.getFuelFlow(PPHEng1).Value);
         let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
-        this.FUELPPHValueRight.textContent = Math.round(PPHEng2).toString();
+        this.FUELPPHValueRight.textContent = Math.round(WT_ConvertUnit.getFuelFlow(PPHEng2).Value);
+
         this.FUELTempValueLeft.textContent = "--";
         this.FUELTempValueRight.textContent = "--";
     }
@@ -1876,6 +1891,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
     constructSVG() {
         if (!this.root)
             return;
+        Utils.RemoveAllChildren(this.root);
         var rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
         rootSVG.setAttribute("id", "Standard");
         rootSVG.setAttribute("viewBox", "0 0 1000 1000");
@@ -1891,7 +1907,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-size", "22");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -1901,7 +1917,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             lineLeft.setAttribute("y1", startPosY.toString());
             lineLeft.setAttribute("x2", (startPosX - 50).toString());
             lineLeft.setAttribute("y2", startPosY.toString());
-            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke", "#52504d");
             lineLeft.setAttribute("stroke-width", "2");
             dcGroup.appendChild(lineLeft);
             var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
@@ -1909,7 +1925,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             lineLeft.setAttribute("y1", startPosY.toString());
             lineLeft.setAttribute("x2", (startPosX + 110).toString());
             lineLeft.setAttribute("y2", startPosY.toString());
-            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke", "#52504d");
             lineLeft.setAttribute("stroke-width", "2");
             dcGroup.appendChild(lineLeft);
             var rectMarginX = 40;
@@ -1921,17 +1937,17 @@ class CJ4_SystemElectrics extends NavSystemElement {
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-size", "22");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
             dcGroup.appendChild(titleText);
             this.DCAmpValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
             this.DCAmpValueLeft.textContent = "0";
-            this.DCAmpValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.DCAmpValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.3).toString());
             this.DCAmpValueLeft.setAttribute("y", startPosY.toString());
-            this.DCAmpValueLeft.setAttribute("fill", "green");
-            this.DCAmpValueLeft.setAttribute("font-size", "22");
+            this.DCAmpValueLeft.setAttribute("fill", "#11d011");
+            this.DCAmpValueLeft.setAttribute("font-size", "26");
             this.DCAmpValueLeft.setAttribute("font-family", "Roboto-Bold");
             this.DCAmpValueLeft.setAttribute("text-anchor", "end");
             this.DCAmpValueLeft.setAttribute("alignment-baseline", "central");
@@ -1940,8 +1956,8 @@ class CJ4_SystemElectrics extends NavSystemElement {
             this.DCAmpValueRight.textContent = "0";
             this.DCAmpValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.DCAmpValueRight.setAttribute("y", startPosY.toString());
-            this.DCAmpValueRight.setAttribute("fill", "green");
-            this.DCAmpValueRight.setAttribute("font-size", "22");
+            this.DCAmpValueRight.setAttribute("fill", "#11d011");
+            this.DCAmpValueRight.setAttribute("font-size", "26");
             this.DCAmpValueRight.setAttribute("font-family", "Roboto-Bold");
             this.DCAmpValueRight.setAttribute("text-anchor", "end");
             this.DCAmpValueRight.setAttribute("alignment-baseline", "central");
@@ -1952,17 +1968,17 @@ class CJ4_SystemElectrics extends NavSystemElement {
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-size", "22");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
             dcGroup.appendChild(titleText);
             this.DCVoltValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
             this.DCVoltValueLeft.textContent = "0";
-            this.DCVoltValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
+            this.DCVoltValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.3).toString());
             this.DCVoltValueLeft.setAttribute("y", startPosY.toString());
-            this.DCVoltValueLeft.setAttribute("fill", "green");
-            this.DCVoltValueLeft.setAttribute("font-size", "22");
+            this.DCVoltValueLeft.setAttribute("fill", "#11d011");
+            this.DCVoltValueLeft.setAttribute("font-size", "26");
             this.DCVoltValueLeft.setAttribute("font-family", "Roboto-Bold");
             this.DCVoltValueLeft.setAttribute("text-anchor", "end");
             this.DCVoltValueLeft.setAttribute("alignment-baseline", "central");
@@ -1971,8 +1987,8 @@ class CJ4_SystemElectrics extends NavSystemElement {
             this.DCVoltValueRight.textContent = "0";
             this.DCVoltValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.DCVoltValueRight.setAttribute("y", startPosY.toString());
-            this.DCVoltValueRight.setAttribute("fill", "green");
-            this.DCVoltValueRight.setAttribute("font-size", "22");
+            this.DCVoltValueRight.setAttribute("fill", "#11d011");
+            this.DCVoltValueRight.setAttribute("font-size", "26");
             this.DCVoltValueRight.setAttribute("font-family", "Roboto-Bold");
             this.DCVoltValueRight.setAttribute("text-anchor", "end");
             this.DCVoltValueRight.setAttribute("alignment-baseline", "central");
@@ -1989,7 +2005,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-size", "22");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -1999,7 +2015,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             lineLeft.setAttribute("y1", startPosY.toString());
             lineLeft.setAttribute("x2", (startPosX - 40).toString());
             lineLeft.setAttribute("y2", startPosY.toString());
-            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke", "#52504d");
             lineLeft.setAttribute("stroke-width", "2");
             batteryGroup.appendChild(lineLeft);
             var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
@@ -2007,7 +2023,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             lineLeft.setAttribute("y1", startPosY.toString());
             lineLeft.setAttribute("x2", (startPosX + 110).toString());
             lineLeft.setAttribute("y2", startPosY.toString());
-            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke", "#52504d");
             lineLeft.setAttribute("stroke-width", "2");
             batteryGroup.appendChild(lineLeft);
             var rectMarginX = 40;
@@ -2020,7 +2036,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-size", "22");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -2029,8 +2045,8 @@ class CJ4_SystemElectrics extends NavSystemElement {
             this.BATAmpValue.textContent = "-7";
             this.BATAmpValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.BATAmpValue.setAttribute("y", startPosY.toString());
-            this.BATAmpValue.setAttribute("fill", "green");
-            this.BATAmpValue.setAttribute("font-size", "22");
+            this.BATAmpValue.setAttribute("fill", "#11d011");
+            this.BATAmpValue.setAttribute("font-size", "26");
             this.BATAmpValue.setAttribute("font-family", "Roboto-Bold");
             this.BATAmpValue.setAttribute("text-anchor", "end");
             this.BATAmpValue.setAttribute("alignment-baseline", "central");
@@ -2041,7 +2057,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-size", "22");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -2050,8 +2066,8 @@ class CJ4_SystemElectrics extends NavSystemElement {
             this.BATVoltValue.textContent = "24";
             this.BATVoltValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.BATVoltValue.setAttribute("y", startPosY.toString());
-            this.BATVoltValue.setAttribute("fill", "green");
-            this.BATVoltValue.setAttribute("font-size", "22");
+            this.BATVoltValue.setAttribute("fill", "#11d011");
+            this.BATVoltValue.setAttribute("font-size", "26");
             this.BATVoltValue.setAttribute("font-family", "Roboto-Bold");
             this.BATVoltValue.setAttribute("text-anchor", "end");
             this.BATVoltValue.setAttribute("alignment-baseline", "central");
@@ -2062,7 +2078,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-size", "22");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -2071,8 +2087,8 @@ class CJ4_SystemElectrics extends NavSystemElement {
             this.BATTempValue.textContent = "0";
             this.BATTempValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.BATTempValue.setAttribute("y", startPosY.toString());
-            this.BATTempValue.setAttribute("fill", "green");
-            this.BATTempValue.setAttribute("font-size", "22");
+            this.BATTempValue.setAttribute("fill", "#11d011");
+            this.BATTempValue.setAttribute("font-size", "26");
             this.BATTempValue.setAttribute("font-family", "Roboto-Bold");
             this.BATTempValue.setAttribute("text-anchor", "end");
             this.BATTempValue.setAttribute("alignment-baseline", "central");
@@ -2089,7 +2105,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-size", "22");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -2099,7 +2115,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             lineLeft.setAttribute("y1", startPosY.toString());
             lineLeft.setAttribute("x2", (startPosX - 50).toString());
             lineLeft.setAttribute("y2", startPosY.toString());
-            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke", "#52504d");
             lineLeft.setAttribute("stroke-width", "2");
             oxyGroup.appendChild(lineLeft);
             var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
@@ -2107,7 +2123,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             lineLeft.setAttribute("y1", startPosY.toString());
             lineLeft.setAttribute("x2", (startPosX + 80).toString());
             lineLeft.setAttribute("y2", startPosY.toString());
-            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke", "#52504d");
             lineLeft.setAttribute("stroke-width", "2");
             oxyGroup.appendChild(lineLeft);
             var gaugeStartX = startPosX + 20;
@@ -2115,14 +2131,15 @@ class CJ4_SystemElectrics extends NavSystemElement {
             var gaugeWidth = 12;
             var gaugeHeight = 125;
             this.OXYCursorX = gaugeStartX + gaugeWidth;
-            this.OXYCursorY1 = gaugeStartY + gaugeHeight;
+            //this.OXYCursorY1 = gaugeStartY + gaugeHeight;
+            this.OXYCursorY1 = 86;
             this.OXYCursorY2 = gaugeStartY;
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
             rect.setAttribute("y", gaugeStartY.toString());
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", (gaugeHeight * 0.75).toString());
-            rect.setAttribute("fill", "green");
+            rect.setAttribute("fill", "#11d011");
             oxyGroup.appendChild(rect);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
@@ -2140,7 +2157,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
                 line.setAttribute("y1", (gaugeStartY + gaugeHeight * gradPercents[i]).toString());
                 line.setAttribute("x2", gaugeStartX.toString());
                 line.setAttribute("y2", (gaugeStartY + gaugeHeight * gradPercents[i]).toString());
-                line.setAttribute("stroke", (i == 4) ? "darkorange" : "green");
+                line.setAttribute("stroke", (i == 4) ? "darkorange" : "#11d011");
                 line.setAttribute("stroke-width", "2");
                 oxyGroup.appendChild(line);
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
@@ -2148,7 +2165,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
                 text.setAttribute("x", (gaugeStartX - gradLength[i] - 10).toString());
                 text.setAttribute("y", (gaugeStartY + gaugeHeight * gradPercents[i]).toString());
                 text.setAttribute("fill", "white");
-                text.setAttribute("font-size", "20");
+                text.setAttribute("font-size", "22");
                 text.setAttribute("font-family", "Roboto-Light");
                 text.setAttribute("text-anchor", "end");
                 text.setAttribute("alignment-baseline", "central");
@@ -2156,7 +2173,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             }
             this.OXYCursor = document.createElementNS(Avionics.SVG.NS, "path");
             this.OXYCursor.setAttribute("transform", "translate (" + this.OXYCursorX + " " + this.OXYCursorY1 + ")");
-            this.OXYCursor.setAttribute("fill", "green");
+            this.OXYCursor.setAttribute("fill", "#11d011");
             this.OXYCursor.setAttribute("d", "M0 0 l15 5 l0 -10 l-15 5 Z");
             oxyGroup.appendChild(this.OXYCursor);
         }
@@ -2171,7 +2188,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-size", "22");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -2181,7 +2198,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             lineLeft.setAttribute("y1", startPosY.toString());
             lineLeft.setAttribute("x2", (startPosX - 40).toString());
             lineLeft.setAttribute("y2", startPosY.toString());
-            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke", "#52504d");
             lineLeft.setAttribute("stroke-width", "2");
             hydroGroup.appendChild(lineLeft);
             var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
@@ -2189,7 +2206,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             lineLeft.setAttribute("y1", startPosY.toString());
             lineLeft.setAttribute("x2", (startPosX + 110).toString());
             lineLeft.setAttribute("y2", startPosY.toString());
-            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke", "#52504d");
             lineLeft.setAttribute("stroke-width", "2");
             hydroGroup.appendChild(lineLeft);
             var rectMarginX = 40;
@@ -2201,7 +2218,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-size", "22");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -2210,8 +2227,8 @@ class CJ4_SystemElectrics extends NavSystemElement {
             this.HYDPSIValueLeft.textContent = "0";
             this.HYDPSIValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
             this.HYDPSIValueLeft.setAttribute("y", startPosY.toString());
-            this.HYDPSIValueLeft.setAttribute("fill", "green");
-            this.HYDPSIValueLeft.setAttribute("font-size", "22");
+            this.HYDPSIValueLeft.setAttribute("fill", "#11d011");
+            this.HYDPSIValueLeft.setAttribute("font-size", "26");
             this.HYDPSIValueLeft.setAttribute("font-family", "Roboto-Bold");
             this.HYDPSIValueLeft.setAttribute("text-anchor", "end");
             this.HYDPSIValueLeft.setAttribute("alignment-baseline", "central");
@@ -2220,8 +2237,8 @@ class CJ4_SystemElectrics extends NavSystemElement {
             this.HYDPSIValueRight.textContent = "0";
             this.HYDPSIValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.HYDPSIValueRight.setAttribute("y", startPosY.toString());
-            this.HYDPSIValueRight.setAttribute("fill", "green");
-            this.HYDPSIValueRight.setAttribute("font-size", "22");
+            this.HYDPSIValueRight.setAttribute("fill", "#11d011");
+            this.HYDPSIValueRight.setAttribute("font-size", "26");
             this.HYDPSIValueRight.setAttribute("font-family", "Roboto-Bold");
             this.HYDPSIValueRight.setAttribute("text-anchor", "end");
             this.HYDPSIValueRight.setAttribute("alignment-baseline", "central");
@@ -2238,7 +2255,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-size", "22");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -2248,7 +2265,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             lineLeft.setAttribute("y1", startPosY.toString());
             lineLeft.setAttribute("x2", (startPosX - 40).toString());
             lineLeft.setAttribute("y2", startPosY.toString());
-            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke", "#52504d");
             lineLeft.setAttribute("stroke-width", "2");
             fuelGroup.appendChild(lineLeft);
             var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
@@ -2256,7 +2273,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             lineLeft.setAttribute("y1", startPosY.toString());
             lineLeft.setAttribute("x2", (startPosX + 110).toString());
             lineLeft.setAttribute("y2", startPosY.toString());
-            lineLeft.setAttribute("stroke", "white");
+            lineLeft.setAttribute("stroke", "#52504d");
             lineLeft.setAttribute("stroke-width", "2");
             fuelGroup.appendChild(lineLeft);
             var rectMarginX = 40;
@@ -2264,11 +2281,11 @@ class CJ4_SystemElectrics extends NavSystemElement {
             var rectHeight = 30;
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "PPH";
+            titleText.textContent = WT_ConvertUnit.isMetric() ? "KG/H" : "PPH";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-size", "22");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -2277,8 +2294,8 @@ class CJ4_SystemElectrics extends NavSystemElement {
             this.FUELPPHValueLeft.textContent = "0";
             this.FUELPPHValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
             this.FUELPPHValueLeft.setAttribute("y", startPosY.toString());
-            this.FUELPPHValueLeft.setAttribute("fill", "green");
-            this.FUELPPHValueLeft.setAttribute("font-size", "22");
+            this.FUELPPHValueLeft.setAttribute("fill", "#11d011");
+            this.FUELPPHValueLeft.setAttribute("font-size", "26");
             this.FUELPPHValueLeft.setAttribute("font-family", "Roboto-Bold");
             this.FUELPPHValueLeft.setAttribute("text-anchor", "end");
             this.FUELPPHValueLeft.setAttribute("alignment-baseline", "central");
@@ -2287,8 +2304,8 @@ class CJ4_SystemElectrics extends NavSystemElement {
             this.FUELPPHValueRight.textContent = "0";
             this.FUELPPHValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.FUELPPHValueRight.setAttribute("y", startPosY.toString());
-            this.FUELPPHValueRight.setAttribute("fill", "green");
-            this.FUELPPHValueRight.setAttribute("font-size", "22");
+            this.FUELPPHValueRight.setAttribute("fill", "#11d011");
+            this.FUELPPHValueRight.setAttribute("font-size", "26");
             this.FUELPPHValueRight.setAttribute("font-family", "Roboto-Bold");
             this.FUELPPHValueRight.setAttribute("text-anchor", "end");
             this.FUELPPHValueRight.setAttribute("alignment-baseline", "central");
@@ -2299,7 +2316,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "20");
+            titleText.setAttribute("font-size", "22");
             titleText.setAttribute("font-family", "Roboto-Light");
             titleText.setAttribute("text-anchor", "middle");
             titleText.setAttribute("alignment-baseline", "central");
@@ -2308,8 +2325,8 @@ class CJ4_SystemElectrics extends NavSystemElement {
             this.FUELTempValueLeft.textContent = "15";
             this.FUELTempValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
             this.FUELTempValueLeft.setAttribute("y", startPosY.toString());
-            this.FUELTempValueLeft.setAttribute("fill", "green");
-            this.FUELTempValueLeft.setAttribute("font-size", "22");
+            this.FUELTempValueLeft.setAttribute("fill", "#11d011");
+            this.FUELTempValueLeft.setAttribute("font-size", "26");
             this.FUELTempValueLeft.setAttribute("font-family", "Roboto-Bold");
             this.FUELTempValueLeft.setAttribute("text-anchor", "end");
             this.FUELTempValueLeft.setAttribute("alignment-baseline", "central");
@@ -2318,8 +2335,8 @@ class CJ4_SystemElectrics extends NavSystemElement {
             this.FUELTempValueRight.textContent = "15";
             this.FUELTempValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.FUELTempValueRight.setAttribute("y", startPosY.toString());
-            this.FUELTempValueRight.setAttribute("fill", "green");
-            this.FUELTempValueRight.setAttribute("font-size", "22");
+            this.FUELTempValueRight.setAttribute("fill", "#11d011");
+            this.FUELTempValueRight.setAttribute("font-size", "26");
             this.FUELTempValueRight.setAttribute("font-family", "Roboto-Bold");
             this.FUELTempValueRight.setAttribute("text-anchor", "end");
             this.FUELTempValueRight.setAttribute("alignment-baseline", "central");
@@ -2330,14 +2347,256 @@ class CJ4_SystemElectrics extends NavSystemElement {
 class CJ4_SystemFMS extends NavSystemElement {
     init(_root) {
         this.root = _root.querySelector(".SystemFMS");
+        this.previousWaypoint = undefined;
+        this._flightPlanUpdateCounter = 0;
+
+        if (!this.root) {
+            console.log("Root component expected!");
+        }
+        else {
+            let waypointContainers = this.root.querySelectorAll(".cj4x-navigation-data-row");
+            this._previousWaypointContainer = waypointContainers[0];
+            this._activeWaypointContainer = waypointContainers[1];
+            this._nextWaypointContainer = waypointContainers[2];
+            this._destinationWaypointContainer = waypointContainers[3];
+        }
     }
     onEnter() {
     }
     onUpdate(_deltaTime) {
+        if (!this._previousWaypointContainer || !this._activeWaypointContainer || !this._nextWaypointContainer || !this._destinationWaypointContainer) {
+            if (!this.isInitialized) {
+                this.init();
+            }
+            return;
+        }
+        if (this.root.offsetParent !== null) {
+            let flightPlanManager = this.gps.currFlightPlanManager;
+            if (flightPlanManager) {
+                this._flightPlanUpdateCounter++;
+                if (this._flightPlanUpdateCounter > 120) {
+                    flightPlanManager.updateFlightPlan();
+                    this._flightPlanUpdateCounter = 0;
+                }
+                if (this._flightPlanUpdateCounter % 10 == 0) {
+
+                    // Grab plane information
+                    let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+                    let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+                    let aircraftPosition = new LatLong(lat, long);
+                    let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+                    const FPWaypoints = flightPlanManager._waypoints[flightPlanManager._currentFlightPlanIndex];
+                    const UTCTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+
+                    if (FPWaypoints) {
+
+                        let approachWaypoints = flightPlanManager.getApproachWaypoints();
+
+                        // Grab waypoints
+                        let previousWaypointIndex = flightPlanManager.getActiveWaypointIndex() - 1;
+                        let previousWaypoint = flightPlanManager.getWaypoint(previousWaypointIndex);
+                        let activeIndex = flightPlanManager.getActiveWaypointIndex();
+                        let activeWaypoint = FPWaypoints[activeIndex];
+                        let nextWaypoint = flightPlanManager.getWaypoint(activeIndex + 1);
+                        let destination = flightPlanManager.getDestination();
+
+                        if (destination && (!nextWaypoint || (nextWaypoint.ident === destination.ident)))
+                            nextWaypoint = flightPlanManager.getWaypoint(activeIndex + 1, NaN, true);
+
+                        if (flightPlanManager.isActiveApproach()) {
+                            if (flightPlanManager.getApproachWaypoints()) {
+                                previousWaypoint = approachWaypoints[previousWaypointIndex];
+                                activeWaypoint = approachWaypoints[activeIndex];
+                                nextWaypoint = approachWaypoints[activeIndex + 1];
+                            }
+                        }
+
+                        // Set ICAOs
+                        this._previousWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-ident")
+                            .textContent = previousWaypoint ? previousWaypoint.ident : "----";
+                        this._activeWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-ident")
+                            .textContent = activeWaypoint && destination && activeWaypoint.ident != destination.ident ? activeWaypoint.ident : "----";
+                        this._nextWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-ident")
+                            .textContent = nextWaypoint && destination && nextWaypoint.ident != destination.ident && nextWaypoint.ident != "USER" ? nextWaypoint.ident : "----";
+                        this._destinationWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-ident")
+                            .textContent = destination ? destination.ident : "----";
+
+                        // Set distances to go
+                        let previousWaypointDistanceNumber = previousWaypoint ? Avionics.Utils.computeDistance(aircraftPosition, previousWaypoint.infos.coordinates) : -1;
+                        let activeWaypointDistanceNumber = activeWaypoint && destination && activeWaypoint.ident != destination.ident ? Avionics.Utils.computeDistance(aircraftPosition, activeWaypoint.infos.coordinates) : -1;
+                        let nextWaypointDistanceNumber = nextWaypoint && destination && nextWaypoint.ident != destination.ident && activeWaypoint ? (activeWaypointDistanceNumber + new Number(Avionics.Utils.computeDistance(activeWaypoint.infos.coordinates, nextWaypoint.infos.coordinates))) : -1;
+                        const previousWaypointDistance = previousWaypointDistanceNumber >= 100 ? previousWaypointDistanceNumber.toFixed(0) : previousWaypointDistanceNumber.toFixed(1);
+                        const activeWaypointDistance = activeWaypointDistanceNumber >= 100 ? activeWaypointDistanceNumber.toFixed(0) : activeWaypointDistanceNumber.toFixed(1);
+                        const nextWaypointDistance = nextWaypointDistanceNumber >= 100 ? nextWaypointDistanceNumber.toFixed(0) : nextWaypointDistanceNumber.toFixed(1);
+                        let destinationDistanceNumber = 0;
+                        //if (destination && activeWaypoint) {
+                        //    destinationDistance += new Number(Avionics.Utils.computeDistance(aircraftPosition, activeWaypoint.infos.coordinates));
+                        //    for (let w = activeIndex; w < FPWaypoints.length - 1; w++) {
+                        //        destinationDistance += new Number(Avionics.Utils.computeDistance(FPWaypoints[w].infos.coordinates, FPWaypoints[w + 1].infos.coordinates));
+                        //    }
+                        //    destinationDistance = destinationDistance.toFixed(1);
+                        //}
+
+                        // Revised distance to destination to use same code as PROG page (original code left commented for easy revert if needed)
+                        if (destination) {
+                            let destinationDistanceDirect = new Number(Avionics.Utils.computeDistance(aircraftPosition, destination.infos.coordinates).toFixed(1));
+                            let destinationDistanceFlightplan = 0;
+                            destinationDistanceNumber = new Number(destinationDistanceDirect);
+                            if (activeWaypoint) {
+                                destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - activeWaypoint.cumulativeDistanceInFP + new Number(activeWaypointDistance));
+                            }
+                            else {
+                                destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP);
+                            }
+                            destinationDistanceNumber = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect.toFixed(1)
+                                : destinationDistanceFlightplan.toFixed(1);
+                        }
+                        const destinationDistance = destinationDistanceNumber >= 100 ? Math.trunc(destinationDistanceNumber) : destinationDistanceNumber;
+
+                        this._previousWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-distance")
+                            .textContent = previousWaypointDistance != -1 ? previousWaypointDistance + "NM" : "---NM";
+                        this._activeWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-distance")
+                            .textContent = activeWaypointDistance != -1 ? activeWaypointDistance + "NM" : "---NM";
+                        this._nextWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-distance")
+                            .textContent = nextWaypointDistance != -1 ? nextWaypointDistance + "NM" : "---NM";
+                        this._destinationWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-distance")
+                            .textContent = destinationDistance != 0 ? destinationDistance + "NM" : "---NM";
+
+                        // Set ETE
+                        let activeWaypointETEValue = "-:--";
+                        if (groundSpeed >= 50 && activeWaypointDistance > 0) {
+                            activeWaypointETEValue = new Date(this.calcETEseconds(activeWaypointDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                        }
+
+                        let nextWaypointETEValue = "-:--";
+                        if (groundSpeed >= 50 && nextWaypointDistance > 0) {
+                            nextWaypointETEValue = new Date(this.calcETEseconds(nextWaypointDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                        }
+
+                        let destinationWaypointETEValue = "-:--";
+                        if (groundSpeed >= 50 && destinationDistance > 0) {
+                            destinationWaypointETEValue = new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                        }
+
+
+                        this._activeWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-ete")
+                            .textContent = activeWaypointETEValue;
+
+                        this._nextWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-ete")
+                            .textContent = nextWaypointETEValue;
+
+                        this._destinationWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-ete")
+                            .textContent = destinationWaypointETEValue;
+
+                        // Set ETA
+                        let previousWaypointETAValue;
+                        if (previousWaypoint && previousWaypoint.ident != flightPlanManager.getOrigin().ident) {
+                            if (this.previousWaypoint == undefined || this.previousWaypoint.ident != previousWaypoint.ident) {
+                                const seconds = Number.parseInt(UTCTime);
+                                previousWaypointETAValue = Utils.SecondsToDisplayTime(seconds, true, false, false);
+                                this.previousWaypoint = previousWaypoint;
+
+                                this._previousWaypointContainer
+                                    .querySelector(".cj4x-navigation-data-waypoint-eta")
+                                    .textContent = previousWaypointETAValue;
+                            }
+                        }
+                        else {
+                            this._previousWaypointContainer
+                                .querySelector(".cj4x-navigation-data-waypoint-eta")
+                                .textContent = "--:--";
+                        }
+
+
+                        let activeWaypointETAValue = "--:--";
+                        if (groundSpeed >= 50 && activeWaypointDistance > 0) {
+                            const seconds = Number.parseInt(UTCTime) + (this.calcETEseconds(activeWaypointDistance, groundSpeed));
+                            const time = Utils.SecondsToDisplayTime(seconds, true, false, false);
+                            activeWaypointETAValue = time;
+                        }
+
+                        let nextWaypointETAValue = "--:--";
+                        if (groundSpeed >= 50 && nextWaypointDistance > 0) {
+                            const seconds = Number.parseInt(UTCTime) + (this.calcETEseconds(nextWaypointDistance, groundSpeed));
+                            const time = Utils.SecondsToDisplayTime(seconds, true, false, false);
+                            nextWaypointETAValue = time;
+                        }
+
+                        let destinationWaypointETAValue = "--:--";
+                        if (groundSpeed >= 50 && destinationDistance > 0) {
+                            const seconds = Number.parseInt(UTCTime) + (this.calcETEseconds(destinationDistance, groundSpeed));
+                            const time = Utils.SecondsToDisplayTime(seconds, true, false, false);
+                            destinationWaypointETAValue = time;
+                        }
+
+                        this._activeWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-eta")
+                            .textContent = activeWaypointETAValue;
+
+                        this._nextWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-eta")
+                            .textContent = nextWaypointETAValue;
+
+                        this._destinationWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-eta")
+                            .textContent = destinationWaypointETAValue;
+
+
+                        // Set expected fuel and gross weight
+                        if (groundSpeed >= 50) {
+                            const fuelFlow = SimVar.GetSimVarValue("CJ4 FUEL FLOW:1", "Pounds per hour") + SimVar.GetSimVarValue("CJ4 FUEL FLOW:2", "Pounds per hour");
+                            const expectedFuelUsage = (fuelFlow * (this.calcETEseconds(destinationDistance, groundSpeed) / 3600)).toFixed(0);
+                            const currentFuel = (SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds") * SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons")).toFixed(0);
+                            const expectedFuelAtDestination = (currentFuel - expectedFuelUsage) < 0 ? 0 : (currentFuel - expectedFuelUsage);
+                            const grossWeight = SimVar.GetSimVarValue("TOTAL WEIGHT", "kg") * 2.205;
+                            // const oilQuantity = SimVar.GetSimVarValue("OIL AMOUNT", "pounds")
+                            const expectedGrossWeight = expectedFuelAtDestination == 0 ? (grossWeight / 1000) : ((grossWeight - expectedFuelUsage) / 1000);
+
+                            const exfuelValue = WT_ConvertUnit.getWeight(expectedFuelAtDestination);
+                            const weightsTextContent = `${exfuelValue.Value.toFixed(0)} ${exfuelValue.Unit} ${WT_ConvertUnit.getWeight(expectedGrossWeight).Value.toFixed(0)} GW`;
+
+                            this._destinationWaypointContainer
+                                .querySelector(".cj4x-navigation-data-waypoint-expected-fuel")
+                                .textContent = weightsTextContent;
+
+                        }
+
+                        if (activeWaypoint && destination) {
+                            if (destination.ident == activeWaypoint.ident) {
+                                this._destinationWaypointContainer
+                                    .setAttribute("style", "color: magenta");
+                                this._activeWaypointContainer
+                                    .setAttribute("style", "color: white");
+                            }
+                            else {
+                                this._destinationWaypointContainer
+                                    .setAttribute("style", "color: white");
+                                this._activeWaypointContainer
+                                    .setAttribute("style", "color: magenta");
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     onExit() {
     }
     onEvent(_event) {
+    }
+    calcETEseconds(distance, currentGroundSpeed) {
+        return (distance / currentGroundSpeed) * 3600;
     }
 }
 class CJ4_SystemAnnunciations extends Cabin_Annunciations {
@@ -2452,6 +2711,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
                 break;
         }
         this.map.instrument.zoomRanges = this.getAdaptiveRanges();
+        this.setWxRadarBug();
     }
     showTerrain(_value) {
         if (this.isTerrainVisible != _value) {
@@ -2562,7 +2822,14 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             ranges[i] *= this.zoomFactor;
         return ranges;
     }
+    setWxRadarBug() {
+        let radarbug = document.querySelector("#weather_radar_bug");
+        if (radarbug) {
+            radarbug.style.display = (this.isWeatherVisible) ? "" : "none";
+        }
+    }
     refreshLayout() {
+        this.setWxRadarBug();
         if (this.isTerrainVisible || this.isGwxVisible) {
             this.map.instrument.mapConfigId = 1;
             this.map.instrument.bingMapRef = EBingReference.SEA;
@@ -2634,6 +2901,10 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
         this.isWeatherVisible = undefined;
         this.isGwxVisible = undefined;
         this.element = new NavSystemElementGroup([this.compass, this.infos]);
+        this._chronoValue = 0;
+        this._chronoStarted = false;
+        this._showET = false;
+        this._timeCounterStarted = 0;
     }
     init() {
         super.init();
@@ -2641,11 +2912,16 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
         if (!this.root) {
             console.log("Root component expected!");
         }
+        else {
+            this.elapsedTime = this.root.querySelector("#ElapsedTime");
+            this.elapsedTimeValue = this.root.querySelector("#ET_Value");
+        }
     }
     onUpdate(_dTime) {
         super.onUpdate(_dTime);
         this.infos.showSymbol(CJ4_MapOverlaySymbol.WX, this.isWeatherVisible);
         this.infos.showSymbol(CJ4_MapOverlaySymbol.TERR, this.isTerrainVisible);
+        this.updateElapsedTime();
     }
     onEvent(_event) {
         super.onEvent(_event);
@@ -2700,6 +2976,46 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
                 this.root.setAttribute("extended", "on");
             else
                 this.root.setAttribute("extended", "off");
+        }
+    }
+    updateElapsedTime(_dTime) {
+        if (this.elapsedTime) {
+            if (this._showET) {
+                if (this._chronoStarted) {
+                    if (this._timeCounterStarted == 0) {
+                        this._timeCounterStarted = Number.parseInt(SimVar.GetGlobalVarValue("ZULU TIME", "seconds"));
+                    }
+                    this._chronoValue = Number.parseInt(SimVar.GetGlobalVarValue("ZULU TIME", "seconds")) - this._timeCounterStarted;
+                }
+                var hours = Math.floor(this._chronoValue / 3600);
+                var minutes = Math.floor((this._chronoValue - (hours * 3600)) / 60);
+                var seconds = Math.floor(this._chronoValue - (minutes * 60) - (hours * 3600));
+                let val = "";
+                if (hours > 0) {
+                    if (hours < 10)
+                        val += "0";
+                    val += hours;
+                    val += ":";
+                    if (minutes < 10)
+                        val += "0";
+                    val += minutes;
+                }
+                else {
+                    if (minutes < 10)
+                        val += "0";
+                    val += minutes;
+                    val += ":";
+                    if (seconds < 10)
+                        val += "0";
+                    val += seconds;
+                }
+                this.elapsedTimeValue.textContent = val;
+                this.elapsedTime.style.display = "block";
+            }
+            else {
+                this.elapsedTime.style.display = "none";
+                this._timeCounterStarted = 0;
+            }
         }
     }
 }
@@ -2848,10 +3164,22 @@ class CJ4_NavBarContainer extends NavSystemElementContainer {
         }
         if (this.isaElement) {
             var altitude = Math.trunc(SimVar.GetSimVarValue("PLANE ALTITUDE", "feet"));
-            var isaTemp = 15 - Math.trunc(2 * (altitude / 1000));
+            let tmpAlt = (altitude / 1000);
+            // until 36k
+            var isaTemp = Math.trunc(Math.min(tmpAlt, 36) * 2);
+            if (tmpAlt > 65) {
+                // above 65k
+                tmpAlt -= 65;
+                isaTemp += Math.trunc(tmpAlt * 0.3);
+            }
+
+            // calc isa
+            isaTemp = 15 - isaTemp;
+
+            // calc dev
             var isa = sat - isaTemp;
             if (isa)
-                this.isaElement.textContent = isa;
+                this.isaElement.textContent = (isa <= 0 ? "" : "+") + isa;
         }
     }
 }
@@ -3050,7 +3378,6 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             {
                 this.addTitle("CONTROLS", this.textSize, 0.5);
                 this.addList("NAV-SRC", this.textSize, ["FMS1", "VOR1", "VOR2"], [CJ4_PopupMenu_Key.NAV_SRC]);
-                this.addList("MAP-SRC", this.textSize, ["FMS1"], [CJ4_PopupMenu_Key.MAP_SRC]);
                 this.addList("RANGE", this.textSize, ["10", "20", "40", "80", "160", "320"], [CJ4_PopupMenu_Key.MAP_RANGE]);
             }
             this.endSection();
@@ -3058,7 +3385,11 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             {
                 this.addSubMenu("BRG SRC", this.textSize, this.showNavPage.bind(this));
                 this.addSubMenu("CONFIG", this.textSize, this.showConfigPage.bind(this));
+                this.addSubMenu("OVERLAYS", this.textSize, null);
+                this.addSubMenu("RADAR", this.textSize, null);
                 this.addSubMenu("REFS", this.textSize, this.showRefPage.bind(this));
+                this.addSubMenu("TAWS", this.textSize, null);
+                this.addSubMenu("BARO SET", this.textSize, null);
             }
             this.endSection();
         }
@@ -3090,16 +3421,16 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addTitle("BRG PTR 1", this.textSize, 0.5);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
                 this.addRadio("FMS1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
-                this.addRadioRange("VOR1", this.textSize, 108, 117.95, 0.005, [CJ4_PopupMenu_Key.BRG_PTR1_SRC, CJ4_PopupMenu_Key.BRG_VOR1_FREQ]);
-                this.addRadioRange("ADF1", this.textSize, 100, 1799, 1, [CJ4_PopupMenu_Key.BRG_PTR1_SRC, CJ4_PopupMenu_Key.BRG_ADF1_FREQ]);
+                this.addRadio("VOR1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
+                this.addRadio("ADF1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
             }
             this.endSection();
             this.beginSection();
             {
                 this.addTitle("BRG PTR 2", this.textSize, 0.5);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
-                this.addRadioRange("VOR2", this.textSize, 108, 117.95, 0.005, [CJ4_PopupMenu_Key.BRG_PTR2_SRC, CJ4_PopupMenu_Key.BRG_VOR2_FREQ]);
-                this.addRadioRange("ADF2", this.textSize, 100, 1799, 1, [CJ4_PopupMenu_Key.BRG_PTR2_SRC, CJ4_PopupMenu_Key.BRG_ADF2_FREQ]);
+                this.addRadio("VOR2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
+                this.addRadio("ADF2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
             }
             this.endSection();
         }
@@ -3322,18 +3653,27 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
                 this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
                 this.addRadio("PPOS", this.textSize, null);
                 this.addRadio("PLAN", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
+                this.addRadio("GWX", this.textSize, null);
                 this.addRadio("TCAS", this.textSize, null);
             }
             this.endSection();
             this.beginSection();
             {
                 this.addTitle("CONTROLS", this.textSize, 0.5);
-                this.addList("NAV-SRC", this.textSize, ["FMS1", "VOR1", "VOR2"], [CJ4_PopupMenu_Key.NAV_SRC]);
+                this.addList("MAP-SRC", this.textSize, ["FMS1"], [CJ4_PopupMenu_Key.MAP_SRC]);
+                this.addSubMenu("OVERLAYS", this.textSize, null);
                 this.addSubMenu("MAP SYMBOLS", this.textSize, this.showMapSymbolsPage.bind(this));
-                this.addSubMenu("SYS TEST", this.textSize, null);
+                this.addSubMenu("TFR TEST", this.textSize, null);
+                this.addSubMenu("SYS TEST", this.textSize, this.showSystemTestPage.bind(this));
+            }
+            this.endSection();
+
+            this.beginSection();
+            {
                 this.addSubMenu("L PFD MENU", this.textSize, null);
             }
             this.endSection();
+
         }
         this.closeMenu();
         this.highlight(_highlight);
@@ -3375,7 +3715,52 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
+    showSystemTestPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("LWR MENU", this.titleSize, 1.0, "blue");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("SYS TEST", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addCheckbox("FIRE WARN", this.textSize, null);
+                this.addCheckbox("LDG GEAR", this.textSize, null);
+                this.addCheckbox("BLEED LEAK", this.textSize, null);
+                this.addCheckbox("TAIL DE-ICE", this.textSize, null);
+                this.addCheckbox("AOA", this.textSize, null);
+                this.addCheckbox("RUDDER BIAS", this.textSize, null);
+                this.addCheckbox("W/S TEMP", this.textSize, null);
+                this.addCheckbox("OVERSPEED", this.textSize, null);
+                this.addCheckbox("ANTI-SKID", this.textSize, null);
+                this.addCheckbox("ANNUNCIATOR", this.textSize, null);
+                this.addCheckbox("CABIN PRESS", this.textSize, null);
+                this.addCheckbox("ELEV TRIM", this.textSize, null);
+                this.addCheckbox("TAWS", this.textSize, null);
+                this.addCheckbox("OFF", this.textSize, null);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 7);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
 }
+
+
+
 
 class CJ4_Checklist_Container extends NavSystemElementContainer {
     constructor(_name, _root) {
@@ -3383,13 +3768,16 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
         this.isVisible = undefined;
         this.dictionary = new Avionics.Dictionary();
         this.otherMenusOpen = false;
-        this.checklists = undefined;
+        this.checklist = new NormalChecklist;
     }
     init() {
         super.init();
         this.root = this.gps.getChildById(this.htmlElemId);
         if (!this.root) {
             console.log("Root component expected!");
+        }
+        else {
+            this.handler = new CJ4_MFDChecklist(this.root, this.dictionary, this.checklist);
         }
     }
     onUpdate(_dTime) {
@@ -3402,17 +3790,11 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
             this.isVisible = _value;
             this.root.setAttribute("visible", (_value) ? "true" : "false");
 
-            if(this.isVisible == true){
-                if(this.checklists == undefined){
-                    this.checklists = [
-                        new NormalChecklist
-                    ];
-                }
-                this.handler = new CJ4_MFDChecklist(this.root, this.dictionary, this.checklists);
+            if (this.isVisible == true) {
+                this.handler.expand();
             }
-            else if(this.isVisible == false){
-                Utils.RemoveAllChildren(this.root);
-                this.handler = null;
+            else if (this.isVisible == false) {
+                this.handler.minimise();
             }
         }
     }
@@ -3422,10 +3804,10 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onActivate();
-                        if(this.handler.highlightItem){
-                            if(this.handler.onChecklistItemPage && this.handler.highlightItem.checkboxVal){
+                        if (this.handler.highlightItem) {
+                            if (this.handler.onChecklistItemPage && this.handler.highlightItem.checkboxVal) {
                                 this.handler.highlight(this.handler.highlightId + 1);
                                 this.handler.changeCurrentSelectionIndex(1);
                             }
@@ -3434,24 +3816,26 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
                     break;
                 case "Upr_DATA_DEC":
                 case "Lwr_DATA_DEC":
-                    if(!this.otherMenusOpen)
+                    if (!this.otherMenusOpen) {
                         this.handler.onDataDec();
+                    }
                     break;
                 case "Upr_DATA_INC":
                 case "Lwr_DATA_INC":
-                    if(!this.otherMenusOpen)
+                    if (!this.otherMenusOpen) {
                         this.handler.onDataInc();
+                    }
                     break;
                 case "Upr_MENU_ADV_DEC":
                 case "Lwr_MENU_ADV_DEC":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onMenuDec();
                         this.handler.changeCurrentSelectionIndex(-1);
                     }
                     break;
                 case "Upr_MENU_ADV_INC":
                 case "Lwr_MENU_ADV_INC":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onMenuInc();
                         this.handler.changeCurrentSelectionIndex(1);
                     }
@@ -3467,7 +3851,7 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
     }
 }
 class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
-    constructor(_root, _dictionary, _checklists) {
+    constructor(_root, _dictionary, _checklist) {
         super();
         // Styling
         this.titleSize = 13;
@@ -3480,46 +3864,62 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
 
         // Logic
         this.onChecklistItemPage = false;
-        this.checklists = _checklists;
+        this.checklist = _checklist;
 
         this.currentMenu = this.showMainPage.bind(this);
         this.currentPage = 1;
         this.totalPages = 1;
         this.currentItemIndex = 0;
-        this.totalSectionItems = this.checklists.length;
 
         this.showMainPage();
     }
     refreshPage() {
-        if(this.currentMenu){
+        if (this.currentMenu) {
             this.currentMenu();
         }
     }
-    changeCurrentSelectionIndex(_delta){
-        // Checklist item scrolling
-        if((this.currentItemIndex + _delta) >= 0 && (this.currentItemIndex + _delta < this.totalSectionItems)){
-            this.currentItemIndex += _delta;
-            let startAtLastPageItem = false;
-
-            // Handle page transition
-            const newPage = Math.ceil((this.currentItemIndex + 1) / this.maximumItemsPerPage);
-            if(newPage != this.currentPage && newPage >= 1){
-                if(newPage < this.currentPage) startAtLastPageItem = true;
-                this.currentPage = newPage;
-                this.refreshPage();
-                //if(startAtLastPageItem) this.highlight(6); // Starts highlight on last item of previous page
+    changeCurrentSelectionIndex(_delta, _override = false) {
+        // Menu scrolling
+        if ((this.currentItemIndex + _delta) >= 0 && (this.currentItemIndex + _delta < this.totalSectionItems)) {
+            if (_override == true) {
+                this.currentItemIndex = _delta;
+            }
+            else {
+                this.currentItemIndex += _delta;
             }
 
+            // Handle page transition
+            let startAtLastPageItem = false;
+            const newPage = Math.ceil((this.currentItemIndex + 1) / this.maximumItemsPerPage);
+            if (newPage != this.currentPage && newPage >= 1) {
+                if (newPage < this.currentPage) startAtLastPageItem = true;
+                this.currentPage = newPage;
+                this.refreshPage();
+                if (startAtLastPageItem) this.highlight(6); // Starts selection highlight on last item of previous page
+            }
+
+            if (_override) {
+                let pageIndex = this.currentItemIndex;
+                if (this.currentItemIndex > 6) {
+                    pageIndex -= this.maximumItemsPerPage * (this.currentPage - 1);
+                }
+                //= Math.abs(this.currentItemIndex - this.currentPage * (this.maximumItemsPerPage - 1)  Math.ceil(this.currentItemIndex / (this.maximumItemsPerPage - 1));
+                if ((this.totalPages == this.currentPage && pageIndex == 6) || (pageIndex == 0 && this.currentPage == 1)) {
+                    this.highlight(pageIndex);
+                    console.log(pageIndex + "+0");
+                }
+                else {
+                    this.highlight(pageIndex + 1);
+                    console.log(pageIndex + "+1");
+                }
+
+            }
         }
     }
     showMainPage(_highlight = 0) {
         this.onChecklistItemPage = false;
         this.currentItemIndex = 0;
-
-        this.currentMenu = this.showMainPage.bind(this, _highlight);
-        this.currentPage = 1;
-        this.totalPages = Math.ceil(this.checklists.length / this.maximumItemsPerPage);
-        this.totalSectionItems = this.checklists.length;
+        this.currentMenu = this.showMainPage.bind(this, 0);
 
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
         page.setAttribute("id", "ViewBox");
@@ -3528,31 +3928,31 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
         {
             this.beginSection();
             {
-                this.addChecklistTitle("CHECKLIST INDEX", this.titleSize, 1.0, this.currentPage, this.totalPages);
+                this.addChecklistTitle("CHECKLIST INDEX", this.titleSize, 1.0, undefined, undefined);
                 this.addChecklistTitle("", this.titleSize, 1.0);
             }
             this.endSection();
             this.beginSection();
             {
-                for(let i = 0; i < this.checklists.length; i++){
-                    this.addSubMenu(this.checklists[i].name, this.textSize, this.showChecklist.bind(this, this.checklists[i]));
-                }
+                this.addSubMenu(this.checklist.name, this.textSize, (() => { this.showChecklistSections(this.checklist); this.changeCurrentSelectionIndex(this.checklist.findCurrentSectionIndex(), true); }).bind(this));
+                this.addSubMenu("CHECKLIST/PASS BRIEF CONFIG MENU", this.textSize, null);
+                if (this.checklist.hasProgress()) this.addSubMenu("RESET CHECKLIST", this.textSize, (() => { this.checklist.resetChecklistState(); this.currentItemIndex = 0; this.refreshPage() }).bind(this));
             }
             this.endSection();
         }
         this.closeMenu();
-        this.escapeCbk = () => {};
+        this.escapeCbk = () => { };
         this.highlight(_highlight);
         page.appendChild(sectionRoot);
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
-    showChecklist(_checklist) {
+    showChecklistSections(_checklist) {
         this.onChecklistItemPage = false;
+        this.currentMenu = this.showChecklistSections.bind(this, _checklist);
 
-        this.currentMenu = this.showChecklist.bind(this, _checklist);
-        this.totalPages = Math.ceil(_checklist.sections.length / this.maximumItemsPerPage);
         this.totalSectionItems = _checklist.sections.length;
+        this.totalPages = Math.ceil(_checklist.sections.length / this.maximumItemsPerPage);
 
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
         page.setAttribute("id", "ViewBox");
@@ -3568,22 +3968,12 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
             this.endSection();
             this.beginSection();
             {
-                let checklistSections = _checklist.sections;
-                let startingItem = (this.currentPage * this.maximumItemsPerPage) - this.maximumItemsPerPage;
-                let endItem = Math.min(checklistSections.length, startingItem + this.maximumItemsPerPage);
+                let startingSection = (this.currentPage * this.maximumItemsPerPage) - this.maximumItemsPerPage;
+                let endSection = Math.min(_checklist.sections.length, startingSection + this.maximumItemsPerPage);
 
-                for(let i = startingItem; i < endItem; i++){
-                    if(checklistSections[i]){
-                        let sectionComplete = true;
-                        for(let x = 0; x < checklistSections[i].checklistItems.length; x++){
-                            if(!checklistSections[i].checklistItems[x].key){
-                                sectionComplete = false;
-                            }
-                        }
-                        this.addSubMenu(_checklist.sections[i].name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, i)}).bind(this), sectionComplete ? "#11d011" : "white");
-                    }
+                for (let i = startingSection; i < endSection; i++) {
+                    this.addSubMenu(_checklist.sections[i].name, this.textSize, (() => { this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, i) }).bind(this), _checklist.isSectionComplete(i) ? "#11d011" : "white");
                 }
-
 
             }
             this.endSection();
@@ -3600,7 +3990,7 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
         this.currentMenu = this.showChecklistSection.bind(this, _checklist, _section_id);
         this.totalPages = Math.ceil(_checklist.sections[_section_id].checklistItems.length / this.maximumItemsPerPage);
         this.totalSectionItems = _checklist.sections[_section_id].checklistItems.length;
-        if(_checklist.sections[_section_id].checklistItems.length % 7 == 0){
+        if (_checklist.sections[_section_id].checklistItems.length % 7 == 0) {
             this.totalPages += 1;
             this.totalSectionItems += 1;
         }
@@ -3615,7 +4005,7 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
             this.beginSection();
             {
                 this.addChecklistTitle(_checklist.name, this.titleSize, 1.0, this.currentPage, this.totalPages);
-                this.addChecklistTitle(_checklist.sections[_section_id].name, this.titleSize, 1.0, undefined, undefined,"left");
+                this.addChecklistTitle(_checklist.sections[_section_id].name, this.titleSize, 1.0, undefined, undefined, "left");
             }
             this.endSection();
             this.beginSection();
@@ -3623,20 +4013,20 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
                 let checklistItems = _checklist.sections[_section_id].checklistItems;
                 let startingItem = (this.currentPage * this.maximumItemsPerPage) - this.maximumItemsPerPage;
                 let endItem = Math.min(checklistItems.length, startingItem + this.maximumItemsPerPage);
-                for(let i = startingItem; i < endItem; i++){
-                    if(checklistItems[i]){
+                for (let i = startingItem; i < endItem; i++) {
+                    if (checklistItems[i]) {
                         this.addChecklistItem(_checklist.sections[_section_id].checklistItems[i], this.textSize);
                     }
                 }
 
-                if(endItem == checklistItems.length && _section_id < _checklist.sections.length - 1){
-                    if(checklistItems.length % 7 != 0){
+                if (endItem == checklistItems.length && _section_id < _checklist.sections.length - 1) {
+                    if (checklistItems.length % 7 != 0) {
                         this.addChecklistTitle("", this.titleSize, 1.0);
-                        this.addSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1);}).bind(this));
+                        this.addSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => { this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1); }).bind(this));
                     }
-                    else{
-                        if(this.currentPage == this.totalPages){
-                            this.addSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => {this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1);}).bind(this));
+                    else {
+                        if (this.currentPage == this.totalPages) {
+                            this.addSubMenu("CKLST COMPLETE: NEXT " + _checklist.name, this.textSize, (() => { this.currentItemIndex = 0; this.currentPage = 1; this.showChecklistSection(_checklist, _section_id + 1); }).bind(this));
                         }
                     }
                 }
@@ -3644,10 +4034,16 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
             this.endSection();
         }
         this.closeMenu();
-        this.escapeCbk = (() => {this.showChecklist(_checklist);}).bind(this);
+        this.escapeCbk = (() => { this.showChecklistSections(_checklist); this.currentItemIndex = 0; this.changeCurrentSelectionIndex(this.checklist.findCurrentSectionIndex(), true); }).bind(this);
         page.appendChild(sectionRoot);
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
+    }
+    minimise() {
+        this.root.setAttribute("visible", "false");
+    }
+    expand() {
+        this.root.setAttribute("visible", "true");
     }
 }
 class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
@@ -3674,10 +4070,10 @@ class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
             this.isVisible = _value;
             this.root.setAttribute("visible", (_value) ? "true" : "false");
 
-            if(this.isVisible == true){
+            if (this.isVisible == true) {
                 this.handler = new CJ4_PassengerBrief(this.root, this.dictionary);
             }
-            else if(this.isVisible == false){
+            else if (this.isVisible == false) {
                 Utils.RemoveAllChildren(this.root);
                 this.handler = null;
             }
@@ -3689,29 +4085,29 @@ class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onActivate();
                     }
                     break;
                 case "Upr_DATA_DEC":
                 case "Lwr_DATA_DEC":
-                    if(!this.otherMenusOpen)
+                    if (!this.otherMenusOpen)
                         this.handler.onDataDec();
                     break;
                 case "Upr_DATA_INC":
                 case "Lwr_DATA_INC":
-                    if(!this.otherMenusOpen)
+                    if (!this.otherMenusOpen)
                         this.handler.onDataInc();
                     break;
                 case "Upr_MENU_ADV_DEC":
                 case "Lwr_MENU_ADV_DEC":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onMenuDec();
                     }
                     break;
                 case "Upr_MENU_ADV_INC":
                 case "Lwr_MENU_ADV_INC":
-                    if(!this.otherMenusOpen){
+                    if (!this.otherMenusOpen) {
                         this.handler.onMenuInc();
                     }
                     break;
@@ -3740,7 +4136,7 @@ class CJ4_PassengerBrief extends WTMenu.PassengerBrief_Menu_Handler {
         this.showMainPage();
     }
     refreshPage() {
-        if(this.currentMenu){
+        if (this.currentMenu) {
             this.currentMenu();
         }
     }
@@ -3769,7 +4165,7 @@ class CJ4_PassengerBrief extends WTMenu.PassengerBrief_Menu_Handler {
             this.endSection();
         }
         this.closeMenu();
-        this.escapeCbk = () => {};
+        this.escapeCbk = () => { };
         this.highlight(_highlight);
         page.appendChild(sectionRoot);
         Utils.RemoveAllChildren(this.root);

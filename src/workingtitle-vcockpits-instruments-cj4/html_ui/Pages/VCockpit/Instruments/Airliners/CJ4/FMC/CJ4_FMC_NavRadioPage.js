@@ -6,6 +6,12 @@ class CJ4_FMC_NavRadioPageOne {
         this._fmc = fmc;
         this._isDirty = true;
 
+        this._transponderMode = 1;
+        let modeValue = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
+        if (modeValue == 4) {
+            this._transponderMode = 0;
+        }
+
         this._freqMap = {
             vhf1: "[]",
             vhf2: "[]",
@@ -27,6 +33,20 @@ class CJ4_FMC_NavRadioPageOne {
                 return true;
             }.bind(this)
         });
+    }
+
+    get transponderMode() { return this._transponderMode; }
+    set transponderMode(value) {
+        if (value == 2) value = 0;
+        this._transponderMode = value;
+
+        // set simvar
+        let modeValue = 1;
+        if (value == 0) modeValue = 4;
+
+        SimVar.SetSimVarValue("TRANSPONDER STATE:1", "number", modeValue);
+
+        this.invalidate();
     }
 
     prepare() {
@@ -59,7 +79,7 @@ class CJ4_FMC_NavRadioPageOne {
 
     render() {
         // console.log("Render Nav");
-        const tcasModeSwitch = this._fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], 0, "blue");
+        const tcasModeSwitch = this._fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], this.transponderMode, "blue");
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/2[blue]", "TUNE[blue]"],
@@ -74,7 +94,7 @@ class CJ4_FMC_NavRadioPageOne {
             [" ATC1", "TCAS MODE "],
             [this._freqMap.atc1.toFixed(0).padStart(4, "0") + "[green]", tcasModeSwitch],
             [" ADF", "REL [blue]"],
-            [this._freqMap.adf1.toFixed(0) + "[green]", "TCAS>"],
+            [this._freqMap.adf1.toFixed(0) + "[green]", "TCAS>[disabled]"],
         ]);
     }
 
@@ -91,7 +111,7 @@ class CJ4_FMC_NavRadioPageOne {
             });
         }
         else if (value.length === 0) {
-            this._fmc.radioNav.swapVHFFrequencies(this._fmc.instrumentIndex, 1);
+            this._fmc.radioNav.swapVHFFrequencies(this._fmc.instrumentIndex, index);
             this._fmc.requestCall(() => {
                 this.update();
             });
@@ -157,6 +177,7 @@ class CJ4_FMC_NavRadioPageOne {
                 this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
             }
         };
+
         this._fmc.onLeftInput[4] = () => {
             let value = this._fmc.inOut;
             let numValue = parseFloat(value);
@@ -173,6 +194,8 @@ class CJ4_FMC_NavRadioPageOne {
                 this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
             }
         };
+
+        this._fmc.onRightInput[4] = () => { this.transponderMode = this.transponderMode + 1; };
 
         this._fmc.onRightInput[5] = () => { CJ4_FMC_NavRadioPage.ShowPage3(this._fmc); };
         this._fmc.onPrevPage = () => { CJ4_FMC_NavRadioPage.ShowPage2(this._fmc); };

@@ -124,9 +124,6 @@ class MapInstrument extends ISvgMapRootElement {
         // MOD END
     }
     get flightPlanManager() {
-        if (this.gps) {
-            return this.gps.currFlightPlanManager;
-        }
         return this._flightPlanManager;
     }
     setNPCAirplaneManagerTCASMode(mode) {
@@ -362,9 +359,6 @@ class MapInstrument extends ISvgMapRootElement {
             if (arg instanceof BaseInstrument) {
                 this.instrument = arg;
                 this.selfManagedInstrument = false;
-                if (this.instrument instanceof NavSystem) {
-                    this.gps = this.instrument;
-                }
             }
             else {
                 this.instrument = document.createElement("base-instrument");
@@ -376,22 +370,16 @@ class MapInstrument extends ISvgMapRootElement {
         }
         else {
         }
-        if (this.gps) {
-            if (!this.gps.currFlightPlanManager) {
-                this.gps.currFlightPlanManager = new FlightPlanManager(this.instrument);
-                this.gps.currFlightPlanManager.registerListener();
-            }
-            this.gps.addEventListener("FlightStart", this.onFlightStart.bind(this));
+        this._flightPlanManager = this.instrument.flightPlanManager;
+        if (this._flightPlanManager) {
+            this.instrument.addEventListener("FlightStart", this.onFlightStart.bind(this));
         }
         else {
-            if (!this._flightPlanManager) {
-                this._flightPlanManager = new FlightPlanManager(this.instrument);
-                this._flightPlanManager.registerListener();
-            }
+            this._flightPlanManager = new FlightPlanManager(this.instrument);
         }
         let bingMapId = this.bingId;
-        if (this.gps && this.gps.urlConfig.index)
-            bingMapId += "_GPS" + this.gps.urlConfig.index;
+        if (this.instrument.urlConfig.index)
+            bingMapId += "_GPS" + this.instrument.urlConfig.index;
         this.bingMap = this.getElementsByTagName("bing-map")[0];
         this.bingMap.setMode(this.eBingMode);
         this.bingMap.setReference(this.eBingRef);
@@ -627,13 +615,8 @@ class MapInstrument extends ISvgMapRootElement {
             this.scrollDisp.x = 0;
             this.scrollDisp.y = 0;
             if (this.bingMap) {
-                if (this.isDisplayingWeather()) {
-                    this.navMap.setRange(this.getWeatherRange());
-                }
-                else {
-                    let rangeTarget = this.getDisplayRange() * 1000 / Math.abs(this.rangeDefinition.getRangeDefinition(this.rangeDefinitionContext));
-                    this.navMap.setRange(rangeTarget);
-                }
+                let rangeTarget = this.getDisplayRange() * 1000 / Math.abs(this.rangeDefinition.getRangeDefinition(this.rangeDefinitionContext));
+                this.navMap.setRange(rangeTarget);
                 var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor * this.overdrawFactor; // MOD: Need to expand map range to compensate for overdraw
                 if (!this.isDisplayingWeather())
                     this.updateBingMapSize();
@@ -719,8 +702,8 @@ class MapInstrument extends ISvgMapRootElement {
             if (!this.isDisplayingWeatherRadar() || !this.weatherHideGPS) {
                 /*
                  * Because of the weird way SvgRoadNetworkElement draws its subelements, when it gets removed from the map its subelements
-                 * don't get properly cleaned up and remain on the map indefinitely as static graphics. To prevent this, we will use the 
-                 * hack-y workaround of ensuring SvgRoadNetworkElement is always loaded into the map so it can properly update and hide 
+                 * don't get properly cleaned up and remain on the map indefinitely as static graphics. To prevent this, we will use the
+                 * hack-y workaround of ensuring SvgRoadNetworkElement is always loaded into the map so it can properly update and hide
                  * its subelements as needed.
                  */
                 this.navMap.mapElements.push(this.roadNetwork);
@@ -978,11 +961,12 @@ class MapInstrument extends ISvgMapRootElement {
             setBingConfig();
         }
     }
-    update() {
+    update(_deltaTime) {
         this.updateVisibility();
         this.updateSize(true);
         if (this.selfManagedInstrument) {
             this.instrument.doUpdate();
+            this.flightPlanManager.update(_deltaTime);
         }
         if (this.wpt) {
             var wpId = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
@@ -1403,6 +1387,13 @@ class MapInstrument extends ISvgMapRootElement {
         }
     }
 
+    // g1000 compatibility
+    setTrackUpDisabled(_val) {
+        if (this.rotationHandler instanceof MapInstrument_DefaultRotationHandler) {
+            this.rotationHandler.rotationDisabled = _val;
+        }
+    }
+
     setPlaneScale(_scale) {
         if (this.airplaneIconElement) {
             this.airplaneIconElement.setScale(this.navMap, _scale);
@@ -1761,7 +1752,7 @@ class MapInstrument extends ISvgMapRootElement {
         return _range.toFixed(decimals + 1);
     }
 }
-MapInstrument.OVERDRAW_FACTOR_DEFAULT = 1;//Math.sqrt(2);
+MapInstrument.OVERDRAW_FACTOR_DEFAULT = Math.sqrt(2);
 MapInstrument.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200];
 
 MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT = true;
@@ -1773,7 +1764,7 @@ MapInstrument.VOR_RANGE_MIN_DEFAULT = 0;
 MapInstrument.NDB_RANGE_DEFAULT = 100;
 MapInstrument.NDB_RANGE_MIN_DEFAULT = 0;
 MapInstrument.AIRPORT_RANGES_DEFAULT = [35, 100, Infinity];
-MapInstrument.CITY_RANGES_DEFAULT = [800, 100, 20];
+MapInstrument.CITY_RANGES_DEFAULT = [1500, 200, 100];
 MapInstrument.PLANE_RANGE_DEFAULT = 60;
 MapInstrument.AIRSPACE_RANGE_DEFAULT = Infinity;
 MapInstrument.ROAD_HIGHWAY_RANGE_DEFAULT = Infinity;
@@ -1816,10 +1807,11 @@ MapInstrument_DefaultRangeDefinition.INSTANCE = new MapInstrument_DefaultRangeDe
 class MapInstrument_DefaultRotationHandler {
     constructor(_rotateWithPlane = false) {
         this.rotateWithPlane = _rotateWithPlane;
+        this.rotationDisabled = false;
     }
 
     getRotation() {
-        if (this.rotateWithPlane) {
+        if (this.rotateWithPlane && !this.rotationDisabled) {
             return -SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
         } else {
             return 0;

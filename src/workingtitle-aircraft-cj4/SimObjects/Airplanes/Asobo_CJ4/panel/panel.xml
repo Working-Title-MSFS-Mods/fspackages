@@ -292,28 +292,6 @@
 		  </Condition>
 		</Annunciation>
 
-		<!-- <Annunciation> -->
-		  <!-- <Type>Caution</Type> -->
-		  <!-- <Text>BLEED OFF</Text> -->
-		  <!-- <Condition> -->
-			<!-- <Equal> -->
-				<!-- <Simvar name="BLEED AIR SOURCE CONTROL" unit="Enum"/> -->
-				<!-- <Constant>1</Constant> -->
-			<!-- </Equal> -->
-		  <!-- </Condition> -->
-		<!-- </Annunciation> -->
-
-		<!-- <Annunciation>
-		  <Type>Caution</Type>
-		  <Text>USE OXYGEN MASK</Text>
-		  <Condition>
-			<Greater>
-				<Simvar name="PRESSURIZATION CABIN ALTITUDE" unit="feet"/>
-				<Constant>10000</Constant>
-			</Greater>
-		  </Condition>
-		</Annunciation> -->
-
 		<Annunciation>
 		  <Type>Caution</Type>
 		  <Text>VACUUM LOW</Text>
@@ -328,91 +306,85 @@
 		<Annunciation>
 		  <Type>Caution</Type>
 		  <Text>PITOT/STATIC COLD </Text>
-		  <Condition Suffix="L/R">
-			<And>
-				<Greater>
-					<Simvar name="TURB ENG N1:1" unit="percent"/>
-					<Constant>70</Constant>
-				</Greater>
-				<Not>
-					<Or>
-						<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
-						<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
-					</Or>
-				</Not>
-			</And>
-		  </Condition>
-		  <Condition Suffix="L">
-			<And>
-				<Greater>
-					<Simvar name="TURB ENG N1:1" unit="percent"/>
-					<Constant>70</Constant>
-				</Greater>
-				<Not>
-					<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
-				</Not>
-			</And>
-		  </Condition>
-		  <Condition Suffix="R">
-			<And>
-				<Greater>
-					<Simvar name="TURB ENG N1:1" unit="percent"/>
-					<Constant>70</Constant>
-				</Greater>
-				<Not>
-					<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
-				</Not>
-			</And>
-		  </Condition>
-		</Annunciation>
-		
-		<!--<Annunciation>
-		  <Type>Caution</Type>
-		  <Text>PITOT HT ON </Text>
-		  <Condition Suffix="L-R">
-			<And>
-				<Lower>
-					<Simvar name="PROP RPM:1" unit="rpm"/>
-					<Constant>1</Constant>
-				</Lower>
-				<And>
-					<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
-					<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
-				</And>
-			</And>
-		  </Condition>
-		  <Condition Suffix="L">
-			<And>
-				<Lower>
-					<Simvar name="PROP RPM:1" unit="rpm"/>
-					<Constant>1</Constant>
-				</Lower>
-				<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
-			</And>
-		  </Condition>
-		  <Condition Suffix="R">
-			<And>
-				<Lower>
-					<Simvar name="PROP RPM:1" unit="rpm"/>
-					<Constant>1</Constant>
-				</Lower>
-				<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
-			</And>
-		  </Condition>
-		</Annunciation>
-
-		<Annunciation>
-		  <Type>Caution</Type>
-		  <Text>INERT SEP ON</Text>
-		  <Condition>
+		  <Condition Suffix="BOTH">
 			<Or>
-				<Simvar name="ENG ANTI ICE:1" unit="Bool"/>
-				<Simvar name="ENG ANTI ICE:2" unit="Bool"/>
+				<And>
+					<Not>
+						<Simvar name="SIM ON GROUND" unit="bool"/>
+					</Not>
+					<Not>
+						<Or>
+							<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
+							<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
+						</Or>
+					</Not>
+				</And>
+				<And>
+					<Greater>
+						<Simvar name="TURB ENG N1:1" unit="percent"/>
+						<Constant>70</Constant>
+					</Greater>
+					<Not>
+						<Or>
+							<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
+							<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
+						</Or>
+					</Not>
+				</And>
+			</Or>
+		  </Condition>
+		  <Condition Suffix="L">
+			<Or>
+				<And>
+					<Not>
+						<Simvar name="SIM ON GROUND" unit="bool"/>
+					</Not>
+					<Not>
+						<Or>
+							<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
+						</Or>
+					</Not>
+				</And>
+				<And>
+					<Greater>
+						<Simvar name="TURB ENG N1:1" unit="percent"/>
+						<Constant>70</Constant>
+					</Greater>
+					<Not>
+						<Or>
+							<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
+						</Or>
+					</Not>
+				</And>
+			</Or>
+		  </Condition>
+		  <Condition Suffix="R">
+			<Or>
+				<And>
+					<Not>
+						<Simvar name="SIM ON GROUND" unit="bool"/>
+					</Not>
+					<Not>
+						<Or>
+							<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
+						</Or>
+					</Not>
+				</And>
+				<And>
+					<Greater>
+						<Simvar name="TURB ENG N1:1" unit="percent"/>
+						<Constant>70</Constant>
+					</Greater>
+					<Not>
+						<Or>
+							<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
+						</Or>
+					</Not>
+				</And>
 			</Or>
 		  </Condition>
 		</Annunciation>
-		-->
-
+		
 		<Annunciation>
 		  <Type>Caution</Type>
 		  <Text>NG HI</Text>
@@ -429,31 +401,6 @@
 			</Or>
 		  </Condition>
 		</Annunciation>
-
-		<!--
-		<Annunciation>
-		  <Type>Caution</Type>
-		  <Text>PROP DEICE ON</Text>
-		  <Condition>
-			<Or>
-				<And>
-					<Lower>
-						<Simvar name="PROP RPM:1" unit="rpm"/>
-						<Constant>1</Constant>
-					</Lower>
-					<Simvar name="PROP DEICE SWITCH:1" unit="Bool"/>
-				</And>
-				<And>
-					<Lower>
-						<Simvar name="PROP RPM:2" unit="rpm"/>
-						<Constant>1</Constant>
-					</Lower>
-					<Simvar name="PROP DEICE SWITCH:2" unit="Bool"/>
-				</And>
-			</Or>
-		  </Condition>
-		</Annunciation>
-		-->
 
 		<Annunciation>
 		  <Type>Advisory</Type>

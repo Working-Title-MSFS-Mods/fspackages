@@ -262,16 +262,22 @@
 			<UseTemplate Name="WT_Detached_Control_Panel_Template">
 				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
 				<ID>1</ID>
-				<!-- Node_ids LOWER PANEL -->
+				<!-- LOWER PANEL -->
 				<NODE_ID_CKLST>CCP_PUSH_CKLST_1</NODE_ID_CKLST>
 				<NODE_ID_PASSBRIEF>CCP_PUSH_PASSBRIEF_1</NODE_ID_PASSBRIEF>
+                <NODE_ID_MEM1>CCP_PUSH_MEM1_1</NODE_ID_MEM1>
+                <NODE_ID_MEM2>CCP_PUSH_MEM2_1</NODE_ID_MEM2>
+                <NODE_ID_MEM3>CCP_PUSH_MEM3_1</NODE_ID_MEM3>
 			</UseTemplate>
 			<UseTemplate Name="WT_Detached_Control_Panel_Template">
 				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
 				<ID>1</ID>
-				<!-- Node_ids LOWER PANEL -->
+				<!-- LOWER PANEL -->
 				<NODE_ID_CKLST>CCP_PUSH_CKLST_2</NODE_ID_CKLST>
 				<NODE_ID_PASSBRIEF>CCP_PUSH_PASSBRIEF_2</NODE_ID_PASSBRIEF>
+                <NODE_ID_MEM1>CCP_PUSH_MEM1_2</NODE_ID_MEM1>
+                <NODE_ID_MEM2>CCP_PUSH_MEM2_2</NODE_ID_MEM2>
+                <NODE_ID_MEM3>CCP_PUSH_MEM3_2</NODE_ID_MEM3>
 			</UseTemplate>
 		</Component>
 
@@ -303,14 +309,17 @@
 						<TOOLTIPID>%((A:LIGHT RECOGNITION, bool))%{if}TT:COCKPIT.TOOLTIPS.PULSE_LIGHT_ON %{else}TT:COCKPIT.TOOLTIPS.PULSE_LIGHT_OFF%{end}</TOOLTIPID>
 					</UseTemplate>
 					<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_SeatBelt_Template">
+						<PART_ID>LIGHTING_PUSH_LIGHT_SEATBELT</PART_ID>
 					</UseTemplate>
                     <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Safety_Template">
+						<PART_ID>LIGHTING_PUSH_LIGHT_SAFETY</PART_ID>
                     </UseTemplate>
 				</Component>
 				<Component ID="LIGHTING_Knobs">
 					<UseTemplate Name="ASOBO_LIGHTING_Knob_Panel_Template">
 						<ANIM_NAME>LIGHTING_Knob_Master</ANIM_NAME>
 						<NODE_ID>LIGHTING_Knob_Master</NODE_ID>
+						<PART_ID>LIGHTING_KNOB_MASTER</PART_ID>
 						<WWISE_EVENT>lighting_master_knob</WWISE_EVENT>
 						<COUNT>10</COUNT>
 					</UseTemplate>
@@ -428,6 +437,7 @@
 			<UseTemplate Name="ASOBO_HANDLING_Switch_ElevatorTrim_Template">
 				<ANIM_NAME>HANDLING_YOKE_Switch_ElevatorTrim_1</ANIM_NAME>
 				<NODE_ID>HANDLING_YOKE_Switch_ElevatorTrim_1</NODE_ID>
+				<PART_ID>HANDLING_YOKE_SWITCH_ELEVATORTRIM_1</PART_ID>
 				<MOMENTARY_MIN_DURATION>0.1</MOMENTARY_MIN_DURATION>
 				<TRIM_LIMIT>15</TRIM_LIMIT>
 			</UseTemplate>
@@ -468,9 +478,11 @@
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_DEICE_Switch_Airframe_Template">
 				<ID>1</ID>
+				<PART_ID>DEICE_PUSH_AIRFRAME_1</PART_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_DEICE_Switch_Airframe_Template">
 				<ID>2</ID>
+				<PART_ID>DEICE_PUSH_AIRFRAME_1</PART_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Wing_Template">
 			</UseTemplate>
@@ -563,6 +575,7 @@
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_ENGINE_Push_Starter_Disengage_Template">
 				<TYPE>TWO_ENGINES</TYPE>
+				<PART_ID>ENGINE_PUSH_STARTER_DISENGAGE_1</PART_ID>
 			</UseTemplate>
 			<CameraTitle>Instrument05</CameraTitle>
 		</Component>
@@ -1065,10 +1078,6 @@
 				<CONTAINER_COUNT>2</CONTAINER_COUNT>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>CCP_PUSH_MEM3</NODE_ID>
-				<CONTAINER_COUNT>2</CONTAINER_COUNT>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>CCP_PUSH_DATABASE</NODE_ID>
 				<CONTAINER_COUNT>2</CONTAINER_COUNT>
 			</UseTemplate>
@@ -1077,15 +1086,7 @@
 				<CONTAINER_COUNT>2</CONTAINER_COUNT>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>CCP_PUSH_MEM1</NODE_ID>
-				<CONTAINER_COUNT>2</CONTAINER_COUNT>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>CCP_PUSH_UNKNOWN</NODE_ID>
-				<CONTAINER_COUNT>2</CONTAINER_COUNT>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>CCP_PUSH_MEM2</NODE_ID>
 				<CONTAINER_COUNT>2</CONTAINER_COUNT>
 			</UseTemplate>
 		</Component>

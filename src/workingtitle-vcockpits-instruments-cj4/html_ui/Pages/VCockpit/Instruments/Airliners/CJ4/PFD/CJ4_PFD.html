@@ -55,8 +55,9 @@
                     <div id="TopBox">
                         <div id="Speed">
                             <svg>
-                                <text id="Wind_Strength" class="Wind" x="130px" y="-40px" alignment-baseline="baseline">--</text>
-                                <polygon id="Wind_Arrow" points="-5 20, 5 20, 5 -20, 15 -20, 0 -40, -15 -20, -5 -20" transform="translate(125 -15) scale(0.40) rotate(0)" fill="magenta" display="none" />
+                                <text id="Wind_Strength" class="Wind" x="140px" y="-40px" alignment-baseline="baseline">--</text>
+                                <path id="Wind_Arrow" d="M 1 60 L -1 60 L 0 -40 L 15 -10 L 0 -40 L -15 -10 L 0 -40 Z" transform="translate(125 -3) scale(0.40) rotate(0)" stroke="magenta"
+                                stroke-width="3" fill="none" display="none" />
                             </svg>
                         </div>
 
@@ -77,25 +78,79 @@
 
                     <div id="VORDMENavaids">
                         <div id="VORDMENavaid_Left" style="display:none">
-                            <svg>
-                                <text id="State" x="50%" y="16%" alignment-baseline="middle"></text>
-                                <text id="ID" x="42.5%" y="50%" alignment-baseline="middle"></text>
-                                <text id="Mode" x="67.5%" y="50%" alignment-baseline="middle"></text>
-                                <text id="Distance" x="50%" y="84%" alignment-baseline="middle">--</text>
-                                <text id="Unit" x="75%" y="84%" alignment-baseline="middle">nm</text>
-                                <path id="Arrow" d="M0,25 L0,0 L-15,0 L0,-25 L0,-35 M0,-25 L15,0 L0,0" transform="translate(40 55)" />
-                            </svg>
+                            <div class='bearing-pointer'>
+                                <svg viewBox='0 0 200 200'>
+                                    <defs>
+                                        <clipPath id='arc'>
+                                            <path d="M10,56 A100 100 0 0 1 190 56 L190,158 L10,158 L10,56" />
+                                        </clipPath>
+                                        <clipPath id='rose'>
+                                            <circle cx="100" cy="100" r="100" />
+                                        </clipPath>
+                                    </defs>
+                                    <g class='bearing-pointer-clip' clip-path='url(#arc)'>
+                                        <g class='bearing-pointer-needle'>
+                                            <path d="M100,-100 L100,50 M100,22 L105,30 M100,22 L95,30" />
+                                            <path d="M100,149 L100,300 M100,166 L105,174 M100,166 L95,174" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class='bearing-block-arrow'>
+                                    <svg viewBox='-6 0 12 20'>
+                                        <path id="Arrow" d="M0,0 L0,6 L4,12 L0,6 L-4,12 L0,6 L0,20"/>
+                                    </svg>
+                                </div>
+                                <div class='bearing-block-dist'>
+                                    <div>
+                                        <span id='State'>FMS</span>1
+                                    </div>
+                                    <div>
+                                        <span id='Distance'>-.-</span><span id='Unit'> NM</span>
+                                    </div>
+                                </div>
+                                <div style='clear: both;'></div>
+                            </div>
+                            <div id='ID'>---</div>
                         </div>
 
                         <div id="VORDMENavaid_Right" style="display:none">
-                            <svg>
-                                <text id="State" x="50%" y="16%" alignment-baseline="middle"></text>
-                                <text id="ID" x="42.5%" y="50%" alignment-baseline="middle"></text>
-                                <text id="Mode" x="67.5%" y="50%" alignment-baseline="middle"></text>
-                                <text id="Distance" x="25%" y="84%" alignment-baseline="middle">--</text>
-                                <text id="Unit" x="50%" y="84%" alignment-baseline="middle">nm</text>
-                                <path id="Arrow" d="M-8,25 L-8,0 L-15,0 L0,-25 L0,-35 M0,-25 L15,0 L8,0 L8,25" transform="translate(280 55)" />
-                            </svg>
+                            <div class='bearing-pointer arc'>
+                                <svg viewBox='0 0 200 200'>
+                                    <defs>
+                                        <clipPath id='arc'>
+                                            <path d="M10,56 A100 100 0 0 1 190 56 L190,158 L10,158 L10,56" />
+                                        </clipPath>
+                                        <clipPath id='rose'>
+                                            <circle cx="100" cy="100" r="100" />
+                                        </clipPath>
+                                    </defs>
+                                    <g class='bearing-pointer-clip' clip-path='url(#arc)'>
+                                        <g class='bearing-pointer-needle'>
+                                            <path d="M100,-100 L100,22 M98,25 L98,52 M102,25 L102,52 M100,22 L105,30 M100,22 L95,30" />
+                                            <path d="M98,149 L98,169 M102,149 L102,169 M100,166 L105,174 M100,166 L95,174 M100,166 L100,300" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>            
+                            <div>
+                                <div class='bearing-block-arrow'>
+                                    <svg viewBox='-6 0 12 20'>
+                                        <path id="Arrow" d="M0,0 L0,6 L4,12 L1.2,8 L1.2,30 L1.2,8 L0,6 L-4,12 L-1.2,8 L-1.2,30 L-1.2,8 L0,6"/>
+                                    </svg>
+                                </div>
+                                <div class='bearing-block-dist'>
+                                    <div>
+                                        <span id='State'>FMS</span>2
+                                    </div>
+                                    <div>
+                                        <span id='Distance'>-.-</span><span id='Unit'> NM</span>
+                                    </div>
+                                </div>
+                                <div style='clear: both;'></div>
+                            </div>
+                            <div id='ID'>---</div>
                         </div>
                     </div>
 
@@ -109,7 +164,7 @@
                     <div id="ElapsedTime">
                         <svg>
                             <text id="ET" class="Title" x="0%" y="50%" alignment-baseline="baseline">ET</text>
-                            <text id="ET_Value" class="Value" x="100%" y="50%" alignment-baseline="baseline">--.--</text>
+                            <text id="ET_Value" class="Value" x="25%" y="50%" alignment-baseline="baseline">--.--</text>
                         </svg>
                     </div>
                 </jet-mfd-nd-info>
@@ -182,6 +237,8 @@
 <link rel="stylesheet" href="CJ4_PFD.css" />
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js"></script>
+
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Utils/RadioNav.js"></script>
 
@@ -195,7 +252,7 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/AirspeedIndicator.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/PFD/AltimeterIndicator.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/AltimeterIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/PFD/HSIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/PFD/AttitudeIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/PFD/VerticalSpeedIndicator.js"></script>
@@ -203,7 +260,7 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/PFD/ILSIndicator.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/BaseAirliners.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/BaseNDCompass.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/BaseNDCompass.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/NDCompass.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/NDInfo.js"></script>

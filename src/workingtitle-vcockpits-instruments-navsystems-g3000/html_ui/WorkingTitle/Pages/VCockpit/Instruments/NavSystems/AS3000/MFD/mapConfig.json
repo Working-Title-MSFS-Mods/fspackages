@@ -30,7 +30,7 @@
   "cityIconFillColor": "#7b8083",
   "cityIconStrokeColor": "#3f3f3f",
   "cityIconStrokeWidth": 3,
-  
+
   "obstacleIconSize": 90,
 
   "airplaneIconSize": 80,
@@ -63,11 +63,11 @@
   "flightPlanNonActiveLegStrokeColor": "#3f3f3f",
   "flightPlanNonActiveLegStrokeWidth": 7,
 
-  "roadMotorWayColor": "#7a7a7a",
+  "roadMotorWayColor": "#9a9a9a",
   "roadMotorWayWidth": 2,
-  "roadTrunkColor": "#7a7a7a",
+  "roadTrunkColor": "#9a9a9a",
   "roadTrunkWidth": 1,
-  "roadPrimaryColor": "#7a7a7a",
+  "roadPrimaryColor": "#9a9a9a",
   "roadPrimaryWidth": 1,
 
   "railwayStrokeColor": "gray",
@@ -87,7 +87,7 @@
       "color": "#000000"
     }
   ],
-  
+
   "netBingAltitudeColors2": [],
   "netBingWaterColor2": "#184b77",
   "netBingHeightColor2": [
@@ -128,7 +128,7 @@
       "color": "#c8c8c8"
     }
   ],
-  
+
   "netBingAltitudeColors3": [],
   "netBingWaterColor3": "#0000ff",
   "netBingHeightColor3": [
