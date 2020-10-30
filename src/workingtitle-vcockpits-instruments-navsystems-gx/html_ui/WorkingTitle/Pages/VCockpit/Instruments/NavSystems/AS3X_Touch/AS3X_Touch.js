@@ -57,6 +57,8 @@ class AS3X_Touch extends NavSystemTouch {
         this.pageMenu.setGPS(this);
         this.mapMenu = new NavSystemElementContainer("Map menu", "MapMenu", new AS3X_Touch_MapMenu());
         this.mapMenu.setGPS(this);
+        this.afcsMenu = new NavSystemElementContainer("AFCS Menu", "AFCS_Menu", new AS3X_Touch_AFCSMenu());
+        this.afcsMenu.setGPS(this);
         this.fullKeyboard = new NavSystemElementContainer("Full Keyboard", "fullKeyboard", new AS3X_Touch_FullKeyboard());
         this.fullKeyboard.setGPS(this);
         this.duplicateWaypointSelection = new NavSystemElementContainer("Waypoint Duplicates", "WaypointDuplicateWindow", new AS3X_Touch_DuplicateWaypointSelection());
@@ -111,6 +113,14 @@ class AS3X_Touch extends NavSystemTouch {
             }
             else {
                 this.switchToPopUpPage(this.pfdMenu);
+            }
+        }.bind(this));
+        this.makeButton(this.getChildById("AutopilotInfos"), function () {
+            if (this.popUpElement == this.afcsMenu) {
+                this.closePopUpElement();
+            }
+            else {
+                this.switchToPopUpPage(this.afcsMenu);
             }
         }.bind(this));
         this.maxUpdateBudget = 12;
@@ -737,6 +747,7 @@ class AS3X_Touch_Map extends MapInstrumentElement {
     init(root) {
         super.init(root);
         this.instrument.zoomRanges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 500, 1000, 1500, 2000];
+        this.instrument.rotationHandler = this;
         this.mapPlus = root.querySelector(".mapPlus");
         this.mapLess = root.querySelector(".mapLess");
         this.mapCenter = root.querySelector(".mapCenter");
@@ -747,11 +758,46 @@ class AS3X_Touch_Map extends MapInstrumentElement {
         this.instrument.addEventListener("mousedown", this.moveMode.bind(this));
         this.instrument.supportMouseWheel(false);
         this.instrument.offsetPlaneInHdgTrk = true;
-        this.loadSavedMapOrientation();
         this.loadSavedMapWeather();
         this.loadSavedTopoState();
         this._autoRange = false;
         this._lastAutoRangeDistance = 0;
+        this._orientation = WTDataStore.get(`Map.${this._mapId}.Orientation`, AS3X_Touch_Map.ORIENTATION_TRK_UP);
+        this._rotationDisabled = false;
+    }
+    get orientation() {
+        return this._orientation
+    }
+    set orientation(orientation) {
+        this._orientation = orientation;
+        WTDataStore.set(`Map.${this._mapId}.Orientation`, orientation);
+        switch (orientation) {
+            case AS3X_Touch_Map.ORIENTATION_TRK_UP:
+                Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "TRACK UP")
+                break;
+            case AS3X_Touch_Map.ORIENTATION_DTK_UP:
+                Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "DTK UP")
+                break;
+            default:
+                Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "NORTH UP")
+        }
+    }
+    get rotationDisabled() {
+        return AS3X_Touch_DirectTo._rotationDisabled
+    }
+    set rotationDisabled(disabled) {
+        this._rotationDisabled = disabled;
+    }
+    getRotation() {
+        if (this._rotationDisabled) {
+            return 0;
+        }
+
+        switch (this._orientation) {
+            case AS3X_Touch_Map.ORIENTATION_TRK_UP: return -SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+            case AS3X_Touch_Map.ORIENTATION_DTK_UP: return -(SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree") + SimVar.GetSimVarValue("MAGVAR", "degree"));
+        }
+        return 0;
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -769,31 +815,6 @@ class AS3X_Touch_Map extends MapInstrumentElement {
     centerOnPlane() {
         this.instrument.setCenteredOnPlane();
         this.mapCenter.setAttribute("state", "Inactive");
-    }
-    disableRotation() {
-        this.instrument.setTrackUpDisabled(true)
-    }
-    enableRotation() {
-        this.instrument.setTrackUpDisabled(false)
-    }
-    loadSavedMapOrientation() {
-        let state = WTDataStore.get(`Map.${this._mapId}.Orientation`, AS3X_Touch_Map.ORIENTATION_TRK_UP);
-        this.setMapOrientation(state);
-    }
-    setMapOrientation(state) {
-        WTDataStore.set(`Map.${this._mapId}.Orientation`, state);
-        SimVar.SetSimVarValue(`L:G3X_Map_${this.mapId}_Orient`, "number", state);
-        switch (state) {
-            case AS3X_Touch_Map.ORIENTATION_NORTH_UP:
-                this.instrument.setOrientation("north");
-                break;
-            case AS3X_Touch_Map.ORIENTATION_TRK_UP:
-                this.instrument.setOrientation("trk");
-                break;
-            case AS3X_Touch_Map.ORIENTATION_DTK_UP:
-                this.instrument.setOrientation("hdg");
-                break;
-        }
     }
     getMapOrientation() {
         return SimVar.GetSimVarValue(`L:G3X_Map_${this.mapId}_Orient`, "number");
@@ -881,8 +902,6 @@ class AS3X_Touch_MapMenu extends AS3X_Touch_Popup {
     init(root) {
         super.init(root);
         this._map = this.gps.mainMap;
-        this._setOrient = this._map.setMapOrientation.bind(this.gps.mainMap);
-        this._getOrient = this._map.getMapOrientation.bind(this.gps.mainMap);
         this.northUp = this.gps.getChildById("MapMenu_Orient_North");
         this.trkUp = this.gps.getChildById("MapMenu_Orient_Track");
         this.dtkUp = this.gps.getChildById("MapMenu_Orient_Dtk");
@@ -892,9 +911,9 @@ class AS3X_Touch_MapMenu extends AS3X_Touch_Popup {
         this.rangeInc = this.gps.getChildById("MapMenu_Range_Inc");
         this.rangeDec = this.gps.getChildById("MapMenu_Range_Dec");
         this.rangeAuto = this.gps.getChildById("MapMenu_Range_Auto");
-        this.gps.makeButton(this.northUp, () => { this._setOrient(AS3X_Touch_Map.ORIENTATION_NORTH_UP)});
-        this.gps.makeButton(this.trkUp, () => { this._setOrient(AS3X_Touch_Map.ORIENTATION_TRK_UP) });
-        this.gps.makeButton(this.dtkUp, () => { this._setOrient(AS3X_Touch_Map.ORIENTATION_DTK_UP) });
+        this.gps.makeButton(this.northUp, () => { this._map.orientation = AS3X_Touch_Map.ORIENTATION_NORTH_UP });
+        this.gps.makeButton(this.trkUp, () => { this._map.orientation = AS3X_Touch_Map.ORIENTATION_TRK_UP });
+        this.gps.makeButton(this.dtkUp, () => { this._map.orientation = AS3X_Touch_Map.ORIENTATION_DTK_UP });
         this.gps.makeButton(this.weather, () => { this._map.setMapWeather(!this._map.getMapWeather()) });
         this.gps.makeButton(this.topo, () => { this._map.setIsolines(!this._map.getIsolines()) });
         this.gps.makeButton(this.rangeDec, () => this.gps.computeEvent("RANGE_DEC"));
@@ -904,16 +923,71 @@ class AS3X_Touch_MapMenu extends AS3X_Touch_Popup {
         })
     }
     onUpdate() {
-        Avionics.Utils.diffAndSetAttribute(this.northUp, "state", this._getOrient() == AS3X_Touch_Map.ORIENTATION_NORTH_UP ? "Active" : "")
-        Avionics.Utils.diffAndSetAttribute(this.trkUp, "state", this._getOrient() == AS3X_Touch_Map.ORIENTATION_TRK_UP ? "Active" : "")
-        Avionics.Utils.diffAndSetAttribute(this.dtkUp, "state", this._getOrient() == AS3X_Touch_Map.ORIENTATION_DTK_UP ? "Active" : "")
+        Avionics.Utils.diffAndSetAttribute(this.northUp, "state", this._map.orientation == AS3X_Touch_Map.ORIENTATION_NORTH_UP ? "Active" : "")
+        Avionics.Utils.diffAndSetAttribute(this.trkUp, "state", this._map.orientation == AS3X_Touch_Map.ORIENTATION_TRK_UP ? "Active" : "")
+        Avionics.Utils.diffAndSetAttribute(this.dtkUp, "state", this._map.orientation == AS3X_Touch_Map.ORIENTATION_DTK_UP ? "Active" : "")
         Avionics.Utils.diffAndSetAttribute(this.weather, "state", this._map.getMapWeather() ? "Active" : "");
         Avionics.Utils.diffAndSetAttribute(this.topo, "state", this._map.getIsolines() ? "Active" : "");
         Avionics.Utils.diffAndSet(this.titleRange, `(${this._map.getRangeText()}nm)`);
         Avionics.Utils.diffAndSetAttribute(this.rangeAuto, "state", this._map.getAutoRange() ? "Active" : "");
     }
 }
-
+class AS3X_Touch_AFCSMenu extends AS3X_Touch_Popup {
+    init(root) {
+        super.init(root);
+        this.MasterButton = this.gps.getChildById("AFCS_AP_Master");
+        this.FdButton = this.gps.getChildById("AFCS_FD_Button");
+        this.YdButton = this.gps.getChildById("AFCS_YD_Button");
+        this.LvlButton = this.gps.getChildById("AFCS_LVL_Button");
+        this.HdgButton = this.gps.getChildById("AFCS_HDG_Button");
+        this.NavButton = this.gps.getChildById("AFCS_NAV_Button");
+        this.ApprButton = this.gps.getChildById("AFCS_APPR_Button");
+        this.IasButton = this.gps.getChildById("AFCS_IAS_Button");
+        this.AltButton = this.gps.getChildById("AFCS_ALT_Button");
+        this.VsButton = this.gps.getChildById("AFCS_VS_Button");
+        this.UpButton = this.gps.getChildById("AFCS_UP_Button");
+        this.DnButton = this.gps.getChildById("AFCS_DN_Button");
+        this.gps.makeButton(this.MasterButton, () => {this.buttonToggle("K:AP_MASTER")});
+        this.gps.makeButton(this.FdButton, () => {this.buttonToggle("K:TOGGLE_FLIGHT_DIRECTOR")});
+        this.gps.makeButton(this.YdButton, () => {this.buttonToggle("K:YAW_DAMPER_TOGGLE")});
+        this.gps.makeButton(this.LvlButton, () => {this.buttonToggle("K:AP_WING_LEVELER")});
+        this.gps.makeButton(this.HdgButton, () => {this.buttonToggle("K:AP_HDG_HOLD")});
+        this.gps.makeButton(this.NavButton, () => {this.buttonToggle("K:AP_NAV1_HOLD")});
+        this.gps.makeButton(this.ApprButton, () => {this.buttonToggle("K:AP_APR_HOLD")});
+        this.gps.makeButton(this.IasButton, () => {this.buttonToggle("K:FLIGHT_LEVEL_CHANGE")});
+        this.gps.makeButton(this.AltButton, () => {this.buttonToggle("K:AP_ALT_HOLD")});
+        this.gps.makeButton(this.VsButton, () => {this.buttonToggle("K:AP_VS_HOLD")});
+        this.gps.makeButton(this.UpButton, () => {this.buttonUpDn("UP")});
+        this.gps.makeButton(this.DnButton, () => {this.buttonUpDn("DN")});
+    }
+    onUpdate() {
+        this.MasterButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") ? "Active" : ""));
+        this.FdButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") ? "Active" : ""));
+        this.YdButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Bool") ? "Active" : ""));
+        this.LvlButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Bool") ? "Active" : ""));
+        this.HdgButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Bool") ? "Active" : ""));
+        this.NavButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Bool") ? "Active" : ""));
+        this.ApprButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool") ? "Active" : ""));
+        this.IasButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Bool") ? "Active" : ""));
+        this.AltButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Bool") ? "Active" : ""));
+        this.VsButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Bool") ? "Active" : ""));
+    }
+    buttonToggle(simvar) {
+        SimVar.SetSimVarValue(simvar, "number", 0)
+    }
+    buttonUpDn(dir) {
+        if (SimVar.GetSimVarValue("A:AUTOPILOT VERTICAL HOLD", "bool")) {
+            var cmds = { "UP": "K:AP_VS_VAR_INC", "DN": "K:AP_VS_VAR_DEC" }
+        } else if (SimVar.GetSimVarValue("A:AUTOPILOT FLIGHT LEVEL CHANGE", "bool")) {
+            var cmds = { "UP": "K:AP_SPD_VAR_DEC", "DN": "K:AP_SPD_VAR_INC" }
+        } else if (SimVar.GetSimVarValue("A:AUTOPILOT PITCH HOLD", "bool")) {
+            var cmds = { "UP": "K:PITCH_REF_INC_UP", "DN": "K:PITCH_REF_INC_DN" }
+        } else {
+            var cmds = {}
+        }
+        if (dir in cmds) this.buttonToggle(cmds[dir]);
+    }
+}
 class AS3X_Touch_PageMenu extends AS3X_Touch_Popup {
     init(root) {
         super.init(root);
