@@ -222,8 +222,12 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                             this.courseColor = "#11d011";
                         }
                         this.courseTO = document.createElementNS(Avionics.SVG.NS, "path");
-                        this.courseTO.setAttribute("d", "M 35.5 150 l 30.5 0 l -15.25 28 l -15.25 -28 Z");
-                        //this.courseTO.setAttribute("fill", "none");
+						
+						if (this.navigationMode == Jet_NDCompass_Navigation.ILS) {
+							this.courseTO.setAttribute("style", "display:none");
+                        }
+						
+                        this.courseTO.setAttribute("d", "M 35 150 l 30.5 0 l -15.25 28 l -15.25 -28 Z");
                         this.courseTO.setAttribute("transform", "rotate(180 50 50)");
                         this.courseTO.setAttribute("stroke", this.courseColor.toString());
                         this.courseTO.setAttribute("stroke-width", ".5");
@@ -242,6 +246,11 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         this.courseDeviation.setAttribute("fill", this.courseColor.toString());
                         this.course.appendChild(this.courseDeviation);
                         this.courseFROM = document.createElementNS(Avionics.SVG.NS, "path");
+
+						if (this.navigationMode == Jet_NDCompass_Navigation.ILS) {
+							this.courseFROM.setAttribute("style", "display:none");
+                        }
+
                         this.courseFROM.setAttribute("d", "M46 -15 l8 0 l0 -20 l-8 0 l0 20 Z");
                         this.courseFROM.setAttribute("fill", "none");
                         this.courseFROM.setAttribute("transform", "rotate(180 50 50)");
@@ -308,8 +317,9 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     ilsBug.setAttribute("id", "ilsBug");
                     ilsBug.setAttribute("d", "M50 " + (50 + circleRadius) + " l0 40 M35 " + (50 + circleRadius + 10) + " l30 0");
                     ilsBug.setAttribute("fill", "transparent");
-                    ilsBug.setAttribute("stroke", "#FF0CE2");
+                    ilsBug.setAttribute("stroke", "red");
                     ilsBug.setAttribute("stroke-width", "3");
+					ilsBug.setAttribute("style", "display:none");
                     this.ilsGroup.appendChild(ilsBug);
                 }
                 this.rotatingCircle.appendChild(this.ilsGroup);
@@ -2624,6 +2634,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     ilsBug.setAttribute("fill", "transparent");
                     ilsBug.setAttribute("stroke", "#FF0CE2");
                     ilsBug.setAttribute("stroke-width", "3");
+					ilsBug.setAttribute("style", "display:none");
                     this.ilsGroup.appendChild(ilsBug);
                 }
                 this.rotatingCircle.appendChild(this.ilsGroup);
