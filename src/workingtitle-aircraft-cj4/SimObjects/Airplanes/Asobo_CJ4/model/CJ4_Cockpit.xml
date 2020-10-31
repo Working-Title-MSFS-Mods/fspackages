@@ -279,6 +279,18 @@
                 <NODE_ID_MEM2>CCP_PUSH_MEM2_2</NODE_ID_MEM2>
                 <NODE_ID_MEM3>CCP_PUSH_MEM3_2</NODE_ID_MEM3>
 			</UseTemplate>
+            <UseTemplate Name="WT_Detached_Control_Panel_Template">
+                <KEY_PREFIX>Generic_Upr</KEY_PREFIX>
+                <ID>1</ID>
+                <!-- UPPER PANEL -->
+                <NODE_ID_CCP>push_pilot_DCP_CCPMENU</NODE_ID_CCP>
+            </UseTemplate>
+            <UseTemplate Name="WT_Detached_Control_Panel_Template">
+                <KEY_PREFIX>Generic_Upr</KEY_PREFIX>
+                <ID>2</ID>
+                <!-- UPPER PANEL -->
+                <NODE_ID_CCP>push_coPilot_DCP_CCPMENU</NODE_ID_CCP>
+            </UseTemplate>
 		</Component>
 
 		<!-- LIGHTING #############################################################################################################-->
@@ -960,9 +972,6 @@
 		<!-- MISC -->
 		<Component ID="TT_INOP">
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>push_pilot_DCP_CCPMENU</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>push_pilot_DCP_RADARMENU</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
@@ -1033,9 +1042,6 @@
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>push_coPilot_DCP_TAWSMENU</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>push_coPilot_DCP_CCPMENU</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>switch_electricicalPanel_emerLights</NODE_ID>
