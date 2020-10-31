@@ -30,18 +30,6 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
         this.root.setAttribute("height", "100%");
         this.root.setAttribute("viewBox", "-225 -215 550 516");
 
-        if (this._displayMode !== Jet_NDCompass_Display.PPOS) {
-            let blackBoxGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            let blackBox =  document.createElementNS(Avionics.SVG.NS, "rect");
-            blackBox.setAttribute("x", "-225");
-            blackBox.setAttribute("y", "-215");
-            blackBox.setAttribute("width", "550");
-            blackBox.setAttribute("height", "516");
-            blackBox.setAttribute("fill", "black");
-            blackBoxGroup.appendChild(blackBox);
-            this.root.appendChild(blackBoxGroup);
-        }  
-
         this.appendChild(this.root);
         var trsGroup = document.createElementNS(Avionics.SVG.NS, "g");
         trsGroup.setAttribute("transform", "translate(0, 70)");
@@ -2523,17 +2511,6 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
         this.root.setAttribute("width", "100%");
         this.root.setAttribute("height", "100%");
         this.root.setAttribute("viewBox", "0 0 1000 1000");
-
-        let blackBoxGroup = document.createElementNS(Avionics.SVG.NS, "g");
-        let blackBox =  document.createElementNS(Avionics.SVG.NS, "rect");
-        blackBox.setAttribute("x", "0");
-        blackBox.setAttribute("y", "0");
-        blackBox.setAttribute("width", "1000");
-        blackBox.setAttribute("height", "1000");
-        blackBox.setAttribute("fill", "black");
-        blackBoxGroup.appendChild(blackBox);
-        this.root.appendChild(blackBoxGroup);
-          
 
         this.appendChild(this.root);
         let circleRadius = 333;
