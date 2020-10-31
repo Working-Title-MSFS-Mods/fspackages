@@ -3,11 +3,9 @@
 ### Latest version: v0.3.0-pre1
 
 ### Description
-This is a mod for MSFS2020 that aims to improve the in-game G3000. The goal is to bring functionality closer to the real-life G3000, with a focus on both features and layout/UI. Most of development and testing was done with the TBM 930, and the TBM 930 version of the G3000 pilot's guide was used as the primary reference.
+This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
 
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
-
-**NOTE:** This version of the mod primarily makes changes to the TBM 930 for now. The Longitude, which also uses the G3000 codebase, will get some of the cosmetic improvements included in the mod (such as updated terrain colors, map font size, etc), but as of now none of the new functionality. We hope to add full compatibility with the Longitude in the future.
 
 ### Installation
 Download `workingtitle-g3000-v0.3.0-pre1.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
