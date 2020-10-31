@@ -1009,7 +1009,7 @@ class AS3000_TSC_NavInfoFieldSelectionElementHandler {
     }
 
     getCurrentIndex() {
-        return this.descriptions.indexOf(WT_NavDataBar.getFieldInfoIndex(this.fieldIndex));
+        return this.descriptions.findIndex(description => description.shortName == WT_NavDataBar.getFieldInfoIndex(this.fieldIndex));
     }
 }
 
