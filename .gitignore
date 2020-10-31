@@ -19,3 +19,8 @@ src/sound/.cache
 src/sound/GeneratedSoundBanks
 src/sound/FlightSim.mediaid
 /.vs
+src/.idea/workspace.xml
+src/.idea/vcs.xml
+src/.idea/src.iml
+src/.idea/modules.xml
+src/.idea/codeStyles/codeStyleConfig.xml
