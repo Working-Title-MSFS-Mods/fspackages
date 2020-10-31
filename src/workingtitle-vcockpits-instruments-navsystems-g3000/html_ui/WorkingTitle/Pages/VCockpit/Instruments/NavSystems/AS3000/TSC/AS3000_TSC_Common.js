@@ -3231,16 +3231,26 @@ class AS3000_TSC_PFDSettings extends NavSystemElement {
     init(root) {
         this.aoaButton = this.gps.getChildById("AoaButton");
         this.aoaValue = this.aoaButton.getElementsByClassName("statusText")[0];
+        this.SVTButton = this.gps.getChildById("SVTButton");
         this.windButton = this.gps.getChildById("WindButton");
         this.windValue = this.windButton.getElementsByClassName("statusText")[0];
         this.comSpacingButton = this.gps.getChildById("ComSpacingButton");
         this.comSpacingValue = this.comSpacingButton.getElementsByClassName("statusText")[0];
+        this.baroUnitButton = this.gps.getChildById("BaroUnitButton");
+        this.baroUnitValue = this.baroUnitButton.getElementsByClassName("statusText")[0];
         //this.comSpacingSelectionMenu = this.gps.getChildById("ComSpacingSelectionMenu");
         this.gps.makeButton(this.aoaButton, this.openAoASelectWindow.bind(this));
+        this.gps.makeButton(this.SVTButton, this.toggleSVT.bind(this));
         this.gps.makeButton(this.windButton, this.openWindSelectWindow.bind(this));
+        this.gps.makeButton(this.baroUnitButton, this.openBaroUnitSelectWindow.bind(this));
         //this.gps.makeButton(this.comSpacingButton, this.compSpacingPress.bind(this));
         //this.gps.makeButton(this.channelSpacing25, this.channelSpacingSetMode.bind(this, 0));
         //this.gps.makeButton(this.channelSpacing833, this.channelSpacingSetMode.bind(this, 1));
+
+        this.baroUnitText = [
+            "Inches (IN)",
+            "Hectopascals (HPA)"
+        ];
     }
 
     compSpacingPress() {
@@ -3283,6 +3293,8 @@ class AS3000_TSC_PFDSettings extends NavSystemElement {
             }
         }
 
+        Avionics.Utils.diffAndSetAttribute(this.SVTButton, "state", AS3000_PFD_MainPage.getSettingVar(AS3000_PFD_MainPage.VARNAME_SVT_SHOW) == 1 ? "Active" : "");
+
         if (wind != this.windMode) {
             this.windMode = wind;
             switch (wind) {
@@ -3312,6 +3324,8 @@ class AS3000_TSC_PFDSettings extends NavSystemElement {
                     break;
             }
         }
+
+        Avionics.Utils.diffAndSet(this.baroUnitValue, this.baroUnitText[AS3000_PFD_MainPage.getSettingVar(AS3000_PFD_MainPage.VARNAME_BARO_UNIT)]);
     }
 
     onExit() {
@@ -3355,6 +3369,10 @@ class AS3000_TSC_PFDSettings extends NavSystemElement {
         }
     }
 
+    toggleSVT() {
+        AS3000_PFD_MainPage.setSettingVar(AS3000_PFD_MainPage.VARNAME_SVT_SHOW, AS3000_PFD_MainPage.getSettingVar(AS3000_PFD_MainPage.VARNAME_SVT_SHOW) ^ 1);
+    }
+
     openWindSelectWindow() {
         this.gps.pfdWindSelect.element.setContext(this.setWindMode.bind(this), this.getWindHighlight.bind(this), "PFD", "PFD Home");
         this.gps.switchToPopUpPage(this.gps.pfdWindSelect);
@@ -3375,6 +3393,27 @@ class AS3000_TSC_PFDSettings extends NavSystemElement {
         return mode == (_val + 1) % 4;
     }
 
+    openBaroUnitSelectWindow() {
+        let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(this.baroUnitText);
+        let context = {
+            title: "Select Baro Units",
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: this.setBaroUnit.bind(this),
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: new AS3000_TSC_PFDSettingIndexGetter(AS3000_PFD_MainPage.VARNAME_BARO_UNIT),
+            homePageParent: "PFD",
+            homePageName: "PFD Home"
+        };
+        this.gps.dynamicSelectionListWindow.element.setContext(context);
+        this.gps.switchToPopUpPage(this.gps.dynamicSelectionListWindow);
+    }
+
+    setBaroUnit(index) {
+        AS3000_PFD_MainPage.setSettingVar(AS3000_PFD_MainPage.VARNAME_BARO_UNIT, index);
+    }
+
     back() {
         this.gps.goBack();
         return true;
@@ -3385,6 +3424,17 @@ class AS3000_TSC_PFDSettings extends NavSystemElement {
         return true;
     }
 }
+
+class AS3000_TSC_PFDSettingIndexGetter {
+    constructor(varName) {
+        this.varName = varName;
+    }
+
+    getCurrentIndex() {
+        return AS3000_PFD_MainPage.getSettingVar(this.varName);
+    }
+}
+
 class AS3000_TSC_MinimumSource extends NavSystemElement {
     init(root) {
         this.window = root;
