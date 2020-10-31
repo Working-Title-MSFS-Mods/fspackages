@@ -144,7 +144,7 @@ class AS3000_TSC_Vertical_SpeedBugs extends AS3000_TSC_SpeedBugs {
         this.initAirspeedReference(this.gps.getChildById("SB_V1Value"), this.gps.getChildById("SB_V1Status"), designSpeeds.V1, "1", AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
         this.initAirspeedReference(this.gps.getChildById("SB_VrValue"), this.gps.getChildById("SB_VrStatus"), designSpeeds.Vr, "R", AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
         this.initAirspeedReference(this.gps.getChildById("SB_V2Value"), this.gps.getChildById("SB_V2Status"), designSpeeds.V2, "2", AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
-        this.initAirspeedReference(this.gps.getChildById("SB_VenrValue"), this.gps.getChildById("SB_VenrStatus"), designSpeeds.Venr, "ENR", AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
+        this.initAirspeedReference(this.gps.getChildById("SB_VftoValue"), this.gps.getChildById("SB_VftoStatus"), designSpeeds.Venr, "FTO", AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
         this.initAirspeedReference(this.gps.getChildById("SB_VrefValue"), this.gps.getChildById("SB_VrefStatus"), designSpeeds.Vapp, "RF", AS3000_TSC_Vertical_SpeedBugs.Tab.LANDING);
         this.initAirspeedReference(this.gps.getChildById("SB_VappValue"), this.gps.getChildById("SB_VappStatus"), designSpeeds.Vapp, "AP", AS3000_TSC_Vertical_SpeedBugs.Tab.LANDING);
         this.takeoffAllOnButton = this.gps.getChildById("SB_Takeoff_AllOn");
