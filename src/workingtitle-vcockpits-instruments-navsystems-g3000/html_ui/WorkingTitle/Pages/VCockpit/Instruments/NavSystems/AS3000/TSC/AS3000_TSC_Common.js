@@ -54,10 +54,18 @@ class AS3000_TSC extends NavSystemTouch {
         this.history = [];
         this.initDuration = 4000;
 
-        SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLightingBool", "bool", true); // tell xmls to use custom display lighting xmlvar
-        SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", 1.0); // initialize display brightness variable: 1.0 = maximum brightness
-        //WT_MapElement.setSettingVar(WT_MapElement.VARNAME_SYNC, "", 0); // initialize map sync variable: 0 = off, 1 = all
-        //WT_MapElement.setSettingVar(WT_MapElement.VARNAME_SYNC_INIT_DEFAULT, "", -1); // -1 = nothing to sync
+        this.initLightingControl();
+    }
+
+    initLightingControl() {
+        if (this.isLightingControlAllowed()) {
+            SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLightingBool", "bool", true); // tell xmls to use custom display lighting xmlvar
+            SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", 1.0); // initialize display brightness variable: 1.0 = maximum brightness
+        }
+    }
+
+    isLightingControlAllowed() {
+        return AS3000_TSC.LIGHTING_CONTROL_ALLOWED_AIRCRAFT.has(SimVar.GetSimVarValue("TITLE", "string"));
     }
 
     createSpeedBugsPage() {
@@ -331,6 +339,10 @@ class AS3000_TSC extends NavSystemTouch {
         this.confirmationWindow.open(_text, _button);
     }
 }
+AS3000_TSC.LIGHTING_CONTROL_ALLOWED_AIRCRAFT = new Set([
+    "TBM 930 Asobo"
+]);
+
 class AS3000_TSC_PageInfos {
 }
 class AS3000_TSC_PFDHome extends NavSystemElement {

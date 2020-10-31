@@ -5,6 +5,7 @@ class NavSystemTouch extends NavSystem {
         this.selectionList = new NavSystemElementContainer("Selection List", "SelectionList", new NavSystemTouch_SelectionList());
         this.selectionList.setGPS(this);
     }
+
     makeButton(_button, _callback) {
         if (!_button) {
             console.warn("Trying to add an interaction on null element, ignoring");
@@ -12,10 +13,15 @@ class NavSystemTouch extends NavSystem {
         }
         _button.addEventListener("mouseup", this.onButtonPressed.bind(this, _callback));
     }
-    onButtonPressed(_callback) {
-        _callback();
+
+    onButtonPressed(callback, event) {
+        if (event.currentTarget.getAttribute("state") == "Greyed") {
+            return;
+        }
+        callback();
         this.playInstrumentSound("tone_NavSystemTouch_touch");
     }
+
     openConfirmationWindow(_message, _button) {
     }
     getFullKeyboard() {
