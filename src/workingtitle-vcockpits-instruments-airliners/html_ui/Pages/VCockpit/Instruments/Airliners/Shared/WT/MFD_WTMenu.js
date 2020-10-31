@@ -857,11 +857,9 @@ var WTMenu;
                                             break;
                                         default:
                                             SimVar.SetSimVarValue(_item.lvar, "number", 1);
-                                            console.log("NOOOOOOO");
                                             break;
                                     }
-                                    SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", true);
-                                    SimVar.SetSimVarValue("L:Update_MFD_Menu", "Bool", true);
+                                    this.dictionary.set(_item.dictKeys[0], _item.radioName);
                                 }
                                 else{
                                     this.dictionary.set(_item.dictKeys[0], _item.radioName);
@@ -1329,22 +1327,9 @@ var WTMenu;
 })(WTMenu || (WTMenu = {}));
 
 // Allows PFD and MFD to share the same dictionary so PFD menus can change things on MFD and so on.
-var GlassCockpitDictionarySingleton = (function () {
-    let instance;
-
-    return {
-        getInstance() {
-            if (!instance) {
-                instance = new Dictionary();
-            }
-            return instance;
-        }
-    };
-})();
-
 class DictionaryItem {
 }
-class Dictionary {
+class WT_Avionics_Dictionary {
     constructor() {
         this.items = new Array();
         SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", false);
