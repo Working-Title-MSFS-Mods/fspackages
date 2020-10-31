@@ -2675,7 +2675,7 @@ class AS3000_TSC_SpeedKeyboard extends NavSystemElement {
             }
         }
         else {
-            this.display.innerHTML = fastToFixed(this.currentInput, 0) + "KT";
+            this.display.innerHTML = (this.currentInput < 0 ? "---" : fastToFixed(this.currentInput, 0)) + "KT";
         }
     }
     onExit() {
