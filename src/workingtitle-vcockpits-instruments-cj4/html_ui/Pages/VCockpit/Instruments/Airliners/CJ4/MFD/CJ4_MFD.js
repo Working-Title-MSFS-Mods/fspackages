@@ -136,6 +136,14 @@ class CJ4_MFD extends BaseAirliners {
                         }
                     }
                     this.mapOverlay.infos.root.onDisplayChange(this.mapDisplayMode);
+
+                    const bearingPointers = document.querySelector('#VORDMENavaids');
+                    if (this.mapDisplayMode === Jet_NDCompass_Display.PLAN) {
+                        bearingPointers.setAttribute('style', 'display: none');
+                    }
+                    else {
+                        bearingPointers.setAttribute('style', '');
+                    }
                 }
 
                 if (this.showTerrain) {
