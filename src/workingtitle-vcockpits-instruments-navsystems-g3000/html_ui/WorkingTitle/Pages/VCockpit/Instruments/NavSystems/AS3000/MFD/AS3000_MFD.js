@@ -294,8 +294,8 @@ class AS3000_MFD_NavDataBar extends WT_NavDataBar {
 
         this.dataFields = Array.from(root.getElementsByClassName("navDataField")).map(e => new AS3000_MFD_NavDataField(e));
         for (let i = 0; i < this.dataFields.length; i++) {
-            let infoIndex = WT_NavDataBar.getFieldInfoIndex(i, -1);
-            if (infoIndex < 0) {
+            let infoIndex = WT_NavDataBar.getFieldInfoIndex(i, null);
+            if (!infoIndex) {
                 infoIndex = AS3000_MFD_NavDataBar.DEFAULT_FIELDS[i];
                 WT_NavDataBar.setFieldInfoIndex(i, infoIndex);
             }
@@ -312,7 +312,7 @@ class AS3000_MFD_NavDataBar extends WT_NavDataBar {
     onEvent(_event) {
     }
 }
-AS3000_MFD_NavDataBar.DEFAULT_FIELDS = [10, 2, 14, 7, 0, 1, 9, 6];
+AS3000_MFD_NavDataBar.DEFAULT_FIELDS = ["GS", "DTK", "TRK", "ETE", "BRG", "DIS", "END", "ETA"];
 
 class AS3000_Engine extends NavSystemElementContainer {
     constructor(_name, _root) {
