@@ -48,6 +48,7 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "knots", 0);
+        this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -241,18 +242,19 @@ class CJ4_PFD extends BaseAirliners {
     readDictionary(_dict) {
         let modeChanged = false;
         let format = SimVar.GetSimVarValue("L:WT_PFD_MAP_FORMAT", "number");
-        if (format === 2) {
-            if (this.mapDisplayMode != Jet_NDCompass_Display.ARC) {
-                this.mapDisplayMode = Jet_NDCompass_Display.ARC;
-                modeChanged = true;
-            }
-        }
-        else {
+        if (format === 1) {
             if (this.mapDisplayMode != Jet_NDCompass_Display.ROSE) {
                 this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
                 modeChanged = true;
             }
         }
+        else if (format === 2) {
+            if (this.mapDisplayMode != Jet_NDCompass_Display.ARC) {
+                this.mapDisplayMode = Jet_NDCompass_Display.ARC;
+                modeChanged = true;
+            }
+        }
+
         let range = _dict.get(CJ4_PopupMenu_Key.MAP_RANGE);
         this.map.range = parseInt(range);
         let navSrc = _dict.get(CJ4_PopupMenu_Key.NAV_SRC);
