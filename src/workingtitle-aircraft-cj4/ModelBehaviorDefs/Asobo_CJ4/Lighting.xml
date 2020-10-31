@@ -78,6 +78,9 @@
             </UPDATE_CODE>
         </UseTemplate>
         <DefaultTemplateParameters>
+
+        </DefaultTemplateParameters>
+        <UseTemplate Name="ASOBO_GT_Push_Button_Airliner">
             <ANIM_NAME>push_Ckpt_Spkr_mute</ANIM_NAME>
             <NODE_ID>push_Ckpt_Spkr_mute</NODE_ID>
             <PART_ID>push_Ckpt_Spkr_mute</PART_ID>
@@ -86,29 +89,9 @@
             <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
             <WWISE_EVENT_2>logo_light_switch_off</WWISE_EVENT_2>
             <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-        </DefaultTemplateParameters>
-        <UseTemplate Name="ASOBO_GT_Push_Button_Airliner">
             <LEFT_SINGLE_CODE>(L:push_Ckpt_Spkr_mute) ! (&gt;L:push_Ckpt_Spkr_mute)</LEFT_SINGLE_CODE>
             <ONLY_SEQ1/>
             <SEQ1_EMISSIVE_CODE>(L:push_Ckpt_Spkr_mute, Bool)</SEQ1_EMISSIVE_CODE>
-        </UseTemplate>
-    </Template>
-
-    <Template Name="ASOBO_LIGHTING_Switch_Light_Com1Tune_Template">
-        <DefaultTemplateParameters>
-            <ANIM_NAME>push_com1Tune</ANIM_NAME>
-            <NODE_ID>push_com1Tune</NODE_ID>
-            <PART_ID>push_com1Tune</PART_ID>
-            <TOOLTIPID>%((L:push_com1Tune, Bool))%{if}UNMUTE Cockpit Speaker%{else}MUTE Cockpit Speaker</TOOLTIPID>
-            <WWISE_EVENT_1>logo_light_switch_on</WWISE_EVENT_1>
-            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-            <WWISE_EVENT_2>logo_light_switch_off</WWISE_EVENT_2>
-            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-        </DefaultTemplateParameters>
-        <UseTemplate Name="ASOBO_GT_Push_Button_Airliner">
-            <LEFT_SINGLE_CODE>(L:push_com1Tune) ! (&gt;L:push_com1Tune)</LEFT_SINGLE_CODE>
-            <ONLY_SEQ1/>
-            <SEQ1_EMISSIVE_CODE>(L:push_com1Tune, Bool)</SEQ1_EMISSIVE_CODE>
         </UseTemplate>
     </Template>
 
