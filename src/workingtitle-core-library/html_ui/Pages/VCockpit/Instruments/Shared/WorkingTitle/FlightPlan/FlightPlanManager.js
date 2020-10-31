@@ -716,8 +716,27 @@ class FlightPlanManager {
    */
   getDepartureRunway() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    if (currentFlightPlan.hasOrigin) {
-      return currentFlightPlan.waypoints[0].infos.oneWayRunways[currentFlightPlan.procedureDetails.departureRunwayIndex];
+    if (currentFlightPlan.hasOrigin 
+      && currentFlightPlan.procedureDetails.departureRunwayIndex !== -1
+      && currentFlightPlan.procedureDetails.departureIndex !== -1) {
+
+        let depRunway = currentFlightPlan.originAirfield.infos
+          .departures[currentFlightPlan.procedureDetails.departureIndex]
+          .runwayTransitions[currentFlightPlan.procedureDetails.departureRunwayIndex]
+          .name.replace("RW", "");
+
+        let runway = currentFlightPlan.originAirfield.infos.oneWayRunways
+          .find(r => { return r.designation.indexOf(depRunway) !== -1; });
+        
+        if (runway) {
+          return runway;
+        }
+        else {
+          return undefined;
+        }
+    }
+    else if (currentFlightPlan.procedureDetails.originRunwayIndex !== -1) {
+      return currentFlightPlan.originAirfield.infos.oneWayRunways[currentFlightPlan.procedureDetails.originRunwayIndex];
     }
 
     return undefined;
@@ -768,7 +787,7 @@ class FlightPlanManager {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.departureIndex = index;
-    currentFlightPlan.buildDeparture();  
+    await currentFlightPlan.buildDeparture();  
 
     this._updateFlightPlanVersion();
     callback();
@@ -779,11 +798,11 @@ class FlightPlanManager {
    * @param {Number} index The index of the runway in the origin airport runway information.
    * @param {() => void} callback A callback to call when the operation completes.
    */
-  setDepartureRunwayIndex(index, callback = EmptyCallback.Void) {
+  async setDepartureRunwayIndex(index, callback = EmptyCallback.Void) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.departureRunwayIndex = index;
-    currentFlightPlan.buildDeparture();
+    await currentFlightPlan.buildDeparture();
 
     this._updateFlightPlanVersion();
     callback();
@@ -795,7 +814,11 @@ class FlightPlanManager {
    * @param {() => void} callback A callback to call when the operation completes.
    */
   setOriginRunwayIndex(index, callback = EmptyCallback.Void) {
-    this.setDepartureRunwayIndex(index, callback);
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+    currentFlightPlan.procedureDetails.originRunwayIndex = index;
+
+    this._updateFlightPlanVersion();
+    callback();
   }
 
   /**
@@ -811,11 +834,11 @@ class FlightPlanManager {
    * @param {Number} index The index of the departure transition to select.
    * @param {() => void} callback A callback to call when the operation completes.
    */
-  setDepartureEnRouteTransitionIndex(index, callback = EmptyCallback.Void) {
+  async setDepartureEnRouteTransitionIndex(index, callback = EmptyCallback.Void) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.departureTransitionIndex = index;
-    currentFlightPlan.buildDeparture();
+    await currentFlightPlan.buildDeparture();
 
     this._updateFlightPlanVersion();
     callback();
@@ -867,11 +890,11 @@ class FlightPlanManager {
    * @param {Number} index The index of the arrival procedure to select.
    * @param {() => void} callback A callback to call when the operation completes.
    */
-  setArrivalProcIndex(index, callback = () => { }) {
+  async setArrivalProcIndex(index, callback = () => { }) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.arrivalIndex = index;
-    currentFlightPlan.buildArrival();
+    await currentFlightPlan.buildArrival();
     
     this._updateFlightPlanVersion();
     callback();
@@ -896,11 +919,11 @@ class FlightPlanManager {
    * @param {Number} index The index of the arrival transition to select.
    * @param {() => void} callback A callback to call when the operation completes.
    */
-  setArrivalEnRouteTransitionIndex(index, callback = () => { }) {
+  async setArrivalEnRouteTransitionIndex(index, callback = () => { }) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.arrivalTransitionIndex = index;
-    currentFlightPlan.buildArrival();
+    await currentFlightPlan.buildArrival();
 
     this._updateFlightPlanVersion();
     callback();
@@ -911,11 +934,11 @@ class FlightPlanManager {
    * @param {Number} index The index of the runway to select.
    * @param {() => void} callback A callback to call when the operation completes.
    */
-  setArrivalRunwayIndex(index, callback = () => { }) {
+  async setArrivalRunwayIndex(index, callback = () => { }) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.arrivalRunwayIndex = index;
-    currentFlightPlan.buildArrival();
+    await currentFlightPlan.buildArrival();
 
     this._updateFlightPlanVersion();
     callback();
@@ -935,11 +958,11 @@ class FlightPlanManager {
    * @param {() => void} callback A callback to call when the operation has completed.
    * @param {Number} transition The approach transition index to set in the approach information. 
    */
-  setApproachIndex(index, callback = () => { }, transition = -1) {
+  async setApproachIndex(index, callback = () => { }, transition = -1) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.approachIndex = index;
-    currentFlightPlan.buildApproach();
+    await currentFlightPlan.buildApproach();
 
     this._updateFlightPlanVersion();
     callback();
@@ -1048,11 +1071,11 @@ class FlightPlanManager {
    * @param {Number} index The index of the transition in the destination airport approach information.
    * @param {() => void} callback A callback to call when the operation completes.
    */
-  setApproachTransitionIndex(index, callback = () => { }) {
+  async setApproachTransitionIndex(index, callback = () => { }) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.approachTransitionIndex = index;
-    currentFlightPlan.buildApproach();
+    await currentFlightPlan.buildApproach();
 
     this._updateFlightPlanVersion();
     callback();
@@ -1062,14 +1085,14 @@ class FlightPlanManager {
    * Removes the arrival segment from the current flight plan.
    * @param {() => void} callback A callback to call when the operation completes.
    */
-  removeArrival(callback = () => { }) {
+  async removeArrival(callback = () => { }) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.arrivalIndex = -1;
     currentFlightPlan.procedureDetails.arrivalRunwayIndex = -1;
     currentFlightPlan.procedureDetails.arrivalTransitionIndex = -1;
 
-    currentFlightPlan.buildArrival();
+    await currentFlightPlan.buildArrival();
     
     this._updateFlightPlanVersion();
     callback();
@@ -1082,7 +1105,7 @@ class FlightPlanManager {
    */
   async activateDirectTo(icao, callback = EmptyCallback.Void) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    const waypoint = this._parentInstrument.facilityLoader.getFacilityRaw(icao);
+    const waypoint = await this._parentInstrument.facilityLoader.getFacilityRaw(icao);
     
     currentFlightPlan.directTo.activateFromWaypoint(waypoint);
     this._updateFlightPlanVersion();
