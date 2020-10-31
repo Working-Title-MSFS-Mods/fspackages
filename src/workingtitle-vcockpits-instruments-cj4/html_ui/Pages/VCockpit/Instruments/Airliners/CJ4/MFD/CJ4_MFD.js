@@ -549,10 +549,6 @@ class CJ4_MFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ROSE");
         else if (PFDMapFormat  == 2)
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ARC");
-        else if (PFDMapFormat  == 3)
-            _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "PPOS");
-        else if (PFDMapFormat  == 4)
-            _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "PLAN");
 
         if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1)
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "VOR1");
@@ -574,6 +570,9 @@ class CJ4_MFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.SYS_SRC, "PASS BRIEF");
         else
             _dict.set(CJ4_PopupMenu_Key.SYS_SRC, this.systemPage2);
+
+        SimVar.SetSimVarValue("L:Update_MFD_Menu", "Bool", false);
+        SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", false);
     }
 }
 class CJ4_FMSContainer extends NavSystemElementContainer {

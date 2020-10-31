@@ -69,7 +69,6 @@ class CJ4_PFD extends BaseAirliners {
             let dict = this.popup.dictionary;
             if (SimVar.GetSimVarValue("L:Update_PFD_Menu", "Bool")) {
                 this.readDictionary(dict);
-                console.log("update PFD menu");
                 SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", false);
             }
 			
@@ -256,6 +255,10 @@ class CJ4_PFD extends BaseAirliners {
                 this.fillDictionary(this.popup.dictionary);
                 this.popup.setMode(CJ4_PopupMenu.PFD);
                 break;
+            case "Upr_Push_CCP_MENU":
+                this.fillDictionary(this.popup.dictionary);
+                this.popup.setMode(CJ4_PopupMenu.CCP);
+                break;
             case "Upr_Push_REFS_MENU":
                 this.fillDictionary(this.popup.dictionary);
                 this.popup.setMode(CJ4_PopupMenu.REFS);
@@ -306,7 +309,7 @@ class CJ4_PFD extends BaseAirliners {
                 modeChanged = true;
             }
         }
-        else if (format == "PPOS") {
+        else if (format == 3) {
             if (this.mapDisplayMode != Jet_NDCompass_Display.PPOS) {
                 this.mapDisplayMode = Jet_NDCompass_Display.PPOS;
                 modeChanged = true;
@@ -425,7 +428,7 @@ class CJ4_PFD extends BaseAirliners {
     }
     fillDictionary(_dict) {
         const mapFormat = SimVar.GetSimVarValue("L:WT_PFD_MAP_FORMAT", "number");
-        if (mapFormat == 1)
+        if (mapFormat === 1)
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ROSE");
         else if (mapFormat == 3)
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "PPOS");
@@ -472,7 +475,6 @@ class CJ4_PFD extends BaseAirliners {
         _dict.set(CJ4_PopupMenu_Key.BRG_PTR2_SRC, this.radioSrc2);
         _dict.set(CJ4_PopupMenu_Key.BRG_VOR2_FREQ, this.radioNav.getVORActiveFrequency(2).toFixed(3));
         _dict.set(CJ4_PopupMenu_Key.BRG_ADF2_FREQ, this.radioNav.getADFActiveFrequency(2).toFixed(0));
-        SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", false)
     }
 }
 class CJ4_HorizonContainer extends NavSystemElementContainer {
