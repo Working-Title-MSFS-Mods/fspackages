@@ -48,6 +48,7 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "knots", 0);
+        this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -315,7 +316,6 @@ class CJ4_PFD extends BaseAirliners {
                 modeChanged = true;
              }
         }
-
 
         let range = _dict.get(CJ4_PopupMenu_Key.MAP_RANGE);
         this.map.range = parseInt(range);

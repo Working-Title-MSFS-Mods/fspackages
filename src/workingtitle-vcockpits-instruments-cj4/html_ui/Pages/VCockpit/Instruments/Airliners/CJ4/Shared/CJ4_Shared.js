@@ -3791,17 +3791,17 @@ class CJ4_PopupMenu_LOWER extends WTMenu.Popup_Menu_Handler {
             this.beginSection();
             {
                 this.addTitle("CONTROLS", this.textSize, 0.5);
-                this.addList("NAV-SRC", this.textSize, ["FMS1", "VOR1", "VOR2"], [CJ4_PopupMenu_Key.NAV_SRC]);
-                this.addList("RANGE", this.textSize, ["10", "20", "40", "80", "160", "320"], [CJ4_PopupMenu_Key.MAP_RANGE]);
+                this.addList("NAV-SRC", this.textSize, ["FMS1", "VOR1", "VOR2"], null);
+                this.addList("RANGE", this.textSize, ["10", "20", "40", "80", "160", "320"], null);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addSubMenu("BRG SRC", this.textSize, this.showNavPage.bind(this));
-                this.addSubMenu("CONFIG", this.textSize, this.showConfigPage.bind(this));
+                this.addSubMenu("BRG SRC", this.textSize, null);
+                this.addSubMenu("CONFIG", this.textSize, null);
                 this.addSubMenu("OVERLAYS", this.textSize, null);
                 this.addSubMenu("RADAR", this.textSize, null);
-                this.addSubMenu("REFS", this.textSize, this.showRefPage.bind(this));
+                this.addSubMenu("REFS", this.textSize, null);
                 this.addSubMenu("TAWS", this.textSize, null);
                 this.addSubMenu("BARO SET", this.textSize, null);
             }
@@ -4024,7 +4024,7 @@ class CJ4_PopupMenu_CCP extends WTMenu.Popup_Menu_Handler {
         this.textSize = 13;
         this.root = _root;
         this.menuLeft = 354;
-        this.menuTop = 430;
+        this.menuTop = 433;
         this.menuWidth = 145;
         this.dictionary = _dictionary;
         this.showMainPage();

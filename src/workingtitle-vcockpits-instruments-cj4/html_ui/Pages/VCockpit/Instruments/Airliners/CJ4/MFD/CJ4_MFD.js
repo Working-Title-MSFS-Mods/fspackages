@@ -545,9 +545,9 @@ class CJ4_MFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.MFD_MAP_FORMAT, "PLAN");
 
         const PFDMapFormat = SimVar.GetSimVarValue("L:WT_PFD_MAP_FORMAT", "number");
-        if (PFDMapFormat  == 1)
+        if (PFDMapFormat == 1)
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ROSE");
-        else if (PFDMapFormat  == 2)
+        else if (PFDMapFormat == 2)
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ARC");
 
         if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1)
