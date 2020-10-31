@@ -2,11 +2,11 @@ class SvgNearestIntersectionElement extends SvgWaypointElement {
     id(map) {
         return "nrst-intersection-" + this.ident + "-map-" + map.index;
     }
-    
+
     class() {
         return "map-nrst-intersection";
     }
-    
+
     imageFileName() {
         let fName = "";
         if (this.source) {
@@ -20,13 +20,17 @@ class SvgNearestIntersectionElement extends SvgWaypointElement {
         }
         return fName.replace(".svg", ".png");
     }
-    
+
     getIconSize(map) {
         if (map.config.waypointINTIconSize) {
             return map.config.waypointINTIconSize;
         } else {
             return map.config.waypointIconSize;
         }
+    }
+
+    getLabelPriority() {
+        return 30;
     }
 }
 //# sourceMappingURL=SvgNearestIntersectionElement.js.map

@@ -47,7 +47,6 @@ class SvgMapElement {
         if (SvgMap.LOG_PERFS) {
             t0 = performance.now();
         }
-        ;
         if (!this.svgElement) {
             this.svgElement = this.findSvgElement(map);
             if (!this.svgElement) {
@@ -76,7 +75,7 @@ class SvgMapElement {
     }
 
     appendToMap(map) {
-        map.appendChild(this.svgElement, map.flightPlanLayer);
+        map.appendChild(this.svgElement, map.defaultLayer);
     }
 
     setPropertyFromConfig(_config, _property) {
