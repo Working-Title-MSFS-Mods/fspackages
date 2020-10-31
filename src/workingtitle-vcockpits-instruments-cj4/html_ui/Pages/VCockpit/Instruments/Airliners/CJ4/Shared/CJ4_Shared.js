@@ -2831,7 +2831,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
     refreshLayout() {
         this.setWxRadarBug();
         if (this.isTerrainVisible || this.isGwxVisible) {
-            this.map.instrument.mapConfigId = 1; //Test
+            this.map.instrument.mapConfigId = 1;
             this.map.instrument.bingMapRef = EBingReference.SEA;
         }
         else {
