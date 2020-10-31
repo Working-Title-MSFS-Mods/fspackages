@@ -60,8 +60,9 @@
   visibility: hidden; }
 .gradientButton[state=Greyed] {
   filter: grayscale(50%) brightness(40%); }
-  .gradientButton[state=Greyed]:Hover:Active {
-    background-color: black !important; }
+.gradientButton[state=Greyed]:Hover:Active {
+    background: linear-gradient(#5f7283 0.4vh, #1f3445, black 2vh);
+    border: 3px solid #404040; }
 .gradientButton[state=Hidden] {
   display: none !important; }
 .gradientButton[state=Invisible] {
