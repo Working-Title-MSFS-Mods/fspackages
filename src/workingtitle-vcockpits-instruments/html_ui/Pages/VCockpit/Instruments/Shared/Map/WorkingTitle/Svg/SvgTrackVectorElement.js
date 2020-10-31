@@ -82,7 +82,8 @@ class SvgTrackVectorElement extends SvgMapElement {
             points = [map.getPlanePositionXY()];
             let i = 0;
             for (let t = 0; t < this.lookahead; t += timeStep) {
-                if (Math.abs(heading - track) > this.dynamicHeadingDeltaMax * Math.PI / 180) {
+                let angleDelta = Math.abs((heading - track) % (2 * Math.PI));
+                if (Math.min(angleDelta, 2 * Math.PI - angleDelta) > this.dynamicHeadingDeltaMax * Math.PI / 180) {
                     break;
                 }
                 let planeSpeedX = tas * Math.sin(heading);
