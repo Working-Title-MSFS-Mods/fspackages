@@ -29,6 +29,19 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
         this.root.setAttribute("width", "100%");
         this.root.setAttribute("height", "100%");
         this.root.setAttribute("viewBox", "-225 -215 550 516");
+
+        if (this._displayMode !== Jet_NDCompass_Display.PPOS) {
+            let blackBoxGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            let blackBox =  document.createElementNS(Avionics.SVG.NS, "rect");
+            blackBox.setAttribute("x", "-225");
+            blackBox.setAttribute("y", "-215");
+            blackBox.setAttribute("width", "550");
+            blackBox.setAttribute("height", "516");
+            blackBox.setAttribute("fill", "black");
+            blackBoxGroup.appendChild(blackBox);
+            this.root.appendChild(blackBoxGroup);
+        }  
+
         this.appendChild(this.root);
         var trsGroup = document.createElementNS(Avionics.SVG.NS, "g");
         trsGroup.setAttribute("transform", "translate(0, 70)");
@@ -71,7 +84,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     circle.setAttribute("cy", "50");
                     circle.setAttribute("r", smallCircleRadius.toString());
                     circle.setAttribute("fill-opacity", "0");
-                    circle.setAttribute("stroke", "white");
+                    circle.setAttribute("stroke", "#cccac8");
                     circle.setAttribute("stroke-width", "2");
                     circle.setAttribute("stroke-opacity", "1");
 
@@ -131,7 +144,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         line.setAttribute("x2", "50");
                         line.setAttribute("y2", lineEnd.toString());
                         line.setAttribute("transform", "rotate(" + (-degrees + 180) + " 50 50)");
-                        line.setAttribute("stroke", "white");
+                        line.setAttribute("stroke", "#cccac8");
                         line.setAttribute("stroke-width", "4");
                         line.setAttribute("stroke-opacity", "0.8");
                         fixedGroup.appendChild(line);
@@ -208,6 +221,12 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             {
                 this.courseGroup = document.createElementNS(Avionics.SVG.NS, "g");
                 this.courseGroup.setAttribute("id", "CourseInfo");
+
+                if (this._displayMode === Jet_NDCompass_Display.PPOS) { //Removes the course needles on PPOS formats
+                    this.courseGroup.setAttribute("style", "display:none");
+                }
+
+                
                 this.rotatingCircle.appendChild(this.courseGroup);
                 {
                     this.course = document.createElementNS(Avionics.SVG.NS, "g");
@@ -218,36 +237,53 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         if (this.navigationMode == Jet_NDCompass_Navigation.ILS) {
                             this.courseColor = "#11d011";
                         }
+                        else if (this.navigationMode == Jet_NDCompass_Navigation.NAV) {
+                            this.courseColor = "#ff00ff";
+                        }
                         else if (this.navigationMode == Jet_NDCompass_Navigation.VOR) {
                             this.courseColor = "#11d011";
                         }
                         this.courseTO = document.createElementNS(Avionics.SVG.NS, "path");
+                        this.courseTOBorder = document.createElementNS(Avionics.SVG.NS, "path");
 						
 						if (this.navigationMode == Jet_NDCompass_Navigation.ILS) {
-							this.courseTO.setAttribute("style", "display:none");
+                            this.courseTO.setAttribute("style", "display:none");
+                            this.courseTOBorder.setAttribute("style", "display:none");
                         }
-						
-                        this.courseTO.setAttribute("d", "M 35 150 l 30.5 0 l -15.25 28 l -15.25 -28 Z");
+                        
+                        this.courseDeviation = document.createElementNS(Avionics.SVG.NS, "rect");
+                        this.courseDeviation.setAttribute("x", "47");
+                        this.courseDeviation.setAttribute("y", "-116");
+                        this.courseDeviation.setAttribute("width", "6");
+                        this.courseDeviation.setAttribute("height", "334");
+                        this.courseDeviation.setAttribute("fill", this.courseColor.toString());
+                        this.course.appendChild(this.courseDeviation);
+
+                        this.courseTOBorder.setAttribute("d", "M 35.5 150 l 28 0 l -14 28 l -14 -28 Z");
+                        this.courseTOBorder.setAttribute("transform", "rotate(180 50 50)");
+                        this.courseTOBorder.setAttribute("stroke", "black");
+                        this.courseTOBorder.setAttribute("stroke-width", "11");
+                        this.courseTOBorder.setAttribute("fill", "none");
+                        this.courseTOBorder.setAttribute("stroke-linejoin", "round");
+                        this.course.appendChild(this.courseTOBorder);
+
+                        this.courseTO.setAttribute("d", "M 35.5 150 l 28 0 l -14 28 l -14 -28 Z");
                         this.courseTO.setAttribute("transform", "rotate(180 50 50)");
                         this.courseTO.setAttribute("stroke", this.courseColor.toString());
-                        this.courseTO.setAttribute("stroke-width", ".5");
+                        this.courseTO.setAttribute("stroke-width", "6");
+                        this.courseTO.setAttribute("fill", "none");
+                        this.courseTO.setAttribute("stroke-linejoin", "round");
                         this.course.appendChild(this.courseTO);
                         this.courseTOLine = document.createElementNS(Avionics.SVG.NS, "path");
-                        this.courseTOLine.setAttribute("d", "M 50 342 l -11 0 l 11 41 l 11 -41 l -11 0 l 0 -121 Z");
+                        this.courseTOLine.setAttribute("d", "M 50 342 l -11 0 l 11 52 l 11 -52 l -11 0 l 0 -118 Z");
                         this.courseTOLine.setAttribute("transform", "rotate(180 50 50)");
                         this.courseTOLine.setAttribute("stroke", this.courseColor.toString());
                         this.courseTOLine.setAttribute("stroke-width", "6");
+                        this.courseTOLine.setAttribute("stroke-linejoin", "round");
                         this.course.appendChild(this.courseTOLine);
-                        this.courseDeviation = document.createElementNS(Avionics.SVG.NS, "rect");
-                        this.courseDeviation.setAttribute("x", "45");
-                        this.courseDeviation.setAttribute("y", "-119");
-                        this.courseDeviation.setAttribute("width", "6");
-                        this.courseDeviation.setAttribute("height", "338");
-                        this.courseDeviation.setAttribute("fill", this.courseColor.toString());
-                        this.course.appendChild(this.courseDeviation);
                         this.courseFROM = document.createElementNS(Avionics.SVG.NS, "path");
 
-						if (this.navigationMode == Jet_NDCompass_Navigation.ILS) {
+						if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode == Jet_NDCompass_Navigation.NAV) {
 							this.courseFROM.setAttribute("style", "display:none");
                         }
 
@@ -258,7 +294,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         this.courseFROM.setAttribute("stroke-width", "1");
                         this.course.appendChild(this.courseFROM);
                         this.courseFROMLine = document.createElementNS(Avionics.SVG.NS, "path");
-                        this.courseFROMLine.setAttribute("d", "M50 -121 l0 -178 Z");
+                        this.courseFROMLine.setAttribute("d", "M50 -123 l0 -178 Z");
                         this.courseFROMLine.setAttribute("fill", "none");
                         this.courseFROMLine.setAttribute("transform", "rotate(180 50 50)");
                         this.courseFROMLine.setAttribute("stroke", this.courseColor.toString());
@@ -277,21 +313,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         }
                     }
                 }
-                this.trackingGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                this.trackingGroup.setAttribute("id", "trackingGroup");
-                {
-                    let rad = 5;
-                    this.trackingBug = document.createElementNS(Avionics.SVG.NS, "circle");
-                    this.trackingBug.setAttribute("id", "trackingBug");
-                    this.trackingBug.setAttribute("cx", "50");
-                    this.trackingBug.setAttribute("cy", (50 + circleRadius + rad).toString());
-                    this.trackingBug.setAttribute("r", rad.toString());
-                    this.trackingBug.setAttribute("fill", "none");
-                    this.trackingBug.setAttribute("stroke", "#ff00e0");
-                    this.trackingBug.setAttribute("stroke-width", "2");
-                    this.trackingGroup.appendChild(this.trackingBug);
-                }
-                this.rotatingCircle.appendChild(this.trackingGroup);
+                
                 this.headingGroup = document.createElementNS(Avionics.SVG.NS, "g");
                 this.headingGroup.setAttribute("id", "headingGroup");
                 {
@@ -310,6 +332,23 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     this.selectedHeadingGroup.appendChild(this.selectedHeadingBug);
                 }
                 this.rotatingCircle.appendChild(this.selectedHeadingGroup);
+
+                this.trackingGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                this.trackingGroup.setAttribute("id", "trackingGroup");
+                {
+                    let rad = 5;
+                    this.trackingBug = document.createElementNS(Avionics.SVG.NS, "circle");
+                    this.trackingBug.setAttribute("id", "trackingBug");
+                    this.trackingBug.setAttribute("cx", "50");
+                    this.trackingBug.setAttribute("cy", (50 + circleRadius + rad).toString());
+                    this.trackingBug.setAttribute("r", rad.toString());
+                    this.trackingBug.setAttribute("fill", "none");
+                    this.trackingBug.setAttribute("stroke", "#ff00e0");
+                    this.trackingBug.setAttribute("stroke-width", "4");
+                    this.trackingGroup.appendChild(this.trackingBug);
+                }
+                this.rotatingCircle.appendChild(this.trackingGroup);
+
                 this.ilsGroup = document.createElementNS(Avionics.SVG.NS, "g");
                 this.ilsGroup.setAttribute("id", "ILSGroup");
                 {
@@ -324,6 +363,18 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 }
                 this.rotatingCircle.appendChild(this.ilsGroup);
             }
+
+            if (this._displayMode !== Jet_NDCompass_Display.PPOS) {
+                let airplaneSymbolGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                let airplaneStick =  document.createElementNS(Avionics.SVG.NS, "path");
+                airplaneStick.setAttribute("transform", "translate(50 88)");
+                airplaneStick.setAttribute("d", "M 0 0 l 0 38 M 0 32 l 11 2 M 0 32 l -11 2 M 0 12 l 19 8 M 0 12 l -19 8");
+                airplaneStick.setAttribute("stroke", "white");
+                airplaneStick.setAttribute("stroke-width", "2.5");
+                airplaneSymbolGroup.appendChild(airplaneStick);
+                this.root.appendChild(airplaneSymbolGroup);
+            }
+
             this.currentRefGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.currentRefGroup.setAttribute("id", "currentRefGroup");
             {
@@ -2472,6 +2523,18 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
         this.root.setAttribute("width", "100%");
         this.root.setAttribute("height", "100%");
         this.root.setAttribute("viewBox", "0 0 1000 1000");
+
+        let blackBoxGroup = document.createElementNS(Avionics.SVG.NS, "g");
+        let blackBox =  document.createElementNS(Avionics.SVG.NS, "rect");
+        blackBox.setAttribute("x", "0");
+        blackBox.setAttribute("y", "0");
+        blackBox.setAttribute("width", "1000");
+        blackBox.setAttribute("height", "1000");
+        blackBox.setAttribute("fill", "black");
+        blackBoxGroup.appendChild(blackBox);
+        this.root.appendChild(blackBoxGroup);
+          
+
         this.appendChild(this.root);
         let circleRadius = 333;
         {
@@ -2546,32 +2609,43 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     if (this.navigationMode == Jet_NDCompass_Navigation.ILS) {
                         this.courseColor = "#11d011";
                     }
+                    else if (this.navigationMode == Jet_NDCompass_Navigation.NAV) {
+                        this.courseColor = "#ff00ff";
+                    }
                     else if (this.navigationMode == Jet_NDCompass_Navigation.VOR) {
                         this.courseColor = "#11d011";
                     }
                     this.courseTO = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.courseTO.setAttribute("d", "M 496 670 L 503 670 L 503 779 L 516 779 L 500 828 L 483 779 L 496 779 L 496 670 Z");
-                    this.courseTO.setAttribute("fill", "none");
+                    this.courseTO.setAttribute("d", "M 500 673 l 0 108 l 16 0 l -16 49 l -16 -49 l 16 0 Z");
+                    this.courseTO.setAttribute("fill", this.courseColor.toString());
                     this.courseTO.setAttribute("transform", "rotate(180 500 500)");
                     this.courseTO.setAttribute("stroke", this.courseColor.toString());
-                    this.courseTO.setAttribute("stroke-width", "1");
+                    this.courseTO.setAttribute("stroke-width", "8");
+                    this.courseTO.setAttribute("stroke-linejoin", "round");
                     this.course.appendChild(this.courseTO);
                     this.courseDeviation = document.createElementNS(Avionics.SVG.NS, "rect");
-                    this.courseDeviation.setAttribute("x", "495");
+                    this.courseDeviation.setAttribute("x", "496");
                     this.courseDeviation.setAttribute("y", "333");
                     this.courseDeviation.setAttribute("width", "8");
                     this.courseDeviation.setAttribute("height", "333");
                     this.courseDeviation.setAttribute("fill", this.courseColor.toString());
                     this.course.appendChild(this.courseDeviation);
-                    this.courseFROM = document.createElementNS(Avionics.SVG.NS, "rect");
-                    this.courseFROM.setAttribute("x", "497");
+                    this.courseFROM = document.createElementNS(Avionics.SVG.NS, "path");
+
+                    this.courseFROM.setAttribute("d", "M 500 165 l 0 163 Z");
+                    this.courseFROM.setAttribute("fill", this.courseColor.toString());
+                    this.courseFROM.setAttribute("transform", "rotate(180 500 500)");
+                    this.courseFROM.setAttribute("stroke", this.courseColor.toString());
+                    this.courseFROM.setAttribute("stroke-width", "8");
+
+                    /*this.courseFROM.setAttribute("x", "497");
                     this.courseFROM.setAttribute("y", "166");
                     this.courseFROM.setAttribute("width", "8");
                     this.courseFROM.setAttribute("height", "163");
                     this.courseFROM.setAttribute("fill", "none");
                     this.courseFROM.setAttribute("transform", "rotate(180 500 500)");
                     this.courseFROM.setAttribute("stroke", this.courseColor.toString());
-                    this.courseFROM.setAttribute("stroke-width", "1");
+                    this.courseFROM.setAttribute("stroke-width", "1");*/
                     this.course.appendChild(this.courseFROM);
                     let circlePosition = [-166, -55, 55, 166];
                     for (let i = 0; i < circlePosition.length; i++) {
@@ -2640,6 +2714,18 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 this.rotatingCircle.appendChild(this.ilsGroup);
             }
         }
+
+
+        let airplaneSymbolGroup = document.createElementNS(Avionics.SVG.NS, "g");
+        let airplaneStick =  document.createElementNS(Avionics.SVG.NS, "path");
+        airplaneStick.setAttribute("transform", "translate(500 468) scale(2)");
+        airplaneStick.setAttribute("d", "M 0 0 l 0 38 M 0 32 l 11 2 M 0 32 l -11 2 M 0 12 l 19 8 M 0 12 l -19 8");
+        airplaneStick.setAttribute("stroke", "white");
+        airplaneStick.setAttribute("stroke-width", "2.5");
+        airplaneSymbolGroup.appendChild(airplaneStick);
+        this.root.appendChild(airplaneSymbolGroup);
+        
+
         let innerCircleGroup = document.createElementNS(Avionics.SVG.NS, "g");
         innerCircleGroup.setAttribute("id", "innerCircle");
         this.root.appendChild(innerCircleGroup);
@@ -2650,7 +2736,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             circle.setAttribute("cy", "500");
             circle.setAttribute("r", smallCircleRadius.toString());
             circle.setAttribute("fill-opacity", "0");
-            circle.setAttribute("stroke", "white");
+            circle.setAttribute("stroke", "#cccac8");
             circle.setAttribute("stroke-width", "2");
             circle.setAttribute("stroke-opacity", "1");
             innerCircleGroup.appendChild(circle);
@@ -2667,7 +2753,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 line.setAttribute("x2", "500");
                 line.setAttribute("y2", lineEnd.toString());
                 line.setAttribute("transform", "rotate(" + (-degrees + 180) + " 500 500)");
-                line.setAttribute("stroke", "white");
+                line.setAttribute("stroke", "#cccac8");
                 line.setAttribute("stroke-width", "4");
                 line.setAttribute("stroke-opacity", "0.8");
                 innerCircleGroup.appendChild(line);

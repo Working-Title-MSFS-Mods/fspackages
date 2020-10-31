@@ -415,7 +415,7 @@ class Jet_NDCompass extends HTMLElement {
     }
     updateNavigationInfo() {
         if (this.courseGroup) {
-            if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode == Jet_NDCompass_Navigation.VOR) {
+            if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode == Jet_NDCompass_Navigation.VOR || this.navigationMode == Jet_NDCompass_Navigation.NAV) {
                 this.courseGroup.classList.toggle('hide', false);
                 let compass = Number(this.getAttribute('rotation'));
                 let displayCourseDeviation = false;
@@ -445,6 +445,15 @@ class Jet_NDCompass extends HTMLElement {
                         this.setAttribute("course", compass.toString());
                         this.setAttribute("course_deviation", "0");
                     }
+                }
+                else if (this.navigationMode === Jet_NDCompass_Navigation.NAV) {
+                    displayCourseDeviation = true;
+                    let deviation = (SimVar.GetSimVarValue("HSI CDI NEEDLE", "number") / 127);
+                    let simSelectedTrack = SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree");
+                    this.setAttribute("course", simSelectedTrack.toString());
+                    this.setAttribute("course_deviation", deviation.toString());
+                   
+
                 }
                 this.setAttribute("display_course_deviation", displayCourseDeviation ? "True" : "False");
                 this.setAttribute("display_vertical_deviation", displayVerticalDeviation ? "True" : "False");
@@ -571,7 +580,7 @@ class Jet_NDCompass extends HTMLElement {
         }
         if (oldValue == newValue)
             return;
-        let factor = (this.displayMode === Jet_NDCompass_Display.ARC) ? 1 : 10;
+        let factor = (this.displayMode === Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.PPOS) ? 1 : 10;
         switch (name) {
             case "vertical_deviation":
                 if (this.glideSlopeCursor) {
@@ -592,7 +601,7 @@ class Jet_NDCompass extends HTMLElement {
                 break;
             case "display_course_deviation":
                 if (newValue == "True") {
-                    this.courseTO.setAttribute("fill", this.courseColor.toString());
+                    this.courseTO.setAttribute("fill", "none");
                     this.courseDeviation.setAttribute("visibility", "visible");
                     this.courseFROM.setAttribute("fill", this.courseColor.toString());
                     if (this.courseTOLine)
@@ -617,7 +626,7 @@ class Jet_NDCompass extends HTMLElement {
                 break;
             case "course_deviation":
                 if (this.courseDeviation) {
-                    if (this.displayMode == Jet_NDCompass_Display.ARC)
+                    if (this.displayMode == Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.ARC)
                         this.courseDeviation.setAttribute("transform", "translate(" + (Math.min(Math.max(parseFloat(newValue), -1), 1) * 100 * factor) + ")");
                     else
                         this.courseDeviation.setAttribute("transform", "translate(" + (Math.min(Math.max(parseFloat(newValue), -1), 1) * 20 * factor) + ")");
@@ -692,7 +701,7 @@ class Jet_NDCompass extends HTMLElement {
         let selectedTrackingBug = Number(this.getAttribute('selected_tracking_bug_rotation'));
         let ilsBug = Number(this.getAttribute('ils_bug_rotation'));
         let factor = 500;
-        if (this.displayMode === Jet_NDCompass_Display.ARC) {
+        if (this.displayMode === Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.PPOS) {
             factor = 50;
             trackingBug = this.degreeToArc(trackingBug);
             headingBug = this.degreeToArc(headingBug);

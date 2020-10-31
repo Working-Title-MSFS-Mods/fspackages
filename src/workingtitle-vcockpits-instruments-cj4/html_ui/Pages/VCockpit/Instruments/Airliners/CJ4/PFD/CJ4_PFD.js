@@ -96,7 +96,7 @@ class CJ4_PFD extends BaseAirliners {
                         el.style = 'transform: translate(-84px, -56px)';
                     }
 
-                    if (this.mapDisplayMode === Jet_NDCompass_Display.ARC) {
+                    if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.PPOS) {
                         el.setAttribute('width', '108%');
                         el.setAttribute('height', '108%');
                         el.style = 'transform: translate(-30px, -18px)';
@@ -381,6 +381,8 @@ class CJ4_PFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "ROSE");
         else if (this.mapDisplayMode == Jet_NDCompass_Display.ARC)
             _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "ARC");
+        else if (this.mapDisplayMode == Jet_NDCompass_Display.PPOS)
+            _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "PPOS");
         _dict.set(CJ4_PopupMenu_Key.MAP_RANGE, this.map.range.toString());
         if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1)
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "VOR1");

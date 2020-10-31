@@ -403,9 +403,15 @@ class CJ4_MFD extends BaseAirliners {
                 modeChanged = true;
             }
         }
-        else if (format == "ARC" || format == "PPOS" || format == "TCAS") {
+        else if (format == "ARC" || format == "TCAS") {
             if (this.mapDisplayMode != Jet_NDCompass_Display.ARC) {
                 this.mapDisplayMode = Jet_NDCompass_Display.ARC;
+                modeChanged = true;
+            }
+        }
+        else if (format == "PPOS") {
+            if (this.mapDisplayMode != Jet_NDCompass_Display.PPOS) {
+                this.mapDisplayMode = Jet_NDCompass_Display.PPOS;
                 modeChanged = true;
             }
         }
@@ -480,6 +486,8 @@ class CJ4_MFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "ROSE");
         else if (this.mapDisplayMode == Jet_NDCompass_Display.ARC)
             _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "ARC");
+        else if (this.mapDisplayMode == Jet_NDCompass_Display.PPOS)
+            _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "PPOS");
         else if (this.mapDisplayMode == Jet_NDCompass_Display.PLAN)
             _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "PLAN");
         if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1)
