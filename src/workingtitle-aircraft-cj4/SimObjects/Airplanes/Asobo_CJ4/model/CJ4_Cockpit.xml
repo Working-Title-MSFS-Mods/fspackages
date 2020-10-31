@@ -332,8 +332,6 @@
                     </UseTemplate>
                     <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Oxygen_Mask_Mic_2_Template">
                     </UseTemplate>
-                    <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Com1Tune_Template">
-                    </UseTemplate>
 				</Component>
 				<Component ID="LIGHTING_Knobs">
 					<UseTemplate Name="ASOBO_LIGHTING_Knob_Panel_Template">
@@ -986,6 +984,9 @@
 
 		<!-- MISC -->
 		<Component ID="TT_INOP">
+            <UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
+                <NODE_ID>com1Tune</NODE_ID>
+            </UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>push_pilot_DCP_RADARMENU</NODE_ID>
 			</UseTemplate>
