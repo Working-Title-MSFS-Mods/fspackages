@@ -60,7 +60,7 @@ class AS3000_TSC extends NavSystemTouch {
     initLightingControl() {
         if (this.isLightingControlAllowed()) {
             SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLightingBool", "bool", true); // tell xmls to use custom display lighting xmlvar
-            SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", 1.0); // initialize display brightness variable: 1.0 = maximum brightness
+            SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", WTDataStore.get(AS3000_TSC_LightingConfig.VARNAME_DISPLAY_LIGHTING, 1)); // initialize display brightness variable: 1.0 = maximum brightness
         }
     }
 
@@ -782,27 +782,34 @@ class AS3000_TSC_LightingConfig extends NavSystemElement {
         this.gps.makeButton(this.decButton, this.changeLighting.bind(this, -0.01));
         this.gps.makeButton(this.incButton, this.changeLighting.bind(this, 0.01));
     }
+
     onEnter() {
         this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
         this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
     }
-    onUpdate(_deltaTime) {
+
+    onUpdate(deltaTime) {
         this.updateSlider();
     }
+
     onExit() {
         this.gps.deactivateNavButton(1);
         this.gps.deactivateNavButton(2);
     }
+
     onEvent(_event) {
     }
+
     back() {
         this.gps.goBack();
         return true;
     }
+
     backHome() {
         this.gps.SwitchToPageName("MFD", "MFD Home");
         return true;
     }
+
     updateSlider() {
         let currValue = SimVar.GetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number") * 100;
         let displayValue = fastToFixed(currValue, 0)
@@ -810,13 +817,25 @@ class AS3000_TSC_LightingConfig extends NavSystemElement {
         this.slider.value = currValue;
         this.sliderBackground.style.webkitClipPath = "polygon(0 0, " + displayValue + "% 0, " + displayValue + "% 100%, 0 100%)"; // update the range slider's track background to only show on the left of the thumb
     }
+
     syncLightingToSlider() {
-        SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", parseInt(this.slider.value) / 100.0);
+        this.setLightingValue(parseInt(this.slider.value) / 100.0);
     }
+
     changeLighting(_delta) {
-        SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", Math.min(Math.max(SimVar.GetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number") + _delta, 0.01), 1));
+        this.setLightingValue(Math.min(Math.max(SimVar.GetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number") + _delta, 0.01), 1));
+    }
+
+    setLightingValue(value) {
+        SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", value);
+        this.updateDataStore(value);
+    }
+
+    updateDataStore(value) {
+        WTDataStore.set(AS3000_TSC_LightingConfig.VARNAME_DISPLAY_LIGHTING, value);
     }
 }
+AS3000_TSC_LightingConfig.VARNAME_DISPLAY_LIGHTING = "Display_Lighting";
 
 /*
  * Utilities Page (via MFD Home)
