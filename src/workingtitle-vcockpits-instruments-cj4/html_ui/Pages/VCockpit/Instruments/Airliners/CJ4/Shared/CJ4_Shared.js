@@ -2641,6 +2641,8 @@ class CJ4_MapContainer extends NavSystemElementContainer {
     constructor(_name, _root) {
         super(_name, _root, null);
         this.map = new CJ4_Map();
+        this.isMapVisible = undefined;
+        this.isRouteVisible = undefined;
         this.isTerrainVisible = undefined;
         this.isWeatherVisible = undefined;
         this.isGwxVisible = undefined;
@@ -2706,7 +2708,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             case Jet_NDCompass_Display.PLAN:
                 this.zoomFactor = 4.1;
                 break;
-            case Jet_NDCompass_Display.PPOS:
+            case Jet_NDCompass_Display.PPOS:           
                 this.zoomFactor = 2.8;
                 break;
             default:
@@ -2831,16 +2833,55 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             radarbug.style.display = (this.isWeatherVisible) ? "" : "none";
         }
     }
+
+    /**
+     * Sets whether or not the map is visible.
+     * @param {Boolean} visible True if the map should be visible, false if it should not be displayed.
+     */
+    showMap(visible) {
+        if (this.isMapVisible !== visible) {
+            this.isMapVisible = visible;
+            this.refreshLayout();
+        }
+    }
+
+    /**
+     * Sets whether or not the flight plan route is visible.
+     * @param {Boolean} visible True if the route should be visible, false if it should not be displayed.
+     */
+    showRoute(visible) {
+        if (this.isRouteVisible !== visible) {
+            this.isRouteVisible = visible;
+            this.refreshLayout();
+        }
+    }
+
     refreshLayout() {
         this.setWxRadarBug();
-        if (this.isTerrainVisible || this.isGwxVisible) {
-            this.map.instrument.mapConfigId = 1;
-            this.map.instrument.bingMapRef = EBingReference.SEA;
+        if (this.isMapVisible) {
+            this.map.instrument.setAttribute('style', '');
+
+            if (this.isTerrainVisible || this.isGwxVisible) {
+                this.map.instrument.mapConfigId = 1;
+                this.map.instrument.bingMapRef = EBingReference.SEA;
+            }
+            else {
+                this.map.instrument.mapConfigId = 0;
+                this.map.instrument.bingMapRef = EBingReference.SEA;
+            }
+
+            if (!this.isRouteVisible) {
+                this.map.instrument.showFlightPlan = false;
+                this.map.instrument.updateFlightPlanVisibility();
+            }
+            else {
+                this.map.instrument.showFlightPlan = true;
+                this.map.instrument.updateFlightPlanVisibility();
+            }
         }
         else {
-            this.map.instrument.mapConfigId = 0;
-            this.map.instrument.bingMapRef = EBingReference.SEA;
-        }
+            this.map.instrument.setAttribute('style', 'display: none');
+        } 
     }
 }
 class CJ4_Map extends MapInstrumentElement {
