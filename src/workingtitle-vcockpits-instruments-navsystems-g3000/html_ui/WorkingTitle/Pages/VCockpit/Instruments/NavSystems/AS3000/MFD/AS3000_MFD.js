@@ -294,7 +294,7 @@ class AS3000_MFD_NavDataBar extends WT_NavDataBar {
 
         this.dataFields = Array.from(root.getElementsByClassName("navDataField")).map(e => new AS3000_MFD_NavDataField(e));
         for (let i = 0; i < this.dataFields.length; i++) {
-            let infoIndex = WT_NavDataBar.getFieldInfoIndex(i, null);
+            let infoIndex = WT_NavDataBar.getFieldInfoIndex(i, "");
             if (!infoIndex) {
                 infoIndex = AS3000_MFD_NavDataBar.DEFAULT_FIELDS[i];
                 WT_NavDataBar.setFieldInfoIndex(i, infoIndex);
