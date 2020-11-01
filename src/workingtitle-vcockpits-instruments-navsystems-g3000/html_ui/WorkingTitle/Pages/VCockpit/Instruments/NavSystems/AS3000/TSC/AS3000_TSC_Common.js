@@ -65,7 +65,7 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     isLightingControlAllowed() {
-        return AS3000_TSC.LIGHTING_CONTROL_ALLOWED_AIRCRAFT.has(SimVar.GetSimVarValue("TITLE", "string"));
+        return AS3000_TSC.LIGHTING_CONTROL_ALLOWED_AIRCRAFT.has(SimVar.GetSimVarValue("ATC MODEL", "string"));
     }
 
     createSpeedBugsPage() {
@@ -334,7 +334,7 @@ class AS3000_TSC extends NavSystemTouch {
     }
 }
 AS3000_TSC.LIGHTING_CONTROL_ALLOWED_AIRCRAFT = new Set([
-    "TBM 930 Asobo"
+    "TT:ATCCOM.AC_MODEL_TBM9.0.text"
 ]);
 
 class AS3000_TSC_PageInfos {
