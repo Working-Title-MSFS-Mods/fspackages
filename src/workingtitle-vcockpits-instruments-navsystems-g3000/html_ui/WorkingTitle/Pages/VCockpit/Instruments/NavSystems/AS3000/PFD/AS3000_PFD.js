@@ -191,13 +191,13 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         ];
         this.pfdMapMenu.elements = [
             new AS3000_PFD_SoftKeyElement("Map Layout", this.switchToMenu.bind(this, this.pfdMapLayoutMenu)),
-            new AS3000_PFD_SoftKeyElement("Detail", this.toggleDcltr.bind(this), null, this.dlctrStatus.bind(this), this.getInsetMapSoftkeyState.bind(this)),
+            new AS3000_PFD_SoftKeyElement("Detail", this.toggleDCLTR.bind(this), null, this.getDCLTRValue.bind(this), this.getInsetMapSoftkeyState.bind(this)),
             new AS3000_PFD_SoftKeyElement("Weather Legend"),
             new AS3000_PFD_SoftKeyElement("Traffic"),
             new AS3000_PFD_SoftKeyElement("Storm-scope"),
-            new AS3000_PFD_SoftKeyElement("Terrain", this.toggleTerrain.bind(this), null, this.terrainStatus.bind(this), this.getInsetMapSoftkeyState.bind(this)),
+            new AS3000_PFD_SoftKeyElement("Terrain", this.toggleTerrain.bind(this), null, this.getTerrainValue.bind(this), this.getInsetMapSoftkeyState.bind(this)),
             new AS3000_PFD_SoftKeyElement("Data Link Settings"),
-            new AS3000_PFD_SoftKeyElement("WX&nbsp;Overlay", this.toggleWX.bind(this), null, this.wxOverlayStatus.bind(this), this.getInsetMapSoftkeyState.bind(this)),
+            new AS3000_PFD_SoftKeyElement("WX&nbsp;Overlay", this.toggleWX.bind(this), null, this.getWXOverlayValue.bind(this), this.getInsetMapSoftkeyState.bind(this)),
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement("METAR"),
             new AS3000_PFD_SoftKeyElement("Back", this.switchToMenu.bind(this, this.rootMenu)),
@@ -322,14 +322,14 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         return this.innerMap.isEnabled() == _comparison;
     }
 
-    toggleDcltr() {
+    toggleDCLTR() {
         if (this.innerMap.isEnabled()) {
             WT_MapElement.setSyncedSettingVar(WT_MapDcltrSetting.VARNAME_ROOT_DEFAULT, this.innerMap.varNameID,
                     (WT_MapElement.getSettingVar(WT_MapDcltrSetting.VARNAME_ROOT_DEFAULT, this.innerMap.varNameID) + 1) % AS3000_MapElement.DETAIL_DISPLAY_TEXT.length);
         }
     }
 
-    dlctrStatus() {
+    getDCLTRValue() {
         return AS3000_MapElement.DETAIL_DISPLAY_TEXT[WT_MapElement.getSettingVar(WT_MapDcltrSetting.VARNAME_ROOT_DEFAULT, this.innerMap.varNameID)];
     }
 
@@ -340,7 +340,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         }
     }
 
-    terrainStatus() {
+    getTerrainValue() {
         return AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT[WT_MapElement.getSettingVar(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT, this.innerMap.varNameID)];
     }
 
@@ -350,7 +350,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         }
     }
 
-    wxOverlayStatus() {
+    getWXOverlayValue() {
         if (this.innerMap.getNexrad()) {
             return "NEXRAD";
         } else {
