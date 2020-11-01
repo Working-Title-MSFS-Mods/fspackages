@@ -2555,7 +2555,7 @@ class CJ4_SystemFMS extends NavSystemElement {
 
                         // Set expected fuel and gross weight
                         if (groundSpeed >= 50) {
-                            const fuelFlow = (SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour") + SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour")) / 2;
+                            const fuelFlow = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour") + SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
                             const expectedFuelUsage = (fuelFlow * (this.calcETEseconds(destinationDistance, groundSpeed) / 3600)).toFixed(0);
                             const currentFuel = (SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds") * SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons")).toFixed(0);
                             const expectedFuelAtDestination = (currentFuel - expectedFuelUsage) < 0 ? 0 : (currentFuel - expectedFuelUsage);
@@ -3938,7 +3938,6 @@ class CJ4_PopupMenu_LOWER extends WTMenu.Popup_Menu_Handler {
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
-
     showMapSymbolsPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
@@ -4063,15 +4062,12 @@ class CJ4_PopupMenu_CCP extends WTMenu.Popup_Menu_Handler {
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
 
-
+        //TODO
         // Show upper page
         // Show lower page
         // Systems overlay
         // Engine overlay
     }
-
-
-
 
     showPFDLowerPage(_highlight = 0) {
         this._isOnMainPage = false;
@@ -4248,20 +4244,6 @@ class CJ4_PopupMenu_CCP extends WTMenu.Popup_Menu_Handler {
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     showMapSymbolsPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
@@ -4339,8 +4321,6 @@ class CJ4_PopupMenu_CCP extends WTMenu.Popup_Menu_Handler {
         this.root.appendChild(page);
     }
 }
-
-
 
 class CJ4_Checklist_Container extends NavSystemElementContainer {
     constructor(_name, _root) {
@@ -4752,7 +4732,5 @@ class CJ4_PassengerBrief extends WTMenu.PassengerBrief_Menu_Handler {
         this.root.appendChild(page);
     }
 }
-
-
 
 //# sourceMappingURL=CJ4_Shared.js.map
