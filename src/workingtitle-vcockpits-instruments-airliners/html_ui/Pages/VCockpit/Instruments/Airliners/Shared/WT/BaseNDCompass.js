@@ -453,6 +453,7 @@ class Jet_NDCompass extends HTMLElement {
                 let displayVerticalDeviation = false;
                 if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode === Jet_NDCompass_Navigation.VOR) {
                     let beacon;
+                    this.ghostNeedleGroup.setAttribute("visibility", "hidden");
                     if (this.navigationMode == Jet_NDCompass_Navigation.ILS) {
                         beacon = this.gps.radioNav.getBestILSBeacon();
                     }
