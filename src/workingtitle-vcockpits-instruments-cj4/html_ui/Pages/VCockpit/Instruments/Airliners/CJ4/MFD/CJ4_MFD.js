@@ -147,14 +147,49 @@ class CJ4_MFD extends BaseAirliners {
                 }
 
                 if (this.showTerrain) {
+                    this.map.showMap(true);
+    
+                    if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {               
+                        this.map.showRoute(false);
+                        this.map.map.instrument.setAttribute('show-airplane', 'false');
+                    }
+                    else {
+                        this.map.showRoute(true);
+                        this.map.map.instrument.setAttribute('show-airplane', 'true');
+                    }
+    
                     this.map.showTerrain(true);
                     this.mapOverlay.showTerrain(true);
                 }
                 else if (this.showWeather) {
+                    this.map.showMap(true);
+    
+                    if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {
+                        this.map.showRoute(false);
+                        this.map.map.instrument.setAttribute('show-airplane', 'false');
+                    }
+                    else {
+                        this.map.showRoute(true);
+                        this.map.map.instrument.setAttribute('show-airplane', 'true');
+                    }
+    
                     this.map.showWeather(true);
                     this.mapOverlay.showWeather(true);
                 }
                 else {
+                    if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {
+                        this.map.showMap(false);
+                        this.map.showRoute(false);
+    
+                        this.map.map.instrument.setAttribute('show-airplane', 'false');
+                    }
+                    else {
+                        this.map.showMap(true);
+                        this.map.showRoute(true);
+    
+                        this.map.map.instrument.setAttribute('show-airplane', 'true');
+                    }
+    
                     this.map.showTerrain(false);
                     this.mapOverlay.showTerrain(false);
                     this.map.showWeather(false);
