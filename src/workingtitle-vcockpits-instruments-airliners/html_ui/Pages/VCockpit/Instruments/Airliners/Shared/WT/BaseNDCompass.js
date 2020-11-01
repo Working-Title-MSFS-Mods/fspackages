@@ -494,10 +494,12 @@ class Jet_NDCompass extends HTMLElement {
                             deviation = -deviation;
                         this.setAttribute("ghost_needle_course", beacon.course.toString());
                         this.setAttribute("ghost_needle_deviation", deviation.toString());
+                        this.ghostNeedleGroup.setAttribute("visibility", "visible");
                     }
                     else {
                         this.setAttribute("ghost_needle_course", compass.toString());
                         this.setAttribute("ghost_needle_deviation", "0");
+                        this.ghostNeedleGroup.setAttribute("visibility", "hidden");
                     }
                    
 
