@@ -485,15 +485,21 @@ class Jet_NDCompass extends HTMLElement {
                     this.setAttribute("course", simSelectedTrack.toString());
                     this.setAttribute("course_deviation", deviation.toString());
 
-                    let beacon = this.gps.radioNav.getBestILSBeacon();
+                    let hasNav = SimVar.GetSimVarValue("NAV HAS NAV:1", "Bool");
+                    let hasLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:1", "Bool");
+                    let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
+                    console.log("onGround?: " + onGround);
 
-                    if (beacon.id > 0) {
+                    if (hasNav && hasLoc && !onGround) {
                         displayCourseDeviation = true;
-                        let deviation = (SimVar.GetSimVarValue("NAV CDI:" + beacon.id, "number") / 127);
+
+                        let course = SimVar.GetSimVarValue("NAV LOCALIZER:1", "degree");
+
+                        let deviation = (SimVar.GetSimVarValue("NAV CDI:1", "number") / 127);
                         let backCourse = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "bool");
                         if (backCourse)
                             deviation = -deviation;
-                        this.setAttribute("ghost_needle_course", beacon.course.toString());
+                        this.setAttribute("ghost_needle_course", course.toString());
                         this.setAttribute("ghost_needle_deviation", deviation.toString());
                         this.ghostNeedleGroup.setAttribute("visibility", "visible");
                     }
@@ -502,8 +508,6 @@ class Jet_NDCompass extends HTMLElement {
                         this.setAttribute("ghost_needle_deviation", "0");
                         this.ghostNeedleGroup.setAttribute("visibility", "hidden");
                     }
-                   
-
                 }
                 this.setAttribute("display_course_deviation", displayCourseDeviation ? "True" : "False");
                 this.setAttribute("display_vertical_deviation", displayVerticalDeviation ? "True" : "False");
@@ -682,7 +686,7 @@ class Jet_NDCompass extends HTMLElement {
                         this.courseDeviation.setAttribute("transform", "translate(" + (Math.min(Math.max(parseFloat(newValue), -1), 1) * 20 * factor) + ")");
                 }
                 break;
-                case "ghost_needle_course":
+            case "ghost_needle_course":
                 if (this.ghostNeedleGroup) {
                     this.ghostNeedleGroup.setAttribute("transform", "rotate(" + (newValue) + " " + (50 * factor) + " " + (50 * factor) + ")");
                 }
