@@ -628,10 +628,81 @@ class AS3000_TSC_DirectTo extends NavSystemTouch_DirectTo {
     }
 }
 class AS3000_TSC_ActiveFPL extends NavSystemTouch_ActiveFPL {
-    init(_root) {
-        super.init(_root);
+    init(root) {
+        this.directToButton = this.gps.getChildById("AFPL_Drct");
+        this.flightPlanDiv = this.gps.getChildById("flightPlan");
+        this.waypointsBody = this.gps.getChildById("AFPL_WaypointsBody");
+        this.fplName = this.gps.getChildById("AFPL_Name");
+        this.origin = this.gps.getChildById("AFPL_Origin");
+        this.origin_mainText = this.origin.getElementsByClassName("mainText")[0];
+        this.origin_mainValue = this.origin.getElementsByClassName("mainValue")[0];
+        this.origin_wayPoint.base = this.gps.getChildById("AFPL_OriginWaypoint");
+        this.origin_wayPoint.identButton = this.origin_wayPoint.base.getElementsByClassName("gradientButton")[0];
+        this.origin_wayPoint.identButton_Ident = this.origin_wayPoint.identButton.getElementsByClassName("mainValue")[0];
+        this.origin_wayPoint.identButton_Name = this.origin_wayPoint.identButton.getElementsByClassName("title")[0];
+        this.origin_wayPoint.identButton_Logo = this.origin_wayPoint.identButton.getElementsByClassName("symbol")[0];
+        this.origin_wayPoint.index = 0;
+        this.enRoute = this.gps.getChildById("AFPL_EnRoute");
+        this.enRouteAdd = this.gps.getChildById("AFPL_EnRouteAdd");
+        this.destination = this.gps.getChildById("AFPL_Destination");
+        this.destination_mainText = this.destination.getElementsByClassName("mainText")[0];
+        this.destination_mainValue = this.destination.getElementsByClassName("mainValue")[0];
+        this.destination_wayPoint.base = this.gps.getChildById("AFPL_DestinationWaypoint");
+        this.destination_wayPoint.identButton = this.destination_wayPoint.base.getElementsByClassName("gradientButton")[0];
+        this.destination_wayPoint.identButton_Ident = this.destination_wayPoint.identButton.getElementsByClassName("mainValue")[0];
+        this.destination_wayPoint.identButton_Name = this.destination_wayPoint.identButton.getElementsByClassName("title")[0];
+        this.destination_wayPoint.identButton_Logo = this.destination_wayPoint.identButton.getElementsByClassName("symbol")[0];
+        this.destination_wayPoint.altButton = this.destination_wayPoint.base.getElementsByClassName("gradientButton")[1];
+        this.destination_wayPoint.altButton_Value = this.destination_wayPoint.altButton.getElementsByClassName("mainValue")[0];
+        this.destination_wayPoint.distance = this.destination_wayPoint.base.getElementsByClassName("DIS")[0];
+        this.destination_wayPoint.dtk = this.destination_wayPoint.base.getElementsByClassName("DTK")[0];
+        this.approach = this.gps.getChildById("AFPL_Approach");
+        this.approach_mainText = this.approach.getElementsByClassName("mainText")[0];
+        this.approach_mainValue = this.approach.getElementsByClassName("mainValue")[0];
+        this.CurrentLegArrow = this.gps.getChildById("CurrentLegArrow");
+        this.insertBefore_Button = this.gps.getChildById("AFPL_InsertBefore_Button");
+        this.insertAfter_Button = this.gps.getChildById("AFPL_InsertAfter_Button");
+        this.drct_Button = this.gps.getChildById("AFPL_Drct_Button");
+        this.activateLegTo_Button = this.gps.getChildById("AFPL_ActivateLegTo_Button");
+        this.removeWaypoint_Button = this.gps.getChildById("AFPL_RemoveWaypoint_Button");
+        this.AFPL_EnRouteAdd = this.gps.getChildById("AFPL_EnRouteAdd");
+        this.AddEnrouteButton = this.gps.getChildById("AddEnrouteButton");
+        this.AddEnrouteDone = this.gps.getChildById("AddEnrouteDone");
+        this.selectOriginAirportButton = this.gps.getChildById("AFPL_SelectOrigin_Button");
+        this.selectDestinationAirportButton = this.gps.getChildById("AFPL_SelectDest_Button");
+        this.altitudeKeyboard = new NavSystemElementContainer("Altitude Keyboard", "altitudeKeyboard", new NavSystemTouch_AltitudeKeyboard());
+        this.altitudeKeyboard.setGPS(this.gps);
+        this.gps.makeButton(this.directToButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Direct To"));
+        this.gps.makeButton(this.origin, this.originClick.bind(this));
+        this.gps.makeButton(this.origin_wayPoint.identButton, this.originWaypointClick.bind(this));
+        this.gps.makeButton(this.destination, this.destinationClick.bind(this));
+        this.gps.makeButton(this.destination_wayPoint.identButton, this.destinationWaypointClick.bind(this));
+        this.gps.makeButton(this.destination_wayPoint.altButton, this.editAltitude.bind(this, 0, 4));
+        this.gps.makeButton(this.insertBefore_Button, this.insertBefore.bind(this));
+        this.gps.makeButton(this.insertAfter_Button, this.insertAfter.bind(this));
+        this.gps.makeButton(this.drct_Button, this.directTo.bind(this));
+        this.gps.makeButton(this.activateLegTo_Button, this.activateLegTo.bind(this));
+        this.gps.makeButton(this.removeWaypoint_Button, this.removeWaypoint.bind(this));
+        this.gps.makeButton(this.AddEnrouteButton, this.addEnroute.bind(this));
+        this.gps.makeButton(this.AddEnrouteDone, this.enrouteDone.bind(this));
+        this.gps.makeButton(this.selectOriginAirportButton, this.selectOrigin.bind(this));
+        this.gps.makeButton(this.selectDestinationAirportButton, this.selectDestination.bind(this));
+
         this.altitudeKeyboard.element = new AS3000_TSC_AltitudeKeyboard();
+
+        this.scrollController = new WT_TouchScrollController(this.waypointsBody, 2000, 0, 5);
     }
+
+    onUpdate(_deltaTime) {
+        this.scrollController.update();
+        this._t++;
+        if (this._t > 30) {
+            this.gps.currFlightPlanManager.updateFlightPlan(this.updateDisplay.bind(this));
+            this._t = 0;
+        }
+        this.updateDisplay();
+    }
+
     onEnter() {
         super.onEnter();
         this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
@@ -639,6 +710,7 @@ class AS3000_TSC_ActiveFPL extends NavSystemTouch_ActiveFPL {
         this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
         this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
     }
+
     onExit() {
         super.onExit();
         this.gps.deactivateNavButton(1, false);
@@ -646,8 +718,195 @@ class AS3000_TSC_ActiveFPL extends NavSystemTouch_ActiveFPL {
         this.gps.deactivateNavButton(5, false);
         this.gps.deactivateNavButton(6, false);
     }
+
     back() {
         this.gps.goBack();
+    }
+
+    scrollUp() {
+        if (this.currentMenu == 1) {
+            // right-side waypoint menu open and set to non-origin/dest waypoint
+            if (this.selectedWaypoint == 0) {
+                // current selected waypoint is the first waypoint in its phase
+                let ok = false;
+                let length;
+                this.unselectLastButton();
+                do {
+                    switch (this.selectedGroup) {
+                        case 0:
+                            // origin waypoint selected; can't scroll up any further, so reselect origin waypoint.
+                        case 1:
+                            // first dep waypoint selected, so now select origin waypoint
+                            this.selectedGroup = 0;
+                            this.selectedWaypoint = 0;
+                            this.selectedElement = this.origin_wayPoint;
+                            this.origin_wayPoint.identButton.setAttribute("state", "SelectedWP");
+                            ok = true;
+                            break;
+                        case 2:
+                            // first enr waypoint selected, so now attempt to select the last dep waypoint
+                            this.selectedGroup = 1;
+                            length = this.gps.currFlightPlanManager.getDepartureWaypointsMap().length;
+                            if (length > 0) {
+                                this.selectedWaypoint = length - 1;
+                                this.selectedElement = this.departureWaypoints[this.selectedWaypoint];
+                                this.departureWaypoints[this.selectedWaypoint].identButton.setAttribute("state", "SelectedWP");
+                                ok = true;
+                            }
+                            break;
+                        case 3:
+                            // first arr waypoint selected, so now attempt to select the last enr waypoint
+                            this.selectedGroup = 2;
+                            length = this.gps.currFlightPlanManager.getEnRouteWaypoints().length;
+                            if (length > 0) {
+                                this.selectedWaypoint = length - 1;
+                                this.selectedElement = this.enRouteWaypoints[this.selectedWaypoint];
+                                this.enRouteWaypoints[this.selectedWaypoint].identButton.setAttribute("state", "SelectedWP");
+                                ok = true;
+                            }
+                            break;
+                        case 4:
+                            // dest waypoint selected, so now attempt to select the last arr waypoint
+                            this.selectedGroup = 3;
+                            length = this.gps.currFlightPlanManager.getArrivalWaypointsMap().length;
+                            if (length > 0) {
+                                this.selectedWaypoint = length - 1;
+                                this.selectedElement = this.arrivalWaypoints[this.selectedWaypoint];
+                                this.arrivalWaypoints[this.selectedWaypoint].identButton.setAttribute("state", "SelectedWP");
+                                ok = true;
+                            }
+                            break;
+                        case 5:
+                            // first appr waypoint selected, so now attempt to select dest waypoint
+                            this.selectedGroup = 4;
+                            if (this.gps.currFlightPlanManager.getDestination()) {
+                                this.selectedWaypoint = 0;
+                                this.selectedElement = this.destination_wayPoint;
+                                this.destination_wayPoint.identButton.setAttribute("state", "SelectedWP");
+                                ok = true;
+                            }
+                            break;
+                    }
+                } while (!ok);
+            } else {
+                this.unselectLastButton();
+                this.selectedWaypoint--;
+                switch (this.selectedGroup) {
+                    case 1:
+                        this.selectedElement = this.departureWaypoints[this.selectedWaypoint];
+                        this.departureWaypoints[this.selectedWaypoint].identButton.setAttribute("state", "SelectedWP");
+                        break;
+                    case 2:
+                        this.selectedElement = this.enRouteWaypoints[this.selectedWaypoint];
+                        this.enRouteWaypoints[this.selectedWaypoint].identButton.setAttribute("state", "SelectedWP");
+                        break;
+                    case 3:
+                        this.selectedElement = this.arrivalWaypoints[this.selectedWaypoint];
+                        this.arrivalWaypoints[this.selectedWaypoint].identButton.setAttribute("state", "SelectedWP");
+                        break;
+                    case 5:
+                        this.selectedElement = this.approachWaypoints[this.selectedWaypoint];
+                        this.approachWaypoints[this.selectedWaypoint].identButton.setAttribute("state", "SelectedWP");
+                        break;
+                }
+            }
+            this.updateMenu();
+            this.scrollController.scrollToElement(this.selectedElement.identButton);
+        } else {
+            this.scrollController.scrollUp();
+        }
+    }
+
+    scrollDown() {
+        if (this.currentMenu == 1) {
+            // right-side waypoint menu open and set to non-origin/dest waypoint
+            let isOk = false;
+            let length;
+            this.unselectLastButton();
+
+            switch (this.selectedGroup) {
+                case 0:
+                    // origin waypoint selected, so now attempt to select first dep waypoint.
+                    if (this.gps.currFlightPlanManager.getDepartureWaypointsMap().length > 0) {
+                        this.selectedGroup = 1;
+                        this.selectedWaypoint = 0;
+                        this.selectedElement = this.departureWaypoints[0];
+                        break;
+                    }
+                case 1:
+                    // dep waypoint selected.
+                    length = this.gps.currFlightPlanManager.getDepartureWaypointsMap().length;
+                    if (this.selectedWaypoint >= length - 1) {
+                        if (this.gps.currFlightPlanManager.getEnRouteWaypoints().length > 0) {
+                            this.selectedGroup = 2;
+                            this.selectedWaypoint = 0;
+                            this.selectedElement = this.enRouteWaypoints[0];
+                            break;
+                        }
+                    } else {
+                        this.selectedGroup = 1;
+                        this.selectedWaypoint++;
+                        this.selectedElement = this.departureWaypoints[this.selectedWaypoint];
+                        break;
+                    }
+                case 2:
+                    // enr waypoint selected.
+                    length = this.gps.currFlightPlanManager.getEnRouteWaypoints().length;
+                    if (this.selectedWaypoint >= length - 1) {
+                        if (this.gps.currFlightPlanManager.getArrivalWaypointsMap().length > 0) {
+                            this.selectedGroup = 3
+                            this.selectedWaypoint = 0;
+                            this.selectedElement = this.arrivalWaypoints[0];
+                            break;
+                        }
+                    } else {
+                        this.selectedGroup = 2;
+                        this.selectedWaypoint++;
+                        this.selectedElement = this.enRouteWaypoints[this.selectedWaypoint];
+                        break;
+                    }
+                case 3:
+                    // arr waypoint selected.
+                    length = this.gps.currFlightPlanManager.getArrivalWaypointsMap().length;
+                    if (this.selectedWaypoint >= length - 1) {
+                        if (this.gps.currFlightPlanManager.getDestination()) {
+                            this.selectedGroup = 4;
+                            this.selectedWaypoint = 0;
+                            this.selectedElement = this.destination_wayPoint;
+                            break;
+                        }
+                    } else {
+                        this.selectedGroup = 3;
+                        this.selectedWaypoint++;
+                        this.selectedElement = this.arrivalWaypoints[this.selectedWaypoint];
+                        break;
+                    }
+                case 4:
+                    // dest waypoint selected.
+                    length = this.gps.currFlightPlanManager.getApproachWaypoints().length;
+                    if (length > 0) {
+                        this.selectedGroup = 5;
+                        this.selectedWaypoint = 0;
+                        this.selectedElement = this.approachWaypoints[0];
+                        break;
+                    }
+                case 5:
+                    // appr waypoint selected.
+                    length = this.gps.currFlightPlanManager.getApproachWaypoints().length;
+                    if (this.selectedWaypoint < length - 1) {
+                        this.selectedGroup = 5;
+                        this.selectedWaypoint++;
+                        this.selectedElement = this.approachWaypoints[this.selectedWaypoint];
+                    }
+            }
+
+            this.selectedElement.identButton.setAttribute("state", "SelectedWP");
+
+            this.scrollController.scrollToElement(this.selectedElement.identButton);
+            this.updateMenu();
+        } else {
+            this.scrollController.scrollDown();
+        }
     }
 }
 class AS3000_TSC_Procedures extends NavSystemTouch_Procedures {
