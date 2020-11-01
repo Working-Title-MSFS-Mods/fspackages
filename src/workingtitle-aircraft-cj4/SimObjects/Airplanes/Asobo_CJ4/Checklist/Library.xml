@@ -38,7 +38,7 @@
             <Instrument Id="LIGHTING_SWITCH_Light_Navigation"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_LANDING_LIGHTS">
-            <CheckpointDesc SubjectTT="LANDING LIGHTS button" ExpectationTT="As required"/>
+            <CheckpointDesc SubjectTT="Landing lights button" ExpectationTT="As required"/>
             <ForceCamera name="Instrument03"/>
             <Instrument Id="LIGHTING_SWITCH_Light_Landing"/>
         </Checkpoint>
@@ -53,7 +53,7 @@
             <Instrument Id="LIGHTING_Push_Light_Logo"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_DIMMING_KNOB_SET">
-            <CheckpointDesc SubjectTT="Dimming PANEL Knob" ExpectationTT="As desired"/>
+            <CheckpointDesc SubjectTT="Dimming panel Knob" ExpectationTT="As desired"/>
             <ForceCamera name="Instrument03"/>
             <Instrument Id="LIGHTING_KNOB_MASTER"/>
         </Checkpoint>
@@ -61,7 +61,7 @@
             <ForceCamera name="Instrument05"/>
             <CheckpointDesc SubjectTT="Lights" ExpectationTT="On/Check/Off"/>
             <Clue name="Exterior lights, Passenger/safety lights, Emergency lights, Glareshield ice detect lights"/>
-            <!-- 
+            <!--
                 <Instrument Id="LIGHTING_SWITCH_Light_Landing"/>
                 <Instrument Id="LIGHTING_Push_Light_Strobe"/>
                 <Instrument Id="LIGHTING_PUSH_LIGHT_SAFETY"/>
@@ -153,7 +153,7 @@
         <!-- ELECTRICAL SYSTEMS -->
         <!--  -->
         <Checkpoint Id="CJ4_BATTERY_SWITCH_OFF">
-            <CheckpointDesc SubjectTT="BATTERY switch" ExpectationTT="OFF"/>
+            <CheckpointDesc SubjectTT="Battery switch" ExpectationTT="OFF"/>
             <ForceCamera name="Instrument02"/>
             <Test>
                 <TestValue>
@@ -165,7 +165,7 @@
             </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_BATTERY_SWITCH_ON">
-            <CheckpointDesc SubjectTT="BATTERY switch" ExpectationTT="ON"/>
+            <CheckpointDesc SubjectTT="Battery switch" ExpectationTT="ON"/>
             <Clue name="STBY FLT DISPLAY Switch amber light extinguished"/>
             <ForceCamera name="Instrument02"/>
             <Test>
@@ -179,7 +179,7 @@
             </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_BATTERY_SWITCH_EMER">
-            <CheckpointDesc SubjectTT="BATTERY switch" ExpectationTT="EMER"/>
+            <CheckpointDesc SubjectTT="Battery switch" ExpectationTT="EMER"/>
             <Clue name="Verify emergency bus items"/>
             <ForceCamera name="Instrument02"/>
             <Feedback name="Verify emergency bus items. %.1f" DurationTimer="True"/>
@@ -198,15 +198,15 @@
             </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_EMERGENCY_LIGHTS_SWITCH_ARMED">
-            <CheckpointDesc SubjectTT="EMERGENCY LIGHTS switch" ExpectationTT="ARMED"/>
+            <CheckpointDesc SubjectTT="Emergency lights switch" ExpectationTT="ARMED"/>
             <ForceCamera name="Instrument02"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_STANDBY_FLIGHT_DISPLAY_SWITCH_ON">
-            <CheckpointDesc SubjectTT="STANDBY FLIGHT DISPLAY switch" ExpectationTT="ON"/>
+            <CheckpointDesc SubjectTT="Standby flight display switch" ExpectationTT="ON"/>
             <ForceCamera name="Instrument02"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_AVIONICS_SWITCH_ON">
-            <CheckpointDesc SubjectTT="AVIONICS switch" ExpectationTT="ON"/>
+            <CheckpointDesc SubjectTT="Avionics switch" ExpectationTT="ON"/>
             <ForceCamera name="Instrument02"/>
             <Test>
                 <TestValue>
@@ -219,7 +219,7 @@
             </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_AVIONICS_SWITCH_OFF">
-            <CheckpointDesc SubjectTT="AVIONICS switch" ExpectationTT="OFF"/>
+            <CheckpointDesc SubjectTT="Avionics switch" ExpectationTT="OFF"/>
             <ForceCamera name="Instrument02"/>
             <Test>
                 <TestValue>
@@ -234,7 +234,7 @@
             </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_AVIONICS_SWITCH_DISPATCH">
-            <CheckpointDesc SubjectTT="AVIONICS switch" ExpectationTT="DISPATCH"/>
+            <CheckpointDesc SubjectTT="Avionics switch" ExpectationTT="DISPATCH"/>
             <ForceCamera name="Instrument02"/>
             <Test>
                 <TestValue>
@@ -247,11 +247,11 @@
             </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_EMERGENCY_LIGHTS_SWITCH_OFF">
-            <CheckpointDesc SubjectTT="EMERGENCY LIGHTS switch" ExpectationTT="OFF"/>
+            <CheckpointDesc SubjectTT="Emergency lights switch" ExpectationTT="OFF"/>
             <ForceCamera name="Instrument02"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_STANDBY_FLIGHT_DISPLAY_SWITCH_OFF">
-            <CheckpointDesc SubjectTT="STANDBY FLIGHT DISPLAY switch" ExpectationTT="ON"/>
+            <CheckpointDesc SubjectTT="Standby flight display switch" ExpectationTT="ON"/>
             <ForceCamera name="Instrument02"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_ELECTRICAL_SYSTEM_CHECK">
@@ -259,7 +259,7 @@
             <Clue name="If both engines running"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_ELECTRICAL_SWITCHES_ALL_OFF">
-            <CheckpointDesc SubjectTT="ELECTRICAL POWER Panel Switches (all)" ExpectationTT="OFF"/>
+            <CheckpointDesc SubjectTT="Electrical power panel switches (all)" ExpectationTT="OFF"/>
             <ForceCamera name="Instrument02"/>
             <Sequence SeqType="Unordered">
                 <Test>
@@ -284,18 +284,18 @@
             </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_INT_MASTER_ON">
-            <CheckpointDesc SubjectTT="INT MASTER Button" ExpectationTT="NORM"/>
+            <CheckpointDesc SubjectTT="Int master Button" ExpectationTT="NORM"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_DISC_TEST_1">
-            <CheckpointDesc SubjectTT="BATT DISC Button" ExpectationTT="DISC"/>
+            <CheckpointDesc SubjectTT="Batt disc Button" ExpectationTT="DISC"/>
             <Clue name="No displays powered&#xA;(External power MUST be disconnected)"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_DISC_TEST_2">
-            <CheckpointDesc SubjectTT="BATT DISC Button" ExpectationTT="NORM"/>
+            <CheckpointDesc SubjectTT="Batt disc Button" ExpectationTT="NORM"/>
             <Clue name="Minimum BATT VOLT 24&#xA;(External power MUST be disconnected)"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_PRESSURE_SOURCE_NORM">
-            <CheckpointDesc SubjectTT="PRESSURIZATION SOURCE Selector" ExpectationTT="NORM"/>
+            <CheckpointDesc SubjectTT="Pressurization source Selector" ExpectationTT="NORM"/>
             <ForceCamera name="Instrument02"/>
             <Test>
                 <TestValue>
@@ -304,18 +304,13 @@
                 <Instrument Id="KNOB_PRESSSOURCE"/>
             </Test>
         </Checkpoint>
-        <Checkpoint Id="CJ4_STBY_FLT_DISPLAY_TEST">
-            <CheckpointDesc SubjectTT="STBY FLT DISPLAY Switch" ExpectationTT="TEST"/>
+        <Checkpoint Id="CJ4_STBY_FLT_DISPLAY_TEST_ON">
+            <CheckpointDesc SubjectTT="Standby flight display switch" ExpectationTT="TEST/ON"/>
             <Clue name="Cyan light illuminated"/>
             <ForceCamera name="Instrument02"/>
         </Checkpoint>
-        <Checkpoint Id="CJ4_STBY_FLT_DISPLAY_ON">
-            <CheckpointDesc SubjectTT="STBY FLT DISPLAY Switch" ExpectationTT="ON"/>
-            <Clue name="Amber light illuminated"/>
-            <ForceCamera name="Instrument02"/>
-        </Checkpoint>
         <Checkpoint Id="CJ4_GENERATORS_ON">
-            <CheckpointDesc SubjectTT="GEN Switches (both)" ExpectationTT="ON"/>
+            <CheckpointDesc SubjectTT="Gen Switches (both)" ExpectationTT="ON"/>
             <Sequence SeqType="Unordered">
                 <Test>
                     <TestValue>
@@ -386,7 +381,7 @@
             </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_ENGINE_ONLY_ANTI_ICE_ASREQUIRED">
-            <CheckpointDesc SubjectTT="ENGINE ONLY ANTI-ICE buttons" ExpectationTT="As required"/>
+            <CheckpointDesc SubjectTT="Engine only anti-ice buttons" ExpectationTT="As required"/>
             <ForceCamera name="Instrument02"/>
             <Instrument Id="DEICE_ENGINE"/>
         </Checkpoint>
@@ -428,7 +423,7 @@
         </Checkpoint>
         <Checkpoint Id="CJ4_PITOT_TEST">
             <ForceCamera name="Instrument02"/>
-            <CheckpointDesc SubjectTT="PITOT/STATIC HEAT Buttons (both)" ExpectationTT="On/CAS Message Clears then After 30 Seconds, Off"/>
+            <CheckpointDesc SubjectTT="Pitot/static heat buttons (both)" ExpectationTT="On/CAS Message Clears then After 30 Seconds, Off"/>
             <Feedback name="Turn OFF after %.1f seconds" DurationTimer="True"/>
             <Sequence SeqType="Ordered">
                 <Test>
@@ -465,7 +460,7 @@
             </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_ENGINES_SHUTDOWN">
-            <CheckpointDesc SubjectTT="ENGINE RUN/STOP buttons" ExpectationTT="STOP"/>
+            <CheckpointDesc SubjectTT="Engine run/stop buttons" ExpectationTT="STOP"/>
             <ForceCamera name="Instrument05"/>
             <Sequence SeqType="Unordered">
                 <Test>
@@ -624,7 +619,7 @@
             <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_ENGINE2_STARTER_BUTTON_PUSH">
-            <CheckpointDesc SubjectTT="ENGINE STARTER button" ExpectationTT="Push"/>
+            <CheckpointDesc SubjectTT="Engine starter button" ExpectationTT="Push"/>
             <Clue name="Verify button illuminates"/>
             <ForceCamera name="Instrument06"/>
             <Test>
@@ -639,7 +634,7 @@
             </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_ENGINE1_STARTER_BUTTON_PUSH">
-            <CheckpointDesc SubjectTT="ENGINE STARTER button" ExpectationTT="Push"/>
+            <CheckpointDesc SubjectTT="Engine starter button" ExpectationTT="Push"/>
             <Clue name="Verify button illuminates"/>
             <ForceCamera name="Instrument06"/>
             <Test>
@@ -653,7 +648,7 @@
             </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_ENGINE2_RUN_STOP_BUTTON_RUN">
-            <CheckpointDesc SubjectTT="ENGINE RUN/STOP button" ExpectationTT="RUN"/>
+            <CheckpointDesc SubjectTT="Engine run/stop button" ExpectationTT="RUN"/>
             <ForceCamera name="Instrument05"/>
             <Test>
                 <TestValue>
@@ -669,7 +664,7 @@
             </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_ENGINE1_RUN_STOP_BUTTON_RUN">
-            <CheckpointDesc SubjectTT="ENGINE RUN/STOP button" ExpectationTT="RUN"/>
+            <CheckpointDesc SubjectTT="Engine run/stop button" ExpectationTT="RUN"/>
             <ForceCamera name="Instrument05"/>
             <Test>
                 <TestValue>
@@ -1011,7 +1006,7 @@
             <Clue name="Towing airplane with control lock engaged may damage nosewheel steering mechanism"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_CONTROL_LOCK_RELEASE">
-            <CheckpointDesc SubjectTT="CTRL LOCK Handle" ExpectationTT="Released"/>
+            <CheckpointDesc SubjectTT="Ctrl lock handle" ExpectationTT="Released"/>
             <ForceCamera name="Instrument04"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_AILERON_TRIM_NEUTRAL">
@@ -1089,13 +1084,13 @@
             <CheckpointDesc SubjectTT="Cleared/ready for takeoff" ExpectationTT="Check"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_PASSENGER_LIGHTS_ASREQUIRED">
-            <CheckpointDesc SubjectTT="PASS LIGHTS buttons" ExpectationTT="As required"/>
+            <CheckpointDesc SubjectTT="Pass lights buttons" ExpectationTT="As required"/>
             <ForceCamera name="Instrument03"/>
             <Instrument Id="LIGHTING_PUSH_LIGHT_SEATBELT"/>
             <Instrument Id="LIGHTING_PUSH_LIGHT_SAFETY"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_PASSENGER_LIGHTS_SAFETY_ON">
-            <CheckpointDesc SubjectTT="PASS LIGHTS SAFETY button" ExpectationTT="ON"/>
+            <CheckpointDesc SubjectTT="Pass lights safety button" ExpectationTT="ON"/>
             <ForceCamera name="Instrument03"/>
             <!-- <Test>
                 <TestValue>
@@ -1174,7 +1169,7 @@
             <Clue name="As required in AFM Section II, Operating Limitations, or applicable AFM supplement"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_CHECK_AUX_GEAR_HANDLE">
-            <CheckpointDesc SubjectTT="AUXILIARY GEAR CONTROL Handle" ExpectationTT="Stowed"/>
+            <CheckpointDesc SubjectTT="Auxiliary gear control Handle" ExpectationTT="Stowed"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_CHECK_EXTINGUISHER">
             <CheckpointDesc SubjectTT="Portable Fire Extinguisher" ExpectationTT="Serviced/Secure *"/>
@@ -1273,7 +1268,7 @@
             <CheckpointDesc SubjectTT="Avionics/Flight instruments" ExpectationTT="Check"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_PITCH_ALTITUDE_GOAROUND">
-            <CheckpointDesc SubjectTT="PITCH ALTITUDE" ExpectationTT="7.5 deg, then as requied"/>
+            <CheckpointDesc SubjectTT="Pitch altitude" ExpectationTT="7.5 deg, then as requied"/>
             <Clue name="Use flight director GA mode"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_TAKEOFF_DATA_CHECK">
@@ -1334,7 +1329,7 @@
             <Instrument Id="AUTOPILOT_KNOB_BARO3"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_TCAS">
-            <CheckpointDesc SubjectTT="Tcas" ExpectationTT="TA/RA"/>
+            <CheckpointDesc SubjectTT="TCAS" ExpectationTT="TA/RA"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_RADAR_ASREQUIRED">
             <CheckpointDesc SubjectTT="Radar" ExpectationTT="As Required"/>
@@ -1360,7 +1355,7 @@
         </Checkpoint>
         <Checkpoint Id="CJ4_CHECK_BATT_VOLT">
             <ForceCamera name="Instrument01"/>
-            <CheckpointDesc SubjectTT="BATT VOLT (If External Power is re-connected)" ExpectationTT="28-29 Volts"/>
+            <CheckpointDesc SubjectTT="Batt volt (If External Power is re-connected)" ExpectationTT="28-29 Volts"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_CHECK_FUELQTY">
             <CheckpointDesc SubjectTT="Fuel Quantity" ExpectationTT="As Required/Balanced"/>
@@ -1399,7 +1394,7 @@
             </Sequence>
         </Checkpoint>
         <Checkpoint Id="CJ4_CLIMATE_CONTROL_SELECTOR_OFF">
-            <CheckpointDesc SubjectTT="CLIMATE CONTROL selector" ExpectationTT="OFF"/>
+            <CheckpointDesc SubjectTT="Climate control selector" ExpectationTT="OFF"/>
             <ForceCamera name="Instrument02"/>
             <Test>
                 <TestValue>
@@ -1409,12 +1404,12 @@
             </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_CLIMATE_CONTROL_SELECTOR_ASDESIRED">
-            <CheckpointDesc SubjectTT="CLIMATE CONTROL selector" ExpectationTT="As desired"/>
+            <CheckpointDesc SubjectTT="Climate control selector" ExpectationTT="As desired"/>
             <ForceCamera name="Instrument02"/>
             <Instrument Id="PASSENGER_KNOB_CLIMATECONTROL_1"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_CLIMATE_CONTROL_SELECTOR_NORM">
-            <CheckpointDesc SubjectTT="CLIMATE CONTROL selector" ExpectationTT="NORM"/>
+            <CheckpointDesc SubjectTT="Climate control selector" ExpectationTT="NORM"/>
             <Clue name="For single-engine operation, selecting CLIMATE CONTROL to NORM or COMP ON may cause a generator overcurrent if the battery charging amps are greater than 100"/>
             <ForceCamera name="Instrument02"/>
             <Test>
@@ -1488,7 +1483,7 @@
             <CheckpointDesc SubjectTT="Avionics" ExpectationTT="Check/Set"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_OXYGEN_SUPPLY_PUSH">
-            <CheckpointDesc SubjectTT="OXYGEN SUPPLY Handle" ExpectationTT="PUSH"/>
+            <CheckpointDesc SubjectTT="Oxygen supply handle" ExpectationTT="PUSH"/>
             <ForceCamera name="Instrument02"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_CHECK_OXYGEN_PRESSURE">
@@ -1505,7 +1500,7 @@
             <ForceCamera name="Instrument01"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_PRESSURE_DUMP_OFF">
-            <CheckpointDesc SubjectTT="CABIN PRESSURE DUMP Button" ExpectationTT="OFF"/>
+            <CheckpointDesc SubjectTT="Cabin pressure dump button" ExpectationTT="OFF"/>
             <ForceCamera name="Instrument02"/>
             <Test>
                 <TestValue>
@@ -1517,11 +1512,11 @@
             </Test>
         </Checkpoint>
         <Checkpoint Id="CJ4_OXYGEN_MASK_MIC_TEST">
-            <CheckpointDesc SubjectTT="OXYGEN MASK MIC Buttons" ExpectationTT="Verify Operation"/>
+            <CheckpointDesc SubjectTT="Oxygen mask mic buttons" ExpectationTT="Verify Operation"/>
             <ForceCamera name="Instrument02"/>
         </Checkpoint>
         <Checkpoint Id="CJ4_OXYGEN_CONTROL_SELECTOR_NORM">
-            <CheckpointDesc SubjectTT="OXYGEN CONTROL Selector" ExpectationTT="NORM"/>
+            <CheckpointDesc SubjectTT="Oxygen control selector" ExpectationTT="NORM"/>
             <ForceCamera name="Instrument02"/>
         </Checkpoint>
     </Checklist.CheckpointLibrary>
