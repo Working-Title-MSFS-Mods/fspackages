@@ -75,6 +75,20 @@ class ManagedFlightPlan {
     return waypoints;
   }
 
+  /** The non-approach waypoints of the flight plan. */
+  get nonApproachWaypoints() { 
+    const waypoints = [];
+    if (this.originAirfield) {
+      waypoints.push(this.originAirfield);
+    }
+
+    for (var segment of this._segments.filter(s => s.type < FlightPlanSegment.Approach)) {
+      waypoints.push(...segment.waypoints);
+    }
+
+    return waypoints;
+  }
+
   /** Whether the flight plan has an origin airfield. */
   get hasOrigin() { return this.originAirfield; }
 
@@ -134,10 +148,11 @@ class ManagedFlightPlan {
   /**
    * Adds a waypoint to the flight plan.
    * @param {WayPoint} waypoint The waypoint to add.
-   * @param {Number} index The index to add the waypoint at. If ommitted the waypoint will 
+   * @param {Number} index The index to add the waypoint at. If ommitted the waypoint will
    * be appended to the end of the flight plan.
+   * @param {Number} segmentType The type of segment to add the waypoint to.
    */
-  addWaypoint(waypoint, index) {
+  addWaypoint(waypoint, index, segmentType) {
 
     const mappedWaypoint = (waypoint instanceof WayPoint) ? waypoint : RawDataMapper.toWaypoint(waypoint, this._parentInstrument);
     if (mappedWaypoint.type === 'A' && index === 0) {
@@ -152,7 +167,9 @@ class ManagedFlightPlan {
       this.length++;
     }
     else {
-      const segment = this.findSegmentByWaypointIndex(index);
+      const segment = segmentType !== undefined
+        ? this.getSegment(segmentType)
+        : this.findSegmentByWaypointIndex(index);
 
       if (segment) {
 
@@ -219,6 +236,14 @@ class ManagedFlightPlan {
    * @param {Number} index The index of the waypoint to get.
    */
   getWaypoint(index) {
+    if (this.originAirfield && index === 0) {
+      return this.originAirfield;
+    }
+
+    if (this.destinationAirfield && index === this.length - 1) {
+      return this.destinationAirfield;
+    }
+
     const segment = this.findSegmentByWaypointIndex(index);
     if (segment) {
       return segment.waypoints[index - segment.offset];
@@ -280,8 +305,8 @@ class ManagedFlightPlan {
    */
   findSegmentByWaypointIndex(index) {
     for (var i = 0; i < this._segments.length; i++) {
-      if (this._segments[i].offset <= index) {
-        return this._segments[i];
+      if (this._segments[i].offset > index) {
+        return this._segments[Math.max(0, i - 1)];
       }
     }
   }
@@ -536,7 +561,7 @@ class ManagedFlightPlan {
 
         let waypointIndex = segment.offset;
         while (procedure.hasNext()) {
-          this.addWaypoint(await procedure.getNext(), ++waypointIndex);
+          this.addWaypoint(await procedure.getNext(), ++waypointIndex, segment.type);
         }
       } 
   }
@@ -581,7 +606,7 @@ class ManagedFlightPlan {
 
       let waypointIndex = segment.offset;
       while (procedure.hasNext()) {
-        this.addWaypoint(await procedure.getNext(), ++waypointIndex);
+        this.addWaypoint(await procedure.getNext(), ++waypointIndex, segment.type);
       }
     }
   }
@@ -601,12 +626,12 @@ class ManagedFlightPlan {
       legs.push(...transition);
     }
 
-    if (approachIndex !== -1) {
+    if (approachIndex !== -1 && approachTransitionIndex === -1) {
       legs.push(...destination.infos.approaches[approachIndex].finalLegs);
     }
 
     let segment = this.approach;
-    if (segment !== FlightPlanSegment.Approach) {
+    if (segment !== FlightPlanSegment.Empty) {
       for (var i = 0; i < segment.waypoints.length; i++) {
         this.removeWaypoint(segment.offset);
       }
@@ -620,7 +645,7 @@ class ManagedFlightPlan {
 
       let waypointIndex = segment.offset;
       while (procedure.hasNext()) {
-        this.addWaypoint(await procedure.getNext(), ++waypointIndex);
+        this.addWaypoint(await procedure.getNext(), ++waypointIndex, segment.type);
       }
     }  
   }
@@ -1181,11 +1206,11 @@ class LegsProcedure {
     this._facilitiesToLoad = new Map();
 
     for (var leg of this._legs) {
-      if (leg.fixIcao.trim() !== '' && !this._facilitiesToLoad.has(leg.fixIcao)) {
+      if (leg.fixIcao.trim() !== '' && leg.fixIcao[0] !== 'R' && !this._facilitiesToLoad.has(leg.fixIcao)) {
         this._facilitiesToLoad.set(leg.fixIcao, this._instrument.facilityLoader.getFacilityRaw(leg.fixIcao, 2000));
       }
 
-      if (leg.originIcao.trim() !== '' && !this._facilitiesToLoad.has(leg.originIcao)) {
+      if (leg.originIcao.trim() !== '' && leg.originIcao[0] !== 'R' && !this._facilitiesToLoad.has(leg.originIcao)) {
         this._facilitiesToLoad.set(leg.originIcao, this._instrument.facilityLoader.getFacilityRaw(leg.originIcao, 2000));
       }
     }
@@ -1224,6 +1249,12 @@ class LegsProcedure {
         mappedLeg = this.mapDiscontinuity(this._previousFix);
         this._isDiscontinuityPending = false;
       }
+      //Some procedures don't start with 15 (initial fix) but instead start with a heading and distance from
+      //a fix: the procedure then starts with the fix exactly
+      else if (this._currentIndex === 0 && currentLeg.type === 10 && !this._addedProcedureStart) {
+        mappedLeg = this.mapExactFix(currentLeg);
+        this._addedProcedureStart = true;
+      }
       else {
         switch (currentLeg.type) {
           case 3:
@@ -1239,16 +1270,30 @@ class LegsProcedure {
             mappedLeg = this.mapHeadingUntilRadialCrossing(currentLeg, this._previousFix);
             break;
           case 9:
+          case 10:
             mappedLeg = this.mapBearingAndDistanceFromOrigin(currentLeg, this._previousFix);
             break;
           case 11:
             mappedLeg = this.mapVectors(currentLeg, this._previousFix);
             break;
-          case 7:
-          case 15:
+          case 15: {
+            const leg = this.mapExactFix(currentLeg);
+            const prevLeg = this._previousFix;
+
+            //If a type 15 (initial fix) comes up in the middle of a plan
+            if (leg.icao === prevLeg.icao && leg.infos.coordinates.lat === prevLeg.infos.coordinates.lat 
+              && leg.infos.coordinates.long === prevLeg.infos.coordinates.long) {
+              isLegMappable = false;
+            }
+            else {
+              mappedLeg = leg;
+            }
+          }
+            break;
+          case 7: 
           case 17:
           case 18:
-            mappedLeg = this.mapExactFix(currentLeg, this._previousFix);
+            mappedLeg = this.mapExactFix(currentLeg);
             break;
           case 2:
           case 19:

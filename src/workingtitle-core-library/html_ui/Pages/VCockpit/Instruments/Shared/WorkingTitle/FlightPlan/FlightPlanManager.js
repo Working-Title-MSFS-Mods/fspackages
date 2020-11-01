@@ -696,7 +696,7 @@ class FlightPlanManager {
       flightPlanIndex = this._currentFlightPlanIndex;
     }
 
-    return this._flightPlans[flightPlanIndex].waypoints;
+    return this._flightPlans[flightPlanIndex].nonApproachWaypoints;
   }
 
   /**
