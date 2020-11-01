@@ -547,6 +547,8 @@
         <Checkpoint Id="CJ4_THROTTLES_IDLE">
             <CheckpointDesc SubjectTT="Throttles" ExpectationTT="IDLE"/>
             <ForceCamera name="Instrument05"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE1"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
             <Sequence SeqType="Unordered">
                 <Test>
                     <TestValue>
@@ -570,6 +572,8 @@
         </Checkpoint>
         <Checkpoint Id="CJ4_THROTTLES_TO">
             <CheckpointDesc SubjectTT="Throttles" ExpectationTT="TO"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE1"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
             <Sequence SeqType="Unordered">
                 <!-- Is (Throttle > 90%) okay here? -->
                 <Test>
@@ -592,6 +596,8 @@
         </Checkpoint>
         <Checkpoint Id="CJ4_THROTTLES_CLB">
             <CheckpointDesc SubjectTT="Throttles" ExpectationTT="CLB"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE1"/>
+            <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
             <Sequence SeqType="Unordered">
                 <!-- Is (Throttle < 90%) okay here? -->
                 <Test>
@@ -614,7 +620,6 @@
         </Checkpoint>
         <Checkpoint Id="CJ4_THROTTLES_ASREQUIRED">
             <CheckpointDesc SubjectTT="Throttles" ExpectationTT="As required"/>
-            <ForceCamera name="Instrument05"/>
             <Instrument Id="ENGINE_LEVER_THROTTLE1"/>
             <Instrument Id="ENGINE_LEVER_THROTTLE2"/>
         </Checkpoint>
