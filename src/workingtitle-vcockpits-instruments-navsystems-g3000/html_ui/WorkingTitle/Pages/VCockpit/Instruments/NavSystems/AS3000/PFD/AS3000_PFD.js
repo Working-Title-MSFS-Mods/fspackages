@@ -72,8 +72,8 @@ class AS3000_PFD_SoftKeyHtmlElement extends SoftKeyHtmlElement {
 }
 
 class AS3000_PFD_InnerMap extends AS3000_MapElement {
-    constructor(_simVarNameID) {
-        super(_simVarNameID);
+    constructor(varNameID) {
+        super(varNameID);
         this.gpsWasInReversionaryMode = false;
         this.enabled = true;
     }
@@ -324,23 +324,24 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 
     toggleDcltr() {
         if (this.innerMap.isEnabled()) {
-            AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_DETAIL_ROOT, this.innerMap.simVarNameID, (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.innerMap.simVarNameID, "number") + 1) % 4);
+            WT_MapElement.setSyncedSettingVar(WT_MapDcltrSetting.VARNAME_ROOT_DEFAULT, this.innerMap.varNameID,
+                    (WT_MapElement.getSettingVar(WT_MapDcltrSetting.VARNAME_ROOT_DEFAULT, this.innerMap.varNameID) + 1) % AS3000_MapElement.DETAIL_DISPLAY_TEXT.length);
         }
     }
 
     dlctrStatus() {
-        return AS3000_MapElement.DETAIL_DISPLAY_TEXT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.innerMap.simVarNameID, "number")];
+        return AS3000_MapElement.DETAIL_DISPLAY_TEXT[WT_MapElement.getSettingVar(WT_MapDcltrSetting.VARNAME_ROOT_DEFAULT, this.innerMap.varNameID)];
     }
 
     toggleTerrain() {
         if (this.innerMap.isEnabled()) {
-            AS3000_MapElement.setSyncedSettingVar(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT, this.innerMap.simVarNameID,
-                    (SimVar.GetSimVarValue(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT + this.innerMap.simVarNameID, "number") + 1) % AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT.length);
+            WT_MapElement.setSyncedSettingVar(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT, this.innerMap.varNameID,
+                    (WT_MapElement.getSettingVar(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT, this.innerMap.varNameID) + 1) % AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT.length);
         }
     }
 
     terrainStatus() {
-        return AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT[SimVar.GetSimVarValue(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT + this.innerMap.simVarNameID, "number")];
+        return AS3000_MapElement.TERRAIN_MODE_DISPLAY_TEXT[WT_MapElement.getSettingVar(WT_MapTerrainModeSetting.VARNAME_ROOT_DEFAULT, this.innerMap.varNameID)];
     }
 
     toggleWX() {
