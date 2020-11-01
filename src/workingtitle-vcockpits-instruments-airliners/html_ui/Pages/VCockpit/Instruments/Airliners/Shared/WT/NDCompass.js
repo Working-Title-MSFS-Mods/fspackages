@@ -349,7 +349,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     this.selectedHeadingGroup.appendChild(this.selectedHeadingLine);
                     this.selectedHeadingBug = document.createElementNS(Avionics.SVG.NS, "path");
                     this.selectedHeadingBug.setAttribute("id", "selectedHeadingBug");
-                    this.selectedHeadingBug.setAttribute("d", "M50 " + (50 + circleRadius) + " h 22 v 18 h -7 l -15 -18 l -15 18 h -7 v -18 z");
+                    this.selectedHeadingBug.setAttribute("d", "M 51 400 h 21 v 19 h -13 l -8 -9 M 48 400 L 48 410 l -8 9 h -13 v -19 z");
                     this.selectedHeadingBug.setAttribute("fill", "#00F2FF");
                     this.selectedHeadingGroup.appendChild(this.selectedHeadingBug);
                 }
