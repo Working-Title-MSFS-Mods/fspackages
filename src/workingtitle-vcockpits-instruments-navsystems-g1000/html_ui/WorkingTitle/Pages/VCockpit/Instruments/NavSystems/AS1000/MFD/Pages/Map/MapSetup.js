@@ -72,16 +72,18 @@ class WT_Map_Setup_View extends WT_HTML_View {
      * @param {WT_Map_Setup_Model} model 
      */
     setModel(model) {
-
+        this.model = model;
     }
     enter(inputStack) {
         this.inputStackHandle = inputStack.push(this.inputLayer);
+        this.inputStackHandle.onPopped.subscribe(() => {
+            this.onExit.fire();
+        });
     }
     exit() {
         if (this.inputStackHandle) {
             this.inputStackHandle = this.inputStackHandle.pop();
         }
-        this.onExit.fire();
     }
     activate() {
         this.storedMenu = this.softKeyController.currentMenu;

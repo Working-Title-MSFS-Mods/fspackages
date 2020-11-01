@@ -17,26 +17,34 @@ class HSIIndicatorModel {
         };
         this.bearing = [
             {
+                ids: [0, 1, 3, 4],
                 sourceId: new Subject(),
-                source: new Subject(),
-                ident: new Subject(),
+                source: new Subject(""),
+                ident: new Subject(""),
                 distance: new Subject(),
-                bearing: new Subject(),
+                bearing: new Subject(0),
+                bearingGoal: 0,
+                display: new Subject(),
+                displayNeedle: new Subject(false),
             },
             {
+                ids: [0, 2, 3, 4],
                 sourceId: new Subject(),
-                source: new Subject(),
-                ident: new Subject(),
+                source: new Subject(""),
+                ident: new Subject(""),
                 distance: new Subject(),
-                bearing: new Subject(),
+                bearing: new Subject(0),
+                bearingGoal: 0,
+                display: new Subject(),
+                displayNeedle: new Subject(false),
             }
         ];
         this.dme = {
             sourceId: new Subject(),
-            source: new Subject(),
-            display: new Subject(),
-            ident: new Subject(),
-            distance: new Subject(),
+            source: new Subject(""),
+            display: new Subject(false),
+            ident: new Subject(""),
+            distance: new Subject(null),
         };
 
         this.crossTrackFullError = 2;
@@ -54,6 +62,10 @@ class HSIIndicatorModel {
         this.lastUpdate = performance.now() / 1000;
     }
     updateCdi(dt) {
+        let now = performance.now() / 1000;
+        dt = now - this.lastUpdate;
+        this.lastUpdate = now;
+
         this.cdi.sourceId.value = SimVar.GetSimVarValue("GPS DRIVES NAV1", "Bool") ? 3 : SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
         switch (this.cdi.sourceId.value) {
             case 1:
@@ -67,7 +79,7 @@ class HSIIndicatorModel {
                     this.bearingGoal = SimVar.GetSimVarValue("NAV OBS:1", "degree");
                 }
                 this.crossTrackGoal = SimVar.GetSimVarValue("NAV CDI:1", "number") / 127;
-                this.cdi.toFrom = SimVar.GetSimVarValue("NAV TOFROM:1", "Enum");
+                this.cdi.toFrom.value = SimVar.GetSimVarValue("NAV TOFROM:1", "Enum");
                 break;
             case 2:
                 this.cdi.displayDeviation.value = SimVar.GetSimVarValue("NAV HAS NAV:2", "boolean") != 0;
@@ -80,7 +92,7 @@ class HSIIndicatorModel {
                     this.bearingGoal = SimVar.GetSimVarValue("NAV OBS:2", "degree");
                 }
                 this.crossTrackGoal = SimVar.GetSimVarValue("NAV CDI:2", "number") / 127;
-                this.cdi.toFrom = SimVar.GetSimVarValue("NAV TOFROM:2", "Enum");
+                this.cdi.toFrom.value = SimVar.GetSimVarValue("NAV TOFROM:2", "Enum");
                 break;
             case 3:
                 this.cdi.source.value = "FMS";
@@ -106,7 +118,7 @@ class HSIIndicatorModel {
                 }
                 this.cdi.deviation.value = parseFloat(SimVar.GetSimVarValue("GPS WP CROSS TRK", "nautical mile"));
                 this.crossTrackGoal = this.cdi.deviation.value / this.crossTrackFullError;
-                this.cdi.toFrom = "1";
+                this.cdi.toFrom.value = 1;
                 break;
         }
 
@@ -114,6 +126,8 @@ class HSIIndicatorModel {
 
         this.crossTrackCurrent += (this.crossTrackGoal - this.crossTrackCurrent) * Math.min(1, 1 - Math.pow(0.01, dt * 3));
         this.bearingCurrent += this.getAngleDelta(this.bearingCurrent, this.bearingGoal) * Math.min(1, 1 - Math.pow(0.01, dt * 3));
+        this.bearing[0].bearing.value = this.bearing[0].bearing.value + this.getAngleDelta(this.bearing[0].bearing.value, this.bearing[0].bearingGoal) * Math.min(1, 1 - Math.pow(0.01, dt));
+        this.bearing[1].bearing.value = this.bearing[1].bearing.value + this.getAngleDelta(this.bearing[1].bearing.value, this.bearing[1].bearingGoal) * Math.min(1, 1 - Math.pow(0.01, dt));
 
         this.cdi.deviationAmount.value = this.crossTrackCurrent;
         this.cdi.bearing.value = this.bearingGoal;
@@ -124,19 +138,21 @@ class HSIIndicatorModel {
     }
     updateBearing(id, bearing) {
         bearing.sourceId.value = SimVar.GetSimVarValue(`L:PFD_BRG${id}_Source`, "Number");
-        bearing.display = bearing.sourceId.value != 0;
+        bearing.display.value = bearing.sourceId.value != 0;
         switch (bearing.sourceId.value) {
             case 1:
                 bearing.source.value = "NAV1";
                 if (SimVar.GetSimVarValue("NAV HAS NAV:1", "Bool")) {
                     bearing.ident.value = SimVar.GetSimVarValue("NAV IDENT:1", "string");
                     bearing.distance.value = SimVar.GetSimVarValue("NAV HAS DME:1", "Bool") ? SimVar.GetSimVarValue("NAV DME:1", "nautical miles") : "";
-                    bearing.bearing.value = (180 + SimVar.GetSimVarValue("NAV RADIAL:1", "degree")) % 360;
+                    bearing.bearingGoal = (180 + SimVar.GetSimVarValue("NAV RADIAL:1", "degree")) % 360;
+                    bearing.displayNeedle.value = true;
                 }
                 else {
-                    bearing.ident.value = "NO DATA";
+                    bearing.ident.value = null;
                     bearing.distance.value = "";
-                    bearing.bearing.value = "";
+                    bearing.displayNeedle.value = false;
+                    //bearing.bearing.value = "";
                 }
                 break;
             case 2:
@@ -144,30 +160,34 @@ class HSIIndicatorModel {
                 if (SimVar.GetSimVarValue("NAV HAS NAV:2", "Bool")) {
                     bearing.ident.value = SimVar.GetSimVarValue("NAV IDENT:2", "string");
                     bearing.distance.value = SimVar.GetSimVarValue("NAV HAS DME:2", "Bool") ? SimVar.GetSimVarValue("NAV DME:2", "nautical miles") : "";
-                    bearing.bearing.value = (180 + SimVar.GetSimVarValue("NAV RADIAL:2", "degree")) % 360;
+                    bearing.bearingGoal = (180 + SimVar.GetSimVarValue("NAV RADIAL:2", "degree")) % 360;
+                    bearing.displayNeedle.value = true;
                 }
                 else {
-                    bearing.ident.value = "NO DATA";
+                    bearing.ident.value = null;
                     bearing.distance.value = "";
-                    bearing.bearing.value = "";
+                    bearing.displayNeedle.value = false;
+                    //bearing.bearing.value = "";
                 }
                 break;
             case 3:
                 bearing.source.value = "GPS";
                 bearing.ident.value = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
                 bearing.distance.value = SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles");
-                bearing.bearing.value = SimVar.GetSimVarValue("GPS WP BEARING", "degree");
+                bearing.bearingGoal = SimVar.GetSimVarValue("GPS WP BEARING", "degree");
+                bearing.displayNeedle.value = SimVar.GetSimVarValue("GPS WP NEXT ID", "string") != "";
                 break;
             case 4:
                 bearing.source.value = "ADF";
                 bearing.distance.value = "";
                 if (SimVar.GetSimVarValue("ADF SIGNAL:1", "number")) {
-                    bearing.ident.value = fastToFixed(SimVar.GetSimVarValue("ADF ACTIVE FREQUENCY:1", "KHz"), 1);
-                    bearing.bearing.value = (SimVar.GetSimVarValue("ADF RADIAL:1", "degree") + compass) % 360;
+                    bearing.ident.value = parseFloat(SimVar.GetSimVarValue("ADF ACTIVE FREQUENCY:1", "KHz")).toFixed(1);
+                    bearing.bearingGoal = (SimVar.GetSimVarValue("ADF RADIAL:1", "degree") + SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree")) % 360;
+                    bearing.displayNeedle.value = true;
                 }
                 else {
-                    bearing.ident.value = "NO DATA";
-                    bearing.bearing.value = "";
+                    bearing.ident.value = null;
+                    bearing.displayNeedle.value = false;
                 }
                 break;
         }
@@ -188,31 +208,27 @@ class HSIIndicatorModel {
                 this.dme.source.value = "NAV1";
                 if (SimVar.GetSimVarValue("NAV HAS DME:1", "Bool")) {
                     this.dme.ident.value = fastToFixed(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:1", "MHz"), 2);
-                    this.dme.distance = SimVar.GetSimVarValue("NAV DME:1", "nautical miles");
+                    this.dme.distance.value = SimVar.GetSimVarValue("NAV DME:1", "nautical miles");
                 }
                 else {
                     this.dme.ident.value = "";
-                    this.dme.distance = "";
+                    this.dme.distance.value = null;
                 }
                 break;
             case 2:
                 this.dme.source.value = "NAV2";
                 if (SimVar.GetSimVarValue("NAV HAS DME:2", "Bool")) {
                     this.dme.ident.value = fastToFixed(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:2", "MHz"), 2);
-                    this.dme.distance = SimVar.GetSimVarValue("NAV DME:2", "nautical miles");
+                    this.dme.distance.value = SimVar.GetSimVarValue("NAV DME:2", "nautical miles");
                 }
                 else {
                     this.dme.ident.value = "";
-                    this.dme.distance = "";
+                    this.dme.distance.value = null;
                 }
                 break;
         }
     }
     update(dt) {
-        let now = performance.now() / 1000;
-        dt = now - this.lastUpdate;
-        this.lastUpdate = now;
-
         this.rotation.value = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
         this.turnRate.value = this.turnRate.value + (SimVar.GetSimVarValue("TURN INDICATOR RATE", "degree per second") - this.turnRate.value) / 5;
         this.heading.value = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degree");
@@ -222,21 +238,11 @@ class HSIIndicatorModel {
         this.updateBearing(1, this.bearing[0]);
         this.updateBearing(2, this.bearing[1]);
         this.updateDme();
-
-        /*
-        
-        let diff = this.crossTrackGoal - this.crossTrackCurrent;
-        let toAdd = (_deltaTime / 1000) * diff * 7.5;
-        if (Math.abs(toAdd) < 0.75) {
-            toAdd = toAdd > 0 ? 0.75 : -0.75;
-        }
-        if (Math.abs(diff) < 0.1 || Math.abs(toAdd) > Math.abs(diff)) {
-            this.crossTrackCurrent = this.crossTrackGoal;
-        }
-        else {
-            this.crossTrackCurrent += toAdd;
-        }
-        Avionics.Utils.diffAndSetAttribute(this.CDI, "transform", "translate(" + this.crossTrackCurrent + " 0)");*/
+    }
+    toggleDme() {
+        let display = this.dme.display.value ? 0 : 1;
+        WTDataStore.set("HSI.ShowDme", display);
+        SimVar.SetSimVarValue("L:PFD_DME_Displayed", "number", display);
     }
     cycleCdi() {
         this.cdi.sourceId.value = (this.cdi.sourceId.value % 3) + 1;
@@ -252,9 +258,14 @@ class HSIIndicatorModel {
         }
     }
     cycleBearing(id) {
-        this.bearing[id - 1].sourceId.value = (this.bearing[id - 1].sourceId.value + 1) % 5;
-        SimVar.SetSimVarValue(`L:PFD_BRG${id}_Source`, "number", this.bearing[id - 1].sourceId.value);
-        WTDataStore.set(`HSI.Brg${id}Src`, this.bearing[id - 1].sourceId.value);
-        this.bearing[id - 1].display.value = this.bearing[id - 1].sourceId.value != 0;
+        const bearing = this.bearing[id - 1];
+        let newId = 0;
+        for (let i = 0; i < bearing.ids.length - 1; i++) {
+            if (bearing.ids[i] == bearing.sourceId.value) {
+                newId = bearing.ids[i + 1];
+            }
+        }
+        SimVar.SetSimVarValue(`L:PFD_BRG${id}_Source`, "number", newId);
+        WTDataStore.set(`HSI.Brg${id}Src`, newId);
     }
 }

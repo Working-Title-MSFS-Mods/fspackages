@@ -1,10 +1,11 @@
 class WT_Airport_Information_Model {
     /**
+     * @param {WT_Show_Direct_To_Handler} showDirectToHandler
      * @param {WT_Waypoint_Repository} waypointRepository 
      * @param {WT_Airport_Database} airportDatabase 
      */
-    constructor(gps, waypointRepository, airportDatabase) {
-        this.gps = gps;
+    constructor(showDirectToHandler, waypointRepository, airportDatabase) {
+        this.showDirectToHandler = showDirectToHandler;
         this.waypointRepository = waypointRepository;
         this.airportDatabase = airportDatabase;
         this.waypoint = new Subject(null);
@@ -28,7 +29,7 @@ class WT_Airport_Information_Model {
     }
     directTo() {
         if (this.waypoint.value)
-            this.gps.showDirectTo(null, this.waypoint.value.icao);
+            this.showDirectToHandler.show(null, this.waypoint.value.icao);
     }
 }
 
@@ -54,6 +55,10 @@ class WT_Airport_Information_Soft_Key_Menu extends WT_Soft_Key_Menu {
 }
 
 class WT_Airport_Information_Input_Layer extends Selectables_Input_Layer {
+    /**
+     * @param {WT_Airport_Information_Model} model 
+     * @param {WT_Airport_Information_View} view 
+     */
     constructor(model, view) {
         super(new Selectables_Input_Layer_Dynamic_Source(view));
         this.model = model;
@@ -74,6 +79,8 @@ class WT_Airport_Information_View extends WT_HTML_View {
 
         this.infoMode = new Subject(1);
         this.softKeyMenu = new WT_Airport_Information_Soft_Key_Menu(this);
+
+        this.subscriptions = new Subscriptions();
     }
     connectedCallback() {
         if (this.hasInitialised)
@@ -112,7 +119,7 @@ class WT_Airport_Information_View extends WT_HTML_View {
     setModel(model) {
         this.model = model;
         this.inputLayer = new WT_Airport_Information_Input_Layer(this.model, this);
-        model.waypoint.subscribe(airport => {
+        this.subscriptions.add(model.waypoint.subscribe(airport => {
             try {
                 if (airport) {
                     let infos = airport.infos;
@@ -167,7 +174,7 @@ class WT_Airport_Information_View extends WT_HTML_View {
             } catch (e) {
                 console.log(e.message);
             }
-        });
+        }));
     }
     toggleInfoMode() {
         this.infoMode.value = (this.infoMode.value % 2) + 1;
@@ -188,6 +195,7 @@ class WT_Airport_Information_View extends WT_HTML_View {
     deactivate() {
         if (this.storedMenu)
             this.softKeyController.setMenu(this.storedMenu);
+        this.subscriptions.unsubscribe();
     }
 }
 customElements.define("g1000-airport-information-page", WT_Airport_Information_View);

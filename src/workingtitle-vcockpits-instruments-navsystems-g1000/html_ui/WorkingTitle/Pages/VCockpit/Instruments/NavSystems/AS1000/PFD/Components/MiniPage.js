@@ -19,8 +19,10 @@ class WT_PFD_Mini_Page_Controller extends WT_HTML_View {
     }
     connectedCallback() {
         this.pages = {
-            references: this.querySelector("wt-timer-references-page"),
-            nearest: this.querySelector("wt-nearest"),
+            references: this.querySelector("g1000-pfd-timer-references-page"),
+            nearest: this.querySelector("g1000-pfd-nearest-airports"),
+            adfDme: this.querySelector("g1000-pfd-adf-dme"),
+            setupMenu: this.querySelector("g1000-pfd-setup-menu"),
         }
     }
     /**
@@ -64,10 +66,16 @@ class WT_PFD_Mini_Page_Controller extends WT_HTML_View {
     showNearest() {
         this.showPage(this.pages.nearest);
     }
+    showAdfDme() {
+        this.showPage(this.pages.adfDme);
+    }
+    showSetupMenu() {
+        this.showPage(this.pages.setupMenu);
+    }
     update(dt) {
         if (this.currentPage) {
             this.currentPage.update(dt);
         }
     }
 }
-customElements.define("wt-mini-page-container", WT_PFD_Mini_Page_Controller);
+customElements.define("g1000-pfd-mini-page-container", WT_PFD_Mini_Page_Controller);

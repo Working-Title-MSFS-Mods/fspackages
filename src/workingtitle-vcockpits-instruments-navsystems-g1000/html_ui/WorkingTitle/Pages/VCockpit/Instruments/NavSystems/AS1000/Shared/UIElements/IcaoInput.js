@@ -108,7 +108,7 @@ class WT_Icao_Input extends HTMLElement {
     }
     updateFromSimVars() {
         let icao = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCurrentIcao", "string", this.instrumentIdentifier);
-        
+
         if (this._icao != icao) {
             this._icao = icao;
             let evt = document.createEvent("HTMLEvents");
@@ -258,11 +258,8 @@ class WT_Waypoint_Quick_Select_View extends WT_HTML_View {
             return;
         this.hasInitialised = true;
 
-        let template = document.getElementById('waypoint-quick-select');
-        let templateContent = template.content;
-
-        this.appendChild(templateContent.cloneNode(true));
-
+        const template = document.getElementById('waypoint-quick-select');
+        this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();
 
         this.removeChild(this.elements.nrst);
@@ -274,8 +271,8 @@ class WT_Waypoint_Quick_Select_View extends WT_HTML_View {
      * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
      */
     async setWaypointQuickSelect(waypointQuickSelect, type) {
-        let waypoints = await waypointQuickSelect.getWaypoints(type);
-        let mapWaypoint = waypoint => `<li class="selectable" data-icao="${waypoint.icao}">${waypoint.ident}</li>`;
+        const waypoints = await waypointQuickSelect.getWaypoints(type);
+        const mapWaypoint = waypoint => `<li class="selectable" data-icao="${waypoint.icao}">${waypoint.ident}</li>`;
         this.elements.nrst.innerHTML = waypoints.nearest.map(mapWaypoint).join("");
         this.elements.fpl.innerHTML = waypoints.flightPlan.map(mapWaypoint).join("");
         this.elements.recent.innerHTML = waypoints.recent.map(mapWaypoint).join("");
@@ -302,8 +299,15 @@ class WT_Waypoint_Quick_Select_View extends WT_HTML_View {
         this.resolve(icao);
         this.exit();
     }
+    /**
+     * @param {Input_Stack} inputStack 
+     */
     enter(inputStack) {
         this.inputHandle = inputStack.push(this.inputLayer);
+        this.inputHandle.onPopped.subscribe(() => {
+            this.reject();
+            this.removeAttribute("state");
+        });
         this.setAttribute("state", "visible");
         return new Promise((resolve, reject) => {
             this.resolve = resolve;
@@ -312,11 +316,8 @@ class WT_Waypoint_Quick_Select_View extends WT_HTML_View {
     }
     exit() {
         if (this.inputHandle) {
-            this.inputHandle.pop();
-            this.inputHandle = null;
+            this.inputHandle = this.inputHandle.pop();
         }
-        this.removeAttribute("state");
-        this.reject();
     }
 }
 customElements.define("waypoint-quick-select", WT_Waypoint_Quick_Select_View);

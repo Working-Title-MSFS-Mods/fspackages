@@ -1,4 +1,8 @@
 class WT_Nearest_Waypoints_Input_Layer extends Selectables_Input_Layer {
+    /**
+     * @param {WT_Nearest_Airports_Model} model 
+     * @param {*} view 
+     */
     constructor(model, view) {
         super(new Selectables_Input_Layer_Dynamic_Source(view, ".ident"));
         this.model = model;
@@ -11,10 +15,15 @@ class WT_Nearest_Waypoints_Input_Layer extends Selectables_Input_Layer {
 }
 
 class WT_Nearest_Airports_View extends WT_HTML_View {
+    /**
+     * @param {WT_Frequency_List_Model} frequencyListModel 
+     * @param {WT_Unit_Chooser} unitChooser 
+     */
     constructor(frequencyListModel, unitChooser) {
         super();
         this.frequencyListModel = frequencyListModel;
         this.unitChooser = unitChooser;
+
         this.inputStackHandle = null;
 
         this.menu = this.initMenu();
@@ -107,12 +116,12 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
     updateSelectedAirport(airport) {
         if (airport == null)
             return;
-        let infos = airport.airport.GetInfos();
+        let infos = airport.GetInfos();
         if (infos && infos.icao != "" && infos.getWaypointType() == "A" && infos.IsUpToDate()) {
             this.elements.facilityName.textContent = infos.name;
             this.elements.city.textContent = infos.city;
             this.elements.elevation.innerHTML = `${infos.runways.reduce((elevation, runway) => { return Math.max(elevation, runway.elevation * 3.28084); }, 0).toFixed(0)}<span class="units">FT</span>`;
-            this.elements.runwaySelector.setFromWaypoint(airport.airport)
+            this.elements.runwaySelector.setFromWaypoint(airport)
             this.frequencyListModel.setFrequencies(infos.frequencies);
             if (infos.approaches) {
                 let elems = [];
@@ -131,7 +140,7 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
                 infos: {
                     coordinates: new LatLongAlt(planeCoordinates.lat, planeCoordinates.long, 0)
                 }
-            }, airport.airport];
+            }, airport];
         }
     }
     updateAirports(airports) {

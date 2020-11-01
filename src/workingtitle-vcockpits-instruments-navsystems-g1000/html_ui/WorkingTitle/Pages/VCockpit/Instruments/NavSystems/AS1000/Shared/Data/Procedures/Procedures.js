@@ -98,6 +98,18 @@ class WT_EnRoute_Transition extends WT_Procedure_Transition {
 
 }
 
+class WT_Procedure_Facility_Repository {
+    /**
+     * @param {WaypointLoader} facilityLoader 
+     */
+    constructor(facilityLoader) {
+        this.facilityLoader = facilityLoader;
+    }
+    get(icao) {
+        return new WT_Procedure_Facility(icao, this.facilityLoader);
+    }
+}
+
 class WT_Procedure_Facility {
     constructor(icao, facilityLoader) {
         this.icao = icao;
@@ -245,15 +257,15 @@ class WT_Procedure_Waypoints {
     constructor(legs) {
         let i = 0;
         this.waypoints = [];
+        const f = (21639 / 2) * Math.PI, sin = Math.sin, asin = Math.asin, cos = Math.cos, acos = Math.acos, tan = Math.tan, atan = Math.atan, abs = Math.abs;
+        const greatCircleDistance = Avionics.Utils.computeGreatCircleDistance;
+        const greatCircleHeading = Avionics.Utils.computeGreatCircleHeading;
+        function deltaAngle(a, b) {
+            let delta = a - b;
+            delta = Avionics.Utils.fmod(delta + 180, 360) - 180;
+            return abs(delta * Math.PI / 180);
+        }
         for (let leg of legs) {
-            const f = (21639 / 2) * Math.PI, sin = Math.sin, asin = Math.asin, cos = Math.cos, acos = Math.acos, tan = Math.tan, atan = Math.atan, abs = Math.abs;
-            const greatCircleDistance = Avionics.Utils.computeGreatCircleDistance;
-            const greatCircleHeading = Avionics.Utils.computeGreatCircleHeading;
-            function deltaAngle(a, b) {
-                let delta = a - b;
-                delta = Avionics.Utils.fmod(delta + 180, 360) - 180;
-                return abs(delta * Math.PI / 180);
-            }
             if ((!leg.fix || leg.fix.coordinates == null) && (!leg.origin || leg.origin.coordinates == null)) {
                 console.warn("Leg didn't have any coordinates!");
                 continue;

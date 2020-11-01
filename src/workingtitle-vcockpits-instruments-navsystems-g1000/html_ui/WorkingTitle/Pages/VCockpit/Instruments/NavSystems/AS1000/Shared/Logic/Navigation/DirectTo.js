@@ -16,6 +16,21 @@ class WT_Direct_To_Waypoints {
     getLastIndexBeforeApproach() { return this.directTo.waypoints.length; };
 }
 
+class WT_Direct_To_Handler {
+    /**
+     * @param {WT_Flight_Plan_Controller} flightPlanController 
+     * @param {MapInstrument} map 
+     */
+    constructor(flightPlanController, map) {
+        this.flightPlanController = flightPlanController;
+        this.map = map;
+    }
+    directTo(waypoint, course) {
+        let controller = new WT_Direct_To_Controller(waypoint, course, this.map);
+        this.flightPlanController.setMode(controller);
+    }
+}
+
 class WT_Direct_To_Controller {
     /**
      * @param {WayPoint} waypoint 

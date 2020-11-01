@@ -1,24 +1,29 @@
 class WT_PFD_Input_Layer extends Base_Input_Layer {
+    onMenuPush(inputStack) {
+        this.navSystem.showSetupMenu();
+    }
+}
 
+class WT_PFD_Show_Direct_To_Handler extends WT_Show_Direct_To_Handler {
 }
 
 class WT_PFD_Model {
-    constructor() {
+    /**
+     * @param {WT_Brightness_Settings} brightnessSettings 
+     */
+    constructor(brightnessSettings) {
         this.syntheticVision = new Subject(false);
         this.lastBrightnessValue = null;
         this.brightnessKnobIndex = null;
-        this.brightness = {
-            mfd: new Subject(WTDataStore.get(`MFD.Brightness`, 100)),
-            pfd: new Subject(WTDataStore.get(`PFD.Brightness`, 100)),
-        };
+        this.brightness = brightnessSettings;
     }
     update(dt) {
         if (this.brightnessKnobIndex !== null) {
             let brightness = Math.floor(SimVar.GetSimVarValue(`A:LIGHT POTENTIOMETER:${this.brightnessKnobIndex}`, "number") * 100);
             if (this.lastBrightnessValue != brightness) {
                 console.log("brightness " + brightness);
-                this.brightness.mfd.value = brightness;
-                this.brightness.pfd.value = brightness;
+                this.brightness.setMfdBrightness(brightness);
+                this.brightness.setPfdBrightness(brightness);
                 this.lastBrightnessValue = brightness;
             }
         }
@@ -38,14 +43,14 @@ class WT_PFD_Model {
 }
 
 class WT_PFD_Alert_Key extends WT_Soft_Key {
-    /**
-     * @param {WT_Annunciations_Model} annuncationsModel 
-     */
     constructor() {
         super("ALERTS", null);
         this.setOnClick(this.click.bind(this));
         this.pressAcknowledgesAnnunciations = false;
     }
+    /**
+    * @param {WT_Annunciations_Model} annuncationsModel 
+    */
     setAnnunciationsModel(model) {
         this.annunciationsModel = model;
         model.alertLevel.subscribe(this.updateAlertLevel.bind(this));
@@ -88,18 +93,17 @@ class AS1000_PFD extends BaseAS1000 {
         this.handleReversionaryMode = false;
         this.initDuration = 7000;
 
-        this.model = new WT_PFD_Model();
+        this.brightnessSettings = new WT_Brightness_Settings();
+        this.model = new WT_PFD_Model(this.brightnessSettings);
     }
     get templateID() { return "AS1000_PFD"; }
     connectedCallback() {
         super.connectedCallback();
-        /*Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });*/
         this.updatables = [];
         this.settings = new WT_Settings("g36", WT_Default_Settings.base);
         this.modSettings = new WT_Settings("mod", WT_Default_Settings.modBase);
         this.unitChooser = new WT_Unit_Chooser(this.settings);
+        this.waypointRepository = new WT_Waypoint_Repository(this.facilityLoader);
         this.nearestWaypoints = new WT_Nearest_Waypoints_Repository(this);
         this.updatables.push(this.nearestWaypoints);
         this.mainPage = new AS1000_PFD_MainPage(this.unitChooser);
@@ -111,19 +115,8 @@ class AS1000_PFD extends BaseAS1000 {
         let bgTimer = new AS1000_PFD_BackgroundTimer();
         let timerRef = new AS1000_PFD_TMRREF();
         timerRef.backgroundTimer = bgTimer;
-        //this.addIndependentElementContainer(new NavSystemElementContainer("InnerMap", "InnerMap", new PFD_InnerMap()));
-        /*this.addIndependentElementContainer(new NavSystemElementContainer("Transponder", "XPDRTimeBox", new PFD_XPDR()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new PFD_WindData()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", new PFD_Warnings()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("BackGroundTimer", "", bgTimer));*/
+
         this.addIndependentElementContainer(new Engine("Engine", "EngineDisplay"));
-        /*this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Nearest Airports", "NearestAirports", new AS1000_PFD_NearestAirports(), "SoftKey_NRST"));
-        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("ADF/DME", "AdfDme", new PFD_ADF_DME(), "SoftKey_ADF_DME"));
-        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Alerts", "AlertsWindow", new AS1000_Alerts(), "Toggle_Alerts"));
-        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("TMR/REF", "TmrRefWindow", timerRef, "Softkey_TMR_REF"));
-        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("AFPL", "ActiveFlightPlan", new AS1000_PFD_ActiveFlightPlan_Element(5), "FPL_Push"));
-        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
-        this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "CONF_MENU_Push"));*/
         this.maxUpdateBudget = 12;
         this._pfdConfigDone = false;
 
@@ -131,6 +124,8 @@ class AS1000_PFD extends BaseAS1000 {
 
         this.barometricPressure = new WT_Barometric_Pressure();
         this.updatables.push(this.barometricPressure);
+
+        this.showDirectToHandler = new WT_PFD_Show_Direct_To_Handler();
 
         this.initModels();
 
@@ -142,7 +137,7 @@ class AS1000_PFD extends BaseAS1000 {
         this.softKeyController = this.querySelector("g1000-soft-key-menu");
         this.softKeyController.handleInput(this.inputStack);
 
-        let miniPage = this.querySelector("wt-mini-page-container");
+        let miniPage = this.querySelector("g1000-pfd-mini-page-container");
         miniPage.handleInput(this.inputStack);
         this.miniPageController = miniPage;
 
@@ -154,17 +149,6 @@ class AS1000_PFD extends BaseAS1000 {
         this.pfdConfig().then(() => {
             console.log("PFD fully configured.");
             this._pfdConfigDone = true;
-        });
-
-        this.model.brightness.mfd.subscribe(brightness => {
-            brightness = Math.max(Math.min(brightness, 100), 0);
-            WTDataStore.set(`MFD.Brightness`, brightness);
-            SimVar.SetSimVarValue(`L:XMLVAR_AS1000_MFD_Brightness`, "number", brightness);
-        });
-        this.model.brightness.pfd.subscribe(brightness => {
-            brightness = Math.max(Math.min(brightness, 100), 0);
-            WTDataStore.set(`PFD.Brightness`, brightness);
-            SimVar.SetSimVarValue(`L:XMLVAR_AS1000_PFD_Brightness`, "number", brightness);
         });
 
         if (!this.alertsKey) {
@@ -192,16 +176,15 @@ class AS1000_PFD extends BaseAS1000 {
         this.localTimeModel = this.initModelView(new WT_Local_Time_Model(this.settings), "g1000-local-time");
         this.oatModel = this.initModelView(new WT_OAT_Model(this.unitChooser), "g1000-oat");
         this.transponderModel = this.initModelView(new WT_Transponder_Model(this.modSettings), "g1000-transponder");
-        this.referencesModel = this.initModelView(new WT_Airspeed_References_Model(), "wt-airspeed-references");
-        this.timerModel = this.initModelView(new WT_PFD_Timer_Model(), "wt-timer");
-
-        this.nearestAirportsModel = new WT_Nearest_Airports_Model(this, this.unitChooser, null, this.softKeyController, this.nearestWaypoints);
-        document.querySelector("wt-nearest").setModel(this.nearestAirportsModel);
+        this.referencesModel = this.initModelView(new WT_Airspeed_References_Model(), "g1000-pfd-airspeed-references");
+        this.timerModel = this.initModelView(new WT_PFD_Timer_Model(), "g1000-pfd-timer");
+        this.setupMenuModel = this.initModelView(new WT_PFD_Setup_Menu_Model(this.brightnessSettings), "g1000-pfd-setup-menu");
+        this.nearestAirportsModel = this.initModelView(new WT_Nearest_Airports_Model(this, this.showDirectToHandler, this.waypointRepository, this.unitChooser, null, this.softKeyController, this.nearestWaypoints), "g1000-pfd-nearest-airports");
     }
     initModelView(model, viewSelector) {
         let view = document.querySelector(viewSelector);
         if (!view)
-            throw new Exception(`${viewSelector} didn't match any views`);
+            throw new Error(`${viewSelector} didn't match any views`);
         view.setModel(model);
         if (model.update)
             this.updatables.push(model);
@@ -234,9 +217,10 @@ class AS1000_PFD extends BaseAS1000 {
     setDefaultVfrSquawk() {
 
     }
+    showDirectTo(icaoType = null, icao = null) {
+        this.showDirectToHandler.show(icaoType, icao);
+    }
     async pfdConfig() {
-        this.loadSavedBrightness("PFD");
-        this.loadSavedBrightness("MFD");
         let loader = new WTConfigLoader(this._xmlConfigPath);
         // We need to wait for this to finish before we can do the initial set of the light pot
         // in the line below because this can set a custom value for the avionics knob.
@@ -269,35 +253,10 @@ class AS1000_PFD extends BaseAS1000 {
         this.miniPageController.update(_deltaTime);
     }
     onEvent(_event) {
-        console.log(_event);
         this.inputStack.processEvent(_event);
-        if (_event == "MENU_Push") {
-            if (this.popUpElement) {
-                if (this.popUpElement.popUpEvent == "CONF_MENU_Push") {
-                    this.computeEvent("CONF_MENU_Push")
-                }
-            } else {
-                this.computeEvent("CONF_MENU_Push");
-            }
-        }
     }
-    loadSavedBrightness(display) {
-        let brightness = WTDataStore.get(`${display}.Brightness`, 100);
-        this.setBrightness(display, brightness);
-    }
-    setBrightness(display, value, relative) {
-        let lvar = `L:XMLVAR_AS1000_${display}_Brightness`;
-        if (relative) {
-            let current = SimVar.GetSimVarValue(lvar, "number")
-            value = current + value;
-        }
-        // clamp value 0-100
-        value = Math.max(Math.min(value, 100), 0);
-        WTDataStore.set(`${display}.Brightness`, value);
-        SimVar.SetSimVarValue(lvar, "number", value);
-    }
-    getBrightness(display) {
-        return SimVar.GetSimVarValue(`L:XMLVAR_AS1000_${display}_Brightness`, "number");
+    showSetupMenu() {
+        this.miniPageController.showSetupMenu();
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -342,7 +301,7 @@ class AS1000_PFD_MainPage extends NavSystemPage {
         this.mapInstrument = new MapInstrumentElement();
         this.element = new NavSystemElementGroup([
             this.attitude,
-            new PFD_Compass(),
+            //new PFD_Compass(),
             //new PFD_OAT(unitChooser),
             this.mapInstrument,
             new PFD_Altimeter(),

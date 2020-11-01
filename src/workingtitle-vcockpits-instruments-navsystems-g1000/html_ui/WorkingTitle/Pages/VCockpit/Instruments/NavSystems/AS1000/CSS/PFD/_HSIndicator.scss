@@ -1,0 +1,236 @@
+glasscockpit-hsi {
+    stroke-opacity: 1;
+
+    %nav-annunciators {
+        font-size: 7px;
+        font-family: $font_family_mono;
+        font-weight: bold;
+        text-anchor: middle;
+    }
+
+    .background-circle {
+        fill: #333;
+        fill-opacity: 0.5;
+    }
+
+    .background-circle-text {
+        fill: white;
+        font-family: $font_family_normal;
+        text-anchor: middle;
+
+        .letter {
+            font-size: 11px;
+        }
+
+        .number {
+            font-size: 7px;
+        }
+    }
+
+    .inner-circle {
+        stroke: white;
+        stroke-width: 0.8;
+        fill: none;
+    }
+
+    .heading-bug {
+        fill: $input_color;
+    }
+
+    .current-track-indicator {
+        fill: $color_gps;
+        stroke-width: 0.5;
+        stroke: scale-color($color_gps, $lightness: -80%);
+    }
+
+    .bearing-arrow {
+        stroke: $input_color;
+        stroke-width: 0.7;
+        fill: none;
+    }
+
+    .course {
+        stroke-width: 0.5;
+        fill-opacity: 1;
+
+        .circle {
+            stroke: white;
+            stroke-width: 1;
+            fill: none;
+        }
+
+        .circle-outline {
+            stroke: #000;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .to-indicator,
+        .from-indicator {
+            display: none;
+        }
+
+        &[direction="to"] {
+            .to-indicator {
+                display: block;
+            }
+        }
+
+        &[direction="from"] {
+            .from-indicator {
+                display: block;
+            }
+        }
+    }
+
+    .flight-phase {
+        display: none;
+        fill: $color_gps;
+        @extend %nav-annunciators;
+    }
+
+    .crosstrack-error {
+        fill: $color_gps;
+        display: none;
+        @extend %nav-annunciators;
+    }
+
+    .nav-source {
+        @extend %nav-annunciators;
+    }
+
+    .course-text,
+    .heading-text {
+        font-family: $font_family_mono;
+        font-weight: bold;
+
+        rect {
+            fill: #000;
+            stroke: #fff;
+            stroke-width: 0.5;
+        }
+
+        .label {
+            fill: white;
+            font-size: 5px;
+        }
+
+        .value {
+            font-size: 7px;
+            letter-spacing: -0.5px;
+            text-anchor: end;
+        }
+    }
+
+    .heading-text .value {
+        fill: $input_color;
+    }
+
+    .bearing-tab-left,
+    .bearing-tab-right,
+    .dme-tab {
+        font-family: $font_family_normal;
+        font-size: 5px;
+        fill: white;
+
+        .ident,
+        .source {
+            fill: $input_color;
+        }
+
+        .background {
+            fill: black;
+            stroke: white;
+            stroke-width: 0.5;
+        }
+
+        .arrow-icon {
+            stroke: $input_color;
+            stroke-width: 0.5;
+            fill: none;
+        }
+    }
+
+    .bearing-tab-right {
+        text-anchor: end;
+    }
+
+    .bearing-top {
+        font-family: $font_family_normal;
+        font-weight: bold;
+        font-size: 11px;
+        fill: white;
+        text-anchor: middle;
+
+        rect {
+            fill: #000;
+            stroke: #fff;
+            stroke-width: 0.5;
+            stroke-opacity: 1;
+        }
+    }
+
+    &[mode="gps"],
+    &[mode="nav1"],
+    &[mode="nav2"] {
+        .course {
+            display: block;
+        }
+    }
+
+    &[mode="gps"] {
+        .course {
+            fill: $color_gps;
+            stroke: scale-color($color_gps, $lightness: -80%);
+        }
+
+        .flight-phase {
+            display: block;
+        }
+
+        .course-text .value {
+            fill: $color_gps;
+        }
+
+        .nav-source {
+            fill: $color_gps;
+        }
+
+        .crosstrack-error {
+            display: block;
+        }
+    }
+
+    &[mode="nav1"],
+    &[mode="nav2"] {
+        .course-text .value {
+            fill: $color_ap_active;
+        }
+
+        .nav-source {
+            fill: $color_ap_active;
+        }
+    }
+
+    &[mode="nav1"] {
+        .course {
+            fill: $color_ap_active;
+            stroke: scale-color($color_ap_active, $lightness: -80%);
+        }
+    }
+
+    &[mode="nav2"] {
+        .course {
+            fill: $color_ap_active;
+            stroke: scale-color($color_ap_active, $lightness: -80%);
+
+            .begin-arrow,
+            .end-arrow,
+            .cdi {
+                stroke: $color_ap_active;
+                fill: none;
+                stroke-width: 1;
+            }
+        }
+    }
+}

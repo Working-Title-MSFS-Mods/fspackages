@@ -43,7 +43,7 @@ class Selectables_Input_Layer_Element_Source {
 }
 
 class Selectables_Input_Layer_Dynamic_Source {
-    constructor(element, selector = "numeric-input, drop-down-selector, time-input, selectable-button, toggle-switch, .selectable, icao-input, scrollable-container") {
+    constructor(element, selector = Selectables_Input_Layer_Dynamic_Source.DEFAULT) {
         this.element = element;
         this.selector = selector;
     }
@@ -113,6 +113,7 @@ class Selectables_Input_Layer_Dynamic_Source {
         return this.element.querySelectorAll(this.selector);
     }
 }
+Selectables_Input_Layer_Dynamic_Source.DEFAULT = "numeric-input, drop-down-selector, time-input, selectable-button, toggle-switch, icao-input, scrollable-container, adf-input, .selectable";
 
 class Selectables_Input_Layer extends Input_Layer {
     constructor(source, navigateWithSmall = false) {
@@ -128,6 +129,7 @@ class Selectables_Input_Layer extends Input_Layer {
     }
     set selectedElement(element) {
         if (this.selectedElement) {
+            this.selectedElement.dispatchEvent(new Event("blur"));
             this.selectedElement.removeAttribute("state");
         }
 
@@ -135,6 +137,7 @@ class Selectables_Input_Layer extends Input_Layer {
         if (this.selectedElement) {
             if (this.isActive) {
                 this.selectedElement.setAttribute("state", "Selected");
+                this.selectedElement.dispatchEvent(new Event("focus"));
                 this.onHighlightedElement(this.selectedElement);
             }
 
@@ -184,7 +187,7 @@ class Selectables_Input_Layer extends Input_Layer {
     sendEventToSelected(event, inputStack) {
         if (!this.selectedElement)
             return;
-        let evt = new CustomEvent(event, {
+        const evt = new CustomEvent(event, {
             bubbles: false,
             detail: {
                 inputStack: inputStack,
@@ -195,7 +198,7 @@ class Selectables_Input_Layer extends Input_Layer {
     onSelectedElement(inputStack) {
         if (!this.selectedElement)
             return;
-        let evt = new CustomEvent("selected", {
+        const evt = new CustomEvent("selected", {
             bubbles: true,
             detail: {
                 element: this.selectedElement,
@@ -252,14 +255,17 @@ class Selectables_Input_Layer extends Input_Layer {
             this.selectedElement = this._source.current(this.iterator);
         if (this.selectedElement) {
             this.selectedElement.setAttribute("state", "Selected");
+            this.selectedElement.dispatchEvent(new Event("focus"));
         }
     }
     onDeactivate() {
+        super.onDeactivate();
         this.isActive = false;
         if (this.iterator)
             this.selectedElement = null;
         if (this.selectedElement) {
             this.selectedElement.removeAttribute("state");
+            this.selectedElement.dispatchEvent(new Event("blur"));
         }
     }
 }

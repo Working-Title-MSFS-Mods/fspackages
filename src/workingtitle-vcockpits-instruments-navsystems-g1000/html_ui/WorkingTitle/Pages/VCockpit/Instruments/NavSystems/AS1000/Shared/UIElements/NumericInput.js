@@ -141,9 +141,14 @@ class WT_Numeric_Input extends HTMLElement {
         this.exit();
     }
     enter(e) {
-        let inputStack = e.detail.inputStack;
-        let inputLayer = new WT_Numeric_Input_Input_Layer(this);
-        this.inputStackManipulator = inputStack.push(inputLayer);
+        const inputStack = e.detail.inputStack;
+        const inputLayer = new WT_Numeric_Input_Input_Layer(this);
+        inputLayer.onDeactivateEvent.subscribe(() => {
+            this.elements.digits[this._editingDigitIndex].removeAttribute("state");
+            this.mode = "display";
+            this.updateDisplay();
+        });
+        this.inputHandler = inputStack.push(inputLayer);
         this.previousValue = this._value;
         this._editingDigitIndex = 0;
         this.elements.digits[this._editingDigitIndex].setAttribute("state", "Selected");
@@ -151,7 +156,7 @@ class WT_Numeric_Input extends HTMLElement {
         this.updateDisplay();
     }
     confirm() {
-        let evt = document.createEvent("HTMLEvents");
+        const evt = document.createEvent("HTMLEvents");
         evt.initEvent("change", true, true);
         this.dispatchEvent(evt);
 
@@ -166,11 +171,9 @@ class WT_Numeric_Input extends HTMLElement {
         this.exit();
     }
     exit() {
-        if (this.inputStackManipulator) {
-            this.inputStackManipulator.pop();
-            this.inputStackManipulator = null;
+        if (this.inputHandler) {
+            this.inputHandler = this.inputHandler.pop();
         }
-        this.elements.digits[this._editingDigitIndex].removeAttribute("state");
     }
     clampValue(value) {
         if (this.min !== null)

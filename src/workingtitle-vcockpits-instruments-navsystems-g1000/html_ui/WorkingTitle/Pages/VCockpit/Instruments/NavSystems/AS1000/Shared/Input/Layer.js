@@ -1,4 +1,8 @@
 class Input_Layer {
+    constructor() {
+        this.onDeactivateEvent = new WT_Event();
+    }
+
     onLargeInc(inputStack) { return false; }
     onLargeDec(inputStack) { return false; }
     onSmallInc(inputStack) { return false; }
@@ -7,6 +11,7 @@ class Input_Layer {
     onNavigationPush(inputStack) { return false; }
     onEnter(inputStack) { return false; }
     onCLR(inputStack) { return false; }
+    onCLRLong(inputStack) { return false; }
     onProceduresPush(inputStack) { return false; }
     onFlightPlan(inputStack) { return false; }
     onDirectTo(inputStack) { return false; }
@@ -64,6 +69,8 @@ class Input_Layer {
                 return this.onProceduresPush(inputStack);
             case "CLR":
                 return this.onCLR(inputStack);
+            case "CLR_Long":
+                return this.onCLRLong(inputStack);
 
             case "FPL_Push":
                 return this.onFlightPlan(inputStack);
@@ -156,7 +163,9 @@ class Input_Layer {
     }
 
     onActivate() { }
-    onDeactivate() { }
+    onDeactivate() {
+        this.onDeactivateEvent.fire();
+    }
 }
 
 class Page_Input_Layer extends Input_Layer {

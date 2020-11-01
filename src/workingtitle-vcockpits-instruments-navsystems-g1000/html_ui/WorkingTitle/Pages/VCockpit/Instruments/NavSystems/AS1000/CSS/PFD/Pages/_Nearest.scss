@@ -1,4 +1,4 @@
-wt-nearest {
+g1000-pfd-nearest-airports {
     width: 100%;
     height: 100%;
     display: grid;
@@ -11,7 +11,7 @@ wt-nearest {
     }
 
     ul {
-        overflow: scroll;
+        overflow-y: scroll;
         height: 100%;
     }
 

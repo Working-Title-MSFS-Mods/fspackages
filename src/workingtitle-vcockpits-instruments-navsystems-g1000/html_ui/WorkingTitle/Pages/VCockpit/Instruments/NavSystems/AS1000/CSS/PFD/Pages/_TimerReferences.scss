@@ -1,8 +1,8 @@
-wt-timer-references-page {
+g1000-pfd-timer-references-page {
     display: block;
 }
 
-wt-timer {
+g1000-pfd-timer {
     margin: 1vh 0;
     display: grid;
     grid-template-columns: 1fr 1.5fr 1fr 1fr;
@@ -21,7 +21,7 @@ wt-timer {
     }
 }
 
-wt-airspeed-references {
+g1000-pfd-airspeed-references {
     display: block;
     margin: 1vh 0;
 
@@ -57,7 +57,7 @@ wt-airspeed-references {
     }
 }
 
-wt-minimums {
+g1000-pfd-minimums {
     display: grid;
     grid-template-columns: 1fr 2.5fr 1fr;
     grid-gap: 2vh;

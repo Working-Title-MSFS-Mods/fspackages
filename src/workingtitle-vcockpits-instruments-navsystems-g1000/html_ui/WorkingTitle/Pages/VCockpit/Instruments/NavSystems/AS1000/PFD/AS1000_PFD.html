@@ -1,7 +1,7 @@
 ﻿<script>
-    /*Include.addScript("/JS/debug.js?asdasss", function () {
+    Include.addScript("/JS/debug.js?asdasss", function () {
         g_modDebugMgr.AddConsole(null);
-    });*/
+    });
 </script>
 
 <script type="text/html" id="AS1000_PFD">
@@ -22,7 +22,7 @@
                             <div class="name">NAV1</div>
                             <div data-element="radio1volume" class="volume"></div>
                             <div data-element="radio1standby" class="standby">--</div>
-                            <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg?2" class="arrow" />
+                            <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg" class="arrow" />
                             <div data-element="radio1active" class="active">--</div>
                             <div data-element="radio1ident" class="ident"></div>
                         </section>
@@ -30,7 +30,7 @@
                             <div class="name">NAV2</div>
                             <div data-element="radio2volume" class="volume"></div>
                             <div data-element="radio2standby" class="standby">--</div>
-                            <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg?2" class="arrow" />
+                            <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg" class="arrow" />
                             <div data-element="radio2active" class="active">--</div>
                             <div data-element="radio2ident" class="ident"></div>
                         </section>
@@ -160,551 +160,108 @@
                         </g1000-oat>
                     </footer>
 
-                    <wt-mini-page-container>
-                        <wt-timer-references-page class="mini-page">
+                    <g1000-pfd-mini-page-container>
+                        <g1000-pfd-timer-references-page class="mini-page">
                             <h1>References</h1>
-                            <wt-timer>
+                            <g1000-pfd-timer>
                                 <label>Timer</label>
                                 <time-input data-change="changeTime" value="0" data-element="time"></time-input>
                                 <toggle-switch data-change="changeDirection" values="DN,UP" value="DN" data-element="direction"></toggle-switch>
                                 <selectable-button data-element="button" data-click="clickButton">Start?</selectable-button>
-                            </wt-timer>
+                            </g1000-pfd-timer>
                             <hr />
-                            <wt-airspeed-references>
+                            <g1000-pfd-airspeed-references>
                                 <ul data-element="references"></ul>
-                            </wt-airspeed-references>
+                            </g1000-pfd-airspeed-references>
                             <hr />
-                            <wt-minimums>
+                            <g1000-pfd-minimums>
                                 <label>Minimums</label>
                                 <toggle-switch data-change="changeMode" values="Off,Baro" value="Off" data-element="mode"></toggle-switch>
                                 <numeric-input data-change="changeAltitude" value="0" increment="10" data-element="altitude" units="ft"></numeric-input>
-                            </wt-minimums>
-                        </wt-timer-references-page>
+                            </g1000-pfd-minimums>
+                        </g1000-pfd-timer-references-page>
 
-                        <wt-nearest class="mini-page">
+                        <g1000-pfd-nearest-airports class="mini-page">
                             <h1>Nearest Airports</h1>
                             <ul class="content scrollable-container" data-element="airportList"></ul>
-                        </wt-nearest>
+                        </g1000-pfd-nearest-airports>
 
-                        <wt-pfd-menu class="mini-page">
+                        <g1000-pfd-adf-dme class="mini-page">
+                            <h1>ADF / DME Tuning</h1>
+                            <section class="adf">
+                                <h2>ADF</h2>
+                                <div class="top">
+                                    <div class="active" data-element="active"></div>
+                                    <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg" class="arrow" />
+                                    <adf-input min="0" max="2000" digits="4" decimals="1" data-element="adfFrequency"></adf-input>
+                                </div>
+                                <div class="bottom">
+                                    <label>Mode</label>
+                                    <toggle-switch values="ADF" value="ADF" data-input="setAdfMode"></toggle-switch>
+                                    <label>Volume</label>
+                                    <numeric-input class="volume" min="0" max="100" units="%" data-input="setVolume" value="100" increment="5"></numeric-input>                                
+                                </div>
+                            </section>
+                            <section class="dme">
+                                <h2>DME</h2>
+                                <div class="mode">
+                                    <label>Mode</label>
+                                    <toggle-switch values="NAV1,NAV2" value="NAV1" data-change="setDmeMode"></toggle-switch>
+                                </div>
+                            </section>
+                            <section class="ent-to-transfer" data-element="entToTransfer">
+                                ENT To Transfer
+                            </section>
+                        </g1000-pfd-adf-dme>
+
+                        <g1000-pfd-setup-menu class="mini-page">
                             <h1>PFD Setup Menu</h1>
                             <div class="element">
                                 <label>PFD Display</label>
                                 <toggle-switch values="Auto,Manual" value="Manual"></toggle-switch>
-                                <<numeric-input data-input="setPfdBrightness" min="0" max="100" units="%" data-element="pfdBrightness"></numeric-input>
+                                <numeric-input data-input="setPfdBrightness" min="0" max="100" units="%" increment="5" data-element="pfdBrightness"></numeric-input>
                             </div>
                             <div class="element">
                                 <label>MFD Display</label>
                                 <toggle-switch values="Auto,Manual" value="Manual"></toggle-switch>
-                                <<numeric-input data-input="setMfdBrightness" min="0" max="100" units="%" data-element="mfdBrightness"></numeric-input>
+                                <numeric-input data-input="setMfdBrightness" min="0" max="100" units="%" increment="5" data-element="mfdBrightness"></numeric-input>
                             </div>
-                        </wt-pfd-menu>
-                    </wt-mini-page-container>
+                        </g1000-pfd-setup-menu>
 
-                    <div id="DirectToWindow" class="PopupWindow" state="Inactive">
-                        <div id="drctTitle" class="subpart">DIRECT TO</div>
-                        <div id="mainInfos" class="subpart">
-                            <div>
-                                <span class="Blinking" id="DRCTIdent">____</span>
-                                <span id="DRCTSymbol"></span>
-                                <span id="DRCTCity"></span>
-                            </div>
-                            <div class="Blinking" id="DRCTFacility"></div>
-                        </div>
-                        <div id="vnav" class="subpart">
-                            <div>
-                                ALT
-                                <span id="DRCTVnavHeight">_____FT</span>
-                            </div>
-                            <div>
-                                OFFSET
-                                <span id="DRCTVnavDistance">+0NM</span>
-                            </div>
-                        </div>
-                        <div id="location" class="subpart">
-                            <div>
-                                <div>BRG</div>
-                                <div id="DRCTBearing"></div>
-                                <div>DIS</div>
-                                <div id="DRCTDistance"></div>
-                            </div>
-                            <div id="Crsline">
-                                <div>CRS</div>
-                                <div class="bottom" id="DRCTDesiredCourse"></div>
-                            </div>
-                        </div>
-                        <div class="Blinking" id="DRCTActivateButton">ACTIVATE?</div>
-                        <div class="Blinking" id="DRCTHoldButton">HOLD?</div>
-
-                        <div id="DRCTSelectionWindow" class="PopupWindow" state="Inactive">
-                            <div id="titlePart">
-                                <span id="Title" class="Blinking">FPL</span>
-                            </div>
-                            <div id="ElementListAndSlider">
-                                <div id="ElementList">
-                                    <div id="DRCTSelectElem1" class="Blinking"></div>
-                                    <div id="DRCTSelectElem2" class="Blinking"></div>
-                                    <div id="DRCTSelectElem3" class="Blinking"></div>
-                                    <div id="DRCTSelectElem4" class="Blinking"></div>
-                                </div>
-                                <div id="Slider" state="Active">
-                                    <div id="SliderCursor"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="TmrRefWindow" class="PopupWindow" state="Inactive">
-                        <div id="tmrTitle" class="subpart">REFERENCES</div>
-                        <div id="timer" class="subpart">
-                            <div class="line">
-                                <div class="white" id="tmrTitle">TIMER</div>
-                                <div class="Blinking" id="tmrTime">00:00:00</div>
-                                <div class="Blinking" id="tmrDirection">UP</div>
-                                <div class="Blinking" id="tmrStart">START?</div>
-                            </div>
-                        </div>
-                        <div id="references" class="subpart">
-                            <div class="line">
-                                <div class="white">GLIDE</div>
-                                <div class="Blinking" id="glideValue">65kt</div>
-                                <div class="Blinking" id="glideActivate">OFF</div>
-                            </div>
-                            <div class="line">
-                                <div class="white">Vr</div>
-                                <div class="Blinking" id="VrValue">55kt</div>
-                                <div class="Blinking" id="VrActivate">OFF</div>
-                            </div>
-                            <div class="line">
-                                <div class="white">Vx</div>
-                                <div class="Blinking" id="VxValue">60kt</div>
-                                <div class="Blinking" id="VxActivate">OFF</div>
-                            </div>
-                            <div class="line">
-                                <div class="white">Vy</div>
-                                <div class="Blinking" id="VyValue">79kt</div>
-                                <div class="Blinking" id="VyActivate">OFF</div>
-                            </div>
-                        </div>
-                        <div id="minimums" class="subpart">
-                            <div class="line">
-                                <div class="white">MINIMUMS</div>
-                                <div class="Blinking" id="minimumType">BARO</div>
-                                <div class="Blinking" id="minimumValue">1500FT</div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div id="NearestAirports" class="PopupWindow" state="Inactive">
-                        <div id="title">NEAREST AIRPORTS</div>
-                        <div id="ElementListAndSlider">
-                            <table id="ElementList">
-                                <tr class="topLine" id="NRSTAirports1Top">
-                                    <td>51K</td>
-                                    <td>114°</td>
-                                    <td>0.3NM</td>
-                                    <td class="end">VFR</td>
-                                </tr>
-                                <tr id="NRSTAirports1Bottom">
-                                    <td class="white">UNICOM</td>
-                                    <td>122.700</td>
-                                    <td class="white">RNWY</td>
-                                    <td class="end">2440FT</td>
-                                </tr>
-                                <tr class="topLine" id="NRSTAirports2Top">
-                                    <td>51K</td>
-                                    <td>114°</td>
-                                    <td>0.3NM</td>
-                                    <td class="end">VFR</td>
-                                </tr>
-                                <tr id="NRSTAirports2Bottom">
-                                    <td class="white">UNICOM</td>
-                                    <td>122.700</td>
-                                    <td class="white">RNWY</td>
-                                    <td class="end">2440FT</td>
-                                </tr>
-                                <tr class="topLine" id="NRSTAirports3Top">
-                                    <td>51K</td>
-                                    <td>114°</td>
-                                    <td>188.5NM</td>
-                                    <td class="end">VFR</td>
-                                </tr>
-                                <tr id="NRSTAirports3Bottom">
-                                    <td class="white">UNICOM</td>
-                                    <td>122.700</td>
-                                    <td class="white">RNWY</td>
-                                    <td class="end">2440FT</td>
-                                </tr>
-                            </table>
-                            <div id="Slider" state="Active">
-                                <div id="SliderCursor"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="AirportInfos" class="PopupWindow" state="Inactive">
-                        <div id="title">AIRPORT INFORMATION</div>
-                        <div id="top">
-                            <div id="topLine">
-                                <div>
-                                    <span id="ident">51K</span>
-                                    <span id="symbol"></span>
-                                </div>
-                                <div id="city">OLATHE KS</div>
-                            </div>
-                            <div id="facilityName">CEDAR</div>
-                        </div>
-                        <div id="middle">
-                            <div id="topLine">
-                                <div id="type">PUBLIC</div>
-                                <div id="timeZone">UTC-6</div>
-                                <div id="runwayLength">1020FT</div>
-                            </div>
-                            <div id="region">N CEN USA</div>
-                        </div>
-                        <div id="bottom">
-                            <div id="latitude">N 38°55.88'</div>
-                            <div id="longitude">W094°53.10'</div>
-                        </div>
-                        <div id="backButton">
-                            BACK
-                        </div>
-                    </div>
-
-                    <div id="AdfDme" class="PopupWindow" state="Inactive">
-                        <div id="title">
-                            ADF/DME TUNING
-                        </div>
-                        <div id="ADF">
-                            <div id="topLine">
-                                <div id="adfTitle">ADF</div>
-                                <div id="ActiveAdfFreq">346.0</div>
-                                <div id="adfDoubleArrow"><img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Misc/DoubleArrow.svg" /></div>
-                                <div id="StbyAdfFreq" class="Blinking">390.0</div>
-                            </div>
-                            <div id="botLine">
-                                <div id="adfModeText">MODE</div>
-                                <div id="adfMode" class="Blinking">ADF</div>
-                                <div id="VolText">VOL</div>
-                                <div id="Volume" class="Blinking">100%</div>
-                            </div>
-                        </div>
-                        <div id="DME">
-                            <div id="dmeTitle">DME</div>
-                            <div id="dmeModeText">MODE</div>
-                            <div id="dmeMode" class="Blinking">NAV2</div>
-                        </div>
-                        <div id="bottomPart">
-                            <div id="indicationText">ENT TO TRANSFER</div>
-                        </div>
-                    </div>
-
-                    <div id="ActiveFlightPlan" class="PopupWindow" state="Inactive">
-                        <div class="RightInfos">
-                            <div class="SubPart ActiveFPL">
-                                <div class="Title">ACTIVE FLIGHT PLAN</div>
-                                <div class="Content">
-                                    <div class="BlueValue" id="AFPL_Name">______ / ______</div>
-                                    <div class="SliderContainer">
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th>DTK</th>
-                                                    <th>DIS</th>
-                                                    <th>ALT</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr class="SizeSetter">
-                                                    <td>
-                                                        <div class="ArrowContainer">
-                                                            <svg id="CurrentLegArrowSVG" height="1000" width="200" xmlns="http://www.w3.org/2000/svg">
-                                                                <path id="CurrentLegArrow" d="M0, 0 Z" fill="magenta" />
-                                                            </svg>
-                                                        </div>
-                                                    </td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr class="L1"></tr>
-                                                <tr class="L2"></tr>
-                                                <tr class="L3"></tr>
-                                                <tr class="L4"></tr>
-                                                <tr class="L5"></tr>
-                                            </tbody>
-                                        </table>
-                                        <div class="Slider" state="Inactive">
-                                            <div class="SliderCursor">
-                                            </div>
-                                        </div>
+                        <g1000-pfd-flight-plan class="mini-page">
+                            <h1>Flight Plan</h1>
+                            <section class="flight-plan">
+                                <div class="flight-plan-header">
+                                    <div class="flight-plan-name"></div>
+                                    <div class="flight-plan-header-labels">
+                                        <div></div>
+                                        <div data-label="DTK">DTK</div>
+                                    <div data-label="DIS">DIS</div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="ProceduresWindow" class="PopupWindow" state="Inactive">
-                        <div>PROCEDURES</div>
-                        <div class="SubPart">
-                            <div class="Content">
-                                <div class="Blinking" state="Greyed" id="Proc_ActivateVTF">ACTIVATE VECTOR-TO-FINAL</div>
-                                <div class="Blinking" id="Proc_ActivateApproach">ACTIVATE APPROACH</div>
-                                <div class="Blinking" state="Greyed" id="Proc_ActivateMissedApproach">ACTIVATE MISSED APPROACH</div>
-                                <div class="Blinking" id="Proc_SelectApproach">SELECT APPROACH</div>
-                                <div class="Blinking" state="Greyed" id="Proc_SelectArrival">SELECT ARRIVAL</div>
-                                <div class="Blinking" state="Greyed" id="Proc_SelectDeparture">SELECT DEPARTURE</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="ApproachSelection" class="PopupWindow" state="Inactive">
-                        <div class="SubPart Airport">
-                            <div class="Title">SELECT APPROACH</div>
-                            <div class="Content">
-                                <div class="airportTop">
-                                    <div class="Blinking" id="Approach_AirportID">_____</div>
-                                    <img id="Approach_AirportLogo" />
-                                    <div id="Approach_AirportType">UNKNOWN</div>
+                                <div class="flight-plan-waypoints scrollable-container" data-element="flightPlanWaypoints">
+                                    <div class="flight-plan-marker" data-element="activeLegMarker">
+                                        <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
+                                            <path d="M100 50 L50 50 Q20 50 20 80 L20 200" stroke="magenta" stroke-width="20" fill="none"></path>
+                                        </svg>
+                                        <div style="overflow:hidden;">
+                                            <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%;">
+                                                <path d="M20 0 L20 100" stroke="magenta" stroke-width="20" fill="none"></path>
+                                            </svg>
+                                        </div>
+                                        <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
+                                            <path d="M20 -100 L20 30 Q20 50 50 50 L60 50" stroke="magenta" stroke-width="20" fill="none"></path>
+                                            <path d="M60 20 L60 80 L100 50 Z" fill="magenta"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="new-waypoint" data-element="newWaypointLine">
+                                        <div></div>
+                                        <div class="ident"><selectable-button data-click="createNewWaypoint" class="new-waypoint">__________</selectable-button></div>
+                                    </div>
                                 </div>
-                                <div class="Blinking" id="Approach_AirportName">____________</div>
-                                <div class="elemGroup" id="Approach_ChannelGroup">
-                                    <div class="white" id="Approach_ChannelTitle">CHNL</div>
-                                    <div class="value" id="Approach_Channel">_____</div>
-                                </div>
-                                <div class="elemGroup" id="Approach_ApproachGroup">
-                                    <div class="white" id="Approach_ApproachTitle">APR</div>
-                                    <div class="Blinking value" id="Approach_Approach">NONE</div>
-                                </div>
-                                <div class="elemGroup" id="Approach_TransitionGroup">
-                                    <div class="white" id="Approach_TransTitle">TRANS</div>
-                                    <div class="Blinking value" id="Approach_Transition">NONE</div>
-                                </div>
-                                <div class="elemGroup" id="Approach_MinimumsGroup">
-                                    <div class="white" id="Approach_MinimumsTitle">MINIMUMS</div>
-                                    <div class="value" id="Approach_MinimumsState">OFF</div>
-                                    <div class="value" id="Approach_MinimumsValue">_____FT</div>
-                                </div>
-                                <div class="elemGroup" id="Approach_FrequencyGroup">
-                                    <div class="white" id="Approach_FrequencyTitle">TRANS</div>
-                                    <div class="value" id="Approach_FrequencyName">___</div>
-                                    <div class="value" id="Approach_FrequencyValue">___.__</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="Approach_ApproachList" class="SubMenu" state="Inactive">
-
-                        </div>
-                        <div id="Approach_TransitionList" class="SubMenu" state="Inactive">
-
-                        </div>
-                        <div class="endLine"><span class="Blinking" id="Approach_LoadButton">LOAD?</span> OR <span class="Blinking" id="Approach_ActivateButton">ACTIVATE?</span></div>
-                    </div>
-                    <div id="ArrivalSelection" class="PopupWindow" state="Inactive">
-                        <div class="SubPart Airport">
-                            <div class="Title">AIRPORT</div>
-                            <div class="Content">
-                                <div class="airportTop">
-                                    <div class="Blinking" id="Arrival_AirportID">_____</div>
-                                    <img id="Arrival_AirportLogo" />
-                                    <div id="Arrival_AirportType">UNKNOWN</div>
-                                </div>
-                                <div class="Blinking" id="Arrival_AirportName">____________</div>
-                                <div class="elemGroup" id="Arrival_ArrivalGroup">
-                                    <div class="white" id="Arrival_ArrivalTitle">Arrival</div>
-                                    <div class="Blinking value" id="Arrival_Arrival">NONE</div>
-                                </div>
-                                <div class="elemGroup" id="Arrival_TransitionGroup">
-                                    <div class="white" id="Arrival_TransitionTitle">Transition</div>
-                                    <div class="Blinking value" id="Arrival_Transition">NONE</div>
-                                </div>
-                                <div class="elemGroup" id="Arrival_RunwayGroup">
-                                    <div class="white" id="Arrival_RunwayTitle">Runway</div>
-                                    <div class="Blinking value" id="Arrival_Runway">NONE</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="Arrival_ArrivalList" class="SubMenu" state="Inactive">
-                            <div class="L1 Blinking"></div>
-                            <div class="L2 Blinking"></div>
-                            <div class="L3 Blinking"></div>
-                            <div class="L4 Blinking"></div>
-                            <div class="L5 Blinking"></div>
-                            <div class="L6 Blinking"></div>
-                            <div class="L7 Blinking"></div>
-                            <div class="L8 Blinking"></div>
-                            <div class="L9 Blinking"></div>
-                            <div class="L10 Blinking"></div>
-                            <div class="Slider">
-                                <div class="SliderCursor"></div>
-                            </div>
-                        </div>
-                        <div id="Arrival_TransitionList" class="SubMenu" state="Inactive">
-
-                        </div>
-                        <div id="Arrival_RunwayList" class="SubMenu" state="Inactive">
-
-                        </div>
-                        <div class="endLine"><span class="Blinking" id="Arrival_LoadButton">LOAD?</span></div>
-                    </div>
-                    <div id="DepartureSelection" class="PopupWindow" state="Inactive">
-                        <div class="SubPart Airport">
-                            <div class="Title">AIRPORT</div>
-                            <div class="Content">
-                                <div class="airportTop">
-                                    <div class="Blinking" id="Departure_AirportID">_____</div>
-                                    <img id="Departure_AirportLogo" />
-                                    <div id="Departure_AirportType">UNKNOWN</div>
-                                </div>
-                                <div class="Blinking" id="Departure_AirportName">____________</div>
-                                <div class="elemGroup" id="Departure_ArrivalGroup">
-                                    <div class="white" id="Departure_ArrivalTitle">Arrival</div>
-                                    <div class="Blinking value" id="Departure_Departure">NONE</div>
-                                </div>
-                                <div class="elemGroup" id="Departure_TransitionGroup">
-                                    <div class="white" id="Departure_TransitionTitle">Transition</div>
-                                    <div class="Blinking value" id="Departure_Transition">NONE</div>
-                                </div>
-                                <div class="elemGroup" id="Departure_RunwayGroup">
-                                    <div class="white" id="Departure_RunwayTitle">Runway</div>
-                                    <div class="Blinking value" id="Departure_Runway">NONE</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="Departure_DepartureList" class="SubMenu" state="Inactive">
-                            <div class="L1 Blinking"></div>
-                            <div class="L2 Blinking"></div>
-                            <div class="L3 Blinking"></div>
-                            <div class="L4 Blinking"></div>
-                            <div class="L5 Blinking"></div>
-                            <div class="L6 Blinking"></div>
-                            <div class="L7 Blinking"></div>
-                            <div class="L8 Blinking"></div>
-                            <div class="L9 Blinking"></div>
-                            <div class="L10 Blinking"></div>
-                            <div class="Slider">
-                                <div class="SliderCursor"></div>
-                            </div>
-                        </div>
-                        <div id="Departure_TransitionList" class="SubMenu" state="Inactive">
-
-                        </div>
-                        <div id="Departure_RunwayList" class="SubMenu" state="Inactive">
-
-                        </div>
-                        <div class="endLine"><span class="Blinking" id="Departure_LoadButton">LOAD?</span></div>
-                    </div>
-
-                    <div id="WaypointsWindows" class="PopupWindow" state="Inactive">
-                        <div>WAYPOINT INFORMATION</div>
-                        <div id="mainInfos">
-                            <div class="top">
-                                <div>IDENT, FACILITY, CITY</div>
-                            </div>
-                            <div class="bottom">
-                                <img id="WPTSymbol" />
-                                <div>
-                                    <span id="WPTIdent">____</span>
-                                </div>
-                                <div id="WPTFacility">_______________</div>
-                                <div id="WPTCity">_______________</div>
-                            </div>
-                        </div>
-                        <div id="location">
-                            <div class="top">LOCATION</div>
-                            <div class="bottom">
-                                <div id="left">
-                                    <div>BRG <span id="WPTBearing">___°</span></div>
-                                    <div>DIS <span id="WPTDistance">__._NM</span></div>
-                                </div>
-                                <div id="right">
-                                    <div id="WPTRegion">__________</div>
-                                    <div id="WPTLatitude">_ __°__.__'</div>
-                                    <div id="WPTLongitude">____°__.__'</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="BotText">Press "ENT" to accept</div>
-                    </div>
-
-                    <div id="DuplicateWaypointWindow" class="PopupWindow" state="Inactive">
-                        <div class="SubPart Waypoint">
-                            <div class="Title">WAYPOINT</div>
-                            <div class="Content">
-                                <div class="Ident"></div>
-                            </div>
-                        </div>
-                        <div class="SubPart Duplicates">
-                            <div class="Title">DUPLICATES</div>
-                            <div class="Content">
-                                <div id="Duplicates_List">
-                                    <div class="Line L1"></div>
-                                    <div class="Line L2"></div>
-                                    <div class="Line L3"></div>
-                                    <div class="Line L4"></div>
-                                    <div class="Line L5"></div>
-                                </div>
-                                <div class="Slider" state="Inactive">
-                                    <div class="SliderCursor"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="SubPart Informations">
-                            <div class="Title">INFORMATION</div>
-                            <div class="Content">
-                                <div class="Name"></div>
-                                <div class="Latitude"></div>
-                                <div class="Longitude"></div>
-                                <div class="Bearing"></div>
-                                <div class="Distance"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="PfdConfWindow" class="PopupWindow" state="Inactive">
-                        <div id="pfdTitle">PFD SETUP MENU</div>
-                        <div id="pfdElementList">
-                            <div class="pfdLine"><span>PFD DSPL &gt;</span> <span class="pfdBrightLevel" id="pfdBrightLevel">NULL</span></div>
-                            <div class="pfdLine"><span>MFD DSPL &gt;</span> <span class="pfdBrightLevel" id="mfdBrightLevel">NULL</span></div>
-                        </div>
-                    </div>
-
-
-                    <div id="AlertsWindow" class="PopupWindow" state="Inactive">
-                        <div id="title">ALERTS</div>
-                        <div id="ElementListAndSlider">
-                            <div id="Elements">
-                                <div id="Alert1" class="Blinking"></div>
-                                <div id="Alert2" class="Blinking"></div>
-                                <div id="Alert3" class="Blinking"></div>
-                            </div>
-                            <div id="Slider" state="Active">
-                                <div id="SliderCursor"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="ContextualMenu" state="Inactive">
-                        <div id="ContextualMenuContent">
-                            <div id="ContextualMenuTitle">EXAMPLE MENU</div>
-                            <div id="ContextualMenuMainArea">
-                                <div id="subTitle">OPTIONS</div>
-                                <div id="ContextualMenuElements">
-                                    <div class="ContextualMenuElement" state="Inactive">Inactive?</div>
-                                    <div class="ContextualMenuElement" state="Selected">Selected?</div>
-                                    <div class="ContextualMenuElement" state="Unselected">Unselected?</div>
-                                </div>
-                                <div id="SliderMenu" state="Active">
-                                    <div id="SliderMenuCursor"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="SubText">
-                            Press the FMS CRSR knob to return to base page
-                        </div>
-                    </div>
+                            </section>
+                        </g1000-pfd-flight-plan>
+                    </g1000-pfd-mini-page-container>
                 </div>
             </div>
         </div>
@@ -818,6 +375,8 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/FileHandler.js"></script>
 
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/WaypointRepository.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/AdfInput.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/AirportIcon.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/Confirm.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/DropDownSelector.js"></script>
@@ -831,10 +390,13 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/RadioFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/ComFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/NavFrequencies.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/PageMenu.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Brightness.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/NearestWaypoints.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Settings.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Observables.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UnitChooser.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/DirectTo.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/NearestAirports.js"></script>
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Annunciations.js"></script>
@@ -846,7 +408,9 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/References.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Timer.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Transponder.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/AdfDme.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/Nearest.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/SetupMenu.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/TimerReferences.js"></script>
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/NavBox.js"></script>

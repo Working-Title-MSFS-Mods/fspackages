@@ -35,6 +35,12 @@ html {
     --engine-green: #00cc00;
     --engine-red: #f84444;
     --engine-yellow: #ffff00;
+
+    --color-gps: #{$color_gps};
+    --color-gps-outline: #{darken($color_gps, 20%)};
+
+    --color-ap: #{$color_ap_active};
+    --color-ap-outline: #{darken($color_ap_active, 20%)};
 }
 
 ul {

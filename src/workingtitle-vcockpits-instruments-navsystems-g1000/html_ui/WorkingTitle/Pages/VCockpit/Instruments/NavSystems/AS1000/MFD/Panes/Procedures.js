@@ -25,15 +25,15 @@ class Procedures {
         return true;
     }
     getActiveLeg() {
-        let waypoints = {
+        const waypoints = {
             origin: null,
             destination: null,
             originIsApproach: false,
             destinationIsApproach: false
         };
-        let flightPlanManager = this.flightPlanManager;
+        const flightPlanManager = this.flightPlanManager;
         if (flightPlanManager.isActiveApproach()) {
-            let index = flightPlanManager.getApproachActiveWaypointIndex();
+            const index = flightPlanManager.getApproachActiveWaypointIndex();
             waypoints.destination = index;
             waypoints.destinationIsApproach = true;
             if (index == 0) {
@@ -62,7 +62,6 @@ class Procedures {
         if (this.activeLeg.hasSubscribers()) {
             let activeLeg = this.getActiveLeg();
             if (!this.compareActiveLegs(this.activeLeg.value, activeLeg)) {
-                console.log(JSON.stringify(activeLeg));
                 this.activeLeg.value = activeLeg;
             }
         }
@@ -86,11 +85,15 @@ class WT_Procedures_Input_Layer extends Pane_Input_Layer {
     }
 }
 
-class WT_Procedures_Pane extends HTMLElement {
-    constructor() {
+class WT_Procedures_Pane extends WT_HTML_View {
+    /**
+     * @param {WT_Show_Procedure_Handler} showProcedureHandler 
+     */
+    constructor(showProcedureHandler) {
         super();
         DOMUtilities.AddScopedEventListener(this, "selectable-button", "selected", this.onButtonClick.bind(this));
         this.subscriptions = new Subscriptions();
+        this.showProcedureHandler = showProcedureHandler;
     }
     connectedCallback() {
         let template = document.getElementById('procedures-pane');
@@ -129,28 +132,30 @@ class WT_Procedures_Pane extends HTMLElement {
     }
     enter(gps, inputStack) {
         this.gps = gps;
-        this.inputStack = inputStack;
         this.inputStackHandle = inputStack.push(this.inputLayer);
+        this.inputStackHandle.onPopped.subscribe(() => {
+            this.parentNode.removeChild(this);
+        });
     }
     back() {
         this.exit();
     }
     exit() {
         if (this.inputStackHandle) {
-            this.inputStackHandle.pop();
-            this.inputStackHandle = null;
+            this.inputStackHandle = this.inputStackHandle.pop();
         }
-        this.parentNode.removeChild(this);
     }
     selectApproach() {
         this.exit();
-        this.gps.showApproaches();
+        this.showProcedureHandler.showApproaches();
     }
-    onButtonClick(e, node) {
-        if (node.dataset.click) {
-            let click = node.dataset.click;
-            this[click]();
-        }
+    selectArrival() {
+        this.exit();
+        this.showProcedureHandler.showArrivals();
+    }
+    selectDeparture() {
+        this.exit();
+        this.showProcedureHandler.showDepartures();
     }
 }
 customElements.define("g1000-procedures-pane", WT_Procedures_Pane);

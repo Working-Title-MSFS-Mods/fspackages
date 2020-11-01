@@ -52,9 +52,8 @@ DOMUtilities.AppendChildren = function (node, children) {
 // Add an event listener to "node" that catches "e" when fired on an element matching "selector"
 // Avoids having to attach listeners to every node
 DOMUtilities.AddScopedEventListener = function (node, selector, e, func, capture = false) {
-    var func2 = function (e) {
-        var targetNode = e.target;
-
+    const func2 = function (e) {
+        let targetNode = e.target;
         while (targetNode != null && targetNode != document) {
             if (targetNode.matches(selector)) {
                 if (e == "mouseout" || e == "mouseover") {
@@ -65,7 +64,6 @@ DOMUtilities.AddScopedEventListener = function (node, selector, e, func, capture
             }
             if (node == targetNode)
                 return;
-
             targetNode = targetNode.parentNode;
         }
     };
@@ -75,7 +73,7 @@ DOMUtilities.AddScopedEventListener = function (node, selector, e, func, capture
 
 // Repopulates an element minimising adding/removing nodes
 DOMUtilities.repopulateElement = function (listElement, elements) {
-    let firstElement = listElement.firstChild;
+    const firstElement = listElement.firstChild;
     let previousElement = null;
     let first = true;
     let modifications = 0;

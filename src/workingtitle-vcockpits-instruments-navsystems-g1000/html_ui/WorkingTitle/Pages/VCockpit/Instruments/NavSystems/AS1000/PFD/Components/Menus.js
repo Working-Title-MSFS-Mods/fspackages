@@ -5,7 +5,7 @@ class WT_PFD_Main_Menu extends WT_Soft_Key_Menu {
     constructor(pfd) {
         super(false);
         this.addSoftKey(1, new WT_Soft_Key("TEST", () => {
-            OpenBrowser("https://www.fimfiction.net"); 
+            OpenBrowser("https://www.fimfiction.net");
             Coherent.trigger("AP_ALT_VAL_SET", 4200);
             Coherent.trigger("AP_VS_VAL_SET", 300);
             Coherent.trigger("AP_HDG_VAL_SET", 180);
@@ -16,7 +16,7 @@ class WT_PFD_Main_Menu extends WT_Soft_Key_Menu {
         this.addSoftKey(4, new WT_Soft_Key("PFD", pfd.showPfdMenu.bind(pfd)));
         this.addSoftKey(5, new WT_Soft_Key("OBS"));
         this.addSoftKey(6, new WT_Soft_Key("CDI", () => pfd.hsiModel.cycleCdi()));
-        this.addSoftKey(7, new WT_Soft_Key("DME"));
+        this.addSoftKey(7, new WT_Soft_Key("DME", () => pfd.miniPageController.showAdfDme()));
         this.addSoftKey(8, new WT_Soft_Key("XPDR", pfd.showTransponderMenu.bind(pfd)));
         this.addSoftKey(9, new WT_Soft_Key("IDENT"));
         this.addSoftKey(10, new WT_Soft_Key("TMR/REF", () => pfd.miniPageController.showTimerReferences()));
@@ -36,10 +36,10 @@ class WT_PFD_PFD_Menu extends WT_Soft_Key_Menu {
         this.addSoftKey(1, new WT_Soft_Key("SYN VIS", pfd.showSyntheticVisionMenu.bind(pfd)));
         this.addSoftKey(2, new WT_Soft_Key("DFLTS"));
         this.addSoftKey(3, new WT_Soft_Key("WIND"));
-        this.addSoftKey(4, new WT_Soft_Key("DME"));
-        this.addSoftKey(5, new WT_Soft_Key("BRG1", hsiModel.cycleBearing.bind(pfd, 1)));
+        this.addSoftKey(4, new WT_Soft_Key("DME", hsiModel.toggleDme.bind(hsiModel)));
+        this.addSoftKey(5, new WT_Soft_Key("BRG1", hsiModel.cycleBearing.bind(hsiModel, 1)));
         this.addSoftKey(6, new WT_Soft_Key("HSI FRMT"));
-        this.addSoftKey(7, new WT_Soft_Key("BRG2", hsiModel.cycleBearing.bind(pfd, 2)));
+        this.addSoftKey(7, new WT_Soft_Key("BRG2", hsiModel.cycleBearing.bind(hsiModel, 2)));
         this.addSoftKey(9, new WT_Soft_Key("ALT UNIT", pfd.showAltUnitMenu.bind(pfd)));
         this.addSoftKey(10, new WT_Soft_Key("STD BARO", () => barometricPressure.setStandard()));
         this.addSoftKey(11, new WT_Soft_Key("BACK", pfd.showMainMenu.bind(pfd)));
@@ -161,13 +161,18 @@ class WT_PFD_Transponder_Code_Menu extends WT_Soft_Key_Menu {
     backspace() {
         if (this.transponderTempCode.length > 0) {
             this.transponderTempCode = this.transponderTempCode.slice(0, this.transponderTempCode.length - 1);
+            this.transponderModel.setEditCode(this.transponderTempCode);
         }
     }
     addNumber(number) {
         this.transponderTempCode += number;
+        this.transponderModel.setEditCode(this.transponderTempCode);
         if (this.transponderTempCode.length == 4) {
             this.transponderModel.setSquawk(this.transponderTempCode);
             this.pfd.showMainMenu();
         }
     };
+    deactivate() {
+        this.transponderModel.setEditCode(null);
+    }
 }

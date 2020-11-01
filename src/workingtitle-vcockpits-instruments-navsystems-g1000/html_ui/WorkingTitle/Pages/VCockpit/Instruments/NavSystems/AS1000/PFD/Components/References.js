@@ -119,4 +119,4 @@ class WT_Airspeed_References_View extends WT_HTML_View {
         this.model.updateSpeed(node.parentNode.dataset.id, speed);
     }
 }
-customElements.define("wt-airspeed-references", WT_Airspeed_References_View);
+customElements.define("g1000-pfd-airspeed-references", WT_Airspeed_References_View);

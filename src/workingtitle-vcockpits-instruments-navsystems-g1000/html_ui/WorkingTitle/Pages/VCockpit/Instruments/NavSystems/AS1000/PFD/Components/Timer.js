@@ -85,4 +85,4 @@ class WT_PFD_Timer_View extends WT_HTML_View {
         this.model.clickButton();
     }
 }
-customElements.define("wt-timer", WT_PFD_Timer_View);
+customElements.define("g1000-pfd-timer", WT_PFD_Timer_View);

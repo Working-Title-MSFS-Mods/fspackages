@@ -112,18 +112,19 @@ class WT_Drop_Down_Selector extends HTMLElement {
             i++;
         }
         let inputLayer = new WT_Drop_Down_Selector_Input_Layer(this, new Selectables_Input_Layer_Dynamic_Source(this.elements.popup, "drop-down-selector-option:not([disabled])"));
+        inputLayer.onDeactivateEvent.subscribe(() => {
+            this.removeAttribute("ACTIVE");
+        });
 
         inputLayer.selectElement(selectedOption);
         inputLayer.setExitHandler(this);
-        this.inputStackManipulator = inputStack.push(inputLayer);
+        this.inputHandler = inputStack.push(inputLayer);
         this.setAttribute("ACTIVE", "ACTIVE");
     }
     exit() {
-        if (this.inputStackManipulator) {
-            this.inputStackManipulator.pop();
-            this.inputStackManipulator = null;
+        if (this.inputHandler) {
+            this.inputHandler = this.inputHandler.pop();
         }
-        this.removeAttribute("ACTIVE");
     }
     onOptionSelected(e, node) {
         e.stopPropagation();

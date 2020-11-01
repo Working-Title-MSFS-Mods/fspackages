@@ -1,26 +1,19 @@
 class WT_Procedure_Page_Model extends WT_Model {
     /**
-     * @param {AS1000_MFD} gps 
      * @param {FlightPlanManager} flightPlanManager 
-     * @param {WaypointLoader} facilityLoader 
-     * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
+     * @param {WT_Procedure_Facility_Repository} procedureFacilityRepository
      */
-    constructor(gps, flightPlanManager, facilityLoader, waypointQuickSelect) {
+    constructor(flightPlanManager, procedureFacilityRepository) {
         super();
-
-        this.gps = gps;
         this.flightPlanManager = flightPlanManager;
-        this.facilityLoader = facilityLoader;
-        this.waypointQuickSelect = waypointQuickSelect;
-
-        this.airportWaypoint = new WayPoint(gps);
+        this.procedureFacilityRepository = procedureFacilityRepository;
 
         this.icao = null;
         this.airport = new Subject();
     }
     setICAO(icao) {
         this.icao = icao;
-        this.airport.value = new WT_Procedure_Facility(icao, this.facilityLoader);
+        this.airport.value = this.procedureFacilityRepository.get(icao);
     }
     /**
      * @param {WT_Selected_Procedure} procedure 
@@ -94,13 +87,12 @@ class WT_Procedure_Page_View extends WT_HTML_View {
             this.selectedPage.removeAttribute("visible");
         }
 
-        this.inputLayer.refreshSelected();
-
         this.subPageIndex.value = pageId;
 
         this.selectedPage = this.pages[pageId];
         this.selectedPage.setAirport(this.model.airport);
         this.selectedPage.setAttribute("visible", "");
+        this.inputLayer.refreshSelected();
 
         this.selectedPageSubscriptions.unsubscribe();
         this.selectedPageSubscriptions.add(this.selectedPage.selectedProcedure.subscribe(procedure => {

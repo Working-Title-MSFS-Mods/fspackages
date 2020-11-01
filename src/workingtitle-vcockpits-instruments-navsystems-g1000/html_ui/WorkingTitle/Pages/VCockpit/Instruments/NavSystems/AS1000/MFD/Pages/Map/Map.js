@@ -58,13 +58,12 @@ class WT_Map_Page_Input_Layer extends Input_Layer {
 
 class WT_Map_View extends WT_HTML_View {
     /**
-     * 
-     * @param {AS1000_MFD} gps 
+     * @param {WT_Show_Page_Menu_Handler} pageMenuHandler 
      * @param {WT_Soft_Key_Controller} softKeyController 
      */
-    constructor(gps, softKeyController) {
+    constructor(pageMenuHandler, softKeyController) {
         super();
-        this.gps = gps;
+        this.pageMenuHandler = pageMenuHandler;
         this.softKeyController = softKeyController;
         this.inputLayer = new WT_Map_Page_Input_Layer(this);
 
@@ -88,7 +87,7 @@ class WT_Map_View extends WT_HTML_View {
         this.pageMenu = new WT_Map_Page_Menu(model);
     }
     showPageMenu() {
-        this.gps.showPageMenu(this.pageMenu);
+        this.pageMenuHandler.show(this.pageMenu);
     }
     update(dt) {
         /*this.airspaceList.Update(10, 1000);

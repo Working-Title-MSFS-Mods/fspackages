@@ -8,6 +8,7 @@ class WT_Transponder_Model {
         this.mode = new Subject();
         this.editing = new Subject(false);
         this.interrogated = new Subject(false);
+        this.editingCode = null;
 
         //this.codeDisplay = new CombinedSubject([this.code, this.editing])
     }
@@ -28,11 +29,11 @@ class WT_Transponder_Model {
         }
         return "IDNT";
     }
-    setEditingCode(code) {
-        this.code.value = code;
+    setEditCode(code) {
+        this.editingCode = code;
     }
     update(dt) {
-        this.code.value = this.getSimCode();
+        this.code.value = this.editingCode === null ? this.getSimCode() : this.editingCode.padEnd(4,"_");
         this.mode.value = this.getMode();
 
         if (Math.random() < 1 / 180) {

@@ -1,10 +1,13 @@
 class WT_Soft_Key_Menu_Input_Layer extends Input_Layer {
+    /**
+     * @param {WT_Soft_Key_Controller} softKeyMenuController 
+     */
     constructor(softKeyMenuController) {
         super();
         this.softKeyMenuController = softKeyMenuController;
     }
     onSoftKey(index, inputStack) {
-        this.softKeyMenuController.activateSoftKey(index);
+        this.softKeyMenuController.activateSoftKey(inputStack, index);
     }
 }
 
@@ -18,7 +21,7 @@ class WT_Soft_Key extends HTMLElement {
     setOnClick(onClick) {
         this.onClick = onClick;
     }
-    activate() {
+    activate(inputStack) {
         if (this.hasAttribute("disabled"))
             return;
         if (this.onClick) {
@@ -163,13 +166,17 @@ class WT_Soft_Key_Controller extends HTMLElement {
             }
         }
     }
-    activateSoftKey(index) {
+    /**
+     * @param {Input_Stack} inputStack 
+     * @param {number} index 
+     */
+    activateSoftKey(inputStack, index) {
         let buttonContainer = this.buttonElements[index - 1];
         if (buttonContainer.children.length == 0)
             return;
         let softKey = buttonContainer.children[0];
         if (softKey) {
-            softKey.activate();
+            softKey.activate(inputStack);
         }
     }
 }

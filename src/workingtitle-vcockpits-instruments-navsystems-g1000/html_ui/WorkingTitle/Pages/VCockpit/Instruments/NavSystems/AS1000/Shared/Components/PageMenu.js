@@ -41,6 +41,15 @@ class WT_Page_Menu_Input_Layer extends Selectables_Input_Layer {
     }
 }
 
+class WT_Show_Page_Menu_Handler {
+    /**
+     * @param {WT_Page_Menu_Model} model 
+     */
+    show(model) {
+        throw new Error("WT_Page_Menu_Handler.show not implemented");
+    }
+}
+
 class WT_Page_Menu_View extends WT_HTML_View {
     constructor() {
         super();
@@ -48,18 +57,15 @@ class WT_Page_Menu_View extends WT_HTML_View {
         this.onExit = new WT_Event();
     }
     connectedCallback() {
-        let template = document.getElementById('menu-screen');
-        let templateContent = template.content;
-
-        this.appendChild(templateContent.cloneNode(true));
-
+        const template = document.getElementById('menu-screen');
+        this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();
     }
     /**
      * @param {WT_Page_Menu_Option} model 
      */
     setModel(model) {
-        let elements = model.options.map(option => {
+        DOMUtilities.AppendChildren(this.elements.options, model.options.map(option => {
             let element = document.createElement("li");
             if (!option.enabled) {
                 element.setAttribute("disabled", "");
@@ -70,18 +76,18 @@ class WT_Page_Menu_View extends WT_HTML_View {
                 model.selectOption(option);
             });
             return element;
-        });
-        DOMUtilities.AppendChildren(this.elements.options, elements);
+        }));
     }
     enter(inputStack) {
         this.inputHandle = inputStack.push(this.inputLayer);
+        this.inputHandle.onPopped.subscribe(() => {
+            this.onExit.fire();
+        });
     }
     exit() {
         if (this.inputHandle) {
-            this.inputHandle.pop();
-            this.inputHandle = null;
+            this.inputHandle = this.inputHandle.pop();
         }
-        this.onExit.fire();
     }
 }
 customElements.define("g1000-page-menu", WT_Page_Menu_View);

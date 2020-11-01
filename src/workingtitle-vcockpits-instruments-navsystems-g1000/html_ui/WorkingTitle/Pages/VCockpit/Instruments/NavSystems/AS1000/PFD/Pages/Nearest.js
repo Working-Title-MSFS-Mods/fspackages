@@ -94,9 +94,8 @@ class WT_PFD_Nearest_View extends WT_HTML_View {
     }
     exit() {
         if (this.inputHandle) {
-            this.inputHandle.pop();
-            this.inputHandle = null;
+            this.inputHandle = this.inputHandle.pop();
         }
     }
 }
-customElements.define("wt-nearest", WT_PFD_Nearest_View);
+customElements.define("g1000-pfd-nearest-airports", WT_PFD_Nearest_View);

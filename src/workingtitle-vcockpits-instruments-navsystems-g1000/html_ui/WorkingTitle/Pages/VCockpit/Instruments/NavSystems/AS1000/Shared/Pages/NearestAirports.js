@@ -1,21 +1,20 @@
 class WT_Nearest_Airports_Model extends WT_Model {
     /**
-     * @param {AS1000_MFD} gps 
+     * @param {WT_Show_Direct_To_Handler} showDirectToHandler 
+     * @param {WT_Waypoint_Repository} waypointRepository 
      * @param {WT_Unit_Chooser} unitChooser 
      * @param {MapInstrument} map 
      * @param {WT_Soft_Key_Controller} softKeyController 
      * @param {WT_Nearest_Waypoints_Repository} nearestWaypoints 
      */
-    constructor(gps, unitChooser, map, softKeyController, nearestWaypoints) {
+    constructor(gps, showDirectToHandler, waypointRepository, unitChooser, map, softKeyController, nearestWaypoints) {
         super();
-        this.gps = gps;
+        this.showDirectToHandler = showDirectToHandler;
+        this.waypointRepository = waypointRepository;
         this.unitChooser = unitChooser;
         this.nearestAirportList = new NearestAirportList(gps);
         this.mapInstrument = map;
         this.softKeyController = softKeyController;
-
-        this.currentWaypoint = new WayPoint(gps);
-        this.currentWaypoint.type = "A";
 
         this.airports = new Subject([], false);
         this.selectedAirport = new Subject();
@@ -23,11 +22,9 @@ class WT_Nearest_Airports_Model extends WT_Model {
         this.subscriptions = new Subscriptions();
         this.subscriptions.add(nearestWaypoints.airports.subscribe(airports => this.airports.value = airports));
 
-        this.setIcao = DOMUtilities.debounce((icao) => this.currentWaypoint.SetICAO(icao, () => {
-            this.selectedAirport.value = {
-                airport: this.currentWaypoint
-            };
-        }, false), 200, false);
+        this.setIcao = DOMUtilities.debounce(async icao => {
+            this.selectedAirport.value = await this.waypointRepository.load(icao);
+        }, 200, false);
     }
     filterAirport(airport) {
         if (this.filter.length) {
@@ -53,7 +50,7 @@ class WT_Nearest_Airports_Model extends WT_Model {
     }
     directTo() {
         if (this.selectedAirport.value)
-            this.gps.showDirectTo(null, this.selectedAirport.value.icao);
+            this.showDirectToHandler.show(null, this.selectedAirport.value.icao);
     }
     selectFrequency(frequency) {
         this.comFrequencies.selectFrequency(frequency);

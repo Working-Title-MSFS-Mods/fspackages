@@ -1163,6 +1163,7 @@ class WT_HTML_View extends HTMLElement {
         this.elements = {};
         DOMUtilities.AddScopedEventListener(this, "[data-click]", "selected", this.onButtonClick.bind(this));
         DOMUtilities.AddScopedEventListener(this, "[data-change]", "change", this.onChange.bind(this));
+        DOMUtilities.AddScopedEventListener(this, "[data-input]", "input", this.onInput.bind(this));
     }
     bindElements() {
         let elements = this.querySelectorAll("[data-element]");
@@ -1187,6 +1188,8 @@ class WT_HTML_View extends HTMLElement {
             let click = node.dataset.click;
             if (this[click])
                 this[click](e.target);
+            else
+                console.warn(`An expected click event ${click} did not have a handler`);
         }
         e.stopPropagation();
     }
@@ -1195,6 +1198,18 @@ class WT_HTML_View extends HTMLElement {
             let change = node.dataset.change;
             if (this[change])
                 this[change](e.target.value, e.target);
+            else
+                console.warn(`An expected change event ${change} did not have a handler`);
+        }
+        e.stopPropagation();
+    }
+    onInput(e, node) {
+        if (node.dataset.input) {
+            let input = node.dataset.input;
+            if (this[input])
+                this[input](e.target.value, e.target);
+            else
+                console.warn(`An expected input event ${input} did not have a handler`);
         }
         e.stopPropagation();
     }
@@ -1224,6 +1239,8 @@ class Base_Input_Layer extends Input_Layer {
     onProceduresPush(inputStack) { this.navSystem.showProcedures(); }
     onFlightPlan(inputStack) { this.navSystem.showFlightPlan(); }
     onDirectTo(inputStack) { this.navSystem.showDirectTo(); }
+
+    onCLRLong(inputStack) { this.navSystem.resetPage(); }
 
     onNavPush(inputStack) { this.navFrequenciesModel.toggleActive(); }
     onNavSwitch(inputStack) { this.navFrequenciesModel.transferActive(); }

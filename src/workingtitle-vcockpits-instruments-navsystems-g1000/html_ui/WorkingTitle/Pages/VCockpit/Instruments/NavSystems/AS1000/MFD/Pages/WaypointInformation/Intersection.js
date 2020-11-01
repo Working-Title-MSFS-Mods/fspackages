@@ -2,8 +2,8 @@ class WT_Intersection_Information_Model {
     /**
      * @param {WT_Waypoint_Repository} waypointRepository 
      */
-    constructor(gps, waypointRepository) {
-        this.gps = gps;
+    constructor(showDirectToHandler, waypointRepository) {
+        this.showDirectToHandler = showDirectToHandler;
         this.waypointRepository = waypointRepository;
         this.waypoint = new Subject(null);
     }
@@ -12,7 +12,7 @@ class WT_Intersection_Information_Model {
     }
     directTo() {
         if (this.waypoint.value)
-            this.gps.showDirectTo(null, this.waypoint.value.icao);
+            this.showDirectToHandler.show(null, this.waypoint.value.icao);
     }
     get instrumentIdentifier() {
         return `WT_Intersection_Information_Model`;
@@ -20,6 +20,10 @@ class WT_Intersection_Information_Model {
 }
 
 class WT_Intersection_Information_Input_Layer extends Selectables_Input_Layer {
+    /**
+     * @param {WT_Intersection_Information_Model} model 
+     * @param {WT_Intersection_Information_View} view 
+     */
     constructor(model, view) {
         super(new Selectables_Input_Layer_Dynamic_Source(view));
         this.model = model;
@@ -47,7 +51,7 @@ class WT_Intersection_Information_View extends WT_HTML_View {
 
         this.elements.icaoInput.setQuickSelect(this.waypointQuickSelect);
         this.elements.icaoInput.addEventListener("change", e => this.model.setIcao(e.target.icao));
-        this.elements.icaoInput.addEventListener("input", e => this.model.setIcao(e.target.icao));
+        this.elements.icaoInput.addEventListener("input", DOMUtilities.debounce(e => this.model.setIcao(e.target.icao), 500));
     }
     getVorImg(type) {
         switch (type) {
