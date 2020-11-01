@@ -168,12 +168,6 @@ class AS3000_TSC extends NavSystemTouch {
         this.mapOrientationSelect = new NavSystemElementContainer("Map Orientation Settings", "MapOrientationSelect", new AS3000_TSC_SimpleSelectionListWindow());
         this.mapOrientationSelect.setGPS(this);
 
-        this.mapOrientationSelect = new NavSystemElementContainer("Map Orientation Settings", "MapOrientationSelect", new AS3000_TSC_SimpleSelectionListWindow());
-        this.mapOrientationSelect.setGPS(this);
-
-        this.mapOrientationSelect = new NavSystemElementContainer("Map Orientation Settings", "MapOrientationSelect", new AS3000_TSC_SimpleSelectionListWindow());
-        this.mapOrientationSelect.setGPS(this);
-
         this.mapSyncSelect = new NavSystemElementContainer("Map Sync Settings", "MapSyncSelect", new AS3000_TSC_SimpleSelectionListWindow());
         this.mapSyncSelect.setGPS(this);
 
