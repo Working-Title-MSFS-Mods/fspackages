@@ -420,7 +420,7 @@ class Jet_NDCompass extends HTMLElement {
             if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode == Jet_NDCompass_Navigation.VOR || this.navigationMode == Jet_NDCompass_Navigation.NAV) {
                 const waypointName = Simplane.getNextWaypointName();
                 const hasNav = waypointName !== null && waypointName !== undefined && waypointName !== '';
-                if (this.navigationMode == Jet_NDCompass_Navigation.NAV) {
+                if (this.navigationMode == Jet_NDCompass_Navigation.NAV && (this.displayMode === Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.ROSE)) {
                     if (hasNav == true) {
                         if (this.displayMode === Jet_NDCompass_Display.ARC) {
                             this.courseTOLine.setAttribute("visibility", "visible");
