@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cj4_wasm", "cj4_wasm.vcxproj", "{691392AC-AECF-4197-8F7F-37B7AEB41D4B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|MSFS = Debug|MSFS
+		Release|MSFS = Release|MSFS
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{691392AC-AECF-4197-8F7F-37B7AEB41D4B}.Debug|MSFS.ActiveCfg = Debug|MSFS
+		{691392AC-AECF-4197-8F7F-37B7AEB41D4B}.Debug|MSFS.Build.0 = Debug|MSFS
+		{691392AC-AECF-4197-8F7F-37B7AEB41D4B}.Release|MSFS.ActiveCfg = Release|MSFS
+		{691392AC-AECF-4197-8F7F-37B7AEB41D4B}.Release|MSFS.Build.0 = Release|MSFS
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C85F0220-E6FA-45B8-AA53-16165653C28C}
+	EndGlobalSection
+EndGlobal

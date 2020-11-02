@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{127a6c6e-3b72-4223-a37d-c591874b3b6f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cj4_fdstuff.cpp" />
+    <ClCompile Include="PidController.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cj4_fdstuff.h" />
+    <ClInclude Include="PidController.h" />
+    <ClInclude Include="SimConnectDefs.h" />
+  </ItemGroup>
+</Project>
