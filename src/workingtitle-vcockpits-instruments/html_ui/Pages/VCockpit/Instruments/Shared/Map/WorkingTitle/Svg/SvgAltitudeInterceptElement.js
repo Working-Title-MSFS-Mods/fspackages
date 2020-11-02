@@ -99,6 +99,12 @@ class SvgAltitudeInterceptElement extends SvgMapElement {
 
         this.arcOuter.setAttribute("display", "inherit");
         this.arcInner.setAttribute("display", "inherit");
+
+        if(WTDataStore.get("RANGE_SEL", 0) === 0){
+            this.arcOuter.setAttribute("display", "none");
+            this.arcInner.setAttribute("display", "none");  
+            return;          
+        }
     }
 
     static getRadialOffsetPos(_center, _radius, _angle) {
