@@ -598,7 +598,7 @@ class CJ4_FMC_PerfInitPage {
             Coherent.call("AP_VS_VAR_SET_ENGLISH", 0, setVerticalSpeed);
 
 
-            let distanceToTod = vnavTargetDistance > topOfDescent ? vnavTargetDistance - topOfDescent : "N/A";
+            const distanceToTod = vnavTargetDistance > topOfDescent ? vnavTargetDistance - topOfDescent : "N/A";
             fmc._templateRenderer.setTemplateRaw([
                 ["", "", "WORKING TITLE VPATH" + "[blue]"],
                 [" target altitude[blue]", "target distance [blue]"],
@@ -610,7 +610,7 @@ class CJ4_FMC_PerfInitPage {
                 [" alt dev[blue]", "ap vs [blue]"],
                 [altDeviation.toFixed(0) + "ft", apCurrentVerticalSpeed.toFixed(0) + "fpm"],
                 [" set vertical speed[blue]", "TOD Dist"],
-                [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod + ""],
+                [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod + " NM"],
                 [""],
                 ["", "VNAV DESCENT>"]
             ]);
