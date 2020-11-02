@@ -577,8 +577,8 @@ class CJ4_FMC_PerfInitPage {
                     setVerticalSpeed = desiredVerticalSpeed;
                 }
             }
-
-            console.log("setVerticalSpeed: " + setVerticalSpeed.toFixed(0));
+            setVerticalSpeed = Math.round(setVerticalSpeed);
+            console.log("setVerticalSpeed: " + setVerticalSpeed);
             //SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading.toFixed(0));
 
             // let deltaVS = setVerticalSpeed - apCurrentVerticalSpeed;
