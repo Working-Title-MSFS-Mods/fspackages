@@ -1,5 +1,13 @@
 # Changelog
 
+### v0.3.0
+**Fixes**
+- \[Misc\] Fixed a regression in v0.3.0-pre1 where adjusting screen backlight brightness via the touchscreen controllers was broken in the TBM if using custom liveries.
+- \[PFD\] The Terrain softkey no longer displays a value of "undefined".
+- \[PFD\] Terrain mode and DCLTR settings for the inset map now save correctly between sessions.
+- \[TSC\] Fixed an issue where the pressing the down button in the active flight plan page would cause a CTD under certain circumstances. Also generally improved the scroll behavior in the active flight plan page.
+- \[TSC\] Fixed a regression in v0.3.0-pre1 where the physical knobs would not function correctly while certain pop-up windows were displayed.
+
 ### v0.3.0-pre1
 **New Features**
 - \[Compatibility\] The mod is now fully compatible with the Cessna Citation Longitude.
