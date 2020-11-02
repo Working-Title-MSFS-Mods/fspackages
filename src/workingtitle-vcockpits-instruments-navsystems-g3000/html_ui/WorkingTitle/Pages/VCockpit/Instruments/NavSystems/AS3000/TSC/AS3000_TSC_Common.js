@@ -1260,7 +1260,8 @@ class AS3000_TSC_AirportInfo extends NavSystemElement {
                 }
                 this.runwayElements[i].runway = infos.runways[i];
                 this.runwayElements[i].nameElem.textContent = infos.runways[i].designation;
-                this.runwayElements[i].sizeElem.textContent = Math.round(infos.runways[i].length * 3.28084) + "FT X " + Math.round(infos.runways[i].width * 3.28084) + "FT";
+                this.runwayElements[i].sizeElem.textContent = Math.round(WT_Unit.METER.convert(infos.runways[i].length, WT_Unit.FOOT)) + "FT x " +
+                    Math.round(WT_Unit.METER.convert(infos.runways[i].width, WT_Unit.FOOT)) + "FT";
                 this.runwayElements[i].surfaceElem.textContent = infos.runways[i].getSurfaceString();
                 let lighting = "Unknown";
                 switch (infos.runways[i].lighting) {

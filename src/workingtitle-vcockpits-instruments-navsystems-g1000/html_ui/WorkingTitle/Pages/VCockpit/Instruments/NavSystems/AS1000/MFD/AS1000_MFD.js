@@ -582,7 +582,8 @@ class AS1000_MFD_AirportInfos1 extends NavSystemElement {
             if ("designation" in infos.runways[this.selectedRunway]) {
                 this.runwayNameElement.textContent = infos.runways[this.selectedRunway].designation;
             }
-            this.runwaySizeElement.textContent = Math.round(infos.runways[this.selectedRunway].length * 3.28084) + "FT x " + Math.round(infos.runways[this.selectedRunway].width * 3.28084) + "FT";
+            this.runwaySizeElement.textContent = Math.round(WT_Unit.METER.convert(infos.runways[this.selectedRunway].length, WT_Unit.FOOT)) + "FT x " +
+                        Math.round(WT_Unit.METER.convert(infos.runways[this.selectedRunway].width, WT_Unit.FOOT)) + "FT";
             switch (infos.runways[this.selectedRunway].surface) {
                 case 0:
                     this.runwaySurfaceTypeElement.textContent = "Unknown";
