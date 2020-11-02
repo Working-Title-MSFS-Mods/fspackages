@@ -3385,6 +3385,7 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 27] = "SYS_SRC";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["AOA"] = 28] = "AOA";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MFD_MAP_FORMAT"] = 29] = "MFD_MAP_FORMAT";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["TERR_WX"] = 31] = "TERR_WX";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
     constructor(_root, _dictionary, _gps) {
@@ -3433,7 +3434,7 @@ class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
             {
                 this.addSubMenu("BRG SRC", this.textSize, this.showNavPage.bind(this));
                 this.addSubMenu("CONFIG", this.textSize, this.showConfigPage.bind(this));
-                this.addSubMenu("OVERLAYS", this.textSize, null);
+                this.addSubMenu("OVERLAYS", this.textSize, this.showOverlaysPage.bind(this));
                 this.addSubMenu("RADAR", this.textSize, null);
                 this.addSubMenu("REFS", this.textSize, this.showRefPage.bind(this));
                 this.addSubMenu("TAWS", this.textSize, null);
@@ -3443,6 +3444,45 @@ class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
         }
         this.closeMenu();
         this.highlight(_highlight);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showOverlaysPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, this.previousHeaderColour);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("OVERLAYS", this.titleSize, 1.0, this.headerColour, true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("TERR/WX", this.textSize, 0.5);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.TERR_WX]);
+                this.addRadio("TERR", this.textSize, [CJ4_PopupMenu_Key.TERR_WX]);
+                this.addRadio("WX", this.textSize, [CJ4_PopupMenu_Key.TERR_WX]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("TFC", this.textSize, 0.5);
+                this.addRadio("OFF", this.textSize, null);
+                this.addRadio("ON", this.textSize, null);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 6);
         page.appendChild(sectionRoot);
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);

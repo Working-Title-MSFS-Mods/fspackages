@@ -82,7 +82,7 @@ class CJ4_PFD extends BaseAirliners {
 			
             this.map.setMode(this.mapDisplayMode);
             this.mapOverlay.setMode(this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource);
-
+            
             //Hack to correct the map compass size until we separate it out
             //fully from the default shared code
             if (this.mapDisplayMode !== this.previousMapDisplayMode || this.mapNavigationSource !== this.previousMapNavigationSource) {
@@ -317,6 +317,20 @@ class CJ4_PFD extends BaseAirliners {
              }
         }
 
+        const terrWx = _dict.get(CJ4_PopupMenu_Key.TERR_WX);
+        if(terrWx == "TERR"){
+            this.showTerrain = true;
+            this.showWeather = false;
+        }
+        else if(terrWx == "WX"){
+            this.showTerrain = false;
+            this.showWeather = true;
+        }
+        else{
+            this.showTerrain = false;
+            this.showWeather = false;
+        }
+
         let range = _dict.get(CJ4_PopupMenu_Key.MAP_RANGE);
         this.map.range = parseInt(range);
         let navSrc = _dict.get(CJ4_PopupMenu_Key.NAV_SRC);
@@ -434,6 +448,16 @@ class CJ4_PFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "PPOS");
         else
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ARC");
+
+        if(this.map.isWeatherVisible){
+            _dict.set(CJ4_PopupMenu_Key.TERR_WX, "WX");
+        }
+        else if(this.map.isTerrainVisible){
+            _dict.set(CJ4_PopupMenu_Key.TERR_WX, "TERR");
+        }
+        else{
+            _dict.set(CJ4_PopupMenu_Key.TERR_WX, "OFF");
+        }
 
         _dict.set(CJ4_PopupMenu_Key.MAP_RANGE, this.map.range.toString());
         if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1)
