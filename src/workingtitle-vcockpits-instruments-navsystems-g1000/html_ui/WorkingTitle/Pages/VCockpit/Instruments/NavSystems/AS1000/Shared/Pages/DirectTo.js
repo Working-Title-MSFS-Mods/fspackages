@@ -78,26 +78,24 @@ class WT_Direct_To_Page_Menu extends WT_Page_Menu_Model {
 
 class WT_Direct_To_View extends WT_HTML_View {
     /**
-     * @param {WT_Soft_Key_Controller} softKeyController 
      * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
      * @param {WT_Show_Page_Menu_Handler} showPageMenuHandler 
      */
-    constructor(softKeyController, waypointQuickSelect, showPageMenuHandler) {
+    constructor(waypointQuickSelect, showPageMenuHandler) {
         super();
-        this.softKeyController = softKeyController;
         this.waypointQuickSelect = waypointQuickSelect;
         this.showPageMenuHandler = showPageMenuHandler;
         this.inputLayer = new WT_Direct_To_Input_Layer(this);
         this.userSelectedCourse = false;
     }
     connectedCallback() {
-        let template = document.getElementById('direct-to-pane');
-        let templateContent = template.content;
-
-        this.appendChild(templateContent.cloneNode(true));
-
+        const template = document.getElementById('direct-to');
+        this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();
 
+        if (this.map) {
+            this.elements.mapContainer.appendChild(this.map);
+        }
         this.elements.icaoInput.addEventListener("change", e => this.icaoChanged(e.target.icao))
         this.elements.icaoInput.addEventListener("input", DOMUtilities.debounce(e => this.icaoInput(e.target.icao), 500, false))
         this.elements.course.addEventListener("change", e => this.userSelectedCourse = true)
@@ -114,6 +112,11 @@ class WT_Direct_To_View extends WT_HTML_View {
     icaoChanged(icao) {
         this.model.setIcao(icao);
     }
+    centerOnCoordinates(coordinates) {
+        if (this.map) {
+            this.map.setCenter(coordinates, 0);
+        }
+    }
     /**
      * @param {WT_Direct_To_Model} model 
      */
@@ -123,6 +126,7 @@ class WT_Direct_To_View extends WT_HTML_View {
         this.model.waypoint.subscribe(waypoint => {
             if (waypoint) {
                 this.elements.icaoInput.icao = waypoint.icao;
+                this.centerOnCoordinates(waypoint.infos.coordinates);
             }
         });
         this.model.name.subscribe(name => this.elements.icaoName.innerHTML = `${name === null ? `__________________` : name}`);
@@ -142,8 +146,7 @@ class WT_Direct_To_View extends WT_HTML_View {
         inputHandler.onPopped.subscribe(() => {
             this.reject();
         })
-        this.storedMenu = this.softKeyController.currentMenu;
-        this.softKeyController.setMenu(new WT_Soft_Key_Menu());
+        this.inputStackHandler = inputHandler;
         return new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
@@ -154,7 +157,6 @@ class WT_Direct_To_View extends WT_HTML_View {
     }
     exit() {
         this.inputStackHandler.pop();
-        this.softKeyController.setMenu(this.storedMenu);
     }
     hold() {
 
@@ -167,3 +169,4 @@ class WT_Direct_To_View extends WT_HTML_View {
         this.exit();
     }
 }
+customElements.define("g1000-direct-to", WT_Direct_To_View);

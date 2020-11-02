@@ -1,0 +1,83 @@
+g1000-direct-to {
+    display: block;
+
+    label {
+        font-weight: bold;
+    }
+
+    > section {
+        margin: 0.5vh 0;
+    }
+
+    .vnav,
+    .info {
+        padding-bottom: 0.5vh;
+        border-bottom: $border_width_thin solid #666;
+    }
+
+    .info {
+        display: grid;
+        grid-gap: 0.5vh;
+        grid-template-columns: 30% 1fr;
+        grid-template-rows: auto auto;
+    }
+
+    .vnav {
+        display: grid;
+        grid-gap: 1vh;
+        grid-template-columns: 3ch 45% auto 1fr;
+    }
+
+    .location {
+        display: grid;
+        grid-gap: 1vh;
+        grid-template-columns: 3ch 45% auto 1fr;
+    }
+
+    .course {
+        display: grid;
+        grid-gap: 1vh;
+        grid-template-columns: 3ch auto 1fr;
+    }
+
+    .bearing,
+    .distance,
+    .city,
+    .country {
+        color: $input_color;
+    }
+
+    .bearing,
+    .distance {
+        font-family: $font_family_mono;
+        text-align: right;
+    }
+
+    .city,
+    .country {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .units {
+        font-size: 0.8em;
+    }
+
+    footer {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+
+        selectable-button {
+            padding: 0.5vh 1vh;
+            border: $border_width_thick outset $border_color;
+            margin-bottom: 1vh;
+            color: #fff;
+            display: inline-block;
+
+            &:nth-child(2) {
+                grid-column-start: 3;
+            }
+        }
+    }
+}

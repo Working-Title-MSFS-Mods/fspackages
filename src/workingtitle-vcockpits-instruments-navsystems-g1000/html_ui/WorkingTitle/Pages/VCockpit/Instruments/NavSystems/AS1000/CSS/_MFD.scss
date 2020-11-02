@@ -16,23 +16,23 @@
 @import "Inputs/String";
 @import "Inputs/Switch";
 
-@import "Pages/AirwaySelector";
-@import "Pages/DirectTo";
-@import "Pages/DuplicateWaypoints";
-@import "Pages/FlightPlan";
-@import "Pages/MapSetup";
-@import "Pages/Nearest/NearestWaypointList";
-@import "Pages/Nearest/NearestPage";
-@import "Pages/Nearest/Airports";
-@import "Pages/Nearest/NDBs";
-@import "Pages/Nearest/VORs";
-@import "Pages/Procedure";
-@import "Pages/Procedures";
-@import "Pages/Settings";
-@import "Pages/WaypointInformation/WaypointInformation";
-@import "Pages/WaypointInformation/Airport";
-@import "Pages/WaypointInformation/Intersection";
-@import "Pages/WaypointSelector";
+@import "MFD/Pages/AirwaySelector";
+@import "MFD/Pages/DirectTo";
+@import "MFD/Pages/DuplicateWaypoints";
+@import "MFD/Pages/FlightPlan";
+@import "MFD/Pages/MapSetup";
+@import "MFD/Pages/Nearest/NearestWaypointList";
+@import "MFD/Pages/Nearest/NearestPage";
+@import "MFD/Pages/Nearest/Airports";
+@import "MFD/Pages/Nearest/NDBs";
+@import "MFD/Pages/Nearest/VORs";
+@import "MFD/Pages/Procedure";
+@import "MFD/Pages/Procedures";
+@import "MFD/Pages/Settings";
+@import "MFD/Pages/WaypointInformation/WaypointInformation";
+@import "MFD/Pages/WaypointInformation/Airport";
+@import "MFD/Pages/WaypointInformation/Intersection";
+@import "MFD/Pages/WaypointSelector";
 
 as1000-mfd-element {
     font-family: $font_family_normal;
@@ -43,6 +43,13 @@ html {
 
 as1000-mfd-element {
     //display:none !important;
+}
+
+g1000-page-menu {
+    position: absolute;
+    right: 2vh;
+    top: 2vh;
+    width: 35vh;
 }
 
 as1000-mfd-element #Mainframe #Electricity {

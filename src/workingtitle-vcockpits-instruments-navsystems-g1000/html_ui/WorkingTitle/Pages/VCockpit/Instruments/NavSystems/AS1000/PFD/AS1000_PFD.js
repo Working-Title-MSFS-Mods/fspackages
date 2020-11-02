@@ -5,6 +5,58 @@ class WT_PFD_Input_Layer extends Base_Input_Layer {
 }
 
 class WT_PFD_Show_Direct_To_Handler extends WT_Show_Direct_To_Handler {
+    /**
+     * @param {WT_PFD_Mini_Page_Controller} miniPageController 
+     * @param {WT_Direct_To_Model} directToModel 
+     */
+    constructor(miniPageController, directToModel, directToView, directToHandler) {
+        super();
+        this.miniPageController = miniPageController;
+        this.directToModel = directToModel;
+        this.directToView = directToView;
+    }
+    show(icaoType = null, icao = null) {
+        const view = this.directToView;
+        if (icao) {
+            this.directToModel.setIcao(icao);
+        }
+        this.miniPageController.showPage(view).
+            catch(e => {
+                this.miniPageController.showPage(view);
+            }).then(directTo => {
+                this.miniPageController.showPage(view);
+                this.directToHandler.directTo(directTo.waypoint, directTo.course);
+            });
+    }
+}
+
+class WT_PFD_Show_Page_Menu_Handler extends WT_Show_Page_Menu_Handler {
+    /**
+     * @param {Input_Stack} inputStack
+     * @param {HTMLElement} pageContainer 
+     */
+    constructor(inputStack, pageContainer) {
+        super();
+        this.inputStack = inputStack;
+        this.pageContainer = pageContainer;
+
+        this.currentPageMenu = null;
+    }
+    show(model) {
+        const view = new WT_Page_Menu_View();
+        this.pageContainer.appendChild(view);
+        view.setModel(model);
+        view.enter(this.inputStack);
+        const handler = {
+            close: () => {
+                view.parentNode.removeChild(view);
+                this.currentPageMenu = null;
+                handler.close = () => { };
+            }
+        };
+        view.onExit.subscribe(handler.close);
+        return handler;
+    }
 }
 
 class WT_PFD_Model {
@@ -87,6 +139,56 @@ class WT_PFD_Alert_Key extends WT_Soft_Key {
 }
 customElements.define("g1000-soft-key-alert", WT_PFD_Alert_Key);
 
+class WT_Dependency_Missing_Error extends Error {
+
+};
+
+class WT_Dependency_Container {
+    constructor() {
+        this._factories = {};
+        this._values = {};
+    }
+    _get(name) {
+        const handler = {
+            get: function (target, prop, receiver) {
+                return target._get(prop);
+            }
+        };
+        const proxy = new Proxy(this, handler);
+
+        if (!this._values(name)) {
+            if (this._factories[name]) {
+                this._values[name] = this._factories[name](proxy);
+            } else {
+                throw new WT_Dependency_Missing_Error(`Factory not found for "${name}"`);
+            }
+        }
+        return this._values[name];
+    }
+    register(name, factory) {
+        this._factories[name] = factory;
+    }
+}
+
+class WT_PFD_Dependencies extends WT_Dependency_Container {
+    /** @returns {WT_Settings} */
+    get settings() {
+        return this._get("settings");
+    }
+    /** @returns {WT_Settings} */
+    get modSettings() {
+        return this._get("modSettings");
+    }
+    /** @returns {WT_Unit_Chooser} */
+    get unitChooser() {
+        return this._get("unitChooser");
+    }
+    /** @returns {WT_Waypoint_Repository} */
+    get waypointRepository() {
+        return this._get("waypointRepository");
+    }
+}
+
 class AS1000_PFD extends BaseAS1000 {
     constructor() {
         super();
@@ -95,23 +197,78 @@ class AS1000_PFD extends BaseAS1000 {
 
         this.brightnessSettings = new WT_Brightness_Settings();
         this.model = new WT_PFD_Model(this.brightnessSettings);
+
+        const d = new WT_PFD_Dependencies();
+        //d.settings;
+
+        // Dependencies
+        d.register("inputStack", d => new Input_Stack());
+        d.register("settings", d => new WT_Settings("g36", WT_Default_Settings.base));
+        d.register("modSettings", d => new WT_Settings("mod", WT_Default_Settings.modBase));
+        d.register("unitChooser", d => new WT_Unit_Chooser(d.settings));
+        d.register("flightPlanManager", d => this.currFlightPlanManager);
+        d.register("waypointRepository", d => new WT_Waypoint_Repository(this.facilityLoader));
+        d.register("nearestWaypoints", d => new WT_Nearest_Waypoints_Repository(this));
+        d.register("waypointQuickSelect", d => new WT_Waypoint_Quick_Select(this, this.currFlightPlanManager));
+        d.register("showPageMenuHandler", d => new WT_PFD_Show_Page_Menu_Handler(d.inputStack, document.getElementById("PageMenuContainer")));
+        d.register("directToHandler", d => new WT_Direct_To_Handler(null, null)); //TODO:
+        d.register("showDirectToHandler", d => new WT_PFD_Show_Direct_To_Handler(d.miniPageController, d.directToModel, d.directToView, d.directToHandler));
+
+        d.register("brightnessSettings", d => new WT_Brightness_Settings());
+        d.register("barometricPressure", d => new WT_Barometric_Pressure());
+
+        d.register("directToModel", d => new WT_Direct_To_Model(this, null, d.waypointRepository));
+        d.register("directToView", d => {
+            const view = new WT_Direct_To_View(d.waypointQuickSelect, d.showPageMenuHandler);
+            view.classList.add("mini-page");
+            d.miniPageController.appendChild(view);
+            view.setModel(d.directToModel);
+        });
+
+        d.register("attitudeModel", d => new Attitude_Indicator_Model(d.syntheticVision));
+        d.register("hsiModel", d => new HSIIndicatorModel(d.syntheticVision));
+        d.register("altimeterModel", d => new WT_Altimeter_Model(d.barometricPressure));
+
+        d.register("navBoxModel", d => new AS1000_PFD_Nav_Box_Model(d.unitChooser, d.flightPlanManager));
+        d.register("comFrequenciesModel", d => new WT_Com_Frequencies_Model());
+        d.register("navFrequenciesModel", d => new WT_Nav_Frequencies_Model());
+
+        d.register("localTimeModel", d => new WT_Local_Time_Model(d.settings));
+        d.register("oatModel", d => new WT_OAT_Model(d.unitChooser));
+        d.register("transponderModel", d => new WT_Transponder_Model(d.modSettings));
+        d.register("referencesModel", d => new WT_Airspeed_References_Model());
+        d.register("timerModel", d => new WT_PFD_Timer_Model());
+        d.register("setupMenuModel", d => new WT_PFD_Setup_Menu_Model(d.brightnessSettings));
+        d.register("nearestAirportsModel", d => new WT_Nearest_Airports_Model(this, d.showDirectToHandler, d.waypointRepository, d.unitChooser, null, null, d.nearestWaypoints));
+        //d.register("", d => );
+
+        const handler = {
+            get: function (target, prop, receiver) {
+                return target._get(prop);
+            }
+        };
+        this.dependencies = new Proxy(this, handler);
     }
     get templateID() { return "AS1000_PFD"; }
     connectedCallback() {
         super.connectedCallback();
         this.updatables = [];
+        this.inputStack = new Input_Stack();
+
         this.settings = new WT_Settings("g36", WT_Default_Settings.base);
         this.modSettings = new WT_Settings("mod", WT_Default_Settings.modBase);
         this.unitChooser = new WT_Unit_Chooser(this.settings);
         this.waypointRepository = new WT_Waypoint_Repository(this.facilityLoader);
         this.nearestWaypoints = new WT_Nearest_Waypoints_Repository(this);
+        this.waypointQuickSelect = new WT_Waypoint_Quick_Select(this, this.currFlightPlanManager);
+        this.showPageMenuHandler = new WT_PFD_Show_Page_Menu_Handler(this.inputStack, document.getElementById("PageMenuContainer"));
         this.updatables.push(this.nearestWaypoints);
-        this.mainPage = new AS1000_PFD_MainPage(this.unitChooser);
+        /*this.mainPage = new AS1000_PFD_MainPage();
         this.pageGroups = [
             new NavSystemPageGroup("Main", this, [
                 this.mainPage
             ]),
-        ];
+        ];*/
         let bgTimer = new AS1000_PFD_BackgroundTimer();
         let timerRef = new AS1000_PFD_TMRREF();
         timerRef.backgroundTimer = bgTimer;
@@ -120,12 +277,20 @@ class AS1000_PFD extends BaseAS1000 {
         this.maxUpdateBudget = 12;
         this._pfdConfigDone = false;
 
-        this.inputStack = new Input_Stack();
-
         this.barometricPressure = new WT_Barometric_Pressure();
         this.updatables.push(this.barometricPressure);
 
-        this.showDirectToHandler = new WT_PFD_Show_Direct_To_Handler();
+        let miniPage = this.querySelector("g1000-pfd-mini-page-container");
+        miniPage.handleInput(this.inputStack);
+        this.miniPageController = miniPage;
+
+        this.directToHandler = new WT_Direct_To_Handler(null, null); //TODO:
+        this.directToModel = new WT_Direct_To_Model(this, null, this.waypointRepository);
+        this.directToView = new WT_Direct_To_View(this.waypointQuickSelect, this.showPageMenuHandler);
+        this.directToView.classList.add("mini-page");
+        this.miniPageController.appendChild(this.directToView);
+        this.directToView.setModel(this.directToModel);
+        this.showDirectToHandler = new WT_PFD_Show_Direct_To_Handler(this.miniPageController, this.directToModel, this.directToView, this.directToHandler);
 
         this.initModels();
 
@@ -136,10 +301,6 @@ class AS1000_PFD extends BaseAS1000 {
 
         this.softKeyController = this.querySelector("g1000-soft-key-menu");
         this.softKeyController.handleInput(this.inputStack);
-
-        let miniPage = this.querySelector("g1000-pfd-mini-page-container");
-        miniPage.handleInput(this.inputStack);
-        this.miniPageController = miniPage;
 
         this.model.syntheticVision.subscribe(enabled => {
             this.getChildById("SyntheticVision").setAttribute("show-bing-map", enabled ? "true" : "false");
@@ -285,7 +446,7 @@ class AS1000_PFD extends BaseAS1000 {
     }
 }
 class AS1000_PFD_MainPage extends NavSystemPage {
-    constructor(unitChooser) {
+    constructor() {
         super("Main", "Mainframe", new AS1000_PFD_MainElement());
         this.rootMenu = new SoftKeysMenu();
         this.insetMenu = new SoftKeysMenu();

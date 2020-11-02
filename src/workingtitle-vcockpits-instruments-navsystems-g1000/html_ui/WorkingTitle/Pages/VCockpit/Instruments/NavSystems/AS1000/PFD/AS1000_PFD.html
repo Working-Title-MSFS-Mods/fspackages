@@ -5,6 +5,42 @@
 </script>
 
 <script type="text/html" id="AS1000_PFD">
+    <template id="direct-to">
+        <h1>Direct To</h1>
+        <section class="info">
+            <icao-input data-element="icaoInput" characters="6"></icao-input>
+            <div data-element="icaoName"></div>
+            <div data-element="icaoCity"></div>
+        </section>
+        <section class="vnav">
+            <label>Alt</label>
+            <numeric-input digits="5" units="FT" value="0"></numeric-input>
+            <label>Offset</label>
+            <numeric-input units="NM" min="-21" max="0" value="0"></numeric-input>
+        </section>
+        <section class="location">
+            <label>BRG</label>
+            <div class="bearing" data-element="bearing"></div>
+            <label>DIS</label>
+            <div class="distance" data-element="distance"></div>
+        </section>
+        <section class="course">
+            <label>CRS</label>
+            <numeric-input units="°" min="0" max="360" value="0" data-element="course"></numeric-input>
+        </section>
+        <footer data-element="footer">
+            <selectable-button data-click="activateDirectTo">Activate?</selectable-button>
+            <selectable-button data-click="hold">Hold?</selectable-button>
+        </footer>
+    </template>
+
+    <template id="waypoint-quick-select">
+        <toggle-switch values="FPL,NRST,RECENT" value="NRST" data-change="chooseList"></toggle-switch>
+        <ul data-element="nrst" class="scrollable-container" visible></ul>
+        <ul data-element="fpl" class="scrollable-container"></ul>
+        <ul data-element="recent" class="scrollable-container"></ul>
+    </template>
+
     <glasscockpit-highlight id="highlight"></glasscockpit-highlight>
     <div id="Mainframe">
         <div id="Electricity" state="off">
@@ -159,6 +195,8 @@
                             <div data-element="oat" class="temperature"></div>
                         </g1000-oat>
                     </footer>
+
+                    <div class="page-menu-container" id="PageMenuContainer"></div>
 
                     <g1000-pfd-mini-page-container>
                         <g1000-pfd-timer-references-page class="mini-page">
@@ -375,6 +413,7 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/FileHandler.js"></script>
 
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/WaypointQuickSelect.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/WaypointRepository.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/AdfInput.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/AirportIcon.js"></script>
@@ -409,6 +448,7 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Timer.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Transponder.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/AdfDme.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/DirectTo.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/Nearest.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/SetupMenu.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/TimerReferences.js"></script>

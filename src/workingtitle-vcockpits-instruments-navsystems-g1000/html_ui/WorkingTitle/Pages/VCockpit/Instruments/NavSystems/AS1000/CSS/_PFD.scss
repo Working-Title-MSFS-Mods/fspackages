@@ -6,15 +6,18 @@
 @import "Components/NavBox";
 @import "Components/ScrollableContainer";
 @import "Components/SoftKeys";
+@import "Components/PageMenu";
 
 @import "Inputs/Button";
 @import "Inputs/DropDownSelect";
+@import "Inputs/Icao";
 @import "Inputs/Numeric";
 @import "Inputs/String";
 @import "Inputs/Switch";
 @import "Inputs/Time";
 
 @import "PFD/Pages/AdfDme";
+@import "PFD/Pages/DirectTo";
 @import "PFD/Pages/Nearest";
 @import "PFD/Pages/SetupMenu";
 @import "PFD/Pages/TimerReferences";
@@ -325,6 +328,14 @@ g1000-oat {
     .units {
         font-size: 0.8em;
     }
+}
+
+g1000-page-menu {
+    position: absolute;
+    right: 2vh;
+    bottom: 30vh;
+    width: 30vh;
+    height: 25vh;
 }
 
 g1000-pfd-mini-page-container {

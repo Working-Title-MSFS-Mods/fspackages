@@ -25,6 +25,9 @@ class WT_PFD_Mini_Page_Controller extends WT_HTML_View {
             setupMenu: this.querySelector("g1000-pfd-setup-menu"),
         }
     }
+    addPage(key, view) {
+        this.pages[key] = view;
+    }
     /**
      * @param {Input_Stack} inputStack 
      */
@@ -49,15 +52,11 @@ class WT_PFD_Mini_Page_Controller extends WT_HTML_View {
         }
         this.currentPage = page;
         this.currentPage.setAttribute("visible", "visible");
-        this.currentPage.enter(this.inputStack);
+        return this.currentPage.enter(this.inputStack);
     }
     showTimerReferences() {
-        this.showPage(this.pages.references);
     }
     showFlightPlan() {
-
-    }
-    showDirectTo() {
 
     }
     showProcedures() {
