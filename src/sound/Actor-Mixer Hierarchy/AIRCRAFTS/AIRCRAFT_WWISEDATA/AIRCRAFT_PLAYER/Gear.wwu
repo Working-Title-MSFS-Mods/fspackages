@@ -108,8 +108,13 @@
 														<Flags>5</Flags>
 													</Point>
 													<Point>
-														<XPos>0.33428</XPos>
-														<YPos>-13.36905</YPos>
+														<XPos>0.23803</XPos>
+														<YPos>-10.49092</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>0.43167</XPos>
+														<YPos>-0.00766</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
@@ -145,6 +150,31 @@
 							</ChildrenList>
 							<ActiveSourceList>
 								<ActiveSource Name="Gear Drag" ID="{ADDC0D75-8607-4021-A470-3692323537AB}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Gear Up" ID="{B2DF8CB1-4A0F-4CF4-84F9-ED1C00E0F939}" ShortID="117740588">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Gear Retract" ID="{FFFD05D0-DCDA-496A-8E33-B5BA8E0FEC3F}">
+									<PropertyList>
+										<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+										<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+										<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
+										<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>Gear Retract.WAV</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Gear Retract" ID="{FFFD05D0-DCDA-496A-8E33-B5BA8E0FEC3F}" Platform="Linked"/>
 							</ActiveSourceList>
 						</Sound>
 					</ChildrenList>

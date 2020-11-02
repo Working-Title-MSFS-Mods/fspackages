@@ -31,6 +31,20 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_gear_up" ID="{ABC2E8B4-D414-41EC-A4C7-75B65E586569}">
+					<ChildrenList>
+						<Action Name="" ID="{5605379F-C69B-4F08-A48D-E121B9CFA781}" ShortID="454768605">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Gear Up" ID="{B2DF8CB1-4A0F-4CF4-84F9-ED1C00E0F939}" WorkUnitID="{5F163F45-FC04-446F-AD64-57E60E134AA1}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

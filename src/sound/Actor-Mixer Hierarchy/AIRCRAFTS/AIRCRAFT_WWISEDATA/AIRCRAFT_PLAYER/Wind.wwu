@@ -17,6 +17,7 @@
 					</ReferenceList>
 					<ChildrenList>
 						<BlendContainer Name="wind_inside" ID="{B4BE83F6-815E-4145-BE4D-DD31BC0C95DB}" ShortID="452461171">
+							<Comment> </Comment>
 							<PropertyList>
 								<Property Name="CenterPercentage" Type="int32">
 									<ValueList>
@@ -24,6 +25,39 @@
 									</ValueList>
 								</Property>
 								<Property Name="OverridePositioning" Type="bool" Value="True"/>
+								<Property Name="Pitch" Type="int32">
+									<RTPCList>
+										<RTPC Name="" ID="{8BD6A576-06C5-4631-B125-64D657A93626}" ShortID="815521331">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="SIMVAR_AIRSPEED_TRUE" ID="{23F33E5A-B0EE-4CD5-AE2C-178797545D5C}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{6025680F-2CD3-49E6-A54D-8B680EDB662A}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="65537"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>-257</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>199.16767</XPos>
+														<YPos>0</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>500</XPos>
+														<YPos>0</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
+									</RTPCList>
+								</Property>
 								<Property Name="Volume" Type="Real64">
 									<ValueList>
 										<Value>-4</Value>
