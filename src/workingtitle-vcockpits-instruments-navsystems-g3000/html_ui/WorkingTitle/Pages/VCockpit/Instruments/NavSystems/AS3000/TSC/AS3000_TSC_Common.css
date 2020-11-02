@@ -1,0 +1,954 @@
+:root {
+  --bodyHeightScale: 1; }
+
+@keyframes TemporaryShow {
+  0%, 100% {
+    visibility: visible; } }
+
+@keyframes TemporaryHide {
+  0%, 100% {
+    visibility: hidden; } }
+
+#highlight {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 10; }
+
+#Electricity {
+  width: 100%;
+  height: 100%; }
+  #Electricity[state=off] {
+    display: none; }
+
+@font-face {
+  font-family: "Roboto";
+  src: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/Roboto-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+@font-face {
+  font-family: "Roboto";
+  src: url("/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/Roboto-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal; }
+
+@keyframes SelectedCharBlinkFreqEdit {
+  0%, 40% {
+    background-color: #67e8ef;
+    color: black; }
+  60%, 100% {
+    background-color: none;
+    color: #67e8ef; } }
+
+.line {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: center; }
+
+.gradientButton {
+  background: linear-gradient(#5f7283 0.4vh, #1f3445, black 2vh);
+  background-color: black;
+  border: 3px solid #404040;
+  border-radius: 4px;
+  position: relative;
+  text-align: center; }
+.gradientButton:Hover:Active {
+  background: linear-gradient(#62f0f5, #0eb8d4 8%, #018cb5 30%, #0285ac 90%);
+  border: 0.5vh solid #32a1bd; }
+.gradientButton[state=Inactive] {
+  visibility: hidden; }
+.gradientButton[state=Greyed] {
+  filter: grayscale(50%) brightness(40%); }
+  .gradientButton[state=Greyed]:Hover:Active {
+    background-color: black !important; }
+.gradientButton[state=Hidden] {
+  display: none !important; }
+.gradientButton[state=Invisible] {
+  visibility: hidden !important; }
+  .gradientButton .img {
+    height: 60%;
+    max-width: 60%;
+    margin-top: 5%;
+    display: inline-block; }
+  .gradientButton .img_small {
+    height: 40%;
+    max-width: 40%;
+    margin-top: 5%;
+    display: inline-block; }
+  .gradientButton .img_large {
+    height: 80%;
+    max-width: 80%;
+    margin-top: 5%;
+    display: inline-block; }
+  .gradientButton .lowerImg {
+    height: 60%;
+    max-width: 60%;
+    display: inline-block;
+    margin-top: 20%; }
+  .gradientButton .centerImg {
+    display: inline-block; }
+  .gradientButton .lowerValue {
+    color: #67e8ef; }
+  .gradientButton .label {
+    width: 100%;
+    transform: translateY(50%);
+    text-align: center;
+    color: white;
+    background: none; }
+  .gradientButton .upperTitle {
+    width: 100%;
+    text-align: center;
+    color: white;
+    background: none;
+    vertical-align: bottom; }
+    .valueButton .upperTitle {
+      top: auto;
+      height: auto;
+      vertical-align: bottom; }
+  .gradientButton .topText {
+    color: white;
+    text-align: left; }
+  .gradientButton .mainNumber {
+    color: white;
+    text-align: justify; }
+  .gradientButton .mainText {
+    color: white;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%; }
+  .gradientButton .statusText {
+    color: #67e8ef;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%; }
+    .statusTextButton .statusText {
+      transform: none;
+      bottom: 0%; }
+  .gradientButton .statusBar {
+    width: 50%;
+    background-color: grey;
+    left: 25%; }
+.gradientButton[state=Active] .mainNumber {
+  color: lawngreen; }
+.gradientButton[state=Active] .statusBar {
+  background-color: lawngreen; }
+.gradientButton[state=Selected] .mainNumber {
+  color: #67e8ef; }
+  .gradientButton[state=Selected] .mainNumber .Writing {
+    color: dimgray;
+    display: inline-block; }
+.gradientButton[state=White] {
+  background-color: #c8e3f0;
+  border-color: #1a4862;
+  margin: auto;
+  box-shadow: none; }
+  .gradientButton[state=White] .mainText {
+    color: black; }
+.gradientButton[state=Highlight] {
+  border-color: #7dddff;
+  background: linear-gradient(#7dddff 0.4vh, #008cb4 2vh); }
+  .gradientButton[state=Highlight] .mainText {
+    color: black; }
+  .gradientButton[state=Highlight] .value {
+    color: black; }
+.gradientButton:Hover:Active {
+  background: #37c6ed; }
+
+.roundButton {
+  position: relative;
+  border: 0.5vh solid #dedede;
+  border-radius: 50%;
+  background: linear-gradient(#4b6677, black 30%);
+  box-shadow: 0px 0px 5px 4px black inset; }
+  .roundButton .mainText {
+    position: absolute;
+    color: white;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    text-align: center; }
+.roundButton:Hover:Active {
+  background-color: #0093d0;
+  box-shadow: 0px 0px 0px 0px black inset ;
+  border: 0.5vh solid #515c60;
+  background: radial-gradient(#55e8f5, #018cb5 60%, #0285ac 90%); }
+
+.tabButton {
+    font-weight: bold;
+    position: relative;
+    margin: 0.5vh;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center; }
+  .tabButtonLeft {
+    border-radius: 4px 0 0 4px; }
+  .tabButtonLeft[state=""] {
+    background: linear-gradient(to right, #7fa5c9 90%, #277199); }
+  .tabButtonLeft[state="Disabled"] {
+    background: linear-gradient(to right, #485c6d 90%, #0d2733); }
+  .tabButtonRight {
+    border-radius: 0 4px 4px 0; }
+  .tabButtonRight[state=""] {
+    background: linear-gradient(to left, #7fa5c9 90%, #277199); }
+  .tabButtonRight[state="Disabled"] {
+    background: linear-gradient(to left, #485c6d 90%, #0d2733); }
+  .tabButtonTop {
+    border-radius: 4px 4px 0 0; }
+  .tabButtonTop[state=""] {
+    background: linear-gradient(to bottom, #7fa5c9 90%, #277199); }
+  .tabButtonTop[state="Disabled"] {
+    background: linear-gradient(to bottom, #485c6d 90%, #0d2733); }
+    .tabButton[state=Highlight] {
+      background-color: #d3eaf9; }
+    .tabButton .mainText {
+      color: black;
+      text-align: center; }
+    .tabButton[state=Disabled] .mainText {
+      color: gray;}
+
+  .Waypoint .mainValue {
+    text-align: left; }
+  .Waypoint .title {
+    text-align: left;
+    white-space: nowrap;
+    overflow-x: scroll;
+    overflow-y: hidden; }
+  .Waypoint .symbol {
+    position: absolute;
+    top: 0;
+    right: 0; }
+.Waypoint[state=SelectedWP] {
+  border-color: #7dddff !important;
+  background: linear-gradient(#7dddff 0.4vh, #008cb4 2vh) !important; }
+  .Waypoint[state=SelectedWP] .mainValue {
+    color: black !important; }
+  .Waypoint[state=SelectedWP] .title {
+    color: black !important; }
+
+.numPad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  justify-items: center;
+  align-items: center; }
+
+.backgroundBox {
+  border-radius: 10px;
+  background: linear-gradient(#1f3445, black 10%);
+  background-color: black;
+  border: 0.4vh solid #454b4e; }
+
+.tabContainer {
+  position: relative; }
+.tabContentContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  border: 3px solid #d3eaf9;
+  border-radius: 10px; }
+  .tabContentContainer .tabContent[state="Active"] {
+    display: block; }
+  .tabContentContainer .tabContent[state="Inactive"] {
+    display: none; }
+
+.tscPage {
+  display: none; }
+
+.PopUpWindow {
+  position: absolute;
+  background-color: black;
+  z-index: 10; }
+.PopUpWindow[state=Inactive] {
+  display: none; }
+  .PopUpWindow .WindowTitle {
+    color: white;
+    text-align: center; }
+  .Transparent {
+    background-image: none;
+    background-color: rgba(0, 0, 0, 0.8); }
+
+#SelectionList .content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 1%;
+  overflow-y: scroll;
+  overflow-x: hidden; }
+  #SelectionList .content::-webkit-scrollbar {
+    width: 1vw; }
+  #SelectionList .content::-webkit-scrollbar-track {
+    background: none; }
+  #SelectionList .content::-webkit-scrollbar-thumb {
+    background: white; }
+  #SelectionList .content .gradientButton {
+    width: 100%; }
+  #SelectionList .content .gradientButton[state=Inactive] {
+    display: none; }
+    #SelectionList .content .gradientButton .value {
+      position: absolute;
+      width: 100%;
+      top: 50%;
+      transform: translateY(-50%); }
+
+.SelectionListWindow .content {
+      position: absolute;
+      background-color: black;
+      border: 0.4vh solid white;
+      padding: 2%;
+      overflow-y: scroll; }
+  .SelectionListWindow .content::-webkit-scrollbar {
+    width: 1vw; }
+  .SelectionListWindow .content::-webkit-scrollbar-track {
+    background: none; }
+  .SelectionListWindow .content::-webkit-scrollbar-thumb {
+    background: white; }
+  .SelectionListWindow .content .gradientButton {
+    width: 100%;
+    margin-bottom: 5%; }
+
+.dynamicSelectionListWindow .content {
+  position: absolute;
+  background-color: black;
+  border: 0.4vh solid white;
+  padding: 2%;
+  overflow-y: scroll; }
+  .dynamicSelectionListWindow .content::-webkit-scrollbar {
+    width: 1vw; }
+  .dynamicSelectionListWindow .content::-webkit-scrollbar-track {
+    background: none; }
+  .dynamicSelectionListWindow .content::-webkit-scrollbar-thumb {
+    background: white; }
+  .dynamicSelectionListWindow .content .gradientButton {
+    width: 100%;
+    margin-bottom: 5%; }
+    .dynamicSelectionListWindow .content .gradientButton .value {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%; }
+
+#PFDSettings .scrollContainer {
+    position: absolute;
+    border-radius: 4px;
+    overflow-y: scroll; }
+  #PFDSettings .scrollContainer::-webkit-scrollbar {
+    width: 1vw; }
+  #PFDSettings .scrollContainer::-webkit-scrollbar-track {
+    background: none; }
+  #PFDSettings .scrollContainer::-webkit-scrollbar-thumb {
+    background: white; }
+  #PFDSettings .buttonsContainer {
+    display: grid;
+    grid-template-columns: 1fr; }
+    #PFDSettings .buttonsContainer .line {
+      height: 100%;
+      border: 1px solid #454b4e;
+      border-radius: 4px;
+      display: grid;
+      grid-template-rows: 1fr; }
+      #PFDSettings .buttonsContainer .line .lineTitle {
+        margin: auto;
+        width: 98%; }
+      #PFDSettings .buttonsContainer .line .gradientButton {
+        justify-self: end;
+        width: 98%;
+        height: 98%;
+        margin: 0; }
+        #PFDSettings .buttonsContainer .line .gradientButton .mainValue {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #67e8ef; }
+
+.MapSettings .MapSettingsLeft {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  align-items: center; }
+    .MapSettings .MapSettingsLeft .MapDetailButton .img {
+      position: absolute;
+      left: 25%;
+      width: 50%;
+      bottom: 5%; }
+    .MapSettings .MapSettingsLeft .MapDetailButton .img[state=Inactive] {
+      visibility: hidden; }
+
+    .MapSettings .MapSettingsRight {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-end;
+      align-items: flex-start; }
+      .MapSettings .MapSettingsRight .tabSelect {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: flex-start;
+        height: 100%; }
+        .MapSettings .MapSettingsRight .tabContentContainer .tabContent {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          overflow-x: hidden;
+          overflow-y: scroll; }
+          .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar {
+            width: 1vw; }
+          .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar-track {
+            background: none; }
+          .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar-thumb {
+            background: white; }
+            .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRow {
+              display: grid;
+              grid-template-rows: 1fr; }
+            .MapSettings .MapSettingsRight .tabContentContainer .tabContent .gradientButton {
+              height: 100%;
+              margin: 0; }
+            .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRowButtonLeft {
+              width: 98%; }
+            .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRowButtonRight {
+              width: 98%;
+              display: flex;
+              justify-content: center;
+              align-items: center; }
+
+.MapDetailSelect .Container {
+  position: absolute;
+  text-align: center;
+  background-color: black;
+  border: 2px solid white;
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-items: center; }
+  .MapDetailSelect .Container .MapDetailSliderOuterContainer {
+    position: relative;
+    border: 1px solid white;
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    align-items: center; }
+    .MapDetailSelect .Container .MapDetailSliderOuterContainer .MapDetailSliderContainer {
+      position: relative; }
+      .MapDetailSelect .MapDetailSliderWrapper {
+        position: relative; }
+        .MapDetailSelect .MapDetailSliderWrapper .slider {
+          -webkit-appearance: none;
+          position: relative;
+          transform: rotate(270deg) translateY(-60%);
+          background: transparent; }
+        .MapDetailSelect .MapDetailSliderWrapper .slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          background: #00b2bf;
+          border: solid 3px black; }
+        .MapDetailSelect .MapDetailSliderWrapper .slider::-webkit-slider-runnable-track {
+          width: 100%;
+          background: transparent; }
+        .MapDetailSelect .MapDetailSliderWrapper .sliderBackground {
+          -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+
+#DirectTo .tabContainer {
+  position: absolute;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+  align-items: flex-start; }
+  #DirectTo .tabSelect {
+    margin-right: -1%;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-end;
+    justify-content: flex-start;
+    height: 100%; }
+    #DirectTo #Waypoint #SelectedWaypoint {
+      width: 98%; }
+      #DirectTo #Waypoint #SelectedWaypoint .mainValue {
+        position: absolute;
+        left: 2%;
+        top: 0%;
+        text-align: left;
+        color: #67e8ef; }
+      #DirectTo #Waypoint #SelectedWaypoint .title {
+        position: absolute;
+        left: 2%;
+        bottom: 0%;
+        text-align: left; }
+        #DirectTo #Waypoint #TopInfos div div {
+          display: block;
+          color: white;
+          width: 100%; }
+      #DirectTo #Waypoint #TopLine {
+        position: relative;
+        width: 100%; }
+      #DirectTo #Waypoint #MiddleLine {
+        position: relative;
+        width: 100%; }
+        #DirectTo #Waypoint #TopLine .gradientButton,
+        #DirectTo #Waypoint #MiddleLine .gradientButton {
+          position: absolute;
+          top: 0%;
+          display: inline-block;
+          text-align: center; }
+        #DirectTo #Waypoint #TopLine .gradientButton:first-child,
+        #DirectTo #Waypoint #MiddleLine .gradientButton:first-child {
+          left: 1%; }
+        #DirectTo #Waypoint #TopLine .gradientButton:last-child,
+        #DirectTo #Waypoint #MiddleLine .gradientButton:last-child {
+          right: 1%; }
+        #DirectTo #Waypoint #TopLine .mainValue,
+        #DirectTo #Waypoint #MiddleLine .mainValue {
+          color: #67e8ef; }
+      #Waypoint #bottomLine {
+        width: 100%; }
+        #DirectTo #Waypoint #bottomLine .gradientButton {
+          display: inline-block;
+          text-align: center; }
+          #DirectTo #Waypoint #bottomLine .gradientButton .title {
+            width: 100%;
+            color: white; }
+          #DirectTo #Waypoint #bottomLine .DrctImg {
+            vertical-align: middle; }
+          #DirectTo #Waypoint #bottomLine .gradientButton .mainValue {
+            width: 100%;
+            color: white; }
+
+#ActiveFlightPlan #flightPlan .HalfMenu {
+  visibility: hidden; }
+#ActiveFlightPlan #flightPlan[displayedMenu=Waypoint] #AFPL_WaypointButtonsTable,
+#ActiveFlightPlan #flightPlan[displayedMenu=Destination] #AFPL_DestinationButtonsTable,
+#ActiveFlightPlan #flightPlan[displayedMenu=Origin] #AFPL_OriginButtonsTable {
+  visibility: visible;
+  animation: flightplanMenuEnter 0.5s; }
+#ActiveFlightPlan #flightPlan #AFPL_WayPointsTable {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-collapse: collapse; }
+  #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable thead {
+    display: block;
+    color: white;
+    width: 100%;
+    border-bottom: 2px solid white; }
+  #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody {
+    display: block;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody::-webkit-scrollbar {
+      width: 1vw; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody::-webkit-scrollbar-track {
+      background: none; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody::-webkit-scrollbar-thumb {
+      background: white; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state="Selected"] {
+      background-color: #0093d0; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=Inactive] {
+      display: none; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .Waypoint .mainValue, #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .Waypoint .title {
+      color: magenta !important; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .DTK, #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr[state=CurrentLeg] .DIS {
+      color: magenta; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody tr, #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody td {
+      position: relative; }
+    #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton {
+      height: auto;
+      width: auto; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue {
+        position: absolute;
+        width: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #67e8ef; }
+        #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue[altitudeMode=Manual] {
+          color: #67e8ef; }
+        #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue[altitudeMode=Subdued] {
+          color: darkcyan;
+          -webkit-mask: url(/Pages/VCockpit/Instruments/NavSystems/Shared/Images/SubduedMask.png);
+          -webkit-mask-repeat: repeat; }
+        #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable .phaseHeader[state=SelectedWP] .gradientButton {
+          background: linear-gradient(#7dddff, #008cb4 2vh); }
+          #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable .phaseHeader[state=SelectedWP] .gradientButton .mainValue {
+            color: black; }
+        #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .mainValue {
+          color: #67e8ef; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .DTK {
+        color: white;
+        text-align: right; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .DIS {
+        color: white;
+        text-align: right; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody #CurrentLegArrowSVG {
+        position: absolute;
+        left: 0%;
+        top: 0%;
+        height: 100%;
+        width: 100%;
+        z-index: 1; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody #AFPL_EnRouteAdd[state="Inactive"] {
+        display: none; }
+          #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable #SizeSetter, #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable #SizeSetter td {
+            border: none;
+            height: 2px;
+            overflow: visible; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable #SizeSetter #CurrentLegArrowSVG {
+        overflow: visible; }
+      #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable td {
+        border: 2px solid #2c3032; }
+#ActiveFlightPlan #flightPlan .HalfMenu {
+  position: absolute; }
+  #ActiveFlightPlan #flightPlan .HalfMenu tbody {
+    height: 100%; }
+    #ActiveFlightPlan #flightPlan .HalfMenu tr td {
+      border: none; }
+
+#Procedures .gradientButton .value {
+        width: 100%;
+        color: #67e8ef; }
+  .ProcSelection .gradientButton .value {
+    color: #67e8ef;
+    width: 100%;
+    text-align: center; }
+  .ProcSelection .ProcAirport .ident {
+    color: #67e8ef;
+    width: 100%;
+    text-align: center; }
+  .ProcSelection .ProcAirport .name {
+    width: 100%;
+    overflow: hidden;
+    text-align: center; }
+  .ProcSelection .ProcSequence .content {
+    width: 100%;
+    overflow-y: scroll; }
+
+#LightingConfig #LightingValueDisplay {
+  text-align: center;
+  color: white; }
+  #LightingConfig #LightingValueDisplay .value {
+    color: #67e8ef; }
+#LightingConfig #LightingControls {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center; }
+  #LightingConfig #LightingControls .gradientButton {
+    border-color: #bbbbbb; }
+  #LightingConfig #LightingControls #LightingConfigSliderWrapper {
+    background: linear-gradient(#5f7283 0.4vh, #1f3445, black 2vh);
+    background-color: black;
+    border: 3px solid #bbbbbb;
+    box-shadow: 0px 0px 0px 3px black inset;
+    border-radius: 4px; }
+    #LightingConfig #LightingControls .sliderWindow {
+      border: 2px solid grey;
+      background-color: black; }
+      #LightingConfig #LightingControls .LightingConfigSliderContainer {
+        width: 100%; }
+      #LightingConfig #LightingControls .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        background: transparent; }
+      #LightingConfig #LightingControls .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        background: #00b2bf;
+        border: solid 0.5vh black; }
+      #LightingConfig #LightingControls .slider::-webkit-slider-runnable-track {
+        width: 100%;
+        background: transparent; }
+
+#AvionicsSettings .tabContainer {
+  display: flex;
+  flex-flow: row nowrap; }
+  #AvionicsSettings #MFDFieldsTab .buttonsContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    overflow-x: hidden;
+    overflow-y: scroll; }
+    #AvionicsSettings #MFDFieldsTab .buttonsContainer::-webkit-scrollbar {
+      width: 1vw; }
+    #AvionicsSettings #MFDFieldsTab .buttonsContainer::-webkit-scrollbar-track {
+      background: none; }
+    #AvionicsSettings #MFDFieldsTab .buttonsContainer::-webkit-scrollbar-thumb {
+      background: white; }
+      #AvionicsSettings #MFDFieldsTab .row {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border: 1px solid grey;
+        border-radius: 4px;
+        display: grid;
+        grid-template-rows: 1fr;
+        justify-items: center;
+        align-items: center; }
+        #AvionicsSettings #MFDFieldsTab .rowLabel {
+          text-align: center; }
+
+#AirportInfo #AirportInfo_SelectedWaypoint .mainValue {
+  text-align: left;
+  color: #67e8ef; }
+#AirportInfo #AirportInfo_SelectedWaypoint .title {
+  text-align: left;
+  overflow-x: scroll; }
+#AirportInfo .tabContainer {
+  display: flex;
+  flex-flow: row nowrap; }
+#AirportInfo .tabSelect {
+  height: 100%;
+  flex-flow: column nowrap; }
+  #AirportInfo .tabContainer .CenterDisplay {
+    z-index: 2;
+    margin: 0 -0.5vh; }
+      #AirportInfo .tabContainer .CenterDisplay .Info .section {
+        width: 100%;
+        border-top: 2px solid white; }
+      #AirportInfo .tabContainer .CenterDisplay .Info .line {
+        width: 100%;
+        display: flex; }
+    #AirportInfo .tabContainer .CenterDisplay .Freqs {
+      width: 100%;
+      height: 100%;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      position: relative; }
+      #AirportInfo .tabContainer .CenterDisplay .Freqs::-webkit-scrollbar {
+        width: 1vw; }
+      #AirportInfo .tabContainer .CenterDisplay .Freqs::-webkit-scrollbar-track {
+        background: none; }
+      #AirportInfo .tabContainer .CenterDisplay .Freqs::-webkit-scrollbar-thumb {
+        background: white; }
+      #AirportInfo .tabContainer .CenterDisplay .Freqs .line {
+        position: relative;
+        display: flex;
+        border-bottom: 2px solid white; }
+        #AirportInfo .tabContainer .CenterDisplay .Freqs .line .frequencyName {
+          border-right: 2px solid white; }
+    #AirportInfo .tabContainer .CenterDisplay .Runways {
+      width: 100%;
+      height: 100%;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      position: relative; }
+      #AirportInfo .tabContainer .CenterDisplay .Runways::-webkit-scrollbar {
+        width: 1vw; }
+      #AirportInfo .tabContainer .CenterDisplay .Runways::-webkit-scrollbar-track {
+        background: none; }
+      #AirportInfo .tabContainer .CenterDisplay .Runways::-webkit-scrollbar-thumb {
+        background: white; }
+      #AirportInfo .tabContainer .CenterDisplay .Runways .line {
+        position: relative;
+        display: flex;
+        border-bottom: 2px solid white; }
+
+#WaypointInfo_WaypointOptions .content {
+  position: absolute;
+  background-color: black;
+  height: auto;
+  border: 2px solid white;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center; }
+
+  #WaypointDuplicateWindow .Container {
+    position: absolute;
+    background: black;
+    border: 2px solid grey;
+    border-radius: 10px; }
+  #WaypointDuplicateWindow table {
+    border: 1px solid grey;
+    border-radius: 6px;
+    color: white;
+    text-align: center;
+    border-spacing: 0;
+    overflow-y: hidden; }
+    #WaypointDuplicateWindow table thead {
+      display: block;
+      color: white;
+      width: 100%; }
+    #WaypointDuplicateWindow table tbody {
+      display: block;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      width: 100%;
+      position: relative; }
+      #WaypointDuplicateWindow table tbody::-webkit-scrollbar {
+        width: 1vw; }
+      #WaypointDuplicateWindow table tbody::-webkit-scrollbar-track {
+        background: none; }
+      #WaypointDuplicateWindow table tbody::-webkit-scrollbar-thumb {
+        background: white; }
+      #WaypointDuplicateWindow table tbody tr[state=Inactive] {
+        display: none; }
+      #WaypointDuplicateWindow table tbody td {
+        border-top: 2px solid grey;
+        border-bottom: 2px solid grey; }
+      #WaypointDuplicateWindow table tbody td[state=Inactive] {
+        display: none; }
+      #WaypointDuplicateWindow table tbody tr td:first-child {
+        border-left: 2px solid grey;
+        border-radius: 6px 0 0 6px; }
+      #WaypointDuplicateWindow table tbody tr td:last-child {
+        border-right: 2px solid grey;
+        border-radius: 0 6px 6px 0; }
+
+.NrstContainer .NearestList {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  color: white;
+  text-align: center;
+  border-spacing: 0; }
+  .NrstContainer .NearestList .gradientButton .mainValue {
+    color: white; }
+  .NrstContainer .NearestList thead {
+    display: block;
+    color: white;
+    width: 100%;
+    border-bottom: 2px solid white; }
+  .NrstContainer .NearestList tbody {
+    display: block;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative; }
+    .NrstContainer .NearestList tbody::-webkit-scrollbar {
+      width: 1vw; }
+    .NrstContainer .NearestList tbody::-webkit-scrollbar-track {
+      background: none; }
+    .NrstContainer .NearestList tbody::-webkit-scrollbar-thumb {
+      background: white; }
+    .NrstContainer .NearestList tbody tr td {
+      border-top: 2px solid grey;
+      border-bottom: 2px solid grey; }
+    .NrstContainer .NearestList tbody tr td:first-child {
+      border-radius: 6px 0 0 6px;
+      border-left: 2px solid grey; }
+    .NrstContainer .NearestList tbody tr td:last-child {
+      border-radius: 0 6px 6px 0;
+      border-right: 2px solid grey; }
+    .NrstContainer .NearestList tbody tr[state=Inactive] {
+      display: none; }
+.NrstContainer .SelectionMenu {
+  background-color: black;
+  border: 2px solid white; }
+.NrstContainer .SelectionMenu[state=Inactive] {
+  display: none; }
+.NrstContainer .SelectionMenu[state=Active] {
+  animation: nearestMenuEnter 0.5s 1; }
+
+#NearestAirport {
+  width: 100%;
+  height: 100%; }
+#NearestIntersection {
+  width: 100%;
+  height: 100%; }
+#NearestVOR {
+  width: 100%;
+  height: 100%; }
+#NearestNDB {
+  width: 100%;
+  height: 100%; }
+
+#AudioRadiosWindow .tabContainer {
+  display: flex;
+  flex-flow: column nowrap; }
+#AudioRadiosWindow .tabSelect {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  width: 100%; }
+#AudioRadiosWindow .tabContentContainer {
+  position: relative; }
+  #AudioRadiosWindow .tabContentContainer table {
+    width: 100%;
+    height: 100%;
+    border-spacing: 0; }
+    #AudioRadiosWindow .tabContentContainer table thead {
+      display: block;
+      color: white;
+      width: 100%; }
+    #AudioRadiosWindow .tabContentContainer table tbody {
+      display: block;
+      overflow-y: scroll;
+      width: 100%; }
+      #AudioRadiosWindow .tabContentContainer table tbody::-webkit-scrollbar {
+        width: 1vw; }
+      #AudioRadiosWindow .tabContentContainer table tbody::-webkit-scrollbar-track {
+        background: black; }
+      #AudioRadiosWindow .tabContentContainer table tbody::-webkit-scrollbar-thumb {
+        background: white; }
+        #AudioRadiosWindow .tabContentContainer table tbody tr td {
+          border-top: 5px solid rgba(0, 0, 0, 0);
+          border-bottom: 5px solid rgba(0, 0, 0, 0); }
+        #AudioRadiosWindow .tabContentContainer table tbody tr td:first-child {
+          border-left: 5px solid rgba(0, 0, 0, 0);
+          border-radius: 4px 0 0 4px; }
+        #AudioRadiosWindow .tabContentContainer table tbody tr td:last-child {
+          border-right: 5px solid rgba(0, 0, 0, 0);
+          border-radius: 0 4px 4px 0; }
+        #AudioRadiosWindow .tabContentContainer table tbody tr[state="Selected"] td {
+          border-top: 5px solid #67e8ef;
+          border-bottom: 5px solid #67e8ef; }
+        #AudioRadiosWindow .tabContentContainer table tbody tr[state="Selected"] td:first-child {
+          border-left: 5px solid #67e8ef; }
+        #AudioRadiosWindow .tabContentContainer table tbody tr[state="Selected"] td:last-child {
+          border-right: 5px solid #67e8ef; }
+          #AudioRadiosWindow .tabContentContainer .gradientButton .mainNumber {
+            text-align: left; }
+          #AudioRadiosWindow .tabContentContainer .gradientButton .standbyFreq {
+            color: #67e8ef; }
+          #AudioRadiosWindow .tabContentContainer .gradientButton .activeNavID {
+            color: white;
+            text-align: right; }
+
+#frequencyKeyboard #topLine {
+  position: absolute;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  width: 100%; }
+  #frequencyKeyboard #topLine #FK_ActiveFreqLine {
+    color: white;
+    width: 100%;
+    text-align: center; }
+  #frequencyKeyboard #topLine #FK_FreqDisplay {
+    background-color: grey;
+    text-align: center; }
+    #frequencyKeyboard #topLine #FK_FreqDisplay .StbyFreq {
+      background-color: #67e8ef;
+      color: black; }
+    #frequencyKeyboard #topLine #FK_FreqDisplay .Writed {
+      background-color: none;
+      color: #67e8ef; }
+    #frequencyKeyboard #topLine #FK_FreqDisplay .ToWrite {
+      background-color: none;
+      color: dimgray; }
+    #frequencyKeyboard #topLine #FK_FreqDisplay .Writing {
+      animation: SelectedCharBlinkFreqEdit 1s infinite;
+      display: inline-block; }
+    #frequencyKeyboard #topLine #FK_FreqDisplay .Fixed {
+      background-color: #67e8ef; }
+
+#TransponderWindow #transponder_ModeSelect #transponder_ModeSelectTitle {
+  color: white; }
+#TransponderWindow #transponder_CodeDisplay {
+  background-color: grey;
+  text-align: center; }
+  #TransponderWindow #transponder_CodeDisplay #transponder_Code {
+    color: black; }
+    #TransponderWindow #transponder_CodeDisplay #transponder_Code .Writed,
+    #TransponderWindow #transponder_CodeDisplay #transponder_Code .ToWrite {
+      background-color: none;
+      color: #67e8ef; }
+    #TransponderWindow #transponder_CodeDisplay #transponder_Code .Writing {
+      animation: SelectedCharBlinkFreqEdit 1s infinite;
+      display: inline-block; }
+    #TransponderWindow #transponder_CodeDisplay #transponder_Code .Fixed {
+      background-color: #67e8ef; }
+#TransponderWindow #transponder_NumberKeyboard {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  justify-items: center;
+  align-items: center; }

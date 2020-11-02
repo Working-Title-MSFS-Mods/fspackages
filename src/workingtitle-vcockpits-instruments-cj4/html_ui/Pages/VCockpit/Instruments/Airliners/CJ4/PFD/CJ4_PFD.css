@@ -9,6 +9,20 @@
   0%, 100% {
     visibility: hidden; } }
 
+html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden; }
+  html body {
+    -webkit-user-select: none;
+    font-family: Roboto-Regular;
+    font-size: calc(var(--viewportHeightRatio) * (36px / 21.6) * var(--currentPageHeight) / 100);
+    color: white;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0; }
+
 #highlight {
   position: absolute;
   height: 100%;
@@ -618,17 +632,25 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
   font-size: 20px;
 }
 
-#NDMapOverlay #selectedRefGroup text:first-child {
+/* #NDMapOverlay #selectedRefGroup text:first-child {
   font-size: 28px;
 }
 
 #NDMapOverlay #selectedRefGroup text:last-child {
   font-size: 40px;
+} */
+
+/* #NDMapOverlay g#selectedRefGroup {
+  transform: translateY(18px);
+} */
+
+/* #NDMapOverlay g#selectedRefGroup_arc {
+  transform: translateY(15px);
 }
 
-#NDMapOverlay g#selectedRefGroup {
-  transform: translateY(18px);
-}
+#NDMapOverlay g#selectedRefGroup_rose {
+  transform: translateY(0px);
+} */
 
 #VerticalSpeed #CenterGroup > text {
   fill: #11d011;
@@ -672,6 +694,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 
 .bearing-pointer-needle {
   transform-origin: 100px 100px;
+  transition: transform .1s ease-in;
 }
 
 #VORDMENavaid_Left #ID,

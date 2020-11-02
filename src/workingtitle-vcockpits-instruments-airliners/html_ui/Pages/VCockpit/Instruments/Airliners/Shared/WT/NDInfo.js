@@ -539,7 +539,7 @@ class VORDMENavAid {
      * @param {Number} parentRadioIndex The radio index of the parent radio system selection.
      */
     handleVORModeUpdate(parentNavMode, parentRadioIndex) {
-        this.setIDValue(SimVar.GetSimVarValue("NAV IDENT:" + this.index, "string"));
+        const ident = SimVar.GetSimVarValue("NAV IDENT:" + this.index, "string");
         const hasNav = SimVar.GetSimVarValue("NAV HAS NAV:" + this.index, "Bool");
 
         if (this.hasNav !== hasNav) {
@@ -551,12 +551,19 @@ class VORDMENavAid {
         this.setDistanceValue(hideDistance ? 0 : this.getDMEDistance(this.index));
 
         if (hasNav) {
-            const navRadial = (SimVar.GetSimVarValue("NAV RADIAL:" + this.index, "degrees") - 180) % 360;
+            const navRadial = (SimVar.GetSimVarValue("NAV RADIAL:" + this.index, "degrees") + 180) % 360;
             const planeHeading = Simplane.getHeadingMagnetic() % 360;
-            this.pointerNeedle.style = `transform: rotate(${navRadial - planeHeading}deg);`;
+            let rotation = (navRadial - planeHeading) % 360;
+            if (rotation < 0) {
+                rotation += 360;
+            }
+
+            this.pointerNeedle.style = `transform: rotate(${rotation}deg);`;
+            this.setIDValue(ident);
         }
         else {
             this.setDistanceValue(0);
+            this.setIDValue(0);
         }
     }
 
@@ -588,7 +595,6 @@ class VORDMENavAid {
      */
     handleFMSModeUpdate(parentNavMode) {
         const waypointName = Simplane.getNextWaypointName();
-        this.setIDValue(waypointName);
         const hasNav = waypointName !== null && waypointName !== undefined && waypointName !== '';
 
         if (this.hasNav !== hasNav) {
@@ -602,7 +608,17 @@ class VORDMENavAid {
         if (hasNav) {
             const waypointBearing = Simplane.getNextWaypointTrack();
             const planeHeading = Simplane.getHeadingMagnetic();
-            this.pointerNeedle.style = `transform: rotate(${waypointBearing - planeHeading}deg);`;
+            let rotation = (waypointBearing - planeHeading) % 360;
+            if (rotation < 0) {
+                rotation += 360;
+            }
+
+            this.pointerNeedle.style = `transform: rotate(${rotation}deg);`;
+            this.setIDValue(waypointName);
+        }
+        else {
+            this.setIDValue(0);
+            this.setDistanceValue(0);
         }
     }
 

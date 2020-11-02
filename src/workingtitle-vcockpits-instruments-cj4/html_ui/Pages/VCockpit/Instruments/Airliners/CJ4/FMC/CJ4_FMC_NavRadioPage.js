@@ -6,10 +6,10 @@ class CJ4_FMC_NavRadioPageOne {
         this._fmc = fmc;
         this._isDirty = true;
 
-        this._transponderMode = 0;
-        let modeValue = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "Enum");
+        this._transponderMode = 1;
+        let modeValue = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
         if (modeValue == 4) {
-            this._transponderMode = 1;
+            this._transponderMode = 0;
         }
 
         this._freqMap = {
@@ -42,9 +42,9 @@ class CJ4_FMC_NavRadioPageOne {
 
         // set simvar
         let modeValue = 1;
-        if (value == 1) modeValue = 4;
+        if (value == 0) modeValue = 4;
 
-        SimVar.SetSimVarValue("TRANSPONDER STATE:1", "Enum", modeValue);
+        SimVar.SetSimVarValue("TRANSPONDER STATE:1", "number", modeValue);
 
         this.invalidate();
     }
@@ -94,7 +94,7 @@ class CJ4_FMC_NavRadioPageOne {
             [" ATC1", "TCAS MODE "],
             [this._freqMap.atc1.toFixed(0).padStart(4, "0") + "[green]", tcasModeSwitch],
             [" ADF", "REL [blue]"],
-            [this._freqMap.adf1.toFixed(0) + "[green]", "TCAS>"],
+            [this._freqMap.adf1.toFixed(0) + "[green]", "TCAS>[disabled]"],
         ]);
     }
 
@@ -111,7 +111,7 @@ class CJ4_FMC_NavRadioPageOne {
             });
         }
         else if (value.length === 0) {
-            this._fmc.radioNav.swapVHFFrequencies(this._fmc.instrumentIndex, 1);
+            this._fmc.radioNav.swapVHFFrequencies(this._fmc.instrumentIndex, index);
             this._fmc.requestCall(() => {
                 this.update();
             });

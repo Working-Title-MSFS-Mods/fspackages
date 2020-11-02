@@ -9,6 +9,20 @@
   0%, 100% {
     visibility: hidden; } }
 
+html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden; }
+  html body {
+    -webkit-user-select: none;
+    font-family: Roboto-Regular;
+    font-size: calc(var(--viewportHeightRatio) * (36px / 21.6) * var(--currentPageHeight) / 100);
+    color: white;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0; }
+
 #highlight {
   position: absolute;
   height: 100%;
@@ -2388,7 +2402,7 @@ as3x-touch-element {
     top: 0%;
     text-align: center;
     font-size: 3vh; }
-        
+
   as3x-touch-element #MFD #MapMenu .subpart {
     position: absolute;
     border: 0.4vh solid white; }
@@ -2424,7 +2438,7 @@ as3x-touch-element #MFD #MapMenu #orientation {
   left: 5%;
   width: 90%;
   height: 21%; }
-  
+
   as3x-touch-element #MFD #MapMenu #MapMenu_Orient_North {
     left: 4%;
     width: 28%}
@@ -2446,8 +2460,8 @@ as3x-touch-element #MFD #MapMenu #features {
   as3x-touch-element #MFD #MapMenu #MapMenu_Weather {
     top: 19%;
     left: 4%;
-    width: 44%;}   
- 
+    width: 44%;}
+
   as3x-touch-element #MFD #MapMenu #MapMenu_Topo {
     top: 19%;
     left: 52%;
@@ -2456,12 +2470,12 @@ as3x-touch-element #MFD #MapMenu #features {
   as3x-touch-element #MFD #MapMenu #MapMenu_RangeRing {
     left: 4%;
     width: 44%;
-    bottom: .5vh;}   
- 
+    bottom: .5vh;}
+
   as3x-touch-element #MFD #MapMenu #MapMenu_Arc {
     left: 52%;
     width: 44%;
-    bottom: .5vh;}    
+    bottom: .5vh;}
 
 as3x-touch-element #MFD #MapMenu #range {
   top: 73%;
@@ -2480,3 +2494,111 @@ as3x-touch-element #MFD #MapMenu #range {
   as3x-touch-element #MFD #MapMenu #MapMenu_Range_Auto {
     left: 68%;
     width: 28%}
+
+  as3x-touch-element #MFD #AFCS_Menu .title {
+    position: absolute;
+    width: 100%;
+    top: 0%;
+    text-align: center;
+    font-size: 3vh; }
+
+    as3x-touch-element #MFD #AFCS_Menu .gradientButton {
+      position: absolute;
+      bottom: 3vh;
+      height: 10vh;
+      width: 18%;}
+
+      as3x-touch-element #MFD #AFCS_Menu .gradientButton .title {
+        position: absolute;
+        font-size: 2vh;
+        width: 100%;
+        text-align: center; }
+
+        as3x-touch-element #MFD #AFCS_Menu .gradientButton .mainText {
+        position: absolute;
+        font-size: 2.3vh;
+        width: 100%;
+        top: 3vh;
+        text-align: center;}
+
+    as3x-touch-element #MFD #AFCS_Menu .AFCS_Group {
+        position: absolute;
+        width: 90%;
+        height: 22%;
+        left: 5%;
+    }
+
+    as3x-touch-element #MFD #AFCS_Menu #GroupOne {
+        top: 6%;
+    }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_AP_Master{
+            left: 0%;
+        }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_FD_Button{
+            left: 20%;
+        }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_YD_Button{
+            left: 40%;
+        }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_ESP_Button{
+            left: 60%;
+        }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_LVL_Button{
+            left: 80%;
+        }
+
+    as3x-touch-element #MFD #AFCS_Menu #GroupTwo {
+        top: 28%;
+    }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_HDG_Button{
+            left: 6%;
+        }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_TRK_Button{
+            left: 29%;
+        }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_NAV_Button{
+            right: 29%;
+        }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_APPR_Button{
+            right: 6%;
+        }
+
+    as3x-touch-element #MFD #AFCS_Menu #GroupThree {
+        top: 50%;
+    }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_IAS_Button{
+            left: 6%;
+        }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_ALT_Button{
+            left: 29%;
+        }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_VS_Button{
+            right: 29%;
+        }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_VNAV_Button{
+            right: 6%;
+        }
+
+    as3x-touch-element #MFD #AFCS_Menu #GroupFour {
+        top: 72%;
+    }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_UP_Button{
+            left: 0%;
+            width: 25%;
+        }
+        as3x-touch-element #MFD #AFCS_Menu #AFCS_DN_Button{
+            right: 0%;
+            width: 25%;
+        }
+
+
+    as3x-touch-element #MFD #AFCS_Menu .AFCS_Group:not(#GroupFour):after {
+        content: "";
+        background: white;
+        position: absolute;
+        bottom: 0;
+        left: 5%;
+        height: 0.4vh;
+        width: 90%;
+    }
+

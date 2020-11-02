@@ -4,18 +4,18 @@
             <img id="Splash" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Logo/Garmin.svg" />
             <div id="PageTitle">PFD HOME</div>
             <div id="PagesDisplay" state="DirectTo">
-                <div id="PFDHome">
+                <div class="tscPage" id="PFDHome">
                     <div class="line">
                         <div class="gradientButton" id="NavSourceButton">
                             <div class="lowerValue">FMS</div>
-                            <div class="upperTitle">NAV SOURCE</div>
+                            <div class="upperTitle">Nav Source</div>
                         </div>
-                        <div class="gradientButton" id="OBSButton" state="Hidden">
-                            <img class="lowerImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_OBS.png" />
+                        <div class="gradientButton" id="OBSButton" state="Greyed">
+                            <img class="lowerImg" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_OBS.png" />
                             <div class="upperTitle">OBS</div>
                         </div>
-                        <div class="gradientButton" id="CasUp" state="Hidden">
-                            <img class="lowerImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_CB_UP_ARROW_1.png" />
+                        <div class="gradientButton" id="CasUp" state="Greyed">
+                            <img class="lowerImg" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_CB_UP_ARROW_1.png" />
                             <div class="upperTitle">CAS UP</div>
                         </div>
                     </div>
@@ -30,143 +30,117 @@
                             <div class="upperTitle">Bearing 2</div>
                             <div class="lowerValue">OFF</div>
                         </div>
-                        <div class="gradientButton" id="CasDown" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_CB_DOWN_ARROW_1.png" />
-                            <div class="title">CAS DOWN</div>
+                        <div class="gradientButton" id="CasDown" state="Greyed">
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_CB_DOWN_ARROW_1.png" />
+                            <div class="label">CAS DOWN</div>
                         </div>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="SpeedBugsButton_PFD">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SPEED_BUG.png" />
-                            <div class="title">Speed Bugs</div>
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SPEED_BUG.png" />
+                            <div class="label">Speed Bugs</div>
                         </div>
                         <div class="gradientButton" id="TimersButton">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_TIMERS.png" />
-                            <div class="title">Timers</div>
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_TIMERS.png" />
+                            <div class="label">Timers</div>
                         </div>
                         <div class="gradientButton" id="MinimumsButton">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_MINIMUMS.png" />
-                            <div class="title">Minimums</div>
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_MINIMUMS.png" />
+                            <div class="label">Minimums</div>
                         </div>
-                        <div class="gradientButton" id="TrafficMapButton" state="Hidden">
+                        <div class="gradientButton" id="TrafficMapButton" state="Greyed">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_TRAFFIC.png" />
-                            <div class="title">Traffic Map</div>
+                            <div class="label">Traffic Map</div>
                         </div>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="PFDMapSettingsButton">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_INSET_SETTINGS_1.png" />
-                            <div class="title">PFD Map Settings</div>
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_INSET_SETTINGS_1.png" />
+                            <div class="label">PFD Map Settings</div>
                         </div>
-                        <div class="gradientButton" id="SensorsButton" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_SENSORS_1.png" />
-                            <div class="title">Sensors</div>
+                        <div class="gradientButton" id="SensorsButton" state="Greyed">
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_SENSORS_1.png" />
+                            <div class="label">Sensors</div>
                         </div>
                         <div class="gradientButton" id="PFDSettingsButton">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_PFD_SETTINGS_1.png" />
-                            <div class="title">PFD Settings</div>
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_PFD_SETTINGS_1.png" />
+                            <div class="label">PFD Settings</div>
                         </div>
                     </div>
                 </div>
-                <div id="SpeedBugs">
-                    <table id="SB_buttons">
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="SB_AllOn">
-                                    <div class="mainText">All On</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="gradientButton" id="SB_AllOff">
-                                    <div class="mainText">All Off</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="SB_VrStatus">
-                                    <div class="mainText">Vr</div>
-                                    <div class="statusBar"></div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="gradientButton" id="SB_VrValue">
-                                    <div class="mainValue">85KT</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="SB_VxStatus">
-                                    <div class="mainText">Vx</div>
-                                    <div class="statusBar"></div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="gradientButton" id="SB_VxValue">
-                                    <div class="mainValue">100KT</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="SB_VyStatus">
-                                    <div class="mainText">Vy</div>
-                                    <div class="statusBar"></div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="gradientButton" id="SB_VyValue">
-                                    <div class="mainValue">124KT</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="SB_VappStatus">
-                                    <div class="mainText">Vapp</div>
-                                    <div class="statusBar"></div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="gradientButton" id="SB_VappValue">
-                                    <div class="mainValue">85KT</div>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+                <div class="tscPage" id="SpeedBugs">
+                    <div class="backgroundBox" id="SB_buttons">
+                        <div class="gradientButton" id="SB_AllOn">
+                            <div class="mainText">All On</div>
+                        </div>
+                        <div class="gradientButton" id="SB_AllOff">
+                            <div class="mainText">All Off</div>
+                        </div>
+                        <div class="gradientButton statusToggleButton" id="SB_VrStatus">
+                            <div class="mainText">Vr</div>
+                            <div class="statusBar"></div>
+                        </div>
+                        <div class="gradientButton" id="SB_VrValue">
+                            <div class="mainValue"><span class="valueSpan">85</span><span class="unitSpan">KT</span></div>
+                            <img class="editIcon" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_PENCIL.png"/>
+                        </div>
+                        <div class="gradientButton statusToggleButton" id="SB_VxStatus">
+                            <div class="mainText">Vx</div>
+                            <div class="statusBar"></div>
+                        </div>
+                        <div class="gradientButton" id="SB_VxValue">
+                            <div class="mainValue"><span class="valueSpan">100</span><span class="unitSpan">KT</span></div>
+                            <img class="editIcon" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_PENCIL.png"/>
+                        </div>
+                        <div class="gradientButton statusToggleButton" id="SB_VyStatus">
+                            <div class="mainText">Vy</div>
+                            <div class="statusBar"></div>
+                        </div>
+                        <div class="gradientButton" id="SB_VyValue">
+                            <div class="mainValue"><span class="valueSpan">124</span><span class="unitSpan">KT</span></div>
+                            <img class="editIcon" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_PENCIL.png"/>
+                        </div>
+                        <div class="gradientButton statusToggleButton" id="SB_VappStatus">
+                            <div class="mainText">Vapp</div>
+                            <div class="statusBar"></div>
+                        </div>
+                        <div class="gradientButton" id="SB_VappValue">
+                            <div class="mainValue"><span class="valueSpan">85</span><span class="unitSpan">KT</span></div>
+                            <img class="editIcon" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_PENCIL.png"/>
+                        </div>
+                    </div>
                     <div class="gradientButton" id="SB_RestoreDefaults">
                         <div class="mainText">Restore All Defaults</div>
                     </div>
                 </div>
-                <div id="Timers">
+                <div class="tscPage" id="Timers">
                     <div class="gradientButton" id="TimerZone">
                         <div class="sectionTitle">Time</div>
                         <div id="TMR_Timer">00:00:00</div>
                     </div>
 
-                    <div id="CountSelection">
+                    <div class="backgroundBox" id="CountSelection">
                         <div class="sectionTitle">Count</div>
-                        <div class="gradientButton" state="Active" id="TMR_UpButton">
-                            <div class="upperTitle">Up</div>
+                        <div class="gradientButton statusToggleButton" state="Active" id="TMR_UpButton">
+                            <div class="mainText">Up</div>
                             <div class="statusBar"></div>
                         </div>
-                        <div class="gradientButton" id="TMR_DownButton">
-                            <div class="upperTitle">Down</div>
+                        <div class="gradientButton statusToggleButton" id="TMR_DownButton">
+                            <div class="mainText">Down</div>
                             <div class="statusBar"></div>
                         </div>
                     </div>
 
                     <div class="gradientButton" id="TMR_ResetButton">
-                        <div class="upperTitle">Reset</div>
+                        <div class="mainText">Reset</div>
                     </div>
 
                     <div class="gradientButton" id="TMR_StopButton">
-                        <div class="upperTitle">Start</div>
+                        <div class="mainText">Start</div>
                     </div>
                 </div>
-                <div id="Minimums">
-                    <div class="gradientButton" id="min_typeButton">
+                <div class="tscPage" id="Minimums">
+                    <div class="gradientButton valueButton" id="min_typeButton">
                         <div class="upperTitle">Minimums</div>
                         <div class="lowerValue">Baro</div>
                     </div>
@@ -180,39 +154,31 @@
                         </div>
                         <div class="gradientButton" id="min_Bksp">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
-                            <div class="title">BKSP</div>
+                            <div class="label">BKSP</div>
                         </div>
-                        <table id="min_KeyBoard_Table">
-                            <tr>
-                                <td> <div class="roundButton" id="min_1">1</div> </td>
-                                <td> <div class="roundButton" id="min_2">2</div> </td>
-                                <td> <div class="roundButton" id="min_3">3</div> </td>
-                            </tr>
-                            <tr>
-                                <td> <div class="roundButton" id="min_4">4</div> </td>
-                                <td> <div class="roundButton" id="min_5">5</div> </td>
-                                <td> <div class="roundButton" id="min_6">6</div> </td>
-                            </tr>
-                            <tr>
-                                <td> <div class="roundButton" id="min_7">7</div> </td>
-                                <td> <div class="roundButton" id="min_8">8</div> </td>
-                                <td> <div class="roundButton" id="min_9">9</div> </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td> <div class="roundButton" id="min_0">0</div> </td>
-                                <td></td>
-                            </tr>
-                        </table>
+                        <div class="numPad" id="min_KeyBoard_Table">
+                            <div class="roundButton" id="min_1"><div class="mainText">1</div></div>
+                            <div class="roundButton" id="min_2"><div class="mainText">2</div></div>
+                            <div class="roundButton" id="min_3"><div class="mainText">3</div></div>
+                            <div class="roundButton" id="min_4"><div class="mainText">4</div></div>
+                            <div class="roundButton" id="min_5"><div class="mainText">5</div></div>
+                            <div class="roundButton" id="min_6"><div class="mainText">6</div></div>
+                            <div class="roundButton" id="min_7"><div class="mainText">7</div></div>
+                            <div class="roundButton" id="min_8"><div class="mainText">8</div></div>
+                            <div class="roundButton" id="min_9"><div class="mainText">9</div></div>
+                            <div class="dummy"></div>
+                            <div class="roundButton" id="min_0"><div class="mainText">0</div></div>
+                            <div class="dummy"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="MapSettings" id="PFDMapSettings">
+                <div class="tscPage MapSettings" id="PFDMapSettings">
                     <div class="MapSettingsLeft" id="PFDMapSettingsLeft">
-                        <div class="gradientButton" id="PFDMapOrientationButton">
+                        <div class="gradientButton valueButton" id="PFDMapOrientationButton">
                             <div class="upperTitle">Orientation</div>
                             <div class="lowerValue"></div>
                         </div>
-                        <div class="gradientButton" id="PFDMapSyncButton">
+                        <div class="gradientButton valueButton" id="PFDMapSyncButton">
                             <div class="upperTitle">Map Sync</div>
                             <div class="lowerValue"></div>
                         </div>
@@ -226,39 +192,35 @@
                     </div>
                     <div class="tabContainer MapSettingsRight" id="PFDMapSettingsRight">
                         <div class="tabSelect MapSettingsTabSelect" id="PFDMapSettingsTabSelect">
-                            <div class="tabButton tabButtonRight" state="Highlight">
+                            <div class="tabButton tabButtonLeft" state="Highlight">
                                 <div class="mainText">Sensor</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="Disabled">
+                            <div class="tabButton tabButtonLeft" state="Disabled">
                                 <div class="mainText">Inset Window</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="">
+                            <div class="tabButton tabButtonLeft" state="">
                                 <div class="mainText">Aviation</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="">
+                            <div class="tabButton tabButtonLeft" state="">
                                 <div class="mainText">Land</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="">
+                            <div class="tabButton tabButtonLeft" state="">
                                 <div class="mainText">Other</div>
                             </div>
                         </div>
                         <div class="tabContentContainer MapSettingsTabContentContainer" id="PFDMapSettingsTabContentContainer">
                             <div class="tabContent MapSensorTab" state="Active">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft">
-                                                <div class="mainText">Terrain</div>
-                                                <div class="lowerValue"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton valueButton MapSettingsTabRowButtonLeft">
+                                            <div class="upperTitle">Terrain</div>
+                                            <div class="lowerValue"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tabContent MapInsetTab" state="Inactive">
                                 <div class="gradientButton">
@@ -266,298 +228,227 @@
                                 </div>
                             </div>
                             <div class="tabContent MapAviationTab" state="Inactive">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">Airspaces</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">Airports</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">VOR</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">INT</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">NDB</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Airspaces</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Airports</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">VOR</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">INT</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">NDB</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tabContent MapLandTab" state="Inactive">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">Roads</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">Cities</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Roads</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Cities</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tabContent MapOtherTab" state="Inactive">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="mainText">North Up<br>Above</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="mainText">Track Vector</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="mainText">Wind Vector</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="mainText">Fuel Rng (Rsv)</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="mainText">Range to<br>Altitude</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">North Up<br>Above</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Track Vector</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Wind Vector</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="dummy"></div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Fuel Rng (Rsv)</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Range to<br>Altitude</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="dummy"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div id="PFDSettings">
-                    <div class="buttonsContainer">
-                        <div class="line">
-                            <div class="lineTitle"><span>AOA</span></div>
-                            <div class="gradientButton" id="AoaButton">
-                                <div class="mainValue">On</div>
+                <div class="tscPage" id="PFDSettings">
+                    <div class="backgroundBox scrollContainer">
+                        <div class="buttonsContainer">
+                            <div class="line">
+                                <div class="lineTitle">AOA</div>
+                                <div class="gradientButton" id="AoaButton">
+                                    <div class="statusText">On</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="line">
-                            <div class="lineTitle"><span>Wind</span></div>
-                            <div class="gradientButton" id="WindButton">
-                                <div class="mainValue">Off</div>
+                            <div class="line">
+                                <div class="lineTitle">Wind</div>
+                                <div class="gradientButton" id="WindButton">
+                                    <div class="statusText">Off</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="line">
-                            <div class="lineTitle"><span>COM Channel Spacing</span></div>
-                            <div class="gradientButton" id="ComSpacingButton">
-                                <div class="mainValue">25 kHz</div>
+                            <div class="line">
+                                <div class="lineTitle">COM Channel Spacing</div>
+                                <div class="gradientButton" id="ComSpacingButton" state="Greyed">
+                                    <div class="statusText">25 kHz</div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="SelectionMenu" id="AoaSelectionMenu" state="Inactive">
-                        <div class="gradientButton" id="AoaOn">
-                            <div class="mainValue">On</div>
-                        </div>
-                        <div class="gradientButton" id="AoaOff">
-                            <div class="mainValue">Off</div>
-                        </div>
-                        <div class="gradientButton" id="AoaAuto">
-                            <div class="mainValue">Auto</div>
-                        </div>
-                    </div>
-                    <div class="SelectionMenu" id="WindSelectionMenu" state="Inactive">
-                        <div class="gradientButton" id="WindO1">
-                            <div class="mainValue">Option 1</div>
-                        </div>
-                        <div class="gradientButton" id="WindO2">
-                            <div class="mainValue">Option 2</div>
-                        </div>
-                        <div class="gradientButton" id="WindO3">
-                            <div class="mainValue">Option 3</div>
-                        </div>
-                        <div class="gradientButton" id="WindOff">
-                            <div class="mainValue">Off</div>
-                        </div>
-                    </div>
-                    <div class="SelectionMenu" id="ComSpacingSelectionMenu" state="Inactive">
-                        <div class="gradientButton" id="Com25">
-                            <div class="mainValue">25 kHz</div>
-                        </div>
-                        <div class="gradientButton" id="Com833">
-                            <div class="mainValue">8.33 kHz</div>
                         </div>
                     </div>
                 </div>
-                <div id="MFDHome">
+                <div class="tscPage" id="MFDHome">
                     <div class="line">
                         <div class="gradientButton" id="MapButton">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png" />
-                            <img class="img active" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SETTINGS_1.png" />
-                            <div class="title">Map</div>
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png" />
+                            <img class="img active" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SETTINGS_1.png" />
+                            <div class="label">Map</div>
                         </div>
-                        <div class="gradientButton" id="TraficButton" state="Hidden">
+                        <div class="gradientButton" id="TraficButton" state="Greyed">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_TRAFFIC_1.png" />
-                            <div class="title">Traffic</div>
+                            <div class="label">Traffic</div>
                         </div>
                         <div class="gradientButton" id="WeatherButton">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_WEATHER.png" />
-                            <img class="img active" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_WEATHER_SETTINGS_1.png" />
-                            <div class="title">Weather</div>
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_WEATHER.png" />
+                            <img class="img active" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_WEATHER_SETTINGS_1.png" />
+                            <div class="label">Weather</div>
                         </div>
-                        <div class="gradientButton" id="TAWSButton" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_TERRAIN_1.png" />
-                            <div class="title">TAWS</div>
+                        <div class="gradientButton" id="TAWSButton" state="Greyed">
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_TERRAIN_1.png" />
+                            <div class="label">TAWS</div>
                         </div>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="DirectToButton">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" />
-                            <div class="title">Direct To</div>
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" />
+                            <div class="label">Direct To</div>
                         </div>
                         <div class="gradientButton" id="FlightPlanButton">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FLIGHT_PLAN_MED_1.png" />
-                            <div class="title">Flight Plan</div>
+                            <div class="label">Flight Plan</div>
                         </div>
                         <div class="gradientButton" id="ProcButton">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PROCEDURES_1.png" />
-                            <div class="title">PROC</div>
+                            <div class="label">PROC</div>
                         </div>
-                        <div class="gradientButton" id="ChartsButton" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_CHARTS_1.png" />
-                            <div class="title">Charts</div>
+                        <div class="gradientButton" id="ChartsButton" state="Greyed">
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_CHARTS_1.png" />
+                            <div class="label">Charts</div>
                         </div>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="AircraftSystemsButton">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_SYSTEM_PROP_1.png" />
-                            <div class="title">Aircraft Systems</div>
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_SYSTEM_PROP_1.png" />
+                            <div class="label">Aircraft Systems</div>
                         </div>
-                        <div class="gradientButton" id="MusicButton" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_MUSIC_1.png" />
-                            <div class="title">Music</div>
+                        <div class="gradientButton" id="ChecklistButton" state="Greyed">
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_INITIALIZATION.png" />
+                            <div class="label">Checklist</div>
                         </div>
-                        <div class="gradientButton" id="UtilitiesButton" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_UTILITIES.png" />
-                            <div class="title">Utilities</div>
+                        <div class="gradientButton" id="ServicesButton" state="Greyed">
+						    <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_MUSIC_1.png" />
+						    <div class="label">Services</div>
+						</div>
+                        <div class="gradientButton" id="UtilitiesButton">
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_UTILITIES.png" />
+                            <div class="label">Utilities</div>
                         </div>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="SpeedBugsButton_MFD">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SPEED_BUG.png" />
-                            <div class="title">Speed Bugs</div>
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SPEED_BUG.png" />
+                            <div class="label">Speed Bugs</div>
                         </div>
                         <div class="gradientButton" id="WaypointInfoButton">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_WAYPOINT_INFO.png" />
-                            <div class="title">Waypoint Info</div>
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_WAYPOINT_INFO.png" />
+                            <div class="label">Waypoint Info</div>
                         </div>
                         <div class="gradientButton" id="NearestButton">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_NEAREST_MED_1.png" />
-                            <div class="title">Nearest</div>
+                            <div class="label">Nearest</div>
                         </div>
                     </div>
                 </div>
-                <div class="MapSettings" id="MFDMapSettings">
+                <div class="tscPage MapSettings" id="MFDMapSettings">
                     <div class="MapSettingsLeft" id="MFDMapSettingsLeft">
-                        <div class="gradientButton" id="MFDMapOrientationButton">
+                        <div class="gradientButton valueButton" id="MFDMapOrientationButton">
                             <div class="upperTitle">Orientation</div>
                             <div class="lowerValue"></div>
                         </div>
-                        <div class="gradientButton" id="MFDMapSyncButton">
+                        <div class="gradientButton valueButton" id="MFDMapSyncButton">
                             <div class="upperTitle">Map Sync</div>
                             <div class="lowerValue"></div>
                         </div>
@@ -571,39 +462,35 @@
                     </div>
                     <div class="tabContainer MapSettingsRight" id="MFDMapSettingsRight">
                         <div class="tabSelect MapSettingsTabSelect" id="MFDMapSettingsTabSelect">
-                            <div class="tabButton tabButtonRight" state="Highlight">
+                            <div class="tabButton tabButtonLeft" state="Highlight">
                                 <div class="mainText">Sensor</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="Disabled">
+                            <div class="tabButton tabButtonLeft" state="Disabled">
                                 <div class="mainText">Inset Window</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="">
+                            <div class="tabButton tabButtonLeft" state="">
                                 <div class="mainText">Aviation</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="">
+                            <div class="tabButton tabButtonLeft" state="">
                                 <div class="mainText">Land</div>
                             </div>
-                            <div class="tabButton tabButtonRight" state="">
+                            <div class="tabButton tabButtonLeft" state="">
                                 <div class="mainText">Other</div>
                             </div>
                         </div>
                         <div class="tabContentContainer MapSettingsTabContentContainer" id="MFDMapSettingsTabContentContainer">
                             <div class="tabContent MapSensorTab" state="Active">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft">
-                                                <div class="mainText">Terrain</div>
-                                                <div class="lowerValue"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton valueButton MapSettingsTabRowButtonLeft">
+                                            <div class="upperTitle">Terrain</div>
+                                            <div class="lowerValue"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tabContent MapInsetTab" state="Inactive">
                                 <div class="gradientButton">
@@ -611,269 +498,216 @@
                                 </div>
                             </div>
                             <div class="tabContent MapAviationTab" state="Inactive">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">Airspaces</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">Airports</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">VOR</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">INT</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">NDB</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Airspaces</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Airports</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">VOR</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">INT</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">NDB</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tabContent MapLandTab" state="Inactive">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">Roads</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-                                                <div class="mainText">Cities</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText">Settings</div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Roads</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
+                                            <div class="mainText">Cities</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText">Settings</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tabContent MapOtherTab" state="Inactive">
-                                <table class="tabTable">
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="mainText">North Up<br>Above</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="mainText">Track Vector</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="mainText">Wind Vector</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="mainText">Fuel Rng (Rsv)</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonRight">
-                                                <div class="statusText"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="MapSettingsTabRow">
-                                        <td>
-                                            <div class="gradientButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                                <div class="mainText">Range to<br>Altitude</div>
-                                                <div class="statusBar"></div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mapSettingsGrid">
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">North Up<br>Above</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Track Vector</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Wind Vector</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="dummy"></div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Fuel Rng (Rsv)</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="gradientButton MapSettingsTabRowButtonRight">
+                                            <div class="statusText"></div>
+                                        </div>
+                                    </div>
+                                    <div class="MapSettingsTabRow">
+                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
+                                            <div class="mainText">Range to<br>Altitude</div>
+                                            <div class="statusBar"></div>
+                                        </div>
+                                        <div class="dummy"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div id="WeatherSelection">
+                <div class="tscPage" id="WeatherSelection">
                     <div class="line">
                         <div class="gradientButton" id="NexradButton">
                             <img class="img" src="" />
-                            <div class="title">NEXRAD</div>
+                            <div class="label">NEXRAD</div>
                         </div>
                         <div class="gradientButton" id="WxRadarButton">
                             <img class="img" src="" />
-                            <div class="title">WX RADAR Horizontal</div>
+                            <div class="label">WX RADAR Horizontal</div>
                         </div>
                         <div class="gradientButton" id="WxRadarVertButton">
                             <img class="img" src="" />
-                            <div class="title">WX RADAR Vertical</div>
+                            <div class="label">WX RADAR Vertical</div>
                         </div>
                     </div>
                 </div>
-                <div id="DirectTo">
-                    <div id="SelectionTabs">
-                        <div class="gradientButton" state="White" id="Waypoint_Select">
-                            <div class="mainText">Waypoint</div>
-                        </div>
-                        <div class="gradientButton" id="FlightPlan_Select" state="Hidden">
-                            <div class="mainText">Flight Plan</div>
-                        </div>
-                        <div class="gradientButton" id="Nearest_Select" state="Hidden">
-                            <div class="mainText">Nearest</div>
-                        </div>
-                        <div class="gradientButton" id="Recent_Select" state="Hidden">
-                            <div class="mainText">Recent</div>
-                        </div>
-                    </div>
-                    <div id="TabContent" state="Waypoint">
-                        <div id="Waypoint">
-                            <div class="gradientButton" id="SelectedWaypoint">
-                                <div class="mainText">SELECT WAYPOINT</div>
-                                <div class="mainValue"></div>
-                                <div class="title"></div>
-                                <img class="waypointSymbol" />
+                <div class="tscPage" id="DirectTo">
+                    <div class="tabContainer">
+                        <div class="tabSelect">
+                            <div class="tabButton tabButtonLeft" id="Waypoint_Select" state="Highlight">
+                                <div class="mainText">Waypoint</div>
                             </div>
-                            <div id="TopInfos">
-                                <div id="Location">
-                                    <div id="DRCT_City"></div>
-                                    <div id="DRCT_Region"></div>
-                                </div>
-                                <div id="Bearing">
-                                    <div>BRG</div>
-                                    <div id="DRCT_Bearing">___°</div>
-                                </div>
-                                <div id="Distance">
-                                    <div>DIS</div>
-                                    <div id="DRCT_Distance">___._NM</div>
-                                </div>
+                            <div class="tabButton tabButtonLeft" id="FlightPlan_Select" state="Disabled">
+                                <div class="mainText">Flight Plan</div>
                             </div>
-                            <div id="TopLine">
-                                <div class="gradientButton" id="DRCT_VNavAltButton" state="Hidden">
-                                    <div class="mainText">VNAV Altitude</div>
-                                    <div class="mainValue">_____FT</div>
-                                </div>
-                                <div class="gradientButton" id="DRCT_VNavOffsetButton" state="Hidden">
-                                    <div class="mainText">VNAV Offset</div>
-                                    <div class="mainValue">0NM</div>
-                                </div>
+                            <div class="tabButton tabButtonLeft" id="Nearest_Select" state="Disabled">
+                                <div class="mainText">Nearest</div>
                             </div>
-                            <div id="MiddleLine">
-                                <div class="gradientButton" id="DRCT_CrsButton" state="Hidden">
-                                    <div class="mainText">Course</div>
-                                    <div class="mainValue">090°</div>
-                                </div>
-                                <div class="gradientButton" id="DRCT_HoldButton" state="Hidden">
-                                    <div class="mainText">Hold</div>
-                                    <div class="mainValue">---</div>
-                                </div>
-                            </div>
-                            <div id="bottomLine">
-                                <div class="gradientButton" id="DRCT_CancelButton">
-                                    <div class="mainText">Cancel <img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                                    <div class="mainValue">______</div>
-                                </div>
-                                <div class="gradientButton" id="DRCT_ActivateInsertInFP" state="Hidden">
-                                    <div class="mainText">Activate and Insert in Flight Plan</div>
-                                </div>
-                                <div class="gradientButton" id="DRCT_ActivateDirect">
-                                    <div class="mainText">Activate <img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                                    <div class="mainValue">______</div>
-                                </div>
+                            <div class="tabButton tabButtonLeft" id="Recent_Select" state="Disabled">
+                                <div class="mainText">Recent</div>
                             </div>
                         </div>
-                        <div id="FlightPlan">
-
-                        </div>
-                        <div id="Nearest">
-
-                        </div>
-                        <div id="Recent">
-
+                        <div class="tabContentContainer" id="DirectToTabContentContainer" state="Waypoint">
+                            <div class="tabContent" id="Waypoint">
+                                <div class="gradientButton" id="SelectedWaypoint">
+                                    <div class="mainText">SELECT WAYPOINT</div>
+                                    <div class="mainValue"></div>
+                                    <div class="title"></div>
+                                    <img class="waypointSymbol" />
+                                </div>
+                                <div id="TopInfos">
+                                    <div id="Location">
+                                        <div id="DRCT_City"></div>
+                                        <div id="DRCT_Region"></div>
+                                    </div>
+                                    <div id="Bearing">
+                                        <div>BRG</div>
+                                        <div id="DRCT_Bearing">___°</div>
+                                    </div>
+                                    <div id="Distance">
+                                        <div>DIS</div>
+                                        <div id="DRCT_Distance">___._NM</div>
+                                    </div>
+                                </div>
+                                <div id="TopLine">
+                                    <div class="gradientButton" id="DRCT_VNavAltButton" state="Hidden">
+                                        <div class="mainText">VNAV Altitude</div>
+                                        <div class="mainValue">_____FT</div>
+                                    </div>
+                                    <div class="gradientButton" id="DRCT_VNavOffsetButton" state="Hidden">
+                                        <div class="mainText">VNAV Offset</div>
+                                        <div class="mainValue">0NM</div>
+                                    </div>
+                                </div>
+                                <div id="MiddleLine">
+                                    <div class="gradientButton" id="DRCT_CrsButton" state="Hidden">
+                                        <div class="mainText">Course</div>
+                                        <div class="mainValue">090°</div>
+                                    </div>
+                                    <div class="gradientButton" id="DRCT_HoldButton" state="Hidden">
+                                        <div class="mainText">Hold</div>
+                                        <div class="mainValue">---</div>
+                                    </div>
+                                </div>
+                                <div id="bottomLine">
+                                    <div class="gradientButton" id="DRCT_CancelButton">
+                                        <div class="title">Cancel <img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
+                                        <div class="mainValue">______</div>
+                                    </div>
+                                    <div class="gradientButton" id="DRCT_ActivateInsertInFP" state="Hidden">
+                                        <div class="mainText">Activate and Insert in Flight Plan</div>
+                                    </div>
+                                    <div class="gradientButton" id="DRCT_ActivateDirect">
+                                        <div class="title">Activate <img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
+                                        <div class="mainValue">______</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div id="ActiveFlightPlan">
+                <div class="tscPage" id="ActiveFlightPlan">
                     <div id="leftBar">
                         <div class="gradientButton" id="AFPL_Drct">
                             <div class="mainText"><img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
@@ -891,7 +725,7 @@
                             <div class="mainText">Flight Plan Options</div>
                         </div>
                     </div>
-                    <div id="flightPlan" displayedMenu="None">
+                    <div class="backgroundBox" id="flightPlan" displayedMenu="None">
                         <table id="AFPL_WayPointsTable">
                             <thead>
                                 <tr>
@@ -910,7 +744,7 @@
                                     <td></td>
                                     <td></td>
                                 </tr>
-                                <tr id="AFPL_Origin">
+                                <tr class="phaseHeader" id="AFPL_Origin">
                                     <td colspan="3">
                                         <div class="gradientButton">
                                             <div class="mainValue"></div>
@@ -929,7 +763,7 @@
                                     <td></td>
                                     <td></td>
                                 </tr>
-                                <tr id="AFPL_EnRoute">
+                                <tr class="phaseHeader" id="AFPL_EnRoute">
                                     <td colspan="3">
                                         <div class="gradientButton">
                                             <div class="mainValue">Enroute</div>
@@ -949,7 +783,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <tr id="AFPL_Destination">
+                                <tr class="phaseHeader" id="AFPL_Destination">
                                     <td colspan="3">
                                         <div class="gradientButton">
                                             <div class="mainValue"></div>
@@ -985,7 +819,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <table id="AFPL_WaypointButtonsTable" class="HalfMenu" state="Active">
+                        <table id="AFPL_WaypointButtonsTable" class="backgroundBox HalfMenu" state="Active">
                             <tr>
                                 <td>
                                     <div class="gradientButton" id="AFPL_InsertBefore_Button">
@@ -1048,7 +882,7 @@
                                 </td>
                             </tr>
                         </table>
-                        <table id="AFPL_DestinationButtonsTable" class="HalfMenu" state="Active">
+                        <table id="AFPL_DestinationButtonsTable" class="backgroundBox HalfMenu" state="Active">
                             <tr>
                                 <td>
                                     <div class="gradientButton" id="AFPL_SelectDest_Button">
@@ -1094,7 +928,7 @@
                                 <td></td>
                             </tr>
                         </table>
-                        <table id="AFPL_OriginButtonsTable" class="HalfMenu" state="Active">
+                        <table id="AFPL_OriginButtonsTable" class="backgroundBox HalfMenu" state="Active">
                             <tr>
                                 <td>
                                     <div class="gradientButton" id="AFPL_SelectOrigin_Button">
@@ -1138,21 +972,21 @@
                         </table>
                     </div>
                 </div>
-                <div id="Procedures">
+                <div class="tscPage" id="Procedures">
                     <div class="gradientButton" id="Procedures_Departure">
-                        <div class="title">Departure</div>
+                        <div class="upperTitle">Departure</div>
                         <div class="value">____</div>
                     </div>
                     <div class="gradientButton" id="Procedures_Arrival">
-                        <div class="title">Arrival</div>
+                        <div class="upperTitle">Arrival</div>
                         <div class="value">____</div>
                     </div>
                     <div class="gradientButton" id="Procedures_Approach">
-                        <div class="title">Approach</div>
+                        <div class="upperTitle">Approach</div>
                         <div class="value">____</div>
                     </div>
                     <div class="gradientButton" id="Procedures_ActivateApproach">
-                        <div class="title">Activate Approach</div>
+                        <div class="mainText">Activate Approach</div>
                     </div>
                     <div class="gradientButton" id="Procedures_ActivateVectorsToFinal" state="Hidden">
                         <div class="title">Activate Vectors To Final</div>
@@ -1161,26 +995,26 @@
                         <div class="title">Activate Missed Approach</div>
                     </div>
                 </div>
-                <div id="DepartureSelection">
-                    <div class="gradientButton" id="Departure_Airport">
-                        <div class="title">Airport</div>
+                <div class="tscPage ProcSelection" id="DepartureSelection">
+                    <div class="gradientButton ProcAirport" id="Departure_Airport">
+                        <div class="upperTitle">Airport</div>
                         <div class="ident">____</div>
                         <div class="name">____</div>
                         <img class="logo" />
                     </div>
-                    <div class="gradientButton" id="Departure_Departure">
-                        <div class="title">Departure</div>
+                    <div class="gradientButton ProcIdentifier" id="Departure_Departure">
+                        <div class="upperTitle">Departure</div>
                         <div class="value">____</div>
                     </div>
-                    <div class="gradientButton" id="Departure_Transition">
-                        <div class="title">Transition</div>
+                    <div class="gradientButton ProcTransition" id="Departure_Transition">
+                        <div class="upperTitle">Transition</div>
                         <div class="value">____</div>
                     </div>
-                    <div class="gradientButton" id="Departure_Runway">
-                        <div class="title">Runway</div>
+                    <div class="gradientButton ProcRunway" id="Departure_Runway">
+                        <div class="upperTitle">Runway</div>
                         <div class="value">____</div>
                     </div>
-                    <div id="Departure_Options">
+                    <div class="backgroundBox ProcOptions" id="Departure_Options">
                         <div class="title">Departure Options</div>
                         <div class="gradientButton" id="Departure_Preview" state="Hidden">
                             <div class="title">Preview</div>
@@ -1191,37 +1025,37 @@
                             <div class="value">Runway</div>
                         </div>
                         <div class="gradientButton" id="Departure_Remove">
-                            <div class="title">Remove</div>
+                            <div class="mainText">Remove</div>
                         </div>
                         <div class="gradientButton" id="Departure_Load">
-                            <div class="title">Load</div>
+                            <div class="mainText">Load</div>
                         </div>
                     </div>
-                    <div id="Departure_Sequence">
+                    <div class="backgroundBox ProcSequence" id="Departure_Sequence">
                         <div class="title">Sequence</div>
                         <div class="content"></div>
                     </div>
                 </div>
-                <div id="ArrivalSelection">
-                    <div class="gradientButton" id="Arrival_Airport">
-                        <div class="title">Airport</div>
+                <div class="tscPage ProcSelection" id="ArrivalSelection">
+                    <div class="gradientButton ProcAirport" id="Arrival_Airport">
+                        <div class="upperTitle">Airport</div>
                         <div class="ident">____</div>
                         <div class="name">____</div>
                         <img class="logo" />
                     </div>
-                    <div class="gradientButton" id="Arrival_Arrival">
-                        <div class="title">Arrival</div>
+                    <div class="gradientButton ProcIdentifier" id="Arrival_Arrival">
+                        <div class="upperTitle">Arrival</div>
                         <div class="value">____</div>
                     </div>
-                    <div class="gradientButton" id="Arrival_Transition">
-                        <div class="title">Transition</div>
+                    <div class="gradientButton ProcTransition" id="Arrival_Transition">
+                        <div class="upperTitle">Transition</div>
                         <div class="value">____</div>
                     </div>
-                    <div class="gradientButton" id="Arrival_Runway">
-                        <div class="title">Runway</div>
+                    <div class="gradientButton ProcRunway" id="Arrival_Runway">
+                        <div class="upperTitle">Runway</div>
                         <div class="value">____</div>
                     </div>
-                    <div id="Arrival_Options">
+                    <div class="backgroundBox ProcOptions" id="Arrival_Options">
                         <div class="title">Arrival Options</div>
                         <div class="gradientButton" id="Arrival_Preview" state="Hidden">
                             <div class="title">Preview</div>
@@ -1232,156 +1066,252 @@
                             <div class="value">Runway</div>
                         </div>
                         <div class="gradientButton" id="Arrival_Remove">
-                            <div class="title">Remove</div>
+                            <div class="mainText">Remove</div>
                         </div>
                         <div class="gradientButton" id="Arrival_Load">
-                            <div class="title">Load</div>
+                            <div class="mainText">Load</div>
                         </div>
                     </div>
-                    <div id="Arrival_Sequence">
+                    <div class="backgroundBox ProcSequence" id="Arrival_Sequence">
                         <div class="title">Sequence</div>
                         <div class="content"></div>
                     </div>
                 </div>
-                <div id="ApproachSelection">
-                    <div class="gradientButton" id="Approach_Airport">
-                        <div class="title">Airport</div>
+                <div class="tscPage ProcSelection" id="ApproachSelection">
+                    <div class="gradientButton ProcAirport" id="Approach_Airport">
+                        <div class="upperTitle">Airport</div>
                         <div class="ident">____</div>
                         <div class="name">____</div>
                         <img class="logo" />
                     </div>
-                    <div class="gradientButton" id="Approach_Approach">
-                        <div class="title">Approach</div>
+                    <div class="gradientButton ProcIdentifier" id="Approach_Approach">
+                        <div class="upperTitle">Approach</div>
                         <div class="value">____</div>
                     </div>
-                    <div class="gradientButton" id="Approach_Transition">
-                        <div class="title">Transition</div>
+                    <div class="gradientButton ProcTransition" id="Approach_Transition">
+                        <div class="upperTitle">Transition</div>
                         <div class="value">____</div>
                     </div>
                     <div class="gradientButton" id="Approach_Minimums" state="Hidden">
-                        <div class="title">Minimums</div>
+                        <div class="upperTitle">Minimums</div>
                         <div class="state">Off</div>
                         <div class="value">_____M</div>
                     </div>
                     <div class="gradientButton" id="Approach_PrimaryFrequency" state="Hidden">
-                        <div class="title">Primary Frequency</div>
+                        <div class="upperTitle">Primary Frequency</div>
                         <div class="value">BD 110.30</div>
                     </div>
-                    <div id="Approach_Options">
+                    <div class="backgroundBox ProcOptions" id="Approach_Options">
                         <div class="title">Approach Options</div>
                         <div class="gradientButton" id="Approach_Preview" state="Hidden">
                             <div class="title">Preview</div>
                             <div class="value">Off</div>
                         </div>
                         <div class="gradientButton" id="Approach_Remove">
-                            <div class="title">Remove</div>
+                            <div class="mainText">Remove</div>
                         </div>
                         <div class="gradientButton" id="Approach_Load">
-                            <div class="title">Load</div>
+                            <div class="mainText">Load</div>
                         </div>
                         <div class="gradientButton" id="Approach_LoadAndActivate">
-                            <div class="title">Load &amp; Activate</div>
+                            <div class="mainText">Load &amp; Activate</div>
                         </div>
                     </div>
-                    <div id="Approach_Sequence">
+                    <div class="backgroundBox ProcSequence" id="Approach_Sequence">
                         <div class="title">Sequence</div>
                         <div class="content"></div>
                     </div>
                 </div>
 
-                <div id="AircraftSystems">
+                <div class="tscPage" id="AircraftSystems">
                     <div class="line">
                         <div class="gradientButton" id="LightingConfigButton">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SYSTEM_TESTS.png" />
-                            <div class="title">Lighting Config</div>
+                            <div class="label">Lighting Config</div>
                         </div>
                     </div>
                 </div>
-                <div id="LightingConfig">
-                    <div id="LightingValueDisplay">
-                        <div class="title">Master</div>
-                        <div class="value"></div>
-                    </div>
-                    <div id="LightingControls">
-                        <div class="gradientButton" id="LightingDecreaseButton">
-                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_ARROW_LEFT_MINUS.png" />
-                            <div class="title">Dec</div>
+                <div class="tscPage" id="LightingConfig">
+                    <div class="backgroundBox">
+                        <div id="LightingValueDisplay">
+                            <div class="title">Master</div>
+                            <div class="value"></div>
                         </div>
-                        <div id="LightingConfigSliderWrapper">
-                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/GRADIENT_TRIANGLE_HORIZ_BLUE.png" id="LightingConfigSliderBackground" />
-                            <div class="LightingConfigSliderContainer">
-                                <input type="range" min="1" max="100" class="slider" id="LightingConfigSlider">
+                        <div id="LightingControls">
+                            <div class="gradientButton" id="LightingDecreaseButton">
+                                <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_ARROW_LEFT_MINUS.png" />
+                                <div class="label">Dec</div>
                             </div>
-                        </div>
-                        <div class="gradientButton" id="LightingIncreaseButton">
-                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_ARROW_RIGHT_PLUS.png" />
-                            <div class="title">Inc</div>
+                            <div id="LightingConfigSliderWrapper">
+                                <div class="sliderWindow">
+                                    <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/GRADIENT_TRIANGLE_HORIZ_BLUE.png" id="LightingConfigSliderBackground" />
+                                    <div class="LightingConfigSliderContainer">
+                                        <input type="range" min="1" max="100" class="slider" id="LightingConfigSlider">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gradientButton" id="LightingIncreaseButton">
+                                <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_ARROW_RIGHT_PLUS.png" />
+                                <div class="label">Inc</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="WaypointsInfo">
+                <div class="tscPage" id="Utilities">
+                    <div class="line">
+                        <div class="gradientButton" id="SetupButton">
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_SETUP.png" />
+                            <div class="label">Setup</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tscPage" id="UtilitiesSetup">
+                    <div class="line">
+                        <div class="gradientButton" id="AvionicsSettingsButton">
+                            <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_AVIONICS_SETTINGS.png" />
+                            <div class="label">Avionics Settings</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tscPage" id="AvionicsSettings">
+                    <div class="tabContainer">
+                        <div class="tabSelect">
+                            <div class="tabButton tabButtonLeft" state="Disabled">
+                                <div class="mainText">System</div>
+                            </div>
+                            <div class="tabButton tabButtonLeft" state="Disabled">
+                                <div class="mainText">Units</div>
+                            </div>
+                            <div class="tabButton tabButtonLeft" state="Disabled">
+                                <div class="mainText">Alerts</div>
+                            </div>
+                            <div class="tabButton tabButtonLeft" state="Highlight">
+                                <div class="mainText">MFD Fields</div>
+                            </div>
+                            <div class="tabButton tabButtonLeft" state="Disabled">
+                                <div class="mainText">Audio</div>
+                            </div>
+                        </div>
+                        <div class="tabContentContainer">
+                            <div class="tabContent" id="MFDFieldsTab">
+                                <div class="buttonsContainer">
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 1</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 2</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 3</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 4</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 5</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 6</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 7</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 8</div>
+                                        <div class="gradientButton">
+                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tscPage" id="WaypointsInfo">
                     <div class="line">
                         <div class="gradientButton" id="WPInfoAirport_Btn">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_AIRPORT.png" />
-                            <div class="title">Airport</div>
+                            <div class="label">Airport</div>
                         </div>
                         <div class="gradientButton" id="WPInfoINT_Btn" state="Hidden">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_INT.png" />
-                            <div class="title">INT</div>
+                            <div class="label">INT</div>
                         </div>
                         <div class="gradientButton" id="WPInfoVOR_Btn" state="Hidden">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_VOR_2.png" />
-                            <div class="title">VOR</div>
+                            <div class="label">VOR</div>
                         </div>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="WPInfoNDB_Btn" state="Hidden">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_NDB.png" />
-                            <div class="title">NDB</div>
+                            <div class="label">NDB</div>
                         </div>
                         <div class="gradientButton" id="WPInfoUser_Btn" state="Hidden">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_USER.png" />
-                            <div class="title">User Waypoint</div>
+                            <div class="label">User Waypoint</div>
                         </div>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="WPInfoUserCreate_Btn" state="Hidden">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_USER.png" />
-                            <div class="title">Create Waypoint</div>
+                            <div class="label">Create Waypoint</div>
                         </div>
                     </div>
                 </div>
 
-                <div id="AirportInfo">
+                <div class="tscPage" id="AirportInfo">
                     <div class="line">
                         <div class="gradientButton" id="AirportInfo_SelectedWaypoint">
                             <div class="mainText">SELECT AIRPORT</div>
                             <div class="mainValue"></div>
                             <div class="title"></div>
-                            <img class="waypointSymbol" />
+                            <img class="waypointSymbol"/>
                         </div>
                         <div class="gradientButton" id="AirportInfo_Options">
                             <div class="mainText">Waypoint Options</div>
                         </div>
                     </div>
-                    <div class="mainPart">
-                        <div class="LeftTabs">
-                            <div class="gradientButton" id="AirportInfo_InfoTab" state="White">
+                    <div class="tabContainer">
+                        <div class="tabSelect LeftTabs">
+                            <div class="tabButton tabButtonLeft" id="AirportInfo_InfoTab" state="Highlight">
                                 <div class="mainText">Info</div>
                             </div>
-                            <div class="gradientButton" id="AirportInfo_FreqsTab">
+                            <div class="tabButton tabButtonLeft" id="AirportInfo_FreqsTab" state="">
                                 <div class="mainText">Freqs</div>
                             </div>
-                            <div class="gradientButton" id="AirportInfo_WeatherTab" state="Hidden">
+                            <div class="tabButton tabButtonLeft" id="AirportInfo_WeatherTab" state="Disabled">
                                 <div class="mainText">Weather</div>
                             </div>
-                            <div class="gradientButton" id="AirportInfo_AptDirTab" state="Hidden">
+                            <div class="tabButton tabButtonLeft" id="AirportInfo_AptDirTab" state="Disabled">
                                 <div class="mainText">APT DIR</div>
                             </div>
                         </div>
-                        <div class="CenterDisplay" state="Info">
-                            <div class="Info">
+                        <div class="tabContentContainer CenterDisplay">
+                            <div class="tabContent Info" state="Active">
                                 <div class="section">
                                     <div class="city"></div>
                                     <div class="region"></div>
@@ -1418,76 +1348,84 @@
                                     <div class="privacy"></div>
                                 </div>
                             </div>
-                            <div class="Freqs">
-
+                            <div class="tabContent Freqs" state="Inactive">
                             </div>
-                            <div class="Runways">
-
+                            <div class="tabContent Weather" state="Inactive">
+                            </div>
+                            <div class="tabContent APTDIR" state="Inactive">
+                            </div>
+                            <div class="tabContent Charts" state="Inactive">
+                            </div>
+                            <div class="tabContent Runways" state="Inactive">
+                            </div>
+                            <div class="tabContent NOTAMs" state="Inactive">
+                            </div>
+                            <div class="tabContent Proc" state="Inactive">
                             </div>
                         </div>
-                        <div class="RightTabs">
-                            <div class="gradientButton" id="AirportInfo_ChartsTab" state="Hidden">
+                        <div class="tabSelect RightTabs">
+                            <div class="tabButton tabButtonRight" id="AirportInfo_ChartsTab" state="Disabled">
                                 <div class="mainText">Charts</div>
                             </div>
-                            <div class="gradientButton" id="AirportInfo_RunwaysTab">
+                            <div class="tabButton tabButtonRight" id="AirportInfo_RunwaysTab" state="">
                                 <div class="mainText">Runways</div>
                             </div>
-                            <div class="gradientButton" id="AirportInfo_ChartNotamsTab" state="Hidden">
+                            <div class="tabButton tabButtonRight" id="AirportInfo_ChartNotamsTab" state="Disabled">
                                 <div class="mainText">Chart NOTAMs</div>
                             </div>
-                            <div class="gradientButton" id="AirportInfo_ProcTab" state="Hidden">
+                            <div class="tabButton tabButtonRight" id="AirportInfo_ProcTab" state="Disabled">
                                 <div class="mainText">Proc</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="Nearest">
+                <div class="tscPage" id="Nearest">
                     <div class="line">
                         <div class="gradientButton" id="NrstAirport_Btn">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_AIRPORT.png" />
-                            <div class="title">Airport</div>
+                            <div class="label">Airport</div>
                         </div>
                         <div class="gradientButton" id="NrstInt_Btn">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_INT.png" />
-                            <div class="title">INT</div>
+                            <div class="label">INT</div>
                         </div>
                         <div class="gradientButton" id="NrstVor_Btn">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_VOR_2.png" />
-                            <div class="title">VOR</div>
+                            <div class="label">VOR</div>
                         </div>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="NrstNdb_Btn">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_NDB.png" />
-                            <div class="title">NDB</div>
+                            <div class="label">NDB</div>
                         </div>
                         <div class="gradientButton" id="NrstUser_Btn" state="Hidden">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_USER.png" />
-                            <div class="title">User</div>
+                            <div class="label">User</div>
                         </div>
                         <div class="gradientButton" id="NrstAirspace_Btn" state="Hidden">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_AIRSPACE.png" />
-                            <div class="title">Airspace</div>
+                            <div class="label">Airspace</div>
                         </div>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="NrstARTCC_Btn" state="Hidden">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" />
-                            <div class="title">ARTCC</div>
+                            <div class="label">ARTCC</div>
                         </div>
                         <div class="gradientButton" id="NrstFSS_Btn" state="Hidden">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" />
-                            <div class="title">FSS</div>
+                            <div class="label">FSS</div>
                         </div>
                         <div class="gradientButton" id="NrstWeather_Btn" state="Hidden">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" />
-                            <div class="title">Weather</div>
+                            <div class="label">Weather</div>
                         </div>
                     </div>
                 </div>
-                <div id="NearestAirport">
-                    <div class="NrstContainer">
+                <div class="tscPage" id="NearestAirport">
+                    <div class="backgroundBox NrstContainer">
                         <table class="NearestList">
                             <thead>
                                 <tr>
@@ -1546,8 +1484,8 @@
                         </table>
                     </div>
                 </div>
-                <div id="NearestIntersection">
-                    <div class="NrstContainer">
+                <div class="tscPage" id="NearestIntersection">
+                    <div class="backgroundBox NrstContainer">
                         <table class="NearestList">
                             <thead>
                                 <tr>
@@ -1597,8 +1535,8 @@
                         </table>
                     </div>
                 </div>
-                <div id="NearestVOR">
-                    <div class="NrstContainer">
+                <div class="tscPage" id="NearestVOR">
+                    <div class="backgroundBox NrstContainer">
                         <table class="NearestList">
                             <thead>
                                 <tr>
@@ -1650,8 +1588,8 @@
                         </table>
                     </div>
                 </div>
-                <div id="NearestNDB">
-                    <div class="NrstContainer">
+                <div class="tscPage" id="NearestNDB">
+                    <div class="backgroundBox NrstContainer">
                         <table class="NearestList">
                             <thead>
                                 <tr>
@@ -1703,7 +1641,7 @@
                         </table>
                     </div>
                 </div>
-                <div id="NavComHome">
+                <div class="tscPage" id="NavComHome">
                     <table id="NavComLeft">
                         <tr>
                             <td class="leftColumn">
@@ -1810,87 +1748,86 @@
                             </td>
                         </tr>
                     </table>
-                    <table id="NumbersKeyboard">
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="NKFindButton" state="Hidden">
-                                    <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FIND.png" />
-                                    <div class="title">Find</div>
-                                </div>
-                            </td>
-                            <td></td>
-                            <td>
-                                <div class="gradientButton" id="NKBkspButton">
-                                    <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
-                                    <div class="title">BKSP</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td> <div class="roundButton" id="NK_1">1</div> </td>
-                            <td> <div class="roundButton" id="NK_2">2</div> </td>
-                            <td> <div class="roundButton" id="NK_3">3</div> </td>
-                        </tr>
-                        <tr>
-                            <td> <div class="roundButton" id="NK_4">4</div> </td>
-                            <td> <div class="roundButton" id="NK_5">5</div> </td>
-                            <td> <div class="roundButton" id="NK_6">6</div> </td>
-                        </tr>
-                        <tr>
-                            <td> <div class="roundButton" id="NK_7">7</div> </td>
-                            <td> <div class="roundButton" id="NK_8">8</div> </td>
-                            <td> <div class="roundButton" id="NK_9">9</div> </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="gradientButton" id="NKPlayButton" state="Hidden">
-                                    <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PLAYBACK_PLAY_1.png" />
-                                    <div class="title">Play</div>
-                                </div>
-                            </td>
-                            <td> <div class="roundButton" id="NK_0">0</div> </td>
-                            <td>
-                                <div class="gradientButton" id="NKXferButton">
-                                    <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Misc/DoubleArrowVerticalWhite.svg" />
-                                    <div class="title">XFER</div>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+                    <div id="NumbersKeyboard">
+                        <div class="gradientButton" id="NKFindButton" state="Hidden">
+                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FIND.png" />
+                            <div class="label">Find</div>
+                        </div>
+                        <div class="dummy"></div>
+                        <div class="dummy"></div>
+                        <div class="gradientButton" id="NKBkspButton">
+                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
+                            <div class="label">BKSP</div>
+                        </div>
+                        <div class="roundButton" id="NK_1"><div class="mainText">1</div></div>
+                        <div class="roundButton" id="NK_2"><div class="mainText">2</div></div>
+                        <div class="roundButton" id="NK_3"><div class="mainText">3</div></div>
+                        <div class="roundButton" id="NK_4"><div class="mainText">4</div></div>
+                        <div class="roundButton" id="NK_5"><div class="mainText">5</div></div>
+                        <div class="roundButton" id="NK_6"><div class="mainText">6</div></div>
+                        <div class="roundButton" id="NK_7"><div class="mainText">7</div></div>
+                        <div class="roundButton" id="NK_8"><div class="mainText">8</div></div>
+                        <div class="roundButton" id="NK_9"><div class="mainText">9</div></div>
+                        <div class="gradientButton" id="NKPlayButton" state="Hidden">
+                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PLAYBACK_PLAY_1.png" />
+                            <div class="label">Play</div>
+                        </div>
+                        <div class="dummy"></div>
+                        <div class="roundButton" id="NK_0"><div class="mainText">0</div></div>
+                        <div class="gradientButton" id="NKXferButton">
+                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Misc/DoubleArrowVerticalWhite.svg" />
+                            <div class="label">XFER</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="NavigationBar">
                 <div class="gradientButton" id="NavBar_1" state="Inactive">
                     <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" id="NavBar_1_img" />
-                    <div class="title" id="NavBar_1_title">Cancel</div>
+                    <div class="label" id="NavBar_1_title">Cancel</div>
                 </div>
                 <div class="gradientButton" id="NavBar_2" state="Inactive">
                     <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" id="NavBar_2_img" />
-                    <div class="title" id="NavBar_2_title"></div>
+                    <div class="label" id="NavBar_2_title"></div>
                 </div>
                 <div class="gradientButton" id="NavBar_3" state="Inactive">
                     <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" id="NavBar_3_img" />
-                    <div class="title" id="NavBar_3_title">MSG</div>
+                    <div class="label" id="NavBar_3_title">MSG</div>
                 </div>
                 <div class="gradientButton" id="NavBar_4" state="Inactive">
                     <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" id="NavBar_4_img" />
-                    <div class="title" id="NavBar_4_title">INIT</div>
+                    <div class="label" id="NavBar_4_title">INIT</div>
                 </div>
                 <div class="gradientButton" id="NavBar_5" state="Inactive">
                     <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" id="NavBar_5_img" />
-                    <div class="title" id="NavBar_5_title"></div>
+                    <div class="label" id="NavBar_5_title"></div>
                 </div>
                 <div class="gradientButton" id="NavBar_6" state="Inactive">
                     <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" id="NavBar_6_img" />
-                    <div class="title" id="NavBar_6_title">Enter</div>
+                    <div class="label" id="NavBar_6_title">Enter</div>
                 </div>
             </div>
             <div id="SoftKeys">
-                <div id="Softkey_1_Container"><p id="SoftKey_1"></p></div>
-                <div id="SoftKey_2_Container"><p id="SoftKey_2">PFD</p></div>
-                <div id="SoftKey_3_Container"><p id="SoftKey_3">MFD</p></div>
-                <div id="SoftKey_4_Container"><p id="SoftKey_4">NAV<br />COM</p></div>
-                <div id="SoftKey_5_Container"><p id="SoftKey_5"></p></div>
+                <div class="softkeyContainer" id="Softkey_1_Container"><div class="softkey" id="SoftKey_1"></div></div>
+                <div class="softkeyContainer interactiveSoftkeyContainer" id="SoftKey_2_Container">
+                    <div class="softkey" id="SoftKey_2">
+                        <div class="softkeyLabel">PFD</div>
+                        <div class="softkeyArrow"></div>
+                    </div>
+                </div>
+                <div class="softkeyContainer interactiveSoftkeyContainer" id="SoftKey_3_Container">
+                    <div class="softkey" id="SoftKey_3">
+                        <div class="softkeyLabel">MFD</div>
+                        <div class="softkeyArrow"></div>
+                    </div>
+                </div>
+                <div class="softkeyContainer interactiveSoftkeyContainer" id="SoftKey_4_Container">
+                    <div class="softkey" id="SoftKey_4">
+                        <div class="softkeyLabel">NAV<br/>COM</div>
+                        <div class="softkeyArrow"></div>
+                    </div>
+                </div>
+                <div class="softkeyContainer" id="SoftKey_5_Container"><div class="softkey" id="SoftKey_5"></div></div>
             </div>
             <div class="PopUpWindow" id="terrainAlert" state="Inactive">
                 <div class="WindowTitle">Terrain Alert</div>
@@ -1916,17 +1853,17 @@
             </div>
             <div class="PopUpWindow" id="TransponderWindow" state="Inactive">
                 <div class="WindowTitle">Transponder</div>
-                <div id="transponder_ModeSelect">
+                <div class="backgroundBox" id="transponder_ModeSelect">
                     <div id="transponder_ModeSelectTitle">Mode</div>
-                    <div class="gradientButton status" id="transponder_Alt" state="Active">
+                    <div class="gradientButton statusToggleButton" id="transponder_Alt" state="Active">
                         <div class="mainText">Altitude Reporting</div>
                         <div class="statusBar"></div>
                     </div>
-                    <div class="gradientButton" id="transponder_On">
+                    <div class="gradientButton statusToggleButton" id="transponder_On">
                         <div class="mainText">On</div>
                         <div class="statusBar"></div>
                     </div>
-                    <div class="gradientButton" id="transponder_Stby">
+                    <div class="gradientButton statusToggleButton" id="transponder_Stby">
                         <div class="mainText">Standby</div>
                         <div class="statusBar"></div>
                     </div>
@@ -1936,22 +1873,18 @@
                 </div>
                 <div class="gradientButton" id="transponder_Bksp">
                     <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
-                    <div class="title">BKSP</div>
+                    <div class="label">BKSP</div>
                 </div>
-                <table id="transponder_NumberKeyboard">
-                    <tr>
-                        <td> <div class="roundButton" id="transponder_0">0</div> </td>
-                        <td> <div class="roundButton" id="transponder_1">1</div> </td>
-                        <td> <div class="roundButton" id="transponder_2">2</div> </td>
-                        <td> <div class="roundButton" id="transponder_3">3</div> </td>
-                    </tr>
-                    <tr>
-                        <td> <div class="roundButton" id="transponder_4">4</div> </td>
-                        <td> <div class="roundButton" id="transponder_5">5</div> </td>
-                        <td> <div class="roundButton" id="transponder_6">6</div> </td>
-                        <td> <div class="roundButton" id="transponder_7">7</div> </td>
-                    </tr>
-                </table>
+                <div id="transponder_NumberKeyboard">
+                    <div class="roundButton" id="transponder_0"><div class="mainText">0</div></div>
+                    <div class="roundButton" id="transponder_1"><div class="mainText">1</div></div>
+                    <div class="roundButton" id="transponder_2"><div class="mainText">2</div></div>
+                    <div class="roundButton" id="transponder_3"><div class="mainText">3</div></div>
+                    <div class="roundButton" id="transponder_4"><div class="mainText">4</div></div>
+                    <div class="roundButton" id="transponder_5"><div class="mainText">5</div></div>
+                    <div class="roundButton" id="transponder_6"><div class="mainText">6</div></div>
+                    <div class="roundButton" id="transponder_7"><div class="mainText">7</div></div>
+                </div>
                 <div class="gradientButton" id="transponder_ActiveTransponder" state="Hidden">
                     <div class="mainText">Active</div>
                     <div class="statusText">XPDR1</div>
@@ -1962,233 +1895,237 @@
             </div>
             <div class="PopUpWindow" id="AudioRadiosWindow" state="Inactive">
                 <div class="WindowTitle">Audio &amp; Radios</div>
-                <div id="tabSelectors">
-                    <div class="gradientButton" state="White">
-                        <div class="mainText">Pilot</div>
+                <div class="tabContainer">
+                    <div class="tabSelect">
+                        <div class="tabButton tabButtonTop" state="Highlight">
+                            <div class="mainText">Pilot</div>
+                        </div>
+                        <div class="tabButton tabButtonTop" state="Disabled">
+                            <div class="mainText">Copilot</div>
+                        </div>
+                        <div class="tabButton tabButtonTop" state="Disabled">
+                            <div class="mainText">Pass</div>
+                        </div>
                     </div>
-                    <div class="gradientButton" state="Hidden">
-                        <div class="mainText">Copilot</div>
-                    </div>
-                    <div class="gradientButton" state="Hidden">
-                        <div class="mainText">Pass</div>
-                    </div>
-                </div>
-                <div id="tabView" state="Pilot">
-                    <div id="Pilot">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th colspan="2"></th>
-                                    <th>Volume</th>
-                                    <th colspan="2">Control</th>
-                                </tr>
-                            </thead>
-                            <tbody id="AudioRadioPilotBody">
-                                <tr id="Nav1" state="Selected">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Nav1_Status">
-                                            <div class="mainText">NAV1</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Nav1_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Nav1_Frequencies">
-                                            <div class="NavFrequencyDisplay">
-                                                <div class="mainNumber activeFreq">112.80</div>
-                                                <div class="mainNumber standbyFreq">110.70</div>
+                    <div class="tabContentContainer" id="AudioRadioTabContentContainer">
+                        <div class="tabContent" id="Pilot" state="Active">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th colspan="2"></th>
+                                        <th>Volume</th>
+                                        <th colspan="2">Control</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="AudioRadioPilotBody">
+                                    <tr id="Nav1" state="Selected">
+                                        <td colspan="2">
+                                            <div class="gradientButton statusToggleButton" id="Nav1_Status">
+                                                <div class="mainText">NAV1</div>
+                                                <div class="statusBar"></div>
                                             </div>
-                                            <div class="activeNavID"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Nav2">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Nav2_Status">
-                                            <div class="mainText">NAV2</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Nav2_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Nav2_Frequencies">
-                                            <div class="NavFrequencyDisplay">
-                                                <div class="mainNumber activeFreq">112.80</div>
-                                                <div class="mainNumber standbyFreq">110.70</div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Nav1_Volume">
                                             </div>
-                                            <div class="activeNavID"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Com1">
-                                    <td>
-                                        <div class="gradientButton" id="Com1_Status">
-                                            <div class="mainText">COM1</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Com1_Mic">
-                                            <div class="mainText">MIC</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Com1_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Com1_Frequencies">
-                                            <div class="ComFrequencyDisplay">
-                                                <div class="mainNumber activeFreq">118.80</div>
-                                                <div class="mainNumber standbyFreq">123.70</div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Nav1_Frequencies">
+                                                <div class="frequencyDisplay NavFrequencyDisplay">
+                                                    <div class="mainNumber activeFreq">112.80</div>
+                                                    <div class="mainNumber standbyFreq">110.70</div>
+                                                </div>
+                                                <div class="activeNavID"></div>
                                             </div>
-                                            <div class="Dummy"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Com2">
-                                    <td>
-                                        <div class="gradientButton" id="Com2_Status">
-                                            <div class="mainText">COM2</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Com2_Mic">
-                                            <div class="mainText">MIC</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Com2_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Com2_Frequencies">
-                                            <div class="ComFrequencyDisplay">
-                                                <div class="mainNumber activeFreq">118.80</div>
-                                                <div class="mainNumber standbyFreq">123.70</div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Nav2">
+                                        <td colspan="2">
+                                            <div class="gradientButton statusToggleButton" id="Nav2_Status">
+                                                <div class="mainText">NAV2</div>
+                                                <div class="statusBar"></div>
                                             </div>
-                                            <div class="Dummy"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Speaker">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Speaker_Status">
-                                            <div class="mainText">Speaker</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Speaker_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2"></td>
-                                </tr>
-                                <tr id="Recorder">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Recorder_Play">
-                                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PLAYBACK_PLAY_1.png" />
-                                            <div class="title">Recorder</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Recorder_Volume">
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Recorder_Prev">
-                                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PREV_SUP.png" />
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Recorder_Next">
-                                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_NEXT_SUP.png" />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Marker">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Marker_Status">
-                                            <div class="mainText">Marker</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Marker_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="MarkerHighSense_Status">
-                                            <div class="mainText">High Sense</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Adf">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Adf_Status">
-                                            <div class="mainText">ADF</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Adf_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Adf_Frequencies">
-                                            <div class="activeFreq">1799.5</div>
-                                            <div class="standbyFreq">190.0</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Music">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Music_Status">
-                                            <div class="mainText">Music</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Music_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Music_MuteSettings">
-                                            <div class="mainText">Mute Settings</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="Clicks">
-                                    <td colspan="2">
-                                        <div class="gradientButton" id="Clicks_Status">
-                                            <div class="mainText">Clicks</div>
-                                            <div class="statusText">Off</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton" id="Clicks_Volume">
-                                        </div>
-                                    </td>
-                                    <td colspan="2"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="Copilot">
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Nav2_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Nav2_Frequencies">
+                                                <div class="frequencyDisplay NavFrequencyDisplay">
+                                                    <div class="mainNumber activeFreq">112.80</div>
+                                                    <div class="mainNumber standbyFreq">110.70</div>
+                                                </div>
+                                                <div class="activeNavID"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Com1">
+                                        <td>
+                                            <div class="gradientButton statusToggleButton" id="Com1_Status">
+                                                <div class="mainText">COM1</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton statusToggleButton" id="Com1_Mic">
+                                                <div class="mainText">MIC</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Com1_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Com1_Frequencies">
+                                                <div class="frequencyDisplay ComFrequencyDisplay">
+                                                    <div class="mainNumber activeFreq">118.80</div>
+                                                    <div class="mainNumber standbyFreq">123.70</div>
+                                                </div>
+                                                <div class="Dummy"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Com2">
+                                        <td>
+                                            <div class="gradientButton statusToggleButton" id="Com2_Status">
+                                                <div class="mainText">COM2</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton statusToggleButton" id="Com2_Mic">
+                                                <div class="mainText">MIC</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Com2_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Com2_Frequencies">
+                                                <div class="frequencyDisplay ComFrequencyDisplay">
+                                                    <div class="mainNumber activeFreq">118.80</div>
+                                                    <div class="mainNumber standbyFreq">123.70</div>
+                                                </div>
+                                                <div class="Dummy"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Speaker">
+                                        <td colspan="2">
+                                            <div class="gradientButton statusToggleButton" id="Speaker_Status">
+                                                <div class="mainText">Speaker</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Speaker_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                    <tr id="Recorder">
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Recorder_Play">
+                                                <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PLAYBACK_PLAY_1.png" />
+                                                <div class="label">Recorder</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Recorder_Volume">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Recorder_Prev">
+                                                <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PREV_SUP.png" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Recorder_Next">
+                                                <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_NEXT_SUP.png" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Marker">
+                                        <td colspan="2">
+                                            <div class="gradientButton statusToggleButton" id="Marker_Status">
+                                                <div class="mainText">Marker</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Marker_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton statusToggleButton" id="MarkerHighSense_Status">
+                                                <div class="mainText">High Sense</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Adf">
+                                        <td colspan="2">
+                                            <div class="gradientButton statusToggleButton" id="Adf_Status">
+                                                <div class="mainText">ADF</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Adf_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Adf_Frequencies">
+                                                <div class="frequencyDisplay">
+                                                    <div class="mainNumber activeFreq">1799.5</div>
+                                                    <div class="mainNumber standbyFreq">190.0</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Music">
+                                        <td colspan="2">
+                                            <div class="gradientButton statusToggleButton" id="Music_Status">
+                                                <div class="mainText">Music</div>
+                                                <div class="statusBar"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Music_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2">
+                                            <div class="gradientButton" id="Music_MuteSettings">
+                                                <div class="mainText">Mute Settings</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="Clicks">
+                                        <td colspan="2">
+                                            <div class="gradientButton statusTextButton" id="Clicks_Status">
+                                                <div class="mainText">Clicks</div>
+                                                <div class="statusText">Off</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="gradientButton" id="Clicks_Volume">
+                                            </div>
+                                        </td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="Copilot">
 
-                    </div>
-                    <div id="Pass">
+                        </div>
+                        <div id="Pass">
 
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2197,7 +2134,7 @@
                 <div id="topLine">
                     <div class="gradientButton" id="FK_Find">
                         <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FIND.png" />
-                        <div class="title">Find</div>
+                        <div class="label">Find</div>
                     </div>
                     <div>
                         <div id="FK_ActiveFreqLine">Active Freq: <span id="FK_ActiveFrequency">116.40</span></div>
@@ -2207,36 +2144,26 @@
                     </div>
                     <div class="gradientButton" id="FK_Bksp">
                         <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
-                        <div class="title">BKSP</div>
+                        <div class="label">BKSP</div>
                     </div>
                 </div>
-                <table id="KeyBoard">
-                    <tr>
-                        <td> <div class="roundButton" id="FK_1">1</div> </td>
-                        <td> <div class="roundButton" id="FK_2">2</div> </td>
-                        <td> <div class="roundButton" id="FK_3">3</div> </td>
-                    </tr>
-                    <tr>
-                        <td> <div class="roundButton" id="FK_4">4</div> </td>
-                        <td> <div class="roundButton" id="FK_5">5</div> </td>
-                        <td> <div class="roundButton" id="FK_6">6</div> </td>
-                    </tr>
-                    <tr>
-                        <td> <div class="roundButton" id="FK_7">7</div> </td>
-                        <td> <div class="roundButton" id="FK_8">8</div> </td>
-                        <td> <div class="roundButton" id="FK_9">9</div> </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td> <div class="roundButton" id="FK_0">0</div> </td>
-                        <td>
-                            <div class="gradientButton" id="FK_Xfer">
-                                <img class="img_small" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Misc/DoubleArrowVerticalWhite.svg" />
-                                <div class="title">XFER</div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
+                <div class="numPad" id="KeyBoard">
+                        <div class="roundButton" id="FK_1"><div class="mainText">1</div></div>
+                        <div class="roundButton" id="FK_2"><div class="mainText">2</div></div>
+                        <div class="roundButton" id="FK_3"><div class="mainText">3</div></div>
+                        <div class="roundButton" id="FK_4"><div class="mainText">4</div></div>
+                        <div class="roundButton" id="FK_5"><div class="mainText">5</div></div>
+                        <div class="roundButton" id="FK_6"><div class="mainText">6</div></div>
+                        <div class="roundButton" id="FK_7"><div class="mainText">7</div></div>
+                        <div class="roundButton" id="FK_8"><div class="mainText">8</div></div>
+                        <div class="roundButton" id="FK_9"><div class="mainText">9</div></div>
+                        <div class="dummy"></div>
+                        <div class="roundButton" id="FK_0"><div class="mainText">0</div> </div>
+                        <div class="gradientButton" id="FK_Xfer">
+                            <img class="img_small" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Misc/DoubleArrowVerticalWhite.svg" />
+                            <div class="label">XFER</div>
+                        </div>
+                </div>
             </div>
             <div class="PopUpWindow" id="timeKeyboard" state="Inactive">
                 <div class="WindowTitle">Enter Time</div>
@@ -2245,30 +2172,22 @@
                 </div>
                 <div class="gradientButton" id="TK_Bksp">
                     <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
-                    <div class="title">BKSP</div>
+                    <div class="label">BKSP</div>
                 </div>
-                <table id="KeyBoard">
-                    <tr>
-                        <td> <div class="roundButton" id="TK_1">1</div> </td>
-                        <td> <div class="roundButton" id="TK_2">2</div> </td>
-                        <td> <div class="roundButton" id="TK_3">3</div> </td>
-                    </tr>
-                    <tr>
-                        <td> <div class="roundButton" id="TK_4">4</div> </td>
-                        <td> <div class="roundButton" id="TK_5">5</div> </td>
-                        <td> <div class="roundButton" id="TK_6">6</div> </td>
-                    </tr>
-                    <tr>
-                        <td> <div class="roundButton" id="TK_7">7</div> </td>
-                        <td> <div class="roundButton" id="TK_8">8</div> </td>
-                        <td> <div class="roundButton" id="TK_9">9</div> </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td> <div class="roundButton" id="TK_0">0</div> </td>
-                        <td></td>
-                    </tr>
-                </table>
+                <div class="numPad" id="KeyBoard">
+                    <div class="roundButton" id="TK_1"><div class="mainText">1</div></div>
+                    <div class="roundButton" id="TK_2"><div class="mainText">2</div></div>
+                    <div class="roundButton" id="TK_3"><div class="mainText">3</div></div>
+                    <div class="roundButton" id="TK_4"><div class="mainText">4</div></div>
+                    <div class="roundButton" id="TK_5"><div class="mainText">5</div></div>
+                    <div class="roundButton" id="TK_6"><div class="mainText">6</div></div>
+                    <div class="roundButton" id="TK_7"><div class="mainText">7</div></div>
+                    <div class="roundButton" id="TK_8"><div class="mainText">8</div></div>
+                    <div class="roundButton" id="TK_9"><div class="mainText">9</div></div>
+                    <div class="dummy"></div>
+                    <div class="roundButton" id="TK_0"><div class="mainText">0</div></div>
+                    <div class="dummy"></div>
+                </div>
             </div>
             <div class="PopUpWindow" id="speedKeyboard" state="Inactive">
                 <div class="WindowTitle">Enter Speed</div>
@@ -2277,30 +2196,22 @@
                 </div>
                 <div class="gradientButton" id="SK_Bksp">
                     <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
-                    <div class="title">BKSP</div>
+                    <div class="label">BKSP</div>
                 </div>
-                <table id="KeyBoard">
-                    <tr>
-                        <td> <div class="roundButton" id="SK_1">1</div> </td>
-                        <td> <div class="roundButton" id="SK_2">2</div> </td>
-                        <td> <div class="roundButton" id="SK_3">3</div> </td>
-                    </tr>
-                    <tr>
-                        <td> <div class="roundButton" id="SK_4">4</div> </td>
-                        <td> <div class="roundButton" id="SK_5">5</div> </td>
-                        <td> <div class="roundButton" id="SK_6">6</div> </td>
-                    </tr>
-                    <tr>
-                        <td> <div class="roundButton" id="SK_7">7</div> </td>
-                        <td> <div class="roundButton" id="SK_8">8</div> </td>
-                        <td> <div class="roundButton" id="SK_9">9</div> </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td> <div class="roundButton" id="SK_0">0</div> </td>
-                        <td></td>
-                    </tr>
-                </table>
+                <div class="numPad" id="KeyBoard">
+                    <div class="roundButton" id="SK_1"><div class="mainText">1</div></div>
+                    <div class="roundButton" id="SK_2"><div class="mainText">2</div></div>
+                    <div class="roundButton" id="SK_3"><div class="mainText">3</div></div>
+                    <div class="roundButton" id="SK_4"><div class="mainText">4</div></div>
+                    <div class="roundButton" id="SK_5"><div class="mainText">5</div></div>
+                    <div class="roundButton" id="SK_6"><div class="mainText">6</div></div>
+                    <div class="roundButton" id="SK_7"><div class="mainText">7</div></div>
+                    <div class="roundButton" id="SK_8"><div class="mainText">8</div></div>
+                    <div class="roundButton" id="SK_9"><div class="mainText">9</div></div>
+                    <div class="dummy"></div>
+                    <div class="roundButton" id="SK_0"><div class="mainText">0</div></div>
+                    <div class="dummy"></div>
+                </div>
             </div>
             <div class="PopUpWindow" id="altitudeKeyboard" state="Inactive">
                 <div class="WindowTitle">Enter Altitude</div>
@@ -2309,30 +2220,22 @@
                 </div>
                 <div class="gradientButton" id="AK_Bksp">
                     <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
-                    <div class="title">BKSP</div>
+                    <div class="label">BKSP</div>
                 </div>
-                <table id="KeyBoard">
-                    <tr>
-                        <td> <div class="roundButton" id="AK_1">1</div> </td>
-                        <td> <div class="roundButton" id="AK_2">2</div> </td>
-                        <td> <div class="roundButton" id="AK_3">3</div> </td>
-                    </tr>
-                    <tr>
-                        <td> <div class="roundButton" id="AK_4">4</div> </td>
-                        <td> <div class="roundButton" id="AK_5">5</div> </td>
-                        <td> <div class="roundButton" id="AK_6">6</div> </td>
-                    </tr>
-                    <tr>
-                        <td> <div class="roundButton" id="AK_7">7</div> </td>
-                        <td> <div class="roundButton" id="AK_8">8</div> </td>
-                        <td> <div class="roundButton" id="AK_9">9</div> </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td> <div class="roundButton" id="AK_0">0</div> </td>
-                        <td></td>
-                    </tr>
-                </table>
+                <div class="numPad" id="KeyBoard">
+                    <div class="roundButton" id="AK_1"><div class="mainText">1</div></div>
+                    <div class="roundButton" id="AK_2"><div class="mainText">2</div></div>
+                    <div class="roundButton" id="AK_3"><div class="mainText">3</div></div>
+                    <div class="roundButton" id="AK_4"><div class="mainText">4</div></div>
+                    <div class="roundButton" id="AK_5"><div class="mainText">5</div></div>
+                    <div class="roundButton" id="AK_6"><div class="mainText">6</div></div>
+                    <div class="roundButton" id="AK_7"><div class="mainText">7</div></div>
+                    <div class="roundButton" id="AK_8"><div class="mainText">8</div></div>
+                    <div class="roundButton" id="AK_9"><div class="mainText">9</div></div>
+                    <div class="dummy"></div>
+                    <div class="roundButton" id="AK_0"><div class="mainText">0</div></div>
+                    <div class="dummy"></div>
+                </div>
             </div>
             <div class="PopUpWindow" id="fullKeyboard" state="Inactive" keyboard="Letters">
                 <div id="topLine">
@@ -2357,7 +2260,7 @@
                         <td>
                             <div class="gradientButton" id="K_Find" state="Hidden">
                                 <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FIND.png" />
-                                <div class="title">Find</div>
+                                <div class="label">Find</div>
                             </div>
                         </td>
                         <td colspan="2" class="Double">
@@ -2368,7 +2271,7 @@
                         <td>
                             <div class="gradientButton" id="K_Bksp">
                                 <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
-                                <div class="title">BKSP</div>
+                                <div class="label">BKSP</div>
                             </div>
                         </td>
                     </tr>
@@ -2508,7 +2411,7 @@
                         <td>
                             <div class="gradientButton" id="KN_Find" state="Hidden">
                                 <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FIND.png" />
-                                <div class="title">Find</div>
+                                <div class="label">Find</div>
                             </div>
                         </td>
                         <td colspan="2" class="Double">
@@ -2519,7 +2422,7 @@
                         <td>
                             <div class="gradientButton" id="KN_Bksp">
                                 <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_BKSP.png" />
-                                <div class="title">BKSP</div>
+                                <div class="label">BKSP</div>
                             </div>
                         </td>
                     </tr>
@@ -2657,30 +2560,60 @@
                 <div class="WindowTitle">Minimum Source</div>
                 <div class="Container">
                     <div class="gradientButton" id="minSource_Off">
-                        <div class="mainValue">
+                        <div class="mainText">
                             Off
                         </div>
                     </div>
                     <div class="gradientButton" id="minSource_Baro">
-                        <div class="mainValue">
+                        <div class="mainText">
                             Baro
                         </div>
                     </div>
                     <div class="gradientButton" id="minSource_TempComp" state="Hidden">
-                        <div class="mainValue">
+                        <div class="mainText">
                             Temp Comp
                         </div>
                     </div>
                     <div class="gradientButton" id="minSource_RadioAlt">
-                        <div class="mainValue">
+                        <div class="mainText">
                             Radio Alt
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="PopUpWindow Transparent" id="DynamicSelectionListWindow" state="Inactive">
+            <div class="PopUpWindow Transparent dynamicSelectionListWindow" id="DynamicSelectionListWindow" state="Inactive">
                 <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
+                <div class="content"></div>
+            </div>
+            <div class="PopUpWindow Transparent SelectionListWindow" id="AoASelect" state="Inactive">
+                <div class="WindowTitle">AOA Settings</div>
                 <div class="content">
+                    <div class="gradientButton" state="Highlight">
+                        <div class="mainText">On</div>
+                    </div>
+                    <div class="gradientButton" state="">
+                        <div class="mainText">Off</div>
+                    </div>
+                    <div class="gradientButton" state="">
+                        <div class="mainText">Auto</div>
+                    </div>
+                </div>
+            </div>
+            <div class="PopUpWindow Transparent SelectionListWindow" id="PFDWindSelect" state="Inactive">
+                <div class="WindowTitle">Wind Settings</div>
+                <div class="content">
+                    <div class="gradientButton" state="">
+                        <div class="mainText">Option 1</div>
+                    </div>
+                    <div class="gradientButton" state="">
+                        <div class="mainText">Option 2</div>
+                    </div>
+                    <div class="gradientButton" state="">
+                        <div class="mainText">Option 3</div>
+                    </div>
+                    <div class="gradientButton" state="Highlight">
+                        <div class="mainText">Off</div>
+                    </div>
                 </div>
             </div>
             <div class="PopUpWindow Transparent SelectionListWindow" id="MapOrientationSelect" state="Inactive">
@@ -2698,7 +2631,7 @@
                 </div>
             </div>
             <div class="PopUpWindow Transparent SelectionListWindow" id="MapSyncSelect" state="Inactive">
-                <div class="WindowTitle">Map Orientation</div>
+                <div class="WindowTitle">Map Sync Settings</div>
                 <div class="content">
                     <div class="gradientButton" id="MapSyncOff" state="Highlight">
                         <div class="mainText">Off</div>
@@ -2732,15 +2665,15 @@
             <div class="PopUpWindow Transparent SelectionListWindow StatusButtonSelectionListWindow" id="MapAirportRangeTypeSelect" state="Inactive">
                 <div class="WindowTitle">Airport Settings</div>
                 <div class="content">
-                    <div class="gradientButton" id="MapAirportRangeLargeAirportButton">
+                    <div class="gradientButton statusTextButton" id="MapAirportRangeLargeAirportButton">
                         <div class="mainText">Large Airport</div>
                         <div class="statusText"></div>
                     </div>
-                    <div class="gradientButton" id="MapAirportRangeMediumAirportButton">
+                    <div class="gradientButton statusTextButton" id="MapAirportRangeMediumAirportButton">
                         <div class="mainText">Medium Airport</div>
                         <div class="statusText"></div>
                     </div>
-                    <div class="gradientButton" id="MapAirportRangeSmallAirportButton">
+                    <div class="gradientButton statusTextButton" id="MapAirportRangeSmallAirportButton">
                         <div class="mainText">Small Airport</div>
                         <div class="statusText"></div>
                     </div>
@@ -2749,15 +2682,15 @@
             <div class="PopUpWindow Transparent SelectionListWindow StatusButtonSelectionListWindow" id="MapRoadRangeTypeSelect" state="Inactive">
                 <div class="WindowTitle">Road Settings</div>
                 <div class="content">
-                    <div class="gradientButton" id="MapRoadRangeHighwayButton">
+                    <div class="gradientButton statusTextButton" id="MapRoadRangeHighwayButton">
                         <div class="mainText">Highways</div>
                         <div class="statusText"></div>
                     </div>
-                    <div class="gradientButton" id="MapRoadRangeTrunkButton">
+                    <div class="gradientButton statusTextButton" id="MapRoadRangeTrunkButton">
                         <div class="mainText">Trunk Roads</div>
                         <div class="statusText"></div>
                     </div>
-                    <div class="gradientButton" id="MapRoadRangePrimaryButton">
+                    <div class="gradientButton statusTextButton" id="MapRoadRangePrimaryButton">
                         <div class="mainText">Local Roads</div>
                         <div class="statusText"></div>
                     </div>
@@ -2766,15 +2699,15 @@
             <div class="PopUpWindow Transparent SelectionListWindow StatusButtonSelectionListWindow" id="MapCityRangeTypeSelect" state="Inactive">
                 <div class="WindowTitle">City Settings</div>
                 <div class="content">
-                    <div class="gradientButton" id="MapRoadRangeHighwayButton">
+                    <div class="gradientButton statusTextButton" id="MapRoadRangeHighwayButton">
                         <div class="mainText">Large Cities</div>
                         <div class="statusText"></div>
                     </div>
-                    <div class="gradientButton" id="MapRoadRangeTrunkButton">
+                    <div class="gradientButton statusTextButton" id="MapRoadRangeTrunkButton">
                         <div class="mainText">Medium Cities</div>
                         <div class="statusText"></div>
                     </div>
-                    <div class="gradientButton" id="MapRoadRangePrimaryButton">
+                    <div class="gradientButton statusTextButton" id="MapRoadRangePrimaryButton">
                         <div class="mainText">Small Cities</div>
                         <div class="statusText"></div>
                     </div>
@@ -2817,15 +2750,15 @@
                 </div>
             </div>
             <div class="PopUpWindow Transparent" id="WaypointInfo_WaypointOptions" state="Inactive">
+                <div class="WindowTitle">Waypoint Options</div>
                 <div class="content">
-                    <div class="title">Waypoint Options</div>
                     <div class="gradientButton drctButon">
                         <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" />
                     </div>
                     <div class="gradientButton flightPlanButon">
                         <div class="mainText">Insert in Flight Plan</div>
                     </div>
-                    <div class="gradientButton showOnMapButon">
+                    <div class="gradientButton statusToggleButton showOnMapButon">
                         <div class="mainText">Show On Map</div>
                         <div class="statusBar"></div>
                     </div>
@@ -2837,13 +2770,16 @@
             </div>
             <div class="PopUpWindow" id="SelectionList" state="Inactive">
                 <div class="WindowTitle"></div>
-                <div class="content">
+                <div class="backgroundBox contentContainer">
+                    <div class="content">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </script>
 
+<link rel="stylesheet" href="../AS3000_TSC_Common.css" />
 <link rel="stylesheet" href="AS3000_TSC_Horizontal.css" />
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
@@ -2860,8 +2796,10 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/ContextualMenu.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/TouchDynamicSelectionListWindow.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/MapElement.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/NavDataBar.js"></script>
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/AS3000_Common.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>

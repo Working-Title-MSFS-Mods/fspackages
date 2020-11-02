@@ -491,7 +491,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             text.setAttribute("alignment-baseline", "central");
             fuelGroup.appendChild(text);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "LBS";
+            text.textContent = WT_ConvertUnit.isMetric() ? "KGS" : "LBS";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", (startPosY + 10).toString());
             text.setAttribute("fill", "#cccac8");
@@ -736,7 +736,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             var percent = (-Simplane.getTrimNeutral() + 1.0) * 0.5;
             percent = Math.min(1, Math.max(0, percent));
-            var posY = ((gaugeStartY+gaugeHeight) - (gaugeHeight * percent)) - ((gaugeHeight*0.18)/2);
+            var posY = ((gaugeStartY + gaugeHeight) - (gaugeHeight * percent)) - ((gaugeHeight * 0.18) / 2);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
             rect.setAttribute("y", (posY).toString());
@@ -1190,8 +1190,8 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilPSI1Value = document.createElementNS(Avionics.SVG.NS, "text");
                 this.OilPSI1Value.textContent = "0";
                 this.OilPSI1Value.setAttribute("x", (this.OilPSI1CursorX + gaugeWidth * 0.5).toString());
-                this.OilPSI1Value.setAttribute("y", (this.OilPSI1CursorY1 + 10).toString());
-                this.OilPSI1Value.setAttribute("fill", "none");
+                this.OilPSI1Value.setAttribute("y", (this.OilPSI1CursorY1 + 15).toString());
+                this.OilPSI1Value.setAttribute("fill", "#11d011");
                 this.OilPSI1Value.setAttribute("font-size", "22");
                 this.OilPSI1Value.setAttribute("font-family", "Roboto-Bold");
                 this.OilPSI1Value.setAttribute("text-anchor", "middle");
@@ -1221,8 +1221,8 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilPSI2Value = document.createElementNS(Avionics.SVG.NS, "text");
                 this.OilPSI2Value.textContent = "0";
                 this.OilPSI2Value.setAttribute("x", (this.OilPSI2CursorX + gaugeWidth * 0.5).toString());
-                this.OilPSI2Value.setAttribute("y", (this.OilPSI2CursorY1 + 10).toString());
-                this.OilPSI2Value.setAttribute("fill", "none");
+                this.OilPSI2Value.setAttribute("y", (this.OilPSI2CursorY1 + 15).toString());
+                this.OilPSI2Value.setAttribute("fill", "#11d011");
                 this.OilPSI2Value.setAttribute("font-size", "22");
                 this.OilPSI2Value.setAttribute("font-family", "Roboto-Bold");
                 this.OilPSI2Value.setAttribute("text-anchor", "middle");
@@ -1266,8 +1266,8 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilTemp1Value = document.createElementNS(Avionics.SVG.NS, "text");
                 this.OilTemp1Value.textContent = "0";
                 this.OilTemp1Value.setAttribute("x", (this.OilTemp1CursorX + gaugeWidth * 0.5).toString());
-                this.OilTemp1Value.setAttribute("y", (this.OilTemp1CursorY1 + 10).toString());
-                this.OilTemp1Value.setAttribute("fill", "none");
+                this.OilTemp1Value.setAttribute("y", (this.OilTemp1CursorY1 + 15).toString());
+                this.OilTemp1Value.setAttribute("fill", "#11d011");
                 this.OilTemp1Value.setAttribute("font-size", "22");
                 this.OilTemp1Value.setAttribute("font-family", "Roboto-Bold");
                 this.OilTemp1Value.setAttribute("text-anchor", "middle");
@@ -1297,8 +1297,8 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilTemp2Value = document.createElementNS(Avionics.SVG.NS, "text");
                 this.OilTemp2Value.textContent = "0";
                 this.OilTemp2Value.setAttribute("x", (this.OilTemp2CursorX + gaugeWidth * 0.5).toString());
-                this.OilTemp2Value.setAttribute("y", (this.OilTemp2CursorY1 + 10).toString());
-                this.OilTemp2Value.setAttribute("fill", "none");
+                this.OilTemp2Value.setAttribute("y", (this.OilTemp2CursorY1 + 15).toString());
+                this.OilTemp2Value.setAttribute("fill", "#11d011");
                 this.OilTemp2Value.setAttribute("font-size", "22");
                 this.OilTemp2Value.setAttribute("font-family", "Roboto-Bold");
                 this.OilTemp2Value.setAttribute("text-anchor", "middle");
@@ -1333,7 +1333,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             fuelGroup.appendChild(text);
             startPosY += spacingY;
             text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "PPH";
+            text.textContent = WT_ConvertUnit.isMetric() ? "KG/H" : "PPH";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", startPosY.toString());
             text.setAttribute("fill", "#cccac8");
@@ -1395,7 +1395,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             fuelGroup.appendChild(this.FuelTempRightValue);
             startPosY += spacingY;
             text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "LBS";
+            text.textContent = WT_ConvertUnit.isMetric() ? "KGS" : "LBS";
             text.setAttribute("x", startPosX.toString());
             text.setAttribute("y", startPosY.toString());
             text.setAttribute("fill", "#cccac8");
@@ -1775,16 +1775,16 @@ class CJ4_SystemEngines extends NavSystemElement {
     updateFuel() {
         let gallonToLBS = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "lbs");
         {
-            let LBSEng1 = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * gallonToLBS;
+            let LBSEng1 = WT_ConvertUnit.getWeight(SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * gallonToLBS).Value;
             this.FuelLBSLeftValue.textContent = Math.round(LBSEng1).toString();
-            let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
+            let PPHEng1 = WT_ConvertUnit.getFuelFlow(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour")).Value;
             this.FuelPPHLeftValue.textContent = Math.round(PPHEng1).toString();
             this.FuelTempLeftValue.textContent = "--";
         }
         {
-            let LBSEng2 = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * gallonToLBS;
+            let LBSEng2 = WT_ConvertUnit.getWeight(SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * gallonToLBS).Value;
             this.FuelLBSRightValue.textContent = Math.round(LBSEng2).toString();
-            let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
+            let PPHEng2 = WT_ConvertUnit.getFuelFlow(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour")).Value;
             this.FuelPPHRightValue.textContent = Math.round(PPHEng2).toString();
             this.FuelTempRightValue.textContent = "--";
         }
@@ -1867,19 +1867,20 @@ class CJ4_SystemElectrics extends NavSystemElement {
         BatAmp = BatAmp / BatVolt;
         this.BATAmpValue.textContent = Math.round(BatAmp).toString();
         this.BATTempValue.textContent = "26";
-		
-		let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
-		let HydPSI1 = N2Eng1 >= 20 ? 3000 : N2Eng1 * 150;
+
+        let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
+        let HydPSI1 = N2Eng1 >= 20 ? 3000 : N2Eng1 * 150;
         this.HYDPSIValueLeft.textContent = Math.round(HydPSI1).toString();
-				
-		let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
-		let HydPSI2 = N2Eng2 >= 20 ? 3000 : N2Eng2 * 150;
+
+        let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
+        let HydPSI2 = N2Eng2 >= 20 ? 3000 : N2Eng2 * 150;
         this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
-		
+
         let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
-        this.FUELPPHValueLeft.textContent = Math.round(PPHEng1).toString();
+        this.FUELPPHValueLeft.textContent = Math.round(WT_ConvertUnit.getFuelFlow(PPHEng1).Value);
         let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
-        this.FUELPPHValueRight.textContent = Math.round(PPHEng2).toString();
+        this.FUELPPHValueRight.textContent = Math.round(WT_ConvertUnit.getFuelFlow(PPHEng2).Value);
+
         this.FUELTempValueLeft.textContent = "--";
         this.FUELTempValueRight.textContent = "--";
     }
@@ -1890,6 +1891,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
     constructSVG() {
         if (!this.root)
             return;
+        Utils.RemoveAllChildren(this.root);
         var rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
         rootSVG.setAttribute("id", "Standard");
         rootSVG.setAttribute("viewBox", "0 0 1000 1000");
@@ -2130,7 +2132,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             var gaugeHeight = 125;
             this.OXYCursorX = gaugeStartX + gaugeWidth;
             //this.OXYCursorY1 = gaugeStartY + gaugeHeight;
-			this.OXYCursorY1 = 86;
+            this.OXYCursorY1 = 86;
             this.OXYCursorY2 = gaugeStartY;
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
@@ -2279,7 +2281,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
             var rectHeight = 30;
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "PPH";
+            titleText.textContent = WT_ConvertUnit.isMetric() ? "KG/H" : "PPH";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "white");
@@ -2553,17 +2555,20 @@ class CJ4_SystemFMS extends NavSystemElement {
 
                         // Set expected fuel and gross weight
                         if (groundSpeed >= 50) {
-                            const fuelFlow = (SimVar.GetSimVarValue("CJ4 FUEL FLOW:1", "Pounds per hour") + SimVar.GetSimVarValue("CJ4 FUEL FLOW:2", "Pounds per hour")) / 2;
+                            const fuelFlow = SimVar.GetSimVarValue("CJ4 FUEL FLOW:1", "Pounds per hour") + SimVar.GetSimVarValue("CJ4 FUEL FLOW:2", "Pounds per hour");
                             const expectedFuelUsage = (fuelFlow * (this.calcETEseconds(destinationDistance, groundSpeed) / 3600)).toFixed(0);
                             const currentFuel = (SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds") * SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons")).toFixed(0);
-                            const expectedFuelAtDestination = (currentFuel - expectedFuelUsage).toFixed(0) < 0 ? 0 : (currentFuel - expectedFuelUsage).toFixed(0);
-                            const grossWeight = SimVar.GetSimVarValue("MAX GROSS WEIGHT", "pounds");
+                            const expectedFuelAtDestination = (currentFuel - expectedFuelUsage) < 0 ? 0 : (currentFuel - expectedFuelUsage);
+                            const grossWeight = SimVar.GetSimVarValue("TOTAL WEIGHT", "kg") * 2.205;
                             // const oilQuantity = SimVar.GetSimVarValue("OIL AMOUNT", "pounds")
-                            const expectedGrossWeight = expectedFuelAtDestination == 0 ? (grossWeight / 1000).toFixed(2) : ((grossWeight - expectedFuelUsage) / 1000).toFixed(2);
+                            const expectedGrossWeight = expectedFuelAtDestination == 0 ? (grossWeight / 1000) : ((grossWeight - expectedFuelUsage) / 1000);
+
+                            const exfuelValue = WT_ConvertUnit.getWeight(expectedFuelAtDestination);
+                            const weightsTextContent = `${exfuelValue.Value.toFixed(0)} ${exfuelValue.Unit} ${WT_ConvertUnit.getWeight(expectedGrossWeight).Value.toFixed(0)} GW`;
 
                             this._destinationWaypointContainer
                                 .querySelector(".cj4x-navigation-data-waypoint-expected-fuel")
-                                .textContent = expectedFuelAtDestination + " LB " + expectedGrossWeight + " GW";
+                                .textContent = weightsTextContent;
 
                         }
 
@@ -2706,6 +2711,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
                 break;
         }
         this.map.instrument.zoomRanges = this.getAdaptiveRanges();
+        this.setWxRadarBug();
     }
     showTerrain(_value) {
         if (this.isTerrainVisible != _value) {
@@ -2816,7 +2822,14 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             ranges[i] *= this.zoomFactor;
         return ranges;
     }
+    setWxRadarBug() {
+        let radarbug = document.querySelector("#weather_radar_bug");
+        if (radarbug) {
+            radarbug.style.display = (this.isWeatherVisible) ? "" : "none";
+        }
+    }
     refreshLayout() {
+        this.setWxRadarBug();
         if (this.isTerrainVisible || this.isGwxVisible) {
             this.map.instrument.mapConfigId = 1;
             this.map.instrument.bingMapRef = EBingReference.SEA;
@@ -3166,7 +3179,7 @@ class CJ4_NavBarContainer extends NavSystemElementContainer {
             // calc dev
             var isa = sat - isaTemp;
             if (isa)
-                this.isaElement.textContent = (isa<=0?"":"+") + isa;
+                this.isaElement.textContent = (isa <= 0 ? "" : "+") + isa;
         }
     }
 }
@@ -3408,16 +3421,16 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addTitle("BRG PTR 1", this.textSize, 0.5);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
                 this.addRadio("FMS1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
-                this.addRadioRange("VOR1", this.textSize, 108, 117.95, 0.005, [CJ4_PopupMenu_Key.BRG_PTR1_SRC, CJ4_PopupMenu_Key.BRG_VOR1_FREQ]);
-                this.addRadioRange("ADF1", this.textSize, 100, 1799, 1, [CJ4_PopupMenu_Key.BRG_PTR1_SRC, CJ4_PopupMenu_Key.BRG_ADF1_FREQ]);
+                this.addRadio("VOR1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
+                this.addRadio("ADF1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
             }
             this.endSection();
             this.beginSection();
             {
                 this.addTitle("BRG PTR 2", this.textSize, 0.5);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
-                this.addRadioRange("VOR2", this.textSize, 108, 117.95, 0.005, [CJ4_PopupMenu_Key.BRG_PTR2_SRC, CJ4_PopupMenu_Key.BRG_VOR2_FREQ]);
-                this.addRadioRange("ADF2", this.textSize, 100, 1799, 1, [CJ4_PopupMenu_Key.BRG_PTR2_SRC, CJ4_PopupMenu_Key.BRG_ADF2_FREQ]);
+                this.addRadio("VOR2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
+                this.addRadio("ADF2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
             }
             this.endSection();
         }

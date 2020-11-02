@@ -3,8 +3,11 @@ class AS3000_PFD extends NavSystem {
         super();
         this.initDuration = 7000;
     }
+
     get IsGlassCockpit() { return true; }
+
     get templateID() { return "AS3000_PFD"; }
+
     connectedCallback() {
         super.connectedCallback();
         this.pageGroups = [
@@ -18,15 +21,17 @@ class AS3000_PFD extends NavSystem {
         this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(AS3000_PFD_SoftKeyHtmlElement)));
         this.maxUpdateBudget = 12;
 
-        //Include.addScript("/JS/debug.js", function () {
-        //    g_modDebugMgr.AddConsole(null);
-        //});
+        Include.addScript("/JS/debug.js", function () {
+            g_modDebugMgr.AddConsole(null);
+        });
     }
+
     disconnectedCallback() {
         super.disconnectedCallback();
     }
-    Update() {
-        super.Update();
+
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
     }
 }
 class AS3000_PFD_SoftKeyElement extends SoftKeyElement {
@@ -79,10 +84,6 @@ class AS3000_PFD_InnerMap extends AS3000_MapElement {
 
     onTemplateLoaded() {
         super.onTemplateLoaded();
-
-        if (this.revertToDefault) {
-            return;
-        }
     }
 
     onUpdate(_deltaTime) {

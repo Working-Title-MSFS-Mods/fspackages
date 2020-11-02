@@ -46,8 +46,7 @@ class CJ4_FMC_FplnRecallPage {
             let addWaypoint = async () => {
                 if (idx >= routeArr.length - 1) {
                     // DONE
-                    fmc.setMsg();
-                    fmc.showErrorMessage("FPLN LOADED[green]");
+                    fmc.setMsg("FPLN LOADED[green]");
                     fmc.flightPlanManager.setActiveWaypointIndex(0);
                     CJ4_FMC_RoutePage.ShowPage1(fmc);
                     return;
@@ -76,7 +75,7 @@ class CJ4_FMC_FplnRecallPage {
                             addWaypoint();
                         }
                         else {
-                            fmc.showErrorMessage("ERROR WPT " + icao + "[red]");
+                            fmc.setMsg("ERROR WPT " + icao + "[red]");
                         }
                     });
                 } else {
@@ -98,7 +97,7 @@ class CJ4_FMC_FplnRecallPage {
                                     if (res) {
                                         addWaypoint();
                                     } else {
-                                        fmc.showErrorMessage("ERROR AIRWAY " + icao + "[red]");
+                                        fmc.setMsg("ERROR AIRWAY " + icao + "[red]");
                                     }
                                 });
                             }
@@ -117,15 +116,17 @@ class CJ4_FMC_FplnRecallPage {
         WTUtils.loadFile(url, (r) => {
             json = JSON.parse(r);
             if (!json || json === "") {
-                fmc.showErrorMessage("NO DATA[red]");
+                fmc.setMsg("NO DATA[red]");
                 return;
             }
             //else if (json.indexOf("Error") > -1) {
             //    fmc.showErrorMessage("WRONG PILOTID");
             //    return;
             //}
-
-            let flightNo = json.general.icao_airline + json.general.flight_number;
+            let flightNo = json.general.flight_number;
+            if (typeof json.general.icao_airline === "string") {
+                flightNo += json.general.icao_airline;
+            }
             fmc.setMsg("LOAD FPLN...FLIGHTNO[green]" + flightNo);
             fmc.updateFlightNo(flightNo);
             let crz = json.general.initial_altitude;
@@ -134,7 +135,7 @@ class CJ4_FMC_FplnRecallPage {
             updateFrom();
         }, () => {
             // wrong pilot id is the most obvious error here, so lets show that
-            fmc.showErrorMessage("WRONG PILOTID[red]");
+            fmc.setMsg("WRONG PILOTID[red]");
             return;
         });
     }
@@ -146,7 +147,7 @@ class CJ4_FMC_FplnRecallPage {
             this.GetFplnFromSimBrief(pilotId, fmc);
         }
         else {
-            fmc.showErrorMessage("NO PILOT ID OR PLAN[red]");
+            fmc.setMsg("NO PILOT ID OR PLAN[red]");
         }
 
     }

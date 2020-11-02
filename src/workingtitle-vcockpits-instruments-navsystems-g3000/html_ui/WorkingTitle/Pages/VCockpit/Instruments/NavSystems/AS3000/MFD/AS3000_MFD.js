@@ -4,34 +4,40 @@ class AS3000_MFD extends NavSystem {
         this.initDuration = 5500;
         this.needValidationAfterInit = true;
     }
+
     get IsGlassCockpit() { return true; }
+
     get templateID() { return "AS3000_MFD"; }
+
     connectedCallback() {
         super.connectedCallback();
         this.pagesContainer = this.getChildById("RightInfos");
         this.addIndependentElementContainer(new AS3000_Engine("Engine", "LeftInfos"));
         this.addIndependentElementContainer(new NavSystemElementContainer("Com Frequencies", "ComFreq", new AS3000_MFD_ComFrequencies()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "TopRight", new AS3000_MFD_NavInfos()));
+        this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new AS3000_MFD_NavDataBar()));
         this.pageGroups = [
             new NavSystemPageGroup("MAP", this, [
                 new AS3000_MFD_MainMap()
             ]),
         ];
-        
-        //Include.addScript("/JS/debug.js", function () {
-        //    g_modDebugMgr.AddConsole(null);
-        //});
+
+        Include.addScript("/JS/debug.js", function () {
+            g_modDebugMgr.AddConsole(null);
+        });
     }
+
     disconnectedCallback() {
     }
+
     onEvent(_event) {
         super.onEvent(_event);
         if (_event == "SOFTKEYS_12") {
             this.acknowledgeInit();
         }
     }
-    Update() {
-        super.Update();
+
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
     }
 }
 
@@ -43,11 +49,11 @@ class AS3000_MFD_WindDataDisplay extends HTMLElement {
             "wind-strength",
         ];
     }
-    
+
     constructor() {
         super();
     }
-    
+
     connectedCallback() {
         this.root = document.createElementNS(Avionics.SVG.NS, "svg");
         this.root.setAttribute("viewBox", "0 0 150 50");
@@ -60,16 +66,16 @@ class AS3000_MFD_WindDataDisplay extends HTMLElement {
         this.windDataBackground.setAttribute("fill", "#1a1d21");
         this.windDataBackground.setAttribute("style", "fill:#1a1d21; stroke:white; stroke-width:1");
         this.root.appendChild(this.windDataBackground);
-        
+
         // shorter, thicker arrow than the default
         this.windData = document.createElementNS(Avionics.SVG.NS, "g");
         this.root.appendChild(this.windData);
-        
+
         this.arrow = document.createElementNS(Avionics.SVG.NS, "path");
         this.arrow.setAttribute("d", "M25 2.5 L10.75 20 L19.75 20 L19.75 47.5 L30.25 47.5 L30.25 20 L39.25 20 Z");
         this.arrow.setAttribute("fill", "white");
         this.windData.appendChild(this.arrow);
-        
+
         this.valueText = document.createElementNS(Avionics.SVG.NS, "text");
         this.valueText.setAttribute("text-align", "right");
         this.valueText.setAttribute("fill", "white");
@@ -87,7 +93,7 @@ class AS3000_MFD_WindDataDisplay extends HTMLElement {
         this.unitText.setAttribute("font-size", "20");
         this.unitText.setAttribute("font-family", "Roboto");
         this.windData.appendChild(this.unitText);
-        
+
         this.noData = document.createElementNS(Avionics.SVG.NS, "g");
         this.root.appendChild(this.noData);
         let noDataText = document.createElementNS(Avionics.SVG.NS, "text");
@@ -104,7 +110,7 @@ class AS3000_MFD_WindDataDisplay extends HTMLElement {
         if (oldValue == newValue) {
             return;
         }
-        
+
         switch (name) {
             case "wind-mode":
                 let backgroundDisplay = "inherit";
@@ -155,17 +161,17 @@ class AS3000_MFD_WindData extends MFD_WindData {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.mapElement.simVarNameID, "number") == 0) {
+        if (WT_MapElement.getSettingVar(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT, this.mapElement.varNameID) == 0) {
             this.svg.setAttribute("wind-mode", "0");
         } else {
             if (SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
                 this.svg.setAttribute("wind-mode", "4")
             } else {
                 var wind = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180; // fix for MFD wind direction bug
-                
+
                 // compensate for map rotation
                 wind = fastToFixed((wind + this.mapElement.instrument.rotation) % 360, 0);
-                
+
                 if (wind != this.windValue) {
                     this.svg.setAttribute("wind-direction", wind);
                     this.windValue = wind;
@@ -192,14 +198,12 @@ class AS3000_MFD_MapElement extends AS3000_MapElement {
         this.lastMapMode = 0;
         this.lastWeatherMapMode = 0;
     }
-    
+
     onTemplateLoaded() {
         super.onTemplateLoaded();
-        if (!this.revertToDefault) {
-            this.instrument.showRangeDisplay = false;
-        }
+        this.instrument.showRangeDisplay = false;
     }
-    
+
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         let isPositionOverride = SimVar.GetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number") != 0;
@@ -255,71 +259,61 @@ class AS3000_MFD_MainMap extends NavSystemPage {
     init() {
     }
 }
-class AS3000_MFD_NavInfos extends NavSystemElement {
-    constructor() {
-        super(...arguments);
-        this._t = 0;
+
+class AS3000_MFD_NavDataField {
+    constructor(rootElement) {
+        this.rootElement = rootElement;
+
+        this._title = rootElement.getElementsByClassName("title")[0];
+        this._number = rootElement.getElementsByClassName("number")[0];
+        this._unit = rootElement.getElementsByClassName("unit")[0];
     }
+
+    getInfo() {
+        return this._info;
+    }
+
+    setInfo(val) {
+        this._info = val;
+    }
+
+    update() {
+        if (!this._info) {
+            return;
+        }
+
+        Avionics.Utils.diffAndSet(this._title, this._info.shortName);
+        Avionics.Utils.diffAndSet(this._number, this._info.getDisplayNumber());
+        Avionics.Utils.diffAndSet(this._unit, this._info.getDisplayUnit());
+    }
+}
+
+class AS3000_MFD_NavDataBar extends WT_NavDataBar {
     init(root) {
-        this.GS = this.gps.getChildById("GS");
-        this.DTK = this.gps.getChildById("DTK");
-        this.TRK = this.gps.getChildById("TRK");
-        this.ETE = this.gps.getChildById("ETE");
-        this.BRG = this.gps.getChildById("BRG");
-        this.DIS = this.gps.getChildById("DIS");
-        this.MSA = this.gps.getChildById("MSA");
-        this.ETA = this.gps.getChildById("ETA");
+        super.init(root);
+
+        this.dataFields = Array.from(root.getElementsByClassName("navDataField")).map(e => new AS3000_MFD_NavDataField(e));
+        for (let i = 0; i < this.dataFields.length; i++) {
+            let infoIndex = WT_NavDataBar.getFieldInfoIndex(i, -1);
+            if (infoIndex < 0) {
+                infoIndex = AS3000_MFD_NavDataBar.DEFAULT_FIELDS[i];
+                WT_NavDataBar.setFieldInfoIndex(i, infoIndex);
+            }
+            this.dataFields[i].setInfo(this._infos[infoIndex]);
+        }
     }
+
     onEnter() {
     }
-    onUpdate(_deltaTime) {
-        this._t++;
-        if (this._t > 30) {
-            this.gps.currFlightPlanManager.updateFlightPlan();
-            this._t = 0;
-        }
-        Avionics.Utils.diffAndSet(this.GS, fastToFixed(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), 0) + "KT");
-        Avionics.Utils.diffAndSet(this.DTK, fastToFixed(SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"), 0) + "°");
-        Avionics.Utils.diffAndSet(this.TRK, fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 0) + "°");
-        let ete = SimVar.GetSimVarValue("GPS WP ETE", "seconds");
-        if (ete == 0) {
-            Avionics.Utils.diffAndSet(this.ETE, "__:__");
-        }
-        else if (ete < 3600) {
-            let sec = ete % 60;
-            Avionics.Utils.diffAndSet(this.ETE, Math.floor(ete / 60).toFixed(0) + (sec < 10 ? ":0" : ":") + sec.toFixed(0));
-        }
-        else {
-            let min = ((ete % 3600) / 60);
-            Avionics.Utils.diffAndSet(this.ETE, Math.floor(ete / 3600).toFixed(0) + (min < 10 ? "+0" : "+") + min.toFixed(0));
-        }
-        Avionics.Utils.diffAndSet(this.BRG, fastToFixed(this.gps.currFlightPlanManager.getBearingToActiveWaypoint(), 0) + "°");
-        
-        let distance = this.gps.currFlightPlanManager.getDistanceToActiveWaypoint();
-        if (distance >= 100) {
-            distance = fastToFixed(distance, 0);
-        } else {
-            distance = fastToFixed(distance, 1);
-        }
-        
-        Avionics.Utils.diffAndSet(this.DIS, distance + "NM");
-        Avionics.Utils.diffAndSet(this.MSA, "____FT");
-        if (ete == 0) {
-            Avionics.Utils.diffAndSet(this.ETA, "__:__");
-        }
-        else {
-            let eteArrival = SimVar.GetSimVarValue("GPS ETE", "seconds");
-            let ETA = (SimVar.GetSimVarValue("E:ZULU TIME", "seconds") + eteArrival) % (24 * 3600);
-            let hours = Math.floor(ETA / 3600);
-            let minutes = Math.floor((ETA / 60) % 60);
-            Avionics.Utils.diffAndSet(this.ETA, (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + "UTC");
-        }
-    }
+
     onExit() {
     }
+
     onEvent(_event) {
     }
 }
+AS3000_MFD_NavDataBar.DEFAULT_FIELDS = [10, 2, 14, 7, 0, 1, 9, 6];
+
 class AS3000_Engine extends NavSystemElementContainer {
     constructor(_name, _root) {
         super(_name, _root, null);
