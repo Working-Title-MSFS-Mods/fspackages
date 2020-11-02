@@ -241,6 +241,14 @@ class CJ4_FMC_PerfInitPage {
             CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
 
+        fmc.onRightInput[3] = () => {
+            CJ4_FMC_PerfInitPage.ShowPage7(fmc);
+        };
+
+        fmc.onLeftInput[3] = () => {
+            CJ4_FMC_PerfInitPage.ShowPage6(fmc);
+        };
+
         
         fmc.updateSideButtonActiveStatus();
     }
@@ -312,32 +320,62 @@ class CJ4_FMC_PerfInitPage {
         fmc.clearDisplay();
 
         let waypoints = [];
+        let rows = [
+            [""], [""], [""], [""], [""], [""], [""], [""], [""]
+        ];
 
         //FETCH WAYPOINTS WITH CONSTRAINTS
         if (fmc.flightPlanManager.getWaypointsWithAltitudeConstraints()) {
             waypoints = fmc.flightPlanManager.getWaypointsWithAltitudeConstraints();
+            console.log("waypoints.length: " + waypoints.length);
+            if (waypoints.length > 0) {
+                console.log("waypoints.length > 0");
+                for (let i = 0; i < 9; i++) {
+                    let wpt = waypoints[i];
+                    let waypointIdent = wpt.ident;
+                    let type = "none";
+                    let altitudeConstraint = "none";
+                    if (wpt && wpt.legAltitudeDescription && wpt.legAltitudeDescription > 0) {
+                        if (wpt.legAltitudeDescription == 1 && wpt.legAltitude1 > 100) {
+                            altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100
+                                : wpt.legAltitude1.toFixed(0);
+                            type = "AT"
+                        }
+                        else if (wpt.legAltitudeDescription == 2 && wpt.legAltitude1 > 100) {
+                            altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "A"
+                                : wpt.legAltitude1.toFixed(0) + "A";
+                            type = "ABOVE"
+                        }
+                        else if (wpt.legAltitudeDescription == 3 && wpt.legAltitude1 > 100) {
+                            altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
+                                : wpt.legAltitude1.toFixed(0) + "B";
+                            type = "BELOW"
+                            }
+                        else if (wpt.legAltitudeDescription == 4 && wpt.legAltitude2 > 100 && wpt.legAltitude1 > 100) {
+                            let altitudeConstraintA = wpt.legAltitude2.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude2.toFixed(0) / 100 + "A"
+                                : wpt.legAltitude2.toFixed(0) + "A";
+                            let altitudeConstraintB = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
+                                : wpt.legAltitude1.toFixed(0) + "B";
+                            altitudeConstraint = altitudeConstraintB + altitudeConstraintA;
+                            type = "BOTH"
+                        }
+                        altitudeConstraint = altitudeConstraint.padStart(6, " ");
+                    }
+                rows[i] = [waypointIdent + "[s-text]", altitudeConstraint + "[s-text]", type + "[s-text]"];
+                }
+            }
         }
 
-
-
         fmc._templateRenderer.setTemplateRaw([
-            [" ACT VNAV CRUISE[blue]", "2/3[blue]"],
-            [" TGT SPEED[blue]", "CRZ ALT [blue]"],
-            ["300/.74", "crzAltCell"],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
+            [" VNAV WAYPOINTS[blue]", "1/1[blue]"],
+            [" WAYPOINT[blue]", "CONSTRAINT [blue]", "TYPE[blue]"],
+            ...rows,
             ["-----------------------[blue]"],
-            ["", "PERF INIT>"]
+            ["", "VNAV DESCENT>"]
         ]);
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
+        //fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
+        //fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
 
@@ -346,7 +384,7 @@ class CJ4_FMC_PerfInitPage {
 
         fmc.registerPeriodicPageRefresh(() => {
             let waypoints = [];
-            
+
             let currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
             let currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
             let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
@@ -367,7 +405,7 @@ class CJ4_FMC_PerfInitPage {
                     
             let activeWaypointTargetAltitude = undefined;
             let activeWaypointDistance = fmc.flightPlanManager.getDistanceToActiveWaypoint();
-            let desiredFPA = 3;
+            let desiredFPA = WTDataStore.get('CJ4_vpa', 3);
 
             //let windCorrection = 180 * Math.asin(currCrosswind / groundSpeed) / Math.PI;
             //previous waypoint data
@@ -490,9 +528,6 @@ class CJ4_FMC_PerfInitPage {
                 }
             }
 
-
-
-
             //PREPARE VNAV VARIABLES
             let desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(desiredFPA * (Math.PI / 180));
             let desiredAltitude = vnavTargetAltitude + (Math.tan(desiredFPA * (Math.PI / 180)) * vnavTargetDistance * 6076.12);
@@ -544,7 +579,7 @@ class CJ4_FMC_PerfInitPage {
                 }
             }
 
-            console.log(setVerticalSpeed.toFixed(0));
+            console.log("setVerticalSpeed: " + setVerticalSpeed.toFixed(0));
             //SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading.toFixed(0));
 
             // let deltaVS = setVerticalSpeed - apCurrentVerticalSpeed;
@@ -578,40 +613,14 @@ class CJ4_FMC_PerfInitPage {
                 [" set vertical speed[blue]", "TOD Dist"],
                 [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod + ""],
                 [""],
-                ["<RETURN"]
+                ["", "VNAV DESCENT>"]
             ]);
 
-
-            // let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
-            // let hours = new String(Math.trunc(simtime / 3600));
-            // let minutes = new String(Math.trunc(simtime / 60) - (hours * 60));
-            // let hourspad = hours.padStart(2, "0");
-            // let minutesspad = minutes.padStart(2, "0");
-
-            // fmc._templateRenderer.setTemplateRaw([
-            //     ["DL[blue]", "1/2[blue]", "DATALINK MENU[blue]"],
-            //     [""],
-            //     ["<RCVD MSGS[disabled]", "ATS LOG>[disabled]"],
-            //     [""],
-            //     ["<SEND MSGS[disabled]", "DEPART CLX>[disabled]"],
-            //     [""],
-            //     ["<WEATHER[disabled]", "OCEANIC CLX>[disabled]"],
-            //     [""],
-            //     ["<TWIP[disabled]"],
-            //     [""],
-            //     ["<ATIS[disabled]"],
-            //     ["        NO COMM[green s-text]"],
-            //     ["<RETURN [white]" + hourspad + "[blue s-text]" + ":[blue s-text]" + minutesspad + "[blue s-text]"]
-            // ]);
-
         }, 1000, true);
-    fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+    fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
+
     fmc.updateSideButtonActiveStatus();
     }
-
-
-
-
 
 }
 //# sourceMappingURL=CJ4_FMC_PerfInitPage.js.map
