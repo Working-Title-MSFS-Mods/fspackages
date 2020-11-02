@@ -809,7 +809,6 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
     update(_deltaTime) {
 
         let navCheck = SimVar.GetSimVarValue('L:RADIONAV_SOURCE', 'Number');
-        console.log("Nav: " + navCheck);
         if (navCheck === 1) {
             this.gs_cursorShapeUp.setAttribute("fill", "#FF0CE2");
             this.gs_cursorShapeDown.setAttribute("fill", "#FF0CE2");
