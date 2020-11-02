@@ -198,6 +198,12 @@ class Jet_NDCompass extends HTMLElement {
         this.updateMapRange();
     }
     updateCompass(_deltaTime) {
+
+        let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
+        if (this.trackingBug) {
+            this.trackingBug.setAttribute("style", (onGround === 1) ? "display:none" : "");
+        }
+
         let simHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
         let simSelectedHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degree");
         let simTrack = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree");
@@ -488,7 +494,6 @@ class Jet_NDCompass extends HTMLElement {
                     let hasNav = SimVar.GetSimVarValue("NAV HAS NAV:1", "Bool");
                     let hasLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:1", "Bool");
                     let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
-                    console.log("onGround?: " + onGround);
 
                     if (hasNav && hasLoc && !onGround) {
                         displayCourseDeviation = true;
@@ -761,6 +766,7 @@ class Jet_NDCompass extends HTMLElement {
         }
     }
     applyRotation() {
+
         let course = Number(this.getAttribute('rotation'));
         let trackingBug = Number(this.getAttribute('tracking_bug_rotation'));
         let headingBug = Number(this.getAttribute('heading_bug_rotation'));
