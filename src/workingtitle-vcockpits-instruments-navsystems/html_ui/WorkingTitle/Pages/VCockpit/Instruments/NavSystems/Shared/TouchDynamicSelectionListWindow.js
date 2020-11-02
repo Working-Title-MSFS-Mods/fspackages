@@ -41,7 +41,9 @@ class WT_TouchDynamicSelectionListWindow extends NavSystemElement {
         this.scrollToHighlightedButton();
     }
 
-    onUpdate(_deltaTime) {
+    onEvent(event) {}
+
+    onUpdate(deltaTime) {
         if (this.root.getAttribute("state") != "Active") {
             return;
         }
