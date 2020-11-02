@@ -600,7 +600,7 @@ class CJ4_FMC_PerfInitPage {
 
             let distanceToTod = vnavTargetDistance > topOfDescent ? vnavTargetDistance - topOfDescent : "N/A";
             fmc._templateRenderer.setTemplateRaw([
-                ["", "", "WORKING TITLE VNAV" + "[blue]"],
+                ["", "", "WORKING TITLE VPATH" + "[blue]"],
                 [" target altitude[blue]", "target distance [blue]"],
                 [vnavTargetAltitude.toFixed(0) + "ft", vnavTargetDistance.toFixed(1) + "nm"],
                 [" VNAV Target[blue]", "ground speed [blue]"],
