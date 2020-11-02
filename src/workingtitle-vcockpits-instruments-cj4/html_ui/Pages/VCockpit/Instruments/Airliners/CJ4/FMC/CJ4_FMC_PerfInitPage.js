@@ -524,7 +524,6 @@ class CJ4_FMC_PerfInitPage {
                         }
                     }
                     i--;
-
                 }
             }
 
