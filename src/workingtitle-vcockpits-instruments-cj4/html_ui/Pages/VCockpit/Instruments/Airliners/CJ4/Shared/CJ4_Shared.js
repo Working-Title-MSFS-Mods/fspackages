@@ -3212,6 +3212,14 @@ class CJ4_PopupMenuContainer extends NavSystemElementContainer {
     onEvent(_event) {
         super.onEvent(_event);
         if (this.handler && this.handler.reactsOnEvent(_event)) {
+
+            // console.log(_event);
+            this._index = CJ4_MFD.getQueryStringValue("idx");
+            if (_event[4] !== this._index) return;
+            if (_event.startsWith("Lwr")) {
+                _event = "Lwr_" + _event.substring(6);
+                console.log(_event);
+            }
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":
@@ -3320,6 +3328,13 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
         return this._isOnMainPage;
     }
     reactsOnEvent(_event) {
+        // console.log(_event);
+        this._index = CJ4_MFD.getQueryStringValue("idx");
+        if (_event[4] !== this._index) return false;
+        if (_event.startsWith("Lwr")) {
+            _event = "Lwr_" + _event.substring(6);
+            console.log(_event);
+        }
         switch (_event) {
             case "Upr_DATA_PUSH":
             case "Upr_DATA_DEC":
@@ -3801,6 +3816,14 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
     onEvent(_event) {
         super.onEvent(_event);
         if (this.handler && this.handler.reactsOnEvent(_event)) {
+            // console.log(_event);
+            this._index = CJ4_MFD.getQueryStringValue("idx");
+            if (_event[4] !== this._index) return false;
+            if (_event.startsWith("Lwr")) {
+                _event = "Lwr_" + _event.substring(6);
+                console.log(_event);
+            }
+
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":
@@ -4082,6 +4105,13 @@ class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
     onEvent(_event) {
         super.onEvent(_event);
         if (this.handler && this.handler.reactsOnEvent(_event)) {
+            // console.log(_event);
+            this._index = CJ4_MFD.getQueryStringValue("idx");
+            if (_event[4] !== this._index) return false;
+            if (_event.startsWith("Lwr")) {
+                _event = "Lwr_" + _event.substring(6);
+                console.log(_event);
+            }
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":

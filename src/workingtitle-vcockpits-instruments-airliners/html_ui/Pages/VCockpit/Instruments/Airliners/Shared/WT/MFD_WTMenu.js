@@ -83,7 +83,7 @@ var WTMenu;
             if (this.highlightItem) {
                 switch (this.highlightItem.type) {
                     case Menu_ItemType.SUBMENU:
-                        if(this.highlightItem.subMenu != null){
+                        if (this.highlightItem.subMenu != null) {
                             this.highlightItem.subMenu();
                         }
                         break;
@@ -175,11 +175,11 @@ var WTMenu;
             this.sectionRoot.appendChild(bg);
             let text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = _text;
-            if(_alignment == "left"){
+            if (_alignment == "left") {
                 text.setAttribute("x", (this.columnLeft1).toString());
                 text.setAttribute("text-anchor", "left");
             }
-            else{
+            else {
                 text.setAttribute("x", "175");
                 text.setAttribute("text-anchor", "middle");
             }
@@ -191,7 +191,7 @@ var WTMenu;
 
             this.sectionRoot.appendChild(text);
 
-            if(_pageNumber && _totalPages && _totalPages > 1){
+            if (_pageNumber && _totalPages && _totalPages > 1) {
                 let pageNumber = document.createElementNS(Avionics.SVG.NS, "text");
                 pageNumber.textContent = "PG " + _pageNumber.toString() + "/" + _totalPages.toString();
                 pageNumber.setAttribute("x", "305");
@@ -373,6 +373,13 @@ var WTMenu;
                 this.onActivate();
         }
         reactsOnEvent(_event) {
+            // console.log(_event);
+            this._index = CJ4_MFD.getQueryStringValue("idx");
+            if (_event[4] !== this._index) return false;
+            if (_event.startsWith("Lwr")) {
+                _event = "Lwr_" + _event.substring(6);
+                console.log(_event);
+            }
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Upr_DATA_DEC":
@@ -673,6 +680,13 @@ var WTMenu;
                 this.onActivate();
         }
         reactsOnEvent(_event) {
+            // console.log(_event);
+            this._index = CJ4_MFD.getQueryStringValue("idx");
+            if (_event[4] !== this._index) return false;
+            if (_event.startsWith("Lwr")) {
+                _event = "Lwr_" + _event.substring(6);
+                console.log(_event);
+            }
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Upr_DATA_DEC":

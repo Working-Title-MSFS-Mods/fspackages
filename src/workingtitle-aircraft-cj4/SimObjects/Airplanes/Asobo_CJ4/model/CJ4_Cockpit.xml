@@ -199,7 +199,7 @@
 					<NODE_ID_KNOB_RANGE>MFD_Knob_Range_1</NODE_ID_KNOB_RANGE>
 				</UseTemplate>
 				<UseTemplate Name="ASOBO_AS3000_Detached_Control_Panel_Template">
-					<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
+					<KEY_PREFIX>Generic_Lwr_1</KEY_PREFIX>
 					<TYPE>CJ4</TYPE>
 					<ID>1</ID>
 					<!-- Node_ids LOWER PANEL -->
@@ -237,7 +237,7 @@
 					<NODE_ID_KNOB_RANGE>MFD_Knob_Range_2</NODE_ID_KNOB_RANGE>
 				</UseTemplate>
 				<UseTemplate Name="ASOBO_AS3000_Detached_Control_Panel_Template">
-					<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
+					<KEY_PREFIX>Generic_Lwr_2</KEY_PREFIX>
 					<TYPE>CJ4</TYPE>
 					<ID>2</ID>
 					<!-- Node_ids LOWER PANEL -->
@@ -271,7 +271,7 @@
 			</UseTemplate>
 			<UseTemplate Name="WT_Detached_Control_Panel_Template">
 				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
-				<ID>1</ID>
+				<ID>2</ID>
 				<!-- LOWER PANEL -->
 				<NODE_ID_CKLST>CCP_PUSH_CKLST_2</NODE_ID_CKLST>
 				<NODE_ID_PASSBRIEF>CCP_PUSH_PASSBRIEF_2</NODE_ID_PASSBRIEF>
