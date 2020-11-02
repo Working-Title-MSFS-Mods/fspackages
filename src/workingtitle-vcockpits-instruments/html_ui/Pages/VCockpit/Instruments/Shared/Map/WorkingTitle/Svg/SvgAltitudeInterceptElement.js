@@ -105,7 +105,7 @@ class SvgAltitudeInterceptElement extends SvgMapElement {
         return new Vec2(_center.x + _radius * Math.sin(_angle), _center.y - _radius * Math.cos(_angle));
     }
 }
-SvgAltitudeInterceptElement.STROKE_COLOR_DEFAULT = "cyan";
+SvgAltitudeInterceptElement.STROKE_COLOR_DEFAULT = "white";
 SvgAltitudeInterceptElement.STROKE_WIDTH_DEFAULT = 4;
 SvgAltitudeInterceptElement.OUTLINE_COLOR_DEFAULT = "black";
 SvgAltitudeInterceptElement.OUTLINE_WIDTH_DEFAULT = 6;
