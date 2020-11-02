@@ -597,14 +597,14 @@ class CJ4_FMC_PerfInitPage {
             //SimVar.SetSimVarValue("K:AP_VS_VAR_SELECT", "feet per minute", setVerticalSpeed.toFixed(0));
             Coherent.call("AP_VS_VAR_SET_ENGLISH", 0, setVerticalSpeed);
 
-
             const distanceToTod = vnavTargetDistance > topOfDescent ? vnavTargetDistance - topOfDescent : "N/A";
+
             fmc._templateRenderer.setTemplateRaw([
                 ["", "", "WORKING TITLE VPATH" + "[blue]"],
                 [" target altitude[blue]", "target distance [blue]"],
                 [vnavTargetAltitude.toFixed(0) + "ft", vnavTargetDistance.toFixed(1) + "nm"],
                 [" VNAV Target[blue]", "ground speed [blue]"],
-                [vnavTargetWaypoint.ident + "ft", groundSpeed.toFixed(0) + ""],
+                [vnavTargetWaypoint.ident + "", groundSpeed.toFixed(0) + ""],
                 [" target FPA[blue]", "target VS [blue]"],
                 [desiredFPA.toFixed(0) + "°", desiredVerticalSpeed.toFixed(0) + "fpm"],
                 [" alt dev[blue]", "ap vs [blue]"],
