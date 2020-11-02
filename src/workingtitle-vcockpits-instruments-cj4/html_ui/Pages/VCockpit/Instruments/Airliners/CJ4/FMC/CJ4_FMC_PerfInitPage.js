@@ -385,16 +385,16 @@ class CJ4_FMC_PerfInitPage {
         fmc.registerPeriodicPageRefresh(() => {
             let waypoints = [];
 
-            let currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
-            let currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
+            //let currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
+            //let currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
             let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
             let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
             //let fromWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint();
             let toWaypoint = fmc.flightPlanManager.getActiveWaypoint();
-            let apCurrentHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "Degrees");	
-            let currTrack = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees");
-            let xtk = SimVar.GetSimVarValue("GPS WP CROSS TRK", "meters") * (0.000539957); //meters to NM conversion
-            let dtk = toWaypoint.bearingInFP.toFixed(0);
+            //let apCurrentHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "Degrees");	
+            //let currTrack = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees");
+            //let xtk = SimVar.GetSimVarValue("GPS WP CROSS TRK", "meters") * (0.000539957); //meters to NM conversion
+            //let dtk = toWaypoint.bearingInFP.toFixed(0);
             //let distanceToWaypoint = Avionics.Utils.computeDistance(currPos, toWaypoint.infos.coordinates);
             //let bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(currPos, toWaypoint.infos.coordinates);
             //let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
@@ -403,8 +403,8 @@ class CJ4_FMC_PerfInitPage {
             let altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
             let destination = undefined;
                     
-            let activeWaypointTargetAltitude = undefined;
-            let activeWaypointDistance = fmc.flightPlanManager.getDistanceToActiveWaypoint();
+            //let activeWaypointTargetAltitude = undefined;
+            //let activeWaypointDistance = fmc.flightPlanManager.getDistanceToActiveWaypoint();
             let desiredFPA = WTDataStore.get('CJ4_vpa', 3);
 
             //let windCorrection = 180 * Math.asin(currCrosswind / groundSpeed) / Math.PI;
@@ -420,8 +420,8 @@ class CJ4_FMC_PerfInitPage {
                 let activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
                 activeWaypointIdent = new String(fmc.flightPlanManager.getActiveWaypoint().ident);
                 activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
-                activeWaypointEte = groundSpeed < 50 ? new String("-:--")
-                    : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
+                //activeWaypointEte = groundSpeed < 50 ? new String("-:--")
+                //    : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
             }
 
             //next waypoint data
@@ -429,8 +429,8 @@ class CJ4_FMC_PerfInitPage {
                 let nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint();
                 nextWaypointIdent = new String(fmc.flightPlanManager.getNextActiveWaypoint().ident);
                 nextWaypointDist = new Number(activeWaypointDist + Avionics.Utils.computeDistance(fmc.flightPlanManager.getActiveWaypoint().infos.coordinates, nextWaypoint.infos.coordinates));
-                nextWaypointEte = groundSpeed < 50 ? new String("-:--")
-                    : new Date(this.calcETEseconds(nextWaypointDist, groundSpeed) * 1000).toISOString().substr(11, 5);
+                //nextWaypointEte = groundSpeed < 50 ? new String("-:--")
+                //    : new Date(this.calcETEseconds(nextWaypointDist, groundSpeed) * 1000).toISOString().substr(11, 5);
             }
 
             //destination data
@@ -450,7 +450,7 @@ class CJ4_FMC_PerfInitPage {
                     : destinationDistanceFlightplan;
             }
 
-            let setHeading = dtk;
+            //let setHeading = dtk;
             //let vsDeviation = desiredVerticalSpeed < 0 ? desiredVerticalSpeed - apCurrentVerticalSpeed
             //    :desiredVerticalSpeed > 0 ? apCurrentVerticalSpeed - desiredVerticalSpeed
             //    :apCurrentVerticalSpeed;
