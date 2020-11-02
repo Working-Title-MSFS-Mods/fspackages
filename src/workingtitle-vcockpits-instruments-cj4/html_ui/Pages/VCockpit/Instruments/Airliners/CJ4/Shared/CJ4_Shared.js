@@ -2884,6 +2884,15 @@ class CJ4_Map extends MapInstrumentElement {
     }
     onTemplateLoaded() {
         super.onTemplateLoaded();
+
+        this.instrument.altitudeInterceptElement = new SvgAltitudeInterceptElement();
+        this.instrument.altitudeInterceptElement.facingHeadingGetter = {
+            getFacingHeading() {
+                return SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
+            }
+        };
+        this.instrument.showAltitudeIntercept = true;
+        this.instrument.showCities = false; // not sure if there's code elsewhere for CJ4 that hides the cities, but putting this here just in case.
     }
 }
 var CJ4_MapOverlaySymbol;
