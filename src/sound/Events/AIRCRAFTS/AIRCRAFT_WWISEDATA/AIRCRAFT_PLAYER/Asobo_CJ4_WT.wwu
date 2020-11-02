@@ -11,6 +11,7 @@
 				<WorkUnit Name="Warnings" ID="{A2476568-8A3D-4287-AA7D-D5CE4405BC8F}" PersistMode="Reference"/>
 				<WorkUnit Name="Wind" ID="{AC9E2451-3589-439A-B1E1-3E0DCD89678F}" PersistMode="Reference"/>
 				<WorkUnit Name="Gear" ID="{578E8A29-4A61-44C9-8BCD-ED68E7432571}" PersistMode="Reference"/>
+				<WorkUnit Name="Spoiler Drag" ID="{E015AA16-3DD1-4DFE-B9B2-68A021A8CFEF}" PersistMode="Reference"/>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

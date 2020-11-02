@@ -999,6 +999,7 @@ Unit Position (-16K to 0) -16K = full left</Comment>
 								<Property Name="Min" Type="Real64" Value="-10000"/>
 							</PropertyList>
 						</GameParameter>
+						<GameParameter Name="SIMVAR_SPOILERS_LEFT_POSITION" ID="{F0B68DB9-910B-4F35-9505-555AA68233E4}"/>
 					</ChildrenList>
 				</Folder>
 				<Folder Name="engine" ID="{A5564708-E5EC-48F9-B5B3-B21D87755A96}" ShortID="609095319">
