@@ -610,7 +610,7 @@ class CJ4_FMC_PerfInitPage {
                 [" alt dev[blue]", "ap vs [blue]"],
                 [altDeviation.toFixed(0) + "ft", apCurrentVerticalSpeed.toFixed(0) + "fpm"],
                 [" set vertical speed[blue]", "TOD Dist"],
-                [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod + " NM"],
+                [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod + " nm"],
                 [""],
                 ["", "VNAV DESCENT>"]
             ]);
