@@ -567,10 +567,10 @@ class CJ4_FMC_PerfInitPage {
                 else if (altDeviation <= -100) {
                     setVerticalSpeed = desiredVerticalSpeed * 0.8;
                 }
-                else if (altDeviation >= 50) {
+                else if (altDeviation >= 20) {
                     setVerticalSpeed = desiredVerticalSpeed * 1.05;
                 }
-                else if (altDeviation <= -50) {
+                else if (altDeviation <= -20) {
                     setVerticalSpeed = desiredVerticalSpeed * 0.9;
                 }
                 else {
