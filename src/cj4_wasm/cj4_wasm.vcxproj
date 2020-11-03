@@ -107,12 +107,13 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cj4_fdstuff.cpp" />
+    <ClCompile Include="cj4_fdcontroller.cpp" />
+    <ClCompile Include="cj4_fdmain.cpp" />
     <ClCompile Include="PidController.cpp" />
+    <ClCompile Include="wt_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cj4_fdstuff.h" />
-    <ClInclude Include="PidController.h" />
+    <ClInclude Include="cj4_fdmain.h" />
     <ClInclude Include="SimConnectDefs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

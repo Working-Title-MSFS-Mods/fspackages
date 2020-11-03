@@ -6,12 +6,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cj4_fdstuff.cpp" />
     <ClCompile Include="PidController.cpp" />
+    <ClCompile Include="cj4_fdmain.cpp" />
+    <ClCompile Include="cj4_fdcontroller.cpp" />
+    <ClCompile Include="wt_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cj4_fdstuff.h" />
-    <ClInclude Include="PidController.h" />
     <ClInclude Include="SimConnectDefs.h" />
+    <ClInclude Include="cj4_fdmain.h" />
   </ItemGroup>
 </Project>
