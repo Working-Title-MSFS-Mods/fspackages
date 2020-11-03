@@ -474,7 +474,7 @@ class Jet_NDCompass extends HTMLElement {
                         this.courseFROM.setAttribute("visibility", "visible");
                         this.courseFROMBorder.setAttribute("visibility", "visible");
                         this.courseFROM.setAttribute("transform", "translate(0 220)", "rotate(0 50 50)");
-                        this.courseFROMBorder.setAttribute("transform", "translate(0 50)", "rotate(0 50 50)");
+                        this.courseFROMBorder.setAttribute("transform", "translate(0 220)", "rotate(0 50 50)");
                         console.log("NAV FROM")
                     }
                 }
