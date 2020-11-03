@@ -426,20 +426,41 @@ class Jet_NDCompass extends HTMLElement {
             if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode == Jet_NDCompass_Navigation.VOR || this.navigationMode == Jet_NDCompass_Navigation.NAV) {
                 const waypointName = Simplane.getNextWaypointName();
                 const hasNav = waypointName !== null && waypointName !== undefined && waypointName !== '';
-                console.log("HasNav? " + hasNav);
+                const waypointBearing = Simplane.getNextWaypointTrack();
+                const planeHeading = Simplane.getHeadingMagnetic();
+                let bearingDiff = Math.abs((waypointBearing - planeHeading) % 360);
+                console.log("Bearing Diff" + bearingDiff);
+
                 if (this.navigationMode == Jet_NDCompass_Navigation.NAV && (this.displayMode === Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.ROSE) && hasNav == false) {
-                    console.log("COURSE GROUP OFF");
                     this.courseDeviation.setAttribute("visibility", "hidden");
                     this.courseTO.setAttribute("visibility", "hidden");
                     this.courseTOLine.setAttribute("visibility", "hidden");
+                    this.courseFROM.setAttribute("visibility", "hidden");
+                    this.courseFROMBorder.setAttribute("visibility", "hidden");
                     this.courseFROMLine.setAttribute("visibility", "hidden");
                     this.courseTOBorder.setAttribute("visibility", "hidden");
                  } else {
                     this.courseDeviation.setAttribute("visibility", "visible");
                     this.courseTO.setAttribute("visibility", "visible");
                     this.courseTOLine.setAttribute("visibility", "visible");
+                    this.courseFROM.setAttribute("visibility", "visible");
+                    this.courseFROMBorder.setAttribute("visibility", "visible");
                     this.courseFROMLine.setAttribute("visibility", "visible");
                     this.courseTOBorder.setAttribute("visibility", "visible");
+
+                    if (bearingDiff > 90 && bearingDiff < 270) {
+                        console.log("FLAG FROM");
+                        this.courseTO.setAttribute("visibility", "hidden");
+                        this.courseTOBorder.setAttribute("visibility", "hidden");
+                        this.courseFROM.setAttribute("visibility", "visible");
+                        this.courseFROMBorder.setAttribute("visibility", "visible");
+                    } else {
+                        this.courseTO.setAttribute("visibility", "visible");
+                        this.courseTOBorder.setAttribute("visibility", "visible");
+                        this.courseFROM.setAttribute("visibility", "hidden");
+                        this.courseFROMBorder.setAttribute("visibility", "hidden");
+                        console.log("FLAG TO");
+                    }
                  }
 
                 this.courseGroup.classList.toggle('hide', false);
