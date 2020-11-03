@@ -239,8 +239,8 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         if (this.navigationMode === Jet_NDCompass_Navigation.ILS) {
                             this.courseTO.setAttribute("style", "display:none");
                             this.courseTOBorder.setAttribute("style", "display:none");
-                            //this.courseFROM.setAttribute("style", "display:none");
-                           // this.courseFROMBorder.setAttribute("style", "display:none");
+                            this.courseFROM.setAttribute("style", "display:none");
+                            this.courseFROMBorder.setAttribute("style", "display:none");
                         }
 
                         this.courseDeviation.setAttribute("x", "47");
@@ -1625,7 +1625,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 this.selectedRefValue.setAttribute("alignment-baseline", "central");
                 this.selectedRefGroup.appendChild(this.selectedRefValue);
             }
-            // this.root.appendChild(this.selectedRefGroup);
+            this.root.appendChild(this.selectedRefGroup);
         }
     }
     constructRose() {
