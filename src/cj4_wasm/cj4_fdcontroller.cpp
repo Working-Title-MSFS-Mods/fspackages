@@ -1,4 +1,5 @@
 #pragma once
+
 #include "SimConnectDefs.h"
 #include <SimConnect.h>
 #include <math.h>
@@ -38,13 +39,14 @@ private:
     /// <param name="deltaTime"></param>
     void updateThrust(double deltaTime) {
         //static thrust* (1 + (M ^ 2) / 5) ^ 3.5
-        double gThrust = wt_utils::convertToGrossThrust(this->simVars->getThrust(1), this->simVars->getMach());
+        //double gThrust = wt_utils::convertToGrossThrust(this->simVars->getThrust(1), this->simVars->getMach());
         //printf("TTHR: %.0f THR: %.0f EL: %f PL: %f \r\n", targetThrust, this->simVars->getThrust(1), errorLeft, pidOutLeft);
         //printf("TTHR: %.0f GTHR: %.0f @ %.0f \r\n", targetThrust, gThrust, this->simVars->getPlaneAltitude());
 
         EngineControlData controls;
         controls.throttleLeft = this->getDesiredThrottle(1, deltaTime);
         controls.throttleRight = this->getDesiredThrottle(2, deltaTime);
+        //printf("TL: %.0f TR: %.0f", controls.throttleLeft, controls.throttleRight);
         SimConnect_SetDataOnSimObject(this->hSimConnect, DataTypes::EngineControls, SIMCONNECT_OBJECT_ID_USER, 0, 0, sizeof(EngineControlData), &controls);
     }
 
@@ -56,7 +58,7 @@ private:
     double getDesiredThrottle(int index, double deltaTime) {
         double throttleLeverPerc = (this->throttleAxis + 16384) / 32768.0;
         double throttleExp = pow(throttleLeverPerc, 3.5);
-        double targetThrust = (2950 * throttleExp) + 250; // this is gross thrust (one engine)
+        double targetThrust = (2950 * throttleExp); // this is gross thrust (one engine)
 
         double grossSimThrust = wt_utils::convertToGrossThrust(this->simVars->getThrust(index), this->simVars->getMach());
         double maxDensityThrust = wt_utils::getMaxDensityThrust(this->simVars->getAmbientDensity());
