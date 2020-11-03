@@ -19,3 +19,7 @@ src/sound/.cache
 src/sound/GeneratedSoundBanks
 src/sound/FlightSim.mediaid
 /.vs
+node_modules
+dist
+.cache
+.tmp

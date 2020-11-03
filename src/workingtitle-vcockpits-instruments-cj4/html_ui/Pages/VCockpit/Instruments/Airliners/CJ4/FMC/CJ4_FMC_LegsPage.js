@@ -289,10 +289,6 @@ class CJ4_FMC_LegsPage {
                                     });
                                 }
                             }
-                            else if (!isDirectTo && approachWpIndex >= 0) {
-                                this._fmc.showErrorMessage("UNABLE MOD APPROACH");
-                                return;
-                            }
                             else { // MOVE TO POSITION IN FPLN
                                 let removeWaypointForLegsMethod = (callback = EmptyCallback.Void) => {
                                     if (x < targedIndexInFpln) {
@@ -315,16 +311,6 @@ class CJ4_FMC_LegsPage {
                         break;
                     }
                     case CJ4_FMC_LegsPage.SELECT_MODE.NEW: {
-                        if (this._fmc.flightPlanManager.isActiveApproach()) {
-                            this._fmc.showErrorMessage("UNABLE MOD APPROACH");
-                            return;
-                        }
-
-                        if (this.isApproachWaypoint(selectedWpIndex)) {
-                            this._fmc.showErrorMessage("UNABLE MOD APPROACH");
-                            return;
-                        }
-
                         if ((i >= 1 && this._currentPage == 1) || this._currentPage > 1) {
                             this._fmc.setMsg("Working...");
                             this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
@@ -347,16 +333,6 @@ class CJ4_FMC_LegsPage {
                         break;
                     }
                     case CJ4_FMC_LegsPage.SELECT_MODE.DELETE: {
-                        if (this._fmc.flightPlanManager.isActiveApproach()) {
-                            this._fmc.showErrorMessage("UNABLE MOD APPROACH");
-                            return;
-                        }
-
-                        if (this.isApproachWaypoint(selectedWpIndex)) {
-                            this._fmc.showErrorMessage("UNABLE MOD APPROACH");
-                            return;
-                        }
-
                         // DELETE WAYPOINT
                         if ((i > 1 && this._currentPage == 1) || this._currentPage > 1) {
                             this._fmc.setMsg("Working...");

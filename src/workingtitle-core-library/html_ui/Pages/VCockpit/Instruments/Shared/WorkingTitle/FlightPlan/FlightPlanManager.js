@@ -32,7 +32,11 @@ class FlightPlanManager {
   }
 
   update(_deltaTime) {
+    const gpsActiveWaypointIndex = GPS.getActiveWaypoint();
 
+    if (this._flightPlans[0].activeWaypointIndex !== gpsActiveWaypointIndex) {
+      this._flightPlans[0].activeWaypointIndex = gpsActiveWaypointIndex;
+    }
   }
 
   onCurrentGameFlightLoaded(_callback) {
@@ -141,10 +145,13 @@ class FlightPlanManager {
    */
   async copyCurrentFlightPlanInto(index, callback = EmptyCallback.Void) {
     const copiedFlightPlan = this._flightPlans[this._currentFlightPlanIndex].copy();
+    const activeWaypointIndex = copiedFlightPlan.activeWaypointIndex;
+
     this._flightPlans[index] = copiedFlightPlan;
 
     if (index === 0) {
       await copiedFlightPlan.syncToGPS();
+      await GPS.setActiveWaypoint(activeWaypointIndex);
     }
     
     this._updateFlightPlanVersion();
@@ -158,10 +165,13 @@ class FlightPlanManager {
    */
   async copyFlightPlanIntoCurrent(index, callback = EmptyCallback.Void) {
     const copiedFlightPlan = this._flightPlans[index].copy();
+    const activeWaypointIndex = copiedFlightPlan.activeWaypointIndex;
+
     this._flightPlans[this._currentFlightPlanIndex] = copiedFlightPlan;
 
     if (this._currentFlightPlanIndex === 0) {
       await copiedFlightPlan.syncToGPS();
+      await GPS.setActiveWaypoint(activeWaypointIndex);
     }
 
     this._updateFlightPlanVersion();

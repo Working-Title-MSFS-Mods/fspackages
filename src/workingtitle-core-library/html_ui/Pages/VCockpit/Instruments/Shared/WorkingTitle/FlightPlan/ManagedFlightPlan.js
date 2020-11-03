@@ -139,6 +139,10 @@ class ManagedFlightPlan {
       else {
         await GPS.addUserWaypoint(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long, i, waypoint.ident);
       }
+
+      if (waypoint.endsInDiscontinuity) {
+        break;
+      }
     }
 
     await GPS.setActiveWaypoint(this.activeWaypointIndex);
@@ -195,6 +199,10 @@ class ManagedFlightPlan {
         this.reflowSegments();
         this.reflowDistances();
       }
+    }
+
+    if (this.activeWaypointIndex === 0 && this.originAirfield) {
+      this.activeWaypointIndex = 1;
     }
   }
 
@@ -309,6 +317,8 @@ class ManagedFlightPlan {
         return this._segments[Math.max(0, i - 1)];
       }
     }
+
+    return this._segments[this._segments.length - 1];
   }
 
   /**
@@ -639,7 +649,7 @@ class ManagedFlightPlan {
       this.removeSegment(segment.type);
     }
     
-    if (legs.length > 0) {
+    if (legs.length > 0 || approachIndex !== -1) {
       segment = this.addSegment(FlightPlanSegment.Approach);
       const procedure = new LegsProcedure(legs, this.getWaypoint(segment.offset - 1), this._parentInstrument);
 
@@ -647,7 +657,38 @@ class ManagedFlightPlan {
       while (procedure.hasNext()) {
         this.addWaypoint(await procedure.getNext(), ++waypointIndex, segment.type);
       }
-    }  
+
+      const runway = this.getRunway(destination.infos.approaches[approachIndex].runway);
+      if (runway) {
+        const runwayWaypoint = procedure.buildWaypoint(`RW${runway.designation}`, runway.beginningCoordinates);
+        this.addWaypoint(runwayWaypoint);
+      }
+    }
+  }
+
+  /**
+   * Gets the destination runway information from an approach runway name.
+   * @param {String} approachRunway The approach runway name.
+   * @returns {*} The found runway, if any.
+   */
+  getRunway(approachRunway) {
+    if (this.destinationAirfield) {
+      const runways = this.destinationAirfield.infos.oneWayRunways;
+      let runwayIndex;
+      
+      const runwayLetter = approachRunway[approachRunway.length - 1];
+      if (runwayLetter === ' ' || runwayLetter === 'C') {
+        const runwayDirection = approachRunway.substring(0, -1);
+        runwayIndex = runways.findIndex(r => r.designation === runwayDirection || r.designation === `${runwayDirection}C`);
+      }
+      else {
+        runwayIndex = runways.findIndex(r => r.designation === approachRunway);
+      }
+
+      if (runwayIndex !== -1) {
+        return runways[runwayIndex];
+      }
+    }
   }
 }
 
@@ -1070,6 +1111,8 @@ RawDataMapper.toWaypoint = (facility, instrument) => {
       waypoint.infos.arrivals = facility.arrivals;
       waypoint.infos.arrivals.forEach(arrival => 
         arrival.runwayTransitions.forEach(trans => trans.name = RawDataMapper.generateRunwayTransitionName(trans)));
+      waypoint.infos.arrivals.forEach(arrival => 
+        arrival.enRouteTransitions.forEach(trans => trans.name = RawDataMapper.generateArrivalTransitionName(trans)));
 
       waypoint.infos.runways = facility.runways;
 
@@ -1152,6 +1195,10 @@ RawDataMapper.generateRunwayTransitionName = (runwayTransition) => {
 
   return name;
 };
+
+RawDataMapper.generateArrivalTransitionName = (enrouteTransition) => {
+  return enrouteTransition.legs[0].fixIcao.substring(7, 12).trim();
+}
 
 /**
  * Creates a collection of waypoints from a legs procedure.
@@ -1245,13 +1292,9 @@ class LegsProcedure {
       const currentLeg = this._legs[this._currentIndex];
       isLegMappable = true;
 
-      if (this._isDiscontinuityPending) {
-        mappedLeg = this.mapDiscontinuity(this._previousFix);
-        this._isDiscontinuityPending = false;
-      }
       //Some procedures don't start with 15 (initial fix) but instead start with a heading and distance from
       //a fix: the procedure then starts with the fix exactly
-      else if (this._currentIndex === 0 && currentLeg.type === 10 && !this._addedProcedureStart) {
+      if (this._currentIndex === 0 && currentLeg.type === 10 && !this._addedProcedureStart) {
         mappedLeg = this.mapExactFix(currentLeg);
         this._addedProcedureStart = true;
       }
@@ -1274,6 +1317,7 @@ class LegsProcedure {
             mappedLeg = this.mapBearingAndDistanceFromOrigin(currentLeg, this._previousFix);
             break;
           case 11:
+          case 22:
             mappedLeg = this.mapVectors(currentLeg, this._previousFix);
             break;
           case 15: {
@@ -1469,12 +1513,12 @@ class LegsProcedure {
    * @returns {WayPoint} The mapped leg.
    */
   mapVectors(leg, prevLeg) {
-    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, 2.5, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
+    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, 5, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
 
     const waypoint =  this.buildWaypoint('(VECT)', coordinates);
     waypoint.isVectors = true;
+    waypoint.endsInDiscontinuity = true;
 
-    this._isDiscontinuityPending = true;
     return waypoint;
   }
 

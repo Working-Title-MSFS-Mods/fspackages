@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "typeRoots": [
+      "./types"
+    ],
+    "allowJs": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "outDir": "./.tmp",
+    "sourceMap": true
+  },
+  "include": [
+    "src"
+  ]
+}
