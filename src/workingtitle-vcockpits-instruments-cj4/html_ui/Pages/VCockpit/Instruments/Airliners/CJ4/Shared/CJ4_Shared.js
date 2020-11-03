@@ -1688,7 +1688,7 @@ class CJ4_SystemEngines extends NavSystemElement {
     }
     updateN1() {
         {
-            let N1Eng1 = SimVar.GetSimVarValue("ENG N1 RPM:1", "percent");
+            let N1Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N1:1", "percent");
             let n1_y = this.N1ToPixels(N1Eng1);
             if ((this.N1LeftZoneY1 - n1_y) > 10)
                 this.N1LeftCursor.setAttribute("d", "M" + (this.N1LeftZoneX - 1) + " " + n1_y + " l-10 0 l0 " + (this.N1LeftZoneY1 - n1_y) + " l5 0 l0 " + -(this.N1LeftZoneY1 - n1_y - 8) + " Z");
@@ -1697,7 +1697,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N1LeftValue.textContent = N1Eng1.toFixed(1);
         }
         {
-            let N1Eng2 = SimVar.GetSimVarValue("ENG N1 RPM:2", "percent");
+            let N1Eng2 = SimVar.GetSimVarValue("TURB ENG CORRECTED N1:2", "percent");
             let n1_y = this.N1ToPixels(N1Eng2);
             if ((this.N1LeftZoneY1 - n1_y) > 10)
                 this.N1RightCursor.setAttribute("d", "M" + (this.N1RightZoneX + 1) + " " + n1_y + " l10 0 l0 " + (this.N1RightZoneY1 - n1_y) + " l-5 0 l0 " + -(this.N1RightZoneY1 - n1_y - 8) + " Z");
@@ -1738,11 +1738,11 @@ class CJ4_SystemEngines extends NavSystemElement {
     }
     updateN2() {
         {
-            let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
+            let N2Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:1", "percent");
             this.N2LeftValue.textContent = N2Eng1.toFixed(1);
         }
         {
-            let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
+            let N2Eng2 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:2", "percent");
             this.N2RightValue.textContent = N2Eng2.toFixed(1);
         }
     }
