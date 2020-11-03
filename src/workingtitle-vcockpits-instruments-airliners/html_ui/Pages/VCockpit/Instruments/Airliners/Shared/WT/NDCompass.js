@@ -1549,7 +1549,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 outerCircle.setAttribute("cy", "500");
                 outerCircle.setAttribute("r", circleRadius.toString());
                 outerCircle.setAttribute("fill", "none");
-                outerCircle.setAttribute("stroke", "white");
+                outerCircle.setAttribute("stroke", "#cccac8");
                 outerCircle.setAttribute("stroke-width", "4");
                 circleGroup.appendChild(outerCircle);
                 let vec = new Vec2(1, 0.45);
