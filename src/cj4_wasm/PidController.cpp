@@ -1,3 +1,4 @@
+#include <stdio.h>
 
 /// <summary>
 /// A class for controlling values via a PID.
@@ -50,16 +51,16 @@ private:
     /// </summary>
     /// <param name="value">The value to clamp.</param>
     /// <returns>The clamped value.</returns>
-    double Clamp(double value)
+    double Clamp(double value, double max, double min)
     {
-        if (value > maxOutput)
+        if (value > max)
         {
-            return maxOutput;
+            return max;
         }
 
-        if (value < minOutput)
+        if (value < min)
         {
-            return minOutput;
+            return min;
         }
 
         return value;
@@ -78,6 +79,10 @@ public:
         : gainProportion(gainProportion), gainIntegral(gainIntegral), gainDerivative(gainDerivative),
         minOutput(minOutput), maxOutput(maxOutput), prevError(0), prevOutput(0), integral(0) { }
 
+    template <typename T> int sgn(T val) {
+        return (T(0) < val) - (val < T(0));
+    }
+
     /// <summary>
     /// Gets the output of the PID for a given error and timespan.
     /// </summary>
@@ -87,10 +92,24 @@ public:
     double GetOutput(double error, double deltaTime)
     {
         auto proportion = gainProportion * error;
+        //if ((gainIntegral * integral) >= maxOutput) {
+            //integral -= (error * deltaTime) + ((deltaTime * (error - prevError)) / 2);
+        //}
+        //else if ((gainIntegral * integral) <= minOutput) {
         integral += (error * deltaTime) + ((deltaTime * (error - prevError)) / 2);
-        auto derivative = (error - prevError) / deltaTime;
+        //}
 
-        auto output = this->Clamp(proportion + (gainIntegral * integral) + (gainDerivative * derivative));
+
+        if (sgn(error) != sgn(prevError)) {
+            integral = 0;
+        }
+
+        auto derivative = gainDerivative * ((error - prevError) / deltaTime);
+        derivative = this->Clamp(derivative, 20.0, -20.0);
+
+        auto output = this->Clamp(proportion + (gainIntegral * integral) + (derivative), this->maxOutput, this->minOutput);
+
+        //printf("P: %.2f I: %.2f D %.2f \r\n", proportion, (gainIntegral * integral), (derivative));
 
         prevError = error;
         prevOutput = output;

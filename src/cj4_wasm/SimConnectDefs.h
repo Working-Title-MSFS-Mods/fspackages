@@ -64,12 +64,18 @@ public:
     /// </summary>
     ENUM Pounds = get_units_enum("Pounds");
 
+    ENUM Feet = get_units_enum("Feet");
+
     /// <summary>
     /// The Foot pounds SimVar unit.
     /// </summary>
     ENUM FootPounds = get_units_enum("Foot pounds");
 
     ENUM Number = get_units_enum("Number");
+
+    ENUM Mach = get_units_enum("Mach");
+
+    ENUM SluggerSlugs = get_units_enum("Slug per cubic feet");
 };
 
 /// <summary>
@@ -90,6 +96,12 @@ public:
     /// The TURB ENG JET THRUST:1 SimVar.
     /// </summary>
     ENUM ThrustEng = get_aircraft_var_enum("TURB ENG JET THRUST");
+
+    ENUM AirSpeedMach = get_aircraft_var_enum("AIRSPEED MACH");
+
+    ENUM PlaneAltitude = get_aircraft_var_enum("PLANE ALTITUDE");
+
+    ENUM AmbientDensity = get_aircraft_var_enum("AMBIENT DENSITY");
 
     /// <summary>
     /// The local variable for the current throttle mode to be ready by MFD.
@@ -113,4 +125,15 @@ public:
         return aircraft_varget(Throttle, this->units->Percent, index);
     }
 
+    FLOAT64 getMach() {
+        return aircraft_varget(AirSpeedMach, this->units->Mach, 0);
+    }
+
+    FLOAT64 getPlaneAltitude() {
+        return aircraft_varget(PlaneAltitude, this->units->Feet, 0);
+    }
+
+    FLOAT64 getAmbientDensity() {
+        return aircraft_varget(AmbientDensity, this->units->SluggerSlugs, 0);
+    }
 };

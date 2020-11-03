@@ -156,8 +156,11 @@ public:
 /// <returns>True if successful, false otherwise.</returns>
     bool InitializeFD()
     {
-        this->throttleLeftController = new PidController(0.010, 0, 0.0000005, -2, 2);
-        this->throttleRightController = new PidController(0.010, 0, 0.0000005, -2, 2);
+        float p = 0.0012;
+        float i = 0.0001;
+        float d = 0.0018;
+        this->throttleLeftController = new PidController(p, i, d, -2, 2);
+        this->throttleRightController = new PidController(p, i, d, -2, 2);
 
         this->simVars = new SimVars();
         this->units = new Units();
@@ -169,7 +172,7 @@ public:
     }
 
     /// <summary>
-    /// A callback used to update the ECU at each tick.
+    /// A callback used to update the FD at each tick.
     /// </summary>
     /// <param name="deltaTime">The time since the previous update.</param>
     /// <returns>True if successful, false otherwise.</returns>
@@ -180,21 +183,42 @@ public:
         SimConnect_CallDispatch(hSimConnect, HandleAxisEvent, this);
         this->currentAxis = globalAxis;
 
-        double targetThrust = (3200.0 / 32768.0) * (this->currentAxis + 16384);
-        double errorLeft = targetThrust - this->simVars->getThrust(1);
-        double errorRight = targetThrust - this->simVars->getThrust(2);
+        double throttleLeverPerc = (this->currentAxis + 16384) / 32768.0;
+        double throttleExp = pow(throttleLeverPerc, 3.5);
+        double targetThrust = (2950 * throttleExp) + 250; // this is gross thrust (one engine)
+
+        double grossSimThrustLeft = convertToGrossThrust(this->simVars->getThrust(1));
+        double grossSimThrustRight = convertToGrossThrust(this->simVars->getThrust(2));
+
+        double density = this->simVars->getAmbientDensity() * 1000;
+        double densityFactor = 1351.6;
+        double maxDensityThrust = (density * densityFactor) + 250;
+
+        if (maxDensityThrust < 3200) {
+            targetThrust = (maxDensityThrust * throttleExp);
+        }
+
+        double errorLeft = targetThrust - grossSimThrustLeft;
+        double errorRight = targetThrust - grossSimThrustRight;
         double pidOutLeft = this->throttleLeftController->GetOutput(errorLeft, deltaTime);
         double pidOutRight = this->throttleRightController->GetOutput(errorRight, deltaTime);
+
+        //static thrust* (1 + (M ^ 2) / 5) ^ 3.5
+        double gThrust = convertToGrossThrust(this->simVars->getThrust(1));
+        //printf("TTHR: %.0f THR: %.0f EL: %f PL: %f \r\n", targetThrust, this->simVars->getThrust(1), errorLeft, pidOutLeft);
+        printf("TTHR: %.0f GTHR: %.0f @ %.0f \r\n", targetThrust, gThrust, this->simVars->getPlaneAltitude());
 
         EngineControlData controls;
         controls.throttleLeft = max(0, min(100, this->simVars->getThrottleLeverPosition(1) + pidOutLeft));
         controls.throttleRight = max(0, min(100, this->simVars->getThrottleLeverPosition(2) + pidOutRight));
         SimConnect_SetDataOnSimObject(this->hSimConnect, DataTypes::EngineControls, SIMCONNECT_OBJECT_ID_USER, 0, 0, sizeof(EngineControlData), &controls);
 
-        //printf("G: %lf L: %lf \r\n", globalAxis, this->currentAxis);
-        //printf("R: %lf|%lf T: %lf|%lf O: %lf|%lf P: %lf|%lf \r\n", propRpm, targetRpm, torque, targetTorque, throttleOutput, propOutput, throttle, propeller);
-
         return true;
+    }
+
+    double convertToGrossThrust(FLOAT64 thrustIn) {
+        return thrustIn * pow((1 + (pow(this->simVars->getMach(), 2) / 5)), 3.5);
+
     }
 
     /// <summary>
