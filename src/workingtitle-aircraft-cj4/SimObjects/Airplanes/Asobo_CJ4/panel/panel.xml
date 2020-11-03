@@ -44,6 +44,25 @@
 	<!-- Annunciations -->
 	
 	<Annunciations>
+
+        <!-- Warnings -->
+
+<!--        Requires battery temperature to be modelled-->
+
+<!--        <Annunciation>-->
+<!--            <Type>Warning</Type>-->
+<!--            <Text>BATTERY OVERTEMP</Text>-->
+<!--            <Condition>-->
+<!--            </Condition>-->
+<!--        </Annunciation>-->
+
+<!--        <Annunciation>-->
+<!--            <Type>Warning</Type>-->
+<!--            <Text>BATTERY OVERTEMP > 71°C</Text>-->
+<!--            <Condition>-->
+<!--            </Condition>-->
+<!--        </Annunciation>-->
+
 		<Annunciation>
 		  <Type>Warning</Type>
 		  <Text>FUEL OFF</Text>
@@ -55,27 +74,34 @@
 		  </Condition>
 		</Annunciation>
 
-		<Annunciation>
-		  <Type>Warning</Type>
-		  <Text>FUEL PRESS</Text>
-		  <Condition>
-			<LowerEqual>
-			  <Simvar name="GENERAL ENG FUEL PRESSURE:1" unit="psi"/>
-			  <Constant>10</Constant>
-			</LowerEqual>
-		  </Condition>
-		</Annunciation>
-
-		<Annunciation>
-		  <Type>Warning</Type>
-		  <Text>OIL PRESS</Text>
-		  <Condition>
-			<LowerEqual>
-			  <Simvar name="ENG OIL PRESSURE:1" unit="psi"/>
-			  <Constant>25</Constant>
-			</LowerEqual>
-		  </Condition>
-		</Annunciation>
+        <Annunciation>
+            <Type>Warning</Type>
+            <Text>OIL PRESSURE LOW </Text>
+            <Condition Suffix="L/R">
+                <And>
+                    <LowerEqual>
+                        <Simvar name="ENG OIL PRESSURE:1" unit="psi"/>
+                        <Constant>29</Constant>
+                    </LowerEqual>
+                    <LowerEqual>
+                        <Simvar name="ENG OIL PRESSURE:2" unit="psi"/>
+                        <Constant>29</Constant>
+                    </LowerEqual>
+                </And>
+            </Condition>
+            <Condition Suffix="L">
+                <LowerEqual>
+                    <Simvar name="ENG OIL PRESSURE:1" unit="psi"/>
+                    <Constant>29</Constant>
+                </LowerEqual>
+            </Condition>
+            <Condition Suffix="R">
+                <LowerEqual>
+                    <Simvar name="ENG OIL PRESSURE:2" unit="psi"/>
+                    <Constant>29</Constant>
+                </LowerEqual>
+            </Condition>
+        </Annunciation>
 
 		<Annunciation>
 		  <Type>Warning</Type>
@@ -115,16 +141,33 @@
 		  </Condition>
 		</Annunciation>
 
-		<Annunciation>
-		  <Type>Warning</Type>
-		  <Text>CABIN DIFF PRESS</Text>
-		  <Condition>
-			<Greater>
-			  <Simvar name="PRESSURIZATION PRESSURE DIFFERENTIAL" unit="psi"/>
-			  <Constant>11.2</Constant>
-			</Greater>
-		  </Condition>
-		</Annunciation>
+        <Annunciation>
+            <Type>Warning</Type>
+            <Text>NO TAKEOFF</Text>
+            <Condition>
+                <And>
+                    <Greater>
+                        <!--Travelling > 30km/h-->
+                        <Simvar name="GPS GROUND SPEED" unit="meters per second"/>
+                        <Constant>8.3</Constant>
+                    </Greater>
+                    <Simvar name="SIM ON GROUND" unit="bool"/>
+                    <Not>
+                        <Greater>
+                            <Simvar name="L:LANDING_TIME" unit="seconds"/>
+                            <Constant>0</Constant>
+                        </Greater>
+                    </Not>
+                    <Or>
+                        <Greater>
+                            <Simvar name="SPOILERS HANDLE POSITION" unit="number"/>
+                            <Constant>0</Constant>
+                        </Greater>
+                        <!--Need to add elevator trim and flaps to this-->
+                    </Or>
+                </And>
+            </Condition>
+        </Annunciation>
 
 		<Annunciation>
 		  <Type>Warning</Type>
@@ -161,6 +204,8 @@
 		  </Condition>
 		</Annunciation>
 
+        <!-- CAUTION -->
+
 		<Annunciation>
 		  <Type>Caution</Type>
 		  <Text>PARKING BRAKE</Text>
@@ -174,23 +219,6 @@
 					<Simvar name="BRAKE PARKING INDICATOR" unit="Bool"/>
 				</And>
 			</And>
-		  </Condition>
-		</Annunciation>
-
-		<Annunciation>
-		  <Type>Caution</Type>
-		  <Text>OIL PRESS</Text>
-		  <Condition>
-			<Or>
-			  <GreaterEqual>
-				<Simvar name="ENG OIL PRESSURE:1" unit="psi"/>
-				<Constant>105</Constant>
-			  </GreaterEqual>
-			  <LowerEqual>
-				<Simvar name="ENG OIL PRESSURE:1" unit="psi"/>
-				<Constant>25</Constant>
-			  </LowerEqual>
-			</Or>
 		  </Condition>
 		</Annunciation>
 
@@ -211,25 +239,26 @@
 		  <Condition Suffix="L-R">
 			<And>
 			  <Lower>
-				<Simvar name="FUEL TANK LEFT MAIN QUANTITY" unit="gallon"/>
-				<Constant>9</Constant>
+				<Simvar name="FUEL TANK LEFT MAIN QUANTITY" unit="gallons"/>
+                <!--200 pounds-->
+				<Constant>29.85</Constant>
 			  </Lower>
 			  <Lower>
-				<Simvar name="FUEL TANK RIGHT MAIN QUANTITY" unit="gallon"/>
-				<Constant>9</Constant>
+				<Simvar name="FUEL TANK RIGHT MAIN QUANTITY" unit="gallons"/>
+				<Constant>29.85</Constant>
 			  </Lower>
 			</And>
 		  </Condition>
 		  <Condition Suffix="L">
 			<Lower>
-			  <Simvar name="FUEL TANK LEFT MAIN QUANTITY" unit="gallon"/>
-			  <Constant>9</Constant>
+			  <Simvar name="FUEL TANK LEFT MAIN QUANTITY" unit="gallons"/>
+			  <Constant>29.85</Constant>
 			</Lower>
 		  </Condition>
 		  <Condition Suffix="R">
 			<Lower>
-			  <Simvar name="FUEL TANK RIGHT MAIN QUANTITY" unit="gallon"/>
-			  <Constant>9</Constant>
+			  <Simvar name="FUEL TANK RIGHT MAIN QUANTITY" unit="gallons"/>
+			  <Constant>29.85</Constant>
 			</Lower>
 		  </Condition>
 		</Annunciation>
@@ -238,12 +267,108 @@
 		  <Type>Caution</Type>
 		  <Text>FUEL IMBALANCE</Text>
 		  <Condition>
-			<Inequal tolerance="15">
-				<Simvar name="FUEL TANK LEFT MAIN QUANTITY" unit="gallon"/>
-				<Simvar name="FUEL TANK RIGHT MAIN QUANTITY" unit="gallon"/>
+            <!--200 pounds-->
+			<Inequal tolerance="29.85">
+				<Simvar name="FUEL TANK LEFT MAIN QUANTITY" unit="gallons"/>
+				<Simvar name="FUEL TANK RIGHT MAIN QUANTITY" unit="gallons"/>
 			</Inequal>
 		  </Condition>
 		</Annunciation>
+
+        <Annunciation>
+            <Type>Caution</Type>
+            <Text>FUEL TRANSFER</Text>
+            <Condition>
+                <!--60 pounds-->
+                <And>
+                    <Simvar name="FUEL TRANSFER PUMP ON" unit="Bool"/>
+                    <Inequal tolerance="8.96">
+                        <Simvar name="FUEL TANK LEFT MAIN QUANTITY" unit="gallons"/>
+                        <Simvar name="FUEL TANK RIGHT MAIN QUANTITY" unit="gallons"/>
+                    </Inequal>
+                </And>
+            </Condition>
+        </Annunciation>
+
+        <Annunciation>
+            <Type>Caution</Type>
+            <Text>FUEL PRESSURE LOW </Text>
+            <Condition Suffix="L-R">
+                <And>
+                    <Lower>
+                        <Simvar name="GENERAL ENG FUEL PRESSURE:1" unit="psi"/>
+                        <Constant>4.65</Constant>
+                    </Lower>
+                    <Lower>
+                        <Simvar name="GENERAL ENG FUEL PRESSURE:2" unit="psi"/>
+                        <Constant>4.65</Constant>
+                    </Lower>
+                </And>
+            </Condition>
+            <Condition Suffix="L">
+                <Lower>
+                    <Simvar name="GENERAL ENG FUEL PRESSURE:1" unit="psi"/>
+                    <Constant>4.65</Constant>
+                </Lower>
+            </Condition>
+            <Condition Suffix="R">
+                <Lower>
+                    <Simvar name="GENERAL ENG FUEL PRESSURE:2" unit="psi"/>
+                    <Constant>4.65</Constant>
+                </Lower>
+            </Condition>
+        </Annunciation>
+
+        <Annunciation>
+            <Type>Caution</Type>
+            <Text>MIN</Text>
+            <Condition>
+
+            </Condition>
+        </Annunciation>
+
+<!--        Need FMS MSG functionality -->
+
+<!--        <Annunciation>-->
+<!--            <Type>Caution</Type>-->
+<!--            <Text>MSG</Text>-->
+<!--            <Condition>-->
+
+<!--            </Condition>-->
+<!--        </Annunciation>-->
+
+        <Annunciation>
+            <Type>Caution</Type>
+            <Text>PRESS SOURCE NOT NORM</Text>
+            <Condition>
+                <And>
+                    <Simvar name="SIM ON GROUND" unit="Bool"/>
+                    <Not>
+                        <Equal>
+                            <Simvar name="L:PRESSOURCE" unit="number"/>
+                            <Constant>2</Constant>
+                        </Equal>
+                    </Not>
+                </And>
+            </Condition>
+        </Annunciation>
+
+        <Annunciation>
+            <Type>Caution</Type>
+            <Text>SPEED BRAKES EXTENDED</Text>
+            <Condition>
+                <And>
+                    <Greater>
+                        <Simvar name="SPOILERS HANDLE POSITION" unit="number"/>
+                        <Constant>0</Constant>
+                    </Greater>
+                    <Lower>
+                        <Simvar name="PLANE ALT ABOVE GROUND" unit="feet"/>
+                        <Constant>500</Constant>
+                    </Lower>
+                </And>
+            </Condition>
+        </Annunciation>
 
 		<Annunciation>
 		  <Type>Caution</Type>
@@ -252,17 +377,6 @@
 		  <Not>
 			<Simvar name="ELECTRICAL MASTER BATTERY" unit="Bool"/>
 		  </Not>
-		  </Condition>
-		</Annunciation>
-
-		<Annunciation>
-		  <Type>Caution</Type>
-		  <Text>BAT AMP</Text>
-		  <Condition>
-			<Greater>
-				<Simvar name="ELECTRICAL BATTERY BUS AMPS" unit="amperes"/>
-				<Constant>25</Constant>
-			</Greater>
 		  </Condition>
 		</Annunciation>
 
@@ -287,104 +401,149 @@
 		  <Condition>
 			<Lower>
 				<Simvar name="ELECTRICAL MAIN BUS VOLTAGE" unit="volts"/>
-				<Constant>24.5</Constant>
+				<Constant>22</Constant>
 			</Lower>
 		  </Condition>
 		</Annunciation>
 
-		<Annunciation>
-		  <Type>Caution</Type>
-		  <Text>VACUUM LOW</Text>
-		  <Condition>
-			<Equal>
-				<Simvar name="PARTIAL PANEL VACUUM" unit="Enum"/>
-				<Constant>1</Constant>
-			</Equal>
-		  </Condition>
-		</Annunciation>
+        <Annunciation>
+            <Type>Caution</Type>
+            <Text>TAIL DE-ICE ON</Text>
+            <Condition>
+                <Or>
+                    <Equal>
+                        <Simvar name="L:TAIL ANTI ICE:1" unit="Bool"/>
+                    </Equal>
+                    <Equal>
+                        <Simvar name="L:TAIL ANTI ICE:2" unit="Bool"/>
+                    </Equal>
+                </Or>
+            </Condition>
+        </Annunciation>
+
+        <!--Requires ability to get wing temperature-->
+<!--        <Annunciation>-->
+<!--            <Type>Caution</Type>-->
+<!--            <Text>WING ANTI-ICE COLD L and/or R</Text>-->
+<!--            <Condition>-->
+<!--                <Lower>-->
+<!--                    <Simvar name="ELECTRICAL MAIN BUS VOLTAGE" unit="volts"/>-->
+<!--                    <Constant>24.5</Constant>-->
+<!--                </Lower>-->
+<!--            </Condition>-->
+<!--        </Annunciation>-->
+
+        <Annunciation>
+            <Type>Caution</Type>
+            <Text>YD</Text>
+            <Condition>
+
+            </Condition>
+        </Annunciation>
 
 		<Annunciation>
 		  <Type>Caution</Type>
 		  <Text>PITOT/STATIC COLD </Text>
-		  <Condition Suffix="BOTH">
-			<Or>
-				<And>
-					<Not>
-						<Simvar name="SIM ON GROUND" unit="bool"/>
-					</Not>
-					<Not>
-						<Or>
-							<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
-							<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
-						</Or>
-					</Not>
-				</And>
-				<And>
-					<Greater>
-						<Simvar name="TURB ENG N1:1" unit="percent"/>
-						<Constant>70</Constant>
-					</Greater>
-					<Not>
-						<Or>
-							<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
-							<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
-						</Or>
-					</Not>
-				</And>
-			</Or>
-		  </Condition>
-		  <Condition Suffix="L">
-			<Or>
-				<And>
-					<Not>
-						<Simvar name="SIM ON GROUND" unit="bool"/>
-					</Not>
-					<Not>
-						<Or>
-							<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
-						</Or>
-					</Not>
-				</And>
-				<And>
-					<Greater>
-						<Simvar name="TURB ENG N1:1" unit="percent"/>
-						<Constant>70</Constant>
-					</Greater>
-					<Not>
-						<Or>
-							<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
-						</Or>
-					</Not>
-				</And>
-			</Or>
-		  </Condition>
-		  <Condition Suffix="R">
-			<Or>
-				<And>
-					<Not>
-						<Simvar name="SIM ON GROUND" unit="bool"/>
-					</Not>
-					<Not>
-						<Or>
-							<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
-						</Or>
-					</Not>
-				</And>
-				<And>
-					<Greater>
-						<Simvar name="TURB ENG N1:1" unit="percent"/>
-						<Constant>70</Constant>
-					</Greater>
-					<Not>
-						<Or>
-							<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
-						</Or>
-					</Not>
-				</And>
-			</Or>
-		  </Condition>
+            <Condition Suffix="L/R">
+                <And>
+                    <Not>
+                        <Simvar name="SIM ON GROUND" unit="Bool"/>
+                    </Not>
+                    <And>
+                        <Not>
+                            <Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
+                        </Not>
+                        <Not>
+                            <Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
+                        </Not>
+                    </And>
+                </And>
+            </Condition>
+            <Condition Suffix="L">
+                <And>
+                    <Not>
+                        <Simvar name="SIM ON GROUND" unit="Bool"/>
+                    </Not>
+                    <Not>
+                        <Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
+                    </Not>
+                </And>
+            </Condition>
+            <Condition Suffix="R">
+                <And>
+                    <Not>
+                        <Simvar name="SIM ON GROUND" unit="Bool"/>
+                    </Not>
+                    <Not>
+                        <Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
+                    </Not>
+                </And>
+            </Condition>
 		</Annunciation>
-		
+
+        <Annunciation>
+            <Type>Caution</Type>
+            <Text>ENGINE ANTI-ICE COLD </Text>
+            <Condition Suffix="L/R">
+                <And>
+                    <Simvar name="TURB ENG MASTER STARTER SWITCH" unit="Bool"/>
+                    <Timer time="150">
+                        <Not>
+                            <Simvar name="SIM ON GROUND" unit="Bool"/>
+                        </Not>
+                    </Timer>
+                    <Timer time="60">
+                        <And>
+                            <Lower>
+                                <Simvar name="RECIP ENG TURBINE INLET TEMPERATURE:1" unit="celsius"/>
+                                <Constant>21</Constant>
+                            </Lower>
+                            <Lower>
+                                <Simvar name="RECIP ENG TURBINE INLET TEMPERATURE:2" unit="celsius"/>
+                                <Constant>21</Constant>
+                            </Lower>
+                        </And>
+                    </Timer>
+                </And>
+            </Condition>
+            <Condition Suffix="L">
+                <And>
+                    <Simvar name="TURB ENG MASTER STARTER SWITCH" unit="Bool"/>
+                    <Timer time="150">
+                        <Not>
+                            <Simvar name="SIM ON GROUND" unit="Bool"/>
+                        </Not>
+                    </Timer>
+                    <Timer time="60">
+                        <And>
+                            <Lower>
+                                <Simvar name="RECIP ENG TURBINE INLET TEMPERATURE:1" unit="celsius"/>
+                                <Constant>21</Constant>
+                            </Lower>
+                        </And>
+                    </Timer>
+                </And>
+            </Condition>
+            <Condition Suffix="R">
+                <And>
+                    <Simvar name="TURB ENG MASTER STARTER SWITCH" unit="Bool"/>
+                    <Timer time="150">
+                        <Not>
+                            <Simvar name="SIM ON GROUND" unit="Bool"/>
+                        </Not>
+                    </Timer>
+                    <Timer time="60">
+                        <And>
+                            <Lower>
+                                <Simvar name="RECIP ENG TURBINE INLET TEMPERATURE:2" unit="celsius"/>
+                                <Constant>21</Constant>
+                            </Lower>
+                        </And>
+                    </Timer>
+                </And>
+            </Condition>
+        </Annunciation>
+
 		<Annunciation>
 		  <Type>Caution</Type>
 		  <Text>NG HI</Text>
@@ -402,28 +561,202 @@
 		  </Condition>
 		</Annunciation>
 
-		<Annunciation>
-		  <Type>Advisory</Type>
-		  <Text>MAX DIFF MODE</Text>
-		  <Condition>
-			<Equal>
-				<Simvar name="BLEED AIR SOURCE CONTROL" unit="Enum"/>
-				<Constant>3</Constant>
-			</Equal>
-		  </Condition>
-		</Annunciation>
+        <!--Need emergency light switch to be implemented-->
+<!--        <Annunciation>-->
+<!--            <Type>Caution</Type>-->
+<!--            <Text>EMERGENCY LIGHTS NOT ARMED</Text>-->
+<!--            <Condition>-->
+<!--               -->
+<!--            </Condition>-->
+<!--        </Annunciation>-->
 
-		<Annunciation>
-		  <Type>Advisory</Type>
-		  <Text>STARTER</Text>
-		  <Condition>
-			<Or>
-				<Simvar name="GENERAL ENG STARTER ACTIVE:1" unit="Bool"/>
-				<Simvar name="GENERAL ENG STARTER ACTIVE:2" unit="Bool"/>
-			</Or>
-		  </Condition>
-		</Annunciation>
-		
+        <!-- Advisory -->
+        <Annunciation>
+            <Type>Advisory</Type>
+            <Text>FUEL TRANSFER</Text>
+            <Condition>
+                <Simvar name="FUEL TRANSFER PUMP ON" unit="Bool"/>
+            </Condition>
+        </Annunciation>
+
+        <Annunciation>
+            <Type>Advisory</Type>
+            <Text>SPEED BRAKES EXTENDED</Text>
+            <Condition>
+                <And>
+                    <Greater>
+                        <Simvar name="SPOILERS HANDLE POSITION" unit="number"/>
+                        <Constant>0</Constant>
+                    </Greater>
+                    <GreaterEqual>
+                        <Simvar name="PLANE ALT ABOVE GROUND" unit="feet"/>
+                        <Constant>500</Constant>
+                    </GreaterEqual>
+                </And>
+            </Condition>
+        </Annunciation>
+
+        <Annunciation>
+            <Type>Advisory</Type>
+            <Text>GROUND SPOILERS EXTENDED</Text>
+            <Condition>
+                <!--Ground spoilers in reality only occur when on the ground but not in sim-->
+                <!--<Simvar name="SIM ON GROUND" unit="Bool"/>-->
+                <Equal>
+                    <Simvar name="SPOILERS HANDLE POSITION" unit="number"/>
+                    <Constant>100</Constant>
+                </Equal>
+            </Condition>
+        </Annunciation>
+
+        <Annunciation>
+            <Type>Advisory</Type>
+            <Text>NO TAKEOFF</Text>
+            <Condition>
+                <And>
+                    <Simvar name="SIM ON GROUND" unit="bool"/>
+                    <LowerEqual>
+                        <!--Travelling <= 30km/h-->
+                        <Simvar name="GPS GROUND SPEED" unit="meters per second"/>
+                        <Constant>8.3</Constant>
+                    </LowerEqual>
+                    <Not>
+                        <Greater>
+                            <Simvar name="L:LANDING_TIME" unit="seconds"/>
+                            <Constant>0</Constant>
+                        </Greater>
+                    </Not>
+                    <Or>
+                        <Greater>
+                            <Simvar name="SPOILERS HANDLE POSITION" unit="number"/>
+                            <Constant>0</Constant>
+                        </Greater>
+                        <!--Need to add elevator trim and flaps to this-->
+                    </Or>
+                </And>
+            </Condition>
+        </Annunciation>
+
+        <Annunciation>
+            <Type>Advisory</Type>
+            <Text>PITOT/STATIC COLD </Text>
+            <Condition Suffix="L/R">
+                <And>
+                    <Simvar name="SIM ON GROUND" unit="Bool"/>
+                    <And>
+                        <Not>
+                            <Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
+                        </Not>
+                        <Not>
+                            <Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
+                        </Not>
+                    </And>
+                </And>
+            </Condition>
+            <Condition Suffix="L">
+                <And>
+                    <Simvar name="SIM ON GROUND" unit="Bool"/>
+                    <Not>
+                        <Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
+                    </Not>
+                </And>
+            </Condition>
+            <Condition Suffix="R">
+                <And>
+                    <Simvar name="SIM ON GROUND" unit="Bool"/>
+                    <Not>
+                        <Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
+                    </Not>
+                </And>
+            </Condition>
+        </Annunciation>
+
+        <Annunciation>
+            <Type>Advisory</Type>
+            <Text>PRESS SOURCE NOT NORM</Text>
+            <Condition>
+                <And>
+                    <Not>
+                        <Simvar name="SIM ON GROUND" unit="Bool"/>
+                    </Not>
+                    <Not>
+                        <Equal>
+                            <Simvar name="L:PRESSOURCE" unit="number"/>
+                            <Constant>2</Constant>
+                        </Equal>
+                    </Not>
+                </And>
+            </Condition>
+        </Annunciation>
+
+<!--        <Annunciation>-->
+<!--            <Type>Advisory</Type>-->
+<!--            <Text>WING/ENG ANTI-ICE ON</Text>-->
+<!--            <Condition>-->
+<!--                <Or>-->
+<!--                    <Simvar name="GENERAL ENG ANTI ICE POSITION:1" unit="Bool"/>-->
+<!--                    <Simvar name="GENERAL ENG ANTI ICE POSITION:2" unit="Bool"/>-->
+<!--                </Or>-->
+<!--            </Condition>-->
+<!--        </Annunciation>-->
+
+        <Annunciation>
+            <Type>Advisory</Type>
+            <Text>ENGINE ANTI-ICE ON</Text>
+            <Condition>
+                <Or>
+                    <Simvar name="GENERAL ENG ANTI ICE POSITION:1" unit="Bool"/>
+                    <Simvar name="GENERAL ENG ANTI ICE POSITION:2" unit="Bool"/>
+                </Or>
+            </Condition>
+        </Annunciation>
+
+        <Annunciation>
+            <Type>Advisory</Type>
+            <Text>TAIL DE-ICE ON</Text>
+            <Condition>
+                <And>
+                    <Or>
+                        <Equal>
+                            <Simvar name="L:TAIL ANTI ICE:1" unit="Bool"/>
+                        </Equal>
+                        <Equal>
+                            <Simvar name="L:TAIL ANTI ICE:2" unit="Bool"/>
+                        </Equal>
+                    </Or>
+                    <GreaterEqual>
+                        <Simvar name="AMBIENT TEMPERATURE" unit="celsius"/>
+                        <Constant>-30</Constant>
+                    </GreaterEqual>
+                </And>
+            </Condition>
+        </Annunciation>
+
+        <Annunciation>
+            <Type>Advisory</Type>
+            <Text>WING ANTI-ICE COLD L/R</Text>
+            <Condition Suffix="L/R">
+                <And>
+                    <Simvar name="TURB ENG MASTER STARTER SWITCH" unit="Bool"/>
+                    <Timer time="150">
+                        <Not>
+                            <Simvar name="SIM ON GROUND" unit="Bool"/>
+                        </Not>
+                    </Timer>
+                    <!--Theres no current way to get wing temperature which is needed. So for now, just relies on ambient -->
+                    <Timer time="60">
+                        <And>
+                            <Lower>
+                                <Simvar name="AMBIENT TEMPERATURE" unit="celsius"/>
+                                <Constant>-2</Constant>
+                            </Lower>
+
+                        </And>
+                    </Timer>
+                </And>
+            </Condition>
+        </Annunciation>
+
 	</Annunciations>
   
 	<!-- Voices Alerts -->
