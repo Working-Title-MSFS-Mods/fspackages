@@ -422,7 +422,7 @@ class Jet_NDCompass extends HTMLElement {
         }
     }
     updateNavigationInfo() {
-        if (this.courseGroup) {
+        if (this.courseGroup && this.displayMode !== Jet_NDCompass_Display.PLAN) {
             if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode == Jet_NDCompass_Navigation.VOR || this.navigationMode == Jet_NDCompass_Navigation.NAV) {
                 const waypointName = Simplane.getNextWaypointName();
                 const hasNav = waypointName !== null && waypointName !== undefined && waypointName !== '';
@@ -544,7 +544,7 @@ class Jet_NDCompass extends HTMLElement {
                         this.setAttribute("ghost_needle_deviation", "0");
                         this.ghostNeedleGroup.setAttribute("visibility", "hidden");
                     }
-                }
+                } 
                 this.setAttribute("display_course_deviation", displayCourseDeviation ? "True" : "False");
                 this.setAttribute("display_vertical_deviation", displayVerticalDeviation ? "True" : "False");
                 switch (this.logic_brg1Source) {
