@@ -147,34 +147,44 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
 
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations,
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations {
-          top: 5%;
-          left: 4%;
-          width: 95%;
-          height: 95%;
+            padding-top: 10px;
+          width: 100%;
+          height: 80%;
           position: relative;
+            box-sizing: border-box;
+            border-top: 3px white solid;
+            border-bottom: 3px white solid;
+            display: table;
+            clear: both;
           display: none; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations div,
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations div {
+            float: left;
+            width: 50%;
             font-size: 1.8vh;
             text-align: left;
+            margin-left: 20px;
             margin-right: 15px;
-            margin-bottom: 1px; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Warning, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Warning_Blink,
+            margin-bottom: 1px;
+            color: #36c8d2;
+          }
+          cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Warning,
+          cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Warning_Blink,
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Warning,
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Warning_Blink {
-            color: red; }
-          cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Caution, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Caution_Blink,
+            color: red;
+          }
+          cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Caution,
+          cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Caution_Blink,
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Caution,
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Caution_Blink {
             color: yellow; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations[state=Blink] .Warning_Blink,
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations[state=Blink] .Warning_Blink {
-            color: white;
-            background-color: red; }
+            color: black; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations[state=Blink] .Caution_Blink,
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations[state=Blink] .Caution_Blink {
-            color: black;
-            background-color: yellow; }
+            color: black; }
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings,
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings {
           position: relative;
