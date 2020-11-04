@@ -572,7 +572,7 @@ class CJ4_FMC_PerfInitPage {
                     //COLLECT NAVIGATION VARIABLES
                     activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
                     activeWaypointIdent = activeWaypoint.ident;
-                    activeWptIndex = fmc.flightPlanManager.getActiveWaypointIndex();
+                    //activeWptIndex = fmc.flightPlanManager.getActiveWaypointIndex();
                     activeWaypointDist = Avionics.Utils.computeDistance(currPos, activeWaypoint.infos.coordinates);
                     currentDistanceInFP = activeWaypoint.cumulativeDistanceInFP - activeWaypointDist;
 
@@ -681,7 +681,7 @@ class CJ4_FMC_PerfInitPage {
                     [" set vs[blue]", "TOD Dist"],
                     [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod + " nm"],
                     [""],
-                    ["<RECALCULATE", "VNAV DESCENT>"]
+                    ["<RECALC", "VNAV>"]
                 ]);
 
             }, 1000, true);
@@ -700,7 +700,7 @@ class CJ4_FMC_PerfInitPage {
                 [""],
                 [""],
                 [""],
-                ["<RECALCULATE", "VNAV DESCENT>"]
+                ["<RECALC", "VNAV>"]
             ]);
         }
     fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };

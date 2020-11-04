@@ -660,6 +660,7 @@ class CJ4_FMC extends FMCMainDisplay {
             storedConstraints = storedConstraints.slice(indexAlt1 + 1);
             let indexAlt2 = storedConstraints.indexOf(",");
             wpt.legAltitude2 = parseFloat(storedConstraints.slice(0, indexAlt2));
+            wpt.ident = wpt.icao.substr(-5);
             //console.log(wpt.icao + " " + wpt.legAltitudeDescription + " " + wpt.legAltitude1 + " " + wpt.legAltitude2);
             constraints.push(wpt);
         }
