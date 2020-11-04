@@ -516,8 +516,10 @@ class Jet_NDCompass extends HTMLElement {
                         }
                 }
                 else if (this.navigationMode === Jet_NDCompass_Navigation.NAV) {
+
                     displayCourseDeviation = true;
-                    let deviation = (SimVar.GetSimVarValue("HSI CDI NEEDLE", "number") / 127);
+                    let crossTrack = SimVar.GetSimVarValue("GPS WP CROSS TRK", "Number");
+                    let deviation = (crossTrack * 0.000539957) / 2; //Converts cross track to NM and then divides by 2 since enroute max deflection is 2nm off course)
                     let simSelectedTrack = SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree");
                     this.setAttribute("course", simSelectedTrack.toString());
                     this.setAttribute("course_deviation", deviation.toString());
