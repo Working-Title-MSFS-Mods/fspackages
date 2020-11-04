@@ -145,16 +145,30 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
     text-align: left;
     width: 21%; }
 
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .AnnunciationsContainer,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .AnnunciationsContainer {
+    height: 100%;
+    width:100%;
+    position: relative;
+}
+    cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .DividerLine,
+    cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .DividerLine {
+        position: absolute;
+        margin-left: 49.7%;
+        top: 0;
+        z-index: 4;
+    }
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations,
         cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations {
             padding-top: 10px;
           width: 100%;
-          height: 80%;
+          height: 77%;
+            background-color: transparent;
           position: relative;
             box-sizing: border-box;
             border-top: 3px white solid;
             border-bottom: 3px white solid;
-            display: table;
+            display: table-column;
             clear: both;
           display: none; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations div,
@@ -163,8 +177,8 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
             width: 50%;
             font-size: 1.8vh;
             text-align: left;
-            margin-left: 20px;
-            margin-right: 15px;
+            padding-left: 20px;
+            padding-right: 20px;
             margin-bottom: 1px;
             color: #36c8d2;
           }
