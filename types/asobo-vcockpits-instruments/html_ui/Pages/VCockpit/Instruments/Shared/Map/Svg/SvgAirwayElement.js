@@ -18,7 +18,6 @@ class SvgAirwayElement extends SvgMapElement {
     }
     id(map) {
         return "airway-" + this.ident + "-map-" + map.index;
-        ;
     }
     createDraw(map) {
         let shape = document.createElementNS(Avionics.SVG.NS, "line");

@@ -740,7 +740,6 @@ class NavSystem extends BaseInstrument {
         if (callback) {
             callback();
         }
-        ;
     }
     getElementOfType(c) {
         for (let i = 0; i < this.IndependentsElements.length; i++) {
@@ -771,7 +770,7 @@ class NavSystem extends BaseInstrument {
             if (this.popUpCloseCallback) {
                 this.popUpCloseCallback();
             }
-            ;
+
         }
         if (this.currentContextualMenu) {
             this.SwitchToInteractionState(0);
@@ -1995,14 +1994,14 @@ var Annunciation_MessageType;
     Annunciation_MessageType[Annunciation_MessageType["ADVISORY"] = 2] = "ADVISORY";
     Annunciation_MessageType[Annunciation_MessageType["SAFEOP"] = 3] = "SAFEOP";
 })(Annunciation_MessageType || (Annunciation_MessageType = {}));
-;
+
 class Annunciation_Message {
     constructor() {
         this.Visible = false;
         this.Acknowledged = false;
     }
 }
-;
+
 class XMLCondition {
     constructor() {
         this.suffix = "";
@@ -2031,7 +2030,7 @@ class Annunciation_Message_XML extends Annunciation_Message {
 }
 class Annunciation_Message_Timed extends Annunciation_Message {
 }
-;
+
 class Annunciation_Message_Switch extends Annunciation_Message {
     get Text() {
         let index = this.Handler();

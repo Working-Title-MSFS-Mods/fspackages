@@ -45,7 +45,6 @@ class SvgRoadElement extends SvgMapElement {
     }
     id(map) {
         return "road-" + this.ident + "-map-" + map.index;
-        ;
     }
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");

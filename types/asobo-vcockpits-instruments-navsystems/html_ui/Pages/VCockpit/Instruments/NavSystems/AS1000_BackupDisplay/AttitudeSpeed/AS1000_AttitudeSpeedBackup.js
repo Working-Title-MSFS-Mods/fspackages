@@ -103,7 +103,6 @@ class ASBackup_Altimeter extends NavSystemElement {
     }
     isReady() {
         return true;
-        ;
     }
     onUpdate(_deltaTime) {
         var altitude = SimVar.GetSimVarValue("INDICATED ALTITUDE:" + this.gps.altimeterIndex, "feet");

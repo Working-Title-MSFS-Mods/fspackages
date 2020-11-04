@@ -11,7 +11,6 @@
 class SvgLatLonElement extends SvgMapElement {
     id(map) {
         return "lat-lon" + "-map-" + map.index;
-        ;
     }
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");

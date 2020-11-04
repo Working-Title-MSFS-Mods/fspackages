@@ -311,7 +311,6 @@ class CJ4_SAI_Altimeter extends NavSystemElement {
     }
     isReady() {
         return true;
-        ;
     }
     onUpdate(_deltaTime) {
         this.altimeterElement.update(_deltaTime);

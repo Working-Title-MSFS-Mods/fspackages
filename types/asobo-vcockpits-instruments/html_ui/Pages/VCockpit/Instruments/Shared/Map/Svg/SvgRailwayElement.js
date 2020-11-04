@@ -15,7 +15,6 @@ class SvgRailwayElement extends SvgMapElement {
     }
     id(map) {
         return "railway-" + this.ident + "-map-" + map.index;
-        ;
     }
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
