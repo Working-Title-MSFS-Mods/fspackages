@@ -2635,10 +2635,11 @@ class MFD_NearestAirport_Element extends NavSystemElement {
                 if (this.runwayIndex >= infos.runways.length) {
                     this.runwayIndex = 0;
                 }
-                Avionics.Utils.diffAndSet(this.runwayDesignation, infos.runways[this.runwayIndex].designation);
-                Avionics.Utils.diffAndSet(this.runwaySurface, infos.runways[this.runwayIndex].getSurfaceString());
-                Avionics.Utils.diffAndSet(this.runwayLength, fastToFixed(infos.runways[this.runwayIndex].length, 0) + "FT");
-                Avionics.Utils.diffAndSet(this.runwayWidth, fastToFixed(infos.runways[this.runwayIndex].width, 0) + "FT");
+                const currentRunway = infos.runways[this.runwayIndex];
+                Avionics.Utils.diffAndSet(this.runwayDesignation, currentRunway.designation);
+                Avionics.Utils.diffAndSet(this.runwaySurface, currentRunway.getSurfaceString());
+                Avionics.Utils.diffAndSet(this.runwayLength, Math.round(WT_Unit.METER.convert(currentRunway.length, WT_Unit.FOOT)) + "FT");
+                Avionics.Utils.diffAndSet(this.runwayWidth, Math.round(WT_Unit.METER.convert(currentRunway.width, WT_Unit.FOOT)) + "FT");
             }
             if (infos.frequencies) {
                 let elems = [];

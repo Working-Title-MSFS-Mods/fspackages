@@ -786,7 +786,7 @@ class AS1000_PFD_AirportInfos extends NavSystemElement {
         this.facilityName = this.gps.getChildById("facilityName");
         this.type = this.gps.getChildById("type");
         this.timeZone = this.gps.getChildById("timeZone");
-        this.runwwayLength = this.gps.getChildById("runwayLength");
+        this.runwayLength = this.gps.getChildById("runwayLength");
         this.region = this.gps.getChildById("region");
         this.latitude = this.gps.getChildById("latitude");
         this.longitude = this.gps.getChildById("longitude");
@@ -829,13 +829,13 @@ class AS1000_PFD_AirportInfos extends NavSystemElement {
                         break;
                 }
                 this.timeZone.textContent = "";
-                var maxLength = 0;
+                let maxLength = 0;
                 for (let i = 0; i < infos.runways.length; i++) {
                     if (infos.runways[i].length > maxLength) {
                         maxLength = infos.runways[i].length;
                     }
                 }
-                this.runwwayLength.textContent = fastToFixed(maxLength, 0) + "FT";
+                this.runwayLength.textContent = Math.round(WT_Unit.METER.convert(maxLength, WT_Unit.FOOT)) + "FT";
                 this.region.textContent = infos.region;
                 this.latitude.textContent = this.gps.latitudeFormat(infos.coordinates.lat);
                 this.longitude.textContent = this.gps.longitudeFormat(infos.coordinates.long);
@@ -847,7 +847,7 @@ class AS1000_PFD_AirportInfos extends NavSystemElement {
                 this.facilityName.textContent = "";
                 this.type.textContent = "";
                 this.timeZone.textContent = "";
-                this.runwwayLength.textContent = "";
+                this.runwayLength.textContent = "";
                 this.region.textContent = "";
                 this.latitude.textContent = "";
                 this.longitude.textContent = "";
