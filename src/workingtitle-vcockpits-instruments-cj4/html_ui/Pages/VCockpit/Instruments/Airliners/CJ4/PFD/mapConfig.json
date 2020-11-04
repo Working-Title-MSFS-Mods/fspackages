@@ -1,4 +1,8 @@
 ﻿{
+  "altitudeArc": {
+    "strokeColor": "white",
+    "outlineColor": "white"
+  },
 
   "waypointLabelFontSize": 16,
   "waypointLabelFontFamily": "Consolas",
