@@ -582,6 +582,11 @@ class CJ4_FMC_PerfInitPage {
                     topOfDescent = ((altitude - vnavTargetAltitude) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
                 }
 
+                //DEFAULT CASE TO REFRESH PAGE IF NONE OF THESE ARE MET
+                else {
+                    CJ4_FMC_PerfInitPage.ShowPage7(fmc);
+                }
+
                 //PREPARE VNAV VARIABLES
                 let desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(desiredFPA * (Math.PI / 180));
                 let desiredAltitude = vnavTargetAltitude + (Math.tan(desiredFPA * (Math.PI / 180)) * vnavTargetDistance * 6076.12);
