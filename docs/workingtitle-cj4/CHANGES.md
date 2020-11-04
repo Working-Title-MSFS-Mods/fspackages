@@ -34,7 +34,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ### FMC
 * SimBrief load should no longer randomly fail on airway loads
-* Improved scratchpad handling to better reflect the actual unit
+* Improved scratchpad handling to better reflect the actual unit (thanks @panourgue)
 
 #### FPLN
 * Setting an origin should now properly clear the whole flight plan
@@ -43,22 +43,22 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Inputting an invalid fix should no longer clear the entire temporary flight plan
 
 #### TAKEOFF PERF
-* Restored ability to set custom QNH
+* Restored ability to set custom QNH (thanks @panourgue)
 * Pages should no longer crash without selected runways
 
 #### FUEL MGMT
-* Fixed issue where fuel management page would spontaneously continue to reappear
+* Fixed issue where fuel management page would spontaneously continue to reappear (thanks Wombii)
 
 #### SELECT WPT
 * Overhauled the waypoint disambiguation page to reflect the real unit layout
 * Suggested fixes should now be orderd by distance from plane position
-* You can now go to multiple pages of SELECT WPT, should there be any
+* You can now go to multiple pages of SELECT WPT, should there be any (thanks Danice737)
 
 #### MOD SETTINGS
 * A GPU can now be connected to the plane on the mod settings page
 * Cabin lights are now properly tied to the battery bus state
 * Cabin lights state should be properly saved between flights and will no longer default to on
-* You can now clear your input SimBrief pilot ID
+* You can now clear your input SimBrief pilot ID (thanks @panourgue)
 * You can now select metric or imperial units for the aircraft
 
 #### TAKEOFF REF
