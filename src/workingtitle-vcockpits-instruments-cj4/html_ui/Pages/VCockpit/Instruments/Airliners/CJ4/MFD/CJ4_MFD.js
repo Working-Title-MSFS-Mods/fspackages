@@ -313,6 +313,9 @@ class CJ4_MFD extends BaseAirliners {
             case "Lwr_Hold_MEM3_1":
                 this.mem3.setMemoryState(3, this.systemPage1, this.systemPage2, this.showChecklist, this.showPassengerBrief, this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource, this.showTerrain, this.showWeather, this.showGwx, this.isExtended);
                 this.activeMemoryFunction(3);
+            case "Lwr_Push_CAS_PAGE":
+                this.systemPage2 = this.systemPage2 === CJ4_SystemPage.ANNUNCIATIONS ? CJ4_SystemPage.NONE : CJ4_SystemPage.ANNUNCIATIONS;
+                // this.showFms = false;
                 break;
             case "Lwr_Push_ESC":
                 this.checklist.otherMenusOpen = false;

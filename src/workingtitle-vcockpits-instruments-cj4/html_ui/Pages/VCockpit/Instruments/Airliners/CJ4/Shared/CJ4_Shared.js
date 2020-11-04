@@ -2599,7 +2599,7 @@ class CJ4_SystemFMS extends NavSystemElement {
         return (distance / currentGroundSpeed) * 3600;
     }
 }
-class CJ4_SystemAnnunciations extends Cabin_Annunciations {
+class CJ4_SystemAnnunciations extends WT_Cabin_Annunciations {
     constructor() {
         super();
         this.rootElementName = "";
