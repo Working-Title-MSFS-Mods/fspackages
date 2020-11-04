@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="FdGauge.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common.h" />
+    <ClInclude Include="FdGauge.h" />
+    <ClInclude Include="FdController.h">
+      <Filter>FD</Filter>
+    </ClInclude>
+    <ClInclude Include="PidController.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="SimConnectDefs.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="FD">
+      <UniqueIdentifier>{9c2e78a3-1c47-4137-88fc-c7c398573b32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{2435d725-306b-401c-b12f-772e60727c8e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
