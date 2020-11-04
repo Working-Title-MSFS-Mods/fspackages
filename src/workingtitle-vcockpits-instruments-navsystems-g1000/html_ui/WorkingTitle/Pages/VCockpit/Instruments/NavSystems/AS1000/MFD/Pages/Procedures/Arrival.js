@@ -39,7 +39,6 @@ class WT_Arrival_Page_View extends WT_HTML_View {
      */
     updateProcedures(procedures) {
         try {
-            console.log(`adding ${procedures.length} arrival procedures`);
             this.elements.procedureSelector.clearOptions();
             let i = 0;
             for (let procedure of procedures) {

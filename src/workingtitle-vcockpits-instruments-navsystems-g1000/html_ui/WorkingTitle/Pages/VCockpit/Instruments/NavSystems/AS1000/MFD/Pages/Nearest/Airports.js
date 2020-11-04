@@ -4,7 +4,7 @@ class WT_Nearest_Waypoints_Input_Layer extends Selectables_Input_Layer {
      * @param {*} view 
      */
     constructor(model, view) {
-        super(new Selectables_Input_Layer_Dynamic_Source(view, ".ident"));
+        super(new Selectables_Input_Layer_Dynamic_Source(view, ".ident"), true);
         this.model = model;
         this.view = view;
     }
@@ -41,6 +41,8 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
             this.menuButtons.FREQ.selected = menu == "FREQ";
             this.menuButtons.APR.selected = menu == "APR";
         });
+
+        DOMUtilities
     }
     initMenu() {
         let menu = new WT_Soft_Key_Menu(false);
@@ -94,6 +96,9 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
 
         this.elements.frequencyList.setModel(this.frequencyListModel);
         this.elements.waypointList.setUnitChooser(this.unitChooser);
+        this.elements.waypointList.onClickWaypoint.subscribe(waypoint => {
+            this.model.showWaypointInfo(waypoint);
+        });
     }
     /**
      * @param {WT_Nearest_Airports_Model} model 

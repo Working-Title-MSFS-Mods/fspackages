@@ -71,22 +71,17 @@ class WT_Waypoint_Quick_Select {
      * @param {String} type 
      */
     async getWaypoints(type) {
-        console.log(type);
         let filter = waypoint => {
             /*if (type)
                 return waypoint.type == type;*/
             return true;
         };
-        try {
-            return {
-                nearest: (await this.getNearestWaypoints(type)).filter(filter),
-                flightPlan: this.getFlightPlanWaypoints(type).filter(filter),
-                recent: (await this.loadWaypoints(this.recentWaypoints.filter(wp => {
-                    return type.includes(wp[0]);
-                }))).filter(filter),
-            }
-        } catch (e) {
-            console.log(e.message);
+        return {
+            nearest: (await this.getNearestWaypoints(type)).filter(filter),
+            flightPlan: this.getFlightPlanWaypoints(type).filter(filter),
+            recent: (await this.loadWaypoints(this.recentWaypoints.filter(wp => {
+                return type.includes(wp[0]);
+            }))).filter(filter),
         }
     }
 }

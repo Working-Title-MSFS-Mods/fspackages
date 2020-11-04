@@ -120,59 +120,51 @@ class WT_Airport_Information_View extends WT_HTML_View {
         this.model = model;
         this.inputLayer = new WT_Airport_Information_Input_Layer(this.model, this);
         this.subscriptions.add(model.waypoint.subscribe(airport => {
-            try {
-                if (airport) {
-                    let infos = airport.infos;
-                    let elevation = 0;
-                    let longest = 0;
-                    let longestDirection = 0;
-                    for (let runway of infos.runways) {
-                        if (runway.length > longest) {
-                            longestDirection = runway.direction;
-                            longest = runway.length;
-                        }
-                        elevation = Math.max(elevation, runway.elevation);
+            if (airport) {
+                let infos = airport.infos;
+                let elevation = 0;
+                let longest = 0;
+                let longestDirection = 0;
+                for (let runway of infos.runways) {
+                    if (runway.length > longest) {
+                        longestDirection = runway.direction;
+                        longest = runway.length;
                     }
-
-                    this.elements.name.textContent = infos.name;
-                    this.elements.city.textContent = infos.city;
-                    this.elements.icon.applyInfo(infos); // This doesn't fully work because the tower status is broken when loaded in this manner
-                    this.elements.icon.angle = longestDirection;
-                    switch (infos.privateType) {
-                        case 0:
-                            this.elements.public.textContent = "Unknown";
-                            break;
-                        case 1:
-                            this.elements.public.textContent = "Public";
-                            break;
-                        case 2:
-                            this.elements.public.textContent = "Military";
-                            break;
-                        case 3:
-                            this.elements.public.textContent = "Private";
-                            break;
-                    }
-                    try {
-                        let country = this.model.getCountry(airport.ident);
-                        this.elements.country.textContent = country ? country : `____________`;
-                        this.elements.elevation.innerHTML = `${(elevation * 3.28084).toFixed(0)}<span class="units">FT</span>`;
-                        this.elements.runwaySelector.setFromWaypoint(airport);
-                        this.frequencyListModel.setFrequencies(infos.frequencies);
-                        let timezone = this.model.getTimezone(airport.ident);
-                        this.elements.timezone.textContent = timezone !== null ? `UTC${timezone >= 0 ? "+" : ""}${timezone}` : "Unknown Timezone";
-                    } catch (e) {
-                        console.log(e.message);
-                    }
-                } else {
-                    this.elements.name.textContent = `____________`;
-                    this.elements.city.textContent = `____________`;
-                    this.elements.public.textContent = `________`
-                    this.elements.country.textContent = `____________`;
-                    this.elements.elevation.innerHTML = `_____<span class="units">FT</span>`;
-                    this.elements.timezone.textContent = `___`;
+                    elevation = Math.max(elevation, runway.elevation);
                 }
-            } catch (e) {
-                console.log(e.message);
+
+                this.elements.name.textContent = infos.name;
+                this.elements.city.textContent = infos.city;
+                this.elements.icon.applyInfo(infos); // This doesn't fully work because the tower status is broken when loaded in this manner
+                this.elements.icon.angle = longestDirection;
+                switch (infos.privateType) {
+                    case 0:
+                        this.elements.public.textContent = "Unknown";
+                        break;
+                    case 1:
+                        this.elements.public.textContent = "Public";
+                        break;
+                    case 2:
+                        this.elements.public.textContent = "Military";
+                        break;
+                    case 3:
+                        this.elements.public.textContent = "Private";
+                        break;
+                }
+                let country = this.model.getCountry(airport.ident);
+                this.elements.country.textContent = country ? country : `____________`;
+                this.elements.elevation.innerHTML = `${(elevation * 3.28084).toFixed(0)}<span class="units">FT</span>`;
+                this.elements.runwaySelector.setFromWaypoint(airport);
+                this.frequencyListModel.setFrequencies(infos.frequencies);
+                let timezone = this.model.getTimezone(airport.ident);
+                this.elements.timezone.textContent = timezone !== null ? `UTC${timezone >= 0 ? "+" : ""}${timezone}` : "Unknown Timezone";
+            } else {
+                this.elements.name.textContent = `____________`;
+                this.elements.city.textContent = `____________`;
+                this.elements.public.textContent = `________`
+                this.elements.country.textContent = `____________`;
+                this.elements.elevation.innerHTML = `_____<span class="units">FT</span>`;
+                this.elements.timezone.textContent = `___`;
             }
         }));
     }
@@ -187,10 +179,14 @@ class WT_Airport_Information_View extends WT_HTML_View {
             this.inputStackHandle = this.inputStackHandle.pop();
         }
     }
-    activate() {
+    activate(inputStack, intent) {
         this.elements.map.appendChild(this.map);
         this.storedMenu = this.softKeyController.currentMenu;
         this.softKeyController.setMenu(this.softKeyMenu);
+
+        if (intent) {
+            this.model.setIcao(intent);
+        }
     }
     deactivate() {
         if (this.storedMenu)

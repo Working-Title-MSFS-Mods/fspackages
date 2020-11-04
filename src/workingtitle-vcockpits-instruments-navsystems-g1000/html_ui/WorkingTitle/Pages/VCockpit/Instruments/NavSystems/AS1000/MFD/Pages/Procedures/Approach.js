@@ -36,7 +36,7 @@ class WT_Approach_Page_View extends WT_HTML_View {
     /**
      * @param {Subject} airport 
      */
-    setAirport(airport) {
+    setAirport(airport, initialProcedureIndex = 0) {
         if (this.airportSubscription) {
             this.airportSubscription = this.airportSubscription();
         }
@@ -45,6 +45,7 @@ class WT_Approach_Page_View extends WT_HTML_View {
                 this.procedures.value = airport ? await airport.getApproaches() : [];
             });
         }
+        this.initialProcedureIndex = initialProcedureIndex;
     }
     /**
      * @param {WT_Approach_Procedure[]} procedures 
@@ -53,9 +54,10 @@ class WT_Approach_Page_View extends WT_HTML_View {
         this.elements.procedureSelector.clearOptions();
         let i = 0;
         for (let procedure of procedures) {
-            i == 0 ? this.setProcedure(i) : null;
+            i++ == this.initialProcedureIndex ? this.setProcedure(i) : null;
             this.elements.procedureSelector.addOption(i++, procedure.name);
         }
+        this.initialProcedureIndex = 0;
     }
     setProcedure(procedureIndex) {
         this.selectedProcedure.value = new WT_Selected_Approach_Procedure(this.procedures.value[procedureIndex]);

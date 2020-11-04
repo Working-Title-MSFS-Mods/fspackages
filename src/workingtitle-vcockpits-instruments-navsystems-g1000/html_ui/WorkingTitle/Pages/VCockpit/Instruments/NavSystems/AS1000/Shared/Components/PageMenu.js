@@ -57,6 +57,9 @@ class WT_Page_Menu_View extends WT_HTML_View {
         this.onExit = new WT_Event();
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
         const template = document.getElementById('menu-screen');
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();
@@ -65,6 +68,7 @@ class WT_Page_Menu_View extends WT_HTML_View {
      * @param {WT_Page_Menu_Option} model 
      */
     setModel(model) {
+        this.elements.options.innerHTML = "";
         DOMUtilities.AppendChildren(this.elements.options, model.options.map(option => {
             let element = document.createElement("li");
             if (!option.enabled) {

@@ -2,11 +2,13 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
     /**
      * @param {FlightPlanManager} flightPlan 
      * @param {Procedures} procedures 
+     * @param {WT_Show_Airways_Handler} showAirwaysHandler 
      */
-    constructor(flightPlan, procedures) {
+    constructor(flightPlan, procedures, showAirwaysHandler) {
         super();
         this.flightPlan = flightPlan;
         this.procedures = procedures;
+        this.showAirwaysHandler = showAirwaysHandler;
 
         this.activeLeg = procedures.activeLeg;
         this.waypoints = new Subject();
@@ -16,6 +18,8 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         this.selectedWaypointIndex = null;
         this.selectedWaypoint = null;
         this.previousWaypoint = null;
+
+        this.t = 0;
 
         this.updateWaypoints();
     }
@@ -46,11 +50,25 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
     deleteFlightPlan() {
         this.flightPlan.clearFlightPlan();
     }
+    getNumWaypoints() {
+        return this.flightPlan.getWaypointsCount();
+    }
     createNewWaypoint(icao, index = -1) {
-        this.flightPlan.addWaypoint(icao, index == -1 ? Infinity : (index - 1), this.updateWaypoints.bind(this));
+        if (index == -1) {
+            if (this.selectedWaypointIndex !== null) {
+                index = this.selectedWaypointIndex;
+            } else {
+                index = this.getNumWaypoints();
+            }
+        }
+        this.addWaypoint(icao, index);
     }
     updateWaypoints() {
-        //this.flightPlan.updateFlightPlan();
+        this.t++;
+        if (this.t > 30) {
+            this.flightPlan.updateFlightPlan();
+            this.t = 0;
+        }
         const flightPlan = this.flightPlan;
 
         const departure = flightPlan.getDepartureWaypointsMap();
@@ -116,6 +134,7 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
                 ete: ete,
                 eta: eta,
                 fod: fod,
+                altitude: altitude,
                 altitudeMode: waypoint.legAltitudeDescription,
                 altitude1: waypoint.legAltitude1,
                 altitude2: waypoint.legAltitude2,
@@ -163,25 +182,31 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
 
         this.lines.value = lines;
     }
+    newWaypointLineSelected() {
+        const waypoints = this.flightPlan.getWaypoints();
+        const previousIndex = waypoints.length - 1;
+        this.selectedWaypointIndex = null;
+        this.previousWaypoint = (previousIndex >= 0) ? waypoints[previousIndex] : null;
+    }
     setSelectedWaypointIndex(index) {
         this.selectedWaypointIndex = index;
-        let waypoints = this.flightPlan.getWaypoints();
+        const waypoints = this.flightPlan.getWaypoints();
         this.selectedWaypoint = waypoints[index];
         this.previousWaypoint = (index > 0) ? waypoints[index - 1] : null;
     }
     canShowAirwaySelector() {
-        return this.previousWaypoint != null;
+        return this.previousWaypoint !== null;
     }
     showAirwaySelector() {
-        /*if (this.canShowAirwaySelector()) {
-            this.gps.showAirwaySelector(this.previousWaypoint.infos).then(waypoints => {
-                this.addWaypoints(waypoints.map(waypoint => waypoint.icao), this.selectedWaypointIndex);
+        if (this.canShowAirwaySelector()) {
+            this.showAirwaysHandler.show(this.previousWaypoint.infos).then(waypoints => {
+                this.addWaypoints(waypoints.map(waypoint => waypoint.icao), this.selectedWaypointIndex !== null ? this.selectedWaypointIndex : this.getNumWaypoints());
             });
-        }*/
+        }
     }
     addWaypoint(icao, index) {
         return new Promise(resolve => {
-            this.flightPlan.addWaypoint(icao, index == -1 ? Infinity : index, () => {
+            this.flightPlan.addWaypoint(icao, index, () => {
                 this.updateWaypoints();
                 resolve();
             });
@@ -192,17 +217,13 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
             let i = 0;
             for (let icao of icaos) {
                 await new Promise(resolve => {
-                    this.flightPlan.addWaypoint(icao, index == -1 ? Infinity : (index + i++), () => {
+                    this.flightPlan.addWaypoint(icao, index + i++, () => {
                         resolve();
                     });
                 });
             }
             resolve();
         });
-    }
-
-    newWaypoint() {
-
     }
 }
 
@@ -226,7 +247,7 @@ class WT_Flight_Plan_Page_Menu extends WT_Page_Menu_Model {
             new WT_Page_Menu_Option("Store Flight Plan"),
             new WT_Page_Menu_Option("Invert Flight Plan"),
             new WT_Page_Menu_Option("Delete Flight Plan", this.deleteFlightPlan.bind(this)),
-            //new WT_Page_Menu_Option("Load Airway", view.showAirwaySelector.bind(view)),
+            new WT_Page_Menu_Option("Load Airway", this.showAirwaySelector.bind(this)),
             new WT_Page_Menu_Option("Collapse Airways"),
             new WT_Page_Menu_Option("Remove Departure", this.deleteDeparture.bind(this)),
             new WT_Page_Menu_Option("Remove Arrival", this.deleteArrival.bind(this)),
@@ -242,6 +263,9 @@ class WT_Flight_Plan_Page_Menu extends WT_Page_Menu_Model {
             new WT_Page_Menu_Option("Hold At Waypoint"),
             new WT_Page_Menu_Option("Hold At Present Position"),
         ];
+    }
+    showAirwaySelector() {
+        this.model.showAirwaySelector();
     }
     deleteDeparture() {
         this.confirmDialogHandler.show("Are you sure you want to delete the departure?")
@@ -280,8 +304,5 @@ class WT_Flight_Plan_Input_Layer extends Selectables_Input_Layer {
 class WT_Flight_Plan_Page_View extends WT_HTML_View {
     handleDelete() {
         throw new Error("WT_Flight_Plan_Page_View.handleDelete not implemented");
-    }
-    handleDelete() {
-        throw new Error("WT_Flight_Plan_Page_View.showPageMenu not implemented");
     }
 }

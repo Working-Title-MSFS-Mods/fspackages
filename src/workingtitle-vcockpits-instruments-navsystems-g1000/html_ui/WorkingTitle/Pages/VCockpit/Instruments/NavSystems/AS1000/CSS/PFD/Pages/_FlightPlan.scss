@@ -1,0 +1,86 @@
+g1000-pfd-flight-plan-page {
+    $active_width: 2ch;
+    $row_height: 3ch;
+
+    $width_ident: 1fr;
+    $width_dtk: 10vh;
+    $width_dis: 10vh;
+    display: grid;
+    height: 100%;
+    grid-template-rows: auto minmax(0, 1fr);
+
+    .flight-plan {
+        height: 100%;
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .flight-plan-header {
+    }
+
+    .flight-plan-header-labels {
+        display: grid;
+        grid-template-columns: $width_ident $width_dtk $width_dis;
+
+        > div {
+            text-align: right;
+        }
+
+        .wide-only {
+            display: none;
+        }
+    }
+
+    .dtk,
+    .distance {
+        text-align: right;
+    }
+
+    .flight-plan-waypoints {
+        display: grid;
+        grid-template-columns: $active_width 1fr;
+        grid-auto-rows: $row_height;
+        align-items: center;
+        overflow-y: scroll;
+        height: 100%;
+    }
+
+    g1000-flight-plan-header-line {
+        grid-column-start: 2;
+        height: auto;
+
+        @extend %animated-selection;
+    }
+
+    g1000-flight-plan-waypoint-line {
+        grid-column-start: 2;
+        display: grid;
+        grid-template-columns: 2vh $width_ident $width_dtk $width_dis;
+        color: $input_color;
+
+        .ident {
+            font-family: $font_family_mono;
+            @extend %animated-selection;
+        }
+    }
+
+    .units-small {
+        font-size: 0.8em;
+    }
+
+    .flight-plan-marker {
+        grid-column: 1/1;
+        display: grid;
+        grid-template-rows: $row_height 1fr $row_height;
+        height: 100%;
+
+        svg {
+            stroke: $color_gps;
+            align-items: center;
+        }
+    }
+
+    .new-waypoint {
+        font-family: $font_family_mono;
+        grid-column-start: 2;
+    }
+}

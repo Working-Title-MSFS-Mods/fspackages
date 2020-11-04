@@ -1,0 +1,93 @@
+g1000-pfd-wind {
+    text {
+        fill: #fff;
+        font-family: $font_family_normal;
+        font-weight: bold;
+        font-size: 16px;
+        text-anchor: left;
+    }
+
+    .background {
+        fill: #000;
+        stroke-width: 3;
+        stroke: #fff;
+        display: none;
+    }
+
+    .arrow {
+        fill: #fff;
+    }
+
+    .arrow-shadow {
+        fill: none;
+        stroke-width: 3;
+        stroke: #666;
+    }
+
+    .mode-1,
+    .mode-2,
+    .mode-3,
+    .mode-4 {
+        display: none;
+    }
+
+    .mode-1 {
+        .arrows {
+            transform: translate(25px, 20px);
+        }
+        .x-speed {
+            transform: translate(50px, 25px);
+        }
+        .y-speed {
+            transform: translate(22.5px, 52px);
+            text-anchor: middle;
+        }
+    }
+
+    .mode-2 {
+        .speed {
+            transform: translate(50px, 40px);
+            font-size: 25px;
+        }
+    }
+
+    .mode-3 {
+        .speed {
+            transform: translate(43px, 25px);
+        }
+        .direction {
+            transform: translate(43px, 45px);
+        }
+    }
+
+    .mode-4 {
+        text:nth-child(1) {
+            transform: translate(10px, 25px);
+        }
+        text:nth-child(2) {
+            transform: translate(10px, 45px);
+        }
+    }
+
+    &[mode="1"],
+    &[mode="2"],
+    &[mode="3"],
+    &[mode="4"] {
+        .background {
+            display: inherit;
+        }
+    }
+
+    &[mode="1"] .mode-1 {
+        display: inherit;
+    }
+    &[mode="2"] .mode-2 {
+        display: inherit;
+    }
+    &[mode="3"] .mode-3 {
+        display: inherit;
+    }
+    &[mode="4"] .mode-4 {
+        display: inherit;
+    }
+}

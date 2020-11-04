@@ -104,6 +104,7 @@ class WT_Airway_Selector_View extends WT_HTML_View {
         this.inputLayer = new WT_Airway_Selector_Input_Layer(this);
         this.onLoad = new WT_Event();
         this.onCancel = new WT_Event();
+        this.onExit = new WT_Event();
         this.flightPlanElement = new SvgFlightPlanElement();
         this.flightPlanElement.source = new WT_Flight_Plan_Waypoints();
         this.flightPlanElement.flightPlanIndex = 10;
@@ -174,6 +175,9 @@ class WT_Airway_Selector_View extends WT_HTML_View {
     }
     enter(inputStack) {
         this.inputStackHandle = inputStack.push(this.inputLayer);
+        this.inputStackHandle.onPopped.subscribe(() => {
+            this.onExit.fire();
+        });
     }
     exit() {
         if (this.inputStackHandle) {

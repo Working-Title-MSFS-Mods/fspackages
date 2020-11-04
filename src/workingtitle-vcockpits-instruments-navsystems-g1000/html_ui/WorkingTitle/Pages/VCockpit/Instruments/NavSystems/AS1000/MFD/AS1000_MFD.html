@@ -23,6 +23,7 @@
             </div>
 
             <div class="page-container" id="PageContainer"></div>
+            <div class="page-container" id="OverlayPageContainer"></div>
             <div class="pane-container" id="PaneContainer"></div>
             <div class="dialog-container" id="DialogContainer"></div>
             <div class="page-menu-container" id="PageMenuContainer"></div>
@@ -144,7 +145,7 @@
 
     <!-- Panes -->
 
-    <template id="procedures-pane">
+    <template id="procedures-menu">
         <h1 class="title">Procedures</h1>
         <div class="category">
             <h1>Options</h1>
@@ -161,11 +162,11 @@
             <h1>Loaded</h1>
             <section class="content">
                 <div class="label">Approach:</div>
-                <div class="element" data-id="loadedApproach"></div>
+                <div class="element" data-element="loadedApproach"></div>
                 <div class="label">Arrival:</div>
-                <div class="element" data-id="loadedArrival"></div>
+                <div class="element" data-element="loadedArrival"></div>
                 <div class="label">Departure:</div>
-                <div class="element" data-id="loadedDeparture"></div>
+                <div class="element" data-element="loadedDeparture"></div>
             </section>
         </div>
     </template>
@@ -923,26 +924,7 @@
                             <div data-label="BRG" class="wide-only">BRG</div>
                         </div>
                     </div>
-                    <div class="flight-plan-waypoints scrollable-container" data-element="flightPlanWaypoints">
-                        <div class="flight-plan-marker" data-element="activeLegMarker">
-                            <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
-                                <path d="M100 50 L50 50 Q20 50 20 80 L20 200" stroke="magenta" stroke-width="20" fill="none"></path>
-                            </svg>
-                            <div style="overflow:hidden;">
-                                <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%;">
-                                    <path d="M20 0 L20 100" stroke="magenta" stroke-width="20" fill="none"></path>
-                                </svg>
-                            </div>
-                            <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
-                                <path d="M20 -100 L20 30 Q20 50 50 50 L60 50" stroke="magenta" stroke-width="20" fill="none"></path>
-                                <path d="M60 20 L60 80 L100 50 Z" fill="magenta"></path>
-                            </svg>
-                        </div>
-                        <div class="new-waypoint" data-element="newWaypointLine">
-                            <div></div>
-                            <div class="ident"><selectable-button data-click="showCreateNewWaypoint" class="new-waypoint">__________</selectable-button></div>
-                        </div>
-                    </div>
+                    <g1000-flight-plan-lines class="flight-plan-waypoints scrollable-container" data-element="flightPlanWaypoints"></g1000-flight-plan-lines>
                 </div>
             </div>
         </section>
@@ -1102,6 +1084,7 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Input/Layers/Selectables.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/BaseAS1000.js"></script>
 
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/FlightPlan.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/RadioFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/ComFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/NavFrequencies.js"></script>
@@ -1132,6 +1115,7 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/DuplicateWaypoints.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/FlightPlan.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/NearestAirports.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/ProceduresMenu.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/FuelUsed.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Observables.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Settings.js"></script>
@@ -1161,7 +1145,7 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/WaypointInformation/Airport.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/WaypointInformation/Intersection.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Panes/DirectTo.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Panes/Procedures.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Panes/ProceduresMenu.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Panes/WaypointSelector.js"></script>
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Engine.js"></script>

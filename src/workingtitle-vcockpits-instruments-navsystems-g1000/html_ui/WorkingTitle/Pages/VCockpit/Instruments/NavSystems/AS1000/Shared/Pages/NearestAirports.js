@@ -1,13 +1,15 @@
 class WT_Nearest_Airports_Model extends WT_Model {
     /**
+     * @param {NavSystem} gps
      * @param {WT_Show_Direct_To_Handler} showDirectToHandler 
      * @param {WT_Waypoint_Repository} waypointRepository 
      * @param {WT_Unit_Chooser} unitChooser 
      * @param {MapInstrument} map 
      * @param {WT_Soft_Key_Controller} softKeyController 
      * @param {WT_Nearest_Waypoints_Repository} nearestWaypoints 
+     * @param {WT_Show_Waypoint_Info_Handler} showWaypointInfoHandler 
      */
-    constructor(gps, showDirectToHandler, waypointRepository, unitChooser, map, softKeyController, nearestWaypoints) {
+    constructor(gps, showDirectToHandler, waypointRepository, unitChooser, map, softKeyController, nearestWaypoints, showWaypointInfoHandler) {
         super();
         this.showDirectToHandler = showDirectToHandler;
         this.waypointRepository = waypointRepository;
@@ -15,6 +17,7 @@ class WT_Nearest_Airports_Model extends WT_Model {
         this.nearestAirportList = new NearestAirportList(gps);
         this.mapInstrument = map;
         this.softKeyController = softKeyController;
+        this.showWaypointInfoHandler = showWaypointInfoHandler;
 
         this.airports = new Subject([], false);
         this.selectedAirport = new Subject();
@@ -48,7 +51,14 @@ class WT_Nearest_Airports_Model extends WT_Model {
     setSelectedAirport(icao) {
         this.setIcao(icao);
     }
-    directTo() {
+    showWaypointInfo(waypoint) {
+        if (waypoint) {
+            this.showWaypointInfoHandler.show(waypoint);
+        }
+    }
+    directTo(icao) {
+        if (icao)
+            this.showDirectToHandler.show(null, icao);
         if (this.selectedAirport.value)
             this.showDirectToHandler.show(null, this.selectedAirport.value.icao);
     }

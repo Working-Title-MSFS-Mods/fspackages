@@ -13,8 +13,8 @@ class HSI_Input_Layer extends Input_Layer {
         if (this.courseIncrementLastUpdate == null) {
             this.courseIncrementLastUpdate = performance.now();
         }
-        let now = performance.now();
-        let dt = (now - this.courseIncrementLastUpdate) / 1000;
+        const now = performance.now();
+        const dt = (now - this.courseIncrementLastUpdate) / 1000;
         this.courseIncrementLastUpdate = now;
         this.courseIncrement = this.courseIncrement * 1.2;
         this.courseIncrement += (1 - this.courseIncrement) * dt;
@@ -29,15 +29,15 @@ class HSI_Input_Layer extends Input_Layer {
         }
 
         this.speedUp();
-        let amount = Math.floor(this.courseIncrement) * (direction ? 1 : -1);
+        const amount = Math.floor(this.courseIncrement) * (direction ? 1 : -1);
         if (this.cdiSource.value == 3) {
-            let value = (SimVar.GetSimVarValue("L:GPS OBS", "degree") + amount + 360) % 360;
+            const value = (SimVar.GetSimVarValue("L:GPS OBS", "degree") + amount + 360) % 360;
             SimVar.SetSimVarValue("L:GPS OBS", "degree", value);
         } else if (this.cdiSource.value == 1) {
-            let value = (SimVar.GetSimVarValue("NAV OBS:1", "degree") + amount + 360) % 360;
+            const value = (SimVar.GetSimVarValue("NAV OBS:1", "degree") + amount + 360) % 360;
             SimVar.SetSimVarValue("K:VOR1_SET", "degree", value);
         } else if (this.cdiSource.value == 2) {
-            let value = (SimVar.GetSimVarValue("NAV OBS:2", "degree") + amount + 360) % 360;
+            const value = (SimVar.GetSimVarValue("NAV OBS:2", "degree") + amount + 360) % 360;
             SimVar.SetSimVarValue("K:VOR2_SET", "degree", value);
         }
     }

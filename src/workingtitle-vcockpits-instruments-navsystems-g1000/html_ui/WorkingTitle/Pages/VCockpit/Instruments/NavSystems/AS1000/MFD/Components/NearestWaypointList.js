@@ -2,12 +2,18 @@ class WT_Nearest_Waypoint_List extends WT_HTML_View {
     constructor() {
         super();
         this.selectedIcao = new Subject(null);
-        DOMUtilities.AddScopedEventListener(this, ".ident", "highlighted", e => {
-            this.selectedIcao.value = e.detail.element.parentNode.dataset.icao;
+        this.onClickWaypoint = new WT_Event();
+
+        DOMUtilities.AddScopedEventListener(this, ".ident", "focusin", e => {
+            this.selectedIcao.value = e.target.parentNode.dataset.icao;
         });
+        DOMUtilities.AddScopedEventListener(this, ".ident", "selected", e => {
+            this.onClickWaypoint.fire(e.target.parentNode.dataset.icao);
+        });
+
         this.selectedIcao.subscribe(icao => {
             if (icao !== null) {
-                let element = this.querySelector(`[data-icao="${icao}"]`);
+                const element = this.querySelector(`[data-icao="${icao}"]`);
                 if (element)
                     element.querySelector(".arrow").appendChild(this.arrow);
             }

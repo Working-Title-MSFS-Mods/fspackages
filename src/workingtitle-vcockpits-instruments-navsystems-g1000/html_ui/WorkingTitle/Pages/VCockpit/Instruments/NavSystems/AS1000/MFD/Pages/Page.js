@@ -63,11 +63,11 @@ class WT_Page_Controller {
 
         this.pageSelection = new Subject();
 
-        this.debounceShowPage = DOMUtilities.debounce(() => {
+        this.debounceShowPage = DOMUtilities.debounce((intent) => {
             let page = this.selectedPage;
             if (this.currentPage == page)
                 return;
-            this.showPage(page);
+            this.showPage(page, false, intent);
 
             this.pageTitle.value = `${this.selectedGroup.name} - ${page.title}`;
         }, 300, false);
@@ -97,7 +97,7 @@ class WT_Page_Controller {
         this.inputStack = inputStack;
         this.inputStack.push(this.inputLayer);
     }
-    showPage(page, activate = false) {
+    showPage(page, activate = false, intent = null) {
         if (this.currentPageView) {
             this.currentPageView.deactivate();
             if (this.currentPageEntered)
@@ -109,7 +109,7 @@ class WT_Page_Controller {
 
         this.currentPage = page;
         this.currentPageView = page.initialise(this.pageContainer);
-        this.currentPageView.activate(this.inputStack);
+        this.currentPageView.activate(this.inputStack, intent);
 
         if (activate) {
             this.togglePageEntered();
@@ -117,8 +117,8 @@ class WT_Page_Controller {
 
         return this.currentPageView;
     }
-    showSelectedPage() {
-        this.debounceShowPage();
+    showSelectedPage(intent) {
+        this.debounceShowPage(intent);
 
         this.pageSelection.value = {
             groups: this.pageGroups,
@@ -150,7 +150,7 @@ class WT_Page_Controller {
             this.currentPageEntered = this.currentPageView.enter(this.inputStack) === false ? false : true;
         }
     }
-    goTo(groupName, pageName) {
+    goTo(groupName, pageName, intent = null) {
         let i = 0;
         for (let group of this.pageGroups) {
             if (group.name == groupName) {
@@ -159,7 +159,7 @@ class WT_Page_Controller {
                     if (page.title == pageName) {
                         this.selectedGroupIndex = i;
                         this.selectedGroupPageIndex = j;
-                        this.showSelectedPage();
+                        this.showSelectedPage(intent);
                     }
                     j++;
                 }

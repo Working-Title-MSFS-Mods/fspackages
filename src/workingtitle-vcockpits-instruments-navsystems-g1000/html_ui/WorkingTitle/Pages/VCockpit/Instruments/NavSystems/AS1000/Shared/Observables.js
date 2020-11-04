@@ -34,9 +34,9 @@ class WT_Event {
     constructor() {
         this.listeners = [];
     }
-    fire(data) {
+    fire() {
         for (let listener of this.listeners) {
-            listener(data);
+            listener(...arguments);
         }
     }
     subscribe(callback) {

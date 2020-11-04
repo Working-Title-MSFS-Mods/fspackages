@@ -1224,21 +1224,49 @@ class WT_HTML_View extends HTMLElement {
     }
 }
 
+class WT_Menu_Push_Handler {
+    push() {
+
+    }
+}
+
+class WT_External_Link extends HTMLElement {
+    connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+        this.addEventListener("selected", () => {
+            OpenBrowser(this.getAttribute("href"));
+        });
+    }
+}
+customElements.define("g1000-external-link", WT_External_Link);
+
 class Base_Input_Layer extends Input_Layer {
-    constructor(navSystem) {
+    /**
+     * @param {NavSystem} navSystem 
+     * @param {WT_Nav_Frequencies_Model} navFrequenciesModel 
+     * @param {WT_Com_Frequencies_Model} comFrequenciesModel 
+     * @param {WT_Show_Direct_To_Handler} showDirectToHandler 
+     * @param {WT_Menu_Push_Handler} menuPushHandler 
+     */
+    constructor(navSystem, navFrequenciesModel, comFrequenciesModel, showDirectToHandler, menuPushHandler) {
         super();
         this.navSystem = navSystem;
-        this.navFrequenciesModel = navSystem.navFrequenciesModel;
-        this.comFrequenciesModel = navSystem.comFrequenciesModel;
+        this.navFrequenciesModel = navFrequenciesModel;
+        this.comFrequenciesModel = comFrequenciesModel;
+        this.showDirectToHandler = showDirectToHandler;
+        this.menuPushHandler = menuPushHandler;
     }
 
     processEvent(_event, inputStack) {
         return super.processEvent(_event, inputStack);
     }
 
+    onMenuPush(inputStack) { if (this.menuPushHandler) { this.menuPushHandler.push(); } }
     onProceduresPush(inputStack) { this.navSystem.showProcedures(); }
     onFlightPlan(inputStack) { this.navSystem.showFlightPlan(); }
-    onDirectTo(inputStack) { this.navSystem.showDirectTo(); }
+    onDirectTo(inputStack) { this.showDirectToHandler.show(); }
 
     onCLRLong(inputStack) { this.navSystem.resetPage(); }
 

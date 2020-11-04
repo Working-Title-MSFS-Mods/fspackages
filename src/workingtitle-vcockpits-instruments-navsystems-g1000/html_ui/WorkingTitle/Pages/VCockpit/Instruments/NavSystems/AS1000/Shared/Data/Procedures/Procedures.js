@@ -1,3 +1,74 @@
+class Procedures {
+    /**
+     * @param {FlightPlanManager} flightPlanManager 
+     */
+    constructor(flightPlanManager) {
+        this.flightPlanManager = flightPlanManager;
+
+        this.approach = new Subject(null);
+        this.departure = new Subject(null);
+        this.arrival = new Subject(null);
+        this.activeLeg = new Subject(null);
+        this.activeWaypoint = new Subject();
+    }
+    compareActiveLegs(a, b) {
+        if (a === null || b === null)
+            return false;
+        if (a.origin !== b.origin)
+            return false;
+        if (a.destination !== b.destination)
+            return false;
+        if (a.originIsApproach !== b.originIsApproach)
+            return false;
+        if (a.destinationIsApproach !== b.destinationIsApproach)
+            return false;
+        return true;
+    }
+    getActiveLeg() {
+        const waypoints = {
+            origin: null,
+            destination: null,
+            originIsApproach: false,
+            destinationIsApproach: false
+        };
+        const flightPlanManager = this.flightPlanManager;
+        if (flightPlanManager.isActiveApproach()) {
+            const index = flightPlanManager.getApproachActiveWaypointIndex();
+            waypoints.destination = index;
+            waypoints.destinationIsApproach = true;
+            if (index == 0) {
+                waypoints.origin = flightPlanManager.getWaypointsCount() - 2;
+            }
+            else {
+                waypoints.origin = index - 1;
+                waypoints.originIsApproach = true;
+            }
+        }
+        else {
+            waypoints.destination = flightPlanManager.getGPSActiveWaypointIndex();
+            waypoints.origin = flightPlanManager.getGPSActiveWaypointIndex() - 1;
+        }
+        if (waypoints.origin === null || waypoints.destination === null)
+            return null;
+        return waypoints;
+    }
+    update() {
+        if (this.approach.hasSubscribers())
+            this.approach.value = this.flightPlanManager.getAirportApproach();
+        if (this.departure.hasSubscribers())
+            this.departure.value = this.flightPlanManager.getDeparture();
+        if (this.arrival.hasSubscribers())
+            this.arrival.value = this.flightPlanManager.getArrival();
+        if (this.activeLeg.hasSubscribers()) {
+            let activeLeg = this.getActiveLeg();
+            if (!this.compareActiveLegs(this.activeLeg.value, activeLeg)) {
+                this.activeLeg.value = activeLeg;
+            }
+        }
+        this.activeWaypoint.value = this.flightPlanManager.getGPSActiveWaypointIndex();
+    }
+}
+
 class WT_Procedure {
     constructor(name, procedureIndex) {
         this._name = name;
@@ -157,16 +228,16 @@ class WT_Procedure_Facility {
      */
     async getApproaches() {
         if (this._approaches === null) {
-            let promises = {};
-            let processLeg = (leg, fixIcao, originIcao) => {
+            const promises = {};
+            const processLeg = (leg, fixIcao, originIcao) => {
                 this.loadFacility(promises, fixIcao, leg.setFix.bind(leg));
                 this.loadFacility(promises, originIcao, leg.setOrigin.bind(leg));
             }
-            let rawData = (await this.getRawData());
+            const rawData = (await this.getRawData());
             this._approaches = rawData.approaches.map((approachData, index) => {
-                let frequencyData = rawData.frequencies.find(f => f.name.replace("RW0", "").replace("RW", "").indexOf(approachData.runway) !== -1);
-                let mapLegs = legData => {
-                    let leg = new WT_Procedure_Leg(legData);
+                const frequencyData = rawData.frequencies.find(f => f.name.replace("RW0", "").replace("RW", "").indexOf(approachData.runway) !== -1);
+                const mapLegs = legData => {
+                    const leg = new WT_Procedure_Leg(legData);
                     processLeg(leg, legData.fixIcao, legData.originIcao);
                     return leg;
                 }
@@ -188,15 +259,15 @@ class WT_Procedure_Facility {
      */
     async getDepartures() {
         if (this._departures === null) {
-            let promises = {};
-            let processLeg = (leg, fixIcao, originIcao) => {
+            const promises = {};
+            const processLeg = (leg, fixIcao, originIcao) => {
                 this.loadFacility(promises, fixIcao, leg.setFix.bind(leg));
                 this.loadFacility(promises, originIcao, leg.setOrigin.bind(leg));
             }
-            let rawData = (await this.getRawData());
+            const rawData = (await this.getRawData());
             this._departures = rawData.departures.map((data, index) => {
-                let mapLegs = legData => {
-                    let leg = new WT_Procedure_Leg(legData);
+                const mapLegs = legData => {
+                    const leg = new WT_Procedure_Leg(legData);
                     processLeg(leg, legData.fixIcao, legData.originIcao);
                     return leg;
                 }
@@ -222,15 +293,15 @@ class WT_Procedure_Facility {
      */
     async getArrivals() {
         if (this._arrivals === null) {
-            let promises = {};
-            let processLeg = (leg, fixIcao, originIcao) => {
+            const promises = {};
+            const processLeg = (leg, fixIcao, originIcao) => {
                 this.loadFacility(promises, fixIcao, leg.setFix.bind(leg));
                 this.loadFacility(promises, originIcao, leg.setOrigin.bind(leg));
             }
-            let rawData = (await this.getRawData());
+            const rawData = (await this.getRawData());
             this._arrivals = rawData.arrivals.map((data, index) => {
-                let mapLegs = legData => {
-                    let leg = new WT_Procedure_Leg(legData);
+                const mapLegs = legData => {
+                    const leg = new WT_Procedure_Leg(legData);
                     processLeg(leg, legData.fixIcao, legData.originIcao);
                     return leg;
                 }

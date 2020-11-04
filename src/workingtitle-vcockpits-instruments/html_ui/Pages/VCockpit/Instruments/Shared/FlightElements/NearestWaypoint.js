@@ -515,7 +515,6 @@ class NearestNDBList {
                     }
                     while (this.ndbs.length > _Values.length) {
                         this.ndbs.pop();
-                        console.log("popped ndb");
                     }
                     this.loadState++;
                     this.loadState++;

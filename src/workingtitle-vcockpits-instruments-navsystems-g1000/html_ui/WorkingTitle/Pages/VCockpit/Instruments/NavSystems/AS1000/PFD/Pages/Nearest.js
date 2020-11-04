@@ -1,13 +1,29 @@
+class WT_PFD_Nearest_Airports_Input_Layer extends Selectables_Input_Layer {
+    /**
+     * @param {WT_Nearest_Airports_Model} model 
+     * @param {*} view 
+     */
+    constructor(model, view) {
+        super(new Selectables_Input_Layer_Dynamic_Source(view, ".ident, .frequency"));
+        this.model = model;
+        this.view = view;
+    }
+    onDirectTo() {
+        if (this.selectedElement)
+            this.model.directTo(this.selectedElement.parentNode.dataset.icao);
+    }
+}
+
 class WT_PFD_Nearest_View extends WT_HTML_View {
     constructor() {
         super();
-        this.inputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this, ".ident, .frequency"));
     }
     /**
      * @param {WT_Nearest_Airports_Model} model 
      */
     setModel(model) {
         this.model = model;
+        this.inputLayer = new WT_PFD_Nearest_Airports_Input_Layer(this.model, this);
         model.airports.subscribe(this.updateAirports.bind(this));
     }
     updateAirports(airports) {

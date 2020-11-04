@@ -64,7 +64,7 @@ class WT_Numeric_Input extends HTMLElement {
         switch (this.inputMode) {
             case "digit": {
                 if (this.mode == "edit") {
-                    let stringValue = value.toFixed(0).padStart(this.elements.digits.length, "0");
+                    let stringValue = (this.value ? this.value : 0).toFixed(0).padStart(this.elements.digits.length, "0");
                     for (let i = 0; i < this.elements.digits.length; i++) {
                         this.elements.digits[i].textContent = stringValue[i];
                     }
@@ -73,15 +73,11 @@ class WT_Numeric_Input extends HTMLElement {
                     if (this.value === null) {
                         stringValue = "___________________".slice(0, this.elements.digits.length);
                     } else {
-                        stringValue = value.toFixed(0).padStart(this.elements.digits.length, "0");
+                        stringValue = value.toFixed(0).padStart(this.elements.digits.length, " ");
                     }
-                    let pastZeroes = false;
                     for (let i = 0; i < this.elements.digits.length; i++) {
                         let digit = stringValue[i];
-                        if (digit != "0") {
-                            pastZeroes = true;
-                        }
-                        this.elements.digits[i].textContent = pastZeroes ? digit : " ";
+                        this.elements.digits[i].textContent = digit;
                     }
                 }
                 break;
@@ -217,7 +213,7 @@ class WT_Numeric_Input extends HTMLElement {
                 break;
             }
             case "digit": {
-                let stringValue = this.pad(this.value, this.elements.digits.length);
+                let stringValue = (this.value ? this.value : 0).toFixed(0).padStart(this.elements.digits.length, "0");
                 stringValue = stringValue.substr(0, this._editingDigitIndex) + ((parseInt(stringValue[this._editingDigitIndex]) + 10 + amount) % 10) + stringValue.substr(this._editingDigitIndex + 1);
                 this.value = this.clampValue(parseInt(stringValue));
                 break;

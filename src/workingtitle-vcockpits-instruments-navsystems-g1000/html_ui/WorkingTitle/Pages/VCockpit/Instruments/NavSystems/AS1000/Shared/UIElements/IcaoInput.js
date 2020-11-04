@@ -178,7 +178,6 @@ class WT_Icao_Input extends HTMLElement {
                     resolve(duplicates);
                 }, this.instrumentIdentifier);
             });
-            console.log(JSON.stringify(duplicates));
             try {
                 let t = this.waypointQuickSelect.gps.showDuplicates(duplicates);
                 this.cancelDuplicates = t.cancel;
@@ -186,7 +185,6 @@ class WT_Icao_Input extends HTMLElement {
                 this.cancelDuplicates = null;
                 this.icao = icao;
             } catch (e) {
-                console.log("Cancelled duplicate selection");
                 return;
             }
         }

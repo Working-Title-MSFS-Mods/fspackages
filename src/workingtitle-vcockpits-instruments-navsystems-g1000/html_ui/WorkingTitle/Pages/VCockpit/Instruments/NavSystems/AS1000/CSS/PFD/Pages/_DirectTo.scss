@@ -24,20 +24,20 @@ g1000-direct-to {
 
     .vnav {
         display: grid;
-        grid-gap: 1vh;
-        grid-template-columns: 3ch 45% auto 1fr;
+        grid-gap: 2vh;
+        grid-template-columns: 1fr 2fr 1fr 2fr;
     }
 
     .location {
         display: grid;
-        grid-gap: 1vh;
-        grid-template-columns: 3ch 45% auto 1fr;
+        grid-gap: 2vh;
+        grid-template-columns: 1fr 2fr 1fr 2fr;
     }
 
     .course {
         display: grid;
-        grid-gap: 1vh;
-        grid-template-columns: 3ch auto 1fr;
+        grid-gap: 2vh;
+        grid-template-columns: 1fr 2fr 1fr 2fr;
     }
 
     .bearing,
@@ -45,12 +45,6 @@ g1000-direct-to {
     .city,
     .country {
         color: $input_color;
-    }
-
-    .bearing,
-    .distance {
-        font-family: $font_family_mono;
-        text-align: right;
     }
 
     .city,

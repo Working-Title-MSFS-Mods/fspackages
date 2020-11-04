@@ -13,9 +13,9 @@
             <div data-element="icaoCity"></div>
         </section>
         <section class="vnav">
-            <label>Alt</label>
+            <label>ALT</label>
             <numeric-input digits="5" units="FT" value="0"></numeric-input>
-            <label>Offset</label>
+            <label>OFFSET</label>
             <numeric-input units="NM" min="-21" max="0" value="0"></numeric-input>
         </section>
         <section class="location">
@@ -39,6 +39,21 @@
         <ul data-element="nrst" class="scrollable-container" visible></ul>
         <ul data-element="fpl" class="scrollable-container"></ul>
         <ul data-element="recent" class="scrollable-container"></ul>
+    </template>
+
+    <template id="flight-plan-page">
+        <h1>Flight Plan</h1>
+        <div class="flight-plan">
+            <div class="flight-plan-header">
+                <div class="flight-plan-name"></div>
+                <div class="flight-plan-header-labels">
+                    <div></div>
+                    <div data-label="DTK">DTK</div>
+                    <div data-label="DIS">DIS</div>
+                </div>
+            </div>
+            <g1000-flight-plan-lines class="flight-plan-waypoints scrollable-container" data-element="flightPlanWaypoints"></g1000-flight-plan-lines>
+        </div>
     </template>
 
     <glasscockpit-highlight id="highlight"></glasscockpit-highlight>
@@ -132,7 +147,7 @@
                     </div>
 
                     <div id="InnerMap">
-                        <map-instrument bing-id="PFD_InnerMap" config-path="/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/InnerMapConfig/"></map-instrument>
+                        <map-instrument id="InnerMapInstrument" bing-id="PFD_InnerMap" config-path="/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/InnerMapConfig/"></map-instrument>
                     </div>
 
                     <glasscockpit-altimeter id="Altimeter"></glasscockpit-altimeter>
@@ -141,7 +156,38 @@
                     <glasscockpit-hsi id="Compass" fmsAlias="GPS"></glasscockpit-hsi>
                     <!--<glasscockpit-hsi-arc state="Inactive" id="ArcCompass"></glasscockpit-hsi-arc>-->
 
-                    <glasscockpit-wind-data id="WindData"></glasscockpit-wind-data>
+                    <g1000-pfd-wind>
+                        <svg data-element="root" viewBox="0 0 90 60" width="100%" height="100%">
+                            <rect class="background" x="0" y="0" width="90" height="60"></rect>
+                            <g class="mode-1">
+                                <g class="arrows">
+                                    <g data-element="mode1xArrow">
+                                        <path class="arrow-shadow" d="M-2 15 L2 15 L2 -10 L5 -10 L0 -15 L-5 -10 L-2 -10 Z"></path>
+                                        <path class="arrow" d="M-2 15 L2 15 L2 -10 L5 -10 L0 -15 L-5 -10 L-2 -10 Z"></path>
+                                    </g>
+                                    <g data-element="mode1yArrow">
+                                        <path class="arrow-shadow" d="M-2 15 L2 15 L2 -10 L5 -10 L0 -15 L-5 -10 L-2 -10 Z"></path>
+                                        <path class="arrow" d="M-2 15 L2 15 L2 -10 L5 -10 L0 -15 L-5 -10 L-2 -10 Z"></path>
+                                    </g>
+                                </g>
+                                <text data-element="mode1xSpeed" class="x-speed"></text>
+                                <text data-element="mode1ySpeed" class="y-speed"></text>
+                            </g>
+                            <g class="mode-2">
+                                <path data-element="mode2arrow" class="arrow" d="M22.5 10 L15 20 L21 20 L21 50 L24 50 L24 20 L30 20 Z"></path>
+                                <text data-element="mode2speed" class="speed"></text>
+                            </g>
+                            <g class="mode-3">
+                                <path data-element="mode3arrow" class="arrow" d="M22.5 10 L15 20 L21 20 L21 50 L24 50 L24 20 L30 20 Z"></path>
+                                <text data-element="mode3speed" class="speed"></text>
+                                <text data-element="mode3direction" class="direction"></text>
+                            </g>
+                            <g class="mode-4">
+                                <text>No Wind</text>
+                                <text>Data</text>
+                            <g>
+                        </svg>
+                    </g1000-pfd-wind>
 
                     <div id="MarkerBeacon">M</div>
 
@@ -305,6 +351,52 @@
         </div>
     </div>
 
+    <template id="procedures-menu">
+        <h1 class="title">Procedures</h1>
+        <selectable-button disabled>ACTIVATE VECTOR-TO-FINAL</selectable-button>
+        <selectable-button disabled>ACTIVATE APPROACH</selectable-button>
+        <selectable-button disabled>ACTIVATE MISSED APPROACH</selectable-button>
+        <selectable-button data-click="selectApproach">SELECT APPROACH</selectable-button>
+        <selectable-button data-click="selectArrival">SELECT ARRIVAL</selectable-button>
+        <selectable-button data-click="selectDeparture">SELECT DEPARTURE</selectable-button>
+    </template>
+
+    <template id="duplicate-waypoints">
+        <h1 class="title">Duplicate Waypoints</h1>
+        <section class="category">
+            <h1>Waypoint</h1>
+            <section class="content">
+                <div class="ident" data-element="ident"></div>
+            </section>
+        </section>
+        <section class="category">
+            <h1>Duplicates</h1>
+            <ul class="content duplicates scrollable-container" data-element="duplicates"></ul>
+        </section>
+        <section class="category">
+            <h1>Information</h1>
+            <section class="content information">
+                <div class="name" data-element="name">___</div>
+                <div class="city" data-element="city">___</div>
+                <div class="coordinatesLat" data-element="coordinatesLat">___</div>
+                <div class="coordinatesLong" data-element="coordinatesLong">___</div>
+                <div class="bearing" data-element="bearing">___</div>
+                <div class="distance" data-element="distance">___</div>
+            </section>
+        </section>
+        <footer>
+            Press "ENT" to select duplicate or "CLR" to cancel
+        </footer>
+    </template>
+
+    <template id="menu-screen">
+        <h1 class="title">Page Menu</h1>
+        <div class="category category-fill-container">
+            <h1>Options</h1>
+            <ul class="content options scrollable-container" data-element="options"></ul>
+        </div>
+    </template>
+
     <template id="airport-icon">
         <style>
             .colored {
@@ -367,6 +459,7 @@
 <link rel="stylesheet" href="AS1000_PFD_WT.css" />
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/DOMUtilities.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/DependencyContainer.js"></script>
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 <script type="text/html" import-script="/JS/dataStorage.js"></script>
@@ -413,7 +506,6 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/FileHandler.js"></script>
 
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/WaypointQuickSelect.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/WaypointRepository.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/AdfInput.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/AirportIcon.js"></script>
@@ -428,18 +520,29 @@
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/RadioFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/ComFrequencies.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/FlightPlan.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/NavFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/PageMenu.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Brightness.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/NearestWaypoints.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Procedures/Procedures.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Procedures/Arrival.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Procedures/Approach.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Procedures/Departure.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/WaypointQuickSelect.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/Navigation/DirectTo.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Settings.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Observables.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UnitChooser.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/DirectTo.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/DuplicateWaypoints.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/FlightPlan.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/NearestAirports.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/ProceduresMenu.js"></script>
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Annunciations.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/DataModels.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/InsetMap.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/LocalTime.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Menus.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/MiniPage.js"></script>
@@ -447,9 +550,13 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/References.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Timer.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Transponder.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Wind.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Data/SyntheticVision.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/AdfDme.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/DirectTo.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/FlightPlan.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/Nearest.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/ProceduresMenu.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/SetupMenu.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/TimerReferences.js"></script>
 

@@ -25,9 +25,12 @@ class WT_Direct_To_Handler {
         this.flightPlanController = flightPlanController;
         this.map = map;
     }
-    directTo(waypoint, course) {
+    activate(waypoint, course) {
         let controller = new WT_Direct_To_Controller(waypoint, course, this.map);
         this.flightPlanController.setMode(controller);
+    }
+    cancel() {
+        throw new Error("Cancel direct to not implemented");
     }
 }
 

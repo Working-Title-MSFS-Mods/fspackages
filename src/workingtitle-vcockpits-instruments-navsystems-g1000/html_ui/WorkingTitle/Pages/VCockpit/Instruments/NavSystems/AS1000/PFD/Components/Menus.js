@@ -1,8 +1,10 @@
 class WT_PFD_Main_Menu extends WT_Soft_Key_Menu {
     /**
      * @param {AS1000_PFD} pfd 
+     * @param {WT_PFD_Mini_Page_Controller} miniPageController 
+     * @param {HSIIndicatorModel} hsiModel 
      */
-    constructor(pfd) {
+    constructor(pfd, miniPageController, hsiModel) {
         super(false);
         this.addSoftKey(1, new WT_Soft_Key("TEST", () => {
             OpenBrowser("https://www.fimfiction.net");
@@ -12,16 +14,39 @@ class WT_PFD_Main_Menu extends WT_Soft_Key_Menu {
             //SimVar.SetSimVarValue("K:AP_ALT_VAR_SET_ENGLISH", "feet", -500);
             //Coherent.call("AP_ALT_VAR_SET_ENGLISH", 0, -1000, false);
         }));
-        this.addSoftKey(2, new WT_Soft_Key("INSET"));
-        this.addSoftKey(4, new WT_Soft_Key("PFD", pfd.showPfdMenu.bind(pfd)));
+        this.addSoftKey(2, new WT_Soft_Key("INSET", () => pfd.showInsetMapMenu()));
+        this.addSoftKey(4, new WT_Soft_Key("PFD", () => pfd.showPfdMenu()));
         this.addSoftKey(5, new WT_Soft_Key("OBS"));
-        this.addSoftKey(6, new WT_Soft_Key("CDI", () => pfd.hsiModel.cycleCdi()));
-        this.addSoftKey(7, new WT_Soft_Key("DME", () => pfd.miniPageController.showAdfDme()));
-        this.addSoftKey(8, new WT_Soft_Key("XPDR", pfd.showTransponderMenu.bind(pfd)));
+        this.addSoftKey(6, new WT_Soft_Key("CDI", () => hsiModel.cycleCdi()));
+        this.addSoftKey(7, new WT_Soft_Key("DME", () => miniPageController.showAdfDme()));
+        this.addSoftKey(8, new WT_Soft_Key("XPDR", () => pfd.showTransponderMenu()));
         this.addSoftKey(9, new WT_Soft_Key("IDENT"));
-        this.addSoftKey(10, new WT_Soft_Key("TMR/REF", () => pfd.miniPageController.showTimerReferences()));
-        this.addSoftKey(11, new WT_Soft_Key("NRST", () => pfd.miniPageController.showNearest()));
+        this.addSoftKey(10, new WT_Soft_Key("TMR/REF", () => miniPageController.showTimerReferences()));
+        this.addSoftKey(11, new WT_Soft_Key("NRST", () => miniPageController.showNearest()));
         this.addSoftKey(12, pfd.alertsKey);
+    }
+}
+
+class WT_PFD_Inset_Map_Menu extends WT_Soft_Key_Menu {
+    /**
+     * @param {AS1000_PFD} pfd 
+     * @param {WT_PFD_Inset_Map} map
+     * @param {WT_PFD_Alert_Key} alertsKey
+     */
+    constructor(pfd, map, alertsKey) {
+        super(false);
+
+        this.map = map;
+        this.addSoftKey(1, new WT_Soft_Key("OFF", () => {
+            map.disable();
+            pfd.showMainMenu();
+        }));
+
+        this.addSoftKey(11, new WT_Soft_Key("BACK", pfd.showMainMenu.bind(pfd)));
+        this.addSoftKey(12, alertsKey);
+    }
+    activate() {
+        this.map.enable();
     }
 }
 
@@ -35,7 +60,7 @@ class WT_PFD_PFD_Menu extends WT_Soft_Key_Menu {
         super(false);
         this.addSoftKey(1, new WT_Soft_Key("SYN VIS", pfd.showSyntheticVisionMenu.bind(pfd)));
         this.addSoftKey(2, new WT_Soft_Key("DFLTS"));
-        this.addSoftKey(3, new WT_Soft_Key("WIND"));
+        this.addSoftKey(3, new WT_Soft_Key("WIND", () => pfd.showWindMenu()));
         this.addSoftKey(4, new WT_Soft_Key("DME", hsiModel.toggleDme.bind(hsiModel)));
         this.addSoftKey(5, new WT_Soft_Key("BRG1", hsiModel.cycleBearing.bind(hsiModel, 1)));
         this.addSoftKey(6, new WT_Soft_Key("HSI FRMT"));
@@ -47,15 +72,44 @@ class WT_PFD_PFD_Menu extends WT_Soft_Key_Menu {
     }
 }
 
+class WT_PFD_Wind_Menu extends WT_Soft_Key_Menu {
+    /**
+     * @param {AS1000_PFD} pfd 
+     * @param {WT_PFD_Wind_Model} wind
+     * @param {WT_PFD_Alert_Key} alertsKey
+     */
+    constructor(pfd, wind, alertsKey) {
+        super(false);
+        this.mode1 = new WT_Soft_Key("OPTN 1", () => wind.setMode(1));
+        this.mode2 = new WT_Soft_Key("OPTN 2", () => wind.setMode(2));
+        this.mode3 = new WT_Soft_Key("OPTN 3", () => wind.setMode(3));
+        this.off = new WT_Soft_Key("OFF", () => wind.setMode(0));
+        wind.mode.subscribe(mode => {
+            this.mode1.selected = mode == 1;
+            this.mode2.selected = mode == 2;
+            this.mode3.selected = mode == 3;
+            this.off.selected = mode == 0;
+        });
+        this.addSoftKey(3, this.mode1);
+        this.addSoftKey(4, this.mode2);
+        this.addSoftKey(5, this.mode3);
+        this.addSoftKey(6, this.off);
+        this.addSoftKey(11, new WT_Soft_Key("BACK", () => pfd.showPfdMenu()));
+        this.addSoftKey(12, alertsKey);
+    }
+}
+
 class WT_PFD_Synthetic_Vision_Menu extends WT_Soft_Key_Menu {
     /**
      * @param {AS1000_PFD} pfd 
+     * @param {WT_Synthetic_Vision} syntheticVision
+     * @param {WT_PFD_Alert_Key} alertsKey
      */
-    constructor(pfd) {
+    constructor(pfd, syntheticVision, alertsKey) {
         super(false);
-        this.model = pfd.model;
+        this.syntheticVision = syntheticVision;
         this.pathway = new WT_Soft_Key("PATHWAY");
-        this.synVis = new WT_Soft_Key("SYN TERR", () => pfd.model.toggleSyntheticVision());
+        this.synVis = new WT_Soft_Key("SYN TERR", () => syntheticVision.toggle());
         this.horizonHeading = new WT_Soft_Key("HRZN HDG");
         this.airportSigns = new WT_Soft_Key("APTSIGNS");
         this.addSoftKey(1, this.pathway);
@@ -63,10 +117,10 @@ class WT_PFD_Synthetic_Vision_Menu extends WT_Soft_Key_Menu {
         this.addSoftKey(3, this.horizonHeading);
         this.addSoftKey(4, this.airportSigns);
         this.addSoftKey(11, new WT_Soft_Key("BACK", pfd.showPfdMenu.bind(pfd)));
-        this.addSoftKey(12, pfd.alertsKey);
+        this.addSoftKey(12, alertsKey);
     }
     activate() {
-        this.synVisUnsubscribe = this.model.syntheticVision.subscribe(enabled => {
+        this.synVisUnsubscribe = this.syntheticVision.enabled.subscribe(enabled => {
             this.synVis.selected = enabled;
             this.pathway.disabled = !enabled;
             this.horizonHeading.disabled = !enabled;
@@ -173,6 +227,7 @@ class WT_PFD_Transponder_Code_Menu extends WT_Soft_Key_Menu {
         }
     };
     deactivate() {
+        this.transponderTempCode = "";
         this.transponderModel.setEditCode(null);
     }
 }

@@ -10,10 +10,14 @@ class WT_Procedure_Page_Model extends WT_Model {
 
         this.icao = null;
         this.airport = new Subject();
+        this.initialProcedureIndex = 0;
     }
     setICAO(icao) {
         this.icao = icao;
         this.airport.value = this.procedureFacilityRepository.get(icao);
+    }
+    setInitialProcedureIndex(index) {
+        this.initialProcedureIndex = index;
     }
     /**
      * @param {WT_Selected_Procedure} procedure 
@@ -76,7 +80,6 @@ class WT_Procedure_Page_View extends WT_HTML_View {
     setModel(model) {
         this.model = model;
         this.softKeyMenu = new WT_Procedure_Page_Menu(this);
-        this.showSubPage("APR");
     }
     /**
      * @param {string} pageId 
@@ -90,7 +93,8 @@ class WT_Procedure_Page_View extends WT_HTML_View {
         this.subPageIndex.value = pageId;
 
         this.selectedPage = this.pages[pageId];
-        this.selectedPage.setAirport(this.model.airport);
+        this.selectedPage.setAirport(this.model.airport, this.initialProcedureIndex);
+        this.initialProcedureIndex = 0;
         this.selectedPage.setAttribute("visible", "");
         this.inputLayer.refreshSelected();
 

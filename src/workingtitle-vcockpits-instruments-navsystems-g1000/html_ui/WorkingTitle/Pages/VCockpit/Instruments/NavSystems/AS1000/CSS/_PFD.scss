@@ -16,12 +16,25 @@
 @import "Inputs/Switch";
 @import "Inputs/Time";
 
+@import "PFD/Components/Wind";
 @import "PFD/Pages/AdfDme";
 @import "PFD/Pages/DirectTo";
+@import "PFD/Pages/FlightPlan";
 @import "PFD/Pages/Nearest";
+@import "PFD/Pages/ProceduresMenu";
 @import "PFD/Pages/SetupMenu";
 @import "PFD/Pages/TimerReferences";
 @import "PFD/HSIndicator";
+
+$mini_page_x: 1vh;
+$mini_page_y: 6vh;
+$mini_page_width: 38vh;
+$mini_page_height: 27vh;
+
+as1000-pfd-element #Mainframe {
+    font-size: 1rem !important;
+    font-family: $font_family_normal;
+}
 
 as1000-pfd-element #Mainframe #HorizonContainer {
     -webkit-transform: rotateX(0deg);
@@ -104,6 +117,15 @@ glasscockpit-hsi {
         left: 50% - $width / 2;
         top: (65 / 117) * 100% - $height / 2;
     }
+}
+
+g1000-pfd-wind {
+    -webkit-transform: rotateX(0deg);
+    position: absolute;
+    top: 57%;
+    left: 26%;
+    height: 6vh;
+    width: 9vh;
 }
 
 as1000-pfd-element #Mainframe #InstrumentsContainer #Compass,
@@ -331,19 +353,40 @@ g1000-oat {
 }
 
 g1000-page-menu {
+    -webkit-transform: rotateX(0deg);
     position: absolute;
-    right: 2vh;
-    bottom: 30vh;
-    width: 30vh;
-    height: 25vh;
+    top: auto;
+    right: $mini_page_x + 2vh;
+    bottom: $mini_page_y + 2vh;
+    width: $mini_page_width - 4vh;
+    height: $mini_page_height - 6vh;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-gap: 0.8vh;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+
+    .title {
+        font-size: 1em;
+        margin: 0;
+    }
+
+    .category {
+        margin: 0 !important;
+    }
+
+    .options {
+        max-height: 100%;
+    }
 }
 
 g1000-pfd-mini-page-container {
+    -webkit-transform: rotateX(0deg);
     position: absolute;
-    bottom: 6vh;
-    right: 1vh;
-    width: 38vh;
-    height: 27vh;
+    right: $mini_page_x;
+    bottom: $mini_page_y;
+    width: $mini_page_width;
+    height: $mini_page_height;
     font-size: 1.05rem;
     font-family: $font_family_normal;
 }

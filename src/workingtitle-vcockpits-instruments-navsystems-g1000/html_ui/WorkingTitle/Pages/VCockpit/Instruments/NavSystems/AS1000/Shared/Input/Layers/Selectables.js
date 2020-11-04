@@ -113,7 +113,7 @@ class Selectables_Input_Layer_Dynamic_Source {
         return this.element.querySelectorAll(this.selector);
     }
 }
-Selectables_Input_Layer_Dynamic_Source.DEFAULT = "numeric-input, drop-down-selector, time-input, selectable-button, toggle-switch, icao-input, scrollable-container, adf-input, .selectable";
+Selectables_Input_Layer_Dynamic_Source.DEFAULT = "numeric-input, drop-down-selector, time-input, selectable-button, toggle-switch, icao-input, scrollable-container, adf-input, .selectable, g1000-external-link";
 
 class Selectables_Input_Layer extends Input_Layer {
     constructor(source, navigateWithSmall = false) {
@@ -137,20 +137,25 @@ class Selectables_Input_Layer extends Input_Layer {
         if (this.selectedElement) {
             if (this.isActive) {
                 this.selectedElement.setAttribute("state", "Selected");
+
+                const focusInEvent = document.createEvent('Event');
+                focusInEvent.initEvent('focusin', true, false);
+                this.selectedElement.dispatchEvent(focusInEvent);
+                
                 this.selectedElement.dispatchEvent(new Event("focus"));
                 this.onHighlightedElement(this.selectedElement);
             }
 
-            let scrollable = DOMUtilities.GetClosestParent(this.selectedElement, ".scrollable-container");
+            const scrollable = DOMUtilities.GetClosestParent(this.selectedElement, ".scrollable-container");
             if (scrollable) {
-                let scrollableContainerY = scrollable.getBoundingClientRect().top;
-                let selectedElementY = this.selectedElement.getBoundingClientRect().top;
-                let selectedElementHeight = this.selectedElement.getBoundingClientRect().height;
+                const scrollableContainerY = scrollable.getBoundingClientRect().top;
+                const selectedElementY = this.selectedElement.getBoundingClientRect().top;
+                const selectedElementHeight = this.selectedElement.getBoundingClientRect().height;
                 if (scrollable.dataset.elementSelector) {
-                    let parentElement = DOMUtilities.GetClosestParent(this.selectedElement, scrollable.dataset.elementSelector);
+                    const parentElement = DOMUtilities.GetClosestParent(this.selectedElement, scrollable.dataset.elementSelector);
                     selectedElementHeight = parentElement.offsetHeight;
                 }
-                let scrollTop = scrollable.scrollTop + (selectedElementY - scrollableContainerY - scrollable.getBoundingClientRect().height / 2);
+                const scrollTop = scrollable.scrollTop + (selectedElementY - scrollableContainerY - scrollable.getBoundingClientRect().height / 2);
                 scrollable.scrollTop = Math.floor(scrollTop / selectedElementHeight) * selectedElementHeight;
             }
         }

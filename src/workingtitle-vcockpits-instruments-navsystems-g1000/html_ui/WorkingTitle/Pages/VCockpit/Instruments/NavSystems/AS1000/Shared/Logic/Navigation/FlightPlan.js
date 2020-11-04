@@ -19,7 +19,6 @@ class WT_Normal_Flight_Plan_Controller {
         }
         fpm.createNewFlightPlan();*/
         fpm.createNewFlightPlan(() => {
-            console.log("created");
             fpm.setCurrentFlightPlanIndex(1, () => fpm.setCurrentFlightPlanIndex(0));
         });
         //this.flightPlanManager.copyFlightPlanIntoCurrent(0);

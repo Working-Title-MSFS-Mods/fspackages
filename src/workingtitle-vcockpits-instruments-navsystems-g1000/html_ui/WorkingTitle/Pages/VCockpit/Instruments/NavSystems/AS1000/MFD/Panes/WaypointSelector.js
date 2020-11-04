@@ -46,6 +46,10 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
         this.map = map;
         this.waypointQuickSelect = waypointQuickSelect;
         this.inputLayer = new WT_Waypoint_Selector_Input_Layer(this);
+
+        this.onWaypointSelected = new WT_Event();
+        this.onCancel = new WT_Event();
+        this.onExit = new WT_Event();
     }
     connectedCallback() {
         let template = document.getElementById('waypoint-selector-pane');
@@ -62,8 +66,7 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
     }
     icaoChanged(icao) {
         this.model.setIcao(icao);
-        this.resolve(icao);
-        this.exit();
+        this.onWaypointSelected.fire(icao);
     }
     /**
      * @param {WT_Waypoint_Selector_Model} model 
@@ -102,23 +105,19 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
         const mapHandler = inputStack.push(new WT_Map_Input_Layer(this.map, true));
         const inputHandler = inputStack.push(this.inputLayer);
         inputHandler.onPopped.subscribe(() => {
-            this.reject();
+            this.onExit.fire();
         });
         this.inputStackHandler = mapHandler;
 
         this.storedMenu = this.model.softKeyController.currentMenu;
         this.model.softKeyController.setMenu(new WT_Soft_Key_Menu());
-        return new Promise((resolve, reject) => {
-            this.resolve = resolve;
-            this.reject = reject;
-        });
     }
     cancel() {
-        this.exit();
+        this.onCancel.fire();
     }
     exit() {
-        this.inputStackHandler.pop();
         this.model.softKeyController.setMenu(this.storedMenu);
+        this.inputStackHandler.pop();
     }
 }
 customElements.define("g1000-waypoint-selector-pane", WT_Waypoint_Selector_View);

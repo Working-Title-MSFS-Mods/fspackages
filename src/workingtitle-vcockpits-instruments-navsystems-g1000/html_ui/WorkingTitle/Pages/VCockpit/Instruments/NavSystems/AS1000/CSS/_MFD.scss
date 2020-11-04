@@ -27,7 +27,7 @@
 @import "MFD/Pages/Nearest/NDBs";
 @import "MFD/Pages/Nearest/VORs";
 @import "MFD/Pages/Procedure";
-@import "MFD/Pages/Procedures";
+@import "MFD/Pages/ProceduresMenu";
 @import "MFD/Pages/Settings";
 @import "MFD/Pages/WaypointInformation/WaypointInformation";
 @import "MFD/Pages/WaypointInformation/Airport";
@@ -38,7 +38,7 @@ as1000-mfd-element {
     font-family: $font_family_normal;
 }
 
-html { 
+html {
 }
 
 as1000-mfd-element {
@@ -190,7 +190,7 @@ airport-icon {
 }
 
 .article {
-    font-size: 1em;
+    font-size: 1.1em;
     line-height: 1.5em;
 
     h1 {
@@ -274,4 +274,9 @@ g1000-map-page {
             }
         }
     }
+}
+
+g1000-external-link {
+    color: $input_color;
+    @extend %animated-selection;
 }

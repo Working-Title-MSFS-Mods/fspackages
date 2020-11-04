@@ -1,6 +1,27 @@
 class Attitude_Indicator_Model {
     constructor(syntheticVision) {
         this.syntheticVision = syntheticVision;
+        this.attributes = new Subject({});
+    }
+    update(dt) {
+        const xyz = Simplane.getOrientationAxis();
+        if (xyz) {
+            const gs = Simplane.getGroundSpeed() * 101.269;
+            const vs = Simplane.getVerticalSpeed();
+            const angle = Math.atan(vs / gs);
+            this.attributes.value = {
+                "ground-speed": Simplane.getGroundSpeed().toString(),
+                "actual-pitch": (angle / Math.PI * 180).toString(),
+                "pitch": (xyz.pitch / Math.PI * 180).toString(),
+                "bank": (xyz.bank / Math.PI * 180).toString(),
+                "slip_skid": Simplane.getInclinometer().toString(),
+                "flight_director-active": SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") ? "true" : "false",
+                "flight_director-pitch": SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR PITCH", "degree"),
+                "flight_director-bank": SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degree"),
+                "track": SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees"),
+                "heading": SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree"),
+            }
+        }
     }
 }
 
@@ -51,6 +72,11 @@ class AttitudeIndicator extends HTMLElement {
             this.horizonBottom.style.display = enabled ? "none" : "block";
             this.horizonTopGradient.style.display = enabled ? "none" : "block";
             this.actualDirectionMarker.style.visibility = (this.groundSpeed > 30 && enabled) ? "visible" : "hidden";
+        });
+        this.model.attributes.subscribe(attributes => {
+            for (let key in attributes) {
+                this.setAttribute(key, attributes[key]);
+            }
         });
     }
     getRectSegments(x, y, w, h) {
@@ -575,7 +601,7 @@ class AttitudeIndicator extends HTMLElement {
             let focalLength = 1 / Math.tan(fov);
             let screenX = (ax * (focalLength / az)) * screenWidth;
             let screenY = (ay * (focalLength / az)) * screenHeight;
-            this.actualDirectionMarker.setAttribute("transform", "translate(" + screenX.toString() + "," + screenY.toString() + ")");            
+            this.actualDirectionMarker.setAttribute("transform", "translate(" + screenX.toString() + "," + screenY.toString() + ")");
 
             // We quantize the angle to 5 degree increments and move the text group by that amount so we always see 5 sets of text at once
             // Then we update the text values to correspond to the correct angle

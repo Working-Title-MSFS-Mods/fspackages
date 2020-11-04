@@ -55,9 +55,9 @@ class WT_PFD_Mini_Page_Controller extends WT_HTML_View {
         return this.currentPage.enter(this.inputStack);
     }
     showTimerReferences() {
+        this.showPage(this.pages.references);
     }
     showFlightPlan() {
-
     }
     showProcedures() {
 

@@ -56,11 +56,7 @@ class WT_Flight_Plan_Main_Menu extends WT_Soft_Key_Menu {
     }
 }
 
-class WT_Flight_Plan_Line extends WT_HTML_View {
-
-}
-
-class WT_Flight_Plan_Waypoint_Line extends WT_Flight_Plan_Line {
+class WT_MFD_Flight_Plan_Waypoint_Line extends WT_Flight_Plan_Waypoint_Line {
     constructor() {
         super();
 
@@ -147,7 +143,7 @@ class WT_Flight_Plan_Waypoint_Line extends WT_Flight_Plan_Line {
     }
     set altitude(altitude) {
         const newValue = altitude > 0 ? Math.floor(altitude) : null;
-        if (this.elements.altitude.value + newValue) {
+        if (this.elements.altitude.mode != "edit") {
             this.elements.altitude.value = newValue;
         }
     }
@@ -164,12 +160,9 @@ class WT_Flight_Plan_Waypoint_Line extends WT_Flight_Plan_Line {
         this.elements.bearing.textContent = bearing != null ? Math.floor(bearing) + "°" : "";
     }
 }
-WT_Flight_Plan_Waypoint_Line.EVENT_ALTITUDE_CHANGED = "altitude_changed";
-WT_Flight_Plan_Waypoint_Line.EVENT_WAYPOINT_DELETED = "waypoint_deleted";
-WT_Flight_Plan_Waypoint_Line.EVENT_WAYPOINT_SELECTED = "waypoint_selected";
-customElements.define("g1000-flight-plan-waypoint-line", WT_Flight_Plan_Waypoint_Line);
+customElements.define("g1000-flight-plan-waypoint-line", WT_MFD_Flight_Plan_Waypoint_Line);
 
-class WT_Flight_Plan_Header_Line extends WT_Flight_Plan_Line {
+class WT_MFD_Flight_Plan_Header_Line extends WT_Flight_Plan_Header_Line {
     constructor() {
         super();
         this.classList.add("selectable");
@@ -192,11 +185,14 @@ class WT_Flight_Plan_Header_Line extends WT_Flight_Plan_Line {
         this.textContent = text;
     }
 }
-customElements.define("g1000-flight-plan-header-line", WT_Flight_Plan_Header_Line);
+customElements.define("g1000-flight-plan-header-line", WT_MFD_Flight_Plan_Header_Line);
 
-class WT_Flight_Plan_View_Line_Factory {
+class WT_MFD_Flight_Plan_Line_Factory {
     createWaypointLine() {
-
+        return new WT_MFD_Flight_Plan_Waypoint_Line();
+    }
+    createHeaderLine() {
+        return new WT_MFD_Flight_Plan_Header_Line();
     }
 }
 
@@ -221,20 +217,18 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
 
         this.waypointLines = [];
         this.headerLines = [];
-        this.activeLeg = null;
 
-        DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line", WT_Flight_Plan_Waypoint_Line.EVENT_ALTITUDE_CHANGED, e => {
-            this.model.setAltitude(e.detail.waypointIndex, e.detail.altitude);
-        });
-
-        DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line .ident", "selected", e => {
+        /*DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line .ident", "selected", e => {
             this.showCreateNewWaypoint(e.detail.element.parentNode.waypointIndex);
-        });
+        });*/
+    }
+    connectedCallback() {
+        const template = document.getElementById('flight-plan-page');
+        this.appendChild(template.content.cloneNode(true));
+        super.connectedCallback();
 
-        DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line", WT_Flight_Plan_Waypoint_Line.EVENT_WAYPOINT_SELECTED, DOMUtilities.debounce(e => {
-            this.model.setSelectedWaypointIndex(e.detail.waypointIndex);
-            this.centerOnLeg(e.detail.waypointIndex);
-        }, 500, false));
+        const linesElement = this.elements.flightPlanWaypoints;
+        linesElement.setLineFactory(new WT_MFD_Flight_Plan_Line_Factory());
     }
     /**
      * @param {WT_Flight_Plan_Page_Model} model 
@@ -252,46 +246,30 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
             main: new WT_Flight_Plan_Main_Menu(this.model, this),
             view: new WT_Flight_Plan_View_Menu(this.model, this),
         }
+
+        const linesElement = this.elements.flightPlanWaypoints;
+        linesElement.onWaypointSelected.subscribe(waypointIndex => this.model.setSelectedWaypointIndex(waypointIndex));
+        linesElement.onWaypointSelected.subscribe(DOMUtilities.debounce(waypointIndex => {
+            this.centerOnLeg(waypointIndex);
+        }, 500, false));
+        linesElement.onWaypointAltitudeChanged.subscribe((waypointIndex, altitude) => {
+            this.model.setAltitude(waypointIndex, altitude);
+        });
+        linesElement.onWaypointClicked.subscribe(waypointIndex => this.showCreateNewWaypoint(waypointIndex));
+        linesElement.onNewWaypointLineSelected.subscribe(() => {
+            this.model.newWaypointLineSelected();
+        })
     }
     updateLines(lines) {
-        const lineElements = [];
-
-        let waypointLineIndex = 0;
-        let headerLineIndex = 0;
-        const waypointLines = [];
-        const headerLines = [];
-        for (const line of lines) {
-            switch (line.type) {
-                case "waypoint": {
-                    const element = this.waypointLines[waypointLineIndex++] || new WT_Flight_Plan_Waypoint_Line();
-                    element.line = line;
-                    waypointLines.push(element);
-                    lineElements.push(element);
-                    break;
-                }
-                case "header": {
-                    const element = this.headerLines[headerLineIndex++] || new WT_Flight_Plan_Header_Line();
-                    element.line = line;
-                    headerLines.push(element);
-                    lineElements.push(element);
-                }
-            }
-        }
-
-        this.waypointLines = waypointLines;
-        this.headerLines = headerLines;
-
-        lineElements.unshift(this.elements.activeLegMarker);
-        lineElements.push(this.elements.newWaypointLine);
-        DOMUtilities.repopulateElement(this.elements.flightPlanWaypoints, lineElements);
+        this.elements.flightPlanWaypoints.updateLines(lines);
     }
     handleDelete() {
-        let selectedElement = this.inputLayer.selectedElement;
+        const selectedElement = this.inputLayer.selectedElement;
         if (!selectedElement)
             return;
-        let waypointLine = DOMUtilities.GetClosestParent(selectedElement, "G1000-FLIGHT-PLAN-WAYPOINT-LINE");
+        const waypointLine = DOMUtilities.GetClosestParent(selectedElement, "G1000-FLIGHT-PLAN-WAYPOINT-LINE");
         if (waypointLine) {
-            this.confirmDialogHandler.show(`Remove ${waypointLine.ident}?`).then(() => this.model.deleteWaypoint(waypointLine.index))
+            this.confirmDialogHandler.show(`Remove ${waypointLine.ident}?`).then(() => this.model.deleteWaypoint(waypointLine.waypointIndex))
         } else if (selectedElement.tagName == "G1000-FLIGHT-PLAN-HEADER-LINE") {
             switch (selectedElement.type) {
                 case "departure":
@@ -314,28 +292,8 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
             this.model.createNewWaypoint(icao, index);
         });
     }
-    waypointIndexToLineIndex(waypointIndex) {
-        if (this.waypointLines[waypointIndex]) {
-            return this.waypointLines[waypointIndex].lineIndex;
-        } else {
-            return null;
-        }
-    }
     updateActiveLeg(leg) {
-        if (leg) {
-            const beginIndex = this.waypointIndexToLineIndex(leg.origin + (leg.originIsApproach ? this.approachIndex : 0));
-            const endIndex = this.waypointIndexToLineIndex(leg.destination + (leg.destinationIsApproach ? this.approachIndex : 0));
-            if (beginIndex !== null && endIndex !== null) {
-                this.elements.activeLegMarker.style.gridRowStart = beginIndex + 1;
-                this.elements.activeLegMarker.style.gridRowEnd = endIndex + 2;
-                this.elements.activeLegMarker.style.visibility = "visible";
-            } else {
-                this.elements.activeLegMarker.style.visibility = "hidden";
-            }
-        } else {
-            this.elements.activeLegMarker.style.visibility = "hidden";
-        }
-        this.activeLeg = leg;
+        this.elements.flightPlanWaypoints.updateActiveLeg(leg);
     }
     centerOnLeg(waypointIndex) {
         const waypoints = this.model.flightPlan.getWaypoints();
@@ -357,11 +315,6 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     }
     restoreMenu() {
         this.softKeyController.setMenu(this.previousMenu);
-    }
-    connectedCallback() {
-        let template = document.getElementById('flight-plan-page');
-        this.appendChild(template.content.cloneNode(true));
-        super.connectedCallback();
     }
     update(dt) {
         if (!this.time)
@@ -388,9 +341,7 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         this.elements.map.appendChild(this.map);
     }
     deactivate() {
-        console.log("FlightPlanView.deactivate");
         this.restoreMenu();
-        this.elements.map.removeChild(this.map);
         if (this.activeLegSubscription) {
             this.activeLegSubscription = this.activeLegSubscription();
         }

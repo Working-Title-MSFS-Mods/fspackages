@@ -5,11 +5,12 @@ class WT_Show_Direct_To_Handler {
 }
 
 class WT_Direct_To_Model extends WT_Model {
-    constructor(gps, type, waypointRepository) {
+    constructor(gps, type, waypointRepository, directToHandler) {
         super();
         this.gps = gps;
         this.type = type;
         this.waypointRepository = waypointRepository;
+        this.directToHandler = directToHandler;
 
         this.waypoint = new Subject(null);
         this.bearing = new Subject(null);
@@ -38,8 +39,14 @@ class WT_Direct_To_Model extends WT_Model {
             this.city.value = null;
         }
     }
+    activateDirectTo(course) {
+        this.directToHandler.activate({
+            waypoint: this.waypoint.value,
+            course: course
+        });
+    }
     cancelDirectTo() {
-        this.gps.revertToFlightPlan();
+        this.directToHandler.cancel();
     }
 }
 
@@ -87,6 +94,10 @@ class WT_Direct_To_View extends WT_HTML_View {
         this.showPageMenuHandler = showPageMenuHandler;
         this.inputLayer = new WT_Direct_To_Input_Layer(this);
         this.userSelectedCourse = false;
+
+        this.onDirectTo = new WT_Event();
+        this.onCancel = new WT_Event();
+        this.onExit = new WT_Event();
     }
     connectedCallback() {
         const template = document.getElementById('direct-to');
@@ -144,16 +155,12 @@ class WT_Direct_To_View extends WT_HTML_View {
     enter(inputStack) {
         const inputHandler = inputStack.push(this.inputLayer);
         inputHandler.onPopped.subscribe(() => {
-            this.reject();
+            this.onExit.fire();
         })
         this.inputStackHandler = inputHandler;
-        return new Promise((resolve, reject) => {
-            this.resolve = resolve;
-            this.reject = reject;
-        });
     }
     cancel() {
-        this.exit();
+        this.onCancel.fire();
     }
     exit() {
         this.inputStackHandler.pop();
@@ -162,11 +169,8 @@ class WT_Direct_To_View extends WT_HTML_View {
 
     }
     activateDirectTo() {
-        this.resolve({
-            waypoint: this.model.waypoint.value,
-            course: this.userSelectedCourse ? this.elements.course.value : null
-        });
-        this.exit();
+        this.model.activateDirectTo(this.userSelectedCourse ? this.elements.course.value : null);
+        this.onCancel.fire();
     }
 }
 customElements.define("g1000-direct-to", WT_Direct_To_View);

@@ -8,9 +8,6 @@ class WT_Airspeed_Reference {
         this._enabled = WTDataStore.get(`VSRef.${id}.IsDisplayed`, false);
     }
     isDefault(speed) {
-        console.log(speed);
-        console.log(this.defaultSpeed);
-
         return speed == this.defaultSpeed;
     }
     get enabled() {
