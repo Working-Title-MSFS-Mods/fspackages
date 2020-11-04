@@ -1,7 +1,9 @@
 ﻿{
   "altitudeArc": {
     "strokeColor": "white",
-    "outlineColor": "white"
+    "outlineColor": "white",
+    "strokeWidth": "2",
+    "outlineWidth": "4"
   },
 
   "waypointLabelFontSize": 16,

@@ -2857,6 +2857,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
     }
 
     refreshLayout() {
+
         this.setWxRadarBug();
         if (this.isMapVisible) {
             this.map.instrument.setAttribute('style', '');
@@ -2890,6 +2891,7 @@ class CJ4_Map extends MapInstrumentElement {
         this.compassDisplayMode = undefined;
     }
     setMode(_display) {
+
         this.compassDisplayMode = _display;
         switch (_display) {
             case Jet_NDCompass_Display.ROSE:
@@ -2898,15 +2900,25 @@ class CJ4_Map extends MapInstrumentElement {
                     this.instrument.rotateWithPlane(true);
                     this.instrument.centerOnActiveWaypoint(false);
                     this.instrument.setPlaneScale(2.5);
+                    this.instrument.showAltitudeIntercept = false;
                     break;
                 }
             case Jet_NDCompass_Display.PPOS:
+                {
+                    this.instrument.style.top = "6%";
+                    this.instrument.rotateWithPlane(true);
+                    this.instrument.centerOnActiveWaypoint(false);
+                    this.instrument.setPlaneScale(2.5);
+                    this.instrument.showAltitudeIntercept = true;
+                    break;
+                }
             case Jet_NDCompass_Display.ARC:
                 {
                     this.instrument.style.top = "6%";
                     this.instrument.rotateWithPlane(true);
                     this.instrument.centerOnActiveWaypoint(false);
                     this.instrument.setPlaneScale(2.5);
+                    this.instrument.showAltitudeIntercept = false;
                     break;
                 }
             case Jet_NDCompass_Display.PLAN:
@@ -2915,6 +2927,7 @@ class CJ4_Map extends MapInstrumentElement {
                     this.instrument.rotateWithPlane(false);
                     this.instrument.centerOnActiveWaypoint(true);
                     this.instrument.setPlaneScale(2.5);
+                    this.instrument.showAltitudeIntercept = false;
                     break;
                 }
             default:
@@ -2923,6 +2936,7 @@ class CJ4_Map extends MapInstrumentElement {
                     this.instrument.rotateWithPlane(false);
                     this.instrument.centerOnActiveWaypoint(false);
                     this.instrument.setPlaneScale(1.0);
+                    this.instrument.showAltitudeIntercept = false;
                     break;
                 }
         }
