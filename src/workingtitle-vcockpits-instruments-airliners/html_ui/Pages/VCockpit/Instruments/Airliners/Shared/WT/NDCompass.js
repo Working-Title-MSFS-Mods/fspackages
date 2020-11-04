@@ -2756,19 +2756,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
 
             this.trackingGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.trackingGroup.setAttribute("id", "trackingGroup");
-            {
-                let rad = 5;
-                this.trackingBug = document.createElementNS(Avionics.SVG.NS, "circle");
-                this.trackingBug.setAttribute("id", "trackingBug");
-                this.trackingBug.setAttribute("cx", "500");
-                this.trackingBug.setAttribute("cy", (500 - circleRadius - rad).toString());
-                this.trackingBug.setAttribute("r", rad.toString());
-                this.trackingBug.setAttribute("fill", "none");
-                this.trackingBug.setAttribute("stroke", "#ff00e0");
-                this.trackingBug.setAttribute("stroke-width", "2");
-                this.trackingGroup.appendChild(this.trackingBug);
-            }
-            this.rotatingCircle.appendChild(this.trackingGroup);
+        
             this.headingGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.headingGroup.setAttribute("id", "headingGroup");
             {
@@ -2784,6 +2772,20 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 this.selectedHeadingGroup.appendChild(this.selectedHeadingBug);
             }
             this.rotatingCircle.appendChild(this.selectedHeadingGroup);
+            this.rotatingCircle.appendChild(this.trackingGroup);
+            {
+                let rad = 6;
+                this.trackingBug = document.createElementNS(Avionics.SVG.NS, "circle");
+                this.trackingBug.setAttribute("id", "trackingBug");
+                this.trackingBug.setAttribute("cx", "500");
+                this.trackingBug.setAttribute("cy", (500 - circleRadius - rad).toString());
+                this.trackingBug.setAttribute("r", rad.toString());
+                this.trackingBug.setAttribute("fill", "none");
+                this.trackingBug.setAttribute("stroke", "#ff00e0");
+                this.trackingBug.setAttribute("stroke-width", "5");
+                this.trackingGroup.appendChild(this.trackingBug);
+            }
+
             if (this.navigationMode == Jet_NDCompass_Navigation.NAV || this.navigationMode == Jet_NDCompass_Navigation.ILS) {
                 this.ilsGroup = document.createElementNS(Avionics.SVG.NS, "g");
                 this.ilsGroup.setAttribute("id", "ILSGroup");
