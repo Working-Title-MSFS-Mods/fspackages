@@ -92,6 +92,7 @@ class WT_Cabin_Annunciations extends WT_Annunciations {
         this.warningTone = false;
         this.firstAcknowledge = true;
         this.offStart = false;
+        this.manuallyOpened = false;
     }
     init(root) {
         super.init(root);
@@ -261,8 +262,11 @@ class WT_Cabin_Annunciations extends WT_Annunciations {
         this.offStart = true;
     }
     hasMessages() {
+        if(this.manuallyOpened){
+            return true
+        }
         for (var i = 0; i < this.allMessages.length; i++) {
-            if (this.allMessages[i].Visible && this.allMessages[i].Type !== Annunciation_MessageType.Advisory) {
+            if (this.allMessages[i].Visible && this.allMessages[i].Type !== Annunciation_MessageType.ADVISORY) {
                 return true;
             }
         }

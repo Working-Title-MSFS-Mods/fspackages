@@ -61,6 +61,9 @@ class CJ4_SystemContainer extends NavSystemElementContainer {
     hasAnnunciations() {
         return this.annunciations.hasMessages();
     }
+    toggleManualCASDisplay(){
+        this.annunciations.manuallyOpened = !this.annunciations.manuallyOpened;
+    }
 }
 class CJ4_SystemEngines extends NavSystemElement {
     constructor() {
