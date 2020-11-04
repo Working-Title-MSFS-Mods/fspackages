@@ -50,18 +50,18 @@
 												<Flags>5</Flags>
 											</Point>
 											<Point>
-												<XPos>52.86667</XPos>
+												<XPos>53.50209</XPos>
 												<YPos>-200</YPos>
 												<Flags>0</Flags>
 											</Point>
 											<Point>
-												<XPos>112.97708</XPos>
-												<YPos>-0</YPos>
+												<XPos>110.18125</XPos>
+												<YPos>-3.67288</YPos>
 												<Flags>0</Flags>
 											</Point>
 											<Point>
 												<XPos>305</XPos>
-												<YPos>5.47252</YPos>
+												<YPos>-0.13414</YPos>
 												<Flags>37</Flags>
 											</Point>
 										</PointList>
@@ -90,6 +90,27 @@
 							<AudioFile>Spoiler Drag.wav</AudioFile>
 						</AudioFileSource>
 					</ChildrenList>
+					<StateInfo>
+						<StateGroupList>
+							<StateGroupInfo>
+								<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+							</StateGroupInfo>
+						</StateGroupList>
+						<CustomStateList>
+							<CustomState>
+								<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+								<CustomState Name="" ID="{4CAA79A3-3538-44F5-B9D5-88EA78D66D1E}" ShortID="782514127"/>
+							</CustomState>
+							<CustomState>
+								<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+								<CustomState Name="" ID="{51AA85D9-DA1E-4F50-B0A2-ECF0119D23A3}" ShortID="176125578">
+									<PropertyList>
+										<Property Name="Volume" Type="Real64" Value="-108"/>
+									</PropertyList>
+								</CustomState>
+							</CustomState>
+						</CustomStateList>
+					</StateInfo>
 					<ActiveSourceList>
 						<ActiveSource Name="Spoiler Drag" ID="{45D05136-2804-4656-99D0-914EDA2975F8}" Platform="Linked"/>
 					</ActiveSourceList>
