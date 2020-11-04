@@ -394,15 +394,17 @@ class CJ4_FMC_PerfInitPage {
         let destinationDistance = undefined;
         let activeWaypoint = undefined;
         let activeWaypointIdent = undefined;
-        let activeWptIndex = undefined;
+        //let activeWptIndex = undefined;
         let activeWaypointDist = undefined;
         let currentDistanceInFP = undefined;
         let _lastActiveWaypointIdent = undefined;
+        let _lastDestinationIdent = undefined;
 
         //COMPONENTS TO REFRESH ONLY WHEN THERE IS A FLIGHT PLAN CHANGE
         let desiredFPA = WTDataStore.get('CJ4_vpa', 3);
         let vnavType = false;
         let waypoints = [];
+        let fpWaypoints = [];
 
         //DESTINATION DATA
         if (fmc.flightPlanManager.getDestination()) {
@@ -418,7 +420,17 @@ class CJ4_FMC_PerfInitPage {
                 vnavType = "route";
             }
         }
+      
+        //VNAV SETUP
+        let vnavTargetDistance = undefined;
+        let topOfDescent = undefined;
+        let vnavTargetWaypoint = undefined;
+        let vnavTargetAltitude = undefined;
+        let vnavTargetFpWaypoint = undefined;
+        let _lastVnavTargetAltitude = undefined;
+        let _interceptingLastAltitude = false;
 
+        //RUN ACTUAL VNAV PATH CONTROL
         if (vnavType) {
             fmc.registerPeriodicPageRefresh(() => {
                 //COLLECT AIRCRAFT VARIABLES
@@ -428,43 +440,38 @@ class CJ4_FMC_PerfInitPage {
                 let apCurrentVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute");
                 let altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
 
-                //VNAV SETUP
-                let vnavTargetDistance = undefined;
-                let topOfDescent = undefined;
-                let vnavTargetWaypoint = undefined;
-                let vnavTargetAltitude = undefined;
-                let vnavTargetFpWaypoint = undefined;
-
-                //LOAD DEFAULT DESTINATION VNAV
-                if (vnavType == "destination") {
+                //LOAD DEFAULT DESTINATION VNAV ONLY WHEN DESTINATION HAS CHANGED OR ON FIRST RUN
+                if (vnavType == "destination" && _lastDestinationIdent != destinationIdent) {
                     let destinationElevation = destination.infos.oneWayRunways[0].elevation * 3.28;
                     vnavTargetAltitude = destinationElevation + 1500;
                     if (fmc.flightPlanManager.getActiveWaypoint()) {
+                        activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
                         activeWaypointDist = Avionics.Utils.computeDistance(currPos, activeWaypoint.infos.coordinates);
                         currentDistanceInFP = activeWaypoint.cumulativeDistanceInFP - activeWaypointDist;
                         destinationDistance = destination.cumulativeDistanceInFP - currentDistanceInFP;
                     }
                     else {
                         destinationDistance = Avionics.Utils.computeDistance(currPos, destination.infos.coordinates);
-                        currentDistanceInFP = destinationDistance;
+                        currentDistanceInFP = destination.cumulativeDistanceInFP - destinationDistance;
                     }
                     vnavTargetDistance = destinationDistance - 10;
                     topOfDescent = 10 + ((altitude - vnavTargetAltitude) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
                     vnavTargetWaypoint = destination;
+                    _lastDestinationIdent = destinationIdent;
                 }
+
                 //LOAD ROUTE VNAV ONLY WHEN ACTIVE WAYPOINT HAS CHANGED OR ON FIRST RUN
                 else if (vnavType == "route" && fmc.flightPlanManager.getWaypoints() && fmc.flightPlanManager.getActiveWaypoint() && fmc.flightPlanManager.getActiveWaypoint().ident != _lastActiveWaypointIdent) {
 
                     //COLLECT NAVIGATION VARIABLES
                     activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
                     activeWaypointIdent = activeWaypoint.ident;
-                    _lastActiveWaypointIdent = activeWaypoint.ident;
-                    activeWptIndex = fmc.flightPlanManager.getActiveWaypointIndex();
+                    _lastActiveWaypointIdent = activeWaypointIdent;
+                    //activeWptIndex = fmc.flightPlanManager.getActiveWaypointIndex();
                     activeWaypointDist = Avionics.Utils.computeDistance(currPos, activeWaypoint.infos.coordinates);
                     currentDistanceInFP = activeWaypoint.cumulativeDistanceInFP - activeWaypointDist;
 
                     //COLLECT ACTUAL FLIGHT PLAN WAYPOINTS
-                    let fpWaypoints = [];
                     if (fmc.flightPlanManager.getWaypoints()) {
                         fpWaypoints = [...fmc.flightPlanManager.getWaypoints()];
                     }
@@ -541,289 +548,120 @@ class CJ4_FMC_PerfInitPage {
                             }
                         }
                     }
-    
                 }
 
-                /////////////////// I GOT THIS FAR
-
-
-
-
-
-
-
-
-
-
-
-                //default values
-                let prevWaypointIdent = "-----";
-                let prevWaypointDist = "----";
-                let activeWaypointIdent = "-----";
-                let activeWaypointDist = "----";
-                let nextWaypointIdent = "-----";
-                let nextWaypointDist = "----";
-                let destinationIdent = "----";
-                let destinationDistance = "----";
-                let prevWaypoint = false;
-                let activeWaypoint = false;
-                let nextWaypoint = false;
-                let destination = false;
-                
-                //destination data
-                if (fmc.flightPlanManager.getDestination()) {
-                    destination = fmc.flightPlanManager.getDestination();
-                    destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
-                    let destinationDistanceDirect = Avionics.Utils.computeDistance(currPos, destination.infos.coordinates);
-                    let destinationDistanceFlightplan = 0;
-                    destinationDistance = destinationDistanceDirect;
-                    if (activeWaypoint) {
-                        destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - activeWaypoint.cumulativeDistanceInFP + activeWaypointDist);
+                //UPDATE DEFAULT DESTINATION VNAV WHEN DESTINATION HAS NOT CHANGED
+                else if (vnavType == "destination") {
+                    if (fmc.flightPlanManager.getActiveWaypoint()) {
+                        activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
+                        activeWaypointDist = Avionics.Utils.computeDistance(currPos, activeWaypoint.infos.coordinates);
+                        currentDistanceInFP = activeWaypoint.cumulativeDistanceInFP - activeWaypointDist;
+                        destinationDistance = destination.cumulativeDistanceInFP - currentDistanceInFP;
                     }
                     else {
-                        destinationDistanceFlightplan = destination.cumulativeDistanceInFP;
+                        destinationDistance = Avionics.Utils.computeDistance(currPos, destination.infos.coordinates);
+                        currentDistanceInFP = destination.cumulativeDistanceInFP - destinationDistance;
                     }
-                    destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
-                        : destinationDistanceFlightplan;
+                    vnavTargetDistance = destinationDistance - 10;
+                    topOfDescent = 10 + ((altitude - vnavTargetAltitude) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
                 }
 
+                //UPDATE ROUTE VNAV WHEN ACTIVE WAYPOINT HAS NOT CHANGED
+                else if (vnavType == "route" && fmc.flightPlanManager.getActiveWaypoint()) {
 
-                //previous waypoint data
-                if (fmc.flightPlanManager.getPreviousActiveWaypoint()) {
-                    prevWaypoint = fmc.flightPlanManager.getPreviousActiveWaypoint();
-                    prevWaypointIdent = new String(fmc.flightPlanManager.getPreviousActiveWaypoint().ident);
-                    prevWaypointDist = new Number(Avionics.Utils.computeDistance(currPos, prevWaypoint.infos.coordinates));
-                }
-
-                //current active waypoint data
-                if (fmc.flightPlanManager.getActiveWaypoint()) {
+                    //COLLECT NAVIGATION VARIABLES
                     activeWaypoint = fmc.flightPlanManager.getActiveWaypoint();
-                    activeWaypointIdent = new String(fmc.flightPlanManager.getActiveWaypoint().ident);
-                    activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
-                    //activeWaypointEte = groundSpeed < 50 ? new String("-:--")
-                    //    : new Date(fmc.flightPlanManager.getETEToActiveWaypoint() * 1000).toISOString().substr(11, 5);
+                    activeWaypointIdent = activeWaypoint.ident;
+                    activeWptIndex = fmc.flightPlanManager.getActiveWaypointIndex();
+                    activeWaypointDist = Avionics.Utils.computeDistance(currPos, activeWaypoint.infos.coordinates);
+                    currentDistanceInFP = activeWaypoint.cumulativeDistanceInFP - activeWaypointDist;
+
+                    //UPDATE
+                    vnavTargetDistance = fpWaypoint == activeWaypoint ? activeWaypointDist
+                        : fpWaypoint.cumulativeDistanceInFP - currentDistanceInFP;
+                    topOfDescent = ((altitude - vnavTargetAltitude) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
                 }
 
-                //next waypoint data
-                if (fmc.flightPlanManager.getNextActiveWaypoint()) {
-                    nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint();
-                    nextWaypointIdent = new String(fmc.flightPlanManager.getNextActiveWaypoint().ident);
-                    nextWaypointDist = new Number(activeWaypointDist + Avionics.Utils.computeDistance(fmc.flightPlanManager.getActiveWaypoint().infos.coordinates, nextWaypoint.infos.coordinates));
-                    //nextWaypointEte = groundSpeed < 50 ? new String("-:--")
-                    //    : new Date(this.calcETEseconds(nextWaypointDist, groundSpeed) * 1000).toISOString().substr(11, 5);
-                }
-
-
-
-                
-                
-                //FETCH WAYPOINTS WITH CONSTRAINTS
-                if (fmc.getConstraints().length > 0 && fmc.flightPlanManager.getWaypoints()) {
-                    let allWaypoints = [];
-                    let enrouteWaypoints = [...fmc.flightPlanManager.getWaypoints()];
-                    enrouteWaypoints.pop();
-                    let approachWaypoints = [];
-                    let activeWptIndex = fmc.flightPlanManager.getActiveWaypointIndex();
-                    // ENROUTE
-                    if (fmc.flightPlanManager.getWaypoints() && !fmc.flightPlanManager.isActiveApproach()) {
-                        // get enroute waypoints
-            
-                        if (fmc.flightPlanManager.getApproachWaypoints()) {
-                            approachWaypoints = [...fmc.flightPlanManager.getApproachWaypoints()];
-                            allWaypoints = enrouteWaypoints.concat(approachWaypoints);
-                        }
-                        else {
-                            allWaypoints = enrouteWaypoints;
-                        }
-                        waypoints = allWaypoints;
-                        // if (activeWptIndex <= 1) {
-                        //     waypoints = allWaypoints;
-                        // }
-                        // else if (activeWptIndex > 1) {
-                        //     waypoints = allWaypoints.splice(activeWptIndex - 1);
-                        // }
-                    }
-                    // APPROACH
-                    else if (fmc.flightPlanManager.isActiveApproach()) {
-                        if (fmc.flightPlanManager.getApproachWaypoints()) {
-                            approachWaypoints = [...fmc.flightPlanManager.getApproachWaypoints()];
-                            allWaypoints = approachWaypoints;
-                        }
-                        waypoints = allWaypoints;        
-                        // // on first wp show em all
-                        // if (activeWptIndex == 1) {
-                        //     waypoints = allWaypoints;
-                        // }
-                        // // skip previous legs
-                        // else if (activeWptIndex > 1) {
-                        //     waypoints = allWaypoints.splice(activeWptIndex - 1);
-                        // }
-                    }
-                    let constraints = fmc.getConstraints();
-                    for (let i = 0; i < waypoints.length; i++) {
-                        let waypointIcao = waypoints[i].icao;
-                        let constraintWpt = constraints.find(wp => { return (wp && wp.icao == waypointIcao); })
-                        if (constraintWpt) {
-                            waypoints[i].legAltitudeDescription = constraintWpt.legAltitudeDescription;
-                            waypoints[i].legAltitude1 = constraintWpt.legAltitude1;
-                            waypoints[i].legAltitude2 = constraintWpt.legAltitude2;
-                        }
-                        else {
-                            waypoints[i].legAltitudeDescription = 0;
-                            waypoints[i].legAltitude1 = 0;
-                            waypoints[i].legAltitude2 = 0;
-                        }
-                    }
-                    let currentWpt = waypoints.find(wp => { return (wp && wp.icao.substr(-5) == activeWaypoint.icao.substr(-5)); });
-                    let currentIndex = waypoints.indexOf(currentWpt);
-                    waypoints = waypoints.slice(currentIndex);
-                }
-
-                console.log("waypoints.length: " + waypoints.length);
-                //console.log(waypoints[0].icao + " " + waypoints[waypoints.length - 1].icao);
-
-                //IF THERE ARE CONSTRAINTS
-                if (waypoints.length > 0 && destination) {
-                    //console.log("waypoints.length > 0: " + waypoints.length);
-                    //console.log("first waypoint " + waypoints[waypoints.length - 1].icao + " " + waypoints[waypoints.length - 1].legAltitudeDescription + " " + waypoints[waypoints.length - 1].legAltitude1);
-                    let currentDistanceInFP = activeWaypoint.cumulativeDistanceInFP - activeWaypointDist;
-                    for (let i = waypoints.length - 1; i >= 0; i--) {
-                        //console.log("processing wpt: " + i + " " + waypoints[i].icao);
-                        let waypoint = waypoints[i];
-                        let legAltitudeDescription = waypoint.legAltitudeDescription
-                        if (legAltitudeDescription == 1 && waypoint.legAltitude1 > 1000) { //AT CASE
-                            vnavTargetAltitude = waypoint.legAltitude1;
-                            vnavTargetDistance = waypoint == activeWaypoint ? activeWaypointDist
-                                : waypoint.cumulativeDistanceInFP - currentDistanceInFP;
-                            topOfDescent = ((altitude - vnavTargetAltitude) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
-                            vnavTargetWaypoint = waypoint;
-                            //console.log("currentDistanceInFP " + currentDistanceInFP + "waypoint.cumulativeDistanceInFP " + waypoint.cumulativeDistanceInFP);
-                        }
-                        else if (legAltitudeDescription == 2 && waypoint.legAltitude1 > 1000) { //ABOVE CASE
-                            let distanceFromVnavTargetWaypoint = vnavTargetWaypoint.cumulativeDistanceInFP - waypoint.cumulativeDistanceInFP;
-                            let vnavTargetAltitudeAtWaypoint = vnavTargetAltitude + (6076.12 * distanceFromVnavTargetWaypoint * (Math.tan(desiredFPA * (Math.PI / 180))));
-                            if (vnavTargetAltitudeAtWaypoint < waypoint.legAltitude1) {
-                                vnavTargetAltitude = waypoint.legAltitude1;
-                                vnavTargetDistance = waypoint == activeWaypoint ? activeWaypointDist
-                                : waypoint.cumulativeDistanceInFP - currentDistanceInFP;
-                                topOfDescent = ((altitude - vnavTargetAltitude) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
-                                vnavTargetWaypoint = waypoint;
-                                //console.log("currentDistanceInFP " + currentDistanceInFP + "waypoint.cumulativeDistanceInFP " + waypoint.cumulativeDistanceInFP);
-                            }
-                        }
-                        else if (legAltitudeDescription == 3 && waypoint.legAltitude1 > 1000) { //BELOW CASE
-                            let distanceFromVnavTargetWaypoint = vnavTargetWaypoint.cumulativeDistanceInFP - waypoint.cumulativeDistanceInFP;
-                            let vnavTargetAltitudeAtWaypoint = vnavTargetAltitude + (6076.12 * distanceFromVnavTargetWaypoint * (Math.tan(desiredFPA * (Math.PI / 180))));
-                            if (vnavTargetAltitudeAtWaypoint > waypoint.legAltitude1) {
-                                vnavTargetAltitude = waypoint.legAltitude1;
-                                vnavTargetDistance = waypoint == activeWaypoint ? activeWaypointDist
-                                : waypoint.cumulativeDistanceInFP - currentDistanceInFP;
-                                topOfDescent = ((altitude - vnavTargetAltitude) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
-                                vnavTargetWaypoint = waypoint;
-                                //console.log("currentDistanceInFP " + currentDistanceInFP + "waypoint.cumulativeDistanceInFP " + waypoint.cumulativeDistanceInFP);
-                            }
-                        }
-                        else if (legAltitudeDescription == 4 && waypoint.legAltitude1 > 1000) { //ABOVE AND BELOW CASE
-                            let distanceFromVnavTargetWaypoint = vnavTargetWaypoint.cumulativeDistanceInFP - waypoint.cumulativeDistanceInFP;
-                            let vnavTargetAltitudeAtWaypoint = vnavTargetAltitude + (6076.12 * distanceFromVnavTargetWaypoint * (Math.tan(desiredFPA * (Math.PI / 180))));
-                            if (vnavTargetAltitudeAtWaypoint > waypoint.legAltitude1) {
-                                vnavTargetAltitude = waypoint.legAltitude1;
-                                vnavTargetDistance = waypoint == activeWaypoint ? activeWaypointDist
-                                : waypoint.cumulativeDistanceInFP - currentDistanceInFP;
-                                topOfDescent = ((altitude - vnavTargetAltitude) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
-                                vnavTargetWaypoint = waypoint;
-                                //console.log("currentDistanceInFP " + currentDistanceInFP + "waypoint.cumulativeDistanceInFP " + waypoint.cumulativeDistanceInFP);
-                            }
-                            else if (vnavTargetAltitudeAtWaypoint < waypoint.legAltitude2) {
-                                vnavTargetAltitude = waypoint.legAltitude2;
-                                vnavTargetDistance = waypoint == activeWaypoint ? activeWaypointDist
-                                : waypoint.cumulativeDistanceInFP - currentDistanceInFP;
-                                topOfDescent = ((altitude - vnavTargetAltitude) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
-                                vnavTargetWaypoint = waypoint;
-                                //console.log("currentDistanceInFP " + currentDistanceInFP + "waypoint.cumulativeDistanceInFP " + waypoint.cumulativeDistanceInFP);
-                            }
-                        }
-                        //i--;
-                    }
-                }
                 //PREPARE VNAV VARIABLES
                 let desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(desiredFPA * (Math.PI / 180));
                 let desiredAltitude = vnavTargetAltitude + (Math.tan(desiredFPA * (Math.PI / 180)) * vnavTargetDistance * 6076.12);
                 let altDeviation = altitude - desiredAltitude;
                 let setVerticalSpeed = 0;
-
-                if (vnavTargetDistance > topOfDescent + 0.5) {
-                    setVerticalSpeed = 0;
+                const distanceToTod = vnavTargetDistance > topOfDescent ? Math.round(vnavTargetDistance - topOfDescent) : "N/A";
+                
+                //SET BEHAVIOR IF INTERCEPTING TARGET ALTITUDE & SET AP TARGET ALTITUDE
+                if (_lastVnavTargetAltitude === undefined) {
+                    _lastVnavTargetAltitude = vnavTargetAltitude;
+                    _interceptingLastAltitude = false;
+                    if (distanceToTod <= 0 || distanceToTod == "N/A") {
+                        Coherent.call("AP_ALT_VAR_SET_ENGLISH", 0, vnavTargetAltitude, true);
+                    }
                 }
-                else if (vnavTargetDistance < 1 && vnavTargetDistance > 0) {
+                else if (_lastVnavTargetAltitude != vnavTargetAltitude && vnavTargetDistance > topOfDescent && altitude > _lastVnavTargetAltitude) {
                     setVerticalSpeed = desiredVerticalSpeed;
+                    Coherent.call("AP_ALT_VAR_SET_ENGLISH", 0, _lastVnavTargetAltitude, true);
+                    _interceptingLastAltitude = true;
                 }
                 else {
-                    if (altDeviation >= 500) {
-                        setVerticalSpeed = desiredVerticalSpeed * 1.5;
+                    _lastVnavTargetAltitude = vnavTargetAltitude;
+                    _interceptingLastAltitude = false;
+                    if (distanceToTod <= 0 || distanceToTod == "N/A") {
+                        Coherent.call("AP_ALT_VAR_SET_ENGLISH", 0, vnavTargetAltitude, true);
                     }
-                    else if (altDeviation <= -500) {
-                        setVerticalSpeed = desiredVerticalSpeed * 0;
+                }
+
+                //SET VS FOR VNAV PATH
+                if (_interceptingLastAltitude === false) {
+                    if ((vnavTargetDistance - topOfDescent) > 0.5) {
+                        setVerticalSpeed = 0;
                     }
-                    else if (altDeviation >= 400) {
-                        setVerticalSpeed = desiredVerticalSpeed * 1.4;
-                    }
-                    else if (altDeviation <= -400) {
-                        setVerticalSpeed = desiredVerticalSpeed * 0;
-                    }
-                    else if (altDeviation >= 300) {
-                        setVerticalSpeed = desiredVerticalSpeed * 1.3;
-                    }
-                    else if (altDeviation <= -300) {
-                        setVerticalSpeed = desiredVerticalSpeed * 0.25;
-                    }
-                    else if (altDeviation >= 200) {
-                        setVerticalSpeed = desiredVerticalSpeed * 1.2;
-                    }
-                    else if (altDeviation <= -200) {
-                        setVerticalSpeed = desiredVerticalSpeed * 0.5;
-                    }
-                    else if (altDeviation >= 100) {
-                        setVerticalSpeed = desiredVerticalSpeed * 1.1;
-                    }
-                    else if (altDeviation <= -100) {
-                        setVerticalSpeed = desiredVerticalSpeed * 0.8;
-                    }
-                    else if (altDeviation >= 20) {
-                        setVerticalSpeed = desiredVerticalSpeed * 1.05;
-                    }
-                    else if (altDeviation <= -20) {
-                        setVerticalSpeed = desiredVerticalSpeed * 0.9;
-                    }
-                    else {
+                    else if (vnavTargetDistance < 1 && vnavTargetDistance > 0) {
                         setVerticalSpeed = desiredVerticalSpeed;
                     }
-                }
-                setVerticalSpeed = Math.round(setVerticalSpeed);
-                //console.log("setVerticalSpeed: " + setVerticalSpeed);
-                //SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading.toFixed(0));
-
-                // let deltaVS = setVerticalSpeed - apCurrentVerticalSpeed;
-                // let iMax = deltaVS > 0 ? Math.min(deltaVS / 100)
-                //     : deltaVS < 0 ? Math.max(deltaVS / 100)
-                //         : 0;
-                // let iMaxAbs = Math.abs(iMax);
-                // for (let i = 0; i < iMaxAbs; i++) {
-                //     if (deltaVS < 0) {
-                //         SimVar.SetSimVarValue("K:AP_VS_VAR_DEC", "number", 0);
-                //     }
-                //     else if (deltaVS > 0) {
-                //         SimVar.SetSimVarValue("K:AP_VS_VAR_INC", "number", 0);
-                //     }
-                // }
-                //SimVar.SetSimVarValue("K:AP_VS_VAR_SELECT", "feet per minute", setVerticalSpeed.toFixed(0));
-                Coherent.call("AP_VS_VAR_SET_ENGLISH", 0, setVerticalSpeed);
-
-                const distanceToTod = vnavTargetDistance > topOfDescent ? Math.round(vnavTargetDistance - topOfDescent) : "N/A";
-                //SET VNAV TARGET ALTITUDE AS SELECTED ALTITUDE
-                if (distanceToTod <= 0 || distanceToTod == "N/A") {
-                    Coherent.call("AP_ALT_VAR_SET_ENGLISH", 0, vnavTargetAltitude, true);
-                }
+                    else {
+                        if (altDeviation >= 500) {
+                            setVerticalSpeed = desiredVerticalSpeed * 1.5;
+                        }
+                        else if (altDeviation <= -500) {
+                            setVerticalSpeed = desiredVerticalSpeed * 0;
+                        }
+                        else if (altDeviation >= 400) {
+                            setVerticalSpeed = desiredVerticalSpeed * 1.4;
+                        }
+                        else if (altDeviation <= -400) {
+                            setVerticalSpeed = desiredVerticalSpeed * 0;
+                        }
+                        else if (altDeviation >= 300) {
+                            setVerticalSpeed = desiredVerticalSpeed * 1.3;
+                        }
+                        else if (altDeviation <= -300) {
+                            setVerticalSpeed = desiredVerticalSpeed * 0.25;
+                        }
+                        else if (altDeviation >= 200) {
+                            setVerticalSpeed = desiredVerticalSpeed * 1.2;
+                        }
+                        else if (altDeviation <= -200) {
+                            setVerticalSpeed = desiredVerticalSpeed * 0.5;
+                        }
+                        else if (altDeviation >= 100) {
+                            setVerticalSpeed = desiredVerticalSpeed * 1.1;
+                        }
+                        else if (altDeviation <= -100) {
+                            setVerticalSpeed = desiredVerticalSpeed * 0.8;
+                        }
+                        else if (altDeviation >= 20) {
+                            setVerticalSpeed = desiredVerticalSpeed * 1.05;
+                        }
+                        else if (altDeviation <= -20) {
+                            setVerticalSpeed = desiredVerticalSpeed * 0.9;
+                        }
+                        else {
+                            setVerticalSpeed = desiredVerticalSpeed;
+                        }
+                    }
+                    //setVerticalSpeed = Math.round(setVerticalSpeed);
+                    Coherent.call("AP_VS_VAR_SET_ENGLISH", 0, setVerticalSpeed);
+                }             
 
                 fmc._templateRenderer.setTemplateRaw([
                     ["", "", "WORKING TITLE VPATH" + "[blue]"],
@@ -838,7 +676,7 @@ class CJ4_FMC_PerfInitPage {
                     [" set vs[blue]", "TOD Dist"],
                     [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod + " nm"],
                     [""],
-                    ["", "VNAV DESCENT>"]
+                    ["<RECALCULATE", "VNAV DESCENT>"]
                 ]);
 
             }, 1000, true);
@@ -849,7 +687,7 @@ class CJ4_FMC_PerfInitPage {
                 [""],
                 [""],
                 [""],
-                ["", "", "UNABLE VNAV"],
+                ["", "", "UNABLE VNAV[yellow]"],
                 [""],
                 [""],
                 [""],
@@ -857,10 +695,11 @@ class CJ4_FMC_PerfInitPage {
                 [""],
                 [""],
                 [""],
-                ["", "VNAV DESCENT>"]
+                ["<RECALCULATE", "VNAV DESCENT>"]
             ]);
         }
     fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
+    fmc.onLeftInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage7(fmc); };
 
     fmc.updateSideButtonActiveStatus();
     }
