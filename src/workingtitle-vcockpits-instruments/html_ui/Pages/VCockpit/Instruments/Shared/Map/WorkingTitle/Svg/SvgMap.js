@@ -7,10 +7,12 @@ class SvgMap {
         this.configLoaded = false;
         this.rotateWithPlane = false;
         this.mapElements = [];
-        this._elementsWithTextBox = [];
-        
+
+        this.textManager = new SvgTextManager(this);
+        this.elementsWithTextBox = new Set();
+
         this.svgLayersToUpdate = [];
-        
+
         this._previousCenterCoordinates = [];
         this.planeDirection = 0;
         this.planeDirectionRadian = 0;
@@ -29,10 +31,10 @@ class SvgMap {
         SvgMap.Index++;
         this.htmlRoot = _root;
         this.planeXY = new Vec2(0.5, 0.5);
-        
+
         this.cosRotation = 1;   // cosine of rotation, mainly for internal use
         this.sinRotation = 0;   // sine of rotation, mainly for internal use
-        
+
         let configPath = "./";
         let elementId = "MapSVG";
         if (typeof (arg) === "string") {
@@ -53,46 +55,46 @@ class SvgMap {
             this._svgHtmlElement = _root.querySelector("#" + elementId);
         }
         this.svgHtmlElement.setAttribute("viewBox", "0 0 1000 1000");
-        
+
         this.cityLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.cityLayer);
         this.svgLayersToUpdate.push(this.cityLayer);
-        
+
         this.flightPlanLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.flightPlanLayer);
         this.svgLayersToUpdate.push(this.flightPlanLayer);
-        
+
         this.defaultLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.defaultLayer);
         this.svgLayersToUpdate.push(this.defaultLayer);
-        
+
         this.textLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.textLayer);
-        
+
         this.trackVectorLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.trackVectorLayer);
         this.svgLayersToUpdate.push(this.trackVectorLayer);
-        
+
         this.altitudeInterceptLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.altitudeInterceptLayer);
         this.svgLayersToUpdate.push(this.altitudeInterceptLayer);
-        
+
         this.fuelRingLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.fuelRingLayer);
         this.svgLayersToUpdate.push(this.fuelRingLayer);
-        
+
         this.rangeRingLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.rangeRingLayer);
         this.svgLayersToUpdate.push(this.rangeRingLayer);
-        
+
         this.maskLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.maskLayer);
         this.svgLayersToUpdate.push(this.maskLayer);
-        
+
         this.planeLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.planeLayer);
         this.svgLayersToUpdate.push(this.planeLayer);
-        
+
         let loadConfig = () => {
             if (typeof (SvgMapConfig) !== "undefined") {
                 this.config = new SvgMapConfig();
@@ -106,23 +108,23 @@ class SvgMap {
         };
         loadConfig();
     }
-    
+
     get svgHtmlElement() {
         return this._svgHtmlElement;
     }
-    
+
     get lastCenterCoordinates() {
         if (this._previousCenterCoordinates.length <= 0)
             return null;
         return this._previousCenterCoordinates[this._previousCenterCoordinates.length - 1];
     }
-    
+
     get centerCoordinates() {
         if (this._previousCenterCoordinates.length <= 0)
             return null;
         return this._previousCenterCoordinates[0];
     }
-    
+
     setCenterCoordinates(a, b, c) {
         if (a === undefined) {
             return;
@@ -150,11 +152,11 @@ class SvgMap {
             }
         }
     }
-    
+
     get planeCoordinates() {
         return this._planeCoordinates;
     }
-    
+
     setPlaneCoordinates(a, b, c) {
         if (a === undefined) {
             return false;
@@ -203,57 +205,57 @@ class SvgMap {
         }
         return unsmoothedMove;
     }
-    
+
     // MOD: width / height
     get aspectRatio() {
         return this._ratio;
     }
-    
+
     get NMWidth() {
         return this._NMWidth;
     }
-    
+
     // MOD: get the width in NM along the short axis of the map
     get NMWidthShort() {
         return this._NMWidth * Math.min(this._ratio, 1 / this._ratio);
     }
-    
+
     set NMWidth(v) {
         if (this.NMWidth !== v) {
             this._NMWidth = v;
             this.computeCoordinates();
         }
     }
-    
+
     setRange(r) {
         this.NMWidth = r;
     }
-    
+
     // MOD: convenience methods that just pass through to MapInstrument
     get rotation() {
         return this.htmlRoot.rotation;
     }
-    
+
     get overdrawFactor() {
         return this.htmlRoot.overdrawFactor;
     }
-    
+
     get minVisibleX() {
         return this.htmlRoot.minVisibleX;
     }
-    
+
     get maxVisibleX() {
         return this.htmlRoot.maxVisibleX;
     }
-    
+
     get minVisibleY() {
         return this.htmlRoot.minVisibleY;
     }
-    
+
     get maxVisibleY() {
         return this.htmlRoot.maxVisibleY;
     }
-    
+
     computeCoordinates() {
         this._ftWidth = 6076.11 * this._NMWidth;
         if (this.centerCoordinates) {
@@ -268,27 +270,27 @@ class SvgMap {
             this._angularWidthSouth = this._NMWidth / 60 / Math.cos(this._bottomLeftCoordinates.lat * Avionics.Utils.DEG2RAD);
         }
     }
-    
+
     get angularWidth() {
         return this._angularWidth;
     }
-    
+
     get angularHeight() {
         return this._angularHeight;
     }
-    
+
     get ftWidth() {
         return this._ftWidth;
     }
-    
+
     get bottomLeftCoordinates() {
         return this._bottomLeftCoordinates;
     }
-    
+
     get topRightCoordinates() {
         return this._topRightCoordinates;
     }
-    
+
     update() {
         if (!this.configLoaded) {
             return;
@@ -299,19 +301,19 @@ class SvgMap {
         }
 
         this.planeDirection = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree") % 360;
-        
+
         this.cosRotation = Math.cos(this.rotation * Math.PI / 180);
         this.sinRotation = Math.sin(this.rotation * Math.PI / 180);
         this.planeAltitude = SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "feet");
-        
-        
+
+
         let w = this.htmlRoot.getWidth();
         let h = this.htmlRoot.getHeight();
         let r = w / h;
         if (isFinite(r) && r > 0) {
             this._ratio = r;
         }
-        
+
         if (this._lastW !== w || this._lastH !== h) {
             this._lastW = w;
             this._lastH = h;
@@ -327,13 +329,19 @@ class SvgMap {
                 child.setAttribute("needDeletion", "true");
             }
         }
-        
+
         if (this.lineCanvas) {
             this.lineCanvas.getContext("2d").clearRect(0, 0, this.lineCanvas.width, this.lineCanvas.height);
         }
+
+        let newElementsWithTextBox = new Set();
         for (let i = 0; i < this.mapElements.length; i++) {
             let svgElement = this.mapElements[i].draw(this);
             svgElement.setAttribute("needDeletion", "false");
+
+            if (this.mapElements[i].hasTextBox) {
+                newElementsWithTextBox.add(this.mapElements[i]);
+            }
         }
         for (let svgLayer of this.svgLayersToUpdate) {
             let i = 0;
@@ -356,19 +364,28 @@ class SvgMap {
                 }
             }
         }
+
         if (this.config.preventLabelOverlap) {
-            this._elementsWithTextBox = [];
-            for (let i = 0; i < this.mapElements.length; i++) {
-                let e = this.mapElements[i];
-                if (e.hasTextBox) {
-                    this._elementsWithTextBox.push(e);
+            let toRemove = [];
+            for (let e of this.elementsWithTextBox) {
+                if (newElementsWithTextBox.has(e)) {
+                    newElementsWithTextBox.delete(e);
+                } else {
+                    toRemove.push(e);
                 }
             }
-            if (!this.textManager) {
-                this.textManager = new SvgTextManager();
+            for (let e of toRemove) {
+                this.textManager.remove(e.getLabelElement());
+                this.elementsWithTextBox.delete(e);
             }
-            this.textManager.update(this, this._elementsWithTextBox);
+            for (let e of newElementsWithTextBox) {
+                this.elementsWithTextBox.add(e);
+                this.textManager.add(e.getLabelElement());
+            }
+
+            this.textManager.update();
         }
+
         if (SvgMap.LOG_PERFS) {
             let dt = performance.now() - t0;
             this._iterations += 1;
@@ -388,14 +405,14 @@ class SvgMap {
             }
         }
     }
-    
+
     appendChild(_svgElement, _svgLayer = null) {
         if (!_svgLayer) {
             _svgLayer = this.defaultLayer;
         }
         _svgLayer.appendChild(_svgElement);
     }
-    
+
     resize(w, h) {
         console.log("SvgMap Resize : " + w + " " + h);
         let max = Math.max(w, h);
@@ -414,31 +431,31 @@ class SvgMap {
         this.lineCanvas.width = w;
         this.lineCanvas.height = h;
     }
-    
+
     NMToPixels(distanceInNM) {
         return distanceInNM / this._NMWidth * 1000;
     }
-    
+
     feetsToPixels(distanceInFeets) {
         return distanceInFeets / this._ftWidth * 1000;
     }
-    
+
     deltaLatitudeToPixels(deltaLatitude) {
         return deltaLatitude / this._angularHeight * 1000;
     }
-    
+
     deltaLongitudeToPixels(deltaLongitude) {
         return deltaLongitude / this._angularWidth * 1000;
     }
-    
+
     deltaLatitudeToNM(deltaLatitude) {
         return deltaLatitude / this._angularHeight * this.NMWidth;
     }
-    
+
     deltaLongitudeToNM(deltaLongitude) {
         return deltaLongitude / this._angularWidth * this.NMWidth;
     }
-    
+
     isInFrame(arg, safetyMarginFactor = 0) {
         if (arg && typeof (arg.x) === "number" && typeof (arg.y) === "number") {
             return this.isVec2InFrame(arg, safetyMarginFactor);
@@ -447,11 +464,11 @@ class SvgMap {
             return this.isLatLongInFrame(arg, safetyMarginFactor);
         }
     }
-    
+
     isVec2InFrame(p, safetyMarginFactor = 0) {
         return p.x >= (0 - 1000 * safetyMarginFactor) && p.y >= (0 - 1000 * safetyMarginFactor) && p.x < (1000 + 1000 * safetyMarginFactor) && p.y < (1000 + 1000 * safetyMarginFactor);
     }
-    
+
     isLatLongInFrame(ll, safetyMarginFactor = 0) {
         let dLat = this._angularHeight * safetyMarginFactor;
         let dLong = this._angularWidth * safetyMarginFactor;
@@ -460,7 +477,7 @@ class SvgMap {
             ll.lat <= this._topRightCoordinates.lat + dLat &&
             ll.long <= this._topRightCoordinates.long + dLong);
     }
-    
+
     isSegmentInFrame(s1, s2) {
         if (isNaN(s1.x) || isNaN(s1.y) || isNaN(s2.x) || isNaN(s2.y)) {
             return false;
@@ -479,13 +496,19 @@ class SvgMap {
         }
         return true;
     }
-    
+
     coordinatesToXY(coordinates) {
         let xy = new Vec2();
         this.coordinatesToXYToRef(coordinates, xy);
         return xy;
     }
-    
+
+    coordinatesToXYForceCenterRotation(coordinates, center, rotation) {
+        let xy = new Vec2();
+        this.coordinatesToXYToRefForceCenterRotation(coordinates, xy, center, rotation);
+        return xy;
+    }
+
     latLongToXYToRef(lat, long, ref) {
         let xNorth = (long - this.centerCoordinates.long) / this._angularWidthNorth * 1000;
         let xSouth = (long - this.centerCoordinates.long) / this._angularWidthSouth * 1000;
@@ -496,7 +519,7 @@ class SvgMap {
         ref.x = x * this.cosRotation - y * this.sinRotation + 500;
         ref.y = x * this.sinRotation + y * this.cosRotation + 500;
     }
-    
+
     coordinatesToXYToRef(coordinates, ref) {
         let xNorth = (coordinates.long - this.centerCoordinates.long) / this._angularWidthNorth * 1000;
         let xSouth = (coordinates.long - this.centerCoordinates.long) / this._angularWidthSouth * 1000;
@@ -507,7 +530,7 @@ class SvgMap {
         ref.x = x * this.cosRotation - y * this.sinRotation + 500;
         ref.y = x * this.sinRotation + y * this.cosRotation + 500;
     }
-    
+
     latLongToXYToRefForceCenter(lat, long, ref, forcedCenterCoordinates) {
         let xNorth = (long - forcedCenterCoordinates.long) / this._angularWidthNorth * 1000;
         let xSouth = (long - forcedCenterCoordinates.long) / this._angularWidthSouth * 1000;
@@ -518,35 +541,41 @@ class SvgMap {
         ref.x = x * this.cosRotation - y * this.sinRotation + 500;
         ref.y = x * this.sinRotation + y * this.cosRotation + 500;
     }
-    
-    coordinatesToXYToRefForceCenter(coordinates, ref, forcedCenterCoordinates) {
-        let xNorth = (coordinates.long - forcedCenterCoordinates.long) / this._angularWidthNorth * 1000;
-        let xSouth = (coordinates.long - forcedCenterCoordinates.long) / this._angularWidthSouth * 1000;
-        let deltaLat = (coordinates.lat - forcedCenterCoordinates.lat) / this._angularHeight;
+
+    coordinatesToXYToRefForceCenter(coordinates, ref, center) {
+        return coordinatesToXYToRefForceCenterRotation(coordinates, ref, center, this.rotation);
+    }
+
+    coordinatesToXYToRefForceCenterRotation(coordinates, ref, center, rotation) {
+        let xNorth = (coordinates.long - center.long) / this._angularWidthNorth * 1000;
+        let xSouth = (coordinates.long - center.long) / this._angularWidthSouth * 1000;
+        let deltaLat = (coordinates.lat - center.lat) / this._angularHeight;
         let y = -deltaLat * 1000;
         deltaLat += 0.5;
         let x = xNorth * deltaLat + xSouth * (1 - deltaLat);
-        ref.x = x * this.cosRotation - y * this.sinRotation + 500;
-        ref.y = x * this.sinRotation + y * this.cosRotation + 500;
+        let sinRotation = Math.sin(rotation * Avionics.Utils.DEG2RAD);
+        let cosRotation = Math.cos(rotation * Avionics.Utils.DEG2RAD);
+        ref.x = x * cosRotation - y * sinRotation + 500;
+        ref.y = x * sinRotation + y * cosRotation + 500;
     }
-    
+
     XYToCoordinates(xy) {
         let lat = this.centerCoordinates.lat - ((xy.y - 500) / 1000) * this._angularHeight;
         let long = this.centerCoordinates.long + ((xy.x - 500) / 1000) * this._angularWidth;
         return new LatLongAlt(lat, long);
     }
-    
+
     bearingDistanceToXY(bearing, distance) {
         let x = 1000 * (this.planeXY.x + Math.sin(bearing * Avionics.Utils.DEG2RAD) * distance / this.NMWidth);
         let y = 1000 * (this.planeXY.y - Math.cos(bearing * Avionics.Utils.DEG2RAD) * distance / this.NMWidth);
         return { x: x, y: y };
     }
-    
+
     // MOD: convenience method to return X,Y coordinates of plane
     getPlanePositionXY() {
         return this.coordinatesToXY(this.planeCoordinates);
     }
-    
+
     // MOD: returns lat/long coordinates of (X,Y) point of map with plane at center, taking into account any current map rotation
     // (X,Y) is vector of arbitrary units where (0,0) is top left and (1000, 1000) is bottom right of map
     XYToCoordinatesFromPlaneWithRotation(xy) {
@@ -554,7 +583,7 @@ class SvgMap {
         let transformed = new Vec2();
         transformed.x = (xy.x - 500) * this.cosRotation + (xy.y - 500) * this.sinRotation + 500;
         transformed.y = -(xy.x - 500) * this.sinRotation + (xy.y - 500) * this.cosRotation + 500;
-        
+
         let lat = this.planeCoordinates.lat - ((transformed.y - 500) / 1000) * this._angularHeight;
         let long = this.planeCoordinates.long + ((transformed.x - 500) / 1000) * this._angularWidth;
         return new LatLongAlt(lat, long);

@@ -1,5 +1,33 @@
 # Changelog
 
+### v0.3.0
+**Fixes**
+- \[Misc\] Fixed a regression in v0.3.0-pre1 where adjusting screen backlight brightness via the touchscreen controllers was broken in the TBM if using custom liveries.
+- \[PFD\] The Terrain softkey no longer displays a value of "undefined".
+- \[PFD\] Terrain mode and DCLTR settings for the inset map now save correctly between sessions.
+- \[TSC\] Fixed an issue where the pressing the down button in the active flight plan page would cause a CTD under certain circumstances. Also generally improved the scroll behavior in the active flight plan page.
+- \[TSC\] Fixed a regression in v0.3.0-pre1 where the physical knobs would not function correctly while certain pop-up windows were displayed.
+
+### v0.3.0-pre1
+**New Features**
+- \[Compatibility\] The mod is now fully compatible with the Cessna Citation Longitude.
+- \[PFD\] Added the ability to control SVT toggle and altimeter barometric units settings via the touchscreen controller.
+  - To change these settings, navigate to PFD Home -> PFD Settings.
+- \[MFD\] Added the ability to customize the navigation data bar (located at the top of the MFD). The player can now select what type of information gets displayed in each of the eight data fields. The currently supported data types are: BRG, DIS, DTG, DTK, END, ENR, ETA, ETE, FOB, FOD, GS, LDG, TAS, TKE, TRK, XTK.
+  - To change these settings, navigate to MFD Home -> Utilities -> Setup -> Avionics Settings -> MFD Data Fields tab.
+
+**Changed Features**
+- \[Misc\] Integrated StuTozer/ElectrikKar's Touchscreen Restyled Mod. This overhauls the look of the touchscreen controllers to more closely match those on the real Garmin units.
+  - In addition to the changes ported from the Touchscreen Restyled Mod, many more have been made on top of those in order to achieve an even more authentic look.
+- \[NavMap\] Reworked how text labels are culled from the navigational map. Culling should now be better at avoiding label overlap. In addition, the map will now prioritize certain labels over others.
+  - The priority order is airports > VOR > NDB > INT > cities. Larger airports and cities also get priority over smaller ones.
+
+**Fixes**
+- \[Misc\] Display brightness is now saved between sessions for the TBM 930.
+- \[NavMap\] Fixed a bug where the track vector overlay would disappear under certain conditions.
+- \[NavMap\] Performance optimizations for the city display.
+- \[NAVCOM\] Fixed a bug where changing the ADF frequency in the touchscreen controller's Audio/Radio page would lead to unexpected changes in NAV frequencies.
+
 ### v0.2.2
 **Fixes**
 - \[Compatibility\] Now compatible with game patch 1.10.7.0 (Update 5).
