@@ -3,7 +3,7 @@
 **/build
 ref
 .idea/codeStyles/codeStyleConfig.xml
-.idea/fspackages.iml
+.idea/*.iml
 .idea/modules.xml
 .idea/vcs.xml
 .idea/workspace.xml

@@ -413,7 +413,8 @@ class MapInstrument extends ISvgMapRootElement {
             this.mapNearestVorList = new NearestVORList(this.instrument);
             this.testAirspaceList = new NearestAirspaceList(this.instrument);
             this.roadNetwork = new SvgRoadNetworkElement();
-            this.cityManager = new SvgCityManager(this.navMap);
+            this.cityCanvas = new SvgCityElementCanvas();
+            this.cityManager = new SvgCityManager(this.navMap, this.cityCanvas);
             this.airwayIterator = 0;
             this.airspaceIterator = 0;
             this.smartIterator = new SmartIterator();
@@ -655,9 +656,7 @@ class MapInstrument extends ISvgMapRootElement {
                     this.ndbLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.ndbLoader.update();
                 }
-                if (this.showCities) {
-                    this.cityManager.update();
-                }
+                this.cityManager.update();
                 if (this.showAirspaces) {
                     if (this.drawCounter === 50) {
                         this.nearestAirspacesLoader.lla.lat = centerCoordinates.lat;
@@ -761,13 +760,7 @@ class MapInstrument extends ISvgMapRootElement {
                         }
                     }
                 }
-                if (this.showCities) {
-                    for (let city of this.cityManager.displayedCities) {
-                        if (this.getDeclutteredRange() <= this.cityMaxRanges[city.size]) {
-                            this.navMap.mapElements.push(city);
-                        }
-                    }
-                }
+                this.navMap.mapElements.push(this.cityCanvas);
                 if (this.showConstraints) {
                     for (let i = 0; i < this.constraints.length; i++) {
                         this.navMap.mapElements.push(this.constraints[i]);

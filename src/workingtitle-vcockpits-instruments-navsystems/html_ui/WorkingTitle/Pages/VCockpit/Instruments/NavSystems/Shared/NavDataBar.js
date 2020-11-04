@@ -45,6 +45,11 @@ class WT_NavDataBar extends NavSystemElement {
         }
         let timeFormatter = new WT_TimeFormatter(timeOpts);
 
+        let utcOpts = {
+            timeFormat: WT_TimeFormatter.Format.HH_MM
+        }
+        let utcFormatter = new WT_TimeFormatter(utcOpts);
+
         let flightPlanManager = this.gps.currFlightPlanManager;
 
         this._infos = {
@@ -87,7 +92,7 @@ class WT_NavDataBar extends NavSystemElement {
                         let ete = SimVar.GetSimVarValue("GPS WP ETE", "seconds");
                         return (currentTime + ete) % (24 * 3600);
                     }
-                }, timeFormatter),
+                }, utcFormatter),
 
             ETE: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.ETE, new WT_NumberUnit(0, WT_Unit.SECOND), "GPS WP ETE", "seconds", timeFormatter, {showDefault: number => number == 0 ? "__:__" : null}),
             FOB: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.FOB, new WT_NumberUnit(0, WT_Unit.GALLON), "FUEL TOTAL QUANTITY", "gallons", volumeFormatter),
@@ -112,7 +117,7 @@ class WT_NavDataBar extends NavSystemElement {
                         let enr = SimVar.GetSimVarValue("GPS ETE", "seconds");
                         return (currentTime + enr) % (24 * 3600);
                     }
-                }, timeFormatter),
+                }, utcFormatter),
 
             TAS: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.TAS, new WT_NumberUnit(0, WT_Unit.KNOT), "AIRSPEED TRUE", "knots", speedFormatter),
             TKE: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.TKE, new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS WP TRACK ANGLE ERROR", "degree", bearingFormatter),
