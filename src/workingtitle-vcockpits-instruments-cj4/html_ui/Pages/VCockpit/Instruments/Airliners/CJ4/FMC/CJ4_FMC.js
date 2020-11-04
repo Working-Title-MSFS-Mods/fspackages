@@ -641,7 +641,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
     //add temporary method to fetch constraints
     getConstraints() {
-        let constraints = []];
+        let constraints = [];
         let storedConstraints = WTDataStore.get('CJ4_currentWaypoints', 'none');
         let constraintsCount = storedConstraints.replace(/[^;]/g, "").length
         //console.log("constraintsCount " + constraintsCount);
