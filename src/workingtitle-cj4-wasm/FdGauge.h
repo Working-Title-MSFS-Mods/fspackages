@@ -148,7 +148,7 @@ public:
     {
         //printf("FdGauge OnUpdate()");
 
-        //g_SimVars.setThrottleMode(1);
+        //g_SimVars.setThrottleMode(1);4
 
         SimConnect_CallDispatch(hSimConnect, HandleAxisEvent, this);
 

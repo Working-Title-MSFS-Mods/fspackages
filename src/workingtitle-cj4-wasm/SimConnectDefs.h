@@ -112,8 +112,14 @@ public:
     /// </summary>
     ID ThrottleMode;
 
+    SimVars()
+    {
+        this->initializeVars();
+    }
+
     void initializeVars() {
         ThrottleMode = register_named_variable("THROTTLE_MODE");
+        m_Units = new Units();
     }
 
     void setThrottleMode(FLOAT64 value) {

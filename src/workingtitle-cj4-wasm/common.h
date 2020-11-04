@@ -14,6 +14,8 @@
 
 #include "SimConnectDefs.h"
 
+#include "WtUtils.h"
+
 /// <summary>
 /// The handle to the SimConnect instance.
 /// </summary>

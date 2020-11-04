@@ -117,6 +117,7 @@
     <ClInclude Include="FdGauge.h" />
     <ClInclude Include="PidController.h" />
     <ClInclude Include="SimConnectDefs.h" />
+    <ClInclude Include="WtUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

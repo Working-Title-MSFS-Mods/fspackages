@@ -39,7 +39,7 @@ private:
         EngineControlData controls;
         controls.throttleLeft = this->getDesiredThrottle(1, deltaTime);
         controls.throttleRight = this->getDesiredThrottle(2, deltaTime);
-        //printf("TL: %.0f TR: %.0f", controls.throttleLeft, controls.throttleRight);
+        //printf("TL: %.0f TR: %.0f \r\n", controls.throttleLeft, controls.throttleRight);
         SimConnect_SetDataOnSimObject(hSimConnect, DataTypes::EngineControls, SIMCONNECT_OBJECT_ID_USER, 0, 0, sizeof(EngineControlData), &controls);
     }
 
@@ -53,8 +53,8 @@ private:
         double throttleExp = pow(throttleLeverPerc, 3.5);
         double targetThrust = (2950 * throttleExp); // this is gross thrust (one engine)
 
-        double grossSimThrust = 0;// wt_utils::convertToGrossThrust(this->simVars->getThrust(index), this->simVars->getMach());
-        double maxDensityThrust = 0; // wt_utils::getMaxDensityThrust(this->simVars->getAmbientDensity());
+        double grossSimThrust = wt_utils::convertToGrossThrust(this->simVars->getThrust(index), this->simVars->getMach());
+        double maxDensityThrust = wt_utils::getMaxDensityThrust(this->simVars->getAmbientDensity());
 
         if (maxDensityThrust < 3200) {
             targetThrust = (maxDensityThrust * throttleExp);
@@ -71,8 +71,13 @@ private:
             pidOut = this->throttleRightController->GetOutput(error, deltaTime);
         }
 
+        if (index == 1)
+            printf("TTHR: %.0f THR: %.0f EL: %f PL: %f \r\n", targetThrust, this->simVars->getThrust(1), error, pidOut);
+
+
+        //printf("TLP: %.0f DTLP %.0f\r\n", this->simVars->getThrottleLeverPosition(index), max(0, min(100, this->simVars->getThrottleLeverPosition(index) + pidOut)));
+
         return max(0, min(100, this->simVars->getThrottleLeverPosition(index) + pidOut));
-        //return 0;
     }
 
 public:

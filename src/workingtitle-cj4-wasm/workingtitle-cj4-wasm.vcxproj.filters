@@ -15,6 +15,9 @@
     <ClInclude Include="SimConnectDefs.h">
       <Filter>Util</Filter>
     </ClInclude>
+    <ClInclude Include="WtUtils.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="FD">
