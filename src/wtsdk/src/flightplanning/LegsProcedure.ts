@@ -1,10 +1,10 @@
 import { WayPoint, ProcedureLeg, BaseInstrument, LatLongAlt, IntersectionInfo, Avionics } from 'MSFS';
-import RawDataMapper from './RawDataMapper';
+import { RawDataMapper } from './RawDataMapper';
 
 /**
  * Creates a collection of waypoints from a legs procedure.
  */
-export default class LegsProcedure {
+export class LegsProcedure {
 
   /** The current index in the procedure. */
   private _currentIndex = 0;

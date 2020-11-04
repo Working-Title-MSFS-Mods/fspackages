@@ -11,6 +11,10 @@ declare module "MSFS" {
     distanceInFP: number;
     cumulativeDistanceInFP: number;
     instrument: BaseInstrument;
+    legAltitudeDescription: number;
+    legAltitude1: number;
+    legAltitude2: number;
+    additionalData: { [key: string]: any }
   }
 
   export class BaseInstrument {
@@ -18,7 +22,7 @@ declare module "MSFS" {
   }
   
   export class FacilityLoader {
-    getFacilityRaw: (icao: string, timeout?: number) => Promise<any>;
+    getFacilityRaw(icao: string, timeout?: number): Promise<any>;
   }
 
   export class WayPointInfo {
@@ -52,6 +56,7 @@ declare module "MSFS" {
 
   export interface OneWayRunway {
     designation: string;
+    direction: number;
   }
 
   export interface RunwayTransition {
@@ -74,7 +79,10 @@ declare module "MSFS" {
     computeGreatCircleDistance(coords1: LatLongAlt, coords2: LatLongAlt): number;
     bearingDistanceToCoordinates(bearing: number, distanceInNM: number, lat: number, long: number): LatLongAlt;
     fmod(value: number, moduloBy: number): number;
+    computeDistance(coords1: LatLongAlt, coords2: LatLongAlt);
+    angleDiff(degrees1: number, degrees2: number);
     DEG2RAD: number;
+    RAD2DEG: number;
   }
 
   export interface ProcedureLeg {
@@ -94,10 +102,20 @@ declare module "MSFS" {
     constructor(lat?: number, long?: number, alt?: number);
     lat: number;
     long: number;
+    alt: number;
   }
 
   export class SimVar {
     static GetSimVarValue(name: string, unit: string): any;
     static SetSimVarValue(name: string, unit: string, value: any): Promise<void>;
+  }
+
+  export class Simplane {
+    static getHeadingMagnetic(): number;
+  }
+
+  export class EmptyCallback {
+    static Void: () => void;
+    static Boolean: (boolean) => void;
   }
 }

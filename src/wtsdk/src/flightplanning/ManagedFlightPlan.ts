@@ -1,15 +1,15 @@
 import { SegmentType, FlightPlanSegment } from './FlightPlanSegment';
-import LegsProcedure from './LegsProcedure';
-import RawDataMapper from './RawDataMapper';
-import GPS from './GPS';
-import ProcedureDetails from './ProcedureDetails';
-import DirectTo from './DirectTo';
-import { WayPoint, BaseInstrument, WayPointInfo, VORInfo, NDBInfo, IntersectionInfo, AirportInfo, LatLongAlt, Avionics } from 'MSFS';
+import { LegsProcedure } from './LegsProcedure';
+import { RawDataMapper } from './RawDataMapper';
+import { GPS }  from './GPS';
+import { ProcedureDetails } from './ProcedureDetails';
+import { DirectTo } from './DirectTo';
+import { WayPoint, BaseInstrument, WayPointInfo, VORInfo, NDBInfo, IntersectionInfo, AirportInfo, LatLongAlt, Avionics, SimVar } from 'MSFS';
 
 /**
  * A flight plan managed by the FlightPlanManager.
  */
-export default class ManagedFlightPlan {
+export class ManagedFlightPlan {
 
   /** Whether or not the flight plan has an origin airfield. */
   public originAirfield?: WayPoint;
@@ -422,6 +422,82 @@ export default class ManagedFlightPlan {
   public reverse(): void {
     //TODO: Fix flight plan indexes after reversal
     //this._waypoints.reverse();
+  }
+
+  /**
+   * Goes direct to the specified 
+   * @param icao 
+   */
+  public async goDirectToIcao(icao: string): Promise<void> {
+    const facility = await this._parentInstrument.facilityLoader.getFacilityRaw(icao);
+    if (facility !== undefined) {
+      const mappedFacility = RawDataMapper.toWaypoint(facility, this._parentInstrument);
+      const interceptPoints = this.calculateDirectIntercept(mappedFacility);
+
+      this.directTo.waypoint = mappedFacility;
+      this.directTo.interceptPoints = interceptPoints;
+      this.directTo.isActive = true;
+
+      for (var i = 0; i < this.waypoints.length; i++) {
+        this.removeWaypoint(0);
+      }
+
+      for (var i = 0; i < this.directTo.interceptPoints.length + 1; i ++) {
+        if (i < this.directTo.interceptPoints.length) {
+          this.addWaypoint(this.directTo.interceptPoints[i], i);
+        }
+        else {
+          this.addWaypoint(this.directTo.waypoint, i);
+        }
+      }
+
+      await GPS.setActiveWaypoint(0);
+      this.activeWaypointIndex = 0;
+
+      await this.syncToGPS();
+    }
+  }
+
+  /**
+   * Calculates an intercept path to a direct-to waypoint.
+   * @param waypoint The waypoint to calculate the path to.
+   * @returns The waypoints that make up the intercept path.
+   */
+  public calculateDirectIntercept(waypoint: WayPoint): WayPoint[] {
+    const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+    const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+
+    const planeCoords = new LatLongAlt(lat, long);
+
+    const groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+    const planeHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "Radians") * Avionics.Utils.RAD2DEG;
+
+    const headingToFix = Avionics.Utils.computeGreatCircleHeading(planeCoords, waypoint.infos.coordinates);
+    let angleDiff = Avionics.Utils.angleDiff(planeHeading, headingToFix);
+
+    const turnDurationSeconds = (angleDiff / 3) + 6;
+    const interceptDistance = (groundSpeed / 60) * turnDurationSeconds;
+
+    const createInterceptPoint = (coords: LatLongAlt) => {
+      const interceptWaypoint = new WayPoint(this._parentInstrument);
+      interceptWaypoint.ident = waypoint.ident;
+
+      interceptWaypoint.infos = new IntersectionInfo(this._parentInstrument);
+      interceptWaypoint.infos.coordinates = coords;
+
+      return interceptWaypoint;
+    };
+
+    if (angleDiff < 90 && angleDiff > -90) {
+      const coords = Avionics.Utils.bearingDistanceToCoordinates(planeHeading, interceptDistance, lat, long);
+      return [createInterceptPoint(planeCoords), createInterceptPoint(coords)];
+    }
+    else {
+      const coords1 = Avionics.Utils.bearingDistanceToCoordinates(planeHeading, interceptDistance / 2, lat, long);
+      const coords2 = Avionics.Utils.bearingDistanceToCoordinates(planeHeading + (angleDiff / 2), interceptDistance / 2, coords1.lat, coords1.long);
+
+      return [createInterceptPoint(planeCoords), createInterceptPoint(coords1), createInterceptPoint(coords2)];
+    }
   }
 
   /**

@@ -1,9 +1,10 @@
 import { WayPoint } from "MSFS";
+import { FlightPlanSegment } from "../wtsdk";
 
 /**
  * Information about the current direct-to procedures in the flight plan.
  */
-export default class DirectTo {
+export class DirectTo {
 
   /** Whether or not the current direct-to is in the flight plan. */
   public waypointIsInFlightPlan: boolean = false;
@@ -15,39 +16,14 @@ export default class DirectTo {
   public waypoint?: WayPoint;
 
   /** The current direct-to waypoint index, if part of the flight plan. */
-  public waypointIndex = 0;
+  public planWaypointIndex = 0;
 
-  /** The origin created when direct-to is activated. */
-  public origin?: WayPoint;
+  /** The intercept points towards the direct. */
+  public interceptPoints?: WayPoint[];
 
-  /**
-   * Activates direct-to with an external waypoint.
-   * @param waypoint The waypoint to fly direct-to.
-   */
-  public activateFromWaypoint(waypoint: WayPoint): void {
-    this.isActive = true;
-    this.waypoint = waypoint;
-    this.waypointIsInFlightPlan = false;
-  }
+  /** The current active index in the direct to waypoints. */
+  public currentWaypointIndex = 0;
 
-  /**
-   * Cancels direct-to. 
-   */
-  public cancel(): void {
-    this.isActive = false;
-    this.waypointIsInFlightPlan = false;
-
-    this.waypoint = undefined;
-    this.origin = undefined;
-  }
-
-  /**
-   * Activates direct-to a waypoint already in the flight plan.
-   * @param index The index of the waypoint in the flight plan.
-   */
-  public activateFromIndex(index: number): void {
-    this.isActive = true;
-    this.waypointIsInFlightPlan = true;
-    this.waypointIndex = index;
-  }
+  /** The segments of the direct plan. */
+  public segments?: FlightPlanSegment[];
 }

@@ -11,7 +11,7 @@ const plugins = [
 ];
 
 module.exports = {
-  entry: './.tmp/index.js',
+  entry: './.tmp/wtsdk.js',
   module: {
     rules: [
       {
@@ -22,7 +22,8 @@ module.exports = {
     ],
   },
   externals: {
-    MSFS: 'MSFS'
+    MSFS: 'MSFS',
+    WorkingTitle: 'WorkingTitle'
   },
   externalsType: 'global',
   resolve: {

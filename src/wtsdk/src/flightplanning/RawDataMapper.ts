@@ -4,7 +4,7 @@ import { WayPoint, BaseInstrument, AirportInfo, OneWayRunway, RunwayTransition,
 /** 
  * A class for mapping raw facility data to WayPoints. 
  */
-export default class RawDataMapper {
+export class RawDataMapper {
 
   /**
    * Maps a raw facility record to a WayPoint.

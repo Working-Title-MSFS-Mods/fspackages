@@ -1,37 +1,47 @@
+import { BaseInstrument, SimVar, EmptyCallback, LatLongAlt, Avionics, AirportInfo, WayPoint, OneWayRunway, Simplane } from 'MSFS';
+import { WTDataStore } from 'WorkingTitle';
+import { ManagedFlightPlan, GPS } from '../wtsdk';
+import { FlightPlanSegment, SegmentType } from './FlightPlanSegment';
+
 /**
  * A system for managing flight plan data used by various instruments.
  */
-class FlightPlanManager {
+export class FlightPlanManager {
+
+  private _isRegistered = false;
+  private _currentFlightPlanVersion = 0;
+  private __currentFlightPlanIndex = 0;
+
+  public static DEBUG_INSTANCE: FlightPlanManager;
+
+  public static FlightPlanKey = "WT.FlightPlan";
+  public static FlightPlanVersionKey = "L:WT.FlightPlan.Version";
+
+  /**
+   * The current stored flight plan data.
+   * @type ManagedFlightPlan[]
+   */
+  private _flightPlans: ManagedFlightPlan[];
 
   /**
    * Constructs an instance of the FlightPlanManager with the provided
    * parent instrument attached.
-   * @param {BaseInstrument} parentInstrument The parent instrument attached to this FlightPlanManager.
+   * @param parentInstrument The parent instrument attached to this FlightPlanManager.
    */
-  constructor(parentInstrument) {
-    this._parentInstrument = parentInstrument;
-    this._isRegistered = false;
-    this._currentFlightPlanVersion = 0;
-    this.__currentFlightPlanIndex = 0;
-
-    /**
-     * The current stored flight plan data.
-     * @type ManagedFlightPlan[]
-     */
-    this._flightPlans;
+  constructor(private _parentInstrument: BaseInstrument) {
     this._loadFlightPlans();
-
     FlightPlanManager.DEBUG_INSTANCE = this;
   }
 
-  get _currentFlightPlanIndex() { 
+  public get _currentFlightPlanIndex() { 
     return this.__currentFlightPlanIndex; 
   }
-  set _currentFlightPlanIndex(value) {
+
+  public set _currentFlightPlanIndex(value) {
     this.__currentFlightPlanIndex = value;
   }
 
-  update(_deltaTime) {
+  public update(_deltaTime: number): void {
     const gpsActiveWaypointIndex = GPS.getActiveWaypoint();
 
     if (this._flightPlans[0].activeWaypointIndex !== gpsActiveWaypointIndex) {
@@ -39,30 +49,31 @@ class FlightPlanManager {
     }
   }
 
-  onCurrentGameFlightLoaded(_callback) {
+  public onCurrentGameFlightLoaded(_callback: () => {}) {
     _callback();
   }
-  registerListener() {
+
+  public registerListener() {
   }
 
-  addHardCodedConstraints(wp) {
+  public addHardCodedConstraints(wp) {
   }
 
   /**
    * Loads sim flight plan data into WayPoint objects for consumption.
-   * @param {*} data The flight plan data to load.
-   * @param {*} currentWaypoints The waypoints array to modify with the data loaded.
-   * @param {*} callback A callback to call when the data has completed loading.
+   * @param data The flight plan data to load.
+   * @param currentWaypoints The waypoints array to modify with the data loaded.
+   * @param callback A callback to call when the data has completed loading.
    */
-  _loadWaypoints(data, currentWaypoints, callback) {
+  private _loadWaypoints(data: any, currentWaypoints: any, callback: () => void) {
   }
 
   /**
    * Updates the current active waypoint index from the sim.
    */
-  async updateWaypointIndex() {
-    const waypointIndex = await Coherent.call("GET_ACTIVE_WAYPOINT_INDEX");
-    this._activeWaypointIndex = waypointIndex;
+  public async updateWaypointIndex() {
+    //const waypointIndex = await Coherent.call("GET_ACTIVE_WAYPOINT_INDEX");
+    //this._activeWaypointIndex = waypointIndex;
   }
 
   /**
@@ -71,7 +82,7 @@ class FlightPlanManager {
    * @param {() => void} callback A callback to call when the update has completed.
    * @param {Boolean} log Whether or not to log the loaded flight plan value.
    */
-  updateFlightPlan(callback = () => { }, log = false) {
+  public updateFlightPlan(callback: () => void = () => { }, log = false): void {
     const flightPlanVersion = SimVar.GetSimVarValue("L:WT.FlightPlan.Version", "number");
     if (flightPlanVersion !== this._currentFlightPlanVersion) {
       this._loadFlightPlans();
@@ -84,7 +95,7 @@ class FlightPlanManager {
   /**
    * Loads the flight plans from data storage.
    */
-  _loadFlightPlans() {
+  public _loadFlightPlans(): void {
     this._flightPlans = JSON.parse(WTDataStore.get("WT.FlightPlan", "[]"));
 
     if (this._flightPlans.length === 0) {
@@ -95,26 +106,27 @@ class FlightPlanManager {
     }
   }
 
-  updateCurrentApproach(callback = () => { }, log = false) {
+  public updateCurrentApproach(callback = () => { }, log = false): void {
     callback();
   }
 
-  get cruisingAltitude() {
+  public get cruisingAltitude(): number {
+    return 0;
   }
 
   /**
    * Gets the index of the currently active flight plan.
    */
-  getCurrentFlightPlanIndex() {
+  public getCurrentFlightPlanIndex(): number {
     return this._currentFlightPlanIndex;
   }
 
   /**
    * Switches the active flight plan index to the supplied index.
-   * @param {Number} index The index to now use for the active flight plan.
-   * @param {(Boolean) => void} callback A callback to call when the operation has completed.
+   * @param index The index to now use for the active flight plan.
+   * @param callback A callback to call when the operation has completed.
    */
-  setCurrentFlightPlanIndex(index, callback = EmptyCallback.Boolean) {
+  public setCurrentFlightPlanIndex(index: number, callback = EmptyCallback.Boolean): void {
     if (index >= 0 && index < this._flightPlans.length) {
       this._currentFlightPlanIndex = index;
       callback(true);
@@ -126,9 +138,9 @@ class FlightPlanManager {
 
   /**
    * Creates a new flight plan.
-   * @param {(Boolean) => void} callback 
+   * @param callback A callback to call when the operation has completed.
    */
-  createNewFlightPlan(callback = EmptyCallback.Void) {
+  public createNewFlightPlan(callback = EmptyCallback.Void): void {
     const newFlightPlan = new ManagedFlightPlan();
     newFlightPlan.setParentInstrument(this._parentInstrument);
 
@@ -140,10 +152,10 @@ class FlightPlanManager {
 
   /**
    * Copies the currently active flight plan into the specified flight plan index.
-   * @param {Number} index The index to copy the currently active flight plan into.
-   * @param {() => void} callback A callback to call when the operation has completed.
+   * @param index The index to copy the currently active flight plan into.
+   * @param callback A callback to call when the operation has completed.
    */
-  async copyCurrentFlightPlanInto(index, callback = EmptyCallback.Void) {
+  public async copyCurrentFlightPlanInto(index: number, callback = EmptyCallback.Void): Promise<void> {
     const copiedFlightPlan = this._flightPlans[this._currentFlightPlanIndex].copy();
     const activeWaypointIndex = copiedFlightPlan.activeWaypointIndex;
 
@@ -160,10 +172,10 @@ class FlightPlanManager {
 
   /**
    * Copies the flight plan at the specified index to the currently active flight plan index.
-   * @param {Number} index The index to copy into the currently active flight plan.
-   * @param {() => void} callback A callback to call when the operation has completed.
+   * @param index The index to copy into the currently active flight plan.
+   * @param callback A callback to call when the operation has completed.
    */
-  async copyFlightPlanIntoCurrent(index, callback = EmptyCallback.Void) {
+  public async copyFlightPlanIntoCurrent(index: number, callback = EmptyCallback.Void): Promise<void> {
     const copiedFlightPlan = this._flightPlans[index].copy();
     const activeWaypointIndex = copiedFlightPlan.activeWaypointIndex;
 
@@ -180,9 +192,9 @@ class FlightPlanManager {
 
   /**
    * Clears the currently active flight plan.
-   * @param {() => void} callback A callback to call when the operation has completed.
+   * @param callback A callback to call when the operation has completed.
    */
-  async clearFlightPlan(callback = EmptyCallback.Void) {
+  public async clearFlightPlan(callback = EmptyCallback.Void): Promise<void> {
     await this._flightPlans[this._currentFlightPlanIndex].clearPlan();
     this._updateFlightPlanVersion();
     
@@ -192,17 +204,17 @@ class FlightPlanManager {
   /**
    * Gets the origin of the currently active flight plan.
    */
-  getOrigin() {
+  public getOrigin(): WayPoint | undefined {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     return currentFlightPlan.originAirfield;
   }
 
   /**
    * Sets the origin in the currently active flight plan.
-   * @param {String} icao The ICAO designation of the origin airport.
-   * @param {() => void} callback A callback to call when the operation has completed.
+   * @param icao The ICAO designation of the origin airport.
+   * @param callback A callback to call when the operation has completed.
    */
-  async setOrigin(icao, callback = () => { }) {
+  public async setOrigin(icao: string, callback = () => { }): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     const airport = await this._parentInstrument.facilityLoader.getFacilityRaw(icao);
 
@@ -215,19 +227,19 @@ class FlightPlanManager {
 
   /**
    * Gets the index of the active waypoint in the flight plan.
-   * @param {Boolean} forceSimVarCall Unused
-   * @param {Boolean} useCorrection Unused
+   * @param forceSimVarCall Unused
+   * @param useCorrection Unused
    */
-  getActiveWaypointIndex(forceSimVarCall = false, useCorrection = false) {
+  public getActiveWaypointIndex(forceSimVarCall = false, useCorrection = false): number {
     return this._flightPlans[this._currentFlightPlanIndex].activeWaypointIndex;
   }
 
   /**
    * Sets the index of the active waypoint in the flight plan.
-   * @param {Number} index The index to make active in the flight plan.
-   * @param {() => void} callback A callback to call when the operation has completed.
+   * @param index The index to make active in the flight plan.
+   * @param callback A callback to call when the operation has completed.
    */
-  setActiveWaypointIndex(index, callback = EmptyCallback.Void) {
+  public setActiveWaypointIndex(index: number, callback = EmptyCallback.Void): void {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (index >= 0 && index < currentFlightPlan.length) {
       currentFlightPlan.activeWaypointIndex = index;
@@ -238,26 +250,26 @@ class FlightPlanManager {
   }
 
   /** Unknown */
-  recomputeActiveWaypointIndex(callback = EmptyCallback.Void) {
+  public recomputeActiveWaypointIndex(callback = EmptyCallback.Void): void {
     callback();
   }
 
   /**
    * Gets the index of the waypoint prior to the currently active waypoint.
-   * @param {Boolean} forceSimVarCall Unused
+   * @param forceSimVarCall Unused
    */
-  getPreviousActiveWaypoint(forceSimVarCall = false) {
+  public getPreviousActiveWaypoint(forceSimVarCall = false): WayPoint {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    const previousWaypointIndex = currentFlightPlan.activeWaypoint - 1;
+    const previousWaypointIndex = currentFlightPlan.activeWaypointIndex - 1;
 
     return currentFlightPlan.getWaypoint(previousWaypointIndex);
   }
 
   /**
    * Gets the ident of the active waypoint.
-   * @param {Boolean} forceSimVarCall Unused
+   * @param forceSimVarCall Unused
    */
-  getActiveWaypointIdent(forceSimVarCall = false) {
+  public getActiveWaypointIdent(forceSimVarCall = false): string {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (currentFlightPlan.activeWaypoint) {
       return currentFlightPlan.activeWaypoint.ident;
@@ -268,28 +280,28 @@ class FlightPlanManager {
 
   /**
    * Gets the active waypoint index from fs9gps. Currently unimplemented.
-   * @param {*} forceSimVarCall Unused
+   * @param forceSimVarCall Unused
    */
-  getGPSActiveWaypointIndex(forceSimVarCall = false) {
+  public getGPSActiveWaypointIndex(forceSimVarCall = false): number {
     return this.getActiveWaypointIndex();
   }
 
   /**
    * Gets the active waypoint.
-   * @param {Boolean} forceSimVarCall Unused
-   * @param {Boolean} useCorrection Unused
+   * @param forceSimVarCall Unused
+   * @param useCorrection Unused
    */
-  getActiveWaypoint(forceSimVarCall = false, useCorrection = false) {
+  public getActiveWaypoint(forceSimVarCall = false, useCorrection = false): WayPoint {
     return this._flightPlans[this._currentFlightPlanIndex].activeWaypoint;
   }
 
   /**
    * Gets the next waypoint following the active waypoint.
-   * @param {Boolean} forceSimVarCall Unused
+   * @param forceSimVarCall Unused
    */
-  getNextActiveWaypoint(forceSimVarCall = false) {
+  public getNextActiveWaypoint(forceSimVarCall = false): WayPoint {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    const nextWaypointIndex = currentFlightPlan.activeWaypoint + 1;
+    const nextWaypointIndex = currentFlightPlan.activeWaypointIndex + 1;
 
     return currentFlightPlan.getWaypoint(nextWaypointIndex);
   }
@@ -297,10 +309,10 @@ class FlightPlanManager {
   /**
    * Gets the distance, in NM, to the active waypoint.
    */
-  getDistanceToActiveWaypoint() {
+  public getDistanceToActiveWaypoint(): number {
     let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
     let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-    let ll = new LatLong(lat, long);
+    let ll = new LatLongAlt(lat, long);
 
     let waypoint = this.getActiveWaypoint();
     if (waypoint && waypoint.infos) {
@@ -313,10 +325,10 @@ class FlightPlanManager {
   /**
    * Gets the bearing, in degrees, to the active waypoint.
    */
-  getBearingToActiveWaypoint() {
+  public getBearingToActiveWaypoint(): number {
     let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
     let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-    let ll = new LatLong(lat, long);
+    let ll = new LatLongAlt(lat, long);
 
     let waypoint = this.getActiveWaypoint();
     if (waypoint && waypoint.infos) {
@@ -329,10 +341,10 @@ class FlightPlanManager {
   /**
    * Gets the estimated time enroute to the active waypoint.
    */
-  getETEToActiveWaypoint() {
+  public getETEToActiveWaypoint(): number {
     let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
     let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-    let ll = new LatLong(lat, long);
+    let ll = new LatLongAlt(lat, long);
 
     let waypoint = this.getActiveWaypoint();
     if (waypoint && waypoint.infos) {
@@ -352,7 +364,7 @@ class FlightPlanManager {
   /**
    * Gets the destination airfield of the current flight plan, if any.
    */
-  getDestination() {
+  public getDestination(): WayPoint | undefined {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     return currentFlightPlan.destinationAirfield;
   }
@@ -360,12 +372,12 @@ class FlightPlanManager {
   /**
    * Gets the currently selected departure information for the current flight plan.
    */
-  getDeparture() {
+  public getDeparture(): WayPoint | undefined {
     const origin = this.getOrigin();
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     if (origin) {
-      let originInfos = origin.infos;
+      let originInfos = origin.infos as AirportInfo;
       if (originInfos.departures !== undefined && currentFlightPlan.procedureDetails.departureIndex !== -1) {
           return originInfos.departures[currentFlightPlan.procedureDetails.departureIndex];
       }
@@ -377,12 +389,12 @@ class FlightPlanManager {
   /**
    * Gets the currently selected arrival information for the current flight plan.
    */
-  getArrival() {
+  public getArrival(): any | undefined {
     const destination = this.getDestination();
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     if (destination) {
-      let originInfos = destination.infos;
+      let originInfos = destination.infos as AirportInfo;
       if (originInfos.arrivals !== undefined && currentFlightPlan.procedureDetails.arrivalIndex !== -1) {
           return originInfos.arrivals[currentFlightPlan.procedureDetails.arrivalIndex];
       }
@@ -394,29 +406,32 @@ class FlightPlanManager {
   /**
    * Gets the currently selected approach information for the current flight plan.
    */
-  getAirportApproach() {
+  public getAirportApproach(): any | undefined {
     const destination = this.getDestination();
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     if (destination) {
-      let originInfos = destination.infos;
-      if (originInfos.approaches !== undefined && currentFlightPlan.approachIndex !== -1) {
-          return originInfos.approaches[currentFlightPlan.approachIndex];
+      let originInfos = destination.infos as AirportInfo;
+      if (originInfos.approaches !== undefined && currentFlightPlan.procedureDetails.approachIndex !== -1) {
+          return originInfos.approaches[currentFlightPlan.procedureDetails.approachIndex];
       }
     }
 
     return undefined;
   }
 
-  async getApproachConstraints() {
+  public async getApproachConstraints(): Promise<WayPoint[]> {
     let approachWaypoints = [];
     let destination = await this._parentInstrument.facilityLoader.getFacilityRaw(this.getDestination().icao);
+
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+
     if (destination) {
-        let approach = destination.approaches[this._approachIndex];
+        let approach = destination.approaches[currentFlightPlan.procedureDetails.approachIndex];
         if (approach) {
             let approachTransition = approach.transitions[0];
             if (approach.transitions.length > 0) {
-                approachTransition = approach.transitions[this._approachTransitionIndex];
+                approachTransition = approach.transitions[currentFlightPlan.procedureDetails.approachTransitionIndex];
             }
             if (approach && approach.finalLegs) {
                 for (let i = 0; i < approach.finalLegs.length; i++) {
@@ -448,22 +463,22 @@ class FlightPlanManager {
   /**
    * Gets the departure waypoints for the current flight plan.
    */
-  getDepartureWaypoints() {
+  public getDepartureWaypoints(): WayPoint[] {
     return this._flightPlans[this._currentFlightPlanIndex].departure.waypoints;
   }
 
   /**
    * Gets a map of the departure waypoints (?)
    */
-  getDepartureWaypointsMap() {
+  public getDepartureWaypointsMap(): WayPoint[] {
     return this._flightPlans[this._currentFlightPlanIndex].departure.waypoints;
   }
 
   /**
    * Gets the enroute waypoints for the current flight plan.
-   * @param {Number[]} outFPIndex An array of waypoint indexes to be pushed to.
+   * @param outFPIndex An array of waypoint indexes to be pushed to.
    */
-  getEnRouteWaypoints(outFPIndex) {
+  public getEnRouteWaypoints(outFPIndex: number[]): WayPoint[] {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     const enrouteSegment = currentFlightPlan.enroute;
 
@@ -479,7 +494,7 @@ class FlightPlanManager {
   /**
    * Gets the index of the last waypoint in the enroute segment of the current flight plan.
    */
-  getEnRouteWaypointsLastIndex() {
+  public getEnRouteWaypointsLastIndex(): number {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     const enrouteSegment = currentFlightPlan.enroute;
 
@@ -489,37 +504,37 @@ class FlightPlanManager {
   /**
    * Gets the arrival waypoints for the current flight plan.
    */
-  getArrivalWaypoints() {
+  public getArrivalWaypoints(): WayPoint[] {
     return this._flightPlans[this._currentFlightPlanIndex].arrival.waypoints;
   }
 
   /**
    * Gets the arrival waypoints for the current flight plan as a map. (?)
    */
-  getArrivalWaypointsMap() {
+  public getArrivalWaypointsMap(): WayPoint[] {
     return this._flightPlans[this._currentFlightPlanIndex].arrival.waypoints;
   }
 
   /**
    * Gets the waypoints for the current flight plan with altitude constraints.
    */
-  getWaypointsWithAltitudeConstraints() {
+  public getWaypointsWithAltitudeConstraints(): WayPoint[] {
     return this._flightPlans[this._currentFlightPlanIndex].waypoints;
   }
 
   /**
    * Sets the destination for the current flight plan.
-   * @param {String} icao The ICAO designation for the destination airfield. 
-   * @param {() => void} callback A callback to call once the operation completes.
+   * @param icao The ICAO designation for the destination airfield. 
+   * @param callback A callback to call once the operation completes.
    */
-  async setDestination(icao, callback = () => { }) {
+  public async setDestination(icao: string, callback = () => { }): Promise<void> {
     const waypoint = await this._parentInstrument.facilityLoader.getFacilityRaw(icao);
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     if (currentFlightPlan.hasDestination) {
       currentFlightPlan.removeWaypoint(currentFlightPlan.length - 1);
     }
-    this._flightPlans[this._currentFlightPlanIndex].addWaypoint(waypoint, undefined, true);
+    this._flightPlans[this._currentFlightPlanIndex].addWaypoint(waypoint);
 
     this._updateFlightPlanVersion();
     callback();
@@ -527,12 +542,12 @@ class FlightPlanManager {
 
   /**
    * Adds a waypoint to the current flight plan.
-   * @param {String} icao The ICAO designation for the waypoint.
-   * @param {Number} index The index of the waypoint to add.
-   * @param {() => void} callback A callback to call once the operation completes.
-   * @param {Boolean} setActive Whether or not to set the added waypoint as active immediately.
+   * @param icao The ICAO designation for the waypoint.
+   * @param index The index of the waypoint to add.
+   * @param callback A callback to call once the operation completes.
+   * @param setActive Whether or not to set the added waypoint as active immediately.
    */
-  async addWaypoint(icao, index = Infinity, callback = () => { }, setActive = true) {
+  public async addWaypoint(icao: string, index = Infinity, callback = () => { }, setActive = true): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     const waypoint = await this._parentInstrument.facilityLoader.getFacilityRaw(icao);
     
@@ -547,11 +562,11 @@ class FlightPlanManager {
 
   /**
    * Sets the altitude for a waypoint in the current flight plan.
-   * @param {Number} altitude The altitude to set for the waypoint.
-   * @param {Number} index The index of the waypoint to set.
-   * @param {() => void} callback A callback to call once the operation is complete.
+   * @param altitude The altitude to set for the waypoint.
+   * @param index The index of the waypoint to set.
+   * @param callback A callback to call once the operation is complete.
    */
-  setWaypointAltitude(altitude, index, callback = () => { }) {
+  public setWaypointAltitude(altitude: number, index: number, callback = () => { }): void {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     const waypoint = currentFlightPlan.getWaypoint(index);
 
@@ -565,12 +580,12 @@ class FlightPlanManager {
 
   /**
    * Sets additional data on a waypoint in the current flight plan.
-   * @param {Number} index The index of the waypoint to set additional data for.
-   * @param {String} key The key of the data.
-   * @param {*} value The value of the data.
-   * @param {() => void} callback A callback to call once the operation is complete.
+   * @param index The index of the waypoint to set additional data for.
+   * @param key The key of the data.
+   * @param value The value of the data.
+   * @param callback A callback to call once the operation is complete.
    */
-  setWaypointAdditionalData(index, key, value, callback = () => { }) {
+  public setWaypointAdditionalData(index: number, key: string, value: any, callback = () => { }): void {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     const waypoint = currentFlightPlan.getWaypoint(index);
 
@@ -584,11 +599,11 @@ class FlightPlanManager {
 
   /**
    * Gets additional data on a waypoint in the current flight plan.
-   * @param {Number} index The index of the waypoint to set additional data for.
-   * @param {String} key The key of the data.
-   * @param {(any) => void} callback A callback to call with the value once the operation is complete.
+   * @param index The index of the waypoint to set additional data for.
+   * @param key The key of the data.
+   * @param callback A callback to call with the value once the operation is complete.
    */
-  getWaypointAdditionalData(index, key, callback = () => { }) {
+  public getWaypointAdditionalData(index: number, key: string, callback: (any) => void = () => { }) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     const waypoint = currentFlightPlan.getWaypoint(index);
 
@@ -604,7 +619,7 @@ class FlightPlanManager {
    * Reverses the currently active flight plan.
    * @param {() => void} callback A callback to call when the operation is complete. 
    */
-  invertActiveFlightPlan(callback = () => { }) {
+  public invertActiveFlightPlan(callback = () => { }): void {
     this._flightPlans[this._currentFlightPlanIndex].reverse();
 
     this._updateFlightPlanVersion();
@@ -613,9 +628,9 @@ class FlightPlanManager {
 
   /**
    * Not sure what this is supposed to do.
-   * @param {*} callback Stuff?
+   * @param callback Stuff?
    */
-  getApproachIfIcao(callback = () => { }) {
+  public getApproachIfIcao(callback: (any) => void = () => { }): void {
     callback(this.getApproach());
   }
 
@@ -623,26 +638,26 @@ class FlightPlanManager {
    * Unused
    * @param {*} _callback Unused
    */
-  addFlightPlanUpdateCallback(_callback) {
+  public addFlightPlanUpdateCallback(_callback) {
   }
 
   /**
    * Adds a waypoint to the currently active flight plan by ident(?)
-   * @param {String} ident The ident of the waypoint.
-   * @param {Number} index The index to add the waypoint at.
-   * @param {() => void} callback A callback to call when the operation finishes.
+   * @param ident The ident of the waypoint.
+   * @param index The index to add the waypoint at.
+   * @param callback A callback to call when the operation finishes.
    */
-  addWaypointByIdent(ident, index = Infinity, callback = EmptyCallback.Void) {
+  public addWaypointByIdent(ident: string, index: number, callback = EmptyCallback.Void): void {
     this.addWaypoint(ident, index, callback);
   }
 
   /**
    * Removes a waypoint from the currently active flight plan.
-   * @param {Number} index The index of the waypoint to remove.
-   * @param {Boolean} thenSetActive Unused
-   * @param {() => void} callback A callback to call when the operation finishes.
+   * @param index The index of the waypoint to remove.
+   * @param thenSetActive Unused
+   * @param callback A callback to call when the operation finishes.
    */
-  removeWaypoint(index, thenSetActive = false, callback = () => { }) {
+  public removeWaypoint(index: number, thenSetActive = false, callback = () => { }): void {
     this._flightPlans[this._currentFlightPlanIndex].removeWaypoint(index);
 
     this._updateFlightPlanVersion();
@@ -651,17 +666,17 @@ class FlightPlanManager {
 
   /**
    * Gets the index of a given waypoint in the current flight plan.
-   * @param {WayPoint} waypoint The waypoint to get the index of.
+   * @param waypoint The waypoint to get the index of.
    */
-  indexOfWaypoint(waypoint) {
+  public indexOfWaypoint(waypoint: WayPoint): number {
     return this._flightPlans[this._currentFlightPlanIndex].waypoints.indexOf(waypoint);
   }
 
   /**
    * Gets the number of waypoints in a flight plan.
-   * @param {Number} flightPlanIndex The index of the flight plan. If omitted, will get the current flight plan.
+   * @param flightPlanIndex The index of the flight plan. If omitted, will get the current flight plan.
    */
-  getWaypointsCount(flightPlanIndex = NaN) {
+  public getWaypointsCount(flightPlanIndex: number = NaN): number {
     if (isNaN(flightPlanIndex)) {
       flightPlanIndex = this._currentFlightPlanIndex;
     }
@@ -672,24 +687,24 @@ class FlightPlanManager {
   /**
    * Gets a count of the number of departure waypoints in the current flight plan.
    */
-  getDepartureWaypointsCount() {
-    return this._flightPlans[this._currentFlightPlanIndex].departure.length;
+  public getDepartureWaypointsCount(): number {
+    return this._flightPlans[this._currentFlightPlanIndex].departure.waypoints.length;
   }
 
   /**
    * Gets a count of the number of arrival waypoints in the current flight plan.
    */
-  getArrivalWaypointsCount() {
-    return this._flightPlans[this._currentFlightPlanIndex].arrival.length;
+  public getArrivalWaypointsCount(): number {
+    return this._flightPlans[this._currentFlightPlanIndex].arrival.waypoints.length;
   }
 
   /**
    * Gets a waypoint from a flight plan.
-   * @param {Number} index The index of the waypoint to get.
-   * @param {Number} flightPlanIndex The index of the flight plan to get the waypoint from. If omitted, will get from the current flight plan.
-   * @param {Boolean} considerApproachWaypoints Whether or not to consider approach waypoints.
+   * @param index The index of the waypoint to get.
+   * @param flightPlanIndex The index of the flight plan to get the waypoint from. If omitted, will get from the current flight plan.
+   * @param considerApproachWaypoints Whether or not to consider approach waypoints.
    */
-  getWaypoint(index, flightPlanIndex = NaN, considerApproachWaypoints) {
+  public getWaypoint(index: number, flightPlanIndex: number = NaN, considerApproachWaypoints: boolean): WayPoint {
     if (isNaN(flightPlanIndex)) {
       flightPlanIndex = this._currentFlightPlanIndex;
     }
@@ -699,9 +714,9 @@ class FlightPlanManager {
 
   /**
    * Gets all waypoints from a flight plan.
-   * @param {Number} flightPlanIndex The index of the flight plan to get the waypoint from. If omitted, will get from the current flight plan.
+   * @param flightPlanIndex The index of the flight plan to get the waypoint from. If omitted, will get from the current flight plan.
    */
-  getWaypoints(flightPlanIndex = NaN) {
+  public getWaypoints(flightPlanIndex: number = NaN): WayPoint[] {
     if (isNaN(flightPlanIndex)) {
       flightPlanIndex = this._currentFlightPlanIndex;
     }
@@ -712,30 +727,30 @@ class FlightPlanManager {
   /**
    * Gets the index of the departure runway in the current flight plan.
    */
-  getDepartureRunwayIndex() {
+  public getDepartureRunwayIndex(): number {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (currentFlightPlan.hasOrigin) {
       return currentFlightPlan.procedureDetails.departureRunwayIndex;
     }
 
-    return undefined;
+    return -1;
   }
 
   /**
    * Gets the string value of the departure runway in the current flight plan.
    */
-  getDepartureRunway() {
+  public getDepartureRunway(): OneWayRunway {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (currentFlightPlan.hasOrigin 
       && currentFlightPlan.procedureDetails.departureRunwayIndex !== -1
       && currentFlightPlan.procedureDetails.departureIndex !== -1) {
 
-        let depRunway = currentFlightPlan.originAirfield.infos
+        let depRunway = (currentFlightPlan.originAirfield.infos as AirportInfo)
           .departures[currentFlightPlan.procedureDetails.departureIndex]
           .runwayTransitions[currentFlightPlan.procedureDetails.departureRunwayIndex]
           .name.replace("RW", "");
 
-        let runway = currentFlightPlan.originAirfield.infos.oneWayRunways
+        let runway = (currentFlightPlan.originAirfield.infos as AirportInfo).oneWayRunways
           .find(r => { return r.designation.indexOf(depRunway) !== -1; });
         
         if (runway) {
@@ -746,7 +761,7 @@ class FlightPlanManager {
         }
     }
     else if (currentFlightPlan.procedureDetails.originRunwayIndex !== -1) {
-      return currentFlightPlan.originAirfield.infos.oneWayRunways[currentFlightPlan.procedureDetails.originRunwayIndex];
+      return (currentFlightPlan.originAirfield.infos as AirportInfo).oneWayRunways[currentFlightPlan.procedureDetails.originRunwayIndex];
     }
 
     return undefined;
@@ -755,7 +770,7 @@ class FlightPlanManager {
   /**
    * Gets the best runway based on the current plane heading.
    */
-  getDetectedCurrentRunway() {
+  public getDetectedCurrentRunway(): OneWayRunway {
     const origin = this.getOrigin();
 
     if (origin && origin.infos instanceof AirportInfo) {
@@ -783,17 +798,17 @@ class FlightPlanManager {
   /**
    * Gets the departure procedure index for the current flight plan.
    */
-  getDepartureProcIndex() {
+  public getDepartureProcIndex(): number {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     return currentFlightPlan.procedureDetails.departureIndex;
   }
 
   /**
    * Sets the departure procedure index for the current flight plan.
-   * @param {Number} index The index of the departure procedure in the origin airport departures information.
-   * @param {() => void} callback A callback to call when the operation completes.
+   * @param index The index of the departure procedure in the origin airport departures information.
+   * @param callback A callback to call when the operation completes.
    */
-  async setDepartureProcIndex(index, callback = () => { }) {
+  public async setDepartureProcIndex(index: number, callback = () => { }): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.departureIndex = index;
@@ -805,10 +820,10 @@ class FlightPlanManager {
 
   /**
    * Sets the departure runway index for the current flight plan.
-   * @param {Number} index The index of the runway in the origin airport runway information.
-   * @param {() => void} callback A callback to call when the operation completes.
+   * @param index The index of the runway in the origin airport runway information.
+   * @param callback A callback to call when the operation completes.
    */
-  async setDepartureRunwayIndex(index, callback = EmptyCallback.Void) {
+  public async setDepartureRunwayIndex(index: number, callback = EmptyCallback.Void): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.departureRunwayIndex = index;
@@ -820,10 +835,10 @@ class FlightPlanManager {
 
   /**
    * Sets the origin runway index for the current flight plan.
-   * @param {Number} index The index of the runway in the origin airport runway information.
-   * @param {() => void} callback A callback to call when the operation completes.
+   * @param index The index of the runway in the origin airport runway information.
+   * @param callback A callback to call when the operation completes.
    */
-  setOriginRunwayIndex(index, callback = EmptyCallback.Void) {
+  public setOriginRunwayIndex(index: number, callback = EmptyCallback.Void): void {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     currentFlightPlan.procedureDetails.originRunwayIndex = index;
 
@@ -834,17 +849,17 @@ class FlightPlanManager {
   /**
    * Gets the departure transition index for the current flight plan.
    */
-  getDepartureEnRouteTransitionIndex() {
+  public getDepartureEnRouteTransitionIndex(): number {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     return currentFlightPlan.procedureDetails.departureTransitionIndex;
   }
 
   /**
    * Sets the departure transition index for the current flight plan.
-   * @param {Number} index The index of the departure transition to select.
-   * @param {() => void} callback A callback to call when the operation completes.
+   * @param index The index of the departure transition to select.
+   * @param callback A callback to call when the operation completes.
    */
-  async setDepartureEnRouteTransitionIndex(index, callback = EmptyCallback.Void) {
+  public async setDepartureEnRouteTransitionIndex(index: number, callback = EmptyCallback.Void): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.departureTransitionIndex = index;
@@ -857,23 +872,26 @@ class FlightPlanManager {
   /**
    * Unused
    */
-  getDepartureDiscontinuity() {
+  public getDepartureDiscontinuity() {
   }
 
   /**
    * Unused
-   * @param {() => void} callback A callback to call when the operation completes.
+   * @param callback A callback to call when the operation completes.
    */
-  clearDepartureDiscontinuity(callback = EmptyCallback.Void) {
+  public clearDepartureDiscontinuity(callback = EmptyCallback.Void) {
     callback();
   }
 
   /**
    * Removes the departure from the currently active flight plan.
-   * @param {() => void} callback A callback to call when the operation completes.
+   * @param callback A callback to call when the operation completes.
    */
-  removeDeparture(callback = () => { }) {
-    this._flightPlans[this._currentFlightPlanIndex].clearDeparture();
+  public async removeDeparture(callback = () => { }): Promise<void> {
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+
+    currentFlightPlan.procedureDetails.departureIndex = -1;
+    await currentFlightPlan.buildDeparture();
 
     this._updateFlightPlanVersion();
     callback();
@@ -882,7 +900,7 @@ class FlightPlanManager {
   /**
    * Gets the arrival procedure index in the currenly active flight plan.
    */
-  getArrivalProcIndex() {
+  public getArrivalProcIndex(): number {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     return currentFlightPlan.procedureDetails.arrivalIndex;
   }
@@ -890,7 +908,7 @@ class FlightPlanManager {
   /**
    * Gets the arrival transition procedure index in the currently active flight plan.
    */
-  getArrivalTransitionIndex() {
+  public getArrivalTransitionIndex(): number {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     return currentFlightPlan.procedureDetails.arrivalTransitionIndex;
   }
@@ -900,7 +918,7 @@ class FlightPlanManager {
    * @param {Number} index The index of the arrival procedure to select.
    * @param {() => void} callback A callback to call when the operation completes.
    */
-  async setArrivalProcIndex(index, callback = () => { }) {
+  public async setArrivalProcIndex(index, callback = () => { }) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.arrivalIndex = index;
@@ -913,14 +931,14 @@ class FlightPlanManager {
   /**
    * Unused
    */
-  getArrivalDiscontinuity() {
+  public getArrivalDiscontinuity() {
   }
 
   /**
    * Unused
    * @param {*} callback 
    */
-  clearArrivalDiscontinuity(callback = EmptyCallback.Void) {
+  public clearArrivalDiscontinuity(callback = EmptyCallback.Void) {
     callback();
   }
 
@@ -929,7 +947,7 @@ class FlightPlanManager {
    * @param {Number} index The index of the arrival transition to select.
    * @param {() => void} callback A callback to call when the operation completes.
    */
-  async setArrivalEnRouteTransitionIndex(index, callback = () => { }) {
+  public async setArrivalEnRouteTransitionIndex(index, callback = () => { }) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.arrivalTransitionIndex = index;
@@ -944,7 +962,7 @@ class FlightPlanManager {
    * @param {Number} index The index of the runway to select.
    * @param {() => void} callback A callback to call when the operation completes.
    */
-  async setArrivalRunwayIndex(index, callback = () => { }) {
+  public async setArrivalRunwayIndex(index, callback = () => { }) {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.arrivalRunwayIndex = index;
@@ -957,18 +975,18 @@ class FlightPlanManager {
   /**
    * Gets the index of the approach in the currently active flight plan.
    */
-  getApproachIndex() {
+  public getApproachIndex() {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     return currentFlightPlan.procedureDetails.approachIndex;
   }
 
   /**
    * Sets the approach index in the currently active flight plan.
-   * @param {Number} index The index of the approach in the destination airport information.
-   * @param {() => void} callback A callback to call when the operation has completed.
-   * @param {Number} transition The approach transition index to set in the approach information. 
+   * @param index The index of the approach in the destination airport information.
+   * @param callback A callback to call when the operation has completed.
+   * @param transition The approach transition index to set in the approach information. 
    */
-  async setApproachIndex(index, callback = () => { }, transition = -1) {
+  public async setApproachIndex(index: number, callback = () => { }, transition: number = -1): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.approachIndex = index;
@@ -980,65 +998,73 @@ class FlightPlanManager {
 
   /**
    * Whether or not an approach is loaded in the current flight plan.
-   * @param {Boolean} forceSimVarCall Unused
+   * @param forceSimVarCall Unused
    */
-  isLoadedApproach(forceSimVarCall = false) {
-    return this._isApproachLoaded;
+  public isLoadedApproach(forceSimVarCall = false): boolean {
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+    return currentFlightPlan.procedureDetails.approachIndex !== -1;
   }
 
   /**
    * Whether or not the approach is active in the current flight plan.
-   * @param {Boolean} forceSimVarCall Unused
+   * @param forceSimVarCall Unused
    */
-  isActiveApproach(forceSimVarCall = false) {
-    return this._isApproachActive;
+  public isActiveApproach(forceSimVarCall = false): boolean {
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+    return currentFlightPlan.approach.waypoints.length > 0
+      && currentFlightPlan.activeWaypointIndex >= currentFlightPlan.approach.offset;
   }
 
   /**
    * Activates the approach segment in the current flight plan.
    * @param {() => void} callback 
    */
-  activateApproach(callback = EmptyCallback.Void) {
+  public async activateApproach(callback = EmptyCallback.Void): Promise<void> {
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+    if (!this.isActiveApproach()) {
+      await GPS.setActiveWaypoint(currentFlightPlan.approach.offset);
+    }
+
     callback();
   }
 
   /**
    * Deactivates the approach segments in the current flight plan.
    */
-  deactivateApproach() {
+  public deactivateApproach() {
   }
 
   /**
    * Attemptes to auto-activate the approach in the current flight plan.
    */
-  tryAutoActivateApproach() {
+  public tryAutoActivateApproach() {
   }
 
   /**
    * Gets the index of the active waypoint on the approach in the current flight plan.
    */
-  getApproachActiveWaypointIndex() {
+  public getApproachActiveWaypointIndex() {
     return this._flightPlans[this._currentFlightPlanIndex].activeWaypointIndex;
   }
 
   /**
    * Gets the approach from the current flight plan.
    */
-  getApproach() {
-    return new Approach();
+  public getApproach() {
+    return this._flightPlans[this._currentFlightPlanIndex].approach;
   }
 
   /**
    * Get the nav frequency for the selected approach in the current flight plan.
    */
-  getApproachNavFrequency() {
+  public getApproachNavFrequency() {
     return NaN;
   }
 
   /**
    * Gets the index of the approach transition in the current flight plan.
    */
-  getApproachTransitionIndex() {
+  public getApproachTransitionIndex(): number {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     return currentFlightPlan.procedureDetails.approachTransitionIndex;
   }
@@ -1047,22 +1073,22 @@ class FlightPlanManager {
    * Gets the last waypoint index before the start of the approach segment in
    * the current flight plan.
    */
-  getLastIndexBeforeApproach() {
+  public getLastIndexBeforeApproach(): number {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    return currentFlightPlan.length;
+    return currentFlightPlan.approach.offset - 1;
   }
 
   /**
    * Gets the approach runway from the current flight plan.
    */
-  getApproachRunway() {
+  public getApproachRunway(): OneWayRunway {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     if (currentFlightPlan.hasDestination && currentFlightPlan.procedureDetails.approachIndex !== -1) {
       const destination = currentFlightPlan.waypoints[currentFlightPlan.waypoints.length - 1];
-      const approachRunwayName = destination.infos.approaches[currentFlightPlan.procedureDetails.approachIndex].runway.trim();
+      const approachRunwayName = (destination.infos as AirportInfo).approaches[currentFlightPlan.procedureDetails.approachIndex].runway.trim();
 
-      const runway = destination.infos.oneWayRunways.find(rw => rw.designation === approachRunwayName);
+      const runway = (destination.infos as AirportInfo).oneWayRunways.find(rw => rw.designation === approachRunwayName);
       return runway;
     }
 
@@ -1072,16 +1098,16 @@ class FlightPlanManager {
   /**
    * Gets the approach waypoints for the current flight plan.
    */
-  getApproachWaypoints() {
+  public getApproachWaypoints(): WayPoint[] {
     return this._flightPlans[this._currentFlightPlanIndex].approach.waypoints;
   }
 
   /**
    * Sets the approach transition index for the current flight plan.
-   * @param {Number} index The index of the transition in the destination airport approach information.
-   * @param {() => void} callback A callback to call when the operation completes.
+   * @param index The index of the transition in the destination airport approach information.
+   * @param callback A callback to call when the operation completes.
    */
-  async setApproachTransitionIndex(index, callback = () => { }) {
+  public async setApproachTransitionIndex(index: number, callback = () => { }): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.approachTransitionIndex = index;
@@ -1093,9 +1119,9 @@ class FlightPlanManager {
 
   /**
    * Removes the arrival segment from the current flight plan.
-   * @param {() => void} callback A callback to call when the operation completes.
+   * @param callback A callback to call when the operation completes.
    */
-  async removeArrival(callback = () => { }) {
+  public async removeArrival(callback = () => { }): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     currentFlightPlan.procedureDetails.arrivalIndex = -1;
@@ -1110,25 +1136,25 @@ class FlightPlanManager {
 
   /**
    * Activates direct-to an ICAO designated fix.
-   * @param {String} icao The ICAO designation for the fix to fly direct-to.
-   * @param {() => void} callback A callback to call when the operation completes.
+   * @param icao The ICAO designation for the fix to fly direct-to.
+   * @param callback A callback to call when the operation completes.
    */
-  async activateDirectTo(icao, callback = EmptyCallback.Void) {
+  public async activateDirectTo(icao: string, callback = EmptyCallback.Void): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    const waypoint = await this._parentInstrument.facilityLoader.getFacilityRaw(icao);
     
-    currentFlightPlan.directTo.activateFromWaypoint(waypoint);
+    currentFlightPlan.goDirectToIcao(icao);
+
     this._updateFlightPlanVersion();
     callback();
   }
 
   /**
    * Cancels the current direct-to and proceeds back along the flight plan.
-   * @param {() => void} callback A callback to call when the operation completes.
+   * @param callback A callback to call when the operation completes.
    */
-  cancelDirectTo(callback = EmptyCallback.Void) {
+  public cancelDirectTo(callback = EmptyCallback.Void): void {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    currentFlightPlan.directTo.cancel();
+    //currentFlightPlan.directTo.cancel();
 
     callback();
   }
@@ -1136,17 +1162,17 @@ class FlightPlanManager {
   /**
    * Gets whether or not the flight plan is current in a direct-to procedure.
    */
-  getIsDirectTo() {
+  public getIsDirectTo(): boolean {
     return this._flightPlans[this._currentFlightPlanIndex].directTo.isActive;
   }
 
   /**
    * Gets the target of the direct-to procedure in the current flight plan.
    */
-  getDirectToTarget() {
+  public getDirectToTarget(): WayPoint {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (currentFlightPlan.directTo.waypointIsInFlightPlan) {
-      return currentFlightPlan.waypoints[currentFlightPlan.directTo.waypointIndex];
+      return currentFlightPlan.waypoints[currentFlightPlan.directTo.planWaypointIndex];
     }
     else {
       return currentFlightPlan.directTo.waypoint;
@@ -1156,23 +1182,21 @@ class FlightPlanManager {
   /**
    * Gets the origin/start waypoint of the direct-to procedure in the current flight plan.
    */
-  getDirecToOrigin() {
-    return this._flightPlans[this._currentFlightPlanIndex].directTo.origin;
+  public getDirecToOrigin(): WayPoint {
+    return this._flightPlans[this._currentFlightPlanIndex].directTo.interceptPoints[0];
   }
 
-  getCoordinatesHeadingAtDistanceAlongFlightPlan(distance) {
+  public getCoordinatesHeadingAtDistanceAlongFlightPlan(distance) {
   }
 
-  getCoordinatesAtNMFromDestinationAlongFlightPlan(distance) {
+  public getCoordinatesAtNMFromDestinationAlongFlightPlan(distance) {
   }
 
   /**
    * Updates the synchronized flight plan version and saves it to shared storage.
    */
-  _updateFlightPlanVersion() {
+  public _updateFlightPlanVersion(): void {
     SimVar.SetSimVarValue(FlightPlanManager.FlightPlanVersionKey, 'number', ++this._currentFlightPlanVersion);
     WTDataStore.set(FlightPlanManager.FlightPlanKey, JSON.stringify(this._flightPlans.map(fp => fp.copySanitized())));
   }
 }
-FlightPlanManager.FlightPlanKey = "WT.FlightPlan";
-FlightPlanManager.FlightPlanVersionKey = "L:WT.FlightPlan.Version";

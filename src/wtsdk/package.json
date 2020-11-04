@@ -4,15 +4,17 @@
   "description": "Working Title SDK",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && webpack && gulp stripImportsExports",
+    "build": "tsc && webpack && gulp stripImportsExports clean:temp",
     "clean": "gulp clean"
   },
   "author": "Working Title",
   "license": "MIT",
   "devDependencies": {
+    "del": "^6.0.0",
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0",
     "gulp-strip-import-export": "^1.0.0",
+    "through2": "^4.0.2",
     "typescript": "^4.0.5",
     "webpack-merge-and-include-globally": "^2.1.26"
   },

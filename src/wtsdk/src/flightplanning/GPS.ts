@@ -3,7 +3,7 @@ import { SimVar } from 'MSFS';
 /**
  * Methods for interacting with the FS9GPS subsystem.
  */
-export default class GPS {
+export class GPS {
 
   /**
    * Clears the FS9GPS flight plan.
@@ -64,7 +64,7 @@ export default class GPS {
   /**
    * Gets the active FS9GPS waypoint.
    */
-  public static getActiveWaypoint(): Promise<void> {
+  public static getActiveWaypoint(): number {
     return SimVar.GetSimVarValue('C:fs9gps:FlightPlanActiveWaypoint', 'number'); 
   }
 

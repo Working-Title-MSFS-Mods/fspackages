@@ -1,7 +1,7 @@
 /**
  * The details of procedures selected in the flight plan.
  */
-export default class ProcedureDetails {
+export class ProcedureDetails {
     /** The index of the origin runway in the origin runway information. */
     public originRunwayIndex: number = -1;
 
