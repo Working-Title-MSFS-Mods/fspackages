@@ -31,10 +31,12 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Ability to use a GPU on the ground
 * Correct ARC, ROSE, and PPOS display modes
 * Altitude select range arc on PPOS Mode
+* Persistent hide yoke feature
 
 ### FMC
 * SimBrief load should no longer randomly fail on airway loads
 * Improved scratchpad handling to better reflect the actual unit (thanks @panourgue)
+* Able to hide yokes in MOD SETTINGS and stay persistent
 
 #### FPLN
 * Setting an origin should now properly clear the whole flight plan
