@@ -75,6 +75,9 @@ class CJ4_FMC_DsplMenuPage {
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage2(fmc) {
+        let rngsel = WTDataStore.get("RANGE_SEL", 0);
+        let rngSelSwitch = (rngsel == 0) ? "" : "green";
+
         fmc.clearDisplay();
         fmc._templateRenderer.setTemplateRaw([
             [" LEFT DISPLAY MENU[blue]", "2/2 [blue]"],
@@ -83,7 +86,7 @@ class CJ4_FMC_DsplMenuPage {
             [""],
             ["NDBS[s-text disabled]"],
             [""],
-            ["RNG: ALT SEL[s-text disabled]"],
+            ["RNG: ALT SEL[s-text " + rngSelSwitch + "]"],
             [""],
             ["GNSS POS[s-text disabled]"],
             ["", "DISPLAY [blue s-text]"],
@@ -91,6 +94,13 @@ class CJ4_FMC_DsplMenuPage {
             ["", "SIDE [blue s-text]"],
             ["", "L[green]/[white]R[s-text]>"]
         ]);
+
+        fmc.onLeftInput[2] = () => {
+            rngsel = (rngsel == 1) ? 0 : 1;
+            WTDataStore.set("RANGE_SEL", rngsel);
+            CJ4_FMC_DsplMenuPage.ShowPage2(fmc);
+        };
+
         fmc.onPrevPage = () => { CJ4_FMC_DsplMenuPage.ShowPage1(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_DsplMenuPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
