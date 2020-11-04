@@ -577,8 +577,8 @@ class CJ4_FMC_PerfInitPage {
                     currentDistanceInFP = activeWaypoint.cumulativeDistanceInFP - activeWaypointDist;
 
                     //UPDATE
-                    vnavTargetDistance = fpWaypoint == activeWaypoint ? activeWaypointDist
-                        : fpWaypoint.cumulativeDistanceInFP - currentDistanceInFP;
+                    vnavTargetDistance = vnavTargetFpWaypoint == activeWaypoint ? activeWaypointDist
+                        : vnavTargetFpWaypoint.cumulativeDistanceInFP - currentDistanceInFP;
                     topOfDescent = ((altitude - vnavTargetAltitude) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
                 }
 
@@ -592,7 +592,7 @@ class CJ4_FMC_PerfInitPage {
                 let desiredAltitude = vnavTargetAltitude + (Math.tan(desiredFPA * (Math.PI / 180)) * vnavTargetDistance * 6076.12);
                 let altDeviation = altitude - desiredAltitude;
                 let setVerticalSpeed = 0;
-                const distanceToTod = vnavTargetDistance > topOfDescent ? Math.round(vnavTargetDistance - topOfDescent) : "N/A";
+                const distanceToTod = topOfDescent < 0 ? "N/A" : vnavTargetDistance > topOfDescent ? Math.round(vnavTargetDistance - topOfDescent) : "N/A";
                 
                 //SET BEHAVIOR IF INTERCEPTING TARGET ALTITUDE & SET AP TARGET ALTITUDE
                 if (_lastVnavTargetAltitude === undefined) {
