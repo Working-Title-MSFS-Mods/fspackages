@@ -28,31 +28,6 @@ class CJ4_FMC_LegsPage {
 
     prepare() {
         this._constraints = this._fmc.getConstraints();
-        // let constraintCount = this._constraints.length;
-        // console.log("loading legs page constraints: " + constraintCount);
-        // for (let i = 0; i < constraintCount; i++) {
-        //     console.log(this._constraints[i].icao + " " + this._constraints[i].legAltitudeDescription + " " + this._constraints[i].legAltitude1);
-        // }
-        // let storedConstraints = WTDataStore.get('CJ4_currentWaypoints', 'none');
-        // let constraintsCount = storedConstraints.replace(/[^;]/g, "").length
-        // //console.log("constraintsCount " + constraintsCount);
-        // for (let i = 0; i < constraintsCount; i++) {
-        //     let wpt = {icao:"", legAltitudeDescription:0, legAltitude1:0, legAltitude2:0};
-        //     let index = storedConstraints.indexOf(";");
-        //     storedConstraints = storedConstraints.slice(index + 1);
-        //     let indexIcao = storedConstraints.indexOf(",");
-        //     wpt.icao = storedConstraints.slice(0, indexIcao);
-        //     storedConstraints = storedConstraints.slice(indexIcao + 1);
-        //     let indexType = storedConstraints.indexOf(",");
-        //     wpt.legAltitudeDescription = parseInt(storedConstraints.slice(0, indexType));
-        //     storedConstraints = storedConstraints.slice(indexType + 1);
-        //     let indexAlt1 = storedConstraints.indexOf(",");
-        //     wpt.legAltitude1 = parseFloat(storedConstraints.slice(0, indexAlt1));
-        //     storedConstraints = storedConstraints.slice(indexAlt1 + 1);
-        //     let indexAlt2 = storedConstraints.indexOf(",");
-        //     wpt.legAltitude2 = parseFloat(storedConstraints.slice(0, indexAlt2));
-        //     //console.log(wpt.icao + " " + wpt.legAltitudeDescription + " " + wpt.legAltitude1 + " " + wpt.legAltitude2);
-        //     this._constraints.push(wpt);
     }
 
     update(forceUpdate = false) {

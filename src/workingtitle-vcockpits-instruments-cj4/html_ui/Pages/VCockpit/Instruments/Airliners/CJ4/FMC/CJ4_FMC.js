@@ -489,13 +489,13 @@ class CJ4_FMC extends FMCMainDisplay {
         let lastActiveWaypointIdent = this._lastActiveWaypointIdent;
         if (this.flightPlanManager.getActiveWaypoint()) {
             if (lastActiveWaypointIdent != this.flightPlanManager.getActiveWaypoint().ident) {
-                console.log("lastActiveWaypointIdent: " + lastActiveWaypointIdent);
-                console.log("flightPlanManager.getActiveWaypoint: " + this.flightPlanManager.getActiveWaypoint().ident);
+                //console.log("lastActiveWaypointIdent: " + lastActiveWaypointIdent);
+                //console.log("flightPlanManager.getActiveWaypoint: " + this.flightPlanManager.getActiveWaypoint().ident);
                 this.updateConstraintsNow = true;
             }
         }
         if (this.updateConstraintsNow === true) {
-            console.log("Updating Constraints");
+            //console.log("Updating Constraints");
             let currentWaypoints = [];
             let approachConstraints = [];
             let allWaypoints = [];
@@ -511,6 +511,11 @@ class CJ4_FMC extends FMCMainDisplay {
     
                 if (this.flightPlanManager.getApproachWaypoints()) {
                     let approachWaypoints = [...this.flightPlanManager.getApproachWaypoints()];
+                    if (enrouteWaypoints[enrouteWaypoints.length - 1].icao == approachWaypoints[0].icao) {
+                        //console.log("enroute array remove / count: " + enrouteWaypoints.length);
+                        enrouteWaypoints.pop();
+                        //console.log("enroute array pop / count: " + enrouteWaypoints.length);
+                    }
                     allWaypoints = enrouteWaypoints.concat(approachWaypoints);
                 }
                 else {
@@ -546,35 +551,34 @@ class CJ4_FMC extends FMCMainDisplay {
             if (this.flightPlanManager.getDeparture()) {
                 let departureWaypoints = this.flightPlanManager.getDepartureWaypoints();
                 constraintsArray = constraintsArray.concat(departureWaypoints);
-                console.log("Departure constraints loaded: " + constraintsArray.length);
+                //console.log("Departure constraints loaded: " + constraintsArray.length);
             }
             if (this.flightPlanManager.getArrival()) {
                 let arrivalWaypoints = this.flightPlanManager.getArrivalWaypoints();
                 constraintsArray = constraintsArray.concat(arrivalWaypoints);
-                console.log("Arrival constraints loaded: " + constraintsArray.length);
+                //console.log("Arrival constraints loaded: " + constraintsArray.length);
             }
-
             if (this.flightPlanManager.getApproach()) {
                 this.flightPlanManager.getApproachConstraints().then(rawApproachWaypoints => {
                     approachConstraints = [...rawApproachWaypoints];
-                    console.log("Raw approach constraints loaded");
+                    //console.log("Raw approach constraints loaded");
                     //console.log("constraintsArray last icao: " + constraintsArray[constraintsArray.length - 1].icao);
                     //console.log("approachConstraints last icao: " + approachConstraints[approachConstraints.length - 1].icao + " " + approachConstraints[approachConstraints.length - 1].legAltitudeDescription);
                     if (constraintsArray[constraintsArray.length - 1].icao == approachConstraints[0].icao && approachConstraints[0].legAltitudeDescription > 0) {
-                        console.log("constraints array remove / count: " + constraintsArray.length);
+                        //console.log("constraints array remove / count: " + constraintsArray.length);
                         constraintsArray.pop();
-                        console.log("constraints array pop / count: " + constraintsArray.length);
+                        //console.log("constraints array pop / count: " + constraintsArray.length);
                     }
-                    for (let k = 0; k < approachConstraints.length; k++) {
-                        console.log("appch cstr" + k + ": " + approachConstraints[k].icao + " " + approachConstraints[k].legAltitudeDescription + " " + approachConstraints[k].legAltitude1 + " " + approachConstraints[k].legAltitude2);
-                    }
+                    // for (let k = 0; k < approachConstraints.length; k++) {
+                    //     console.log("appch cstr" + k + ": " + approachConstraints[k].icao + " " + approachConstraints[k].legAltitudeDescription + " " + approachConstraints[k].legAltitude1 + " " + approachConstraints[k].legAltitude2);
+                    // }
                     constraintsArray = constraintsArray.concat(approachConstraints);
-                    console.log("Approach constraints loaded: " + constraintsArray.length);
+                    //console.log("Approach constraints loaded: " + constraintsArray.length);
 
                     //replace bad constraints with good constraints
                     for (let i = 0; i < currentWaypoints.length; i++) {
                         if (constraintsArray) {
-                            console.log(currentWaypoints[i].ident + " " + currentWaypoints[i].legAltitudeDescription + " " + currentWaypoints[i].legAltitude1 + " " + currentWaypoints[i].legAltitude2);
+                            //console.log(currentWaypoints[i].ident + " " + currentWaypoints[i].legAltitudeDescription + " " + currentWaypoints[i].legAltitude1 + " " + currentWaypoints[i].legAltitude2);
                             let wpt = constraintsArray.find(wp => { return (wp && wp.icao.substr(-5) == currentWaypoints[i].icao.substr(-5)); })
                             if (wpt && wpt.legAltitudeDescription > 0) {
                                 currentWaypoints[i].legAltitudeDescription = wpt.legAltitudeDescription;
@@ -586,7 +590,7 @@ class CJ4_FMC extends FMCMainDisplay {
                                 currentWaypoints[i].legAltitude1 = 0;
                                 currentWaypoints[i].legAltitude2 = 0;
                             }
-                            console.log(currentWaypoints[i].ident + " " + currentWaypoints[i].legAltitudeDescription + " " + currentWaypoints[i].legAltitude1 + " " + currentWaypoints[i].legAltitude2);
+                            //console.log(currentWaypoints[i].ident + " " + currentWaypoints[i].legAltitudeDescription + " " + currentWaypoints[i].legAltitude1 + " " + currentWaypoints[i].legAltitude2);
                         }
                     }
                     this._currentWaypoints = this._currentWaypoints.slice(0,0);
@@ -630,14 +634,14 @@ class CJ4_FMC extends FMCMainDisplay {
                 for (let j = 0; j < this._currentWaypoints.length; j++) {
                     currentWaypointsString = currentWaypointsString.concat(";" + this._currentWaypoints[j].icao + "," + this._currentWaypoints[j].legAltitudeDescription + "," + this._currentWaypoints[j].legAltitude1 + "," + this._currentWaypoints[j].legAltitude2)
                  }
-                 WTDataStore.set('CJ4_currentWaypoints', currentWaypointsString);
+                WTDataStore.set('CJ4_currentWaypoints', currentWaypointsString);
             }
         }
     }
 
     //add temporary method to fetch constraints
     getConstraints() {
-        let constraints = [];
+        let constraints = []];
         let storedConstraints = WTDataStore.get('CJ4_currentWaypoints', 'none');
         let constraintsCount = storedConstraints.replace(/[^;]/g, "").length
         //console.log("constraintsCount " + constraintsCount);
@@ -661,32 +665,6 @@ class CJ4_FMC extends FMCMainDisplay {
         }
         return constraints;
     }
-    // getConstraints() {
-    //     let constraints = [];
-    //     let storedConstraints = WTDataStore.get('CJ4_currentWaypoints', 'none');
-    //     let constraintsCount = storedConstraints.replace(/[^;]/g, "").length
-    //     //console.log("constraintsCount " + constraintsCount);
-    //     for (let i = 0; i < constraintsCount; i++) {
-    //         let wpt = {icao:"", legAltitudeDescription:0, legAltitude1:0, legAltitude2:0};
-    //         let index = storedConstraints.indexOf(";");
-    //         storedConstraints = storedConstraints.slice(index + 1);
-    //         let indexIcao = storedConstraints.indexOf(",");
-    //         wpt.icao = storedConstraints.slice(0, indexIcao);
-    //         storedConstraints = storedConstraints.slice(indexIcao + 1);
-    //         let indexType = storedConstraints.indexOf(",");
-    //         wpt.legAltitudeDescription = parseInt(storedConstraints.slice(0, indexType));
-    //         storedConstraints = storedConstraints.slice(indexType + 1);
-    //         let indexAlt1 = storedConstraints.indexOf(",");
-    //         wpt.legAltitude1 = parseFloat(storedConstraints.slice(0, indexAlt1));
-    //         storedConstraints = storedConstraints.slice(indexAlt1 + 1);
-    //         let indexAlt2 = storedConstraints.indexOf(",");
-    //         wpt.legAltitude2 = parseFloat(storedConstraints.slice(0, indexAlt2));
-    //         //console.log(wpt.icao + " " + wpt.legAltitudeDescription + " " + wpt.legAltitude1 + " " + wpt.legAltitude2);
-    //         constraints.push(wpt);
-    //     }
-    //     return constraints;
-    // }
-
 
     //add new method to find correct runway designation (with leading 0)
     getRunwayDesignation(selectedRunway) {

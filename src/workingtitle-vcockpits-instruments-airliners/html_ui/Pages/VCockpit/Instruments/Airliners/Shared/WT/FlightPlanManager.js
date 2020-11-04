@@ -9,39 +9,10 @@ class FlightPlanManager {
         this.decelPrevIndex = -1;
         this._lastDistanceToPreviousActiveWaypoint = 0;
         this._isGoingTowardPreviousActiveWaypoint = false;
-        this._update = () => {
-            let prevWaypoint = this.getPreviousActiveWaypoint();
-            if (prevWaypoint) {
-                let planeCoordinates = new LatLong(SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude"), SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude"));
-                if (isFinite(planeCoordinates.lat) && isFinite(planeCoordinates.long)) {
-                    let dist = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, prevWaypoint.infos.coordinates);
-                    if (isFinite(dist)) {
-                        if (dist < this._lastDistanceToPreviousActiveWaypoint) {
-                            this._isGoingTowardPreviousActiveWaypoint = true;
-                        }
-                        else {
-                            this._isGoingTowardPreviousActiveWaypoint = false;
-                        }
-                        this._lastDistanceToPreviousActiveWaypoint = dist;
-                        if (this._activeWaypointIdentHasChanged || this._gpsActiveWaypointIndexHasChanged) {
-                            setTimeout(() => {
-                                this._activeWaypointIdentHasChanged = false;
-                                this._gpsActiveWaypointIndexHasChanged = false;
-                            }, 3000);
-                        }
-                        return;
-                    }
-                }
-            }
-            if (this._activeWaypointIdentHasChanged || this._gpsActiveWaypointIndexHasChanged) {
-                setTimeout(() => {
-                    this._activeWaypointIdentHasChanged = false;
-                    this._gpsActiveWaypointIndexHasChanged = false;
-                }, 3000);
-            }
-            this._isGoingTowardPreviousActiveWaypoint = false;
-        };
+        this._resetTimer = 0;
+        this._updateTimer = 0;
         this._isRegistered = false;
+        this._isRegisteredAndLoaded = false;
         this._currentFlightPlanIndex = 0;
         this._activeWaypointIdentHasChanged = false;
         this._timeLastSimVarCall = 0;
@@ -53,7 +24,7 @@ class FlightPlanManager {
         FlightPlanManager.DEBUG_INSTANCE = this;
         this.instrument = _instrument;
         this._arrivalRunwayIndex = -1;
-        setInterval(this._update, 1000);
+        this.registerListener();
     }
     addHardCodedConstraints(wp) {
         return;
@@ -83,6 +54,51 @@ class FlightPlanManager {
             wp.legAltitude1 = 1900;
         }
     }
+    update(_deltaTime) {
+        if (this._resetTimer > 0) {
+            this._resetTimer -= _deltaTime;
+            if (this._resetTimer <= 0) {
+                this._resetTimer = 0;
+                this._activeWaypointIdentHasChanged = false;
+                this._gpsActiveWaypointIndexHasChanged = false;
+            }
+        }
+        this._updateTimer += _deltaTime;
+        if (this._updateTimer >= 1000) {
+            this._updateTimer = 0;
+            let prevWaypoint = this.getPreviousActiveWaypoint();
+            if (prevWaypoint) {
+                let planeCoordinates = new LatLong(SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude"), SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude"));
+                if (isFinite(planeCoordinates.lat) && isFinite(planeCoordinates.long)) {
+                    let dist = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, prevWaypoint.infos.coordinates);
+                    if (isFinite(dist)) {
+                        if (dist < this._lastDistanceToPreviousActiveWaypoint) {
+                            this._isGoingTowardPreviousActiveWaypoint = true;
+                        }
+                        else {
+                            this._isGoingTowardPreviousActiveWaypoint = false;
+                        }
+                        this._lastDistanceToPreviousActiveWaypoint = dist;
+                        if ((this._activeWaypointIdentHasChanged || this._gpsActiveWaypointIndexHasChanged) && this._resetTimer <= 0) {
+                            this._resetTimer = 3000;
+                        }
+                        return;
+                    }
+                }
+            }
+            if ((this._activeWaypointIdentHasChanged || this._gpsActiveWaypointIndexHasChanged) && this._resetTimer <= 0) {
+                this._resetTimer = 3000;
+            }
+            this._isGoingTowardPreviousActiveWaypoint = false;
+        }
+    }
+    onCurrentGameFlightLoaded(_callback) {
+        if (this._isRegisteredAndLoaded) {
+            _callback();
+            return;
+        }
+        this._onCurrentGameFlightLoaded = _callback;
+    }
     registerListener() {
         if (this._isRegistered) {
             return;
@@ -92,11 +108,12 @@ class FlightPlanManager {
         setTimeout(() => {
             Coherent.call("LOAD_CURRENT_GAME_FLIGHT");
             Coherent.call("LOAD_CURRENT_ATC_FLIGHTPLAN");
-            if (this.onCurrentGameFlightLoaded) {
-                setTimeout(() => {
-                    this.onCurrentGameFlightLoaded();
-                }, 200);
-            }
+            setTimeout(() => {
+                this._isRegisteredAndLoaded = true;
+                if (this._onCurrentGameFlightLoaded) {
+                    this._onCurrentGameFlightLoaded();
+                }
+            }, 200);
         }, 200);
     }
     _loadWaypoints(data, currentWaypoints, callback) {
@@ -279,6 +296,7 @@ class FlightPlanManager {
                     //added code to make decel waypoint Top of Descent
                     let altitude = SimVar.GetSimVarValue("L:AIRLINER_CRUISE_ALTITUDE", "number");
                     let runways = destination.infos.oneWayRunways;
+                    if(runways.length < 1) return;
                     let destinationElevation = runways[0].elevation * 3.28;
                     let desiredFPA = 3;
                     let topOfDescent = 10 + ((altitude - destinationElevation + 1500) / (Math.tan(desiredFPA * (Math.PI / 180)))) / 6076.12;
@@ -860,17 +878,6 @@ class FlightPlanManager {
                 if (approach.transitions.length > 0) {
                     approachTransition = approach.transitions[this._approachTransitionIndex];
                 }
-                if (approach && approach.finalLegs) {
-                    for (let i = 0; i < approach.finalLegs.length; i++) {
-                        let wp = new WayPoint(this.instrument);
-                        wp.icao = approach.finalLegs[i].fixIcao;
-                        wp.ident = wp.icao.substr(7);
-                        wp.legAltitudeDescription = approach.finalLegs[i].altDesc;
-                        wp.legAltitude1 = approach.finalLegs[i].altitude1 * 3.28084;
-                        wp.legAltitude2 = approach.finalLegs[i].altitude2 * 3.28084;
-                        approachWaypoints.push(wp);
-                    }
-                }
                 if (approachTransition && approachTransition.legs) {
                     for (let i = 0; i < approachTransition.legs.length; i++) {
                         let wp = new WayPoint(this.instrument);
@@ -879,6 +886,17 @@ class FlightPlanManager {
                         wp.legAltitudeDescription = approachTransition.legs[i].altDesc;
                         wp.legAltitude1 = approachTransition.legs[i].altitude1 * 3.28084;
                         wp.legAltitude2 = approachTransition.legs[i].altitude2 * 3.28084;
+                        approachWaypoints.push(wp);
+                    }
+                }
+                if (approach.finalLegs) {
+                    for (let i = 0; i < approach.finalLegs.length; i++) {
+                        let wp = new WayPoint(this.instrument);
+                        wp.icao = approach.finalLegs[i].fixIcao;
+                        wp.ident = wp.icao.substr(7);
+                        wp.legAltitudeDescription = approach.finalLegs[i].altDesc;
+                        wp.legAltitude1 = approach.finalLegs[i].altitude1 * 3.28084;
+                        wp.legAltitude2 = approach.finalLegs[i].altitude2 * 3.28084;
                         approachWaypoints.push(wp);
                     }
                 }
