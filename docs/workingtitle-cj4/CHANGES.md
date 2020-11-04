@@ -71,12 +71,16 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * The LSK should no longer select the wrong runway if an arrival is also selected
 
 ### PFD/MFD
-* ARC, ROSE, and PPOS modes have been overhauled. You should no longer see the route map in ARC and ROSE modes, but only in PPOS and PLAN modes.
+* ARC, ROSE, and PPOS modes have been overhauled. You should no longer see the route map in ARC and ROSE modes, but only in PPOS and PLAN modes
 * Properly modeled and styled course needles have been added to the ARC and ROSE modes reflective of the real aircraft
-* The dotted blue ghost localizer needle now shows in ARC and ROSE if you have FMS selected but have a localizer tuned
+* The dotted blue ghost localizer needle now shows in ARC and ROSE if you have FMS selected, a localizer tuned, and within range (~30NM from airport)
 * The altitude range arc has been added to PPOS mode and will now show when you will reach your selected target altitude 
 * Metric and imperial units switch should be reflected on the PFD/MFD
+* Heading bug resized
 * Heading bug and line should now appear and disappear properly in the ARC and ROSE modes
+* Changed color of deviation diamonds to green when on an ILS
+* Changed deviation diamonds from filled to outlined diamond for accuracy
+* Magenta track bug hidden when on the ground, resized, and overlayed over heading bug for visibility.
 * When switching to NAV1 or NAV2, you can now select the NAV AP button to enable tracking the tuned VOR or localizer
 * The weather radar sweep indicator should no longer show when WX is not being displayed
 * Bearing pointers should no longer show in PLAN mode
