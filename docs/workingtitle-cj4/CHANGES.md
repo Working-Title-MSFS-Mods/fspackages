@@ -30,7 +30,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Metric units support
 * Ability to use a GPU on the ground
 * Correct ARC, ROSE, and PPOS display modes
-* Altitude range arc on PPOS Mode
+* Altitude select range arc on PPOS Mode
 
 ### FMC
 * SimBrief load should no longer randomly fail on airway loads
