@@ -486,11 +486,11 @@ class CJ4_FMC_InitRefIndexPage {
 
                 const prevWaypointDistanceConst = prevWaypointDist >= 100 ? prevWaypointDist.toFixed(0) : prevWaypointDist.toFixed(1);
                 const activeWaypointDistanceConst = activeWaypointDist >= 100 ? activeWaypointDist.toFixed(0) : activeWaypointDist.toFixed(1);
-                const nextWaypointDistanceConst = nextWaypointDist >= 100 ? nextWaypointDist.toFixed(0) : nextWaypointDist.toFixed(1);
+                const nextWaypointDistanceConst = nextWaypointDist === "----" ? "0" : (nextWaypointDist >= 100 ? nextWaypointDist.toFixed(0) : nextWaypointDist.toFixed(1));
                 const destWaypointDistanceConst = destinationDistance >= 100 ? destinationDistance.toFixed(0) : destinationDistance.toFixed(1);
-                const activeWaypointFuelConst = activeWaypointFuel == "-----" ? "-----" : activeWaypointFuel.toFixed(0).padStart(5, " ");
-                const nextWaypointFuelConst = nextWaypointFuel == "-----" ? "-----" : nextWaypointFuel.toFixed(0).padStart(5, " ");
-                const destinationFuelConst = destinationFuel == "-----" ? "-----" : destinationFuel.toFixed(0).padStart(5, " ");
+                const activeWaypointFuelConst = activeWaypointFuel[0] === "-" ? "-----" : activeWaypointFuel.toFixed(0).padStart(5, " ");
+                const nextWaypointFuelConst = nextWaypointFuel[0] === "-" ? "-----" : nextWaypointFuel.toFixed(0).padStart(5, " ");
+                const destinationFuelConst = destinationFuel[0] === "-" ? "-----" : destinationFuel.toFixed(0).padStart(5, " ");
 
                 fmc._templateRenderer.setTemplateRaw([
                     [" PROGRESS[blue]", "1/2[blue] "],
@@ -1245,7 +1245,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["Working-Title-MSFS-Mods[white s-text]"],
             [""],
             [" VERSION[blue]"],
-            ["0.6.1[s-text white]"],
+            ["0.7.0[s-text white]"],
             [""],
             [""],
             [""],

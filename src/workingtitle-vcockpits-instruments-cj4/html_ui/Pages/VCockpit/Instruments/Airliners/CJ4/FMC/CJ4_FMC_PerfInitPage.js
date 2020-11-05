@@ -35,13 +35,7 @@ class CJ4_FMC_PerfInitPage {
         if (fmc.cruiseFlightLevel) {
             crzAltCell = fmc.cruiseFlightLevel;
         }
-        fmc.onRightInput[0] = () => {
-            let value = fmc.inOut;
-            fmc.clearUserInput();
-            if (fmc.setCruiseFlightLevelAndTemperature(value)) {
-                CJ4_FMC_PerfInitPage.ShowPage2(fmc);
-            }
-        };
+
         let fuelQuantityLeft = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
         let fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
         let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft;
@@ -79,26 +73,50 @@ class CJ4_FMC_PerfInitPage {
             ["", ""],
             ["", "VNAV SETUP>"]
         ]);
+        fmc.onRightInput[0] = () => {
+            let value = fmc.inOut;
+            if (fmc.setCruiseFlightLevelAndTemperature(value)) {
+                CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            }
+            fmc.clearUserInput();
+        };
         fmc.onLeftInput[1] = () => {
-            fmc.paxNumber = parseInt(fmc.inOut);
+            let value = parseInt(fmc.inOut);
+            if (value >= 0 && value <= 10) {
+                fmc.paxNumber = value;
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
             fmc.clearUserInput();
             CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
         fmc.onLeftInput[2] = () => {
-            fmc.cargoWeight = WT_ConvertUnit.setWeight(parseInt(fmc.inOut)); //ParseInt changes from string to number
+            let value = WT_ConvertUnit.setWeight(parseInt(fmc.inOut)); //ParseInt changes from string to number
+            if (value >= 0 && value <= 2221) {
+                fmc.cargoWeight = value; 
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
             fmc.clearUserInput();
             CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
 		fmc.onRightInput[2] = () => {
+            let value = WT_ConvertUnit.setWeight(parseInt(fmc.inOut));
 			if (fmc.inOut == FMCMainDisplay.clrValue){
 				fmc.zFWActive = 0;
 				fmc.paxNumber = 0;
 				fmc.cargoWeight = 0;
-			} else {
-            zFW = WT_ConvertUnit.setWeight(parseInt(fmc.inOut));
-			fmc.zFWPilotInput = zFW;
-			fmc.zFWActive = 1;
-			}
+            }
+            else if (value >= 10280 && value <= 12600) {
+                zFW = value;
+                fmc.zFWPilotInput = zFW;
+                fmc.zFWActive = 1;
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
 			fmc.clearUserInput();
             CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };

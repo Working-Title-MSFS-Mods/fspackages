@@ -175,6 +175,7 @@ class SvgRoadNetworkElement extends SvgMapElement {
         this.lastShowRoadsPrimary = true;
         this.lastShowAirspaces = true;
         this.lastShowAirways = true;
+        this.firstDraw = true;
     }
     nodes(map) {
         if (map.NMWidth > SvgRoadNetworkElement.EPSILON_ROADS_LEVEL0) { // pretty sure this is broken???? Will always return true given the value of the constant
@@ -270,7 +271,8 @@ class SvgRoadNetworkElement extends SvgMapElement {
         let thresholdLat = 0.25 * map.angularHeight;
         let thresholdLong = 0.25 * map.angularWidth;
         let resized = false;
-        if (this._visibleCanvas.canvas.style.width !== fastToFixed(this.canvasSize, 0) + "px") {
+        if ((this._visibleCanvas.canvas.style.width !== fastToFixed(this.canvasSize, 0) + "px") || this.firstDraw) {
+            this.firstDraw = false;
             console.log("Resize RoadNetworkElement " + fastToFixed(this.canvasSize, 0) + "px");
             this._visibleCanvas.canvas.width = this.canvasSize;
             this._visibleCanvas.canvas.height = this.canvasSize;

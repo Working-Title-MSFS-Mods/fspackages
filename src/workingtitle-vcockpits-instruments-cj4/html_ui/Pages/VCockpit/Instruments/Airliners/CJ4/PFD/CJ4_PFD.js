@@ -71,6 +71,14 @@ class CJ4_PFD extends BaseAirliners {
                 this.readDictionary(dict);
                 dict.changed = false;
             }
+			
+			if (this.mapNavigationMode === Jet_NDCompass_Navigation.VOR) {
+                const radioFix = this.radioNav.getVORBeacon(this.mapNavigationSource);
+                if (radioFix.name && radioFix.name.indexOf("ILS") !== -1) {
+                    this.mapNavigationMode = Jet_NDCompass_Navigation.ILS;
+                }       
+            }
+			
             this.map.setMode(this.mapDisplayMode);
             this.mapOverlay.setMode(this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource);
 
@@ -88,7 +96,7 @@ class CJ4_PFD extends BaseAirliners {
                         el.style = 'transform: translate(-84px, -56px)';
                     }
 
-                    if (this.mapDisplayMode === Jet_NDCompass_Display.ARC) {
+                    if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.PPOS) {
                         el.setAttribute('width', '108%');
                         el.setAttribute('height', '108%');
                         el.style = 'transform: translate(-30px, -18px)';
@@ -98,14 +106,49 @@ class CJ4_PFD extends BaseAirliners {
             }
 
             if (this.showTerrain) {
+                this.map.showMap(true);
+
+                if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {               
+                    this.map.showRoute(false);
+                    this.map.map.instrument.setAttribute('show-airplane', 'false');
+                }
+                else {
+                    this.map.showRoute(true);
+                    this.map.map.instrument.setAttribute('show-airplane', 'true');
+                }
+
                 this.map.showTerrain(true);
                 this.mapOverlay.showTerrain(true);
             }
             else if (this.showWeather) {
+                this.map.showMap(true);
+
+                if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {
+                    this.map.showRoute(false);
+                    this.map.map.instrument.setAttribute('show-airplane', 'false');
+                }
+                else {
+                    this.map.showRoute(true);
+                    this.map.map.instrument.setAttribute('show-airplane', 'true');
+                }
+
                 this.map.showWeather(true);
                 this.mapOverlay.showWeather(true);
             }
             else {
+                if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {
+                    this.map.showMap(false);
+                    this.map.showRoute(false);
+
+                    this.map.map.instrument.setAttribute('show-airplane', 'false');
+                }
+                else {
+                    this.map.showMap(true);
+                    this.map.showRoute(true);
+
+                    this.map.map.instrument.setAttribute('show-airplane', 'true');
+                }
+
                 this.map.showTerrain(false);
                 this.mapOverlay.showTerrain(false);
                 this.map.showWeather(false);
@@ -143,7 +186,7 @@ class CJ4_PFD extends BaseAirliners {
 
                     this.onModeChanged();
                 }
-                else if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1) {
+                else if ((this.mapNavigationMode == Jet_NDCompass_Navigation.VOR || this.mapNavigationMode == Jet_NDCompass_Navigation.ILS) && this.mapNavigationSource == 1) {
                     this.radioNav.setRADIONAVSource(NavSource.VOR2);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
                     this.mapNavigationSource = 2;
@@ -151,7 +194,7 @@ class CJ4_PFD extends BaseAirliners {
                     SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 2);
                     this.onModeChanged();
                 }
-                else if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 2) {
+                else if ((this.mapNavigationMode == Jet_NDCompass_Navigation.VOR || this.mapNavigationMode == Jet_NDCompass_Navigation.ILS) && this.mapNavigationSource == 2) {
                     this.radioNav.setRADIONAVSource(NavSource.GPS);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
                     this.mapNavigationSource = 0;
@@ -167,8 +210,12 @@ class CJ4_PFD extends BaseAirliners {
             case "Upr_Push_FRMT":
                 if (this.mapDisplayMode == Jet_NDCompass_Display.ARC)
                     this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
-                else
-                    this.mapDisplayMode = Jet_NDCompass_Display.ARC;
+
+                else if (this.mapDisplayMode == Jet_NDCompass_Display.ROSE)
+                    this.mapDisplayMode = Jet_NDCompass_Display.PPOS;
+                
+                else this.mapDisplayMode = Jet_NDCompass_Display.ARC;
+
                 this.onModeChanged();
                 break;
             case "Upr_Push_TERR_WX":
@@ -243,11 +290,17 @@ class CJ4_PFD extends BaseAirliners {
                 modeChanged = true;
             }
         }
-        else if (format == "ARC" || format == "PPOS") {
+        else if (format == "ARC") {
             if (this.mapDisplayMode != Jet_NDCompass_Display.ARC) {
                 this.mapDisplayMode = Jet_NDCompass_Display.ARC;
                 modeChanged = true;
             }
+        }
+        else if (format == "PPOS") {
+            if (this.mapDisplayMode != Jet_NDCompass_Display.PPOS) {
+                this.mapDisplayMode = Jet_NDCompass_Display.PPOS;
+                modeChanged = true;
+             }
         }
         let range = _dict.get(CJ4_PopupMenu_Key.MAP_RANGE);
         this.map.range = parseInt(range);
@@ -363,6 +416,8 @@ class CJ4_PFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "ROSE");
         else if (this.mapDisplayMode == Jet_NDCompass_Display.ARC)
             _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "ARC");
+        else if (this.mapDisplayMode == Jet_NDCompass_Display.PPOS)
+            _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "PPOS");
         _dict.set(CJ4_PopupMenu_Key.MAP_RANGE, this.map.range.toString());
         if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1)
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "VOR1");
