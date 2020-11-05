@@ -78,28 +78,112 @@
             <Type>Warning</Type>
             <Text>OIL PRESSURE LOW </Text>
             <Condition Suffix="L/R">
-                <And>
-                    <LowerEqual>
-                        <Simvar name="ENG OIL PRESSURE:1" unit="psi"/>
-                        <Constant>29</Constant>
-                    </LowerEqual>
-                    <LowerEqual>
-                        <Simvar name="ENG OIL PRESSURE:2" unit="psi"/>
-                        <Constant>29</Constant>
-                    </LowerEqual>
-                </And>
+                <Or>
+                    <And>
+                        <Or>
+                            <Lower>
+                                <Simvar name="TURB ENG N1:1" unit="percent"/>
+                                <Constant>80</Constant>
+                            </Lower>
+                            <Lower>
+                                <Simvar name="TURB ENG N1:2" unit="percent"/>
+                                <Constant>80</Constant>
+                            </Lower>
+                        </Or>
+                        <Timer time="300">
+                            <And>
+                                <LowerEqual>
+                                    <Simvar name="ENG OIL PRESSURE:1" unit="psi"/>
+                                    <Constant>29</Constant>
+                                </LowerEqual>
+                                <LowerEqual>
+                                    <Simvar name="ENG OIL PRESSURE:2" unit="psi"/>
+                                    <Constant>29</Constant>
+                                </LowerEqual>
+                            </And>
+                        </Timer>
+                    </And>
+                    <And>
+                        <Or>
+                            <GreaterEqual>
+                                <Simvar name="TURB ENG N1:1" unit="percent"/>
+                                <Constant>80</Constant>
+                            </GreaterEqual>
+                            <GreaterEqual>
+                                <Simvar name="TURB ENG N1:2" unit="percent"/>
+                                <Constant>80</Constant>
+                            </GreaterEqual>
+                        </Or>
+                        <Timer time="300">
+                            <And>
+                                <LowerEqual>
+                                    <Simvar name="ENG OIL PRESSURE:1" unit="psi"/>
+                                    <Constant>39</Constant>
+                                </LowerEqual>
+                                <LowerEqual>
+                                    <Simvar name="ENG OIL PRESSURE:2" unit="psi"/>
+                                    <Constant>39</Constant>
+                                </LowerEqual>
+                            </And>
+                        </Timer>
+                    </And>
+                </Or>
             </Condition>
             <Condition Suffix="L">
-                <LowerEqual>
-                    <Simvar name="ENG OIL PRESSURE:1" unit="psi"/>
-                    <Constant>29</Constant>
-                </LowerEqual>
+                <Or>
+                    <And>
+                        <GreaterEqual>
+                            <Simvar name="TURB ENG N1:1" unit="percent"/>
+                            <Constant>80</Constant>
+                        </GreaterEqual>
+                        <Timer time="300">
+                            <LowerEqual>
+                                <Simvar name="ENG OIL PRESSURE:1" unit="psi"/>
+                                <Constant>39</Constant>
+                            </LowerEqual>
+                        </Timer>
+                    </And>
+                    <And>
+                        <Lower>
+                            <Simvar name="TURB ENG N1:1" unit="percent"/>
+                            <Constant>80</Constant>
+                        </Lower>
+                        <Timer time="300">
+                            <LowerEqual>
+                                <Simvar name="ENG OIL PRESSURE:1" unit="psi"/>
+                                <Constant>29</Constant>
+                            </LowerEqual>
+                        </Timer>
+                    </And>
+                </Or>
             </Condition>
             <Condition Suffix="R">
-                <LowerEqual>
-                    <Simvar name="ENG OIL PRESSURE:2" unit="psi"/>
-                    <Constant>29</Constant>
-                </LowerEqual>
+                <Or>
+                    <And>
+                        <GreaterEqual>
+                            <Simvar name="TURB ENG N1:2" unit="percent"/>
+                            <Constant>80</Constant>
+                        </GreaterEqual>
+                        <Timer time="300">
+                            <LowerEqual>
+                                <Simvar name="ENG OIL PRESSURE:2" unit="psi"/>
+                                <Constant>39</Constant>
+                            </LowerEqual>
+                        </Timer>
+                    </And>
+                    <And>
+                        <Lower>
+                            <Simvar name="TURB ENG N1:2" unit="percent"/>
+                            <Constant>80</Constant>
+                        </Lower>
+                        <Timer time="300">
+                            <LowerEqual>
+                                <Simvar name="ENG OIL PRESSURE:2" unit="psi"/>
+                                <Constant>29</Constant>
+                            </LowerEqual>
+                        </Timer>
+                    </And>
+                </Or>
             </Condition>
         </Annunciation>
 
@@ -130,16 +214,17 @@
 		  </Condition>
 		</Annunciation>
 
-		<Annunciation>
-		  <Type>Warning</Type>
-		  <Text>CABIN ALTITUDE</Text>
-		  <Condition>
-			<Greater>
-			  <Simvar name="PRESSURIZATION CABIN ALTITUDE" unit="feet"/>
-			  <Constant>45000</Constant>
-			</Greater>
-		  </Condition>
-		</Annunciation>
+<!--        Requires modelling of cabin altitude and pressure-->
+<!--		<Annunciation>-->
+<!--		  <Type>Warning</Type>-->
+<!--		  <Text>CABIN ALTITUDE</Text>-->
+<!--		  <Condition>-->
+<!--			<Greater>-->
+<!--			  <Simvar name="PRESSURIZATION CABIN ALTITUDE" unit="feet"/>-->
+<!--			  <Constant>45000</Constant>-->
+<!--			</Greater>-->
+<!--		  </Condition>-->
+<!--		</Annunciation>-->
 
         <Annunciation>
             <Type>Warning</Type>
@@ -433,13 +518,13 @@
 <!--            </Condition>-->
 <!--        </Annunciation>-->
 
-        <Annunciation>
-            <Type>Caution</Type>
-            <Text>YD</Text>
-            <Condition>
+<!--        <Annunciation>-->
+<!--            <Type>Caution</Type>-->
+<!--            <Text>YD</Text>-->
+<!--            <Condition>-->
 
-            </Condition>
-        </Annunciation>
+<!--            </Condition>-->
+<!--        </Annunciation>-->
 
 		<Annunciation>
 		  <Type>Caution</Type>
@@ -603,7 +688,7 @@
                 <!--Ground spoilers in reality only occur when on the ground but not in sim-->
                 <!--<Simvar name="SIM ON GROUND" unit="Bool"/>-->
                 <Equal>
-                    <Simvar name="SPOILERS HANDLE POSITION" unit="number"/>
+                    <Simvar name="SPOILERS HANDLE POSITION" unit="percentage"/>
                     <Constant>100</Constant>
                 </Equal>
             </Condition>
