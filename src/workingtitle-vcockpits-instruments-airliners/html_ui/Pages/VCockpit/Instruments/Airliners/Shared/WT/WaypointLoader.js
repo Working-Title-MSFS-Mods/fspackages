@@ -980,9 +980,6 @@ class FacilityLoader {
     async getAirwayData(intersectionInfo, name = "", maxLength = 100) {
         await this.waitRegistration();
 
-        if (name === "UN858")
-            console.log("GETAIRWAYDATA " + name + " " + intersectionInfo.icao);
-
         if (!intersectionInfo.routes) {
             return undefined;
         }
@@ -1002,8 +999,6 @@ class FacilityLoader {
             for (let i = 0; i < maxLength * 0.5; i++) {
                 if (currentRoute) {
                     let prevIcao = currentRoute.prevIcao;
-                    if (name === "UN858")
-                        console.log("   prevIcao = " + prevIcao);
 
                     currentRoute = undefined;
                     if (prevIcao && prevIcao.length > 0 && prevIcao[0] != " ") {
@@ -1025,8 +1020,7 @@ class FacilityLoader {
             for (let i = 0; i < maxLength * 0.5; i++) {
                 if (currentRoute) {
                     let nextIcao = currentRoute.nextIcao;
-                    if (name === "UN858")
-                        console.log("   nextIcao = " + nextIcao);
+
                     currentRoute = undefined;
                     if (nextIcao && nextIcao.length > 0 && nextIcao[0] != " ") {
                         let nextWaypoint = await this.getIntersectionData(nextIcao);
@@ -1455,7 +1449,6 @@ class IntersectionLoader extends WaypointLoader {
             for (let i = 0; i < routesCount; i++) {
                 SimVar.SetSimVarValue("C:fs9gps:NearestIntersectionCurrentCurrentRoute", "number", i, this.instrument.instrumentIdentifier + "-loader").then(() => {
                     let routeName = SimVar.GetSimVarValue("C:fs9gps:NearestIntersectionCurrentRouteName", "string", this.instrument.instrumentIdentifier + "-loader");
-                    console.log("INTERSECTIONLOADER");
                     let routePrevIcao = SimVar.GetSimVarValue("C:fs9gps:NearestIntersectionCurrentRoutePrevIcao", "string", this.instrument.instrumentIdentifier + "-loader");
                     let routeNextIcao = SimVar.GetSimVarValue("C:fs9gps:NearestIntersectionCurrentRouteNextIcao", "string", this.instrument.instrumentIdentifier + "-loader");
                     let route = new NearestWaypointRoute(intersection);
