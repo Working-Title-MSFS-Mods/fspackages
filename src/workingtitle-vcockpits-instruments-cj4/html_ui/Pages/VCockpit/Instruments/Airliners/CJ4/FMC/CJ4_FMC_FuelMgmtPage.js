@@ -95,9 +95,15 @@ class CJ4_FMC_FuelMgmtPageOne {
 
     bindEvents() {
         this._fmc.onLeftInput[2] = () => {
-            this._fmc.reserveFuel = this._fmc.inOut;
+            let value = WT_ConvertUnit.setWeight(parseInt(fmc.inOut));
+            if (value >= 0 && value <= 5000) {
+                this._fmc.reserveFuel = value;
+            }
+            else {
+                this._fmc.showErrorMessage("INVALID");
+            }
             this._fmc.clearUserInput();
-            console.log(this._fmc.reserve);
+            //console.log(this._fmc.reserve);
             this.invalidate();
             this.update();
         };
