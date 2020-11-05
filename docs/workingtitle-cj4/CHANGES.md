@@ -6,9 +6,11 @@ Welcome to the latest update of the Working Title CJ4 (v0.7.0). This version bri
 
 The active flight plan route will no longer be displayed in the ARC or ROSE modes. This is accurate to the actual aircraft. The ARC and ROSE modes are designed to work with the course pointer system. If you would like to see the flight plan route, you must use the PPOS display mode (very similar to ARC, except with the active flight plan instead of pointers) or the PLAN mode.
 
+To activate the new altitude select range indicator (altitude banana), press DSPL MENU on the FMC, then go to page 2. Press LSK3L to activate the indicator. The indicator will only be displayed in the PPOS mode.
+
 ---
 
-Demo video: TODO
+Demo video: [Working Title CJ4 0.7.0 Features Showcase](https://www.youtube.com/watch?v=ta8SQSLStTM)
 
 Feel free to test out our new Simbrief Profile: [SIMBRIEF PROFILE](https://www.simbrief.com/system/dispatch.php?sharefleet=eyJ0cyI6IjE2MDI1MzkxMTUxODMiLCJiYXNldHlwZSI6IkMyNUMiLCJjb21tZW50cyI6IldPUktJTkcgVElUTEUgQ0o0IiwiaWNhbyI6IkMyNUMiLCJuYW1lIjoiQ0lUQVRJT04gQ0o0IiwiZW5naW5lcyI6IkZKNDQtNEEiLCJyZWciOiJONTI1V1QiLCJmaW4iOiIyNTQiLCJzZWxjYWwiOiIiLCJoZXhjb2RlIjoiIiwiY2F0IjoiTSIsInBlciI6IkIiLCJlcXVpcCI6IlNERTJFM0ZHSFJXWFlaIiwidHJhbnNwb25kZXIiOiJMQjEiLCJwYm4iOiJBMUIyQzJEMkQzTzJPM1MyIiwiZXh0cmFybWsiOiIiLCJtYXhwYXgiOiI3Iiwid2d0dW5pdHMiOiJMQlMiLCJvZXciOiIxMDI4MCIsIm16ZnciOiIxMjUwMCIsIm10b3ciOiIxNzExMCIsIm1sdyI6IjE1NjYwIiwibWF4ZnVlbCI6IjU3NjIiLCJwYXh3Z3QiOiIxNzAiLCJkZWZhdWx0Y2kiOiIiLCJmdWVsZmFjdG9yIjoiUDAwIiwiY3J1aXNlb2Zmc2V0IjoiUDAwMDAifQ--)
 
@@ -76,7 +78,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * ARC, ROSE, and PPOS modes have been overhauled. You should no longer see the route map in ARC and ROSE modes, but only in PPOS and PLAN modes (Selected from FMS DSPL MENU)
 * Properly modeled and styled course needles have been added to the ARC and ROSE modes reflective of the real aircraft
 * The dotted blue ghost localizer needle now shows in ARC and ROSE if you have FMS selected, a localizer tuned, and within range (~30NM from airport)
-* The altitude range arc has been added to PPOS mode and will now show when you will reach your selected target altitude 
+* The altitude range arc has been added to PPOS mode and will now show when you will reach your selected target altitude (thanks WT Garmin team)
 * Metric and imperial units switch should be reflected on the PFD/MFD
 * Heading bug resized
 * Heading bug and line should now appear and disappear properly in the ARC and ROSE modes
