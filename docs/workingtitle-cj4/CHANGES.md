@@ -58,7 +58,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 #### MOD SETTINGS
 * A GPU can now be connected to the plane on the mod settings page
-* Cabin lights are now properly tied to the battery bus state
+* Cabin lights are now properly tied to the battery bus state. This should also bring the flashlight back
 * Cabin lights state should be properly saved between flights and will no longer default to on
 * You can now clear your input SimBrief pilot ID (thanks @panourgue)
 * You can now select metric or imperial units for the aircraft
@@ -86,6 +86,10 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * When switching to NAV1 or NAV2, you can now select the NAV AP button to enable tracking the tuned VOR or localizer
 * The weather radar sweep indicator should no longer show when WX is not being displayed
 * Bearing pointers should no longer show in PLAN mode
+* Fixed VSpeeds turning cyan when selecting options in the PFD menu
+
+### PROG
+* Fixed crash when there was no flight plan
 
 ## Known Issues
 * The speed constraints on arrivals may not show correctly because of database issues.

@@ -22,6 +22,11 @@ class CJ4_FMC_ModSettingsPageOne {
 
         this._gpuSetting = SimVar.GetSimVarValue("EXTERNAL POWER ON", "number");
 
+        this._gpuAvailable = SimVar.GetSimVarValue("EXTERNAL POWER AVAILABLE", "number") == 1;
+        if (!this._gpuAvailable) {
+            this._gpuSetting = 0;
+        }
+
         this._yokeHide = SimVar.GetSimVarValue("L:XMLVAR_YOKEHidden1", "number");
 
     }
@@ -84,13 +89,17 @@ class CJ4_FMC_ModSettingsPageOne {
 
         this.invalidate();
     }
-    
+
     render() {
         let lightSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "DIM", "ON"], this.lightMode);
         let pilotIdDisplay = (this.pilotId !== this._pilotDefault) ? this.pilotId + "[green]" : this._pilotDefault;
         let unitsSwitch = this._fmc._templateRenderer.renderSwitch(["IMPERIAL", "METRIC"], this.cj4Units);
         let gpuSettingSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.gpuSetting);
         let yokeHideSwitch = this._fmc._templateRenderer.renderSwitch(["NO", "YES"], this.yokeHide);
+
+        if(!this._gpuAvailable) {
+            gpuSettingSwitch = "NO EXT PWR[disabled]";
+        }
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/1[blue] ", "WT MOD SETTINGS[yellow]"],
@@ -117,7 +126,7 @@ class CJ4_FMC_ModSettingsPageOne {
             this._fmc.clearUserInput();
         };
         this._fmc.onLeftInput[2] = () => { this.cj4Units = this.cj4Units + 1; };
-        this._fmc.onLeftInput[3] = () => { this.gpuSetting = this.gpuSetting + 1; };
+        this._fmc.onLeftInput[3] = () => { if (this._gpuAvailable) this.gpuSetting = this.gpuSetting + 1; };
         this._fmc.onLeftInput[4] = () => { this.yokeHide = this.yokeHide + 1; };
         this._fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(this._fmc); };
     }
