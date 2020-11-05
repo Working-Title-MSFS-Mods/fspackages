@@ -481,7 +481,7 @@ class CJ4_FMC_PerfInitPage {
                         }
                         let approachWaypoints = [...fmc.flightPlanManager.getApproachWaypoints()];
                         if (approachWaypoints[0].ident == fpWaypoints[fpWaypoints.length - 1].ident) {
-                            approachWaypoints.pop();
+                            fpWaypoints.pop();
                         }
                         fpWaypoints = fpWaypoints.concat(approachWaypoints);
                     }
@@ -489,6 +489,15 @@ class CJ4_FMC_PerfInitPage {
                         let approachWaypoints = [...fmc.flightPlanManager.getApproachWaypoints()];
                         fpWaypoints = approachWaypoints;
                     }
+
+                    //REMOVE PASSED CONSTRAINT WAYPOINTS
+                    let constraintWpt = waypoints.find(wp => { return (wp && wp.icao.substr(-5) == activeWaypoint.icao.substr(-5)); });
+                    let constraintWptIndex = waypoints.indexOf(constraintWpt);
+                    waypoints = waypoints.slice(constraintWptIndex);
+
+                    //SET DESTINATION AS STARTING POINT FOR VNAV CALCS
+                    vnavTargetFpWaypoint = vnavTargetFpWaypoint === undefined ? destination : vnavTargetFpWaypoint;
+                    vnavTargetAltitude = vnavTargetAltitude === undefined ? destination.infos.oneWayRunways[0].elevation * 3.28 : vnavTargetAltitude;
 
                     //PLAN DESCENT PROFILE
                     for (let i = waypoints.length - 1; i >= 0; i--) {
@@ -617,7 +626,7 @@ class CJ4_FMC_PerfInitPage {
 
                 //SET VS FOR VNAV PATH
                 if (_interceptingLastAltitude === false) {
-                    if ((vnavTargetDistance - topOfDescent) > 0.5) {
+                    if ((vnavTargetDistance - topOfDescent) > 0.5 || altitude < vnavTargetAltitude) {
                         setVerticalSpeed = 0;
                     }
                     else if (vnavTargetDistance < 1 && vnavTargetDistance > 0) {
@@ -678,7 +687,7 @@ class CJ4_FMC_PerfInitPage {
                     [desiredFPA.toFixed(1) + "°", desiredVerticalSpeed.toFixed(0) + "fpm"],
                     [" alt dev[blue]", "ap vs [blue]"],
                     [altDeviation.toFixed(0) + "ft", apCurrentVerticalSpeed.toFixed(0) + "fpm"],
-                    [" set vs[blue]", "TOD Dist"],
+                    [" set vs[blue]", "TOD Dist[blue] "],
                     [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod + " nm"],
                     [""],
                     ["<RECALC", "VNAV>"]
