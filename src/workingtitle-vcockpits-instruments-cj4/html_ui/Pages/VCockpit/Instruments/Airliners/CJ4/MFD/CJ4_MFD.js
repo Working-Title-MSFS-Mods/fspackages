@@ -158,6 +158,8 @@ class CJ4_MFD extends BaseAirliners {
                         this.map.map.instrument.setAttribute('show-airplane', 'true');
                     }
     
+                    this.map.showWeather(false);
+                    this.mapOverlay.showWeather(false);
                     this.map.showTerrain(true);
                     this.mapOverlay.showTerrain(true);
                 }
@@ -173,6 +175,8 @@ class CJ4_MFD extends BaseAirliners {
                         this.map.map.instrument.setAttribute('show-airplane', 'true');
                     }
     
+                    this.map.showTerrain(false);
+                    this.mapOverlay.showTerrain(false);
                     this.map.showWeather(true);
                     this.mapOverlay.showWeather(true);
                 }
