@@ -146,7 +146,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
                 line.setAttribute("y2", posY.toString());
                 line.setAttribute("stroke", (i == 1) ? "red" : "#52504d");
-                line.setAttribute("stroke-width", "2");
+                line.setAttribute("stroke-width", "3");
                 n1Group.appendChild(line);
                 var line = document.createElementNS(Avionics.SVG.NS, "line");
                 line.setAttribute("x1", (startPosX + halfWidth - gradLength[i]).toString());
@@ -154,7 +154,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("x2", (startPosX + halfWidth).toString());
                 line.setAttribute("y2", posY.toString());
                 line.setAttribute("stroke", (i == 1) ? "red" : "#52504d");
-                line.setAttribute("stroke-width", "2");
+                line.setAttribute("stroke-width", "3");
                 n1Group.appendChild(line);
                 posY += gradSpacing[i];
             }
@@ -227,6 +227,32 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N1RightValue.setAttribute("text-anchor", "end");
             this.N1RightValue.setAttribute("alignment-baseline", "central");
             n1Group.appendChild(this.N1RightValue);
+
+            startPosY = 70;
+
+            // engine modes
+            this.N1ModeLeft = document.createElementNS(Avionics.SVG.NS, "text");
+            this.N1ModeLeft.textContent = "TO";
+            this.N1ModeLeft.setAttribute("x", 100);
+            this.N1ModeLeft.setAttribute("y", startPosY);
+            this.N1ModeLeft.setAttribute("fill", "#cccac8");
+            this.N1ModeLeft.setAttribute("font-size", "24");
+            this.N1ModeLeft.setAttribute("writing-mode", "tb-rl");
+            this.N1ModeLeft.setAttribute("glyph-orientation-vertical", "0");
+            this.N1ModeLeft.setAttribute("font-family", "Roboto-Bold");
+            n1Group.appendChild(this.N1ModeLeft);
+            
+            this.N1ModeRight = document.createElementNS(Avionics.SVG.NS, "text");
+            this.N1ModeRight.textContent = "TO";
+            this.N1ModeRight.setAttribute("x", 180);
+            this.N1ModeRight.setAttribute("y", startPosY);
+            this.N1ModeRight.setAttribute("fill", "#cccac8");
+            this.N1ModeRight.setAttribute("font-size", "24");
+            this.N1ModeRight.setAttribute("writing-mode", "tb-rl");
+            this.N1ModeRight.setAttribute("glyph-orientation-vertical", "0");
+            this.N1ModeRight.setAttribute("font-family", "Roboto-Bold");
+            n1Group.appendChild(this.N1ModeRight);
+
         }
         {
             var ittGroup = document.createElementNS(Avionics.SVG.NS, "g");
