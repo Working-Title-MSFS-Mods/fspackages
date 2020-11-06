@@ -183,8 +183,6 @@ class CJ4_FMC_FuelMgmtPageTwo {
     }
 
     render() {
-        console.log("Render Fuel2");
-
         const fuelBurnedLeft = WT_ConvertUnit.getWeight(this._fuelBurnedLeftDisplay);
         const fuelBurned1Text = fuelBurnedLeft.Value.toFixed(0).padStart(4, " ") + " [d-text]";
 
@@ -197,10 +195,10 @@ class CJ4_FMC_FuelMgmtPageTwo {
         const fuelFlowRight = WT_ConvertUnit.getFuelFlow(this._fuelFlowRight);
         const fuelFlow2Text = fuelFlowRight.Value.toFixed(0).padStart(4, " ") + "[d-text]";
 
-        const fuelBurnedTotal = WT_ConvertUnit.getWeight(this._fuelBurnedTotalDisplay, "LBS [s-text]", "KGS [s-text]");
-        const fuelBurnedTotalText = fuelBurnedTotal.Value.toFixed(0).padStart(4, " ") + " [d-text]"
+        const fuelBurnedTotal = WT_ConvertUnit.getWeight(this._fuelBurnedTotalDisplay, "LB[s-text]", "KG[s-text]");
+        const fuelBurnedTotalText = fuelBurnedTotal.Value.toFixed(0).padStart(4, " ") + " [d-text]";
 
-        const fuelFlowTotal = WT_ConvertUnit.getFuelFlow(this._totalFuelFlow, "PPH[s-text]", "KG/H[s-text]");
+        const fuelFlowTotal = WT_ConvertUnit.getFuelFlow(this._totalFuelFlow, "LB/HR[s-text]", "KG/HR[s-text]");
         const fuelFlowTotalText = fuelFlowTotal.Value.toFixed(0).padStart(4, " ") + "[d-text]";
         
         const fuelBurnedHead = fuelBurnedTotal.Unit;
@@ -209,7 +207,7 @@ class CJ4_FMC_FuelMgmtPageTwo {
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "2/3[blue] ", "FUEL MGMT[blue]"],
             [" ENGINE[blue s-text]", "FLOW-FUEL-USED[blue s-text] ", ""],
-            ["", fuelBurnedHead, fuelFlowHead],
+            ["", fuelBurnedHead + "  ", fuelFlowHead],
             ["   1[d-text]", fuelBurned1Text, fuelFlow1Text],
             ["   2[d-text]", fuelBurned2Text, fuelFlow2Text],
             [" TOTAL[d-text]", fuelBurnedTotalText, fuelFlowTotalText],
