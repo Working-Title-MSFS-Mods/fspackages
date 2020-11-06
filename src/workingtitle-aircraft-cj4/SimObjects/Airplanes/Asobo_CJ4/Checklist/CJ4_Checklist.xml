@@ -18,8 +18,6 @@
                 <Block SubjectTT="Documents/Manuals/Charts">
                     <Checkpoint ReferenceId="CJ4_DOCS_ONBOARD_1"/>
                     <Checkpoint ReferenceId="CJ4_DOCS_ONBOARD_2"/>
-                    <Checkpoint ReferenceId="CJ4_DOCS_ONBOARD_1"/>
-                    <Checkpoint ReferenceId="CJ4_DOCS_ONBOARD_2"/>
                     <Checkpoint ReferenceId="CJ4_DOCS_ONBOARD_3"/>
                     <Checkpoint ReferenceId="CJ4_DOCS_ONBOARD_4"/>
                 </Block>
@@ -60,16 +58,113 @@
             </Page>
 
             <Page SubjectTT="EXTERIOR INSPECTION">
-                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_HOT_ITEMS"/>
-                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_LEFT_NOSE"/>
-                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_RIGHT_NOSE"/>
-                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_RIGHT_WING"/>
-                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_RIGHT_NACELLE"/>
-                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_EMPENNAGE"/>
-                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_LEFT_NACELLE"/>
-                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_TAILCONE"/>
-                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_LEFT_WING"/>
-                <Checkpoint ReferenceId="CJ4_EXTERIOR_CHECKS_LEFT_SIDE"/>
+                <Block SubjectTT="Hot Items/Lights">
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="L, R, and Standby Static Ports" ExpectationTT="Clear/Warm"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="L, R and Standby Pitot Tubes" ExpectationTT="Clear/Hot"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Landing Lights" ExpectationTT="Both On"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Angle of Attack Vane/Case" ExpectationTT="Rotates/Hot"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Beacon Light" ExpectationTT="On/Flashing"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Emergency Exit Light" ExpectationTT="On"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="R Navigation/Strobe Lights" ExpectationTT="On"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Tail Navigation Light" ExpectationTT="On"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="L Wing Inspection/Navigation/Strobe Lights" ExpectationTT="On"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="LOGO Lights" ExpectationTT="On"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="BATTERY Switch" ExpectationTT="OFF"/></Checkpoint>
+                </Block>
+                <Block SubjectTT="Left Nose">
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Baggage Door" ExpectationTT="Secure/Locked"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Nose Gear/Doors/Wheel/Tire" ExpectationTT="Condition/Secure"/></Checkpoint>
+                </Block>
+                <Block SubjectTT="Right Nose/Forward Fuselage">
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Gear/Brake Emergency Pneumatic Pressure Gage" ExpectationTT="Verify Per Placard"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Oxygen Pressure" ExpectationTT="Verify Per Placard"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Baggage Door" ExpectationTT="Secure/Locked"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Oxygen Blowout Disc" ExpectationTT="Green"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Overboard Vent Lines" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Landing Light" ExpectationTT="Condition"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Wing Fairing Vent" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Top/Bottom Antennas" ExpectationTT="Condition/Secure"/></Checkpoint>
+                </Block>
+                <Block SubjectTT="Right Wing/Aft Fuselage">
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Wing Leading Edge Vent" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Single Point Fuel Door" ExpectationTT="Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Fuel Quick Drains (5)" ExpectationTT="Drain/Check"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Main Gear Door/Wheel/Tire" ExpectationTT="Condition/Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Engine Air Inlet" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Engine Fan Duct/Fan" ExpectationTT="Condition"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Engine PT2/TT2 Probe" ExpectationTT="Condition"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Generator Cooling Air Inlet" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Pylon Precooler Inlet" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Emergency Exit Door" ExpectationTT="Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Stall Strips (2) and BLEs (6)" ExpectationTT="Condition/Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Heated Leading Edge" ExpectationTT="Condition/Exhaust Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Fuel Tank Vent" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Fuel Filler Cap" ExpectationTT="Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Static Wicks (3)" ExpectationTT="Condition"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Aileron/Trim Tab/Flap/Speedbrakes/Ground Spoilers" ExpectationTT="Condition/Secure"/><Clue name="Verify trim tab position matches indicator"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Hydraulic Reservoir" ExpectationTT="Check Per Placard/Door Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Toilet Service Door (if installed)" ExpectationTT="Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Air Conditioning Exhaust/Lower Antennas/Drains" ExpectationTT="Condition/Clear"/></Checkpoint>
+                </Block>
+                <Block SubjectTT="Right Nacelle">
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Engine Anti-Ice Exhaust" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Engine Fluid Drains" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Generator Cooling Air Exhaust" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Oil Level" ExpectationTT="Check"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Access Door" ExpectationTT="Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Engine Exhaust/Bypass Ducts" ExpectationTT="Condition/Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Pylon Precooler Exhaust" ExpectationTT="Clear"/></Checkpoint>
+                </Block>
+                <Block SubjectTT="Empennage">
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="R Horizontal Stabilizer Deice Boot" ExpectationTT="Condition"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="R Horizontal Stabilizer/Elevator/Trim Tab" ExpectationTT="Condition"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Rudder/Trim Tab" ExpectationTT="Secure"/><Clue name="Verify trim tab position matches indicator"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Static Wicks (9)" ExpectationTT="Condition"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="L Horizontal Stabilizer/Elevator/Trim Tab" ExpectationTT="Condition"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="L Horizontal Stabilizer Deice Boot" ExpectationTT="Condition"/></Checkpoint>
+                </Block>
+                <Block SubjectTT="Left Nacelle">
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Pylon Precooler Exhaust" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Engine Exhaust/Bypass Ducts" ExpectationTT="Condition/Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Oil Level" ExpectationTT="Check"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Access Door" ExpectationTT="Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Generator Cooling Air Exhaust" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Engine Fluid Drains" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Engine Anti-Ice Exhaust" ExpectationTT="Clear"/></Checkpoint>
+                </Block>
+                <Block SubjectTT="Tailcone/Aft Compartment">
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Aft Compartment Baggage" ExpectationTT="Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Aft Compartment Light Switch" ExpectationTT="Off"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Aft Compartment Access Door" ExpectationTT="Secure/Locked"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="External Power Service Door" ExpectationTT="Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="External Power Circuit Breaker" ExpectationTT="In"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Battery Compartment Door" ExpectationTT="Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Battery Cooling Intake/Vent Lines" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Power Brake Accumulator" ExpectationTT="Bleed to Pre-Charge"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Brake Fluid Reservoir Sight Gages" ExpectationTT="Fluid Visible"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Brake System Access Door" ExpectationTT="Secure"/></Checkpoint>
+                </Block>
+                <Block SubjectTT="Left Wing">
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Flap/Ground Spoilers/ Speedbrakes/Aileron" ExpectationTT="Condition/Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Static Wicks (3)" ExpectationTT="Condition"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Fuel Tank Vent" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Fuel Filler Cap" ExpectationTT="Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Heated Leading Edge" ExpectationTT="Condition/Exhaust Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Stall Strips (2) and BLEs (6)" ExpectationTT="Condition/Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Engine Air Inlet" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Engine Fan Duct/Fan" ExpectationTT="Condition"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Engine PT2/TT2 Probe" ExpectationTT="Condition"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Generator Cooling Air Inlet" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Pylon Precooler Inlet" ExpectationTT="Clear"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Main Gear Door/Wheel/Tire" ExpectationTT="Condition/Secure"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Fuel Quick Drains (5)" ExpectationTT="Drain/Check"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Wing Leading Edge Vent" ExpectationTT="Clear"/></Checkpoint>
+                </Block>
+                <Block SubjectTT="Fuselage Left Side">
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Wing Inspection Light" ExpectationTT="Condition"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Landing Light" ExpectationTT="Condition"/></Checkpoint>
+                    <Checkpoint ReferenceId="CJ4_DUMMY_ALWAYS_PASS"><CheckpointDesc SubjectTT="Cabin Door Seal" ExpectationTT="Condition"/></Checkpoint>
+                </Block>
             </Page>
 
             <Page SubjectTT="Cockpit preparation">
@@ -110,17 +205,18 @@
                 <Checkpoint ReferenceId="CJ4_CABIN_DOOR_CLOSED"/>
                 <Checkpoint ReferenceId="CJ4_PASSENGER_BRIEFING"/>
                 <Checkpoint ReferenceId="CJ4_SEATS_BELTS_PEDALS_ADJUST"/>
-                <Checkpoint ReferenceId="CJ4_EXTERIOR_LIGHTS_PREFLIGHT"/>
+                <Checkpoint ReferenceId="CJ4_EXTERIOR_LIGHTS_ENGINE_START"/>
+                <!-- What are we supposed to do here ??? -->
                 <Checkpoint ReferenceId="CJ4_EICAS_CHECK"/>
                 <Checkpoint ReferenceId="CJ4_FMS"/>
                 <Checkpoint ReferenceId="CJ4_CLIMATE_CONTROL_SELECTOR_OFF"/>
             </Page>
 
-            <Page SubjectTT="STARTING ENGINE(S)">
+            <Page SubjectTT="STARTING ENGINES">
                 <Checkpoint ReferenceId="CJ4_THROTTLES_IDLE"/>
                 <Checkpoint ReferenceId="CJ4_ENGINE2_STARTER_BUTTON_PUSH"/>
                 <Checkpoint ReferenceId="CJ4_ENGINE2_RUN_STOP_BUTTON_RUN"/>
-                <Checkpoint ReferenceId="CJ4_ITT_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_ITT_ENGINE2_CHECK"/>
                 <Checkpoint ReferenceId="CJ4_EICAS_CHECK"/>
                 <Checkpoint ReferenceId="CJ4_START_OPPOSITE_ENGINE"/>
                 <Checkpoint ReferenceId="CJ4_EXTERNAL_POWER_DISCONNECT"/>
@@ -128,17 +224,24 @@
             </Page>
 
             <Page SubjectTT="BEFORE TAXI">
-                <Checkpoint ReferenceId="CJ4_AVIONICS_ON"/>
+                <Checkpoint ReferenceId="CJ4_AVIONICS_SWITCH_ON"/>
                 <Checkpoint ReferenceId="CJ4_CLIMATE_CONTROL_SELECTOR_NORM"/>
                 <Checkpoint ReferenceId="CJ4_PASSENGER_LIGHTS_SAFETY_ON"/>
-                <Checkpoint ReferenceId="CJ4_TRIMS_CHECK"/>
+                <!-- Do we check if trims are working or setting them for TO ??? -->
+                <Checkpoint ReferenceId="CJ4_TRIMS_CHECK_FOR_TO">
+                    <CheckpointDesc SubjectTT="Trims" ExpectationTT="Check/Set"/>
+                </Checkpoint>
                 <Checkpoint ReferenceId="CJ4_FLIGHT_CONTROLS_CHECK"/>
-                <Checkpoint ReferenceId="CJ4_SPEEDBRAKES_GROUND_SPOILERS_CHECK"/>
-                <Checkpoint ReferenceId="CJ4_FLAPS_CHECKSET"/>
+                <!-- Do we disengage spoilers or checking if they are working ??? -->
+                <Checkpoint ReferenceId="CJ4_SPEEDBRAKES_DISENGAGE"/>
+                <!-- Do we check if flaps are working or setting them to 15 degrees ??? -->
+                <Checkpoint ReferenceId="CJ4_FLAPS_SET_15"/>
                 <Checkpoint ReferenceId="CJ4_HYDRAULIC_PRESSURE_CHECK"/>
                 <Checkpoint ReferenceId="CJ4_ENGINE_ONLY_ANTI_ICE_ASREQUIRED"/>
                 <Checkpoint ReferenceId="CJ4_TAKEOFF_DATA_CHECK"/>
+                <!-- What are we supposed to do here ??? -->
                 <Checkpoint ReferenceId="CJ4_TRANSPONDER_ATC2"/>
+                <!-- What are we supposed to do here ??? -->
                 <Checkpoint ReferenceId="CJ4_AVIONICS_CHECK_SET"/>
                 <Checkpoint ReferenceId="CJ4_AUTOPILOT_TEST"/>
                 <Checkpoint ReferenceId="CJ4_ALTIMETER_CHECK_BEFORE_TAXI"/>
@@ -155,12 +258,13 @@
                 <Checkpoint ReferenceId="CJ4_PARKING_BRAKE_RELEASE"/>
                 <Checkpoint ReferenceId="CJ4_BRAKES_CHECK"/>
                 <Checkpoint ReferenceId="CJ4_NOSEWHEEL_STEERING_CHECK"/>
+                <!-- What are we supposed to do here ??? -->
                 <Checkpoint ReferenceId="CJ4_FLIGHT_INSTRUMENTS_CHECK"/>
             </Page>
         </Step>
 
         <Step ChecklistStepId="FLIGHT_RUNWAY">
-            <Page SubjectTT="SECOND ENGINE START AFTER TAXI (OPTIONAL)">
+            <!-- <Page SubjectTT="SECOND ENGINE START AFTER TAXI (OPTIONAL)">
                 <Checkpoint ReferenceId="CJ4_PARKING_BRAKE_SET"/>
                 <Checkpoint ReferenceId="CJ4_ENGINE1_STARTER_BUTTON_PUSH"/>
                 <Checkpoint ReferenceId="CJ4_ENGINE1_RUN_STOP_BUTTON_RUN"/>
@@ -170,7 +274,7 @@
                 </Checkpoint>
                 <Checkpoint ReferenceId="CJ4_HYDRAULIC_PRESSURE_CHECK"/>
                 <Checkpoint ReferenceId="CJ4_ELECTRICAL_SYSTEM_CHECK"/>
-            </Page>
+            </Page> -->
 
             <Page SubjectTT="BEFORE TAKEOFF">
                 <Checkpoint ReferenceId="CJ4_ICE_PROTECTION_SYSTEMS_BEFORE_TO"/>
@@ -184,7 +288,7 @@
                 <Checkpoint ReferenceId="CJ4_RADAR_ASREQUIRED"/>
                 <Checkpoint ReferenceId="CJ4_GA_BUTTON"/>
                 <Checkpoint ReferenceId="CJ4_BATTERY_AMPS_OK"/>
-                <Checkpoint ReferenceId="CJ4_CLEADER_FOR_TO"/>
+                <Checkpoint ReferenceId="CJ4_CLEARED_FOR_TO"/>
                 <Checkpoint ReferenceId="CJ4_ICE_PROTECTION_SYSTEMS_FLIGHT"/>
                 <Checkpoint ReferenceId="CJ4_PITOT_HEAT_ON"/>
                 <Checkpoint ReferenceId="CJ4_EXTERIOR_LIGHTS_BEFORE_TO"/>
@@ -197,6 +301,7 @@
                 <Checkpoint ReferenceId="CJ4_THROTTLES_TO">
                     <Clue name="FADEC Mode Indicator - Green TO"/>
                 </Checkpoint>
+                <!-- I dont's see any "green chevron"... -->
                 <Checkpoint ReferenceId="CJ4_N1_BUGS_GREEN"/>
                 <Checkpoint ReferenceId="CJ4_BRAKES_RELEASE"/>
                 <Checkpoint ReferenceId="CJ4_ROTATE"/>
@@ -223,7 +328,7 @@
                 <Checkpoint ReferenceId="CJ4_AUTOPILOT_ASREQUIRED"/>
                 <Checkpoint ReferenceId="CJ4_ICE_PROTECTION_SYSTEMS_FLIGHT"/>
                 <Checkpoint ReferenceId="CJ4_PASSENGER_LIGHTS_ASREQUIRED"/>
-                <Checkpoint ReferenceId="CJ4_LANDING_LIGHTS"/>
+                <Checkpoint ReferenceId="CJ4_LANDING_LIGHTS_ASREQUIRED"/>
                 <Checkpoint ReferenceId="CJ4_PRESSURIZATION_CHECK"/>
                 <Checkpoint ReferenceId="CJ4_ALTIMETERS_STD"/>
             </Page>
@@ -260,7 +365,7 @@
                 <Checkpoint ReferenceId="CJ4_PASSENGER_BRIEFING"/>
                 <Checkpoint ReferenceId="CJ4_SEATS_UP"/>
                 <Checkpoint ReferenceId="CJ4_SEATS_BELTS"/>
-                <Checkpoint ReferenceId="CJ4_PASSENGER_LIGHTS_ON"/>
+                <Checkpoint ReferenceId="CJ4_PASSENGER_LIGHTS_SAFETY_ON"/>
                 <Checkpoint ReferenceId="CJ4_EICAS_CHECK"/>
                 <Checkpoint ReferenceId="CJ4_PRESSURIZATION_SET_APPROACH"/>
             </Page>
@@ -288,9 +393,7 @@
                 <Checkpoint ReferenceId="CJ4_PITCH_ALTITUDE_GOAROUND"/>
                 <Checkpoint ReferenceId="CJ4_FLAPS_SET_15"/>
                 <Checkpoint ReferenceId="CJ4_LANDING_GEAR_UP"/>
-                <Checkpoint ReferenceId="CJ4_FLAPS_CHECKSET">
-                    <Clue name="For 0deg flaps : vAPP+10 knots"/>
-                </Checkpoint>
+                <Checkpoint ReferenceId="CJ4_FLAPS_UP_GOAROUND"/>
                 <Checkpoint ReferenceId="CJ4_AIRSPEED_ASREQUIRED"/>
                 <Checkpoint ReferenceId="CJ4_THROTTLES_ASREQUIRED"/>
                 <Checkpoint ReferenceId="CJ4_YAW_DAMPER_ON"/>
