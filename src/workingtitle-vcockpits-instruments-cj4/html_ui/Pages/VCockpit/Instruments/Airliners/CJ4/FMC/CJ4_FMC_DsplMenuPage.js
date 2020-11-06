@@ -42,11 +42,12 @@ class CJ4_FMC_DsplMenuPage {
             });
         };
 
-        fmc.onRightInput[2] = () => {
-            this.toggleSymbol(CJ4_MapSymbol.CONSTRAINTS).then(() => {
-                CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
-            });
-        };
+        // TODO: disabled because of errors with mapinstrument
+        // fmc.onRightInput[2] = () => {
+        //     this.toggleSymbol(CJ4_MapSymbol.CONSTRAINTS).then(() => {
+        //         CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
+        //     });
+        // };
 
         fmc.onRightInput[3] = () => {
             this.toggleSymbol(CJ4_MapSymbol.AIRPORTS).then(() => {
@@ -61,7 +62,7 @@ class CJ4_FMC_DsplMenuPage {
             [""],
             ["HI NAVAIDS[s-text disabled]", "SPEED[s-text disabled]"],
             [""],
-            [loNavaidsActive, altitudeActive],
+            [loNavaidsActive, altitudeActive + "[disabled]"],
             [""],
             [intersectionsActive, airportsActive],
             [""],

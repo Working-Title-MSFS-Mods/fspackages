@@ -1,7 +1,7 @@
 # Working Title CJ4 Mod
 
 ## UPDATES
-Latest Version: [v0.6.5](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.6.5)
+Latest Version: [v0.7.1](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.7.1)
 
 Changelog: [CHANGES.md](https://github.com/Working-Title-MSFS-Mods/fspackages/blob/main/docs/workingtitle-cj4/CHANGES.md)
 
@@ -36,6 +36,10 @@ This list is incomplete, but thanks to everyone that contributed from inside and
 * cwburnett
 * kaosfere
 * dga711
+* aznricepuff
 * musurca
 * uwajimaya
+* dihedral (QA)
+* Danice (QA)
+* Viralwhite (QA)
 * AND others!
