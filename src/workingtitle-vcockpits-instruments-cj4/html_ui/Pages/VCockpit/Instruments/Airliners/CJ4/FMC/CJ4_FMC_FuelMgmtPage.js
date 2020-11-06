@@ -164,11 +164,11 @@ class CJ4_FMC_FuelMgmtPageTwo {
             this._fuelFlowLeft = fuelFlowLeft;
             this._fuelFlowRight = fuelFlowRight;
 
-            this._fuelBurnedLeftDisplay = fuelBurnedLeft < 0 ? "0"
+            this._fuelBurnedLeftDisplay = fuelBurnedLeft < 0 ? 0
                 : fuelBurnedLeft;
-            this._fuelBurnedRightDisplay = fuelBurnedRight < 0 ? "0"
+            this._fuelBurnedRightDisplay = fuelBurnedRight < 0 ? 0
                 : fuelBurnedRight;
-            this._fuelBurnedTotalDisplay = fuelBurnedTotal < 0 ? "0"
+            this._fuelBurnedTotalDisplay = fuelBurnedTotal < 0 ? 0
                 : fuelBurnedTotal;
         }
 
