@@ -2,7 +2,9 @@
 
 ## UPDATES
 Latest Version: [v0.7.1](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.7.1)
+
 Changelog: [CHANGES.md](https://github.com/Working-Title-MSFS-Mods/fspackages/blob/main/docs/workingtitle-cj4/CHANGES.md)
+
 Discord: Track Updates and Progress on Discord [https://discord.com/invite/Fa6w2xK](https://discord.com/invite/Fa6w2xK)
 
 ## BETA
