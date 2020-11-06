@@ -355,26 +355,24 @@ class SvgMap {
             }
         }
 
-        if (this.config.preventLabelOverlap) {
-            let toRemove = [];
-            for (let e of this.elementsWithTextBox) {
-                if (newElementsWithTextBox.has(e)) {
-                    newElementsWithTextBox.delete(e);
-                } else {
-                    toRemove.push(e);
-                }
+        let toRemove = [];
+        for (let e of this.elementsWithTextBox) {
+            if (newElementsWithTextBox.has(e)) {
+                newElementsWithTextBox.delete(e);
+            } else {
+                toRemove.push(e);
             }
-            for (let e of toRemove) {
-                this.textManager.remove(e);
-                this.elementsWithTextBox.delete(e);
-            }
-            for (let e of newElementsWithTextBox) {
-                this.elementsWithTextBox.add(e);
-                this.textManager.add(e);
-            }
-
-            this.textManager.update();
         }
+        for (let e of toRemove) {
+            this.textManager.remove(e);
+            this.elementsWithTextBox.delete(e);
+        }
+        for (let e of newElementsWithTextBox) {
+            this.elementsWithTextBox.add(e);
+            this.textManager.add(e);
+        }
+
+        this.textManager.update();
 
         if (SvgMap.LOG_PERFS) {
             let dt = performance.now() - t0;

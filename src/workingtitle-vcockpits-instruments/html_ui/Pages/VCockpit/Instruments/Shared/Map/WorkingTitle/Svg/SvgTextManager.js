@@ -49,6 +49,7 @@ class SvgTextManager {
         this.map = map;
         this.perfModeThreshold = perfModeThreshold;
         this._lastPerformanceMode = false;
+        this._lastPreventCollision = false;
 
         this._managedTexts = new Map();
         this._visibleTexts = new Set();
@@ -112,17 +113,18 @@ class SvgTextManager {
     updateOnAdd(newManagedText) {
         newManagedText.mapElement.updateDraw(this.map);
         let showText = true;
-        let compareSet = this.isInPerformanceMode() ? this._visibleTexts.values() : this._managedTexts.values();
-        for (let existing of compareSet) {
-            if (existing.doesCollide(newManagedText)) {
-                existing.collisions.add(newManagedText);
-                newManagedText.collisions.add(existing);
-                if (existing.showText) {
-                    showText = showText && newManagedText.priority < existing.priority;
+        if (this.map.config.preventLabelOverlap) {
+            let compareSet = this.isInPerformanceMode() ? this._visibleTexts.values() : this._managedTexts.values();
+            for (let existing of compareSet) {
+                if (existing.doesCollide(newManagedText)) {
+                    existing.collisions.add(newManagedText);
+                    newManagedText.collisions.add(existing);
+                    if (existing.showText) {
+                        showText = showText && newManagedText.priority < existing.priority;
+                    }
                 }
             }
         }
-
         this._managedTexts.set(newManagedText.label, newManagedText);
         this.changeVisibility(newManagedText, showText);
     }
@@ -188,52 +190,62 @@ class SvgTextManager {
 
     update() {
         let currentTime = Date.now() / 1000;
+        let preventCollisionChanged = this._lastPreventCollision != this.map.config.preventLabelOverlap;
+        this._lastPreventCollision = this.map.config.preventLabelOverlap;
 
-        if (this.map.NMWidth != this._lastNMWidth) {
-            // map zoom changed -> clear all labels and start timer
-            for (let managedText of this._managedTexts.values()) {
-                managedText.showText = false;
-                this._visibleTexts.clear();
-            }
-            this._mapZoomTimer = this.mapZoomUpdateDelay;
-            this._lastTime = currentTime;
-            this._lastNMWidth = this.map.NMWidth;
-            return;
-        }
-
-        if (this._mapZoomTimer > 0) {
-            let dt = currentTime - this._lastTime;
-            this._mapZoomTimer -= dt;
-            if (this._mapZoomTimer <= 0) {
-                // map zoom change timer expired -> update collisions
-                this.startUpdateCollisions();
-                this.updateDrawVisible();
+        if (this.map.config.preventLabelOverlap) {
+            if (this.map.NMWidth != this._lastNMWidth) {
+                // map zoom changed -> clear all labels and start timer
+                for (let managedText of this._managedTexts.values()) {
+                    managedText.showText = false;
+                    this._visibleTexts.clear();
+                }
+                this._mapZoomTimer = this.mapZoomUpdateDelay;
+                this._lastTime = currentTime;
+                this._lastNMWidth = this.map.NMWidth;
                 return;
             }
-            this._lastTime = currentTime;
-            return;
-        }
 
-        let rotationDelta = Math.abs(this.map.rotation - this._lastRotation);
-        rotationDelta = Math.min(rotationDelta, 360 - rotationDelta);
-        if (rotationDelta >= this.rotationDeltaThreshold) {
-            this._lastRotation = this.map.rotation;
-            this.startUpdateCollisions();
-            return;
-        }
+            if (this._mapZoomTimer > 0) {
+                let dt = currentTime - this._lastTime;
+                this._mapZoomTimer -= dt;
+                if (this._mapZoomTimer <= 0) {
+                    // map zoom change timer expired -> update collisions
+                    this.startUpdateCollisions();
+                    this.updateDrawVisible();
+                    return;
+                }
+                this._lastTime = currentTime;
+                return;
+            }
 
-        let forceUpdateCollisions =
-               (this.isInPerformanceMode() != this._lastPerformanceMode)
-            || (this._toRemoveBuffer.size + this._toAddBuffer.size > this.addRemoveForceUpdateThreshold);
+            let rotationDelta = Math.abs(this.map.rotation - this._lastRotation);
+            rotationDelta = Math.min(rotationDelta, 360 - rotationDelta);
+            if (rotationDelta >= this.rotationDeltaThreshold) {
+                this._lastRotation = this.map.rotation;
+                this.startUpdateCollisions();
+                return;
+            }
 
-        if (forceUpdateCollisions) {
-            this.startUpdateCollisions();
-            return;
-        }
+            let forceUpdateCollisions =
+                (preventCollisionChanged)
+                || (this.isInPerformanceMode() != this._lastPerformanceMode)
+                || (this._toRemoveBuffer.size + this._toAddBuffer.size > this.addRemoveForceUpdateThreshold);
 
-        if (this.isUpdatingCollisions()) {
-            this.doUpdateCollisions();
-            return;
+            if (forceUpdateCollisions) {
+                this.startUpdateCollisions();
+                return;
+            }
+
+            if (this.isUpdatingCollisions()) {
+                this.doUpdateCollisions();
+                return;
+            }
+        } else {
+            if (preventCollisionChanged) {
+                this.showAll();
+                return;
+            }
         }
 
         if (this.isAddingRemoving()) {
@@ -252,6 +264,14 @@ class SvgTextManager {
     updateDrawAll() {
         for (let managedText of this._managedTexts.values()) {
             managedText.mapElement.updateDraw(this.map);
+        }
+    }
+
+    showAll() {
+        for (let managedText of this._managedTexts.values()) {
+            managedText.collisions.clear();
+            managedText.mapElement.updateDraw(this.map);
+            managedText.show = true;
         }
     }
 
