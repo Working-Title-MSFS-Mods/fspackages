@@ -8,6 +8,8 @@
 
 This is the home of mods for the new Microsoft Flight Simulator from the Working Title team.  We have a number of projects either in the works or planned.  Here is the status of what is currently being worked on and links to downloadable releases.
 
+Track Updates and Progress on Discord [https://discord.com/invite/Fa6w2xK](https://discord.com/invite/Fa6w2xK)
+
 Project | Description | Current Version | Documentation
 --------|-------------|-----------------|--------------
 CJ4 | Performance and avionics improvements for the Citation CJ4 | [v0.7.1](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.7.1) | [docs](https://github.com/Working-Title-MSFS-Mods/fspackages/tree/main/docs/workingtitle-cj4)
