@@ -389,7 +389,7 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage13(fmc) { //PROG Pg 1
         fmc.clearDisplay();
-        const fuelHeading = WT_ConvertUnit.getWeight(1, " FUEL-LB[s-text blue]", " FUEL-KG[s-text blue]").Unit;
+        const fuelHeading = WT_ConvertUnit.isMetric() ? " FUEL-KG[s-text blue]" : " FUEL-LB[s-text blue]";
 
         fmc.registerPeriodicPageRefresh(() => {
 
@@ -453,7 +453,7 @@ class CJ4_FMC_InitRefIndexPage {
                 }
 
                 //next waypoint data
-                if (fmc.flightPlanManager.getNextActiveWaypoint()) {
+                if (fmc.flightPlanManager.getNextActiveWaypoint() && fmc.flightPlanManager.getActiveWaypoint()) {
                     let nextWaypoint = fmc.flightPlanManager.getNextActiveWaypoint();
                     nextWaypointIdent = new String(fmc.flightPlanManager.getNextActiveWaypoint().ident);
                     nextWaypointDist = new Number(activeWaypointDist + Avionics.Utils.computeDistance(fmc.flightPlanManager.getActiveWaypoint().infos.coordinates, nextWaypoint.infos.coordinates));
