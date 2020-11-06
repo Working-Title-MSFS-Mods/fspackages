@@ -14,6 +14,8 @@ class SvgWaypointElement extends SvgMapElement {
         this._lastMinimize = false;
         this._lastIsActiveWaypoint = false;
         this.source = source;
+
+        this._label = new SvgWaypointTextElement(this);
     }
 
     appendToMap(map) {
@@ -103,8 +105,6 @@ class SvgWaypointElement extends SvgMapElement {
     }
 
     createDraw(map) {
-        this._label = new SvgWaypointTextElement(this);
-
         let isActiveWaypoint = this.isActiveWaypoint();
 
         this._image = document.createElementNS(Avionics.SVG.NS, "image");
@@ -165,7 +165,6 @@ class SvgWaypointElement extends SvgMapElement {
                 this.needRepaint = true;
             }
             if (this.needRepaint || Math.abs(this._lastX - this.x) > 0.1 || Math.abs(this._lastY - this.y) > 0.1) {
-                let fontSize = this.getLabelFontSize(map);
                 this._lastX = this.x;
                 this._lastY = this.y;
                 iconSize *= (this.minimize ? 0.5 : 1);
@@ -238,7 +237,6 @@ class SvgWaypointTextElement {
 
         if (isFinite(this.waypointElement.x) && isFinite(this.waypointElement.y)) {
             if (this._needRepaint || Math.abs(this._lastX - this.waypointElement.x) > 0.1 || Math.abs(this._lastY - this.waypointElement.y) > 0.1) {
-                let fontSize = this.waypointElement.getLabelFontSize(map);
                 this._lastX = this.waypointElement.x;
                 this._lastY = this.waypointElement.y;
                 let iconSize = this.waypointElement.getIconSize(map) * (this.waypointElement.minimize ? 0.5 : 1);

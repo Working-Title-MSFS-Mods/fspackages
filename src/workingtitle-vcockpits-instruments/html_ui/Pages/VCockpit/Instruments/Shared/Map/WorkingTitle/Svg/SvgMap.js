@@ -340,7 +340,7 @@ class SvgMap {
             svgElement.setAttribute("needDeletion", "false");
 
             if (this.mapElements[i].hasTextBox) {
-                newElementsWithTextBox.add(this.mapElements[i]);
+                newElementsWithTextBox.add(this.mapElements[i].getLabelElement());
             }
         }
         for (let svgLayer of this.svgLayersToUpdate) {
@@ -349,42 +349,30 @@ class SvgMap {
                 let e = svgLayer.children[i];
                 if (e.getAttribute("needDeletion") === "true") {
                     svgLayer.removeChild(e);
-                    if (e.getAttribute("hasTextBox") === "true") {
-                        let textElement = this.htmlRoot.querySelector("#" + e.id + "-text-" + this.index);
-                        if (textElement) {
-                            this.textLayer.removeChild(textElement);
-                        }
-                        let rectElement = this.htmlRoot.querySelector("#" + e.id + "-rect-" + this.index);
-                        if (rectElement) {
-                            this.textLayer.removeChild(rectElement);
-                        }
-                    }
                 } else {
                     i++;
                 }
             }
         }
 
-        if (this.config.preventLabelOverlap) {
-            let toRemove = [];
-            for (let e of this.elementsWithTextBox) {
-                if (newElementsWithTextBox.has(e)) {
-                    newElementsWithTextBox.delete(e);
-                } else {
-                    toRemove.push(e);
-                }
+        let toRemove = [];
+        for (let e of this.elementsWithTextBox) {
+            if (newElementsWithTextBox.has(e)) {
+                newElementsWithTextBox.delete(e);
+            } else {
+                toRemove.push(e);
             }
-            for (let e of toRemove) {
-                this.textManager.remove(e.getLabelElement());
-                this.elementsWithTextBox.delete(e);
-            }
-            for (let e of newElementsWithTextBox) {
-                this.elementsWithTextBox.add(e);
-                this.textManager.add(e.getLabelElement());
-            }
-
-            this.textManager.update();
         }
+        for (let e of toRemove) {
+            this.textManager.remove(e);
+            this.elementsWithTextBox.delete(e);
+        }
+        for (let e of newElementsWithTextBox) {
+            this.elementsWithTextBox.add(e);
+            this.textManager.add(e);
+        }
+
+        this.textManager.update();
 
         if (SvgMap.LOG_PERFS) {
             let dt = performance.now() - t0;
