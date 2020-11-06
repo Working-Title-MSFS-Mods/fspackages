@@ -210,6 +210,14 @@ class CJ4_MFD extends BaseAirliners {
                 this.systemOverlay.show(false);
             }
 
+            const rangeSelectDisabled = WTDataStore.get('WT_CJ4_RANGE_SEL_DISABLED', 0);
+            if (rangeSelectDisabled) {
+                this.map.map.instrument.showAltitudeIntercept = false;
+            }
+            else {
+                this.map.map.instrument.showAltitudeIntercept = true;
+            }
+
             // if (this.showFms) {
             //     this.systems1.minimize(true);
             //     this.systems2.show(CJ4_SystemPage.NONE);

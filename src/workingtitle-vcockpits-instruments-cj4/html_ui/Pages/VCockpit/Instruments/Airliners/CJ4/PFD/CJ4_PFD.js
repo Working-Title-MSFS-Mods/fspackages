@@ -168,6 +168,15 @@ class CJ4_PFD extends BaseAirliners {
             }
             this.mapOverlay.setRange(this.map.range);
         }
+
+        const rangeSelectDisabled = WTDataStore.get('WT_CJ4_RANGE_SEL_DISABLED', 0);
+        if (rangeSelectDisabled) {
+            this.map.map.instrument.showAltitudeIntercept = false;
+        }
+        else {
+            this.map.map.instrument.showAltitudeIntercept = true;
+        }
+
         this.updateMachTransition();
     }
     onEvent(_event) {
