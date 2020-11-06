@@ -10,7 +10,7 @@
   "waypointLabelFontFamily": "Consolas",
   "waypointLabelColor": "white",
   "waypointLabelStrokeColor": "white",
-  "waypointLabelStrokeWidth": 10,
+  "waypointLabelStrokeWidth": 0,
   "waypointLabelUseBackground": false,
   "waypointLabelBackgroundColor": "#ffffff",
   "waypointLabelBackgroundStrokeColor": "black",
