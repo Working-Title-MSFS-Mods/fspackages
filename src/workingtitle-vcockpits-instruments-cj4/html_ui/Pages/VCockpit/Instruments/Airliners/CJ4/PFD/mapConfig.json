@@ -8,8 +8,8 @@
 
   "waypointLabelFontSize": 16,
   "waypointLabelFontFamily": "Consolas",
-  "waypointLabelColor": "black",
-  "waypointLabelStrokeColor": "#black",
+  "waypointLabelColor": "white",
+  "waypointLabelStrokeColor": "white",
   "waypointLabelStrokeWidth": 10,
   "waypointLabelUseBackground": false,
   "waypointLabelBackgroundColor": "#ffffff",
@@ -57,9 +57,9 @@
 
   "flightPlanActiveLegColor": "#ff00e0",
   "flightPlanActiveLegWidth": 2,
-  "flightPlanActiveLegStrokeColor": "white",
+  "flightPlanActiveLegStrokeColor": "#ff00e0",
   "flightPlanActiveLegStrokeWidth": 0,
-  "flightPlanNonActiveLegColor": "#ff00e0",
+  "flightPlanNonActiveLegColor": "white",
   "flightPlanNonActiveLegWidth": 2,
   "flightPlanNonActiveLegStrokeColor": "white",
   "flightPlanNonActiveLegStrokeWidth": 0,
