@@ -85,7 +85,7 @@ class CJ4_FMC_PerfInitPage {
         };
         fmc.onLeftInput[1] = () => {
             let value = parseInt(fmc.inOut);
-            if (value >= 0 && value <= 10) {
+            if (value >= 0) {
                 fmc.paxNumber = value;
             }
             else {
@@ -96,7 +96,7 @@ class CJ4_FMC_PerfInitPage {
         };
         fmc.onLeftInput[2] = () => {
             let value = WT_ConvertUnit.setWeight(parseInt(fmc.inOut)); //ParseInt changes from string to number
-            if (value >= 0 && value <= 2221) {
+            if (value >= 0) {
                 fmc.cargoWeight = value; 
             }
             else {
