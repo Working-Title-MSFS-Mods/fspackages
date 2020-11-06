@@ -218,13 +218,13 @@
                 <Checkpoint ReferenceId="CJ4_ENGINE2_RUN_STOP_BUTTON_RUN"/>
                 <Checkpoint ReferenceId="CJ4_ITT_ENGINE2_CHECK"/>
                 <Checkpoint ReferenceId="CJ4_EICAS_CHECK"/>
+                <Checkpoint ReferenceId="CJ4_AVIONICS_SWITCH_ON"/>
                 <Checkpoint ReferenceId="CJ4_START_OPPOSITE_ENGINE"/>
                 <Checkpoint ReferenceId="CJ4_EXTERNAL_POWER_DISCONNECT"/>
                 <Checkpoint ReferenceId="CJ4_ELECTRICAL_SYSTEM_CHECK"/>
             </Page>
 
             <Page SubjectTT="BEFORE TAXI">
-                <Checkpoint ReferenceId="CJ4_AVIONICS_SWITCH_ON"/>
                 <Checkpoint ReferenceId="CJ4_CLIMATE_CONTROL_SELECTOR_NORM"/>
                 <Checkpoint ReferenceId="CJ4_PASSENGER_LIGHTS_SAFETY_ON"/>
                 <!-- Do we check if trims are working or setting them for TO ??? -->
