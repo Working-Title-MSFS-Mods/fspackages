@@ -51,11 +51,14 @@ class CJ4_FMC_PerfInitPage {
         fmc.grossWeight = zFW + fuelQuantityTotal;
         
         const unitText = WT_ConvertUnit.getWeight(1).Unit + "[s-text]";
-        const zfwText = WT_ConvertUnit.getWeight(zFW).getString(0, "", "[s-text]") + (zFW > 12500 ? "[yellow]" : "");
-        const cargoWeightText = fmc.zFWActive == 1 ? "----" : WT_ConvertUnit.getWeight(fmc.cargoWeight).Value.toFixed(0) + "[d-text]" + unitText;
-        const fuelText = WT_ConvertUnit.getWeight(fuelQuantityTotal).Value.toFixed(0) + "[d-text]" + unitText;
-        const grossWeightText = WT_ConvertUnit.getWeight(fmc.grossWeight).getString(0, "");
-        const bowText = fmc.zFWActive == 1 ? "-----": WT_ConvertUnit.getWeight(bow).Value.toFixed(0) + "[d-text]" + unitText;
+        const zwfValueUnit = WT_ConvertUnit.getWeight(zFW);
+        const zfwText = zwfValueUnit.Value.toFixed(0) + " " + zwfValueUnit.Unit + (zFW > 12500 ? "[s-text yellow]" : "[s-text]");
+        const cargoValueUnit = WT_ConvertUnit.getWeight(fmc.cargoWeight);
+        const cargoWeightText = fmc.zFWActive == 1 ? "----" : cargoValueUnit.Value.toFixed(0).padStart(4, " ") + "[d-text] " + unitText;
+        const fuelText = WT_ConvertUnit.getWeight(fuelQuantityTotal).Value.toFixed(0) + "[d-text] " + unitText + "[s-text]";
+        const gwtValueUnit = WT_ConvertUnit.getWeight(fmc.grossWeight);
+        const grossWeightText = gwtValueUnit.Value.toFixed(0) + " " + gwtValueUnit.Unit + "[s-text]";
+        const bowText = fmc.zFWActive == 1 ? " -----": " " + WT_ConvertUnit.getWeight(bow).Value.toFixed(0) + "[d-text]" + unitText + "[s-text]";
         const paxText = fmc.zFWActive == 1 ? "--/--" : fmc.paxNumber + paxLabel;
 
         fmc._templateRenderer.setTemplateRaw([
