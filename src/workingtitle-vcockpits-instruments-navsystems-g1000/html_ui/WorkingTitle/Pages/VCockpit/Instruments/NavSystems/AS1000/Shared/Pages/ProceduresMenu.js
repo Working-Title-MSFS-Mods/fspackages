@@ -29,6 +29,7 @@ class WT_Procedures_Menu_View extends WT_HTML_View {
 
         this.subscriptions = new Subscriptions();
         this.inputLayer = new WT_Procedures_Input_Layer(this, new Selectables_Input_Layer_Dynamic_Source(this, "selectable-button"));
+        this.onExit = new WT_Event();
     }
     connectedCallback() {
         console.log("ergerg");
@@ -44,7 +45,7 @@ class WT_Procedures_Menu_View extends WT_HTML_View {
     enter(inputStack) {
         this.inputStackHandle = inputStack.push(this.inputLayer);
         this.inputStackHandle.onPopped.subscribe(() => {
-            //this.parentNode.removeChild(this);
+            this.onExit.fire();
         });
     }
     back() {

@@ -184,6 +184,7 @@ class MapInstrument extends ISvgMapRootElement {
         }
         if (this.hasAttribute("config-path")) {
             this.configPath = this.getAttribute("config-path");
+            console.log(this.configPath);
         }
         for (let i = 0; i < MapInstrument.observedAttributes.length; i++) {
             let attr = MapInstrument.observedAttributes[i];

@@ -1,3 +1,91 @@
+class WT_Airspeed_Model {
+    /**
+     * @param {WT_Airspeed_References} airspeedReferences 
+     */
+    constructor(airspeedReferences) {
+        this.airspeedReferences = airspeedReferences;
+
+        this.lastIndicatedSpeed = -10000;
+        this.lastTrueSpeed = -10000;
+        this.acceleration = 0;
+        this.lastSpeed = null;
+        this.alwaysDisplaySpeed = false;
+
+        this.airspeed = new Subject(0);
+        this.trueAirspeed = new Subject(0);
+        this.trend = new Subject(0);
+        this.referenceSpeed = {
+            show: new Subject(false),
+            speed: new Subject(0),
+        }
+        this.references = new Subject([], false);
+        this.referenceSpeeds = new Subject();
+
+        airspeedReferences.references.subscribe(references => {
+            this.references.value = references.filter(reference => reference.enabled);
+        });
+    }
+    updateCockpitSettings(cockpitSettings) {
+        const speeds = {};
+        if (cockpitSettings && cockpitSettings.AirSpeed.Initialized) {
+            speeds["min-speed"] = cockpitSettings.AirSpeed.lowLimit;
+            speeds["green-begin"] = cockpitSettings.AirSpeed.greenStart;
+            speeds["green-end"] = cockpitSettings.AirSpeed.greenEnd;
+            speeds["flaps-begin"] = cockpitSettings.AirSpeed.whiteStart;
+            speeds["flaps-end"] = cockpitSettings.AirSpeed.whiteEnd;
+            speeds["yellow-begin"] = cockpitSettings.AirSpeed.yellowStart;
+            speeds["yellow-end"] = cockpitSettings.AirSpeed.yellowEnd;
+            speeds["red-begin"] = cockpitSettings.AirSpeed.redStart;
+            speeds["red-end"] = cockpitSettings.AirSpeed.redEnd;
+            speeds["max-speed"] = cockpitSettings.AirSpeed.highLimit;
+        } else {
+            var designSpeeds = Simplane.getDesignSpeeds();
+            speeds["green-begin"] = designSpeeds.VS1;
+            speeds["green-end"] = designSpeeds.VNo;
+            speeds["flaps-begin"] = designSpeeds.VS0;
+            speeds["flaps-end"] = designSpeeds.VFe;
+            speeds["yellow-begin"] = designSpeeds.VNo;
+            speeds["yellow-end"] = designSpeeds.VNe;
+            speeds["red-begin"] = designSpeeds.VNe;
+            speeds["red-end"] = designSpeeds.VMax;
+            speeds["max-speed"] = designSpeeds.VNe;
+        }
+        this.referenceSpeeds.value = speeds;
+    }
+    update(dt) {
+        const indicatedSpeed = Simplane.getIndicatedSpeed();
+        this.airspeed.value = indicatedSpeed;
+        const trueSpeed = Simplane.getTrueSpeed();
+        this.trueAirspeed.value = trueSpeed;
+        if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") || this.alwaysDisplaySpeed) {
+            this.referenceSpeed.show.value = true;
+            this.referenceSpeed.speed.value = SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots");
+        } else {
+            this.referenceSpeed.show.value = true;
+        }
+        if (this.lastSpeed == null) {
+            this.lastSpeed = indicatedSpeed;
+        }
+        let instantAcceleration;
+        if (indicatedSpeed < 20) {
+            instantAcceleration = 0;
+            this.acceleration = 0;
+        } else {
+            instantAcceleration = (indicatedSpeed - this.lastSpeed) / (dt / 1000);
+        }
+        let smoothFactor = 2000;
+        this.acceleration = ((Math.max((smoothFactor - dt), 0) * this.acceleration) + (Math.min(dt, smoothFactor) * instantAcceleration)) / smoothFactor;
+        this.lastSpeed = indicatedSpeed;
+        this.trend.value = this.acceleration;
+        let crossSpeed = SimVar.GetGameVarValue("AIRCRAFT CROSSOVER SPEED", "Knots");
+        let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
+        let crossSpeedFactor = Simplane.getCrossoverSpeedFactor(this.maxSpeed, cruiseMach);
+        if (crossSpeed != 0) {
+            //this.airspeedElement.setAttribute("max-speed", (Math.min(crossSpeedFactor, 1) * this.maxSpeed).toString()); // TODO:
+        }
+    }
+}
+
 class ReferenceBug {
 }
 class AirspeedIndicator extends HTMLElement {
@@ -18,156 +106,130 @@ class AirspeedIndicator extends HTMLElement {
         this.referenceBugs = [];
         this.nocolor = false;
     }
-    static get observedAttributes() {
-        return [
-            "airspeed",
-            "airspeed-trend",
-            "min-speed",
-            "green-begin",
-            "green-end",
-            "flaps-begin",
-            "flaps-end",
-            "yellow-begin",
-            "yellow-end",
-            "red-begin",
-            "red-end",
-            "max-speed",
-            "true-airspeed",
-            "reference-bugs",
-            "display-ref-speed",
-            "ref-speed"
-        ];
+    /**
+     * @param {WT_Airspeed_Model} model 
+     */
+    setModel(model) {
+        model.airspeed.subscribe(this.updateAirspeed.bind(this));
+
+        model.trueAirspeed.subscribe(tas => {
+            this.tasText.textContent = tas.toFixed(0);
+        });
+
+        model.references.subscribe(references => {
+            for (let i = 0; i < references.length; i++) {
+                if (i >= this.referenceBugs.length) {
+                    const bug = new ReferenceBug();
+                    bug.group = this.createSvgElement("g", { class: "reference-bug" });
+                    this.centerSvg.appendChild(bug.group);
+                    bug.bug = this.createSvgElement("polygon", { points: "0,300 10,315 50,315 50,285 10,285" });
+                    bug.group.appendChild(bug.bug);
+                    bug.text = this.createSvgElement("text", { x: 30, y: 310 });
+                    bug.group.appendChild(bug.text);
+                    this.referenceBugs.push(bug);
+                }
+                this.referenceBugs[i].value = references[i].speed;
+                this.referenceBugs[i].text.textContent = references[i].id;
+                this.referenceBugs[i].group.setAttribute("display", "");
+            }
+            for (let i = references.length; i < this.referenceBugs.length; i++) {
+                this.referenceBugs[i].group.setAttribute("display", "none");
+            }
+        });
+
+        model.trend.subscribe(trend => {
+            trend = Math.min(Math.max(300 + parseFloat(trend) * 6 * -10, 0), 600);
+            this.trendElement.setAttribute("y", Math.min(trend, 300));
+            this.trendElement.setAttribute("height", Math.abs(trend - 300));
+        });
+
+        model.referenceSpeed.show.subscribe(show => {
+            this.airspeedReferenceGroup.setAttribute("display", show ? "" : "none");
+            this.selectedSpeedBug.setAttribute("display", show ? "" : "none");
+        });
+
+        model.referenceSpeed.speed.subscribe(speed => {
+            this.selectedSpeedBugValue = speed;
+            this.selectedSpeedText.textContent = Math.round(speed);
+        });
+
+        model.referenceSpeeds.subscribe(speeds => {
+            if (!speeds)
+                return;
+            if ("min-speed" in speeds)
+                this.minValue = speeds["min-speed"];
+            if ("green-begin" in speeds)
+                this.greenBegin = speeds["green-begin"];
+            if ("green-end" in speeds)
+                this.greenEnd = speeds["green-end"];
+            if ("yellow-begin" in speeds)
+                this.yellowBegin = speeds["yellow-begin"];
+            if ("yellow-end" in speeds)
+                this.yellowEnd = speeds["yellow-end"];
+            if ("flaps-begin" in speeds)
+                this.flapsBegin = speeds["flaps-begin"];
+            if ("flaps-end" in speeds)
+                this.flapsEnd = speeds["flaps-end"];
+            if ("red-begin" in speeds)
+                this.redBegin = speeds["red-begin"];
+            if ("red-end" in speeds)
+                this.redEnd = speeds["red-end"];
+            if ("max-speed" in speeds)
+                this.maxValue = speeds["max-speed"];
+            console.log(`Max value: ${this.maxValue}`);
+        });
+    }
+    createSvgElement(tagName, attributes = []) {
+        return DOMUtilities.createElementNS(Avionics.SVG.NS, tagName, attributes);
+    }
+    createBackground() {
+        return this.createSvgElement("rect", { x: 0, y: 0, width: AirspeedIndicator.WIDTH, height: 600, class: "background" });
     }
     connectedCallback() {
-        this.root = document.createElementNS(Avionics.SVG.NS, "svg");
-        /*let defs = document.createElementNS(Avionics.SVG.NS, "defs");
-        defs.innerHTML = `
-            <linearGradient id="barber" x1="0" y1="0" x2="25" y2="25" spreadMethod="repeat" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color= "red" />
-                <stop offset="49%" stop-color= "red" />
-                <stop offset="50%" stop-color= "white" />
-                <stop offset="99%" stop-color= "white" />
-                <stop offset="100%" stop-color= "red" />
-            </linearGradient>`;
-        this.root.appendChild(defs);*/
+        this.root = this.createSvgElement("svg");
         this.root.setAttribute("width", "100%");
         this.root.setAttribute("height", "100%");
-        this.root.setAttribute("viewBox", "0 -50 250 700");
+        this.root.setAttribute("viewBox", "0 -52 250 704");
         this.appendChild(this.root);
         {
-            this.airspeedReferenceGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            this.airspeedReferenceGroup = this.createSvgElement("g", { class: "airspeed-reference" });
             this.root.appendChild(this.airspeedReferenceGroup);
-            let background = document.createElementNS(Avionics.SVG.NS, "rect");
-            background.setAttribute("x", "0");
-            background.setAttribute("y", "-50");
-            background.setAttribute("width", "200");
-            background.setAttribute("height", "50");
-            background.setAttribute("fill", "#1a1d21");
-            background.setAttribute("fill-opacity", "1");
-            this.airspeedReferenceGroup.appendChild(background);
-            this.selectedSpeedFixedBug = document.createElementNS(Avionics.SVG.NS, "polygon");
-            this.selectedSpeedFixedBug.setAttribute("points", "190,-40 180,-40 180,-30 185,-25 180,-20 180,-10 190,-10 ");
-            this.selectedSpeedFixedBug.setAttribute("fill", "#36c8d2");
+            this.airspeedReferenceGroup.appendChild(this.createSvgElement("rect", { x: 0, y: -50, width: AirspeedIndicator.WIDTH, height: 50 }));
+            this.selectedSpeedFixedBug = this.createSvgElement("polygon", {
+                points: "-10,-40 -20,-40 -20,-30 -15,-25 -20,-20 -20,-10 -10,-10 ",
+                transform: `translate(${AirspeedIndicator.WIDTH}, 0)`,
+            });
             this.airspeedReferenceGroup.appendChild(this.selectedSpeedFixedBug);
-            this.selectedSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
-            this.selectedSpeedText.setAttribute("x", "20");
-            this.selectedSpeedText.setAttribute("y", "-10");
-            this.selectedSpeedText.setAttribute("fill", "#36c8d2");
-            this.selectedSpeedText.setAttribute("font-size", "45");
-            this.selectedSpeedText.setAttribute("font-family", "Roboto-Bold");
-            this.selectedSpeedText.setAttribute("text-anchor", "start");
+            this.selectedSpeedText = this.createSvgElement("text", { x: 20, y: -10 });
             this.selectedSpeedText.textContent = "---";
             this.airspeedReferenceGroup.appendChild(this.selectedSpeedText);
         }
         {
-            let background = document.createElementNS(Avionics.SVG.NS, "rect");
-            background.setAttribute("x", "0");
-            background.setAttribute("y", "0");
-            background.setAttribute("width", "200");
-            background.setAttribute("height", "600");
-            background.setAttribute("fill", "#1a1d21");
-            background.setAttribute("fill-opacity", "0.25");
-            this.root.appendChild(background);
-            this.centerSvg = document.createElementNS(Avionics.SVG.NS, "svg");
-            this.centerSvg.setAttribute("x", "0");
-            this.centerSvg.setAttribute("y", "0");
-            this.centerSvg.setAttribute("width", "250");
-            this.centerSvg.setAttribute("height", "600");
-            this.centerSvg.setAttribute("viewBox", "0 0 250 600");
+            this.root.appendChild(this.createBackground());
+            this.centerSvg = this.createSvgElement("svg", { x: 0, y: 0, width: 250, height: 600, viewBox: "0 0 250 600", });
             this.root.appendChild(this.centerSvg);
             {
-                this.centerGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                this.centerGroup = this.createSvgElement("g");
                 this.centerSvg.appendChild(this.centerGroup);
                 {
                     this.gradTexts = [];
                     if (this.getAttribute("NoColor") != "True") {
-                        this.redElement = document.createElementNS(Avionics.SVG.NS, "rect");
-                        this.redElement.setAttribute("x", "175");
-                        this.redElement.setAttribute("y", "-1");
-                        this.redElement.setAttribute("width", "25");
-                        this.redElement.setAttribute("height", "0");
-                        this.redElement.setAttribute("fill", "red");
+                        this.bottomRedElement = this.createSvgElement("rect", { x: AirspeedIndicator.WIDTH - 15, y: -1, width: 15 - 1.5, height: 0, class: "speed-red" });
+                        this.centerGroup.appendChild(this.bottomRedElement);
+                        this.redElement = this.createSvgElement("rect", { x: AirspeedIndicator.WIDTH - 15, y: -1, width: 15 - 1.5, height: 0, class: "speed-red" });
                         this.centerGroup.appendChild(this.redElement);
-                        this.yellowElement = document.createElementNS(Avionics.SVG.NS, "rect");
-                        this.yellowElement.setAttribute("x", "175");
-                        this.yellowElement.setAttribute("y", "-1");
-                        this.yellowElement.setAttribute("width", "25");
-                        this.yellowElement.setAttribute("height", "0");
-                        this.yellowElement.setAttribute("fill", "yellow");
+                        this.yellowElement = this.createSvgElement("rect", { x: AirspeedIndicator.WIDTH - 15, y: -1, width: 15 - 1.5, height: 0, class: "speed-yellow" });
                         this.centerGroup.appendChild(this.yellowElement);
-                        this.greenElement = document.createElementNS(Avionics.SVG.NS, "rect");
-                        this.greenElement.setAttribute("x", "175");
-                        this.greenElement.setAttribute("y", "-1");
-                        this.greenElement.setAttribute("width", "25");
-                        this.greenElement.setAttribute("height", "0");
-                        this.greenElement.setAttribute("fill", "green");
+                        this.greenElement = this.createSvgElement("rect", { x: AirspeedIndicator.WIDTH - 15, y: -1, width: 15 - 1.5, height: 0, class: "speed-green" });
                         this.centerGroup.appendChild(this.greenElement);
-                        this.flapsElement = document.createElementNS(Avionics.SVG.NS, "rect");
-                        this.flapsElement.setAttribute("x", "187.5");
-                        this.flapsElement.setAttribute("y", "-1");
-                        this.flapsElement.setAttribute("width", "12.5");
-                        this.flapsElement.setAttribute("height", "0");
-                        this.flapsElement.setAttribute("fill", "white");
+                        this.flapsElement = this.createSvgElement("rect", { x: AirspeedIndicator.WIDTH - 15, y: -1, width: 7, height: 0, class: "speed-white" });
                         this.centerGroup.appendChild(this.flapsElement);
-                        let dashSvg = document.createElementNS(Avionics.SVG.NS, "svg");
-                        dashSvg.setAttribute("id", "DASH");
-                        dashSvg.setAttribute("x", "175");
-                        dashSvg.setAttribute("y", "0");
-                        dashSvg.setAttribute("width", "25");
-                        dashSvg.setAttribute("height", "600");
-                        dashSvg.setAttribute("viewBox", "0 0 25 600");
+                        const dashSvg = this.createSvgElement("svg", { id: "DASH", x: AirspeedIndicator.WIDTH - 15, y: 0, width: 15 - 1.5, height: 600, viewBox: "0 0 13.5 600" });
                         this.root.appendChild(dashSvg);
-                        this.startElement = document.createElementNS(Avionics.SVG.NS, "g");
-                        dashSvg.appendChild(this.startElement);
-                        let startBg = document.createElementNS(Avionics.SVG.NS, "rect");
-                        startBg.setAttribute("x", "0");
-                        startBg.setAttribute("y", "-935");
-                        startBg.setAttribute("width", "25");
-                        startBg.setAttribute("height", "800");
-                        startBg.setAttribute("fill", "white");
-                        //startBg.setAttribute("fill", "url(#barber)");
-                        this.startElement.appendChild(startBg);
-                        let lineElements = [];
-                        for (let i = 0; i <= 32; i++) {
-                            lineElements.push(`M0 ${-125 - 25 * i}`);
-                            lineElements.push(`l25 -7`);
-                            lineElements.push(`l0 12.5`);
-                            lineElements.push(`l-25 7`);
-                        }
-                        let redLine = document.createElementNS(Avionics.SVG.NS, "path");
-                        redLine.setAttribute("d", lineElements.join(" "));                        
-                        redLine.setAttribute("fill", "red");
-                        this.startElement.appendChild(redLine);
-                        
-                        this.endElement = document.createElementNS(Avionics.SVG.NS, "g");
+                        this.endElement = this.createSvgElement("g");
                         dashSvg.appendChild(this.endElement);
-                        let endBg = document.createElementNS(Avionics.SVG.NS, "rect");
-                        endBg.setAttribute("x", "0");
-                        endBg.setAttribute("y", "-900");
-                        endBg.setAttribute("width", "25");
-                        endBg.setAttribute("height", "800");
-                        endBg.setAttribute("fill", "white");
-                        lineElements = [];
+                        let endBg = this.createSvgElement("rect", { x: 0, y: -900, width: 20, height: 800, fill: "white" });
+                        let lineElements = [];
                         this.endElement.appendChild(endBg);
                         for (let i = 0; i <= 32; i++) {
                             lineElements.push(`M0 ${-125 - 25 * i}`);
@@ -175,346 +237,217 @@ class AirspeedIndicator extends HTMLElement {
                             lineElements.push(`l0 12.5`);
                             lineElements.push(`l-25 7`);
                         }
-                        redLine = document.createElementNS(Avionics.SVG.NS, "path");
-                        redLine.setAttribute("d", lineElements.join(" "));                        
-                        redLine.setAttribute("fill", "red");
-                        this.startElement.appendChild(redLine);
-                    }
-                    else {
+                        let redLine = this.createSvgElement("path", { d: lineElements.join(" "), fill: "red" });
+                        this.endElement.appendChild(redLine);
+                    } else {
                         this.nocolor = true;
                     }
                     for (let i = -4; i <= 4; i++) {
-                        let grad = document.createElementNS(Avionics.SVG.NS, "rect");
-                        grad.setAttribute("x", "150");
-                        grad.setAttribute("y", (298 + 100 * i).toString());
-                        grad.setAttribute("height", "4");
-                        grad.setAttribute("width", "50");
-                        grad.setAttribute("fill", "white");
-                        this.centerGroup.appendChild(grad);
+                        this.centerGroup.appendChild(
+                            this.createSvgElement("rect", {
+                                x: AirspeedIndicator.WIDTH - 30, y: 298 + 100 * i, height: "4", width: 30, class: "graduation"
+                            })
+                        );
                         if (i != 0) {
-                            let halfGrad = document.createElementNS(Avionics.SVG.NS, "rect");
-                            halfGrad.setAttribute("x", "175");
-                            halfGrad.setAttribute("y", (298 + 100 * i + (i < 0 ? 50 : -50)).toString());
-                            halfGrad.setAttribute("height", "4");
-                            halfGrad.setAttribute("width", "25");
-                            halfGrad.setAttribute("fill", "black");
-                            this.centerGroup.appendChild(halfGrad);
+                            this.centerGroup.appendChild(
+                                this.createSvgElement("rect", {
+                                    x: AirspeedIndicator.WIDTH - 15, y: 298 + 100 * i + (i < 0 ? 50 : -50), height: "4", width: 15, class: "graduation"
+                                })
+                            );
                         }
-                        let gradText = document.createElementNS(Avionics.SVG.NS, "text");
-                        gradText.setAttribute("x", "140");
-                        gradText.setAttribute("y", (320 + 100 * i).toString());
-                        gradText.setAttribute("fill", "white");
-                        gradText.setAttribute("font-size", "50");
-                        gradText.setAttribute("text-anchor", "end");
-                        gradText.setAttribute("font-family", "Roboto-Bold");
-                        gradText.setAttribute("letter-spacing", "12");
-                        gradText.textContent = "XXX";
+                        const gradText = this.createSvgElement("text", { x: AirspeedIndicator.WIDTH - 40, y: 312 + 100 * i, class: "graduation-text" });
                         this.gradTexts.push(gradText);
                         this.centerGroup.appendChild(gradText);
                     }
-                    let center = 300;
-                    this.selectedSpeedBug = document.createElementNS(Avionics.SVG.NS, "polygon");
-                    this.selectedSpeedBug.setAttribute("points", "200, " + (center - 20) + " 180, " + (center - 20) + " 180, " + (center - 15) + " 190, " + center + " 180, " + (center + 15) + " 180, " + (center + 20) + " 200, " + (center + 20));
-                    this.selectedSpeedBug.setAttribute("fill", "#36c8d2");
+                    const center = 300;
+                    this.selectedSpeedBug = this.createSvgElement("polygon", {
+                        points: `0, ${center - 20} -20, ${center - 20} -20, ${center - 15} -10, ${center} -20, ${center + 15} -20, ${center + 20} 0, ${center + 20}`,
+                        class: "selected-speed-bug",
+                    });
                     this.centerSvg.appendChild(this.selectedSpeedBug);
                 }
-                this.cursor = document.createElementNS(Avionics.SVG.NS, "polygon");
-                this.cursor.setAttribute("points", "200,300 170,260 150,260 150,240 100,240 100,260 0,260 0,340 100,340 100,360 150,360 150,340 170,340");
-                this.cursor.setAttribute("fill", "#1a1d21");
+                {
+                    const right = AirspeedIndicator.WIDTH - 1.5;
+                    this.cursor = this.createSvgElement("polygon", {
+                        points: `${right},300 ${right - 20},280 ${right - 20},240 ${right - 60},240 ${right - 60},260 1.5,260 1.5,340 ${right - 60},340 ${right - 60},360 ${right - 20},360 ${right - 20},320 Z`,
+                        class: "cursor-background",
+                    });
+                }
                 this.root.appendChild(this.cursor);
-                this.trendElement = document.createElementNS(Avionics.SVG.NS, "rect");
-                this.trendElement.setAttribute("x", "200");
-                this.trendElement.setAttribute("y", "-1");
-                this.trendElement.setAttribute("width", "8");
-                this.trendElement.setAttribute("height", "0");
-                this.trendElement.setAttribute("fill", "#d12bc7");
+                this.trendElement = this.createSvgElement("rect", { x: AirspeedIndicator.WIDTH, y: -1, width: 8, height: 0, class: "trend-line" });
                 this.root.appendChild(this.trendElement);
-                let baseCursorSvg = document.createElementNS(Avionics.SVG.NS, "svg");
-                baseCursorSvg.setAttribute("x", "0");
-                baseCursorSvg.setAttribute("y", "260");
-                baseCursorSvg.setAttribute("width", "100");
-                baseCursorSvg.setAttribute("height", "80");
-                baseCursorSvg.setAttribute("viewBox", "0 0 100 80");
+
+                const margin = 5;
+                const baseCursorSvg = this.createSvgElement("svg", { x: margin, y: 260 + margin, width: 100 - margin, height: 80 - margin * 2, viewBox: "5 5 95 70", class: "cursor" });
                 this.root.appendChild(baseCursorSvg);
-                {
-                    this.digit1Top = document.createElementNS(Avionics.SVG.NS, "text");
-                    this.digit1Top.setAttribute("x", "28");
-                    this.digit1Top.setAttribute("y", "-1");
-                    this.digit1Top.setAttribute("fill", "white");
-                    this.digit1Top.setAttribute("font-size", "50");
-                    this.digit1Top.setAttribute("font-family", "Roboto-Bold");
-                    this.digit1Top.textContent = "-";
-                    baseCursorSvg.appendChild(this.digit1Top);
-                    this.digit1Bot = document.createElementNS(Avionics.SVG.NS, "text");
-                    this.digit1Bot.setAttribute("x", "28");
-                    this.digit1Bot.setAttribute("y", "55");
-                    this.digit1Bot.setAttribute("fill", "white");
-                    this.digit1Bot.setAttribute("font-size", "50");
-                    this.digit1Bot.setAttribute("font-family", "Roboto-Bold");
-                    this.digit1Bot.textContent = "-";
-                    baseCursorSvg.appendChild(this.digit1Bot);
-                    this.digit2Top = document.createElementNS(Avionics.SVG.NS, "text");
-                    this.digit2Top.setAttribute("x", "70");
-                    this.digit2Top.setAttribute("y", "-1");
-                    this.digit2Top.setAttribute("fill", "white");
-                    this.digit2Top.setAttribute("font-size", "50");
-                    this.digit2Top.setAttribute("font-family", "Roboto-Bold");
-                    this.digit2Top.textContent = "-";
-                    baseCursorSvg.appendChild(this.digit2Top);
-                    this.digit2Bot = document.createElementNS(Avionics.SVG.NS, "text");
-                    this.digit2Bot.setAttribute("x", "70");
-                    this.digit2Bot.setAttribute("y", "55");
-                    this.digit2Bot.setAttribute("fill", "white");
-                    this.digit2Bot.setAttribute("font-size", "50");
-                    this.digit2Bot.setAttribute("font-family", "Roboto-Bold");
-                    this.digit2Bot.textContent = "-";
-                    baseCursorSvg.appendChild(this.digit2Bot);
-                }
-                let rotatingCursorSvg = document.createElementNS(Avionics.SVG.NS, "svg");
-                rotatingCursorSvg.setAttribute("x", "100");
-                rotatingCursorSvg.setAttribute("y", "240");
-                rotatingCursorSvg.setAttribute("width", "70");
-                rotatingCursorSvg.setAttribute("height", "120");
-                rotatingCursorSvg.setAttribute("viewBox", "0 -60 50 120");
+
+                this.digit1Top = this.createSvgElement("text", { x: AirspeedIndicator.WIDTH - 122, y: -1 });
+                this.digit1Top.textContent = "-";
+                this.digit1Bot = this.createSvgElement("text", { x: AirspeedIndicator.WIDTH - 122, y: 55 });
+                this.digit1Bot.textContent = "-";
+                baseCursorSvg.appendChild(this.digit1Top);
+                baseCursorSvg.appendChild(this.digit1Bot);
+
+                this.digit2Top = this.createSvgElement("text", { x: AirspeedIndicator.WIDTH - 92, y: -1 });
+                this.digit2Top.textContent = "-";
+                this.digit2Bot = this.createSvgElement("text", { x: AirspeedIndicator.WIDTH - 92, y: 55 });
+                this.digit2Bot.textContent = "-";
+                baseCursorSvg.appendChild(this.digit2Top);
+                baseCursorSvg.appendChild(this.digit2Bot);
+
+                const rotatingCursorSvg = this.createSvgElement("svg", { x: AirspeedIndicator.WIDTH - 60 + margin, y: 240 + margin, width: 50 - margin, height: 120 - margin * 2, viewBox: "5 -65 45 110", });
                 this.root.appendChild(rotatingCursorSvg);
-                {
-                    this.endDigitsGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                    rotatingCursorSvg.appendChild(this.endDigitsGroup);
-                    this.endDigits = [];
-                    for (let i = -2; i <= 2; i++) {
-                        let digit = document.createElementNS(Avionics.SVG.NS, "text");
-                        digit.setAttribute("x", "0");
-                        digit.setAttribute("y", (15 + 45 * i).toString());
-                        digit.setAttribute("fill", "white");
-                        digit.setAttribute("font-size", "50");
-                        digit.setAttribute("font-family", "Roboto-Bold");
-                        digit.textContent = i == 0 ? "-" : " ";
-                        this.endDigits.push(digit);
-                        this.endDigitsGroup.appendChild(digit);
-                    }
+
+                this.endDigitsGroup = this.createSvgElement("g", { class: "cursor" });
+                rotatingCursorSvg.appendChild(this.endDigitsGroup);
+                this.endDigits = [];
+                for (let i = -2; i <= 2; i++) {
+                    let digit = this.createSvgElement("text", { x: 5, y: 15 + 45 * i });
+                    digit.textContent = i == 0 ? "-" : " ";
+                    this.endDigits.push(digit);
+                    this.endDigitsGroup.appendChild(digit);
                 }
+
             }
         }
-        {
-            this.bottomBackground = document.createElementNS(Avionics.SVG.NS, "rect");
-            this.bottomBackground.setAttribute("x", "0");
-            this.bottomBackground.setAttribute("y", "600");
-            this.bottomBackground.setAttribute("width", "200");
-            this.bottomBackground.setAttribute("height", "50");
-            this.bottomBackground.setAttribute("fill", "#1a1d21");
-            this.root.appendChild(this.bottomBackground);
-            let tasTasText = document.createElementNS(Avionics.SVG.NS, "text");
-            tasTasText.setAttribute("x", "5");
-            tasTasText.setAttribute("y", "638");
-            tasTasText.setAttribute("fill", "white");
-            tasTasText.setAttribute("font-size", "35");
-            tasTasText.setAttribute("font-family", "Roboto-Bold");
-            tasTasText.setAttribute("text-anchor", "start");
-            tasTasText.textContent = "TAS";
-            this.root.appendChild(tasTasText);
-            this.tasText = document.createElementNS(Avionics.SVG.NS, "text");
-            this.tasText.setAttribute("x", "195");
-            this.tasText.setAttribute("y", "638");
-            this.tasText.setAttribute("fill", "white");
-            this.tasText.setAttribute("font-size", "35");
-            this.tasText.setAttribute("font-family", "Roboto-Bold");
-            this.tasText.setAttribute("text-anchor", "end");
-            this.tasText.textContent = "0KT";
-            this.root.appendChild(this.tasText);
-        }
+        this.root.appendChild(this.createTasText());
     }
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (oldValue == newValue && name != "airspeed")
-            return;
-        switch (name) {
-            case "airspeed":
-                this.value = Math.max(parseFloat(newValue), 20);
-                let center = Math.max(Math.round(this.value / 10) * 10, 60);
-                if (!this.nocolor && ((this.minValue > 0) && (this.value < this.minValue)) || ((this.maxValue > 0) && (this.value > this.maxValue))) {
-                    Avionics.Utils.diffAndSetAttribute(this.cursor, "fill", "red");
-                    Avionics.Utils.diffAndSetAttribute(this.bottomBackground, "fill", "red");
+    createTasText() {
+        this.tasBackground = this.createSvgElement("rect", { x: 0, y: 0, width: AirspeedIndicator.WIDTH, height: 50 });
+        const label = this.createSvgElement("text", { x: 5, y: 38, class: "label" });
+        label.textContent = "TAS";
+        const units = this.createSvgElement("text", { x: AirspeedIndicator.WIDTH - 5, y: 38, class: "units" });
+        units.textContent = "KT";
+        this.tasText = this.createSvgElement("text", { x: AirspeedIndicator.WIDTH - 35, y: 38, class: "value" });
+        this.tasText.textContent = "0";
+
+        const g = this.createSvgElement("g", { transform: `translate(0, 600)`, class: "tas-text" });
+        g.appendChild(this.tasBackground);
+        g.appendChild(label);
+        g.appendChild(this.tasText);
+        g.appendChild(units);
+        return g;
+    }
+    updateAirspeed(airspeed) {
+        this.value = Math.max(airspeed, 20);
+        const center = Math.max(Math.round(this.value / 10) * 10, 60);
+        const hasMinSpeed = this.minValue > 0;
+        const hasMaxSpeed = this.maxValue > 0;
+        const isAboveMaxSpeed = hasMaxSpeed && this.value > this.maxValue;
+        const isBelowMinSpeed = hasMinSpeed && this.value < this.minValue;
+        const isAboveYellowSpeed = this.yellowBegin && this.value > this.yellowBegin;
+        const isAboveRedSpeed = this.redBegin && this.value > this.redBegin;
+
+        // Update min / max speeds
+        this.centerGroup.setAttribute("transform", `translate(0, ${(this.value - center) * 10})`);
+        if (!this.nocolor) {
+            if (isAboveMaxSpeed) {
+                this.setAttribute("speed", "red");
+            } else if (isAboveRedSpeed) {
+                this.setAttribute("speed", "red");
+            } else if (isAboveYellowSpeed) {
+                this.setAttribute("speed", "yellow");
+            } else {
+                this.setAttribute("speed", "white");
+            }
+            /*if (hasMinSpeed) {
+                const val = 835 + ((center + 40 - this.minValue) * 10) + ((this.value - center) * 10);
+                this.startElement.setAttribute("transform", `translate(0,${val})`);
+            }*/
+            if (hasMaxSpeed) {
+                const val = ((Math.min(Math.max(center + 40 - this.maxValue, -10), 80) * 10) + (this.value - center) * 10);
+                this.endElement.setAttribute("transform", `translate(0,${val})`);
+            }
+        }
+
+        // Update reference bugs
+        for (let i = 0; i < this.referenceBugs.length; i++) {
+            this.referenceBugs[i].group.setAttribute("transform", `translate(${AirspeedIndicator.WIDTH + 1.5},${(this.value - this.referenceBugs[i].value) * 10})`);
+        }
+        this.selectedSpeedBug.setAttribute("transform", `translate(${AirspeedIndicator.WIDTH},${(this.value - this.selectedSpeedBugValue) * 10})`);
+
+        // Update color lines        
+        if (this.currentCenterGrad != center) {
+            this.currentCenterGrad = center;
+            for (let i = 0; i < this.gradTexts.length; i++) {
+                this.gradTexts[i].textContent = fastToFixed(((4 - i) * 10) + center, 0);
+            }
+            if (!this.nocolor) {
+                let bottomRedEnd = Math.min(Math.max(-100, (300 + (-10 * (this.minValue - center)))), 700);
+                let bottomRedBegin = Math.min(Math.max(-100, (300 + (-10 * (20 - center)))), 700);
+                this.bottomRedElement.setAttribute("y", bottomRedEnd.toString());
+                this.bottomRedElement.setAttribute("height", (bottomRedBegin - bottomRedEnd).toString());
+                let greenEnd = Math.min(Math.max(-100, (300 + (-10 * (this.greenEnd - center)))), 700);
+                let greenBegin = Math.min(Math.max(-100, (300 + (-10 * (this.greenBegin - center)))), 700);
+                this.greenElement.setAttribute("y", greenEnd.toString());
+                this.greenElement.setAttribute("height", (greenBegin - greenEnd).toString());
+                let yellowEnd = Math.min(Math.max(-100, (300 + (-10 * (this.yellowEnd - center)))), 700);
+                let yellowBegin = Math.min(Math.max(-100, (300 + (-10 * (this.yellowBegin - center)))), 700);
+                this.yellowElement.setAttribute("y", yellowEnd.toString());
+                this.yellowElement.setAttribute("height", (yellowBegin - yellowEnd).toString());
+                let redEnd = Math.min(Math.max(-100, (300 + (-10 * (this.redEnd - center)))), 700);
+                let redBegin = Math.min(Math.max(-100, (300 + (-10 * (this.redBegin - center)))), 700);
+                this.redElement.setAttribute("y", redEnd.toString());
+                this.redElement.setAttribute("height", (redBegin - redEnd).toString());
+                let flapsEnd = Math.min(Math.max(-100, (300 + (-10 * (this.flapsEnd - center)))), 700);
+                let flapsBegin = Math.min(Math.max(-100, (300 + (-10 * (this.flapsBegin - center)))), 700);
+                this.flapsElement.setAttribute("y", flapsEnd.toString());
+                this.flapsElement.setAttribute("height", (flapsBegin - flapsEnd).toString());
+            }
+        }
+        let endValue = this.value % 10;
+        let endCenter = Math.round(endValue);
+        this.endDigitsGroup.setAttribute("transform", `translate(0, ${(endValue - endCenter) * 45})`);
+        for (let i = 0; i < this.endDigits.length; i++) {
+            if (this.value == 20) {
+                this.endDigits[i].textContent = (i == 2 ? "-" : " ");
+            } else {
+                let digitValue = (2 - i + endCenter);
+                this.endDigits[i].textContent = fastToFixed((10 + digitValue) % 10, 0);
+            }
+        }
+        if (this.value > 20) {
+            let d2Value = (Math.abs(this.value) % 100) / 10;
+            this.digit2Bot.textContent = fastToFixed(Math.floor(d2Value), 0);
+            this.digit2Top.textContent = fastToFixed((Math.floor(d2Value) + 1) % 10, 0);
+            if (endValue > 9) {
+                let translate = (endValue - 9) * 55;
+                this.digit2Bot.setAttribute("transform", "translate(0, " + translate + ")");
+                this.digit2Top.setAttribute("transform", "translate(0, " + translate + ")");
+            }
+            else {
+                this.digit2Bot.setAttribute("transform", "");
+                this.digit2Top.setAttribute("transform", "");
+            }
+            if (Math.abs(this.value) >= 99) {
+                let d1Value = (Math.abs(this.value) % 1000) / 100;
+                this.digit1Bot.textContent = Math.abs(this.value) < 100 ? "" : fastToFixed(Math.floor(d1Value), 0);
+                this.digit1Top.textContent = fastToFixed((Math.floor(d1Value) + 1) % 10, 0);
+                if (endValue > 9 && d2Value > 9) {
+                    let translate = (endValue - 9) * 55;
+                    this.digit1Bot.setAttribute("transform", "translate(0, " + translate + ")");
+                    this.digit1Top.setAttribute("transform", "translate(0, " + translate + ")");
                 }
                 else {
-                    Avionics.Utils.diffAndSetAttribute(this.cursor, "fill", "#1a1d21");
-                    Avionics.Utils.diffAndSetAttribute(this.bottomBackground, "fill", "#1a1d21");
-                }
-                this.centerGroup.setAttribute("transform", "translate(0, " + ((this.value - center) * 10) + ")");
-                if (!this.nocolor) {
-                    if (this.minValue > 0) {
-                        var val = 835 + ((center + 40 - this.minValue) * 10) + ((this.value - center) * 10);
-                        this.startElement.setAttribute("transform", "translate(0," + val + ")");
-                    }
-                    if (this.maxValue > 0) {
-                        var val = ((Math.min(Math.max(center + 40 - this.maxValue, -10), 80) * 10) + (this.value - center) * 10);
-                        this.endElement.setAttribute("transform", "translate(0," + val + ")");
-                    }
-                }
-                for (let i = 0; i < this.referenceBugs.length; i++) {
-                    this.referenceBugs[i].group.setAttribute("transform", "translate(0," + ((this.value - this.referenceBugs[i].value) * 10) + ")");
-                }
-                this.selectedSpeedBug.setAttribute("transform", "translate(0," + ((this.value - this.selectedSpeedBugValue) * 10) + ")");
-                if (this.currentCenterGrad != center) {
-                    this.currentCenterGrad = center;
-                    for (let i = 0; i < this.gradTexts.length; i++) {
-                        this.gradTexts[i].textContent = fastToFixed(((4 - i) * 10) + center, 0);
-                    }
-                    if (!this.nocolor) {
-                        let greenEnd = Math.min(Math.max(-100, (300 + (-10 * (this.greenEnd - center)))), 700);
-                        let greenBegin = Math.min(Math.max(-100, (300 + (-10 * (this.greenBegin - center)))), 700);
-                        this.greenElement.setAttribute("y", greenEnd.toString());
-                        this.greenElement.setAttribute("height", (greenBegin - greenEnd).toString());
-                        let yellowEnd = Math.min(Math.max(-100, (300 + (-10 * (this.yellowEnd - center)))), 700);
-                        let yellowBegin = Math.min(Math.max(-100, (300 + (-10 * (this.yellowBegin - center)))), 700);
-                        this.yellowElement.setAttribute("y", yellowEnd.toString());
-                        this.yellowElement.setAttribute("height", (yellowBegin - yellowEnd).toString());
-                        let redEnd = Math.min(Math.max(-100, (300 + (-10 * (this.redEnd - center)))), 700);
-                        let redBegin = Math.min(Math.max(-100, (300 + (-10 * (this.redBegin - center)))), 700);
-                        this.redElement.setAttribute("y", redEnd.toString());
-                        this.redElement.setAttribute("height", (redBegin - redEnd).toString());
-                        let flapsEnd = Math.min(Math.max(-100, (300 + (-10 * (this.flapsEnd - center)))), 700);
-                        let flapsBegin = Math.min(Math.max(-100, (300 + (-10 * (this.flapsBegin - center)))), 700);
-                        this.flapsElement.setAttribute("y", flapsEnd.toString());
-                        this.flapsElement.setAttribute("height", (flapsBegin - flapsEnd).toString());
-                    }
-                }
-                let endValue = this.value % 10;
-                let endCenter = Math.round(endValue);
-                this.endDigitsGroup.setAttribute("transform", "translate(0, " + ((endValue - endCenter) * 45) + ")");
-                for (let i = 0; i < this.endDigits.length; i++) {
-                    if (this.value == 20) {
-                        this.endDigits[i].textContent = (i == 2 ? "-" : " ");
-                    }
-                    else {
-                        let digitValue = (2 - i + endCenter);
-                        this.endDigits[i].textContent = fastToFixed((10 + digitValue) % 10, 0);
-                    }
-                }
-                if (this.value > 20) {
-                    let d2Value = (Math.abs(this.value) % 100) / 10;
-                    this.digit2Bot.textContent = fastToFixed(Math.floor(d2Value), 0);
-                    this.digit2Top.textContent = fastToFixed((Math.floor(d2Value) + 1) % 10, 0);
-                    if (endValue > 9) {
-                        let translate = (endValue - 9) * 55;
-                        this.digit2Bot.setAttribute("transform", "translate(0, " + translate + ")");
-                        this.digit2Top.setAttribute("transform", "translate(0, " + translate + ")");
-                    }
-                    else {
-                        this.digit2Bot.setAttribute("transform", "");
-                        this.digit2Top.setAttribute("transform", "");
-                    }
-                    if (Math.abs(this.value) >= 99) {
-                        let d1Value = (Math.abs(this.value) % 1000) / 100;
-                        this.digit1Bot.textContent = Math.abs(this.value) < 100 ? "" : fastToFixed(Math.floor(d1Value), 0);
-                        this.digit1Top.textContent = fastToFixed((Math.floor(d1Value) + 1) % 10, 0);
-                        if (endValue > 9 && d2Value > 9) {
-                            let translate = (endValue - 9) * 55;
-                            this.digit1Bot.setAttribute("transform", "translate(0, " + translate + ")");
-                            this.digit1Top.setAttribute("transform", "translate(0, " + translate + ")");
-                        }
-                        else {
-                            this.digit1Bot.setAttribute("transform", "");
-                            this.digit1Top.setAttribute("transform", "");
-                        }
-                    }
-                    else {
-                        this.digit1Bot.textContent = "";
-                        this.digit1Top.textContent = "";
-                    }
-                }
-                else {
-                    this.digit2Bot.textContent = "-";
-                    this.digit1Bot.textContent = "-";
                     this.digit1Bot.setAttribute("transform", "");
                     this.digit1Top.setAttribute("transform", "");
-                    this.digit2Bot.setAttribute("transform", "");
-                    this.digit2Top.setAttribute("transform", "");
                 }
-                break;
-            case "airspeed-trend":
-                this.trendValue = Math.min(Math.max(300 + parseFloat(newValue) * 6 * -10, 0), 600);
-                this.trendElement.setAttribute("y", Math.min(this.trendValue, 300).toString());
-                this.trendElement.setAttribute("height", Math.abs(this.trendValue - 300).toString());
-                break;
-            case "min-speed":
-                this.minValue = parseFloat(newValue);
-                break;
-            case "green-begin":
-                this.greenBegin = parseFloat(newValue);
-                break;
-            case "green-end":
-                this.greenEnd = parseFloat(newValue);
-                break;
-            case "yellow-begin":
-                this.yellowBegin = parseFloat(newValue);
-                break;
-            case "yellow-end":
-                this.yellowEnd = parseFloat(newValue);
-                break;
-            case "flaps-begin":
-                this.flapsBegin = parseFloat(newValue);
-                break;
-            case "flaps-end":
-                this.flapsEnd = parseFloat(newValue);
-                break;
-            case "red-begin":
-                this.redBegin = parseFloat(newValue);
-                break;
-            case "red-end":
-                this.redEnd = parseFloat(newValue);
-                break;
-            case "max-speed":
-                this.maxValue = parseFloat(newValue);
-                break;
-            case "true-airspeed":
-                this.tasText.textContent = fastToFixed(parseFloat(newValue), 0) + "KT";
-                break;
-            case "reference-bugs":
-                let elements;
-                if (newValue != "") {
-                    elements = newValue.split(";");
-                }
-                else {
-                    elements = [];
-                }
-                for (let i = 0; i < elements.length; i++) {
-                    if (i >= this.referenceBugs.length) {
-                        let newRef = new ReferenceBug();
-                        newRef.group = document.createElementNS(Avionics.SVG.NS, "g");
-                        this.centerSvg.appendChild(newRef.group);
-                        newRef.bug = document.createElementNS(Avionics.SVG.NS, "polygon");
-                        newRef.bug.setAttribute("points", "200,300 210,315 250,315 250,285 210,285");
-                        newRef.bug.setAttribute("fill", "#1a1d21");
-                        newRef.group.appendChild(newRef.bug);
-                        newRef.text = document.createElementNS(Avionics.SVG.NS, "text");
-                        newRef.text.setAttribute("fill", "aqua");
-                        newRef.text.setAttribute("x", "230");
-                        newRef.text.setAttribute("y", "310");
-                        newRef.text.setAttribute("font-size", "25");
-                        newRef.text.setAttribute("text-anchor", "middle");
-                        newRef.text.setAttribute("font-family", "Roboto-Bold");
-                        newRef.group.appendChild(newRef.text);
-                        this.referenceBugs.push(newRef);
-                    }
-                    let values = elements[i].split(':');
-                    this.referenceBugs[i].value = parseFloat(values[1]);
-                    this.referenceBugs[i].text.textContent = values[0];
-                    this.referenceBugs[i].group.setAttribute("transform", "translate(0," + ((this.value - this.referenceBugs[i].value) * 10) + ")");
-                    this.referenceBugs[i].group.setAttribute("display", "");
-                }
-                for (let i = elements.length; i < this.referenceBugs.length; i++) {
-                    this.referenceBugs[i].group.setAttribute("display", "none");
-                }
-                break;
-            case "display-ref-speed":
-                this.airspeedReferenceGroup.setAttribute("display", newValue == "True" ? "" : "none");
-                this.selectedSpeedBug.setAttribute("display", newValue == "True" ? "" : "none");
-                break;
-            case "ref-speed":
-                this.selectedSpeedBugValue = parseFloat(newValue);
-                this.selectedSpeedText.textContent = Math.round(parseFloat(newValue)).toString();
-                break;
+            }
+            else {
+                this.digit1Bot.textContent = "";
+                this.digit1Top.textContent = "";
+            }
+        }
+        else {
+            this.digit2Bot.textContent = "-";
+            this.digit1Bot.textContent = "-";
+            this.digit1Bot.setAttribute("transform", "");
+            this.digit1Top.setAttribute("transform", "");
+            this.digit2Bot.setAttribute("transform", "");
+            this.digit2Top.setAttribute("transform", "");
         }
     }
 }
+AirspeedIndicator.WIDTH = 150;
 customElements.define('glasscockpit-airspeed-indicator', AirspeedIndicator);
 //# sourceMappingURL=AirspeedIndicator.js.map

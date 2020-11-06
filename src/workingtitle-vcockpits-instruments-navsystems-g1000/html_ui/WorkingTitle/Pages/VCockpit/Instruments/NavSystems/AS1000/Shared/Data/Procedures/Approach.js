@@ -7,8 +7,9 @@ class WT_Approach_Procedure extends WT_Procedure {
      * @param {WT_Procedure_Leg[]} finalLegs 
      * @param {WT_Approach_Transition[]} transitions 
      */
-    constructor(index, name, runway, frequency, finalLegs, transitions) {
+    constructor(icao, index, name, runway, frequency, finalLegs, transitions) {
         super(name, index);
+        this.icao = icao;
         this.runway = runway;
         this.primaryFrequency = frequency;
         this.finalLegs = finalLegs;
@@ -81,6 +82,9 @@ class WT_Selected_Approach_Procedure extends WT_Selected_Procedure {
     getAirport() {
         return this.procedure.airport;
     }
+    /**
+     * @param {FlightPlanManager} flightPlan 
+     */
     async load(flightPlan) {
         return new Promise(resolve => {
             console.log(`Setting destination to ${this.procedure.icao}...`);
@@ -93,6 +97,9 @@ class WT_Selected_Approach_Procedure extends WT_Selected_Procedure {
             });
         });
     }
+    /**
+     * @param {FlightPlanManager} flightPlan 
+     */
     async activate(flightPlan) {
         console.log("Activating approach...");
         await this.load(flightPlan);

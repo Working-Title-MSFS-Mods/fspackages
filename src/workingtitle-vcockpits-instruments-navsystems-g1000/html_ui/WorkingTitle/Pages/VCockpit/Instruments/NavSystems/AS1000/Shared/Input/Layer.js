@@ -36,6 +36,8 @@ class Input_Layer {
     onVolume2Inc(inputStack) { return false; }
     onVolume2Dec(inputStack) { return false; }
 
+    onBaroIncrement(inputStack) { return false; }
+    onBaroDecrement(inputStack) { return false; }
     onCourseIncrement(inputStack) { return false; }
     onCourseDecrement(inputStack) { return false; }
     onCoursePush(inputStack) { return false; }
@@ -136,6 +138,11 @@ class Input_Layer {
                 return this.onVolume2Inc(inputStack);
             case "VOL_2_DEC":
                 return this.onVolume2Dec(inputStack);
+
+            case "BARO_INC":
+                return this.onBaroIncrement(inputStack);
+            case "BARO_DEC":
+                return this.onBaroDecrement(inputStack);
 
             case "CRS_INC":
                 return this.onCourseIncrement(inputStack);

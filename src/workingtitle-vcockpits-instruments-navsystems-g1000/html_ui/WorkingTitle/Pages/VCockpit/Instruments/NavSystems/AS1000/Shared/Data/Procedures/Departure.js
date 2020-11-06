@@ -1,6 +1,7 @@
 class WT_Departure_Procedure extends WT_Procedure {
-    constructor(index, name, runwayCoordinates, runwayTransitions, commonLegs, enRouteTransitions) {
+    constructor(icao, index, name, runwayCoordinates, runwayTransitions, commonLegs, enRouteTransitions) {
         super(name, index);
+        this.icao = icao;
         this.runwayCoordinates = runwayCoordinates;
         this.runwayTransitions = runwayTransitions;
         this.commonLegs = commonLegs;
@@ -106,5 +107,22 @@ class WT_Selected_Departure_Procedure extends WT_Selected_Procedure {
      * @param {FlightPlanManager} flightPlan 
      */
     async load(flightPlan) {
+        return new Promise(resolve => {
+            console.log(`Setting origin to ${this.procedure.icao}...`);
+            flightPlan.setOrigin(this.procedure.icao, () => {
+                console.log(`Setting departure...`);
+                const promises = [];
+                promises.push(new Promise(resolve => {
+                    flightPlan.setDepartureProcIndex(this.procedure.procedureIndex, resolve);
+                }));
+                promises.push(new Promise(resolve => {
+                    flightPlan.setDepartureEnRouteTransitionIndex(this.enRouteTransitionIndex, resolve);
+                }));
+                promises.push(new Promise(resolve => {
+                    flightPlan.setDepartureRunwayIndex(this.runwayTransitionIndex, resolve);
+                }));
+                Promise.all(promises).then(resolve);
+            });
+        });
     }
 }

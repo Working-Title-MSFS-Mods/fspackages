@@ -1,0 +1,27 @@
+g1000-page-menu {
+    -webkit-transform: rotateX(0deg);
+    position: absolute;
+    top: auto;
+    right: $mini_page_x + 2vh;
+    bottom: $mini_page_y + 2vh;
+    width: $mini_page_width - 4vh;
+    height: $mini_page_height - 6vh;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-gap: 0.8vh;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+
+    .title {
+        font-size: 1em;
+        margin: 0;
+    }
+
+    .category {
+        margin: 0 !important;
+    }
+
+    .options {
+        max-height: 100%;
+    }
+}

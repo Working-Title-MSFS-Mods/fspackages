@@ -69,7 +69,7 @@ class WT_Procedure_Page_View extends WT_HTML_View {
         this.selectedPage = null;
         this.selectedPageSubscriptions = new Subscriptions();
 
-        this.inputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this, "drop-down-selector, numeric-input, string-input, icao-input, toggle-switch, g1000-sequence-list li, .selectable, selectable-button"));
+        this.inputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this, `${Selectables_Input_Layer_Dynamic_Source.DEFAULT}, g1000-sequence-list li`));
         this.inputLayer.setExitHandler(this);
 
         this.onExit = new WT_Event();
@@ -120,8 +120,9 @@ class WT_Procedure_Page_View extends WT_HTML_View {
                 this.model.loadProcedure(selectedProcedure);
             }));
         }
-        if (this.selectedPage.onActiveProcedure) {
-            this.selectedPageSubscriptions.add(this.selectedPage.onActiveProcedure.subscribe(selectedProcedure => {
+        if (this.selectedPage.onActivateProcedure) {
+            this.selectedPageSubscriptions.add(this.selectedPage.onActivateProcedure.subscribe(selectedProcedure => {
+                console.log("activate");
                 this.model.activateProcedure(selectedProcedure);
             }));
         }

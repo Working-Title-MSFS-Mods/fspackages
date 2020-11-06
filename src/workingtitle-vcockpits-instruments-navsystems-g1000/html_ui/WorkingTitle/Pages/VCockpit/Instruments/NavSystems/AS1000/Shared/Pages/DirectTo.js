@@ -5,6 +5,12 @@ class WT_Show_Direct_To_Handler {
 }
 
 class WT_Direct_To_Model extends WT_Model {
+    /**
+     * @param {NavSystem} gps 
+     * @param {string} type 
+     * @param {WT_Waypoint_Repository} waypointRepository 
+     * @param {WT_Direct_To_Handler} directToHandler 
+     */
     constructor(gps, type, waypointRepository, directToHandler) {
         super();
         this.gps = gps;
@@ -40,10 +46,7 @@ class WT_Direct_To_Model extends WT_Model {
         }
     }
     activateDirectTo(course) {
-        this.directToHandler.activate({
-            waypoint: this.waypoint.value,
-            course: course
-        });
+        this.directToHandler.activate(this.waypoint.value, course);
     }
     cancelDirectTo() {
         this.directToHandler.cancel();
@@ -95,7 +98,6 @@ class WT_Direct_To_View extends WT_HTML_View {
         this.inputLayer = new WT_Direct_To_Input_Layer(this);
         this.userSelectedCourse = false;
 
-        this.onDirectTo = new WT_Event();
         this.onCancel = new WT_Event();
         this.onExit = new WT_Event();
     }

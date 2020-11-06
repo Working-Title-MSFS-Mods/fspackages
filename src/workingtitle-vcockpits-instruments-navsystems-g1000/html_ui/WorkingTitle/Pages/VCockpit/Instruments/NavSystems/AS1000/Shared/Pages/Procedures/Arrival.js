@@ -82,6 +82,8 @@ class WT_Arrival_Page_View extends WT_HTML_View {
         this.updateSequence();
     }
     updateSequence() {
+        if (!this.elements.sequenceList)
+            return;
         if (this.selectedProcedure.value) {
             this.elements.sequenceList.updateSequence(this.selectedProcedure.value.getSequence());
         } else {

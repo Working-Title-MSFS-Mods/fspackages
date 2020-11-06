@@ -406,13 +406,13 @@
         <div class="category">
             <h1>Approach</h1>
             <section class="content">
-                <div class="element"><drop-down-selector data-element="procedureSelector" updateOnSelection></drop-down-selector></div>
+                <div class="element"><drop-down-selector data-element="procedureSelector" updateOnSelection empty-value="None"></drop-down-selector></div>
             </section>
         </div>
         <div class="category">
             <h1>Transition</h1>
             <section class="content">
-                <div class="element"><drop-down-selector data-element="transitionSelector" updateOnSelection></drop-down-selector></div>
+                <div class="element"><drop-down-selector data-element="transitionSelector" updateOnSelection empty-value="None"></drop-down-selector></div>
             </section>
         </div>
         <div class="category">
@@ -446,19 +446,19 @@
         <div class="category">
             <h1>Departure</h1>
             <section class="content">
-                <div class="element"><drop-down-selector data-element="procedureSelector" updateOnSelection></drop-down-selector></div>
+                <div class="element"><drop-down-selector data-element="procedureSelector" updateOnSelection empty-value="None"></drop-down-selector></div>
             </section>
         </div>
         <div class="category">
             <h1>Runway</h1>
             <section class="content">
-                <div class="element"><drop-down-selector data-element="runwayTransitionSelector" updateOnSelection></drop-down-selector></div>
+                <div class="element"><drop-down-selector data-element="runwayTransitionSelector" updateOnSelection empty-value="None"></drop-down-selector></div>
             </section>
         </div>
         <div class="category">
             <h1>Transition</h1>
             <section class="content">
-                <div class="element"><drop-down-selector data-element="enRouteTransitionSelector" updateOnSelection></drop-down-selector></div>
+                <div class="element"><drop-down-selector data-element="enRouteTransitionSelector" updateOnSelection empty-value="None"></drop-down-selector></div>
             </section>
         </div>
         <div class="category">
@@ -474,19 +474,19 @@
         <div class="category">
             <h1>Arrival</h1>
             <section class="content">
-                <div class="element"><drop-down-selector data-element="procedureSelector" updateOnSelection></drop-down-selector></div>
+                <div class="element"><drop-down-selector data-element="procedureSelector" updateOnSelection empty-value="None"></drop-down-selector></div>
             </section>
         </div>        
         <div class="category">
             <h1>Transition</h1>
             <section class="content">
-                <div class="element"><drop-down-selector data-element="enRouteTransitionSelector" updateOnSelection></drop-down-selector></div>
+                <div class="element"><drop-down-selector data-element="enRouteTransitionSelector" updateOnSelection empty-value="None"></drop-down-selector></div>
             </section>
         </div>
         <div class="category">
             <h1>Runway</h1>
             <section class="content">
-                <div class="element"><drop-down-selector data-element="runwayTransitionSelector" updateOnSelection></drop-down-selector></div>
+                <div class="element"><drop-down-selector data-element="runwayTransitionSelector" updateOnSelection empty-value="None"></drop-down-selector></div>
             </section>
         </div>
         <div class="category">
@@ -1116,6 +1116,9 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/FlightPlan.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/NearestAirports.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/ProceduresMenu.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/Procedures/Approach.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/Procedures/Arrival.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/Procedures/Departure.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/FuelUsed.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Observables.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Settings.js"></script>
@@ -1139,9 +1142,6 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Nearest/NDBs.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Nearest/VORs.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Procedures/Procedure.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Procedures/Approach.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Procedures/Arrival.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Procedures/Departure.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/WaypointInformation/Airport.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/WaypointInformation/Intersection.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Panes/DirectTo.js"></script>

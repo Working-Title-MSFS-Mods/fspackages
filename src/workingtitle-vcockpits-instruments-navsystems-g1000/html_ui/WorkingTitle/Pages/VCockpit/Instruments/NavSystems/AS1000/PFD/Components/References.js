@@ -26,26 +26,13 @@ class WT_Airspeed_Reference {
     }
 }
 
-class WT_Airspeed_References_Model extends WT_Model {
-    /**
-     * @param {WT_Settings} settings 
-     */
-    constructor(settings) {
-        super();
-        this.units = new Subject("kts");//settings.getValue("dis_spd"));
-        this._references = this.getDefaultReferences();
-        this.references = new Subject(this._references, false);
-        this.updateReferences();
-        /*settings.addListener(units => {
-            this.units.value = (units == "nautical" ? "kts" : "kph");
-        }, "dis_spd");*/
-    }
-    updateReferences() {
-        this.references.value = this._references;
+class WT_Airspeed_References {
+    constructor() {
+        this.references = new Subject(this.getDefaultReferences(), false);
     }
     getDefaultReferences() {
-        let references = [];
-        let designSpeeds = Simplane.getDesignSpeeds();
+        const references = [];
+        const designSpeeds = Simplane.getDesignSpeeds();
         references.push(new WT_Airspeed_Reference("G", "Glide", designSpeeds.BestGlide));
         references.push(new WT_Airspeed_Reference("R", "Vr", designSpeeds.Vr));
         references.push(new WT_Airspeed_Reference("X", "Vx", designSpeeds.Vx));
@@ -53,18 +40,43 @@ class WT_Airspeed_References_Model extends WT_Model {
         return references;
     }
     getReference(id) {
-        let reference = this._references.find(r => r.id == id);
+        const reference = this.references.value.find(r => r.id == id);
         if (reference) {
             return reference;
         }
         throw new Error(`Reference "${id}" doesn't exist`);
     }
+    updateReferences() {
+        this.references.value = this.references.value;
+    }
     updateSpeed(id, speed) {
         this.getReference(id).speed = speed;
         this.updateReferences();
     }
-    isDefault(id, speed) {
-        return this.getReference(id).isDefault(speed);
+    updateEnabled(id, enabled) {
+        this.getReference(id).enabled = enabled;
+        this.updateReferences();
+    }
+}
+
+class WT_Airspeed_References_Model extends WT_Model {
+    /**
+     * @param {WT_Settings} settings 
+     * @param {WT_Airspeed_References} airspeedReferences 
+     */
+    constructor(settings, airspeedReferences) {
+        super();
+        this.airspeedReferences = airspeedReferences;
+        this.units = new Subject("kts");//settings.getValue("dis_spd"));
+        /*settings.addListener(units => {
+            this.units.value = (units == "nautical" ? "kts" : "kph");
+        }, "dis_spd");*/
+    }
+    updateSpeed(id, speed) {
+        this.airspeedReferences.updateSpeed(id, speed);
+    }
+    updateEnabled(id, enabled) {
+        this.airspeedReferences.updateEnabled(id, enabled);
     }
 }
 
@@ -84,7 +96,7 @@ class WT_Airspeed_References_View extends WT_HTML_View {
         this.model.units.subscribe(units => {
             this.units = units;
         });
-        this.model.references.subscribe(references => {
+        this.model.airspeedReferences.references.subscribe(references => {
             this.setReferences(references);
         });
     }
@@ -99,7 +111,7 @@ class WT_Airspeed_References_View extends WT_HTML_View {
                     <label>${reference.name}</label>
                     <numeric-input data-change="setSpeed" value="${reference.speed}" min="0" max="999" units="${this.units}"></numeric-input>
                     <span class="non-standard"></span>
-                    <toggle-switch value="1"></toggle-switch>
+                    <toggle-switch data-change="setEnabled" value="1"></toggle-switch>
                 `;
                 element.querySelector("numeric-input").addEventListener("input", e => {
                     element.querySelector(".non-standard").textContent = reference.isDefault(e.target.value) ? "" : "*";
@@ -114,6 +126,9 @@ class WT_Airspeed_References_View extends WT_HTML_View {
     }
     setSpeed(speed, node) {
         this.model.updateSpeed(node.parentNode.dataset.id, speed);
+    }
+    setEnabled(enabled, node) {
+        this.model.updateEnabled(node.parentNode.dataset.id, enabled == "On");
     }
 }
 customElements.define("g1000-pfd-airspeed-references", WT_Airspeed_References_View);

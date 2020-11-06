@@ -75,6 +75,51 @@ class WT_PFD_Show_Page_Menu_Handler extends WT_Show_Page_Menu_Handler {
     }
 }
 
+class WT_PFD_Show_Procedure_Handler {
+    /**
+     * @param {WT_PFD_Mini_Page_Controller} pageController 
+     * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
+     * @param {WT_Procedure_Page_Model} procedurePageModel 
+     * @param {WT_Approach_Page_View} approachPageView 
+     * @param {WT_Arrival_Page_View} arrivalPageView 
+     * @param {WT_Departure_Page_View} departurePageView 
+     */
+    constructor(pageController, waypointQuickSelect, procedurePageModel, approachPageView, arrivalPageView, departurePageView) {
+        this.pageController = pageController;
+        this.waypointQuickSelect = waypointQuickSelect;
+        this.procedurePageModel = procedurePageModel;
+        this.approachPageView = approachPageView;
+        this.arrivalPageView = arrivalPageView;
+        this.departurePageView = departurePageView;
+    }
+    /**
+     * @param {WT_PFD_Procedure_Page_View} view 
+     */
+    showView(view) {
+        this.pageController.appendChild(view);
+        view.classList.add("mini-page");
+        view.setModel(this.procedurePageModel);
+        const subscriptions = new Subscriptions();
+        subscriptions.add(view.onExit.subscribe(() => {
+            this.pageController.removeChild(view);
+            subscriptions.unsubscribe();
+        }));
+        this.pageController.showPage(view);
+    }
+    showApproaches(icao = null, procedureIndex = null) {
+        const view = new WT_PFD_Procedure_Page_View(this.waypointQuickSelect, this.approachPageView);
+        this.showView(view);
+    }
+    showDepartures(icao = null, procedureIndex = null) {
+        const view = new WT_PFD_Procedure_Page_View(this.waypointQuickSelect, this.departurePageView);
+        this.showView(view);
+    }
+    showArrivals(icao = null, procedureIndex = null) {
+        const view = new WT_PFD_Procedure_Page_View(this.waypointQuickSelect, this.arrivalPageView);
+        this.showView(view);
+    }
+}
+
 class WT_PFD_Model {
     /**
      * @param {WT_Brightness_Settings} brightnessSettings 
@@ -150,6 +195,12 @@ customElements.define("g1000-soft-key-alert", WT_PFD_Alert_Key);
 class AS1000_PFD extends BaseAS1000 {
     constructor() {
         super();
+
+        window.addEventListener('unhandledrejection', function (event) {
+            console.error("Unhandled exception");
+            event.preventDefault();
+        });
+
         this.handleReversionaryMode = false;
         this.initDuration = 7000;
 
@@ -191,6 +242,12 @@ class AS1000_PFD extends BaseAS1000 {
             this.updatables.push(pressure);
             return pressure;
         });
+        d.register("airspeedReferences", d => new WT_Airspeed_References());
+        d.register("minimums", d => {
+            const minimums = new WT_Minimums();
+            this.updatables.push(minimums);
+            return minimums;
+        });
         d.register("miniPageController", d => {
             const controller = this.querySelector("g1000-pfd-mini-page-container");
             this.updatables.push(controller);
@@ -212,21 +269,28 @@ class AS1000_PFD extends BaseAS1000 {
         });
 
         d.register("proceduresMenuView", d => {
-            const view = new WT_PFD_Procedures_Menu_View(null, d.procedures); //TODO:
+            const view = new WT_PFD_Procedures_Menu_View(d.showProcedureHandler, d.procedures); //TODO:
             view.classList.add("mini-page");
             return view;
         });
+        d.register("approachPageView", d => new WT_Approach_Page_View());
+        d.register("departurePageView", d => new WT_Departure_Page_View());
+        d.register("arrivalPageView", d => new WT_Arrival_Page_View());
+        d.register("procedureFacilityRepository", d => new WT_Procedure_Facility_Repository(d.facilityLoader));
+        d.register("procedurePageModel", d => new WT_PFD_Procedure_Page_Model(d.flightPlanModel, d.procedureFacilityRepository));
+        d.register("showProcedureHandler", d => new WT_PFD_Show_Procedure_Handler(d.miniPageController, d.waypointQuickSelect, d.procedurePageModel, d.approachPageView, d.arrivalPageView, d.departurePageView));
 
         d.register("alertsKey", d => new WT_PFD_Alert_Key());
 
         d.register("attitudeModel", d => {
-            const model = new Attitude_Indicator_Model(d.syntheticVision.enabled);
+            const model = new Attitude_Indicator_Model(d.syntheticVision, d.nearestWaypoints);
             this.updatables.push(model);
             return model;
         });
         d.register("hsiInput", d => new HSI_Input_Layer(d.hsiModel))
         d.register("hsiModel", d => new HSIIndicatorModel(d.syntheticVision));
-        d.register("altimeterModel", d => new WT_Altimeter_Model(d.barometricPressure));
+        d.register("altimeterModel", d => new WT_Altimeter_Model(this, d.barometricPressure, d.minimums));
+        d.register("airspeedModel", d => new WT_Airspeed_Model(d.airspeedReferences));
 
         d.register("navBoxModel", d => new AS1000_PFD_Nav_Box_Model(d.unitChooser, d.flightPlanManager));
         d.register("comFrequenciesModel", d => new WT_Com_Frequencies_Model());
@@ -235,11 +299,13 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("localTimeModel", d => new WT_Local_Time_Model(d.settings));
         d.register("oatModel", d => new WT_OAT_Model(d.unitChooser));
         d.register("transponderModel", d => new WT_Transponder_Model(d.modSettings));
-        d.register("referencesModel", d => new WT_Airspeed_References_Model());
+        d.register("referencesModel", d => new WT_Airspeed_References_Model(d.settings, d.airspeedReferences));
         d.register("timerModel", d => new WT_PFD_Timer_Model());
         d.register("setupMenuModel", d => new WT_PFD_Setup_Menu_Model(d.brightnessSettings));
         d.register("nearestAirportsModel", d => new WT_Nearest_Airports_Model(this, d.showDirectToHandler, d.waypointRepository, d.unitChooser, null, null, d.nearestWaypoints));
         d.register("windModel", d => new WT_PFD_Wind_Model());
+        d.register("setMinimumsModel", d => new WT_Set_Minimums_Model(d.minimums));
+        d.register("minimumsModel", d => new WT_Minimums_Model(d.minimums));
 
         d.register("transponderMenu", d => new WT_PFD_Transponder_Menu(this, d.transponderModel));
         d.register("transponderCodeMenu", d => new WT_PFD_Transponder_Code_Menu(this, d.transponderModel));
@@ -266,11 +332,12 @@ class AS1000_PFD extends BaseAS1000 {
 
         d.register("menuPushHandler", d => new WT_PFD_Menu_Push_Handler(d.miniPageController));
         d.register("pfdModel", d => new WT_PFD_Model(d.brightnessSettings));
-        d.register("pfdInputLayer", d => new WT_PFD_Input_Layer(this, d.navFrequenciesModel, d.comFrequenciesModel, d.showDirectToHandler, d.menuPushHandler));
+        d.register("pfdInputLayer", d => new WT_PFD_Input_Layer(this, d.navFrequenciesModel, d.comFrequenciesModel, d.showDirectToHandler, d.barometricPressure, d.menuPushHandler));
 
         this.dependencies = d.getDependencies();
 
         this.model = d.create("pfdModel");
+        this.updatables.push(this.model);
     }
     get templateID() { return "AS1000_PFD"; }
     connectedCallback() {
@@ -307,13 +374,16 @@ class AS1000_PFD extends BaseAS1000 {
         this.inputStack.push(new WT_Map_Input_Layer(this.dependencies.map));
         this.dependencies.softKeyController.handleInput(this.inputStack);
 
+        const syntheticVision = this.getChildById("SyntheticVision");
+        syntheticVision.init(this);
+        this.dependencies.syntheticVision.enabled.subscribe(enabled => {
+            syntheticVision.setAttribute("show-bing-map", enabled ? "true" : "false");
+            syntheticVision.style.display = enabled ? "block" : "none";
+            document.querySelector("glasscockpit-attitude-indicator").setAttribute("bank_size_ratio", enabled ? "-17" : "-6.5");
+        });
+
         // Need to do this to get the map to load 
         this.dependencies.insetMap;
-
-        this.dependencies.syntheticVision.enabled.subscribe(enabled => {
-            this.getChildById("SyntheticVision").setAttribute("show-bing-map", enabled ? "true" : "false");
-            this.getChildById("SyntheticVision").style.display = enabled ? "block" : "none";
-        });
 
         this.pfdConfig().then(() => {
             console.log("PFD fully configured.");
@@ -327,12 +397,22 @@ class AS1000_PFD extends BaseAS1000 {
         const annuncationsModel = new WT_Annunciations_Model(this.xmlConfig);
         this.initModelView(annuncationsModel, "g1000-annunciations");
         this.alertsKey.setAnnunciationsModel(annuncationsModel);
+
+        const raElem = this.xmlConfig.getElementsByTagName("RadarAltitude");
+        if (raElem.length > 0) {
+            const hasRadarAltitude = raElem[0].textContent == "True";
+            if (hasRadarAltitude) {
+                this.dependencies.minimums.setModes([0, 1, 3]);
+            }
+        }
     }
     initViews(dependencies) {
         this.initModelView(dependencies.attitudeModel, "glasscockpit-attitude-indicator");
+        this.initModelView(dependencies.airspeedModel, "glasscockpit-airspeed-indicator");
         this.initModelView(dependencies.hsiModel, "#Compass");
         this.initModelView(dependencies.altimeterModel, "glasscockpit-altimeter");
         this.initModelView(dependencies.windModel, "g1000-pfd-wind");
+        this.initModelView(dependencies.minimumsModel, "g1000-minimums");
 
         this.initModelView(dependencies.navBoxModel, "g1000-nav-box");
         this.initModelView(dependencies.comFrequenciesModel, "g1000-com-frequencies");
@@ -341,7 +421,9 @@ class AS1000_PFD extends BaseAS1000 {
         this.initModelView(dependencies.localTimeModel, "g1000-local-time");
         this.initModelView(dependencies.oatModel, "g1000-oat");
         this.initModelView(dependencies.transponderModel, "g1000-transponder");
+
         this.initModelView(dependencies.referencesModel, "g1000-pfd-airspeed-references");
+        this.initModelView(dependencies.setMinimumsModel, "g1000-pfd-minimums");
         this.initModelView(dependencies.timerModel, "g1000-pfd-timer");
         this.initModelView(dependencies.setupMenuModel, "g1000-pfd-setup-menu");
         this.initModelView(dependencies.nearestAirportsModel, "g1000-pfd-nearest-airports");
@@ -384,6 +466,9 @@ class AS1000_PFD extends BaseAS1000 {
     showProcedures() {
         this.miniPageController.showPage(this.dependencies.proceduresMenuView);
     }
+    showApproachProcedures() {
+
+    }
     async pfdConfig() {
         let loader = new WTConfigLoader(this._xmlConfigPath);
         // We need to wait for this to finish before we can do the initial set of the light pot
@@ -412,6 +497,10 @@ class AS1000_PFD extends BaseAS1000 {
             updatable.update(_deltaTime);
         }
         this.miniPageController.update(_deltaTime);
+        const syntheticVision = this.getChildById("SyntheticVision");
+        if (syntheticVision.offsetParent) {
+            syntheticVision.update(_deltaTime);
+        }
     }
     computeEvent(_event) {
         let r = this.inputStack.processEvent(_event);
@@ -433,6 +522,7 @@ class AS1000_PFD extends BaseAS1000 {
         if (reversionaryMode && reversionaryMode.textContent == "True") {
             this.handleReversionaryMode = true;
         }
+        this.dependencies.airspeedModel.updateCockpitSettings(SimVar.GetGameVarValue("", "GlassCockpitSettings"));
     }
     Update() {
         super.Update();

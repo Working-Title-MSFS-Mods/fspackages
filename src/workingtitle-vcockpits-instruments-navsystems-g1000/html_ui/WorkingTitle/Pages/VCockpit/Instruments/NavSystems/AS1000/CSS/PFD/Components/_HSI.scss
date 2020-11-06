@@ -1,0 +1,45 @@
+glasscockpit-hsi {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 100%;
+    grid-template-areas: "main";
+    position: relative;
+
+    $hsi_width: 50vw;
+    $hsi_height: $hsi_width * (117 / 172);
+
+    transform: rotateX(0);
+    position: absolute;
+    border: none;
+    $middle: 46.6vw;
+    $width: $hsi_width;
+    left: $middle - $width/2;
+    bottom: 1vh;
+    width: $width;
+    height: $hsi_height;
+    z-index: 0;
+
+    .compass-background,
+    .compass-background-circle,
+    .compass-overlay,
+    .compass-static-overlay {
+        grid-area: main;
+        -webkit-transform: rotateX(0deg);
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    .compass-background-circle,
+    .compass-overlay {
+        position: absolute;
+        $width: (100/172) * 100%;
+        $height: (100/117) * 100%;
+        width: $width;
+        height: $height;
+        left: 50% - $width / 2;
+        top: (65 / 117) * 100% - $height / 2;
+    }
+}

@@ -1,0 +1,136 @@
+glasscockpit-airspeed-indicator {
+    transform: rotateX(0);
+    position: absolute;
+    top: 4%;
+    height: 57%;
+    width: 57% * (250/700) * (3/4);
+    left: 14%;
+    font-family: $font_family_normal;
+    font-weight: bold;
+
+    $stroke_width: 3px;
+
+    .background {
+        fill: rgba(#333, 0.5);
+        stroke: #ddd;
+        stroke-width: $stroke_width;
+    }
+
+    .airspeed-reference {
+        text {
+            font-size: 45px;
+        }
+
+        text,
+        polygon {
+            fill: $input_color;
+        }
+
+        rect {
+            fill: #000;
+            stroke: #ddd;
+            stroke-width: $stroke_width;
+        }
+    }
+
+    .reference-bug {
+        polygon {
+            fill: #000;
+        }
+
+        text {
+            fill: $input_color;
+            font-size: 25px;
+            text-anchor: middle;
+        }
+    }
+
+    .selected-speed-bug {
+        fill: $input_color;
+    }
+
+    .cursor {
+        text {
+            font-size: 50px;
+            fill: #fff;
+        }
+    }
+
+    .graduation-text {
+        fill: #ccc;
+        font-size: 36px;
+        font-family: $font_family_normal;
+        font-weight: bold;
+        text-anchor: end;
+    }
+
+    .graduation {
+        fill: #fff;
+    }
+
+    .cursor-background {
+        fill: #000;
+    }
+
+    .trend-line {
+        fill: $color_gps;
+        stroke: #ddd;
+        stroke-width: 2px;
+    }
+
+    .tas-text {
+        font-size: 32px;
+        fill: #fff;
+
+        rect {
+            fill: #000;
+            stroke: #ddd;
+            stroke-width: $stroke_width;
+        }
+
+        .value {
+            text-anchor: end;
+        }
+
+        .label {
+            font-size: 24px;
+        }
+
+        .units {
+            font-size: 24px;
+            text-anchor: end;
+        }
+    }
+
+    .speed-red {
+        fill: red;
+    }
+
+    .speed-yellow {
+        fill: yellow;
+    }
+
+    .speed-green {
+        fill: green;
+    }
+
+    .speed-white {
+        fill: white;
+    }
+
+    &[speed="red"] {
+        .tas-text rect {
+            fill: red;
+        }
+
+        .cursor-background {
+            fill: red;
+        }
+    }
+
+    &[speed="yellow"] {
+        .cursor text {
+            fill: yellow;
+        }
+    }
+}

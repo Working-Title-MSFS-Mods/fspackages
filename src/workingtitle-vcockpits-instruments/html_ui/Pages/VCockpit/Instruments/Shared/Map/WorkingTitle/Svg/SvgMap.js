@@ -49,6 +49,7 @@ class SvgMap {
                 configPath = arg.configPath;
             }
         }
+        console.log(`Config path: ${configPath}`);
         if (!this._svgHtmlElement) {
             this._svgHtmlElement = _root.querySelector("#" + elementId);
         }

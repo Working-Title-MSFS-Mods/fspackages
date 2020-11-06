@@ -17,24 +17,23 @@ class WT_Drop_Down_Selector extends HTMLElement {
         super();
         this.options = [];
         this._value = null;
+        this.emptyValue = "&nbsp;";
         this.elements = {
             value: null,
             popup: null
         };
 
         DOMUtilities.AddScopedEventListener(this, "drop-down-selector-option", "selected", this.onOptionSelected.bind(this));
-        this.addEventListener("selected", (e) => { if (e.detail.element == this) this.enter(e) });
+        this.addEventListener("selected", (e) => { if (e.detail.element == this && this.options.length > 0) this.enter(e) });
     }
     get value() {
         return this._value;
     }
     set value(value) {
-        if (this._value != value) {
-            this._value = value;
-            for (let option of this.getOptions()) {
-                if (option.getAttribute("value") == value) {
-                    this.updateSelectedValue(option.innerHTML);
-                }
+        this._value = value;
+        for (let option of this.getOptions()) {
+            if (option.getAttribute("value") == value) {
+                this.updateSelectedValue(option.innerHTML);
             }
         }
     }
@@ -59,11 +58,14 @@ class WT_Drop_Down_Selector extends HTMLElement {
         if (this.options.length > 0) {
             this.value = this.options[0].getAttribute("value");
         }
+        if (this.hasAttribute("empty-value")) {
+            this.emptyValue = this.getAttribute("empty-value");
+        }
     }
     clearOptions() {
         this._value = null;
         this.options = [];
-        this.updateSelectedValue("&nbsp;");
+        this.updateSelectedValue(this.emptyValue);
         this.elements.popup.innerHTML = "";
     }
     addOption(value, text, enabled = true) {

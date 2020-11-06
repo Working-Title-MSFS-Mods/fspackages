@@ -9,6 +9,7 @@ $border_color: #e8e8e8;
 
 $color_gps: #ff00ff;
 $color_ap_active: #00ff00;
+$color_green: #00ff00;
 
 $category_box_outline_color: #999;
 $category_box_background_color: #000;
@@ -29,7 +30,7 @@ $font_family_mono: "Roboto-Mono";
 
 html {
     background-color: #000;
-    font-size: calc(2 * 1vh * var(--bodyHeightScale));
+    font-size: calc(2 * 1vh);// * var(--bodyHeightScale));
     font-family: $font_family_normal;
 
     --engine-green: #00cc00;

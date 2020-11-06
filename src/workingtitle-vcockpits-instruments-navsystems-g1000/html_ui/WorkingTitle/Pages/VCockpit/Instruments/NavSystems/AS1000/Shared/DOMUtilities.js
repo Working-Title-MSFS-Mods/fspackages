@@ -120,3 +120,19 @@ DOMUtilities.debounce = function (func, wait, immediate) {
         if (callNow) func.apply(context, args);
     };
 };
+
+DOMUtilities.createElementNS = function (namespace, tagName, attributes = {}) {
+    let el = document.createElementNS(namespace, tagName);
+    for (let key in attributes) {
+        el.setAttribute(key, attributes[key]);
+    }
+    return el;
+}
+
+DOMUtilities.createElement = function(tagName, attributes = {}) {
+    let el = document.createElement(tagName);
+    for (let key in attributes) {
+        el.setAttribute(key, attributes[key]);
+    }
+    return el;
+}

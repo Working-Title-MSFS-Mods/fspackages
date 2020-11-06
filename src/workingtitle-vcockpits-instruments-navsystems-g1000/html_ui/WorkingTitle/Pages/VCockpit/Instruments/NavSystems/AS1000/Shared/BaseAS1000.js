@@ -1248,20 +1248,25 @@ class Base_Input_Layer extends Input_Layer {
      * @param {WT_Nav_Frequencies_Model} navFrequenciesModel 
      * @param {WT_Com_Frequencies_Model} comFrequenciesModel 
      * @param {WT_Show_Direct_To_Handler} showDirectToHandler 
+     * @param {WT_Barometric_Pressure} barometricPressure
      * @param {WT_Menu_Push_Handler} menuPushHandler 
      */
-    constructor(navSystem, navFrequenciesModel, comFrequenciesModel, showDirectToHandler, menuPushHandler) {
+    constructor(navSystem, navFrequenciesModel, comFrequenciesModel, showDirectToHandler, barometricPressure, menuPushHandler) {
         super();
         this.navSystem = navSystem;
         this.navFrequenciesModel = navFrequenciesModel;
         this.comFrequenciesModel = comFrequenciesModel;
         this.showDirectToHandler = showDirectToHandler;
+        this.barometricPressure = barometricPressure;
         this.menuPushHandler = menuPushHandler;
     }
 
     processEvent(_event, inputStack) {
         return super.processEvent(_event, inputStack);
     }
+
+    onBaroIncrement(inputStack) { this.barometricPressure.incrementBaro(); }
+    onBaroDecrement(inputStack) { this.barometricPressure.decrementBaro(); }
 
     onMenuPush(inputStack) { if (this.menuPushHandler) { this.menuPushHandler.push(); } }
     onProceduresPush(inputStack) { this.navSystem.showProcedures(); }

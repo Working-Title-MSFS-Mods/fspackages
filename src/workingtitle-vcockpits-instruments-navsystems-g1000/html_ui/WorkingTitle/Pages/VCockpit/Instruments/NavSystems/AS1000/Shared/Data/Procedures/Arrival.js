@@ -8,8 +8,9 @@ class WT_Arrival_Procedure extends WT_Procedure {
      * @param {WT_Procedure_Leg[]} commonLegs 
      * @param {WT_EnRoute_Transition[]} enRouteTransitions 
      */
-    constructor(index, name, runwayCoordinates, airportIdent, runwayTransitions, commonLegs, enRouteTransitions) {
+    constructor(icao, index, name, runwayCoordinates, airportIdent, runwayTransitions, commonLegs, enRouteTransitions) {
         super(name, index);
+        this.icao = icao;
         this.runwayCoordinates = runwayCoordinates;
         this.airportIdent = airportIdent;
         this.runwayTransitions = runwayTransitions;

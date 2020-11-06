@@ -10,6 +10,10 @@ class WT_Approach_Page_View extends WT_HTML_View {
         this.onActivateProcedure = new WT_Event();
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+
         let template = document.getElementById('approach-page');
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();
@@ -54,8 +58,9 @@ class WT_Approach_Page_View extends WT_HTML_View {
         this.elements.procedureSelector.clearOptions();
         let i = 0;
         for (let procedure of procedures) {
-            i++ == this.initialProcedureIndex ? this.setProcedure(i) : null;
-            this.elements.procedureSelector.addOption(i++, procedure.name);
+            i == this.initialProcedureIndex ? this.setProcedure(i) : null;
+            this.elements.procedureSelector.addOption(i, procedure.name);
+            i++;
         }
         this.initialProcedureIndex = 0;
     }
@@ -75,6 +80,7 @@ class WT_Approach_Page_View extends WT_HTML_View {
      * @param {WT_Approach_Transition[]} transitions 
      */
     updateTransitions(transitions) {
+        console.log(`trans: ${transitions.length}`);
         this.elements.transitionSelector.clearOptions();
         if (transitions) {
             let i = 0;
@@ -89,6 +95,8 @@ class WT_Approach_Page_View extends WT_HTML_View {
         this.updateSequence();
     }
     updateSequence() {
+        if (!this.elements.sequenceList)
+            return;
         if (this.selectedProcedure.value) {
             this.elements.sequenceList.updateSequence(this.selectedProcedure.value.getSequence());
         } else {

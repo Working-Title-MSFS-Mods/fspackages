@@ -193,11 +193,12 @@ class NearestAirportList {
         this.airportLineBatch.add("C:fs9gps:NearestAirportCurrentLongestRunwayLength", "feet", "number");
         this.airportLineBatch.add("C:fs9gps:NearestAirportCurrentLongestAirportDirection", "degree", "number");
         this.airportLineBatch.add("C:fs9gps:NearestAirportCurrentAirportKind", "number", "number");
-        this.airportLineBatch.add("C:fs9gps:NearestAirportCurrentTowered", "number", "number");        
+        this.airportLineBatch.add("C:fs9gps:NearestAirportCurrentTowered", "number", "number");
         this.airportSelectedBatch = new SimVar.SimVarBatch("C:fs9gps:NearestAirportItemsNumber", "C:fs9gps:NearestAirportSelected");
         this.airportSelectedBatch.add("C:fs9gps:NearestAirportSelectedAirportName", "string", "string");
         this.airportSelectedBatch.add("C:fs9gps:NearestAirportSelectedLatitude", "degree latitude");
         this.airportSelectedBatch.add("C:fs9gps:NearestAirportSelectedLongitude", "degree longitude");
+        this.airportSelectedBatch.add("C:fs9gps:NearestAirportSelectedAirportElevation", "feet", "number");
     }
     Update(_nbMax = 20, _milesDistance = 200) {
         this.nbMax = _nbMax;
@@ -305,7 +306,7 @@ class NearestAirportList {
                             this.airports.push(new NearestAirport(this.instrument));
                         }
                         this.airports[i].name = Utils.Translate(_Values[i][0]);
-                        this.airports[i].coordinates = new LatLongAlt(_Values[i][1], _Values[i][2]);
+                        this.airports[i].coordinates = new LatLongAlt(_Values[i][1], _Values[i][2], _Values[i][3]);
                     }
                     this.loadState++;
                 }.bind(this), instrId);

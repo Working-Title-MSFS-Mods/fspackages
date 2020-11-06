@@ -129,7 +129,7 @@ class WT_MFD_Show_Direct_To_Handler extends WT_Show_Direct_To_Handler {
     }
     show(icaoType = null, icao = null) {
         //TODO: Fix reverting flight plan
-        let model = new WT_Direct_To_Model(this, icaoType, this.waypointRepository);
+        let model = new WT_Direct_To_Model(this, icaoType, this.waypointRepository, this.directToHandler);
         if (icao) {
             model.setIcao(icao);
         }
@@ -138,10 +138,6 @@ class WT_MFD_Show_Direct_To_Handler extends WT_Show_Direct_To_Handler {
         view.setModel(model);
 
         const subscriptions = new Subscriptions();
-        const onDirectTo = directTo => {
-            this.directToHandler.directTo(directTo.waypoint, directTo.course);
-            view.exit();
-        };
         const onCancel = () => {
             view.exit();
         };
@@ -149,7 +145,6 @@ class WT_MFD_Show_Direct_To_Handler extends WT_Show_Direct_To_Handler {
             subscriptions.unsubscribe();
             this.paneContainer.removeChild(view);
         };
-        subscriptions.add(view.onDirectTo.subscribe(onDirectTo));
         subscriptions.add(view.onCancel.subscribe(onCancel));
         subscriptions.add(view.onExit.subscribe(onExit));
 
@@ -503,6 +498,9 @@ class AS1000_MFD extends BaseAS1000 {
         const element = new WT_MFD_Procedures_Menu_View(this.showProcedureHandler, this.procedures);
         this.paneContainer.appendChild(element);
         element.enter(this.inputStack);
+        element.onExit.subscribe(() => {
+            element.parentNode.removeChild(element);
+        });
         this.pageTitle.value = "PROC - PROCEDURES";
     }
     showMapSetup() {

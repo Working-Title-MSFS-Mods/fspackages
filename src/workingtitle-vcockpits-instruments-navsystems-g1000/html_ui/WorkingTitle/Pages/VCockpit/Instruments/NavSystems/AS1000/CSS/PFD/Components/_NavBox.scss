@@ -1,0 +1,122 @@
+g1000-nav-box {
+    > .center {
+        .ap-status {
+            align-items: center;
+            font-size: $font_size_extra_large;
+            display: grid;
+            grid-gap: 2vh;
+            grid-template-columns: 25% $border_width_thin 15% $border_width_thin 1fr;
+            font-weight: bold;
+
+            .active {
+                color: #00ff00;
+            }
+
+            .armed {
+            }
+        }
+
+        .nav-status {
+            border-bottom: $border_width_thin solid $border_color;
+            align-items: center;
+            font-size: $font_size_extra_large;
+            display: grid;
+            grid-gap: 2vh;
+            grid-template-columns: 40% $border_width_thin 60%;
+        }
+    }
+
+    .nav-left {
+        padding: 0 2vh;
+        display: grid;
+        width: 100%;
+        grid-gap: 2vh;
+        grid-template-columns: 40% 1fr 40%;
+        color: $color_gps;
+        font-weight: bold;
+
+        .leg-symbol {
+            text-align: center;
+        }
+
+        .leg-to {
+            text-align: right;
+        }
+
+        .leg-from {
+            text-align: left;
+        }
+    }
+
+    .nav-right {
+        align-items: baseline;
+        display: flex;
+
+        div {
+            width: auto;
+            margin: 0 1vh;
+            flex: none;
+            font-size: $font_size_large;
+            line-height: 0.7;
+
+            &.value {
+                font-weight: bold;
+                color: $color_gps;
+                flex: 1;
+                font-size: $font_size_extra_large;
+            }
+        }
+    }
+
+    .ap-left {
+        display: grid;
+        grid-template-columns: 50% 50%;
+    }
+
+    .ap-divider,
+    .nav-divider {
+        background: $border_color;
+        height: 100%;
+        display: block;
+    }
+
+    .ap-right {
+        display: grid;
+        grid-template-columns: 15% 10% 40% 30%;
+    }
+
+    .ap-status {
+        .active {
+            display: inline-block;
+            @keyframes ap-status-disable-animation {
+                0% {
+                    background: yellow;
+                    color: #000;
+                }
+                45% {
+                    background: yellow;
+                    color: #000;
+                }
+                50% {
+                    background: transparent;
+                    color: yellow;
+                }
+                95% {
+                    background: transparent;
+                    color: yellow;
+                }
+                100% {
+                    background: yellow;
+                    color: #000;
+                }
+            }
+            &[status="disabling"] {
+                animation: ap-status-disable-animation infinite 1s !important;
+                animation-timing-function: cubic-bezier(1, 0, 0, 0.99);
+            }
+            &[status="disabled"] {
+                visibility: hidden;
+            }
+        }
+    }
+}

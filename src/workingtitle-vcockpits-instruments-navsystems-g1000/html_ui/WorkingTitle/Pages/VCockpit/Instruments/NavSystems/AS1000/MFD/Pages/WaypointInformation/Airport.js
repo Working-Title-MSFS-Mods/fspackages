@@ -170,6 +170,7 @@ class WT_Airport_Information_View extends WT_HTML_View {
     }
     toggleInfoMode() {
         this.infoMode.value = (this.infoMode.value % 2) + 1;
+        this.inputLayer.refreshSelected();
     }
     enter(inputStack) {
         this.inputStackHandle = inputStack.push(this.inputLayer);

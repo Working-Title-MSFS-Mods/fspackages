@@ -57,299 +57,286 @@
     </template>
 
     <glasscockpit-highlight id="highlight"></glasscockpit-highlight>
-    <div id="Mainframe">
-        <div id="Electricity" state="off">
-            <div id="Console">Initializing System...</div>
-            <img id="Splash" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Logo/Garmin.svg" />
-            <div id="HorizonContainer">
-                <map-instrument id="SyntheticVision" bing-mode="horizon" bing-id="PFD_SyntheticVision" show-overlay="false" config-path="/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/"></map-instrument>
-                <glasscockpit-attitude-indicator id="Horizon" background="false" bank_size_ratio="-17"></glasscockpit-attitude-indicator>
+    <!--<div id="Console">Initializing System...</div>
+    <img id="Splash" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Logo/Garmin.svg" />-->
+    <section class="horizon-container">
+        <map-instrument id="SyntheticVision" class="synthetic-vision" bing-mode="horizon" bing-id="PFD_SyntheticVision" show-overlay="false" config-path="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/"></map-instrument>
+        <glasscockpit-attitude-indicator background="false" bank_size_ratio="-6.5"></glasscockpit-attitude-indicator>
+    </section>
+
+    <section class="instruments-container" id="Mainframe">
+        <g1000-nav-box>
+            <g1000-nav-frequencies class="left">
+                <section class="radio-1" data-element="radio1">
+                    <div class="name">NAV1</div>
+                    <div data-element="radio1volume" class="volume"></div>
+                    <div data-element="radio1standby" class="standby">--</div>
+                    <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg" class="arrow" />
+                    <div data-element="radio1active" class="active">--</div>
+                    <div data-element="radio1ident" class="ident"></div>
+                </section>
+                <section class="radio-2" data-element="radio2">
+                    <div class="name">NAV2</div>
+                    <div data-element="radio2volume" class="volume"></div>
+                    <div data-element="radio2standby" class="standby">--</div>
+                    <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg" class="arrow" />
+                    <div data-element="radio2active" class="active">--</div>
+                    <div data-element="radio2ident" class="ident"></div>
+                </section>
+            </g1000-nav-frequencies>
+
+            <section class="center">
+                <section class="nav-status">
+                    <section class="nav-left">
+                        <div class="leg-from" data-element="legFrom"></div>
+                        <div class="leg-symbol" data-element="legSymbol"></div>
+                        <div class="leg-to" data-element="legTo"></div>
+                    </section>
+                    <div class="nav-divider"></div>
+                    <section class="nav-right">
+                        <div>DIS</div>
+                        <div class="value" data-element="legDistance"></div>
+                        <div>BRG</div>
+                        <div class="value" data-element="legBearing"></div>
+                    </section>
+                </section>
+                <section class="ap-status">
+                    <section class="ap-left">
+                        <div class="armed" data-element="apLateralArmed"></div>
+                        <div class="active" data-element="apLateralActive"></div>
+                    </section>
+                    <div class="ap-divider"></div>
+                    <section class="ap-center">
+                        <div class="active" data-element="apStatus">AP</div>
+                    </section>
+                    <div class="ap-divider"></div>
+                    <section class="ap-right">
+                        <div class="active"  data-element="apVerticalActive"></div>
+                        <img data-element="apVerticalReferenceArrow"/>
+                        <div data-element="apVerticalReference"></div>
+                        <div class="armed"  data-element="apVerticalArmed"></div>
+                    </section>
+                </section>
+            </section>
+
+            <g1000-com-frequencies class="right">
+                <section class="radio-1" data-element="radio1">
+                    <div class="name">COM1</div>
+                    <div data-element="radio1volume" class="volume"></div>
+                    <div data-element="radio1standby" class="standby">--</div>
+                    <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg?2" class="arrow" />
+                    <div data-element="radio1active" class="active">--</div>
+                </section>
+                <section class="radio-2" data-element="radio2">
+                    <div class="name">COM2</div>
+                    <div data-element="radio2volume" class="volume"></div>
+                    <div data-element="radio2standby" class="standby">--</div>
+                    <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg?2" class="arrow" />
+                    <div data-element="radio2active" class="active">--</div>
+                </section>
+            </g1000-com-frequencies>
+        </g1000-nav-box>
+
+        <g1000-soft-key-menu id="SoftKeyMenu"></g1000-soft-key-menu>
+        
+        <section class="center">
+            <div id="EngineDisplay">
+                <engine-display id="ED"></engine-display>
             </div>
 
-            <div id="InstrumentsContainer">
-                <g1000-nav-box>
-                    <g1000-nav-frequencies class="left">
-                        <section class="radio-1" data-element="radio1">
-                            <div class="name">NAV1</div>
-                            <div data-element="radio1volume" class="volume"></div>
-                            <div data-element="radio1standby" class="standby">--</div>
-                            <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg" class="arrow" />
-                            <div data-element="radio1active" class="active">--</div>
-                            <div data-element="radio1ident" class="ident"></div>
-                        </section>
-                        <section class="radio-2" data-element="radio2">
-                            <div class="name">NAV2</div>
-                            <div data-element="radio2volume" class="volume"></div>
-                            <div data-element="radio2standby" class="standby">--</div>
-                            <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg" class="arrow" />
-                            <div data-element="radio2active" class="active">--</div>
-                            <div data-element="radio2ident" class="ident"></div>
-                        </section>
-                    </g1000-nav-frequencies>
+            <div id="InnerMap">
+                <map-instrument id="InnerMapInstrument" bing-id="PFD_InnerMap" config-path="/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/InnerMapConfig/"></map-instrument>
+            </div>
 
-                    <div class="center">
-                        <div class="nav-status">
-                            <div class="nav-left">
-                                <div class="leg-from" data-element="legFrom"></div>
-                                <div class="leg-symbol" data-element="legSymbol"></div>
-                                <div class="leg-to" data-element="legTo"></div>
-                            </div>
-                            <div class="nav-divider"></div>
-                            <div class="nav-right">
-                                <div>DIS</div>
-                                <div class="value" data-element="legDistance"></div>
-                                <div>BRG</div>
-                                <div class="value" data-element="legBearing"></div>
-                            </div>
-                        </div>
-                        <div class="ap-status">
-                            <div class="ap-left">
-                                <div class="armed" data-element="apLateralArmed"></div>
-                                <div class="active" data-element="apLateralActive"></div>
-                            </div>
-                            <div class="ap-divider"></div>
-                            <div class="ap-center">
-                                <div class="active" data-element="apStatus">AP</div>
-                            </div>
-                            <div class="ap-divider"></div>
-                            <div class="ap-right">
-                                <div class="active"  data-element="apVerticalActive"></div>
-                                <img data-element="apVerticalReferenceArrow"/>
-                                <div data-element="apVerticalReference"></div>
-                                <div class="armed"  data-element="apVerticalArmed"></div>
-                            </div>
-                        </div>
-                    </div>
+            <glasscockpit-altimeter id="Altimeter"></glasscockpit-altimeter>
+            <glasscockpit-airspeed-indicator id="Airspeed"></glasscockpit-airspeed-indicator>
 
-                    <g1000-com-frequencies class="right">
-                        <section class="radio-1" data-element="radio1">
-                            <div class="name">COM1</div>
-                            <div data-element="radio1volume" class="volume"></div>
-                            <div data-element="radio1standby" class="standby">--</div>
-                            <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg?2" class="arrow" />
-                            <div data-element="radio1active" class="active">--</div>
-                        </section>
-                        <section class="radio-2" data-element="radio2">
-                            <div class="name">COM2</div>
-                            <div data-element="radio2volume" class="volume"></div>
-                            <div data-element="radio2standby" class="standby">--</div>
-                            <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg?2" class="arrow" />
-                            <div data-element="radio2active" class="active">--</div>
-                        </section>
-                    </g1000-com-frequencies>
-                </g1000-nav-box>
+            <glasscockpit-hsi id="Compass" fmsAlias="GPS"></glasscockpit-hsi>
+            <!--<glasscockpit-hsi-arc state="Inactive" id="ArcCompass"></glasscockpit-hsi-arc>-->
 
-                <g1000-soft-key-menu id="SoftKeyMenu"></g1000-soft-key-menu>
-                
-                <div class="center">
-                    <div id="EngineDisplay">
-                        <engine-display id="ED"></engine-display>
-                    </div>
-
-                    <div id="InnerMap">
-                        <map-instrument id="InnerMapInstrument" bing-id="PFD_InnerMap" config-path="/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/InnerMapConfig/"></map-instrument>
-                    </div>
-
-                    <glasscockpit-altimeter id="Altimeter"></glasscockpit-altimeter>
-                    <glasscockpit-airspeed-indicator id="Airspeed"></glasscockpit-airspeed-indicator>
-
-                    <glasscockpit-hsi id="Compass" fmsAlias="GPS"></glasscockpit-hsi>
-                    <!--<glasscockpit-hsi-arc state="Inactive" id="ArcCompass"></glasscockpit-hsi-arc>-->
-
-                    <g1000-pfd-wind>
-                        <svg data-element="root" viewBox="0 0 90 60" width="100%" height="100%">
-                            <rect class="background" x="0" y="0" width="90" height="60"></rect>
-                            <g class="mode-1">
-                                <g class="arrows">
-                                    <g data-element="mode1xArrow">
-                                        <path class="arrow-shadow" d="M-2 15 L2 15 L2 -10 L5 -10 L0 -15 L-5 -10 L-2 -10 Z"></path>
-                                        <path class="arrow" d="M-2 15 L2 15 L2 -10 L5 -10 L0 -15 L-5 -10 L-2 -10 Z"></path>
-                                    </g>
-                                    <g data-element="mode1yArrow">
-                                        <path class="arrow-shadow" d="M-2 15 L2 15 L2 -10 L5 -10 L0 -15 L-5 -10 L-2 -10 Z"></path>
-                                        <path class="arrow" d="M-2 15 L2 15 L2 -10 L5 -10 L0 -15 L-5 -10 L-2 -10 Z"></path>
-                                    </g>
-                                </g>
-                                <text data-element="mode1xSpeed" class="x-speed"></text>
-                                <text data-element="mode1ySpeed" class="y-speed"></text>
+            <g1000-pfd-wind>
+                <svg data-element="root" viewBox="0 0 90 60" width="100%" height="100%">
+                    <rect class="background" x="0" y="0" width="90" height="60"></rect>
+                    <g class="mode-1">
+                        <g class="arrows">
+                            <g data-element="mode1xArrow">
+                                <path class="arrow-shadow" d="M-2 15 L2 15 L2 -10 L5 -10 L0 -15 L-5 -10 L-2 -10 Z"></path>
+                                <path class="arrow" d="M-2 15 L2 15 L2 -10 L5 -10 L0 -15 L-5 -10 L-2 -10 Z"></path>
                             </g>
-                            <g class="mode-2">
-                                <path data-element="mode2arrow" class="arrow" d="M22.5 10 L15 20 L21 20 L21 50 L24 50 L24 20 L30 20 Z"></path>
-                                <text data-element="mode2speed" class="speed"></text>
+                            <g data-element="mode1yArrow">
+                                <path class="arrow-shadow" d="M-2 15 L2 15 L2 -10 L5 -10 L0 -15 L-5 -10 L-2 -10 Z"></path>
+                                <path class="arrow" d="M-2 15 L2 15 L2 -10 L5 -10 L0 -15 L-5 -10 L-2 -10 Z"></path>
                             </g>
-                            <g class="mode-3">
-                                <path data-element="mode3arrow" class="arrow" d="M22.5 10 L15 20 L21 20 L21 50 L24 50 L24 20 L30 20 Z"></path>
-                                <text data-element="mode3speed" class="speed"></text>
-                                <text data-element="mode3direction" class="direction"></text>
-                            </g>
-                            <g class="mode-4">
-                                <text>No Wind</text>
-                                <text>Data</text>
-                            <g>
-                        </svg>
-                    </g1000-pfd-wind>
+                        </g>
+                        <text data-element="mode1xSpeed" class="x-speed"></text>
+                        <text data-element="mode1ySpeed" class="y-speed"></text>
+                    </g>
+                    <g class="mode-2">
+                        <path data-element="mode2arrow" class="arrow" d="M22.5 10 L15 20 L21 20 L21 50 L24 50 L24 20 L30 20 Z"></path>
+                        <text data-element="mode2speed" class="speed"></text>
+                    </g>
+                    <g class="mode-3">
+                        <path data-element="mode3arrow" class="arrow" d="M22.5 10 L15 20 L21 20 L21 50 L24 50 L24 20 L30 20 Z"></path>
+                        <text data-element="mode3speed" class="speed"></text>
+                        <text data-element="mode3direction" class="direction"></text>
+                    </g>
+                    <g class="mode-4">
+                        <text>No Wind</text>
+                        <text>Data</text>
+                    <g>
+                </svg>
+            </g1000-pfd-wind>
 
-                    <div id="MarkerBeacon">M</div>
+            <div id="MarkerBeacon">M</div>
 
-                    <div id="Minimums" state="Inactive">
-                        <div id="Minimums_Source">
-                            BARO<br />MIN
-                        </div>
-                        <div id="Minimums_Value">
-                            1280<span class="unit">FT</span>
-                        </div>
-                    </div>
+            <g1000-minimums>
+                <label class="source" data-element="source"></label>
+                <div class="value" data-element="value"></div>
+            </g1000-minimums>
 
-                    <div id="RadarAltitude" state="Inactive">
-                        <div id="RA_Title">
-                            RA
-                        </div>
-                        <div id="RA_Value">
-                            1080
-                        </div>
-                    </div>
-
-                    <div id="Warnings" state="Hidden">
-                        <span id="WarningsContent">PULL UP</span>
-                    </div>
-
-                    <div id="Annunciations" state="Hidden">
-                        <div id="newAnnunciations"></div>
-                        <div id="acknowledged"></div>
-                    </div>
-
-                    <g1000-annunciations>
-                        <ul class="new" data-element="new"></ul>
-                        <ul class="acknowledged" data-element="acknowledged"></ul>
-                    </g1000-annunciations>
-
-                    <footer>
-                        <g1000-transponder>
-                            <label>XPDR</label>
-                            <span class="code" data-element="code"></span>
-                            <span class="mode" data-element="mode"></span>
-                            <span class="reply">R</span>
-                        </g1000-transponder>
-
-                        <g1000-local-time>
-                            <label data-element="mode">LCL</label>
-                            <span data-element="time" class="time"></span>
-                        </g1000-local-time>
-
-                        <g1000-oat>
-                            <label>OAT</label>
-                            <div data-element="oat" class="temperature"></div>
-                        </g1000-oat>
-                    </footer>
-
-                    <div class="page-menu-container" id="PageMenuContainer"></div>
-
-                    <g1000-pfd-mini-page-container>
-                        <g1000-pfd-timer-references-page class="mini-page">
-                            <h1>References</h1>
-                            <g1000-pfd-timer>
-                                <label>Timer</label>
-                                <time-input data-change="changeTime" value="0" data-element="time"></time-input>
-                                <toggle-switch data-change="changeDirection" values="DN,UP" value="DN" data-element="direction"></toggle-switch>
-                                <selectable-button data-element="button" data-click="clickButton">Start?</selectable-button>
-                            </g1000-pfd-timer>
-                            <hr />
-                            <g1000-pfd-airspeed-references>
-                                <ul data-element="references"></ul>
-                            </g1000-pfd-airspeed-references>
-                            <hr />
-                            <g1000-pfd-minimums>
-                                <label>Minimums</label>
-                                <toggle-switch data-change="changeMode" values="Off,Baro" value="Off" data-element="mode"></toggle-switch>
-                                <numeric-input data-change="changeAltitude" value="0" increment="10" data-element="altitude" units="ft"></numeric-input>
-                            </g1000-pfd-minimums>
-                        </g1000-pfd-timer-references-page>
-
-                        <g1000-pfd-nearest-airports class="mini-page">
-                            <h1>Nearest Airports</h1>
-                            <ul class="content scrollable-container" data-element="airportList"></ul>
-                        </g1000-pfd-nearest-airports>
-
-                        <g1000-pfd-adf-dme class="mini-page">
-                            <h1>ADF / DME Tuning</h1>
-                            <section class="adf">
-                                <h2>ADF</h2>
-                                <div class="top">
-                                    <div class="active" data-element="active"></div>
-                                    <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg" class="arrow" />
-                                    <adf-input min="0" max="2000" digits="4" decimals="1" data-element="adfFrequency"></adf-input>
-                                </div>
-                                <div class="bottom">
-                                    <label>Mode</label>
-                                    <toggle-switch values="ADF" value="ADF" data-input="setAdfMode"></toggle-switch>
-                                    <label>Volume</label>
-                                    <numeric-input class="volume" min="0" max="100" units="%" data-input="setVolume" value="100" increment="5"></numeric-input>                                
-                                </div>
-                            </section>
-                            <section class="dme">
-                                <h2>DME</h2>
-                                <div class="mode">
-                                    <label>Mode</label>
-                                    <toggle-switch values="NAV1,NAV2" value="NAV1" data-change="setDmeMode"></toggle-switch>
-                                </div>
-                            </section>
-                            <section class="ent-to-transfer" data-element="entToTransfer">
-                                ENT To Transfer
-                            </section>
-                        </g1000-pfd-adf-dme>
-
-                        <g1000-pfd-setup-menu class="mini-page">
-                            <h1>PFD Setup Menu</h1>
-                            <div class="element">
-                                <label>PFD Display</label>
-                                <toggle-switch values="Auto,Manual" value="Manual"></toggle-switch>
-                                <numeric-input data-input="setPfdBrightness" min="0" max="100" units="%" increment="5" data-element="pfdBrightness"></numeric-input>
-                            </div>
-                            <div class="element">
-                                <label>MFD Display</label>
-                                <toggle-switch values="Auto,Manual" value="Manual"></toggle-switch>
-                                <numeric-input data-input="setMfdBrightness" min="0" max="100" units="%" increment="5" data-element="mfdBrightness"></numeric-input>
-                            </div>
-                        </g1000-pfd-setup-menu>
-
-                        <g1000-pfd-flight-plan class="mini-page">
-                            <h1>Flight Plan</h1>
-                            <section class="flight-plan">
-                                <div class="flight-plan-header">
-                                    <div class="flight-plan-name"></div>
-                                    <div class="flight-plan-header-labels">
-                                        <div></div>
-                                        <div data-label="DTK">DTK</div>
-                                    <div data-label="DIS">DIS</div>
-                                    </div>
-                                </div>
-                                <div class="flight-plan-waypoints scrollable-container" data-element="flightPlanWaypoints">
-                                    <div class="flight-plan-marker" data-element="activeLegMarker">
-                                        <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
-                                            <path d="M100 50 L50 50 Q20 50 20 80 L20 200" stroke="magenta" stroke-width="20" fill="none"></path>
-                                        </svg>
-                                        <div style="overflow:hidden;">
-                                            <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%;">
-                                                <path d="M20 0 L20 100" stroke="magenta" stroke-width="20" fill="none"></path>
-                                            </svg>
-                                        </div>
-                                        <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
-                                            <path d="M20 -100 L20 30 Q20 50 50 50 L60 50" stroke="magenta" stroke-width="20" fill="none"></path>
-                                            <path d="M60 20 L60 80 L100 50 Z" fill="magenta"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="new-waypoint" data-element="newWaypointLine">
-                                        <div></div>
-                                        <div class="ident"><selectable-button data-click="createNewWaypoint" class="new-waypoint">__________</selectable-button></div>
-                                    </div>
-                                </div>
-                            </section>
-                        </g1000-pfd-flight-plan>
-                    </g1000-pfd-mini-page-container>
+            <div id="RadarAltitude" state="Inactive">
+                <div id="RA_Title">
+                    RA
+                </div>
+                <div id="RA_Value">
+                    1080
                 </div>
             </div>
-        </div>
-    </div>
+
+            <div id="Warnings" state="Hidden">
+                <span id="WarningsContent">PULL UP</span>
+            </div>
+
+            <g1000-annunciations>
+                <ul class="new" data-element="new"></ul>
+                <ul class="acknowledged" data-element="acknowledged"></ul>
+            </g1000-annunciations>
+
+            <footer>
+                <g1000-transponder>
+                    <label>XPDR</label>
+                    <span class="code" data-element="code"></span>
+                    <span class="mode" data-element="mode"></span>
+                    <span class="reply">R</span>
+                </g1000-transponder>
+
+                <g1000-local-time>
+                    <label data-element="mode">LCL</label>
+                    <span data-element="time" class="time"></span>
+                </g1000-local-time>
+
+                <g1000-oat>
+                    <label>OAT</label>
+                    <div data-element="oat" class="temperature"></div>
+                </g1000-oat>
+            </footer>
+
+            <div class="page-menu-container" id="PageMenuContainer"></div>
+
+            <g1000-pfd-mini-page-container>
+                <g1000-pfd-timer-references-page class="mini-page">
+                    <h1>References</h1>
+                    <g1000-pfd-timer>
+                        <label>Timer</label>
+                        <time-input data-change="changeTime" value="0" data-element="time"></time-input>
+                        <toggle-switch data-change="changeDirection" values="DN,UP" value="DN" data-element="direction"></toggle-switch>
+                        <selectable-button data-element="button" data-click="clickButton">Start?</selectable-button>
+                    </g1000-pfd-timer>
+                    <hr />
+                    <g1000-pfd-airspeed-references>
+                        <ul data-element="references"></ul>
+                    </g1000-pfd-airspeed-references>
+                    <hr />
+                    <g1000-pfd-minimums>
+                        <label>Minimums</label>
+                        <toggle-switch data-change="changeMode" values="Off,Baro,Radar" value="Off" data-element="mode"></toggle-switch>
+                        <numeric-input data-change="setAltitude" value="0" increment="10" data-element="altitude" units="ft"></numeric-input>
+                    </g1000-pfd-minimums>
+                </g1000-pfd-timer-references-page>
+
+                <g1000-pfd-nearest-airports class="mini-page">
+                    <h1>Nearest Airports</h1>
+                    <ul class="content scrollable-container" data-element="airportList"></ul>
+                </g1000-pfd-nearest-airports>
+
+                <g1000-pfd-adf-dme class="mini-page">
+                    <h1>ADF / DME Tuning</h1>
+                    <section class="adf">
+                        <h2>ADF</h2>
+                        <div class="top">
+                            <div class="active" data-element="active"></div>
+                            <img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/DoubleArrow.svg" class="arrow" />
+                            <adf-input min="0" max="2000" digits="4" decimals="1" data-element="adfFrequency"></adf-input>
+                        </div>
+                        <div class="bottom">
+                            <label>Mode</label>
+                            <toggle-switch values="ADF" value="ADF" data-input="setAdfMode"></toggle-switch>
+                            <label>Volume</label>
+                            <numeric-input class="volume" min="0" max="100" units="%" data-input="setVolume" value="100" increment="5"></numeric-input>                                
+                        </div>
+                    </section>
+                    <section class="dme">
+                        <h2>DME</h2>
+                        <div class="mode">
+                            <label>Mode</label>
+                            <toggle-switch values="NAV1,NAV2" value="NAV1" data-change="setDmeMode"></toggle-switch>
+                        </div>
+                    </section>
+                    <section class="ent-to-transfer" data-element="entToTransfer">
+                        ENT To Transfer
+                    </section>
+                </g1000-pfd-adf-dme>
+
+                <g1000-pfd-setup-menu class="mini-page">
+                    <h1>PFD Setup Menu</h1>
+                    <div class="element">
+                        <label>PFD Display</label>
+                        <toggle-switch values="Auto,Manual" value="Manual"></toggle-switch>
+                        <numeric-input data-input="setPfdBrightness" min="0" max="100" units="%" increment="5" data-element="pfdBrightness"></numeric-input>
+                    </div>
+                    <div class="element">
+                        <label>MFD Display</label>
+                        <toggle-switch values="Auto,Manual" value="Manual"></toggle-switch>
+                        <numeric-input data-input="setMfdBrightness" min="0" max="100" units="%" increment="5" data-element="mfdBrightness"></numeric-input>
+                    </div>
+                </g1000-pfd-setup-menu>
+
+                <g1000-pfd-flight-plan class="mini-page">
+                    <h1>Flight Plan</h1>
+                    <section class="flight-plan">
+                        <div class="flight-plan-header">
+                            <div class="flight-plan-name"></div>
+                            <div class="flight-plan-header-labels">
+                                <div></div>
+                                <div data-label="DTK">DTK</div>
+                            <div data-label="DIS">DIS</div>
+                            </div>
+                        </div>
+                        <div class="flight-plan-waypoints scrollable-container" data-element="flightPlanWaypoints">
+                            <div class="flight-plan-marker" data-element="activeLegMarker">
+                                <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
+                                    <path d="M100 50 L50 50 Q20 50 20 80 L20 200" stroke="magenta" stroke-width="20" fill="none"></path>
+                                </svg>
+                                <div style="overflow:hidden;">
+                                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%;">
+                                        <path d="M20 0 L20 100" stroke="magenta" stroke-width="20" fill="none"></path>
+                                    </svg>
+                                </div>
+                                <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
+                                    <path d="M20 -100 L20 30 Q20 50 50 50 L60 50" stroke="magenta" stroke-width="20" fill="none"></path>
+                                    <path d="M60 20 L60 80 L100 50 Z" fill="magenta"></path>
+                                </svg>
+                            </div>
+                            <div class="new-waypoint" data-element="newWaypointLine">
+                                <div></div>
+                                <div class="ident"><selectable-button data-click="createNewWaypoint" class="new-waypoint">__________</selectable-button></div>
+                            </div>
+                        </div>
+                    </section>
+                </g1000-pfd-flight-plan>
+            </g1000-pfd-mini-page-container>
+        </section>
+    </section>
 
     <template id="procedures-menu">
         <h1 class="title">Procedures</h1>
@@ -395,6 +382,77 @@
             <h1>Options</h1>
             <ul class="content options scrollable-container" data-element="options"></ul>
         </div>
+    </template>
+
+    <template id="procedure-page">
+        <h1>Select Procedure</h1>
+        <section class="content">
+            <icao-input data-element="icaoInput" characters="6" data-change="updateIcao"></icao-input>
+        </section>
+        <section data-element="page"></section>
+    </template>
+
+    <template id="approach-page">
+        <section>
+            <label>Approach</label>
+            <drop-down-selector data-element="procedureSelector" updateOnSelection empty-value="None"></drop-down-selector>           
+        </section>
+        <section>
+            <label>Trans</label>
+            <drop-down-selector data-element="transitionSelector" updateOnSelection empty-value="None"></drop-down-selector>
+        </section>
+        <section class="minimums">
+            <label>Minimums</label>
+            <toggle-switch value="0" data-element="minimumsMode"></toggle-switch>
+            <numeric-input digits="5" min="0" max="35000" class="value" value="0" units="FT" style="text-align:right;"></numeric-input>                
+        </section>
+        <section class="frequency">
+            <label>Prim Freq</label>
+            <selectable-button class="value selectable" data-element="primaryFrequencyHz"></selectable-button>
+            <div class="name" data-element="primaryFrequencyName"></div>
+        </section>
+        <hr />
+        <section class="load-or-activate">
+            <selectable-button data-element="loadApproach" data-click="loadProcedure">LOAD?</selectable-button>
+            <span>OR</span>
+            <selectable-button data-element="activateApproach" data-click="activateProcedure">ACTIVATE</selectable-button>
+        </section>
+    </template>
+
+    <template id="departure-page">
+        <section>
+            <label>Departure</label>
+            <drop-down-selector data-element="procedureSelector" updateOnSelection></drop-down-selector>
+        </section>
+        <section>
+            <label>Runway</label>
+            <drop-down-selector data-element="runwayTransitionSelector" updateOnSelection empty-value="None"></drop-down-selector>
+        </section>
+        <section>
+            <label>Trans</label>
+            <drop-down-selector data-element="enRouteTransitionSelector" updateOnSelection empty-value="None"></drop-down-selector>
+        </section>
+        <section class="load-or-activate">
+            <selectable-button data-click="loadProcedure">LOAD?</selectable-button>
+        </section>
+    </template>
+
+    <template id="arrival-page">
+        <section>
+            <label>Arrival</label>
+            <drop-down-selector data-element="procedureSelector" updateOnSelection></drop-down-selector>
+        </section>        
+        <section>
+            <label>Trans</label>
+            <drop-down-selector data-element="enRouteTransitionSelector" updateOnSelection empty-value="None"></drop-down-selector>
+        </section>
+        <section>
+            <label>Runway</label>
+            <drop-down-selector data-element="runwayTransitionSelector" updateOnSelection empty-value="None"></drop-down-selector>
+        </section>
+        <section class="load-or-activate">
+            <selectable-button data-click="loadProcedure">LOAD?</selectable-button>
+        </section>
     </template>
 
     <template id="airport-icon">
@@ -455,7 +513,7 @@
     </template>
 </script>
 
-<link rel="stylesheet" href="AS1000_PFD.css" />
+<!--<link rel="stylesheet" href="AS1000_PFD.css" />-->
 <link rel="stylesheet" href="AS1000_PFD_WT.css" />
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/DOMUtilities.js"></script>
@@ -481,7 +539,7 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AttitudeIndicator/AttitudeIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/VerticalSpeedIndicator/VerticalSpeedIndicator.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Altimeter/Altimeter.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AirspeedIndicator/AirspeedIndicator.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AirspeedIndicator/AirspeedIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/SearchField.js"></script>
@@ -539,12 +597,18 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/FlightPlan.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/NearestAirports.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/ProceduresMenu.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/Procedures/Approach.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/Procedures/Arrival.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Pages/Procedures/Departure.js"></script>
 
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Altimeter.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Annunciations.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/DataModels.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/InsetMap.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/LocalTime.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Menus.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Minimums.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/SetMinimums.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/MiniPage.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/OAT.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/References.js"></script>
@@ -557,6 +621,7 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/FlightPlan.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/Nearest.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/ProceduresMenu.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/Procedure.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/SetupMenu.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Pages/TimerReferences.js"></script>
 

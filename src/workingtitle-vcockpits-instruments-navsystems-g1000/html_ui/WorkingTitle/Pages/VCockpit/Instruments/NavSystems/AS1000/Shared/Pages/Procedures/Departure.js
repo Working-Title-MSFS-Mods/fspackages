@@ -4,6 +4,8 @@ class WT_Departure_Page_View extends WT_HTML_View {
 
         this.procedures = new Subject([]);
         this.selectedProcedure = new Subject(null);
+
+        this.onLoadProcedure = new WT_Event();
     }
     connectedCallback() {
         let template = document.getElementById('departure-page');
@@ -81,6 +83,8 @@ class WT_Departure_Page_View extends WT_HTML_View {
         this.updateSequence();
     }
     updateSequence() {
+        if (!this.elements.sequenceList)
+            return;
         if (this.selectedProcedure.value) {
             this.elements.sequenceList.updateSequence(this.selectedProcedure.value.getSequence());
         } else {
@@ -88,7 +92,7 @@ class WT_Departure_Page_View extends WT_HTML_View {
         }
     }
     loadProcedure() {
-        this.onLoadApproach.fire(this.selectedProcedure.value);
+        this.onLoadProcedure.fire(this.selectedProcedure.value);
     }
 }
 customElements.define("g1000-departure-page", WT_Departure_Page_View);

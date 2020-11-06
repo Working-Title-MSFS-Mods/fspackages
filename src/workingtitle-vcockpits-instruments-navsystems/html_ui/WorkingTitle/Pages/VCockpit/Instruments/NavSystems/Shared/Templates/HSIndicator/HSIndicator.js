@@ -304,14 +304,7 @@ class HSIndicator extends HTMLElement {
         return group;
     }
     createSvgElement(tagName, attributes = []) {
-        return this.createElement(Avionics.SVG.NS, tagName, attributes);
-    }
-    createElement(namespace, tagName, attributes) {
-        let el = document.createElementNS(namespace, tagName);
-        for (let key in attributes) {
-            el.setAttribute(key, attributes[key]);
-        }
-        return el;
+        return DOMUtilities.createElementNS(Avionics.SVG.NS, tagName, attributes);
     }
     createSVG() {
         Utils.RemoveAllChildren(this.elements.background);

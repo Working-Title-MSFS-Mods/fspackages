@@ -1,0 +1,22 @@
+g1000-oat {
+    grid-area: oat;
+    padding: 1vh;
+    display: grid;
+    grid-template-columns: 3ch auto;
+    grid-gap: 1vh;
+    background-color: $page_background_color;
+    border-top: $border_width_thin solid $border_color;
+    border-right: $border_width_thin solid $border_color;
+
+    label {
+        font-weight: bold;
+    }
+
+    .temperature {
+        text-align: right;
+    }
+
+    .units {
+        font-size: 0.8em;
+    }
+}

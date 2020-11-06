@@ -1,0 +1,33 @@
+g1000-pfd-procedures-page {
+    display: block;
+}
+
+g1000-approach-page,
+g1000-departure-page,
+g1000-arrival-page {
+    display: block;
+
+    section {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-gap: 2vh;
+        margin: 0.75vh 0;
+
+        label {
+            font-weight: bold;
+        }
+
+        &.minimums {
+            grid-template-columns: auto 1fr 6ch;
+        }
+
+        &.frequency {
+            grid-template-columns: auto auto auto;
+        }
+
+        &.load-or-activate {
+            grid-template-columns: auto 1fr auto;
+            text-align: center;
+        }
+    }
+}

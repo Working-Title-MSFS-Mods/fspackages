@@ -1,0 +1,22 @@
+g1000-local-time {
+    grid-area: lcl;
+    padding: 1vh;
+    background-color: $page_background_color;
+    border-top: $border_width_thin solid $border_color;
+    border-left: $border_width_thin solid $border_color;
+    display: grid;
+    grid-template-columns: 3ch 10ch;
+    grid-gap: 1vh;
+
+    label {
+        font-weight: bold;
+    }
+
+    .time {
+        text-align: right;
+    }
+
+    .meridiem {
+        font-size: 0.8em;
+    }
+}
