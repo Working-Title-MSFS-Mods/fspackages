@@ -265,9 +265,9 @@
 				<!-- LOWER PANEL -->
 				<NODE_ID_CKLST>CCP_PUSH_CKLST_1</NODE_ID_CKLST>
 				<NODE_ID_PASSBRIEF>CCP_PUSH_PASSBRIEF_1</NODE_ID_PASSBRIEF>
-                <NODE_ID_MEM1>CCP_PUSH_MEM1_1</NODE_ID_MEM1>
-                <NODE_ID_MEM2>CCP_PUSH_MEM2_1</NODE_ID_MEM2>
-                <NODE_ID_MEM3>CCP_PUSH_MEM3_1</NODE_ID_MEM3>
+				<NODE_ID_MEM1>CCP_PUSH_MEM1_1</NODE_ID_MEM1>
+				<NODE_ID_MEM2>CCP_PUSH_MEM2_1</NODE_ID_MEM2>
+				<NODE_ID_MEM3>CCP_PUSH_MEM3_1</NODE_ID_MEM3>
 			</UseTemplate>
 			<UseTemplate Name="WT_Detached_Control_Panel_Template">
 				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
@@ -275,14 +275,14 @@
 				<!-- LOWER PANEL -->
 				<NODE_ID_CKLST>CCP_PUSH_CKLST_2</NODE_ID_CKLST>
 				<NODE_ID_PASSBRIEF>CCP_PUSH_PASSBRIEF_2</NODE_ID_PASSBRIEF>
-                <NODE_ID_MEM1>CCP_PUSH_MEM1_2</NODE_ID_MEM1>
-                <NODE_ID_MEM2>CCP_PUSH_MEM2_2</NODE_ID_MEM2>
-                <NODE_ID_MEM3>CCP_PUSH_MEM3_2</NODE_ID_MEM3>
+				<NODE_ID_MEM1>CCP_PUSH_MEM1_2</NODE_ID_MEM1>
+				<NODE_ID_MEM2>CCP_PUSH_MEM2_2</NODE_ID_MEM2>
+				<NODE_ID_MEM3>CCP_PUSH_MEM3_2</NODE_ID_MEM3>
 			</UseTemplate>
 		</Component>
 
 		<!-- LIGHTING #############################################################################################################-->
-        <Component ID="LIGHTING">
+		<Component ID="LIGHTING">
 			<Component ID="LIGHTING_Controls">
 				<Component ID="LIGHTING_Switches">
 					<DefaultTemplateParameters>
@@ -311,9 +311,9 @@
 					<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_SeatBelt_Template">
 						<PART_ID>LIGHTING_PUSH_LIGHT_SEATBELT</PART_ID>
 					</UseTemplate>
-                    <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Safety_Template">
+					<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Safety_Template">
 						<PART_ID>LIGHTING_PUSH_LIGHT_SAFETY</PART_ID>
-                    </UseTemplate>
+					</UseTemplate>
 				</Component>
 				<Component ID="LIGHTING_Knobs">
 					<UseTemplate Name="ASOBO_LIGHTING_Knob_Panel_Template">
@@ -375,6 +375,14 @@
 				<Component ID="LIGHTING_Emissives">
 					<UseTemplate Name="ASOBO_LIGHTING_Panel_Emissive_Template">
 						<EMISSIVE_CODE>0.1</EMISSIVE_CODE>
+					</UseTemplate>
+					<UseTemplate Name="ASOBO_LIGHTING_Panel_Emissive_Template">
+						<EMISSIVE_CODE>0.1</EMISSIVE_CODE>
+						<NODE_ID>Static_1</NODE_ID>
+					</UseTemplate>
+					<UseTemplate Name="ASOBO_LIGHTING_Panel_Emissive_Template">
+						<EMISSIVE_CODE>0.1</EMISSIVE_CODE>
+						<NODE_ID>Static_2</NODE_ID>
 					</UseTemplate>
 					<UseTemplate Name="ASOBO_LIGHTING_Cabin_Emissive_Template">
 						<SIMVAR_INDEX>1</SIMVAR_INDEX>
@@ -1144,8 +1152,10 @@
 					<NODE_ID>PASSENGER_Knob_Air_2</NODE_ID>
 				</UseTemplate>
 				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
-					<NODE_ID>CCP_PUSH_CHART</NODE_ID>
-					<CONTAINER_COUNT>2</CONTAINER_COUNT>
+					<NODE_ID>CCP_PUSH_CHART_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_CHART_2</NODE_ID>
 				</UseTemplate>
 				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 					<NODE_ID>PASSENGER_Knob_Air_3</NODE_ID>
@@ -1310,6 +1320,124 @@
 				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
 					<NODE_ID>PRESSURIZATION_Push_Control</NODE_ID>
 				</UseTemplate>
+
+				<!-- PANELS -->
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_esc_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_lwrMenu_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_terrWX_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_tfc_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_sys_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Switch_zoom_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_casPage_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_eng_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_uprMenu_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_CKLST_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_PASSBRIEF_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_MEM1_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_MEM2_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_MEM3_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_Select_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_navData_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_CURSR_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_DATABASE_1</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_UNKNOWN_1</NODE_ID>
+				</UseTemplate>
+
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_esc_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_lwrMenu_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_terrWX_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_tfc_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_sys_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Switch_zoom_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_casPage_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_eng_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_uprMenu_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_CKLST_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_PASSBRIEF_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_MEM1_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_MEM2_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_MEM3_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_Select_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_Push_navData_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_CURSR_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_DATABASE_2</NODE_ID>
+				</UseTemplate>
+				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+					<NODE_ID>CCP_PUSH_UNKNOWN_2</NODE_ID>
+				</UseTemplate>
+				
 
 				<!-- FMC LEFT -->
 				<UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
