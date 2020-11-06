@@ -376,6 +376,14 @@
 					<UseTemplate Name="ASOBO_LIGHTING_Panel_Emissive_Template">
 						<EMISSIVE_CODE>0.1</EMISSIVE_CODE>
 					</UseTemplate>
+					<UseTemplate Name="ASOBO_LIGHTING_Panel_Emissive_Template">
+						<EMISSIVE_CODE>0.1</EMISSIVE_CODE>
+						<NODE_ID>Static_1</NODE_ID>
+					</UseTemplate>
+					<UseTemplate Name="ASOBO_LIGHTING_Panel_Emissive_Template">
+						<EMISSIVE_CODE>0.1</EMISSIVE_CODE>
+						<NODE_ID>Static_2</NODE_ID>
+					</UseTemplate>
 					<UseTemplate Name="ASOBO_LIGHTING_Cabin_Emissive_Template">
 						<SIMVAR_INDEX>1</SIMVAR_INDEX>
 						<NODE_ID>LIGHTING_Cabin_1_Emissive</NODE_ID>
