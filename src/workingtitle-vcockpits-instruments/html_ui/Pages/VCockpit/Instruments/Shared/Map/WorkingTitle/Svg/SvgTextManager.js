@@ -50,6 +50,7 @@ class SvgTextManager {
         this.perfModeThreshold = perfModeThreshold;
         this._lastPerformanceMode = false;
         this._lastPreventCollision = false;
+        this._lastHideAll = false;
 
         this._managedTexts = new Map();
         this._visibleTexts = new Set();
@@ -189,6 +190,16 @@ class SvgTextManager {
     }
 
     update() {
+        let hideAll = this.map.htmlRoot.isDisplayingWeatherRadar() && this.map.htmlRoot.weatherHideGPS;
+        let hideAllChanged = this._lastHideAll != hideAll;
+        this._lastHideAll = hideAll;
+        if (hideAll) {
+            if (hideAllChanged) {
+                this.hideAll();
+            }
+            return;
+        }
+
         let currentTime = Date.now() / 1000;
         let preventCollisionChanged = this._lastPreventCollision != this.map.config.preventLabelOverlap;
         this._lastPreventCollision = this.map.config.preventLabelOverlap;
@@ -228,7 +239,8 @@ class SvgTextManager {
             }
 
             let forceUpdateCollisions =
-                (preventCollisionChanged)
+                hideAllChanged
+                || preventCollisionChanged
                 || (this.isInPerformanceMode() != this._lastPerformanceMode)
                 || (this._toRemoveBuffer.size + this._toAddBuffer.size > this.addRemoveForceUpdateThreshold);
 
@@ -271,7 +283,14 @@ class SvgTextManager {
         for (let managedText of this._managedTexts.values()) {
             managedText.collisions.clear();
             managedText.mapElement.updateDraw(this.map);
-            managedText.show = true;
+            managedText.showText = true;
+        }
+    }
+
+    hideAll() {
+        for (let managedText of this._managedTexts.values()) {
+            managedText.collisions.clear();
+            managedText.showText = false;
         }
     }
 
