@@ -30,7 +30,7 @@ class CJ4_FMC_PerfInitPage {
 		
         let crzAltCell = "□□□□□";
 		let zFW = 0;
-		let paxNumber = fmc.cj4Units == 1 ? "/77[d-text]KG[s-text]" : "/170[d-text]LB[s-text]";
+		const paxLabel = WT_ConvertUnit.isMetric() ? "/77[d-text]KG[s-text]" : "/170[d-text]LB[s-text]";
 		let bow = 10280;
         if (fmc.cruiseFlightLevel) {
             crzAltCell = fmc.cruiseFlightLevel;
@@ -44,7 +44,6 @@ class CJ4_FMC_PerfInitPage {
 			zFW = fmc.zFWPilotInput;
 			bow = "-----";
 			fmc.paxNumber = "--";
-			paxNumber = "--";
 			fmc.cargoWeight = "----";
 		} else {
 			zFW = 10280 + (fmc.paxNumber * 170) + fmc.cargoWeight;
@@ -53,17 +52,18 @@ class CJ4_FMC_PerfInitPage {
         
         const unitText = WT_ConvertUnit.getWeight(1).Unit + "[s-text]";
         const zfwText = WT_ConvertUnit.getWeight(zFW).getString(0, "", "[s-text]") + (zFW > 12500 ? "[yellow]" : "");
-        const cargoWeightText =  WT_ConvertUnit.getWeight(fmc.cargoWeight).Value.toFixed(0) + "[d-text]" + unitText;
+        const cargoWeightText = fmc.zFWActive == 1 ? "----" : WT_ConvertUnit.getWeight(fmc.cargoWeight).Value.toFixed(0) + "[d-text]" + unitText;
         const fuelText = WT_ConvertUnit.getWeight(fuelQuantityTotal).Value.toFixed(0) + "[d-text]" + unitText;
         const grossWeightText = WT_ConvertUnit.getWeight(fmc.grossWeight).getString(0, "");
-        const bowText = WT_ConvertUnit.getWeight(bow).Value.toFixed(0) + "[d-text]" + unitText;
+        const bowText = fmc.zFWActive == 1 ? "-----": WT_ConvertUnit.getWeight(bow).Value.toFixed(0) + "[d-text]" + unitText;
+        const paxText = fmc.zFWActive == 1 ? "--/--" : fmc.paxNumber + paxLabel;
 
         fmc._templateRenderer.setTemplateRaw([
             [" ACT PERF INIT[blue]","",""],
             [" BOW[blue]", "CRZ ALT[blue] "],
             [bowText, "FL" + crzAltCell],
             [" PASS/WT[blue]"],
-            [" " + fmc.paxNumber + paxNumber],
+            [" " + paxText],
             [" CARGO[blue]", "= ZFW[blue] "],
             [" " + cargoWeightText, zfwText],
             [" SENSED FUEL[blue]", "= GWT[blue] "],
