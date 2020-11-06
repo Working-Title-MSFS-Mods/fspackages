@@ -81,13 +81,18 @@ class SvgTextManager {
             return;
         }
 
-        if (!this._managedTexts.has(mapElement.getLabel())) {
+        let existing = this._managedTexts.get(mapElement.getLabel());
+        if (!existing) {
             let toAdd = new ManagedText(this, mapElement);
             mapElement.updateDraw(this.map);
             this._toAddBuffer.set(toAdd.label, toAdd);
-            //this.updateOnAdd(newManagedText);
         } else {
-            this._toRemoveBuffer.delete(mapElement.getLabel());
+            if (this._toRemoveBuffer.has(mapElement.getLabel())) {
+                if (mapElement != existing) {
+                    existing.mapElement = mapElement;
+                }
+                this._toRemoveBuffer.delete(mapElement.getLabel());
+            }
         }
     }
 
@@ -99,7 +104,6 @@ class SvgTextManager {
         let toRemove = this._managedTexts.get(mapElement.getLabel());
         if (toRemove) {
             this._toRemoveBuffer.set(toRemove.label, toRemove);
-            //this.updateOnRemove(removed);
         } else {
             this._toAddBuffer.delete(mapElement.getLabel());
         }
