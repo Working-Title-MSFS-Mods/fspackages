@@ -82,7 +82,7 @@ class CJ4_PFD extends BaseAirliners {
 			
             this.map.setMode(this.mapDisplayMode);
             this.mapOverlay.setMode(this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource);
-            
+
             //Hack to correct the map compass size until we separate it out
             //fully from the default shared code
             if (this.mapDisplayMode !== this.previousMapDisplayMode || this.mapNavigationSource !== this.previousMapNavigationSource) {
@@ -358,7 +358,29 @@ class CJ4_PFD extends BaseAirliners {
                 modeChanged = true;
             }
         }
-        let baroUnits = _dict.get(CJ4_PopupMenu_Key.UNITS_PRESS);
+        const baroUnits = _dict.get(CJ4_PopupMenu_Key.UNITS_PRESS);
+        let baroSet = _dict.get(CJ4_PopupMenu_Key.BARO_SET);
+        if(baroSet === "STD"){
+            console.log("BARO SETTT");
+            const currentBaro = SimVar.GetSimVarValue("KOHLSMAN SETTING HG:2", "inches of mercury");
+            const STDMB = 29.92;
+            const difference = currentBaro - STDMB;
+
+            SimVar.SetSimVarValue("K:BAROMETRIC", "millibar", 1013.25);
+            console.log(SimVar.GetSimVarValue("K:BAROMETRIC", "millibar"));
+            SimVar.SetSimVarValue("KOHLSMAN SETTING STD", "Bool", 1);
+            SimVar.SetSimVarValue("KOHLSMAN SETTING STD", "Bool", 0);
+            // if(baroUnits === "HPA"){
+            //
+            //
+            //     SimVar.SetSimVarValue("K:BAROMETRIC", "millibar", fastToFixed(parseFloat("29.92") * 33.8639, 0));
+            // }
+            // else{
+            //     SimVar.SetSimVarValue("K:BAROMETRIC", "millibar", );
+            //     console.log("v " + SimVar.GetSimVarValue(K:BAROMETRIC", "millibar"))
+            // }
+        }
+
         SimVar.SetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool", (baroUnits == "HPA") ? 1 : 0);
         let mtrsOn = _dict.get(CJ4_PopupMenu_Key.UNITS_MTR_ALT);
         this.horizon.showMTRS((mtrsOn == "ON") ? true : false);

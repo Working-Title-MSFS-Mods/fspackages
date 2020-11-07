@@ -3385,6 +3385,7 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 27] = "SYS_SRC";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["AOA"] = 28] = "AOA";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MFD_MAP_FORMAT"] = 29] = "MFD_MAP_FORMAT";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BARO_SET"] = 30] = "BARO_SET";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["TERR_WX"] = 31] = "TERR_WX";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
@@ -3478,6 +3479,40 @@ class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
                 this.addTitle("TFC", this.textSize, 0.5);
                 this.addRadio("OFF", this.textSize, null);
                 this.addRadio("ON", this.textSize, null);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 6);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    // NOT YET IMPLEMENTED - REQUIRES SETTABLE BARO SIMVARS?
+    showBaroPage(){
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, this.previousHeaderColour);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("BARO SET", this.titleSize, 1.0, this.headerColour, true);
+            }
+            this.endSection();
+            const units = Simplane.getPressureSelectedUnits();
+            const pressure = Simplane.getPressureValue(units);
+            const baroUnits = this.dictionary.get(CJ4_PopupMenu_Key.UNITS_PRESS);
+            this.beginSection();
+            {
+                this.addRadio(pressure.toFixed(2) + " " + baroUnits, this.textSize, [CJ4_PopupMenu_Key.BARO_SET]);
+                this.addRadio("STD", this.textSize, [CJ4_PopupMenu_Key.BARO_SET]);
             }
             this.endSection();
         }
