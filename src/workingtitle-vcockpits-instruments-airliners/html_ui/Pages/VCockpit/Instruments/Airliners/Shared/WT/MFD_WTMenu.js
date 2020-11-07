@@ -852,8 +852,11 @@ var WTMenu;
                                         case "ARC":
                                             SimVar.SetSimVarValue(_item.lvar, "number", 2);
                                             break;
-                                        case "PLAN":
+                                        case "PPOS":
                                             SimVar.SetSimVarValue(_item.lvar, "number", 3);
+                                            break;
+                                        case "PLAN":
+                                            SimVar.SetSimVarValue(_item.lvar, "number", 4);
                                             break;
                                         default:
                                             SimVar.SetSimVarValue(_item.lvar, "number", 1);

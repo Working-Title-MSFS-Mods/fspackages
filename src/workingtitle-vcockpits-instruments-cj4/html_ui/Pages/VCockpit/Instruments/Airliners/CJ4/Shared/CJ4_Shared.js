@@ -2708,7 +2708,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             case Jet_NDCompass_Display.PLAN:
                 this.zoomFactor = 4.1;
                 break;
-            case Jet_NDCompass_Display.PPOS:           
+            case Jet_NDCompass_Display.PPOS:
                 this.zoomFactor = 2.8;
                 break;
             default:
@@ -2882,7 +2882,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         }
         else {
             this.map.instrument.setAttribute('style', 'display: none');
-        } 
+        }
     }
 }
 class CJ4_Map extends MapInstrumentElement {
@@ -3419,9 +3419,9 @@ class CJ4_PopupMenu_PFD extends WTMenu.Popup_Menu_Handler {
             this.beginSection();
             {
                 this.addTitle("FORMAT", this.textSize, 0.4);
-                this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT], "L:WT_PFD_MAP_FORMAT");
-                this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT], "L:WT_PFD_MAP_FORMAT");
-                this.addRadio("PPOS", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT], "L:WT_PFD_MAP_FORMAT");
+                this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_FORMAT], "L:WT_PFD_MAP_FORMAT");
+                this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_FORMAT], "L:WT_PFD_MAP_FORMAT");
+                this.addRadio("PPOS", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_FORMAT], "L:WT_PFD_MAP_FORMAT");
             }
             this.endSection();
             this.beginSection();
@@ -3805,10 +3805,10 @@ class CJ4_PopupMenu_LOWER extends WTMenu.Popup_Menu_Handler {
             this.beginSection();
             {
                 this.addTitle("FORMAT", this.textSize, 0.45);
-                this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT], "L:WT_MFD_MAP_FORMAT");
-                this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT], "L:WT_MFD_MAP_FORMAT");
-                this.addRadio("PPOS", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT], "L:WT_MFD_MAP_FORMAT");
-                this.addRadio("PLAN", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT], "L:WT_MFD_MAP_FORMAT");
+                this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MFD_MAP_FORMAT], "L:WT_MFD_MAP_FORMAT");
+                this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MFD_MAP_FORMAT], "L:WT_MFD_MAP_FORMAT");
+                this.addRadio("PPOS", this.textSize, [CJ4_PopupMenu_Key.MFD_MAP_FORMAT], "L:WT_MFD_MAP_FORMAT");
+                this.addRadio("PLAN", this.textSize, [CJ4_PopupMenu_Key.MFD_MAP_FORMAT], "L:WT_MFD_MAP_FORMAT");
                 this.addRadio("GWX", this.textSize, null);
                 this.addRadio("TCAS", this.textSize, null);
             }
@@ -3860,7 +3860,7 @@ class CJ4_PopupMenu_LOWER extends WTMenu.Popup_Menu_Handler {
                 this.addTitle("FORMAT", this.textSize, 0.4);
                 this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_FORMAT], "L:WT_PFD_MAP_FORMAT");
                 this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_FORMAT],"L:WT_PFD_MAP_FORMAT");
-                this.addRadio("PPOS", this.textSize, null);
+                this.addRadio("PPOS", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_FORMAT],"L:WT_PFD_MAP_FORMAT");
             }
             this.endSection();
             this.beginSection();
@@ -4166,7 +4166,7 @@ class CJ4_PopupMenu_CCP extends WTMenu.Popup_Menu_Handler {
                 this.addTitle("FORMAT", this.textSize, 0.4);
                 this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_FORMAT], "L:WT_PFD_MAP_FORMAT");
                 this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_FORMAT],"L:WT_PFD_MAP_FORMAT");
-                this.addRadio("PPOS", this.textSize, null);
+                this.addRadio("PPOS", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_FORMAT],"L:WT_PFD_MAP_FORMAT");
             }
             this.endSection();
             this.beginSection();

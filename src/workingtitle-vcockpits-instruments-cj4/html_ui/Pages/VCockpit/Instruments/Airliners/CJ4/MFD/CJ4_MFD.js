@@ -148,24 +148,7 @@ class CJ4_MFD extends BaseAirliners {
 
                 if (this.showTerrain) {
                     this.map.showMap(true);
-    
-                    if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {               
-                        this.map.showRoute(false);
-                        this.map.map.instrument.setAttribute('show-airplane', 'false');
-                    }
-                    else {
-                        this.map.showRoute(true);
-                        this.map.map.instrument.setAttribute('show-airplane', 'true');
-                    }
-    
-                    this.map.showWeather(false);
-                    this.mapOverlay.showWeather(false);
-                    this.map.showTerrain(true);
-                    this.mapOverlay.showTerrain(true);
-                }
-                else if (this.showWeather) {
-                    this.map.showMap(true);
-    
+
                     if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {
                         this.map.showRoute(false);
                         this.map.map.instrument.setAttribute('show-airplane', 'false');
@@ -174,7 +157,24 @@ class CJ4_MFD extends BaseAirliners {
                         this.map.showRoute(true);
                         this.map.map.instrument.setAttribute('show-airplane', 'true');
                     }
-    
+
+                    this.map.showWeather(false);
+                    this.mapOverlay.showWeather(false);
+                    this.map.showTerrain(true);
+                    this.mapOverlay.showTerrain(true);
+                }
+                else if (this.showWeather) {
+                    this.map.showMap(true);
+
+                    if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {
+                        this.map.showRoute(false);
+                        this.map.map.instrument.setAttribute('show-airplane', 'false');
+                    }
+                    else {
+                        this.map.showRoute(true);
+                        this.map.map.instrument.setAttribute('show-airplane', 'true');
+                    }
+
                     this.map.showTerrain(false);
                     this.mapOverlay.showTerrain(false);
                     this.map.showWeather(true);
@@ -184,16 +184,16 @@ class CJ4_MFD extends BaseAirliners {
                     if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {
                         this.map.showMap(false);
                         this.map.showRoute(false);
-    
+
                         this.map.map.instrument.setAttribute('show-airplane', 'false');
                     }
                     else {
                         this.map.showMap(true);
                         this.map.showRoute(true);
-    
+
                         this.map.map.instrument.setAttribute('show-airplane', 'true');
                     }
-    
+
                     this.map.showTerrain(false);
                     this.mapOverlay.showTerrain(false);
                     this.map.showWeather(false);
@@ -549,6 +549,8 @@ class CJ4_MFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ROSE");
         else if (PFDMapFormat == 2)
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ARC");
+        else
+            _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "PPOS");
 
         if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1)
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "VOR1");
