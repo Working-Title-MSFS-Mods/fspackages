@@ -3,11 +3,13 @@ class WT_Altimeter_Model {
      * @param {NavSystem} gps 
      * @param {WT_Barometric_Pressure} barometricPressure 
      * @param {WT_Minimums} minimums
+     * @param {WT_Radio_Altimeter} radioAltimeter
      */
-    constructor(gps, barometricPressure, minimums) {
+    constructor(gps, barometricPressure, minimums, radioAltimeter) {
         this.gps = gps;
         this.barometricPressure = barometricPressure;
         this.minimums = minimums;
+        this.radioAltimeter = radioAltimeter;
 
         this.lastPressure = -10000;
         this.lastSelectedAltitude = -10000;
@@ -15,9 +17,9 @@ class WT_Altimeter_Model {
         this.blinkTime = 0;
         this.alertState = 0;
         this.altimeterIndex = 1;
-        this.readyToSet = false;
 
         this.altitude = new Subject(0);
+        this.radarAltitude = new Subject(null);
         this.vspeed = new Subject(0);
         this.referenceVSpeed = new Subject(0);
         this.referenceAltitude = new Subject(0);
@@ -64,6 +66,14 @@ class WT_Altimeter_Model {
                 }
                 break;
         }
+    }
+    updateRadarAltitude() {
+        if (this.radioAltimeter.isAvailable) {
+            this.radarAltitude.value = this.radioAltimeter.getAltitude();
+        }
+    }
+    updatePressure() {
+        this.pressure.value = this.barometricPressure.getPressure();
     }
     update(dt) {
         const altitude = SimVar.GetSimVarValue("INDICATED ALTITUDE:" + this.altimeterIndex, "feet");
@@ -136,6 +146,7 @@ class WT_Altimeter_Model {
             }
         }
         this.updateVdi();
-        this.pressure.value = SimVar.GetSimVarValue(`KOHLSMAN SETTING HG:${this.altimeterIndex}`, "inches of mercury");
+        this.updateRadarAltitude();
+        this.updatePressure();
     }
 }

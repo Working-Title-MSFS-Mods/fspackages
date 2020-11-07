@@ -45,6 +45,11 @@ class Altimeter extends HTMLElement {
         });
 
         model.altitude.subscribe(altitude => this.setAttribute("altitude", altitude));
+        model.radarAltitude.subscribe(altitude => {
+            if (altitude !== null) {
+                this.setAttribute("radar-altitude", altitude);
+            }
+        });
         model.vspeed.subscribe(vspeed => this.setAttribute("vspeed", vspeed));
         model.referenceVSpeed.subscribe(speed => this.setAttribute("reference-vspeed", speed));
         model.referenceAltitude.subscribe(altitude => this.setAttribute("reference-altitude", altitude));
@@ -365,7 +370,6 @@ class Altimeter extends HTMLElement {
                         graduationSegments.push(...this.getRectSegments(0, center - 2 + i * graduationSize + j * (graduationSize / 5), 15, 4), "Z");
                     }
                 }
-                console.log(graduationSegments.join(" "));
                 const graduationLines = this.createSvgElement("path", {
                     d: graduationSegments.join(" "),
                     fill: "#fff",
@@ -392,16 +396,21 @@ class Altimeter extends HTMLElement {
                 groundLineSvg.setAttribute("height", "600");
                 groundLineSvg.setAttribute("viewBox", "0 0 200 600");
                 this.groundLine.appendChild(groundLineSvg);
+                const lines = [];
                 for (let i = -5; i <= 25; i++) {
-                    let line = this.createSvgElement("rect");
-                    line.setAttribute("fill", "white");
-                    line.setAttribute("x", "0");
-                    line.setAttribute("y", (-50 + i * 30).toString());
-                    line.setAttribute("width", "200");
-                    line.setAttribute("height", "4");
-                    line.setAttribute("transform", "skewY(-30)");
-                    groundLineSvg.appendChild(line);
+                    const y = -50 + i * 30;
+                    const lineSegments = [];
+                    lineSegments.push({ x: 0, y: y });
+                    lineSegments.push({ x: 200, y: y - 130 });
+                    lineSegments.push({ x: 200, y: y - 126 });
+                    lineSegments.push({ x: 0, y: y + 4 });
+                    lines.push(lineSegments.map((segment, i) => `${i == 0 ? "M" : "L"}${segment.x} ${segment.y}`), "Z");
                 }
+                const linesPath = this.createSvgElement("path", {
+                    d: lines.join(" "),
+                    fill: "white"
+                });
+                groundLineSvg.appendChild(linesPath);
             }
 
             this.bugsGroup = this.createSvgElement("g");
@@ -627,20 +636,6 @@ class Altimeter extends HTMLElement {
                     }
                 }
                 break;
-
-            /*case "pressure":
-                this.lastPressure = newValue;
-                newValue = this.baroMode;*/
-            /* fall through to update the HTML text */
-            /*case "baro-mode":
-            if (newValue == "HPA") {
-                this.baroMode = "HPA";
-                this.baroText.textContent = fastToFixed(parseFloat(this.lastPressure) * 33.8639, 0) + "HPA";
-            } else {
-                this.baroMode = "IN";
-                this.baroText.textContent = fastToFixed(parseFloat(this.lastPressure), 2) + "IN";
-            }
-            WTDataStore.set("Alt.BaroMode", this.baroMode);*/
             case "vspeed":
                 let vSpeed = parseFloat(newValue);
                 if (this.compactVs) {

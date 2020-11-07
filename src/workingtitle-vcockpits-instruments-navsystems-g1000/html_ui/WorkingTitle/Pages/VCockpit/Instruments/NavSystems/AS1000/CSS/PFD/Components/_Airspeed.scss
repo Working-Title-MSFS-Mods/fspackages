@@ -1,5 +1,4 @@
 glasscockpit-airspeed-indicator {
-    transform: rotateX(0);
     position: absolute;
     top: 4%;
     height: 57%;
@@ -9,6 +8,15 @@ glasscockpit-airspeed-indicator {
     font-weight: bold;
 
     $stroke_width: 3px;
+
+    > svg {
+        transform: rotateX(0);
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+    }
 
     .background {
         fill: rgba(#333, 0.5);

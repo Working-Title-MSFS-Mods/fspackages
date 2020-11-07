@@ -31,6 +31,9 @@ class WT_Barometric_Pressure {
     decrementBaro() {
         SimVar.SetSimVarValue("K:KOHLSMAN_DEC", "number", this.altimeterIndex);
     }
+    getPressure() {
+        return SimVar.GetSimVarValue(`KOHLSMAN SETTING HG:${this.altimeterIndex}`, "inches of mercury");
+    }
 }
 WT_Barometric_Pressure.IN_MG = "IN";
 WT_Barometric_Pressure.HPA = "HPA";

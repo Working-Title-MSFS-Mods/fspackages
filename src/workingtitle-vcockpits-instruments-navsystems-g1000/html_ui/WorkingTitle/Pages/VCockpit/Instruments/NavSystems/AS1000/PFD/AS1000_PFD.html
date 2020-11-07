@@ -194,14 +194,10 @@
                 <div class="value" data-element="value"></div>
             </g1000-minimums>
 
-            <div id="RadarAltitude" state="Inactive">
-                <div id="RA_Title">
-                    RA
-                </div>
-                <div id="RA_Value">
-                    1080
-                </div>
-            </div>
+            <g1000-radio-altimeter>
+                <label>RA</label>
+                <div data-element="altitude"></div>
+            </g1000-radio-altimeter>
 
             <div id="Warnings" state="Hidden">
                 <span id="WarningsContent">PULL UP</span>
@@ -582,6 +578,7 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/NavFrequencies.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Components/PageMenu.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Brightness.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/DataModels.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/NearestWaypoints.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Procedures/Procedures.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Procedures/Arrival.js"></script>
@@ -589,6 +586,8 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/Procedures/Departure.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/WaypointQuickSelect.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/Navigation/DirectTo.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/PlaneState.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Logic/Sound.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Settings.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Observables.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UnitChooser.js"></script>
@@ -608,6 +607,7 @@
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/LocalTime.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Menus.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/Minimums.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/RadioAltimeter.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/SetMinimums.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/MiniPage.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Components/OAT.js"></script>

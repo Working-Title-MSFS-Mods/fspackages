@@ -209,6 +209,9 @@ class AS1000_PFD extends BaseAS1000 {
         const d = new WT_Dependency_Container();
 
         d.register("inputStack", d => new Input_Stack());
+        d.register("planeState", d => new WT_Plane_State());
+        d.register("radioAltimeter", d => new WT_Radio_Altimeter());
+        d.register("sound", d => new WT_Sound());
         d.register("softKeyController", d => this.querySelector("g1000-soft-key-menu"));
         d.register("settings", d => {
             const settings = new WT_Settings("g36", WT_Default_Settings.base);
@@ -289,7 +292,7 @@ class AS1000_PFD extends BaseAS1000 {
         });
         d.register("hsiInput", d => new HSI_Input_Layer(d.hsiModel))
         d.register("hsiModel", d => new HSIIndicatorModel(d.syntheticVision));
-        d.register("altimeterModel", d => new WT_Altimeter_Model(this, d.barometricPressure, d.minimums));
+        d.register("altimeterModel", d => new WT_Altimeter_Model(this, d.barometricPressure, d.minimums, d.radioAltimeter));
         d.register("airspeedModel", d => new WT_Airspeed_Model(d.airspeedReferences));
 
         d.register("navBoxModel", d => new AS1000_PFD_Nav_Box_Model(d.unitChooser, d.flightPlanManager));
@@ -306,15 +309,17 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("windModel", d => new WT_PFD_Wind_Model());
         d.register("setMinimumsModel", d => new WT_Set_Minimums_Model(d.minimums));
         d.register("minimumsModel", d => new WT_Minimums_Model(d.minimums));
+        d.register("radioAltimeterModel", d => new WT_Radio_Altimeter_Model(d.radioAltimeter));
 
-        d.register("transponderMenu", d => new WT_PFD_Transponder_Menu(this, d.transponderModel));
-        d.register("transponderCodeMenu", d => new WT_PFD_Transponder_Code_Menu(this, d.transponderModel));
-        d.register("mainMenu", d => new WT_PFD_Main_Menu(this, d.miniPageController, d.hsiModel));
-        d.register("pfdMenu", d => new WT_PFD_PFD_Menu(this, d.hsiModel, d.barometricPressure));
-        d.register("windMenu", d => new WT_PFD_Wind_Menu(this, d.windModel, d.alertsKey));
-        d.register("insetMapMenu", d => new WT_PFD_Inset_Map_Menu(this, d.insetMap, d.alertsKey));
-        d.register("syntheticVisionMenu", d => new WT_PFD_Synthetic_Vision_Menu(this, d.syntheticVision, d.alertsKey));
-        d.register("altUnitMenu", d => new WT_PFD_Alt_Unit_Menu(this, d.barometricPressure));
+        d.register("menuHandler", d => new WT_PFD_Menu_Handler(d.softKeyController, d.alertsKey));
+        d.register("transponderMenu", d => new WT_PFD_Transponder_Menu(d.menuHandler, d.transponderModel, d.transponderCodeMenu));
+        d.register("transponderCodeMenu", d => new WT_PFD_Transponder_Code_Menu(d.menuHandler, d.transponderModel));
+        d.register("mainMenu", d => new WT_PFD_Main_Menu(d.menuHandler, d.miniPageController, d.hsiModel, d.insetMapMenu, d.pfdMenu, d.transponderMenu));
+        d.register("pfdMenu", d => new WT_PFD_PFD_Menu(d.menuHandler, d.hsiModel, d.barometricPressure, d.syntheticVisionMenu, d.altUnitMenu, d.windMenu));
+        d.register("windMenu", d => new WT_PFD_Wind_Menu(d.menuHandler, d.windModel, d.alertsKey));
+        d.register("insetMapMenu", d => new WT_PFD_Inset_Map_Menu(d.menuHandler, d.insetMap, d.alertsKey));
+        d.register("syntheticVisionMenu", d => new WT_PFD_Synthetic_Vision_Menu(d.menuHandler, d.syntheticVision, d.alertsKey));
+        d.register("altUnitMenu", d => new WT_PFD_Alt_Unit_Menu(d.menuHandler, d.barometricPressure));
 
         d.register("insetMap", d => new WT_PFD_Inset_Map(d.map));
         d.register("map", d => {
@@ -390,11 +395,12 @@ class AS1000_PFD extends BaseAS1000 {
             this._pfdConfigDone = true;
         });
 
-        this.showMainMenu();
+        const menuHandler = this.dependencies.menuHandler;
+        menuHandler.goToMenu(this.dependencies.mainMenu);
     }
     onXMLConfigLoaded(_xml) {
         super.onXMLConfigLoaded(_xml);
-        const annuncationsModel = new WT_Annunciations_Model(this.xmlConfig);
+        const annuncationsModel = new WT_Annunciations_Model(this.xmlConfig, this.dependencies.sound, this.dependencies.planeState);
         this.initModelView(annuncationsModel, "g1000-annunciations");
         this.alertsKey.setAnnunciationsModel(annuncationsModel);
 
@@ -403,8 +409,13 @@ class AS1000_PFD extends BaseAS1000 {
             const hasRadarAltitude = raElem[0].textContent == "True";
             if (hasRadarAltitude) {
                 this.dependencies.minimums.setModes([0, 1, 3]);
+                this.dependencies.radioAltimeter.isAvailable = true;
             }
         }
+        this.dependencies.radioAltimeter.isAvailable = true;
+    }
+    onSoundEnd(_event) {
+        this.dependencies.sound.onSoundEnd(_event);
     }
     initViews(dependencies) {
         this.initModelView(dependencies.attitudeModel, "glasscockpit-attitude-indicator");
@@ -413,6 +424,7 @@ class AS1000_PFD extends BaseAS1000 {
         this.initModelView(dependencies.altimeterModel, "glasscockpit-altimeter");
         this.initModelView(dependencies.windModel, "g1000-pfd-wind");
         this.initModelView(dependencies.minimumsModel, "g1000-minimums");
+        this.initModelView(dependencies.radioAltimeterModel, "g1000-radio-altimeter");
 
         this.initModelView(dependencies.navBoxModel, "g1000-nav-box");
         this.initModelView(dependencies.comFrequenciesModel, "g1000-com-frequencies");
@@ -436,38 +448,11 @@ class AS1000_PFD extends BaseAS1000 {
         if (model.update)
             this.updatables.push(model);
     }
-    showTransponderMenu() {
-        this.softKeyController.setMenu(this.dependencies.transponderMenu);
-    }
-    showTransponderCodeMenu() {
-        this.softKeyController.setMenu(this.dependencies.transponderCodeMenu);
-    }
-    showMainMenu() {
-        this.softKeyController.setMenu(this.dependencies.mainMenu);
-    }
-    showPfdMenu() {
-        this.softKeyController.setMenu(this.dependencies.pfdMenu);
-    }
-    showWindMenu() {
-        this.softKeyController.setMenu(this.dependencies.windMenu);
-    }
-    showInsetMapMenu() {
-        this.softKeyController.setMenu(this.dependencies.insetMapMenu);
-    }
-    showSyntheticVisionMenu() {
-        this.softKeyController.setMenu(this.dependencies.syntheticVisionMenu);
-    }
-    showAltUnitMenu() {
-        this.softKeyController.setMenu(this.dependencies.altUnitMenu);
-    }
     showFlightPlan() {
         this.miniPageController.showPage(this.dependencies.flightPlanView);
     }
     showProcedures() {
         this.miniPageController.showPage(this.dependencies.proceduresMenuView);
-    }
-    showApproachProcedures() {
-
     }
     async pfdConfig() {
         let loader = new WTConfigLoader(this._xmlConfigPath);
@@ -535,6 +520,14 @@ class AS1000_PFD extends BaseAS1000 {
                 }
             }
         }
+    }
+    onShutDown() {
+        super.onShutDown();
+        this.dependencies.planeState.shutDown();
+    }
+    onPowerOn() {
+        super.onPowerOn();
+        this.dependencies.planeState.powerOn();
     }
 }
 class AS1000_PFD_MainPage extends NavSystemPage {

@@ -50,6 +50,9 @@ class Input_Layer {
     onJoystickLeft(inputStack) { return false; };
     onJoystickRight(inputStack) { return false; };
 
+    onMasterCautionPush(inputStack) { return false; }
+    onMasterWarningPush(inputStack) { return false; }
+
     processEvent(_event, inputStack) {
         switch (_event) {
             case "FMS_Lower_INC":
@@ -165,6 +168,12 @@ class Input_Layer {
                 return this.onJoystickLeft(inputStack);
             case "JOYSTICK_RIGHT":
                 return this.onJoystickRight(inputStack);
+
+            case "Master_Caution_Push":
+                return this.onMasterCautionPush(inputStack);
+            case "Master_Warning_Push":
+                return this.onMasterWarningPush(inputStack);
+
         }
         return false;
     }

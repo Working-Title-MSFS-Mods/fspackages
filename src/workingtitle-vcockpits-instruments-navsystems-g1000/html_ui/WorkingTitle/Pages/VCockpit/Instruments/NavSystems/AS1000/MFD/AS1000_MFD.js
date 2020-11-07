@@ -555,12 +555,13 @@ class AS1000_MFD extends BaseAS1000 {
     disconnectedCallback() {
     }
     computeEvent(_event) {
+        if (_event == "SOFTKEYS_12") {
+            this.acknowledgeInit();
+        }
+
         if (this.isBootProcedureComplete()) {
             let r = this.inputStack.processEvent(_event);
             if (r === false) {
-                for (let i = 0; i < this.IndependentsElements.length; i++) {
-                    this.IndependentsElements[i].onEvent(_event);
-                }
                 switch (_event) {
                     case "ActiveFPL_Modified":
                         this.currFlightPlan.FillWithCurrentFP();

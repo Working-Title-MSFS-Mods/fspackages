@@ -7,6 +7,7 @@ g1000-annunciations {
     background: #000;
     border: $border_width_thin solid $border_color;
     font-family: $font_family_mono;
+    display: none;
 
     &[state="visible"] {
         display: block;

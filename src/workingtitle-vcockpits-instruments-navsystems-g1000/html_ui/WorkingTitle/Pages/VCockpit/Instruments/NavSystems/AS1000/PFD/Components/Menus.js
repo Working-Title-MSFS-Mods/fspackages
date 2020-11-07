@@ -1,48 +1,75 @@
+class WT_PFD_Menu_Handler {
+    /**
+     * @param {WT_Soft_Key_Controller} softKeyController 
+     * @param {WT_PFD_Alert_Key} alertsKey 
+     */
+    constructor(softKeyController, alertsKey) {
+        this.softKeyController = softKeyController;
+        this.alertsKey = alertsKey;
+
+        this.stack = [];
+        this.backKey = new WT_Soft_Key("BACK", this.back.bind(this));
+    }
+    goToMenu(menu) {
+        this.softKeyController.setMenu(menu);
+        this.stack.push(menu);
+    }
+    back() {
+        this.stack.pop();
+        const menu = this.stack[this.stack.length - 1];
+        if (menu) {
+            this.softKeyController.setMenu(menu);
+        }
+    }
+}
+
 class WT_PFD_Main_Menu extends WT_Soft_Key_Menu {
     /**
-     * @param {AS1000_PFD} pfd 
+     * @param {WT_PFD_Menu_Handler} menus 
      * @param {WT_PFD_Mini_Page_Controller} miniPageController 
      * @param {HSIIndicatorModel} hsiModel 
+     * @param {WT_PFD_Inset_Map_Menu} insetMapMenu 
+     * @param {WT_PFD_PFD_Menu} pfdMenu 
+     * @param {WT_PFD_Transponder_Menu} transponderMenu 
      */
-    constructor(pfd, miniPageController, hsiModel) {
+    constructor(menus, miniPageController, hsiModel, insetMapMenu, pfdMenu, transponderMenu) {
         super(false);
         this.addSoftKey(1, new WT_Soft_Key("TEST", () => {
-            OpenBrowser("https://www.fimfiction.net");
             Coherent.trigger("AP_ALT_VAL_SET", 4200);
             Coherent.trigger("AP_VS_VAL_SET", 300);
             Coherent.trigger("AP_HDG_VAL_SET", 180);
             //SimVar.SetSimVarValue("K:AP_ALT_VAR_SET_ENGLISH", "feet", -500);
             //Coherent.call("AP_ALT_VAR_SET_ENGLISH", 0, -1000, false);
         }));
-        this.addSoftKey(2, new WT_Soft_Key("INSET", () => pfd.showInsetMapMenu()));
-        this.addSoftKey(4, new WT_Soft_Key("PFD", () => pfd.showPfdMenu()));
+        this.addSoftKey(2, new WT_Soft_Key("INSET", () => menus.goToMenu(insetMapMenu)));
+        this.addSoftKey(4, new WT_Soft_Key("PFD", () => menus.goToMenu(pfdMenu)));
         this.addSoftKey(5, new WT_Soft_Key("OBS"));
         this.addSoftKey(6, new WT_Soft_Key("CDI", () => hsiModel.cycleCdi()));
         this.addSoftKey(7, new WT_Soft_Key("DME", () => miniPageController.showAdfDme()));
-        this.addSoftKey(8, new WT_Soft_Key("XPDR", () => pfd.showTransponderMenu()));
+        this.addSoftKey(8, new WT_Soft_Key("XPDR", () => menus.goToMenu(transponderMenu)));
         this.addSoftKey(9, new WT_Soft_Key("IDENT"));
         this.addSoftKey(10, new WT_Soft_Key("TMR/REF", () => miniPageController.showTimerReferences()));
         this.addSoftKey(11, new WT_Soft_Key("NRST", () => miniPageController.showNearest()));
-        this.addSoftKey(12, pfd.alertsKey);
+        this.addSoftKey(12, menus.alertsKey);
     }
 }
 
 class WT_PFD_Inset_Map_Menu extends WT_Soft_Key_Menu {
     /**
-     * @param {AS1000_PFD} pfd 
+     * @param {WT_PFD_Menu_Handler} menus 
      * @param {WT_PFD_Inset_Map} map
      * @param {WT_PFD_Alert_Key} alertsKey
      */
-    constructor(pfd, map, alertsKey) {
+    constructor(menus, map, alertsKey) {
         super(false);
 
         this.map = map;
         this.addSoftKey(1, new WT_Soft_Key("OFF", () => {
             map.disable();
-            pfd.showMainMenu();
+            menus.back();
         }));
 
-        this.addSoftKey(11, new WT_Soft_Key("BACK", pfd.showMainMenu.bind(pfd)));
+        this.addSoftKey(11, menus.backKey);
         this.addSoftKey(12, alertsKey);
     }
     activate() {
@@ -52,33 +79,36 @@ class WT_PFD_Inset_Map_Menu extends WT_Soft_Key_Menu {
 
 class WT_PFD_PFD_Menu extends WT_Soft_Key_Menu {
     /**
-     * @param {AS1000_PFD} pfd 
+     * @param {WT_PFD_Menu_Handler} menus 
      * @param {HSIIndicatorModel} hsiModel
      * @param {WT_Barometric_Pressure} barometricPressure
+     * @param {WT_PFD_Synthetic_Vision_Menu} syntheticVisionMenu
+     * @param {WT_PFD_Alt_Unit_Menu} altUnitMenu
+     * @param {WT_PFD_Wind_Menu} windMenu
      */
-    constructor(pfd, hsiModel, barometricPressure) {
+    constructor(menus, hsiModel, barometricPressure, syntheticVisionMenu, altUnitMenu, windMenu) {
         super(false);
-        this.addSoftKey(1, new WT_Soft_Key("SYN VIS", pfd.showSyntheticVisionMenu.bind(pfd)));
+        this.addSoftKey(1, new WT_Soft_Key("SYN VIS", () => menus.goToMenu(syntheticVisionMenu)));
         this.addSoftKey(2, new WT_Soft_Key("DFLTS"));
-        this.addSoftKey(3, new WT_Soft_Key("WIND", () => pfd.showWindMenu()));
+        this.addSoftKey(3, new WT_Soft_Key("WIND", () => menus.goToMenu(windMenu)));
         this.addSoftKey(4, new WT_Soft_Key("DME", hsiModel.toggleDme.bind(hsiModel)));
         this.addSoftKey(5, new WT_Soft_Key("BRG1", hsiModel.cycleBearing.bind(hsiModel, 1)));
         this.addSoftKey(6, new WT_Soft_Key("HSI FRMT"));
         this.addSoftKey(7, new WT_Soft_Key("BRG2", hsiModel.cycleBearing.bind(hsiModel, 2)));
-        this.addSoftKey(9, new WT_Soft_Key("ALT UNIT", pfd.showAltUnitMenu.bind(pfd)));
+        this.addSoftKey(9, new WT_Soft_Key("ALT UNIT", () => menus.goToMenu(altUnitMenu)));
         this.addSoftKey(10, new WT_Soft_Key("STD BARO", () => barometricPressure.setStandard()));
-        this.addSoftKey(11, new WT_Soft_Key("BACK", pfd.showMainMenu.bind(pfd)));
-        this.addSoftKey(12, pfd.alertsKey);
+        this.addSoftKey(11, menus.backKey);
+        this.addSoftKey(12, menus.alertsKey);
     }
 }
 
 class WT_PFD_Wind_Menu extends WT_Soft_Key_Menu {
     /**
-     * @param {AS1000_PFD} pfd 
+     * @param {WT_PFD_Menu_Handler} menus 
      * @param {WT_PFD_Wind_Model} wind
      * @param {WT_PFD_Alert_Key} alertsKey
      */
-    constructor(pfd, wind, alertsKey) {
+    constructor(menus, wind, alertsKey) {
         super(false);
         this.mode1 = new WT_Soft_Key("OPTN 1", () => wind.setMode(1));
         this.mode2 = new WT_Soft_Key("OPTN 2", () => wind.setMode(2));
@@ -94,18 +124,18 @@ class WT_PFD_Wind_Menu extends WT_Soft_Key_Menu {
         this.addSoftKey(4, this.mode2);
         this.addSoftKey(5, this.mode3);
         this.addSoftKey(6, this.off);
-        this.addSoftKey(11, new WT_Soft_Key("BACK", () => pfd.showPfdMenu()));
+        this.addSoftKey(11, menus.backKey);
         this.addSoftKey(12, alertsKey);
     }
 }
 
 class WT_PFD_Synthetic_Vision_Menu extends WT_Soft_Key_Menu {
     /**
-     * @param {AS1000_PFD} pfd 
+     * @param {WT_PFD_Menu_Handler} menus 
      * @param {WT_Synthetic_Vision} syntheticVision
      * @param {WT_PFD_Alert_Key} alertsKey
      */
-    constructor(pfd, syntheticVision, alertsKey) {
+    constructor(menus, syntheticVision, alertsKey) {
         super(false);
         this.syntheticVision = syntheticVision;
         this.pathway = new WT_Soft_Key("PATHWAY");
@@ -116,7 +146,7 @@ class WT_PFD_Synthetic_Vision_Menu extends WT_Soft_Key_Menu {
         this.addSoftKey(2, this.synVis);
         this.addSoftKey(3, this.horizonHeading);
         this.addSoftKey(4, this.airportSigns);
-        this.addSoftKey(11, new WT_Soft_Key("BACK", pfd.showPfdMenu.bind(pfd)));
+        this.addSoftKey(11, menus.backKey);
         this.addSoftKey(12, alertsKey);
 
         this.subscriptions = new Subscriptions();
@@ -139,17 +169,17 @@ class WT_PFD_Synthetic_Vision_Menu extends WT_Soft_Key_Menu {
 
 class WT_PFD_Alt_Unit_Menu extends WT_Soft_Key_Menu {
     /**
-     * @param {AS1000_PFD} pfd 
+     * @param {WT_PFD_Menu_Handler} menus 
      * @param {WT_Barometric_Pressure} barometricPressure
      */
-    constructor(pfd, barometricPressure) {
+    constructor(menus, barometricPressure) {
         super(false);
         this.barometricPressure = barometricPressure;
         this.addSoftKey(6, new WT_Soft_Key("METERS"));
         this.in = this.addSoftKey(8, new WT_Soft_Key("IN", () => barometricPressure.setInMG()));
         this.hpa = this.addSoftKey(9, new WT_Soft_Key("HPA", () => barometricPressure.setHpa()));
-        this.addSoftKey(11, new WT_Soft_Key("BACK", pfd.showPfdMenu.bind(pfd)));
-        this.addSoftKey(12, pfd.alertsKey);
+        this.addSoftKey(11, menus.backKey);
+        this.addSoftKey(12, menus.alertsKey);
     }
     activate() {
         this.altUnitUnsubscribe = this.barometricPressure.altUnit.subscribe(unit => {
@@ -165,9 +195,11 @@ class WT_PFD_Alt_Unit_Menu extends WT_Soft_Key_Menu {
 
 class WT_PFD_Transponder_Menu extends WT_Soft_Key_Menu {
     /**
-     * @param {AS1000_PFD} pfd 
+     * @param {WT_PFD_Menu_Handler} menus 
+     * @param {WT_Transponder_Model} transponderModel 
+     * @param {WT_PFD_Transponder_Code_Menu} transponderCodeMenu 
      */
-    constructor(pfd, transponderModel) {
+    constructor(menus, transponderModel, transponderCodeMenu) {
         super(false);
         this.transponderModel = transponderModel;
         this.stby = new WT_Soft_Key("STBY", () => transponderModel.setMode(1));
@@ -179,10 +211,10 @@ class WT_PFD_Transponder_Menu extends WT_Soft_Key_Menu {
         this.addSoftKey(5, this.alt);
         this.addSoftKey(6, this.gnd);
         this.addSoftKey(7, new WT_Soft_Key("VFR", transponderModel.setVfrSquawk.bind(transponderModel)));
-        this.addSoftKey(8, new WT_Soft_Key("CODE", pfd.showTransponderCodeMenu.bind(pfd)));
+        this.addSoftKey(8, new WT_Soft_Key("CODE", () => menus.goToMenu(transponderCodeMenu)));
         this.addSoftKey(9, new WT_Soft_Key("IDENT"));
-        this.addSoftKey(11, new WT_Soft_Key("BACK", pfd.showMainMenu.bind(pfd)));
-        this.addSoftKey(12, pfd.alertsKey);
+        this.addSoftKey(11, menus.backKey);
+        this.addSoftKey(12, menus.alertsKey);
 
     }
     activate() {
@@ -201,11 +233,11 @@ class WT_PFD_Transponder_Menu extends WT_Soft_Key_Menu {
 
 class WT_PFD_Transponder_Code_Menu extends WT_Soft_Key_Menu {
     /**
-     * @param {AS1000_PFD} pfd 
+     * @param {WT_PFD_Menu_Handler} menus 
      */
-    constructor(pfd, transponderModel) {
+    constructor(menus, transponderModel) {
         super(false);
-        this.pfd = pfd;
+        this.menus = menus;
         this.transponderModel = transponderModel;
         this.transponderTempCode = "";
         for (let i = 0; i <= 7; i++) {
@@ -213,8 +245,8 @@ class WT_PFD_Transponder_Code_Menu extends WT_Soft_Key_Menu {
         }
         this.addSoftKey(9, new WT_Soft_Key("IDENT"));
         this.addSoftKey(10, new WT_Soft_Key("BKSP", this.backspace.bind(this)));
-        this.addSoftKey(11, new WT_Soft_Key("BACK", pfd.showMainMenu.bind(pfd)));
-        this.addSoftKey(12, pfd.alertsKey);
+        this.addSoftKey(11, menus.backKey);
+        this.addSoftKey(12, menus.alertsKey);
     }
     backspace() {
         if (this.transponderTempCode.length > 0) {
@@ -227,7 +259,7 @@ class WT_PFD_Transponder_Code_Menu extends WT_Soft_Key_Menu {
         this.transponderModel.setEditCode(this.transponderTempCode);
         if (this.transponderTempCode.length == 4) {
             this.transponderModel.setSquawk(this.transponderTempCode);
-            this.pfd.showMainMenu();
+            this.menus.back();
         }
     };
     deactivate() {

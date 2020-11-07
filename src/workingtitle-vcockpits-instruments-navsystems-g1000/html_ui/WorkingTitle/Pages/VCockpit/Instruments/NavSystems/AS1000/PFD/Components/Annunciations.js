@@ -1,19 +1,32 @@
 class WT_Annunciations_Model {
-    constructor(xmlConfig) {
+    /**
+     * @param {*} xmlConfig 
+     * @param {WT_Sound} sound 
+     * @param {WT_Plane_State} planeState
+     */
+    constructor(xmlConfig, sound, planeState) {
+        this.sound = sound;
+        this.planeState = planeState;
+        this.isPlayingSound = {};
+
         this.engineType = Simplane.getEngineType();
         this.annunciations = [];
         this.messages = new Subject(this.annunciations, false);
         this.alertLevel = new Subject(0);
         this.hasUnacknowledgedAnnunciations = new Subject(false);
         this.init(xmlConfig);
+
+        planeState.onShutDown.subscribe(() => {
+            this.acknowledgeAll();
+            SimVar.SetSimVarValue("L:Generic_Master_Warning_Active", "Bool", 0);
+            SimVar.SetSimVarValue("L:Generic_Master_Caution_Active", "Bool", 0);
+        });
     }
     init(xml) {
-        if (xml) {
-            let annunciationsRoot = xml.getElementsByTagName("Annunciations");
-            if (annunciationsRoot.length > 0) {
-                for (let annunciation of annunciationsRoot[0].getElementsByTagName("Annunciation")) {
-                    this.addXmlMessage(annunciation);
-                }
+        let annunciationsRoot = xml.getElementsByTagName("Annunciations");
+        if (annunciationsRoot.length > 0) {
+            for (let annunciation of annunciationsRoot[0].getElementsByTagName("Annunciation")) {
+                this.addXmlMessage(annunciation);
             }
         }
     }
@@ -53,10 +66,10 @@ class WT_Annunciations_Model {
         let anyUpdated = false;
         let alertLevel = 0;
         let hasUnacknowledged = false;
+        let hasWarnings = false;
+        let hasCautions = false;
         for (let annunciation of this.annunciations) {
-            let value = false;
-            if (annunciation.Handler)
-                value = annunciation.Handler();
+            const value = annunciation.Handler ? annunciation.Handler() : false;
             if (value != annunciation.Visible) {
                 anyUpdated = true;
                 if (!value) {
@@ -68,9 +81,13 @@ class WT_Annunciations_Model {
                 switch (annunciation.Type) {
                     case Annunciation_MessageType.WARNING:
                         alertLevel = Math.max(alertLevel, 3);
+                        hasWarnings = true;
+                        this.playSound("tone_warning", "tone");
                         break;
                     case Annunciation_MessageType.CAUTION:
                         alertLevel = Math.max(alertLevel, 2);
+                        hasCautions = true;
+                        this.playSound("tone_caution", "tone");
                         break;
                     case Annunciation_MessageType.ADVISORY:
                         alertLevel = Math.max(alertLevel, 1);
@@ -79,10 +96,20 @@ class WT_Annunciations_Model {
                 hasUnacknowledged = true;
             }
         }
+
+        SimVar.SetSimVarValue("L:Generic_Master_Warning_Active", "Bool", hasWarnings);
+        SimVar.SetSimVarValue("L:Generic_Master_Caution_Active", "Bool", hasCautions);
+
         this.hasUnacknowledgedAnnunciations.value = hasUnacknowledged;
         this.alertLevel.value = alertLevel;
         if (anyUpdated) {
             this.messages.value = this.annunciations;
+        }
+    }
+    playSound(id, group = "") {
+        if (!this.isPlayingSound[group]) {
+            this.sound.play(id).then(() => this.isPlayingSound[group] = false);
+            this.isPlayingSound[group] = true;
         }
     }
     acknowledgeAll() {
@@ -92,8 +119,26 @@ class WT_Annunciations_Model {
             }
         }
     }
+    acknowledgeCautions() {
+        for (let annunciation of this.annunciations) {
+            if (annunciation.Type == Annunciation_MessageType.CAUTION && annunciation.Visible) {
+                annunciation.Acknowledged = true;
+            }
+        }
+    }
+    acknowledgeWarnings() {
+        const acknowledgedWarning = false;
+        for (let annunciation of this.annunciations) {
+            if (annunciation.Type == Annunciation_MessageType.WARNING && annunciation.Visible) {
+                annunciation.Acknowledged = true;
+                acknowledgedWarning = true;
+            }
+        }
+        if (acknowledgedWarning) {
+            this.playSound("aural_warning_ok", "aural");
+        }
+    }
 }
-
 
 class WT_Annunciations_View extends WT_HTML_View {
     /**
@@ -133,7 +178,7 @@ class WT_Annunciations_View extends WT_HTML_View {
                 }
             }
         }
-        let hasAnnunciations = this.elements.new.children.length > 0 || this.elements.acknowledged.children.length > 0;
+        const hasAnnunciations = this.elements.new.children.length > 0 || this.elements.acknowledged.children.length > 0;
         if (this.elements.new.children.length > 0) {
             this.setAttribute("hasNew", "hasNew");
         } else {
