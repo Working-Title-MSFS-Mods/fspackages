@@ -801,8 +801,8 @@
             <Text>AIRFRAME ANTI-ICE ON</Text>
             <Condition>
                 <Or>
-                    <Simvar name="L:XMLVAR_Airframe" unit="Bool"/>
-                    <Simvar name="L:XMLVAR_Airframe" unit="Bool"/>
+                    <Simvar name="L:XMLVAR_Airframe_1" unit="Bool"/>
+                    <Simvar name="L:XMLVAR_Airframe_2" unit="Bool"/>
                 </Or>
             </Condition>
         </Annunciation>
