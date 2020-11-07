@@ -277,21 +277,10 @@ class WT_Engine_Annunciations extends WT_Cabin_Annunciations {
     init(root) {
         super.init(root);
         switch (this.engineType) {
-            case EngineType.ENGINE_TYPE_PISTON:
-                this.addMessage(Annunciation_MessageType.WARNING, "OIL PRESSURE", this.OilPressure);
-                this.addMessage(Annunciation_MessageType.WARNING, "LOW VOLTS", this.LowVoltage);
-                this.addMessage(Annunciation_MessageType.WARNING, "HIGH VOLTS", this.HighVoltage);
-                this.addMessage(Annunciation_MessageType.WARNING, "CO LVL HIGH", this.COLevelHigh);
-                this.addMessage(Annunciation_MessageType.CAUTION, "STBY BATT", this.StandByBattery);
-                this.addMessage(Annunciation_MessageType.CAUTION, "LOW VACUUM", this.LowVaccum);
-                this.addMessage(Annunciation_MessageType.CAUTION, "LOW FUEL R", this.LowFuelR);
-                this.addMessage(Annunciation_MessageType.CAUTION, "LOW FUEL L", this.LowFuelL);
-                break;
-            case EngineType.ENGINE_TYPE_TURBOPROP:
             case EngineType.ENGINE_TYPE_JET:
                 this.addMessage(Annunciation_MessageType.WARNING, "FUEL OFF", this.fuelOff);
-                this.addMessage(Annunciation_MessageType.WARNING, "FUEL PRESS", this.fuelPress);
-                this.addMessage(Annunciation_MessageType.WARNING, "OIL PRESS", this.oilPressWarning);
+                //this.addMessage(Annunciation_MessageType.WARNING, "FUEL PRESS", this.fuelPress);
+                //this.addMessage(Annunciation_MessageType.WARNING, "OIL PRESS", this.oilPressWarning);
                 this.addMessageMultipleConditions(Annunciation_MessageType.WARNING, "ITT", [
                     new Condition(this.itt.bind(this, "1000")),
                     new Condition(this.itt.bind(this, "870"), 5),
@@ -299,41 +288,40 @@ class WT_Engine_Annunciations extends WT_Cabin_Annunciations {
                 ]);
                 this.addMessage(Annunciation_MessageType.WARNING, "FLAPS ASYM", this.flapsAsym);
                 this.addMessage(Annunciation_MessageType.WARNING, "ELEC FEATH FAULT", this.elecFeathFault);
-                this.addMessage(Annunciation_MessageType.WARNING, "BLEED TEMP", this.bleedTemp);
-                this.addMessage(Annunciation_MessageType.WARNING, "CABIN ALTITUDE", this.cabinAltitude);
+                //this.addMessage(Annunciation_MessageType.WARNING, "BLEED TEMP", this.bleedTemp);
+                //this.addMessage(Annunciation_MessageType.WARNING, "CABIN ALTITUDE", this.cabinAltitude);
                 this.addMessage(Annunciation_MessageType.WARNING, "EDM", this.edm);
-                this.addMessage(Annunciation_MessageType.WARNING, "CABIN DIFF PRESS", this.cabinDiffPress);
+                //this.addMessage(Annunciation_MessageType.WARNING, "CABIN DIFF PRESS", this.cabinDiffPress);
                 this.addMessage(Annunciation_MessageType.WARNING, "DOOR", this.door);
                 this.addMessage(Annunciation_MessageType.WARNING, "USP ACTIVE", this.uspActive);
                 this.addMessage(Annunciation_MessageType.WARNING, "GEAR UNSAFE", this.gearUnsafe);
-                this.addMessage(Annunciation_MessageType.WARNING, "PARK BRAKE", this.parkBrake);
-                this.addMessage(Annunciation_MessageType.WARNING, "OXYGEN", this.oxygen);
-                this.addMessage(Annunciation_MessageType.CAUTION, "OIL PRESS", this.oilPressCaution);
+                //this.addMessage(Annunciation_MessageType.WARNING, "PARK BRAKE", this.parkBrake);
+                //this.addMessage(Annunciation_MessageType.WARNING, "OXYGEN", this.oxygen);
+                //this.addMessage(Annunciation_MessageType.CAUTION, "OIL PRESS", this.oilPressCaution);
                 this.addMessage(Annunciation_MessageType.CAUTION, "CHIP", this.chip);
-                this.addMessage(Annunciation_MessageType.CAUTION, "OIL TEMP", this.oilTemp);
+                //this.addMessage(Annunciation_MessageType.CAUTION, "OIL TEMP", this.oilTemp);
                 this.addMessage(Annunciation_MessageType.CAUTION, "AUX BOOST PMP ON", this.auxBoostPmpOn);
-                this.addMessageSwitch(Annunciation_MessageType.CAUTION, ["FUEL LOW L", "FUEL LOW R", "FUEL LOW L-R"], this.fuelLowSelector);
+                //this.addMessageSwitch(Annunciation_MessageType.CAUTION, ["FUEL LOW L", "FUEL LOW R", "FUEL LOW L-R"], this.fuelLowSelector);
                 this.addMessage(Annunciation_MessageType.CAUTION, "AUTO SEL", this.autoSel);
-                this.addMessageTimed(Annunciation_MessageType.CAUTION, "FUEL IMBALANCE", this.fuelImbalance, 30);
                 this.addMessageSwitch(Annunciation_MessageType.CAUTION, ["LOW LVL FAIL L", "LOW LVL FAIL R", "LOW LVL FAIL L-R"], this.lowLvlFailSelector);
-                this.addMessage(Annunciation_MessageType.CAUTION, "BAT OFF", this.batOff);
+                //this.addMessage(Annunciation_MessageType.CAUTION, "BAT OFF", this.batOff);
                 this.addMessage(Annunciation_MessageType.CAUTION, "BAT AMP", this.batAmp);
                 this.addMessage(Annunciation_MessageType.CAUTION, "MAIN GEN", this.mainGen);
                 this.addMessage(Annunciation_MessageType.CAUTION, "LOW VOLTAGE", this.lowVoltage);
-                this.addMessage(Annunciation_MessageType.CAUTION, "BLEED OFF", this.bleedOff);
-                this.addMessage(Annunciation_MessageType.CAUTION, "USE OXYGEN MASK", this.useOxygenMask);
-                this.addMessage(Annunciation_MessageType.CAUTION, "VACUUM LOW", this.vacuumLow);
-                this.addMessage(Annunciation_MessageType.CAUTION, "PROP DEICE FAIL", this.propDeiceFail);
-                this.addMessage(Annunciation_MessageType.CAUTION, "INERT SEP FAIL", this.inertSepFail);
-                this.addMessageSwitch(Annunciation_MessageType.CAUTION, ["PITOT NO HT L", "PITOT NO HT R", "PITOT NO HT L-R"], this.pitotNoHtSelector);
-                this.addMessageSwitch(Annunciation_MessageType.CAUTION, ["PITOT HT ON L", "PITOT HT ON R", "PITOT HT ON L-R"], this.pitotHtOnSelector);
+                //this.addMessage(Annunciation_MessageType.CAUTION, "BLEED OFF", this.bleedOff);
+                //this.addMessage(Annunciation_MessageType.CAUTION, "USE OXYGEN MASK", this.useOxygenMask);
+                //this.addMessage(Annunciation_MessageType.CAUTION, "VACUUM LOW", this.vacuumLow);
+                //this.addMessage(Annunciation_MessageType.CAUTION, "PROP DEICE FAIL", this.propDeiceFail);
+                //this.addMessage(Annunciation_MessageType.CAUTION, "INERT SEP FAIL", this.inertSepFail);
+                //this.addMessageSwitch(Annunciation_MessageType.CAUTION, ["PITOT NO HT L", "PITOT NO HT R", "PITOT NO HT L-R"], this.pitotNoHtSelector);
+                //this.addMessageSwitch(Annunciation_MessageType.CAUTION, ["PITOT HT ON L", "PITOT HT ON R", "PITOT HT ON L-R"], this.pitotHtOnSelector);
                 this.addMessage(Annunciation_MessageType.CAUTION, "STALL NO HEAT", this.stallNoHeat);
                 this.addMessage(Annunciation_MessageType.CAUTION, "STALL HEAT ON", this.stallHeatOn);
                 this.addMessage(Annunciation_MessageType.CAUTION, "FRONT CARGO DOOR", this.frontCargoDoor);
                 this.addMessage(Annunciation_MessageType.CAUTION, "GPU DOOR", this.gpuDoor);
                 this.addMessage(Annunciation_MessageType.CAUTION, "IGNITION", this.ignition);
                 this.addMessage(Annunciation_MessageType.CAUTION, "STARTER", this.starter);
-                this.addMessage(Annunciation_MessageType.CAUTION, "MAX DIFF MODE", this.maxDiffMode);
+                //this.addMessage(Annunciation_MessageType.CAUTION, "MAX DIFF MODE", this.maxDiffMode);
                 this.addMessage(Annunciation_MessageType.CAUTION, "CPCS BACK UP MODE", this.cpcsBackUpMode);
                 break;
         }
