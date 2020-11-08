@@ -60,6 +60,22 @@ class WT_NumberUnit {
             this._unit = unit;
         }
     }
+
+    asUnit(unit) {
+        return this.refUnit.convert(this.refNumber, unit);
+    }
+
+    compare(other) {
+        return this.refNumber - other.asUnit(this.refUnit);
+    }
+
+    copy() {
+        return new WT_NumberUnit(this.refNumber, this.refUnit);
+    }
+
+    copyFrom(other) {
+        this.refNumber = other.refUnit.convert(other.refNumber, this.refUnit);
+    }
 }
 
 /**
@@ -289,6 +305,7 @@ WT_Unit.FOOT = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 0.3048, "foot", "feet"
 WT_Unit.KILOMETER = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 1000, "kilometer", "kilometers", "km");
 WT_Unit.MILE = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 1609.34, "mile", "miles", "m");
 WT_Unit.NMILE = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 1852, "nautical mile", "nautical miles", "nm");
+WT_Unit.GA_RADIAN = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 40075000 / (2 * Math.PI), "great arc radian", "great arc radians", "rad");
 
 WT_Unit.RADIAN = new WT_SimpleUnit(WT_Unit.Family.ANGLE, 1, "radian", "radians", "rad");
 WT_Unit.DEGREE = new WT_SimpleUnit(WT_Unit.Family.ANGLE, Math.PI/180, "degree", "degrees", "°");
