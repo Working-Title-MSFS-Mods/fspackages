@@ -103,7 +103,7 @@ class WT_Annunciations_Model {
         this.hasUnacknowledgedAnnunciations.value = hasUnacknowledged;
         this.alertLevel.value = alertLevel;
         if (anyUpdated) {
-            this.messages.value = this.annunciations;
+            this.messages.value = this.annunciations.filter(annunciation => annunciation.Visible);
         }
     }
     playSound(id, group = "") {
@@ -152,39 +152,38 @@ class WT_Annunciations_View extends WT_HTML_View {
         this.elements.new.innerHTML = "";
         this.elements.acknowledged.innerHTML = "";
 
+        let hasUnacknowledged = false;
+        let hasAcknowledged = false;
         for (let annunciation of annunciations) {
-            if (annunciation.Visible) {
-                if (annunciation.Type == Annunciation_MessageType.WARNING || annunciation.Type == Annunciation_MessageType.CAUTION || annunciation.Type == Annunciation_MessageType.ADVISORY) {
-                    let type = "";
-                    switch (annunciation.Type) {
-                        case Annunciation_MessageType.WARNING:
-                            type = "Warning";
-                            break;
-                        case Annunciation_MessageType.CAUTION:
-                            type = "Caution";
-                            break;
-                        case Annunciation_MessageType.ADVISORY:
-                            type = "Advisory";
-                            break;
-                    }
-                    let element = document.createElement("li");
-                    element.className = type;
-                    element.textContent = annunciation.Text;
-                    if (!annunciation.Acknowledged) {
-                        this.elements.new.appendChild(element);
-                    } else {
-                        this.elements.acknowledged.appendChild(element);
-                    }
+            if (annunciation.Type == Annunciation_MessageType.WARNING || annunciation.Type == Annunciation_MessageType.CAUTION || annunciation.Type == Annunciation_MessageType.ADVISORY) {
+                let type = "";
+                switch (annunciation.Type) {
+                    case Annunciation_MessageType.WARNING:
+                        type = "Warning";
+                        break;
+                    case Annunciation_MessageType.CAUTION:
+                        type = "Caution";
+                        break;
+                    case Annunciation_MessageType.ADVISORY:
+                        type = "Advisory";
+                        break;
+                }
+                let element = document.createElement("li");
+                element.className = type;
+                element.textContent = annunciation.Text;
+                if (annunciation.Acknowledged) {
+                    this.elements.acknowledged.appendChild(element);
+                    hasAcknowledged = true;
+                } else {
+                    this.elements.new.appendChild(element);
+                    hasUnacknowledged = true;
                 }
             }
         }
-        const hasAnnunciations = this.elements.new.children.length > 0 || this.elements.acknowledged.children.length > 0;
-        if (this.elements.new.children.length > 0) {
-            this.setAttribute("hasNew", "hasNew");
-        } else {
-            this.removeAttribute("hasNew");
-        }
+        const hasAnnunciations = hasAcknowledged || hasUnacknowledged;
         this.setAttribute("state", hasAnnunciations ? "visible" : "hidden");
+        this.setAttribute("hasAcknowledged", hasAcknowledged ? "true" : "false");
+        this.setAttribute("hasUnacknowledged", hasUnacknowledged ? "true" : "false");
     }
 }
 customElements.define("g1000-annunciations", WT_Annunciations_View);

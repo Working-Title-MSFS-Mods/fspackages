@@ -3,18 +3,19 @@ g1000-annunciations {
     right: 1vh;
     bottom: 40%;
     width: 14%;
-    font-size: 0.9rem;
+    font-size: 1rem;
     background: #000;
     border: $border_width_thin solid $border_color;
-    font-family: $font_family_mono;
     display: none;
 
     &[state="visible"] {
         display: block;
     }
 
-    .new:not(:empty) {
-        border-bottom: $border_width_thin solid $border_color;
+    &[hasUnacknowledged="true"][hasAcknowledged="true"] {
+        .new {
+            border-bottom: $border_width_thin solid $border_color;
+        }
     }
 
     ul {

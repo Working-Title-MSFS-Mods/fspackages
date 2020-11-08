@@ -28,7 +28,7 @@ class WT_Soft_Key extends HTMLElement {
             this.onClick();
             this.setAttribute("hover", "hover");
             clearTimeout(this.hoverTimeout);
-            this.hoverTimeout = setTimeout(() => this.removeAttribute("hover"), 200);
+            this.hoverTimeout = setTimeout(() => this.removeAttribute("hover"), 100);
         }
     }
     set selected(selected) {

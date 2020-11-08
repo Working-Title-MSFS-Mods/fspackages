@@ -1,21 +1,16 @@
 g1000-soft-key-menu {
     background-color: $page_background_color;
     display: grid;
-    $w: percentage(1/12);
-    grid-template-columns: $w $w $w $w $w $w $w $w $w $w $w $w;
-    width: 100%;
-    height: 100%;
+    grid-template-columns: repeat(12, percentage(1/12));
     font-size: 1rem;
-    font-family: "Roboto-Regular";
-    font-weight: normal;
 
     g1000-soft-key,
     g1000-soft-key-alert {
         display: block;
         height: 100%;
         width: 100%;
-        border-right: $border_width_thin solid darken($page_background_color, 30%);
-        border-left: $border_width_thin solid lighten($page_background_color, 30%);
+        border-right: $border_width_thin solid #000;
+        border-left: $border_width_thin solid #ccc;
         border-top: $border_width_thick solid $border_color;
         text-align: center;
         line-height: 1.8;
@@ -26,11 +21,14 @@ g1000-soft-key-menu {
 
         &[selected],
         &[hover] {
-            color: #1a1d21;
-            background-color: #b0bacd;
+            &:not([disabled]) {
+                color: #000;
+                background-color: #777;
 
-            border-right-color: transparent;
-            border-left-color: rgba(0, 0, 0, 0.6);
+                box-shadow: 0px $border_width_thin 0px 0px #333 inset;
+                border-right-color: #bbb;
+                border-left-color: #000;
+            }
         }
     }
 
