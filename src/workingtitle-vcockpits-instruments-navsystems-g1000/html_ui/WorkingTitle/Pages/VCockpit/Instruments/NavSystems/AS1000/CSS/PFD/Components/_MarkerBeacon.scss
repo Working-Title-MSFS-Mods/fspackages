@@ -1,0 +1,26 @@
+g1000-marker-beacon {
+    display: none;
+    position: absolute;
+    right: 30%;
+    top: 9%;
+    padding: 1vh;
+    line-height: 1;
+    font-weight: bold;
+    text-align: center;
+    color: black;
+    box-shadow: 0px 0px 0px $border_width_thin #fff inset;
+    border: $border_width_thin solid #000;
+
+    &[state="O"] {
+        display: block;
+        background: #36c8d2;
+    }
+    &[state="M"] {
+        display: block;
+        background: yellow;
+    }
+    &[state="I"] {
+        display: block;
+        background: white;
+    }
+}

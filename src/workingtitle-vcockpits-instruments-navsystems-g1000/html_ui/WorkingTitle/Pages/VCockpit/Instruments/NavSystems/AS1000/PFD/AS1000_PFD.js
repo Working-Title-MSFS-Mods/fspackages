@@ -318,6 +318,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("minimumsModel", d => new WT_Minimums_Model(d.minimums));
         d.register("radioAltimeterModel", d => new WT_Radio_Altimeter_Model(d.radioAltimeter));
         d.register("warningsModel", d => new WT_Warnings_Model(this, d.planeConfig, d.sound));
+        d.register("markerBeaconModel", d => new WT_Marker_Beacon_Model(this, d.planeConfig, d.sound));
 
         d.register("menuHandler", d => new WT_PFD_Menu_Handler(d.softKeyController, d.alertsKey));
         d.register("transponderMenu", d => new WT_PFD_Transponder_Menu(d.menuHandler, d.transponderModel, d.transponderCodeMenu));
@@ -423,6 +424,7 @@ class AS1000_PFD extends BaseAS1000 {
         this.initModelView(dependencies.radioAltimeterModel, "g1000-radio-altimeter");
         this.initModelView(dependencies.annunciationsModel, "g1000-annunciations");
         this.initModelView(dependencies.warningsModel, "g1000-warnings");
+        this.initModelView(dependencies.markerBeaconModel, "g1000-marker-beacon");
 
         this.initModelView(dependencies.navBoxModel, "g1000-nav-box");
         this.initModelView(dependencies.comFrequenciesModel, "g1000-com-frequencies");
