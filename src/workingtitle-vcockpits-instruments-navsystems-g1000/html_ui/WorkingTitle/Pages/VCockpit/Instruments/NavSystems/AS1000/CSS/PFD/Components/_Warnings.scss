@@ -1,0 +1,72 @@
+g1000-warnings {
+    display: block;
+    position: absolute;
+    width: 10%;
+    left: 60%;
+    top: 3%;
+    text-align: center;
+    z-index: 100;
+    padding: 1vh;
+    line-height: 1;
+    font-weight: bold;
+    box-shadow: 0px 0px 0px $border_width_thin #fff inset;
+    border: $border_width_thin solid #000;
+
+    @keyframes RedWarning {
+        0%,
+        45% {
+            background-color: red;
+            color: white;
+        }
+        55%,
+        100% {
+            background-color: white;
+            color: red;
+        }
+    }
+
+    @keyframes YellowWarning {
+        0%,
+        45% {
+            background-color: yellow;
+            color: black;
+        }
+        55%,
+        100% {
+            background-color: black;
+            color: yellow;
+        }
+    }
+
+    @keyframes WhiteWarning {
+        0%,
+        45% {
+            background-color: White;
+            color: black;
+        }
+        55%,
+        100% {
+            background-color: black;
+            color: white;
+        }
+    }
+
+    &[state="Red"] {
+        animation: RedWarning 1s 5;
+        background-color: red;
+        color: white;
+    }
+    &[state="Yellow"] {
+        animation: YellowWarning 1s 5;
+        background-color: black;
+        color: yellow;
+    }
+    &[state="White"] {
+        animation: WhiteWarning 1s 5;
+        background-color: white;
+        color: black;
+    }
+    &[state="Hidden"] {
+        display: none;
+    }
+}
