@@ -12,6 +12,9 @@ class Selectables_Input_Layer_Source {
 }
 
 class Selectables_Input_Layer_Element_Source {
+    /**
+     * @param {HTMLElement[]} elements 
+     */
     constructor(elements) {
         this.elements = elements;
     }
@@ -43,6 +46,10 @@ class Selectables_Input_Layer_Element_Source {
 }
 
 class Selectables_Input_Layer_Dynamic_Source {
+    /**
+     * @param {HTMLElement} element 
+     * @param {string} selector 
+     */
     constructor(element, selector = Selectables_Input_Layer_Dynamic_Source.DEFAULT) {
         this.element = element;
         this.selector = selector;
@@ -53,7 +60,7 @@ class Selectables_Input_Layer_Dynamic_Source {
         };
     }
     current(iterator) {
-        if (iterator.element == null || !document.body.contains(iterator.element)) {
+        if (iterator.element == null || !iterator.element.offsetParent) {
             let elements = this.elements;
             iterator.element = elements.length > 0 ? this.elements[0] : null;
         }
@@ -116,6 +123,10 @@ class Selectables_Input_Layer_Dynamic_Source {
 Selectables_Input_Layer_Dynamic_Source.DEFAULT = "numeric-input, drop-down-selector, time-input, selectable-button, toggle-switch, icao-input, scrollable-container, adf-input, .selectable, g1000-external-link";
 
 class Selectables_Input_Layer extends Input_Layer {
+    /**
+     * @param {Selectables_Input_Layer_Source} source 
+     * @param {boolean} navigateWithSmall 
+     */
     constructor(source, navigateWithSmall = false) {
         super();
         this._selectedElement = null;
@@ -128,6 +139,9 @@ class Selectables_Input_Layer extends Input_Layer {
         this.source = source;
     }
     set selectedElement(element) {
+        if (element == this.selectedElement)
+            return;
+
         if (this.selectedElement) {
             this.selectedElement.dispatchEvent(new Event("blur"));
             this.selectedElement.removeAttribute("state");
@@ -141,7 +155,7 @@ class Selectables_Input_Layer extends Input_Layer {
                 const focusInEvent = document.createEvent('Event');
                 focusInEvent.initEvent('focusin', true, false);
                 this.selectedElement.dispatchEvent(focusInEvent);
-                
+
                 this.selectedElement.dispatchEvent(new Event("focus"));
                 this.onHighlightedElement(this.selectedElement);
             }
@@ -160,6 +174,9 @@ class Selectables_Input_Layer extends Input_Layer {
             }
         }
     }
+    /**
+     * @param {Selectables_Input_Layer_Source} source 
+     */
     set source(source) {
         this._source = source;
         if (this._source) {
@@ -169,6 +186,9 @@ class Selectables_Input_Layer extends Input_Layer {
             this.iterator = null;
         }
     }
+    /**
+     * @returns {HTMLElement}
+     */
     get selectedElement() {
         return this._selectedElement;
     }
@@ -181,36 +201,33 @@ class Selectables_Input_Layer extends Input_Layer {
         }
     }
     onHighlightedElement(element) {
-        let evt = new CustomEvent("highlighted", {
+        element.dispatchEvent(new CustomEvent("highlighted", {
             bubbles: true,
             detail: {
                 element: element,
             }
-        });
-        element.dispatchEvent(evt);
+        }));
     }
     sendEventToSelected(event, inputStack) {
         if (!this.selectedElement)
             return;
-        const evt = new CustomEvent(event, {
+        this.selectedElement.dispatchEvent(new CustomEvent(event, {
             bubbles: false,
             detail: {
                 inputStack: inputStack,
             }
-        });
-        this.selectedElement.dispatchEvent(evt);
+        }));
     }
     onSelectedElement(inputStack) {
         if (!this.selectedElement)
             return;
-        const evt = new CustomEvent("selected", {
+        this.selectedElement.dispatchEvent(new CustomEvent("selected", {
             bubbles: true,
             detail: {
                 element: this.selectedElement,
                 inputStack: inputStack
             }
-        });
-        this.selectedElement.dispatchEvent(evt);
+        }));
         return true;
     }
     setExitHandler(handler) {
@@ -255,9 +272,11 @@ class Selectables_Input_Layer extends Input_Layer {
         }
     }
     onActivate() {
+        super.onActivate();
         this.isActive = true;
-        if (this.iterator)
+        if (this.iterator) {
             this.selectedElement = this._source.current(this.iterator);
+        }
         if (this.selectedElement) {
             this.selectedElement.setAttribute("state", "Selected");
             this.selectedElement.dispatchEvent(new Event("focus"));
@@ -266,11 +285,12 @@ class Selectables_Input_Layer extends Input_Layer {
     onDeactivate() {
         super.onDeactivate();
         this.isActive = false;
-        if (this.iterator)
-            this.selectedElement = null;
         if (this.selectedElement) {
             this.selectedElement.removeAttribute("state");
             this.selectedElement.dispatchEvent(new Event("blur"));
+        }
+        if (this.iterator) {
+            this.selectedElement = null;
         }
     }
 }

@@ -262,6 +262,7 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     }
     updateLines(lines) {
         this.elements.flightPlanWaypoints.updateLines(lines);
+        this.inputLayer.refreshSelected();
     }
     handleDelete() {
         const selectedElement = this.inputLayer.selectedElement;

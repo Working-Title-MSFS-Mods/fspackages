@@ -6,7 +6,6 @@ class Attitude_Indicator_Model {
     constructor(syntheticVision, nearestWaypointsRepository) {
         this.syntheticVision = syntheticVision;
         this.nearestWaypointsRepository = nearestWaypointsRepository;
-        this.attributes = new Subject({});
 
         this.flightPathMarker = {
             show: new Subject(true),
@@ -162,18 +161,6 @@ class AttitudeIndicator extends HTMLElement {
     }
     static get observedAttributes() {
         return [
-            "actual-pitch",
-            "ground-speed",
-            "synthetic-vision",
-            "track",
-            "heading",
-            "pitch",
-            "bank",
-            "slip_skid",
-            "background",
-            "flight_director-active",
-            "flight_director-pitch",
-            "flight_director-bank",
             "bank_size_ratio",
             "aspect-ratio",
             "is-backup",
@@ -222,17 +209,16 @@ class AttitudeIndicator extends HTMLElement {
                 }
             }
         });
+        const horizonHeadingsEnabled = new CombinedSubject([this.model.syntheticVision.enabled, this.model.syntheticVision.horizonHeadings], (horizonHeadings, enabled) => {
+            return enabled && horizonHeadings;
+        });
+        horizonHeadingsEnabled.subscribe(enabled => this.horizonHeadingsGroup.style.display = enabled ? "block" : "none");
         this.model.flightPathMarker.show.subscribe(show => {
             this.flightPathMarker.style.display = show ? "block" : "none";
         });
         this.model.flightPathMarker.position.subscribe(position => {
             if (position) {
                 this.flightPathMarker.setAttribute("transform", `translate(${position.x * screenSize}, ${position.y * screenSize})`);
-            }
-        });
-        this.model.attributes.subscribe(attributes => {
-            for (let key in attributes) {
-                this.setAttribute(key, attributes[key]);
             }
         });
         this.model.pitchBank.subscribe(pitchBank => {
