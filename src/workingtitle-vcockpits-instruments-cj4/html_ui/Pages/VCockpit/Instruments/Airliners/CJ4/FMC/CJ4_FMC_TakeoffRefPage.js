@@ -1,5 +1,5 @@
 class CJ4_FMC_TakeoffRefPage {
-    static ShowPage1(fmc, manualQnh) { //TAKEOFF REF Page 1 + added ability to keep manually set QNH by passing var manualQnh
+    static ShowPage1(fmc) { //TAKEOFF REF Page 1
         fmc.clearDisplay();
         let originIdent = "";
         let origin = fmc.flightPlanManager.getOrigin();
@@ -21,8 +21,8 @@ class CJ4_FMC_TakeoffRefPage {
             depRunwayLength = new Number(depRunway.length);
         }
 
-        if (manualQnh && manualQnh > 0) {
-            fmc.takeoffQnh = manualQnh;
+        if (fmc.manualQnh && fmc.manualQnh > 0) {
+            fmc.takeoffQnh = fmc.manualQnh;
         }
         else {
             fmc.takeoffQnh = SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg");
@@ -123,15 +123,19 @@ class CJ4_FMC_TakeoffRefPage {
             if (!isNaN(qnhInput)) {
                 if (qnhInput > 28 && qnhInput < 32) {
                     fmc.takeoffQnh = qnhInput;
+                    fmc.manualQnh = fmc.takeoffQnh;
                 }
                 else if (qnhInput > 280 && qnhInput < 320) {
                     fmc.takeoffQnh = qnhInput / 10;
+                    fmc.manualQnh = fmc.takeoffQnh;
                 }
                 else if (qnhInput > 2800 && qnhInput < 3200) {
                     fmc.takeoffQnh = qnhInput / 100;
+                    fmc.manualQnh = fmc.takeoffQnh;
                 }
                 else if (qnhInput > 940 && qnhInput < 1090) { //parse hPA input
                     fmc.takeoffQnh = qnhInput / 33.864;
+                    fmc.manualQnh = fmc.takeoffQnh;
                 }
                 else {
                     fmc.showErrorMessage("INVALID");
@@ -324,9 +328,9 @@ class CJ4_FMC_TakeoffRefPage {
                 fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.INPROGRESS;
                 setTimeout(() => {
                     //added custom LVARS for all v speeds and FMC Set
-                    SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots", v1);
-                    SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots", vR);
-                    SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots", v2);
+                    SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots", Math.round(v1));
+                    SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots", Math.round(vR));
+                    SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots", Math.round(v2));
                     SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots", 140);
                     SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
                     SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);

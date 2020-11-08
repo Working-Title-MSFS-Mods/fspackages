@@ -42,11 +42,12 @@ class CJ4_FMC_DsplMenuPage {
             });
         };
 
-        fmc.onRightInput[2] = () => {
-            this.toggleSymbol(CJ4_MapSymbol.CONSTRAINTS).then(() => {
-                CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
-            });
-        };
+        // TODO: disabled because of errors with mapinstrument
+        // fmc.onRightInput[2] = () => {
+        //     this.toggleSymbol(CJ4_MapSymbol.CONSTRAINTS).then(() => {
+        //         CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
+        //     });
+        // };
 
         fmc.onRightInput[3] = () => {
             this.toggleSymbol(CJ4_MapSymbol.AIRPORTS).then(() => {
@@ -61,7 +62,7 @@ class CJ4_FMC_DsplMenuPage {
             [""],
             ["HI NAVAIDS[s-text disabled]", "SPEED[s-text disabled]"],
             [""],
-            [loNavaidsActive, altitudeActive],
+            [loNavaidsActive, altitudeActive + "[disabled]"],
             [""],
             [intersectionsActive, airportsActive],
             [""],
@@ -75,8 +76,8 @@ class CJ4_FMC_DsplMenuPage {
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage2(fmc) {
-        let rngsel = WTDataStore.get("RANGE_SEL", 0);
-        let rngSelSwitch = (rngsel == 0) ? "" : "green";
+        let rngSelDisabled = WTDataStore.get("WT_CJ4_RANGE_SEL_DISABLED", 0);
+        let rngSelSwitch = (rngSelDisabled == 0) ? "green" : "";
 
         fmc.clearDisplay();
         fmc._templateRenderer.setTemplateRaw([
@@ -96,8 +97,8 @@ class CJ4_FMC_DsplMenuPage {
         ]);
 
         fmc.onLeftInput[2] = () => {
-            rngsel = (rngsel == 1) ? 0 : 1;
-            WTDataStore.set("RANGE_SEL", rngsel);
+            rngSelDisabled = (rngSelDisabled == 1) ? 0 : 1;
+            WTDataStore.set("WT_CJ4_RANGE_SEL_DISABLED", rngSelDisabled);
             CJ4_FMC_DsplMenuPage.ShowPage2(fmc);
         };
 

@@ -1,14 +1,16 @@
 ﻿{
   "altitudeArc": {
     "strokeColor": "white",
-    "outlineColor": "white"
+    "outlineColor": "white",
+    "strokeWidth": "2",
+    "outlineWidth": "4"
   },
 
   "waypointLabelFontSize": 16,
   "waypointLabelFontFamily": "Consolas",
-  "waypointLabelColor": "black",
-  "waypointLabelStrokeColor": "#black",
-  "waypointLabelStrokeWidth": 10,
+  "waypointLabelColor": "white",
+  "waypointLabelStrokeColor": "white",
+  "waypointLabelStrokeWidth": 0,
   "waypointLabelUseBackground": false,
   "waypointLabelBackgroundColor": "#ffffff",
   "waypointLabelBackgroundStrokeColor": "black",
@@ -55,9 +57,9 @@
 
   "flightPlanActiveLegColor": "#ff00e0",
   "flightPlanActiveLegWidth": 2,
-  "flightPlanActiveLegStrokeColor": "white",
+  "flightPlanActiveLegStrokeColor": "#ff00e0",
   "flightPlanActiveLegStrokeWidth": 0,
-  "flightPlanNonActiveLegColor": "#ff00e0",
+  "flightPlanNonActiveLegColor": "white",
   "flightPlanNonActiveLegWidth": 2,
   "flightPlanNonActiveLegStrokeColor": "white",
   "flightPlanNonActiveLegStrokeWidth": 0,

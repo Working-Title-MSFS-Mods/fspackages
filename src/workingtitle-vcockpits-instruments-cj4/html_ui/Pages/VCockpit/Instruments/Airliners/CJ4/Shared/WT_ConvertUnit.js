@@ -13,7 +13,7 @@ class WT_ValueAndUnit {
     }
 
     getString(precision = 0, seperator = " ", cssFormat = "", emptyValue = "") {
-        if (typeof this._value == 'number') {
+        if (typeof this._value == 'number' || this._value instanceof Number) {
             return this._value.toFixed(precision) + seperator + this._unit + cssFormat;
         } else {
             return emptyValue;

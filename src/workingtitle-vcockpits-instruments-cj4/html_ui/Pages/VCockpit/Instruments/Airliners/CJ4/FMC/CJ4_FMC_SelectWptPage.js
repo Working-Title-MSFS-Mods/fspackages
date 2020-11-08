@@ -16,20 +16,17 @@ class CJ4_FMC_SelectWptPage {
             [""],
             [""]
         ];
-        //console.log("search ident: " + ident);
         let waypointsFiltered = [];
 
         for (let j = 0; j < waypoints.length; j++) {
-            //console.log("checking: " + waypoints[j].ident + " " + waypoints[j].icao);
-            if (waypoints[j].ident == ident) {
-                //console.log("match! adding: " + waypoints[j].icao);
-                waypointsFiltered.push(waypoints[j]);
-                //console.log("pushed: " + waypoints[j].icao);
+            if (waypoints[j]) {
+                if (waypoints[j].ident == ident) {
+                    waypointsFiltered.push(waypoints[j]);
+                }
             }
         }
 
         let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
-        //console.log("before sort: " + waypoints[0].icao + ", " + waypoints[1].icao + ", " + waypoints[2].icao + ", " + waypoints[3].icao);
         waypointsFiltered = waypointsFiltered.sort((a, b) => {
             let aLatLong = new LatLong(a.infos.coordinates.lat, a.infos.coordinates.long);
             let bLatLong = new LatLong(b.infos.coordinates.lat, b.infos.coordinates.long);
@@ -39,7 +36,6 @@ class CJ4_FMC_SelectWptPage {
             console.log(b.icao + " " + bDistance);
             return aDistance - bDistance;
         });
-        //console.log("after sort: " + waypoints[0].icao + ", " + waypoints[1].icao + ", " + waypoints[2].icao + ", " + waypoints[3].icao);
 
         for (let i = 0; i < 3; i++) {
             let w = waypointsFiltered[i + 3 * page];
@@ -69,11 +65,9 @@ class CJ4_FMC_SelectWptPage {
 					BHold = i + i;
 				}
                 fmc.onLeftInput[BHold] = () => {
-                    //fmc.setMsg("WORKING...");
                     callback(w);
                 };
                 fmc.onRightInput[BHold] = () => {
-                    //fmc.setMsg("WORKING...");
                     callback(w);
                 };
             }

@@ -201,7 +201,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N1LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N1LeftValue.textContent = "0.0";
             this.N1LeftValue.setAttribute("x", (startPosX - halfWidth - rectOffsetX + rectWidth * 0.95).toString());
-            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.58).toString());
+            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.62).toString());
             this.N1LeftValue.setAttribute("fill", "#11d011");
             this.N1LeftValue.setAttribute("font-size", "32");
             this.N1LeftValue.setAttribute("font-family", "Roboto-Bold");
@@ -220,7 +220,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N1RightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N1RightValue.textContent = "0.0";
             this.N1RightValue.setAttribute("x", (startPosX + halfWidth + rectOffsetX - rectWidth * 0.05).toString());
-            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.58).toString());
+            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.62).toString());
             this.N1RightValue.setAttribute("fill", "#11d011");
             this.N1RightValue.setAttribute("font-size", "32");
             this.N1RightValue.setAttribute("font-family", "Roboto-Bold");
@@ -399,7 +399,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N2LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N2LeftValue.textContent = "0.0";
             this.N2LeftValue.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
-            this.N2LeftValue.setAttribute("y", startPosY.toString());
+            this.N2LeftValue.setAttribute("y", 51);
             this.N2LeftValue.setAttribute("fill", "#11d011");
             this.N2LeftValue.setAttribute("font-size", "28");
             this.N2LeftValue.setAttribute("font-family", "Roboto-Bold");
@@ -418,7 +418,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N2RightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N2RightValue.textContent = "0.0";
             this.N2RightValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
-            this.N2RightValue.setAttribute("y", startPosY.toString());
+            this.N2RightValue.setAttribute("y", 51);
             this.N2RightValue.setAttribute("fill", "#11d011");
             this.N2RightValue.setAttribute("font-size", "28");
             this.N2RightValue.setAttribute("font-family", "Roboto-Bold");
@@ -538,7 +538,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.FuelLBSLeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.FuelLBSLeftValue.textContent = "2910";
             this.FuelLBSLeftValue.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
-            this.FuelLBSLeftValue.setAttribute("y", startPosY.toString());
+            this.FuelLBSLeftValue.setAttribute("y", 167);
             this.FuelLBSLeftValue.setAttribute("fill", "#11d011");
             this.FuelLBSLeftValue.setAttribute("font-size", "28");
             this.FuelLBSLeftValue.setAttribute("font-family", "Roboto-Bold");
@@ -557,7 +557,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.FuelLBSRightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.FuelLBSRightValue.textContent = "2910";
             this.FuelLBSRightValue.setAttribute("x", (startPosX + 33 + rectWidth * 0.95).toString());
-            this.FuelLBSRightValue.setAttribute("y", startPosY.toString());
+            this.FuelLBSRightValue.setAttribute("y", 167);
             this.FuelLBSRightValue.setAttribute("fill", "#11d011");
             this.FuelLBSRightValue.setAttribute("font-size", "28");
             this.FuelLBSRightValue.setAttribute("font-family", "Roboto-Bold");
@@ -768,7 +768,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             rect.setAttribute("y", (posY).toString());
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", (gaugeHeight * 0.20).toString());
-            rect.setAttribute("fill", "green");
+            rect.setAttribute("fill", "#11d011");
             trimGroup.appendChild(rect);
             this.ElevatorCursorX = gaugeStartX + gaugeWidth;
             this.ElevatorCursorY1 = gaugeStartY;
@@ -948,7 +948,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N1LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N1LeftValue.textContent = "0.0";
             this.N1LeftValue.setAttribute("x", (startPosX - halfWidth - rectOffsetX + rectWidth * 0.95).toString());
-            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.58).toString());
+            this.N1LeftValue.setAttribute("y", (posY + rectHeight * 0.62).toString());
             this.N1LeftValue.setAttribute("fill", "#11d011");
             this.N1LeftValue.setAttribute("font-size", "32");
             this.N1LeftValue.setAttribute("font-family", "Roboto-Bold");
@@ -967,7 +967,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N1RightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N1RightValue.textContent = "0.0";
             this.N1RightValue.setAttribute("x", (startPosX + halfWidth + rectOffsetX - rectWidth * 0.05).toString());
-            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.58).toString());
+            this.N1RightValue.setAttribute("y", (posY + rectHeight * 0.62).toString());
             this.N1RightValue.setAttribute("fill", "#11d011");
             this.N1RightValue.setAttribute("font-size", "32");
             this.N1RightValue.setAttribute("font-family", "Roboto-Bold");
@@ -1131,7 +1131,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N2LeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N2LeftValue.textContent = "0.0";
             this.N2LeftValue.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
-            this.N2LeftValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.58).toString());
+            this.N2LeftValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.65).toString());
             this.N2LeftValue.setAttribute("fill", "#11d011");
             this.N2LeftValue.setAttribute("font-size", "28");
             this.N2LeftValue.setAttribute("font-family", "Roboto-Bold");
@@ -1150,7 +1150,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N2RightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.N2RightValue.textContent = "0.0";
             this.N2RightValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
-            this.N2RightValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.58).toString());
+            this.N2RightValue.setAttribute("y", (startPosY + rectMarginY + rectHeight * 0.65).toString());
             this.N2RightValue.setAttribute("fill", "#11d011");
             this.N2RightValue.setAttribute("font-size", "28");
             this.N2RightValue.setAttribute("font-family", "Roboto-Bold");
@@ -1442,7 +1442,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.FuelLBSLeftValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.FuelLBSLeftValue.textContent = "2910";
             this.FuelLBSLeftValue.setAttribute("x", (startPosX - spacingX - 5).toString());
-            this.FuelLBSLeftValue.setAttribute("y", startPosY.toString());
+            this.FuelLBSLeftValue.setAttribute("y", 312);
             this.FuelLBSLeftValue.setAttribute("fill", "#11d011");
             this.FuelLBSLeftValue.setAttribute("font-size", "28");
             this.FuelLBSLeftValue.setAttribute("font-family", "Roboto-Bold");
@@ -1461,7 +1461,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.FuelLBSRightValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.FuelLBSRightValue.textContent = "2910";
             this.FuelLBSRightValue.setAttribute("x", (startPosX + spacingX + rectWidth - 5).toString());
-            this.FuelLBSRightValue.setAttribute("y", startPosY.toString());
+            this.FuelLBSRightValue.setAttribute("y", 312);
             this.FuelLBSRightValue.setAttribute("fill", "#11d011");
             this.FuelLBSRightValue.setAttribute("font-size", "28");
             this.FuelLBSRightValue.setAttribute("font-family", "Roboto-Bold");
@@ -1578,7 +1578,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             var text = document.createElementNS(Avionics.SVG.NS, "text");
             text.textContent = "RUD";
             text.setAttribute("x", startPosX.toString());
-            text.setAttribute("y", startPosY.toString());
+            text.setAttribute("y", 122);
             text.setAttribute("fill", "#cccac8");
             text.setAttribute("font-size", "22");
             text.setAttribute("font-family", "Roboto-Light");
@@ -2667,6 +2667,8 @@ class CJ4_MapContainer extends NavSystemElementContainer {
     constructor(_name, _root) {
         super(_name, _root, null);
         this.map = new CJ4_Map();
+        this.isMapVisible = undefined;
+        this.isRouteVisible = undefined;
         this.isTerrainVisible = undefined;
         this.isWeatherVisible = undefined;
         this.isGwxVisible = undefined;
@@ -2731,6 +2733,9 @@ class CJ4_MapContainer extends NavSystemElementContainer {
                 break;
             case Jet_NDCompass_Display.PLAN:
                 this.zoomFactor = 4.1;
+                break;
+            case Jet_NDCompass_Display.PPOS:           
+                this.zoomFactor = 2.8;
                 break;
             default:
                 this.zoomFactor = 1.0;
@@ -2854,16 +2859,56 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             radarbug.style.display = (this.isWeatherVisible) ? "" : "none";
         }
     }
+
+    /**
+     * Sets whether or not the map is visible.
+     * @param {Boolean} visible True if the map should be visible, false if it should not be displayed.
+     */
+    showMap(visible) {
+        if (this.isMapVisible !== visible) {
+            this.isMapVisible = visible;
+            this.refreshLayout();
+        }
+    }
+
+    /**
+     * Sets whether or not the flight plan route is visible.
+     * @param {Boolean} visible True if the route should be visible, false if it should not be displayed.
+     */
+    showRoute(visible) {
+        if (this.isRouteVisible !== visible) {
+            this.isRouteVisible = visible;
+            this.refreshLayout();
+        }
+    }
+
     refreshLayout() {
+
         this.setWxRadarBug();
-        if (this.isTerrainVisible || this.isGwxVisible) {
-            this.map.instrument.mapConfigId = 1;
-            this.map.instrument.bingMapRef = EBingReference.SEA;
+        if (this.isMapVisible) {
+            this.map.instrument.setAttribute('style', '');
+
+            if (this.isTerrainVisible || this.isGwxVisible) {
+                this.map.instrument.mapConfigId = 1;
+                this.map.instrument.bingMapRef = EBingReference.SEA;
+            }
+            else {
+                this.map.instrument.mapConfigId = 0;
+                this.map.instrument.bingMapRef = EBingReference.SEA;
+            }
+
+            if (!this.isRouteVisible) {
+                this.map.instrument.showFlightPlan = false;
+                this.map.instrument.updateFlightPlanVisibility();
+            }
+            else {
+                this.map.instrument.showFlightPlan = true;
+                this.map.instrument.updateFlightPlanVisibility();
+            }
         }
         else {
-            this.map.instrument.mapConfigId = 0;
-            this.map.instrument.bingMapRef = EBingReference.SEA;
-        }
+            this.map.instrument.setAttribute('style', 'display: none');
+        } 
     }
 }
 class CJ4_Map extends MapInstrumentElement {
@@ -2872,6 +2917,7 @@ class CJ4_Map extends MapInstrumentElement {
         this.compassDisplayMode = undefined;
     }
     setMode(_display) {
+
         this.compassDisplayMode = _display;
         switch (_display) {
             case Jet_NDCompass_Display.ROSE:
@@ -2880,6 +2926,16 @@ class CJ4_Map extends MapInstrumentElement {
                     this.instrument.rotateWithPlane(true);
                     this.instrument.centerOnActiveWaypoint(false);
                     this.instrument.setPlaneScale(2.5);
+                    this.instrument.showAltitudeIntercept = false;
+                    break;
+                }
+            case Jet_NDCompass_Display.PPOS:
+                {
+                    this.instrument.style.top = "6%";
+                    this.instrument.rotateWithPlane(true);
+                    this.instrument.centerOnActiveWaypoint(false);
+                    this.instrument.setPlaneScale(2.5);
+                    this.instrument.showAltitudeIntercept = true;
                     break;
                 }
             case Jet_NDCompass_Display.ARC:
@@ -2888,6 +2944,7 @@ class CJ4_Map extends MapInstrumentElement {
                     this.instrument.rotateWithPlane(true);
                     this.instrument.centerOnActiveWaypoint(false);
                     this.instrument.setPlaneScale(2.5);
+                    this.instrument.showAltitudeIntercept = false;
                     break;
                 }
             case Jet_NDCompass_Display.PLAN:
@@ -2896,6 +2953,7 @@ class CJ4_Map extends MapInstrumentElement {
                     this.instrument.rotateWithPlane(false);
                     this.instrument.centerOnActiveWaypoint(true);
                     this.instrument.setPlaneScale(2.5);
+                    this.instrument.showAltitudeIntercept = false;
                     break;
                 }
             default:
@@ -2904,6 +2962,7 @@ class CJ4_Map extends MapInstrumentElement {
                     this.instrument.rotateWithPlane(false);
                     this.instrument.centerOnActiveWaypoint(false);
                     this.instrument.setPlaneScale(1.0);
+                    this.instrument.showAltitudeIntercept = false;
                     break;
                 }
         }
@@ -3406,7 +3465,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addTitle("FORMAT", this.textSize, 0.4);
                 this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
                 this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
-                this.addRadio("PPOS", this.textSize, null);
+                this.addRadio("PPOS", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
             }
             this.endSection();
             this.beginSection();
@@ -3543,7 +3602,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             {
                 this.addTitle("RA/BARO MIN", this.textSize, 0.6);
                 this.addRadioRange("RA", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
-                this.addRadioRange("BARO", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
+                this.addRadioRange("BARO", this.textSize, 0, 12100, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
             }
             this.endSection();
         }
@@ -3686,7 +3745,7 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
                 this.addTitle("FORMAT", this.textSize, 0.45);
                 this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
                 this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
-                this.addRadio("PPOS", this.textSize, null);
+                this.addRadio("PPOS", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
                 this.addRadio("PLAN", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
                 this.addRadio("GWX", this.textSize, null);
                 this.addRadio("TCAS", this.textSize, null);
@@ -3735,7 +3794,7 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addCheckbox("CONSTRAINTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_CONSTRAINTS]);
+                //this.addCheckbox("CONSTRAINTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_CONSTRAINTS]);
                 this.addCheckbox("AIRSPACES", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRSPACES]);
                 this.addCheckbox("AIRWAYS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRWAYS]);
                 this.addCheckbox("NAVAIDS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_NAVAIDS]);

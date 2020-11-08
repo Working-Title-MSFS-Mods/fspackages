@@ -1,5 +1,11 @@
 # Changelog
 
+### v0.3.1
+**Fixes**
+- \[Compatibility\] Improved compatibility with the WorkingTitle CJ4 mod.
+- \[NavMap\] Fixed an issue where waypoints in a flight plan sometimes had missing labels.
+- \[NavMap\] City labels no longer appear in the weather radar screens.
+
 ### v0.3.0
 **Fixes**
 - \[Misc\] Fixed a regression in v0.3.0-pre1 where adjusting screen backlight brightness via the touchscreen controllers was broken in the TBM if using custom liveries.
