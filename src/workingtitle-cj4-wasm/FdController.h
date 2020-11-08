@@ -62,37 +62,48 @@ private:
     double getDesiredThrottle(int index, double deltaTime) {
         double throttleLeverPerc = (this->throttleAxis + 16384) / 32768.0;
         double throttleExp = pow(throttleLeverPerc, 3.5);
-        double targetThrust = (2950 * throttleExp) + 250; // flat target thrust
+        double targetThrust = (3400 * throttleExp); // flat target thrust
+
+        if (!enabled) {
+            return throttleLeverPerc * 100;
+        }
+
+        double grossSimThrust = wt_utils::convertToGrossThrust(this->simVars->getThrust(index), this->simVars->getMach());
+        double maxDensityThrust = wt_utils::getMaxDensityThrust(this->simVars->getAmbientDensity());
+        double thrustF = 0.95;
+
 
         // TODO: extract the modes later
         switch (this->throttleMode)
         {
         case TO:
             targetThrust = 3400;
+            return 100;
             break;
         case CLB:
-            targetThrust = 1800;
+            targetThrust = 2000;
+            if ((maxDensityThrust * thrustF) < targetThrust) {
+                targetThrust = (maxDensityThrust * thrustF);
+            }
             break;
-        case CRU:
+        case CRU: {
+            double cruThrPerc = (this->throttleAxis + 16384) / 25444.0; // -16384 -> 9060
+            double cruThrExp = pow(cruThrPerc, 3.5);
+            targetThrust = (3400 * cruThrPerc); // flat target thrust
+            if ((maxDensityThrust < targetThrust)) {
+                targetThrust = (maxDensityThrust * cruThrPerc); // TODO 100% = 0 -> CRU
+            }
+            //targetThrust *= 1.25;
             //targetThrottle = this->throttleAxis;
             break;
+        }
         default:
             break;
         }
 
-        double grossSimThrust = wt_utils::convertToGrossThrust(this->simVars->getThrust(index), this->simVars->getMach());
-        double maxDensityThrust = wt_utils::getMaxDensityThrust(this->simVars->getAmbientDensity());
 
-        if (this->frameCount % 50000000 == 0) {
-            printf("TTHR: %.0f GTHR: %.0f @ %.0f \r\n", targetThrust, grossSimThrust, this->simVars->getPlaneAltitude());
-        }
-
-        if (!enabled) {
-            return throttleLeverPerc * 100;
-        }
-
-        if (this->throttleMode != TO && this->throttleMode != CLB && (maxDensityThrust < targetThrust)) {
-            targetThrust = (maxDensityThrust * throttleExp);
+        if (this->frameCount % 5000000 == 0) {
+            printf("TTHR: %.0f GTHR: %.0f MDENS: %.0f @ %.0f \r\n", targetThrust, grossSimThrust, maxDensityThrust, this->simVars->getPlaneAltitude());
         }
 
         double error = targetThrust - grossSimThrust;

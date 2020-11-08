@@ -1739,6 +1739,7 @@ class CJ4_SystemEngines extends NavSystemElement {
         {
             // update thrust setting
             let thrustSetting = "TO";
+            let modeClr = thrustSetting == 0 ? "#cccac8" : "#11d011";
             switch (SimVar.GetSimVarValue("L:THROTTLE_MODE", "number")) {
                 case 1:
                     thrustSetting = "CRU";
@@ -1754,7 +1755,9 @@ class CJ4_SystemEngines extends NavSystemElement {
             }
 
             this.N1ModeLeft.textContent = thrustSetting;
+            this.N1ModeLeft.setAttribute("fill", modeClr);
             this.N1ModeRight.textContent = thrustSetting;
+            this.N1ModeRight.setAttribute("fill", modeClr);
         }
         {
             let N1Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N1:1", "percent");
