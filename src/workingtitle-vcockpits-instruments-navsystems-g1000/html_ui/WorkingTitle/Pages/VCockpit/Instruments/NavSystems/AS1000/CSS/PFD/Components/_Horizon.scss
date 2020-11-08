@@ -138,7 +138,7 @@
     .graduation-text-left,
     .graduation-text-right {
         font-family: $font_family_normal;
-        fill:#fff;
+        fill: #fff;
         font-weight: bold;
     }
 
@@ -148,5 +148,16 @@
 
     .graduation-text-right {
         text-anchor: start;
+    }
+
+    .horizon-heading {
+        fill: #fff;
+        text {
+            font-size: 20px;
+            font-weight: bold;
+            text-anchor: middle;
+            stroke: rgba(0, 0, 0, 0.6);
+            stroke-width: 6px;
+        }
     }
 }

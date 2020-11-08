@@ -148,10 +148,15 @@ class WT_PFD_Model {
 }
 
 class WT_PFD_Alert_Key extends WT_Soft_Key {
-    constructor() {
+    /**
+     * @param {WT_Annunciations_Model} annunciationsModel 
+     */
+    constructor(annunciationsModel) {
         super("ALERTS", null);
         this.setOnClick(this.click.bind(this));
         this.pressAcknowledgesAnnunciations = false;
+
+        this.setAnnunciationsModel(annunciationsModel);
     }
     /**
     * @param {WT_Annunciations_Model} annuncationsModel 
@@ -209,8 +214,9 @@ class AS1000_PFD extends BaseAS1000 {
         const d = new WT_Dependency_Container();
 
         d.register("inputStack", d => new Input_Stack());
+        d.register("planeConfig", d => new WT_Plane_Config());
         d.register("planeState", d => new WT_Plane_State());
-        d.register("radioAltimeter", d => new WT_Radio_Altimeter());
+        d.register("radioAltimeter", d => new WT_Radio_Altimeter(d.planeConfig));
         d.register("sound", d => new WT_Sound());
         d.register("softKeyController", d => this.querySelector("g1000-soft-key-menu"));
         d.register("settings", d => {
@@ -247,7 +253,7 @@ class AS1000_PFD extends BaseAS1000 {
         });
         d.register("airspeedReferences", d => new WT_Airspeed_References());
         d.register("minimums", d => {
-            const minimums = new WT_Minimums();
+            const minimums = new WT_Minimums(d.planeConfig);
             this.updatables.push(minimums);
             return minimums;
         });
@@ -283,7 +289,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("procedurePageModel", d => new WT_PFD_Procedure_Page_Model(d.flightPlanModel, d.procedureFacilityRepository));
         d.register("showProcedureHandler", d => new WT_PFD_Show_Procedure_Handler(d.miniPageController, d.waypointQuickSelect, d.procedurePageModel, d.approachPageView, d.arrivalPageView, d.departurePageView));
 
-        d.register("alertsKey", d => new WT_PFD_Alert_Key());
+        d.register("alertsKey", d => new WT_PFD_Alert_Key(d.annunciationsModel));
 
         d.register("attitudeModel", d => {
             const model = new Attitude_Indicator_Model(d.syntheticVision, d.nearestWaypoints);
@@ -299,6 +305,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("comFrequenciesModel", d => new WT_Com_Frequencies_Model());
         d.register("navFrequenciesModel", d => new WT_Nav_Frequencies_Model());
 
+        d.register("annunciationsModel", d => new WT_Annunciations_Model(d.planeConfig, d.sound, d.planeState));
         d.register("localTimeModel", d => new WT_Local_Time_Model(d.settings));
         d.register("oatModel", d => new WT_OAT_Model(d.unitChooser));
         d.register("transponderModel", d => new WT_Transponder_Model(d.modSettings));
@@ -400,19 +407,7 @@ class AS1000_PFD extends BaseAS1000 {
     }
     onXMLConfigLoaded(_xml) {
         super.onXMLConfigLoaded(_xml);
-        const annuncationsModel = new WT_Annunciations_Model(this.xmlConfig, this.dependencies.sound, this.dependencies.planeState);
-        this.initModelView(annuncationsModel, "g1000-annunciations");
-        this.alertsKey.setAnnunciationsModel(annuncationsModel);
-
-        const raElem = this.xmlConfig.getElementsByTagName("RadarAltitude");
-        if (raElem.length > 0) {
-            const hasRadarAltitude = raElem[0].textContent == "True";
-            if (hasRadarAltitude) {
-                this.dependencies.minimums.setModes([0, 1, 3]);
-                this.dependencies.radioAltimeter.isAvailable = true;
-            }
-        }
-        this.dependencies.radioAltimeter.isAvailable = true;
+        this.dependencies.planeConfig.updateConfig(this.xmlConfig);
     }
     onSoundEnd(_event) {
         this.dependencies.sound.onSoundEnd(_event);
@@ -425,6 +420,7 @@ class AS1000_PFD extends BaseAS1000 {
         this.initModelView(dependencies.windModel, "g1000-pfd-wind");
         this.initModelView(dependencies.minimumsModel, "g1000-minimums");
         this.initModelView(dependencies.radioAltimeterModel, "g1000-radio-altimeter");
+        this.initModelView(dependencies.annunciationsModel, "g1000-annunciations");
 
         this.initModelView(dependencies.navBoxModel, "g1000-nav-box");
         this.initModelView(dependencies.comFrequenciesModel, "g1000-com-frequencies");

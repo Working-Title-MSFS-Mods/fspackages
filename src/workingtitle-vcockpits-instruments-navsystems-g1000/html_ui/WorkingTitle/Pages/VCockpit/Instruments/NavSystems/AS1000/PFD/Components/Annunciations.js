@@ -1,10 +1,10 @@
 class WT_Annunciations_Model {
     /**
-     * @param {*} xmlConfig 
+     * @param {WT_Plane_Config} config 
      * @param {WT_Sound} sound 
      * @param {WT_Plane_State} planeState
      */
-    constructor(xmlConfig, sound, planeState) {
+    constructor(config, sound, planeState) {
         this.sound = sound;
         this.planeState = planeState;
         this.isPlayingSound = {};
@@ -14,7 +14,7 @@ class WT_Annunciations_Model {
         this.messages = new Subject(this.annunciations, false);
         this.alertLevel = new Subject(0);
         this.hasUnacknowledgedAnnunciations = new Subject(false);
-        this.init(xmlConfig);
+        config.watchNodes("Annunciations").subscribe(nodes => this.init(nodes));
 
         planeState.onShutDown.subscribe(() => {
             this.acknowledgeAll();
@@ -22,10 +22,10 @@ class WT_Annunciations_Model {
             SimVar.SetSimVarValue("L:Generic_Master_Caution_Active", "Bool", 0);
         });
     }
-    init(xml) {
-        let annunciationsRoot = xml.getElementsByTagName("Annunciations");
-        if (annunciationsRoot.length > 0) {
-            for (let annunciation of annunciationsRoot[0].getElementsByTagName("Annunciation")) {
+    init(xmlNodes) {
+        this.annunciations = [];
+        for (let node of xmlNodes) {
+            for (let annunciation of node.getElementsByTagName("Annunciation")) {
                 this.addXmlMessage(annunciation);
             }
         }

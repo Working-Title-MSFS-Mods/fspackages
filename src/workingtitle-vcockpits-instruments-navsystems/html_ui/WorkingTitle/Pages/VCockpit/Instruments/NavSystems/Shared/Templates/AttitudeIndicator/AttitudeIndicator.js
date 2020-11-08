@@ -13,6 +13,7 @@ class Attitude_Indicator_Model {
             position: new Subject({ x: 0, y: 0 })
         }
         this.pitchBank = new Subject({ pitch: 0, bank: 0 });
+        this.heading = new Subject(0);
         this.flightDirector = {
             pitchBank: new Subject({ pitch: 0, bank: 0 }),
             show: new Subject(false),
@@ -45,12 +46,15 @@ class Attitude_Indicator_Model {
                 SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees"),
                 SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree")
             );
-            const current = this.flightPathMarker.position.value;
-            this.flightPathMarker.position.value = {
-                x: (current.x + (markerPos.x - current.x) / 5),
-                y: (current.y + (markerPos.y - current.y) / 5),
-            };
-            //this.flightPathMarker.position.value = this.projectLatLongAlt(new LatLongAlt(52.070148, -0.618633, 360));
+            if (!isNaN(markerPos.x) && !isNaN(markerPos.y)) {
+                const current = this.flightPathMarker.position.value;
+                this.flightPathMarker.position.value = {
+                    x: (current.x + (markerPos.x - current.x) / 5),
+                    y: (current.y + (markerPos.y - current.y) / 5),
+                };
+            }
+
+            this.heading.value = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
         }
 
         if (this.airportSigns.hasSubscribers()) {
@@ -78,50 +82,62 @@ class Attitude_Indicator_Model {
         c = (c + 180) % 360 - 180;
         return c * Math.PI / 180;
     }
-    getFlightPathMarkerPosition(groundSpeed, verticalSpeed, track, heading) {
-        const angle = Math.atan(verticalSpeed / groundSpeed);
-        let a = track - heading;
-        a = (a + 180) % 360 - 180;
-        a = a * Math.PI / 180;
-        const ax = Math.sin(a);
-        const ay = Math.sin(-angle);
-        const az = Math.cos(a);
-        const screenWidth = 1;//400 * 100 / 47.0; //From the css setting the width
-        const screenHeight = screenWidth * 3 / 4;
-        const fov = (55 / 2) * Math.PI / 180.0;
+    project(x, y, z) {
+        const screenWidth = 1;
+        const screenHeight = screenWidth;// * 3 / 4;
+        const fov = (57 / 2) * Math.PI / 180.0;
         const focalLength = 1 / Math.tan(fov);
         return {
-            x: (ax * (focalLength / az)) * screenWidth,
-            y: (ay * (focalLength / az)) * screenHeight,
+            x: (x * (focalLength / z)) * screenWidth,
+            y: (y * (focalLength / z)) * screenHeight,
+            z: z
         };
+    }
+    /**
+     * Relative yaw/pitch to plane, both in radians
+     * @param {number} yaw 
+     * @param {number} pitch 
+     */
+    projectYawPitch(yaw, pitch) {
+        const cos = Math.cos, sin = Math.sin;
+        let vec = { x: 0, y: 0, z: 1 };
+
+        // transformed with pitch then yaw, this can be condensed but it's easier to understand 
+        // and modify when split up like this
+        vec = {
+            x: vec.x,
+            y: vec.y * cos(pitch) - vec.z * sin(pitch),
+            z: vec.y * sin(pitch) + vec.z * cos(pitch),
+        };
+
+        vec = {
+            x: vec.x * cos(yaw) + vec.z * sin(yaw),
+            y: vec.y,
+            z: vec.x * -sin(yaw) + vec.z * cos(yaw),
+        };
+
+        return this.project(vec.x, vec.y, vec.z);
+    }
+    getFlightPathMarkerPosition(groundSpeed, verticalSpeed, track, heading) {
+        const pitch = Math.atan(verticalSpeed / groundSpeed);
+        const yaw = this.getDeltaAngle(track, heading);
+        return this.projectYawPitch(yaw, pitch);
     }
     projectLatLongAlt(latLongAlt) {
         const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
         const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
         const alt = SimVar.GetSimVarValue("INDICATED ALTITUDE:1", "feet");
         const planeCoordinates = new LatLongAlt(lat, long, alt);
+
         const heading = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
         const directionToPos = Avionics.Utils.computeGreatCircleHeading(planeCoordinates, latLongAlt);
+        const yaw = this.getDeltaAngle(directionToPos, heading);
 
         const deltaPos = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, latLongAlt) * 6076;
-        const deltaAlt = -Math.abs(latLongAlt.alt - planeCoordinates.alt);
-        const vAngle = Math.tan(deltaAlt / deltaPos);
+        const deltaAlt = Math.abs(latLongAlt.alt - planeCoordinates.alt);
+        const pitch = -Math.tan(deltaAlt / deltaPos);
 
-        const hAngle = this.getDeltaAngle(directionToPos, heading);
-
-        const ax = Math.sin(hAngle);
-        const ay = Math.sin(-vAngle);
-        const az = Math.cos(hAngle);
-        const screenWidth = 1;
-        const screenHeight = screenWidth * 3 / 4;
-        const fov = (55 / 2) * Math.PI / 180.0;
-        const focalLength = 1 / Math.tan(fov);
-        return {
-            x: (ax * (focalLength / az)) * screenWidth,
-            y: (ay * (focalLength / az)) * screenHeight,
-            z: az,
-            dist: deltaPos,
-        };
+        return this.projectYawPitch(yaw, pitch);
     }
     updateNearestAirports(airports) {
         this.nearestAirports = airports;
@@ -170,6 +186,8 @@ class AttitudeIndicator extends HTMLElement {
      * @param {Attitude_Indicator_Model} model 
      */
     setModel(model) {
+        const screenSize = 200 * 100.0 / 41.0;
+
         this.model = model;
         this.model.syntheticVision.enabled.subscribe(enabled => {
             this.horizonBottom.style.display = enabled ? "none" : "block";
@@ -188,7 +206,7 @@ class AttitudeIndicator extends HTMLElement {
                         const sign = this.airportSigns[i];
                         sign.style.display = airportSign.projectedPosition.z > 0 ? "block" : "none";
                         if (airportSign.projectedPosition.z > 0) {
-                            sign.setAttribute("transform", `translate(${airportSign.projectedPosition.x * 200 * 100.0 / 41.0}, ${airportSign.projectedPosition.y * 200 * 100.0 / 41.0})`);
+                            sign.setAttribute("transform", `translate(${airportSign.projectedPosition.x * screenSize}, ${airportSign.projectedPosition.y * screenSize})`);
                             Avionics.Utils.diffAndSet(sign.querySelector("text"), airportSign.name);
                             i--;
                         }
@@ -209,7 +227,7 @@ class AttitudeIndicator extends HTMLElement {
         });
         this.model.flightPathMarker.position.subscribe(position => {
             if (position) {
-                this.flightPathMarker.setAttribute("transform", `translate(${position.x * 200 * 100.0 / 41.0}, ${position.y * 200 * 100.0 / 41.0})`);
+                this.flightPathMarker.setAttribute("transform", `translate(${position.x * screenSize}, ${position.y * screenSize})`);
             }
         });
         this.model.attributes.subscribe(attributes => {
@@ -245,7 +263,17 @@ class AttitudeIndicator extends HTMLElement {
         this.model.flightDirector.show.subscribe(show => this.flightDirector.style.display = show ? "block" : "none");
         this.model.slipSkid.subscribe(value => this.slipSkid.setAttribute("transform", `translate(${value * 40}, 0)`));
 
-
+        this.model.heading.subscribe(heading => {
+            const quantizedHeading = Math.floor(heading / 30) * 30;
+            const delta = quantizedHeading - heading;
+            for (let i = 0; i < this.horizonHeadings.length; i++) {
+                const j = i - 1;
+                const projected = this.model.projectYawPitch((j * 30 + delta) * Math.PI / 180, 0);
+                const text = quantizedHeading + j * 30;
+                this.horizonHeadings[i].querySelector("text").textContent = text == 0 ? 360 : text;
+                this.horizonHeadings[i].setAttribute("transform", `translate(${projected.x * screenSize}, 0)`);
+            }
+        });
     }
     createSvgElement(tagName, attributes = []) {
         return DOMUtilities.createElementNS(Avionics.SVG.NS, tagName, attributes);
@@ -425,6 +453,7 @@ class AttitudeIndicator extends HTMLElement {
         this.flightPathMarker = this.createFlightPathMarker();
         this.bottomPart.appendChild(this.flightPathMarker);
 
+        this.bottomPart.appendChild(this.createHorizonHeadings());
         this.bottomPart.appendChild(this.createAirportSigns());
     }
     createHorizon() {
@@ -645,17 +674,18 @@ class AttitudeIndicator extends HTMLElement {
         for (let i = 0; i < 5; i++) {
             const sign = this.createSvgElement("g");
             const background = this.createSvgElement("rect", {
-                fill: "rgba(30,30,30,0.5)",
+                fill: "rgba(30,30,30,0.75)",
                 stroke: "#fff",
                 "stroke-width": 2,
                 width: 50,
                 height: 20,
+                x: -25,
                 y: -30 - 20
             });
             const text = this.createSvgElement("text", {
                 fill: "#fff",
                 "font-size": 15,
-                x: 25,
+                x: 0,
                 y: -30 - 5,
                 "text-anchor": "middle"
             });
@@ -664,7 +694,7 @@ class AttitudeIndicator extends HTMLElement {
                 width: 2,
                 height: 30,
                 y: -30,
-                x: -1 + 50 / 2
+                x: -1
             }));
             sign.appendChild(background);
             sign.appendChild(text);
@@ -673,6 +703,21 @@ class AttitudeIndicator extends HTMLElement {
         }
         this.airportSigns = signs;
         this.airportSignsGroup = g;
+        return g;
+    }
+    createHorizonHeadings() {
+        const g = this.createSvgElement("g");
+        const elements = [];
+        for (let i = -1; i <= 1; i++) {
+            const element = this.createSvgElement("g", { class: "horizon-heading" });
+            const text = this.createSvgElement("text", { x: 0, y: -10 - 6 });
+            element.appendChild(this.createSvgElement("rect", { width: 2, height: 10, y: -10, x: -1 }));
+            element.appendChild(text);
+            g.appendChild(element);
+            elements.push(element);
+        }
+        this.horizonHeadings = elements;
+        this.horizonHeadingsGroup = g;
         return g;
     }
     attributeChangedCallback(name, oldValue, newValue) {

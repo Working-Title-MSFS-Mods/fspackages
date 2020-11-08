@@ -176,7 +176,6 @@ class AirspeedIndicator extends HTMLElement {
                 this.redEnd = speeds["red-end"];
             if ("max-speed" in speeds)
                 this.maxValue = speeds["max-speed"];
-            console.log(`Max value: ${this.maxValue}`);
         });
     }
     createSvgElement(tagName, attributes = []) {

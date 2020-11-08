@@ -5,10 +5,11 @@ class WT_Synthetic_Vision {
     }
     toggle() {
         this.set(!this.enabled.value);
+        WTDataStore.set(`PFD.SyntheticVision`, this.enabled.value);
     }
     set(enabled) {
-        WTDataStore.set(`PFD.SyntheticVision`, enabled);
         this.enabled.value = enabled;
+        WTDataStore.set(`PFD.SyntheticVision`, this.enabled.value);
     }
     toggleAirportSigns() {
         this.airportSigns.value = !this.airportSigns.value;

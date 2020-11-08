@@ -39,7 +39,10 @@ WT_Barometric_Pressure.IN_MG = "IN";
 WT_Barometric_Pressure.HPA = "HPA";
 
 class WT_Minimums {
-    constructor() {
+    /**
+     * @param {WT_Plane_Config} config 
+     */
+    constructor(config) {
         this.mode = new Subject();
         this.source = new Subject();
         this.value = new Subject();
@@ -51,6 +54,15 @@ class WT_Minimums {
         this.wasUpper = false;
 
         this.modes = new Subject([0, 1]);
+
+        config.watchNode("RadarAltitude").subscribe(node => {
+            const isAvailable = node && node.textContent == "True";
+            if (isAvailable) {
+                this.modes.value = [0, 1, 3];
+            } else {
+                this.modes.value = [0, 1];
+            }
+        });
         /*let raElem = this.gps.instrumentXmlConfig.getElementsByTagName("RadarAltitude");
         if (raElem.length > 0) {
             this.haveRadarAltitude = raElem[0].textContent == "True";
