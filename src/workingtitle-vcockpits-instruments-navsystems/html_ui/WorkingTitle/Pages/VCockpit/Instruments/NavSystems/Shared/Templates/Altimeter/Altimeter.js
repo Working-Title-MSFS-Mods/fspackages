@@ -115,17 +115,17 @@ class Altimeter extends HTMLElement {
     createRotatingSvg(center) {
         const margin = 5;
         const svg = this.createSvgElement("svg", {
-            x: Altimeter.ALTIMETER_WIDTH - 70 + margin,
+            x: Altimeter.ALTIMETER_WIDTH - 60,
             y: center - 60 + margin,
-            width: 70 - margin * 2,
+            width: 60,
             height: 120 - margin * 2,
-            viewBox: "0 -50 70 120",
+            viewBox: "0 -50 60 110",
         });
         this.endDigitsGroup = this.createSvgElement("g");
         svg.appendChild(this.endDigitsGroup);
         this.endDigits = [];
         for (let i = -2; i <= 2; i++) {
-            let digit = this.createSvgElement("text", { x: 7, y: 23 + 45 * i, class: "rotating-digit-small" });
+            let digit = this.createSvgElement("text", { x: 4, y: 23 + 45 * i, class: "rotating-digit" });
             digit.textContent = "XX";
             this.endDigits.push(digit);
             this.endDigitsGroup.appendChild(digit);
@@ -438,7 +438,7 @@ class Altimeter extends HTMLElement {
             this.trendElement = this.createSvgElement("rect", { x: 1.5, y: 0, width: 8, height: 0, class: "trend-line" });
             graduationSvg.appendChild(this.trendElement);
 
-            const smallStartX = Altimeter.ALTIMETER_WIDTH - 70;
+            const smallStartX = Altimeter.ALTIMETER_WIDTH - 60;
             const startY = center - 30;
             const endY = center + 30;
             const smallStartY = center - 60;
@@ -450,24 +450,24 @@ class Altimeter extends HTMLElement {
             });
             graduationSvg.appendChild(cursor);
             const margin = 5;
-            const cursorBaseSvg = this.createSvgElement("svg", { x: Altimeter.ALTIMETER_WIDTH - 165 + margin, y: center - 30 + margin, width: 100 - margin, height: 60 - margin * 2, viewBox: "5 5 95 50" });
+            const cursorBaseSvg = this.createSvgElement("svg", { x: 20 + margin, y: center - 30 + margin, width: Altimeter.ALTIMETER_WIDTH - 20 - margin, height: 60 - margin * 2, viewBox: `5 5 ${Altimeter.ALTIMETER_WIDTH - 20 - margin * 2} 50` });
             graduationSvg.appendChild(cursorBaseSvg);
-            this.digit1Top = this.createSvgElement("text", { x: 16, y: -6, class: "rotating-digit" });
+            this.digit1Top = this.createSvgElement("text", { x: 13, y: -6, class: "rotating-digit-thousands" });
             this.digit1Top.textContent = "X";
             cursorBaseSvg.appendChild(this.digit1Top);
-            this.digit1Bot = this.createSvgElement("text", { x: 16, y: 49, class: "rotating-digit" });
+            this.digit1Bot = this.createSvgElement("text", { x: 13, y: 49, class: "rotating-digit-thousands" });
             this.digit1Bot.textContent = "X";
             cursorBaseSvg.appendChild(this.digit1Bot);
-            this.digit2Top = this.createSvgElement("text", { x: 44, y: -6, class: "rotating-digit" });
+            this.digit2Top = this.createSvgElement("text", { x: 40, y: -6, class: "rotating-digit-thousands" });
             this.digit2Top.textContent = "X";
             cursorBaseSvg.appendChild(this.digit2Top);
-            this.digit2Bot = this.createSvgElement("text", { x: 44, y: 49, class: "rotating-digit" });
+            this.digit2Bot = this.createSvgElement("text", { x: 40, y: 49, class: "rotating-digit-thousands" });
             this.digit2Bot.textContent = "X";
             cursorBaseSvg.appendChild(this.digit2Bot);
-            this.digit3Top = this.createSvgElement("text", { x: 72, y: -6, class: "rotating-digit" });
+            this.digit3Top = this.createSvgElement("text", { x: 70, y: -6, class: "rotating-digit" });
             this.digit3Top.textContent = "X";
             cursorBaseSvg.appendChild(this.digit3Top);
-            this.digit3Bot = this.createSvgElement("text", { x: 72, y: 49, class: "rotating-digit" });
+            this.digit3Bot = this.createSvgElement("text", { x: 70, y: 49, class: "rotating-digit" });
             this.digit3Bot.textContent = "X";
             cursorBaseSvg.appendChild(this.digit3Bot);
             graduationSvg.appendChild(this.createRotatingSvg(center));

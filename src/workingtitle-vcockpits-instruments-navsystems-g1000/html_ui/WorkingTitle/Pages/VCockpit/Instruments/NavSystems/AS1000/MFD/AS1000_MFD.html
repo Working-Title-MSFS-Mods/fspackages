@@ -639,7 +639,11 @@
                     </div>
                     <div class="element" data-id="time-format">
                         <div class="name">Time Format</div>
-                        <div class="value"></div>
+                        <drop-down-selector class="value" data-setting="time_mode">
+                            <drop-down-selector-option value="0">Local 12hr</drop-down-selector-option>
+                            <drop-down-selector-option value="1">Local 24hr</drop-down-selector-option>
+                            <drop-down-selector-option value="2">UTC</drop-down-selector-option>
+                        </drop-down-selector>
                     </div>
                     <div class="element" data-id="time-offset">
                         <div class="name">Time Offset</div>

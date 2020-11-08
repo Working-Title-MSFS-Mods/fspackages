@@ -6,7 +6,7 @@ drop-down-selector {
         display: none !important;
         z-index: 1000;
         position: absolute;
-        left: 0;
+        right: 0;
         top: 100%;
         background: $popup_background_color;
         border: 1vh outset rgba(#111, 0.8);

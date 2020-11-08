@@ -260,6 +260,11 @@ class AttitudeIndicator extends HTMLElement {
                 this.horizonHeadings[i].setAttribute("transform", `translate(${projected.x * screenSize}, 0)`);
             }
         });
+
+        this.model.syntheticVision.enabled.subscribe(enabled => {
+            this.lastQuantizedAngle = null;
+            this.setAttribute("bank_size_ratio", enabled ? "-17" : "-6");
+        });
     }
     createSvgElement(tagName, attributes = []) {
         return DOMUtilities.createElementNS(Avionics.SVG.NS, tagName, attributes);

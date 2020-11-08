@@ -99,13 +99,20 @@ class WT_Drop_Down_Selector extends HTMLElement {
         this.exit();
     }
     cancel() {
+        this.value = this.previousValue;
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("input", true, true);
+        this.dispatchEvent(evt);
         this.exit();
     }
     enter(e) {
         if (this.options.length == 0)
             return;
 
-        let inputStack = e.detail.inputStack;
+        this.previousValue = this.value;
+        this.setAttribute("ACTIVE", "ACTIVE");
+
+        const inputStack = e.detail.inputStack;
         let selectedOption = null;
         let i = 0;
         for (let option of this.getOptions()) {
@@ -113,7 +120,7 @@ class WT_Drop_Down_Selector extends HTMLElement {
                 selectedOption = option;
             i++;
         }
-        let inputLayer = new WT_Drop_Down_Selector_Input_Layer(this, new Selectables_Input_Layer_Dynamic_Source(this.elements.popup, "drop-down-selector-option:not([disabled])"));
+        const inputLayer = new WT_Drop_Down_Selector_Input_Layer(this, new Selectables_Input_Layer_Dynamic_Source(this.elements.popup, "drop-down-selector-option:not([disabled])"));
         inputLayer.onDeactivateEvent.subscribe(() => {
             this.removeAttribute("ACTIVE");
         });
@@ -121,7 +128,6 @@ class WT_Drop_Down_Selector extends HTMLElement {
         inputLayer.selectElement(selectedOption);
         inputLayer.setExitHandler(this);
         this.inputHandler = inputStack.push(inputLayer);
-        this.setAttribute("ACTIVE", "ACTIVE");
     }
     exit() {
         if (this.inputHandler) {

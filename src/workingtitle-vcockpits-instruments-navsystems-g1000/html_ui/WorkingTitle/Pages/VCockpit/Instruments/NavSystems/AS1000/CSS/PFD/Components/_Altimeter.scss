@@ -115,17 +115,18 @@ glasscockpit-altimeter {
         fill: #000;
     }
 
-    .rotating-digit {
+    .rotating-digit-thousands {
         font-size: 50px;
         font-family: $font_family_normal;
         font-weight: bold;
         fill: #fff;
     }
 
-    .rotating-digit-small {
+    .rotating-digit {
         font-size: 42px;
         font-family: $font_family_normal;
         fill: #fff;
+        font-weight: bold;
     }
 
     .barometric-pressure {

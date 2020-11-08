@@ -21,7 +21,7 @@ class WT_Local_Time_Model {
         let offset = this.settings.getValue("time_offset");
         switch (mode) {
             // Local 12HR
-            case 0: {
+            case "0": {
                 let value = SimVar.GetGlobalVarValue("LOCAL TIME", "seconds");
                 if (value) {
                     let seconds = (Number.parseInt(value) + offset + 86400) % 86400;
@@ -36,7 +36,7 @@ class WT_Local_Time_Model {
             }
 
             // Local 24HR
-            case 1: {
+            case "1": {
                 let value = SimVar.GetGlobalVarValue("LOCAL TIME", "seconds");
                 if (value) {
                     let seconds = (Number.parseInt(value) + offset + 86400) % 86400;
@@ -46,8 +46,8 @@ class WT_Local_Time_Model {
             }
 
             // ZULU / UTC
-            case 2: {
-                let value = SimVar.GetGlobalVarValue("E:ZULU TIME", "seconds");
+            case "2": {
+                let value = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
                 if (value) {
                     let seconds = (Number.parseInt(value) + offset + 86400) % 86400;
                     let time = this.secondsToZulu(seconds);
@@ -57,7 +57,7 @@ class WT_Local_Time_Model {
         }
     }
     update(dt) {
-        let mode = this.getMode();
+        const mode = this.getMode();
         this.mode.value = mode;
         this.time.value = this.getTime(mode);
     }
@@ -74,10 +74,10 @@ class WT_Local_Time_View extends WT_HTML_View {
     }
     modeToText(mode) {
         switch (mode) {
-            case 0:
-            case 1:
+            case "0":
+            case "1":
                 return "LCL";
-            case 2:
+            case "2":
                 return "UTC";
         }
     }

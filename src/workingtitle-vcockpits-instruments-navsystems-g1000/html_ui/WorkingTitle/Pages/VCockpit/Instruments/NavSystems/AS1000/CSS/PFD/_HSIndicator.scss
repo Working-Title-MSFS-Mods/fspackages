@@ -3,7 +3,7 @@ glasscockpit-hsi {
 
     %nav-annunciators {
         font-size: 7px;
-        font-family: $font_family_mono;
+        font-family: $font_family_normal;
         font-weight: bold;
         text-anchor: middle;
     }
@@ -101,7 +101,7 @@ glasscockpit-hsi {
 
     .course-text,
     .heading-text {
-        font-family: $font_family_mono;
+        font-family: $font_family_normal;
         font-weight: bold;
 
         rect {

@@ -393,7 +393,6 @@ class AS1000_PFD extends BaseAS1000 {
         this.dependencies.syntheticVision.enabled.subscribe(enabled => {
             syntheticVision.setAttribute("show-bing-map", enabled ? "true" : "false");
             syntheticVision.style.display = enabled ? "block" : "none";
-            document.querySelector("glasscockpit-attitude-indicator").setAttribute("bank_size_ratio", enabled ? "-17" : "-6.5");
         });
 
         // Need to do this to get the map to load 
