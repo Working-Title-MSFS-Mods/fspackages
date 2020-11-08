@@ -241,7 +241,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N1ModeLeft.setAttribute("glyph-orientation-vertical", "0");
             this.N1ModeLeft.setAttribute("font-family", "Roboto-Bold");
             n1Group.appendChild(this.N1ModeLeft);
-            
+
             this.N1ModeRight = document.createElementNS(Avionics.SVG.NS, "text");
             this.N1ModeRight.textContent = "TO";
             this.N1ModeRight.setAttribute("x", 180);
@@ -1696,6 +1696,29 @@ class CJ4_SystemEngines extends NavSystemElement {
                 trimGroup.appendChild(text);
             }
         }
+
+        // engine modes
+        this.N1ModeLeft = document.createElementNS(Avionics.SVG.NS, "text");
+        this.N1ModeLeft.textContent = "TO";
+        this.N1ModeLeft.setAttribute("x", 100);
+        this.N1ModeLeft.setAttribute("y", startPosY);
+        this.N1ModeLeft.setAttribute("fill", "#cccac8");
+        this.N1ModeLeft.setAttribute("font-size", "24");
+        this.N1ModeLeft.setAttribute("writing-mode", "tb-rl");
+        this.N1ModeLeft.setAttribute("glyph-orientation-vertical", "0");
+        this.N1ModeLeft.setAttribute("font-family", "Roboto-Bold");
+        n1Group.appendChild(this.N1ModeLeft);
+
+        this.N1ModeRight = document.createElementNS(Avionics.SVG.NS, "text");
+        this.N1ModeRight.textContent = "TO";
+        this.N1ModeRight.setAttribute("x", 180);
+        this.N1ModeRight.setAttribute("y", startPosY);
+        this.N1ModeRight.setAttribute("fill", "#cccac8");
+        this.N1ModeRight.setAttribute("font-size", "24");
+        this.N1ModeRight.setAttribute("writing-mode", "tb-rl");
+        this.N1ModeRight.setAttribute("glyph-orientation-vertical", "0");
+        this.N1ModeRight.setAttribute("font-family", "Roboto-Bold");
+        n1Group.appendChild(this.N1ModeRight);
     }
     onUpdate(_deltaTime) {
         if (!this.root)
@@ -1713,6 +1736,26 @@ class CJ4_SystemEngines extends NavSystemElement {
     onEvent(_event) {
     }
     updateN1() {
+        {
+            // update thrust setting
+            let thrustSetting = "TO";
+            switch (SimVar.GetSimVarValue("L:THROTTLE_MODE", "number")) {
+                case 1:
+                    thrustSetting = "CRU";
+                    break;
+                case 2:
+                    thrustSetting = "CLB";
+                    break;
+                case 3:
+                    thrustSetting = "TO";
+                    break;
+                default:
+                    break;
+            }
+
+            this.N1ModeLeft.textContent = thrustSetting;
+            this.N1ModeRight.textContent = thrustSetting;
+        }
         {
             let N1Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N1:1", "percent");
             let n1_y = this.N1ToPixels(N1Eng1);
@@ -2734,7 +2777,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             case Jet_NDCompass_Display.PLAN:
                 this.zoomFactor = 4.1;
                 break;
-            case Jet_NDCompass_Display.PPOS:           
+            case Jet_NDCompass_Display.PPOS:
                 this.zoomFactor = 2.8;
                 break;
             default:
@@ -2908,7 +2951,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         }
         else {
             this.map.instrument.setAttribute('style', 'display: none');
-        } 
+        }
     }
 }
 class CJ4_Map extends MapInstrumentElement {

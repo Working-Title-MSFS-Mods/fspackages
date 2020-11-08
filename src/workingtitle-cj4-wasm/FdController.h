@@ -26,6 +26,14 @@ private:
     /// </summary>  
     int throttleAxis = 0;
 
+    int frameCount = 0;
+
+    enum ThrottleMode { UNDEF = 0, CRU = 1, CLB = 2, TO = 3 };
+
+    ThrottleMode throttleMode = UNDEF;
+
+    bool enabled = true;
+
     /// <summary>
     /// Calculates and updates thrust according to target and PIDs.
     /// </summary>
@@ -35,6 +43,9 @@ private:
         //double gThrust = wt_utils::convertToGrossThrust(this->simVars->getThrust(1), this->simVars->getMach());
         //printf("TTHR: %.0f THR: %.0f EL: %f PL: %f \r\n", targetThrust, this->simVars->getThrust(1), errorLeft, pidOutLeft);
         //printf("TTHR: %.0f GTHR: %.0f @ %.0f \r\n", targetThrust, gThrust, this->simVars->getPlaneAltitude());
+        //if (this->frameCount % 1000000 == 0) {
+        //    printf("AXIS: %d\r\n ", this->throttleAxis);
+        //}
 
         EngineControlData controls;
         controls.throttleLeft = this->getDesiredThrottle(1, deltaTime);
@@ -51,12 +62,36 @@ private:
     double getDesiredThrottle(int index, double deltaTime) {
         double throttleLeverPerc = (this->throttleAxis + 16384) / 32768.0;
         double throttleExp = pow(throttleLeverPerc, 3.5);
-        double targetThrust = (2950 * throttleExp); // this is gross thrust (one engine)
+        double targetThrust = (2950 * throttleExp) + 250; // flat target thrust
+
+        // TODO: extract the modes later
+        switch (this->throttleMode)
+        {
+        case TO:
+            targetThrust = 3400;
+            break;
+        case CLB:
+            targetThrust = 1800;
+            break;
+        case CRU:
+            //targetThrottle = this->throttleAxis;
+            break;
+        default:
+            break;
+        }
 
         double grossSimThrust = wt_utils::convertToGrossThrust(this->simVars->getThrust(index), this->simVars->getMach());
         double maxDensityThrust = wt_utils::getMaxDensityThrust(this->simVars->getAmbientDensity());
 
-        if (maxDensityThrust < 3200) {
+        if (this->frameCount % 50000000 == 0) {
+            printf("TTHR: %.0f GTHR: %.0f @ %.0f \r\n", targetThrust, grossSimThrust, this->simVars->getPlaneAltitude());
+        }
+
+        if (!enabled) {
+            return throttleLeverPerc * 100;
+        }
+
+        if (this->throttleMode != TO && this->throttleMode != CLB && (maxDensityThrust < targetThrust)) {
             targetThrust = (maxDensityThrust * throttleExp);
         }
 
@@ -71,13 +106,44 @@ private:
             pidOut = this->throttleRightController->GetOutput(error, deltaTime);
         }
 
-        if (index == 1)
-            printf("TTHR: %.0f THR: %.0f EL: %f PL: %f \r\n", targetThrust, this->simVars->getThrust(1), error, pidOut);
-
-
-        //printf("TLP: %.0f DTLP %.0f\r\n", this->simVars->getThrottleLeverPosition(index), max(0, min(100, this->simVars->getThrottleLeverPosition(index) + pidOut)));
-
         return max(0, min(100, this->simVars->getThrottleLeverPosition(index) + pidOut));
+    }
+
+    void updateVisibleThrottle() {
+        int targetThrottle = 0;
+
+        switch (this->throttleMode)
+        {
+        case TO:
+            targetThrottle = 16384;
+            break;
+        case CLB:
+            targetThrottle = 9060;
+            break;
+        case CRU:
+            targetThrottle = this->throttleAxis;
+            break;
+        default:
+            break;
+        }
+
+        double throttleLeverPerc = (targetThrottle + 16384) / 32768.0;
+        this->simVars->setThrottlePos(throttleLeverPerc * 100);
+    }
+
+    void updateThrottleMode() {
+        if (this->throttleAxis > 15000) {
+            this->throttleMode = TO;
+        }
+        else if (this->throttleAxis > 9060) {
+            this->throttleMode = CLB;
+        }
+        else if (this->throttleAxis < 9060) {
+            this->throttleMode = CRU;
+        }
+
+        this->simVars->setThrottleMode(this->throttleMode);
+
     }
 
 public:
@@ -96,8 +162,15 @@ public:
 
     void update(double throttleAxis, double deltaTime)
     {
+        this->frameCount += deltaTime;
+        if (this->frameCount > 1147483647) {
+            this->frameCount = 0;
+        }
+
         this->throttleAxis = throttleAxis;
+        this->updateThrottleMode();
         this->updateThrust(deltaTime);
+        this->updateVisibleThrottle();
     }
 };
 

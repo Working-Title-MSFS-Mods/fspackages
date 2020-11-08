@@ -112,7 +112,6 @@ private:
         {
         case ThrottleEventIDs::AxisThrottleSet:
             globalThrottleAxis = static_cast<int>(evt->dwData);
-            //printf("G: %d \r\n", globalThrottleAxis);
             break;
         }
     }
@@ -132,8 +131,6 @@ public:
             return false;
         }
 
-        //g_SimVars.initializeVars();
-
         FdCtrlInstance.init();
 
         return true;
@@ -146,10 +143,6 @@ public:
     /// <returns>True if successful, false otherwise.</returns>
     bool OnUpdate(double deltaTime)
     {
-        //printf("FdGauge OnUpdate()");
-
-        //g_SimVars.setThrottleMode(1);4
-
         SimConnect_CallDispatch(hSimConnect, HandleAxisEvent, this);
 
         FdCtrlInstance.update(globalThrottleAxis, deltaTime);

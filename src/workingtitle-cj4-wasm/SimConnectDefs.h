@@ -112,6 +112,16 @@ public:
     /// </summary>
     ID ThrottleMode;
 
+    /// <summary>
+    /// The local variable for the visible throttle position 1
+    /// </summary>
+    ID ThrottlePos1;
+
+    /// <summary>
+    /// The local variable for the visible throttle position 2
+    /// </summary>
+    ID ThrottlePos2;
+
     SimVars()
     {
         this->initializeVars();
@@ -119,11 +129,19 @@ public:
 
     void initializeVars() {
         ThrottleMode = register_named_variable("THROTTLE_MODE");
+        this->setThrottleMode(0);
+        ThrottlePos1 = register_named_variable("Throttle1_Pos");
+        ThrottlePos2 = register_named_variable("Throttle2_Pos");
         m_Units = new Units();
     }
 
     void setThrottleMode(FLOAT64 value) {
         set_named_variable_value(ThrottleMode, value);
+    }
+
+    void setThrottlePos(double value) {
+        set_named_variable_value(ThrottlePos1, value);
+        set_named_variable_value(ThrottlePos2, value);
     }
 
     FLOAT64 getThrust(int index) {
