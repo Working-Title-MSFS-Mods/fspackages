@@ -23,6 +23,7 @@
         "EmptyCallback": "writable",
         "LatLong": "writable",
         "Coherent": "writable",
+        "WT_BaseAutopilot": "writable",
         "SimVar": "writable",
         "Simplane": "writable",
         "fastToFixed": "writable",
