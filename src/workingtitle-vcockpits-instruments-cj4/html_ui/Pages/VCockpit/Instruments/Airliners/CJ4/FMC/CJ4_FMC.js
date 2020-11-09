@@ -404,9 +404,9 @@ class CJ4_FMC extends FMCMainDisplay {
             }
             this._apHasDeactivated = !currentApMasterStatus && this._previousApMasterStatus;
             this._previousApMasterStatus = currentApMasterStatus;
-            let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean");
+            let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
 
-            if (isVNAVActivate && !this._currentAP === undefined) {
+            if (isVNAVActivate && this._currentAP === undefined) {
                 // vnav turned on, init it
                 this._currentAP = new WT_VNavPathAutopilot(this.flightPlanManager);
                 this._currentAP.activate();
