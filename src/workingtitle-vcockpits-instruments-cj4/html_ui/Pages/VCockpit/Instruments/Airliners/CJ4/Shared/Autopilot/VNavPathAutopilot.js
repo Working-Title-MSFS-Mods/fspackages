@@ -35,7 +35,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
             this._vnavTargetDistance = this._destinationDistance - 10;
             this._topOfDescent = 10 + ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
             this._vnavTargetWaypoint = this._destination;
-            this.__lastDestinationIdent = this._destination.ident;
+            this._lastDestinationIdent = this._destination.ident;
         }
         //LOAD ROUTE VNAV ONLY WHEN ACTIVE WAYPOINT HAS CHANGED OR ON FIRST RUN
         else if (this._vnavType == "route" && this._waypoints && this._activeWaypoint && this._activeWaypoint.ident != this._lastActiveWaypointIdent) {
