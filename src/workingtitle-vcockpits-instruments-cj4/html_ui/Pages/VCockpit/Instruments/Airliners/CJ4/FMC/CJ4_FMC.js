@@ -308,7 +308,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
             const uniqueWaypoints = new Map();
             waypoints.forEach(wp => {
-                if(wp){
+                if (wp) {
                     uniqueWaypoints.set(wp.icao, wp);
                 }
             });
@@ -501,6 +501,14 @@ class CJ4_FMC extends FMCMainDisplay {
             }
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MAX_CALCULATED", "knots", Simplane.getMaxSpeed(Aircraft.CJ4));
+
+            const machMode = Simplane.getAutoPilotMachModeActive();
+            if (machMode) {
+                const machAirspeed = Simplane.getAutoPilotMachHoldValue();
+                Coherent.call("AP_MACH_VAR_SET", 0, parseFloat(machAirspeed.toFixed(2)));
+            }
+
+
             this.updateAutopilotCooldown = this._apCooldown;
         }
     }
