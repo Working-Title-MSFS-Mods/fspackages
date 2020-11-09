@@ -9,6 +9,7 @@ class WT_BaseAutopilot {
         this._currentDistanceInFP = undefined;
         this._lastActiveWaypointIdent = undefined;
         this._lastDestinationIdent = undefined;
+        this._currentFlightSegment = undefined;
 
         //COMPONENTS TO REFRESH ONLY WHEN THERE IS A FLIGHT PLAN CHANGE
         this._desiredFPA = WTDataStore.get('CJ4_vpa', 3);
@@ -37,8 +38,8 @@ class WT_BaseAutopilot {
         //this._apCurrentAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "Feet");
         this._apCurrentVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute");
         this._altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
-
         this._activeWaypoint = this._fpm.getActiveWaypoint();
+        this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
 
         // TODO detect if activewaypoint is changed and update
         // TODO detect if destination is changed and update
