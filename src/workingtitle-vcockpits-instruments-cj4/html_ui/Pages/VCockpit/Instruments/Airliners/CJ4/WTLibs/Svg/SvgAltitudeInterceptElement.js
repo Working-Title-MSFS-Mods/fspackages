@@ -88,6 +88,8 @@ class SvgAltitudeInterceptElement extends SvgMapElement {
         let arcStart = SvgAltitudeInterceptElement.getRadialOffsetPos(centerPos, distance, -arcAngularWidthRad / 2);
         let arcEnd = SvgAltitudeInterceptElement.getRadialOffsetPos(centerPos, distance, arcAngularWidthRad / 2);
 
+        if (isNaN(centerPos.x)) return;
+
         this.arcOuter.setAttribute("d", `M ${arcStart.x} ${arcStart.y} A ${distance} ${distance} 0 0 1 ${arcEnd.x} ${arcEnd.y}`);
         this.arcOuter.setAttribute("transform", `rotate(${facing + map.rotation} ${centerPos.x} ${centerPos.y})`);
         this.arcInner.setAttribute("d", `M ${arcStart.x} ${arcStart.y} A ${distance} ${distance} 0 0 1 ${arcEnd.x} ${arcEnd.y}`);
