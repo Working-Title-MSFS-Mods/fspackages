@@ -24,6 +24,7 @@
         "LatLong": "writable",
         "Coherent": "writable",
         "WT_BaseAutopilot": "writable",
+        "WT_VNavPathAutopilot": "writable",
         "SimVar": "writable",
         "Simplane": "writable",
         "fastToFixed": "writable",
