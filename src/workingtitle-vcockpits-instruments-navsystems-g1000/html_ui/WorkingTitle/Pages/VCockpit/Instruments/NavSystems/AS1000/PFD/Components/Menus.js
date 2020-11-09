@@ -237,6 +237,7 @@ class WT_PFD_Transponder_Menu extends WT_Soft_Key_Menu {
 class WT_PFD_Transponder_Code_Menu extends WT_Soft_Key_Menu {
     /**
      * @param {WT_PFD_Menu_Handler} menus 
+     * @param {WT_Transponder_Model} transponderModel 
      */
     constructor(menus, transponderModel) {
         super(false);

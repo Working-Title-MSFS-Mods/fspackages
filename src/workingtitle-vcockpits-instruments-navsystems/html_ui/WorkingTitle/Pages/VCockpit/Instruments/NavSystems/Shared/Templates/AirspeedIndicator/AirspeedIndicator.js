@@ -1,9 +1,11 @@
 class WT_Airspeed_Model {
     /**
      * @param {WT_Airspeed_References} airspeedReferences 
+     * @param {WT_Unit_Chooser} unitChooser
      */
-    constructor(airspeedReferences) {
+    constructor(airspeedReferences, unitChooser) {
         this.airspeedReferences = airspeedReferences;
+        this.unitChooser = unitChooser;
 
         this.lastIndicatedSpeed = -10000;
         this.lastTrueSpeed = -10000;
@@ -12,6 +14,7 @@ class WT_Airspeed_Model {
         this.alwaysDisplaySpeed = false;
 
         this.airspeed = new Subject(0);
+        this.airspeedUnits = new Subject("KT");
         this.trueAirspeed = new Subject(0);
         this.trend = new Subject(0);
         this.referenceSpeed = {
@@ -21,45 +24,55 @@ class WT_Airspeed_Model {
         this.references = new Subject([], false);
         this.referenceSpeeds = new Subject();
 
-        airspeedReferences.references.subscribe(references => {
-            this.references.value = references.filter(reference => reference.enabled);
+        airspeedReferences.references.combineWith(this.airspeedUnits).subscribe(references => {
+            this.references.value = references.filter(reference => reference.enabled).map(reference => ({
+                id: reference.id,
+                speed: this.convertSpeed(reference.speed)
+            }));
+        });
+
+        this.airspeedUnits.subscribe(units => {
+            if (this.cockpitSettings) {
+                this.updateCockpitSettings(this.cockpitSettings);
+            }
         });
     }
     updateCockpitSettings(cockpitSettings) {
         const speeds = {};
+        this.cockpitSettings = cockpitSettings;
         if (cockpitSettings && cockpitSettings.AirSpeed.Initialized) {
-            speeds["min-speed"] = cockpitSettings.AirSpeed.lowLimit;
-            speeds["green-begin"] = cockpitSettings.AirSpeed.greenStart;
-            speeds["green-end"] = cockpitSettings.AirSpeed.greenEnd;
-            speeds["flaps-begin"] = cockpitSettings.AirSpeed.whiteStart;
-            speeds["flaps-end"] = cockpitSettings.AirSpeed.whiteEnd;
-            speeds["yellow-begin"] = cockpitSettings.AirSpeed.yellowStart;
-            speeds["yellow-end"] = cockpitSettings.AirSpeed.yellowEnd;
-            speeds["red-begin"] = cockpitSettings.AirSpeed.redStart;
-            speeds["red-end"] = cockpitSettings.AirSpeed.redEnd;
-            speeds["max-speed"] = cockpitSettings.AirSpeed.highLimit;
+            speeds["min-speed"] = this.convertSpeed(cockpitSettings.AirSpeed.lowLimit);
+            speeds["green-begin"] = this.convertSpeed(cockpitSettings.AirSpeed.greenStart);
+            speeds["green-end"] = this.convertSpeed(cockpitSettings.AirSpeed.greenEnd);
+            speeds["flaps-begin"] = this.convertSpeed(cockpitSettings.AirSpeed.whiteStart);
+            speeds["flaps-end"] = this.convertSpeed(cockpitSettings.AirSpeed.whiteEnd);
+            speeds["yellow-begin"] = this.convertSpeed(cockpitSettings.AirSpeed.yellowStart);
+            speeds["yellow-end"] = this.convertSpeed(cockpitSettings.AirSpeed.yellowEnd);
+            speeds["red-begin"] = this.convertSpeed(cockpitSettings.AirSpeed.redStart);
+            speeds["red-end"] = this.convertSpeed(cockpitSettings.AirSpeed.redEnd);
+            speeds["max-speed"] = this.convertSpeed(cockpitSettings.AirSpeed.highLimit);
         } else {
             var designSpeeds = Simplane.getDesignSpeeds();
-            speeds["green-begin"] = designSpeeds.VS1;
-            speeds["green-end"] = designSpeeds.VNo;
-            speeds["flaps-begin"] = designSpeeds.VS0;
-            speeds["flaps-end"] = designSpeeds.VFe;
-            speeds["yellow-begin"] = designSpeeds.VNo;
-            speeds["yellow-end"] = designSpeeds.VNe;
-            speeds["red-begin"] = designSpeeds.VNe;
-            speeds["red-end"] = designSpeeds.VMax;
-            speeds["max-speed"] = designSpeeds.VNe;
+            speeds["green-begin"] = this.convertSpeed(designSpeeds.VS1);
+            speeds["green-end"] = this.convertSpeed(designSpeeds.VNo);
+            speeds["flaps-begin"] = this.convertSpeed(designSpeeds.VS0);
+            speeds["flaps-end"] = this.convertSpeed(designSpeeds.VFe);
+            speeds["yellow-begin"] = this.convertSpeed(designSpeeds.VNo);
+            speeds["yellow-end"] = this.convertSpeed(designSpeeds.VNe);
+            speeds["red-begin"] = this.convertSpeed(designSpeeds.VNe);
+            speeds["red-end"] = this.convertSpeed(designSpeeds.VMax);
+            speeds["max-speed"] = this.convertSpeed(designSpeeds.VNe);
         }
         this.referenceSpeeds.value = speeds;
     }
     update(dt) {
         const indicatedSpeed = Simplane.getIndicatedSpeed();
-        this.airspeed.value = indicatedSpeed;
+        this.airspeed.value = this.convertSpeed(indicatedSpeed);
         const trueSpeed = Simplane.getTrueSpeed();
-        this.trueAirspeed.value = trueSpeed;
+        this.trueAirspeed.value = this.convertSpeed(trueSpeed);
         if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") || this.alwaysDisplaySpeed) {
             this.referenceSpeed.show.value = true;
-            this.referenceSpeed.speed.value = SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots");
+            this.referenceSpeed.speed.value = this.convertSpeed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"));
         } else {
             this.referenceSpeed.show.value = false;
         }
@@ -83,6 +96,10 @@ class WT_Airspeed_Model {
         if (crossSpeed != 0) {
             //this.airspeedElement.setAttribute("max-speed", (Math.min(crossSpeedFactor, 1) * this.maxSpeed).toString()); // TODO:
         }
+        this.airspeedUnits.value = this.unitChooser.chooseSpeed("KPH", "KTS");
+    }
+    convertSpeed(speed) {
+        return this.unitChooser.chooseSpeed(speed * 1.852, speed);
     }
 }
 
@@ -110,6 +127,8 @@ class AirspeedIndicator extends HTMLElement {
      * @param {WT_Airspeed_Model} model 
      */
     setModel(model) {
+        this.model = model;
+
         model.airspeed.subscribe(this.updateAirspeed.bind(this));
 
         model.trueAirspeed.subscribe(tas => {
@@ -176,6 +195,11 @@ class AirspeedIndicator extends HTMLElement {
                 this.redEnd = speeds["red-end"];
             if ("max-speed" in speeds)
                 this.maxValue = speeds["max-speed"];
+        });
+
+        model.airspeedUnits.subscribe(units => {
+            this.tasUnits.textContent = units;
+            this.currentCenterGrad = -1000;
         });
     }
     createSvgElement(tagName, attributes = []) {
@@ -312,7 +336,8 @@ class AirspeedIndicator extends HTMLElement {
         label.textContent = "TAS";
         const units = this.createSvgElement("text", { x: AirspeedIndicator.WIDTH - 5, y: 38, class: "units" });
         units.textContent = "KT";
-        this.tasText = this.createSvgElement("text", { x: AirspeedIndicator.WIDTH - 35, y: 38, class: "value" });
+        this.tasUnits = units;
+        this.tasText = this.createSvgElement("text", { x: AirspeedIndicator.WIDTH - 45, y: 38, class: "value" });
         this.tasText.textContent = "0";
 
         const g = this.createSvgElement("g", { transform: `translate(0, 600)`, class: "tas-text" });
@@ -369,7 +394,7 @@ class AirspeedIndicator extends HTMLElement {
                 this.gradTexts[i].textContent = fastToFixed((4 - i) * 10 + center, 0);
             }
             if (useColors) {
-                function getValue(value) {
+                const getValue = (value) => {
                     return Math.min(Math.max(-100, 300 - 10 * (value - center)), 700);
                 }
                 function handleBar(element, begin, end) {

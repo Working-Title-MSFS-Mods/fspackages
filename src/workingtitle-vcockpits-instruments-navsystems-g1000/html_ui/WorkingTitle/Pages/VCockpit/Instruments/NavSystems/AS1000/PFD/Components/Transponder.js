@@ -8,9 +8,8 @@ class WT_Transponder_Model {
         this.mode = new Subject();
         this.editing = new Subject(false);
         this.interrogated = new Subject(false);
+        this.interrogatedTimeout = null;
         this.editingCode = null;
-
-        //this.codeDisplay = new CombinedSubject([this.code, this.editing])
     }
     getSimCode() {
         return ("0000" + SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number")).slice(-4);
@@ -33,12 +32,12 @@ class WT_Transponder_Model {
         this.editingCode = code;
     }
     update(dt) {
-        this.code.value = this.editingCode === null ? this.getSimCode() : this.editingCode.padEnd(4,"_");
+        this.code.value = this.editingCode === null ? this.getSimCode() : this.editingCode.padEnd(4, "_");
         this.mode.value = this.getMode();
 
-        if (Math.random() < 1 / 180) {
+        if (Math.random() < 1 / 90 && !this.interrogated.value) {
             this.interrogated.value = true;
-            setTimeout(() => this.interrogated.value = false, 1000);
+            setTimeout(() => this.interrogated.value = false, Math.random() * 500);
         }
 
         let onGround = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") < 50;

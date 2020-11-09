@@ -28,6 +28,13 @@ class Subject {
     hasSubscribers() {
         return this.listeners.length > 0;
     }
+    combineWith(others) {
+        if (others instanceof Array) {
+            return new CombinedSubject([this, ...others]);
+        } else {
+            return new CombinedSubject([this, others]);
+        }
+    }
 }
 
 class WT_Event {
@@ -54,15 +61,16 @@ class WT_Event {
 }
 
 class CombinedSubject {
-    constructor(subjects, callback) {
+    constructor(subjects, zipFunction = null) {
         this._value = undefined;
         this.listeners = [];
-        this.callback = callback;
+        this.zipFunction = zipFunction;
         this.subjects = subjects;
+        this.subscriptions = new Subscriptions();
         for (let subject of subjects) {
             if (!(subject instanceof Subject))
                 throw new Error("Tried to create a combined subject with non subjects");
-            subject.subscribe(this.updated.bind(this));
+            this.subscriptions.add(subject.subscribe(this.updated.bind(this)));
         }
     }
     get value() {
@@ -71,8 +79,12 @@ class CombinedSubject {
     set value(value) {
         if (this._value != value) {
             this._value = value;
-            for (let listener of this.listeners) {
-                listener(this.value);
+            for (const listener of this.listeners) {
+                if (this.zipFunction) {
+                    listener(this.value);
+                } else {
+                    listener(...this.value);
+                }
             }
         }
     }
@@ -82,16 +94,25 @@ class CombinedSubject {
             if (typeof value == "undefined")
                 return;
         }
-        this.value = this.callback(...values);
+        if (this.zipFunction) {
+            this.value = this.zipFunction(...values);
+        } else {
+            this.value = values;
+        }
     }
     subscribe(callback) {
         this.listeners.push(callback);
-        if (typeof this.value != "undefined")
-            callback(this.value);
+        if (typeof this.value != "undefined") {
+            if (this.zipFunction) {
+                callback(this.value);
+            } else {
+                callback(...this.value);
+            }
+        }
         return () => this.unsubscribe(callback);
     }
     unsubscribe(callback) {
-        let idx = this.listeners.indexOf(callback);
+        const idx = this.listeners.indexOf(callback);
         this.listeners.splice(idx, 1);
     }
     hasSubscribers() {

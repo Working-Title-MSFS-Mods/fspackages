@@ -67,18 +67,36 @@ function Update-Packages {
         Write-Host "Building css from scss..."
         $stylesheetPath = $packagePath
         $files = Get-ChildItem $stylesheetPath -Recurse -Include *.scss 
-        for ($i=0; $i -lt $files.Count; $i++) {
+        for ($i = 0; $i -lt $files.Count; $i++) {
             $file = $files[$i]
             $fileName = $file.BaseName
             $filePath = $file.FullName
             if (-not $fileName.StartsWith("_")) {
                 $directory = $file.DirectoryName
-                $newFilePath =  "$directory\$fileName.css"
+                $newFilePath = "$directory\$fileName.css"
                 Write-Host "Compiling $fileName.scss..."
                 build-tools\dart-sass\sass.bat --no-source-map $filePath $newFilePath                
             }
         }
         Remove-Item -Path $packagePath -recurse -Include *.scss
+
+        Write-Host "Building js..."
+        $files = Get-ChildItem $packagePath -Recurse -Include BuildJS
+        for ($i = 0; $i -lt $files.Count; $i++) {
+            $file = $files[$i]
+            $string = "";
+            $directory = $file.DirectoryName
+            foreach ($line in Get-Content $file) {
+                if ($line -ne "") {
+                    $string += Get-Content "$directory/$line" -Raw
+                    $string += "`n"
+                }
+            }
+            $fileName = $file.BaseName
+            $filePath = $file.FullName
+            $newFilePath = "$directory\Scripts.js"    
+            $string | Out-File $newFilePath
+        }
     
         Write-Host "Writing $manifestPath..."  
         $manifest | ConvertTo-Json | Out-File -FilePath $manifestPath -Encoding ASCII

@@ -1,4 +1,8 @@
 class WT_Airway_Selector_Model {
+    /**
+     * @param {NavSystem} gps 
+     * @param {WayPointInfo} waypoint 
+     */
     constructor(gps, waypoint) {
         this.gps = gps;
 
@@ -14,23 +18,16 @@ class WT_Airway_Selector_Model {
 
         this.selectedAirway.subscribe(airway => {
             if (airway != null) {
-                let loaded = 0;
-                let waypoints = [];
-                for (let icao of airway.icaos) {
-                    let waypoint = new WayPoint(this.gps);
-                    waypoint.SetICAO(icao, () => loaded++, false);
-                    waypoints.push(waypoint);
-                }
-
-                let frame = () => {
-                    if (loaded < waypoints.length) {
-                        requestAnimationFrame(frame);
-                    } else {
-                        this.exits.value = waypoints;
-                        this.selectedExit.value = this.exits.value[0];
-                    }
-                }
-                requestAnimationFrame(frame);
+                const promises = [];
+                const waypoints = airway.icaos.map(icao => {
+                    const waypoint = new WayPoint(this.gps);
+                    promises.push(new Promise(resolve => waypoint.SetICAO(icao, resolve, false)));
+                    return waypoint;
+                });
+                Promise.all(promises).then(() => {
+                    this.exits.value = waypoints;
+                    this.selectedExit.value = this.exits.value[0];
+                });
             }
         });
 
@@ -51,10 +48,11 @@ class WT_Airway_Selector_Model {
             }
         });
 
-        waypoint.UpdateInfos(() => {
-            this.entry.value = waypoint;
-            this.airways.value = waypoint.airways;
-        });
+        this.loadAirways(waypoint);
+    }
+    async loadAirways(waypoint) {
+        this.entry.value = waypoint;
+        this.airways.value = await this.gps.facilityLoader.getAllAirways(waypoint);
     }
     setSelectedAirwayIndex(index) {
         this.selectedAirway.value = this.airways.value[index];

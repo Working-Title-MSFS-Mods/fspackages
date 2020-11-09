@@ -23,6 +23,12 @@ class WT_Page_Menu_Model {
             this.onSelectedOption.fire();
         }
     }
+    activate() {
+
+    }
+    deactivate() {
+        
+    }
 }
 
 class WT_Page_Menu_Input_Layer extends Selectables_Input_Layer {
@@ -68,6 +74,7 @@ class WT_Page_Menu_View extends WT_HTML_View {
      * @param {WT_Page_Menu_Option} model 
      */
     setModel(model) {
+        this.model = model;
         this.elements.options.innerHTML = "";
         DOMUtilities.AppendChildren(this.elements.options, model.options.map(option => {
             let element = document.createElement("li");
@@ -87,11 +94,13 @@ class WT_Page_Menu_View extends WT_HTML_View {
         this.inputHandle.onPopped.subscribe(() => {
             this.onExit.fire();
         });
+        this.model.activate();
     }
     exit() {
         if (this.inputHandle) {
             this.inputHandle = this.inputHandle.pop();
         }
+        this.model.deactivate();
     }
 }
 customElements.define("g1000-page-menu", WT_Page_Menu_View);

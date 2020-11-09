@@ -240,8 +240,6 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
 
         model.viewMode.subscribe(viewMode => this.setAttribute("view-mode", viewMode));
 
-        this.pageMenu = new WT_Flight_Plan_Page_Menu(model, this, this.confirmDialogHandler);
-
         this.softKeyMenus = {
             main: new WT_Flight_Plan_Main_Menu(this.model, this),
             view: new WT_Flight_Plan_View_Menu(this.model, this),
@@ -286,7 +284,8 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         }
     }
     showPageMenu() {
-        this.pageMenuHandler.show(this.pageMenu);
+        const pageMenu = new WT_Flight_Plan_Page_Menu(this.model, this, this.confirmDialogHandler);
+        this.pageMenuHandler.show(pageMenu);
     }
     showCreateNewWaypoint(index = -1) {
         this.newWaypointHandler.show().then(icao => {

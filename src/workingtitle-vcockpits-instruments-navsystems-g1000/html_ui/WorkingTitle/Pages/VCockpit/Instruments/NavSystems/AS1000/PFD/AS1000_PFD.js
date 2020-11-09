@@ -299,7 +299,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("hsiInput", d => new HSI_Input_Layer(d.hsiModel))
         d.register("hsiModel", d => new HSIIndicatorModel(d.syntheticVision));
         d.register("altimeterModel", d => new WT_Altimeter_Model(this, d.barometricPressure, d.minimums, d.radioAltimeter));
-        d.register("airspeedModel", d => new WT_Airspeed_Model(d.airspeedReferences));
+        d.register("airspeedModel", d => new WT_Airspeed_Model(d.airspeedReferences, d.unitChooser));
 
         d.register("navBoxModel", d => new AS1000_PFD_Nav_Box_Model(d.unitChooser, d.flightPlanManager));
         d.register("comFrequenciesModel", d => new WT_Com_Frequencies_Model());
