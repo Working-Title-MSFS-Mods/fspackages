@@ -18,7 +18,7 @@ class CJ4_FMC_PerfInitPage {
             ["        --- KT[s-text white]"]
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
-        fmc.onLeftInput[1] = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
+        fmc.onLeftInput[1] = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };
         fmc.onLeftInput[2] = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         fmc.onRightInput[0] = () => { CJ4_FMC_FuelMgmtPage.ShowPage1(fmc); };
         fmc.onRightInput[1] = () => { CJ4_FMC_PerfInitPage.ShowPage12(fmc); };
@@ -124,7 +124,7 @@ class CJ4_FMC_PerfInitPage {
             CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
         fmc.onRightInput[4] = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage3(fmc) { //VNAV SETUP Page 1
@@ -144,8 +144,8 @@ class CJ4_FMC_PerfInitPage {
             ["-----------------------[blue]"],
             ["", "PERF INIT>"]
         ]);
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage4(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
+        fmc.onNextPage = () => { CJ4_FMC_VNavSetupPage.ShowPage2(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
@@ -166,8 +166,8 @@ class CJ4_FMC_PerfInitPage {
             ["-----------------------[blue]"],
             ["", "PERF INIT>"]
         ]);
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };
+        fmc.onNextPage = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
@@ -188,8 +188,8 @@ class CJ4_FMC_PerfInitPage {
             ["-----------------------[blue]"],
             ["<DESC INFO", "PERF INIT>"]
         ]);
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage4(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
+        fmc.onPrevPage = () => { CJ4_FMC_VNavSetupPage.ShowPage2(fmc); };
+        fmc.onNextPage = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
