@@ -54,6 +54,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.currentInput = undefined;
         this.previousInput = undefined;
         this._frameUpdates = 0;
+        this._vpathMode = false;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -390,6 +391,8 @@ class CJ4_FMC extends FMCMainDisplay {
         let now = performance.now();
         let dt = now - this._lastUpdateAPTime;
         this._lastUpdateAPTime = now;
+        let vnavMode = undefined;
+
         if (isFinite(dt)) {
             this.updateAutopilotCooldown -= dt;
         }
@@ -406,18 +409,53 @@ class CJ4_FMC extends FMCMainDisplay {
             this._previousApMasterStatus = currentApMasterStatus;
             let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
 
-            if (isVNAVActivate && this._currentAP === undefined) {
+            if (isVNAVActivate) {
                 // vnav turned on, init it
-                this._currentAP = new WT_VNavPathAutopilot(this.flightPlanManager);
-                this._currentAP.activate();
-            } else if (this._currentAP !== undefined) {
-                if (!isVNAVActivate) {
+                let altMode = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean");
+                let flcMode = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean");
+                let vsMode = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean");
+                let gsMode = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean");
+                let pitMode = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean");
+                let currentAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
+                let selectedAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
+                let altDelta = Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feet");
+
+                //ACTIVATE VNAV MODE
+                if (this._currentAP === undefined) {
+                    if (flcMode || vsMode || gsMode || pitMode) {
+                        this._vpathMode = false;
+                        this._currentAP = new WT_VModeAutopilot(this.flightPlanManager);
+                        this._currentAP.activate();
+                    }
+                    else if (altMode && altDelta < 100) {
+                        this._vpathMode = true;
+                        this._currentAP = new WT_VNavPathAutopilot(this.flightPlanManager);
+                        this._currentAP.activate();
+                    }
+                }
+                //UPDATE VNAV MODE
+                else if (this._currentAP) {
+                    if (this._vpathMode = true && (flcMode || vsMode || gsMode || pitMode)) {
+                        this._vpathMode = false;
+                        this._currentAP.deactivate();
+                        this._currentAP = new WT_VModeAutopilot(this.flightPlanManager);
+                    }
+                    else if (this._vpathMode = false && !flcMode && !vsMode && !gsMode && !pitMode) {
+                        this._vpathMode = true;
+                        this._currentAP.deactivate();
+                        this._currentAP = new WT_VNavPathAutopilot(this.flightPlanManager);
+                    }
+                    else {
+                        this._currentAP.update();
+                    }
+                }
+                
+            }
+            else {
+                if (this._currentAP) {
                     // vnav turned off, destroy it
                     this._currentAP.deactivate();
                     this._currentAP = undefined;
-                } else {
-                    // update vnav
-                    this._currentAP.update();
                 }
             }
 
