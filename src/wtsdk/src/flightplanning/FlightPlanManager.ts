@@ -1048,10 +1048,15 @@ export class FlightPlanManager {
   }
 
   /**
-   * Gets the approach from the current flight plan.
+   * Gets the approach procedure from the current flight plan destination airport procedure information.
    */
-  public getApproach() {
-    return this._flightPlans[this._currentFlightPlanIndex].approach;
+  public getApproach(): any {
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+    if (currentFlightPlan.hasDestination && currentFlightPlan.procedureDetails.approachIndex !== -1) {
+      return (currentFlightPlan.destinationAirfield.infos as AirportInfo).approaches[currentFlightPlan.procedureDetails.approachIndex];
+    }
+
+    return undefined;
   }
 
   /**
