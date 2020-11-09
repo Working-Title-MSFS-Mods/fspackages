@@ -8,6 +8,9 @@
 						<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
 						<Property Name="OverridePositioning" Type="bool" Value="True"/>
 						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>-2</Value>
+							</ValueList>
 							<RTPCList>
 								<RTPC Name="" ID="{E9C24571-6165-47BD-B24C-0481FB10BCF5}" ShortID="818384961">
 									<ReferenceList>
