@@ -60,7 +60,7 @@ class CJ4_FMC_VNavSetupPage {
             [" SPD/ALT LIMIT[blue]"],
             [arrivalSpeedLimit + "/" + arrivalSpeedLimitAltitude],
             ["", "VPA [blue]"],
-            ["---/-----", vpa + "\xB0"],
+            ["---/-----", vpa.toFixed(1) + "\xB0"],
             [""],
             ["<VNAV WPTS", "VNAV MONITOR>"],
             [""],
@@ -120,9 +120,9 @@ class CJ4_FMC_VNavSetupPage {
         };
 
         fmc.onRightInput[2] = () => {
-            let value = parseFloat(fmc.inOut).toPrecision(2);
+            let value = parseFloat(fmc.inOut);
             if (value > 0 && value <= 6) {
-                vpa = value;
+                vpa = parseFloat(value.toFixed(1));
                 WTDataStore.set('CJ4_vpa', vpa);
             }
             else {
