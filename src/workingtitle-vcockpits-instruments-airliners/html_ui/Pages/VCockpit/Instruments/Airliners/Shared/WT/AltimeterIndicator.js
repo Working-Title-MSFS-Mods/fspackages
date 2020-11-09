@@ -88,10 +88,10 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.totalGraduations = this.nbPrimaryGraduations + ((this.nbPrimaryGraduations - 1) * this.nbSecondaryGraduations);
         this.graduationScroller = new Avionics.Scroller(this.nbPrimaryGraduations, 100, true);
         this.cursorIntegrals = new Array();
-        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 52, 1, 10, 1000));
-        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 52, 1, 10, 100));
-        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 52, 1, 10, 10));
-        this.cursorDecimals = new Avionics.AltitudeScroller(5, 25, 10, 100);
+        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 62, 1, 10, 1000));
+        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 62, 1, 10, 100));
+        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 62, 1, 10, 10));
+        this.cursorDecimals = new Avionics.AltitudeScroller(5, 27, 10, 100);
         if (!this.rootGroup) {
             this.rootGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.rootGroup.setAttribute("id", "Altimeter");
@@ -241,14 +241,14 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     this.cursorSVGShape = document.createElementNS(Avionics.SVG.NS, "path");
                 this.cursorSVGShape.setAttribute("fill", "black");
                 this.cursorSVGShape.setAttribute("d", "M0 0 L95 0 L95 30 L105 40 L95 50 L95 80 L0 80 Z");
-                this.cursorSVGShape.setAttribute("stroke", "white");
-                this.cursorSVGShape.setAttribute("stroke-width", "0.85");
+                this.cursorSVGShape.setAttribute("stroke", "#909090");
+                this.cursorSVGShape.setAttribute("stroke-width", "3.5");
                 this.cursorSVG.appendChild(this.cursorSVGShape);
                 var _cursorPosX = -3;
                 var _cursorPosY = cursorHeight * 0.5;
-                this.cursorIntegrals[0].construct(this.cursorSVG, _cursorPosX + 25, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
-                this.cursorIntegrals[1].construct(this.cursorSVG, _cursorPosX + 44, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
-                this.cursorIntegrals[2].construct(this.cursorSVG, _cursorPosX + 63, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
+                this.cursorIntegrals[0].construct(this.cursorSVG, _cursorPosX + 25, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
+                this.cursorIntegrals[1].construct(this.cursorSVG, _cursorPosX + 44, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
+                this.cursorIntegrals[2].construct(this.cursorSVG, _cursorPosX + 63, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
                 this.cursorDecimals.construct(this.cursorSVG, _cursorPosX + 95, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 0.95, "green");
                 this.centerSVG.appendChild(this.cursorSVG);
             }
