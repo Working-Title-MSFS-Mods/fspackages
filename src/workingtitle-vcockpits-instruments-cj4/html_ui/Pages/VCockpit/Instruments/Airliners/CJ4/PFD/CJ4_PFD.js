@@ -670,8 +670,51 @@ class CJ4_APDisplay extends NavSystemElement {
             Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
         }
         else if (SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean")) {
-            Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VNAV");
-            Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+            if (SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean")) {
+                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VPIT");
+                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+            }
+            else if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean")) {
+                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VFLC");
+                if (Simplane.getAutoPilotMachModeActive()) {
+                    Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2));
+                }
+                else {
+                    Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0) + "KT");
+                }
+            }
+            else if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
+                let vsDisplay = "<span>VVS</span> ";
+                let verticalHoldVar = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute");
+                vsDisplay += "<span style=\"color: #0599fc;\">" + fastToFixed(verticalHoldVar, 0) + "</span>";
+                if (verticalHoldVar > 0) {
+                    vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↑</span>";
+                }
+                else if (verticalHoldVar < 0) {
+                    vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↓</span>";
+                }
+                Avionics.Utils.diffAndSet(this.AP_VerticalActive, vsDisplay);
+                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+            }
+            else if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean")) {
+                if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean")) {
+                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VALTS");
+                }
+                else {
+                    let delta = Math.abs(Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feet"));
+                    if (delta < 50) {
+                        Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VALT CAP");
+                    }
+                    else {
+                        Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VALT");
+                    }
+                }
+                Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet"), 0) + "FT");
+            }
+            else {
+                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VPATH");
+                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+            }
         }
         else if (SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean")) {
             Avionics.Utils.diffAndSet(this.AP_VerticalActive, "PIT");
