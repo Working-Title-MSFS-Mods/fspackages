@@ -21,6 +21,8 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
      */
     activate() {
         super.activate();
+        Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, 0);
+        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 2);
     }
 
     /**
@@ -71,21 +73,25 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
         let setVerticalSpeed = 0;
 
         //SET BEHAVIOR IF INTERCEPTING TARGET ALTITUDE & SET AP TARGET ALTITUDE
-        if (this.__lastVnavTargetAltitude !== undefined && this.__lastVnavTargetAltitude != this._vnavTargetAltitude && this._vnavTargetDistance > this._topOfDescent && this._altitude > this.__lastVnavTargetAltitude) {
+        if (this._lastVnavTargetAltitude !== undefined && this._lastVnavTargetAltitude != this._vnavTargetAltitude && this._vnavTargetDistance > this._topOfDescent && this._altitude > this._lastVnavTargetAltitude) {
             setVerticalSpeed = this._desiredVerticalSpeed;
-            Coherent.call("AP_ALT_VAR_SET_ENGLISH", 0, this.__lastVnavTargetAltitude, true);
+            Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, this._lastVnavTargetAltitude, true);
+            SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
+            SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
             this._interceptingLastAltitude = true;
         }
         else {
-            this.__lastVnavTargetAltitude = this._vnavTargetAltitude;
+            this._lastVnavTargetAltitude = this._vnavTargetAltitude;
             this._interceptingLastAltitude = false;
             if (this._distanceToTod <= 0 || this._distanceToTod == "N/A") {
-                Coherent.call("AP_ALT_VAR_SET_ENGLISH", 0, this._vnavTargetAltitude, true);
+                Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, this._vnavTargetAltitude, true);
+                SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
+                SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
             }
         }
 
         //SET VS FOR VNAV PATH
-        if (this.__interceptingLastAltitude === false) {
+        if (this._interceptingLastAltitude === false) {
             if ((this._vnavTargetDistance - this._topOfDescent) > 0.5 || this._altitude < this._vnavTargetAltitude) {
                 setVerticalSpeed = 0;
             }
@@ -134,7 +140,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
                 }
             }
             //setVerticalSpeed = Math.round(setVerticalSpeed);
-            Coherent.call("AP_VS_VAR_SET_ENGLISH", 0, setVerticalSpeed);
+            Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, setVerticalSpeed);
         }
     }
 
@@ -143,7 +149,9 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
      */
     deactivate() {
         super.deactivate();
-
+        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+        SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
     }
 
     buildDescentProfile() {
