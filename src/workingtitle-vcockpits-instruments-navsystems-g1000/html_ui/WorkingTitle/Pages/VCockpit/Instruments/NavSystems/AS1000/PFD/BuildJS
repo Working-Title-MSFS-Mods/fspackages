@@ -3,7 +3,16 @@ Components/Annunciations.js
 Components/DataModels.js
 Components/InsetMap.js
 Components/LocalTime.js
-Components/Menus.js
+Components/Menus/AltUnit.js
+Components/Menus/Debug.js
+Components/Menus/Handler.js
+Components/Menus/InsetMap.js
+Components/Menus/Main.js
+Components/Menus/PFD.js
+Components/Menus/SyntheticVision.js
+Components/Menus/Transponder.js
+Components/Menus/TransponderCode.js
+Components/Menus/Wind.js
 Components/Minimums.js
 Components/RadioAltimeter.js
 Components/SetMinimums.js

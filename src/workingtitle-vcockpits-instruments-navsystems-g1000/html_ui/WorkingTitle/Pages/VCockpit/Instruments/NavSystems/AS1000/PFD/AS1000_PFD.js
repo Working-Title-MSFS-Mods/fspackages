@@ -203,7 +203,6 @@ class AS1000_PFD extends BaseAS1000 {
 
         window.addEventListener('unhandledrejection', function (event) {
             console.error("Unhandled exception");
-            event.preventDefault();
         });
 
         this.handleReversionaryMode = false;
@@ -321,9 +320,10 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("markerBeaconModel", d => new WT_Marker_Beacon_Model(this, d.planeConfig, d.sound));
 
         d.register("menuHandler", d => new WT_PFD_Menu_Handler(d.softKeyController, d.alertsKey));
+        d.register("debugMenu", d => new WT_PFD_Debug_Menu(d.menuHandler));
         d.register("transponderMenu", d => new WT_PFD_Transponder_Menu(d.menuHandler, d.transponderModel, d.transponderCodeMenu));
         d.register("transponderCodeMenu", d => new WT_PFD_Transponder_Code_Menu(d.menuHandler, d.transponderModel));
-        d.register("mainMenu", d => new WT_PFD_Main_Menu(d.menuHandler, d.miniPageController, d.hsiModel, d.insetMapMenu, d.pfdMenu, d.transponderMenu));
+        d.register("mainMenu", d => new WT_PFD_Main_Menu(d.menuHandler, d.miniPageController, d.hsiModel, d.insetMapMenu, d.pfdMenu, d.transponderMenu, d.debugMenu));
         d.register("pfdMenu", d => new WT_PFD_PFD_Menu(d.menuHandler, d.hsiModel, d.barometricPressure, d.syntheticVisionMenu, d.altUnitMenu, d.windMenu));
         d.register("windMenu", d => new WT_PFD_Wind_Menu(d.menuHandler, d.windModel, d.alertsKey));
         d.register("insetMapMenu", d => new WT_PFD_Inset_Map_Menu(d.menuHandler, d.insetMap, d.alertsKey));

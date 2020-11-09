@@ -8,10 +8,6 @@ Components/RadioFrequencies.js
 Components/ComFrequencies.js
 Components/NavFrequencies.js
 Components/PageMenu.js
-Data/AirportDatabase.js
-Data/Brightness.js
-Data/DataModels.js
-Data/NearestWaypoints.js
 Data/Procedures/Procedure.js
 Data/Procedures/SelectedProcedure.js
 Data/Procedures/Arrival.js
@@ -21,6 +17,11 @@ Data/Procedures/ProcedureFacility.js
 Data/Procedures/Procedures.js
 Data/Procedures/Transitions.js
 Data/Procedures/Waypoints.js
+Data/AirportDatabase.js
+Data/Brightness.js
+Data/PlaneConfig.js
+Data/NearestWaypoints.js
+Data/RadioAltimeter.js
 Data/WaypointQuickSelect.js
 Libs/CSV.js
 Logic/Navigation/DirectTo.js
