@@ -523,6 +523,16 @@ export class FlightPlanManager {
   }
 
   /**
+   * Gets the flight plan segment for a flight plan waypoint.
+   * @param waypoint The waypoint we want to find the segment for.
+   */
+  public getSegmentFromWaypoint(waypoint: WayPoint | undefined): FlightPlanSegment {
+    const index = waypoint === undefined ? this.getActiveWaypointIndex() : this.indexOfWaypoint(waypoint);
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+    return currentFlightPlan.findSegmentByWaypointIndex(index);
+  }
+
+  /**
    * Sets the destination for the current flight plan.
    * @param icao The ICAO designation for the destination airfield. 
    * @param callback A callback to call once the operation completes.
