@@ -424,23 +424,23 @@ class CJ4_FMC_LegsPage {
             speedConstraint = waypoint.speedConstraint;
         }
         if (waypoint.altDesc > 0) {
-            if (wpt.legAltitudeDescription == 1 && wpt.legAltitude1 > 100) {
-                altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100
-                    : wpt.legAltitude1.toFixed(0);
+            if (wpt.altDesc == 1 && wpt.altitude1 > 100) {
+                altitudeConstraint = wpt.altitude1.toFixed(0) >= 18000 ? "FL" + wpt.altitude1.toFixed(0) / 100
+                    : wpt.altitude1.toFixed(0);
             }
-            else if (wpt.legAltitudeDescription == 2 && wpt.legAltitude1 > 100) {
-                altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "A"
-                    : wpt.legAltitude1.toFixed(0) + "A";
+            else if (wpt.altDesc == 2 && wpt.altitude1 > 100) {
+                altitudeConstraint = wpt.altitude1.toFixed(0) >= 18000 ? "FL" + wpt.altitude1.toFixed(0) / 100 + "A"
+                    : wpt.altitude1.toFixed(0) + "A";
             }
-            else if (wpt.legAltitudeDescription == 3 && wpt.legAltitude1 > 100) {
-                altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
-                    : wpt.legAltitude1.toFixed(0) + "B";
+            else if (wpt.altDesc == 3 && wpt.altitude1 > 100) {
+                altitudeConstraint = wpt.altitude1.toFixed(0) >= 18000 ? "FL" + wpt.altitude1.toFixed(0) / 100 + "B"
+                    : wpt.altitude1.toFixed(0) + "B";
             }
-            else if (wpt.legAltitudeDescription == 4 && wpt.legAltitude2 > 100 && wpt.legAltitude1 > 100) {
-                let altitudeConstraintA = wpt.legAltitude2.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude2.toFixed(0) / 100 + "A"
-                    : wpt.legAltitude2.toFixed(0) + "A";
-                let altitudeConstraintB = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
-                    : wpt.legAltitude1.toFixed(0) + "B";
+            else if (wpt.altDesc == 4 && wpt.altitude2 > 100 && wpt.altitude1 > 100) {
+                let altitudeConstraintA = wpt.altitude2.toFixed(0) >= 18000 ? "FL" + wpt.altitude2.toFixed(0) / 100 + "A"
+                    : wpt.altitude2.toFixed(0) + "A";
+                let altitudeConstraintB = wpt.altitude1.toFixed(0) >= 18000 ? "FL" + wpt.altitude1.toFixed(0) / 100 + "B"
+                    : wpt.altitude1.toFixed(0) + "B";
                 altitudeConstraint = altitudeConstraintB + altitudeConstraintA;
             }
 
