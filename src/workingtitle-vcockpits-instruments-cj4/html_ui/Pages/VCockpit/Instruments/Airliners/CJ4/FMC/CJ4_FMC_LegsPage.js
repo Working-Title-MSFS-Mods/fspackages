@@ -418,12 +418,12 @@ class CJ4_FMC_LegsPage {
     getAltSpeedRestriction(waypoint) {
         let speedConstraint = "---";
         let altitudeConstraint = "----- ";
-        let wpt = waypoint;
+        let wpt = this._flightPlanManager.getWaypoints().find(wp => { return (wp && wp.icao.substr(-5) == waypoint.icao.substr(-5)); });
 
         if (waypoint.speedConstraint && waypoint.speedConstraint > 100) {
             speedConstraint = waypoint.speedConstraint;
         }
-        if (waypoint.altDesc > 0) {
+        if (wpt.altDesc > 0) {
             if (wpt.altDesc == 1 && wpt.altitude1 > 100) {
                 altitudeConstraint = wpt.altitude1.toFixed(0) >= 18000 ? "FL" + wpt.altitude1.toFixed(0) / 100
                     : wpt.altitude1.toFixed(0);
