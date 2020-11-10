@@ -1,3 +1,13 @@
+class WT_Map_Input_Layer_Factory {
+    /**
+     * @param {MapInstrument} map 
+     * @param {boolean} allowScrolling 
+     */
+    create(map, allowScrolling) {
+        return new WT_Map_Input_Layer(map, allowScrolling);
+    }
+}
+
 class WT_Map_Input_Layer extends Input_Layer {
     /**
      * @param {MapInstrument} map 
