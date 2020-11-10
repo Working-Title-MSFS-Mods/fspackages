@@ -151,6 +151,7 @@ class WT_BaseVnav {
             this._flightPlanChanged = false;
             this._activeWaypointChanged = false;
             this.writeDatastoreValues();
+            this.writeMonitorValues();
         }
         else {
             this._vnavType = false;
@@ -237,4 +238,12 @@ class WT_BaseVnav {
         };
         WTDataStore.set('CJ4_vnavValues', JSON.stringify(vnavValues));
     }
+
+    writeMonitorValues() {
+        // const monitorValues = {
+        //     vnavTargetWaypointIdent: this._vnavTargetWaypoint.ident,
+        // };
+        WTDataStore.set('CJ4_vnavTargetWaypoint', this._vnavTargetWaypoint.ident);
+    }
 }
+

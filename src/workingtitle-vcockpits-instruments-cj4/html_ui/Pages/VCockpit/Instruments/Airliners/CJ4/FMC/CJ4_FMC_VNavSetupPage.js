@@ -151,15 +151,9 @@ class CJ4_FMC_VNavSetupPage {
         ];
 
         //FETCH WAYPOINTS WITH CONSTRAINTS
-        if (fmc.getConstraints().length > 0) {
-            waypoints = fmc.getConstraints();
-            let activeWaypoint = waypoints.find(wp => { return (wp && wp.icao.substr(-5) == fmc.flightPlanManager.getActiveWaypointIdent()); })
-            if (activeWaypoint) {
-                let activeWaypointIndex = waypoints.indexOf(activeWaypoint);
-                waypoints = waypoints.slice(activeWaypointIndex);
-            }
+        if (fmc.flightPlanManager.getWaypoints().length > 0) {
+            waypoints = fmc.flightPlanManager.getWaypoints().slice(fmc.flightPlanManager.getActiveWaypointIndex());
             if (waypoints.length > 0) {
-                //console.log("waypoints.length > 0");
                 let rowNumber = 0;
                 for (let i = 0; i < waypoints.length; i++) {
                     let wpt = waypoints[i];
@@ -216,34 +210,42 @@ class CJ4_FMC_VNavSetupPage {
 
         let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
 
-     
-        //VNAV SETUP
-        let vnavTargetDistance = undefined;
-        let topOfDescent = undefined;
-        let vnavTargetWaypoint = undefined;
-        let vnavTargetAltitude = undefined;
-        let vnavTargetFpWaypoint = undefined;
-        let _lastVnavTargetAltitude = undefined;
-        let _interceptingLastAltitude = false;
-
         //RUN ACTUAL VNAV PATH CONTROL
-        if (isVNAVActivate) {
+        if (fmc._vnav) {
             fmc.registerPeriodicPageRefresh(() => {
+
+                const vnavActive = isVNAVActivate ? "ACTIVE" : "INACTIVE";
+                const vnavTargetWaypointIdent = WTDataStore.get('CJ4_vnavTargetWaypoint', 'none');
+                const vnavValues = WTDataStore.get('CJ4_vnavValues', 'none');
+                if (vnavValues != "none") {
+                    const parsedVnavValues = JSON.parse(vnavValues);
+                    const vnavTargetAltitude = parsedVnavValues.vnavTargetAltitude;
+                    const vnavTargetDistance = parsedVnavValues.vnavTargetDistance;
+                    const topOfDescent = parsedVnavValues.topOfDescent;
+                    const distanceToTod = parsedVnavValues.distanceToTod;
+                }
+                const altDeviation = SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
+                const desiredFPA = WTDataStore.get('CJ4_vpa', 3);
+                const setVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
+
+
+
+
                 //COLLECT AIRCRAFT VARIABLES
-                let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
                 let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
                 //let apCurrentAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "Feet");
                 let apCurrentVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute");
                 let altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
+                const desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(desiredFPA * (Math.PI / 180));
 
                              
 
                 fmc._templateRenderer.setTemplateRaw([
-                    ["", "", "WORKING TITLE VNAV" + "[blue]"],
+                    ["", "", "WT VNAV" + vnavActive + "[blue]"],
                     [" target alt[blue]", "target dist [blue]"],
                     [vnavTargetAltitude.toFixed(0) + "ft", vnavTargetDistance.toFixed(1) + "nm"],
                     [" VNAV Target[blue]", "ground spd [blue]"],
-                    [vnavTargetWaypoint.ident + "", groundSpeed.toFixed(0) + "kts"],
+                    [vnavTargetWaypointIdent + "", groundSpeed.toFixed(0) + "kts"],
                     [" target FPA[blue]", "target VS [blue]"],
                     [desiredFPA.toFixed(1) + "°", desiredVerticalSpeed.toFixed(0) + "fpm"],
                     [" alt dev[blue]", "ap vs [blue]"],
@@ -258,7 +260,7 @@ class CJ4_FMC_VNavSetupPage {
         }
         else {
             fmc._templateRenderer.setTemplateRaw([
-                ["", "", "WORKING TITLE VPATH" + "[blue]"],
+                ["", "", "WT VNAV" + "[blue]"],
                 [""],
                 [""],
                 [""],
