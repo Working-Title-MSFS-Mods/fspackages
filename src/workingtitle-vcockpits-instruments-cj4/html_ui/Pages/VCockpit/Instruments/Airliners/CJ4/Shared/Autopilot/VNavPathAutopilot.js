@@ -138,7 +138,6 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
                     setVerticalSpeed = this._desiredVerticalSpeed;
                 }
             }
-            //setVerticalSpeed = Math.round(setVerticalSpeed);
             Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, setVerticalSpeed);
         }
     }

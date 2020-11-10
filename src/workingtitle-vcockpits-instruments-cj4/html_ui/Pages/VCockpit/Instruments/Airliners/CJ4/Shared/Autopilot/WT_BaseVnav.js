@@ -137,6 +137,17 @@ class WT_BaseVnav {
             if (this._flightPlanChanged || this._vnavTargetChanged) {
                 this.buildDescentProfile();
             }
+
+            //TRACK ALTITUDE DEVIATION
+            if (this._vnavTargetAltitude && this._vnavTargetWaypoint) {
+                this._vnavTargetDistance = waypoint == this._activeWaypoint ? this._activeWaypointDist
+                    : waypoint.cumulativeDistanceInFP - this._currentDistanceInFP;
+                this._desiredAltitude = this._vnavTargetAltitude + (Math.tan(this._desiredFPA * (Math.PI / 180)) * this._vnavTargetDistance * 6076.12);
+                this._altDeviation = this._altitude - this._desiredAltitude;
+                this._distanceToTod = this._topOfDescent < 0 ? undefined : this._vnavTargetDistance > this._topOfDescent ? Math.round(this._vnavTargetDistance - this._topOfDescent) : undefined;
+                SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", this._altDeviation);
+            }
+
             this._vnavTargetChanged = false;
             this._flightPlanChanged = false;
             this._activeWaypointChanged = false;
@@ -145,8 +156,6 @@ class WT_BaseVnav {
             this._vnavType = false;
         }
 
-
-
     }
 
     /**
@@ -154,6 +163,7 @@ class WT_BaseVnav {
      */
     execute() {
 
+    
     }
 
     /**
