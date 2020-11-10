@@ -671,7 +671,7 @@ class CJ4_APDisplay extends NavSystemElement {
         }
         else if (SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean")) {
             if (SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean")) {
-                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VPIT");
+                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VPTCH");
                 Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
             }
             else if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean")) {
@@ -717,7 +717,7 @@ class CJ4_APDisplay extends NavSystemElement {
             }
         }
         else if (SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean")) {
-            Avionics.Utils.diffAndSet(this.AP_VerticalActive, "PIT");
+            Avionics.Utils.diffAndSet(this.AP_VerticalActive, "PTCH");
             Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
         }
         else if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean")) {
@@ -813,7 +813,7 @@ class CJ4_APDisplay extends NavSystemElement {
             Avionics.Utils.diffAndSet(this.AP_LateralActive, "LVL");
         }
         else if (SimVar.GetSimVarValue("AUTOPILOT BANK HOLD", "Boolean")) {
-            Avionics.Utils.diffAndSet(this.AP_LateralActive, "ROL");
+            Avionics.Utils.diffAndSet(this.AP_LateralActive, "ROLL");
         }
         else {
             Avionics.Utils.diffAndSet(this.AP_LateralActive, "");
