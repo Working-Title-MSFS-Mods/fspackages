@@ -14,7 +14,6 @@ class WT_BaseAutopilot {
         //COMPONENTS TO REFRESH ONLY WHEN THERE IS A FLIGHT PLAN CHANGE
         this._desiredFPA = WTDataStore.get('CJ4_vpa', 3);
         this._vnavType = false;
-        this._waypoints = [];
 
         this._currPos = undefined;
         this._groundSpeed = undefined;

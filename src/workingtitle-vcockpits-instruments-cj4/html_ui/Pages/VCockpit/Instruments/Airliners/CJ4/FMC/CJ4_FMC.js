@@ -435,19 +435,19 @@ class CJ4_FMC extends FMCMainDisplay {
                 }
                 //UPDATE VNAV MODE
                 else if (this._currentAP) {
-                    if (this._vpathMode = true && (flcMode || vsMode || gsMode || pitMode)) {
+                    if (this._vpathMode == true && (flcMode || vsMode || gsMode || pitMode)) {
                         this._vpathMode = false;
                         this._currentAP.deactivate();
                         this._currentAP = new WT_VModeAutopilot(this.flightPlanManager);
                     }
-                    else if (this._vpathMode = false && !flcMode && !vsMode && !gsMode && !pitMode) {
+                    else if (this._vpathMode == false && !flcMode && !vsMode && !gsMode && !pitMode) {
                         this._vpathMode = true;
                         this._currentAP.deactivate();
                         this._currentAP = new WT_VNavPathAutopilot(this.flightPlanManager);
                     }
-                    else {
-                        this._currentAP.update();
-                    }
+
+                    this._currentAP.update();
+                    this._currentAP.execute();
                 }
                 
             }

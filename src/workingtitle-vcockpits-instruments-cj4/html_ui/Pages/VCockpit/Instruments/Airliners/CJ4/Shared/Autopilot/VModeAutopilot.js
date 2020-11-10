@@ -25,7 +25,7 @@ class WT_VModeAutopilot extends WT_BaseAutopilot {
             : undefined;
 
         //DEPARTURE PLAN - ONLY WHEN ACTIVE WAYPOINT HAS CHANGED OR ON FIRST RUN
-        if (this._activeWaypoint.ident != this._lastActiveWaypointIdent && phase === "departure") {
+        if (this._activeWaypoint.ident != this._lastActiveWaypointIdent && this._vModeAutopilotPhase === "departure") {
             this._constraintWaypoints = this._fpm.getDepartureWaypoints().slice(this._fpm.getActiveWaypointIndex());
             this._vnavTargetWaypoint = undefined;
             if (this._constraintWaypoints.length > 0) {
@@ -51,7 +51,7 @@ class WT_VModeAutopilot extends WT_BaseAutopilot {
         }
 
         //ARRIVAL PLAN - ONLY WHEN ACTIVE WAYPOINT HAS CHANGED OR ON FIRST RUN
-        else if (this._activeWaypoint.ident != this._lastActiveWaypointIdent && phase === "arrival") {
+        else if (this._activeWaypoint.ident != this._lastActiveWaypointIdent && this._vModeAutopilotPhase === "arrival") {
             this._constraintWaypoints = this.waypoints;
             this._vnavTargetWaypoint = undefined;
             if (this._constraintWaypoints.length > 0) {
