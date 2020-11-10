@@ -133,14 +133,150 @@ class CJ4_FMC_VNavSetupPage {
         };
 
         fmc.onRightInput[3] = () => {
-            CJ4_FMC_VNavSetupPage.ShowPage4(fmc);
-        };
-
-        fmc.onLeftInput[3] = () => {
             CJ4_FMC_VNavSetupPage.ShowPage5(fmc);
         };
 
+        fmc.onLeftInput[3] = () => {
+            CJ4_FMC_VNavSetupPage.ShowPage4(fmc);
+        };
+
         fmc.updateSideButtonActiveStatus();
+    }
+    static ShowPage4(fmc) { //VNAV WPTS
+        fmc.clearDisplay();
+
+        let waypoints = [];
+        let rows = [
+            [""], [""], [""], [""], [""], [""], [""], [""], [""]
+        ];
+
+        //FETCH WAYPOINTS WITH CONSTRAINTS
+        if (fmc.getConstraints().length > 0) {
+            waypoints = fmc.getConstraints();
+            let activeWaypoint = waypoints.find(wp => { return (wp && wp.icao.substr(-5) == fmc.flightPlanManager.getActiveWaypointIdent()); })
+            if (activeWaypoint) {
+                let activeWaypointIndex = waypoints.indexOf(activeWaypoint);
+                waypoints = waypoints.slice(activeWaypointIndex);
+            }
+            if (waypoints.length > 0) {
+                //console.log("waypoints.length > 0");
+                let rowNumber = 0;
+                for (let i = 0; i < waypoints.length; i++) {
+                    let wpt = waypoints[i];
+                    let waypointIdent = wpt.icao.substr(-5);
+                    let type = "none";
+                    let altitudeConstraint = "none";
+                    if (wpt && wpt.legAltitudeDescription && wpt.legAltitudeDescription > 0 && wpt.legAltitude1 > 1000 && rowNumber < 9) {
+                        if (wpt.legAltitudeDescription == 1 && wpt.legAltitude1 > 100) {
+                            altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100
+                                : wpt.legAltitude1.toFixed(0);
+                            type = "AT"
+                        }
+                        else if (wpt.legAltitudeDescription == 2 && wpt.legAltitude1 > 100) {
+                            altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "A"
+                                : wpt.legAltitude1.toFixed(0) + "A";
+                            type = "ABOVE"
+                        }
+                        else if (wpt.legAltitudeDescription == 3 && wpt.legAltitude1 > 100) {
+                            altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
+                                : wpt.legAltitude1.toFixed(0) + "B";
+                            type = "BELOW"
+                            }
+                        else if (wpt.legAltitudeDescription == 4 && wpt.legAltitude2 > 100 && wpt.legAltitude1 > 100) {
+                            let altitudeConstraintA = wpt.legAltitude2.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude2.toFixed(0) / 100 + "A"
+                                : wpt.legAltitude2.toFixed(0) + "A";
+                            let altitudeConstraintB = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
+                                : wpt.legAltitude1.toFixed(0) + "B";
+                            altitudeConstraint = altitudeConstraintB + altitudeConstraintA;
+                            type = "BOTH"
+                        }
+                        altitudeConstraint = altitudeConstraint.padStart(6, " ");
+                        rows[rowNumber] = [waypointIdent.padStart(5, " ") + " " + type.padStart(5, " ") + "[s-text]", altitudeConstraint + "[s-text]"];
+                        rowNumber++;
+                    }
+                }
+            }
+        }
+
+        fmc._templateRenderer.setTemplateRaw([
+            [" VNAV WAYPOINTS[blue]", "1/1[blue]"],
+            [" WPT   TYPE[blue]", "CONST [blue]"],
+            ...rows,
+            ["-----------------------[blue]"],
+            ["", "VNAV DESCENT>"]
+        ]);
+        //fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
+        //fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
+        fmc.updateSideButtonActiveStatus();
+    }
+
+    static ShowPage5(fmc) { //VNAV MONITOR
+        fmc.clearDisplay();
+
+        let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
+
+     
+        //VNAV SETUP
+        let vnavTargetDistance = undefined;
+        let topOfDescent = undefined;
+        let vnavTargetWaypoint = undefined;
+        let vnavTargetAltitude = undefined;
+        let vnavTargetFpWaypoint = undefined;
+        let _lastVnavTargetAltitude = undefined;
+        let _interceptingLastAltitude = false;
+
+        //RUN ACTUAL VNAV PATH CONTROL
+        if (isVNAVActivate) {
+            fmc.registerPeriodicPageRefresh(() => {
+                //COLLECT AIRCRAFT VARIABLES
+                let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+                let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+                //let apCurrentAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "Feet");
+                let apCurrentVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute");
+                let altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
+
+                             
+
+                fmc._templateRenderer.setTemplateRaw([
+                    ["", "", "WORKING TITLE VNAV" + "[blue]"],
+                    [" target alt[blue]", "target dist [blue]"],
+                    [vnavTargetAltitude.toFixed(0) + "ft", vnavTargetDistance.toFixed(1) + "nm"],
+                    [" VNAV Target[blue]", "ground spd [blue]"],
+                    [vnavTargetWaypoint.ident + "", groundSpeed.toFixed(0) + "kts"],
+                    [" target FPA[blue]", "target VS [blue]"],
+                    [desiredFPA.toFixed(1) + "°", desiredVerticalSpeed.toFixed(0) + "fpm"],
+                    [" alt dev[blue]", "ap vs [blue]"],
+                    [altDeviation.toFixed(0) + "ft", apCurrentVerticalSpeed.toFixed(0) + "fpm"],
+                    [" set vs[blue]", "TOD Dist[blue] "],
+                    [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod + " nm"],
+                    [""],
+                    ["<RECALC", "VNAV>"]
+                ]);
+
+            }, 1000, true);
+        }
+        else {
+            fmc._templateRenderer.setTemplateRaw([
+                ["", "", "WORKING TITLE VPATH" + "[blue]"],
+                [""],
+                [""],
+                [""],
+                ["", "", "UNABLE VNAV[yellow]"],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                ["<RECALC", "VNAV>"]
+            ]);
+        }
+    //fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
+    //fmc.onLeftInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage7(fmc); };
+
+    fmc.updateSideButtonActiveStatus();
     }
 
 }

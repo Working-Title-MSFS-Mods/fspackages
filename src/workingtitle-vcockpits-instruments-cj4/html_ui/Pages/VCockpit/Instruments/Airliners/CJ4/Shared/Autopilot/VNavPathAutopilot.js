@@ -9,11 +9,10 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
         this._vnavTargetAltitude = undefined;
         this._lastVnavTargetAltitude = undefined;
         this._interceptingLastAltitude = false;
-
         this._desiredVerticalSpeed = undefined;
         this._desiredAltitude = undefined;
         this._altDeviation = undefined;
-        this._distanceToTod = "N/A";
+        this._distanceToTod = undefined;
     }
 
     /**

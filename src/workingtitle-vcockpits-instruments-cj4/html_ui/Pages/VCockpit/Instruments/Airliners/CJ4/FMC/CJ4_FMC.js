@@ -54,6 +54,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.currentInput = undefined;
         this.previousInput = undefined;
         this._frameUpdates = 0;
+        this._vnav = undefined;
         this._vpathMode = false;
     }
     get templateID() { return "CJ4_FMC"; }
@@ -385,7 +386,6 @@ class CJ4_FMC extends FMCMainDisplay {
             });
         });
     }
-    //function added to convert FMS units between metric and imperial
 
     updateAutopilot() {
         let now = performance.now();
@@ -407,8 +407,17 @@ class CJ4_FMC extends FMCMainDisplay {
             }
             this._apHasDeactivated = !currentApMasterStatus && this._previousApMasterStatus;
             this._previousApMasterStatus = currentApMasterStatus;
-            let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
 
+            //UPDATE VNAV REGARDLESS OF WHETHER AP IS ENGAGED
+            if (this._vnav === undefined) {
+                this._vnav = new WT_BaseVnav(this.flightPlanManager);
+                this._vnav.activate();
+            }
+            else {
+                this._vnav.update();
+                }
+
+            let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
             if (isVNAVActivate) {
                 // vnav turned on, init it
                 let altMode = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean");
