@@ -54,9 +54,9 @@ class WT_BaseVnav {
      */
     update() {
 
-        // TODO detect if activewaypoint is changed and update
-        // TODO detect if destination is changed and update
-        // TODO is there a performance benefit to loading waypoints on activation and then only updating the waypoints if
+        // [done] TODO detect if activewaypoint is changed and update 
+        // [done] TODO detect if destination is changed and update
+        // [done] TODO is there a performance benefit to loading waypoints on activation and then only updating the waypoints if
         //    there is an increment in the flight plan version?
 
         //CAN VNAV EVEN RUN?
