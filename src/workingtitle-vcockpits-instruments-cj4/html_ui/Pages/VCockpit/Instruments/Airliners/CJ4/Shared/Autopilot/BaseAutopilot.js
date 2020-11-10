@@ -22,6 +22,10 @@ class WT_BaseAutopilot {
         this._altitude = undefined;
     }
 
+    get waypoints(){
+        return this._fpm.getWaypoints().slice(this._fpm.getActiveWaypointIndex());
+    }
+
     /**
      * Run on first activation.
      */
@@ -57,7 +61,6 @@ class WT_BaseAutopilot {
                 this._vnavType = "route";
             }
         }        
-        this._waypoints = this._waypoints.slice(this._fpm.getActiveWaypointIndex());
 
         if (this._activeWaypoint) {
             this._activeWaypointDist = Avionics.Utils.computeDistance(this._currPos, this._activeWaypoint.infos.coordinates);

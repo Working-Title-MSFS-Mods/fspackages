@@ -52,7 +52,7 @@ class WT_VModeAutopilot extends WT_BaseAutopilot {
 
         //ARRIVAL PLAN - ONLY WHEN ACTIVE WAYPOINT HAS CHANGED OR ON FIRST RUN
         else if (this._activeWaypoint.ident != this._lastActiveWaypointIdent && phase === "arrival") {
-            this._constraintWaypoints = this._waypoints;
+            this._constraintWaypoints = this.waypoints;
             this._vnavTargetWaypoint = undefined;
             if (this._constraintWaypoints.length > 0) {
                 for (let i = 0; i < this._constraintWaypoints.length; i++) {

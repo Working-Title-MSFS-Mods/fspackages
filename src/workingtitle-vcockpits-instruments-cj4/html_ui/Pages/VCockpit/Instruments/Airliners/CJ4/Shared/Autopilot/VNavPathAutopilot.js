@@ -40,7 +40,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
             this._lastDestinationIdent = this._destination.ident;
         }
         //LOAD ROUTE VNAV ONLY WHEN ACTIVE WAYPOINT HAS CHANGED OR ON FIRST RUN
-        else if (this._vnavType == "route" && this._waypoints && this._activeWaypoint && this._activeWaypoint.ident != this._lastActiveWaypointIdent) {
+        else if (this._vnavType == "route" && this.waypoints && this._activeWaypoint && this._activeWaypoint.ident != this._lastActiveWaypointIdent) {
             this.buildDescentProfile();
         }
 
@@ -158,8 +158,8 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
         this._vnavTargetAltitude = this._vnavTargetAltitude === undefined ? this._destination.infos.oneWayRunways[0].elevation * 3.28 : this._vnavTargetAltitude;
 
         //PLAN DESCENT PROFILE
-        for (let i = this._waypoints.length - 1; i >= 0; i--) {
-            const waypoint = this._waypoints[i];
+        for (let i = this.waypoints.length - 1; i >= 0; i--) {
+            const waypoint = this.waypoints[i];
             let altDesc = waypoint.altDesc;
             if (altDesc == 1 && waypoint.altitude1 > 1000) { //AT CASE
                 this._vnavTargetAltitude = waypoint.altitude1;
