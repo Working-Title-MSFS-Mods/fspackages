@@ -286,7 +286,7 @@
         <div class="enter-accept">Press "ENT" to accept</div>
     </template>
 
-    <template id="direct-to">
+    <template id="template-direct-to">
         <h1 class="title">Direct To</h1>
         <section class="category">
             <h1>Ident, Facility, City</h1>
@@ -534,10 +534,10 @@
                 <g1000-frequency-list data-element="frequencyList" class="content frequencies scrollable-container"></g1000-frequency-list>
             </section>
         </section>
-        <section class="directory" data-element="directory" style="padding-top:1.5vh; padding-bottom:1.5vh;">
-            <section class="category category-fill-container" style="margin:0;">
+        <section class="directory" style="padding-top:1.5vh; padding-bottom:1.5vh;">
+            <section class="category category-fill-container" data-element="directory" style="margin:0;">
                 <h1>Airport Directory</h1>
-                <scrollable-container data-element="directoryInformation" class="content" style="height:100%;">
+                <scrollable-container data-element="directoryInformation" class="content">
                     <article class="article">
                         <p>Narrator: According to all known laws of aviation, there is no way that a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyway because bees don't care what humans think is impossible.
                         cut to Barry's room, where he's picking out what to wear</p>
@@ -905,6 +905,33 @@
                     </div>
                 </div>
             </section>
+        </section>
+    </template>
+
+    <template id="aux-changelog">
+        <section class="category">
+            <h1>Changelog</h1>
+            <div class="content selector">
+                <label>Version:</label>
+                <drop-down-selector data-element="changelogSelector" data-change="selectChangelog"></drop-down-selector>
+                <div data-element="date" class="date"></div>
+            </div>
+        </section>
+        <section class="category category-fill-container" data-element="selectedChangelogContainer">
+            <h1>
+                <drop-down-selector data-element="sectionSelector" data-input="selectSection" class="section-selector">
+                    <drop-down-selector-option value="all">All</drop-down-selector-option>
+                    <drop-down-selector-option value="features">Features</drop-down-selector-option>
+                    <drop-down-selector-option value="enhancements">Enhancements</drop-down-selector-option>
+                    <drop-down-selector-option value="performance">Performance</drop-down-selector-option>
+                    <drop-down-selector-option value="visuals">Visuals</drop-down-selector-option>
+                    <drop-down-selector-option value="bugFixes">Bug Fixes</drop-down-selector-option>
+                </drop-down-selector>
+            </h1>
+            <scrollable-container class="content" data-element="selectedChangelogScrollable">
+                <article data-element="selectedChangelog" class="article">
+                </article>       
+            </scrollable-container>
         </section>
     </template>
 

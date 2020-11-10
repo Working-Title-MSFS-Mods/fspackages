@@ -4,6 +4,7 @@ Components/NearestWaypointList.js
 Components/RunwaySelector.js
 Components/SequenceList.js
 Pages/Page.js
+Pages/Auxilliary/Changelog.js
 Pages/Auxilliary/Credits.js
 Pages/Auxilliary/ModSettings.js
 Pages/Auxilliary/Settings.js

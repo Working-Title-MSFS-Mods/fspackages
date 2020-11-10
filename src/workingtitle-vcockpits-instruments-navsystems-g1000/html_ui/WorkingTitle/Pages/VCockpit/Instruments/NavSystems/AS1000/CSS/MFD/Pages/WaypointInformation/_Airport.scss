@@ -20,12 +20,6 @@ g1000-airport-information-page {
         .content {
             overflow-y: scroll;
         }
-
-        &[highlighted] {
-            .category {
-                --border-color: #00ffff;
-            }
-        }
     }
 
     .information {

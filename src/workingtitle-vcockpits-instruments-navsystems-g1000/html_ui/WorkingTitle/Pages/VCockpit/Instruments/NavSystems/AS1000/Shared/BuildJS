@@ -19,11 +19,13 @@ Data/Procedures/Transitions.js
 Data/Procedures/Waypoints.js
 Data/AirportDatabase.js
 Data/Brightness.js
+Data/Changelog.js
 Data/PlaneConfig.js
 Data/NearestWaypoints.js
 Data/RadioAltimeter.js
 Data/WaypointQuickSelect.js
 Libs/CSV.js
+Libs/markdown.js
 Logic/Navigation/DirectTo.js
 Logic/Navigation/FlightPlan.js
 Logic/Navigation/OBS.js

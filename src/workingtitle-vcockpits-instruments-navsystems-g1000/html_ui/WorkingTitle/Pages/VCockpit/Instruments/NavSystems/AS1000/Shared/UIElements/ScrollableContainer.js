@@ -8,6 +8,7 @@ class WT_Scrollable_Container extends HTMLElement {
     }
     incDesiredScroll(scroll) {
         this.desiredScroll += scroll;
+        this.desiredScroll = Math.max(0, Math.min(this.scrollHeight - this.offsetHeight, this.desiredScroll));
         if (!this.isAnimating) {
             this.beginAnimation();
         }
@@ -22,19 +23,6 @@ class WT_Scrollable_Container extends HTMLElement {
                 this.isAnimating = false;
         }
         requestAnimationFrame(frame);
-    }
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name == "state") {
-            if (newValue == "Selected") {
-                this.dispatchEvent(new Event("focus"));
-            }
-            if (oldValue == "Selected") {
-                this.dispatchEvent(new Event("blur"));
-            }
-        }
-    }
-    static get observedAttributes() {
-        return ["state"];
     }
 }
 customElements.define("scrollable-container", WT_Scrollable_Container);

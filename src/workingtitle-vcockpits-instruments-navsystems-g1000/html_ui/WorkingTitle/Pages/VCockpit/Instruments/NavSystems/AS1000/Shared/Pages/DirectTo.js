@@ -102,7 +102,7 @@ class WT_Direct_To_View extends WT_HTML_View {
         this.onExit = new WT_Event();
     }
     connectedCallback() {
-        const template = document.getElementById('direct-to');
+        const template = document.getElementById('template-direct-to');
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();
 

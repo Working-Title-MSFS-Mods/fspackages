@@ -73,7 +73,11 @@
         margin: 1.5vh 0;
         --border-color: #{$category_box_outline_color};
 
-        h1 {
+        &[highlighted] {
+            --border-color: #00ffff;
+        }
+
+        > h1 {
             display: flex;
             align-items: flex-end;
             color: #fff;
@@ -165,7 +169,7 @@
 
     .category-fill-container {
         display: grid;
-        height: 100%;
+        max-height: 100%;
         grid-template-rows: auto minmax(0, 1fr);
 
         .content {

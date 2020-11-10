@@ -7,7 +7,7 @@ class WT_PFD_Debug_Menu extends WT_Soft_Key_Menu {
         this.addSoftKey(1, new WT_Soft_Key("Reload", () => {
             window.document.location.reload();
         }));
-        this.addSoftKey(2, new WT_Soft_Key("CSS", () => {
+        this.addSoftKey(2, new WT_Soft_Key("Reload CSS", () => {
             for (let cssElement of document.querySelectorAll(`link[rel=stylesheet]`)) {
                 let url = cssElement.getAttribute("href");
                 url = url.split("?")[0];

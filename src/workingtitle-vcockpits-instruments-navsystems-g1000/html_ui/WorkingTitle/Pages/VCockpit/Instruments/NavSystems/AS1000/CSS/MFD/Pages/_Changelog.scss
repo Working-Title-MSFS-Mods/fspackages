@@ -1,0 +1,33 @@
+g1000-changelog {
+    display: grid;
+    height: 100%;
+    grid-template-rows: auto minmax(0, 1fr);
+    padding: 0 2vh;
+
+    .selector {
+        display: grid;
+        grid-gap: 1vh;
+        grid-template-columns: auto auto 1fr;
+    }
+
+    .date {
+        text-align: right;
+    }
+
+    article {
+        margin: 0 1vh;
+    }
+
+    drop-down-selector.section-selector {
+        font-weight: normal;
+
+        .value {
+            color: #fff;
+        }
+        
+        .popup {
+            right: auto;
+            left: 0;
+        }
+    }
+}
