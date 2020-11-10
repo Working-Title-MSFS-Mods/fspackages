@@ -61,11 +61,42 @@ class WT_NumberUnit {
         }
     }
 
+    add(other) {
+        if (this.unit.type !== other.unit.type) {
+            return;
+        }
+        this.refNumber += other.asUnit(this.refUnit);
+        return this;
+    }
+
+    subtract(other) {
+        if (this.unit.type !== other.unit.type) {
+            return;
+        }
+        this.refNumber -= other.asUnit(this.refUnit);
+        return this;
+    }
+
+    scale(factor) {
+        this.refNumber *= factor;
+        return this;
+    }
+
+    ratio(other) {
+        if (this.unit.type !== other.unit.type) {
+            return;
+        }
+        return this.refNumber / other.asUnit(this.refUnit);
+    }
+
     asUnit(unit) {
         return this.refUnit.convert(this.refNumber, unit);
     }
 
     compare(other) {
+        if (this.unit.type !== other.unit.type) {
+            return undefined;
+        }
         return this.refNumber - other.asUnit(this.refUnit);
     }
 
@@ -74,6 +105,9 @@ class WT_NumberUnit {
     }
 
     copyFrom(other) {
+        if (this.unit.type !== other.unit.type) {
+            return;
+        }
         this.refNumber = other.refUnit.convert(other.refNumber, this.refUnit);
     }
 }
@@ -494,7 +528,7 @@ class WT_NumberFormatter {
 
         let decimalIndex = formatted.indexOf(".");
         if (!this.forceDecimalZeroes && decimalIndex >= 0) {
-            formatted = formatted.replace(/0+\b/, "");
+            formatted = formatted.replace(/0+$/, "");
             if (formatted.indexOf(".") == formatted.length - 1) {
                 formatted = formatted.substring(0, formatted.length - 1);
             }
@@ -510,7 +544,7 @@ class WT_NumberFormatter {
         formatted = formatted + "";
 
         if (this.pad == 0) {
-            formatted = formatted.replace(/\b0\./, ".");
+            formatted = formatted.replace(/^0\./, ".");
         }
         decimalIndex = formatted.indexOf(".");
         if (decimalIndex < 0) {
@@ -673,7 +707,7 @@ WT_TimeFormatter.Format = {
 WT_TimeFormatter.OPTIONS = {
     precision: 1,
     round: 1,
-    digits: Infinity,
+    maxDigits: Infinity,
     forceDecimalZeroes: true,
     pad: 2,
     unitShow: false,
@@ -691,7 +725,7 @@ class WT_NumberHTMLFormatter {
      * @param {WT_NumberFormatter} numberFormatter - the formatter to use to generate the raw string representations of the WT_NumberUnit objects.
      * @param {object} opts - options definition object containing properties to initialize to the new formatter.
      */
-    constructor(numberFormatter, opts) {
+    constructor(numberFormatter, opts = {}) {
         this.numberFormatter = numberFormatter;
         this.setOptions(WT_NumberHTMLFormatter.OPTIONS);
         this.setOptions(opts);
