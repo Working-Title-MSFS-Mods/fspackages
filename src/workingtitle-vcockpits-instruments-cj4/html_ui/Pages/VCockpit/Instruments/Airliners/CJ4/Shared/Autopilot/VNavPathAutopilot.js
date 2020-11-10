@@ -29,39 +29,16 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
      */
     update() {
         super.update();
-        let destinationElevation = this._destination.infos.oneWayRunways[0].elevation * 3.28;
-        this._vnavTargetAltitude = destinationElevation + 1500;
 
-        if (this._vnavType == "destination" && this._lastDestinationIdent != this._destination.ident) {
-            this._vnavTargetDistance = this._destinationDistance - 10;
-            this._topOfDescent = 10 + ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
-            this._vnavTargetWaypoint = this._destination;
-            this._lastDestinationIdent = this._destination.ident;
-        }
-        //LOAD ROUTE VNAV ONLY WHEN ACTIVE WAYPOINT HAS CHANGED OR ON FIRST RUN
-        else if (this._vnavType == "route" && this.waypoints && this._activeWaypoint && this._activeWaypoint.ident != this._lastActiveWaypointIdent) {
-            this.buildDescentProfile();
-        }
-
-        //UPDATE DEFAULT DESTINATION VNAV WHEN DESTINATION HAS NOT CHANGED
-        else if (this._vnavType == "destination") {
-            this.vnavTargetDistance = this._destinationDistance - 10;
-            this.topOfDescent = 10 + ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
-        }
-
-        //UPDATE ROUTE VNAV WHEN ACTIVE WAYPOINT HAS NOT CHANGED
-        else if (this._vnavType == "route" && this._activeWaypoint) {
-
-            //UPDATE
-            this._vnavTargetDistance = (this._vnavTargetWaypoint === this._activeWaypoint) ? this._activeWaypointDist : this._vnavTargetWaypoint.cumulativeDistanceInFP - this._currentDistanceInFP;
-            this._topOfDescent = ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
-        }
-
-        //PREPARE VNAV VARIABLES
+        //FETCH VNAV VARIABLES
+        this._vnavTargetAltitude = fmc._vnav.getVnavTargetAltitude();
+        this._vnavTargetDistance = fmc._vnav.getVnavTargetDistance();
+        this._distanceToTod = fmc._vnav.getDistanceToTod();
+        this._altDeviation = fmc._vnav.getAltDeviation();
+        
+        //PREPARE EXECUTION VARIABLES
         this._desiredVerticalSpeed = -101.2686667 * this._groundSpeed * Math.tan(this._desiredFPA * (Math.PI / 180));
         this._desiredAltitude = this._vnavTargetAltitude + (Math.tan(this._desiredFPA * (Math.PI / 180)) * this._vnavTargetDistance * 6076.12);
-        this._altDeviation = this._altitude - this._desiredAltitude;
-        this._distanceToTod = this._topOfDescent < 0 ? "N/A" : this._vnavTargetDistance > this._topOfDescent ? Math.round(this._vnavTargetDistance - this._topOfDescent) : "N/A";
     }
 
     /**

@@ -36,6 +36,7 @@ class WT_BaseAutopilot {
      * Update data if needed.
      */
     update() {
+        this._desiredFPA = WTDataStore.get('CJ4_vpa', 3);
         this._currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
         this._groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
         //this._apCurrentAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "Feet");
