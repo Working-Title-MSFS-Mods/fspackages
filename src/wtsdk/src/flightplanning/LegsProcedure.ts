@@ -34,7 +34,7 @@ export class LegsProcedure {
    * @param instrument The instrument that is attached to the flight plan.
    */
   constructor(private _legs: ProcedureLeg[], private _previousFix: WayPoint, private _instrument: BaseInstrument) {
-    
+
     for (var leg of this._legs) {
       if (leg.fixIcao.trim() !== '' && leg.fixIcao[0] !== 'R' && !this._facilitiesToLoad.has(leg.fixIcao)) {
         this._facilitiesToLoad.set(leg.fixIcao, this._instrument.facilityLoader.getFacilityRaw(leg.fixIcao, 2000));
@@ -58,7 +58,7 @@ export class LegsProcedure {
    * Gets the next mapped leg from the procedure.
    * @returns The mapped waypoint from the leg of the procedure.
    */
-  public async getNext(): Promise<WayPoint> {   
+  public async getNext(): Promise<WayPoint> {
     let isLegMappable = false;
     let mappedLeg: WayPoint;
 
@@ -108,7 +108,7 @@ export class LegsProcedure {
             const prevLeg = this._previousFix;
 
             //If a type 15 (initial fix) comes up in the middle of a plan
-            if (leg.icao === prevLeg.icao && leg.infos.coordinates.lat === prevLeg.infos.coordinates.lat 
+            if (leg.icao === prevLeg.icao && leg.infos.coordinates.lat === prevLeg.infos.coordinates.lat
               && leg.infos.coordinates.long === prevLeg.infos.coordinates.long) {
               isLegMappable = false;
             }
@@ -117,7 +117,7 @@ export class LegsProcedure {
             }
           }
             break;
-          case 7: 
+          case 7:
           case 17:
           case 18:
             mappedLeg = this.mapExactFix(currentLeg);
@@ -129,6 +129,12 @@ export class LegsProcedure {
           default:
             isLegMappable = false;
             break;
+        }
+
+        if (mappedLeg !== undefined) {
+          mappedLeg.legAltitudeDescription = currentLeg.altDesc;
+          mappedLeg.legAltitude1 = currentLeg.altitude1 * 3.28;
+          mappedLeg.legAltitude2 = currentLeg.altitude2 * 3.28;
         }
 
         this._currentIndex++;
@@ -163,10 +169,10 @@ export class LegsProcedure {
     const distanceAngle = Math.asin((Math.sin(distanceToOrigin) * Math.sin(deltaAngle)) / Math.sin(targetDistance));
     const inverseDistanceAngle = Math.PI - distanceAngle;
 
-    const legDistance1 = 2 * Math.atan(Math.tan(0.5 * (targetDistance - distanceToOrigin)) * (Math.sin(0.5 * (deltaAngle + distanceAngle)) 
+    const legDistance1 = 2 * Math.atan(Math.tan(0.5 * (targetDistance - distanceToOrigin)) * (Math.sin(0.5 * (deltaAngle + distanceAngle))
       / Math.sin(0.5 * (deltaAngle - distanceAngle))));
 
-    const legDistance2 = 2 * Math.atan(Math.tan(0.5 * (targetDistance - distanceToOrigin)) * (Math.sin(0.5 * (deltaAngle + inverseDistanceAngle)) 
+    const legDistance2 = 2 * Math.atan(Math.tan(0.5 * (targetDistance - distanceToOrigin)) * (Math.sin(0.5 * (deltaAngle + inverseDistanceAngle))
       / Math.sin(0.5 * (deltaAngle - inverseDistanceAngle))));
 
     const legDistance = targetDistance > distanceToOrigin ? legDistance1 : Math.min(legDistance1, legDistance2);
@@ -303,7 +309,7 @@ export class LegsProcedure {
   public mapVectors(leg: ProcedureLeg, prevLeg: WayPoint) {
     const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, 5, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
 
-    const waypoint =  this.buildWaypoint('(VECT)', coordinates);
+    const waypoint = this.buildWaypoint('(VECT)', coordinates);
     waypoint.isVectors = true;
     waypoint.endsInDiscontinuity = true;
 
