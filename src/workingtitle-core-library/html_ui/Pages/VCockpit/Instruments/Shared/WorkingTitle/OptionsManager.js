@@ -22,22 +22,29 @@ class WT_OptionsManager {
         this._optionDefs[opt] = {
             default: optionDef.default === undefined ? undefined : optionDef.default,
             auto: optionDef.auto === undefined ? false : optionDef.auto,
+            observed: optionDef.observed === undefined ? false : optionDef.observed,
             readOnly: optionDef.readOnly === undefined ? false : optionDef.readOnly
         };
 
         if (this._optionDefs[opt].auto) {
-            if (this._optionDefs[opt].readOnly) {
-                Object.defineProperty(this.parent, opt, {
-                    get() {return this[`_${opt}`];},
-                    configurable: true
-                });
-            } else {
-                Object.defineProperty(this.parent, opt, {
-                    get() {return this[`_${opt}`];},
-                    set(value) {this[`_${opt}`] = value;},
-                    configurable: true
-                });
+            let definition = {
+                get() {return this[`_${opt}`];},
+                configurable: true
+            };
+            if (!this._optionDefs[opt].readOnly) {
+                if (this._optionDefs[opt].observed) {
+                    definition["set"] = function(value) {
+                        let old = this[`_${opt}`];
+                        if (old !== value) {
+                            this[`_${opt}`] = value;
+                            this.onOptionChanged(opt, old, value);
+                        }
+                    };
+                } else {
+                    definition["set"] = function(value) {this[`_${opt}`] = value;};
+                }
             }
+            Object.defineProperty(this.parent, opt, definition);
         }
         if (!this._optionDefs[opt].readOnly && this._optionDefs[opt].default !== undefined) {
             this.parent[opt] = optionDef.default;
