@@ -176,6 +176,7 @@ class WT_BaseVnav {
     buildDescentProfile() {
         this._vnavTargetAltitude = this._vnavTargetAltitude === undefined ? this._destination.infos.oneWayRunways[0].elevation * 3.28 : this._vnavTargetAltitude;
         this._lastActiveWaypointIdent = this._activeWaypoint.ident;
+        this._desiredFPA = WTDataStore.get('CJ4_vpa', 3);
 
         //PLAN DESCENT PROFILE
         for (let i = this.waypoints.length - 1; i >= 0; i--) {
