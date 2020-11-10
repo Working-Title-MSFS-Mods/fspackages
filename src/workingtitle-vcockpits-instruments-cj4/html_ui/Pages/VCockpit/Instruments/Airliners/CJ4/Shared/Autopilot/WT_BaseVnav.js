@@ -227,4 +227,17 @@ class WT_BaseVnav {
         this._topOfDescent = ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
         this._vnavTargetWaypoint = waypoint;
     }
+
+    getVnavTargetAltitude() {
+        return this._vnavTargetAltitude;
+    }
+    getVnavTargetDistance() {
+        return this._vnavTargetDistance;
+    }
+    getDistanceToTod() {
+        return this._distanceToTod;
+    }
+    getAltDeviation() {
+        return this._altDeviation;
+    }
 }
