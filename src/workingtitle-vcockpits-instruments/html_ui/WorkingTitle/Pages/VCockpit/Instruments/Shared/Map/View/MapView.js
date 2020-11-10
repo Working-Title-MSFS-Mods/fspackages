@@ -177,10 +177,10 @@ class WT_MapView extends HTMLElement {
                 if (viewSizeChanged) {
                     layer.onViewSizeChanged(optionsToPass);
                 }
-                Avionics.Utils.diffAndSetAttribute(layer.htmlElement, "display", "block");
+                layer.htmlElement.style.display = "block";
                 layer.onUpdate(optionsToPass);
             } else {
-                Avionics.Utils.diffAndSetAttribute(layer.htmlElement, "display", "none");
+                layer.htmlElement.style.display = "none";
             }
         }
     }
