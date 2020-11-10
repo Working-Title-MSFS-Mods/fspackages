@@ -1503,6 +1503,26 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 this.slipSkid.setAttribute("fill", "white");
                 this.attitude_root.appendChild(this.slipSkid);
             }
+            {
+                this.radioAltitudeGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                this.radioAltitudeGroup.setAttribute("id", "RadioAltitude");
+                this.attitude_root.appendChild(this.radioAltitudeGroup);
+                this.radioAltitudeColorOk = "#11d011";
+                this.radioAltitudeColorBad = "#11d011";
+                this.radioAltitudeColorLimit = 400;
+                this.radioAltitudeRotate = false;
+                this.radioAltitude = document.createElementNS(Avionics.SVG.NS, "text");
+                this.radioAltitude.textContent = "";
+                this.radioAltitude.setAttribute("x", "0");
+                this.radioAltitude.setAttribute("y", "165");
+                this.radioAltitude.setAttribute("text-anchor", "middle");
+                this.radioAltitude.setAttribute("font-size", "32");
+                this.radioAltitude.setAttribute("font-family", "Roboto-Bold");
+                this.radioAltitude.setAttribute("fill", "#11d011");
+                this.radioAltitude.setAttribute("stroke", "black");
+                this.radioAltitude.setAttribute("stroke-width", "3.5");
+                this.radioAltitudeGroup.appendChild(this.radioAltitude);
+            }
         }
         this.applyAttributes();
     }
