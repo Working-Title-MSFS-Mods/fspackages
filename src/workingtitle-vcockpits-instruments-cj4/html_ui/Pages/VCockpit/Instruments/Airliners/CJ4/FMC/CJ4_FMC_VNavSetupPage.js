@@ -133,11 +133,11 @@ class CJ4_FMC_VNavSetupPage {
         };
 
         fmc.onRightInput[3] = () => {
-            CJ4_FMC_PerfInitPage.ShowPage7(fmc);
+            CJ4_FMC_VNavSetupPage.ShowPage4(fmc);
         };
 
         fmc.onLeftInput[3] = () => {
-            CJ4_FMC_PerfInitPage.ShowPage6(fmc);
+            CJ4_FMC_VNavSetupPage.ShowPage5(fmc);
         };
 
         fmc.updateSideButtonActiveStatus();
