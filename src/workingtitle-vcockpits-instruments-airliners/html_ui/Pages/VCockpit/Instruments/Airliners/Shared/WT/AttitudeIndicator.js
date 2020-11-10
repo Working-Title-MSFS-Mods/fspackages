@@ -1415,10 +1415,10 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 this.attitude_bank = document.createElementNS(Avionics.SVG.NS, "g");
                 this.attitude_root.appendChild(this.attitude_bank);
                 let topTriangle = document.createElementNS(Avionics.SVG.NS, "path");
-                topTriangle.setAttribute("d", "M0 -180 l-7.5 -10 l15 0 Z");
+                topTriangle.setAttribute("d", "M 0 -180 l -5 -10 l 10 0 Z");
                 topTriangle.setAttribute("fill", "transparent");
                 topTriangle.setAttribute("stroke", "white");
-                topTriangle.setAttribute("stroke-width", "1");
+                topTriangle.setAttribute("stroke-width", "2");
                 topTriangle.setAttribute("stroke-opacity", "1");
                 this.attitude_bank.appendChild(topTriangle);
                 let smallDashesAngle = [-60, -30, -20, -10, 10, 20, 30, 60];
@@ -1437,7 +1437,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                     this.attitude_bank.appendChild(dash);
                 }
                 let leftTriangle = document.createElementNS(Avionics.SVG.NS, "path");
-                leftTriangle.setAttribute("d", "M0 -180 l-7.5 -10 l15 0 Z");
+                leftTriangle.setAttribute("d", "M 0 -180 l -5 -10 l 10 0 Z");
                 leftTriangle.setAttribute("fill", "transparent");
                 leftTriangle.setAttribute("stroke", "white");
                 leftTriangle.setAttribute("stroke-width", "2");
@@ -1445,7 +1445,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 leftTriangle.setAttribute("transform", "rotate(45,0,0)");
                 this.attitude_bank.appendChild(leftTriangle);
                 let rightTriangle = document.createElementNS(Avionics.SVG.NS, "path");
-                rightTriangle.setAttribute("d", "M0 -180 l-7.5 -10 l15 0 Z");
+                rightTriangle.setAttribute("d", "M 0 -180 l -5 -10 l 10 0 Z");
                 rightTriangle.setAttribute("fill", "transparent");
                 rightTriangle.setAttribute("stroke", "white");
                 rightTriangle.setAttribute("stroke-width", "2");
