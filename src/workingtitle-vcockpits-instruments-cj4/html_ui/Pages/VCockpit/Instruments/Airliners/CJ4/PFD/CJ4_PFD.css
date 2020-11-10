@@ -120,6 +120,19 @@ cj4-pfd-element {
           left: 7.95%;
           width: 28%;
           height: 100%; }
+        cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #VnavAlt {
+          transform: rotateX(0);
+          position: absolute;
+          font-size: 26px;
+          color: magenta;
+          font: "Robot-Bold";
+          -webkit-text-stroke: 7px black;
+          display:none;
+          text-align: right;
+          top: 2.75%;
+          left: 80%;
+          width: 150px;
+          height: 100px; }
         cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #VSpeed {
           transform: rotateX(0);
           position: absolute;

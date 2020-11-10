@@ -1,7 +1,7 @@
 class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
     constructor() {
         super(...arguments);
-        this.cursorTextColor = "rgb(26,255,0)";
+        this.cursorTextColor = "#11d011";
         this.fontSize = 25;
         this.cursorPosX1 = 0;
         this.cursorPosY1 = 0;
@@ -65,10 +65,12 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
         this.rootSVG.setAttribute("viewBox", "0 0 250 1000");
         var width = 70.5;
         var centerHeight = 495;
-        var posX = width * 0.5;
+        var posX = width * 0.5 + 1;
         var posY = 350;
         this.maxSpeed = 4000;
         this.cursorTextColor = "rgb(26,255,0)";
+        
+
         if (!this.rootGroup) {
             this.rootGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.rootGroup.setAttribute("id", "VerticalSpeed");
@@ -196,7 +198,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.cursorSVGLine.setAttribute("x2", this.cursorPosX2.toString());
             this.cursorSVGLine.setAttribute("y2", this.cursorPosY2.toString());
             this.cursorSVGLine.setAttribute("stroke", this.cursorTextColor);
-            this.cursorSVGLine.setAttribute("stroke-width", "2");
+            this.cursorSVGLine.setAttribute("stroke-width", "3");
             this.cursorSVGGroup.appendChild(this.cursorSVGLine);
             this.centerGroup.appendChild(this.cursorSVGGroup);
             let selectedCursorHeight = 12;
@@ -206,6 +208,20 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.selectedCursorSVG.setAttribute("fill", "cyan");
             this.selectedCursorSVG.setAttribute("visibility", "hidden");
             this.cursorSVGGroup.appendChild(this.selectedCursorSVG);
+
+            //Disabled until Chris adds in VNAV
+            /*if (SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") == 2) {
+                    SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
+                }*/
+            /*this.pinkDonut = document.createElementNS(Avionics.SVG.NS, "circle");
+            this.pinkDonut.setAttribute("cx", "30");
+            this.pinkDonut.setAttribute("cy", "130");
+            this.pinkDonut.setAttribute("r", "10");
+            this.pinkDonut.setAttribute("fill", "none");
+            this.pinkDonut.setAttribute("stroke", "magenta");
+            this.pinkDonut.setAttribute("stroke-width", "3");
+            this.cursorSVGGroup.appendChild(this.pinkDonut);*/
+
             this.bottomSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
             this.bottomSpeedText.textContent = "";
             this.bottomSpeedText.setAttribute("x", (_left + _width * 0.92).toString());
@@ -217,6 +233,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.bottomSpeedText.setAttribute("alignment-baseline", "central");
             this.centerGroup.appendChild(this.bottomSpeedText);
             this.rootGroup.appendChild(this.centerGroup);
+
         }
         this.rootSVG.appendChild(this.rootGroup);
         this.appendChild(this.rootSVG);
