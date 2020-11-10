@@ -418,31 +418,12 @@ class CJ4_FMC_LegsPage {
     getAltSpeedRestriction(waypoint) {
         let speedConstraint = "---";
         let altitudeConstraint = "----- ";
-        let wpt = undefined;
+        let wpt = waypoint;
 
         if (waypoint.speedConstraint && waypoint.speedConstraint > 100) {
             speedConstraint = waypoint.speedConstraint;
         }
-        let constraintIndex = this._wayPointsToRender.indexOf(waypoint);
-        //console.log(waypoint.ident + " " + constraintIndex);
-        //console.log("departure waypoint size " + this._fmc.flightPlanManager._departureWaypointSize);
-        //console.log("arrival waypoint index " + (this._wayPointsToRender.length - this._approachWaypoints.length - this._fmc.flightPlanManager.getArrivalWaypointsCount() - 1));
-        //console.log("approach waypoint index " + (this._wayPointsToRender.length - this._approachWaypoints.length - 1));
-
-        if (this._fmc.flightPlanManager.getDeparture() && constraintIndex <= this._fmc.flightPlanManager._departureWaypointSize) {
-            //console.log("departure waypoint");
-            let departureWaypoints = this._fmc.flightPlanManager.getDepartureWaypoints();
-            wpt = departureWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
-            //console.log(wpt != undefined ? "match: " + wpt.icao : "no match" + this._wayPointsToRender[constraintIndex].icao);
-        }
-        else if (this._fmc.flightPlanManager.getApproach() && this._rawApproachWaypoints && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - 1)) {
-            wpt = this._rawApproachWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
-        }
-        else if (this._fmc.flightPlanManager.getArrival() && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - this._fmc.flightPlanManager.getArrivalWaypointsCount() - 1)) {
-            let arrivalWaypoints = this._fmc.flightPlanManager.getArrivalWaypoints();
-            wpt = arrivalWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
-        }
-        if (wpt && wpt.legAltitudeDescription && wpt.legAltitudeDescription > 0) {
+        if (waypoint.altDesc > 0) {
             if (wpt.legAltitudeDescription == 1 && wpt.legAltitude1 > 100) {
                 altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100
                     : wpt.legAltitude1.toFixed(0);
@@ -463,8 +444,48 @@ class CJ4_FMC_LegsPage {
                 altitudeConstraint = altitudeConstraintB + altitudeConstraintA;
             }
 
-            altitudeConstraint = altitudeConstraint.padStart(6, " ");
         }
+        altitudeConstraint = altitudeConstraint.padStart(6, " ");
+
+
+        // let constraintIndex = this._wayPointsToRender.indexOf(waypoint);
+
+        // if (this._fmc.flightPlanManager.getDeparture() && constraintIndex <= this._fmc.flightPlanManager._departureWaypointSize) {
+        //     //console.log("departure waypoint");
+        //     let departureWaypoints = this._fmc.flightPlanManager.getDepartureWaypoints();
+        //     wpt = departureWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
+        //     //console.log(wpt != undefined ? "match: " + wpt.icao : "no match" + this._wayPointsToRender[constraintIndex].icao);
+        // }
+        // else if (this._fmc.flightPlanManager.getApproach() && this._rawApproachWaypoints && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - 1)) {
+        //     wpt = this._rawApproachWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
+        // }
+        // else if (this._fmc.flightPlanManager.getArrival() && constraintIndex >= (this._wayPointsToRender.length - this._approachWaypoints.length - this._fmc.flightPlanManager.getArrivalWaypointsCount() - 1)) {
+        //     let arrivalWaypoints = this._fmc.flightPlanManager.getArrivalWaypoints();
+        //     wpt = arrivalWaypoints.find(wp => { return (wp && wp.icao.substr(-5) == this._wayPointsToRender[constraintIndex].icao.substr(-5)); })
+        // }
+        // if (wpt && wpt.legAltitudeDescription && wpt.legAltitudeDescription > 0) {
+        //     if (wpt.legAltitudeDescription == 1 && wpt.legAltitude1 > 100) {
+        //         altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100
+        //             : wpt.legAltitude1.toFixed(0);
+        //     }
+        //     else if (wpt.legAltitudeDescription == 2 && wpt.legAltitude1 > 100) {
+        //         altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "A"
+        //             : wpt.legAltitude1.toFixed(0) + "A";
+        //     }
+        //     else if (wpt.legAltitudeDescription == 3 && wpt.legAltitude1 > 100) {
+        //         altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
+        //             : wpt.legAltitude1.toFixed(0) + "B";
+        //     }
+        //     else if (wpt.legAltitudeDescription == 4 && wpt.legAltitude2 > 100 && wpt.legAltitude1 > 100) {
+        //         let altitudeConstraintA = wpt.legAltitude2.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude2.toFixed(0) / 100 + "A"
+        //             : wpt.legAltitude2.toFixed(0) + "A";
+        //         let altitudeConstraintB = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
+        //             : wpt.legAltitude1.toFixed(0) + "B";
+        //         altitudeConstraint = altitudeConstraintB + altitudeConstraintA;
+        //     }
+
+        //     altitudeConstraint = altitudeConstraint.padStart(6, " ");
+        // }
         return speedConstraint + "/" + altitudeConstraint + "[green]";
     }
 
