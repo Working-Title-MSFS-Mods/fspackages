@@ -730,8 +730,8 @@ export class FlightPlanManager {
   }
 
   /**
-   * Gets all waypoints from a flight plan.
-   * @param flightPlanIndex The index of the flight plan to get the waypoint from. If omitted, will get from the current flight plan.
+   * Gets all non-approach waypoints from a flight plan.
+   * @param flightPlanIndex The index of the flight plan to get the waypoints from. If omitted, will get from the current flight plan.
    */
   public getWaypoints(flightPlanIndex: number = NaN): WayPoint[] {
     if (isNaN(flightPlanIndex)) {
@@ -739,6 +739,18 @@ export class FlightPlanManager {
     }
 
     return this._flightPlans[flightPlanIndex].nonApproachWaypoints;
+  }
+
+  /**
+   * Gets all waypoints from a flight plan.
+   * @param flightPlanIndex The index of the flight plan to get the waypoints from. If omitted, will get from the current flight plan.
+   */
+  public getAllWaypoints(flightPlanIndex?: number): WayPoint[] {
+    if (flightPlanIndex === undefined) {
+      flightPlanIndex = this._currentFlightPlanIndex;
+    }
+
+    return this._flightPlans[flightPlanIndex].waypoints;
   }
 
   /**

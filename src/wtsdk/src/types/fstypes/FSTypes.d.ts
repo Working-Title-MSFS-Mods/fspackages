@@ -30,6 +30,7 @@ declare module "MSFS" {
     coordinates: LatLongAlt;
     ident: string;
     instrument: BaseInstrument;
+    magneticVariation?: number;
     _svgElements: any;
   }
 
@@ -106,8 +107,8 @@ declare module "MSFS" {
   }
 
   export class SimVar {
-    static GetSimVarValue(name: string, unit: string): any;
-    static SetSimVarValue(name: string, unit: string, value: any): Promise<void>;
+    static GetSimVarValue(name: string, unit: string, dataSource?: string): any;
+    static SetSimVarValue(name: string, unit: string, value: any, dataSource?: string): Promise<void>;
   }
 
   export class Simplane {

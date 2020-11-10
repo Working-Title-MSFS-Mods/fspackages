@@ -1,4 +1,6 @@
 import { WayPoint, ProcedureLeg, BaseInstrument, LatLongAlt, IntersectionInfo, Avionics } from 'MSFS';
+import { GPS } from '../wtsdk';
+import { GeoMath } from './GeoMath';
 import { RawDataMapper } from './RawDataMapper';
 
 /**
@@ -65,6 +67,9 @@ export class LegsProcedure {
     if (!this._facilitiesLoaded) {
       const facilityResults = await Promise.all(this._facilitiesToLoad.values());
       for (var facility of facilityResults.filter(f => f !== undefined)) {
+        const magvar = await GPS.getMagVar(facility.icao);
+        facility.magneticVariation = magvar;
+
         this._facilities.set(facility.icao, facility);
       }
 
@@ -176,7 +181,8 @@ export class LegsProcedure {
       / Math.sin(0.5 * (deltaAngle - inverseDistanceAngle))));
 
     const legDistance = targetDistance > distanceToOrigin ? legDistance1 : Math.min(legDistance1, legDistance2);
-    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, legDistance * LegsProcedure.distanceNormalFactorNM, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
+    const course = leg.course + GeoMath.getMagvar(prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
+    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(course, legDistance * LegsProcedure.distanceNormalFactorNM, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
 
     return this.buildWaypoint(`${originIdent}${Math.trunc(legDistance * LegsProcedure.distanceNormalFactorNM)}`, coordinates);
   }
@@ -189,6 +195,8 @@ export class LegsProcedure {
   public mapBearingAndDistanceFromOrigin(leg: ProcedureLeg): WayPoint {
     const origin = this._facilities.get(leg.originIcao);
     const originIdent = origin.icao.substring(7, 12).trim();
+
+    const course = leg.course + GeoMath.getMagvar(origin.lat, origin.lon);
     const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, leg.distance / 1852, origin.lat, origin.lon);
 
     return this.buildWaypoint(`${originIdent}${Math.trunc(leg.distance / 1852)}`, coordinates);
@@ -207,7 +215,9 @@ export class LegsProcedure {
     else {
       const origin = this._facilities.get(leg.originIcao);
       const originIdent = origin.icao.substring(7, 12).trim();
-      const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, leg.distance / 1852, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
+
+      const course = leg.course + GeoMath.getMagvar(prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
+      const coordinates = Avionics.Utils.bearingDistanceToCoordinates(course, leg.distance / 1852, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
 
       const distanceFromOrigin = Avionics.Utils.computeGreatCircleDistance(new LatLongAlt(origin.lat, origin.lon), coordinates);
       return this.buildWaypoint(`${originIdent}${Math.trunc(distanceFromOrigin / 1852)}`, coordinates);
@@ -256,7 +266,8 @@ export class LegsProcedure {
       let ang3 = Math.acos(Math.sin(ang1) * Math.sin(ang2) * Math.cos(distanceFromOrigin / LegsProcedure.distanceNormalFactorNM) - Math.cos(ang1) * Math.cos(ang2));
 
       let legDistance = Math.acos((Math.cos(ang1) + Math.cos(ang2) * Math.cos(ang3)) / (Math.sin(ang2) * Math.sin(ang3))) * LegsProcedure.distanceNormalFactorNM;
-      const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, legDistance, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
+      const course = leg.course + GeoMath.getMagvar(prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
+      const coordinates = Avionics.Utils.bearingDistanceToCoordinates(course, legDistance, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
 
       return this.buildWaypoint(`T${leg.course}${referenceFix.icao.substring(7, 12).trim()}`, coordinates);
     }
@@ -282,7 +293,9 @@ export class LegsProcedure {
     const gamma = Math.acos(Math.sin(alpha) * Math.sin(beta) * Math.cos(distanceToOrigin) - Math.cos(alpha) * Math.cos(beta));
     const legDistance = Math.acos((Math.cos(beta) + Math.cos(alpha) * Math.cos(gamma)) / (Math.sin(alpha) * Math.sin(gamma)));
 
-    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, legDistance * LegsProcedure.distanceNormalFactorNM, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
+    const course = leg.course + GeoMath.getMagvar(prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
+    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(course, legDistance * LegsProcedure.distanceNormalFactorNM, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
+    
     return this.buildWaypoint(`${this.getIdent(origin.icao)}${leg.theta}`, coordinates);
   }
 
@@ -295,9 +308,11 @@ export class LegsProcedure {
   public mapHeadingUntilAltitude(leg: ProcedureLeg, prevLeg: WayPoint) {
     const altitudeFeet = (leg.altitude1 * 3.2808399);
     const distanceInNM = altitudeFeet / 500.0;
-    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, distanceInNM, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
 
-    return this.buildWaypoint(`A${Math.trunc(altitudeFeet)}`, coordinates);
+    const course = leg.course + GeoMath.getMagvar(prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
+    const coordinates = GeoMath.relativeBearingDistanceToCoords(course, distanceInNM, prevLeg.infos.coordinates);
+
+    return this.buildWaypoint(`A${Math.trunc(altitudeFeet)}`, coordinates, prevLeg.infos.magneticVariation);
   }
 
   /**
@@ -307,7 +322,8 @@ export class LegsProcedure {
    * @returns The mapped leg.
    */
   public mapVectors(leg: ProcedureLeg, prevLeg: WayPoint) {
-    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.course, 5, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
+    const course = leg.course + GeoMath.getMagvar(prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
+    const coordinates = GeoMath.relativeBearingDistanceToCoords(course, 5, prevLeg.infos.coordinates);
 
     const waypoint = this.buildWaypoint('(VECT)', coordinates);
     waypoint.isVectors = true;
@@ -358,13 +374,16 @@ export class LegsProcedure {
    * Builds a WayPoint from basic data.
    * @param ident The ident of the waypoint.
    * @param coordinates The coordinates of the waypoint. 
+   * @param magneticVariation The magnetic variation of the waypoint, if any.
+   * @returns The built waypoint.
    */
-  buildWaypoint(ident: string, coordinates: LatLongAlt): WayPoint {
+  buildWaypoint(ident: string, coordinates: LatLongAlt, magneticVariation?: number): WayPoint {
     const waypoint = new WayPoint(this._instrument);
     waypoint.type = 'W';
 
     waypoint.infos = new IntersectionInfo(this._instrument);
     waypoint.infos.coordinates = coordinates;
+    waypoint.infos.magneticVariation = magneticVariation;
 
     waypoint.ident = ident;
     waypoint.infos.ident = ident;

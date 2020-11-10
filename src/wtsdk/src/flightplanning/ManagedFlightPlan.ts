@@ -4,7 +4,7 @@ import { RawDataMapper } from './RawDataMapper';
 import { GPS }  from './GPS';
 import { ProcedureDetails } from './ProcedureDetails';
 import { DirectTo } from './DirectTo';
-import { WayPoint, BaseInstrument, WayPointInfo, VORInfo, NDBInfo, IntersectionInfo, AirportInfo, LatLongAlt, Avionics, SimVar } from 'MSFS';
+import { WayPoint, BaseInstrument, WayPointInfo, VORInfo, NDBInfo, IntersectionInfo, AirportInfo, LatLongAlt, Avionics, SimVar, OneWayRunway } from 'MSFS';
 
 /**
  * A flight plan managed by the FlightPlanManager.
@@ -511,6 +511,8 @@ export class ManagedFlightPlan {
       const runwayIndex = this.procedureDetails.departureRunwayIndex;
       const transitionIndex = this.procedureDetails.departureTransitionIndex;
 
+      const selectedOriginRunwayIndex = this.procedureDetails.originRunwayIndex;
+
       const airportInfo = origin.infos as AirportInfo;
 
       if (departureIndex !== -1 && runwayIndex !== -1) {
@@ -536,9 +538,24 @@ export class ManagedFlightPlan {
         this.removeSegment(segment.type);
       }
       
-      if (legs.length > 0) {
+      if (legs.length > 0 || selectedOriginRunwayIndex !== -1 || (departureIndex !== -1 && runwayIndex !== -1)) {
         segment = this.addSegment(SegmentType.Departure);
-        const procedure = new LegsProcedure(legs, origin, this._parentInstrument);
+        let procedure = new LegsProcedure(legs, origin, this._parentInstrument);
+
+        let runway;
+        if (selectedOriginRunwayIndex !== -1) {
+          runway = airportInfo.oneWayRunways[selectedOriginRunwayIndex];
+        }
+        else if (runwayIndex !== -1) {
+          runway = this.getRunway(airportInfo.oneWayRunways, airportInfo.departures[departureIndex].runwayTransitions[runwayIndex].name);
+        }
+        
+        if (runway) {
+          const runwayWaypoint = procedure.buildWaypoint(`RW${runway.designation}`, runway.endCoordinates);
+          this.addWaypoint(runwayWaypoint, undefined, segment.type);
+
+          procedure = new LegsProcedure(legs, runwayWaypoint, this._parentInstrument);
+        }
 
         let waypointIndex = segment.offset;
         while (procedure.hasNext()) {
@@ -633,7 +650,7 @@ export class ManagedFlightPlan {
         this.addWaypoint(await procedure.getNext(), ++waypointIndex, segment.type);
       }
 
-      const runway = this.getRunway(destinationInfo.approaches[approachIndex].runway);
+      const runway = this.getRunway(destinationInfo.oneWayRunways, destinationInfo.approaches[approachIndex].runway);
       if (runway) {
         const runwayWaypoint = procedure.buildWaypoint(`RW${runway.designation}`, runway.beginningCoordinates);
         this.addWaypoint(runwayWaypoint);
@@ -642,22 +659,23 @@ export class ManagedFlightPlan {
   }
 
   /**
-   * Gets the destination runway information from an approach runway name.
-   * @param approachRunway The approach runway name.
+   * Gets the runway information from a given runway name.
+   * @param runways The collection of runways to search.
+   * @param runwayName The runway name.
    * @returns The found runway, if any.
    */
-  public getRunway(approachRunway: string): any {
+  public getRunway(runways: OneWayRunway[], runwayName: string): any {
     if (this.destinationAirfield) {
       const runways = (this.destinationAirfield.infos as AirportInfo).oneWayRunways;
       let runwayIndex;
       
-      const runwayLetter = approachRunway[approachRunway.length - 1];
+      const runwayLetter = runwayName[runwayName.length - 1];
       if (runwayLetter === ' ' || runwayLetter === 'C') {
-        const runwayDirection = approachRunway.substring(0, -1);
+        const runwayDirection = runwayName.substring(0, -1);
         runwayIndex = runways.findIndex(r => r.designation === runwayDirection || r.designation === `${runwayDirection}C`);
       }
       else {
-        runwayIndex = runways.findIndex(r => r.designation === approachRunway);
+        runwayIndex = runways.findIndex(r => r.designation === runwayName);
       }
 
       if (runwayIndex !== -1) {
