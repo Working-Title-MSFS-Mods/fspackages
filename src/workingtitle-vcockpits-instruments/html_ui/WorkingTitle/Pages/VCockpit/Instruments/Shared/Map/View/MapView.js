@@ -106,6 +106,7 @@ class WT_MapView extends HTMLElement {
             this._loadLayerConfig(layer);
         }
         this.appendChild(layer.htmlElement);
+        layer.htmlElement.style.zIndex = this._layers.length;
         layer.onAttached(this._optsManager.getOptionsFromList(WT_MapView.OPTIONS_TO_PASS));
     }
 
