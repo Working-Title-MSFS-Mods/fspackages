@@ -82,7 +82,6 @@ class WT_BaseVnav {
             this._activeWaypointDist = Avionics.Utils.computeDistance(this._currPos, this._activeWaypoint.infos.coordinates);
             this._currentDistanceInFP = this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist;
             this._destinationDistance = this._destination.cumulativeDistanceInFP - this._currentDistanceInFP;
-            this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
 
             //HAS THE ACTIVE WAYPOINT CHANGED?
             if (this._lastActiveWaypointIdent != this._activeWaypoint.ident) {
@@ -151,6 +150,7 @@ class WT_BaseVnav {
             this._vnavTargetChanged = false;
             this._flightPlanChanged = false;
             this._activeWaypointChanged = false;
+            this.writeDatastoreValues();
         }
         else {
             this._vnavType = false;
@@ -228,16 +228,13 @@ class WT_BaseVnav {
         this._vnavTargetWaypoint = waypoint;
     }
 
-    getVnavTargetAltitude() {
-        return this._vnavTargetAltitude;
-    }
-    getVnavTargetDistance() {
-        return this._vnavTargetDistance;
-    }
-    getDistanceToTod() {
-        return this._distanceToTod;
-    }
-    getAltDeviation() {
-        return this._altDeviation;
+    writeDatastoreValues() {
+        const vnavValues = {
+            vnavTargetAltitude: this._vnavTargetAltitude,
+            vnavTargetDistance: this._vnavTargetDistance,
+            topOfDescent: this._topOfDescent,
+            distanceToTod: this._distanceToTod
+        };
+        WTDataStore.set('CJ4_vnavValues', JSON.stringify(vnavValues));
     }
 }
