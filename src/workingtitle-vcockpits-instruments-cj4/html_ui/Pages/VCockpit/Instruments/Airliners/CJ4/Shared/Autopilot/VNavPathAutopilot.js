@@ -160,33 +160,33 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
         //PLAN DESCENT PROFILE
         for (let i = this._waypoints.length - 1; i >= 0; i--) {
             const waypoint = this._waypoints[i];
-            let legAltitudeDescription = waypoint.legAltitudeDescription;
-            if (legAltitudeDescription == 1 && waypoint.legAltitude1 > 1000) { //AT CASE
-                this._vnavTargetAltitude = waypoint.legAltitude1;
+            let altDesc = waypoint.altDesc;
+            if (altDesc == 1 && waypoint.altitude1 > 1000) { //AT CASE
+                this._vnavTargetAltitude = waypoint.altitude1;
                 this._vnavTargetDistance = (waypoint === this._activeWaypoint) ? this._activeWaypointDist : waypoint.cumulativeDistanceInFP - this._currentDistanceInFP;
                 this._topOfDescent = ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
             }
-            else if (legAltitudeDescription == 2 && waypoint.legAltitude1 > 1000) { //ABOVE CASE
+            else if (altDesc == 2 && waypoint.altitude1 > 1000) { //ABOVE CASE
                 let vnavTargetAltitudeAtWaypoint = this.getVNavTargetAltitudeAtWaypoint(waypoint);
-                if (vnavTargetAltitudeAtWaypoint < waypoint.legAltitude1) {
+                if (vnavTargetAltitudeAtWaypoint < waypoint.altitude1) {
                     this.processWaypoint(waypoint);
 
                 }
             }
-            else if (legAltitudeDescription == 3 && waypoint.legAltitude1 > 1000) { //BELOW CASE
+            else if (altDesc == 3 && waypoint.altitude1 > 1000) { //BELOW CASE
                 let vnavTargetAltitudeAtWaypoint = this.getVNavTargetAltitudeAtWaypoint(waypoint);
-                if (vnavTargetAltitudeAtWaypoint > waypoint.legAltitude1) {
+                if (vnavTargetAltitudeAtWaypoint > waypoint.altitude1) {
                     this.processWaypoint(waypoint);
 
                 }
             }
-            else if (legAltitudeDescription == 4 && waypoint.legAltitude1 > 1000) { //ABOVE AND BELOW CASE
+            else if (altDesc == 4 && waypoint.altitude1 > 1000) { //ABOVE AND BELOW CASE
                 let vnavTargetAltitudeAtWaypoint = this.getVNavTargetAltitudeAtWaypoint(waypoint);
-                if (vnavTargetAltitudeAtWaypoint > waypoint.legAltitude1) {
+                if (vnavTargetAltitudeAtWaypoint > waypoint.altitude1) {
                     this.processWaypoint(waypoint);
                 }
-                else if (this._vnavTargetAltitudeAtWaypoint < waypoint.legAltitude2) {
-                    this._vnavTargetAltitude = waypoint.legAltitude2;
+                else if (this._vnavTargetAltitudeAtWaypoint < waypoint.altitude2) {
+                    this._vnavTargetAltitude = waypoint.altitude2;
                     this._vnavTargetDistance = waypoint == this._activeWaypoint ? this._activeWaypointDist
                         : waypoint.cumulativeDistanceInFP - this._currentDistanceInFP;
                     this._topOfDescent = ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
@@ -202,7 +202,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
     }
 
     processWaypoint(waypoint) {
-        this._vnavTargetAltitude = waypoint.legAltitude1;
+        this._vnavTargetAltitude = waypoint.altitude1;
         this._vnavTargetDistance = waypoint == this._activeWaypoint ? this._activeWaypointDist
             : waypoint.cumulativeDistanceInFP - this._currentDistanceInFP;
         this._topOfDescent = ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;

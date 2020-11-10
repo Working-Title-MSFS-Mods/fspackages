@@ -31,18 +31,18 @@ class WT_VModeAutopilot extends WT_BaseAutopilot {
             if (this._constraintWaypoints.length > 0) {
                 for (let i = 0; i < this._constraintWaypoints.length; i++) {
                     let waypoint = this._constraintWaypoints[i];
-                    if (waypoint.legAltitudeDescription === 1 && waypoint.legAltitude1 > this._altitude) { //AT CASE
-                        this._vnavTargetAltitude = waypoint.legAltitude1;
+                    if (waypoint.altDesc === 1 && waypoint.altitude1 > this._altitude) { //AT CASE
+                        this._vnavTargetAltitude = waypoint.altitude1;
                         this._vnavTargetWaypoint = waypoint;
                         break;
                     }
-                    else if (waypoint.legAltitudeDescription === 3 && waypoint.legAltitude1 > this._altitude) { //AT CASE
-                        this._vnavTargetAltitude = waypoint.legAltitude1;
+                    else if (waypoint.altDesc === 3 && waypoint.altitude1 > this._altitude) { //AT CASE
+                        this._vnavTargetAltitude = waypoint.altitude1;
                         this._vnavTargetWaypoint = waypoint;
                         break;
                     }
-                    else if (waypoint.legAltitudeDescription === 4 && waypoint.legAltitude1 > this._altitude) { //AT CASE
-                        this._vnavTargetAltitude = waypoint.legAltitude1;
+                    else if (waypoint.altDesc === 4 && waypoint.altitude1 > this._altitude) { //AT CASE
+                        this._vnavTargetAltitude = waypoint.altitude1;
                         this._vnavTargetWaypoint = waypoint;
                         break;
                     }
@@ -57,18 +57,18 @@ class WT_VModeAutopilot extends WT_BaseAutopilot {
             if (this._constraintWaypoints.length > 0) {
                 for (let i = 0; i < this._constraintWaypoints.length; i++) {
                     let waypoint = this._constraintWaypoints[i];
-                    if (waypoint.legAltitudeDescription === 1 && waypoint.legAltitude1 < this._altitude) { //AT CASE
-                        this._vnavTargetAltitude = waypoint.legAltitude1;
+                    if (waypoint.altDesc === 1 && waypoint.altitude1 < this._altitude) { //AT CASE
+                        this._vnavTargetAltitude = waypoint.altitude1;
                         this._vnavTargetWaypoint = waypoint;
                         break;
                     }
-                    else if (waypoint.legAltitudeDescription === 2 && waypoint.legAltitude1 < this._altitude) { //AT CASE
-                        this._vnavTargetAltitude = waypoint.legAltitude1;
+                    else if (waypoint.altDesc === 2 && waypoint.altitude1 < this._altitude) { //AT CASE
+                        this._vnavTargetAltitude = waypoint.altitude1;
                         this._vnavTargetWaypoint = waypoint;
                         break;
                     }
-                    else if (waypoint.legAltitudeDescription === 4 && waypoint.legAltitude2 < this._altitude) { //AT CASE
-                        this._vnavTargetAltitude = waypoint.legAltitude2;
+                    else if (waypoint.altDesc === 4 && waypoint.altitude2 < this._altitude) { //AT CASE
+                        this._vnavTargetAltitude = waypoint.altitude2;
                         this._vnavTargetWaypoint = waypoint;
                         break;
                     }
