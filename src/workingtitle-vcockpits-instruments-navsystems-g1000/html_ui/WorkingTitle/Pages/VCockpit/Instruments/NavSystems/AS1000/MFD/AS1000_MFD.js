@@ -451,13 +451,10 @@ class AS1000_MFD extends BaseAS1000 {
         this.querySelector("g1000-page-selector").setController(this.pageController);
     }
     initDefaultSoftKeys() {
-        let engine = new WT_Soft_Key("ENGINE", this.showEngineMenu.bind(this));
-        let map = new WT_Soft_Key("MAP", null);
-        let checklist = new WT_Soft_Key("CHKLIST", null);
         this.defaultSoftKeys = {
-            engine: engine,
-            map: map,
-            checklist: checklist
+            engine: new WT_Soft_Key("ENGINE", this.showEngineMenu.bind(this)),
+            map: new WT_Soft_Key("MAP", null),
+            checklist: new WT_Soft_Key("CHKLIST", null)
         };
     }
     resetPage() {

@@ -66,6 +66,8 @@ class WT_Airspeed_Model {
         this.referenceSpeeds.value = speeds;
     }
     update(dt) {
+        dt /= 1000;
+
         const indicatedSpeed = Simplane.getIndicatedSpeed();
         this.airspeed.value = this.convertSpeed(indicatedSpeed);
         const trueSpeed = Simplane.getTrueSpeed();
@@ -76,18 +78,18 @@ class WT_Airspeed_Model {
         } else {
             this.referenceSpeed.show.value = false;
         }
-        if (this.lastSpeed == null) {
-            this.lastSpeed = indicatedSpeed;
+        if (this.lastSpeed === null) {
+            this.lastSpeed = this.airspeed.value;
         }
         let instantAcceleration;
         if (indicatedSpeed < 20) {
             instantAcceleration = 0;
             this.acceleration = 0;
         } else {
-            instantAcceleration = (indicatedSpeed - this.lastSpeed) / (dt / 1000);
+            instantAcceleration = (this.airspeed.value - this.lastSpeed) / dt;
         }
-        let smoothFactor = 2000;
-        this.acceleration = ((Math.max((smoothFactor - dt), 0) * this.acceleration) + (Math.min(dt, smoothFactor) * instantAcceleration)) / smoothFactor;
+        if (dt < 1)
+            this.acceleration += (instantAcceleration - this.acceleration) * Math.min(1, 1 - Math.pow(0.5, dt));
         this.lastSpeed = indicatedSpeed;
         this.trend.value = this.acceleration;
         let crossSpeed = SimVar.GetGameVarValue("AIRCRAFT CROSSOVER SPEED", "Knots");

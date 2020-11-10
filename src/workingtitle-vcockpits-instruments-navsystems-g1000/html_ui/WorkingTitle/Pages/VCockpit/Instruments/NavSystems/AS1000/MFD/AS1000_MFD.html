@@ -150,12 +150,12 @@
         <div class="category">
             <h1>Options</h1>
             <section class="content">
-                <selectable-button disabled>ACTIVATE VECTOR-TO-FINAL</selectable-button>
-                <selectable-button disabled>ACTIVATE APPROACH</selectable-button>
-                <selectable-button disabled>ACTIVATE MISSED APPROACH</selectable-button>
-                <selectable-button data-click="selectApproach">SELECT APPROACH</selectable-button>
-                <selectable-button data-click="selectArrival">SELECT ARRIVAL</selectable-button>
-                <selectable-button data-click="selectDeparture">SELECT DEPARTURE</selectable-button>
+                <selectable-button data-element="vectorToFinalButton" disabled>ACTIVATE VECTOR-TO-FINAL</selectable-button>
+                <selectable-button data-element="activateApproachButton" data-click="activateApproach" disabled>ACTIVATE APPROACH</selectable-button>
+                <selectable-button data-element="activateMissedApproachButton" disabled>ACTIVATE MISSED APPROACH</selectable-button>
+                <selectable-button data-element="selectApproachButton" data-click="selectApproach">SELECT APPROACH</selectable-button>
+                <selectable-button data-element="selectArrivalButton" data-click="selectArrival">SELECT ARRIVAL</selectable-button>
+                <selectable-button data-element="selectDepartureButton" data-click="selectDeparture">SELECT DEPARTURE</selectable-button>
             </section>
         </div>
         <div class="category">
@@ -678,7 +678,7 @@
                     </div>
                     <div class="element" data-id="temp">
                         <div class="name">Temp</div>
-                        <drop-down-selector class="value" data-setting="temp">
+                        <drop-down-selector class="value" data-setting="temperature">
                             <drop-down-selector-option value="celsius">Celsius <span style="font-size:0.8em;">(°C)</span></drop-down-selector-option>
                             <drop-down-selector-option value="farenheit">Farenheit <span style="font-size:0.8em;">(°F)</span></drop-down-selector-option>
                         </drop-down-selector>

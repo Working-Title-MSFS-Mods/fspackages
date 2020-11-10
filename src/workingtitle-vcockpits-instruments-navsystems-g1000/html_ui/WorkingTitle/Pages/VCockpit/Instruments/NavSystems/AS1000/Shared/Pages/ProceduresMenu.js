@@ -28,16 +28,27 @@ class WT_Procedures_Menu_View extends WT_HTML_View {
         this.procedures = procedures;
 
         this.subscriptions = new Subscriptions();
-        this.inputLayer = new WT_Procedures_Input_Layer(this, new Selectables_Input_Layer_Dynamic_Source(this, "selectable-button"));
+        this.inputLayer = new WT_Procedures_Input_Layer(this, new Selectables_Input_Layer_Dynamic_Source(this, "selectable-button:not([disabled])"));
         this.onExit = new WT_Event();
     }
     connectedCallback() {
-        console.log("ergerg");
         const template = document.getElementById('procedures-menu');
         this.appendChild(template.content.cloneNode(true));
-        console.log("dergerg");
 
         super.connectedCallback();
+
+        this.procedures.approach.subscribe(approach => {
+            DOMUtilities.ToggleAttribute(this.elements.activateApproachButton, "disabled", !approach);
+            DOMUtilities.ToggleAttribute(this.elements.selectArrivalButton, "disabled", !approach);
+        });
+
+        this.procedures.origin.subscribe(origin => {
+            DOMUtilities.ToggleAttribute(this.elements.selectDepartureButton, "disabled", !origin);
+        });
+
+        this.procedures.destination.subscribe(destination => {
+            DOMUtilities.ToggleAttribute(this.elements.selectArrivalButton, "disabled", !destination);
+        });
     };
     disconnectedCallback() {
         this.subscriptions.unsubscribe();

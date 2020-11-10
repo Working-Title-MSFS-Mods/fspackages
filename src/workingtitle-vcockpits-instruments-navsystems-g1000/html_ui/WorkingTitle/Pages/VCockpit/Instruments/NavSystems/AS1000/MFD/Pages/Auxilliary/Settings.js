@@ -7,19 +7,22 @@ class WT_System_Settings_Model extends WT_Model {
         this.settings = settings;
         this.softKeyController = softKeyController;
         this.menu = this.initMenu();
+
+        this.onResetSettings = new WT_Event();
     }
     updateSetting(setting, value) {
         console.log(`Modified: ${setting} -> ${value}`);
         this.settings.setValue(setting, value);
     }
     initMenu() {
-        let menu = new WT_Soft_Key_Menu(true);
+        const menu = new WT_Soft_Key_Menu(true);
         menu.options.showMap = false;
         menu.addSoftKey(10, new WT_Soft_Key("DFLTS", this.resetToDefaults.bind(this)));
         return menu;
     }
     resetToDefaults() {
-
+        this.settings.reset();
+        this.onResetSettings.fire();
     }
     save() {
         this.settings.save();
@@ -57,12 +60,15 @@ class WT_System_Settings_View extends WT_HTML_View {
      */
     setModel(model) {
         this.model = model;
+        this.isInitialised = true;
+        model.onResetSettings.subscribe(() => this.populateSettings());
 
+        this.populateSettings();
+    }
+    populateSettings() {
         for (let input of this.querySelectorAll("[data-setting]")) {
             input.value = this.model.settings.getValue(input.dataset.setting);
         }
-
-        this.isInitialised = true;
     }
     enter(inputStack) {
         this.inputStack = inputStack;

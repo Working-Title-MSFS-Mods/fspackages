@@ -90,6 +90,7 @@ function Update-Packages {
                 if ($line -ne "") {
                     $string += Get-Content "$directory/$line" -Raw
                     $string += "`n"
+                    Remove-Item -Path "$directory/$line"
                 }
             }
             $fileName = $file.BaseName

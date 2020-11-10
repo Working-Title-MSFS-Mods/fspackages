@@ -83,7 +83,7 @@ class WT_Flight_Plan_Waypoints {
         this.waypoints = [];
     }
     getWaypoints() { return this.waypoints; }
-    getWaypointsCount() { return this.waypoints.lengtj; };
+    getWaypointsCount() { return this.waypoints.length; };
     getActiveWaypointIndex() { return 0; };
     getActiveWaypoint() { return null; }
     getApproach() { return null; }

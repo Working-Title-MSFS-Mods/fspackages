@@ -218,10 +218,17 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
     }
     addWaypoint(icao, index) {
         return new Promise(resolve => {
-            this.flightPlan.addWaypoint(icao, index, () => {
-                this.updateWaypoints();
-                resolve();
-            });
+            if (this.getNumWaypoints() == 0) {
+                this.flightPlan.setOrigin(icao, index, () => {
+                    this.updateWaypoints();
+                    resolve();
+                });
+            } else {
+                this.flightPlan.addWaypoint(icao, index, () => {
+                    this.updateWaypoints();
+                    resolve();
+                });
+            }
         });
     }
     addWaypoints(icaos, index) {

@@ -7,6 +7,8 @@ class WT_Mod_Settings_Model extends WT_Model {
         this.settings = settings;
         this.softKeyController = softKeyController;
         this.menu = this.initMenu();
+
+        this.onResetSettings = new WT_Event();
     }
     updateSetting(setting, value) {
         console.log(`Modified: ${setting} -> ${value}`);
@@ -19,7 +21,8 @@ class WT_Mod_Settings_Model extends WT_Model {
         return menu;
     }
     resetToDefaults() {
-
+        this.settings.reset();
+        this.onResetSettings.fire();
     }
     save() {
         this.settings.save();
@@ -30,6 +33,9 @@ class WT_Mod_Settings_Model extends WT_Model {
     }
     restoreMenu() {
         this.softKeyController.setMenu(this.previousMenu);
+    }
+    deleteAllStoredData() {
+        this.settings.reset();
     }
 }
 
@@ -57,12 +63,15 @@ class WT_Mod_Settings_View extends WT_HTML_View {
      */
     setModel(model) {
         this.model = model;
+        this.isInitialised = true;
+        model.onResetSettings.subscribe(() => this.populateSettings());
 
+        this.populateSettings();
+    }
+    populateSettings() {
         for (let input of this.querySelectorAll("[data-setting]")) {
             input.value = this.model.settings.getValue(input.dataset.setting);
         }
-
-        this.isInitialised = true;
     }
     enter(inputStack) {
         this.inputStack = inputStack;

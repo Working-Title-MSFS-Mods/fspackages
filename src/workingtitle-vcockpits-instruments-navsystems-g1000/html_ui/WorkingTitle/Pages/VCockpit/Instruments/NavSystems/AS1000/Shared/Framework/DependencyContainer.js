@@ -24,7 +24,7 @@ class WT_Dependency_Container {
     }
     _get(name, useCache = true) {
         if (name in this.factoriesCalled) {
-            throw new WT_Dependency_Cyclic_Dependency_Error(`Cyclic dependency detected when creating "${this.factoryCalled}" (${Object.keys(this.factoriesCalled)})`);
+            throw new WT_Dependency_Cyclic_Dependency_Error(`Cyclic dependency detected when creating "${this.factoryCalled}" (${Object.keys(this.factoriesCalled).join(" -> ")})`);
         }
         this.factoriesCalled[name] = true;
 

@@ -3,7 +3,7 @@ class WT_Default_Settings {
 
 WT_Default_Settings.base = {
     weight: "kg",
-    dis_spd: "metric",
+    dis_spd: "nautical",
     alt_vs: "feet",
     temperature: "farenheit",
     weight: "lb",
@@ -12,7 +12,7 @@ WT_Default_Settings.base = {
     mfd_watched_2: "TRK",
     mfd_watched_3: "ETE",
     time_offset: 0,
-    time_mode: 0,
+    time_mode: "0",
     vfr_xpdr: 1200,
 };
 
@@ -55,6 +55,10 @@ class WT_Settings {
     }
     getTimestampKey() {
         return "config_timestamp_" + this.aircraft;
+    }
+    reset() {
+        this.settings = {};
+        this.save();
     }
     save() {
         let json = JSON.stringify(this.settings);

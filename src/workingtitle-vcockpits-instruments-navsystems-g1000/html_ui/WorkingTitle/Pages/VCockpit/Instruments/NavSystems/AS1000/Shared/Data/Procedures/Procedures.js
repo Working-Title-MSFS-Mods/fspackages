@@ -5,6 +5,8 @@ class Procedures {
     constructor(flightPlanManager) {
         this.flightPlanManager = flightPlanManager;
 
+        this.origin = new Subject(null);
+        this.destination = new Subject(null);
         this.approach = new Subject(null);
         this.departure = new Subject(null);
         this.arrival = new Subject(null);
@@ -53,6 +55,8 @@ class Procedures {
         return waypoints;
     }
     update() {
+        this.origin.value = this.flightPlanManager.getOrigin();
+        this.destination.value = this.flightPlanManager.getDestination();
         if (this.approach.hasSubscribers())
             this.approach.value = this.flightPlanManager.getAirportApproach();
         if (this.departure.hasSubscribers())

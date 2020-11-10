@@ -49,6 +49,14 @@ DOMUtilities.AppendChildren = function (node, children) {
         node.appendChild(child);
 }
 
+DOMUtilities.ToggleAttribute = function (node, attribute, toggle) {
+    if (toggle) {
+        node.setAttribute(attribute, "");
+    } else {
+        node.removeAttribute(attribute);
+    }
+}
+
 // Add an event listener to "node" that catches "e" when fired on an element matching "selector"
 // Avoids having to attach listeners to every node
 DOMUtilities.AddScopedEventListener = function (node, selector, e, func, capture = false) {
@@ -129,7 +137,7 @@ DOMUtilities.createElementNS = function (namespace, tagName, attributes = {}) {
     return el;
 }
 
-DOMUtilities.createElement = function(tagName, attributes = {}) {
+DOMUtilities.createElement = function (tagName, attributes = {}) {
     let el = document.createElement(tagName);
     for (let key in attributes) {
         el.setAttribute(key, attributes[key]);

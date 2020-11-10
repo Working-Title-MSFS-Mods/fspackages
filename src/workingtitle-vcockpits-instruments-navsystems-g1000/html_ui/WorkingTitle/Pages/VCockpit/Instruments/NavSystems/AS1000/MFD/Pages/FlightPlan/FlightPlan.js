@@ -1,20 +1,8 @@
-class WT_Flight_Plan {
-    /**
-     * @param {FlightPlanManager} flightPlan 
-     */
-    constructor(flightPlan) {
-        this.flightPlan = flightPlan;
-    }
-    getWaypoints() {
-
-    }
-}
-
 class WT_Flight_Plan_View_Menu extends WT_Soft_Key_Menu {
     constructor(model, view) {
         super(false);
 
-        let buttons = {
+        const buttons = {
             wide: new WT_Soft_Key("WIDE", () => model.viewMode.value = "wide"),
             narrow: new WT_Soft_Key("NARROW", () => model.viewMode.value = "narrow"),
             leg: new WT_Soft_Key("LEG-LEG", () => model.distanceMode.value = "leg"),
