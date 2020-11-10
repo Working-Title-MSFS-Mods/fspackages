@@ -67,9 +67,6 @@ export class LegsProcedure {
     if (!this._facilitiesLoaded) {
       const facilityResults = await Promise.all(this._facilitiesToLoad.values());
       for (var facility of facilityResults.filter(f => f !== undefined)) {
-        const magvar = await GPS.getMagVar(facility.icao);
-        facility.magneticVariation = magvar;
-
         this._facilities.set(facility.icao, facility);
       }
 
