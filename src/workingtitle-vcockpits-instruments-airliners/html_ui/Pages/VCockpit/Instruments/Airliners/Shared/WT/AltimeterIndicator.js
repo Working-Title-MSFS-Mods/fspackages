@@ -246,11 +246,21 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.cursorSVG.appendChild(this.cursorSVGShape);
                 var _cursorPosX = -3;
                 var _cursorPosY = cursorHeight * 0.5;
-                this.cursorIntegrals[0].construct(this.cursorSVG, _cursorPosX + 25, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
-                this.cursorIntegrals[1].construct(this.cursorSVG, _cursorPosX + 44, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
-                this.cursorIntegrals[2].construct(this.cursorSVG, _cursorPosX + 63, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
-                this.cursorDecimals.construct(this.cursorSVG, _cursorPosX + 95, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 0.95, "green");
+                this.cursorIntegrals[0].construct(this.cursorSVG, _cursorPosX + 25, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
+                this.cursorIntegrals[1].construct(this.cursorSVG, _cursorPosX + 44, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
+                this.cursorIntegrals[2].construct(this.cursorSVG, _cursorPosX + 63, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
+                this.cursorDecimals.construct(this.cursorSVG, _cursorPosX + 95, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 0.95, "green");
                 this.centerSVG.appendChild(this.cursorSVG);
+
+                this.cursorSVGShapeBox = document.createElementNS(Avionics.SVG.NS, "path");
+                this.cursorSVGShapeBox.setAttribute("fill", "none");
+                this.cursorSVGShapeBox.setAttribute("d", "M0 0 L95 0 L95 30 L105 40 L95 50 L95 80 L0 80 Z");
+                this.cursorSVGShapeBox.setAttribute("stroke", "#cccac8");
+                this.cursorSVGShapeBox.setAttribute("stroke-width", "2.0");
+                this.cursorSVG.appendChild(this.cursorSVGShapeBox);
+
+
+
             }
             var targetAltitudeIndicatorPosX = gradWidth - 13;
             var targetAltitudeIndicatorPosY = _top + _height * 0.5;
