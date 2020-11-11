@@ -20,19 +20,13 @@ class CJ4_FMC_LegsPage {
         this._lsk6Field = "";
 
         this._wayPointsToRender = [];
-        this._approachWaypoints = [];
-        this._rawApproachWaypoints = [];
+
         this.prepare();
     }
 
     prepare() {
         // Noop as there is no preparation with this
-        if (this._fmc.flightPlanManager.getApproach()) {
-            this._fmc.flightPlanManager.getApproachConstraints().then(rawApproachWaypoints => {
-                this._rawApproachWaypoints = [...rawApproachWaypoints];
-                console.log("raw approach waypoints loaded");
-            });
-        }
+        this.update(true);
     }
 
     update(forceUpdate = false) {
@@ -46,17 +40,15 @@ class CJ4_FMC_LegsPage {
 
         // get and format distance
         let distanceToActWpt = this._fmc.flightPlanManager.getDistanceToActiveWaypoint();
-        // distanceToActWpt = (distanceToActWpt < 100) ? distanceToActWpt.toFixed(1) : distanceToActWpt.toFixed(0);
         if (distanceToActWpt !== this._distanceToActiveWpt) {
             this._distanceToActiveWpt = distanceToActWpt;
             this._isDirty = true;
         }
 
-        // TODO notice when approach gets activated and render dirty
-
         if (this._isDirty || forceUpdate) {
             this.invalidate();
         }
+
         // register refresh and bind to update which will only render on changes
         this._fmc.registerPeriodicPageRefresh(() => {
             this.update();
@@ -71,9 +63,7 @@ class CJ4_FMC_LegsPage {
 
         let offset = Math.floor((this._currentPage - 1) * 5);
 
-        let allWaypoints = [];
-        let enrouteWaypoints = [...this._fmc.flightPlanManager.getWaypoints()];
-        enrouteWaypoints.pop();
+        let allWaypoints = this._fpc.flightPlanManager.getAllWaypoints();
 
         // ENROUTE
         if (this._fmc.flightPlanManager.getWaypoints() && !this._fmc.flightPlanManager.isActiveApproach()) {
