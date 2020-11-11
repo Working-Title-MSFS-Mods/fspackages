@@ -151,8 +151,8 @@ class CJ4_FMC_VNavSetupPage {
         ];
 
         //FETCH WAYPOINTS WITH CONSTRAINTS
-        if (fmc.flightPlanManager.getWaypoints().length > 0) {
-            waypoints = fmc.flightPlanManager.getWaypoints().slice(fmc.flightPlanManager.getActiveWaypointIndex());
+        if (fmc.flightPlanManager.getAllWaypoints().length > 0) {
+            waypoints = fmc.flightPlanManager.getAllWaypoints().slice(fmc.flightPlanManager.getActiveWaypointIndex());
             if (waypoints.length > 0) {
                 let rowNumber = 0;
                 for (let i = 0; i < waypoints.length; i++) {
@@ -160,7 +160,7 @@ class CJ4_FMC_VNavSetupPage {
                     let waypointIdent = wpt.icao.substr(-5);
                     let type = "none";
                     let altitudeConstraint = "none";
-                    if (wpt && wpt.legAltitudeDescription && wpt.legAltitudeDescription > 0 && wpt.legAltitude1 > 1000 && rowNumber < 9) {
+                    if (wpt && wpt.legAltitudeDescription && wpt.legAltitudeDescription > 0 && wpt.legAltitude1 > 100 && rowNumber < 9) {
                         if (wpt.legAltitudeDescription == 1 && wpt.legAltitude1 > 100) {
                             altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100
                                 : wpt.legAltitude1.toFixed(0);
@@ -197,11 +197,13 @@ class CJ4_FMC_VNavSetupPage {
             [" WPT   TYPE[blue]", "CONST [blue]"],
             ...rows,
             ["-----------------------[blue]"],
-            ["", "VNAV DESCENT>"]
+            ["<MONITOR", "VNAV DESCENT>"]
         ]);
         //fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
         //fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage5(fmc); };
+
         fmc.updateSideButtonActiveStatus();
     }
 
@@ -209,6 +211,10 @@ class CJ4_FMC_VNavSetupPage {
         fmc.clearDisplay();
 
         let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
+        let vnavTargetAltitude = 0;
+        let vnavTargetDistance = 0;
+        let topOfDescent = 0;
+        let distanceToTod = 0;
 
         //RUN ACTUAL VNAV PATH CONTROL
         if (fmc._vnav) {
@@ -218,11 +224,12 @@ class CJ4_FMC_VNavSetupPage {
                 const vnavTargetWaypointIdent = WTDataStore.get('CJ4_vnavTargetWaypoint', 'none');
                 const vnavValues = WTDataStore.get('CJ4_vnavValues', 'none');
                 if (vnavValues != "none") {
+                    console.log("vnav values");
                     const parsedVnavValues = JSON.parse(vnavValues);
-                    const vnavTargetAltitude = parsedVnavValues.vnavTargetAltitude;
-                    const vnavTargetDistance = parsedVnavValues.vnavTargetDistance;
-                    const topOfDescent = parsedVnavValues.topOfDescent;
-                    const distanceToTod = parsedVnavValues.distanceToTod;
+                    vnavTargetAltitude = parseInt(parsedVnavValues.vnavTargetAltitude);
+                    vnavTargetDistance = parseFloat(parsedVnavValues.vnavTargetDistance);
+                    topOfDescent = parseFloat(parsedVnavValues.topOfDescent);
+                    distanceToTod = parseFloat(parsedVnavValues.distanceToTod);
                 }
                 const altDeviation = SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
                 const desiredFPA = WTDataStore.get('CJ4_vpa', 3);
@@ -253,7 +260,7 @@ class CJ4_FMC_VNavSetupPage {
                     [" set vs[blue]", "TOD Dist[blue] "],
                     [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod + " nm"],
                     [""],
-                    ["<RECALC", "VNAV>"]
+                    ["<CONSTRAINTS", "VNAV>"]
                 ]);
 
             }, 1000, true);
@@ -272,11 +279,11 @@ class CJ4_FMC_VNavSetupPage {
                 [""],
                 [""],
                 [""],
-                ["<RECALC", "VNAV>"]
+                ["", "VNAV>"]
             ]);
         }
-    //fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
-    //fmc.onLeftInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage7(fmc); };
+    fmc.onRightInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
+    fmc.onLeftInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage4(fmc); };
 
     fmc.updateSideButtonActiveStatus();
     }
