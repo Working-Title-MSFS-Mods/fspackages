@@ -40,7 +40,7 @@ class WT_BaseVnav {
     }
 
     get waypoints() {
-        return this._fpm.getWaypoints().slice(this._fpm.getActiveWaypointIndex());
+        return this._fpm.getAllWaypoints().slice(this._fpm.getActiveWaypointIndex());
     }
 
     /**
@@ -217,7 +217,8 @@ class WT_BaseVnav {
     }
 
     getVNavTargetAltitudeAtWaypoint(waypoint) {
-        let distanceFromVnavTargetWaypoint = this._vnavTargetWaypoint.cumulativeDistanceInFP - waypoint.cumulativeDistanceInFP;
+        let distanceFromVnavTargetWaypoint = this._vnavTargetWaypoint ? this._vnavTargetWaypoint.cumulativeDistanceInFP - waypoint.cumulativeDistanceInFP
+            : this._destination.cumulativeDistanceInFP - waypoint.cumulativeDistanceInFP;
         return this._vnavTargetAltitude + (6076.12 * distanceFromVnavTargetWaypoint * (Math.tan(this._desiredFPA * (Math.PI / 180))));
     }
 
