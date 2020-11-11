@@ -20,11 +20,12 @@ declare module "MSFS" {
   export class BaseInstrument {
     addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
     facilityLoader: FacilityLoader;
+    instrumentIdentifier: string;
   }
 
   export class NavSystem {
   }
-  
+
   export class FacilityLoader {
     getFacilityRaw(icao: string, timeout?: number): Promise<any>;
   }
@@ -47,15 +48,15 @@ declare module "MSFS" {
     oneWayRunways: OneWayRunway[];
   }
 
-  export class IntersectionInfo extends WayPointInfo { 
+  export class IntersectionInfo extends WayPointInfo {
     constructor(_instrument: BaseInstrument);
   }
 
-  export class VORInfo extends WayPointInfo { 
+  export class VORInfo extends WayPointInfo {
     constructor(_instrument: BaseInstrument);
   }
 
-  export class NDBInfo extends WayPointInfo { 
+  export class NDBInfo extends WayPointInfo {
     constructor(_instrument: BaseInstrument);
   }
 
@@ -73,7 +74,7 @@ declare module "MSFS" {
     legs: ProcedureLeg[];
   }
 
-  export class Runway {}
+  export class Runway { }
 
   export class Avionics {
     static Utils: Utils;

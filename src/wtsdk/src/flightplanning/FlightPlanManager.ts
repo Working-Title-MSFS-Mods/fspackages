@@ -9,6 +9,7 @@ import { FlightPlanSegment, SegmentType } from './FlightPlanSegment';
 export class FlightPlanManager {
 
   private _isRegistered = false;
+  private _isMaster = false;
   private _currentFlightPlanVersion = 0;
   private __currentFlightPlanIndex = 0;
 
@@ -28,19 +29,21 @@ export class FlightPlanManager {
    * parent instrument attached.
    * @param parentInstrument The parent instrument attached to this FlightPlanManager.
    */
-  constructor(private _parentInstrument: BaseInstrument, _isMaster:boolean=true) { // TODO: need to find a solution for the fpln reset
-    _parentInstrument.addEventListener("FlightStart", function() {
-      console.log("FPM FLIGHT START");
-    });
-
-    this._flightPlans = [];
-    if (_isMaster == true) {
+  constructor(private _parentInstrument: BaseInstrument) {
+    _parentInstrument.addEventListener("FlightStart", function () {
+      // TODO: load game flight plan
       this._flightPlans.push(new ManagedFlightPlan());
       this._currentFlightPlanVersion++;
       this._updateFlightPlanVersion();
-    } else {
-      this._loadFlightPlans();
+    });
+
+    if (_parentInstrument.instrumentIdentifier == "CJ4_FMC") {
+      this._isMaster = true;
     }
+
+    this._flightPlans = [];
+    this._loadFlightPlans();
+
     FlightPlanManager.DEBUG_INSTANCE = this;
   }
 
