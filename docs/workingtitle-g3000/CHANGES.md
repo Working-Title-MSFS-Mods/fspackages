@@ -1,5 +1,9 @@
 # Changelog
 
+### v0.3.2
+**Fixes**
+- \[Compatibility\] Brought up to date with game patch 1.10.11.0 (Update 6).
+
 ### v0.3.1
 **Fixes**
 - \[Compatibility\] Improved compatibility with the WorkingTitle CJ4 mod.
