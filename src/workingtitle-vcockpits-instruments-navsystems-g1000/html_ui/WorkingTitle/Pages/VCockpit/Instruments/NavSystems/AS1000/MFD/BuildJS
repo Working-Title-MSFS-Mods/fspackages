@@ -1,4 +1,5 @@
 Components/FrequencyList.js
+Components/MenuHandler.js
 Components/NavBox.js
 Components/NearestWaypointList.js
 Components/RunwaySelector.js

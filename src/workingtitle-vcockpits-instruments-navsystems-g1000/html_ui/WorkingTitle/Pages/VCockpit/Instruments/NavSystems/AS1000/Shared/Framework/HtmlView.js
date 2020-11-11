@@ -10,15 +10,16 @@ class WT_HTML_View extends HTMLElement {
         const elements = this.querySelectorAll("[data-element]");
         for (let element of elements) {
             // We only want to collect elements that aren't in another view already
-            while (element = element.parentNode) {
-                if (element == this) {
+            let el = element;
+            while (el = el.parentNode) {
+                if (el == this) {
                     const elementName = element.getAttribute("data-element");
                     if (elementName in this.elements) {
                         console.warn(`A duplicate element "${elementName}" was found`);
                     }
                     this.elements[elementName] = element;
                     break;
-                } else if (element instanceof WT_HTML_View) {
+                } else if (el instanceof WT_HTML_View) {
                     break;
                 }
             }

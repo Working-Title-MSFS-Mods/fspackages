@@ -311,7 +311,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("referencesModel", d => new WT_Airspeed_References_Model(d.settings, d.airspeedReferences));
         d.register("timerModel", d => new WT_PFD_Timer_Model());
         d.register("setupMenuModel", d => new WT_PFD_Setup_Menu_Model(d.brightnessSettings));
-        d.register("nearestAirportsModel", d => new WT_Nearest_Airports_Model(this, d.showDirectToHandler, d.waypointRepository, d.unitChooser, null, null, d.nearestWaypoints));
+        d.register("nearestAirportsModel", d => new WT_Nearest_Airports_Model(this, d.showDirectToHandler, d.waypointRepository, d.unitChooser, null, d.nearestWaypoints));
         d.register("windModel", d => new WT_PFD_Wind_Model());
         d.register("setMinimumsModel", d => new WT_Set_Minimums_Model(d.minimums));
         d.register("minimumsModel", d => new WT_Minimums_Model(d.minimums));

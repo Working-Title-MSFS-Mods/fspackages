@@ -6,13 +6,13 @@ class WT_Nearest_Ndbs_Model extends WT_Nearest_Waypoints_Model {
 
 class WT_Nearest_Ndbs_View extends WT_HTML_View {
     /**
-     * @param {WT_Soft_Key_Controller} softKeyController 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      * @param {MapInstrument} map 
      * @param {WT_Unit_Chooser} unitChooser 
      */
-    constructor(softKeyController, map, unitChooser) {
+    constructor(softKeyMenuHandler, map, unitChooser) {
         super();
-        this.softKeyController = softKeyController;
+        this.softKeyMenuHandler = softKeyMenuHandler;
         this.map = map;
         this.unitChooser = unitChooser;
 
@@ -131,13 +131,14 @@ class WT_Nearest_Ndbs_View extends WT_HTML_View {
     activate(inputStack) {
         this.elements.map.appendChild(this.map);
         this.inputStack = inputStack;
-        this.previousMenu = this.softKeyController.currentMenu;
-        this.softKeyController.setMenu(this.menu);
+        this.menuHandler = this.softKeyMenuHandler.show(this.menu);
         this.map.flightPlanElements.push(this.flightPlanElement);
         this.map.showFlightPlan = false;
     }
     deactivate() {
-        this.softKeyController.setMenu(this.previousMenu);
+        if (this.menuHandler) {
+            this.menuHandler = this.menuHandler.pop();
+        }
         this.map.flightPlanElements.splice(this.map.flightPlanElements.findIndex(item => item == this.flightPlanElement), 1);
         this.map.showFlightPlan = true;
         this.model.unsubscribe();

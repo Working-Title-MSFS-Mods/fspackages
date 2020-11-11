@@ -2,23 +2,14 @@ class WT_System_Settings_Model extends WT_Model {
     /**
      * @param {WT_Settings} settings 
      */
-    constructor(settings, softKeyController) {
+    constructor(settings) {
         super();
         this.settings = settings;
-        this.softKeyController = softKeyController;
-        this.menu = this.initMenu();
-
         this.onResetSettings = new WT_Event();
     }
     updateSetting(setting, value) {
         console.log(`Modified: ${setting} -> ${value}`);
         this.settings.setValue(setting, value);
-    }
-    initMenu() {
-        const menu = new WT_Soft_Key_Menu(true);
-        menu.options.showMap = false;
-        menu.addSoftKey(10, new WT_Soft_Key("DFLTS", this.resetToDefaults.bind(this)));
-        return menu;
     }
     resetToDefaults() {
         this.settings.reset();
@@ -27,21 +18,19 @@ class WT_System_Settings_Model extends WT_Model {
     save() {
         this.settings.save();
     }
-    showMenu() {
-        this.previousMenu = this.softKeyController.currentMenu;
-        this.softKeyController.setMenu(this.menu);
-    }
-    restoreMenu() {
-        this.softKeyController.setMenu(this.previousMenu);
-    }
 }
 
 class WT_System_Settings_View extends WT_HTML_View {
+    /**
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
+     */
+    constructor(softKeyMenuHandler) {
+        super();
+        this.softKeyMenuHandler = softKeyMenuHandler;
+    }
     connectedCallback() {
-        let template = document.getElementById('aux-settings');
-        let templateContent = template.content;
-
-        this.appendChild(templateContent.cloneNode(true));
+        const template = document.getElementById('aux-settings');
+        this.appendChild(template.content.cloneNode(true));
 
         super.connectedCallback();
 
@@ -53,7 +42,8 @@ class WT_System_Settings_View extends WT_HTML_View {
             this.model.save();
         });
 
-        this.inputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this, "drop-down-selector, numeric-input, toggle-switch"));
+        this.menu = this.initMenu();
+        this.inputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this));
     }
     /**
      * @param {AS1000_Settings_Model} model 
@@ -70,6 +60,12 @@ class WT_System_Settings_View extends WT_HTML_View {
             input.value = this.model.settings.getValue(input.dataset.setting);
         }
     }
+    initMenu() {
+        const menu = new WT_Soft_Key_Menu(true);
+        menu.options.showMap = false;
+        menu.addSoftKey(10, new WT_Soft_Key("DFLTS", () => this.model.resetToDefaults()));
+        return menu;
+    }
     enter(inputStack) {
         this.inputStack = inputStack;
         this.inputStackHandle = inputStack.push(this.inputLayer);
@@ -84,10 +80,11 @@ class WT_System_Settings_View extends WT_HTML_View {
         }
     }
     activate() {
-        this.model.showMenu();
+        this.menuHandler = this.softKeyMenuHandler.show(this.menu);
     }
     deactivate() {
-        this.model.restoreMenu();
+        if (this.menuHandler)
+            this.menuHandler = this.menuHandler.pop();
     }
 }
 customElements.define("g1000-aux-settings", WT_System_Settings_View);

@@ -2,13 +2,13 @@ class WT_Waypoint_Selector_Model extends WT_Model {
     /**
      * @param {string} type 
      * @param {WT_Waypoint_Repository} waypointRepository 
-     * @param {WT_Soft_Key_Controller} softKeyController 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      */
-    constructor(type, waypointRepository, softKeyController) {
+    constructor(type, waypointRepository, softKeyMenuHandler) {
         super();
         this.type = type;
         this.waypointRepository = waypointRepository;
-        this.softKeyController = softKeyController;
+        this.softKeyMenuHandler = softKeyMenuHandler;
 
         this.waypoint = new Subject();
         this.bearing = new Subject();
@@ -109,14 +109,15 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
         });
         this.inputStackHandler = mapHandler;
 
-        this.storedMenu = this.model.softKeyController.currentMenu;
-        this.model.softKeyController.setMenu(new WT_Soft_Key_Menu());
+        this.menuHandler = this.model.softKeyMenuHandler.show(null);
     }
     cancel() {
         this.onCancel.fire();
     }
     exit() {
-        this.model.softKeyController.setMenu(this.storedMenu);
+        if (this.menuHandler) {
+            this.menuHandler = this.menuHandler.pop();
+        }
         this.inputStackHandler.pop();
     }
 }

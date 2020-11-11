@@ -1,5 +1,10 @@
 class WT_Flight_Plan_View_Menu extends WT_Soft_Key_Menu {
-    constructor(model, view) {
+    /**
+     * @param {WT_Flight_Plan_Page_Model} model 
+     * @param {WT_Flight_Plan_Page_View} view 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
+     */
+    constructor(model, view, softKeyMenuHandler) {
         super(false);
 
         const buttons = {
@@ -22,7 +27,7 @@ class WT_Flight_Plan_View_Menu extends WT_Soft_Key_Menu {
         this.addSoftKey(6, buttons.narrow);
         this.addSoftKey(8, buttons.leg);
         this.addSoftKey(9, buttons.cumulative);
-        this.addSoftKey(11, new WT_Soft_Key("BACK", () => view.softKeyBack()));
+        this.addSoftKey(11, softKeyMenuHandler.getBackButton());
     }
 }
 
@@ -32,7 +37,7 @@ class WT_Flight_Plan_Main_Menu extends WT_Soft_Key_Menu {
      * @param {WT_Flight_Plan_Page_View} view 
      */
     constructor(model, view) {
-        super()
+        super(true);
         this.addSoftKey(4, new WT_Soft_Key("NEW WPT", view.showCreateNewWaypoint.bind(view)));
         this.addSoftKey(5, new WT_Soft_Key("VIEW", view.showViewMenu.bind(view)));
         this.addSoftKey(6, new WT_Soft_Key("VNV PROF"));
@@ -187,16 +192,16 @@ class WT_MFD_Flight_Plan_Line_Factory {
 class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     /**
      * @param {MapInstrument} map 
-     * @param {WT_Soft_Key_Controller} softKeyController 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      * @param {WT_Show_Page_Menu_Handler} pageMenuHandler
      * @param {WT_Show_Confirm_Dialog_Handler} confirmDialogHandler
      * @param {WT_Show_New_Waypoint_Handler} newWaypointHandler
      */
-    constructor(map, softKeyController, pageMenuHandler, confirmDialogHandler, newWaypointHandler) {
+    constructor(map, softKeyMenuHandler, pageMenuHandler, confirmDialogHandler, newWaypointHandler) {
         super();
 
         this.map = map;
-        this.softKeyController = softKeyController;
+        this.softKeyMenuHandler = softKeyMenuHandler;
         this.pageMenuHandler = pageMenuHandler;
         this.confirmDialogHandler = confirmDialogHandler;
         this.newWaypointHandler = newWaypointHandler;
@@ -230,7 +235,7 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
 
         this.softKeyMenus = {
             main: new WT_Flight_Plan_Main_Menu(this.model, this),
-            view: new WT_Flight_Plan_View_Menu(this.model, this),
+            view: new WT_Flight_Plan_View_Menu(this.model, this, this.softKeyMenuHandler),
         }
 
         const linesElement = this.elements.flightPlanWaypoints;
@@ -285,24 +290,20 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     }
     centerOnLeg(waypointIndex) {
         const waypoints = this.model.flightPlan.getWaypoints();
-        const centerOn = [waypoints[waypointIndex].infos.coordinates];
+
+        const current = waypoints[waypointIndex];
+        const centerOn = current.latitudeFP ? [new LatLong(current.latitudeFP, current.longitudeFP)] : [current.infos.coordinates];
         if (waypointIndex > 0) {
-            centerOn.push(waypoints[waypointIndex - 1].infos.coordinates);
+            const previous = waypoints[waypointIndex - 1];
+            centerOn.push(previous.latitudeFP ? new LatLong(previous.latitudeFP, previous.longitudeFP) : previous.infos.coordinates);
         }
         this.map.centerOnCoordinates(centerOn, centerOn.length > 1 ? null : 20);
     }
-    softKeyBack() {
-        this.softKeyController.setMenu(this.softKeyMenus.main);
-    }
     showMainMenu() {
-        this.previousMenu = this.softKeyController.currentMenu;
-        this.softKeyController.setMenu(this.softKeyMenus.main);
+        this.softKeyMenuHandler.show(this.softKeyMenus.main);
     }
     showViewMenu() {
-        this.softKeyController.setMenu(this.softKeyMenus.view);
-    }
-    restoreMenu() {
-        this.softKeyController.setMenu(this.previousMenu);
+        this.softKeyMenuHandler.show(this.softKeyMenus.view);
     }
     update(dt) {
         if (!this.time)
@@ -325,13 +326,15 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         this.inputStackHandle = inputStack.push(this.inputLayer);
     }
     activate() {
-        this.showMainMenu();
+        this.menuHandler = this.softKeyMenuHandler.show(this.softKeyMenus.main);
         this.elements.map.appendChild(this.map);
     }
     deactivate() {
-        this.restoreMenu();
         if (this.activeLegSubscription) {
             this.activeLegSubscription = this.activeLegSubscription();
+        }
+        if (this.menuHandler) {
+            this.menuHandler = this.menuHandler.pop();
         }
     }
 }

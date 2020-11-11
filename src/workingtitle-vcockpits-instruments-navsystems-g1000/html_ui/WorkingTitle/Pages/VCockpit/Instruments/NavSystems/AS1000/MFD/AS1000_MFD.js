@@ -2,13 +2,13 @@ class WT_MFD_Show_Page_Menu_Handler extends WT_Show_Page_Menu_Handler {
     /**
      * @param {Input_Stack} inputStack
      * @param {HTMLElement} container 
-     * @param {WT_Soft_Key_Controller} softKeyController 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      */
-    constructor(inputStack, container, softKeyController) {
+    constructor(inputStack, container, softKeyMenuHandler) {
         super();
         this.inputStack = inputStack;
         this.container = container;
-        this.softKeyController = softKeyController;
+        this.softKeyMenuHandler = softKeyMenuHandler;
 
         this.currentPageMenu = null;
     }
@@ -17,13 +17,12 @@ class WT_MFD_Show_Page_Menu_Handler extends WT_Show_Page_Menu_Handler {
         this.container.appendChild(view);
         view.setModel(model);
         view.enter(this.inputStack);
-        const softKeyMenu = this.softKeyController.currentMenu;
-        this.softKeyController.setMenu(null);
+        const menuHandler = this.softKeyMenuHandler.show(null);
         this.currentPageMenu = view;
         const subscriptions = new Subscriptions();
         subscriptions.add(view.onExit.subscribe(() => {
             view.parentNode.removeChild(view);
-            this.softKeyController.setMenu(softKeyMenu);
+            menuHandler.pop();
             this.currentPageMenu = null;
             subscriptions.unsubscribe();
         }));
@@ -34,26 +33,24 @@ class WT_Show_Confirm_Dialog_Handler {
     /**
      * @param {Input_Stack} inputStack
      * @param {HTMLElement} dialogContainer 
-     * @param {WT_Soft_Key_Controller} softKeyController 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      */
-    constructor(inputStack, dialogContainer, softKeyController) {
+    constructor(inputStack, dialogContainer, softKeyMenuHandler) {
         this.inputStack = inputStack;
         this.dialogContainer = dialogContainer;
-        this.softKeyController = softKeyController;
+        this.softKeyMenuHandler = softKeyMenuHandler;
     }
     show(message) {
-        const softKeyMenu = this.softKeyController.currentMenu;
-        this.softKeyController.setMenu(null);
-
+        const menuHandler = this.softKeyMenuHandler.show(null);
         const confirm = new WT_Confirm_Dialog();
         this.dialogContainer.appendChild(confirm);
         return confirm.show(message, this.inputStack).then((result) => {
             this.dialogContainer.removeChild(confirm);
-            this.softKeyController.setMenu(softKeyMenu);
+            menuHandler.pop();
             return result;
         }, (e) => {
             this.dialogContainer.removeChild(confirm);
-            this.softKeyController.setMenu(softKeyMenu);
+            menuHandler.pop();
             throw e;
         });
     }
@@ -62,22 +59,22 @@ class WT_Show_Confirm_Dialog_Handler {
 class WT_Show_New_Waypoint_Handler {
     /**
      * @param {HTMLElement} paneContainer
-     * @param {WT_Soft_Key_Controller} softKeyController 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      * @param {WT_Waypoint_Repository} waypointRepository 
      * @param {MapInstrument} map
      * @param {WT_Waypoint_Quick_Select} waypointQuickSelect
      * @param {Input_Stack} inputStack
      */
-    constructor(paneContainer, softKeyController, waypointRepository, map, waypointQuickSelect, inputStack) {
+    constructor(paneContainer, softKeyMenuHandler, waypointRepository, map, waypointQuickSelect, inputStack) {
         this.paneContainer = paneContainer;
-        this.softKeyController = softKeyController;
+        this.softKeyMenuHandler = softKeyMenuHandler;
         this.waypointRepository = waypointRepository;
         this.waypointQuickSelect = waypointQuickSelect;
         this.map = map;
         this.inputStack = inputStack;
     }
     show(icaoType = null) {
-        const model = new WT_Waypoint_Selector_Model(icaoType, this.waypointRepository, this.softKeyController);
+        const model = new WT_Waypoint_Selector_Model(icaoType, this.waypointRepository, this.softKeyMenuHandler);
         const view = new WT_Waypoint_Selector_View(this.map, this.waypointQuickSelect);
         this.paneContainer.appendChild(view);
         view.setModel(model);
@@ -108,7 +105,7 @@ class WT_Show_New_Waypoint_Handler {
 class WT_MFD_Show_Direct_To_Handler extends WT_Show_Direct_To_Handler {
     /**
      * @param {HTMLElement} paneContainer
-     * @param {WT_Soft_Key_Controller} softKeyController 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      * @param {WT_Waypoint_Repository} waypointRepository 
      * @param {MapInstrument} map
      * @param {WT_Waypoint_Quick_Select} waypointQuickSelect
@@ -116,10 +113,10 @@ class WT_MFD_Show_Direct_To_Handler extends WT_Show_Direct_To_Handler {
      * @param {WT_Direct_To_Handler} directToHandler
      * @param {WT_Show_Page_Menu_Handler} showPageMenuHandler
      */
-    constructor(paneContainer, softKeyController, waypointRepository, map, waypointQuickSelect, inputStack, directToHandler, showPageMenuHandler) {
+    constructor(paneContainer, softKeyMenuHandler, waypointRepository, map, waypointQuickSelect, inputStack, directToHandler, showPageMenuHandler) {
         super();
         this.paneContainer = paneContainer;
-        this.softKeyController = softKeyController;
+        this.softKeyMenuHandler = softKeyMenuHandler;
         this.waypointRepository = waypointRepository;
         this.waypointQuickSelect = waypointQuickSelect;
         this.map = map;
@@ -133,7 +130,7 @@ class WT_MFD_Show_Direct_To_Handler extends WT_Show_Direct_To_Handler {
         if (icao) {
             model.setIcao(icao);
         }
-        let view = new WT_MFD_Direct_To_View(this.softKeyController, this.map, this.waypointQuickSelect, this.showPageMenuHandler);
+        let view = new WT_MFD_Direct_To_View(this.softKeyMenuHandler, this.map, this.waypointQuickSelect, this.showPageMenuHandler);
         this.paneContainer.appendChild(view);
         view.setModel(model);
 
@@ -282,15 +279,16 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("mapInputLayerFactory", d => new WT_Map_Input_Layer_Factory());
 
         d.register("waypointQuickSelect", d => new WT_Waypoint_Quick_Select(this, d.flightPlanManager));
-        d.register("pageMenuHandler", d => new WT_MFD_Show_Page_Menu_Handler(d.inputStack, d.pageContainer, d.softKeyController));
-        d.register("confirmDialogHandler", d => new WT_Show_Confirm_Dialog_Handler(d.inputStack, d.dialogContainer, d.softKeyController));
-        d.register("newWaypointHandler", d => new WT_Show_New_Waypoint_Handler(d.paneContainer, d.softKeyController, d.waypointRepository, d.miniMap, d.waypointQuickSelect, d.inputStack));
+        d.register("pageMenuHandler", d => new WT_MFD_Show_Page_Menu_Handler(d.inputStack, d.pageContainer, d.softKeyMenuHandler));
+        d.register("confirmDialogHandler", d => new WT_Show_Confirm_Dialog_Handler(d.inputStack, d.dialogContainer, d.softKeyMenuHandler));
+        d.register("newWaypointHandler", d => new WT_Show_New_Waypoint_Handler(d.paneContainer, d.softKeyMenuHandler, d.waypointRepository, d.miniMap, d.waypointQuickSelect, d.inputStack));
         d.register("directToHandler", d => new WT_Direct_To_Handler(d.flightPlanController, d.mainMap));
-        d.register("showDirectToHandler", d => new WT_MFD_Show_Direct_To_Handler(d.paneContainer, d.softKeyController, d.waypointRepository, d.miniMap, d.waypointQuickSelect, d.inputStack, d.directToHandler, d.pageMenuHandler));
+        d.register("showDirectToHandler", d => new WT_MFD_Show_Direct_To_Handler(d.paneContainer, d.softKeyMenuHandler, d.waypointRepository, d.miniMap, d.waypointQuickSelect, d.inputStack, d.directToHandler, d.pageMenuHandler));
         d.register("showAirwaysHandler", d => new WT_Show_Airways_Handler(this, d.inputStack, d.overlayPageContainer, d.mainMap));
         d.register("showProcedureHandler", d => new WT_Show_Procedure_Handler(d.pageController, d.flightPlanManager, d.procedureFacilityRepository, () => d.procedurePageView));
         d.register("showWaypointInfoHandler", d => new WT_Show_Waypoint_Info_Handler(d.pageController));
-        d.register("procedurePageView", d => new WT_Procedure_Page_View(d.softKeyController, d.mainMap, d.waypointQuickSelect), { scope: "transient" })
+        d.register("procedurePageView", d => new WT_Procedure_Page_View(d.softKeyMenuHandler, d.mainMap, d.waypointQuickSelect), { scope: "transient" });
+        d.register("softKeyMenuHandler", d => new WT_MFD_Soft_Key_Menu_Handler(d.softKeyController));
 
         d.register("frequencyListModel", d => new WT_Frequency_List_Model(d.comFrequenciesModel, d.navFrequenciesModel), { scope: "transient" });
 
@@ -298,16 +296,16 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("mapView", d => new WT_Map_View(d.pageMenuHandler, d.softKeyController), { scope: "transient" });
 
         d.register("airportInformationModel", d => new WT_Airport_Information_Model(d.showDirectToHandler, d.waypointRepository, d.airportDatabase), { scope: "transient" });
-        d.register("airportInformationView", d => new WT_Airport_Information_View(d.mainMap, d.waypointQuickSelect, d.frequencyListModel, d.softKeyController), { scope: "transient" });
+        d.register("airportInformationView", d => new WT_Airport_Information_View(d.mainMap, d.waypointQuickSelect, d.frequencyListModel, d.softKeyMenuHandler), { scope: "transient" });
 
         d.register("intersectionInformationModel", d => new WT_Intersection_Information_Model(d.showDirectToHandler, d.waypointRepository), { scope: "transient" });
         d.register("intersectionInformationView", d => new WT_Intersection_Information_View(d.mainMap, d.waypointQuickSelect), { scope: "transient" });
 
-        d.register("systemSettingsModel", d => new WT_System_Settings_Model(d.settings, d.softKeyController), { scope: "transient" });
-        d.register("systemSettingsView", d => new WT_System_Settings_View(), { scope: "transient" });
+        d.register("systemSettingsModel", d => new WT_System_Settings_Model(d.settings), { scope: "transient" });
+        d.register("systemSettingsView", d => new WT_System_Settings_View(d.softKeyMenuHandler), { scope: "transient" });
 
-        d.register("modSettingsModel", d => new WT_Mod_Settings_Model(d.modSettings, d.softKeyController), { scope: "transient" });
-        d.register("modSettingsView", d => new WT_Mod_Settings_View(), { scope: "transient" });
+        d.register("modSettingsModel", d => new WT_Mod_Settings_Model(d.modSettings), { scope: "transient" });
+        d.register("modSettingsView", d => new WT_Mod_Settings_View(d.softKeyMenuHandler), { scope: "transient" });
 
         d.register("changelogModel", d => new WT_Changelog_Model(d.changelogRepository), { scope: "transient" });
         d.register("changelogView", d => new WT_Changelog_View(), { scope: "transient" });
@@ -316,16 +314,16 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("creditsView", d => new WT_Credits_View(), { scope: "transient" });
 
         d.register("flightPlanModel", d => new WT_Flight_Plan_Page_Model(d.flightPlanManager, d.procedures, d.showAirwaysHandler), { scope: "transient" });
-        d.register("flightPlanView", d => new WT_MFD_Flight_Plan_Page_View(d.mainMap, d.softKeyController, d.pageMenuHandler, d.confirmDialogHandler, d.newWaypointHandler), { scope: "transient" });
+        d.register("flightPlanView", d => new WT_MFD_Flight_Plan_Page_View(d.mainMap, d.softKeyMenuHandler, d.pageMenuHandler, d.confirmDialogHandler, d.newWaypointHandler), { scope: "transient" });
 
-        d.register("nearestAirportsModel", d => new WT_Nearest_Airports_Model(this, d.showDirectToHandler, d.waypointRepository, d.unitChooser, d.mainMap, d.softKeyController, d.nearestWaypoints, d.showWaypointInfoHandler), { scope: "transient" });
-        d.register("nearestAirportsView", d => new WT_Nearest_Airports_View(d.frequencyListModel, d.unitChooser), { scope: "transient" });
+        d.register("nearestAirportsModel", d => new WT_Nearest_Airports_Model(this, d.showDirectToHandler, d.waypointRepository, d.unitChooser, d.mainMap, d.nearestWaypoints, d.showWaypointInfoHandler), { scope: "transient" });
+        d.register("nearestAirportsView", d => new WT_Nearest_Airports_View(d.frequencyListModel, d.unitChooser, d.softKeyMenuHandler), { scope: "transient" });
 
         d.register("nearestNdbsModel", d => new WT_Nearest_Ndbs_Model(d.waypointRepository, d.nearestWaypoints, d.showWaypointInfoHandler), { scope: "transient" });
-        d.register("nearestNdbsView", d => new WT_Nearest_Ndbs_View(d.softKeyController, d.mainMap, d.unitChooser), { scope: "transient" });
+        d.register("nearestNdbsView", d => new WT_Nearest_Ndbs_View(d.softKeyMenuHandler, d.mainMap, d.unitChooser), { scope: "transient" });
 
         d.register("nearestVorsModel", d => new WT_Nearest_Vors_Model(d.waypointRepository, d.nearestWaypoints, d.showWaypointInfoHandler), { scope: "transient" });
-        d.register("nearestVorsView", d => new WT_Nearest_Vors_View(d.softKeyController, d.mainMap, d.unitChooser), { scope: "transient" });
+        d.register("nearestVorsView", d => new WT_Nearest_Vors_View(d.softKeyMenuHandler, d.mainMap, d.unitChooser), { scope: "transient" });
 
         d.register("pageTitle", d => new Subject("MAP - NAVIGATION MAP"));
         d.register("pageController", d => new WT_Page_Controller([
@@ -389,7 +387,8 @@ class AS1000_MFD extends BaseAS1000 {
         this.fuelUsed = d.fuelUsed;
         this.mainMap = d.mainMap;
         this.miniMap = d.miniMap;
-        this.pageTitle = d.pageTitle
+        this.pageTitle = d.pageTitle;
+        this.softKeyMenuHandler = d.softKeyMenuHandler;
 
         this.updatables.push(d.flightPlanController);
         this.updatables.push(d.nearestWaypoints);
@@ -409,7 +408,7 @@ class AS1000_MFD extends BaseAS1000 {
 
         this.initDefaultSoftKeys();
         this.softKeyMenus = {
-            engine: new AS1000_Engine_Menu(this.engineDisplay, () => this.showMainMenu()),
+            engine: new AS1000_Engine_Menu(this.engineDisplay, this.softKeyMenuHandler),
             main: new WT_Soft_Key_Menu(true)
         };
 
@@ -461,10 +460,10 @@ class AS1000_MFD extends BaseAS1000 {
         this.pageController.goTo("MAP", "Map");
     }
     showMainMenu() {
-        this.softKeyController.setMenu(this.softKeyMenus.main);
+        this.softKeyMenuHandler.show(this.softKeyMenus.main);
     }
     showEngineMenu() {
-        this.softKeyController.setMenu(this.softKeyMenus.engine);
+        this.softKeyMenuHandler.show(this.softKeyMenus.engine);
     }
     showDirectTo(icaoType = null, icao = null) {
         this.showDirectToHandler.show(icaoType, icao);
@@ -1654,10 +1653,14 @@ class AS1000_MapMenu {
     }
 }
 class AS1000_Engine_Menu extends WT_Soft_Key_Menu {
-    constructor(engineDisplay, back) {
+    /**
+     * @param {WT_Engine} engineDisplay 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} menuHandler 
+     */
+    constructor(engineDisplay, softKeyMenuHandler) {
         super(false);
         this.engineDisplay = engineDisplay;
-        this.back = back;
+        this.softKeyMenuHandler = softKeyMenuHandler;
         this.pageButtons = [];
         this.selectedPage = new Subject("");
 
@@ -1678,14 +1681,11 @@ class AS1000_Engine_Menu extends WT_Soft_Key_Menu {
             this.pageButtons.push(button);
             this.addSoftKey(i++, button);
         }
-        this.addSoftKey(11, new WT_Soft_Key("BACK", this.back.bind(this)));
+        this.addSoftKey(11, this.softKeyMenuHandler.getBackButton());
     }
     selectEngineDisplayPage(id) {
         this.selectedPage.value = id;
         this.engineDisplay.selectEnginePage(id);
-    }
-    back() {
-        this.back();
     }
 }
 registerInstrument("as1000-mfd-element", AS1000_MFD);

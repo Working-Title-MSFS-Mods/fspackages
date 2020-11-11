@@ -336,12 +336,12 @@
 
     <template id="procedures-menu">
         <h1 class="title">Procedures</h1>
-        <selectable-button disabled>ACTIVATE VECTOR-TO-FINAL</selectable-button>
-        <selectable-button disabled>ACTIVATE APPROACH</selectable-button>
-        <selectable-button disabled>ACTIVATE MISSED APPROACH</selectable-button>
-        <selectable-button data-click="selectApproach">SELECT APPROACH</selectable-button>
-        <selectable-button data-click="selectArrival">SELECT ARRIVAL</selectable-button>
-        <selectable-button data-click="selectDeparture">SELECT DEPARTURE</selectable-button>
+        <selectable-button data-element="vectorToFinalButton" disabled>ACTIVATE VECTOR-TO-FINAL</selectable-button>
+        <selectable-button data-element="activateApproachButton" data-click="activateApproach" disabled>ACTIVATE APPROACH</selectable-button>
+        <selectable-button data-element="activateMissedApproachButton" disabled>ACTIVATE MISSED APPROACH</selectable-button>
+        <selectable-button data-element="selectApproachButton" data-click="selectApproach">SELECT APPROACH</selectable-button>
+        <selectable-button data-element="selectArrivalButton" data-click="selectArrival">SELECT ARRIVAL</selectable-button>
+        <selectable-button data-element="selectDepartureButton" data-click="selectDeparture">SELECT DEPARTURE</selectable-button>
     </template>
 
     <template id="duplicate-waypoints">

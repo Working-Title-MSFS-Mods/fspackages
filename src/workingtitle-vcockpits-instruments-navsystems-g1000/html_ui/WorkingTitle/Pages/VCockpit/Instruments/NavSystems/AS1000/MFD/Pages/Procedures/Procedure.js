@@ -54,15 +54,15 @@ class WT_Procedure_Page_Menu extends WT_Soft_Key_Menu {
 
 class WT_Procedure_Page_View extends WT_HTML_View {
     /**
-     * @param {WT_Soft_Key_Controller} softKeyController 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      * @param {MapInstrument} map 
      * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
      */
-    constructor(softKeyController, map, waypointQuickSelect) {
+    constructor(softKeyMenuHandler, map, waypointQuickSelect) {
         super();
 
         this.map = map;
-        this.softKeyController = softKeyController;
+        this.softKeyMenuHandler = softKeyMenuHandler;
         this.waypointQuickSelect = waypointQuickSelect;
 
         this.subPageIndex = new Subject(null);
@@ -163,7 +163,6 @@ class WT_Procedure_Page_View extends WT_HTML_View {
             this.inputStackHandle.pop();
             this.inputStackHandle = null;
         }
-        this.softKeyController.setMenu(this.previousSoftKeyMenu);
         this.map.mapConfigId = 0;
         this.map.procedureElement = null;
     }
@@ -171,14 +170,16 @@ class WT_Procedure_Page_View extends WT_HTML_View {
         return ["show-cities", "show-vors", "show-ndbs", "show-roads", "show-intersections", "show-airspaces", "show-airports"];
     }
     activate() {
-        this.previousSoftKeyMenu = this.softKeyController.currentMenu;
-        this.softKeyController.setMenu(this.softKeyMenu);
+        this.menuHandler = this.softKeyMenuHandler.show(this.softKeyMenu);
 
         this.elements.map.appendChild(this.map);
         this.mapToggles.forEach(toggle => this.map.setAttribute(toggle, "false"));
     }
     deactivate() {
         this.mapToggles.forEach(toggle => this.map.setAttribute(toggle, "true"));
+        if (this.menuHandler) {
+            this.menuHandler = this.menuHandler.pop();
+        }
     }
 }
 customElements.define("g1000-procedures-page", WT_Procedure_Page_View);

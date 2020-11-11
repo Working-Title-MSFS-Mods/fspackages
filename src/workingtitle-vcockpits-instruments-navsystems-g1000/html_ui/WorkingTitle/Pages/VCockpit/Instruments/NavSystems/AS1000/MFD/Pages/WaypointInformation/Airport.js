@@ -70,12 +70,18 @@ class WT_Airport_Information_Input_Layer extends Selectables_Input_Layer {
 }
 
 class WT_Airport_Information_View extends WT_HTML_View {
-    constructor(map, waypointQuickSelect, frequencyListModel, softKeyController) {
+    /**
+     * @param {MapInstrument} map 
+     * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
+     * @param {WT_Frequency_List_Model} frequencyListModel 
+     * @param {WT_MFD_Menu_Handler} menuHandler 
+     */
+    constructor(map, waypointQuickSelect, frequencyListModel, menuHandler) {
         super();
         this.map = map;
         this.waypointQuickSelect = waypointQuickSelect;
         this.frequencyListModel = frequencyListModel;
-        this.softKeyController = softKeyController;
+        this.menuHandler = menuHandler;
 
         this.infoMode = new Subject(1);
         this.softKeyMenu = new WT_Airport_Information_Soft_Key_Menu(this);
@@ -182,16 +188,15 @@ class WT_Airport_Information_View extends WT_HTML_View {
     }
     activate(inputStack, intent) {
         this.elements.map.appendChild(this.map);
-        this.storedMenu = this.softKeyController.currentMenu;
-        this.softKeyController.setMenu(this.softKeyMenu);
+        this.softKeyMenuHandler = this.menuHandler.show(this.softKeyMenu);
 
         if (intent) {
             this.model.setIcao(intent);
         }
     }
     deactivate() {
-        if (this.storedMenu)
-            this.softKeyController.setMenu(this.storedMenu);
+        if (this.softKeyMenuHandler)
+            this.softKeyMenuHandler = this.softKeyMenuHandler.pop();
         this.subscriptions.unsubscribe();
     }
 }

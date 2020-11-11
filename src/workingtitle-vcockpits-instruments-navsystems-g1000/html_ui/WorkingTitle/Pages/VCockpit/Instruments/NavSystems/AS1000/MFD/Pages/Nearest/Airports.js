@@ -18,11 +18,13 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
     /**
      * @param {WT_Frequency_List_Model} frequencyListModel 
      * @param {WT_Unit_Chooser} unitChooser 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      */
-    constructor(frequencyListModel, unitChooser) {
+    constructor(frequencyListModel, unitChooser, softKeyMenuHandler) {
         super();
         this.frequencyListModel = frequencyListModel;
         this.unitChooser = unitChooser;
+        this.softKeyMenuHandler = softKeyMenuHandler;
 
         this.inputStackHandle = null;
 
@@ -163,20 +165,17 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
     }
     activate(inputStack) {
         this.inputStack = inputStack;
-        this.previousMenu = this.model.softKeyController.currentMenu;
-        this.model.softKeyController.setMenu(this.menu);
+        this.menuHandler = this.softKeyMenuHandler.show(this.menu);
         this.map.flightPlanElements.push(this.flightPlanElement);
         this.map.showFlightPlan = false;
     }
     deactivate() {
-        try {
-            this.model.softKeyController.setMenu(this.previousMenu);
-            this.map.flightPlanElements.splice(this.map.flightPlanElements.findIndex(item => item == this.flightPlanElement), 1);
-            this.map.showFlightPlan = true;
-            this.model.unsubscribe();
-        } catch (e) {
-            console.error(e.message);
+        if (this.menuHandler) {
+            this.menuHandler = this.menuHandler.pop();
         }
+        this.map.flightPlanElements.splice(this.map.flightPlanElements.findIndex(item => item == this.flightPlanElement), 1);
+        this.map.showFlightPlan = true;
+        this.model.unsubscribe();
     }
 }
 customElements.define("g1000-nearest-airports-page", WT_Nearest_Airports_View);

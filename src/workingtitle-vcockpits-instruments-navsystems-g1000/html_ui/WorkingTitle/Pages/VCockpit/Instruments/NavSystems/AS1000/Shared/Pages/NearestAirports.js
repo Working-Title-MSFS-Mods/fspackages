@@ -5,18 +5,16 @@ class WT_Nearest_Airports_Model extends WT_Model {
      * @param {WT_Waypoint_Repository} waypointRepository 
      * @param {WT_Unit_Chooser} unitChooser 
      * @param {MapInstrument} map 
-     * @param {WT_Soft_Key_Controller} softKeyController 
      * @param {WT_Nearest_Waypoints_Repository} nearestWaypoints 
      * @param {WT_Show_Waypoint_Info_Handler} showWaypointInfoHandler 
      */
-    constructor(gps, showDirectToHandler, waypointRepository, unitChooser, map, softKeyController, nearestWaypoints, showWaypointInfoHandler) {
+    constructor(gps, showDirectToHandler, waypointRepository, unitChooser, map, nearestWaypoints, showWaypointInfoHandler) {
         super();
         this.showDirectToHandler = showDirectToHandler;
         this.waypointRepository = waypointRepository;
         this.unitChooser = unitChooser;
         this.nearestAirportList = new NearestAirportList(gps);
         this.mapInstrument = map;
-        this.softKeyController = softKeyController;
         this.showWaypointInfoHandler = showWaypointInfoHandler;
 
         this.airports = new Subject([], false);
