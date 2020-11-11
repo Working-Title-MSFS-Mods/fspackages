@@ -18,7 +18,11 @@ declare module "MSFS" {
   }
 
   export class BaseInstrument {
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
     facilityLoader: FacilityLoader;
+  }
+
+  export class NavSystem {
   }
   
   export class FacilityLoader {

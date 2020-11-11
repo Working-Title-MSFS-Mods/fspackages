@@ -28,7 +28,11 @@ export class FlightPlanManager {
    * parent instrument attached.
    * @param parentInstrument The parent instrument attached to this FlightPlanManager.
    */
-  constructor(private _parentInstrument: BaseInstrument, _isMaster:boolean=true) { // TODO: need to find a solution for the fpln resetr
+  constructor(private _parentInstrument: BaseInstrument, _isMaster:boolean=true) { // TODO: need to find a solution for the fpln reset
+    _parentInstrument.addEventListener("FlightStart", function() {
+      console.log("FPM FLIGHT START");
+    });
+
     this._flightPlans = [];
     if (_isMaster == true) {
       this._flightPlans.push(new ManagedFlightPlan());
