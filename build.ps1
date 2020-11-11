@@ -144,6 +144,15 @@ function Wait-FileChange {
     Unregister-Event -SubscriptionId $onChange.Id
 }
 
+if($Project -Like "*cj4*"){
+    Write-Host "npm run build...please wait..." -ForegroundColor Yellow
+    Push-Location "src\wtsdk"
+    & npm run build | Write-Host
+    Pop-Location  
+}
+
+Update-Packages
+
 # FILE WATCHER
 if ($WatchFiles -eq $true) {
     try {
@@ -156,6 +165,4 @@ if ($WatchFiles -eq $true) {
     finally {
         Get-EventSubscriber -Force | Unregister-Event -Force
     }
-} else {
-    Update-Packages
 }
