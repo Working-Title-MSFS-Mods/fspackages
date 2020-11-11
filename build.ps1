@@ -122,6 +122,16 @@ function Wait-FileChange {
                 Write-Host $text -ForegroundColor Green
     
                 $global:FileChanged = $true
+            } elseif($FullPath -Like ".\src\wtsdk\src*") {
+                $text = "{0} was {1} at {2}" -f $FullPath, $ChangeType, $Timestamp
+                Write-Host ""
+                Write-Host $text -ForegroundColor Green     
+                Write-Host "npm run build...please wait..." -ForegroundColor Yellow 
+                Push-Location "src\wtsdk"
+                $global:FileChanged = $true
+                & npm run build | Write-Host
+                Pop-Location           
+                Write-Host "build finished" -ForegroundColor Green
             }
         }
     }
