@@ -31,10 +31,10 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
         const vnavValues = WTDataStore.get('CJ4_vnavValues', 'none');
         if (vnavValues != "none") {
             const parsedVnavValues = JSON.parse(vnavValues);
-            this._vnavTargetAltitude = parsedVnavValues.vnavTargetAltitude;
-            this._vnavTargetDistance = parsedVnavValues.vnavTargetDistance;
-            this._topOfDescent = parsedVnavValues.topOfDescent;
-            this._distanceToTod = parsedVnavValues.distanceToTod;
+            this._vnavTargetAltitude = parseInt(parsedVnavValues.vnavTargetAltitude);
+            this._vnavTargetDistance = parseFloat(parsedVnavValues.vnavTargetDistance);
+            this._topOfDescent = parseFloat(parsedVnavValues.topOfDescent);
+            this._distanceToTod = parseFloat(parsedVnavValues.distanceToTod);
         }
         this._altDeviation = SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
         
