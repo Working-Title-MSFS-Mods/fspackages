@@ -491,7 +491,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         this.speedBackground.setAttribute("width", 100);
         this.speedBackground.setAttribute("height", 32);
         this.speedBackground.setAttribute("fill", "black");
-        this.speedBackground.setAttribute("fill-opacity", "0.3");
+        this.speedBackground.setAttribute("fill-opacity", "0.5");
         this.rootGroup.appendChild(this.speedBackground);
 
         this.targetSpeedIconSVG = document.createElementNS(Avionics.SVG.NS, "path");
