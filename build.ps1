@@ -11,6 +11,8 @@ param (
 $global:FileChanged = $false
 $Action = 'Update-Packages'
 
+Get-EventSubscriber -Force | Unregister-Event -Force
+
 function Update-Packages {
     param (
         
@@ -106,7 +108,22 @@ function Wait-FileChange {
         NotifyFilter          = [IO.NotifyFilters]'FileName, LastWrite'
     }
     $onChange = Register-ObjectEvent $Watcher -EventName "Changed" -Action {
-        $global:FileChanged = $true
+        if($global:FileChanged -eq $false) {
+            $details = $event.SourceEventArgs
+            $Name = $details.Name
+            $FullPath = $details.FullPath
+            $OldFullPath = $details.OldFullPath
+            $OldName = $details.OldName
+            $ChangeType = $details.ChangeType
+            $Timestamp = $event.TimeGenerated
+            if($FullPath -NotLike ".\src\wtsdk*"){
+                $text = "{0} was {1} at {2}" -f $FullPath, $ChangeType, $Timestamp
+                Write-Host ""
+                Write-Host $text -ForegroundColor Green
+    
+                $global:FileChanged = $true
+            }
+        }
     }
 
     while ($global:FileChanged -eq $false) {
@@ -117,13 +134,18 @@ function Wait-FileChange {
     Unregister-Event -SubscriptionId $onChange.Id
 }
 
-Update-Packages
-
 # FILE WATCHER
 if ($WatchFiles -eq $true) {
-    while (1 -eq 1) {
-        Write-Host "Waiting for file changes... (CTRL+C to quit)"
-        Wait-FileChange -Folder (Join-Path "." "src") -Action $Action
-        Start-Sleep -Milliseconds 100
+    try {
+        while (1 -eq 1) {
+            Write-Host "Waiting for file changes... (CTRL+C to quit)"
+            Wait-FileChange -Folder (Join-Path "." "src") -Action $Action
+            Start-Sleep -Milliseconds 100
+        }        
     }
+    finally {
+        Get-EventSubscriber -Force | Unregister-Event -Force
+    }
+} else {
+    Update-Packages
 }
