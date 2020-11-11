@@ -39,7 +39,7 @@ class WT_BaseVnav {
 
     }
 
-    get waypoints(){
+    get waypoints() {
         return this._fpm.getWaypoints().slice(this._fpm.getActiveWaypointIndex());
     }
 
@@ -69,8 +69,8 @@ class WT_BaseVnav {
         this._destination = this._fpm.getDestination();
         this._activeWaypoint = this._fpm.getActiveWaypoint();
 
-        if (this._destination && waypoints && waypoints.length > 1 && this._activeWaypoint) {
-            
+        if (this._destination && this.waypoints && this.waypoints.length > 1 && this._activeWaypoint) {
+
             //VNAV CAN RUN, UPDATE DATA
             this._currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
             this._groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
@@ -100,8 +100,8 @@ class WT_BaseVnav {
 
             //FIND CURRENT CONSTRAINT -- This only needs to run when active waypoint changes
             if (this._flightPlanChanged || this._activeWaypointChanged) {
-                for (let i = 0; i < waypoints.length; i++) {
-                    let wpt = waypoints[i];
+                for (let i = 0; i < this.waypoints.length; i++) {
+                    let wpt = this.waypoints[i];
                     if (wpt.legAltitudeDescription > 0 && this._currentFlightSegment === SegmentType.Departure) {
                         if (wpt.legAltitudeDescription == 1 || wpt.legAltitudeDescription == 3 || wpt.legAltitudeDescription == 4) {
                             this._vnavConstraintAltitude = wpt.legAltitude1;
@@ -139,8 +139,8 @@ class WT_BaseVnav {
 
             //TRACK ALTITUDE DEVIATION
             if (this._vnavTargetAltitude && this._vnavTargetWaypoint) {
-                this._vnavTargetDistance = waypoint == this._activeWaypoint ? this._activeWaypointDist
-                    : waypoint.cumulativeDistanceInFP - this._currentDistanceInFP;
+                this._vnavTargetDistance = this._vnavTargetWaypoint == this._activeWaypoint ? this._activeWaypointDist
+                    : this._vnavTargetWaypoint.cumulativeDistanceInFP - this._currentDistanceInFP;
                 this._desiredAltitude = this._vnavTargetAltitude + (Math.tan(this._desiredFPA * (Math.PI / 180)) * this._vnavTargetDistance * 6076.12);
                 this._altDeviation = this._altitude - this._desiredAltitude;
                 this._distanceToTod = this._topOfDescent < 0 ? undefined : this._vnavTargetDistance > this._topOfDescent ? Math.round(this._vnavTargetDistance - this._topOfDescent) : undefined;
@@ -164,7 +164,7 @@ class WT_BaseVnav {
      */
     execute() {
 
-    
+
     }
 
     /**
@@ -243,7 +243,9 @@ class WT_BaseVnav {
         // const monitorValues = {
         //     vnavTargetWaypointIdent: this._vnavTargetWaypoint.ident,
         // };
-        WTDataStore.set('CJ4_vnavTargetWaypoint', this._vnavTargetWaypoint.ident);
+        if (this._vnavTargetWaypoint) {
+            WTDataStore.set('CJ4_vnavTargetWaypoint', this._vnavTargetWaypoint.ident);
+        }
     }
 }
 
