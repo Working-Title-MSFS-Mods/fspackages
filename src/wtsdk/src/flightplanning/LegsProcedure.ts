@@ -135,8 +135,8 @@ export class LegsProcedure {
 
         if (mappedLeg !== undefined) {
           mappedLeg.legAltitudeDescription = currentLeg.altDesc;
-          mappedLeg.legAltitude1 = currentLeg.altitude1 * 3.28;
-          mappedLeg.legAltitude2 = currentLeg.altitude2 * 3.28;
+          mappedLeg.legAltitude1 = currentLeg.altitude1 * 3.28084;
+          mappedLeg.legAltitude2 = currentLeg.altitude2 * 3.28084;
         }
 
         this._currentIndex++;
