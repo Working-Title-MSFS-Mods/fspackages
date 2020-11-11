@@ -22,7 +22,7 @@ export class FlightPlanManager {
    * The current stored flight plan data.
    * @type ManagedFlightPlan[]
    */
-  private _flightPlans: ManagedFlightPlan[];
+  private _flightPlans : ManagedFlightPlan[] = [];
 
   /**
    * Constructs an instance of the FlightPlanManager with the provided
@@ -30,15 +30,16 @@ export class FlightPlanManager {
    * @param parentInstrument The parent instrument attached to this FlightPlanManager.
    */
   constructor(private _parentInstrument: BaseInstrument) {
-    _parentInstrument.addEventListener("FlightStart", function () {
-      // TODO: load game flight plan
-      this._flightPlans.push(new ManagedFlightPlan());
-      this._currentFlightPlanVersion++;
-      this._updateFlightPlanVersion();
-    });
-
     if (_parentInstrument.instrumentIdentifier == "CJ4_FMC") {
       this._isMaster = true;
+
+      _parentInstrument.addEventListener("FlightStart", function () {
+        // TODO: load game flight plan
+        this._flightPlans = [];
+        this._flightPlans.push(new ManagedFlightPlan());
+        this._currentFlightPlanVersion++;
+        this._updateFlightPlanVersion();
+      }.bind(this));
     }
 
     this._flightPlans = [];
