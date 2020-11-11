@@ -48,7 +48,7 @@ class WT_MapView extends HTMLElement {
     _loadConfig(data) {
         this._config = JSON.parse(data);
         this._configLoaded = true;
-        for (layer of this._layers) {
+        for (let layer of this._layers) {
             this._loadLayerConfig(layer);
         }
     }
@@ -140,7 +140,7 @@ class WT_MapView extends HTMLElement {
         let currentWidth = this.viewWidth;
         let currentHeight = this.viewHeight;
 
-        let changed = currentWidth != this._lastWidth || currentHeight != this._lastHeight
+        let changed = currentWidth != this._lastWidth || currentHeight != this._lastHeight;
 
         this._lastWidth = currentWidth;
         this._lastHeight = currentHeight;
@@ -174,10 +174,10 @@ class WT_MapView extends HTMLElement {
         let optionsToPass = this._optsManager.getOptionsFromList(WT_MapView.OPTIONS_TO_PASS);
 
         for (let layer of this._layers) {
+            if (viewSizeChanged) {
+                layer.onViewSizeChanged(optionsToPass);
+            }
             if (layer.isVisible(optionsToPass)) {
-                if (viewSizeChanged) {
-                    layer.onViewSizeChanged(optionsToPass);
-                }
                 layer.htmlElement.style.display = "block";
                 layer.onUpdate(optionsToPass);
             } else {
