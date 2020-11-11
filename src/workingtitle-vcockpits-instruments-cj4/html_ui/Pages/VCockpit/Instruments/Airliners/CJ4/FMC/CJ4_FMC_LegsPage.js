@@ -62,7 +62,7 @@ class CJ4_FMC_LegsPage {
         ];
 
         let offset = Math.floor((this._currentPage - 1) * 5);
-        let allWaypoints = this._fpc.flightPlanManager.getAllWaypoints();
+        let allWaypoints = this._fmc.flightPlanManager.getAllWaypoints();
         this._wayPointsToRender = allWaypoints.splice(this._activeWptIndex - 1);
         this._wayPointsToRender.push("EMPTY");
 
