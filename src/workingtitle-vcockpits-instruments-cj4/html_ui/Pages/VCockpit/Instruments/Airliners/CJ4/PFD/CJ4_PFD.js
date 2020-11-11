@@ -48,6 +48,7 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "knots", 0);
+        this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -67,9 +68,9 @@ class CJ4_PFD extends BaseAirliners {
                 }
             }
             let dict = this.popup.dictionary;
-            if (dict.changed) {
+            if (SimVar.GetSimVarValue("L:Update_PFD_Menu", "Bool")) {
                 this.readDictionary(dict);
-                dict.changed = false;
+                SimVar.SetSimVarValue("L:Update_PFD_Menu", "Bool", false);
             }
 			
 			if (this.mapNavigationMode === Jet_NDCompass_Navigation.VOR) {
@@ -255,6 +256,10 @@ class CJ4_PFD extends BaseAirliners {
                 this.fillDictionary(this.popup.dictionary);
                 this.popup.setMode(CJ4_PopupMenu.PFD);
                 break;
+            case "Upr_Push_CCP_MENU":
+                this.fillDictionary(this.popup.dictionary);
+                this.popup.setMode(CJ4_PopupMenu.CCP);
+                break;
             case "Upr_Push_REFS_MENU":
                 this.fillDictionary(this.popup.dictionary);
                 this.popup.setMode(CJ4_PopupMenu.REFS);
@@ -292,25 +297,40 @@ class CJ4_PFD extends BaseAirliners {
     }
     readDictionary(_dict) {
         let modeChanged = false;
-        let format = _dict.get(CJ4_PopupMenu_Key.MAP_FORMAT);
-        if (format == "ROSE") {
+        let format = SimVar.GetSimVarValue("L:WT_PFD_MAP_FORMAT", "number");
+        if(format == 1) {
             if (this.mapDisplayMode != Jet_NDCompass_Display.ROSE) {
                 this.mapDisplayMode = Jet_NDCompass_Display.ROSE;
                 modeChanged = true;
             }
         }
-        else if (format == "ARC") {
+        else if (format == 2) {
             if (this.mapDisplayMode != Jet_NDCompass_Display.ARC) {
                 this.mapDisplayMode = Jet_NDCompass_Display.ARC;
                 modeChanged = true;
             }
         }
-        else if (format == "PPOS") {
+        else if (format == 3) {
             if (this.mapDisplayMode != Jet_NDCompass_Display.PPOS) {
                 this.mapDisplayMode = Jet_NDCompass_Display.PPOS;
                 modeChanged = true;
              }
         }
+
+        const terrWx = _dict.get(CJ4_PopupMenu_Key.TERR_WX);
+        if(terrWx == "TERR"){
+            this.showTerrain = true;
+            this.showWeather = false;
+        }
+        else if(terrWx == "WX"){
+            this.showTerrain = false;
+            this.showWeather = true;
+        }
+        else{
+            this.showTerrain = false;
+            this.showWeather = false;
+        }
+
         let range = _dict.get(CJ4_PopupMenu_Key.MAP_RANGE);
         this.map.range = parseInt(range);
         let navSrc = _dict.get(CJ4_PopupMenu_Key.NAV_SRC);
@@ -338,7 +358,29 @@ class CJ4_PFD extends BaseAirliners {
                 modeChanged = true;
             }
         }
-        let baroUnits = _dict.get(CJ4_PopupMenu_Key.UNITS_PRESS);
+        const baroUnits = _dict.get(CJ4_PopupMenu_Key.UNITS_PRESS);
+        let baroSet = _dict.get(CJ4_PopupMenu_Key.BARO_SET);
+        if(baroSet === "STD"){
+            console.log("BARO SETTT");
+            const currentBaro = SimVar.GetSimVarValue("KOHLSMAN SETTING HG:2", "inches of mercury");
+            const STDMB = 29.92;
+            const difference = currentBaro - STDMB;
+
+            SimVar.SetSimVarValue("K:BAROMETRIC", "millibar", 1013.25);
+            console.log(SimVar.GetSimVarValue("K:BAROMETRIC", "millibar"));
+            SimVar.SetSimVarValue("KOHLSMAN SETTING STD", "Bool", 1);
+            SimVar.SetSimVarValue("KOHLSMAN SETTING STD", "Bool", 0);
+            // if(baroUnits === "HPA"){
+            //
+            //
+            //     SimVar.SetSimVarValue("K:BAROMETRIC", "millibar", fastToFixed(parseFloat("29.92") * 33.8639, 0));
+            // }
+            // else{
+            //     SimVar.SetSimVarValue("K:BAROMETRIC", "millibar", );
+            //     console.log("v " + SimVar.GetSimVarValue(K:BAROMETRIC", "millibar"))
+            // }
+        }
+
         SimVar.SetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool", (baroUnits == "HPA") ? 1 : 0);
         let mtrsOn = _dict.get(CJ4_PopupMenu_Key.UNITS_MTR_ALT);
         this.horizon.showMTRS((mtrsOn == "ON") ? true : false);
@@ -421,12 +463,24 @@ class CJ4_PFD extends BaseAirliners {
             this.onModeChanged();
     }
     fillDictionary(_dict) {
-        if (this.mapDisplayMode == Jet_NDCompass_Display.ROSE)
-            _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "ROSE");
-        else if (this.mapDisplayMode == Jet_NDCompass_Display.ARC)
-            _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "ARC");
-        else if (this.mapDisplayMode == Jet_NDCompass_Display.PPOS)
-            _dict.set(CJ4_PopupMenu_Key.MAP_FORMAT, "PPOS");
+        const mapFormat = SimVar.GetSimVarValue("L:WT_PFD_MAP_FORMAT", "number");
+        if (mapFormat === 1)
+            _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ROSE");
+        else if (mapFormat == 3)
+            _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "PPOS");
+        else
+            _dict.set(CJ4_PopupMenu_Key.PFD_MAP_FORMAT, "ARC");
+
+        if(this.map.isWeatherVisible){
+            _dict.set(CJ4_PopupMenu_Key.TERR_WX, "WX");
+        }
+        else if(this.map.isTerrainVisible){
+            _dict.set(CJ4_PopupMenu_Key.TERR_WX, "TERR");
+        }
+        else{
+            _dict.set(CJ4_PopupMenu_Key.TERR_WX, "OFF");
+        }
+
         _dict.set(CJ4_PopupMenu_Key.MAP_RANGE, this.map.range.toString());
         if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1)
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "VOR1");
@@ -467,7 +521,6 @@ class CJ4_PFD extends BaseAirliners {
         _dict.set(CJ4_PopupMenu_Key.BRG_PTR2_SRC, this.radioSrc2);
         _dict.set(CJ4_PopupMenu_Key.BRG_VOR2_FREQ, this.radioNav.getVORActiveFrequency(2).toFixed(3));
         _dict.set(CJ4_PopupMenu_Key.BRG_ADF2_FREQ, this.radioNav.getADFActiveFrequency(2).toFixed(0));
-        _dict.changed = false;
     }
 }
 class CJ4_HorizonContainer extends NavSystemElementContainer {
