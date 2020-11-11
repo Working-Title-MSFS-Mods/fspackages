@@ -13,13 +13,15 @@ class WT_MapViewAirplaneLayer extends WT_MapViewCanvasLayer {
         return this.canvases[0].context;
     }
 
+    _drawIconToCanvas(iconImage) {
+        this.canvasContext.drawImage(iconImage, 0, 0, this.iconSize, this.iconSize);
+    }
+
     onViewSizeChanged(data) {
     }
 
     onConfigLoaded() {
         this._setPropertyFromConfig("iconSize");
-        this._icon = document.createElement("img");
-        this._icon.src = this.config.iconPath;
 
         this.canvas.width = this.iconSize;
         this.canvas.height = this.iconSize;
@@ -27,7 +29,10 @@ class WT_MapViewAirplaneLayer extends WT_MapViewCanvasLayer {
         this.canvas.style.top = `${-this.iconSize / 2}px`;
         this.canvas.style.width = `${this.iconSize}px`;
         this.canvas.style.height = `${this.iconSize}px`;
-        this.canvasContext.drawImage(this._icon, 0, 0, this.iconSize, this.iconSize);
+
+        let iconImage = document.createElement("img");
+        iconImage.onload = this._drawIconToCanvas.bind(this, iconImage);
+        iconImage.src = this.config.iconPath;
     }
 
     onUpdate(data) {
