@@ -1,4 +1,4 @@
-<AssetPackage Name="workingtitle-g3000" Version="0.1.0">
+<AssetPackage Name="workingtitle-g3000" Version="0.3.2">
 	<ItemSettings>
 		<ContentType>CUSTOM</ContentType>
 		<Title>Working Title G3000</Title>
@@ -33,7 +33,7 @@
 			</Flags>
 			<AssetDir>src\workingtitle-vcockpits-instruments-navsystems-g3000</AssetDir>
 			<OutputDir>.\</OutputDir>
-		</AssetGroup>			
+		</AssetGroup>
         <AssetGroup Name="workingtitle-vcockpits-instruments">
 			<Type>Copy</Type>
 			<Flags>
@@ -49,6 +49,6 @@
 			</Flags>
 			<AssetDir>docs\workingtitle-g3000</AssetDir>
 			<OutputDir>.\</OutputDir>
-		</AssetGroup>  	
+		</AssetGroup>
 	</AssetGroups>
 </AssetPackage>

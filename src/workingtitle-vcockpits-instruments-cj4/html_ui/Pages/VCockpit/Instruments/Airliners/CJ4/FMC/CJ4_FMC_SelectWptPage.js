@@ -16,20 +16,17 @@ class CJ4_FMC_SelectWptPage {
             [""],
             [""]
         ];
-        //console.log("search ident: " + ident);
         let waypointsFiltered = [];
 
         for (let j = 0; j < waypoints.length; j++) {
-            //console.log("checking: " + waypoints[j].ident + " " + waypoints[j].icao);
-            if (waypoints[j].ident == ident) {
-                //console.log("match! adding: " + waypoints[j].icao);
-                waypointsFiltered.push(waypoints[j]);
-                //console.log("pushed: " + waypoints[j].icao);
+            if (waypoints[j]) {
+                if (waypoints[j].ident == ident) {
+                    waypointsFiltered.push(waypoints[j]);
+                }
             }
         }
 
         let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
-        //console.log("before sort: " + waypoints[0].icao + ", " + waypoints[1].icao + ", " + waypoints[2].icao + ", " + waypoints[3].icao);
         waypointsFiltered = waypointsFiltered.sort((a, b) => {
             let aLatLong = new LatLong(a.infos.coordinates.lat, a.infos.coordinates.long);
             let bLatLong = new LatLong(b.infos.coordinates.lat, b.infos.coordinates.long);
@@ -39,7 +36,6 @@ class CJ4_FMC_SelectWptPage {
             console.log(b.icao + " " + bDistance);
             return aDistance - bDistance;
         });
-        //console.log("after sort: " + waypoints[0].icao + ", " + waypoints[1].icao + ", " + waypoints[2].icao + ", " + waypoints[3].icao);
 
         for (let i = 0; i < 3; i++) {
             let w = waypointsFiltered[i + 3 * page];
@@ -64,12 +60,14 @@ class CJ4_FMC_SelectWptPage {
                 }
                 rows[4 * i] = [w.ident.padEnd(5, " ") + t + freq + "[d-text]", region + "[d-text]"];
                 rows[4 * i + 1] = ["  " + w.infos.coordinates.toDegreeString() + "[d-text]"];
-                fmc.onLeftInput[i] = () => {
-                    //fmc.setMsg("WORKING...");
+				let BHold = i;
+				if (i != 0 ) { 
+					BHold = i + i;
+				}
+                fmc.onLeftInput[BHold] = () => {
                     callback(w);
                 };
-                fmc.onRightInput[i] = () => {
-                    //fmc.setMsg("WORKING...");
+                fmc.onRightInput[BHold] = () => {
                     callback(w);
                 };
             }
@@ -83,12 +81,12 @@ class CJ4_FMC_SelectWptPage {
         fmc.setMsg();
         fmc.onPrevPage = () => {
             if (page > 0) {
-                CJ4_FMC_SelectWptPage.ShowPage(fmc, waypointsFiltered, callback, page - 1);
+                CJ4_FMC_SelectWptPage.ShowPage(fmc, waypoints, ident, callback, page - 1);
             }
         };
         fmc.onNextPage = () => {
-            if (page < Math.floor(waypoints.length / 5)) {
-                CJ4_FMC_SelectWptPage.ShowPage(fmc, waypointsFiltered, callback, page + 1);
+              if (page < Math.floor(waypoints.length / 3)) {
+				CJ4_FMC_SelectWptPage.ShowPage(fmc, waypoints, ident, callback, page + 1);
             }
         };
     }

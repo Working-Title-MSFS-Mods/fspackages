@@ -98,7 +98,7 @@ class FacilityLoader {
     addFacility(_data) {
 
         _data.icaoTrimed = _data.icao.trim();
-        
+
         // After a "Coherent.call('LOAD_*', icao)" we get many responses received by "Coherent.on('Send*'") for the same facility.
         // The assumption is: The data is the same across the multiple receptions. If this does not hold, this approach needs to be reconsidered.
         // The idea is to
@@ -115,7 +115,7 @@ class FacilityLoader {
                 this.loadedFacilities.splice(0, 1);
             }
         }
-        
+
         const pendingRequest = this._pendingRawRequests.get(_data.icaoTrimed);
         if (pendingRequest) {
             clearTimeout(pendingRequest.timeout);
@@ -963,6 +963,13 @@ class FacilityLoader {
                         this.loadedAirwayDatas.set(routeName, airwayData);
                     }
                     if (airwayData) {
+                        // if waypoint not in airway then reload it
+                        // find intersectioninfo.icao in airwayData.icaos
+                        if (airwayData.icaos.findIndex((x) => x === intersectionInfo.icao) === -1) {
+                            airwayData = await this.getAirwayData(intersectionInfo, intersectionInfo.routes[i].name, maxLength);
+                            this.loadedAirwayDatas.set(routeName, airwayData);
+                        }
+
                         airways.push(airwayData);
                     }
                 }
@@ -972,6 +979,7 @@ class FacilityLoader {
     }
     async getAirwayData(intersectionInfo, name = "", maxLength = 100) {
         await this.waitRegistration();
+
         if (!intersectionInfo.routes) {
             return undefined;
         }
@@ -987,9 +995,11 @@ class FacilityLoader {
             };
             let currentRoute = route;
             let currentWaypointIcao = intersectionInfo.icao;
+
             for (let i = 0; i < maxLength * 0.5; i++) {
                 if (currentRoute) {
                     let prevIcao = currentRoute.prevIcao;
+
                     currentRoute = undefined;
                     if (prevIcao && prevIcao.length > 0 && prevIcao[0] != " ") {
                         let prevWaypoint = await this.getIntersectionData(prevIcao);
@@ -1000,6 +1010,8 @@ class FacilityLoader {
                                 currentRoute = prevWaypoint.routes.find(r => { return r.name === name; });
                             }
                         }
+                    } else {
+                        break;
                     }
                 }
             }
@@ -1008,6 +1020,7 @@ class FacilityLoader {
             for (let i = 0; i < maxLength * 0.5; i++) {
                 if (currentRoute) {
                     let nextIcao = currentRoute.nextIcao;
+
                     currentRoute = undefined;
                     if (nextIcao && nextIcao.length > 0 && nextIcao[0] != " ") {
                         let nextWaypoint = await this.getIntersectionData(nextIcao);
@@ -1018,20 +1031,23 @@ class FacilityLoader {
                                 currentRoute = nextWaypoint.routes.find(r => { return r.name === name; });
                             }
                         }
+                    } else {
+                        break;
                     }
                 }
             }
+
             return airway;
         }
     }
-    
+
     async UpdateFacilityInfos(facility, loadFacilitiesTransitively = false) {
         await this.waitRegistration();
         return new Promise(resolve => {
             facility.UpdateInfos(resolve, loadFacilitiesTransitively);
         });
     }
-    
+
     /* Gets an array of frequencies of the given airport ident.
      */
     async GetAirportNamedFrequenciesByIdent(airportIdent) {
@@ -1063,7 +1079,7 @@ class FacilityLoader {
                 while (frequencyCount === 0 && attempts < 10) {
                     await new Promise(resolve => this.instrument.requestCall(resolve));
                     frequencyCount = SimVar.GetSimVarValue("C:fs9gps:WaypointAirportFrequenciesNumber", "number", this.instrument.instrumentIdentifier + "-loader");
-                    attempts++;                    
+                    attempts++;
                 }
 
                 let getFrequency = async (index) => {
@@ -1079,7 +1095,7 @@ class FacilityLoader {
                         });
                     });
                 };
-                
+
                 let frequencies = [];
                 for (let i = 0; i < frequencyCount; i++) {
                     let frequency = await getFrequency(i);

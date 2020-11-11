@@ -167,6 +167,11 @@ class CJ4_FMC extends FMCMainDisplay {
         // set persisted heading
         SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', WTDataStore.get("AP_HEADING", Simplane.getHeadingMagnetic()));
 
+        // get HideYoke        
+        let yokeHide = WTDataStore.get('WT_CJ4_HideYoke', 1);
+        SimVar.SetSimVarValue("L:XMLVAR_YOKEHidden1", "number", yokeHide);
+        SimVar.SetSimVarValue("L:XMLVAR_YOKEHidden2", "number", yokeHide);
+
         const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
         this.initialFuelLeft = Math.trunc(SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * fuelWeight);
         this.initialFuelRight = Math.trunc(SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * fuelWeight);
@@ -303,7 +308,9 @@ class CJ4_FMC extends FMCMainDisplay {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
             const uniqueWaypoints = new Map();
             waypoints.forEach(wp => {
-                uniqueWaypoints.set(wp.icao, wp);
+                if (wp) {
+                    uniqueWaypoints.set(wp.icao, wp);
+                }
             });
             waypoints = [...uniqueWaypoints.values()];
             if (!waypoints || waypoints.length === 0) {
@@ -494,6 +501,14 @@ class CJ4_FMC extends FMCMainDisplay {
             }
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MAX_CALCULATED", "knots", Simplane.getMaxSpeed(Aircraft.CJ4));
+
+            const machMode = Simplane.getAutoPilotMachModeActive();
+            if (machMode) {
+                const machAirspeed = Simplane.getAutoPilotMachHoldValue();
+                Coherent.call("AP_MACH_VAR_SET", 0, parseFloat(machAirspeed.toFixed(2)));
+            }
+
+
             this.updateAutopilotCooldown = this._apCooldown;
         }
     }

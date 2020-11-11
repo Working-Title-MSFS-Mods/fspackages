@@ -97,7 +97,7 @@
                     <div class="line">
                         <div class="gradientButton" id="NavSourceButton">
                             <div class="lowerValue">FMS</div>
-                            <div class="upperTitle">NAV SOURCE</div>
+                            <div class="upperTitle">Nav Source</div>
                         </div>
                         <div class="gradientButton" id="OBSButton" state="Greyed">
                             <img class="lowerImg" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_OBS.png" />
@@ -153,7 +153,7 @@
                         </div>
                         <div class="gradientButton" id="PFDSettingsButton">
                             <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_PFD_SETTINGS_1.png" />
-                            <div class="label">PFD Settings</div>
+                            <div class="label">PFD<br>Settings</div>
                         </div>
                     </div>
                 </div>
@@ -204,11 +204,11 @@
                                             <div class="mainValue"><span class="valueSpan">124</span><span class="unitSpan">KT</span></div>
                                             <img class="editIcon" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_PENCIL.png"/>
                                         </div>
-                                        <div class="gradientButton statusToggleButton" id="SB_VenrStatus">
-                                            <div class="mainText">Venr</div>
+                                        <div class="gradientButton statusToggleButton" id="SB_VftoStatus">
+                                            <div class="mainText">Vfto</div>
                                             <div class="statusBar"></div>
                                         </div>
-                                        <div class="gradientButton" id="SB_VenrValue">
+                                        <div class="gradientButton" id="SB_VftoValue">
                                             <div class="mainValue"><span class="valueSpan">85</span><span class="unitSpan">KT</span></div>
                                             <img class="editIcon" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_PENCIL.png"/>
                                         </div>
@@ -495,6 +495,13 @@
                                 </div>
                             </div>
                             <div class="line">
+                                <div class="lineTitle">SVT<br>Terrain</div>
+                                <div class="gradientButton statusToggleButton" id="SVTButton">
+                                    <div class="mainText">Enable</div>
+                                    <div class="statusBar"></div>
+                                </div>
+                            </div>
+                            <div class="line">
                                 <div class="lineTitle">Wind</div>
                                 <div class="gradientButton" id="WindButton">
                                     <div class="statusText">Off</div>
@@ -504,6 +511,12 @@
                                 <div class="lineTitle">COM Channel Spacing</div>
                                 <div class="gradientButton" id="ComSpacingButton" state="Greyed">
                                     <div class="statusText">25 kHz</div>
+                                </div>
+                            </div>
+                            <div class="line">
+                                <div class="lineTitle">Baro<br>Select<br>Units</div>
+                                <div class="gradientButton" id="BaroUnitButton">
+                                    <div class="statusText"></div>
                                 </div>
                             </div>
                         </div>
@@ -549,7 +562,7 @@
                         </div>
                     </div>
                     <div class="line">
-                        <div class="gradientButton" id="AircraftSystemsButton">
+                        <div class="gradientButton" id="AircraftSystemsButton" state="Greyed">
                             <img class="img" src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_SYSTEM_PROP_1.png" />
                             <div class="label">Aircraft Systems</div>
                         </div>
@@ -2529,7 +2542,7 @@
                 </div>
             </div>
             <div class="PopUpWindow Transparent SelectionListWindow" id="MapSyncSelect" state="Inactive">
-                <div class="WindowTitle">Map Orientation</div>
+                <div class="WindowTitle">Map Sync Settings</div>
                 <div class="content">
                     <div class="gradientButton" id="MapSyncOff" state="Highlight">
                         <div class="mainText">Off</div>
@@ -2621,6 +2634,8 @@
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 <script type="text/html" import-script="/JS/dataStorage.js"></script>
 
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/NumberUnit.js"></script>
+
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js"></script>
 <script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/MapInstrument.html"></script>
 
@@ -2633,10 +2648,12 @@
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/TouchScrollController.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/TouchDynamicSelectionListWindow.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/MapElement.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/NavDataBar.js"></script>
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/AS3000_Common.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/PFD/AS3000_PFD.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Vertical/AS3000_TSC_Vertical.js"></script>

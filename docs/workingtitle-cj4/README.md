@@ -1,9 +1,11 @@
 # Working Title CJ4 Mod
 
 ## UPDATES
-Latest Version: [v0.6.1](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.6.1)
+Latest Version: [v0.7.1](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.7.1)
 
 Changelog: [CHANGES.md](https://github.com/Working-Title-MSFS-Mods/fspackages/blob/main/docs/workingtitle-cj4/CHANGES.md)
+
+Track Updates and Progress on Discord [https://discord.com/invite/Fa6w2xK](https://discord.com/invite/Fa6w2xK)
 
 ## BETA
 This is a beta, and as such you will surely encounter bugs and problems with the aircraft and functions. Please log these bugs under Issues at the [Working Title Github Repo](https://github.com/Working-Title-MSFS-Mods/fspackages/issues), and please **TAG THEM** as CJ4 issues. 
@@ -36,6 +38,10 @@ This list is incomplete, but thanks to everyone that contributed from inside and
 * cwburnett
 * kaosfere
 * dga711
+* aznricepuff
 * musurca
 * uwajimaya
+* dihedral (QA)
+* Danice (QA)
+* Viralwhite (QA)
 * AND others!
