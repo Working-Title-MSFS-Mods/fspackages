@@ -47,16 +47,20 @@ export class RawDataMapper {
 
         break;
       case 'V':
-        waypoint.infos = new VORInfo(instrument);
+        // waypoint.infos = new VORInfo(instrument);
+        waypoint.infos = facility;
         break;
       case 'N':
-        waypoint.infos = new NDBInfo(instrument);
+        // waypoint.infos = new NDBInfo(instrument);
+        waypoint.infos = facility;
         break;
       case 'W':
-        waypoint.infos = new IntersectionInfo(instrument);
+        // waypoint.infos = new IntersectionInfo(instrument);
+        waypoint.infos = facility;
         break;
       default:
-        waypoint.infos = new WayPointInfo(instrument);
+        // waypoint.infos = new WayPointInfo(instrument);
+        waypoint.infos = facility;
         break;
     }
 
