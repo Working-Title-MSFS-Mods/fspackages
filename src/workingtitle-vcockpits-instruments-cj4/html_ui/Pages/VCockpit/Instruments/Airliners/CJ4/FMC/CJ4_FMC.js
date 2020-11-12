@@ -415,6 +415,11 @@ class CJ4_FMC extends FMCMainDisplay {
             this._apHasDeactivated = !currentApMasterStatus && this._previousApMasterStatus;
             this._previousApMasterStatus = currentApMasterStatus;
 
+            //SET DEFAULT VS VALUE TO CURRENT VS
+            if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
+                Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, Simplane.getVerticalSpeed());
+            }
+
             //UPDATE VNAV REGARDLESS OF WHETHER AP IS ENGAGED
             if (this._vnav === undefined) {
                 this._vnav = new WT_BaseVnav(this.flightPlanManager);
