@@ -37,6 +37,7 @@ declare module "MSFS" {
     instrument: BaseInstrument;
     magneticVariation?: number;
     _svgElements: any;
+    routes: any[];
     UpdateInfos(_CallBack?, loadFacilitiesTransitively?);
     CopyBaseInfosFrom(_WP:WayPoint); 
   }

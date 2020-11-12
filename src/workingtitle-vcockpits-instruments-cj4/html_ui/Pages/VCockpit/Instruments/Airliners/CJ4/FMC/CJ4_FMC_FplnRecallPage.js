@@ -2,7 +2,6 @@ class CJ4_FMC_FplnRecallPage {
     static async GetFplnFromSimBrief(pilotId, fmc) {
         let url = "https://www.simbrief.com/api/xml.fetcher.php?userid=" + pilotId + "&json=1";
         let json = "";
-        let called = 0;
 
         // HINT: defining these methods here in the order they will be called by the callbacks
         let updateFrom = () => {
@@ -23,8 +22,6 @@ class CJ4_FMC_FplnRecallPage {
         };
 
         let updateRunways = () => {
-            called++;
-            if (called < 2) return;
             console.log("UPDATE RUNWAY");
             let rwy = json.origin.plan_rwy;
             fmc.setMsg("LOAD FPLN...RWY [yellow]" + rwy);
