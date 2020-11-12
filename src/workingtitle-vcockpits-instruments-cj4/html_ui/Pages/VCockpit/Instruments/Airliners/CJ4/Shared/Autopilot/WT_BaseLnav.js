@@ -109,11 +109,9 @@ class WT_BaseLnav {
             }
 
             Coherent.call("HEADING_BUG_SET", 2, setHeading).catch(console.log);
-            SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
-            SimVar.SetSimVarValue("L:AP_HEADING_HOLD_ACTIVE", "number", 1);
         }
         else {
-            Coherent.call("HEADING_BUG_SET", 1, Simplane.getHeadingMagnetic());
+            //Coherent.call("HEADING_BUG_SET", 1, Simplane.getHeadingMagnetic());
             SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
         }
     }

@@ -488,6 +488,15 @@ class CJ4_FMC extends FMCMainDisplay {
                 }
             }
 
+            //ACTIVATE LNAV
+            const isLNAVActivate = SimVar.GetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'Bool');
+            if (isLNAVActivate) {
+                SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
+            }
+            else {
+                SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+            }
+
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MAX_CALCULATED", "knots", Simplane.getMaxSpeed(Aircraft.CJ4));
 
