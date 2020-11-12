@@ -287,5 +287,70 @@ class CJ4_FMC_VNavSetupPage {
 
     fmc.updateSideButtonActiveStatus();
     }
+    static ShowPage6(fmc) { //WT Autopilot Page Menu
+        fmc.clearDisplay();
+
+
+        fmc.registerPeriodicPageRefresh(() => {
+
+
+
+            fmc._templateRenderer.setTemplateRaw([
+                [" WT AUTOPILOT MONITOR[blue]", ""],
+                [" L MODE[blue]", "V MODE [blue]"],
+                ["300/.74", "crzAltCell"],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                ["-----------------------[blue]"],
+                ["<LNAV MONITOR", "VNAV MONITOR>"]
+            ]);
+
+        }, 1000, true);
+        //fmc.onPrevPage = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };
+        //fmc.onNextPage = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage7(fmc); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage5(fmc); };
+        fmc.updateSideButtonActiveStatus();
+    }
+    static ShowPage7(fmc) { //LNAV MONITOR MODE
+        fmc.clearDisplay();
+
+
+        fmc.registerPeriodicPageRefresh(() => {
+
+            const xtk = SimVar.GetSimVarValue("L:WT_CJ4_XTK", "number");
+            const dtk = SimVar.GetSimVarValue("L:WT_CJ4_DTK", "number");
+            const wptDistance = SimVar.GetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number");
+            const activeWaypointIdent = fmc.flightPlanManager.getActiveWaypoint().ident;
+
+
+            fmc._templateRenderer.setTemplateRaw([
+                [" WT LNAV MONITOR[blue]", ""],
+                [" ACT WPT[blue]", "DISTANCE [blue]"],
+                [activeWaypointIdent, wptDistance + " NM"],
+                [" DTK[blue]", "XTK [blue]"],
+                [dtk + "°", xtk + " NM"],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                ["-----------------------[blue]"],
+                ["<BACK", "VNAV MONITOR>"]
+            ]);
+        }, 1000, true);
+        //fmc.onPrevPage = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };
+        //fmc.onNextPage = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
+        fmc.onLeftInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage6(fmc); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage5(fmc); };
+        fmc.updateSideButtonActiveStatus();
+    }
 
 }

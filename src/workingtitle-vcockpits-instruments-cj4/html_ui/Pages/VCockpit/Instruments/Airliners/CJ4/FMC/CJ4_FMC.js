@@ -152,6 +152,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     this.refreshPageCallback();
                 }
             }
+            this.onMsg = () => { CJ4_FMC_VNavSetupPage.ShowPage6(this); };
             this._activatingDirectToExisting = false;
         };
 
@@ -242,6 +243,12 @@ class CJ4_FMC extends FMCMainDisplay {
         if (input === "EXEC") {
             if (this.onExec) {
                 this.onExec();
+            }
+            return true;
+        }
+        if (input === "MSG") {
+            if (this.onMsg) {
+                this.onMsg();
             }
             return true;
         }
