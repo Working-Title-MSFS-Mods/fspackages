@@ -187,10 +187,16 @@ class CJ4_PFD extends BaseAirliners {
                     this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
                     this.mapNavigationSource = 1;
 
-                    const apOnGPS = SimVar.GetSimVarValue('GPS DRIVES NAV1', 'Bool');
+                    // const apOnGPS = SimVar.GetSimVarValue('GPS DRIVES NAV1', 'Bool');
+                    // if (apOnGPS) {
+                    //     SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0)
+                    //         .then(() => SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 1));
+                    // }
+                    
+                    //UPDATED FOR WT LNAV
+                    const apOnGPS = SimVar.GetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'Bool');
                     if (apOnGPS) {
-                        SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0)
-                            .then(() => SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 1));
+                        SimVar.SetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'number', 0);
                     }
 
                     this.onModeChanged();
@@ -208,9 +214,15 @@ class CJ4_PFD extends BaseAirliners {
                     this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
                     this.mapNavigationSource = 0;
 
-                    const apOnGPS = SimVar.GetSimVarValue('GPS DRIVES NAV1', 'Bool');
+                    // const apOnGPS = SimVar.GetSimVarValue('GPS DRIVES NAV1', 'Bool');
+                    // if (!apOnGPS) {
+                    //     SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0)
+                    // }
+
+                    //UPDATED FOR WT LNAV
+                    const apOnGPS = SimVar.GetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'Bool');
                     if (!apOnGPS) {
-                        SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0)
+                        SimVar.SetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'number', 1);
                     }
 
                     this.onModeChanged();
