@@ -60,12 +60,7 @@ export class FlightPlanManager {
   }
 
   public update(_deltaTime: number): void {
-    const gpsActiveWaypointIndex = GPS.getActiveWaypoint();
-    if (this._flightPlans !== undefined && this._flightPlans.length > 0) {
-      if (this._flightPlans[0].activeWaypointIndex !== gpsActiveWaypointIndex) {
-        this._flightPlans[0].activeWaypointIndex = gpsActiveWaypointIndex;
-      }
-    }
+    
   }
 
   public onCurrentGameFlightLoaded(_callback: () => {}) {
@@ -183,7 +178,6 @@ export class FlightPlanManager {
     this._flightPlans[index] = copiedFlightPlan;
 
     if (index === 0) {
-      await copiedFlightPlan.syncToGPS();
       await GPS.setActiveWaypoint(activeWaypointIndex);
     }
 
@@ -203,7 +197,6 @@ export class FlightPlanManager {
     this._flightPlans[this._currentFlightPlanIndex] = copiedFlightPlan;
 
     if (this._currentFlightPlanIndex === 0) {
-      await copiedFlightPlan.syncToGPS();
       await GPS.setActiveWaypoint(activeWaypointIndex);
     }
 
@@ -1202,7 +1195,6 @@ export class FlightPlanManager {
     const waypointIndex = currentFlightPlan.waypoints.findIndex(w => w.icao === icao);
     if (waypointIndex !== -1) {
       currentFlightPlan.addDirectTo(waypointIndex);
-      await currentFlightPlan.syncToGPS();
     }
 
     this._updateFlightPlanVersion();
