@@ -22,7 +22,7 @@ export class FlightPlanManager {
    * The current stored flight plan data.
    * @type ManagedFlightPlan[]
    */
-  private _flightPlans : ManagedFlightPlan[] = [];
+  private _flightPlans: ManagedFlightPlan[] = [];
 
   /**
    * Constructs an instance of the FlightPlanManager with the provided
@@ -111,7 +111,7 @@ export class FlightPlanManager {
    * Loads the flight plans from data storage.
    */
   public _loadFlightPlans(): void {
-    this._flightPlans = JSON.parse(WTDataStore.get("WT.FlightPlan", "[]"));
+    this._getFlightPlan();
 
     if (this._flightPlans.length === 0) {
       this._flightPlans.push(new ManagedFlightPlan());
@@ -1239,10 +1239,18 @@ export class FlightPlanManager {
   }
 
   /**
+   * Gets the current stored flight plan
+   */
+  public _getFlightPlan(): void {
+    const fpln = window.localStorage.getItem(FlightPlanManager.FlightPlanKey)
+    this._flightPlans = (fpln === '') ? [] : JSON.parse(fpln);
+  }
+
+  /**
    * Updates the synchronized flight plan version and saves it to shared storage.
    */
   public _updateFlightPlanVersion(): void {
     SimVar.SetSimVarValue(FlightPlanManager.FlightPlanVersionKey, 'number', ++this._currentFlightPlanVersion);
-    WTDataStore.set(FlightPlanManager.FlightPlanKey, JSON.stringify(this._flightPlans.map(fp => fp.copySanitized())));
+    window.localStorage.setItem(FlightPlanManager.FlightPlanKey, JSON.stringify(this._flightPlans.map(fp => fp.copySanitized())));
   }
 }
