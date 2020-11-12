@@ -36,7 +36,11 @@ export class FlightPlanManager {
       _parentInstrument.addEventListener("FlightStart", function () {
         // TODO: load game flight plan
         this._flightPlans = [];
-        this._flightPlans.push(new ManagedFlightPlan());
+
+        const plan = new ManagedFlightPlan();
+        plan.setParentInstrument(_parentInstrument);
+        this._flightPlans.push(plan);
+        
         this._currentFlightPlanVersion++;
         this._updateFlightPlanVersion();
       }.bind(this));
@@ -1188,8 +1192,12 @@ export class FlightPlanManager {
   public async activateDirectTo(icao: string, callback = EmptyCallback.Void): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
-    currentFlightPlan.goDirectToIcao(icao);
-
+    const waypointIndex = currentFlightPlan.waypoints.findIndex(w => w.icao === icao);
+    if (waypointIndex !== -1) {
+      currentFlightPlan.addDirectTo(waypointIndex);
+      await currentFlightPlan.syncToGPS();
+    }
+    
     this._updateFlightPlanVersion();
     callback();
   }

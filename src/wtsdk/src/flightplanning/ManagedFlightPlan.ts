@@ -5,6 +5,7 @@ import { GPS }  from './GPS';
 import { ProcedureDetails } from './ProcedureDetails';
 import { DirectTo } from './DirectTo';
 import { WayPoint, BaseInstrument, WayPointInfo, VORInfo, NDBInfo, IntersectionInfo, AirportInfo, LatLongAlt, Avionics, SimVar, OneWayRunway } from 'MSFS';
+import { GeoMath } from './GeoMath';
 
 /**
  * A flight plan managed by the FlightPlanManager.
@@ -425,37 +426,14 @@ export class ManagedFlightPlan {
   }
 
   /**
-   * Goes direct to the specified 
-   * @param icao 
+   * Goes direct to the specified waypoint index in the flight plan.
+   * @param index The waypoint index to go direct to. 
    */
-  public async goDirectToIcao(icao: string): Promise<void> {
-    const facility = await this._parentInstrument.facilityLoader.getFacilityRaw(icao);
-    if (facility !== undefined) {
-      const mappedFacility = RawDataMapper.toWaypoint(facility, this._parentInstrument);
-      const interceptPoints = this.calculateDirectIntercept(mappedFacility);
+  public addDirectTo(index: number): void {
+    const interceptPoints = this.calculateDirectIntercept(this.getWaypoint(index));
+    this.addWaypoint(interceptPoints[0], index);
 
-      this.directTo.waypoint = mappedFacility;
-      this.directTo.interceptPoints = interceptPoints;
-      this.directTo.isActive = true;
-
-      for (var i = 0; i < this.waypoints.length; i++) {
-        this.removeWaypoint(0);
-      }
-
-      for (var i = 0; i < this.directTo.interceptPoints.length + 1; i ++) {
-        if (i < this.directTo.interceptPoints.length) {
-          this.addWaypoint(this.directTo.interceptPoints[i], i);
-        }
-        else {
-          this.addWaypoint(this.directTo.waypoint, i);
-        }
-      }
-
-      await GPS.setActiveWaypoint(0);
-      this.activeWaypointIndex = 0;
-
-      await this.syncToGPS();
-    }
+    this.activeWaypointIndex = index;
   }
 
   /**
@@ -480,7 +458,7 @@ export class ManagedFlightPlan {
 
     const createInterceptPoint = (coords: LatLongAlt) => {
       const interceptWaypoint = new WayPoint(this._parentInstrument);
-      interceptWaypoint.ident = waypoint.ident;
+      interceptWaypoint.ident = '$DIR';
 
       interceptWaypoint.infos = new IntersectionInfo(this._parentInstrument);
       interceptWaypoint.infos.coordinates = coords;
@@ -488,6 +466,11 @@ export class ManagedFlightPlan {
       return interceptWaypoint;
     };
 
+    const coords = Avionics.Utils.bearingDistanceToCoordinates(planeHeading, interceptDistance, lat, long);
+    return [createInterceptPoint(coords)];
+
+    //TODO: Work out better direct to intercept waypoint(s)
+    /*
     if (angleDiff < 90 && angleDiff > -90) {
       const coords = Avionics.Utils.bearingDistanceToCoordinates(planeHeading, interceptDistance, lat, long);
       return [createInterceptPoint(planeCoords), createInterceptPoint(coords)];
@@ -498,6 +481,7 @@ export class ManagedFlightPlan {
 
       return [createInterceptPoint(planeCoords), createInterceptPoint(coords1), createInterceptPoint(coords2)];
     }
+    */
   }
 
   /**
