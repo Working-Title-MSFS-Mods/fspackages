@@ -85,30 +85,31 @@ class WT_BaseLnav {
             }
 
             SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading).catch(console.log);
-           
+            
+            //TURN ANTICIPATION
+            let turnRadius = Math.pow(this._groundSpeed / 60, 2) / 9;
+            if (this._activeWaypoint && nextActiveWaypoint && this._activeWaypointDist <= turnRadius && this._groundSpeed < 700) {
+                let fromHeading = this._dtk;
+                let toHeading = Avionics.Utils.computeGreatCircleHeading(this._activeWaypoint.infos.coordinates, nextActiveWaypoint.infos.coordinates);
+                while (fromHeading >= 180) {
+                    fromHeading -= 360;
+                }
+                while (toHeading >= 180) {
+                    toHeading -= 360;
+                }
+                let turnAngle = toHeading - fromHeading;
+                while (turnAngle >= 180) {
+                    turnAngle -= 360;
+                }
+                let absTurnAngle = Math.abs(turnAngle);
+                let activateDistance = Math.min(turnRadius * Math.tan((absTurnAngle / 2) * (Math.PI / 180)), turnRadius);
+                if (this._activeWaypointDist <= activateDistance) {
+                    setHeading += turnAngle;
+                    this.flightPlanManager.setActiveWaypointIndex(this.flightPlanManager.getActiveWaypointIndex() + 1);
+                }
+            }
         }
-        //TURN ANTICIPATION
-        let turnRadius = Math.pow(this._groundSpeed / 60, 2) / 9;
-        if (this._activeWaypoint && nextActiveWaypoint && this._activeWaypointDist <= turnRadius && this._groundSpeed < 700) {
-            let fromHeading = this._dtk;
-            let toHeading = Avionics.Utils.computeGreatCircleHeading(this._activeWaypoint.infos.coordinates, nextActiveWaypoint.infos.coordinates);
-            while (fromHeading >= 180) {
-                fromHeading -= 360;
-            }
-            while (toHeading >= 180) {
-                toHeading -= 360;
-            }
-            let turnAngle = toHeading - fromHeading;
-            while (turnAngle >= 180) {
-                turnAngle -= 360;
-            }
-            let absTurnAngle = Math.abs(turnAngle);
-            let activateDistance = Math.min(turnRadius * Math.tan((absTurnAngle / 2) * (Math.PI / 180)), turnRadius);
-            if (this._activeWaypointDist <= activateDistance) {
-                setHeading += turnAngle;
-                this.flightPlanManager.setActiveWaypointIndex(this.flightPlanManager.getActiveWaypointIndex() + 1);
-            }
-        }
+
 
 
     }
