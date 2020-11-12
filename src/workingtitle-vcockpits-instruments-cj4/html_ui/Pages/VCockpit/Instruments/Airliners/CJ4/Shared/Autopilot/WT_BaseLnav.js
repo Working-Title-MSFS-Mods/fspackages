@@ -103,7 +103,7 @@ class WT_BaseLnav {
                 let activateDistance = Math.min(turnRadius * Math.tan((absTurnAngle / 2) * (Math.PI / 180)), turnRadius);
                 if (this._activeWaypointDist <= activateDistance) {
                     setHeading += turnAngle;
-                    this.flightPlanManager.setActiveWaypointIndex(this.flightPlanManager.getActiveWaypointIndex() + 1);
+                    this._fpm.setActiveWaypointIndex(this._fpm.getActiveWaypointIndex() + 1);
                     this.update();
                 }
             }
