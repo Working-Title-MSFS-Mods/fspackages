@@ -260,9 +260,9 @@ class CJ4_FMC_VNavSetupPage {
                     [apCurrentVerticalSpeed.toFixed(0) + "FPM", setVerticalSpeed.toFixed(0) + "FPM[green]", desiredVerticalSpeed.toFixed(0) + "FPM"],
                     ["ALTDEV [blue]", "TOD[blue]", " ALT/VS SLOT[blue]"],
                     [altDeviation.toFixed(0) + "FT", distanceToTod.toFixed(1) + "NM", altSlot + "/" + vsSlot],
-                    ["VSVAR/VAR:1/VAR:2/VAR:2[blue]"],
+                    ["VSVAR/VAR:1/VAR:2/VAR:3[blue]"],
                     [vsVar + "/" + vsVar1 + "/" + vsVar2 + "/" + vsVar3],
-                    ["ALTVAR/VAR:1/VAR:2/VAR:2[blue]"],
+                    ["ALTVAR/VAR:1/VAR:2/VAR:3[blue]"],
                     [altVar + "/" + altVar1 + "/" + altVar2 + "/" + altVar3],
                     [""],
                     ["<CONSTRAINTS", "MENU>"]
