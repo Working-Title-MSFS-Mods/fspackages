@@ -492,6 +492,7 @@ class CJ4_FMC extends FMCMainDisplay {
             const isLNAVActivate = SimVar.GetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'Bool');
             if (isLNAVActivate) {
                 SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
+                SimVar.SetSimVarValue("K:AP_HDG_HOLD_ON", "number", 1);
             }
             else {
                 SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
