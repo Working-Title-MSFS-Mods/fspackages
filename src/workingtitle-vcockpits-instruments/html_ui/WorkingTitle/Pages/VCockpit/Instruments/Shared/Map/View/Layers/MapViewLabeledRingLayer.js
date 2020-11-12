@@ -22,11 +22,15 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewCanvasLayer {
         let topLevel = super._createHTMLElement();
 
         this._ringContainer = document.createElement("div");
+        this._ringContainer.style.position = "absolute";
         this._ringContainer.style.width = "100%";
         this._ringContainer.style.height = "100%";
+        this._ringContainer.style.zIndex = 1;
         this._labelContainer = document.createElement("div");
+        this._labelContainer.style.position = "absolute";
         this._labelContainer.style.width = "100%";
         this._labelContainer.style.height = "100%";
+        this._labelContainer.style.zIndex = 2;
 
         topLevel.appendChild(this._ringContainer);
         topLevel.appendChild(this._labelContainer);
@@ -41,13 +45,14 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewCanvasLayer {
     addCanvas() {
         let entry = this._createCanvas();
         this._canvases.push(entry);
-        this.ringContainer.appendChild(entry.canvas);
+        entry.container.style.zIndex = this._canvases.length;
+        this.ringContainer.appendChild(entry.container);
     }
 
     removeCanvas() {
         let entry = this._canvases.pop();
-        if (entry && entry.canvas.parentNode === this.ringContainer) {
-            this.ringContainer.removeChild(entry.canvas);
+        if (entry && entry.container.parentNode === this.ringContainer) {
+            this.ringContainer.removeChild(entry.container);
         }
     }
 

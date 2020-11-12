@@ -15,6 +15,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
 
     _createHTMLElement() {
         this._bingMap = document.createElement("bing-map");
+        this._bingMap.style.position = "absolute";
 
         return this._bingMap;
     }
