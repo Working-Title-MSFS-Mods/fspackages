@@ -18,14 +18,14 @@
 // degrees (e.g. lat, lon, brng)
 
 
-/* LatLonSpherical - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+/* LatLon - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 const π = Math.PI;
 
 /**
  * Latitude/longitude points on a spherical model earth, and methods for calculating distances,
  * bearings, destinations, etc on (orthodromic) great-circle paths and (loxodromic) rhumb lines.
  */
-class LatLonSpherical {
+class LatLon {
     /**
      * Creates a latitude/longitude point on the earth’s surface, using a spherical model earth.
      *
@@ -156,7 +156,7 @@ class LatLonSpherical {
 
         if (isNaN(lat) || isNaN(lon)) throw new TypeError(`invalid point ‘${args.toString()}’`);
 
-        return new LatLonSpherical(lat, lon);
+        return new LatLon(lat, lon);
     }
 
 
@@ -177,7 +177,7 @@ class LatLonSpherical {
      *   const m = p1.distanceTo(p2, 3959); // 251.2 miles
      */
     distanceTo(point, radius=6371e3) {
-        if (!(point instanceof LatLonSpherical)) point = LatLonSpherical.parse(point); // allow literal forms
+        if (!(point instanceof LatLon)) point = LatLon.parse(point); // allow literal forms
         if (isNaN(radius)) throw new TypeError(`invalid radius ‘${radius}’`);
 
         // a = sin²(Δφ/2) + cos(φ1)⋅cos(φ2)⋅sin²(Δλ/2)
@@ -209,7 +209,7 @@ class LatLonSpherical {
      *   const b1 = p1.initialBearingTo(p2); // 156.2°
      */
     initialBearingTo(point) {
-        if (!(point instanceof LatLonSpherical)) point = LatLonSpherical.parse(point); // allow literal forms
+        if (!(point instanceof LatLon)) point = LatLon.parse(point); // allow literal forms
         if (this.equals(point)) return NaN; // coincident points
 
         // tanθ = sinΔλ⋅cosφ2 / cosφ1⋅sinφ2 − sinφ1⋅cosφ2⋅cosΔλ
@@ -242,7 +242,7 @@ class LatLonSpherical {
      *   const b2 = p1.finalBearingTo(p2); // 157.9°
      */
     finalBearingTo(point) {
-        if (!(point instanceof LatLonSpherical)) point = LatLonSpherical.parse(point); // allow literal forms
+        if (!(point instanceof LatLon)) point = LatLon.parse(point); // allow literal forms
 
         // get initial bearing from destination point to this point & reverse it by adding 180°
 
@@ -264,7 +264,7 @@ class LatLonSpherical {
      *   const pMid = p1.midpointTo(p2); // 50.5363°N, 001.2746°E
      */
     midpointTo(point) {
-        if (!(point instanceof LatLonSpherical)) point = LatLonSpherical.parse(point); // allow literal forms
+        if (!(point instanceof LatLon)) point = LatLon.parse(point); // allow literal forms
 
         // φm = atan2( sinφ1 + sinφ2, √( (cosφ1 + cosφ2⋅cosΔλ)² + cos²φ2⋅sin²Δλ ) )
         // λm = λ1 + atan2(cosφ2⋅sinΔλ, cosφ1 + cosφ2⋅cosΔλ)
@@ -288,7 +288,7 @@ class LatLonSpherical {
         const lat = φm.toDegrees();
         const lon = λm.toDegrees();
 
-        return new LatLonSpherical(lat, lon);
+        return new LatLon(lat, lon);
     }
 
 
@@ -305,8 +305,8 @@ class LatLonSpherical {
      *   const pInt = p1.intermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
      */
     intermediatePointTo(point, fraction) {
-        if (!(point instanceof LatLonSpherical)) point = LatLonSpherical.parse(point); // allow literal forms
-        if (this.equals(point)) return new LatLonSpherical(this.lat, this.lon); // coincident points
+        if (!(point instanceof LatLon)) point = LatLon.parse(point); // allow literal forms
+        if (this.equals(point)) return new LatLon(this.lat, this.lon); // coincident points
 
         const φ1 = this.lat.toRadians(), λ1 = this.lon.toRadians();
         const φ2 = point.lat.toRadians(), λ2 = point.lon.toRadians();
@@ -331,7 +331,7 @@ class LatLonSpherical {
         const lat = φ3.toDegrees();
         const lon = λ3.toDegrees();
 
-        return new LatLonSpherical(lat, lon);
+        return new LatLon(lat, lon);
     }
 
 
@@ -367,7 +367,7 @@ class LatLonSpherical {
         const lat = φ2.toDegrees();
         const lon = λ2.toDegrees();
 
-        return new LatLonSpherical(lat, lon);
+        return new LatLon(lat, lon);
     }
 
 
@@ -386,8 +386,8 @@ class LatLonSpherical {
      *   const pInt = LatLon.intersection(p1, brng1, p2, brng2); // 50.9078°N, 004.5084°E
      */
     static intersection(p1, brng1, p2, brng2) {
-        if (!(p1 instanceof LatLonSpherical)) p1 = LatLonSpherical.parse(p1); // allow literal forms
-        if (!(p2 instanceof LatLonSpherical)) p2 = LatLonSpherical.parse(p2); // allow literal forms
+        if (!(p1 instanceof LatLon)) p1 = LatLon.parse(p1); // allow literal forms
+        if (!(p2 instanceof LatLon)) p2 = LatLon.parse(p2); // allow literal forms
         if (isNaN(brng1)) throw new TypeError(`invalid brng1 ‘${brng1}’`);
         if (isNaN(brng2)) throw new TypeError(`invalid brng2 ‘${brng2}’`);
 
@@ -401,7 +401,7 @@ class LatLonSpherical {
         // angular distance p1-p2
         const δ12 = 2 * Math.asin(Math.sqrt(Math.sin(Δφ/2) * Math.sin(Δφ/2)
             + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2)));
-        if (Math.abs(δ12) < Number.EPSILON) return new LatLonSpherical(p1.lat, p1.lon); // coincident points
+        if (Math.abs(δ12) < Number.EPSILON) return new LatLon(p1.lat, p1.lon); // coincident points
 
         // initial/final bearings between points
         const cosθa = (Math.sin(φ2) - Math.sin(φ1)*Math.cos(δ12)) / (Math.sin(δ12)*Math.cos(φ1));
@@ -430,7 +430,7 @@ class LatLonSpherical {
         const lat = φ3.toDegrees();
         const lon = λ3.toDegrees();
 
-        return new LatLonSpherical(lat, lon);
+        return new LatLon(lat, lon);
     }
 
 
@@ -450,8 +450,8 @@ class LatLonSpherical {
      *   const d = pCurrent.crossTrackDistanceTo(p1, p2);  // -307.5 m
      */
     crossTrackDistanceTo(pathStart, pathEnd, radius=6371e3) {
-        if (!(pathStart instanceof LatLonSpherical)) pathStart = LatLonSpherical.parse(pathStart); // allow literal forms
-        if (!(pathEnd instanceof LatLonSpherical)) pathEnd = LatLonSpherical.parse(pathEnd);       // allow literal forms
+        if (!(pathStart instanceof LatLon)) pathStart = LatLon.parse(pathStart); // allow literal forms
+        if (!(pathEnd instanceof LatLon)) pathEnd = LatLon.parse(pathEnd);       // allow literal forms
         const R = radius;
 
         if (this.equals(pathStart)) return 0;
@@ -484,8 +484,8 @@ class LatLonSpherical {
      *   const d = pCurrent.alongTrackDistanceTo(p1, p2);  // 62.331 km
      */
     alongTrackDistanceTo(pathStart, pathEnd, radius=6371e3) {
-        if (!(pathStart instanceof LatLonSpherical)) pathStart = LatLonSpherical.parse(pathStart); // allow literal forms
-        if (!(pathEnd instanceof LatLonSpherical)) pathEnd = LatLonSpherical.parse(pathEnd);       // allow literal forms
+        if (!(pathStart instanceof LatLon)) pathStart = LatLon.parse(pathStart); // allow literal forms
+        if (!(pathEnd instanceof LatLon)) pathEnd = LatLon.parse(pathEnd);       // allow literal forms
         const R = radius;
 
         if (this.equals(pathStart)) return 0;
@@ -583,7 +583,7 @@ class LatLonSpherical {
      *   const d = p1.distanceTo(p2); //  40.31 km
      */
     rhumbDistanceTo(point, radius=6371e3) {
-        if (!(point instanceof LatLonSpherical)) point = LatLonSpherical.parse(point); // allow literal forms
+        if (!(point instanceof LatLon)) point = LatLon.parse(point); // allow literal forms
 
         // see www.edwilliams.org/avform.htm#Rhumb
 
@@ -620,7 +620,7 @@ class LatLonSpherical {
      *   const d = p1.rhumbBearingTo(p2); // 116.7°
      */
     rhumbBearingTo(point) {
-        if (!(point instanceof LatLonSpherical)) point = LatLonSpherical.parse(point); // allow literal forms
+        if (!(point instanceof LatLon)) point = LatLon.parse(point); // allow literal forms
         if (this.equals(point)) return NaN; // coincident points
 
         const φ1 = this.lat.toRadians();
@@ -673,7 +673,7 @@ class LatLonSpherical {
         const lat = φ2.toDegrees();
         const lon = λ2.toDegrees();
 
-        return new LatLonSpherical(lat, lon);
+        return new LatLon(lat, lon);
     }
 
 
@@ -689,7 +689,7 @@ class LatLonSpherical {
      *   const pMid = p1.rhumbMidpointTo(p2); // 51.0455°N, 001.5957°E
      */
     rhumbMidpointTo(point) {
-        if (!(point instanceof LatLonSpherical)) point = LatLonSpherical.parse(point); // allow literal forms
+        if (!(point instanceof LatLon)) point = LatLon.parse(point); // allow literal forms
 
         // see mathforum.org/kb/message.jspa?messageID=148837
 
@@ -709,7 +709,7 @@ class LatLonSpherical {
         const lat = φ3.toDegrees();
         const lon = λ3.toDegrees();
 
-        return new LatLonSpherical(lat, lon);
+        return new LatLon(lat, lon);
     }
 
 
@@ -796,7 +796,7 @@ class LatLonSpherical {
      *   const equal = p1.equals(p2); // true
      */
     equals(point) {
-        if (!(point instanceof LatLonSpherical)) point = LatLonSpherical.parse(point); // allow literal forms
+        if (!(point instanceof LatLon)) point = LatLon.parse(point); // allow literal forms
 
         if (Math.abs(this.lat - point.lat) > Number.EPSILON) return false;
         if (Math.abs(this.lon - point.lon) > Number.EPSILON) return false;

@@ -35,18 +35,16 @@ export class FlightPlanManager {
 
       _parentInstrument.addEventListener("FlightStart", function () {
         // TODO: load game flight plan
-        this._flightPlans = [];
 
         const plan = new ManagedFlightPlan();
         plan.setParentInstrument(_parentInstrument);
         this._flightPlans.push(plan);
-        
+
         this._currentFlightPlanVersion++;
         this._updateFlightPlanVersion();
       }.bind(this));
     }
 
-    this._flightPlans = [];
     this._loadFlightPlans();
 
     FlightPlanManager.DEBUG_INSTANCE = this;
@@ -62,9 +60,10 @@ export class FlightPlanManager {
 
   public update(_deltaTime: number): void {
     const gpsActiveWaypointIndex = GPS.getActiveWaypoint();
-
-    if (this._flightPlans[0].activeWaypointIndex !== gpsActiveWaypointIndex) {
-      this._flightPlans[0].activeWaypointIndex = gpsActiveWaypointIndex;
+    if (this._flightPlans !== undefined && this._flightPlans.length > 0) {
+      if (this._flightPlans[0].activeWaypointIndex !== gpsActiveWaypointIndex) {
+        this._flightPlans[0].activeWaypointIndex = gpsActiveWaypointIndex;
+      }
     }
   }
 
@@ -118,6 +117,8 @@ export class FlightPlanManager {
     this._getFlightPlan();
 
     if (this._flightPlans.length === 0) {
+      let newFpln = new ManagedFlightPlan();
+      newFpln.setParentInstrument(this._parentInstrument);
       this._flightPlans.push(new ManagedFlightPlan());
     }
     else {
@@ -1197,7 +1198,7 @@ export class FlightPlanManager {
       currentFlightPlan.addDirectTo(waypointIndex);
       await currentFlightPlan.syncToGPS();
     }
-    
+
     this._updateFlightPlanVersion();
     callback();
   }
@@ -1251,7 +1252,14 @@ export class FlightPlanManager {
    */
   public _getFlightPlan(): void {
     const fpln = window.localStorage.getItem(FlightPlanManager.FlightPlanKey)
-    this._flightPlans = (fpln === '') ? [] : JSON.parse(fpln);
+    console.log("_getFlightPlan = " + fpln);
+    if (fpln === null || fpln === '') {
+      this._flightPlans = [];
+      let initFpln = new ManagedFlightPlan();
+      this._flightPlans.push(initFpln);
+    } else {
+      this._flightPlans = JSON.parse(fpln);
+    }
   }
 
   /**

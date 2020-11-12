@@ -4,7 +4,6 @@ class WT_BaseAutopilot {
 
         this._vnavType = false;
 
-
         //COMPONENTS TO REFRESH ONLY WHEN THERE IS A FLIGHT PLAN CHANGE
         this._desiredFPA = WTDataStore.get('CJ4_vpa', 3);
         this._currPos = undefined;

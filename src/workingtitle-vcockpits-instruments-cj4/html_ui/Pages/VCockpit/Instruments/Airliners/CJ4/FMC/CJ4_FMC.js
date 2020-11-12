@@ -56,6 +56,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._frameUpdates = 0;
         this._vnav = undefined;
         this._vpathMode = false;
+        this._lnav = undefined;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -391,7 +392,6 @@ class CJ4_FMC extends FMCMainDisplay {
         let now = performance.now();
         let dt = now - this._lastUpdateAPTime;
         this._lastUpdateAPTime = now;
-        let vnavMode = undefined;
 
         if (isFinite(dt)) {
             this.updateAutopilotCooldown -= dt;
@@ -415,7 +415,15 @@ class CJ4_FMC extends FMCMainDisplay {
             }
             else {
                 this._vnav.update();
-                }
+            }
+
+            if (this._lnav === undefined) {
+                this._lnav = new WT_BaseLnav(this.flightPlanManager);
+                this._lnav.activate();
+            }
+            else {
+                this._lnav.update();
+            }
 
             let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
             if (isVNAVActivate) {
@@ -458,7 +466,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     this._currentAP.update();
                     this._currentAP.execute();
                 }
-                
+
             }
             else {
                 if (this._currentAP) {
