@@ -365,6 +365,8 @@ export class ManagedFlightPlan {
       delete sanitized.destinationAirfield.infos._svgElements;
     }
 
+    sanitized._segments = [...this._segments];
+
     for (var i = 0; i < sanitized._segments.length; i++) {
       const segment = Object.assign({}, sanitized._segments[i]);
       segment.waypoints = segment.waypoints.map(waypoint => {
