@@ -5,12 +5,6 @@ class WT_MapViewLayer {
 
         this._htmlElement = this._createHTMLElement();
         this._htmlElement.id = id;
-        this._htmlElement.style.position = "absolute";
-        this._htmlElement.style.left = 0;
-        this._htmlElement.style.top = 0;
-        this._htmlElement.style.width = "100%";
-        this._htmlElement.style.height = "100%";
-        this._htmlElement.style.transform = "rotateX(0deg)";
     }
 
     _createHTMLElement() {
@@ -71,7 +65,13 @@ class WT_MapViewCanvasLayer extends WT_MapViewLayer {
     }
 
     _createHTMLElement() {
-        return document.createElement("div");
+        let container = document.createElement("div");
+        container.style.position = "absolute";
+        container.style.left = 0;
+        container.style.top = 0;
+        container.style.width = "100%";
+        container.style.height = "100%";
+        return container;
     }
 
     _updateCanvasSize(canvas) {
@@ -83,6 +83,15 @@ class WT_MapViewCanvasLayer extends WT_MapViewLayer {
 
     _createCanvas() {
         let entry = {};
+
+        entry.container = document.createElement("div");
+        entry.container.style.position = "absolute";
+        entry.container.style.left = 0;
+        entry.container.style.top = 0;
+        entry.container.style.width = "100%";
+        entry.container.style.height = "100%";
+        entry.container.style.transform = "rotateX(0deg)";
+
         entry.canvas = document.createElement("canvas");
         entry.context = entry.canvas.getContext("2d");
         entry.context.imageSmoothingEnabled = false;
@@ -90,10 +99,10 @@ class WT_MapViewCanvasLayer extends WT_MapViewLayer {
         entry.canvas.style.position = "absolute";
         entry.canvas.style.left = 0;
         entry.canvas.style.top = 0;
-        entry.canvas.style.transform = "rotateX(0deg)";
 
         this._updateCanvasSize(entry.canvas);
 
+        entry.container.appendChild(entry.canvas);
         return entry;
     }
 
@@ -104,13 +113,14 @@ class WT_MapViewCanvasLayer extends WT_MapViewLayer {
     addCanvas() {
         let entry = this._createCanvas();
         this._canvases.push(entry);
-        this.htmlElement.appendChild(entry.canvas);
+        entry.container.style.zIndex = this._canvases.length;
+        this.htmlElement.appendChild(entry.container);
     }
 
     removeCanvas() {
         let entry = this._canvases.pop();
-        if (entry && entry.canvas.parentNode === this.htmlElement) {
-            this.htmlElement.removeChild(entry.canvas);
+        if (entry && entry.container.parentNode === this.htmlElement) {
+            this.htmlElement.removeChild(entry.container);
         }
     }
 
