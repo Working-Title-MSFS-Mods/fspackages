@@ -445,8 +445,8 @@ class CJ4_FMC extends FMCMainDisplay {
                 let vsMode = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean");
                 let gsMode = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean");
                 let pitMode = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean");
-                let currentAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
-                let selectedAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
+                //let currentAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
+                //let selectedAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
                 let altDelta = Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feet");
 
                 //ACTIVATE VNAV MODE

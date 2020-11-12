@@ -328,20 +328,26 @@ class CJ4_FMC_VNavSetupPage {
             const dtk = SimVar.GetSimVarValue("L:WT_CJ4_DTK", "number");
             const wptDistance = SimVar.GetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number");
             const activeWaypointIdent = fmc.flightPlanManager.getActiveWaypoint().ident;
+            const lnavActive = SimVar.GetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'Bool') ? " ACTIVE[green]" :" INACTIVE[white]";
+            const hdgIndex = SimVar.GetSimVarValue("AUTOPILOT HEADING SLOT INDEX", "number");
+            const hdgLock = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degrees");
+            const hdgLock1 = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR:1", "degrees");
+            const hdgLock2 = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR:2", "degrees");
+            const hdgHold = SimVar.GetSimVarValue("L:AP_HEADING_HOLD_ACTIVE", "number");
 
 
             fmc._templateRenderer.setTemplateRaw([
-                [" WT LNAV MONITOR[blue]", ""],
+                ["", "", " WT LNAV[blue]" + lnavActive],
                 [" ACT WPT[blue]", "DISTANCE [blue]"],
                 [activeWaypointIdent, wptDistance + " NM"],
                 [" DTK[blue]", "XTK [blue]"],
                 [dtk + "°", xtk + " NM"],
-                [""],
-                [""],
-                [""],
-                [""],
-                [""],
-                [""],
+                [" HDG IDX[blue]", "HDG LOCK [blue]"],
+                [hdgIndex + "", hdgLock + "°"],
+                [" HDG LOCK:1[blue]", "HDG LOCK:2 [blue]"],
+                [hdgLock1 + "°", hdgLock2 + "°"],
+                [" HDG HOLD VAL[blue]", " [blue]"],
+                [hdgHold + ""],
                 ["-----------------------[blue]"],
                 ["<BACK", "VNAV MONITOR>"]
             ]);
