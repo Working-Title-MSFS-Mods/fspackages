@@ -257,7 +257,7 @@ class CJ4_FMC_VNavSetupPage {
                     [" alt dev[blue]", "ap vs [blue]"],
                     [altDeviation.toFixed(0) + "ft", apCurrentVerticalSpeed.toFixed(0) + "fpm"],
                     [" set vs[blue]", "TOD Dist[blue] "],
-                    [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod + " nm"],
+                    [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod.toFixed(1) + " nm"],
                     [""],
                     ["<CONSTRAINTS", "MENU>"]
                 ]);
