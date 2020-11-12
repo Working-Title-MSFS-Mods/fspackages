@@ -219,7 +219,7 @@ class CJ4_FMC_VNavSetupPage {
         if (fmc._vnav) {
             fmc.registerPeriodicPageRefresh(() => {
                 let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
-                const vnavActive = isVNAVActivate ? "ACTIVE" : "INACTIVE";
+                const vnavActive = isVNAVActivate ? " ACTIVE[green]" : " INACTIVE[white]";
                 const vnavTargetWaypointIdent = WTDataStore.get('CJ4_vnavTargetWaypoint', 'none');
                 const vnavValues = WTDataStore.get('CJ4_vnavValues', 'none');
                 if (vnavValues != "none") {
@@ -247,7 +247,7 @@ class CJ4_FMC_VNavSetupPage {
                              
 
                 fmc._templateRenderer.setTemplateRaw([
-                    ["", "", "WT VNAV" + vnavActive + "[blue]"],
+                    ["", "", "WT VNAV[blue]" + vnavActive],
                     [" target alt[blue]", "target dist [blue]"],
                     [vnavTargetAltitude.toFixed(0) + "ft", vnavTargetDistance.toFixed(1) + "nm"],
                     [" VNAV Target[blue]", "ground spd [blue]"],
