@@ -326,15 +326,15 @@ class CJ4_FMC_VNavSetupPage {
 
         fmc.registerPeriodicPageRefresh(() => {
 
-            const xtk = SimVar.GetSimVarValue("L:WT_CJ4_XTK", "number");
-            const dtk = SimVar.GetSimVarValue("L:WT_CJ4_DTK", "number");
-            const wptDistance = SimVar.GetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number");
+            const xtk = SimVar.GetSimVarValue("L:WT_CJ4_XTK", "number").toFixed(2);
+            const dtk = SimVar.GetSimVarValue("L:WT_CJ4_DTK", "number").toFixed(0);
+            const wptDistance = SimVar.GetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number").toFixed(1);
             const activeWaypointIdent = fmc.flightPlanManager.getActiveWaypoint().ident;
             const lnavActive = SimVar.GetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'Bool') ? " ACTIVE[green]" :" INACTIVE[white]";
             const hdgIndex = SimVar.GetSimVarValue("AUTOPILOT HEADING SLOT INDEX", "number");
-            const hdgLock = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degrees");
-            const hdgLock1 = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR:1", "degrees");
-            const hdgLock2 = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR:2", "degrees");
+            const hdgLock = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degrees").toFixed(0);
+            const hdgLock1 = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR:1", "degrees").toFixed(0);
+            const hdgLock2 = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR:2", "degrees").toFixed(0);
             const hdgHold = SimVar.GetSimVarValue("L:AP_HEADING_HOLD_ACTIVE", "number");
 
 
