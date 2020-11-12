@@ -234,30 +234,36 @@ class CJ4_FMC_VNavSetupPage {
                 const desiredFPA = WTDataStore.get('CJ4_vpa', 3);
                 const setVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
 
-
-
-
-                //COLLECT AIRCRAFT VARIABLES
                 let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-                //let apCurrentAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "Feet");
                 let apCurrentVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute");
-                let altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
                 const desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(desiredFPA * (Math.PI / 180));
+
+                const altSlot = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number");
+                const vsSlot = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
+
+                const vsVar = parseInt(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute"));
+                const vsVar1 = parseInt(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:1", "feet per minute"));
+                const vsVar2 = parseInt(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute"));
+                const vsVar3 = parseInt(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:3", "feet per minute"));
+                const altVar = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet"));
+                const altVar1 = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet"));
+                const altVar2 = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet"));
+                const altVar3 = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet"));
 
                              
 
                 fmc._templateRenderer.setTemplateRaw([
-                    ["", "", "WT VNAV[blue]" + vnavActive],
-                    [" target alt[blue]", "target dist [blue]"],
-                    [vnavTargetAltitude.toFixed(0) + "ft", vnavTargetDistance.toFixed(1) + "nm"],
-                    [" VNAV Target[blue]", "ground spd [blue]"],
-                    [vnavTargetWaypointIdent + "", groundSpeed.toFixed(0) + "kts"],
-                    [" target FPA[blue]", "target VS [blue]"],
-                    [desiredFPA.toFixed(1) + "°", desiredVerticalSpeed.toFixed(0) + "fpm"],
-                    [" alt dev[blue]", "ap vs [blue]"],
-                    [altDeviation.toFixed(0) + "ft", apCurrentVerticalSpeed.toFixed(0) + "fpm"],
-                    [" set vs[blue]", "TOD Dist[blue] "],
-                    [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod.toFixed(1) + " nm"],
+                    [vnavTargetWaypointIdent, "", "  WT VNAV[blue]" + vnavActive],
+                    [" target alt[blue]", "dist [blue]", "FPA[blue]"],
+                    [vnavTargetAltitude.toFixed(0) + "FT", vnavTargetDistance.toFixed(1) + "NM", desiredFPA.toFixed(1) + "°"],
+                    [" VS:CURRENT[blue]", "SET [blue]", "TARGET[blue]"],
+                    [apCurrentVerticalSpeed.toFixed(0) + "FPM", setVerticalSpeed.toFixed(0) + "FPM[green]", desiredVerticalSpeed.toFixed(0) + "FPM"],
+                    ["ALTDEV [blue]", "TOD[blue]", " ALT/VS SLOT[blue]"],
+                    [altDeviation.toFixed(0) + "FT", distanceToTod.toFixed(1) + "NM", altSlot + "/" + vsSlot],
+                    ["VSVAR/VAR:1/VAR:2/VAR:2[blue]"],
+                    [vsVar + "/" + vsVar1 + "/" + vsVar2 + "/" + vsVar3],
+                    ["ALTVAR/VAR:1/VAR:2/VAR:2[blue]"],
+                    [altVar + "/" + altVar1 + "/" + altVar2 + "/" + altVar3],
                     [""],
                     ["<CONSTRAINTS", "MENU>"]
                 ]);
