@@ -202,7 +202,11 @@ export class ManagedFlightPlan {
       }
     }
 
-    if (this.activeWaypointIndex === 0 && this.originAirfield) {
+    if (index <= this.activeWaypointIndex) {
+      this.activeWaypointIndex++;
+    }
+
+    if (this.activeWaypointIndex === 0 && this.length > 1) {
       this.activeWaypointIndex = 1;
     }
   }
@@ -237,6 +241,10 @@ export class ManagedFlightPlan {
         this.reflowSegments();
         this.reflowDistances();
       }
+    }
+
+    if (index < this.activeWaypointIndex) {
+      this.activeWaypointIndex--;
     }
   }
 
@@ -316,8 +324,9 @@ export class ManagedFlightPlan {
    */
   public findSegmentByWaypointIndex(index: number): FlightPlanSegment {
     for (var i = 0; i < this._segments.length; i++) {
-      if (this._segments[i].offset > index) {
-        return this._segments[Math.max(0, i - 1)];
+      const segMaxIdx = this._segments[i].offset + this._segments[i].waypoints.length; 
+      if (segMaxIdx > index) {
+        return this._segments[i];
       }
     }
 
@@ -339,7 +348,8 @@ export class ManagedFlightPlan {
         const referenceWaypoint = waypoints[i];
         const prevWaypoint = waypoints[i - 1];
 
-        referenceWaypoint.bearingInFP = Avionics.Utils.computeGreatCircleHeading(prevWaypoint.infos.coordinates, referenceWaypoint.infos.coordinates);
+        const trueCourseToWaypoint = Avionics.Utils.computeGreatCircleHeading(prevWaypoint.infos.coordinates, referenceWaypoint.infos.coordinates);
+        referenceWaypoint.bearingInFP = trueCourseToWaypoint - GeoMath.getMagvar(prevWaypoint.infos.coordinates.lat, prevWaypoint.infos.coordinates.long);
         referenceWaypoint.distanceInFP = Avionics.Utils.computeGreatCircleDistance(prevWaypoint.infos.coordinates, referenceWaypoint.infos.coordinates);
 
         cumulativeDistance += referenceWaypoint.distanceInFP;
