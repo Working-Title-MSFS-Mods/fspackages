@@ -63,7 +63,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
         else {
             this._lastVnavTargetAltitude = this._vnavTargetAltitude;
             this._interceptingLastAltitude = false;
-            if (this._distanceToTod <= 0 || isNan(this._distanceToTod)) {
+            if (this._distanceToTod <= 0) {
                 Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, this._vnavTargetAltitude, true);
                 SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
                 SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);

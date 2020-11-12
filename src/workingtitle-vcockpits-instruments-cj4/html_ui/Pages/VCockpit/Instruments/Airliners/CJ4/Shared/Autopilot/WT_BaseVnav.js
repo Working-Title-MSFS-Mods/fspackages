@@ -143,7 +143,7 @@ class WT_BaseVnav {
                     : this._vnavTargetWaypoint.cumulativeDistanceInFP - this._currentDistanceInFP;
                 this._desiredAltitude = this._vnavTargetAltitude + (Math.tan(this._desiredFPA * (Math.PI / 180)) * this._vnavTargetDistance * 6076.12);
                 this._altDeviation = this._altitude - this._desiredAltitude;
-                this._distanceToTod = this._topOfDescent < 0 ? undefined : this._vnavTargetDistance > this._topOfDescent ? Math.round(this._vnavTargetDistance - this._topOfDescent) : undefined;
+                this._distanceToTod = this._topOfDescent < 0 ? 0 : this._vnavTargetDistance > this._topOfDescent ? Math.round(this._vnavTargetDistance - this._topOfDescent) : 0;
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", this._altDeviation);
             }
 
