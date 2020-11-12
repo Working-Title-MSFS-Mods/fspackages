@@ -1127,7 +1127,14 @@ export class FlightPlanManager {
    */
   public getLastIndexBeforeApproach(): number {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    return currentFlightPlan.approach.offset - 1;
+
+    // TODO: if we have an approach return last index
+    if (currentFlightPlan.approach.offset > -1) {
+      return currentFlightPlan.approach.offset - 1;
+    } else {
+      return this.getWaypointsCount() - 1;
+    }
+
   }
 
   /**
