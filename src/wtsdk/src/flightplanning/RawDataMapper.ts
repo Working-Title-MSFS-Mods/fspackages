@@ -51,20 +51,20 @@ export class RawDataMapper {
         break;
       case 'V':
         waypoint.infos = new VORInfo(instrument);
-        waypoint.infos.CopyBaseInfosFrom(waypoint);
         break;
       case 'N':
         waypoint.infos = new NDBInfo(instrument);
-        waypoint.infos.CopyBaseInfosFrom(waypoint);
         break;
       case 'W':
         waypoint.infos = new IntersectionInfo(instrument);
-        waypoint.infos.CopyBaseInfosFrom(waypoint);
         break;
       default:
         waypoint.infos = new WayPointInfo(instrument);
-        waypoint.infos.CopyBaseInfosFrom(waypoint);
         break;
+    }
+    if(waypoint.type !== 'A'){
+      waypoint.infos.CopyBaseInfosFrom(waypoint);
+      waypoint.infos.routes = facility.routes;
     }
 
     waypoint.infos.coordinates = new LatLongAlt(facility.lat, facility.lon);
