@@ -32,6 +32,7 @@
 						<WorkUnit Name="Wind" ID="{CAB3256F-F41F-49E3-A292-8974A514FB46}" PersistMode="Reference"/>
 						<WorkUnit Name="Gear" ID="{5F163F45-FC04-446F-AD64-57E60E134AA1}" PersistMode="Reference"/>
 						<WorkUnit Name="Spoiler Drag" ID="{30DABAEE-CADC-4B29-B080-211845AEA85F}" PersistMode="Reference"/>
+						<WorkUnit Name="Rain" ID="{EFE87A9B-AD09-425F-BCC3-E047B92CE33D}" PersistMode="Reference"/>
 					</ChildrenList>
 				</ActorMixer>
 			</ChildrenList>

@@ -5,6 +5,7 @@
 			<ChildrenList>
 				<SoundBank Name="Asobo_CJ4_WT" ID="{CCCCFDFA-06A9-42B0-B420-F5811DF76F04}">
 					<ObjectInclusionList>
+						<ObjectRef Name="Rain" ID="{28129900-453E-4395-BB86-21E0FCD94D02}" WorkUnitID="{28129900-453E-4395-BB86-21E0FCD94D02}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Wind" ID="{AC9E2451-3589-439A-B1E1-3E0DCD89678F}" WorkUnitID="{AC9E2451-3589-439A-B1E1-3E0DCD89678F}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Autopilot" ID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" WorkUnitID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Push_Buttons" ID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" WorkUnitID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" Origin="Manual" Filter="7"/>
