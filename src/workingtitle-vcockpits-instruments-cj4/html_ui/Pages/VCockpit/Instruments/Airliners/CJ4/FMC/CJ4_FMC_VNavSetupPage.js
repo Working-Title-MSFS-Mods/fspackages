@@ -210,7 +210,6 @@ class CJ4_FMC_VNavSetupPage {
     static ShowPage5(fmc) { //VNAV MONITOR
         fmc.clearDisplay();
 
-        let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
         let vnavTargetAltitude = 0;
         let vnavTargetDistance = 0;
         let topOfDescent = 0;
@@ -219,7 +218,7 @@ class CJ4_FMC_VNavSetupPage {
         //RUN ACTUAL VNAV PATH CONTROL
         if (fmc._vnav) {
             fmc.registerPeriodicPageRefresh(() => {
-
+                let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
                 const vnavActive = isVNAVActivate ? "ACTIVE" : "INACTIVE";
                 const vnavTargetWaypointIdent = WTDataStore.get('CJ4_vnavTargetWaypoint', 'none');
                 const vnavValues = WTDataStore.get('CJ4_vnavValues', 'none');
@@ -260,7 +259,7 @@ class CJ4_FMC_VNavSetupPage {
                     [" set vs[blue]", "TOD Dist[blue] "],
                     [setVerticalSpeed.toFixed(0) + "fpm[green]", distanceToTod + " nm"],
                     [""],
-                    ["<CONSTRAINTS", "VNAV>"]
+                    ["<CONSTRAINTS", "MENU>"]
                 ]);
 
             }, 1000, true);
@@ -279,10 +278,10 @@ class CJ4_FMC_VNavSetupPage {
                 [""],
                 [""],
                 [""],
-                ["", "VNAV>"]
+                ["<CONSTRAINTS", "MENU>"]
             ]);
         }
-    fmc.onRightInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
+    fmc.onRightInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage6(fmc); };
     fmc.onLeftInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage4(fmc); };
 
     fmc.updateSideButtonActiveStatus();
@@ -293,12 +292,15 @@ class CJ4_FMC_VNavSetupPage {
 
         fmc.registerPeriodicPageRefresh(() => {
 
+            const lnavActive = SimVar.GetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'Bool') ? "LNAV ON[green]" :"LNAV OFF[white]";
+            let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
+            const vnavActive = isVNAVActivate ? "VNAV ON[green]" : "VNAV OFF[white]";
 
 
             fmc._templateRenderer.setTemplateRaw([
                 [" WT AUTOPILOT MONITOR[blue]", ""],
                 [" L MODE[blue]", "V MODE [blue]"],
-                ["300/.74", "crzAltCell"],
+                [lnavActive, vnavActive],
                 [""],
                 [""],
                 [""],
