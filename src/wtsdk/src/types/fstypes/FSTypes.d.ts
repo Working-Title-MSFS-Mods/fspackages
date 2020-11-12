@@ -37,6 +37,8 @@ declare module "MSFS" {
     instrument: BaseInstrument;
     magneticVariation?: number;
     _svgElements: any;
+    UpdateInfos(_CallBack?, loadFacilitiesTransitively?);
+    CopyBaseInfosFrom(_WP:WayPoint); 
   }
 
   export class AirportInfo extends WayPointInfo {

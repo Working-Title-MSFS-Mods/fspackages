@@ -1,5 +1,7 @@
-import { WayPoint, BaseInstrument, AirportInfo, OneWayRunway, RunwayTransition, 
-  EnrouteTransition, LatLongAlt, WayPointInfo, IntersectionInfo, NDBInfo, VORInfo, Runway } from 'MSFS';
+import {
+  WayPoint, BaseInstrument, AirportInfo, OneWayRunway, RunwayTransition,
+  EnrouteTransition, LatLongAlt, WayPointInfo, IntersectionInfo, NDBInfo, VORInfo, Runway
+} from 'MSFS';
 
 /** 
  * A class for mapping raw facility data to WayPoints. 
@@ -20,21 +22,22 @@ export class RawDataMapper {
     waypoint.type = facility.icao[0];
 
     switch (waypoint.type) {
-      case 'A':
+      case 'A': {
         const info = new AirportInfo(instrument);
+        info.CopyBaseInfosFrom(waypoint);
 
         info.approaches = facility.approaches;
-        info.approaches.forEach(approach => 
+        info.approaches.forEach(approach =>
           approach.transitions.forEach(trans => trans.name = trans.legs[0].fixIcao.substring(7, 12).trim()));
 
         info.departures = facility.departures;
-        info.departures.forEach(departure => 
+        info.departures.forEach(departure =>
           departure.runwayTransitions.forEach(trans => trans.name = RawDataMapper.generateRunwayTransitionName(trans)));
 
         info.arrivals = facility.arrivals;
-        info.arrivals.forEach(arrival => 
+        info.arrivals.forEach(arrival =>
           arrival.runwayTransitions.forEach(trans => trans.name = RawDataMapper.generateRunwayTransitionName(trans)));
-        info.arrivals.forEach(arrival => 
+        info.arrivals.forEach(arrival =>
           arrival.enRouteTransitions.forEach(trans => trans.name = RawDataMapper.generateArrivalTransitionName(trans)));
 
         info.runways = facility.runways;
@@ -44,23 +47,23 @@ export class RawDataMapper {
 
         info.oneWayRunways.sort(RawDataMapper.sortRunways);
         waypoint.infos = info;
-
+      }
         break;
       case 'V':
-        // waypoint.infos = new VORInfo(instrument);
-        waypoint.infos = facility;
+        waypoint.infos = new VORInfo(instrument);
+        waypoint.infos.CopyBaseInfosFrom(waypoint);
         break;
       case 'N':
-        // waypoint.infos = new NDBInfo(instrument);
-        waypoint.infos = facility;
+        waypoint.infos = new NDBInfo(instrument);
+        waypoint.infos.CopyBaseInfosFrom(waypoint);
         break;
       case 'W':
-        // waypoint.infos = new IntersectionInfo(instrument);
-        waypoint.infos = facility;
+        waypoint.infos = new IntersectionInfo(instrument);
+        waypoint.infos.CopyBaseInfosFrom(waypoint);
         break;
       default:
-        // waypoint.infos = new WayPointInfo(instrument);
-        waypoint.infos = facility;
+        waypoint.infos = new WayPointInfo(instrument);
+        waypoint.infos.CopyBaseInfosFrom(waypoint);
         break;
     }
 
@@ -78,23 +81,23 @@ export class RawDataMapper {
     if (parseInt(r1.designation) === parseInt(r2.designation)) {
       let v1 = 0;
       if (r1.designation.indexOf("L") != -1) {
-          v1 = 1;
+        v1 = 1;
       }
       else if (r1.designation.indexOf("C") != -1) {
-          v1 = 2;
+        v1 = 2;
       }
       else if (r1.designation.indexOf("R") != -1) {
-          v1 = 3;
+        v1 = 3;
       }
       let v2 = 0;
       if (r2.designation.indexOf("L") != -1) {
-          v2 = 1;
+        v2 = 1;
       }
       else if (r2.designation.indexOf("C") != -1) {
-          v2 = 2;
+        v2 = 2;
       }
       else if (r2.designation.indexOf("R") != -1) {
-          v2 = 3;
+        v2 = 3;
       }
       return v1 - v2;
     }
@@ -110,15 +113,15 @@ export class RawDataMapper {
     let name = `RW${runwayTransition.runwayNumber}`;
 
     switch (runwayTransition.runwayDesignation) {
-        case 1:
-            name += "L";
-            break;
-        case 2:
-            name += "R";
-            break;
-        case 3:
-            name += "C";
-            break;
+      case 1:
+        name += "L";
+        break;
+      case 2:
+        name += "R";
+        break;
+      case 3:
+        name += "C";
+        break;
     }
 
     return name;

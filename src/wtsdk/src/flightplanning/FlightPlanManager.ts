@@ -581,7 +581,6 @@ export class FlightPlanManager {
   public async addWaypoint(icao: string, index = Infinity, callback = () => { }, setActive = true): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     const waypoint = await this._parentInstrument.facilityLoader.getFacilityRaw(icao);
-
     currentFlightPlan.addWaypoint(waypoint, index);
     if (setActive) {
       //currentFlightPlan.activeWaypointIndex = index;
@@ -1127,12 +1126,11 @@ export class FlightPlanManager {
    */
   public getLastIndexBeforeApproach(): number {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-
     // TODO: if we have an approach return last index
-    if (currentFlightPlan.approach.offset > -1) {
+    if (currentFlightPlan.approach !== FlightPlanSegment.Empty) {
       return currentFlightPlan.approach.offset - 1;
     } else {
-      return this.getWaypointsCount() - 1;
+      return this.getWaypointsCount();
     }
 
   }
