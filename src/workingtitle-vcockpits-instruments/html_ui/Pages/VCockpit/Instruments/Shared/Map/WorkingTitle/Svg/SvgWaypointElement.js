@@ -260,7 +260,7 @@ class SvgWaypointTextElement {
         let fontSize = this.waypointElement.getLabelFontSize(map);
         let text = this.waypointElement.ident;
         let c = document.createElement("canvas");
-        let ctx = c.getContext("2d");
+        let ctx = c.getContext("2d", {alpha: false});
         ctx.font = fontSize + "px " + map.config.waypointLabelFontFamily;
         this._textWidth = ctx.measureText(text).width;
         this._textHeight = fontSize * 0.675;
