@@ -84,8 +84,6 @@ class WT_BaseLnav {
                 setHeading = (((this._bearingToWaypoint + windCorrection) % 360) + 360) % 360;
             }
 
-            SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading).catch(console.log);
-            
             //TURN ANTICIPATION
             let turnRadius = Math.pow(this._groundSpeed / 60, 2) / 9;
             if (this._activeWaypoint && nextActiveWaypoint && this._activeWaypointDist <= turnRadius && this._groundSpeed < 700) {
@@ -109,10 +107,15 @@ class WT_BaseLnav {
                     this.update();
                 }
             }
+
+            Coherent.call("HEADING_BUG_SET", 2, setHeading).catch(console.log);
+            SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
+            SimVar.SetSimVarValue("L:AP_HEADING_HOLD_ACTIVE", "number", 1);
         }
-
-
-
+        else {
+            Coherent.call("HEADING_BUG_SET", 1, Simplane.getHeadingMagnetic());
+            SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+        }
     }
 
     /**
