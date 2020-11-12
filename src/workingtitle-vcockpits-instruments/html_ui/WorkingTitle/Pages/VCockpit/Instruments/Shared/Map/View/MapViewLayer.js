@@ -35,7 +35,7 @@ class WT_MapViewLayer {
     onViewSizeChanged(data) {
     }
 
-    onConfigLoaded() {
+    onConfigLoaded(data) {
     }
 
     onModelChanged(data) {

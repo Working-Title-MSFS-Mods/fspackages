@@ -32,7 +32,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         this.bingMap.style.height = `${this._size}px`;
     }
 
-    onConfigLoaded() {
+    onConfigLoaded(data) {
         for (let i = 0; i < this.config[WT_MapViewBingLayer.CONFIG_BING_CONFIGS_NAME].length; i++) {
             this.bingMap.addConfig(new WT_BingMapConfig(this.config[WT_MapViewBingLayer.CONFIG_BING_CONFIGS_NAME][i]).parse());
         }
@@ -40,6 +40,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
     }
 
     onAttached(data) {
+        this.onViewSizeChanged(data);
         this._bingMap.setMode(EBingMode.PLANE);
         this._bingMap.setReference(EBingReference.SEA);
         this._bingMap.setVisible(true);
