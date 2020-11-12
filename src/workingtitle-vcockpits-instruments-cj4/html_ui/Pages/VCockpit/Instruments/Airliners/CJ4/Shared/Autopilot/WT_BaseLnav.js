@@ -61,48 +61,48 @@ class WT_BaseLnav {
             let currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
             let currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
             let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((this._xtk * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
-            let windCorrection = 180 * Math.asin(currCrosswind / this._) / Math.PI;
+            let windCorrection = 0; //180 * Math.asin(currCrosswind / this._groundSpeed) / Math.PI;
             
             let setHeading = this._dtk;
 
             let interceptAngle = Math.min(Math.pow(this._xtk * 20, 1.1), 45);
 
     
-            if (this._xtk >= 1) {
-                setHeading = this._dtk + windCorrection - 30 < 0 ? this._dtk + windCorrection - 330
-                    : this._dtk + windCorrection - 30;
-            }
-            else if (this._xtk <= -1) {
-                setHeading = this._dtk + windCorrection + 30 > 360 ? this._dtk + windCorrection - 330
-                    : this._dtk + windCorrection + 30;
-            }
-            else if (1 > this._xtk && this._xtk > 0.5) {
-                setHeading = this._dtk + windCorrection - 20 < 0 ? this._dtk + windCorrection - 340
-                    : this._dtk + windCorrection - 20;
-            }
-            else if (-1 < this._xtk && this._xtk < -0.5) {
-                setHeading = this._dtk + windCorrection + 20 > 360 ? this._dtk + windCorrection - 340
-                    : this._dtk + windCorrection + 20;
-            }
-            else if (0.5 >= this._xtk && this._xtk > 0.2) {
-                setHeading = this._dtk + windCorrection - 10 < 0 ? this._dtk + windCorrection - 350
-                    : this._dtk + windCorrection - 10;
-            }
-            else if (-0.5 <= this._xtk && this._xtk < -0.2) {
-                setHeading = this._dtk + windCorrection + 10 > 360 ? this._dtk + windCorrection - 350
-                    : this._dtk + windCorrection + 10;
-            }
-            else if (0.2 >= this._xtk && this._xtk > 0) {
-                setHeading = this._dtk + windCorrection - 5 < 0 ? this._dtk + windCorrection - 355
-                    : this._dtk + windCorrection - 5;
-            }
-            else if (-0.2 <= this._xtk && this._xtk < 0) {
-                setHeading = this._dtk + windCorrection + 5 > 360 ? this._dtk + windCorrection - 355
-                    : this._dtk + windCorrection + 5;
-            }
-            else if (this._xtk == 0) {
-                setHeading = this._dtk + windCorrection;
-            }
+            // if (this._xtk >= 1) {
+            //     setHeading = this._dtk + windCorrection - 30 < 0 ? this._dtk + windCorrection - 330
+            //         : this._dtk + windCorrection - 30;
+            // }
+            // else if (this._xtk <= -1) {
+            //     setHeading = this._dtk + windCorrection + 30 > 360 ? this._dtk + windCorrection - 330
+            //         : this._dtk + windCorrection + 30;
+            // }
+            // else if (1 > this._xtk && this._xtk > 0.5) {
+            //     setHeading = this._dtk + windCorrection - 20 < 0 ? this._dtk + windCorrection - 340
+            //         : this._dtk + windCorrection - 20;
+            // }
+            // else if (-1 < this._xtk && this._xtk < -0.5) {
+            //     setHeading = this._dtk + windCorrection + 20 > 360 ? this._dtk + windCorrection - 340
+            //         : this._dtk + windCorrection + 20;
+            // }
+            // else if (0.5 >= this._xtk && this._xtk > 0.2) {
+            //     setHeading = this._dtk + windCorrection - 10 < 0 ? this._dtk + windCorrection - 350
+            //         : this._dtk + windCorrection - 10;
+            // }
+            // else if (-0.5 <= this._xtk && this._xtk < -0.2) {
+            //     setHeading = this._dtk + windCorrection + 10 > 360 ? this._dtk + windCorrection - 350
+            //         : this._dtk + windCorrection + 10;
+            // }
+            // else if (0.2 >= this._xtk && this._xtk > 0) {
+            //     setHeading = this._dtk + windCorrection - 5 < 0 ? this._dtk + windCorrection - 355
+            //         : this._dtk + windCorrection - 5;
+            // }
+            // else if (-0.2 <= this._xtk && this._xtk < 0) {
+            //     setHeading = this._dtk + windCorrection + 5 > 360 ? this._dtk + windCorrection - 355
+            //         : this._dtk + windCorrection + 5;
+            // }
+            // else if (this._xtk == 0) {
+            //     setHeading = this._dtk + windCorrection;
+            // }
 
             SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading).catch(console.log);
            

@@ -38,6 +38,7 @@ export class FlightPlanManager {
 
         const plan = new ManagedFlightPlan();
         plan.setParentInstrument(_parentInstrument);
+        this._flightPlans = [];
         this._flightPlans.push(plan);
 
         this._currentFlightPlanVersion++;
@@ -1252,7 +1253,6 @@ export class FlightPlanManager {
    */
   public _getFlightPlan(): void {
     const fpln = window.localStorage.getItem(FlightPlanManager.FlightPlanKey)
-    console.log("_getFlightPlan = " + fpln);
     if (fpln === null || fpln === '') {
       this._flightPlans = [];
       let initFpln = new ManagedFlightPlan();
