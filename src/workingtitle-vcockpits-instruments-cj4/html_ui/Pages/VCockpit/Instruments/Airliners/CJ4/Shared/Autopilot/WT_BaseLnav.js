@@ -108,6 +108,7 @@ class WT_BaseLnav {
                 }
             }
 
+            setHeading = GeoMath.correctMagvar(setHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"));
             Coherent.call("HEADING_BUG_SET", 2, setHeading).catch(console.log);
         }
         else {
