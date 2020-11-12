@@ -187,6 +187,7 @@ class WT_BaseVnav {
                 this._vnavTargetAltitude = waypoint.legAltitude1;
                 this._vnavTargetDistance = (waypoint === this._activeWaypoint) ? this._activeWaypointDist : waypoint.cumulativeDistanceInFP - this._currentDistanceInFP;
                 this._topOfDescent = ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
+                this._vnavTargetWaypoint = waypoint;
             }
             else if (altDesc == 2 && waypoint.legAltitude1 > 1000) { //ABOVE CASE
                 let vnavTargetAltitudeAtWaypoint = this.getVNavTargetAltitudeAtWaypoint(waypoint);
