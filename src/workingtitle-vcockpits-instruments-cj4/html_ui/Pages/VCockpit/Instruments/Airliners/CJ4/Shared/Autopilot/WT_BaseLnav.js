@@ -61,51 +61,53 @@ class WT_BaseLnav {
             let currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
             let currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
             let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((this._xtk * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
-            let windCorrection = 0; //180 * Math.asin(currCrosswind / this._groundSpeed) / Math.PI;
-            
+            let windCorrection = 180 * Math.asin(currCrosswind / this._groundSpeed) / Math.PI;
+           
             let setHeading = this._dtk;
 
-            let interceptAngle = Math.min(Math.pow(this._xtk * 20, 1.1), 45);
+            let interceptAngle = this._xtk < 0 ? -1 * (Math.min(Math.pow(Math.abs(this._xtk) * 20, 1.1), 45))
+                : Math.min(Math.pow(Math.abs(this._xtk) * 20, 1.1), 45);
+            
+            let deltaAngle = ((((this._dtk - this._bearingToWaypoint) % 360) + 360) % 360) > 180 ? 360 - ((((this._dtk - this._bearingToWaypoint) % 360) + 360) % 360)
+                : ((((this._dtk - this._bearingToWaypoint) % 360) + 360) % 360);
 
-    
-            // if (this._xtk >= 1) {
-            //     setHeading = this._dtk + windCorrection - 30 < 0 ? this._dtk + windCorrection - 330
-            //         : this._dtk + windCorrection - 30;
-            // }
-            // else if (this._xtk <= -1) {
-            //     setHeading = this._dtk + windCorrection + 30 > 360 ? this._dtk + windCorrection - 330
-            //         : this._dtk + windCorrection + 30;
-            // }
-            // else if (1 > this._xtk && this._xtk > 0.5) {
-            //     setHeading = this._dtk + windCorrection - 20 < 0 ? this._dtk + windCorrection - 340
-            //         : this._dtk + windCorrection - 20;
-            // }
-            // else if (-1 < this._xtk && this._xtk < -0.5) {
-            //     setHeading = this._dtk + windCorrection + 20 > 360 ? this._dtk + windCorrection - 340
-            //         : this._dtk + windCorrection + 20;
-            // }
-            // else if (0.5 >= this._xtk && this._xtk > 0.2) {
-            //     setHeading = this._dtk + windCorrection - 10 < 0 ? this._dtk + windCorrection - 350
-            //         : this._dtk + windCorrection - 10;
-            // }
-            // else if (-0.5 <= this._xtk && this._xtk < -0.2) {
-            //     setHeading = this._dtk + windCorrection + 10 > 360 ? this._dtk + windCorrection - 350
-            //         : this._dtk + windCorrection + 10;
-            // }
-            // else if (0.2 >= this._xtk && this._xtk > 0) {
-            //     setHeading = this._dtk + windCorrection - 5 < 0 ? this._dtk + windCorrection - 355
-            //         : this._dtk + windCorrection - 5;
-            // }
-            // else if (-0.2 <= this._xtk && this._xtk < 0) {
-            //     setHeading = this._dtk + windCorrection + 5 > 360 ? this._dtk + windCorrection - 355
-            //         : this._dtk + windCorrection + 5;
-            // }
-            // else if (this._xtk == 0) {
-            //     setHeading = this._dtk + windCorrection;
-            // }
+            setHeading = (((this._dtk + interceptAngle + windCorrection) % 360) + 360) % 360;
+
+            //CASE WHERE WE ARE PASSED THE WAYPOINT AND SHOULD SEQUENCE THE NEXT WPT
+            if (Math.abs(deltaAngle) >= 90) {
+                setHeading = this._dtk;
+                this._fpm.setActiveWaypointIndex(this._fpm.getActiveWaypointIndex() + 1);
+                this.update();
+            }
+            //CASE WHERE INTERCEPT ANGLE IS NOT BIG ENOUGH AND INTERCEPT NEEDS TO BE SET TO BEARING
+            else if (Math.abs(deltaAngle) > Math.abs(interceptAngle)) {
+                setHeading = (((this._bearingToWaypoint + windCorrection) % 360) + 360) % 360;
+            }
 
             SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', setHeading).catch(console.log);
            
+        }
+        //TURN ANTICIPATION
+        let turnRadius = Math.pow(this._groundSpeed / 60, 2) / 9;
+        if (this._activeWaypoint && nextActiveWaypoint && this._activeWaypointDist <= turnRadius && this._groundSpeed < 700) {
+            let fromHeading = this._dtk;
+            let toHeading = Avionics.Utils.computeGreatCircleHeading(this._activeWaypoint.infos.coordinates, nextActiveWaypoint.infos.coordinates);
+            while (fromHeading >= 180) {
+                fromHeading -= 360;
+            }
+            while (toHeading >= 180) {
+                toHeading -= 360;
+            }
+            let turnAngle = toHeading - fromHeading;
+            while (turnAngle >= 180) {
+                turnAngle -= 360;
+            }
+            let absTurnAngle = Math.abs(turnAngle);
+            let activateDistance = Math.min(turnRadius * Math.tan((absTurnAngle / 2) * (Math.PI / 180)), turnRadius);
+            if (this._activeWaypointDist <= activateDistance) {
+                setHeading += turnAngle;
+                this.flightPlanManager.setActiveWaypointIndex(this.flightPlanManager.getActiveWaypointIndex() + 1);
+            }
         }
 
 
