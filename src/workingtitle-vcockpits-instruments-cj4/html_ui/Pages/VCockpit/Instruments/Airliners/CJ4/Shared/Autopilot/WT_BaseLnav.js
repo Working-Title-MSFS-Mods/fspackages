@@ -65,8 +65,8 @@ class WT_BaseLnav {
            
             let setHeading = this._dtk;
 
-            let interceptAngle = this._xtk < 0 ? -1 * (Math.min(Math.pow(Math.abs(this._xtk) * 20, 1.1), 45))
-                : Math.min(Math.pow(Math.abs(this._xtk) * 20, 1.1), 45);
+            let interceptAngle = this._xtk < 0 ? Math.min(Math.pow(Math.abs(this._xtk) * 20, 1.1), 45)
+                : -1 * Math.min(Math.pow(Math.abs(this._xtk) * 20, 1.1), 45);
             
             let deltaAngle = ((((this._dtk - this._bearingToWaypoint) % 360) + 360) % 360) > 180 ? 360 - ((((this._dtk - this._bearingToWaypoint) % 360) + 360) % 360)
                 : ((((this._dtk - this._bearingToWaypoint) % 360) + 360) % 360);
