@@ -2,15 +2,23 @@ class WT_MapView extends HTMLElement {
     constructor() {
         super();
 
+        this._pixelDensity = 1;
         this._layers = [];
+
+        this._configLoaded = false;
 
         this._lastWidth = 0;
         this._lastHeight = 0;
+        this._lastPixelDensity = 1;
 
         this.setTargetOffsetHandler({getTargetOffset(model) {return {x: 0, y: 0}}});
         this.setRangeInterpreter({getRangeFactor(model) {return 1}});
 
         this._optsManager = new WT_OptionsManager(this, WT_MapView.OPTIONS_DEF);
+    }
+
+    static get observedAttributes() {
+        return ["pixel-density"];
     }
 
     connectedCallback() {
@@ -48,16 +56,6 @@ class WT_MapView extends HTMLElement {
     _loadConfig(data) {
         this._config = JSON.parse(data);
         this._configLoaded = true;
-        for (let layerContainer of this._layers) {
-            this._loadLayerConfig(layerContainer.layer);
-        }
-    }
-
-    _loadLayerConfig(layer) {
-        if (this._config[layer.configName]) {
-            layer.config = this._config[layer.configName];
-            layer.onConfigLoaded();
-        }
     }
 
     get templateID() {
@@ -72,12 +70,26 @@ class WT_MapView extends HTMLElement {
         return this.clientHeight;
     }
 
+    get pixelDensity() {
+        return this._pixelDensity;
+    }
+
     get model() {
         return this._model;
     }
 
+    get config() {
+        return this._config;
+    }
+
     get viewPlane() {
         return this._viewPlane;
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "pixel-density") {
+            this._pixelDensity = parseFloat(newValue);
+        }
     }
 
     setModel(model) {
@@ -101,14 +113,9 @@ class WT_MapView extends HTMLElement {
     }
 
     addLayer(layer) {
-        let layerContainer = new WT_MapViewLayerContainer(layer);
+        let layerContainer = new WT_MapViewLayerContainer(this, layer);
         this._layers.push(layerContainer);
-        if (this._configLoaded) {
-            this._loadLayerConfig(layer);
-        }
-        this.appendChild(layerContainer.container);
         layerContainer.container.style.zIndex = this._layers.length;
-        layer.onAttached(this._optsManager.getOptionsFromList(WT_MapView.OPTIONS_TO_PASS));
     }
 
     removeLayer(layer) {
@@ -141,10 +148,11 @@ class WT_MapView extends HTMLElement {
         let currentWidth = this.viewWidth;
         let currentHeight = this.viewHeight;
 
-        let changed = currentWidth != this._lastWidth || currentHeight != this._lastHeight;
+        let changed = currentWidth != this._lastWidth || currentHeight != this._lastHeight || this.pixelDensity != this._lastPixelDensity;
 
         this._lastWidth = currentWidth;
         this._lastHeight = currentHeight;
+        this._lastPixelDensity = this.pixelDensity;
 
         return changed;
     }
@@ -169,7 +177,7 @@ class WT_MapView extends HTMLElement {
     }
 
     isReady() {
-        return this.model && this.viewWidth > 0 && this.viewHeight > 0;
+        return this.model && this.viewWidth > 0 && this.viewHeight > 0 && this._configLoaded;
     }
 
     update() {
@@ -183,7 +191,9 @@ class WT_MapView extends HTMLElement {
         let optionsToPass = this._optsManager.getOptionsFromList(WT_MapView.OPTIONS_TO_PASS);
 
         for (let layerContainer of this._layers) {
-            if (viewSizeChanged) {
+            if (!layerContainer.isInitialized) {
+                layerContainer.init(optionsToPass, this._config[layerContainer.layer.configName]);
+            } else if (viewSizeChanged) {
                 layerContainer.layer.onViewSizeChanged(optionsToPass);
             }
             if (layerContainer.layer.isVisible(optionsToPass)) {
@@ -197,14 +207,17 @@ class WT_MapView extends HTMLElement {
 }
 WT_MapView.OPTIONS_DEF = {
     model: {default: undefined, readOnly: true},
+    pixelDensity: {},
     projection: {default: WT_MapProjection.createProjection(WT_MapProjection.Projection.MERCATOR), auto: true},
     viewPlane: {default: undefined, auto: true}
 };
-WT_MapView.OPTIONS_TO_PASS = ["model", "viewWidth", "viewHeight", "projection", "viewPlane"];
+WT_MapView.OPTIONS_TO_PASS = ["model", "pixelDensity", "projection", "viewPlane"];
 
 class WT_MapViewLayerContainer {
-    constructor(layer) {
+    constructor(view, layer) {
+        this._view = view;
         this._layer = layer;
+        this._isInit = false;
 
         this._container = document.createElement("div");
         this._container.style.position = "absolute";
@@ -216,12 +229,31 @@ class WT_MapViewLayerContainer {
         this._container.appendChild(layer.htmlElement);
     }
 
+    get view() {
+        return this._view;
+    }
+
     get layer() {
         return this._layer;
     }
 
     get container() {
         return this._container;
+    }
+
+    get isInitialized() {
+        return this._isInit;
+    }
+
+    init(data) {
+        let config = this.view.config[this.layer.configName];
+        if (config) {
+            this.layer.config = config;
+            this.layer.onConfigLoaded(data);
+        }
+        this.view.appendChild(this.container);
+        this.layer.onAttached(data);
+        this._isInit = true;
     }
 }
 

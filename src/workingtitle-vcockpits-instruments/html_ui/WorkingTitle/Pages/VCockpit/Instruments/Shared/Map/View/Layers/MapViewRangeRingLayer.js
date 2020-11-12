@@ -2,31 +2,31 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
     constructor(id = WT_MapViewRangeRingLayer.ID_DEFAULT, configName = WT_MapViewRangeRingLayer.CONFIG_NAME_DEFAULT) {
         super(id, configName);
 
+        this._lastPixelDensity = 1;
+
         this.addRing(new WT_MapViewRangeRing());
         this.labeledRing.label.anchor = {x: 0.5, y: 0.5};
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRangeRingLayer.OPTIONS_DEF);
-
-        this._updateRingOptions();
     }
 
     get labeledRing() {
         return this.rings[0].ring;
     }
 
-    _updateRingOptions() {
+    _updateRingOptions(pixelDensity) {
         this.labeledRing.ring.setOptions({
-            strokeWidth: this.strokeWidth,
+            strokeWidth: this.strokeWidth * pixelDensity,
             strokeColor: this.strokeColor,
-            strokeDash: this.strokeDash,
-            outlineWidth: this.outlineWidth,
+            strokeDash: this.strokeDash.map(e => e * pixelDensity),
+            outlineWidth: this.outlineWidth * pixelDensity,
             outlineColor: this.outlineColor,
-            outlineDash: this.outlineDash
+            outlineDash: this.outlineDash.map(e => e * pixelDensity)
         });
 
         this.labeledRing.label.setOptions({
             radialAngle: this.labelAngle,
-            radialOffset: this.labelOffset,
+            radialOffset: this.labelOffset * pixelDensity,
         });
     }
 
@@ -34,12 +34,17 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
         return data.model.rangeRing.show;
     }
 
-    onConfigLoaded() {
+    onConfigLoaded(data) {
         for (let property of WT_MapViewRangeRingLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
 
-        this._updateRingOptions();
+        this._updateRingOptions(data.pixelDensity);
+    }
+
+    onViewSizeChanged(data) {
+        super.onViewSizeChanged(data);
+        this._updateRingOptions(data.pixelDensity);
     }
 }
 WT_MapViewRangeRingLayer.ID_DEFAULT = "RangeRingLayer";
