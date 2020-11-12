@@ -106,6 +106,7 @@ class WT_BaseLnav {
                 if (this._activeWaypointDist <= activateDistance) {
                     setHeading += turnAngle;
                     this.flightPlanManager.setActiveWaypointIndex(this.flightPlanManager.getActiveWaypointIndex() + 1);
+                    this.update();
                 }
             }
         }
