@@ -1264,6 +1264,6 @@ export class FlightPlanManager {
    */
   public _updateFlightPlanVersion(): void {
     SimVar.SetSimVarValue(FlightPlanManager.FlightPlanVersionKey, 'number', ++this._currentFlightPlanVersion);
-    window.localStorage.setItem(FlightPlanManager.FlightPlanKey, JSON.stringify(this._flightPlans.map(fp => fp.copySanitized())));
+    window.localStorage.setItem(FlightPlanManager.FlightPlanKey, JSON.stringify(this._flightPlans.map(fp => fp.serialize())));
   }
 }

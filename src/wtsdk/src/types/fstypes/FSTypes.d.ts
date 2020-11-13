@@ -15,6 +15,7 @@ declare module "MSFS" {
     legAltitude1: number;
     legAltitude2: number;
     additionalData: { [key: string]: any }
+    _svgElements: any;
   }
 
   export class BaseInstrument {
@@ -33,6 +34,7 @@ declare module "MSFS" {
   export class WayPointInfo {
     constructor(_instrument: BaseInstrument);
     coordinates: LatLongAlt;
+    icao: string;
     ident: string;
     instrument: BaseInstrument;
     magneticVariation?: number;

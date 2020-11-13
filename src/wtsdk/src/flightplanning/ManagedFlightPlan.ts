@@ -185,7 +185,7 @@ export class ManagedFlightPlan {
         if (index !== undefined) {
           const segmentIndex = index - segment.offset;
           if (segmentIndex < segment.waypoints.length) {
-            segment.waypoints.splice(index, 0, mappedWaypoint);
+            segment.waypoints.splice(segmentIndex, 0, mappedWaypoint);
           }
           else {
             segment.waypoints.push(mappedWaypoint);
@@ -362,62 +362,56 @@ export class ManagedFlightPlan {
    * Copies a sanitized version of the flight plan for shared data storage.
    * @returns The sanitized flight plan.
    */
-  public copySanitized(): ManagedFlightPlan {
+  public serialize(): any {
+    const planCopy = new ManagedFlightPlan();
+    const copyWaypoint = (waypoint: WayPoint) => ({
+      icao: waypoint.icao,
+      ident: waypoint.ident,
+      type: waypoint.type,
+      infos: {
+        icao: waypoint.infos.icao,
+        ident: waypoint.infos.ident,
+        coordinates: {
+          lat: waypoint.infos.coordinates.lat,
+          long: waypoint.infos.coordinates.long,
+          alt: waypoint.infos.coordinates.alt 
+        }
+      }
+    });
 
-    let sanitized = Object.assign({}, this);
-    delete sanitized._parentInstrument;
+    const copyAirfield = (airfield: WayPoint): WayPoint => {
+      const copy = Object.assign(new WayPoint(undefined), airfield);
+      copy.infos = Object.assign(new AirportInfo(undefined), copy.infos);
 
-    if (sanitized.originAirfield) {
-      sanitized.originAirfield = Object.assign({}, sanitized.originAirfield);
-      delete sanitized.originAirfield.instrument;
-      delete sanitized.originAirfield.infos.instrument;
-      delete sanitized.originAirfield.infos._svgElements;
+      delete copy.instrument;
+      delete copy.infos.instrument;
+      delete copy._svgElements;
+      delete copy.infos._svgElements;
+
+      return copy;
     }
 
-    if (sanitized.destinationAirfield) {
-      sanitized.destinationAirfield = Object.assign({}, sanitized.destinationAirfield);
-      delete sanitized.destinationAirfield.instrument;
-      delete sanitized.destinationAirfield.infos.instrument;
-      delete sanitized.destinationAirfield.infos._svgElements;
+    planCopy.activeWaypointIndex = this.activeWaypointIndex;
+    planCopy.destinationAirfield = this.destinationAirfield && copyAirfield(this.destinationAirfield);
+    planCopy.originAirfield = this.originAirfield && copyAirfield(this.originAirfield);
+    
+    planCopy.length = this.length;
+
+    planCopy.procedureDetails = Object.assign({}, this.procedureDetails);
+    planCopy.directTo = Object.assign({}, this.directTo);
+
+    const copySegments = [];
+    for (var segment of this._segments) {
+      const copySegment = new FlightPlanSegment(segment.type, segment.offset, []);
+      for (var waypoint of segment.waypoints) {
+        copySegment.waypoints.push(copyWaypoint(waypoint) as WayPoint);
+      }
+
+      copySegments.push(copySegment);
     }
 
-    sanitized._segments = [...this._segments];
-
-    for (var i = 0; i < sanitized._segments.length; i++) {
-      const segment = Object.assign({}, sanitized._segments[i]);
-      segment.waypoints = segment.waypoints.map(waypoint => {
-        let clone = Object.assign({}, waypoint);
-        clone.infos = Object.assign({}, clone.infos);
-
-        const visitObject = (obj) => {
-
-          if (Array.isArray(obj)) {
-            obj = [...obj];
-          }
-          else {
-            obj = Object.assign({}, obj);
-          }
-
-          delete obj.instrument;
-          delete obj._svgElements;
-
-          for (var key in obj) {
-            if (typeof obj[key] === 'object') {
-              obj[key] = visitObject(obj[key]);
-            }
-          }
-
-          return obj;
-        };
-
-        clone = visitObject(clone);
-        return clone;
-      });
-
-      sanitized._segments[i] = segment;
-    }
-
-    return sanitized;
+    planCopy._segments = copySegments;
+    return planCopy;
   }
 
   /**
@@ -469,10 +463,10 @@ export class ManagedFlightPlan {
     const planeHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "Radians") * Avionics.Utils.RAD2DEG;
 
     const headingToFix = Avionics.Utils.computeGreatCircleHeading(planeCoords, waypoint.infos.coordinates);
-    let angleDiff = Avionics.Utils.angleDiff(planeHeading, headingToFix);
+    let angleDiff = Math.abs(Avionics.Utils.angleDiff(planeHeading, headingToFix));
 
     const turnDurationSeconds = (angleDiff / 3) + 6;
-    const interceptDistance = (groundSpeed / 60) * turnDurationSeconds;
+    const interceptDistance = (groundSpeed / 60 / 60) * turnDurationSeconds;
 
     const createInterceptPoint = (coords: LatLongAlt) => {
       const interceptWaypoint = new WayPoint(this._parentInstrument);
@@ -484,7 +478,7 @@ export class ManagedFlightPlan {
       return interceptWaypoint;
     };
 
-    const coords = Avionics.Utils.bearingDistanceToCoordinates(planeHeading, interceptDistance, lat, long);
+    const coords = Avionics.Utils.bearingDistanceToCoordinates(planeHeading, Math.min(interceptDistance, 1.0), lat, long);
     return [createInterceptPoint(coords)];
 
     //TODO: Work out better direct to intercept waypoint(s)
