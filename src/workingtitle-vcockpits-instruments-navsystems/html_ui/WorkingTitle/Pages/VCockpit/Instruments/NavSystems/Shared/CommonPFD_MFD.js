@@ -2635,10 +2635,11 @@ class MFD_NearestAirport_Element extends NavSystemElement {
                 if (this.runwayIndex >= infos.runways.length) {
                     this.runwayIndex = 0;
                 }
-                Avionics.Utils.diffAndSet(this.runwayDesignation, infos.runways[this.runwayIndex].designation);
-                Avionics.Utils.diffAndSet(this.runwaySurface, infos.runways[this.runwayIndex].getSurfaceString());
-                Avionics.Utils.diffAndSet(this.runwayLength, fastToFixed(infos.runways[this.runwayIndex].length, 0) + "FT");
-                Avionics.Utils.diffAndSet(this.runwayWidth, fastToFixed(infos.runways[this.runwayIndex].width, 0) + "FT");
+                const currentRunway = infos.runways[this.runwayIndex];
+                Avionics.Utils.diffAndSet(this.runwayDesignation, currentRunway.designation);
+                Avionics.Utils.diffAndSet(this.runwaySurface, currentRunway.getSurfaceString());
+                Avionics.Utils.diffAndSet(this.runwayLength, Math.round(WT_Unit.METER.convert(currentRunway.length, WT_Unit.FOOT)) + "FT");
+                Avionics.Utils.diffAndSet(this.runwayWidth, Math.round(WT_Unit.METER.convert(currentRunway.width, WT_Unit.FOOT)) + "FT");
             }
             if (infos.frequencies) {
                 let elems = [];
@@ -3213,23 +3214,30 @@ class MFD_ApproachSelection extends NavSystemElement {
             this.selectedTransition = 0;
         }
     }
+    getSelectedApproach(airport) {
+        if (airport && airport.approaches && this.selectedApproach >= 0 && airport.approaches.length > this.selectedApproach) {
+            return airport.approaches[this.selectedApproach];
+        }
+        return null;
+    }
     openTransitionList(_event) {
         if (_event == "ENT_Push" || _event == "NavigationSmallInc" || _event == "NavigationSmallDec") {
             let infos = this.icaoSearchField.getUpdatedInfos();
             let nbElems = 0;
             this.transitionSelectables = [];
-            if (infos && infos.icao && infos.approaches.length > this.selectedApproach && infos.approaches[this.selectedApproach].transitions.length > 0) {
-                for (let i = 0; i < infos.approaches[this.selectedApproach].transitions.length; i++) {
+            let approach = this.getSelectedApproach(infos);
+            if (approach && approach.transitions.length > 0) {
+                for (let i = 0; i < approach.transitions.length; i++) {
                     if (i >= this.transitionLines.length) {
                         this.transitionLines.push(document.createElement("div"));
                         this.transitionList.appendChild(this.transitionLines[i]);
                     }
-                    Avionics.Utils.diffAndSet(this.transitionLines[i], infos.approaches[this.selectedApproach].transitions[i].name);
+                    Avionics.Utils.diffAndSet(this.transitionLines[i], approach.transitions[i].name);
                     Avionics.Utils.diffAndSetAttribute(this.transitionLines[i], "state", "Active");
                     Avionics.Utils.diffAndSetAttribute(this.transitionLines[i], "class", "Blinking");
                     this.transitionSelectables.push(new SelectableElement(this.gps, this.transitionLines[i], this.selectTransition.bind(this, i)));
                 }
-                nbElems = infos.approaches[this.selectedApproach].transitions.length;
+                nbElems = approach.transitions.length;
             }
             for (let i = nbElems; i < this.transitionLines.length; i++) {
                 Avionics.Utils.diffAndSetAttribute(this.transitionLines[i], "state", "Inactive");
@@ -3292,10 +3300,11 @@ class MFD_ApproachSelection extends NavSystemElement {
             else {
                 Avionics.Utils.diffAndSetAttribute(this.elem_airportLogo, "src", "");
             }
-            if (infos.approaches.length > this.selectedApproach) {
-                Avionics.Utils.diffAndSet(this.elem_approach, infos.approaches[this.selectedApproach].name);
-                if (infos.approaches[this.selectedApproach].transitions.length > this.selectedTransition) {
-                    Avionics.Utils.diffAndSet(this.elem_transition, infos.approaches[this.selectedApproach].transitions[this.selectedTransition].name);
+            let approach = this.getSelectedApproach(infos);
+            if (approach) {
+                Avionics.Utils.diffAndSet(this.elem_approach, approach.name);
+                if (approach.transitions && this.selectedTransition >= 0 && approach.transitions.length > this.selectedTransition) {
+                    Avionics.Utils.diffAndSet(this.elem_transition, approach.transitions[this.selectedTransition].name);
                 }
                 else {
                     Avionics.Utils.diffAndSet(this.elem_transition, "NONE");
@@ -3307,24 +3316,24 @@ class MFD_ApproachSelection extends NavSystemElement {
             }
             if (this.elem_sequence && this.nbLines > 0) {
                 let sequence = [];
-                if (infos.approaches.length > this.selectedApproach) {
-                    if (infos.approaches[this.selectedApproach].transitions.length > this.selectedTransition) {
-                        for (let i = 0; i < infos.approaches[this.selectedApproach].transitions[this.selectedTransition].waypoints.length; i++) {
-                            if (infos.approaches[this.selectedApproach].transitions[this.selectedTransition].waypoints[i] != undefined) {
-                                sequence.push('<td class="Blinking">' + infos.approaches[this.selectedApproach].transitions[this.selectedTransition].waypoints[i].infos.ident + "</td><td>"
+                if (approach) {
+                    if (approach.transitions && this.selectedTransition >= 0 && approach.transitions.length > this.selectedTransition) {
+                        for (let i = 0; i < approach.transitions[this.selectedTransition].waypoints.length; i++) {
+                            if (approach.transitions[this.selectedTransition].waypoints[i] != undefined) {
+                                sequence.push('<td class="Blinking">' + approach.transitions[this.selectedTransition].waypoints[i].infos.ident + "</td><td>"
                                     + " " + "</td><td>"
                                     + " " + "</td><td>"
-                                    + (infos.approaches[this.selectedApproach].transitions[this.selectedTransition].waypoints[i].bearingInFP ? infos.approaches[this.selectedApproach].transitions[this.selectedTransition].waypoints[i].bearingInFP.toFixed(0) + "°" : "") + "</td><td>"
-                                    + (infos.approaches[this.selectedApproach].transitions[this.selectedTransition].waypoints[i].distanceInFP ? infos.approaches[this.selectedApproach].transitions[this.selectedTransition].waypoints[i].distanceInFP.toFixed(1) + "NM" : "") + "</td>");
+                                    + (approach.transitions[this.selectedTransition].waypoints[i].bearingInFP ? approach.transitions[this.selectedTransition].waypoints[i].bearingInFP.toFixed(0) + "°" : "") + "</td><td>"
+                                    + (approach.transitions[this.selectedTransition].waypoints[i].distanceInFP ? approach.transitions[this.selectedTransition].waypoints[i].distanceInFP.toFixed(1) + "NM" : "") + "</td>");
                             }
                         }
                     }
-                    for (let i = 0; i < infos.approaches[this.selectedApproach].wayPoints.length; i++) {
-                        sequence.push('<td class="Blinking">' + infos.approaches[this.selectedApproach].wayPoints[i].ident + "</td><td>"
+                    for (let i = 0; i < approach.wayPoints.length; i++) {
+                        sequence.push('<td class="Blinking">' + approach.wayPoints[i].ident + "</td><td>"
                             + " " + "</td><td>"
                             + " " + "</td><td>"
-                            + infos.approaches[this.selectedApproach].wayPoints[i].bearingInFP.toFixed(0) + "°" + "</td><td>"
-                            + infos.approaches[this.selectedApproach].wayPoints[i].distanceInFP.toFixed(1) + "NM" + "</td>");
+                            + approach.wayPoints[i].bearingInFP.toFixed(0) + "°" + "</td><td>"
+                            + approach.wayPoints[i].distanceInFP.toFixed(1) + "NM" + "</td>");
                     }
                     this.sequenceSliderGroup.setStringElements(sequence);
                 }
@@ -3449,6 +3458,12 @@ class MFD_ArrivalSelection extends NavSystemElement {
             this.gps.SwitchToInteractionState(3);
         }
     }
+    getSelectedArrival(airport) {
+        if (airport && airport.arrivals && this.selectedArrival >= 0 && this.selectedArrival < airport.arrivals.length) {
+            return airport.arrivals[this.selectedArrival];
+        }
+        return null;
+    }
     openArrivalList(_event) {
         if (_event == "ENT_Push" || _event == "NavigationSmallInc" || _event == "NavigationSmallDec") {
             let infos = this.icaoSearchField.getUpdatedInfos();
@@ -3477,20 +3492,22 @@ class MFD_ArrivalSelection extends NavSystemElement {
     openTransitionList(_event) {
         if (_event == "ENT_Push" || _event == "NavigationSmallInc" || _event == "NavigationSmallDec") {
             let infos = this.icaoSearchField.getUpdatedInfos();
+            let arrival = this.getSelectedArrival(infos);
             let nbElems = 0;
+            arrival;
             this.transitionSelectables = [];
-            if (infos && infos.icao && infos.arrivals.length > this.selectedArrival && infos.arrivals[this.selectedArrival].enRouteTransitions.length > 0) {
-                for (let i = 0; i < infos.arrivals[this.selectedArrival].enRouteTransitions.length; i++) {
+            if (arrival && arrival.enRouteTransitions.length > 0) {
+                for (let i = 0; i < arrival.enRouteTransitions.length; i++) {
                     if (i >= this.transitionLines.length) {
                         this.transitionLines.push(document.createElement("div"));
                         this.transitionList.appendChild(this.transitionLines[i]);
                     }
-                    Avionics.Utils.diffAndSet(this.transitionLines[i], infos.arrivals[this.selectedArrival].enRouteTransitions[i].name);
+                    Avionics.Utils.diffAndSet(this.transitionLines[i], arrival.enRouteTransitions[i].name);
                     Avionics.Utils.diffAndSetAttribute(this.transitionLines[i], "state", "Active");
                     Avionics.Utils.diffAndSetAttribute(this.transitionLines[i], "class", "Blinking");
                     this.transitionSelectables.push(new SelectableElement(this.gps, this.transitionLines[i], this.selectTransition.bind(this, i)));
                 }
-                nbElems = infos.arrivals[this.selectedArrival].enRouteTransitions.length;
+                nbElems = arrival.enRouteTransitions.length;
             }
             for (let i = nbElems; i < this.transitionLines.length; i++) {
                 Avionics.Utils.diffAndSetAttribute(this.transitionLines[i], "state", "Inactive");
@@ -3511,20 +3528,21 @@ class MFD_ArrivalSelection extends NavSystemElement {
     openRunwaysList(_event) {
         if (_event == "ENT_Push" || _event == "NavigationSmallInc" || _event == "NavigationSmallDec") {
             let infos = this.icaoSearchField.getUpdatedInfos();
+            let arrival = this.getSelectedArrival(infos);
             let nbElems = 0;
             this.runwaySelectables = [];
-            if (infos && infos.icao && infos.arrivals.length > this.selectedArrival && infos.arrivals[this.selectedArrival].runwayTransitions.length > 0) {
-                for (let i = 0; i < infos.arrivals[this.selectedArrival].runwayTransitions.length; i++) {
+            if (arrival && arrival.runwayTransitions.length > 0) {
+                for (let i = 0; i < arrival.runwayTransitions.length; i++) {
                     if (i >= this.runwayLines.length) {
                         this.runwayLines.push(document.createElement("div"));
                         this.runwayList.appendChild(this.runwayLines[i]);
                     }
-                    Avionics.Utils.diffAndSet(this.runwayLines[i], infos.arrivals[this.selectedArrival].runwayTransitions[i].name);
+                    Avionics.Utils.diffAndSet(this.runwayLines[i], arrival.runwayTransitions[i].name);
                     Avionics.Utils.diffAndSetAttribute(this.runwayLines[i], "state", "Active");
                     Avionics.Utils.diffAndSetAttribute(this.runwayLines[i], "class", "Blinking");
                     this.runwaySelectables.push(new SelectableElement(this.gps, this.runwayLines[i], this.selectRunway.bind(this, i)));
                 }
-                nbElems = infos.arrivals[this.selectedArrival].runwayTransitions.length;
+                nbElems = arrival.runwayTransitions.length;
             }
             for (let i = nbElems; i < this.runwayLines.length; i++) {
                 Avionics.Utils.diffAndSetAttribute(this.runwayLines[i], "state", "Inactive");
@@ -3587,16 +3605,17 @@ class MFD_ArrivalSelection extends NavSystemElement {
             else {
                 Avionics.Utils.diffAndSetAttribute(this.elem_airportLogo, "src", "");
             }
-            if (infos.arrivals.length > this.selectedArrival) {
-                Avionics.Utils.diffAndSet(this.elem_arrival, infos.arrivals[this.selectedArrival].name);
-                if (infos.arrivals[this.selectedArrival].enRouteTransitions.length > this.selectedTransition) {
-                    Avionics.Utils.diffAndSet(this.elem_transition, infos.arrivals[this.selectedArrival].enRouteTransitions[this.selectedTransition].name);
+            let arrival = this.getSelectedArrival(infos);
+            if (arrival) {
+                Avionics.Utils.diffAndSet(this.elem_arrival, arrival.name);
+                if (arrival.enRouteTransitions && this.selectedTransition >= 0 && arrival.enRouteTransitions.length > this.selectedTransition) {
+                    Avionics.Utils.diffAndSet(this.elem_transition, arrival.enRouteTransitions[this.selectedTransition].name);
                 }
                 else {
                     Avionics.Utils.diffAndSet(this.elem_transition, "NONE");
                 }
-                if (infos.arrivals[this.selectedArrival].runwayTransitions.length > this.selectedRunway) {
-                    Avionics.Utils.diffAndSet(this.elem_runway, infos.arrivals[this.selectedArrival].runwayTransitions[this.selectedRunway].name);
+                if (arrival.runwayTransitions && this.selectedRunway >= 0 && arrival.runwayTransitions.length > this.selectedRunway) {
+                    Avionics.Utils.diffAndSet(this.elem_runway, arrival.runwayTransitions[this.selectedRunway].name);
                 }
                 else {
                     Avionics.Utils.diffAndSet(this.elem_runway, "ALL");
@@ -3608,30 +3627,30 @@ class MFD_ArrivalSelection extends NavSystemElement {
             }
             if (this.elem_sequence && this.nbLines > 0) {
                 let sequence = [];
-                if (infos.arrivals.length > this.selectedArrival) {
-                    if (infos.arrivals[this.selectedArrival].runwayTransitions.length > this.selectedRunway) {
-                        for (let i = 0; i < infos.arrivals[this.selectedArrival].runwayTransitions[this.selectedRunway].legs.length; i++) {
-                            sequence.push('<td class="Blinking">' + infos.arrivals[this.selectedArrival].runwayTransitions[this.selectedRunway].legs[i].fixIcao.substr(7, 5) + "</td><td>"
+                if (arrival) {
+                    if (arrival.runwayTransitions && this.selectedRunway >= 0 && arrival.runwayTransitions.length > this.selectedRunway) {
+                        for (let i = 0; i < arrival.runwayTransitions[this.selectedRunway].legs.length; i++) {
+                            sequence.push('<td class="Blinking">' + arrival.runwayTransitions[this.selectedRunway].legs[i].fixIcao.substr(7, 5) + "</td><td>"
                                 + " " + "</td><td>"
                                 + " " + "</td><td>"
-                                + infos.arrivals[this.selectedArrival].runwayTransitions[this.selectedRunway].legs[i].course.toFixed(0) + "°" + "</td><td>"
-                                + infos.arrivals[this.selectedArrival].runwayTransitions[this.selectedRunway].legs[i].distance.toFixed(1) + "NM" + "</td>");
+                                + arrival.runwayTransitions[this.selectedRunway].legs[i].course.toFixed(0) + "°" + "</td><td>"
+                                + arrival.runwayTransitions[this.selectedRunway].legs[i].distance.toFixed(1) + "NM" + "</td>");
                         }
                     }
-                    for (let i = 0; i < infos.arrivals[this.selectedArrival].commonLegs.length; i++) {
-                        sequence.push('<td class="Blinking">' + infos.arrivals[this.selectedArrival].commonLegs[i].fixIcao.substr(7, 5) + "</td><td>"
+                    for (let i = 0; i < arrival.commonLegs.length; i++) {
+                        sequence.push('<td class="Blinking">' + arrival.commonLegs[i].fixIcao.substr(7, 5) + "</td><td>"
                             + " " + "</td><td>"
                             + " " + "</td><td>"
-                            + infos.arrivals[this.selectedArrival].commonLegs[i].course.toFixed(0) + "°" + "</td><td>"
-                            + infos.arrivals[this.selectedArrival].commonLegs[i].distance.toFixed(1) + "NM" + "</td>");
+                            + arrival.commonLegs[i].course.toFixed(0) + "°" + "</td><td>"
+                            + arrival.commonLegs[i].distance.toFixed(1) + "NM" + "</td>");
                     }
-                    if (infos.arrivals[this.selectedArrival].enRouteTransitions.length > this.selectedTransition) {
-                        for (let i = 0; i < infos.arrivals[this.selectedArrival].enRouteTransitions[this.selectedTransition].legs.length; i++) {
-                            sequence.push('<td class="Blinking">' + infos.arrivals[this.selectedArrival].enRouteTransitions[this.selectedTransition].legs[i].fixIcao.substr(7, 5) + "</td><td>"
+                    if (arrival.enRouteTransitions && this.selectedTransition >= 0 && arrival.enRouteTransitions.length > this.selectedTransition) {
+                        for (let i = 0; i < arrival.enRouteTransitions[this.selectedTransition].legs.length; i++) {
+                            sequence.push('<td class="Blinking">' + arrival.enRouteTransitions[this.selectedTransition].legs[i].fixIcao.substr(7, 5) + "</td><td>"
                                 + " " + "</td><td>"
                                 + " " + "</td><td>"
-                                + infos.arrivals[this.selectedArrival].enRouteTransitions[this.selectedTransition].legs[i].course.toFixed(0) + "°" + "</td><td>"
-                                + infos.arrivals[this.selectedArrival].enRouteTransitions[this.selectedTransition].legs[i].distance.toFixed(1) + "NM" + "</td>");
+                                + arrival.enRouteTransitions[this.selectedTransition].legs[i].course.toFixed(0) + "°" + "</td><td>"
+                                + arrival.enRouteTransitions[this.selectedTransition].legs[i].distance.toFixed(1) + "NM" + "</td>");
                         }
                     }
                     this.sequenceSliderGroup.setStringElements(sequence);
@@ -3781,23 +3800,30 @@ class MFD_DepartureSelection extends NavSystemElement {
             this.selectedRunway = 0;
         }
     }
+    getSelectedDeparture(airport) {
+        if (airport && airport.departures && this.selectedDeparture >= 0 && airport.departures.length > this.selectedDeparture) {
+            return airport.departures[this.selectedDeparture];
+        }
+        return null;
+    }
     openTransitionList(_event) {
         if (_event == "ENT_Push" || _event == "NavigationSmallInc" || _event == "NavigationSmallDec") {
             let infos = this.icaoSearchField.getUpdatedInfos();
             let nbElems = 0;
             this.transitionSelectables = [];
-            if (infos && infos.icao && infos.departures.length > this.selectedDeparture && infos.departures[this.selectedDeparture].enRouteTransitions.length > 0) {
-                for (let i = 0; i < infos.departures[this.selectedDeparture].enRouteTransitions.length; i++) {
+            let departure = this.getSelectedDeparture(infos);
+            if (departure && departure.enRouteTransitions.length > 0) {
+                for (let i = 0; i < departure.enRouteTransitions.length; i++) {
                     if (i >= this.transitionLines.length) {
                         this.transitionLines.push(document.createElement("div"));
                         this.transitionList.appendChild(this.transitionLines[i]);
                     }
-                    Avionics.Utils.diffAndSet(this.transitionLines[i], infos.departures[this.selectedDeparture].enRouteTransitions[i].name);
+                    Avionics.Utils.diffAndSet(this.transitionLines[i], departure.enRouteTransitions[i].name);
                     Avionics.Utils.diffAndSetAttribute(this.transitionLines[i], "state", "Active");
                     Avionics.Utils.diffAndSetAttribute(this.transitionLines[i], "class", "Blinking");
                     this.transitionSelectables.push(new SelectableElement(this.gps, this.transitionLines[i], this.selectTransition.bind(this, i)));
                 }
-                nbElems = infos.departures[this.selectedDeparture].enRouteTransitions.length;
+                nbElems = departure.enRouteTransitions.length;
             }
             for (let i = nbElems; i < this.transitionLines.length; i++) {
                 Avionics.Utils.diffAndSetAttribute(this.transitionLines[i], "state", "Inactive");
@@ -3820,18 +3846,19 @@ class MFD_DepartureSelection extends NavSystemElement {
             let infos = this.icaoSearchField.getUpdatedInfos();
             let nbElems = 0;
             this.runwaySelectables = [];
-            if (infos && infos.icao && infos.departures.length > this.selectedDeparture && infos.departures[this.selectedDeparture].runwayTransitions.length > 0) {
-                for (let i = 0; i < infos.departures[this.selectedDeparture].runwayTransitions.length; i++) {
+            let departure = this.getSelectedDeparture(infos);
+            if (departure && departure.runwayTransitions.length > 0) {
+                for (let i = 0; i < departure.runwayTransitions.length; i++) {
                     if (i >= this.runwayLines.length) {
                         this.runwayLines.push(document.createElement("div"));
                         this.runwayList.appendChild(this.runwayLines[i]);
                     }
-                    Avionics.Utils.diffAndSet(this.runwayLines[i], infos.departures[this.selectedDeparture].runwayTransitions[i].name);
+                    Avionics.Utils.diffAndSet(this.runwayLines[i], departure.runwayTransitions[i].name);
                     Avionics.Utils.diffAndSetAttribute(this.runwayLines[i], "state", "Active");
                     Avionics.Utils.diffAndSetAttribute(this.runwayLines[i], "class", "Blinking");
                     this.runwaySelectables.push(new SelectableElement(this.gps, this.runwayLines[i], this.selectRunway.bind(this, i)));
                 }
-                nbElems = infos.departures[this.selectedDeparture].runwayTransitions.length;
+                nbElems = departure.runwayTransitions.length;
             }
             for (let i = nbElems; i < this.runwayLines.length; i++) {
                 Avionics.Utils.diffAndSetAttribute(this.runwayLines[i], "state", "Inactive");
@@ -3894,16 +3921,17 @@ class MFD_DepartureSelection extends NavSystemElement {
             else {
                 Avionics.Utils.diffAndSetAttribute(this.elem_airportLogo, "src", "");
             }
-            if (infos.departures.length > this.selectedDeparture) {
-                Avionics.Utils.diffAndSet(this.elem_departure, infos.departures[this.selectedDeparture].name);
-                if (infos.departures[this.selectedDeparture].enRouteTransitions.length > this.selectedTransition) {
-                    Avionics.Utils.diffAndSet(this.elem_transition, infos.departures[this.selectedDeparture].enRouteTransitions[this.selectedTransition].name);
+            let departure = this.getSelectedDeparture(infos);
+            if (departure) {
+                Avionics.Utils.diffAndSet(this.elem_departure, departure.name);
+                if (this.selectedTransition >= 0 && departure.enRouteTransitions.length > this.selectedTransition) {
+                    Avionics.Utils.diffAndSet(this.elem_transition, departure.enRouteTransitions[this.selectedTransition].name);
                 }
                 else {
                     Avionics.Utils.diffAndSet(this.elem_transition, "NONE");
                 }
-                if (infos.departures[this.selectedDeparture].runwayTransitions.length > this.selectedRunway) {
-                    Avionics.Utils.diffAndSet(this.elem_runway, infos.departures[this.selectedDeparture].runwayTransitions[this.selectedRunway].name);
+                if (this.selectedRunway >= 0 && departure.runwayTransitions.length > this.selectedRunway) {
+                    Avionics.Utils.diffAndSet(this.elem_runway, departure.runwayTransitions[this.selectedRunway].name);
                 }
                 else {
                     Avionics.Utils.diffAndSet(this.elem_runway, "ALL");
@@ -3915,30 +3943,30 @@ class MFD_DepartureSelection extends NavSystemElement {
             }
             if (this.elem_sequence && this.nbLines > 0) {
                 let sequence = [];
-                if (infos.departures.length > this.selectedDeparture) {
-                    if (infos.departures[this.selectedDeparture].enRouteTransitions.length > this.selectedTransition) {
-                        for (let i = 0; i < infos.departures[this.selectedDeparture].enRouteTransitions[this.selectedTransition].legs.length; i++) {
-                            sequence.push('<td class="Blinking">' + infos.departures[this.selectedDeparture].enRouteTransitions[this.selectedTransition].legs[i].fixIcao.substr(7, 5) + "</td><td>"
+                if (departure) {
+                    if (departure.enRouteTransitions && this.selectedTransition >= 0 && departure.enRouteTransitions.length > this.selectedTransition) {
+                        for (let i = 0; i < departure.enRouteTransitions[this.selectedTransition].legs.length; i++) {
+                            sequence.push('<td class="Blinking">' + departure.enRouteTransitions[this.selectedTransition].legs[i].fixIcao.substr(7, 5) + "</td><td>"
                                 + " " + "</td><td>"
                                 + " " + "</td><td>"
-                                + infos.departures[this.selectedDeparture].enRouteTransitions[this.selectedTransition].legs[i].course.toFixed(0) + "°" + "</td><td>"
-                                + infos.departures[this.selectedDeparture].enRouteTransitions[this.selectedTransition].legs[i].distance.toFixed(1) + "NM" + "</td>");
+                                + departure.enRouteTransitions[this.selectedTransition].legs[i].course.toFixed(0) + "°" + "</td><td>"
+                                + departure.enRouteTransitions[this.selectedTransition].legs[i].distance.toFixed(1) + "NM" + "</td>");
                         }
                     }
-                    for (let i = 0; i < infos.departures[this.selectedDeparture].commonLegs.length; i++) {
-                        sequence.push('<td class="Blinking">' + infos.departures[this.selectedDeparture].commonLegs[i].fixIcao.substr(7, 5) + "</td><td>"
+                    for (let i = 0; i < departure.commonLegs.length; i++) {
+                        sequence.push('<td class="Blinking">' + departure.commonLegs[i].fixIcao.substr(7, 5) + "</td><td>"
                             + " " + "</td><td>"
                             + " " + "</td><td>"
-                            + infos.departures[this.selectedDeparture].commonLegs[i].course.toFixed(0) + "°" + "</td><td>"
-                            + infos.departures[this.selectedDeparture].commonLegs[i].distance.toFixed(1) + "NM" + "</td>");
+                            + departure.commonLegs[i].course.toFixed(0) + "°" + "</td><td>"
+                            + departure.commonLegs[i].distance.toFixed(1) + "NM" + "</td>");
                     }
-                    if (infos.departures[this.selectedDeparture].runwayTransitions.length > this.selectedRunway) {
-                        for (let i = 0; i < infos.departures[this.selectedDeparture].runwayTransitions[this.selectedRunway].legs.length; i++) {
-                            sequence.push('<td class="Blinking">' + infos.departures[this.selectedDeparture].runwayTransitions[this.selectedRunway].legs[i].fixIcao.substr(7, 5) + "</td><td>"
+                    if (departure.enRouteTransitions && this.selectedRunway >= 0 && departure.enRouteTransitions.length > this.selectedRunway) {
+                        for (let i = 0; i < departure.runwayTransitions[this.selectedRunway].legs.length; i++) {
+                            sequence.push('<td class="Blinking">' + departure.runwayTransitions[this.selectedRunway].legs[i].fixIcao.substr(7, 5) + "</td><td>"
                                 + " " + "</td><td>"
                                 + " " + "</td><td>"
-                                + infos.departures[this.selectedDeparture].runwayTransitions[this.selectedRunway].legs[i].course.toFixed(0) + "°" + "</td><td>"
-                                + infos.departures[this.selectedDeparture].runwayTransitions[this.selectedRunway].legs[i].distance.toFixed(1) + "NM" + "</td>");
+                                + departure.runwayTransitions[this.selectedRunway].legs[i].course.toFixed(0) + "°" + "</td><td>"
+                                + departure.runwayTransitions[this.selectedRunway].legs[i].distance.toFixed(1) + "NM" + "</td>");
                         }
                     }
                     this.sequenceSliderGroup.setStringElements(sequence);

@@ -584,14 +584,6 @@ class WT_TimeFormatter extends WT_NumberFormatter {
         return WT_TimeFormatter.OPTIONS;
     }
 
-    _formatHours(numberUnit) {
-        let hours = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.HOUR));
-        let hoursText = hours.toFixed(0);
-        hoursText = hoursText.padStart(this.pad, "0");
-        hoursText += this._formatUnit(hours, WT_Unit.HOUR);
-        return {number: hours, text: hoursText}
-    }
-
     getFormattedNumber(numberUnit) {
         let savedUnitShow = this.unitShow;
         this.unitShow = false;
@@ -610,14 +602,12 @@ class WT_TimeFormatter extends WT_NumberFormatter {
         let hoursUnitText = "";
         let minUnitText = "";
         let secUnitText = "";
-        if (this.timeFormat != WT_TimeFormatter.Format.MM_SS) {
-            let hoursInfo = this._formatHours(numberUnit);
-            if (!(this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hoursInfo.number == 0)) {
-                hours = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.HOUR));
-                hoursText = hours.toFixed(0);
-                hoursText = hoursText.padStart(this.pad, "0");
-                hoursUnitText = this._formatUnit(hours, WT_Unit.HOUR) + ":";
-            }
+
+        hours = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.HOUR));
+        if (this.timeFormat != WT_TimeFormatter.Format.MM_SS && !(this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hours == 0)) {
+            hoursText = hours.toFixed(0);
+            hoursText = hoursText.padStart(this.pad, "0");
+            hoursUnitText = this._formatUnit(hours, WT_Unit.HOUR) + (this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS ? "+" : ":");
         }
 
         let hourSubtract = 0;

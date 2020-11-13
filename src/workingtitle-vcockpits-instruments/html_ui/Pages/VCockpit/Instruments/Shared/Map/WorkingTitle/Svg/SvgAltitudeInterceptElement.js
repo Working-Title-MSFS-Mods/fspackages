@@ -10,9 +10,11 @@ class SvgAltitudeInterceptElement extends SvgMapElement {
         this.altitudeTargetThreshold = SvgAltitudeInterceptElement.ALTITUDE_TARGET_THRESHOLD_DEFAULT;   // feet, minimum deviation from altitude target before arc is shown
         this.smoothingConstant = SvgAltitudeInterceptElement.SMOOTHING_CONSTANT;                        // larger values = more smoothing but also more temporal lag
 
-        this.lastTime = 0;
-        this.lastDistance = -1;
-        this.lastMapRange = 0;
+        this.facingHeadingGetter = SvgAltitudeInterceptElement.FACING_HEADING_GETTER_DEFAULT;
+
+        this._lastTime = 0;
+        this._lastDistance = -1;
+        this._lastMapRange = 0;
     }
 
     id(map) {
@@ -57,7 +59,7 @@ class SvgAltitudeInterceptElement extends SvgMapElement {
         }
 
         let currentTime = Date.now() / 1000;
-        let dt = currentTime - this.lastTime;
+        let dt = currentTime - this._lastTime;
 
         let vSpeed = SimVar.GetSimVarValue("VERTICAL SPEED", "feet per minute");
         let altTarget = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
@@ -65,21 +67,21 @@ class SvgAltitudeInterceptElement extends SvgMapElement {
         if (Math.abs(vSpeed) < this.vSpeedThreshold || ((altTarget - altCurrent) / vSpeed) < 0 || Math.abs(altTarget - altCurrent) < this.altitudeTargetThreshold) {
             this.arcOuter.setAttribute("display", "none");
             this.arcInner.setAttribute("display", "none");
-            this.lastDistance = -1;
+            this._lastDistance = -1;
             return;
         }
 
-        let mapRangeChanged = map.NMWidth != this.lastMapRange;
+        let mapRangeChanged = map.NMWidth != this._lastMapRange;
 
         let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") / map.NMWidth * 1000 / 60;
-        let track = SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+        let facing = this.facingHeadingGetter.getFacingHeading();
 
         let centerPos = map.getPlanePositionXY();
         let distance = (altTarget - altCurrent) / vSpeed * groundSpeed;
 
-        if (this.lastDistance >= 0 && !mapRangeChanged) {
+        if (this._lastDistance >= 0 && !mapRangeChanged) {
             let smoothingFactor = Math.pow(0.5, dt * this.smoothingConstant);
-            distance = distance * smoothingFactor + (this.lastDistance) * (1 - smoothingFactor);
+            distance = distance * smoothingFactor + (this._lastDistance) * (1 - smoothingFactor);
         }
 
         let arcAngularWidthRad = this.angularWidth * Math.PI / 180;
@@ -87,13 +89,13 @@ class SvgAltitudeInterceptElement extends SvgMapElement {
         let arcEnd = SvgAltitudeInterceptElement.getRadialOffsetPos(centerPos, distance, arcAngularWidthRad / 2);
 
         this.arcOuter.setAttribute("d", `M ${arcStart.x} ${arcStart.y} A ${distance} ${distance} 0 0 1 ${arcEnd.x} ${arcEnd.y}`);
-        this.arcOuter.setAttribute("transform", `rotate(${track + map.rotation} ${centerPos.x} ${centerPos.y})`);
+        this.arcOuter.setAttribute("transform", `rotate(${facing + map.rotation} ${centerPos.x} ${centerPos.y})`);
         this.arcInner.setAttribute("d", `M ${arcStart.x} ${arcStart.y} A ${distance} ${distance} 0 0 1 ${arcEnd.x} ${arcEnd.y}`);
-        this.arcInner.setAttribute("transform", `rotate(${track + map.rotation} ${centerPos.x} ${centerPos.y})`);
+        this.arcInner.setAttribute("transform", `rotate(${facing + map.rotation} ${centerPos.x} ${centerPos.y})`);
 
-        this.lastTime = currentTime;
-        this.lastDistance = distance;
-        this.lastMapRange = map.NMWidth;
+        this._lastTime = currentTime;
+        this._lastDistance = distance;
+        this._lastMapRange = map.NMWidth;
 
         this.arcOuter.setAttribute("display", "inherit");
         this.arcInner.setAttribute("display", "inherit");
@@ -112,3 +114,9 @@ SvgAltitudeInterceptElement.ANGULAR_WIDTH_DEFAULT = 40;
 SvgAltitudeInterceptElement.VERTICAL_SPEED_THRESHOLD_DEFAULT = 100;
 SvgAltitudeInterceptElement.ALTITUDE_TARGET_THRESHOLD_DEFAULT = 100;
 SvgAltitudeInterceptElement.SMOOTHING_CONSTANT = 100;
+
+SvgAltitudeInterceptElement.FACING_HEADING_GETTER_DEFAULT = {
+    getFacingHeading() {
+        return SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+    }
+};
