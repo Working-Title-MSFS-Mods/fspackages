@@ -536,8 +536,10 @@
 		<Component ID="ENGINE_PEDESTAL">
 			<DefaultTemplateParameters>
 				<LEVER_TYPE>REVERSE_IDLE_FULL</LEVER_TYPE>
-				<DRAG_ANIM_VAR_1>(O:XMLVAR_ENGINE_Lever_Throttle_1_Animation_Position)</DRAG_ANIM_VAR_1>
-				<DRAG_ANIM_VAR_2>(O:XMLVAR_ENGINE_Lever_Throttle_2_Animation_Position)</DRAG_ANIM_VAR_2>
+				<!-- <DRAG_ANIM_VAR_1>(O:XMLVAR_ENGINE_Lever_Throttle_1_Animation_Position)</DRAG_ANIM_VAR_1>
+				<DRAG_ANIM_VAR_2>(O:XMLVAR_ENGINE_Lever_Throttle_2_Animation_Position)</DRAG_ANIM_VAR_2> -->
+				<DRAG_ANIM_VAR_1>(L:Throttle1_Pos)</DRAG_ANIM_VAR_1>
+				<DRAG_ANIM_VAR_2>(L:Throttle2_Pos)</DRAG_ANIM_VAR_2>
 				<HAS_IDLE_GATE/>
 				<!-- idle position percent in anim -->
 				<IDLE Process="Float">1 9 /</IDLE>

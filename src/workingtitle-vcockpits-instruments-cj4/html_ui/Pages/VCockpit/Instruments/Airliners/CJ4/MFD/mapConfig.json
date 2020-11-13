@@ -11,7 +11,7 @@
   "waypointLabelColor": "white",
   "waypointLabelStrokeColor": "#3f3f3f",
   "waypointLabelStrokeWidth": 0,
-  "waypointLabelUseBackground": true,
+  "waypointLabelUseBackground": false,
   "waypointLabelBackgroundColor": "#3f4851",
   "waypointLabelBackgroundStrokeColor": "black",
   "waypointLabelBackgroundStrokeWidth": 0,

@@ -44,7 +44,7 @@ class CJ4_FMC_FplnRecallPage {
                 if (idx >= routeArr.length - 1) {
                     // DONE
                     fmc.setMsg("FPLN LOADED[green]");
-                    fmc.flightPlanManager.setActiveWaypointIndex(0);
+                    fmc.flightPlanManager.setActiveWaypointIndex(1);
                     CJ4_FMC_RoutePage.ShowPage1(fmc);
                     return;
                 }
