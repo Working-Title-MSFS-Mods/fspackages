@@ -2457,7 +2457,7 @@ class CJ4_SystemFMS extends NavSystemElement {
                     let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
                     let aircraftPosition = new LatLong(lat, long);
                     let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-                    const FPWaypoints = flightPlanManager._waypoints[flightPlanManager._currentFlightPlanIndex];
+                    const FPWaypoints = flightPlanManager.getWaypoints();
                     const UTCTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
 
                     if (FPWaypoints) {

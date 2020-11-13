@@ -54,6 +54,9 @@ class CJ4_FMC extends FMCMainDisplay {
         this.currentInput = undefined;
         this.previousInput = undefined;
         this._frameUpdates = 0;
+        this._vnav = undefined;
+        this._vpathMode = false;
+        this._lnav = undefined;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -149,6 +152,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     this.refreshPageCallback();
                 }
             }
+            this.onMsg = () => { CJ4_FMC_VNavSetupPage.ShowPage6(this); };
             this._activatingDirectToExisting = false;
         };
 
@@ -239,6 +243,12 @@ class CJ4_FMC extends FMCMainDisplay {
         if (input === "EXEC") {
             if (this.onExec) {
                 this.onExec();
+            }
+            return true;
+        }
+        if (input === "MSG") {
+            if (this.onMsg) {
+                this.onMsg();
             }
             return true;
         }
@@ -384,12 +394,12 @@ class CJ4_FMC extends FMCMainDisplay {
             });
         });
     }
-    //function added to convert FMS units between metric and imperial
 
     updateAutopilot() {
         let now = performance.now();
         let dt = now - this._lastUpdateAPTime;
         this._lastUpdateAPTime = now;
+
         if (isFinite(dt)) {
             this.updateAutopilotCooldown -= dt;
         }
@@ -404,110 +414,99 @@ class CJ4_FMC extends FMCMainDisplay {
             }
             this._apHasDeactivated = !currentApMasterStatus && this._previousApMasterStatus;
             this._previousApMasterStatus = currentApMasterStatus;
-            let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean");
-            let currentAltitude = Simplane.getAltitude();
-            let groundSpeed = Simplane.getGroundSpeed();
-            let apTargetAltitude = Simplane.getAutoPilotAltitudeLockValue("feet");
-            let planeHeading = Simplane.getHeadingMagnetic();
-            let planeCoordinates = new LatLong(SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude"), SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude"));
+
+            //SET DEFAULT VS VALUE TO CURRENT VS
+            if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
+                Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, Simplane.getVerticalSpeed());
+            }
+
+            //UPDATE VNAV REGARDLESS OF WHETHER AP IS ENGAGED
+            if (this._vnav === undefined) {
+                this._vnav = new WT_BaseVnav(this.flightPlanManager);
+                this._vnav.activate();
+            }
+            else {
+                this._vnav.update();
+            }
+
+            if (this._lnav === undefined) {
+                this._lnav = new WT_BaseLnav(this.flightPlanManager);
+                this._lnav.activate();
+            }
+            else {
+                this._lnav.update();
+            }
+
+            let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
             if (isVNAVActivate) {
-                let isInAltMode = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number") == 3;
-                this._wasInAltMode = isInAltMode || this._wasInAltMode;
-                let prevWaypoint = this.flightPlanManager.getPreviousActiveWaypoint();
-                let nextWaypoint = this.flightPlanManager.getActiveWaypoint();
-                if (nextWaypoint && (nextWaypoint.legAltitudeDescription === 3 || nextWaypoint.legAltitudeDescription === 4)) {
-                    let targetAltitude = nextWaypoint.legAltitude1;
-                    if (nextWaypoint.legAltitudeDescription === 4) {
-                        targetAltitude = Math.max(nextWaypoint.legAltitude1, nextWaypoint.legAltitude2);
+                // vnav turned on, init it
+                let altMode = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean");
+                let flcMode = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean");
+                let vsMode = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean");
+                let gsMode = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean");
+                let pitMode = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean");
+                //let currentAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
+                //let selectedAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
+                let altDelta = Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feet");
+
+                //ACTIVATE VNAV MODE
+                if (this._currentAP === undefined) {
+                    if (flcMode || vsMode || gsMode || pitMode) {
+                        this._vpathMode = false;
+                        this._currentAP = new WT_VModeAutopilot(this.flightPlanManager);
+                        this._currentAP.activate();
                     }
-                    let showTopOfDescent = false;
-                    let topOfDescentLat;
-                    let topOfDescentLong;
-                    this._hasReachedTopOfDescent = true;
-                    if (currentAltitude > targetAltitude + 40) {
-                        let vSpeed = 3000;
-                        let descentDuration = Math.abs(targetAltitude - currentAltitude) / vSpeed / 60;
-                        let descentDistance = descentDuration * groundSpeed;
-                        let distanceToTarget = Avionics.Utils.computeGreatCircleDistance(prevWaypoint.infos.coordinates, nextWaypoint.infos.coordinates);
-                        showTopOfDescent = true;
-                        let f = 1 - descentDistance / distanceToTarget;
-                        topOfDescentLat = Avionics.Utils.lerpAngle(planeCoordinates.lat, nextWaypoint.infos.lat, f);
-                        topOfDescentLong = Avionics.Utils.lerpAngle(planeCoordinates.long, nextWaypoint.infos.long, f);
-                        if (distanceToTarget + 1 > descentDistance) {
-                            this._hasReachedTopOfDescent = false;
-                        }
-                    }
-                    if (showTopOfDescent) {
-                        SimVar.SetSimVarValue("L:AIRLINER_FMS_SHOW_TOP_DSCNT", "number", 1);
-                        SimVar.SetSimVarValue("L:AIRLINER_FMS_LAT_TOP_DSCNT", "number", topOfDescentLat);
-                        SimVar.SetSimVarValue("L:AIRLINER_FMS_LONG_TOP_DSCNT", "number", topOfDescentLong);
-                    }
-                    else {
-                        SimVar.SetSimVarValue("L:AIRLINER_FMS_SHOW_TOP_DSCNT", "number", 0);
-                    }
-                    let altitude = Simplane.getAutoPilotSelectedAltitudeLockValue("feet");
-                    let constraintRespected = false;
-                    if (isFinite(nextWaypoint.legAltitude1) && altitude <= nextWaypoint.legAltitude1) {
-                        if (this._hasReachedTopOfDescent) {
-                            SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
-                            Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, nextWaypoint.legAltitude1, true);
-                            SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
-                            constraintRespected = true;
-                        }
-                    }
-                    if (!constraintRespected) {
-                        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", this._wasInAltMode ? 3 : 0);
-                        SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
-                        this._wasInAltMode = false;
+                    else if (altMode && altDelta < 100) {
+                        this._vpathMode = true;
+                        this._currentAP = new WT_VNavPathAutopilot(this.flightPlanManager);
+                        this._currentAP.activate();
                     }
                 }
-                else {
-                    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", this._wasInAltMode ? 3 : 0);
-                    SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
+                //UPDATE VNAV MODE
+                else if (this._currentAP) {
+                    if (this._vpathMode == true && (flcMode || vsMode || gsMode || pitMode)) {
+                        this._vpathMode = false;
+                        this._currentAP.deactivate();
+                        this._currentAP = new WT_VModeAutopilot(this.flightPlanManager);
+                    }
+                    else if (this._vpathMode == false && !flcMode && !vsMode && !gsMode && !pitMode) {
+                        this._vpathMode = true;
+                        this._currentAP.deactivate();
+                        this._currentAP = new WT_VNavPathAutopilot(this.flightPlanManager);
+                    }
+
+                    this._currentAP.update();
+                    this._currentAP.execute();
+                }
+
+            }
+            else {
+                if (this._currentAP) {
+                    // vnav turned off, destroy it
+                    this._currentAP.deactivate();
+                    this._currentAP = undefined;
                 }
             }
-            else if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number") != 3) {
-                if (this._wasInAltMode) {
-                    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
-                    this._wasInAltMode = false;
-                }
-                else {
-                    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 0);
-                }
-                SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
+
+            //ACTIVATE LNAV
+            const isLNAVActivate = SimVar.GetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'Bool');
+            if (isLNAVActivate) {
+                SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
+                SimVar.SetSimVarValue("K:AP_HDG_HOLD_ON", "number", 1);
             }
-            if (!this.flightPlanManager.isActiveApproach()) {
-                let activeWaypoint = this.flightPlanManager.getActiveWaypoint();
-                let nextActiveWaypoint = this.flightPlanManager.getNextActiveWaypoint();
-                if (activeWaypoint && nextActiveWaypoint) {
-                    let pathAngle = nextActiveWaypoint.bearingInFP - activeWaypoint.bearingInFP;
-                    while (pathAngle < 180) {
-                        pathAngle += 360;
-                    }
-                    while (pathAngle > 180) {
-                        pathAngle -= 360;
-                    }
-                    let absPathAngle = 180 - Math.abs(pathAngle);
-                    let airspeed = Simplane.getIndicatedSpeed();
-                    if (airspeed < 400) {
-                        let turnRadius = airspeed * 360 / (1091 * 0.36 / airspeed) / 3600 / 2 / Math.PI;
-                        let activateDistance = Math.pow(90 / absPathAngle, 1.6) * turnRadius * 1.2;
-                        let distanceToActive = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, activeWaypoint.infos.coordinates);
-                        if (distanceToActive < activateDistance) {
-                            this.flightPlanManager.setActiveWaypointIndex(this.flightPlanManager.getActiveWaypointIndex() + 1);
-                        }
-                    }
-                }
+            else {
+                SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
             }
+
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MAX_CALCULATED", "knots", Simplane.getMaxSpeed(Aircraft.CJ4));
 
+            // DONT DELETE: mach mode fix
             const machMode = Simplane.getAutoPilotMachModeActive();
             if (machMode) {
                 const machAirspeed = Simplane.getAutoPilotMachHoldValue();
                 Coherent.call("AP_MACH_VAR_SET", 0, parseFloat(machAirspeed.toFixed(2)));
             }
-
 
             this.updateAutopilotCooldown = this._apCooldown;
         }

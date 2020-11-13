@@ -1,4 +1,5 @@
 {
+    "root": true,
     "env": {
         "browser": true,
         "es2017": true
@@ -23,6 +24,8 @@
         "EmptyCallback": "writable",
         "LatLong": "writable",
         "Coherent": "writable",
+        "WT_BaseAutopilot": "writable",
+        "WT_VNavPathAutopilot": "writable",
         "SimVar": "writable",
         "Simplane": "writable",
         "fastToFixed": "writable",

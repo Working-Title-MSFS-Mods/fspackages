@@ -53,3 +53,10 @@ ipch/
 *.cachefile
 *.VC.db
 *.VC.VC.opendb
+
+node_modules
+dist
+.cache
+.tmp
+src/workingtitle-vcockpits-instruments-cj4/html_ui/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/wtsdk.js
+

@@ -58,7 +58,7 @@ class FacilityLoader {
         this._maxSimultaneousCoherentCalls = 20;
         this._pendingGetFacilityCoherentCall = [];
         this.instrument = _instrument;
-        this._pendingRawRequests = new Map();
+        this._loadedIcaos = {};
         this.registerListener();
     }
     registerListener() {
@@ -72,10 +72,16 @@ class FacilityLoader {
                 this.addFacility(data);
             });
             Coherent.on("SendIntersection", (data) => {
-                this.addFacility(data);
+                if (!this._loadedIcaos[data.icao]) {
+                    this._loadedIcaos[data.icao] = true;
+                    this.addFacility(data);
+                }
             });
             Coherent.on("SendVor", (data) => {
-                this.addFacility(data);
+                if (!this._loadedIcaos[data.icao]) {
+                    this._loadedIcaos[data.icao] = true;
+                    this.addFacility(data);
+                }
             });
             Coherent.on("SendNdb", (data) => {
                 this.addFacility(data);
@@ -96,64 +102,13 @@ class FacilityLoader {
         }
     }
     addFacility(_data) {
-
         _data.icaoTrimed = _data.icao.trim();
-
-        // After a "Coherent.call('LOAD_*', icao)" we get many responses received by "Coherent.on('Send*'") for the same facility.
-        // The assumption is: The data is the same across the multiple receptions. If this does not hold, this approach needs to be reconsidered.
-        // The idea is to
-        //  - avoid redundancy in "loadedFacilities"
-        //  - keep subsequent search operations fast at the cost of an existence check here
-        //  - reduce the need to reload facilities, after they got shifted out due to the 1000 elements limit
-        // So: Load the facility only, if we don't have it already.
-        // We, however, allow two variants of a facility: With and without routes. Some users of "loadedFacilites" look for the variant with routes, some for the other.
-        let facilityIndex = this.loadedFacilities.findIndex(f => f.icao === _data.icao && ((f.routes === undefined && _data.routes === undefined) || (f.routes !== undefined && _data.routes !== undefined)));
-        let facilityLoadedAlready = facilityIndex > -1;
-        if (!facilityLoadedAlready) {
-            this.loadedFacilities.push(_data);
-            while (this.loadedFacilities.length > 1000) {
-                this.loadedFacilities.splice(0, 1);
-            }
-        }
-
-        const pendingRequest = this._pendingRawRequests.get(_data.icaoTrimed);
-        if (pendingRequest) {
-            clearTimeout(pendingRequest.timeout);
-            pendingRequest.resolve(_data);
-            this._pendingRawRequests.delete(_data.icaoTrimed);
+        this.loadedFacilities.push(_data);
+        while (this.loadedFacilities.length > 1000) {
+            this.loadedFacilities.splice(0, 1);
         }
     }
-    /**
-     * Gets the raw facility data for a given icao.
-     * @param {String} icao The ICAO to get the raw facility data for.
-     */
-    getFacilityRaw(icao, timeout = 1000) {
-        return new Promise((resolve) => {
-            const request = {
-                resolve: resolve,
-                timeout: setTimeout(() => resolve(undefined), timeout),
-                icao: icao.trim()
-            };
-
-            this._pendingRawRequests.set(request.icao, request);
-            const type = icao[0];
-            switch (type) {
-                case 'A':
-                    Coherent.call('LOAD_AIRPORT', icao);
-                    break;
-                case 'W':
-                    Coherent.call('LOAD_INTERSECTION', icao);
-                    break;
-                case 'V':
-                    Coherent.call('LOAD_VOR', icao);
-                    break;
-                case 'N':
-                    Coherent.call('LOAD_NDB', icao);
-                    break;
-            }
-        });
-    }
-    getFacilityCB(icao, callback, loadFacilitiesTransitively = false) {
+    getFacilityCB(icao, callback) {
         if (this._isCompletelyRegistered && this.loadingFacilities.length < this._maxSimultaneousCoherentCalls) {
             this.getFacilityDataCB(icao, (data) => {
                 let waypoint;
@@ -161,7 +116,7 @@ class FacilityLoader {
                     waypoint = new WayPoint(this.instrument);
                     waypoint.SetFromIFacility(data, () => {
                         callback(waypoint);
-                    }, loadFacilitiesTransitively);
+                    });
                 }
                 else {
                     callback(undefined);
@@ -190,11 +145,11 @@ class FacilityLoader {
             await waitForCompleteRegistration();
         }
     }
-    async getFacility(icao, loadFacilitiesTransitively = false) {
+    async getFacility(icao) {
         return new Promise(resolve => {
             return this.getFacilityCB(icao, (wp) => {
                 resolve(wp);
-            }, loadFacilitiesTransitively);
+            });
         });
     }
     getFacilityDataCB(icao, callback) {
@@ -230,12 +185,12 @@ class FacilityLoader {
             });
         });
     }
-    async getAirport(icao, loadFacilitiesTransitively = false) {
+    async getAirport(icao) {
         await this.waitRegistration();
         let data = await this.getAirportData(icao);
         if (data) {
             let airport = new WayPoint(this.instrument);
-            airport.SetFromIFacility(data, EmptyCallback.Void, loadFacilitiesTransitively);
+            airport.SetFromIFacility(data);
             return airport;
         }
     }
@@ -244,12 +199,12 @@ class FacilityLoader {
             icao = icao.trim();
             let airport = this.loadedFacilities.find(f => { return f.icaoTrimed === icao && (f.routes === undefined); });
             if (airport) {
-                // console.log("Airport found in loadedFacilities array.");
+                console.log("Airport found in loadedFacilities array.");
                 return callback(airport);
             }
             else {
-                // console.log("Airport not found in loadedFacilities array.");
-                // console.log(this.loadedFacilities);
+                console.log("Airport not found in loadedFacilities array.");
+                console.log(this.loadedFacilities);
             }
             if (icao[0] !== "A") {
                 console.warn("Icao mismatch trying to load AIRPORT of invalid icao '" + icao + "'");
@@ -930,7 +885,7 @@ class FacilityLoader {
             loadedVorsCallback();
         });
     }
-    async getAllAirways(intersection, name = undefined, maxLength = 100) {
+    async getAllAirways(intersection, maxLength = 100) {
         await this.waitRegistration();
         let airways = [];
         let intersectionInfo;
@@ -941,7 +896,7 @@ class FacilityLoader {
             intersectionInfo = intersection;
         }
         if (intersectionInfo instanceof WayPointInfo) {
-            let datas = await this.getAllAirwaysData(intersectionInfo, name, maxLength);
+            let datas = await this.getAllAirwaysData(intersectionInfo);
             for (let i = 0; i < datas.length; i++) {
                 let airway = new Airway();
                 airway.SetFromIAirwayData(datas[i]);
@@ -950,28 +905,19 @@ class FacilityLoader {
         }
         return airways;
     }
-    async getAllAirwaysData(intersectionInfo, name = undefined, maxLength = 100) {
+    async getAllAirwaysData(intersectionInfo, maxLength = 100) {
         await this.waitRegistration();
         let airways = [];
         if (intersectionInfo.routes) {
             for (let i = 0; i < intersectionInfo.routes.length; i++) {
-                if (name === undefined || name === intersectionInfo.routes[i].name) {
-                    let routeName = intersectionInfo.routes[i].name;
-                    let airwayData = this.loadedAirwayDatas.get(routeName);
-                    if (!airwayData) {
-                        airwayData = await this.getAirwayData(intersectionInfo, intersectionInfo.routes[i].name, maxLength);
-                        this.loadedAirwayDatas.set(routeName, airwayData);
-                    }
-                    if (airwayData) {
-                        // if waypoint not in airway then reload it
-                        // find intersectioninfo.icao in airwayData.icaos
-                        if (airwayData.icaos.findIndex((x) => x === intersectionInfo.icao) === -1) {
-                            airwayData = await this.getAirwayData(intersectionInfo, intersectionInfo.routes[i].name, maxLength);
-                            this.loadedAirwayDatas.set(routeName, airwayData);
-                        }
-
-                        airways.push(airwayData);
-                    }
+                let routeName = intersectionInfo.routes[i].name;
+                let airwayData = this.loadedAirwayDatas.get(routeName);
+                if (!airwayData) {
+                    airwayData = await this.getAirwayData(intersectionInfo, intersectionInfo.routes[i].name, maxLength);
+                    this.loadedAirwayDatas.set(routeName, airwayData);
+                }
+                if (airwayData) {
+                    airways.push(airwayData);
                 }
             }
         }
@@ -979,7 +925,6 @@ class FacilityLoader {
     }
     async getAirwayData(intersectionInfo, name = "", maxLength = 100) {
         await this.waitRegistration();
-
         if (!intersectionInfo.routes) {
             return undefined;
         }
@@ -994,116 +939,39 @@ class FacilityLoader {
                 icaos: [intersectionInfo.icao]
             };
             let currentRoute = route;
-            let currentWaypointIcao = intersectionInfo.icao;
-
             for (let i = 0; i < maxLength * 0.5; i++) {
                 if (currentRoute) {
                     let prevIcao = currentRoute.prevIcao;
-
                     currentRoute = undefined;
                     if (prevIcao && prevIcao.length > 0 && prevIcao[0] != " ") {
                         let prevWaypoint = await this.getIntersectionData(prevIcao);
                         if (prevWaypoint) {
                             airway.icaos.splice(0, 0, prevWaypoint.icao);
-                            currentWaypointIcao = prevWaypoint.icao;
                             if (prevWaypoint.routes) {
                                 currentRoute = prevWaypoint.routes.find(r => { return r.name === name; });
                             }
                         }
-                    } else {
-                        break;
                     }
                 }
             }
             currentRoute = route;
-            currentWaypointIcao = intersectionInfo.icao;
             for (let i = 0; i < maxLength * 0.5; i++) {
                 if (currentRoute) {
                     let nextIcao = currentRoute.nextIcao;
-
                     currentRoute = undefined;
                     if (nextIcao && nextIcao.length > 0 && nextIcao[0] != " ") {
                         let nextWaypoint = await this.getIntersectionData(nextIcao);
                         if (nextWaypoint) {
                             airway.icaos.push(nextWaypoint.icao);
-                            currentWaypointIcao = nextWaypoint.icao;
                             if (nextWaypoint.routes) {
                                 currentRoute = nextWaypoint.routes.find(r => { return r.name === name; });
                             }
                         }
-                    } else {
-                        break;
                     }
                 }
             }
-
             return airway;
         }
-    }
-
-    async UpdateFacilityInfos(facility, loadFacilitiesTransitively = false) {
-        await this.waitRegistration();
-        return new Promise(resolve => {
-            facility.UpdateInfos(resolve, loadFacilitiesTransitively);
-        });
-    }
-
-    /* Gets an array of frequencies of the given airport ident.
-     */
-    async GetAirportNamedFrequenciesByIdent(airportIdent) {
-        await this.waitRegistration();
-        return new Promise(resolve => {
-            SimVar.SetSimVarValue("C:fs9gps:IcaoSearchStartCursor", "string", "A", this.instrument.instrumentIdentifier + "-loader").then(() => {
-                this.instrument.requestCall(() => {
-                    SimVar.SetSimVarValue("C:fs9gps:IcaoSearchEnterChar", "string", airportIdent, this.instrument.instrumentIdentifier + "-loader").then(() => {
-                        SimVar.SetSimVarValue("C:fs9gps:IcaoSearchMatchedIcao", "number", 0, this.instrument.instrumentIdentifier + "-loader").then(async () => {
-                            let airportIcao = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCurrentIcao", "string", this.instrument.instrumentIdentifier + "-loader");
-                            this.GetAirportNamedFrequencies(airportIcao).then((frequencies) => resolve(frequencies));
-                        });
-                    });
-                });
-            });
-        });
-    }
-
-    /* Gets an array of frequencies of the given airport icao.
-     * The elements of the returned array contain name ("Clearance", "Ground", etc.) and value in MHz.
-     */
-    async GetAirportNamedFrequencies(airportIcao) {
-        await this.waitRegistration();
-        return new Promise(resolve => {
-            SimVar.SetSimVarValue("C:fs9gps:WaypointAirportICAO", "string", airportIcao, this.instrument.instrumentIdentifier + "-loader").then(async () => {
-                let frequencyCount = SimVar.GetSimVarValue("C:fs9gps:WaypointAirportFrequenciesNumber", "number", this.instrument.instrumentIdentifier + "-loader");
-                let attempts = 0;
-                // Wait for the database query to complete
-                while (frequencyCount === 0 && attempts < 10) {
-                    await new Promise(resolve => this.instrument.requestCall(resolve));
-                    frequencyCount = SimVar.GetSimVarValue("C:fs9gps:WaypointAirportFrequenciesNumber", "number", this.instrument.instrumentIdentifier + "-loader");
-                    attempts++;
-                }
-
-                let getFrequency = async (index) => {
-                    return new Promise((resolve) => {
-                        SimVar.SetSimVarValue("C:fs9gps:WaypointAirportCurrentFrequency", "number", index, this.instrument.instrumentIdentifier + "-loader").then(() => {
-                            let frequencyName = SimVar.GetSimVarValue("C:fs9gps:WaypointAirportFrequencyName", "string", this.instrument.instrumentIdentifier + "-loader");
-                            let frequencyValue = SimVar.GetSimVarValue("C:fs9gps:WaypointAirportFrequencyValue", "number", this.instrument.instrumentIdentifier + "-loader");
-                            resolve({
-                                name: frequencyName,
-                                // convert from Hz to MHz
-                                value: (parseFloat(frequencyValue) / 1000000)
-                            });
-                        });
-                    });
-                };
-
-                let frequencies = [];
-                for (let i = 0; i < frequencyCount; i++) {
-                    let frequency = await getFrequency(i);
-                    frequencies.push(frequency);
-                }
-                resolve(frequencies);
-            });
-        });
     }
 }
 class WaypointLoader {
