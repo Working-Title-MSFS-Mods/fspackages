@@ -22,6 +22,10 @@ g1000-airport-information-page {
         }
     }
 
+    .metar-container {
+        display: none;
+    }
+
     .information {
         display: grid;
         grid-template-columns: 1fr 3ch 1fr;
@@ -78,6 +82,21 @@ g1000-airport-information-page {
 
     .units {
         font-size: 0.8em;
+    }
+
+    &[mode="WX"] {
+        .sidebar {
+            grid-template-rows: auto minmax(0, 1fr);
+        }
+
+        .metar-container {
+            display: block;
+        }
+
+        .runways-container,
+        .frequencies-container {
+            display: none;
+        }
     }
 
     &[mode="Info-2"] {

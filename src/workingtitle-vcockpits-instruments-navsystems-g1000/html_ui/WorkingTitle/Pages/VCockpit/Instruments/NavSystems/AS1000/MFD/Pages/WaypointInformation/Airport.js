@@ -3,15 +3,23 @@ class WT_Airport_Information_Model {
      * @param {WT_Show_Direct_To_Handler} showDirectToHandler
      * @param {WT_Waypoint_Repository} waypointRepository 
      * @param {WT_Airport_Database} airportDatabase 
+     * @param {WT_Metar_Repository} metarRepository 
      */
-    constructor(showDirectToHandler, waypointRepository, airportDatabase) {
+    constructor(showDirectToHandler, waypointRepository, airportDatabase, metarRepository) {
         this.showDirectToHandler = showDirectToHandler;
         this.waypointRepository = waypointRepository;
         this.airportDatabase = airportDatabase;
+        this.metarRepository = metarRepository;
         this.waypoint = new Subject(null);
+        this.metar = new Subject(null);
     }
     async setIcao(icao) {
         this.waypoint.value = await this.waypointRepository.load(icao);
+        try {
+            this.metar.value = this.metarRepository.get(this.waypoint.value.ident);
+        } catch (e) {
+            this.metar.value = null;
+        }
     }
     getCountry(ident) {
         let airport = this.airportDatabase.get(ident);
@@ -34,22 +42,27 @@ class WT_Airport_Information_Model {
 }
 
 class WT_Airport_Information_Soft_Key_Menu extends WT_Soft_Key_Menu {
+    /**
+     * @param {WT_Airport_Information_View} view 
+     */
     constructor(view) {
         super(true);
         let buttons = {
-            info: new WT_Soft_Key("", () => view.toggleInfoMode())
+            info: new WT_Soft_Key("", () => view.toggleInfoMode()),
+            wx: new WT_Soft_Key("WX", () => view.toggleWxMode())
         }
         this.addSoftKey(4, new WT_Soft_Key("CHRT"));
         this.addSoftKey(5, buttons.info);
         this.addSoftKey(6, new WT_Soft_Key("DP"));
         this.addSoftKey(7, new WT_Soft_Key("STAR"));
         this.addSoftKey(8, new WT_Soft_Key("APR"));
-        this.addSoftKey(9, new WT_Soft_Key("WX"));
+        this.addSoftKey(9, buttons.wx);
         this.addSoftKey(10, new WT_Soft_Key("NOTAM"));
 
-        view.infoMode.subscribe(mode => {
-            buttons.info.text = `INFO-${mode}`;
-            buttons.info.selected = true;
+        view.viewMode.subscribe(mode => {
+            buttons.wx.selected = mode == "WX";
+            buttons.info.text = mode == "Info-2" ? "INFO-2" : "INFO-1";
+            buttons.info.selected = mode == "Info-2" || mode == "Info-1";
         });
     }
 }
@@ -83,7 +96,7 @@ class WT_Airport_Information_View extends WT_HTML_View {
         this.frequencyListModel = frequencyListModel;
         this.menuHandler = menuHandler;
 
-        this.infoMode = new Subject(1);
+        this.viewMode = new Subject("Info-1");
         this.softKeyMenu = new WT_Airport_Information_Soft_Key_Menu(this);
 
         this.subscriptions = new Subscriptions();
@@ -112,8 +125,8 @@ class WT_Airport_Information_View extends WT_HTML_View {
             }
         })
 
-        this.infoMode.subscribe(mode => {
-            this.setAttribute("mode", `Info-${mode}`);
+        this.viewMode.subscribe(mode => {
+            this.setAttribute("mode", mode);
         });
 
         this.elements.directoryInformation.addEventListener("focus", () => this.elements.directory.setAttribute("highlighted", ""));
@@ -173,9 +186,30 @@ class WT_Airport_Information_View extends WT_HTML_View {
                 this.elements.timezone.textContent = `___`;
             }
         }));
+
+        this.subscriptions.add(model.metar.subscribe(metar => {
+            if (metar == null) {
+                this.elements.metar.innerHTML = "";
+                return;
+            }
+
+            const lines = [];
+            const metarData = metar.getMetar();
+            lines.push(`<b>Time:</b> ${metarData.time}`);
+            lines.push(`<b>Wind:</b> ${metarData.wind.direction} @ ${metarData.wind.speed}kts`);
+            lines.push(`<b>Visiblity:</b> ${metarData.visibility}`);
+            lines.push(`<b>Clouds:</b> ${metarData.clouds.map(cloud => {
+                return `${cloud.meaning.toUpperCase()} at ${cloud.altitude}ft`
+            }).join(", ")}`)
+            this.elements.metar.innerHTML = lines.join("<br/>");
+        }));
     }
     toggleInfoMode() {
-        this.infoMode.value = (this.infoMode.value % 2) + 1;
+        this.viewMode.value = this.viewMode.value == "Info-1" ? "Info-2" : "Info-1";
+        this.inputLayer.refreshSelected();
+    }
+    toggleWxMode() {
+        this.viewMode.value = "WX";
         this.inputLayer.refreshSelected();
     }
     enter(inputStack) {

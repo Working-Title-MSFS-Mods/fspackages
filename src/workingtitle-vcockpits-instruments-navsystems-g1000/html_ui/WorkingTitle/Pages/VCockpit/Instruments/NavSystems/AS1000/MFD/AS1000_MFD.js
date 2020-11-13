@@ -272,6 +272,8 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("fuelUsed", d => new WT_Fuel_Used(["FUEL LEFT QUANTITY", "FUEL RIGHT QUANTITY"]));
         d.register("electricityAvailable", d => new Subject(this.isElectricityAvailable()));
         d.register("changelogRepository", d => new WT_Changelog_Repository());
+        d.register("metarDownloader", d => new WT_Metar_Downloader());
+        d.register("metarRepository", d => new WT_Metar_Repository(d.metarDownloader));
 
         d.register("mainMap", d => {
             const map = document.querySelector("#MapInstrument");
@@ -304,7 +306,7 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("mapModel", d => new WT_Map_Model(this, d.mainMap), { scope: "transient" });
         d.register("mapView", d => new WT_Map_View(d.pageMenuHandler, d.softKeyController), { scope: "transient" });
 
-        d.register("airportInformationModel", d => new WT_Airport_Information_Model(d.showDirectToHandler, d.waypointRepository, d.airportDatabase), { scope: "transient" });
+        d.register("airportInformationModel", d => new WT_Airport_Information_Model(d.showDirectToHandler, d.waypointRepository, d.airportDatabase, d.metarRepository), { scope: "transient" });
         d.register("airportInformationView", d => new WT_Airport_Information_View(d.mainMap, d.waypointQuickSelect, d.frequencyListModel, d.softKeyMenuHandler), { scope: "transient" });
 
         d.register("intersectionInformationModel", d => new WT_Intersection_Information_Model(d.showDirectToHandler, d.waypointRepository), { scope: "transient" });
