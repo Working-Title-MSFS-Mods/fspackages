@@ -207,7 +207,7 @@ class Jet_NDCompass extends HTMLElement {
         let simHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
         let simSelectedHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degree");
         let simTrack = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree");
-        let simSelectedTrack = SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree");
+        let simSelectedTrack = Simplane.getNextWaypointTrack();
         let simGroundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
         if (Simplane.getAutoPilotTRKModeActive() || Simplane.getAutoPilotTRKFPAModeActive())
             this._referenceMode = Jet_NDCompass_Reference.TRACK;
@@ -518,9 +518,9 @@ class Jet_NDCompass extends HTMLElement {
                 else if (this.navigationMode === Jet_NDCompass_Navigation.NAV) {
 
                     displayCourseDeviation = true;
-                    let crossTrack = SimVar.GetSimVarValue("GPS WP CROSS TRK", "Number");
+                    let crossTrack = SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number");
                     let deviation = (crossTrack * 0.000539957) / 2; //Converts cross track to NM and then divides by 2 since enroute max deflection is 2nm off course)
-                    let simSelectedTrack = SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree");
+                    let simSelectedTrack = Simplane.getNextWaypointTrack();
                     this.setAttribute("course", simSelectedTrack.toString());
                     this.setAttribute("course_deviation", deviation.toString());
 
@@ -574,7 +574,7 @@ class Jet_NDCompass extends HTMLElement {
                         }
                     case 3:
                         {
-                            this.setAttribute("bearing1_bearing", SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
+                            this.setAttribute("bearing1_bearing", Simplane.getNextWaypointTrack());
                             break;
                         }
                     case 4:
@@ -613,7 +613,7 @@ class Jet_NDCompass extends HTMLElement {
                         }
                     case 3:
                         {
-                            this.setAttribute("bearing2_bearing", SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
+                            this.setAttribute("bearing2_bearing", Simplane.getNextWaypointTrack());
                             break;
                         }
                     case 4:
