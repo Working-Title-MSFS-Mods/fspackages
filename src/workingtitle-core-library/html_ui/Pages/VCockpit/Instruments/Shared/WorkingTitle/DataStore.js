@@ -9,7 +9,7 @@ class WTDataStore {
      * @returns {string|number|boolean} Either the stored value of the key, or the default value
      */
     static get(key, defaultValue) {
-        var storeKey = `${SimVar.GetSimVarValue("ATC MODEL", "string")}.${key}`;
+        const storeKey = `${SimVar.GetSimVarValue("ATC MODEL", "string")}.${key}`;
         try {
             var stringValue = GetStoredData(storeKey);
             if (stringValue == null || stringValue == "") {
@@ -39,7 +39,7 @@ class WTDataStore {
      * @param {string|number|boolean} The value to store
      */
     static set(key, value) {
-        var storeKey = `${SimVar.GetSimVarValue("ATC MODEL", "string")}.${key}`;
+        const storeKey = `${SimVar.GetSimVarValue("ATC MODEL", "string")}.${key}`;
         switch (typeof value) {
             case "string":
             case "number":
@@ -47,5 +47,14 @@ class WTDataStore {
                 SetStoredData(storeKey, value.toString());
         }
         return value;
+    }
+
+    /**
+     * Removes a key from the data store
+     * @param {string} key 
+     */
+    static remove(key) {
+        const storeKey = `${SimVar.GetSimVarValue("ATC MODEL", "string")}.${key}`;
+        DeleteStoredData(storeKey);
     }
 }

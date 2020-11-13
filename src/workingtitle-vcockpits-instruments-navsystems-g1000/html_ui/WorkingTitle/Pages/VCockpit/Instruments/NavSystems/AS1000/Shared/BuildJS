@@ -33,6 +33,7 @@ Data/Settings.js
 Data/WaypointQuickSelect.js
 Libs/CSV.js
 Libs/markdown.js
+Logic/Navigation/Controller.js
 Logic/Navigation/DirectTo.js
 Logic/Navigation/FlightPlan.js
 Logic/Navigation/OBS.js

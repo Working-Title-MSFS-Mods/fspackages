@@ -18,7 +18,7 @@ WT_Default_Settings.base = {
 
 WT_Default_Settings.modBase = {
     range_knob: "Range",
-    navigation_knob: "Default",
+    navigation_knob: "Normal",
     font_family: "default",
     font_size: "normal",
     scroll_wrap: "disabled",
@@ -71,12 +71,12 @@ class WT_Settings {
         let storedData = GetStoredData(this.getStorageKey());
         if (storedData) {
             let settings = JSON.parse(storedData);
-            /*for (let name of settings) {
-                let value = settings[name];
+            for (let name in settings) {
+                const value = settings[name];
                 if (this.settings[name] != value) {
                     this.onValueChanged(name, value);
                 }
-            }*/
+            }
             this.settings = settings;
             console.log("Loaded settings:");
             this.lastUpdated = parseInt(GetStoredData(this.getTimestampKey()));
@@ -98,7 +98,7 @@ class WT_Settings {
     }
     addListener(listener, pattern) {
         this.listeners.push({
-            patter: pattern,
+            pattern: pattern,
             listener: listener
         });
     }

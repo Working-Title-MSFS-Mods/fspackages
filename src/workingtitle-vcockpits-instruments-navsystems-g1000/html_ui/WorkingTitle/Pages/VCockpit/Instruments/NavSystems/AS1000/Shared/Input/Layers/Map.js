@@ -1,20 +1,28 @@
 class WT_Map_Input_Layer_Factory {
     /**
+     * @param {WT_Settings} modSettings 
+     */
+    constructor(modSettings) {
+        this.modSettings = modSettings;
+    }
+    /**
      * @param {MapInstrument} map 
      * @param {boolean} allowScrolling 
      */
     create(map, allowScrolling) {
-        return new WT_Map_Input_Layer(map, allowScrolling);
+        return new WT_Map_Input_Layer(map, this.modSettings, allowScrolling);
     }
 }
 
 class WT_Map_Input_Layer extends Input_Layer {
     /**
      * @param {MapInstrument} map 
+     * @param {WT_Settings} modSettings 
      * @param {boolean} allowScrolling 
      */
-    constructor(map, allowScrolling = true) {
+    constructor(map, modSettings, allowScrolling = true) {
         super()
+        this.modSettings = modSettings;
         this.cursorSpeed = 0.4;
         this.mapSpeed = this.cursorSpeed * 4;
         this.speedMultiplier = 1;
@@ -22,11 +30,14 @@ class WT_Map_Input_Layer extends Input_Layer {
         this.map = map;
         this.allowScrolling = allowScrolling;
     }
+    isRangeMode() {
+        return this.modSettings.getValue("range_knob") == "Range";
+    }
     onRangeInc() {
-        this.map.zoomIn();
+        this.isRangeMode() ? this.map.zoomOut() : this.map.zoomIn();
     }
     onRangeDec() {
-        this.map.zoomOut();
+        this.isRangeMode() ? this.map.zoomIn() : this.map.zoomOut();
     }
     updateSpeed() {
         let now = performance.now();

@@ -113,20 +113,3 @@ class WT_OBS_Controller {
 }
 WT_OBS_Controller.COURSE_LENGTH = 100;
 WT_OBS_Controller.FLIGHT_PLAN_INDEX = 20;
-
-class WT_Flight_Plan_Controller {
-    constructor() {
-        this.mode = null;
-    }
-    setMode(mode) {
-        if (this.mode)
-            this.mode.deactivate();
-        this.mode = mode;
-        if (this.mode)
-            this.mode.activate();
-    }
-    update(dt) {
-        if (this.mode)
-            this.mode.update(dt);
-    }
-}

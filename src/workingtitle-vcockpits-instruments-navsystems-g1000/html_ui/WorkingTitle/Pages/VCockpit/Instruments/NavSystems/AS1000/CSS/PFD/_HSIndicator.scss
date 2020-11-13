@@ -6,6 +6,9 @@ glasscockpit-hsi {
         font-family: $font_family_normal;
         font-weight: bold;
         text-anchor: middle;
+        stroke: #000;
+        stroke-width: 1.5;
+        paint-order: stroke;
     }
 
     .background-circle {
@@ -60,8 +63,8 @@ glasscockpit-hsi {
         }
 
         .circle-outline {
-            stroke: #000;
-            stroke-width: 2;
+            /*stroke: #000;
+            stroke-width: 2;*/
             fill: none;
         }
 

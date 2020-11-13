@@ -211,85 +211,39 @@ class AS1000_PFD extends BaseAS1000 {
         this.updatables = [];
 
         const d = new WT_Dependency_Container();
+        WT_Shared_Dependencies.add(d, this);
 
-        d.register("inputStack", d => new Input_Stack());
-        d.register("planeConfig", d => new WT_Plane_Config());
-        d.register("planeState", d => new WT_Plane_State());
-        d.register("radioAltimeter", d => new WT_Radio_Altimeter(d.planeConfig));
-        d.register("sound", d => new WT_Sound());
-        d.register("softKeyController", d => this.querySelector("g1000-soft-key-menu"));
-        d.register("settings", d => {
-            const settings = new WT_Settings("g36", WT_Default_Settings.base);
-            this.updatables.push(settings);
-            return settings;
-        });
-        d.register("modSettings", d => {
-            const settings = new WT_Settings("mod", WT_Default_Settings.modBase);
-            this.updatables.push(settings);
-            return settings;
-        });
-        d.register("unitChooser", d => new WT_Unit_Chooser(d.settings));
-        d.register("syntheticVision", d => new WT_Synthetic_Vision());
-        d.register("flightPlanManager", d => this.currFlightPlanManager);
-        d.register("facilityLoader", d => this.facilityLoader);
-        d.register("waypointRepository", d => new WT_Waypoint_Repository(d.facilityLoader));
-        d.register("nearestWaypoints", d => {
-            const repository = new WT_Nearest_Waypoints_Repository(this);
-            this.updatables.push(repository);
-            return repository;
-        });
-        d.register("waypointQuickSelect", d => new WT_Waypoint_Quick_Select(this, d.flightPlanManager));
         d.register("showPageMenuHandler", d => new WT_PFD_Show_Page_Menu_Handler(d.inputStack, document.getElementById("PageMenuContainer")));
         d.register("directToHandler", d => new WT_Direct_To_Handler(null, null)); //TODO:
         d.register("showDirectToHandler", d => new WT_PFD_Show_Direct_To_Handler(d.miniPageController, d.directToModel, d.directToView));
 
-        d.register("procedures", d => new Procedures(d.flightPlanManager));
-        d.register("brightnessSettings", d => new WT_Brightness_Settings());
-        d.register("barometricPressure", d => {
-            const pressure = new WT_Barometric_Pressure();
-            this.updatables.push(pressure);
-            return pressure;
-        });
-        d.register("airspeedReferences", d => new WT_Airspeed_References());
-        d.register("minimums", d => {
-            const minimums = new WT_Minimums(d.planeConfig);
-            this.updatables.push(minimums);
-            return minimums;
-        });
         d.register("miniPageController", d => {
             const controller = this.querySelector("g1000-pfd-mini-page-container");
             this.updatables.push(controller);
             return controller;
         });
 
-        d.register("directToModel", d => new WT_Direct_To_Model(this, null, d.waypointRepository, d.directToHandler));
         d.register("directToView", d => {
             const view = new WT_Direct_To_View(d.waypointQuickSelect, d.showPageMenuHandler);
             view.classList.add("mini-page");
             return view;
         });
-
-        d.register("flightPlanModel", d => new WT_Flight_Plan_Page_Model(d.flightPlanManager, d.procedures, null));
         d.register("flightPlanView", d => {
             const view = new WT_PFD_Flight_Plan_Page_View(d.showPageMenuHandler, null, null);
             view.classList.add("mini-page");
             return view;
         });
-
         d.register("proceduresMenuView", d => {
             const view = new WT_PFD_Procedures_Menu_View(d.showProcedureHandler, d.procedures); //TODO:
             view.classList.add("mini-page");
             return view;
         });
-        d.register("approachPageView", d => new WT_Approach_Page_View());
-        d.register("departurePageView", d => new WT_Departure_Page_View());
-        d.register("arrivalPageView", d => new WT_Arrival_Page_View());
-        d.register("procedureFacilityRepository", d => new WT_Procedure_Facility_Repository(d.facilityLoader));
         d.register("procedurePageModel", d => new WT_PFD_Procedure_Page_Model(d.flightPlanModel, d.procedureFacilityRepository));
         d.register("showProcedureHandler", d => new WT_PFD_Show_Procedure_Handler(d.miniPageController, d.waypointQuickSelect, d.procedurePageModel, d.approachPageView, d.arrivalPageView, d.departurePageView));
 
         d.register("alertsKey", d => new WT_PFD_Alert_Key(d.annunciationsModel));
 
+        d.register("syntheticVision", d => new WT_Synthetic_Vision());
         d.register("attitudeModel", d => {
             const model = new Attitude_Indicator_Model(d.syntheticVision, d.nearestWaypoints);
             this.updatables.push(model);
@@ -299,10 +253,9 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("hsiModel", d => new HSIIndicatorModel(d.syntheticVision));
         d.register("altimeterModel", d => new WT_Altimeter_Model(this, d.barometricPressure, d.minimums, d.radioAltimeter));
         d.register("airspeedModel", d => new WT_Airspeed_Model(d.airspeedReferences, d.unitChooser));
+        d.register("airspeedReferences", d => new WT_Airspeed_References());
 
         d.register("navBoxModel", d => new AS1000_PFD_Nav_Box_Model(d.unitChooser, d.flightPlanManager));
-        d.register("comFrequenciesModel", d => new WT_Com_Frequencies_Model());
-        d.register("navFrequenciesModel", d => new WT_Nav_Frequencies_Model());
 
         d.register("annunciationsModel", d => new WT_Annunciations_Model(d.planeConfig, d.sound, d.planeState));
         d.register("localTimeModel", d => new WT_Local_Time_Model(d.settings));

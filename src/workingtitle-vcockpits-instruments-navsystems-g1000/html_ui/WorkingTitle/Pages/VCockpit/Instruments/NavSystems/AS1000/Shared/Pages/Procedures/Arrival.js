@@ -4,6 +4,8 @@ class WT_Arrival_Page_View extends WT_HTML_View {
 
         this.procedures = new Subject([]);
         this.selectedProcedure = new Subject(null);
+
+        this.onLoadProcedure = new WT_Event();
     }
     connectedCallback() {
         let template = document.getElementById('arrival-page');
@@ -91,7 +93,7 @@ class WT_Arrival_Page_View extends WT_HTML_View {
         }
     }
     loadProcedure() {
-        this.onLoadApproach.fire(this.selectedProcedure.value);
+        this.onLoadProcedure.fire(this.selectedProcedure.value);
     }
 }
 customElements.define("g1000-arrival-page", WT_Arrival_Page_View);

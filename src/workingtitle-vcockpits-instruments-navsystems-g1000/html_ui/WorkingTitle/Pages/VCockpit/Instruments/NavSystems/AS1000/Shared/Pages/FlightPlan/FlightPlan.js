@@ -3,12 +3,14 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
      * @param {FlightPlanManager} flightPlan 
      * @param {Procedures} procedures 
      * @param {WT_Show_Airways_Handler} showAirwaysHandler 
+     * @param {WT_Show_Direct_To_Handler} showDirectToHandler 
      */
-    constructor(flightPlan, procedures, showAirwaysHandler) {
+    constructor(flightPlan, procedures, showAirwaysHandler, showDirectToHandler) {
         super();
         this.flightPlan = flightPlan;
         this.procedures = procedures;
         this.showAirwaysHandler = showAirwaysHandler;
+        this.showDirectToHandler = showDirectToHandler;
 
         this.activeLeg = procedures.activeLeg;
         this.waypoints = new Subject();
@@ -209,6 +211,13 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
     canShowAirwaySelector() {
         return this.previousWaypoint !== null && this.previousWaypoint.infos.routes && this.previousWaypoint.infos.routes.length > 0;
     }
+    directToSelected() {
+        if (this.selectedWaypoint) {
+            this.showDirectToHandler.show(this.selectedWaypoint.icao);
+            return true;
+        }
+        return false;
+    }
     showAirwaySelector() {
         if (this.canShowAirwaySelector()) {
             this.showAirwaysHandler.show(this.previousWaypoint.infos).then(waypoints => {
@@ -260,10 +269,16 @@ class WT_Flight_Plan_Input_Layer extends Selectables_Input_Layer {
     onMenuPush() {
         this.flightPlanView.showPageMenu();
     }
+    onDirectTo() {
+        return this.flightPlanView.onDirectTo();
+    }
 }
 
 class WT_Flight_Plan_Page_View extends WT_HTML_View {
     handleDelete() {
         throw new Error("WT_Flight_Plan_Page_View.handleDelete not implemented");
+    }
+    onDirectTo() {
+        throw new Error("WT_Flight_Plan_Page_View.onDirectTo not implemented");
     }
 }

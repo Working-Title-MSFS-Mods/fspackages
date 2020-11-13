@@ -119,5 +119,22 @@ class WT_Selected_Arrival_Procedure extends WT_Selected_Procedure {
         return this.procedure.airport;
     }
     load(flightPlan) {
+        return new Promise(resolve => {
+            console.log(`Setting desination to ${this.procedure.icao}...`);
+            flightPlan.setDesination(this.procedure.icao, () => {
+                console.log(`Setting arrival...`);
+                const promises = [];
+                promises.push(new Promise(resolve => {
+                    flightPlan.setArrivalProcIndex(this.procedure.procedureIndex, resolve);
+                }));
+                promises.push(new Promise(resolve => {
+                    flightPlan.setArrivalEnRouteTransitionIndex(this.enRouteTransitionIndex, resolve);
+                }));
+                promises.push(new Promise(resolve => {
+                    flightPlan.setArrivalRunwayIndex(this.runwayTransitionIndex, resolve);
+                }));
+                Promise.all(promises).then(resolve);
+            });
+        });
     }
 }

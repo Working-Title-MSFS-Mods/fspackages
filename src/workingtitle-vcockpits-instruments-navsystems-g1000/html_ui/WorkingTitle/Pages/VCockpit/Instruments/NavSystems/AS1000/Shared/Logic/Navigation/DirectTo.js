@@ -34,7 +34,22 @@ class WT_Direct_To_Handler {
     }
 }
 
-class WT_Direct_To_Controller {
+class WT_Direct_To_Controller_Factory {
+    /**
+     * @param {WT_Waypoint_Repository} waypoint 
+     * @param {MapInstrument} map 
+     */
+    constructor(waypointRepository, map) {
+        this.waypointRepository = waypointRepository;
+        this.map = map;
+    }
+    async create(icao, course) {
+        const waypoint = await this.waypointRepository.load(icao);
+        return new WT_Direct_To_Controller(waypoint, course, this.map);
+    }
+}
+
+class WT_Direct_To_Controller extends WT_Flight_Plan_Mode {
     /**
      * @param {WayPoint} waypoint 
      * @param {Number} course 
@@ -102,6 +117,15 @@ class WT_Direct_To_Controller {
         this.map.flightPlanElements.splice(this.map.flightPlanElements.findIndex(item => item == this.flightPlanElement), 1);
     }
     update(dt) {
+    }
+    getLegInformation() {
+        const from = null;
+        const to = this.waypoint.icao;
+        const symbol = "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to.bmp";
+        const distance = SimVar.GetSimVarValue("GPS WP DISTANCE", "kilometers");
+        const bearing = Math.round(SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
+
+        return new WT_Flight_Plan_Leg_Information(WT_Flight_Plan_Mode.MODE_DIRECT_TO, from, to, symbol, distance, bearing);
     }
 }
 WT_Direct_To_Controller.COURSE_LENGTH = 100;

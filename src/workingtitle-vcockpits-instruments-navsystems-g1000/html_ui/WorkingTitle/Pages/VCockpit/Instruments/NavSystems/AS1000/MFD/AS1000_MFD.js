@@ -251,7 +251,6 @@ class WT_Show_Waypoint_Info_Handler {
     }
 }
 
-
 class AS1000_MFD extends BaseAS1000 {
     constructor() {
         super();
@@ -274,9 +273,19 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("electricityAvailable", d => new Subject(this.isElectricityAvailable()));
         d.register("changelogRepository", d => new WT_Changelog_Repository());
 
-        d.register("mainMap", d => document.querySelector("#MapInstrument"));
+        d.register("mainMap", d => {
+            const map = document.querySelector("#MapInstrument");
+            map.rangeRingElement = new SvgRangeRingElement();
+            map.rangeCompassElement = new SvgRangeCompassElement();
+            map.trackVectorElement = new SvgTrackVectorElement();
+            map.fuelRingElement = new SvgFuelRingElement();
+            map.altitudeInterceptElement = new SvgAltitudeInterceptElement();
+            const feet = 1 / 6076;
+            map.zoomRanges = [500 * feet, 800 * feet, 1000 * feet, 1500 * feet, 2000 * feet, 3000 * feet, 5000 * feet, 1, 1.5, 2, 3, 5, 8, 10, 15, 20, 30, 50, 80, 100, 150, 200, 300, 500, 800, 1000];
+            return map;
+        });
         d.register("miniMap", d => document.querySelector("#MiniMap"));
-        d.register("mapInputLayerFactory", d => new WT_Map_Input_Layer_Factory());
+        d.register("mapInputLayerFactory", d => new WT_Map_Input_Layer_Factory(d.modSettings));
 
         d.register("waypointQuickSelect", d => new WT_Waypoint_Quick_Select(this, d.flightPlanManager));
         d.register("pageMenuHandler", d => new WT_MFD_Show_Page_Menu_Handler(d.inputStack, d.pageContainer, d.softKeyMenuHandler));
@@ -313,7 +322,7 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("creditsModel", d => new WT_Credits_Model(), { scope: "transient" });
         d.register("creditsView", d => new WT_Credits_View(), { scope: "transient" });
 
-        d.register("flightPlanModel", d => new WT_Flight_Plan_Page_Model(d.flightPlanManager, d.procedures, d.showAirwaysHandler), { scope: "transient" });
+        d.register("flightPlanModel", d => new WT_Flight_Plan_Page_Model(d.flightPlanManager, d.procedures, d.showAirwaysHandler, d.showDirectToHandler), { scope: "transient" });
         d.register("flightPlanView", d => new WT_MFD_Flight_Plan_Page_View(d.mainMap, d.softKeyMenuHandler, d.pageMenuHandler, d.confirmDialogHandler, d.newWaypointHandler), { scope: "transient" });
 
         d.register("nearestAirportsModel", d => new WT_Nearest_Airports_Model(this, d.showDirectToHandler, d.waypointRepository, d.unitChooser, d.mainMap, d.nearestWaypoints, d.showWaypointInfoHandler), { scope: "transient" });
@@ -366,6 +375,11 @@ class AS1000_MFD extends BaseAS1000 {
         ], d.pageTitle));
         d.register("mfdInputLayer", d => new Base_Input_Layer(this, d.navFrequenciesModel, d.comFrequenciesModel, d.showDirectToHandler, null));
 
+        d.register("mapSetup", d => new WT_Map_Setup(WT_Map_Setup.DEFAULT));
+        d.register("mapSetupHandler", d => new WT_Map_Setup_Handler(d.mapSetup, d.mainMap));
+        d.register("mapSetupModel", d => new WT_Map_Setup_Model(d.mapSetup), { scope: "transient" });
+        d.register("mapSetupView", d => new WT_Map_Setup_View(d.softKeyMenuHandler, d.mainMap), { scope: "transient" });
+
         this.dependencies = d.getDependencies();
     }
     get templateID() { return "AS1000_MFD"; }
@@ -389,6 +403,8 @@ class AS1000_MFD extends BaseAS1000 {
         this.miniMap = d.miniMap;
         this.pageTitle = d.pageTitle;
         this.softKeyMenuHandler = d.softKeyMenuHandler;
+        this.mapSetup = d.mapSetup;
+        this.mapSetupHandler = d.mapSetupHandler;
 
         this.updatables.push(d.flightPlanController);
         this.updatables.push(d.nearestWaypoints);
@@ -437,7 +453,6 @@ class AS1000_MFD extends BaseAS1000 {
     }
     initMainMap(mapInputLayerFactory) {
         this.mainMap.init(this);
-        this.mapSetup = new WT_Map_Setup();
         this.inputStack.push(mapInputLayerFactory.create(this.mainMap));
     }
     initMiniMap() {
@@ -511,10 +526,10 @@ class AS1000_MFD extends BaseAS1000 {
         this.pageTitle.value = "PROC - PROCEDURES";
     }
     showMapSetup() {
-        let view = new WT_Map_Setup_View(this.softKeyController);
-        let model = new WT_Map_Setup_Model(this.mapSetup);
-        view.setModel(model);
+        const view = this.dependencies.mapSetupView;
+        const model = this.dependencies.mapSetupModel;
         this.paneContainer.appendChild(view);
+        view.setModel(model);
         view.onExit.subscribe(() => {
             this.paneContainer.removeChild(view);
             view.deactivate();
@@ -1095,7 +1110,7 @@ class AS1000_MFD_AirportInfos1 extends NavSystemElement {
                 this.runwayNameElement.textContent = infos.runways[this.selectedRunway].designation;
             }
             this.runwaySizeElement.textContent = Math.round(WT_Unit.METER.convert(infos.runways[this.selectedRunway].length, WT_Unit.FOOT)) + "FT x " +
-                        Math.round(WT_Unit.METER.convert(infos.runways[this.selectedRunway].width, WT_Unit.FOOT)) + "FT";
+                Math.round(WT_Unit.METER.convert(infos.runways[this.selectedRunway].width, WT_Unit.FOOT)) + "FT";
             switch (infos.runways[this.selectedRunway].surface) {
                 case 0:
                     this.runwaySurfaceTypeElement.textContent = "Unknown";

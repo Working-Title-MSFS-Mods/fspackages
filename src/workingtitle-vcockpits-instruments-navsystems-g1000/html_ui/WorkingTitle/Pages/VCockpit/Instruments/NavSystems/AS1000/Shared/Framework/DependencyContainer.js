@@ -79,6 +79,8 @@ class WT_Shared_Dependencies {
         d.register("modSettings", d => {
             const settings = new WT_Settings("mod", WT_Default_Settings.modBase);
             navSystem.updatables.push(settings);
+            Selectables_Input_Layer.SCROLL_DIRECTION = settings.getValue("navigation_knob")
+            settings.addListener(value => Selectables_Input_Layer.SCROLL_DIRECTION = value, "navigation_knob");
             return settings;
         });
         d.register("unitChooser", d => new WT_Unit_Chooser(d.settings));

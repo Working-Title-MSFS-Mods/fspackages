@@ -107,8 +107,10 @@
         <section class="category">
             <h1>Group</h1>
             <div class="content">
-                <drop-down-selector data-element="groupSelector">
+                <drop-down-selector data-element="groupSelector" data-input="setGroup">
                     <drop-down-selector-option value="map">Map</drop-down-selector-option>
+                    <drop-down-selector-option value="aviation">Aviation</drop-down-selector-option>
+                    <drop-down-selector-option value="land">Land</drop-down-selector-option>
                 </drop-down-selector>
             </div>
         </section>
@@ -117,10 +119,10 @@
                 <label>Orientation</label>
                 <div class="value">
                     <drop-down-selector data-setting="orientation">
-                        <drop-down-selector-option value="north up">North up</drop-down-selector-option>
-                        <drop-down-selector-option value="track up">Track up</drop-down-selector-option>
-                        <drop-down-selector-option value="dtk up">DTK up</drop-down-selector-option>
-                        <drop-down-selector-option value="hdg up">HDG up</drop-down-selector-option>
+                        <drop-down-selector-option value="north">North up</drop-down-selector-option>
+                        <drop-down-selector-option value="track">Track up</drop-down-selector-option>
+                        <drop-down-selector-option value="dtk">DTK up</drop-down-selector-option>
+                        <drop-down-selector-option value="heading">HDG up</drop-down-selector-option>
                     </drop-down-selector>
                 </div>
                 <label>Auto Zoom</label>
@@ -133,8 +135,63 @@
                 <div class="value">
                     <div class="columns">
                         <toggle-switch data-setting="trackVectorEnabled" value="On"></toggle-switch>
-                        <numeric-input min="0" max="60" value="60" units="sec"></numeric-input>
+                        <numeric-input data-setting="trackVectorLength" min="0" max="60" value="60" units="sec"></numeric-input>
                     </div>
+                </div>
+                <label>Nav Range Ring</label>
+                <div class="value">
+                    <toggle-switch data-setting="navRangeRingEnabled" value="On"></toggle-switch>
+                </div>
+                <label>Terrain Data</label>
+                <div class="value">
+                    <toggle-switch data-setting="terrainDataEnabled" value="On"></toggle-switch>
+                </div>
+                <label>Fuel Range (RSV)</label>
+                <div class="value">
+                    <div class="columns">
+                        <toggle-switch data-setting="fuelRingEnabled" value="On"></toggle-switch>
+                        <time-input data-setting="fuelRingReserveTime" show-seconds="0"></time-input>
+                    </div>
+                </div>
+            </section>
+            <section class="options" data-group="land">
+                <label>Large City</label>
+                <div class="value">
+                    <drop-down-selector data-setting="largeCityRange" data-element="largeCityRange"></drop-down-selector>
+                </div>
+                <label>Medium City</label>
+                <div class="value">
+                    <drop-down-selector data-setting="mediumCityRange" data-element="mediumCityRange"></drop-down-selector>
+                </div>
+                <label>Small City</label>
+                <div class="value">
+                    <drop-down-selector data-setting="smallCityRange" data-element="smallCityRange"></drop-down-selector>
+                </div>
+            </section>
+            <section class="options" data-group="aviation">
+                <label>Large Airport</label>
+                <div class="value">
+                    <drop-down-selector data-setting="largeAirportRange" data-element="largeAirportRange"></drop-down-selector>
+                </div>
+                <label>Medium Airport</label>
+                <div class="value">
+                    <drop-down-selector data-setting="mediumAirportRange" data-element="mediumAirportRange"></drop-down-selector>
+                </div>
+                <label>Small Airport</label>
+                <div class="value">
+                    <drop-down-selector data-setting="smallAirportRange" data-element="smallAirportRange"></drop-down-selector>
+                </div>
+                <label>Int Waypoint</label>
+                <div class="value">
+                    <drop-down-selector data-setting="intersectionRange" data-element="intersectionRange"></drop-down-selector>
+                </div>
+                <label>NDB Waypoint</label>
+                <div class="value">
+                    <drop-down-selector data-setting="ndbRange" data-element="ndbRange"></drop-down-selector>
+                </div>
+                <label>VOR Waypoint</label>
+                <div class="value">
+                    <drop-down-selector data-setting="vorRange" data-element="vorRange"></drop-down-selector>
                 </div>
             </section>
         </div>

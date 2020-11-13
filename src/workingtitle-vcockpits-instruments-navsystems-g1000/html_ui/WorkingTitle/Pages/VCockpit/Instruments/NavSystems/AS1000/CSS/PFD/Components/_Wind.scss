@@ -21,7 +21,8 @@ g1000-pfd-wind {
     .arrow-shadow {
         fill: none;
         stroke-width: 3;
-        stroke: #666;
+        stroke: #111;
+        paint-order: stroke;
     }
 
     .mode-1,

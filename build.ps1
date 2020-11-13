@@ -96,6 +96,7 @@ function Update-Packages {
             $fileName = $file.BaseName
             $filePath = $file.FullName
             $newFilePath = "$directory\Scripts.js"    
+            Write-Host "Compiling $newFilePath..."
             $string | Out-File $newFilePath
         }
     

@@ -127,8 +127,19 @@ class HSIndicator extends HTMLElement {
         let lineSegments = angles.map(angle => this.getRectSegments(-0.5, -57, 1, 6, angle * Math.PI / 180).join(" "));
         return this.createSvgElement("path", { d: lineSegments.join(" "), fill: "white", });
     }
+    createCirclePath(radius, num) {
+        const segments = [];
+        for (let i = 0; i <= num; i++) {
+            const angle = i / num * Math.PI * 2;
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            segments.push(`${i == 0 ? "M" : "L"}${x} ${y}`);
+        }
+        return segments.join(" ");
+    }
     createBackgroundCircle() {
-        return this.createSvgElement("circle", { cx: 0, cy: 0, r: 50, class: "background-circle" });
+        return this.createSvgElement("path", { d: this.createCirclePath(50, 360), class: "background-circle" });
+        //return this.createSvgElement("circle", { cx: 0, cy: 0, r: 50, class: "background-circle" });
     }
     createBackgroudCircleText() {
         const texts = ["N", "3", "6", "E", "12", "15", "S", "21", "24", "W", "30", "33"];
@@ -149,7 +160,7 @@ class HSIndicator extends HTMLElement {
         return this.createSvgElement("polygon", { points: "-4,-50 -3,-50 0,-46 3,-50 4,-50 4,-45 -4,-45", class: "heading-bug" });
     }
     createInnerCircle() {
-        return this.createSvgElement("circle", { cx: 0, cy: 0, r: 30, class: "inner-circle" });
+        return this.createSvgElement("path", { d: this.createCirclePath(30, 180), class: "inner-circle" });
     }
     createTopArrow() {
         return this.createSvgElement("polygon", { points: "-4,-53 4,-53 0,-47", fill: "white", stroke: "#222", "stroke-width": "0.5" });
@@ -192,8 +203,8 @@ class HSIndicator extends HTMLElement {
         const course = this.createSvgElement("g", { class: "course" });
 
         [-20, -10, 10, 20].forEach(position => {
-            course.appendChild(this.createSvgElement("circle", { cx: position, cy: 0, r: 2, class: "circle-outline" }));
-            course.appendChild(this.createSvgElement("circle", { cx: position, cy: 0, r: 2, class: "circle" }));
+            //course.appendChild(this.createSvgElement("circle", { cx: position, cy: 0, r: 2, class: "circle-outline" }));
+            course.appendChild(this.createSvgElement("path", { d: this.createCirclePath(2, 60), class: "circle", transform: `translate(${position}, 0)` }));
         });
 
         course.appendChild(this.createSvgElement("polygon", { points: `${width},46 -${width},46 -${width},25 ${width},25`, class: "begin-arrow" }));

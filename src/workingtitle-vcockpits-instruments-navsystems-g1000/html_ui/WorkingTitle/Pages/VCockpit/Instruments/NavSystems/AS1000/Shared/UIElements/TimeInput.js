@@ -40,6 +40,8 @@ class WT_Time_Input extends HTMLElement {
         this.minutes = 0;
         this.seconds = 0;
 
+        this.showSeconds = true;
+
         this.previousValue = 0;
         this._editingValue = 0;
         this._editingDigitIndex = 0;
@@ -64,7 +66,9 @@ class WT_Time_Input extends HTMLElement {
     updateDisplay() {
         this.elements.hours.textContent = Math.floor(this.hours).toFixed(0);//.padStart("0", 2);
         this.elements.minutes.textContent = Math.floor(this.minutes).toFixed(0).padStart(2, "0");
-        this.elements.seconds.textContent = Math.floor(this.seconds).toFixed(0).padStart(2, "0");
+        if (this.showSeconds) {
+            this.elements.seconds.textContent = Math.floor(this.seconds).toFixed(0).padStart(2, "0");
+        }
     }
     connectedCallback() {
         this.elements.hours = document.createElement("span");
@@ -72,6 +76,7 @@ class WT_Time_Input extends HTMLElement {
         this.elements.hours.dataset.number = "hours";
         this.elements.digits.push(this.elements.hours);
         this.appendChild(this.elements.hours);
+
         {
             let colon = document.createElement("span");
             colon.textContent = ":";
@@ -82,16 +87,20 @@ class WT_Time_Input extends HTMLElement {
         this.elements.minutes.dataset.number = "minutes";
         this.elements.digits.push(this.elements.minutes);
         this.appendChild(this.elements.minutes);
-        {
-            let colon = document.createElement("span");
-            colon.textContent = ":";
-            this.appendChild(colon);
+
+        this.showSeconds = this.hasAttribute("show-seconds") ? (this.getAttribute("show-seconds") == "true") : true;
+        if (this.showSeconds) {
+            {
+                let colon = document.createElement("span");
+                colon.textContent = ":";
+                this.appendChild(colon);
+            }
+            this.elements.seconds = document.createElement("span");
+            this.elements.seconds.className = "digit";
+            this.elements.seconds.dataset.number = "seconds";
+            this.elements.digits.push(this.elements.seconds);
+            this.appendChild(this.elements.seconds);
         }
-        this.elements.seconds = document.createElement("span");
-        this.elements.seconds.className = "digit";
-        this.elements.seconds.dataset.number = "seconds";
-        this.elements.digits.push(this.elements.seconds);
-        this.appendChild(this.elements.seconds);
 
         this.value = parseInt(this.getAttribute("value"));
     }
@@ -156,6 +165,10 @@ class WT_Time_Input extends HTMLElement {
                 break;
         }
         this.updateDisplay();
+
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("input", true, true);
+        this.dispatchEvent(evt);
     }
 }
 customElements.define("time-input", WT_Time_Input);

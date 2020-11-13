@@ -272,7 +272,7 @@ class SvgFuelTimeLabelElement {
         this.displayValueText = document.createElementNS(Avionics.SVG.NS, "text");
         this.displayValueText.setAttribute("fill", this.fontColor);
         this.displayValueText.setAttribute("text-anchor", "start");
-        this.displayValueText.setAttribute("font-size", this.valueFontSize);
+        this.displayValueText.setAttribute("font-size", this.fontSize);
         this.displayValueText.setAttribute("font-family", this.font);
         this.svgElement.appendChild(this.displayValueText);
 

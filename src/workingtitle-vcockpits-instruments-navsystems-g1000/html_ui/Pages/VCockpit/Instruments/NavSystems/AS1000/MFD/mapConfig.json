@@ -68,7 +68,6 @@
     "railwayStrokeColor": "gray",
     "railwayWidth": 2,
     "railwayDashLength": 6,
-
     "netBingTextureResolution": 1024,
     "netBingAltitudeColors1": [],
     "netBingWaterColor1": "#000080",
@@ -112,6 +111,78 @@
         {
             "alt": 28000,
             "color": "#b8b9bb"
+        }
+    ],
+    "netBingAltitudeColors2": [],
+    "netBingWaterColor2": "#184b77",
+    "netBingHeightColor2": [
+        {
+            "alt": 0,
+            "color": "#94b947"
+        },
+        {
+            "alt": 500,
+            "color": "#738922"
+        },
+        {
+            "alt": 1000,
+            "color": "#d0aa43"
+        },
+        {
+            "alt": 2000,
+            "color": "#c58f45"
+        },
+        {
+            "alt": 3000,
+            "color": "#9d6434"
+        },
+        {
+            "alt": 6000,
+            "color": "#904f25"
+        },
+        {
+            "alt": 8000,
+            "color": "#904522"
+        },
+        {
+            "alt": 10500,
+            "color": "#939393"
+        },
+        {
+            "alt": 27000,
+            "color": "#c8c8c8"
+        }
+    ],
+    "netBingAltitudeColors3": [],
+    "netBingWaterColor3": "#0000ff",
+    "netBingHeightColor3": [
+        {
+            "alt": 0,
+            "color": "#ff0000"
+        },
+        {
+            "alt": 99,
+            "color": "#ff0000"
+        },
+        {
+            "alt": 100,
+            "color": "#ffff00"
+        },
+        {
+            "alt": 999,
+            "color": "#ffff00"
+        },
+        {
+            "alt": 1000,
+            "color": "#00ff00"
+        },
+        {
+            "alt": 1999,
+            "color": "#00ff00"
+        },
+        {
+            "alt": 2000,
+            "color": "#000000"
         }
     ]
 }

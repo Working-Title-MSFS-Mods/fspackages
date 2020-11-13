@@ -280,6 +280,9 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         const pageMenu = new WT_Flight_Plan_Page_Menu(this.model, this, this.confirmDialogHandler);
         this.pageMenuHandler.show(pageMenu);
     }
+    onDirectTo() {
+        return this.model.directToSelected();
+    }
     showCreateNewWaypoint(index = -1) {
         this.newWaypointHandler.show().then(icao => {
             this.model.createNewWaypoint(icao, index);

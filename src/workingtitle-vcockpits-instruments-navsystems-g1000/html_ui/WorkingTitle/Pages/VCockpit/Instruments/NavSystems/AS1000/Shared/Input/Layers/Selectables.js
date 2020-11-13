@@ -235,11 +235,11 @@ class Selectables_Input_Layer extends Input_Layer {
     }
     onLargeInc(inputStack) {
         if (this.iterator)
-            this.selectedElement = this._source.next(this.iterator);
+            this.selectedElement = Selectables_Input_Layer.SCROLL_DIRECTION == "Normal" ? this._source.next(this.iterator) : this._source.previous(this.iterator);
     }
     onLargeDec(inputStack) {
         if (this.iterator)
-            this.selectedElement = this._source.previous(this.iterator);
+            this.selectedElement = Selectables_Input_Layer.SCROLL_DIRECTION == "Normal" ? this._source.previous(this.iterator) : this._source.next(this.iterator);
     }
     onSmallInc(inputStack) {
         if (this.options.navigateWithSmall)
@@ -294,3 +294,4 @@ class Selectables_Input_Layer extends Input_Layer {
         }
     }
 }
+Selectables_Input_Layer.SCROLL_DIRECTION = "Normal";

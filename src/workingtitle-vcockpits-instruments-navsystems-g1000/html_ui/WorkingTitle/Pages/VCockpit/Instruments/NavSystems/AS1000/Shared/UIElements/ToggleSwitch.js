@@ -30,27 +30,22 @@ class WT_Toggle_Switch extends HTMLElement {
     }
     fireChangeEvent() {
         let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("input", true, true);
+        this.dispatchEvent(evt);
+
+        evt = document.createEvent("HTMLEvents");
         evt.initEvent("change", true, true);
         this.dispatchEvent(evt);
     }
     updateDisplayValue() {
         this.elements.text.textContent = this.values[this.index];
-        if (this.index < this.values.length - 1) {
-            this.setAttribute("showNext", "show");
-        } else {
-            this.removeAttribute("showNext", "show");
-        }
-
-        if (this.index > 0) {
-            this.setAttribute("showPrevious", "show");
-        } else {
-            this.removeAttribute("showPrevious", "show");
-        }
+        DOMUtilities.ToggleAttribute(this, "showNext", this.index < this.values.length - 1);
+        DOMUtilities.ToggleAttribute(this, "showPrevious", this.index > 0);
     }
     connectedCallback() {
         if (this.hasInitialised)
             return;
-        this.hasInitialised = true;        
+        this.hasInitialised = true;
 
         this.elements.text = document.createElement("div");
         this.appendChild(this.elements.text);
