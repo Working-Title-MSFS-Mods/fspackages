@@ -54,9 +54,9 @@ class WT_BaseLnav {
 
             let nextActiveWaypoint = this._fpm.getNextActiveWaypoint();
 
-            SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", this._xtk).catch(console.log);
-            SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", this._dtk).catch(console.log);
-            SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", this._activeWaypointDist).catch(console.log);
+            SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", this._xtk);
+            SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", this._dtk);
+            SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", this._activeWaypointDist);
 
             let currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
             let currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
