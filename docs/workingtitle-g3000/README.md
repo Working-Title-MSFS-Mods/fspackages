@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.3.1
+### Latest version: v0.3.2
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,11 +8,14 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.3.1.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.3.2.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
-### Release Highlights (v0.3.1)
+### Release Highlights (v0.3.2)
+- Brought up to date with game patch 1.10.11.0 (Update 6).
+
+#### Highlights for v0.3.1
 - Improved compatibility with the WorkingTitle CJ4 mod.
 - Fixed an issue where on the navigational map, waypoints in a flight plan sometimes had missing labels.
 - City labels no longer appear in the weather radar screens.
