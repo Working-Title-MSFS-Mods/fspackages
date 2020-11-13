@@ -151,7 +151,7 @@
 
     <!-- INSTRUMENTS FOLEYS  =========================================================================  -->
 
-    <Sound WwiseData="true" WwiseEvent="lever_throttle_01" ViewPoint="Inside" NodeName="ENGINE_LEVER_THROTTLE_1" SimVar="GENERAL ENG THROTTLE LEVER POSITION" Units="PERCENT" Index="1" ContinuousStopDelay="1.0">
+    <!-- <Sound WwiseData="true" WwiseEvent="lever_throttle_01" ViewPoint="Inside" NodeName="ENGINE_LEVER_THROTTLE_1" SimVar="GENERAL ENG THROTTLE LEVER POSITION" Units="PERCENT" Index="1" ContinuousStopDelay="1.0">
       <WwiseRTPC SimVar="GENERAL ENG THROTTLE LEVER POSITION" Units="PERCENT" Index="1" Derived="true" RTPCName="SIMVAR_GENERAL_ENG_THROTTLE_LEVER_POSITION_DERIVED" />
       <WwiseRTPC SimVar="GENERAL ENG THROTTLE LEVER POSITION" Units="PERCENT" Index="1" RTPCName="SIMVAR_GENERAL_ENG_THROTTLE_LEVER_POSITION" />
     </Sound>
@@ -159,22 +159,16 @@
     <Sound WwiseData="true" WwiseEvent="lever_throttle_02" ViewPoint="Inside" NodeName="ENGINE_LEVER_THROTTLE_2" SimVar="GENERAL ENG THROTTLE LEVER POSITION" Units="PERCENT" Index="2" ContinuousStopDelay="1.0">
       <WwiseRTPC SimVar="GENERAL ENG THROTTLE LEVER POSITION" Units="PERCENT" Index="2" Derived="true" RTPCName="SIMVAR_GENERAL_ENG_THROTTLE_LEVER_POSITION_DERIVED" />
       <WwiseRTPC SimVar="GENERAL ENG THROTTLE LEVER POSITION" Units="PERCENT" Index="2" RTPCName="SIMVAR_GENERAL_ENG_THROTTLE_LEVER_POSITION" />
-    </Sound>
-
-    <Sound WwiseData="true" WwiseEvent="flaps_lever" Continuous="false" ViewPoint="Inside" NodeName="ENGINE_LEVER_THROTTLE_1" LocalVar="Throttle1_Pos">
-      <Range LowerBound="77.5" UpperBound="77.8" />
-    </Sound>
-    <Sound WwiseData="true" WwiseEvent="flaps_lever" Continuous="false" ViewPoint="Inside" NodeName="ENGINE_LEVER_THROTTLE_2" LocalVar="Throttle2_Pos">
-      <Range LowerBound="77.5" UpperBound="77.8" />
-    </Sound>
-
-    <!-- <Sound WwiseData="true" WwiseEvent="lever_throttle_2_stop" Continuous="false" ViewPoint="Inside" NodeName="LEVER_THROTTLE_2" LocalVar="Throttle2_Pos">
-      <Range UpperBound="0" />
-      <Range LowerBound="0.9" UpperBound="1.1" />
-      <Range LowerBound="1.9" UpperBound="2.1" />
-      <Range LowerBound="2.9" UpperBound="3.1" />
-      <Range LowerBound="3.9" />
     </Sound> -->
+
+    <Sound WwiseData="true" WwiseEvent="flaps_lever" Continuous="false" ContinuousStopDelay="1.0" ViewPoint="Inside" NodeName="ENGINE_LEVER_THROTTLE_1" LocalVar="Throttle1_Pos">
+      <Range LowerBound="77.5" UpperBound="77.7" />
+      <Range  LowerBound="100" UpperBound="100" />    
+    </Sound>
+    <Sound WwiseData="true" WwiseEvent="flaps_lever" Continuous="false" ContinuousStopDelay="1.0" ViewPoint="Inside" NodeName="ENGINE_LEVER_THROTTLE_2" LocalVar="Throttle2_Pos">
+      <Range LowerBound="77.5" UpperBound="77.7" />
+      <Range  LowerBound="100" UpperBound="100" />    
+    </Sound>
 
     <Sound WwiseData="true" WwiseEvent="trim_rudder_lever" ViewPoint="Inside" NodeName="HANDLING_KNOB_RUDDERTRIM" ContinuousStopDelay="1.0" SimVar="RUDDER TRIM PCT" Units="PERCENT" Index="0">
       <WwiseRTPC SimVar="RUDDER TRIM PCT" Units="PERCENT" Index="0" Derived="true" RTPCName="SIMVAR_RUDDER_TRIM_PCT_DERIVED" />
