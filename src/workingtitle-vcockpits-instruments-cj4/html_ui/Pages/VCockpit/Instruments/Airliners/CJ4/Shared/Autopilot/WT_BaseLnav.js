@@ -109,11 +109,12 @@ class WT_BaseLnav {
             }
 
             setHeading = GeoMath.correctMagvar(setHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"));
-            Coherent.call("HEADING_BUG_SET", 2, setHeading).catch(console.log);
+            //Coherent.call("HEADING_BUG_SET", 2, setHeading);
+            this.execute();
+            
         }
         else {
-            //Coherent.call("HEADING_BUG_SET", 1, Simplane.getHeadingMagnetic());
-            SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+            this.deactivate();
         }
     }
 
@@ -121,6 +122,11 @@ class WT_BaseLnav {
      * Execute.
      */
     execute() {
+        //ONLY SEND HEADING COMMANDS IF IN CORRECT MODE
+        const isLNAVActivate = this.radioNav.getRADIONAVSource();
+        if (isLNAVActivate == 1) {
+            Coherent.call("HEADING_BUG_SET", 2, setHeading);
+        }
 
     }
 
@@ -128,7 +134,8 @@ class WT_BaseLnav {
      * Run when deactivated.
      */
     deactivate() {
-
+        //Coherent.call("HEADING_BUG_SET", 1, Simplane.getHeadingMagnetic());
+        SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
     }
 }
 

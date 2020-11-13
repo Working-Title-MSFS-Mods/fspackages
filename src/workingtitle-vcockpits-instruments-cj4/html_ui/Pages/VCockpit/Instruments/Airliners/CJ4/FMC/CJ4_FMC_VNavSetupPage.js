@@ -249,8 +249,8 @@ class CJ4_FMC_VNavSetupPage {
                 const altVar1 = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet"));
                 const altVar2 = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet"));
                 const altVar3 = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet"));
-
-                             
+                const altLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") ? "TRUE" : "FALSE";
+                const altArm = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") ? "TRUE" : "FALSE";
 
                 fmc._templateRenderer.setTemplateRaw([
                     [vnavTargetWaypointIdent, "", "  WT VNAV[blue]" + vnavActive],
@@ -264,7 +264,7 @@ class CJ4_FMC_VNavSetupPage {
                     [vsVar + "/" + vsVar1 + "/" + vsVar2 + "/" + vsVar3],
                     ["ALTVAR/VAR:1/VAR:2/VAR:3[blue]"],
                     [altVar + "/" + altVar1 + "/" + altVar2 + "/" + altVar3],
-                    [""],
+                    ["ALT LOCK: " + altLock, "ALT ARM: " + altArm],
                     ["<CONSTRAINTS", "MENU>"]
                 ]);
 

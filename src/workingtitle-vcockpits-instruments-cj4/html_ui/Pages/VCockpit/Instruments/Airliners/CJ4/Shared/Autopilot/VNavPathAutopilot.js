@@ -55,6 +55,9 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
         //SET BEHAVIOR IF INTERCEPTING TARGET ALTITUDE & SET AP TARGET ALTITUDE
         if (this._lastVnavTargetAltitude !== undefined && this._lastVnavTargetAltitude != this._vnavTargetAltitude && this._vnavTargetDistance > this._topOfDescent && this._altitude > this._lastVnavTargetAltitude) {
             setVerticalSpeed = this._desiredVerticalSpeed;
+            if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
+                SimVar.SetSimVarValue("K:AP_ALT_HOLD", "number", 1);
+            }
             Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, this._lastVnavTargetAltitude, true);
             SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
             SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
@@ -64,6 +67,9 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
             this._lastVnavTargetAltitude = this._vnavTargetAltitude;
             this._interceptingLastAltitude = false;
             if (this._distanceToTod <= 0) {
+                if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
+                    SimVar.SetSimVarValue("K:AP_ALT_HOLD", "number", 0);
+                }
                 Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, this._vnavTargetAltitude, true);
                 SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
                 SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
@@ -128,8 +134,13 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
      */
     deactivate() {
         super.deactivate();
-        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+        if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
+            SimVar.SetSimVarValue("K:AP_ALT_HOLD", "number", 1);
+
+        }
         SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+        Coherent.call("AP_ALT_VAR_SET_ENGLISH", 1, SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet"));
         SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
+        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
     }
 }

@@ -699,17 +699,23 @@ class CJ4_APDisplay extends NavSystemElement {
                 }
             }
             else if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
-                let vsDisplay = "<span>VVS</span> ";
-                let verticalHoldVar = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute");
-                vsDisplay += "<span style=\"color: #0599fc;\">" + fastToFixed(verticalHoldVar, 0) + "</span>";
-                if (verticalHoldVar > 0) {
-                    vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↑</span>";
+                if (SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") == 2) {
+                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VPATH");
+                    Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
                 }
-                else if (verticalHoldVar < 0) {
-                    vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↓</span>";
+                else {
+                    let vsDisplay = "<span>VVS</span> ";
+                    let verticalHoldVar = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute");
+                    vsDisplay += "<span style=\"color: #0599fc;\">" + fastToFixed(verticalHoldVar, 0) + "</span>";
+                    if (verticalHoldVar > 0) {
+                        vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↑</span>";
+                    }
+                    else if (verticalHoldVar < 0) {
+                        vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↓</span>";
+                    }
+                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, vsDisplay);
+                    Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
                 }
-                Avionics.Utils.diffAndSet(this.AP_VerticalActive, vsDisplay);
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
             }
             else if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean")) {
                 if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean")) {
