@@ -24,7 +24,7 @@ private:
     /// <summary>
     /// The current throttle control axis, from -16384 to 16384.
     /// </summary>  
-    int throttleAxis = 0;
+    int throttleAxis = -16384;
 
     int frameCount = 0;
 
@@ -86,6 +86,7 @@ private:
                 targetThrust = (maxDensityThrust * thrustF);
             }
             break;
+        case UNDEF:
         case CRU: {
             double cruThrPerc = (this->throttleAxis + 16384) / 25444.0; // -16384 -> 9060
             double cruThrExp = pow(cruThrPerc, 3.5);
@@ -93,7 +94,7 @@ private:
             if ((maxDensityThrust < targetThrust)) {
                 targetThrust = (maxDensityThrust * cruThrPerc); // TODO 100% = 0 -> CRU
             }
-            //targetThrust *= 1.25;
+            targetThrust *= thrustF;
             //targetThrottle = this->throttleAxis;
             break;
         }
@@ -102,8 +103,8 @@ private:
         }
 
 
-        if (this->frameCount % 5000000 == 0) {
-            printf("TTHR: %.0f GTHR: %.0f MDENS: %.0f @ %.0f \r\n", targetThrust, grossSimThrust, maxDensityThrust, this->simVars->getPlaneAltitude());
+        if (this->frameCount % 10000000 == 0) {
+            printf("TA %d TLP: %d TTHR: %.0f GTHR: %.0f MDENS: %.0f @ %.0f \r\n",this->throttleAxis, throttleLeverPerc, targetThrust, grossSimThrust, maxDensityThrust, this->simVars->getPlaneAltitude());
         }
 
         double error = targetThrust - grossSimThrust;
@@ -131,6 +132,7 @@ private:
         case CLB:
             targetThrottle = 9060;
             break;
+        case UNDEF:
         case CRU:
             targetThrottle = this->throttleAxis;
             break;
@@ -143,14 +145,19 @@ private:
     }
 
     void updateThrottleMode() {
+        bool simOnGround = this->simVars->getSimOnGround() > 0;
+
         if (this->throttleAxis > 15000) {
             this->throttleMode = TO;
         }
-        else if (this->throttleAxis > 9060) {
+        else if (this->throttleAxis > 9060 && !simOnGround) {
             this->throttleMode = CLB;
         }
-        else if (this->throttleAxis < 9060) {
+        else if (this->throttleAxis > -15250 && !simOnGround) {
             this->throttleMode = CRU;
+        }
+        else {
+            this->throttleMode = UNDEF;
         }
 
         this->simVars->setThrottleMode(this->throttleMode);

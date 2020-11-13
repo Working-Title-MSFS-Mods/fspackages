@@ -107,6 +107,8 @@ public:
 
     ENUM AmbientDensity = get_aircraft_var_enum("AMBIENT DENSITY");
 
+    ENUM SimOnGround = get_aircraft_var_enum("SIM ON GROUND");
+
     /// <summary>
     /// The local variable for the current throttle mode to be ready by MFD.
     /// </summary>
@@ -162,6 +164,10 @@ public:
 
     FLOAT64 getAmbientDensity() {
         return aircraft_varget(AmbientDensity, m_Units->SluggerSlugs, 0);
+    }
+
+    FLOAT64 getSimOnGround() {
+        return aircraft_varget(SimOnGround, m_Units->Number, 0);
     }
 };
 

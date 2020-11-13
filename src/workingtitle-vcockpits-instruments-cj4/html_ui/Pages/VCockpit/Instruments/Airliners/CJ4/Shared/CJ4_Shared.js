@@ -1738,9 +1738,16 @@ class CJ4_SystemEngines extends NavSystemElement {
     updateN1() {
         {
             // update thrust setting
+            let throttleMode = SimVar.GetSimVarValue("L:THROTTLE_MODE", "number");
+            let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "boolean");
+
             let thrustSetting = "TO";
-            let modeClr = thrustSetting == 0 ? "#cccac8" : "#11d011";
-            switch (SimVar.GetSimVarValue("L:THROTTLE_MODE", "number")) {
+            let modeClr = "#11d011";
+            
+            switch (throttleMode) {
+                case 0: 
+                    modeClr = "#cccac8";
+                    break;
                 case 1:
                     thrustSetting = "CRU";
                     break;

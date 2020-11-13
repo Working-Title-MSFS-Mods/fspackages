@@ -124,7 +124,7 @@ public:
     /// <returns>True if successful, false otherwise.</returns>
     bool InitializeFD()
     {
-        globalThrottleAxis = 0.0;
+        globalThrottleAxis = -16384;
 
         if (!this->InitializeSimConnect()) {
             printf("Init SimConnect failed");
