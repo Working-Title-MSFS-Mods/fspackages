@@ -448,6 +448,7 @@ class CJ4_FMC extends FMCMainDisplay {
                 //let currentAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
                 //let selectedAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
                 let altDelta = Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feet");
+                
 
                 //ACTIVATE VNAV MODE
                 if (this._currentAP === undefined) {
@@ -489,13 +490,19 @@ class CJ4_FMC extends FMCMainDisplay {
             }
 
             //ACTIVATE LNAV
-            const isLNAVActivate = SimVar.GetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'Bool');
-            if (isLNAVActivate) {
+            // if (this.radioNav.getRADIONAVSource() == 1) {
+            //     SimVar.SetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'number', 1);
+            // }
+            // const isLNAVActivate = SimVar.GetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'Bool');
+            const isLNAVActivate = this.radioNav.getRADIONAVSource();
+            if (isLNAVActivate == 1) {
                 SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
                 SimVar.SetSimVarValue("K:AP_HDG_HOLD_ON", "number", 1);
+                SimVar.SetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'number', 1);
             }
             else {
                 SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+                SimVar.SetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'number', 0);
             }
 
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
