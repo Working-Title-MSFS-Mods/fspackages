@@ -11,6 +11,9 @@ declare module "MSFS" {
     distanceInFP: number;
     cumulativeDistanceInFP: number;
     instrument: BaseInstrument;
+    altDesc: number;
+    altitude1: number;
+    altitude2: number;
     legAltitudeDescription: number;
     legAltitude1: number;
     legAltitude2: number;
@@ -68,6 +71,9 @@ declare module "MSFS" {
   export interface OneWayRunway {
     designation: string;
     direction: number;
+    beginningCoordinates: LatLongAlt;
+    endCoordinates: LatLongAlt;
+    elevation: number;
   }
 
   export interface RunwayTransition {

@@ -69,10 +69,10 @@ class CJ4_FMC_LegsPage {
         for (let i = 0; i < 5; i++) {
 
             let waypoint = this._wayPointsToRender[i + offset];
-            if (waypoint.fix.icao === "$EMPTY") {
+            if (waypoint && waypoint.fix && waypoint.fix.icao === "$EMPTY") {
                 this._rows[2 * i + 1] = ["-----"];
             }
-            else if (waypoint.fix) {
+            else if (waypoint && waypoint.fix) {
                 let bearing = isFinite(waypoint.fix.bearingInFP) ? waypoint.fix.bearingInFP.toFixed(0).padStart(3, "0") + "°" : "";
                 let prevWaypoint = this._wayPointsToRender[i + offset - 1];
                 let distance = 0;
@@ -139,7 +139,7 @@ class CJ4_FMC_LegsPage {
 
     buildLegs(waypoints, activeWaypointIndex) {
         const displayWaypoints = [];
-        for (var i = 0; i < waypoints.length && i >= activeWaypointIndex - 1; i++) {
+        for (var i = Math.max(0, activeWaypointIndex - 1); i < waypoints.length; i++) {
             displayWaypoints.push({index: i, fix: waypoints[i]});
 
             if (waypoints[i].endsInDiscontinuity) {
@@ -160,7 +160,7 @@ class CJ4_FMC_LegsPage {
 
                 if (!waypoint) return;
 
-                if (waypoint.ident === "USR") {
+                if (waypoint.fix.ident === "USR") {
                     this._fmc.showErrorMessage("UNABLE MOD USR");
                     return;
                 }
@@ -185,7 +185,7 @@ class CJ4_FMC_LegsPage {
                     this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NEW;
 
                 // only allow insert new on add line
-                if (waypoint === "EMPTY" && this._fmc.selectMode !== CJ4_FMC_LegsPage.SELECT_MODE.NEW) return;
+                if (waypoint.fix === "$EMPTY" && this._fmc.selectMode !== CJ4_FMC_LegsPage.SELECT_MODE.NEW) return;
 
                 switch (this._fmc.selectMode) {
                     case CJ4_FMC_LegsPage.SELECT_MODE.NONE: {
@@ -194,14 +194,14 @@ class CJ4_FMC_LegsPage {
                             // SELECT EXISTING WAYPOINT FROM FLIGHT PLAN
                             this._approachWaypoints = this._fmc.flightPlanManager.getApproachWaypoints();
                             if (this._approachWaypoints.length > 0) {
-                                if (waypoint.ident === this._approachWaypoints[this._approachWaypoints.length - 1].ident) {
+                                if (waypoint.fix.ident === this._approachWaypoints[this._approachWaypoints.length - 1].ident) {
                                     this._fmc.showErrorMessage("UNABLE MOD RW");
                                     return;
                                 }
                             }
 
-                            this._fmc.selectedWaypoint = waypoint;
-                            this._fmc.inOut = waypoint.ident;
+                            this._fmc.selectedWaypoint = waypoint.fix;
+                            this._fmc.inOut = waypoint.fix.ident;
                             this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.EXISTING;
                         }
                         break;
@@ -353,19 +353,19 @@ class CJ4_FMC_LegsPage {
         //     speedConstraint = wpt.speedConstraint;
         // }
         if (wpt.legAltitudeDescription > 0) {
-            if (wpt.legAltitudeDescription == 1 && wpt.legAltitude1 > 100) {
+            if (wpt.legAltitudeDescription == 1) {
                 altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100
                     : wpt.legAltitude1.toFixed(0);
             }
-            else if (wpt.legAltitudeDescription == 2 && wpt.legAltitude1 > 100) {
+            else if (wpt.legAltitudeDescription == 2) {
                 altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "A"
                     : wpt.legAltitude1.toFixed(0) + "A";
             }
-            else if (wpt.legAltitudeDescription == 3 && wpt.legAltitude1 > 100) {
+            else if (wpt.legAltitudeDescription == 3) {
                 altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
                     : wpt.legAltitude1.toFixed(0) + "B";
             }
-            else if (wpt.legAltitudeDescription == 4 && wpt.legAltitude2 > 100 && wpt.legAltitude1 > 100) {
+            else if (wpt.legAltitudeDescription == 4) {
                 let altitudeConstraintA = wpt.legAltitude2.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude2.toFixed(0) / 100 + "A"
                     : wpt.legAltitude2.toFixed(0) + "A";
                 let altitudeConstraintB = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"

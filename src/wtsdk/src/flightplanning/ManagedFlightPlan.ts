@@ -368,6 +368,9 @@ export class ManagedFlightPlan {
       icao: waypoint.icao,
       ident: waypoint.ident,
       type: waypoint.type,
+      legAltitudeDescription: waypoint.legAltitudeDescription,
+      legAltitude1: waypoint.legAltitude1,
+      legAltitude2: waypoint.legAltitude2,
       infos: {
         icao: waypoint.infos.icao,
         ident: waypoint.infos.ident,
@@ -548,6 +551,9 @@ export class ManagedFlightPlan {
 
       if (runway) {
         const runwayWaypoint = procedure.buildWaypoint(`RW${runway.designation}`, runway.endCoordinates);
+        runwayWaypoint.legAltitudeDescription = 1;
+        runwayWaypoint.legAltitude1 = runway.elevation * 3.28084;
+
         this.addWaypoint(runwayWaypoint, undefined, segment.type);
 
         procedure = new LegsProcedure(legs, runwayWaypoint, this._parentInstrument);
@@ -649,6 +655,9 @@ export class ManagedFlightPlan {
       const runway = this.getRunway(destinationInfo.oneWayRunways, destinationInfo.approaches[approachIndex].runway);
       if (runway) {
         const runwayWaypoint = procedure.buildWaypoint(`RW${runway.designation}`, runway.beginningCoordinates);
+        runwayWaypoint.legAltitudeDescription = 1;
+        runwayWaypoint.legAltitude1 = runway.elevation * 3.28084;
+
         this.addWaypoint(runwayWaypoint);
       }
     }
@@ -660,7 +669,7 @@ export class ManagedFlightPlan {
    * @param runwayName The runway name.
    * @returns The found runway, if any.
    */
-  public getRunway(runways: OneWayRunway[], runwayName: string): any {
+  public getRunway(runways: OneWayRunway[], runwayName: string): OneWayRunway {
     if (this.destinationAirfield) {
       const runways = (this.destinationAirfield.infos as AirportInfo).oneWayRunways;
       let runwayIndex;
