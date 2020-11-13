@@ -552,7 +552,7 @@ export class ManagedFlightPlan {
       if (runway) {
         const runwayWaypoint = procedure.buildWaypoint(`RW${runway.designation}`, runway.endCoordinates);
         runwayWaypoint.legAltitudeDescription = 1;
-        runwayWaypoint.legAltitude1 = runway.elevation * 3.28084;
+        runwayWaypoint.legAltitude1 = (runway.elevation * 3.28084) + 50;
 
         this.addWaypoint(runwayWaypoint, undefined, segment.type);
 
@@ -656,7 +656,7 @@ export class ManagedFlightPlan {
       if (runway) {
         const runwayWaypoint = procedure.buildWaypoint(`RW${runway.designation}`, runway.beginningCoordinates);
         runwayWaypoint.legAltitudeDescription = 1;
-        runwayWaypoint.legAltitude1 = runway.elevation * 3.28084;
+        runwayWaypoint.legAltitude1 = (runway.elevation * 3.28084) + 50;
 
         this.addWaypoint(runwayWaypoint);
       }
