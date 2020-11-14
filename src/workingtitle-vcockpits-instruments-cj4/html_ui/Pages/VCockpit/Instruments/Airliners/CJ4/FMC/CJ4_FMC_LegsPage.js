@@ -166,8 +166,7 @@ class CJ4_FMC_LegsPage {
                 }
 
                 let value = this._fmc.inOut;
-                let selectedWpIndex = this._currentPage == 1 ? this._fmc.flightPlanManager.getActiveWaypointIndex() + i - 1
-                    : (this._currentPage - 1) * 5 + this._fmc.flightPlanManager.getActiveWaypointIndex() + i - 1;
+                let selectedWpIndex = waypoint.index;
 
                 // Can't mod first blue line
                 // TODO this should be possible later to set it as FROM for intercept TO
@@ -200,7 +199,7 @@ class CJ4_FMC_LegsPage {
                                 }
                             }
 
-                            this._fmc.selectedWaypoint = waypoint.fix;
+                            this._fmc.selectedWaypoint = waypoint;
                             this._fmc.inOut = waypoint.fix.ident;
                             this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.EXISTING;
                         }
@@ -210,12 +209,10 @@ class CJ4_FMC_LegsPage {
                         if ((i >= 1 && this._currentPage == 1) || this._currentPage > 1) {
 
                             this._fmc.setMsg("Working...");
-                            let waypoints = this._fmc.flightPlanManager.getWaypoints();
-                            let targedIndexInFpln = waypoints.findIndex(w => {
-                                return w.icao === this._fmc.selectedWaypoint.icao;
-                            });
+                            let scratchPadWaypointIndex = this._fmc.selectedWaypoint.index;
+
                             // MOVE EXISTING WAYPOINT WITH LEGS AFTER
-                            let x = selectedWpIndex;
+                            let lskWaypointIndex = selectedWpIndex;
                             let isDirectTo = (i == 1 && this._currentPage == 1);
 
                             if (isDirectTo) { // DIRECT TO
@@ -226,10 +223,15 @@ class CJ4_FMC_LegsPage {
                                 });
                             }
                             else { // MOVE TO POSITION IN FPLN
+                                if (waypoint.fix.icao === '$DISCO') {
+                                    this._fmc.flightPlanManager.clearDiscontinuity(waypoint.index);
+                                    lskWaypointIndex += 1;
+                                }
+
                                 let removeWaypointForLegsMethod = (callback = EmptyCallback.Void) => {
-                                    if (x < targedIndexInFpln) {
-                                        this._fmc.flightPlanManager.removeWaypoint(x, false, () => {
-                                            targedIndexInFpln--;
+                                    if (lskWaypointIndex < scratchPadWaypointIndex) {
+                                        this._fmc.flightPlanManager.removeWaypoint(lskWaypointIndex, false, () => {
+                                            scratchPadWaypointIndex--;
                                             removeWaypointForLegsMethod(callback);
                                         });
                                     }
@@ -273,9 +275,15 @@ class CJ4_FMC_LegsPage {
                         if ((i > 1 && this._currentPage == 1) || this._currentPage > 1) {
                             this._fmc.setMsg("Working...");
                             this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                this._fmc.flightPlanManager.removeWaypoint(selectedWpIndex, false, () => {
+                                if (waypoint.fix.icao === '$DISCO') {
+                                    this._fmc.flightPlanManager.clearDiscontinuity(waypoint.index);
                                     this.resetAfterOp();
-                                });
+                                }
+                                else {
+                                    this._fmc.flightPlanManager.removeWaypoint(selectedWpIndex, false, () => {
+                                        this.resetAfterOp();
+                                    });
+                                }
                             });
                         }
                         else {
