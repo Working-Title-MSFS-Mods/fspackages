@@ -225,6 +225,8 @@ class WT_MapViewRingLabel {
         this._htmlElement = this._createLabel();
         this._htmlElement.style.position = "absolute";
 
+        this._center = new WT_GVector2(0, 0);
+
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRingLabel.OPTIONS_DEF);
 
         this._needRedraw = true;
@@ -237,6 +239,16 @@ class WT_MapViewRingLabel {
 
     get htmlElement() {
         return this._htmlElement;
+    }
+
+    get center() {
+        return this._center.copy();
+    }
+
+    set center(newValue) {
+        let oldValue = this.center;
+        this._center.set(newValue);
+        this.onOptionChanged("center", oldValue, newValue);
     }
 
     get anchor() {
@@ -265,7 +277,7 @@ class WT_MapViewRingLabel {
             return;
         }
 
-        let position = data.projection.xyOffsetByViewAngle(this.center, this.radius + this.radialOffset, this.radialAngle);
+        let position = this.center.add(WT_GVector2.fromPolar(this.radius + this.radialOffset, this.radialAngle * Avionics.Utils.DEG2RAD), true);
         this.htmlElement.style.left = `${position.x}px`;
         this.htmlElement.style.top = `${position.y}px`;
 
@@ -274,7 +286,7 @@ class WT_MapViewRingLabel {
 }
 WT_MapViewRingLabel.OPTIONS_DEF = {
     show: {default: true, auto: true},
-    center: {default: {x: 0, y: 0}, auto: true, observed: true},
+    center: {},
     radius: {default: 0, auto: true, observed: true},
     radialAngle: {default: 0, auto: true, observed: true},
     radialOffset: {default: 0, auto: true, observed: true},
