@@ -78,6 +78,10 @@ class WT_MapModelAirplaneComponent extends WT_MapModelComponent {
         return SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
     }
 
+    get magVar() {
+        return SimVar.GetSimVarValue("GPS MAGVAR", "degree");
+    }
+
     get altitude() {
         return new WT_NumberUnit(SimVar.GetSimVarValue("PLANE ALTITUDE", "feet"), WT_Unit.FOOT);
     }
