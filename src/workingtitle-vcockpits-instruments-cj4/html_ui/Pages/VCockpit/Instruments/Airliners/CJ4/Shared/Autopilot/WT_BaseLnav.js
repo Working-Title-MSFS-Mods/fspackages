@@ -104,12 +104,10 @@ class WT_BaseLnav {
             if (isLnavActive) {
                 this._setHeading = this._dtk;
 
-                let interceptAngle = this._xtk < 0 ? Math.min(Math.pow(Math.abs(this._xtk) * 10, 1.35), 45)
-                    : -1 * Math.min(Math.pow(Math.abs(this._xtk) * 10, 1.35), 45);
+                const absInterceptAngle = Math.min(Math.pow(Math.abs(this._xtk) * 10, 1.35), 45);
+                const interceptAngle = this._xtk < 0 ? absInterceptAngle : -1 * absInterceptAngle;
                 
-                let deltaAngle = ((((this._dtk - this._bearingToWaypoint) % 360) + 360) % 360) > 180 ? 360 - ((((this._dtk - this._bearingToWaypoint) % 360) + 360) % 360)
-                    : ((((this._dtk - this._bearingToWaypoint) % 360) + 360) % 360);
-
+                let deltaAngle = Avionics.Utils.angleDiff(this._dtk, this._bearingToWaypoint);
                 this._setHeading = (((this._dtk + interceptAngle) % 360) + 360) % 360;
 
                 //CASE WHERE WE ARE PASSED THE WAYPOINT AND SHOULD SEQUENCE THE NEXT WPT
@@ -130,7 +128,9 @@ class WT_BaseLnav {
 
                 //TURN ANTICIPATION & TURN WAYPOINT SWITCHING
                 const turnRadius = Math.pow(this._groundSpeed / 60, 2) / 9;
-                if (this._activeWaypoint && !this._activeWaypoint.endsInDiscontinuity && nextActiveWaypoint && this._activeWaypointDist <= (turnRadius * 2) && this._groundSpeed < 700) {
+                const maxAnticipationDistance = SimVar.GetSimVarValue('AIRSPEED TRUE', 'Knots') < 350 ? 7: 10;
+
+                if (this._activeWaypoint && !this._activeWaypoint.endsInDiscontinuity && nextActiveWaypoint && this._activeWaypointDist <= maxAnticipationDistance && this._groundSpeed < 700) {
 
                     let toCurrentFixHeading = Avionics.Utils.computeGreatCircleHeading(new LatLongAlt(this._planePos._lat, this._planePos._lon), this._activeWaypoint.infos.coordinates);
                     let toNextFixHeading = Avionics.Utils.computeGreatCircleHeading(this._activeWaypoint.infos.coordinates, nextActiveWaypoint.infos.coordinates);
@@ -140,7 +140,7 @@ class WT_BaseLnav {
 
                     let enterBankDistance = (this._groundSpeed / 3600) * 4;
 
-                    const getDistanceToActivate = turnAngle => (turnRadius * Math.tan((Math.abs(turnAngle) / 2) * (Math.PI / 180))) + enterBankDistance;
+                    const getDistanceToActivate = turnAngle => Math.min((turnRadius * Math.tan((Math.abs(turnAngle) / 2) * (Math.PI / 180))) + enterBankDistance, maxAnticipationDistance);
 
                     let activateDistance = Math.max(getDistanceToActivate(nextFixTurnAngle), getDistanceToActivate(currentFixTurnAngle));
                     
