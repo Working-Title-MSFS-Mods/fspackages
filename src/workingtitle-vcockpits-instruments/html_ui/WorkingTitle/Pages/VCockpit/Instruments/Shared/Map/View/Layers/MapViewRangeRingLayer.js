@@ -2,8 +2,6 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
     constructor(id = WT_MapViewRangeRingLayer.ID_DEFAULT, configName = WT_MapViewRangeRingLayer.CONFIG_NAME_DEFAULT) {
         super(id, configName);
 
-        this._lastPixelDensity = 1;
-
         this.addRing(new WT_MapViewRangeRing());
         this.labeledRing.label.anchor = {x: 0.5, y: 0.5};
 
@@ -14,19 +12,19 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
         return this.rings[0].ring;
     }
 
-    _updateRingOptions(pixelDensity) {
+    _updateRingOptions(dpiScale) {
         this.labeledRing.ring.setOptions({
-            strokeWidth: this.strokeWidth * pixelDensity,
+            strokeWidth: this.strokeWidth * dpiScale,
             strokeColor: this.strokeColor,
-            strokeDash: this.strokeDash.map(e => e * pixelDensity),
-            outlineWidth: this.outlineWidth * pixelDensity,
+            strokeDash: this.strokeDash.map(e => e * dpiScale),
+            outlineWidth: this.outlineWidth * dpiScale,
             outlineColor: this.outlineColor,
-            outlineDash: this.outlineDash.map(e => e * pixelDensity)
+            outlineDash: this.outlineDash.map(e => e * dpiScale)
         });
 
         this.labeledRing.label.setOptions({
             radialAngle: this.labelAngle,
-            radialOffset: this.labelOffset * pixelDensity,
+            radialOffset: this.labelOffset * dpiScale,
         });
     }
 
@@ -39,12 +37,12 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
             this._setPropertyFromConfig(property);
         }
 
-        this._updateRingOptions(data.pixelDensity);
+        this._updateRingOptions(data.dpiScale);
     }
 
     onViewSizeChanged(data) {
         super.onViewSizeChanged(data);
-        this._updateRingOptions(data.pixelDensity);
+        this._updateRingOptions(data.dpiScale);
     }
 }
 WT_MapViewRangeRingLayer.ID_DEFAULT = "RangeRingLayer";

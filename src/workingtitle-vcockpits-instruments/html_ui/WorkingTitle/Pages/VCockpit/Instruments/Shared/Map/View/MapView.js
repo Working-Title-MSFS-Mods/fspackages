@@ -2,7 +2,7 @@ class WT_MapView extends HTMLElement {
     constructor() {
         super();
 
-        this._pixelDensity = 1;
+        this._dpiScale = 1;
         this._layers = [];
 
         this._configLoaded = false;
@@ -18,7 +18,7 @@ class WT_MapView extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["pixel-density"];
+        return ["dpi-scale"];
     }
 
     connectedCallback() {
@@ -70,8 +70,8 @@ class WT_MapView extends HTMLElement {
         return this.clientHeight;
     }
 
-    get pixelDensity() {
-        return this._pixelDensity;
+    get dpiScale() {
+        return this._dpiScale;
     }
 
     get model() {
@@ -87,8 +87,8 @@ class WT_MapView extends HTMLElement {
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        if (name === "pixel-density") {
-            this._pixelDensity = parseFloat(newValue);
+        if (name === "dpi-scale") {
+            this._dpiScale = parseFloat(newValue);
         }
     }
 
@@ -148,11 +148,11 @@ class WT_MapView extends HTMLElement {
         let currentWidth = this.viewWidth;
         let currentHeight = this.viewHeight;
 
-        let changed = currentWidth != this._lastWidth || currentHeight != this._lastHeight || this.pixelDensity != this._lastPixelDensity;
+        let changed = currentWidth != this._lastWidth || currentHeight != this._lastHeight || this.dpiScale != this._lastPixelDensity;
 
         this._lastWidth = currentWidth;
         this._lastHeight = currentHeight;
-        this._lastPixelDensity = this.pixelDensity;
+        this._lastPixelDensity = this.dpiScale;
 
         return changed;
     }
@@ -207,11 +207,11 @@ class WT_MapView extends HTMLElement {
 }
 WT_MapView.OPTIONS_DEF = {
     model: {default: undefined, readOnly: true},
-    pixelDensity: {},
+    dpiScale: {},
     projection: {default: WT_MapProjection.createProjection(WT_MapProjection.Projection.MERCATOR), auto: true},
     viewPlane: {default: undefined, auto: true}
 };
-WT_MapView.OPTIONS_TO_PASS = ["model", "pixelDensity", "projection", "viewPlane"];
+WT_MapView.OPTIONS_TO_PASS = ["model", "dpiScale", "projection", "viewPlane"];
 
 class WT_MapViewLayerContainer {
     constructor(view, layer) {
