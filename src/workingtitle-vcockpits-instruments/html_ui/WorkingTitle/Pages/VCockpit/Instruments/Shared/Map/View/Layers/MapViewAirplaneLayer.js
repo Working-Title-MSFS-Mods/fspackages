@@ -2,30 +2,29 @@ class WT_MapViewAirplaneLayer extends WT_MapViewCanvasLayer {
     constructor(id = WT_MapViewAirplaneLayer.ID_DEFAULT, configName = WT_MapViewAirplaneLayer.CONFIG_NAME_DEFAULT) {
         super(id, configName);
 
+        this._airplaneIcon = new WT_MapViewCanvas(false, false);
+        this.addCanvas(this._airplaneIcon);
+
         this._optsManager = new WT_OptionsManager(this, WT_MapViewAirplaneLayer.OPTIONS_DEF);
 
         this._iconImageLoaded = false;
     }
 
-    get canvas() {
-        return this.canvases[0].canvas;
-    }
-
-    get canvasContext() {
-        return this.canvases[0].context;
+    get airplaneIcon() {
+        return this._airplaneIcon;
     }
 
     _resizeCanvas() {
-        this.canvas.width = this.iconSizePx;
-        this.canvas.height = this.iconSizePx;
-        this.canvas.style.left = `${-this.iconSizePx / 2}px`;
-        this.canvas.style.top = `${-this.iconSizePx / 2}px`;
-        this.canvas.style.width = `${this.iconSizePx}px`;
-        this.canvas.style.height = `${this.iconSizePx}px`;
+        this.airplaneIcon.canvas.width = this.iconSizePx;
+        this.airplaneIcon.canvas.height = this.iconSizePx;
+        this.airplaneIcon.canvas.style.left = `${-this.iconSizePx / 2}px`;
+        this.airplaneIcon.canvas.style.top = `${-this.iconSizePx / 2}px`;
+        this.airplaneIcon.canvas.style.width = `${this.iconSizePx}px`;
+        this.airplaneIcon.canvas.style.height = `${this.iconSizePx}px`;
     }
 
     _redrawIcon() {
-        this.canvasContext.drawImage(this._iconImage, 0, 0, this.iconSizePx, this.iconSizePx);
+        this.airplaneIcon.context.drawImage(this._iconImage, 0, 0, this.iconSizePx, this.iconSizePx);
     }
 
     _drawIconToCanvas() {
@@ -60,7 +59,7 @@ class WT_MapViewAirplaneLayer extends WT_MapViewCanvasLayer {
             return;
         }
         let iconRotation = data.model.airplane.headingTrue + data.projection.rotation;
-        this.canvas.style.transform = `translate(${data.viewPlane.x}px, ${data.viewPlane.y}px) rotate(${iconRotation}deg)`;
+        this.airplaneIcon.canvas.style.transform = `translate(${data.viewPlane.x}px, ${data.viewPlane.y}px) rotate(${iconRotation}deg)`;
     }
 }
 WT_MapViewAirplaneLayer.ID_DEFAULT = "AirplaneLayer";

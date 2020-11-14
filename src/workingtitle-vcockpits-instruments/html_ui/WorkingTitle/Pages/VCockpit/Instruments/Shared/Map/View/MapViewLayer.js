@@ -52,16 +52,12 @@ class WT_MapViewLayer {
 }
 
 class WT_MapViewCanvasLayer extends WT_MapViewLayer {
-    constructor(id, configName, canvasCount = 1) {
+    constructor(id, configName) {
         super(id, configName);
         this._canvases = [];
 
         this._lastWidth = 0;
         this._lastHeight = 0;
-
-        for (let i = 0; i < canvasCount; i++) {
-            this.addCanvas();
-        }
     }
 
     _createHTMLElement() {
@@ -77,50 +73,32 @@ class WT_MapViewCanvasLayer extends WT_MapViewLayer {
     _updateCanvasSize(canvas) {
         canvas.width = this._lastWidth;
         canvas.height = this._lastHeight;
-        canvas.style.width = `${this._lastWidth}px`;
-        canvas.style.height = `${this._lastHeight}px`;
-    }
-
-    _createCanvas() {
-        let entry = {};
-
-        entry.container = document.createElement("div");
-        entry.container.style.position = "absolute";
-        entry.container.style.left = 0;
-        entry.container.style.top = 0;
-        entry.container.style.width = "100%";
-        entry.container.style.height = "100%";
-        entry.container.style.transform = "rotateX(0deg)";
-
-        entry.canvas = document.createElement("canvas");
-        entry.context = entry.canvas.getContext("2d");
-        entry.context.imageSmoothingEnabled = false;
-
-        entry.canvas.style.position = "absolute";
-        entry.canvas.style.left = 0;
-        entry.canvas.style.top = 0;
-
-        this._updateCanvasSize(entry.canvas);
-
-        entry.container.appendChild(entry.canvas);
-        return entry;
     }
 
     get canvases() {
         return this._canvases;
     }
 
-    addCanvas() {
-        let entry = this._createCanvas();
-        this._canvases.push(entry);
-        entry.container.style.zIndex = this._canvases.length;
-        this.htmlElement.appendChild(entry.container);
+    addCanvas(canvas, parentHTMLElement) {
+        if (!parentHTMLElement) {
+            parentHTMLElement = this.htmlElement;
+        }
+
+        this._canvases.push(canvas);
+        canvas.container.style.zIndex = this._canvases.length;
+        canvas.parentHTMLElement = parentHTMLElement;
+        parentHTMLElement.appendChild(canvas.container);
+        if (canvas.syncSizeToView) {
+            this._updateCanvasSize(canvas);
+        }
     }
 
-    removeCanvas() {
-        let entry = this._canvases.pop();
-        if (entry && entry.container.parentNode === this.htmlElement) {
-            this.htmlElement.removeChild(entry.container);
+    removeCanvas(canvas) {
+        let index = this._canvases.indexOf(canvas);
+        if (index >= 0) {
+            if (canvas.container.parentNode === canvas.parentHTMLElement) {
+                canvas.parentHTMLElement.removeChild(canvas.container);
+            }
         }
     }
 
@@ -128,13 +106,94 @@ class WT_MapViewCanvasLayer extends WT_MapViewLayer {
         this._lastWidth = data.projection.viewWidth;
         this._lastHeight = data.projection.viewHeight;
 
-        for (let entry of this._canvases) {
-            this._updateCanvasSize(entry.canvas);
+        for (let canvas of this._canvases) {
+            if (canvas.syncSizeToView) {
+                this._updateCanvasSize(canvas);
+            }
         }
     }
 
     onAttached(data) {
         this.onViewSizeChanged(data);
+    }
+}
+
+class WT_MapViewCanvas {
+    constructor(useBuffer, syncSizeToView) {
+        this._useBuffer = useBuffer;
+        this._syncSizeToView = syncSizeToView;
+
+        if (useBuffer) {
+            let buffer = document.createElement("canvas");
+            let bufferContext = buffer.getContext("2d");
+            this._buffer = {canvas: buffer, context: bufferContext};
+        }
+
+        this._container = document.createElement("div");
+        this._container.style.position = "absolute";
+        this._container.style.left = 0;
+        this._container.style.top = 0;
+        this._container.style.width = "100%";
+        this._container.style.height = "100%";
+        this._container.style.transform = "rotateX(0deg)";
+
+        this._canvas = document.createElement("canvas");
+        this._context = this._canvas.getContext("2d");
+        this._context.imageSmoothingEnabled = false;
+
+        this._canvas.style.position = "absolute";
+        this._canvas.style.left = 0;
+        this._canvas.style.top = 0;
+
+        this._container.appendChild(this._canvas);
+    }
+
+    get useBuffer() {
+        return this._useBuffer;
+    }
+
+    get syncSizeToView() {
+        return this._syncSizeToView;
+    }
+
+    get container() {
+        return this._container;
+    }
+
+    get canvas() {
+        return this._canvas;
+    }
+
+    get context() {
+        return this._context;
+    }
+
+    get buffer() {
+        return this._buffer;
+    }
+
+    get width() {
+        return this.canvas.width;
+    }
+
+    set width(width) {
+        this.canvas.width = width;
+        this.canvas.style.width = `${width}px`;
+        if (this.useBuffer) {
+            this.buffer.canvas.width = width;
+        }
+    }
+
+    get height() {
+        return this.canvas.height;
+    }
+
+    set height(height) {
+        this.canvas.height = height;
+        this.canvas.style.height = `${height}px`;
+        if (this.useBuffer) {
+            this.buffer.canvas.height = height;
+        }
     }
 }
 

@@ -42,44 +42,31 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewCanvasLayer {
         this._bounds = {left: 0, top: 0, width: data.projection.viewWidth, height: data.projection.viewHeight};
     }
 
-    addCanvas() {
-        let entry = this._createCanvas();
-        this._canvases.push(entry);
-        entry.container.style.zIndex = this._canvases.length;
-        this.ringContainer.appendChild(entry.container);
-    }
-
-    removeCanvas() {
-        let entry = this._canvases.pop();
-        if (entry && entry.container.parentNode === this.ringContainer) {
-            this.ringContainer.removeChild(entry.container);
-        }
-    }
-
     onViewSizeChanged(data) {
         super.onViewSizeChanged(data);
         this._updateBounds(data);
     }
 
     addRing(labeledRing) {
-        this._rings.push({
+        let entry = {
+            canvas: new WT_MapViewCanvas(false, true),
             ring: labeledRing,
             lastDrawn: {left: 0, top: 0, width: 0, height: 0}
-        });
+        }
+        this._rings.push(entry);
         let label = labeledRing.label;
         if (label) {
             this.labelContainer.appendChild(label.htmlElement);
         }
-        if (this.rings.length > this.canvases.length) {
-            this.addCanvas();
-        }
+        this.addCanvas(entry.canvas, this.ringContainer);
     }
 
     removeRing(labeledRing) {
         let index = this._rings.findIndex(entry => entry.ring === labeledRing);
         if (index >= 0) {
-            this.removeCanvas();
+            let removed = this._rings[index];
             this._rings.splice(index, 1);
+            this.removeCanvas(removed.canvas);
             let label = labeledRing.label;
             if (label && label.htmlElement.parentNode === this.labelContainer) {
                 this.labelContainer.removeChild(label.htmlElement);
@@ -91,7 +78,7 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewCanvasLayer {
         for (let i = 0; i < this.rings.length; i++) {
             let entry = this.rings[i];
             entry.ring.onUpdate(data);
-            this.canvases[i].context.clearRect(entry.lastDrawn.left, entry.lastDrawn.top, entry.lastDrawn.width, entry.lastDrawn.height);
+            entry.canvas.context.clearRect(entry.lastDrawn.left, entry.lastDrawn.top, entry.lastDrawn.width, entry.lastDrawn.height);
             entry.lastDrawn = {left: 0, right: 0, top: 0, bottom: 0};
             let toDraw = entry.ring.drawRing(data, this._bounds);
             if (toDraw) {
@@ -101,7 +88,7 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewCanvasLayer {
                     width: toDraw.bounds.width,
                     height: toDraw.bounds.height
                 };
-                this.canvases[i].context.drawImage(toDraw.image, toDraw.bounds.left, toDraw.bounds.top, toDraw.bounds.width, toDraw.bounds.height, drawn.left, drawn.top, drawn.width, drawn.height);
+                entry.canvas.context.drawImage(toDraw.image, toDraw.bounds.left, toDraw.bounds.top, toDraw.bounds.width, toDraw.bounds.height, drawn.left, drawn.top, drawn.width, drawn.height);
                 entry.lastDrawn = drawn;
             }
             entry.ring.drawLabel(data);
@@ -240,7 +227,7 @@ class WT_MapViewRingLabel {
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRingLabel.OPTIONS_DEF);
 
-        this._needRedraw = false;
+        this._needRedraw = true;
     }
 
     _createLabel() {
