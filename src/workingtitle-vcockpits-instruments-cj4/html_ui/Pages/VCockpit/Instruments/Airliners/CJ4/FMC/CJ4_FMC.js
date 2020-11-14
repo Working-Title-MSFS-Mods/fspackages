@@ -442,10 +442,10 @@ class CJ4_FMC extends FMCMainDisplay {
             const isHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1 ? true : false;
             const isNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1 ? true : false;
             const isLnavActive = this.radioNav.getRADIONAVSource() == 1 ? true : false;
-            if (isHdgActive && isNavActive) { //IF BOTH ON, SET BOTH OFF
-                SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
-                SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
-            }
+            // if (isHdgActive && isNavActive) { //IF BOTH ON, SET BOTH OFF
+            //     SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
+            //     SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
+            // }
 
             //TODO: CASES FOR WHEN OTHER MODES ARE SET ACTIVE -- CAN BE REMOVED IF WE UPDATE XML FILES FOR NON WT NAV MODES
 
