@@ -1,4 +1,9 @@
 class WT_BaseLnav {
+
+    /**
+     * Creates an instance of WT_BaseLnav.
+     * @param {FlightPlanManager} fpm The flight plan manager to use with this instance. 
+     */
     constructor(fpm) {
         this._fpm = fpm;
 
@@ -6,7 +11,16 @@ class WT_BaseLnav {
         this._activeWaypointChanged = true;
         this._activeWaypointChangedflightPlanChanged = true;
 
+        /**
+         * The current active waypoint.
+         * @type {WayPoint}
+         */
         this._activeWaypoint = undefined;
+
+        /**
+         * The previous active waypoint.
+         * @type {WayPoint}
+         */
         this._previousWaypoint = undefined;
 
         this._planePos = undefined;
@@ -21,6 +35,9 @@ class WT_BaseLnav {
         this._onDiscontinuity = false;
 
         this._lnavDeactivated = true;
+
+        /** Whether or not executing the calculated linear instructions is inhibited. */
+        this._executeInhibited = false;
     }
 
     get waypoints() {
@@ -39,8 +56,14 @@ class WT_BaseLnav {
      */
     update() {
 
+        //Cancel execution inhibited when the waypoint changes
+        const currentWaypoint = this._fpm.getActiveWaypoint();
+        if (this._executeInhibited && currentWaypoint.icao !== this._activeWaypoint.icao) {
+            this._executeInhibited = false;
+        }
+
         //CAN LNAV EVEN RUN?
-        this._activeWaypoint = this._fpm.getActiveWaypoint();
+        this._activeWaypoint = currentWaypoint;
         this._previousWaypoint = this._fpm.getPreviousActiveWaypoint();
         const isLnavActive = SimVar.GetSimVarValue("L:RADIONAV_SOURCE", "number") == 1 ? true : false;
         const navModeActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
@@ -70,6 +93,7 @@ class WT_BaseLnav {
             const nextWptPos = new LatLon(this._activeWaypoint.infos.coordinates.lat, this._activeWaypoint.infos.coordinates.long);
             this._xtk = this._planePos.crossTrackDistanceTo(prevWptPos, nextWptPos) * (0.000539957); //meters to NM conversion
             this._dtk = Avionics.Utils.computeGreatCircleHeading(this._previousWaypoint.infos.coordinates, this._activeWaypoint.infos.coordinates);
+            
             SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", this._xtk);
             SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", this._dtk);
             SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", this._activeWaypointDist);
@@ -90,7 +114,10 @@ class WT_BaseLnav {
                 //CASE WHERE WE ARE PASSED THE WAYPOINT AND SHOULD SEQUENCE THE NEXT WPT
                 if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90) {
                     this._setHeading = this._dtk;
+                    
                     this._fpm.setActiveWaypointIndex(this._fpm.getActiveWaypointIndex() + 1);
+                    this._executeInhibited = false;
+
                     this.execute();
                     return;
                 }
@@ -102,8 +129,9 @@ class WT_BaseLnav {
                 //TURN ANTICIPATION & TURN WAYPOINT SWITCHING
                 const turnRadius = Math.pow(this._groundSpeed / 60, 2) / 9;
                 if (this._activeWaypoint && !this._activeWaypoint.endsInDiscontinuity && nextActiveWaypoint && this._activeWaypointDist <= turnRadius && this._groundSpeed < 700) {
-                    let fromHeading = this._dtk;
+                    let fromHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG;
                     let toHeading = Avionics.Utils.computeGreatCircleHeading(this._activeWaypoint.infos.coordinates, nextActiveWaypoint.infos.coordinates);
+                    
                     while (fromHeading >= 180) {
                         fromHeading -= 360;
                     }
@@ -114,24 +142,32 @@ class WT_BaseLnav {
                     while (turnAngle >= 180) {
                         turnAngle -= 360;
                     }
+
                     let absTurnAngle = Math.abs(turnAngle);
                     let activateDistance = Math.min(turnRadius * Math.tan((absTurnAngle / 2) * (Math.PI / 180)), turnRadius);
+                    
                     if (this._activeWaypointDist <= activateDistance) { //TIME TO START TURN
                         this._setHeading += turnAngle;
+                        
                         this._fpm.setActiveWaypointIndex(this._fpm.getActiveWaypointIndex() + 1);
+                        this._executeInhibited = false;
+
                         this.execute();
                         return;
                     }
                 }
 
-                //NEAR WAYPOINT TRACKING AND DISCONTINUITIES
+                //DISCONTINUITIES
+                if (this._activeWaypoint.endsInDiscontinuity && this._activeWaypointDist < 0.25) {
+                    this._setHeading = this._dtk;
+                    this.executeDiscontinuity();
+                    return;
+                }
+
+                //NEAR WAYPOINT TRACKING
                 if (navModeActive && this._activeWaypointDist < 0.5) { //WHEN NOT MUCH TURN, STOP CHASING DTK CLOSE TO WAYPOINT
                     this._setHeading = this._bearingToWaypoint;
-                    if (this._activeWaypoint.endsInDiscontinuity && this._activeWaypointDist < 0.25) {
-                        this._setHeading = this._dtk;
-                        this.executeVectors();
-                        return;
-                    }
+                    this._executeInhibited = true;
                 }
                 this.execute();
             }
@@ -147,38 +183,42 @@ class WT_BaseLnav {
      * Execute.
      */
     execute() {
-        //ADD MAGVAR
-        this._setHeading = GeoMath.correctMagvar(this._setHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"));
+        if (!this._executeInhibited) {
+            //ADD MAGVAR
+            this._setHeading = GeoMath.correctMagvar(this._setHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"));
 
-        //ADD WIND CORRECTION
-        const currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
-        const currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
-        const currCrosswind = Math.trunc(currWindSpeed * (Math.sin((this._setHeading * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
-        const windCorrection = 180 * Math.asin(currCrosswind / this._groundSpeed) / Math.PI;
-        this._setHeading = (((this._setHeading + windCorrection) % 360) + 360) % 360;
-        
-        //SET HEADING
-        Coherent.call("HEADING_BUG_SET", 2, this._setHeading);
+            //ADD WIND CORRECTION
+            const currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
+            const currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
+            const currCrosswind = Math.trunc(currWindSpeed * (Math.sin((this._setHeading * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
+            const windCorrection = 180 * Math.asin(currCrosswind / this._groundSpeed) / Math.PI;
+            this._setHeading = (((this._setHeading + windCorrection) % 360) + 360) % 360;
+            
+            //SET HEADING
+            Coherent.call("HEADING_BUG_SET", 2, this._setHeading);
+        }
     }
 
     /**
      * Execute Vectors
      */
-    executeVectors() {
-        //ADD MAGVAR
-        this._setHeading = GeoMath.correctMagvar(this._setHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"));
+    executeDiscontinuity() {
+        if (!this._executeInhibited) {
+            //ADD MAGVAR
+            this._setHeading = GeoMath.correctMagvar(this._setHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"));
 
-        //SET HEADING AND CHANGE TO HEADING MODE
-        Coherent.call("HEADING_BUG_SET", 2, this._setHeading);
-        Coherent.call("HEADING_BUG_SET", 1, this._setHeading);
-        SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
-        SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 1);
-        SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
-        SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", 0);
-        SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", this._setHeading);
-        SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", 0);
+            //SET HEADING AND CHANGE TO HEADING MODE
+            Coherent.call("HEADING_BUG_SET", 2, this._setHeading);
+            Coherent.call("HEADING_BUG_SET", 1, this._setHeading);
+            SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+            SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 1);
+            SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
+            SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", 0);
+            SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", this._setHeading);
+            SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", 0);
 
-        this._onDiscontinuity = true;
+            this._onDiscontinuity = true;
+        }
     }
 
     /**

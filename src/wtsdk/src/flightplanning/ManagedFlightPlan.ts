@@ -402,6 +402,7 @@ export class ManagedFlightPlan {
 
     planCopy.procedureDetails = Object.assign({}, this.procedureDetails);
     planCopy.directTo = Object.assign({}, this.directTo);
+    planCopy.directTo.interceptPoints = planCopy.directTo.interceptPoints?.map(w => copyWaypoint(w) as WayPoint);
 
     const copySegments = [];
     for (var segment of this._segments) {
@@ -448,7 +449,11 @@ export class ManagedFlightPlan {
     const interceptPoints = this.calculateDirectIntercept(this.getWaypoint(index));
     this.addWaypoint(interceptPoints[0], index);
 
-    this.activeWaypointIndex = index;
+    this.activeWaypointIndex = index + 1;
+
+    this.directTo.isActive = true;
+    this.directTo.planWaypointIndex = index + 1;
+    this.directTo.interceptPoints = interceptPoints;
   }
 
   /**
