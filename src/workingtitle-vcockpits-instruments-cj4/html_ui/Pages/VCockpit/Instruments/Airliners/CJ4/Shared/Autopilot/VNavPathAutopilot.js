@@ -1,6 +1,7 @@
 class WT_VNavPathAutopilot extends WT_BaseAutopilot {
     constructor(fpm) {
         super(fpm);
+        this._vnavConstraintAltitude = undefined;
         this._vnavTargetAltitude = undefined;
         this._vnavTargetDistance = undefined;
         this._topOfDescent = undefined;
@@ -26,6 +27,14 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
      */
     update() {
         super.update();
+
+        //GRAB THE CURRENT CONSTRAINT AND SET IT IF IT EXISTS
+        if (SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "feet") > 0) {
+            this._vnavConstraintAltitude = SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "feet");
+        }
+        else {
+            this._vnavConstraintAltitude = undefined;
+        }
 
         //FETCH VNAV VARIABLES
         const vnavValues = WTDataStore.get('CJ4_vnavValues', 'none');

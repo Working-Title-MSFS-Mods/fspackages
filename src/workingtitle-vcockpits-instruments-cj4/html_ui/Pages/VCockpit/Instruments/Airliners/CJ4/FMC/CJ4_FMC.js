@@ -446,7 +446,7 @@ class CJ4_FMC extends FMCMainDisplay {
                 SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
                 SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
             }
-            
+
             //TODO: CASES FOR WHEN OTHER MODES ARE SET ACTIVE -- CAN BE REMOVED IF WE UPDATE XML FILES FOR NON WT NAV MODES
 
             if (isHdgActive) { //ACTIVATE DEFALT HEADING MODE INDEX 1
@@ -493,7 +493,7 @@ class CJ4_FMC extends FMCMainDisplay {
                         this._currentAP = new WT_VModeAutopilot(this.flightPlanManager);
                         this._currentAP.activate();
                     }
-                    else if (altMode && altDelta < 100) {
+                    else {
                         this._vpathMode = true;
                         this._currentAP = new WT_VNavPathAutopilot(this.flightPlanManager);
                         this._currentAP.activate();
