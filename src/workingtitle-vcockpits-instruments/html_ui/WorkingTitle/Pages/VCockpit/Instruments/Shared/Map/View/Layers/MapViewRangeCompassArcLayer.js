@@ -336,12 +336,12 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
         let arcRightTickEnd = center.add(WT_GVector2.fromPolar(this.radius + this.arcEndTickLength, arcAngularWidthRad / 2));
 
         if (this.arcOutlineWidth > 0) {
-            this._drawArcToCanvas(this.arcOutlineWidth * data.pixelDensity, this.arcOutlineColor, center, this.radius, arcAngularWidthRad, arcLeftTickStart, arcLeftTickEnd, arcRightTickStart, arcRightTickEnd);
+            this._drawArcToCanvas(this.arcOutlineWidth * data.dpiScale, this.arcOutlineColor, center, this.radius, arcAngularWidthRad, arcLeftTickStart, arcLeftTickEnd, arcRightTickStart, arcRightTickEnd);
         }
 
-        this._drawArcToCanvas(this.arcStrokeWidth * data.pixelDensity, this.arcStrokeColor, center, this.radius, arcAngularWidthRad, arcLeftTickStart, arcLeftTickEnd, arcRightTickStart, arcRightTickEnd);
+        this._drawArcToCanvas(this.arcStrokeWidth * data.dpiScale, this.arcStrokeColor, center, this.radius, arcAngularWidthRad, arcLeftTickStart, arcLeftTickEnd, arcRightTickStart, arcRightTickEnd);
 
-        let thick = Math.max(this.arcStrokeWidth * data.pixelDensity, this.arcOutlineWidth * data.pixelDensity);
+        let thick = Math.max(this.arcStrokeWidth * data.dpiScale, this.arcOutlineWidth * data.dpiScale);
         let arcApexLeft = center.x - this.radius;
         let arcApexRight = center.x + this.radius;
         let arcApexTop = center.y - this.radius;
@@ -409,11 +409,11 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
 
         if (this._needRestyleBearingLabels) {
             if (this.bearingLabelFontOutlineWidth > 0) {
-                this.bearingLabelLayer.buffer.context.lineWidth = this.bearingLabelFontOutlineWidth * data.pixelDensity * 2;
+                this.bearingLabelLayer.buffer.context.lineWidth = this.bearingLabelFontOutlineWidth * data.dpiScale * 2;
                 this.bearingLabelLayer.buffer.context.strokeStyle = this.bearingLabelFontOutlineWidth;
             }
 
-            this.bearingLabelLayer.buffer.context.font = `${this.bearingLabelFontSize * data.pixelDensity}px ${this.bearingLabelFont}`;
+            this.bearingLabelLayer.buffer.context.font = `${this.bearingLabelFontSize * data.dpiScale}px ${this.bearingLabelFont}`;
             this.bearingLabelLayer.buffer.context.fontSize = this.bearingLabelFontSize;
             this.bearingLabelLayer.buffer.context.fillStyle = this.bearingLabelFontColor;
 
@@ -424,9 +424,9 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
         let centerAngle = (-this.rotation + this.facing + 360) % 360;
         let bearingLabelToDrawAngles = this.bearingLabelAngles.filter(angle => Math.min(Math.abs(angle - centerAngle), 360 - Math.abs(angle - centerAngle)) <= halfAngularWidth);
 
-        let tickLengthPx = Math.max(this.bearingTickMinorLength, this.bearingTickMajorLength) * data.pixelDensity;
-        let offsetPx = this.bearingLabelOffset * data.pixelDensity;
-        let fontSizePx = this.bearingLabelFontSize * data.pixelDensity;
+        let tickLengthPx = Math.max(this.bearingTickMinorLength, this.bearingTickMajorLength) * data.dpiScale;
+        let offsetPx = this.bearingLabelOffset * data.dpiScale;
+        let fontSizePx = this.bearingLabelFontSize * data.dpiScale;
         for (let angle of bearingLabelToDrawAngles) {
             this._drawBearingLabel(angle, tickLengthPx, offsetPx, fontSizePx);
         }
@@ -457,22 +457,22 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
         let center = this.center;
         let minorTicks = this.bearingTickMinorAngles.map((function(angle) {
             return {
-                start: center.add(WT_GVector2.fromPolar(this.radius - this.bearingTickMinorLength * data.pixelDensity, angle * Avionics.Utils.DEG2RAD)),
+                start: center.add(WT_GVector2.fromPolar(this.radius - this.bearingTickMinorLength * data.dpiScale, angle * Avionics.Utils.DEG2RAD)),
                 end: center.add(WT_GVector2.fromPolar(this.radius, angle * Avionics.Utils.DEG2RAD))
             };
         }).bind(this));
         let majorTicks = this.bearingTickMajorAngles.map((function(angle) {
             return {
-                start: center.add(WT_GVector2.fromPolar(this.radius - this.bearingTickMajorLength * data.pixelDensity, angle * Avionics.Utils.DEG2RAD)),
+                start: center.add(WT_GVector2.fromPolar(this.radius - this.bearingTickMajorLength * data.dpiScale, angle * Avionics.Utils.DEG2RAD)),
                 end: center.add(WT_GVector2.fromPolar(this.radius, angle * Avionics.Utils.DEG2RAD))
             };
         }).bind(this));
 
         if (this.arcOutlineWidth > 0) {
-            this._drawBearingTicksToBuffer(this.arcOutlineWidth * data.pixelDensity, this.arcOutlineColor, minorTicks, majorTicks);
+            this._drawBearingTicksToBuffer(this.arcOutlineWidth * data.dpiScale, this.arcOutlineColor, minorTicks, majorTicks);
         }
 
-        this._drawBearingTicksToBuffer(this.arcStrokeWidth * data.pixelDensity, this.arcStrokeColor, minorTicks, majorTicks);
+        this._drawBearingTicksToBuffer(this.arcStrokeWidth * data.dpiScale, this.arcStrokeColor, minorTicks, majorTicks);
 
         this.bearingTickLayer.context.drawImage(this.bearingTickLayer.buffer.canvas,
             toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height,
@@ -499,14 +499,14 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
 
     _drawForwardTick(data) {
         let angleRad = this.forwardTickAngle * Avionics.Utils.DEG2RAD;
-        let lengthPx = this.forwardTickLength * data.pixelDensity;
+        let lengthPx = this.forwardTickLength * data.dpiScale;
         let begin = this.center.add(WT_GVector2.fromPolar(this.radius, angleRad), true);
         let end = begin.add(WT_GVector2.fromPolar(lengthPx, angleRad));
 
         if (this.arcOutlineWidth > 0) {
-            this._drawForwardTickToCanvas(this.arcOutlineWidth * data.pixelDensity, this.arcOutlineColor, begin, end);
+            this._drawForwardTickToCanvas(this.arcOutlineWidth * data.dpiScale, this.arcOutlineColor, begin, end);
         }
-        this._drawForwardTickToCanvas(this.arcStrokeWidth * data.pixelDensity, this.arcStrokeColor, begin, end);
+        this._drawForwardTickToCanvas(this.arcStrokeWidth * data.dpiScale, this.arcStrokeColor, begin, end);
     }
 
     _updateForwardTick(data) {
@@ -529,9 +529,9 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
             return;
         }
 
-        let thick = Math.max(this.arcStrokeWidth * data.pixelDensity, this.arcOutlineWidth * data.pixelDensity);
-        let innerToOuterLength = Math.max(this.arcEndTickLength * data.pixelDensity, this.forwardTickLength * data.pixelDensity) + thick;
-        let totalRadius = this.radius + Math.max(this.arcEndTickLength * data.pixelDensity, this.forwardTickLength * data.pixelDensity);
+        let thick = Math.max(this.arcStrokeWidth * data.dpiScale, this.arcOutlineWidth * data.dpiScale);
+        let innerToOuterLength = Math.max(this.arcEndTickLength * data.dpiScale, this.forwardTickLength * data.dpiScale) + thick;
+        let totalRadius = this.radius + Math.max(this.arcEndTickLength * data.dpiScale, this.forwardTickLength * data.dpiScale);
         let facingRad = this.facing * Avionics.Utils.DEG2RAD;
         let leftAngleRad = (-this.arcAngularWidth / 2 + this.facing) * Avionics.Utils.DEG2RAD;
 
@@ -568,7 +568,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
             return;
         }
 
-        let position = this.center.add(WT_GVector2.fromPolar(this.radius + this.labelOffset * data.pixelDensity, (this.labelAngle + this.facing) * Avionics.Utils.DEG2RAD), true);
+        let position = this.center.add(WT_GVector2.fromPolar(this.radius + this.labelOffset * data.dpiScale, (this.labelAngle + this.facing) * Avionics.Utils.DEG2RAD), true);
         this.rangeLabel.labelElement.style.left = `${position.x}px`;
         this.rangeLabel.labelElement.style.top = `${position.y}px`;
 
