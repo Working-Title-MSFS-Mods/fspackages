@@ -836,22 +836,6 @@ class CJ4_APDisplay extends NavSystemElement {
             Avionics.Utils.diffAndSet(this.AP_Armed, "PATH");
         }
 
-        const isLnavActive = this.radioNav.getRADIONAVSource() == 1 ? true : false;
-        const isWTNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1 ? true : false;
-        const isWTHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1 ? true : false;
-        const isVnavActive = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") == 1 ? true : false;
-        //LATERAL MODES
-        const isHdgActive = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean") == 1 ? true : false;
-        const isNavActive = SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") == 1 ? true : false;
-        const selectedNav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
-        const selectedNavHasLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + selectedNav, "Boolean") == 1 ? true : false;
-        const isLvlActive = SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Boolean") == 1 ? true : false;
-        const isRollActive = SimVar.GetSimVarValue("AUTOPILOT BANK HOLD", "Boolean") == 1 ? true : false;
-        const isApproachActive = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Boolean") == 1 ? true : false;
-        const isGsActive = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean") == 1 ? true : false;
-        const isGsArmed = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ARM", "Boolean") == 1 ? true : false;
-        const isBcActive = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "Boolean") == 1 ? true : false;
-
         //SET LATERAL MODES
         if (isWTNavActive) {
             if (isHdgActive) {
