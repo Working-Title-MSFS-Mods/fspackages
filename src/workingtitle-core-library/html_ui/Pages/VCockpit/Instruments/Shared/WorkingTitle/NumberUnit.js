@@ -100,6 +100,10 @@ class WT_NumberUnit {
         return this.refNumber - other.asUnit(this.refUnit);
     }
 
+    equals(other) {
+        return Math.abs(this.compare(other)) < 1e-14;
+    }
+
     copy() {
         return new WT_NumberUnit(this.refNumber, this.refUnit);
     }
