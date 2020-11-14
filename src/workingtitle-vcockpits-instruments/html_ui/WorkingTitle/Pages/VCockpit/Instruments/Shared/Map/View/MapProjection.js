@@ -4,7 +4,9 @@ class WT_MapProjection {
         this._d3Projection = d3Projection;
         this._d3Projection.center([0, 0]);
         this._d3Projection.translate([0, 0]);
+
         this.__range = new WT_NumberUnit(1, WT_Unit.NMILE);
+        this.__viewTargetOffset = new WT_GVector2(0, 0);
 
         this._optsManager = new WT_OptionsManager(this, WT_MapProjection.OPTIONS_DEF);
     }
@@ -32,7 +34,7 @@ class WT_MapProjection {
     }
 
     get viewCenter() {
-        return {x: this.viewWidth / 2, y: this.viewHeight / 2};
+        return new WT_GVector2(this.viewWidth / 2, this.viewHeight / 2);
     }
 
     get _target() {
@@ -57,11 +59,11 @@ class WT_MapProjection {
     }
 
     set _viewTargetOffset(offset) {
-        this.__viewTargetOffset = offset;
+        this.__viewTargetOffset.set(offset);
     }
 
     get viewTargetOffset() {
-        return this._viewTargetOffset;
+        return this._viewTargetOffset.copy();
     }
 
     set viewTargetOffset(offset) {
@@ -91,7 +93,9 @@ class WT_MapProjection {
     }
 
     set _rotation(rotation) {
+        rotation += Math.max(0, -Math.floor(rotation / 360)) * 360;
         this.__rotation = rotation;
+        this._rotationRad = rotation * Avionics.Utils.DEG2RAD;
         this._sin = Math.sin(rotation * Avionics.Utils.DEG2RAD);
         this._cos = Math.cos(rotation * Avionics.Utils.DEG2RAD);
         this._d3Projection.angle(-rotation);
@@ -111,7 +115,7 @@ class WT_MapProjection {
     }
 
     get viewTarget() {
-        return {x: this.viewCenter.x + this.viewTargetOffset.x, y: this.viewCenter.y + this.viewTargetOffset.y};
+        return this.viewCenter.add(this.viewTargetOffset, true);
     }
 
     _recalculateProjection() {
@@ -124,6 +128,7 @@ class WT_MapProjection {
 
         let currentCenterX = currentTargetXY[0] - this.viewTargetOffset.x;
         let currentCenterY = currentTargetXY[1] - this.viewTargetOffset.y
+        let currentCenter = this.xyProjectionToView(currentTargetXY).subtract(this.viewTargetOffset, true);
         let dx = 0;
         let dyTop = -this.viewHeight / 2;
         let dyBottom = this.viewHeight / 2;
@@ -133,8 +138,12 @@ class WT_MapProjection {
         let rotatedDxBottom = dx * this._cos - dyBottom * this._sin;
         let rotatedDyBottom = dx * this._sin + dyBottom * this._cos;
 
-        let top = this._d3Projection.invert([currentCenterX + rotatedDxTop, currentCenterY + rotatedDyTop]);
-        let bottom = this._d3Projection.invert([currentCenterX + rotatedDxBottom, currentCenterY + rotatedDyBottom]);
+        let delta = WT_GVector2.fromPolar(this.viewHeight / 2, this._rotationRad);
+        let viewTop = currentCenter.subtract(delta);
+        let viewBottom = currentCenter.add(delta);
+
+        let top = this._d3Projection.invert(this.xyViewToProjection(viewTop));
+        let bottom = this._d3Projection.invert(this.xyViewToProjection(viewBottom));
         let currentRange = WT_Unit.GA_RADIAN.convert(d3.geoDistance(top, bottom), this.range.unit);
         let ratio = currentRange / this.range.number;
 
@@ -152,11 +161,11 @@ class WT_MapProjection {
     }
 
     relXYToAbsXY(xy) {
-        return {x: xy.x * this.viewWidth, y: xy.y * this.viewHeight};
+        return WT_GTransform2.scale(this.viewWidth, this.viewHeight).apply(xy);
     }
 
     absXYToRelXY(xy) {
-        return {x: xy.x / this.viewWidth, y: xy.y / this.viewHeight};
+        return WT_GTransform2.scale(1 / this.viewWidth, 1 / this.viewHeight).apply(xy);
     }
 
     xyViewToProjection(xy) {
@@ -164,7 +173,7 @@ class WT_MapProjection {
     }
 
     xyProjectionToView(xy) {
-        return {x: xy[0], y: xy[1]};
+        return new WT_GVector2(xy[0], xy[1]);
     }
 
     latLongGameToProjection(latLong) {
@@ -210,9 +219,7 @@ class WT_MapProjection {
     }
 
     xyOffsetByViewAngle(xy, distance, angle) {
-        let sin = Math.sin(angle * Avionics.Utils.DEG2RAD);
-        let cos = Math.cos(angle * Avionics.Utils.DEG2RAD);
-        return {x: xy.x + distance * sin, y: xy.y - distance * cos};
+        return xy.add(WT_GVector2.fromPolar(distance, angle * Avionics.Utils.DEG2RAD));
     }
 
     offsetByViewAngle(point, distance, angle) {
@@ -232,7 +239,7 @@ class WT_MapProjection {
     }
 
     _offsetInViewSpace(point, distance, angle) {
-        if (point.x !== undefined && point.y !== undefined) {
+        if (point instanceof WT_GVector2) {
             return this.xyOffsetByViewAngle(point, distance, angle);
         } else if (point.lat !== undefined && point.long !== undefined) {
             return this.xyOffsetByViewAngle(this.projectLatLong(latLong), distance, angle);
@@ -259,7 +266,7 @@ WT_MapProjection.OPTIONS_DEF = {
     _viewWidth: {default: 1000},
     _viewHeight: {default: 1000},
     _target: {default: new LatLong(0, 0)},
-    _viewTargetOffset: {default: {x: 0, y: 0}},
+    _viewTargetOffset: {},
     _range: {},
     _rotation: {default: 0}
 };
