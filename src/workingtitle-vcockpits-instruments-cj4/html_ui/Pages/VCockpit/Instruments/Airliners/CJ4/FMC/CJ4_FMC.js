@@ -54,8 +54,8 @@ class CJ4_FMC extends FMCMainDisplay {
         this.currentInput = undefined;
         this.previousInput = undefined;
         this._frameUpdates = 0;
+        this._currentAP = undefined
         this._vnav = undefined;
-        this._vpathMode = false;
         this._lnav = undefined;
     }
     get templateID() { return "CJ4_FMC"; }
@@ -416,9 +416,10 @@ class CJ4_FMC extends FMCMainDisplay {
             this._previousApMasterStatus = currentApMasterStatus;
 
             //SET DEFAULT VS VALUE TO CURRENT VS
-            if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
-                Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, Simplane.getVerticalSpeed());
-            }
+            //TODO: CHECK IF BUTTON TEMPLATE NOW SETS THE CURRENT VS AUTOMATICALLY
+            // if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
+            //     Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, Simplane.getVerticalSpeed());
+            // }
 
             //RUN VNAV ALWAYS
             if (this._vnav === undefined) {
@@ -442,12 +443,6 @@ class CJ4_FMC extends FMCMainDisplay {
             const isHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1 ? true : false;
             const isNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1 ? true : false;
             const isLnavActive = this.radioNav.getRADIONAVSource() == 1 ? true : false;
-            // if (isHdgActive && isNavActive) { //IF BOTH ON, SET BOTH OFF
-            //     SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
-            //     SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
-            // }
-
-            //TODO: CASES FOR WHEN OTHER MODES ARE SET ACTIVE -- CAN BE REMOVED IF WE UPDATE XML FILES FOR NON WT NAV MODES
 
             if (isHdgActive) { //ACTIVATE DEFALT HEADING MODE INDEX 1
                 if (!SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean")) {
@@ -477,43 +472,15 @@ class CJ4_FMC extends FMCMainDisplay {
             const isVNAVActive = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
             if (isVNAVActive) {
                 // vnav turned on
-                const altMode = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") === 1;
-                const flcMode = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") === 1;
-                const vsMode = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean") === 1;
-                const gsMode = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean") === 1;
-                const pitMode = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") === 1;
-                //let currentAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
-                //let selectedAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
-                const altDelta = Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feet");
                 
                 //ACTIVATE VNAV MODE
                 if (this._currentAP === undefined) {
-                    if (flcMode || vsMode || gsMode || pitMode) {
-                        this._vpathMode = false;
-                        this._currentAP = new WT_VModeAutopilot(this.flightPlanManager);
-                        this._currentAP.activate();
-                    }
-                    else {
-                        this._vpathMode = true;
-                        this._currentAP = new WT_VNavPathAutopilot(this.flightPlanManager);
-                        this._currentAP.activate();
-                    }
+                    this._currentAP = new WT_VNavPathAutopilot(this.flightPlanManager);
+                    this._currentAP.activate();
                 }
                 //UPDATE VNAV MODE
-                else if (this._currentAP) {
-                    if (this._vpathMode == true && (flcMode || vsMode || gsMode || pitMode)) {
-                        this._vpathMode = false;
-                        this._currentAP.deactivate();
-                        this._currentAP = new WT_VModeAutopilot(this.flightPlanManager);
-                    }
-                    else if (this._vpathMode == false && !flcMode && !vsMode && !gsMode && !pitMode) {
-                        this._vpathMode = true;
-                        this._currentAP.deactivate();
-                        this._currentAP = new WT_VNavPathAutopilot(this.flightPlanManager);
-                    }
-
+                else {
                     this._currentAP.update();
-                    this._currentAP.execute();
                 }
             }
             else {
@@ -522,10 +489,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     this._currentAP.deactivate();
                     this._currentAP = undefined;
                 }
-                this._vpathMode = false;
             }
-
-
 
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MAX_CALCULATED", "knots", Simplane.getMaxSpeed(Aircraft.CJ4));

@@ -3,7 +3,7 @@ class WT_BaseVnav {
         this._fpm = fpm;
 
         this._destination = undefined;
-        this._destinationDistance = undefined;
+        //this._destinationDistance = undefined;
         this._activeWaypoint = undefined;
         this._activeWaypointDist = undefined;
         this._currentDistanceInFP = undefined;
@@ -16,8 +16,8 @@ class WT_BaseVnav {
         this._vnavType = false;
 
         this._currPos = undefined;
-        this._groundSpeed = undefined;
-        this._apCurrentVerticalSpeed = undefined;
+        //this._groundSpeed = undefined;
+        //this._apCurrentVerticalSpeed = undefined;
         this._altitude = undefined;
 
         this._vnavTargetDistance = undefined;
@@ -36,7 +36,7 @@ class WT_BaseVnav {
         this._activeWaypointChanged = false;
         this._activeWaypointChangedflightPlanChanged = false;
         this._activeWaypointChangedvnavTargetChanged = false;
-
+        this._valuesUpdated = false;
     }
 
     get waypoints() {
@@ -52,6 +52,7 @@ class WT_BaseVnav {
         this._activeWaypointChanged = true;
         this._activeWaypointChangedflightPlanChanged = true;
         this._activeWaypointChangedvnavTargetChanged = true;
+        this._valuesUpdated = false;
         this.update();
     }
 
@@ -60,28 +61,12 @@ class WT_BaseVnav {
      */
     update() {
 
-        // [done] TODO detect if activewaypoint is changed and update 
-        // [done] TODO detect if destination is changed and update
-        // [done] TODO is there a performance benefit to loading waypoints on activation and then only updating the waypoints if
-        //    there is an increment in the flight plan version?
-
         //CAN VNAV EVEN RUN?
         this._destination = this._fpm.getDestination();
         this._activeWaypoint = this._fpm.getActiveWaypoint();
+        const flightPlanVersion = SimVar.GetSimVarValue("L:WT.FlightPlan.Version", "number");
 
-        if (this._destination && this.waypoints && this.waypoints.length > 1 && this._activeWaypoint) {
-
-            //VNAV CAN RUN, UPDATE DATA
-            this._currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
-            this._groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-            //this._apCurrentAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "Feet");
-            this._apCurrentVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute");
-            this._altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
-            this._activeWaypoint = this._fpm.getActiveWaypoint();
-            this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
-            this._activeWaypointDist = Avionics.Utils.computeDistance(this._currPos, this._activeWaypoint.infos.coordinates);
-            this._currentDistanceInFP = this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist;
-            this._destinationDistance = this._destination.cumulativeDistanceInFP - this._currentDistanceInFP;
+        if (this._destination && this.waypoints && this.waypoints.length > 1 && this._activeWaypoint && flightPlanVersion) {
 
             //HAS THE ACTIVE WAYPOINT CHANGED?
             if (this._lastActiveWaypointIdent != this._activeWaypoint.ident) {
@@ -89,7 +74,7 @@ class WT_BaseVnav {
             }
 
             //HAS THE FLIGHT PLAN CHANGED?
-            if (this._flightPlanVersion != SimVar.GetSimVarValue("L:WT.FlightPlan.Version", "number")) {
+            if (this._flightPlanVersion != flightPlanVersion) {
                 this._flightPlanChanged = true;
             }
 
@@ -134,29 +119,34 @@ class WT_BaseVnav {
 
             //BUILD VPATH DESCENT PROFILE -- This only needs to be updated when flight plan changed or when active VNAV waypoint changes
             if (this._flightPlanChanged || this._vnavTargetChanged) {
+                this.updateValues();
                 this.buildDescentProfile();
             }
 
             //TRACK ALTITUDE DEVIATION
             if (this._vnavTargetAltitude && this._vnavTargetWaypoint) {
+                if (this._valuesUpdated == false) {
+                    this.updateValues();
+                }
                 this._vnavTargetDistance = this._vnavTargetWaypoint == this._activeWaypoint ? this._activeWaypointDist
                     : this._vnavTargetWaypoint.cumulativeDistanceInFP - this._currentDistanceInFP;
                 this._desiredAltitude = this._vnavTargetAltitude + (Math.tan(this._desiredFPA * (Math.PI / 180)) * this._vnavTargetDistance * 6076.12);
                 this._altDeviation = this._altitude - this._desiredAltitude;
-                this._distanceToTod = this._topOfDescent < 0 ? 0 : this._vnavTargetDistance > this._topOfDescent ? Math.round(this._vnavTargetDistance - this._topOfDescent) : 0;
+                this._distanceToTod = this._topOfDescent < 0 ? 0 : this._vnavTargetDistance > this._topOfDescent ? (this._vnavTargetDistance - this._topOfDescent) : 0;
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", this._altDeviation);
             }
 
             this._vnavTargetChanged = false;
             this._flightPlanChanged = false;
             this._activeWaypointChanged = false;
-            this.writeDatastoreValues();
-            this.writeMonitorValues();
+            this.writeMonitorValues(); //CAN BE REMOVED AFTER WE'RE DONE WITH MONITORING
         }
         else {
+            //TODO: DO WE NEED TO FLAG WHEN NO VNAV IS BEING CALCULATED ANYWHERE?
             this._vnavType = false;
         }
-
+        this._valuesUpdated = false;
+        this.writeDatastoreValues();
     }
 
     /**
@@ -175,7 +165,7 @@ class WT_BaseVnav {
     }
 
     buildDescentProfile() {
-        this._vnavTargetAltitude = this._vnavTargetAltitude === undefined ? this._destination.infos.oneWayRunways[0].elevation * 3.28 : this._vnavTargetAltitude;
+        this._vnavTargetAltitude = this._vnavTargetAltitude === undefined ? (this._destination.infos.oneWayRunways[0].elevation * 3.28) + 50 : this._vnavTargetAltitude;
         this._lastActiveWaypointIdent = this._activeWaypoint.ident;
         this._desiredFPA = WTDataStore.get('CJ4_vpa', 3);
 
@@ -231,14 +221,35 @@ class WT_BaseVnav {
         this._vnavTargetWaypoint = waypoint;
     }
 
+     /**
+     * Fetch values when needed.
+     */
+    updateValues() {
+        this._currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+        //this._groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+        //this._apCurrentVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute");
+        this._altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
+        this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
+        this._activeWaypointDist = Avionics.Utils.computeDistance(this._currPos, this._activeWaypoint.infos.coordinates);
+        this._currentDistanceInFP = this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist;
+        //this._destinationDistance = this._destination.cumulativeDistanceInFP - this._currentDistanceInFP;
+        this._valuesUpdated = true;
+    }
+
     writeDatastoreValues() {
-        const vnavValues = {
-            vnavTargetAltitude: this._vnavTargetAltitude,
-            vnavTargetDistance: this._vnavTargetDistance,
-            topOfDescent: this._topOfDescent,
-            distanceToTod: this._distanceToTod
-        };
-        WTDataStore.set('CJ4_vnavValues', JSON.stringify(vnavValues));
+        if (this._vnavType == false) {
+            WTDataStore.set('CJ4_vnavValues', 'none');
+        }
+        else {
+            const vnavValues = {
+                vnavTargetAltitude: this._vnavTargetAltitude,
+                vnavTargetDistance: this._vnavTargetDistance,
+                topOfDescent: this._topOfDescent,
+                distanceToTod: this._distanceToTod
+            };
+            WTDataStore.set('CJ4_vnavValues', JSON.stringify(vnavValues));
+        }
+
     }
 
     writeMonitorValues() {
