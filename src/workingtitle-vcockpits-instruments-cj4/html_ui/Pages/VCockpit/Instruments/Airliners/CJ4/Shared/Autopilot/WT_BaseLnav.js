@@ -56,14 +56,8 @@ class WT_BaseLnav {
      */
     update() {
 
-        //Cancel execution inhibited when the waypoint changes
-        const currentWaypoint = this._fpm.getActiveWaypoint();
-        if (this._executeInhibited && currentWaypoint.icao !== this._activeWaypoint.icao) {
-            this._executeInhibited = false;
-        }
-
         //CAN LNAV EVEN RUN?
-        this._activeWaypoint = currentWaypoint;
+        this._activeWaypoint = this._fpm.getActiveWaypoint();
         this._previousWaypoint = this._fpm.getPreviousActiveWaypoint();
         const isLnavActive = SimVar.GetSimVarValue("L:RADIONAV_SOURCE", "number") == 1 ? true : false;
         const navModeActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
@@ -85,6 +79,8 @@ class WT_BaseLnav {
 
             //LNAV CAN RUN, UPDATE DATA
             this._groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+            const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG;
+
             this._activeWaypointDist = Avionics.Utils.computeGreatCircleDistance(new LatLong(this._planePos.lat, this._planePos.lon), this._activeWaypoint.infos.coordinates);
             this._previousWaypointDist = Avionics.Utils.computeGreatCircleDistance(new LatLong(this._planePos.lat, this._planePos.lon), this._previousWaypoint.infos.coordinates);
             this._bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(new LatLong(this._planePos.lat, this._planePos.lon), this._activeWaypoint.infos.coordinates);
@@ -99,12 +95,17 @@ class WT_BaseLnav {
             SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", this._activeWaypointDist);
 
             const nextActiveWaypoint = this._fpm.getNextActiveWaypoint();
+
+            //Remove heading instruction inhibition when near desired track
+            if (Math.abs(Avionics.Utils.angleDiff(this._dtk, planeHeading)) < 10) {
+                this._executeInhibited = false;
+            }
             
             if (isLnavActive) {
                 this._setHeading = this._dtk;
 
-                let interceptAngle = this._xtk < 0 ? Math.min(Math.pow(Math.abs(this._xtk) * 20, 1.1), 45)
-                    : -1 * Math.min(Math.pow(Math.abs(this._xtk) * 20, 1.1), 45);
+                let interceptAngle = this._xtk < 0 ? Math.min(Math.pow(Math.abs(this._xtk) * 10, 1.35), 45)
+                    : -1 * Math.min(Math.pow(Math.abs(this._xtk) * 10, 1.35), 45);
                 
                 let deltaAngle = ((((this._dtk - this._bearingToWaypoint) % 360) + 360) % 360) > 180 ? 360 - ((((this._dtk - this._bearingToWaypoint) % 360) + 360) % 360)
                     : ((((this._dtk - this._bearingToWaypoint) % 360) + 360) % 360);
@@ -113,12 +114,13 @@ class WT_BaseLnav {
 
                 //CASE WHERE WE ARE PASSED THE WAYPOINT AND SHOULD SEQUENCE THE NEXT WPT
                 if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90) {
-                    this._setHeading = this._dtk;
-                    
+                    this._setHeading = this._dtk;               
                     this._fpm.setActiveWaypointIndex(this._fpm.getActiveWaypointIndex() + 1);
+                    
                     this._executeInhibited = false;
-
                     this.execute();
+                    this._executeInhibited = true;
+
                     return;
                 }
                 //CASE WHERE INTERCEPT ANGLE IS NOT BIG ENOUGH AND INTERCEPT NEEDS TO BE SET TO BEARING
@@ -128,31 +130,28 @@ class WT_BaseLnav {
 
                 //TURN ANTICIPATION & TURN WAYPOINT SWITCHING
                 const turnRadius = Math.pow(this._groundSpeed / 60, 2) / 9;
-                if (this._activeWaypoint && !this._activeWaypoint.endsInDiscontinuity && nextActiveWaypoint && this._activeWaypointDist <= turnRadius && this._groundSpeed < 700) {
-                    let fromHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG;
-                    let toHeading = Avionics.Utils.computeGreatCircleHeading(this._activeWaypoint.infos.coordinates, nextActiveWaypoint.infos.coordinates);
-                    
-                    while (fromHeading >= 180) {
-                        fromHeading -= 360;
-                    }
-                    while (toHeading >= 180) {
-                        toHeading -= 360;
-                    }
-                    let turnAngle = toHeading - fromHeading;
-                    while (turnAngle >= 180) {
-                        turnAngle -= 360;
-                    }
+                if (this._activeWaypoint && !this._activeWaypoint.endsInDiscontinuity && nextActiveWaypoint && this._activeWaypointDist <= (turnRadius * 2) && this._groundSpeed < 700) {
 
-                    let absTurnAngle = Math.abs(turnAngle);
-                    let activateDistance = Math.min(turnRadius * Math.tan((absTurnAngle / 2) * (Math.PI / 180)), turnRadius);
+                    let toCurrentFixHeading = Avionics.Utils.computeGreatCircleHeading(new LatLongAlt(this._planePos._lat, this._planePos._lon), this._activeWaypoint.infos.coordinates);
+                    let toNextFixHeading = Avionics.Utils.computeGreatCircleHeading(this._activeWaypoint.infos.coordinates, nextActiveWaypoint.infos.coordinates);
+                    
+                    let nextFixTurnAngle = Avionics.Utils.angleDiff(planeHeading, toNextFixHeading);
+                    let currentFixTurnAngle = Avionics.Utils.angleDiff(planeHeading, toCurrentFixHeading);
+
+                    let enterBankDistance = (this._groundSpeed / 3600) * 4;
+
+                    const getDistanceToActivate = turnAngle => (turnRadius * Math.tan((Math.abs(turnAngle) / 2) * (Math.PI / 180))) + enterBankDistance;
+
+                    let activateDistance = Math.max(getDistanceToActivate(nextFixTurnAngle), getDistanceToActivate(currentFixTurnAngle));
                     
                     if (this._activeWaypointDist <= activateDistance) { //TIME TO START TURN
-                        this._setHeading += turnAngle;
-                        
+                        this._setHeading = toNextFixHeading;
                         this._fpm.setActiveWaypointIndex(this._fpm.getActiveWaypointIndex() + 1);
-                        this._executeInhibited = false;
-
+                        
+                        this._executeInhibited = false;                     
                         this.execute();
+                        this._executeInhibited = true; //Prevent heading changes until turn is near completion
+                        
                         return;
                     }
                 }
