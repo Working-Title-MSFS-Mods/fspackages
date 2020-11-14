@@ -61,6 +61,7 @@
 			</EMISSIVE_CODE_ACTIVE>
 		</UseTemplate>
 	</Template>
+
 	<Template Name="ASOBO_AUTOPILOT_Push_BackCourse_Template">
 		<DefaultTemplateParameters>
 			<DEFAULT_NAME>BackCourse</DEFAULT_NAME>
@@ -76,6 +77,55 @@
 			<EMISSIVE_SIMVAR_ACTIVE>AUTOPILOT BACKCOURSE HOLD</EMISSIVE_SIMVAR_ACTIVE>
 		</UseTemplate>
 	</Template>
+
+	<Template Name="ASOBO_AUTOPILOT_Push_VerticalSpeed_Template">
+		<DefaultTemplateParameters>
+			<DEFAULT_NAME>VerticalSpeed</DEFAULT_NAME>
+			<TOOLTIPID>%((A:AUTOPILOT VERTICAL HOLD, bool))%{if}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_VS_ON%{else}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_VS_OFF%{end}</TOOLTIPID>
+		</DefaultTemplateParameters>
+		<UseTemplate Name="ASOBO_AUTOPILOT_Push_Template">
+			<Switch Param="TYPE">
+				<Default>
+					<LEFT_SINGLE_CODE>
+						(L:WT_CJ4_VS_ON) ! (&gt;L:WT_CJ4_VS_ON)
+						0 (&gt;L:WT_CJ4_FLC_ON)
+						(A:VERTICAL SPEED, fpm) (&gt;K:AP_VS_VAR_SET_ENGLISH)
+					</LEFT_SINGLE_CODE>
+					<EMISSIVE_SIMVAR_ACTIVE>AUTOPILOT VERTICAL HOLD</EMISSIVE_SIMVAR_ACTIVE>
+				</Default>
+			</Switch>
+		</UseTemplate>
+	</Template>
+
+	<Template Name="ASOBO_AUTOPILOT_Push_FlightLevelChange_Template">
+		<DefaultTemplateParameters>
+			<DEFAULT_NAME>FlightLevelChange</DEFAULT_NAME>
+			<HELPID>HELPID_AUTOPILOT_ALTITUDE_HOLD</HELPID>
+			<TOOLTIPID>%((A:AUTOPILOT FLIGHT LEVEL CHANGE, BOOL))%{if}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_FLC_ON%{else}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_FLC_OFF%{end}</TOOLTIPID> 
+
+		</DefaultTemplateParameters>
+		<UseTemplate Name="ASOBO_AUTOPILOT_Push_Template">
+			<Switch Param="TYPE">
+				<Default>
+					<LEFT_SINGLE_CODE>
+						(&gt;K:FLIGHT_LEVEL_CHANGE)
+						(A:AIRSPEED INDICATED, knots) (&gt;K:AP_SPD_VAR_SET)
+					</LEFT_SINGLE_CODE>
+					<LEFT_SINGLE_CODE>
+						(L:WT_CJ4_FLC_ON) ! (&gt;L:WT_CJ4_FLC_ON)
+						0 (&gt;L:WT_CJ4_VS_ON)
+						(A:AIRSPEED INDICATED, knots) (&gt;K:AP_SPD_VAR_SET)
+					</LEFT_SINGLE_CODE>
+					<EMISSIVE_SIMVAR_ACTIVE>AUTOPILOT FLIGHT LEVEL CHANGE</EMISSIVE_SIMVAR_ACTIVE>
+				</Default>
+			</Switch>
+		</UseTemplate>
+	</Template>
+
+
+
+
+
 
 
 	<!-- CCP ############################################## -->
