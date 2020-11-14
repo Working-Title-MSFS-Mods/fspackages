@@ -684,7 +684,8 @@ class CJ4_APDisplay extends NavSystemElement {
         //MASTER MODES
         const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1 ? true : false;
         const ydActive = SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Boolean") == 1 ? true : false;
-        const isLnavActive = this.radioNav.getRADIONAVSource() == 1 ? true : false;
+        //const isLnavActive = this.radioNav.getRADIONAVSource() == 1 ? true : false;
+        const isLnavActive = SimVar.GetSimVarValue("L:RADIONAV_SOURCE", "number") == 1 ? true : false;
         const isWTNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1 ? true : false;
         const isWTHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1 ? true : false;
         const isVnavActive = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") == 1 ? true : false;

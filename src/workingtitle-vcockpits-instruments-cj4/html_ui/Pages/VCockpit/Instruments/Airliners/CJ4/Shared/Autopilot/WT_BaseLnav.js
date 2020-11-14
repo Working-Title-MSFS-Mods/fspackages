@@ -19,6 +19,8 @@ class WT_BaseLnav {
         this._setHeading = undefined;
 
         this._onDiscontinuity = false;
+
+        this._lnavDeactivated = true;
     }
 
     get waypoints() {
@@ -54,6 +56,7 @@ class WT_BaseLnav {
         }
 
         if (!this._onDiscontinuity && this.waypoints.length > 0 && this._activeWaypoint && this._previousWaypoint) {
+            this._lnavDeactivated = false;
 
             this._planePos = new LatLon(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
 
@@ -134,7 +137,9 @@ class WT_BaseLnav {
             }
         }
         else {
-            this.deactivate();
+            if (!this._lnavDeactivated) {
+                this.deactivate();
+            }
         }
     }
 
@@ -186,6 +191,7 @@ class WT_BaseLnav {
         SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", this._setHeading);
         SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", 0);
+        this._lnavDeactivated = true;
     }
 }
 
