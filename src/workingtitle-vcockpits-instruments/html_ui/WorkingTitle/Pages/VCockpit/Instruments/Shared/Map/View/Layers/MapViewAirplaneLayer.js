@@ -33,7 +33,7 @@ class WT_MapViewAirplaneLayer extends WT_MapViewCanvasLayer {
     }
 
     onViewSizeChanged(data) {
-        let newIconSizePx = this.iconSize * data.pixelDensity;
+        let newIconSizePx = this.iconSize * data.dpiScale;
         if (newIconSizePx !== this.iconSizePx) {
             this.iconSizePx = newIconSizePx;
             this._resizeCanvas();
@@ -46,7 +46,7 @@ class WT_MapViewAirplaneLayer extends WT_MapViewCanvasLayer {
     onConfigLoaded(data) {
         this._setPropertyFromConfig("iconSize");
 
-        this.iconSizePx = this.iconSize * data.pixelDensity;
+        this.iconSizePx = this.iconSize * data.dpiScale;
         this._resizeCanvas();
 
         this._iconImage = document.createElement("img");
