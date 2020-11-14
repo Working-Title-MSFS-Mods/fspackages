@@ -829,13 +829,13 @@ class CJ4_APDisplay extends NavSystemElement {
 
         //SET LATERAL MODES
         if (isWTNavActive) {
-            if (isHdgActive) {
+            if (isHdgActive && isLnavActive) {
                 Avionics.Utils.diffAndSet(this.AP_LateralActive, "LNV1");
             }
             else if (isNavActive || isApproachActive) {
                 if (selectedNavHasLoc) {
                     Avionics.Utils.diffAndSet(this.AP_LateralActive, "LOC" + selectedNav.toFixed(0));
-                    }
+                }
                 else {
                     Avionics.Utils.diffAndSet(this.AP_LateralActive, "VOR" + selectedNav.toFixed(0));
                 }
@@ -845,7 +845,6 @@ class CJ4_APDisplay extends NavSystemElement {
             }
             else {
                 Avionics.Utils.diffAndSet(this.AP_LateralActive, "LERROR");
-
             }
         }
         else {
