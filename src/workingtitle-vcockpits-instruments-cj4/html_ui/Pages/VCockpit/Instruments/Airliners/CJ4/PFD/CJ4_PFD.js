@@ -89,7 +89,7 @@ class CJ4_PFD extends BaseAirliners {
             vnavAltEl.style.display = isAltConstraint ? "" : "none";
             if (isAltConstraint) {
                 vnavAltEl.textContent = SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE").toFixed(0);
-           }
+            }
             
             this.map.setMode(this.mapDisplayMode);
             this.mapOverlay.setMode(this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource);
