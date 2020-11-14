@@ -30,7 +30,7 @@ $font_family_mono: "Roboto-Mono";
 
 html {
     background-color: #000;
-    font-size: calc(2 * 1vh);// * var(--bodyHeightScale));
+    font-size: calc(2 * 1vh); // * var(--bodyHeightScale));
     font-family: $font_family_normal;
 
     --engine-green: #00cc00;
@@ -95,6 +95,10 @@ ul {
         font-size: 1.1em;
         margin: 2vh 0;
     }
+}
+
+%render-layer {
+    -webkit-transform: rotateX(0deg);
 }
 
 @if ($theme == "nxi") {

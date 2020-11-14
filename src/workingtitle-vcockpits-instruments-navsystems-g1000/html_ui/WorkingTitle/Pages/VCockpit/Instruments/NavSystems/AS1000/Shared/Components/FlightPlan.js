@@ -61,7 +61,7 @@ class WT_Flight_Plan_Lines extends WT_HTML_View {
             </div>
             <div class="new-waypoint" data-element="newWaypointLine">
                 <div></div>
-                <div class="ident"><selectable-button data-element="newWaypointButton" data-click="showCreateNewWaypoint" class="new-waypoint">__________</selectable-button></div>
+                <div class="ident"><selectable-button data-element="newWaypointButton" class="new-waypoint">__________</selectable-button></div>
             </div>`;
         super.connectedCallback();
 

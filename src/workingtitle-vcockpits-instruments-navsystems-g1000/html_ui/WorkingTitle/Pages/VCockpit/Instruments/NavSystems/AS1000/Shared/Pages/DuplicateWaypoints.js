@@ -11,13 +11,17 @@ class WT_Duplicate_Waypoints_Model {
         this.setDuplicates(duplicates);
     }
     async setDuplicates(duplicates) {
-        let waypoints = [];
+        const promises = [];
         for (let icao of duplicates) {
-            waypoints.push(await this.waypointRepository.load(icao));
+            const promise = new Promise(async resolve => {
+                resolve(await this.waypointRepository.load(icao));
+            })
+            promises.push(promise);
         }
-        let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
-        let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-        let planeCoordinates = new LatLong(lat, long);
+        const waypoints = await Promise.all(promises);
+        const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+        const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+        const planeCoordinates = new LatLong(lat, long);
         this.duplicates.value = waypoints.map(waypoint => {
             return {
                 waypoint: waypoint,
@@ -59,7 +63,7 @@ class WT_Duplicate_Waypoints_View extends WT_HTML_View {
         });
     }
     connectedCallback() {
-        let template = document.getElementById('duplicate-waypoints');
+        const template = document.getElementById('duplicate-waypoints');
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();
     }
@@ -74,9 +78,9 @@ class WT_Duplicate_Waypoints_View extends WT_HTML_View {
     }
     coordinateToGps(value) {
         // This is probably wrong, I rushed it
-        let hours = Math.floor(value);
-        let minutes = Math.floor((Math.abs(value) % 1) * 60);
-        let seconds = Math.floor((Math.abs(value) % 1) * 3600) % 60;
+        const hours = Math.floor(value);
+        const minutes = Math.floor((Math.abs(value) % 1) * 60);
+        const seconds = Math.floor((Math.abs(value) % 1) * 3600) % 60;
 
         /*if (value < 0) {
             minutes = 59 - minutes;
@@ -99,7 +103,7 @@ class WT_Duplicate_Waypoints_View extends WT_HTML_View {
         this.elements.ident.textContent = this.model.ident;
         this.model.duplicates.subscribe(duplicates => {
             this.elements.duplicates.innerHTML = duplicates.map(waypoint => {
-                let img = waypoint.infos.imageFileName();
+                const img = waypoint.infos.imageFileName();
                 return `
                     <li>
                         <span class="type">${this.typeToString(waypoint.infos.getWaypointType())}</span>
@@ -115,11 +119,11 @@ class WT_Duplicate_Waypoints_View extends WT_HTML_View {
                 return;
             this.elements.name.textContent = waypoint.infos.name;
             this.elements.city.textContent = waypoint.infos.city;
-            let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
-            let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-            let planeCoordinates = new LatLong(lat, long);
+            const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+            const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+            const planeCoordinates = new LatLong(lat, long);
             this.elements.bearing.textContent = `${Avionics.Utils.computeGreatCircleHeading(planeCoordinates, waypoint.infos.coordinates).toFixed(0)}°`;
-            let distance = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, waypoint.infos.coordinates);
+            const distance = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, waypoint.infos.coordinates);
             this.elements.distance.innerHTML = `${distance.toFixed(0)}<span class="units">NM</span>`;
 
             this.elements.coordinatesLat.textContent = this.formatLat(waypoint.infos.coordinates.lat);

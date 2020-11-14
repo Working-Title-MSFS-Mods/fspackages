@@ -85,14 +85,14 @@ class WT_Airport_Information_Input_Layer extends Selectables_Input_Layer {
 class WT_Airport_Information_View extends WT_HTML_View {
     /**
      * @param {MapInstrument} map 
-     * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
+     * @param {WT_Icao_Input_Model} icaoInputModel 
      * @param {WT_Frequency_List_Model} frequencyListModel 
      * @param {WT_MFD_Menu_Handler} menuHandler 
      */
-    constructor(map, waypointQuickSelect, frequencyListModel, menuHandler) {
+    constructor(map, icaoInputModel, frequencyListModel, menuHandler) {
         super();
         this.map = map;
-        this.waypointQuickSelect = waypointQuickSelect;
+        this.icaoInputModel = icaoInputModel;
         this.frequencyListModel = frequencyListModel;
         this.menuHandler = menuHandler;
 
@@ -113,7 +113,7 @@ class WT_Airport_Information_View extends WT_HTML_View {
         super.connectedCallback();
 
         this.elements.frequencyList.setModel(this.frequencyListModel);
-        this.elements.icaoInput.setQuickSelect(this.waypointQuickSelect);
+        this.elements.icaoInput.setModel(this.icaoInputModel);
         this.elements.icaoInput.addEventListener("change", e => this.model.setIcao(e.target.icao));
         this.elements.icaoInput.addEventListener("input", DOMUtilities.debounce(e => this.model.setIcao(e.target.icao), 500, false));
         this.elements.runwaySelector.selectedRunway.subscribe(runway => {
@@ -189,7 +189,7 @@ class WT_Airport_Information_View extends WT_HTML_View {
 
         this.subscriptions.add(model.metar.subscribe(metar => {
             if (metar == null) {
-                this.elements.metar.innerHTML = "";
+                this.elements.metar.innerHTML = "None";
                 return;
             }
 
@@ -199,7 +199,7 @@ class WT_Airport_Information_View extends WT_HTML_View {
             lines.push(`<b>Wind:</b> ${metarData.wind.direction} @ ${metarData.wind.speed}kts`);
             lines.push(`<b>Visiblity:</b> ${metarData.visibility}`);
             lines.push(`<b>Clouds:</b> ${metarData.clouds.map(cloud => {
-                return `${cloud.meaning.toUpperCase()} at ${cloud.altitude}ft`
+                return `${cloud.meaning.toUpperCase()}${cloud.altitude ? ` at ${cloud.altitude}ft`: ``}`
             }).join(", ")}`)
             this.elements.metar.innerHTML = lines.join("<br/>");
         }));

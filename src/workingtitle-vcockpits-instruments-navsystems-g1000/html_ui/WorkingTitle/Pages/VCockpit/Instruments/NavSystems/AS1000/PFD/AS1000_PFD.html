@@ -372,6 +372,26 @@
         </footer>
     </template>
 
+    <template id="template-waypoint-selector">
+        <h1>Waypoint Information</h1>
+        <section class="content waypoint-info">
+            <!--<string-input characters="10" value="EGLL"></string-input>-->
+            <icao-input data-element="icaoInput" characters="6"></icao-input>
+            <div class="icao-name" data-element="icaoName"></div>
+            <div class="icao-city" data-element="icaoCity"></div>
+        </section>
+        <hr />
+        <section class="content location">
+            <label>BRG</label>
+            <div class="bearing" data-element="bearing"></div>
+            <div class="country" data-element="country"></div>
+            <label>DIS</label>
+            <div class="distance" data-element="distance"></div>
+            <div class="coordinates" data-element="coordinates"></div>
+        </section>
+        <footer>Press "ENT" to accept</footer>
+    </template>
+
     <template id="menu-screen">
         <h1 class="title">Page Menu</h1>
         <div class="category category-fill-container">

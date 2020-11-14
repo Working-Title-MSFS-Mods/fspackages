@@ -44,6 +44,7 @@ $mini_page_height: 27vh;
 @import "PFD/Pages/ProceduresMenu";
 @import "PFD/Pages/SetupMenu";
 @import "PFD/Pages/TimerReferences";
+@import "PFD/Pages/WaypointSelector";
 @import "PFD/HSIndicator";
 
 body:after {
@@ -51,7 +52,7 @@ body:after {
 }
 
 glasscockpit-altimeter {
-    -webkit-transform: rotateX(0deg);
+    @extend %render-layer;
 }
 
 as1000-pfd-element {
@@ -67,7 +68,7 @@ as1000-pfd-element {
 }
 
 .instruments-container {
-    transform: rotateX(0);
+    @extend %render-layer;
     grid-area: main;
     display: grid;
     grid-template-columns: 100%;
@@ -106,7 +107,7 @@ as1000-pfd-element {
 }
 
 #InnerMap {
-    transform: rotateX(0);
+    @extend %render-layer;
     position: absolute;
     left: 1vh;
     bottom: 8vh;
@@ -126,7 +127,7 @@ as1000-pfd-element {
 }
 
 #EngineDisplay {
-    transform: rotateX(0);
+    @extend %render-layer;
     position: absolute;
     left: 0%;
     top: 7.5%;
@@ -137,7 +138,7 @@ as1000-pfd-element {
 }
 
 g1000-pfd-wind {
-    -webkit-transform: rotateX(0deg);
+    @extend %render-layer;
     position: absolute;
     top: 57%;
     left: 26%;
@@ -146,7 +147,7 @@ g1000-pfd-wind {
 }
 
 g1000-pfd-mini-page-container {
-    -webkit-transform: rotateX(0deg);
+    @extend %render-layer;
     position: absolute;
     right: $mini_page_x;
     bottom: $mini_page_y;

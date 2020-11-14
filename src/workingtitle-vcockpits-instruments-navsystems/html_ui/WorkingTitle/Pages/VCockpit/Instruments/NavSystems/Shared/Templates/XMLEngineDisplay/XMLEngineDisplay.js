@@ -687,7 +687,7 @@ class XMLGauge extends HTMLElement {
 
         if (newValueAlert && newValueAlert != 0) {
             if (!this.isAlerting) {
-                console.log("Switching to alert mode")
+                //console.log("Switching to alert mode")
                 this.isAlerting = true;
                 this.isCaution = false;
                 this.computeAlertBackgrounds();
@@ -695,7 +695,7 @@ class XMLGauge extends HTMLElement {
             }
         } else if (newValueCaution && newValueCaution != 0) {
             if (!this.isCaution) {
-                console.log("Switching to caution mode")
+                //console.log("Switching to caution mode")
                 this.isAlerting = false;
                 this.isCaution = true;
                 this.computeCautionBackgrounds();

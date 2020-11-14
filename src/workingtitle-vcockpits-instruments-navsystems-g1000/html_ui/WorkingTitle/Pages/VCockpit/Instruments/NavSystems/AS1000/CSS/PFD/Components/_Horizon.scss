@@ -1,10 +1,10 @@
 .horizon-container {
     grid-area: main;
-    transform: rotateX(0);
+    @extend %render-layer;
     position: relative;
 
     #SyntheticVision {
-        transform: rotateX(0);
+        @extend %render-layer;
         position: absolute;
         left: -13.5%;
         top: -21%;
@@ -16,7 +16,6 @@
         #road-network-canvas,
         #MapRange,
         #MapOrientation {
-            transform: rotateX(0);
             display: none;
         }
         bing-map {

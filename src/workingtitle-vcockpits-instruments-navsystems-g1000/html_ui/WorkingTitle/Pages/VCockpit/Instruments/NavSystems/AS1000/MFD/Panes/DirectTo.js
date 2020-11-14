@@ -2,11 +2,11 @@ class WT_MFD_Direct_To_View extends WT_Direct_To_View {
     /**
      * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      * @param {MapInstrument} map
-     * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
+     * @param {WT_Icao_Input_Model} icaoInputModel 
      * @param {WT_Show_Page_Menu_Handler} showPageMenuHandler 
      */
-    constructor(softKeyMenuHandler, map, waypointQuickSelect, showPageMenuHandler) {
-        super(waypointQuickSelect, showPageMenuHandler);
+    constructor(softKeyMenuHandler, map, icaoInputModel, showPageMenuHandler) {
+        super(icaoInputModel, showPageMenuHandler);
         this.softKeyMenuHandler = softKeyMenuHandler;
         this.map = map;
     }

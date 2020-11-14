@@ -1,5 +1,5 @@
 g1000-warnings {
-    transform: rotateX(0);
+    @extend %render-layer;
     display: block;
     position: absolute;
     right: 30%;

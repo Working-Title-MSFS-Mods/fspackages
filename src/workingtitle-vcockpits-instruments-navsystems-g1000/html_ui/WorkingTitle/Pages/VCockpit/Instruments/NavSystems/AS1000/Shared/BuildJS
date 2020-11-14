@@ -61,5 +61,6 @@ Pages/ProceduresMenu.js
 Pages/Procedures/Approach.js
 Pages/Procedures/Arrival.js
 Pages/Procedures/Departure.js
+Pages/WaypointSelector.js
 BaseInputLayer.js
 Engine.js

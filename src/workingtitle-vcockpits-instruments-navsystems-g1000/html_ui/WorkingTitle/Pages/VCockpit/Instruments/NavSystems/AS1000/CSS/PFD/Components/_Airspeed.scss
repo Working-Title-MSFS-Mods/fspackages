@@ -10,7 +10,7 @@ glasscockpit-airspeed-indicator {
     $stroke_width: 3px;
 
     > svg {
-        transform: rotateX(0);
+        @extend %render-layer;
         position: absolute;
         left: 0;
         top: 0;

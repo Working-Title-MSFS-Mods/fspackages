@@ -4,6 +4,14 @@ Components/NavBox.js
 Components/NearestWaypointList.js
 Components/RunwaySelector.js
 Components/SequenceList.js
+Handlers/ShowAirways.js
+Handlers/ShowConfirmDialog.js
+Handlers/ShowDirectTo.js
+Handlers/ShowDuplicates.js
+Handlers/ShowNewWaypoint.js
+Handlers/ShowPageMenu.js
+Handlers/ShowProcedure.js
+Handlers/ShowWaypointInfo.js
 Pages/Page.js
 Pages/Auxilliary/Changelog.js
 Pages/Auxilliary/Credits.js

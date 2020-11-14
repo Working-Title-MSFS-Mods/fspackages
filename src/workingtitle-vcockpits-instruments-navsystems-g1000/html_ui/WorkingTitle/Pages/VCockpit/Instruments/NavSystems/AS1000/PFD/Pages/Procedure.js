@@ -35,13 +35,13 @@ class WT_PFD_Procedure_Page_Model extends WT_Model {
 
 class WT_PFD_Procedure_Page_View extends WT_HTML_View {
     /**
-     * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
+     * @param {WT_Icao_Input_Model} icaoInputModel 
      * @param {WT_HTML_View} procedurePage
      */
-    constructor(waypointQuickSelect, procedurePage) {
+    constructor(icaoInputModel, procedurePage) {
         super();
 
-        this.waypointQuickSelect = waypointQuickSelect;
+        this.icaoInputModel = icaoInputModel;
         this.procedurePage = procedurePage;
 
         this.inputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this));
@@ -77,7 +77,7 @@ class WT_PFD_Procedure_Page_View extends WT_HTML_View {
         super.connectedCallback();
 
         this.elements.page.appendChild(this.procedurePage);
-        this.elements.icaoInput.setQuickSelect(this.waypointQuickSelect);
+        this.elements.icaoInput.setModel(this.icaoInputModel);
     };
     disconnectedCallback() {
         this.procedurePage.setAirport(null);

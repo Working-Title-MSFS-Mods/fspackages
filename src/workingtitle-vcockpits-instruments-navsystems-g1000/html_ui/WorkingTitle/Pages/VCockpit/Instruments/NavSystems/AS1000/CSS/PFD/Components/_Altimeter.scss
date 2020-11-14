@@ -1,5 +1,5 @@
 glasscockpit-altimeter {
-    transform: rotateX(0);
+    @extend %render-layer;
     position: absolute;
     top: 4%;
     height: 57%;
@@ -11,7 +11,7 @@ glasscockpit-altimeter {
 
     .svg-background,
     .svg-overlay {
-        transform: rotateX(0);
+        @extend %render-layer;
         position: absolute;
         top: 0;
         right: 0;

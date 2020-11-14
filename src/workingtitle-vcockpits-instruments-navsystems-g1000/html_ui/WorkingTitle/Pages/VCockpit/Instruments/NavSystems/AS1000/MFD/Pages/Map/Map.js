@@ -77,8 +77,10 @@ class WT_Map_View extends WT_HTML_View {
      */
     setModel(model) {
         this.model = model;
-        /*if (this.model.mapElement.isInit())
-            this.model.mapElement.centerOnPlane();*/
+        setTimeout(() => {
+            if (this.model.mapElement.isInit())
+                this.model.mapElement.centerOnPlane();
+        }, 500); // This needs sorting out. centerOnPlane doesn't work before an initial update cycle
 
         this.menus = {
             main: new WT_Map_Main_Menu(model),

@@ -1,5 +1,5 @@
 g1000-marker-beacon {
-    transform: rotateX(0);
+    @extend %render-layer;
     display: none;
     position: absolute;
     right: 30%;

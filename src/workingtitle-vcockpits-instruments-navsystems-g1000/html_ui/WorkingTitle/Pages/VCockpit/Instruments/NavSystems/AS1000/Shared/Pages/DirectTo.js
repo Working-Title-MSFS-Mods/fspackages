@@ -88,12 +88,12 @@ class WT_Direct_To_Page_Menu extends WT_Page_Menu_Model {
 
 class WT_Direct_To_View extends WT_HTML_View {
     /**
-     * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
+     * @param {WT_Icao_Input_Model} icaoInputModel 
      * @param {WT_Show_Page_Menu_Handler} showPageMenuHandler 
      */
-    constructor(waypointQuickSelect, showPageMenuHandler) {
+    constructor(icaoInputModel, showPageMenuHandler) {
         super();
-        this.waypointQuickSelect = waypointQuickSelect;
+        this.icaoInputModel = icaoInputModel;
         this.showPageMenuHandler = showPageMenuHandler;
         this.inputLayer = new WT_Direct_To_Input_Layer(this);
         this.userSelectedCourse = false;
@@ -135,7 +135,7 @@ class WT_Direct_To_View extends WT_HTML_View {
      */
     setModel(model) {
         this.model = model;
-        this.elements.icaoInput.setQuickSelect(this.waypointQuickSelect);
+        this.elements.icaoInput.setModel(this.icaoInputModel);
         this.model.waypoint.subscribe(waypoint => {
             if (waypoint) {
                 this.elements.icaoInput.icao = waypoint.icao;

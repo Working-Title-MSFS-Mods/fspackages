@@ -56,14 +56,14 @@ class WT_Procedure_Page_View extends WT_HTML_View {
     /**
      * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      * @param {MapInstrument} map 
-     * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
+     * @param {WT_Icao_Input_Model} icaoInputModel 
      */
-    constructor(softKeyMenuHandler, map, waypointQuickSelect) {
+    constructor(softKeyMenuHandler, map, icaoInputModel) {
         super();
 
         this.map = map;
         this.softKeyMenuHandler = softKeyMenuHandler;
-        this.waypointQuickSelect = waypointQuickSelect;
+        this.icaoInputModel = icaoInputModel;
 
         this.subPageIndex = new Subject(null);
         this.selectedPage = null;
@@ -136,7 +136,7 @@ class WT_Procedure_Page_View extends WT_HTML_View {
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();
 
-        this.elements.icaoInput.setQuickSelect(this.waypointQuickSelect);
+        this.elements.icaoInput.setModel(this.icaoInputModel);
         this.pages = {
             DP: this.elements.departurePage,
             STAR: this.elements.arrivalPage,

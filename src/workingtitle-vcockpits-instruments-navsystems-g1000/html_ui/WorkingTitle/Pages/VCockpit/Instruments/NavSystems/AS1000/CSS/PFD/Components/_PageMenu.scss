@@ -1,5 +1,5 @@
 g1000-page-menu {
-    -webkit-transform: rotateX(0deg);
+    @extend %render-layer;
     position: absolute;
     top: auto;
     right: $mini_page_x + 2vh;

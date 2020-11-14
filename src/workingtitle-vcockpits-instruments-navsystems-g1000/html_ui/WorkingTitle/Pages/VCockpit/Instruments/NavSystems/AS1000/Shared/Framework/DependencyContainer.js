@@ -119,5 +119,8 @@ class WT_Shared_Dependencies {
 
         d.register("comFrequenciesModel", d => new WT_Com_Frequencies_Model());
         d.register("navFrequenciesModel", d => new WT_Nav_Frequencies_Model());
+
+        d.register("showDuplicatesHandler", d => new WT_Show_Duplicates_Handler());
+        d.register("icaoInputModel", d => new WT_Icao_Input_Model(d.showDuplicatesHandler, d.waypointQuickSelect), { scope: "transient" });
     }
 }

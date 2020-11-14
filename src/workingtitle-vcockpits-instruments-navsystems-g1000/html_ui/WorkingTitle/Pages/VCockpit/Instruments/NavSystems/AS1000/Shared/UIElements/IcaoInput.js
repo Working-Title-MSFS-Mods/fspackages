@@ -26,6 +26,26 @@ class WT_Icao_Input_Input_Layer extends Input_Layer {
     }
 }
 
+class WT_Show_Duplicates_Handler {
+    show(icaos) {
+        throw new Error(`WT_Show_Duplicates_Handler.show not implemented`);
+    }
+}
+
+class WT_Icao_Input_Model {
+    /**
+     * @param {WT_Show_Duplicates_Handler} showDuplicatesHandler 
+     * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
+     */
+    constructor(showDuplicatesHandler, waypointQuickSelect) {
+        this.showDuplicatesHandler = showDuplicatesHandler;
+        this.waypointQuickSelect = waypointQuickSelect;
+    }
+    addToQuickSelect(icao) {
+        this.waypointQuickSelect.addRecentWaypoint(icao);
+    }
+}
+
 class WT_Icao_Input extends HTMLElement {
     constructor() {
         super();
@@ -75,15 +95,15 @@ class WT_Icao_Input extends HTMLElement {
         return this.icao;
     }
     setEditingSimVars() {
-        SimVar.SetSimVarValue("C:fs9gps:IcaoSearchInitialIcao", "string", this.icao, this.instrumentIdentifier);
+        SimVar.SetSimVarValue("C:fs9gps:IcaoSearchInitialIcao", "string", this.icao ? this.icao : "", this.instrumentIdentifier);
         SimVar.SetSimVarValue("C:fs9gps:IcaoSearchStartCursor", "string", this.type, this.instrumentIdentifier);
     }
     /**
-     * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
+     * @param {WT_Icao_Input_Model} model 
      */
-    setQuickSelect(waypointQuickSelect) {
-        this.waypointQuickSelect = waypointQuickSelect;
-        this.quickSelect.setWaypointQuickSelect(waypointQuickSelect, this.type);
+    setModel(model) {
+        this.model = model;
+        this.quickSelect.setWaypointQuickSelect(this.model.waypointQuickSelect, this.type);
     }
     showQuickSelect(inputStack) {
         return this.quickSelect.enter(inputStack);
@@ -168,7 +188,7 @@ class WT_Icao_Input extends HTMLElement {
         batch.add("C:fs9gps:IcaoSearchCurrentIdent", "string", "string");
         let numberOfDuplicates = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchMatchedIcaosNumber", "number", this.instrumentIdentifier);
         if (numberOfDuplicates > 1 && checkDupes) {
-            let duplicates = await new Promise(resolve => {
+            const duplicates = await new Promise(resolve => {
                 SimVar.GetSimVarArrayValues(batch, (_Values) => {
                     let duplicates = [];
                     for (var i = 0; i < _Values.length; i++) {
@@ -179,7 +199,7 @@ class WT_Icao_Input extends HTMLElement {
                 }, this.instrumentIdentifier);
             });
             try {
-                let t = this.waypointQuickSelect.gps.showDuplicates(duplicates);
+                let t = this.model.showDuplicatesHandler.show(duplicates);
                 this.cancelDuplicates = t.cancel;
                 let icao = await t.promise;
                 this.cancelDuplicates = null;
@@ -188,12 +208,12 @@ class WT_Icao_Input extends HTMLElement {
                 return;
             }
         }
-        if (this.waypointQuickSelect) {
-            this.waypointQuickSelect.addRecentWaypoint(this.icao);
+        if (this.model) {
+            this.model.addToQuickSelect(this.icao);
         }
         this.active = false;
 
-        let evt = document.createEvent("HTMLEvents");
+        const evt = document.createEvent("HTMLEvents");
         evt.initEvent("change", true, true);
         this.dispatchEvent(evt);
         this.exit();

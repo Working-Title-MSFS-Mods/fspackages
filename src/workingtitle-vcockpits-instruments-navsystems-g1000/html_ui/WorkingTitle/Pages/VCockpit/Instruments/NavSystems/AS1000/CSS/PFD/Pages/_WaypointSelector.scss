@@ -1,0 +1,67 @@
+g1000-waypoint-selector-pane {
+    display: block;
+
+    .location {
+        display: grid;
+        grid-template-columns: 4ch 1fr 50%;
+        grid-template-rows: auto auto;
+        align-items: center;
+    }
+
+    .waypoint-info {
+        font-family: $font_family_mono;
+        color: $input_color;
+        display: grid;
+        grid-template-columns: 6ch 2ch 1fr;
+        grid-template-rows: auto auto;
+        grid-template-areas:
+            "icao icon name"
+            "city city city";
+
+        .icao-name {
+            grid-area: name;
+        }
+
+        .icao-city {
+            grid-area: city;
+        }
+
+        icao-input {
+            grid-area: icao;
+        }
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    .bearing,
+    .distance,
+    .city,
+    .country {
+        color: $input_color;
+    }
+
+    .bearing,
+    .distance {
+        font-family: $font_family_mono;
+    }
+
+    .city,
+    .country {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .units {
+        font-size: 0.8em;
+    }
+
+    footer {
+        font-weight: bold;
+        text-align: center;
+        margin-top: 1em;
+        font-size: 1.1em;
+    }
+}

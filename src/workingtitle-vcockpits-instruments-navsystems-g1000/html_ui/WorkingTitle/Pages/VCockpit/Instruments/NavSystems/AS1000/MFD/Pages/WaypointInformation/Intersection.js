@@ -35,10 +35,14 @@ class WT_Intersection_Information_Input_Layer extends Selectables_Input_Layer {
 }
 
 class WT_Intersection_Information_View extends WT_HTML_View {
-    constructor(map, waypointQuickSelect) {
+    /**
+     * @param {MapInstrument} map 
+     * @param {WT_Icao_Input_Model} icaoInputModel 
+     */
+    constructor(map, icaoInputModel) {
         super();
         this.map = map;
-        this.waypointQuickSelect = waypointQuickSelect;
+        this.icaoInputModel = icaoInputModel;
     }
     connectedCallback() {
         if (this.hasInitialised)
@@ -49,7 +53,7 @@ class WT_Intersection_Information_View extends WT_HTML_View {
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();
 
-        this.elements.icaoInput.setQuickSelect(this.waypointQuickSelect);
+        this.elements.icaoInput.setModel(this.icaoInputModel);
         this.elements.icaoInput.addEventListener("change", e => this.model.setIcao(e.target.icao));
         this.elements.icaoInput.addEventListener("input", DOMUtilities.debounce(e => this.model.setIcao(e.target.icao), 500));
     }
