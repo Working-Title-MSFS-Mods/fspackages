@@ -323,7 +323,7 @@ class SvgWaypointTextElement {
             }
         }
         else {
-            context.fillStyle = "white";
+            context.fillStyle = "magenta";
         }
         context.font = fontSize + "px " + map.config.waypointLabelFontFamily;
         context.strokeStyle = map.config.waypointLabelStrokeColor;

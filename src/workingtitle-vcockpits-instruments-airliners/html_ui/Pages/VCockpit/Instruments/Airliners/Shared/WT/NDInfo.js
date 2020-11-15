@@ -47,12 +47,14 @@ class Jet_MFD_NDInfo extends HTMLElement {
     }
     update(_dTime) {
         this._dTime = _dTime / 1000;
+
         this.updateTitle();
         this.updateSpeeds();
         this.updateWaypoint();
         this.updateVOR();
         this.updateApproach();
         this.updateElapsedTime();
+        this.updateWaypointAlert(_dTime);
     }
     onEvent(_event) {
         if (_event == "Push_ET") {
@@ -69,6 +71,35 @@ class Jet_MFD_NDInfo extends HTMLElement {
             }
         }
     }
+
+    /**
+     * Updates the waypoint alert flash for the FMS data block.
+     * @param {number} deltaTime The delta time since the last frame.
+     */
+    updateWaypointAlert(deltaTime) {
+        const isAlertSet = SimVar.GetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number') === 1;
+        if (this._isWaypointAlerting !== isAlertSet) {
+            this._alertAnimationNextTime = 0;
+            this._alertAnimationElapsed = 0;
+            this._isWaypointAlerting = isAlertSet;
+
+            if (!isAlertSet) {
+                this._displayWaypointName = true;
+                this.waypointName.style.visibility = 'visible';
+            }
+        }
+
+        if (this._isWaypointAlerting) {
+            this._alertAnimationElapsed += deltaTime;
+            while (this._alertAnimationElapsed >= this._alertAnimationNextTime) {
+                this._displayWaypointName = this._displayWaypointName ? false : true;
+                this._alertAnimationNextTime += 500;
+            }
+
+            this.waypointName.style.visibility = this._displayWaypointName ? 'visible' : 'hidden';
+        }      
+    }
+
     showILS(_val) {
         this._showILS = _val;
     }

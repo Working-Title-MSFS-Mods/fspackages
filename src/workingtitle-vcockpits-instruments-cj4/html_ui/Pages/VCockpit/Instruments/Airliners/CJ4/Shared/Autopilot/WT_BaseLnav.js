@@ -112,9 +112,11 @@ class WT_BaseLnav {
 
                 //CASE WHERE WE ARE PASSED THE WAYPOINT AND SHOULD SEQUENCE THE NEXT WPT
                 if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90) {
-                    this._setHeading = this._dtk;               
+                    this._setHeading = this._dtk;           
                     this._fpm.setActiveWaypointIndex(this._fpm.getActiveWaypointIndex() + 1);
                     
+                    SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
+
                     this._executeInhibited = false;
                     this.execute();
                     this._executeInhibited = true;
@@ -143,11 +145,18 @@ class WT_BaseLnav {
                     const getDistanceToActivate = turnAngle => Math.min((turnRadius * Math.tan((Math.abs(turnAngle) / 2) * (Math.PI / 180))) + enterBankDistance, maxAnticipationDistance);
 
                     let activateDistance = Math.max(getDistanceToActivate(nextFixTurnAngle), getDistanceToActivate(currentFixTurnAngle));
-                    
+                    let alertDistance = activateDistance + (this._groundSpeed / 3600) * 5; //Alert approximately 5 seconds prior to waypoint change
+
+                    if (this._activeWaypointDist <= alertDistance) {
+                        SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 1);
+                    }
+
                     if (this._activeWaypointDist <= activateDistance) { //TIME TO START TURN
                         this._setHeading = toNextFixHeading;
                         this._fpm.setActiveWaypointIndex(this._fpm.getActiveWaypointIndex() + 1);
                         
+                        SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
+
                         this._executeInhibited = false;                     
                         this.execute();
                         this._executeInhibited = true; //Prevent heading changes until turn is near completion
