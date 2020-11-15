@@ -212,10 +212,6 @@ export class ManagedFlightPlan {
         this.reflowSegments();
         this.reflowDistances();
 
-        if (index <= this.activeWaypointIndex) {
-          this.activeWaypointIndex++;
-        }
-
         if (this.activeWaypointIndex === 0 && this.length > 1) {
           this.activeWaypointIndex = 1;
         }
