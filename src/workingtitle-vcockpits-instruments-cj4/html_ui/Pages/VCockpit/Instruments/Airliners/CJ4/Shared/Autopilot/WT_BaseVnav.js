@@ -67,6 +67,7 @@ class WT_BaseVnav {
         const flightPlanVersion = SimVar.GetSimVarValue("L:WT.FlightPlan.Version", "number");
 
         if (this._destination && this.waypoints && this.waypoints.length > 1 && this._activeWaypoint && flightPlanVersion) {
+            this._vnavType = true;
 
             //HAS THE ACTIVE WAYPOINT CHANGED?
             if (this._lastActiveWaypointIdent != this._activeWaypoint.ident) {

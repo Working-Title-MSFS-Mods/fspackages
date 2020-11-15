@@ -157,6 +157,11 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
             //PREPARE EXECUTION VARIABLES
             //this._desiredAltitude = this._vnavTargetAltitude + (Math.tan(this._desiredFPA * (Math.PI / 180)) * this._vnavTargetDistance * 6076.12);
         }
+        if (this._vnavMode = 2) {
+            WTDataStore.set('CJ4_VNAV_ACTIVE', 'true');
+        } else {
+            WTDataStore.set('CJ4_VNAV_ACTIVE', 'false');
+        }
         this.execute();
     }
 

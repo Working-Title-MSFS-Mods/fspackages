@@ -495,35 +495,6 @@ class CJ4_FMC extends FMCMainDisplay {
                 this._isLNavActive = newIsLnavActive;
             }
 
-
-
-
-            if (newIsNavActive) { //NAV MODE SELECTED
-                if (newIsLnavActive) { //FMS SELECTED IN PFD AS NAV SOURCE
-                    SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
-                    if (!SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean")) {
-                        SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 1);
-                    }
-                }
-                else { //NAV1 OR NAV2 SELECTED IN PFD AS NAV SOURCE
-                    // TODO: CHECK IF WE NEED THIS FIRST STEP:
-                    // if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean")) {
-                    //     SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
-                    // }
-                    if (!SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean")) {
-                        SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 1);
-                    }
-                }
-            }
-            else if (!newIsNavActive) {
-                if (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean")) {
-                    SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 0);
-                }
-                else {
-
-                }
-            }
-
             const newIsVsActive = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1;
             const newIsFlcActive = SimVar.GetSimVarValue("L:WT_CJ4_FLC_ON", "number") == 1;
 

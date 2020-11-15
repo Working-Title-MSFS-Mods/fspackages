@@ -692,11 +692,13 @@ class CJ4_APDisplay extends NavSystemElement {
 
         //VERTICAL MODES
         const isPitchActive = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") == 1 ? true : false;
-        const isVsActive = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean") == 1 ? true : false;
-        const isFlcActive = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") == 1 ? true : false;
+        const isVsActive = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1 ? true : false;
+        const isFlcActive = SimVar.GetSimVarValue("L:WT_CJ4_FLC_ON", "number") == 1 ? true : false;
         const isAltLockActive = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") == 1 ? true : false;
         const isAltArmed = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") == 1 ? true : false;
         const altDelta = Math.abs(Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feet"));
+        const isVpathActive = WTDataStore.get('CJ4_VNAV_ACTIVE', 'false') == "true" ? true : false;
+
 
         //LATERAL MODES
         const isHdgActive = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean") == 1 ? true : false;
@@ -718,7 +720,11 @@ class CJ4_APDisplay extends NavSystemElement {
         if (apMasterActive && !ydActive) {
             SimVar.SetSimVarValue("K:YAW_DAMPER_TOGGLE", "number", 1);
         }
-        Avionics.Utils.diffAndSet(this.AP_YDStatus, ydActive ? "YD" : "");
+        if (apMasterActive) {
+            Avionics.Utils.diffAndSet(this.AP_YDStatus, "");
+        } else {
+            Avionics.Utils.diffAndSet(this.AP_YDStatus, ydActive ? "YD" : "");
+        }
 
         //SET VERTICAL MODES
         if (isVnavActive) { //VNAV ACTIVE
@@ -727,24 +733,17 @@ class CJ4_APDisplay extends NavSystemElement {
                 Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
             }
             else if (isVsActive) {
-                if (SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") == 2) {
-                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VPATH");
-                    Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+                let vsDisplay = "<span>VVS</span> ";
+                let verticalHoldVar = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute");
+                vsDisplay += "<span style=\"color: #0599fc;\">" + fastToFixed(verticalHoldVar, 0) + "</span>";
+                if (verticalHoldVar > 0) {
+                    vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↑</span>";
                 }
-                else {
-                    let vsDisplay = "<span>VVS</span> ";
-                    let verticalHoldVar = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute");
-                    vsDisplay += "<span style=\"color: #0599fc;\">" + fastToFixed(verticalHoldVar, 0) + "</span>";
-                    if (verticalHoldVar > 0) {
-                        vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↑</span>";
-                    }
-                    else if (verticalHoldVar < 0) {
-                        vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↓</span>";
-                    }
-                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, vsDisplay);
-                    Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+                else if (verticalHoldVar < 0) {
+                    vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↓</span>";
                 }
-
+                Avionics.Utils.diffAndSet(this.AP_VerticalActive, vsDisplay);
+                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
             }
             else if (isFlcActive) {
                 Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VFLC");
@@ -763,6 +762,10 @@ class CJ4_APDisplay extends NavSystemElement {
                     Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VALT");
                 }
                 Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet"), 0) + "FT");
+            }
+            else if (isVpathActive) {
+                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VPATH");
+                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
             }
             else {
                 Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VERROR");

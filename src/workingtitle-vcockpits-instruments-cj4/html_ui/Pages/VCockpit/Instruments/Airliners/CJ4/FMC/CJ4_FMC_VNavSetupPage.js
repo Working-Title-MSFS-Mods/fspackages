@@ -253,10 +253,10 @@ class CJ4_FMC_VNavSetupPage {
                 const altArm = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") ? "TRUE" : "FALSE";
 
                 fmc._templateRenderer.setTemplateRaw([
-                    [vnavTargetWaypointIdent, "", "  WT VNAV[blue]" + vnavActive],
-                    [" target alt[blue]", "dist [blue]", "FPA[blue]"],
+                    [vnavTargetWaypointIdent, "   WT VNAV[blue]" + vnavActive],
+                    [" T ALT[blue]", "T DIST [blue]", "FPA[blue]"],
                     [vnavTargetAltitude.toFixed(0) + "FT", vnavTargetDistance.toFixed(1) + "NM", desiredFPA.toFixed(1) + "°"],
-                    [" VS:CURRENT[blue]", "SET [blue]", "TARGET[blue]"],
+                    [" VS:CURR[blue]", "SET [blue]", "TGT[blue]"],
                     [apCurrentVerticalSpeed.toFixed(0) + "FPM", setVerticalSpeed.toFixed(0) + "FPM[green]", desiredVerticalSpeed.toFixed(0) + "FPM"],
                     ["ALTDEV [blue]", "TOD[blue]", " ALT/VS SLOT[blue]"],
                     [altDeviation.toFixed(0) + "FT", distanceToTod.toFixed(1) + "NM", altSlot + "/" + vsSlot],
@@ -264,7 +264,7 @@ class CJ4_FMC_VNavSetupPage {
                     [vsVar + "/" + vsVar1 + "/" + vsVar2 + "/" + vsVar3],
                     ["ALTVAR/VAR:1/VAR:2/VAR:3[blue]"],
                     [altVar + "/" + altVar1 + "/" + altVar2 + "/" + altVar3],
-                    ["ALT LOCK: " + altLock, "ALT ARM: " + altArm],
+                    ["A LK: " + altLock, "A ARM: " + altArm],
                     ["<CONSTRAINTS", "MENU>"]
                 ]);
 
