@@ -48,6 +48,7 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "knots", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_LNAV_MODE", "number", this.mapNavigationSource);
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -204,7 +205,13 @@ class CJ4_PFD extends BaseAirliners {
                     // }
                     
                     //UPDATED FOR WT LNAV
-                    SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 1);
+                    // SimVar.SetSimVarValue("L:WT_CJ4_LNAV_MODE", "number", 0);
+                    // if (SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1) {
+                    //     if (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") == 0) {
+                    //         SimVar.SetSimVarValue('K:AP_NAV1_HOLD', 'number', 1);
+                    //     }
+                    // }
+                    // SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 1);
 
                     this.onModeChanged();
                 }
@@ -227,8 +234,13 @@ class CJ4_PFD extends BaseAirliners {
                     // }
 
                     //UPDATED FOR WT LNAV
-
-
+                    // SimVar.SetSimVarValue("L:WT_CJ4_LNAV_MODE", "number", 1);
+                    // if (SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1) {
+                    //     if (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") == 1) {
+                    //         SimVar.SetSimVarValue('K:AP_NAV1_HOLD', 'number', 0);
+                    //     }
+                    // }
+                    
                     this.onModeChanged();
                 }
                 break;
@@ -300,6 +312,7 @@ class CJ4_PFD extends BaseAirliners {
     }
     onModeChanged() {
         SimVar.SetSimVarValue("L:CJ4_MAP_MODE", "number", this.mapDisplayMode);
+        SimVar.SetSimVarValue("L:WT_CJ4_LNAV_MODE", "number", this.mapNavigationSource);
         SimVar.SetSimVarValue("L:FMC_UPDATE_CURRENT_PAGE", "number", 1);
         if (this.modeChangeMask) {
             this.modeChangeMask.style.display = "block";
@@ -684,7 +697,7 @@ class CJ4_APDisplay extends NavSystemElement {
         //MASTER MODES
         const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1;
         const ydActive = SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Boolean") == 1;
-        const isLnavActive = SimVar.GetSimVarValue("L:RADIONAV_SOURCE", "number") == 1;
+        const isLnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
         const isWTNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
         const isWTHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1;
         const isVnavActive = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") == 1;
@@ -697,7 +710,6 @@ class CJ4_APDisplay extends NavSystemElement {
         const isAltArmed = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") == 1;
         const altDelta = Math.abs(Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feet"));
         const isVpathActive = WTDataStore.get('CJ4_VNAV_ACTIVE', 'false') == "true";
-
 
         //LATERAL MODES
         const isHdgActive = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean") == 1;
@@ -821,16 +833,19 @@ class CJ4_APDisplay extends NavSystemElement {
         if (isGsArmed) {
             Avionics.Utils.diffAndSet(this.AP_Armed, "GS");
         }
-        else if (isAltArmed) {
-            Avionics.Utils.diffAndSet(this.AP_Armed, "ALTS");
+        else {
+            Avionics.Utils.diffAndSet(this.AP_Armed, "");
         }
-        else if (isVnavActive && SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") == 2) {
-            Avionics.Utils.diffAndSet(this.AP_Armed, "PATH");
-        }
+        // else if (isAltArmed) {
+        //     Avionics.Utils.diffAndSet(this.AP_Armed, "ALTS");
+        // }
+        // else if (isVnavActive && SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") == 2) {
+        //     Avionics.Utils.diffAndSet(this.AP_Armed, "PATH");
+        // }
 
         //SET LATERAL MODES
         if (isWTNavActive) {
-            if (isHdgActive && isLnavActive) {
+            if (isLnavActive) {
                 Avionics.Utils.diffAndSet(this.AP_LateralActive, "LNV1");
             }
             else if (isNavActive || isApproachActive) {
@@ -852,14 +867,14 @@ class CJ4_APDisplay extends NavSystemElement {
             if (isWTHdgActive && isHdgActive) {
                 Avionics.Utils.diffAndSet(this.AP_LateralActive, "HDG");
             }
-            else if (isNavActive) {
-                if (selectedNavHasLoc) {
-                    Avionics.Utils.diffAndSet(this.AP_LateralActive, "LOC" + selectedNav.toFixed(0));
-                }
-                else {
-                    Avionics.Utils.diffAndSet(this.AP_LateralActive, "VOR" + selectedNav.toFixed(0));
-                }
-            }
+            // else if (isNavActive) {
+            //     if (selectedNavHasLoc) {
+            //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "LOC" + selectedNav.toFixed(0));
+            //     }
+            //     else {
+            //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "VOR" + selectedNav.toFixed(0));
+            //     }
+            // }
             else if (isBcActive) {
                 Avionics.Utils.diffAndSet(this.AP_LateralActive, "BC" + selectedNav.toFixed(0));
             }
@@ -868,7 +883,7 @@ class CJ4_APDisplay extends NavSystemElement {
                     Avionics.Utils.diffAndSet(this.AP_LateralActive, "LOC" + selectedNav.toFixed(0));
                 }
                 else {
-                    Avionics.Utils.diffAndSet(this.AP_LateralActive, "VOR" + selectedNav.toFixed(0));
+                    Avionics.Utils.diffAndSet(this.AP_LateralActive, "VORA" + selectedNav.toFixed(0));
                 }
             }
             else if (isLvlActive) {
