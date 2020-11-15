@@ -158,8 +158,8 @@ class WT_MapViewLabeledRing {
 
 class WT_MapViewRing {
     constructor() {
-        this._canvas = document.createElement("canvas");
-        this._canvasContext = this._canvas.getContext("2d");
+        this._buffer = document.createElement("canvas");
+        this._bufferContext = this._buffer.getContext("2d");
         this._lastDrawnBounds = {left: 0, right: 0, top: 0, bottom: 0};
 
         this._needRedraw = true;
@@ -221,6 +221,31 @@ class WT_MapViewRing {
         this._needRedraw = needRedraw;
     }
 
+    _calculateToDrawBounds(centerX, centerY, radius, bounds) {
+        let thick = this.strokeWidth / 2 + this.outlineWidth;
+        let toDrawLeft = Math.max(centerX - radius - thick - 5, bounds.left);
+        let toDrawTop = Math.max(centerY - radius - thick - 5, bounds.top);
+        let toDrawWidth = Math.min(centerX + radius + thick + 5, bounds.left + bounds.width) - toDrawLeft;
+        let toDrawHeight = Math.min(centerY + radius + thick + 5, bounds.top + bounds.height) - toDrawTop;
+        return {left: toDrawLeft, top: toDrawTop, width: toDrawWidth, height: toDrawHeight};
+    }
+
+    _drawRingComponentToBuffer(lineWidth, strokeWidth, lineDash, centerX, centerY, radius) {
+        this._bufferContext.lineWidth = lineWidth;
+        this._bufferContext.strokeStyle = strokeWidth;
+        this._bufferContext.setLineDash(lineDash);
+        this._bufferContext.beginPath();
+        this._bufferContext.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        this._bufferContext.stroke();
+    }
+
+    _drawRingComponents(centerX, centerY) {
+        if (this.outlineWidth > 0) {
+            this._drawRingComponentToBuffer(this.strokeWidth + this.outlineWidth * 2, this.outlineColor, this.outlineDash, centerX, centerY, this.radius);
+        }
+        this._drawRingComponentToBuffer(this.strokeWidth, this.strokeColor, this.strokeDash, centerX, centerY, this.radius);
+    }
+
     draw(bounds) {
         if (!this._needRedraw) {
             return {refresh: false};
@@ -230,41 +255,22 @@ class WT_MapViewRing {
             return {refresh: true, copy: false};
         }
 
-        this._canvasContext.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
+        this._bufferContext.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
-        this._canvas.width = bounds.width;
-        this._canvas.height = bounds.height;
+        this._buffer.width = bounds.width;
+        this._buffer.height = bounds.height;
 
-        let centerXRounded = Math.round(this.center.x) - bounds.left;
-        let centerYRounded = Math.round(this.center.y) - bounds.top;
-        let radiusRounded = Math.round(this.radius);
+        let center = this.center;
+        let centerX = center.x - bounds.left;
+        let centerY = center.y - bounds.top;
 
-        if (this.outlineWidth > 0) {
-            this._canvasContext.lineWidth = this.strokeWidth + this.outlineWidth * 2;
-            this._canvasContext.strokeStyle = this.outlineColor;
-            this._canvasContext.setLineDash(this.outlineDash);
-            this._canvasContext.beginPath();
-            this._canvasContext.arc(centerXRounded, centerYRounded, radiusRounded, 0, 2 * Math.PI);
-            this._canvasContext.stroke();
-        }
+        this._drawRingComponents(centerX, centerY);
 
-        this._canvasContext.lineWidth = this.strokeWidth;
-        this._canvasContext.strokeStyle = this.strokeColor;
-        this._canvasContext.setLineDash(this.strokeDash);
-        this._canvasContext.beginPath();
-        this._canvasContext.arc(centerXRounded, centerYRounded, radiusRounded, 0, 2 * Math.PI);
-        this._canvasContext.stroke();
-
-        let thick = this.strokeWidth / 2 + this.outlineWidth;
-        let toDrawLeft = Math.max(centerXRounded - radiusRounded - thick - 5, bounds.left);
-        let toDrawTop = Math.max(centerYRounded - radiusRounded - thick - 5, bounds.top);
-        let toDrawWidth = Math.min(centerXRounded + radiusRounded + thick + 5, bounds.left + bounds.width) - toDrawLeft;
-        let toDrawHeight = Math.min(centerYRounded + radiusRounded + thick + 5, bounds.top + bounds.height) - toDrawTop;
-        this._lastDrawnBounds = {left: toDrawLeft, top: toDrawTop, width: toDrawWidth, height: toDrawHeight};
+        this._lastDrawnBounds = this._calculateToDrawBounds(centerX, centerY, this.radius, bounds);
 
         this._needRedraw = false;
 
-        return {refresh: true, copy: true, image: this._canvas, bounds: this._lastDrawnBounds};
+        return {refresh: true, copy: true, image: this._buffer, bounds: this._lastDrawnBounds};
     }
 }
 WT_MapViewRing.OPTIONS_DEF = {
