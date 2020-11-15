@@ -145,15 +145,13 @@ private:
     }
 
     void updateThrottleMode() {
-        bool simOnGround = this->simVars->getSimOnGround() > 0;
-
         if (this->throttleAxis > 15000) {
             this->throttleMode = TO;
         }
-        else if (this->throttleAxis > 9060 && !simOnGround) {
+        else if (this->throttleAxis > 9060) {
             this->throttleMode = CLB;
         }
-        else if (this->throttleAxis > -15250 && !simOnGround) {
+        else if (this->throttleAxis > -15250) {
             this->throttleMode = CRU;
         }
         else {

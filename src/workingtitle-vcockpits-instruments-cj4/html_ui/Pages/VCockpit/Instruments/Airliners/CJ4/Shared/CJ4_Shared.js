@@ -1743,9 +1743,15 @@ class CJ4_SystemEngines extends NavSystemElement {
 
             let thrustSetting = "TO";
             let modeClr = "#11d011";
-            
+
+            if (throttleMode < 3 && onGround) {
+                throttleMode = 0;
+            } else if (throttleMode == 0 && !onGround) {
+                throttleMode = 1;
+            }
+
             switch (throttleMode) {
-                case 0: 
+                case 0:
                     modeClr = "#cccac8";
                     break;
                 case 1:
