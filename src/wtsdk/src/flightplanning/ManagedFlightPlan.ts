@@ -215,11 +215,11 @@ export class ManagedFlightPlan {
         if (index <= this.activeWaypointIndex) {
           this.activeWaypointIndex++;
         }
-      }
-    }
 
-    if (this.activeWaypointIndex === 0 && this.length > 1) {
-      this.activeWaypointIndex = 1;
+        if (this.activeWaypointIndex === 0 && this.length > 1) {
+          this.activeWaypointIndex = 1;
+        }
+      }
     }
   }
 
@@ -660,9 +660,13 @@ export class ManagedFlightPlan {
       if (segment === FlightPlanSegment.Empty) {
         segment = this.addSegment(SegmentType.Approach);
         startIndex = segment.offset;
-      }
 
-      this.getWaypoint(segment.offset - 1).endsInDiscontinuity = true;
+        const prevWaypointIndex = segment.offset - 1;
+        if (prevWaypointIndex > 0) {
+          this.getWaypoint(segment.offset - 1).endsInDiscontinuity = true;
+        }
+      }  
+      
       const procedure = new LegsProcedure(legs, this.getWaypoint(startIndex - 1), this._parentInstrument);
 
       let waypointIndex = startIndex;
@@ -691,7 +695,7 @@ export class ManagedFlightPlan {
   public truncateSegment(type: SegmentType): {startIndex: number, segment: FlightPlanSegment} {
     let segment = this.getSegment(type);
     const startIndex = this.findSegmentByWaypointIndex(this.activeWaypointIndex) === segment
-      ? (segment.offset - this.activeWaypointIndex) + 1
+      ? this.activeWaypointIndex + 1
       : segment.offset;
 
     if (segment !== FlightPlanSegment.Empty) {
@@ -706,7 +710,7 @@ export class ManagedFlightPlan {
       segment = FlightPlanSegment.Empty;
     }
     else {
-      segment.waypoints[Math.max(startIndex - 1, segment.offset)].endsInDiscontinuity = true;
+      segment.waypoints[Math.max((startIndex - 1) - segment.offset, 0)].endsInDiscontinuity = true;
     }
 
     return {startIndex, segment};
