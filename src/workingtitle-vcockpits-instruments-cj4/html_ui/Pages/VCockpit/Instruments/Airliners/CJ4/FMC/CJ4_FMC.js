@@ -176,7 +176,10 @@ class CJ4_FMC extends FMCMainDisplay {
         };
 
         // set persisted heading
-        SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', WTDataStore.get("AP_HEADING", Simplane.getHeadingMagnetic()));
+        //SimVar.SetSimVarValue('K:HEADING_BUG_SET:1', 'degrees', WTDataStore.get("AP_HEADING", Simplane.getHeadingMagnetic()));
+        this._isLNavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
+        SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
 
         // get HideYoke        
         let yokeHide = WTDataStore.get('WT_CJ4_HideYoke', 1);
@@ -422,12 +425,6 @@ class CJ4_FMC extends FMCMainDisplay {
             this._apHasDeactivated = !currentApMasterStatus && this._previousApMasterStatus;
             this._previousApMasterStatus = currentApMasterStatus;
 
-            //SET DEFAULT VS VALUE TO CURRENT VS
-            //TODO: CHECK IF BUTTON TEMPLATE NOW SETS THE CURRENT VS AUTOMATICALLY
-            // if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
-            //     Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, Simplane.getVerticalSpeed());
-            // }
-
             //RUN VNAV ALWAYS
             if (this._vnav === undefined) {
                 this._vnav = new WT_BaseVnav(this.flightPlanManager);
@@ -449,7 +446,7 @@ class CJ4_FMC extends FMCMainDisplay {
             //PARSE CJ4 AP MODES
             const newIsHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1;
             const newIsNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
-            const newIsLnavActive = this.radioNav.getRADIONAVSource() == 1;
+            const newIsLnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
 
             if(newIsHdgActive !== this._isHdgActive){
 
@@ -500,10 +497,10 @@ class CJ4_FMC extends FMCMainDisplay {
 
             if(newIsVsActive !== this._isVsActive) {
                 if(!newIsFlcActive){
-                    // if (newIsVsActive) {
-                    //     Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, Simplane.getVerticalSpeed());
-                    //     SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
-                    // }
+                    if (newIsVsActive) {
+                        //Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, Simplane.getVerticalSpeed());
+                        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+                    }
                     if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean") !== newIsVsActive) {
                         SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
                     }
