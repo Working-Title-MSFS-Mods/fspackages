@@ -15,6 +15,75 @@
 		</UseTemplate>
 	</Template>
 
+	<Template Name="ASOBO_AUTOPILOT_Knob_Heading_SubTemplate">
+		<DefaultTemplateParameters>
+			<ANIM_NAME_KNOB>AUTOPILOT_Knob_Heading#SUFFIX_ID#</ANIM_NAME_KNOB>
+			<ANIM_NAME_PUSH>AUTOPILOT_Knob_Heading_Push#SUFFIX_ID#</ANIM_NAME_PUSH>
+			<ANIM_NAME_PUSHPULL>AUTOPILOT_Knob_Heading_PushPull#SUFFIX_ID#</ANIM_NAME_PUSHPULL>
+			<PART_ID>AUTOPILOT_Knob_Heading</PART_ID>
+			<NODE_ID>AUTOPILOT_Knob_Heading#SUFFIX_ID#</NODE_ID>
+			
+			<ANIMTIP_0>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_HDG_TUNING_LEFT</ANIMTIP_0>
+			<ANIMTIP_0_ON_CURSOR>TurnLeft</ANIMTIP_0_ON_CURSOR>
+			<ANIMTIP_1>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_HDG_TUNING_RIGHT</ANIMTIP_1>
+			<ANIMTIP_1_ON_CURSOR>TurnRight</ANIMTIP_1_ON_CURSOR>
+			<ANIMTIP_3_ON_CURSOR>Hand</ANIMTIP_3_ON_CURSOR>
+			<WWISE_EVENT_1>autopilot_knob_push_button_on</WWISE_EVENT_1>
+			<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+			<WWISE_EVENT_2>autopilot_knob_push_button_off</WWISE_EVENT_2>
+			<NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+			<WWISE_EVENT>autopilot_heading_knob</WWISE_EVENT>
+			<COUNT>36</COUNT>
+			
+			<Switch Param="TYPE">
+				<Default>
+					<ANIMTIP_3>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_HDG_PUSH</ANIMTIP_3>
+				</Default>
+			</Switch>
+		</DefaultTemplateParameters>
+		<EditableTemplateParameters>
+			<AddParams>
+				<ANIM_NAME_KNOB></ANIM_NAME_KNOB>
+				<ANIM_NAME_PUSH></ANIM_NAME_PUSH>
+				<ANIM_NAME_PUSHPULL></ANIM_NAME_PUSHPULL>
+			</AddParams>
+			<AddOptions>
+				<PUSH></PUSH>
+				<AIRBUS_TYPE></AIRBUS_TYPE>
+			</AddOptions>
+		</EditableTemplateParameters>
+
+		<Component ID="#NODE_ID#" Node="#NODE_ID#">
+			<Switch Param="TYPE">
+				<Case Check="PUSH">
+					<UseTemplate Name="ASOBO_GT_Knob_Infinite_Push">
+						<CLOCKWISE_CODE>(&gt;K:1:HEADING_BUG_INC)</CLOCKWISE_CODE>
+						<ANTICLOCKWISE_CODE>(&gt;K:1:HEADING_BUG_DEC)</ANTICLOCKWISE_CODE>
+						<LEFT_SINGLE_CODE>
+							(A:HEADING INDICATOR, degrees)
+							(&gt;K:1:HEADING_BUG_SET)
+						</LEFT_SINGLE_CODE>
+						<ANIMTIP_0>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_HDG_TUNING_LEFT</ANIMTIP_0>
+						<ANIMTIP_0_ON_CURSOR>TurnLeft</ANIMTIP_0_ON_CURSOR>
+						<ANIMTIP_1>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_HDG_TUNING_RIGHT</ANIMTIP_1>
+						<ANIMTIP_1_ON_CURSOR>TurnRight</ANIMTIP_1_ON_CURSOR>
+						<ANIMTIP_3>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_HDG_PUSH</ANIMTIP_3>
+						<ANIMTIP_3_ON_CURSOR>Hand</ANIMTIP_3_ON_CURSOR>
+					</UseTemplate>
+				</Case>
+				<Default>
+					<UseTemplate Name="ASOBO_GT_Knob_Infinite">
+						<ANIM_NAME>#ANIM_NAME_KNOB#</ANIM_NAME>
+						<CLOCKWISE_CODE>(&gt;K:1:HEADING_BUG_INC)</CLOCKWISE_CODE>
+						<ANTICLOCKWISE_CODE>(&gt;K:1:HEADING_BUG_DEC)</ANTICLOCKWISE_CODE>
+						<!-- <WWISE_EVENT>autopilot_heading_knob</WWISE_EVENT> -->
+						<!-- <COUNT>36</COUNT> -->
+					</UseTemplate>
+				</Default>
+			</Switch>
+		</Component>
+	</Template>
+
 	<Template Name="ASOBO_AUTOPILOT_Push_Navigation_Template">
 		<DefaultTemplateParameters>
 			<DEFAULT_NAME>Navigation</DEFAULT_NAME>
@@ -122,9 +191,189 @@
 		</UseTemplate>
 	</Template>
 
+	<Template Name="ASOBO_AUTOPILOT_Knob_Altitude_SubTemplate">
+		<DefaultTemplateParameters>
+			<HELPID>HELPID_AUTOPILOT_ALTITUDE_INDICATOR</HELPID>
+
+			<Switch Param="TYPE">
+				<Case Check="PUSH">
+					<ANIM_NAME_KNOB>AUTOPILOT_Knob_Altitude#SUFFIX_ID#</ANIM_NAME_KNOB>
+					<ANIM_NAME_PUSH>AUTOPILOT_Knob_Altitude_Push#SUFFIX_ID#</ANIM_NAME_PUSH>
+					<ANIMREF_ID>-1</ANIMREF_ID>
+					<ANIMTIP_0>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_ALT_DECREASE</ANIMTIP_0>
+					<ANIMTIP_0_ON_CURSOR>TurnLeft</ANIMTIP_0_ON_CURSOR>
+					<ANIMTIP_1>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_ALT_INCREASE</ANIMTIP_1>
+					<ANIMTIP_1_ON_CURSOR>TurnRight</ANIMTIP_1_ON_CURSOR>
+					<ANIMTIP_2>TT:COCKPIT.TOOLTIPS.AUTOPILOT_KNOB_ALTITUDE</ANIMTIP_2>
+					<ANIMTIP_2_ON_CURSOR>Hand</ANIMTIP_2_ON_CURSOR>
+					<INCREMENTATION_INDEX>0</INCREMENTATION_INDEX>
+				</Case>
+				<Default>
+					<ANIM_NAME>AUTOPILOT_Knob_Altitude#SUFFIX_ID#</ANIM_NAME>
+					<ANIMREF_ID>-1</ANIMREF_ID>
+					<ANIMTIP_0>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_ALT_DECREASE</ANIMTIP_0>
+					<ANIMTIP_0_ON_CURSOR>TurnLeft</ANIMTIP_0_ON_CURSOR>
+					<ANIMTIP_1>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_ALT_INCREASE</ANIMTIP_1>
+					<ANIMTIP_1_ON_CURSOR>TurnRight</ANIMTIP_1_ON_CURSOR>
+					<INCREMENTATION_INDEX>0</INCREMENTATION_INDEX>
+				</Default>
+			</Switch>
+			<PART_ID>AUTOPILOT_Knob_Altitude</PART_ID>
+			<Condition Check="INCREMENT">
+				<True>
+					<NODE_ID>AUTOPILOT_Knob_Altitude_#INCREMENT##SUFFIX_ID#</NODE_ID>
+					<ANIM_NAME>AUTOPILOT_Knob_Altitude_#INCREMENT##SUFFIX_ID#</ANIM_NAME>
+					<ANIM_NAME_KNOB>AUTOPILOT_Knob_Altitude_#INCREMENT##SUFFIX_ID#</ANIM_NAME_KNOB>
+					<ANIM_NAME_PUSH>AUTOPILOT_Knob_Altitude_#INCREMENT#_Push#SUFFIX_ID#</ANIM_NAME_PUSH>
+					<WWISE_EVENT>autopilot_altitude_#INCREMENT#_knob</WWISE_EVENT>
+					<COUNT>36</COUNT>
+				</True>
+				<False>
+					<Condition>
+						<Test>
+							<Or>
+								<Arg Check="TYPE" Match="AIRBUS"/>
+								<Arg Check="TYPE" Match="AS01B"/>
+							</Or>
+						</Test>
+						<True>
+							<INCREMENT>(L:XMLVAR_Autopilot_Altitude_Increment)</INCREMENT>
+						</True>
+					</Condition>
+					<NODE_ID>AUTOPILOT_Knob_Altitude#SUFFIX_ID#</NODE_ID>
+					<WWISE_EVENT>autopilot_altitude_knob</WWISE_EVENT>
+					<COUNT>36</COUNT>
+				</False>
+			</Condition>
+
+		</DefaultTemplateParameters>
+		<OverrideTemplateParameters>
+			<Switch Param="TYPE">
+				<Case Check="PUSH">
+					<TEMPLATE>ASOBO_GT_Knob_Infinite_Push</TEMPLATE>
+				</Case>
+				<Default>
+					<TEMPLATE>ASOBO_GT_Knob_Infinite</TEMPLATE>
+				</Default>
+			</Switch>
+		</OverrideTemplateParameters>
+		<EditableTemplateParameters>
+			<AddParams>
+				<ANIM_NAME_KNOB></ANIM_NAME_KNOB>
+				<ANIM_NAME_PUSH></ANIM_NAME_PUSH>
+				<ANIM_NAME_PUSHPULL></ANIM_NAME_PUSHPULL>
+				<INCREMENT></INCREMENT>
+			</AddParams>
+			<AddOptions>
+				<EMISSIVE_KNOB></EMISSIVE_KNOB>
+				<PUSH></PUSH>
+			</AddOptions>
+		</EditableTemplateParameters>
+		
+		<Component ID="#NODE_ID#" Node="#NODE_ID#">
+			<UseTemplate Name="#TEMPLATE#">
+				<Condition Check="INCREMENT">
+					<True>
+						<CLOCKWISE_CODE>
+							(A:AUTOPILOT ALTITUDE LOCK VAR, feet) #INCREMENT# + (&gt;K:AP_ALT_VAR_SET_ENGLISH) (&gt;H:AP_KNOB_Up)
+						</CLOCKWISE_CODE>
+						<ANTICLOCKWISE_CODE>
+							(A:AUTOPILOT ALTITUDE LOCK VAR, feet) #INCREMENT# - (&gt;K:AP_ALT_VAR_SET_ENGLISH) (&gt;H:AP_KNOB_Down)
+						</ANTICLOCKWISE_CODE>
+					</True>
+					<False>
+						<CLOCKWISE_CODE>
+							#INCREMENTATION_INDEX# (&gt;K:1:AP_ALT_VAR_INC)
+						</CLOCKWISE_CODE>
+						<ANTICLOCKWISE_CODE>
+							#INCREMENTATION_INDEX# (&gt;K:1:AP_ALT_VAR_DEC)
+						</ANTICLOCKWISE_CODE>
+					</False>
+				</Condition>
+				<Switch Param="TYPE">
+					<Case Check="PUSH">
+						<LEFT_SINGLE_CODE>(A:INDICATED ALTITUDE, feet) (&gt;K:1:AP_ALT_VAR_SET_ENGLISH) (&gt;H:AP_KNOB)</LEFT_SINGLE_CODE>
+						<WWISE_EVENT_1>autopilot_knob_push_button_on</WWISE_EVENT_1>
+						<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+						<WWISE_EVENT_2>autopilot_knob_push_button_off</WWISE_EVENT_2>
+						<NORMALIZED_TIME_2>0.3</NORMALIZED_TIME_2>
+					</Case>
+				</Switch>
+			</UseTemplate>
+			<Condition Check="EMISSIVE_KNOB">
+				<UseTemplate Name="ASOBO_GT_Emissive_Gauge"/>
+			</Condition>
+		</Component>
+	</Template>
 
 
 
+	<!-- CCP ############################################## -->
+	<Template Name="WT_Detached_Control_Panel_Template">
+		<DefaultTemplateParameters>
+			<AS3000>AS3000</AS3000>
+			<DISPLAY>MFD</DISPLAY>
+			<TYPE></TYPE>
+			<ID>1</ID>
+			<ANIM_NEVER_FAILS/>
+		</DefaultTemplateParameters>
+
+		<UseTemplate Name="ASOBO_GT_Helper_Suffix_ID_Appender">
+			<TEMPLATE_TO_CALL>WT_Detached_Control_Panel_SubTemplate</TEMPLATE_TO_CALL>
+		</UseTemplate>
+	</Template>
+
+	<Template Name="WT_Detached_Control_Panel_SubTemplate">
+		<DefaultTemplateParameters>
+			<KEY_PREFIX>#AS3000#_#DISPLAY#</KEY_PREFIX>
+		</DefaultTemplateParameters>
+		<!-- LOWER PANEL -->
+		<Condition Valid="NODE_ID_CKLST">
+			<Component ID="#NODE_ID_CKLST#" Node="#NODE_ID_CKLST#">
+				<UseTemplate Name="ASOBO_GT_Push_Button">
+					<ANIM_NAME>#NODE_ID_CKLST#</ANIM_NAME>
+					<LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_CKLST_1)</LEFT_SINGLE_CODE>
+					<WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
+					<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+					<WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
+					<NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+					<TOOLTIPID>Checklist</TOOLTIPID>
+				</UseTemplate>
+			</Component>
+		</Condition>
+		<Condition Valid="NODE_ID_PASSBRIEF">
+			<Component ID="#NODE_ID_PASSBRIEF#" Node="#NODE_ID_PASSBRIEF#">
+				<UseTemplate Name="ASOBO_GT_Push_Button">
+					<ANIM_NAME>#NODE_ID_PASSBRIEF#</ANIM_NAME>
+					<LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_PASSBRIEF_1)</LEFT_SINGLE_CODE>
+					<WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
+					<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+					<WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
+					<NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+					<TOOLTIPID>Passenger Brief</TOOLTIPID>
+				</UseTemplate>
+			</Component>
+		</Condition>
+		<Condition Valid="NODE_ID_MEM1">
+			<Component ID="#NODE_ID_MEM1#" Node="#NODE_ID_MEM1#">
+				<UseTemplate Name = "ASOBO_GT_Push_Button_Timed">
+					<ANIM_NAME>#NODE_ID_MEM1#</ANIM_NAME>
+					<SHORT_CLICK_CODE>(&gt;H:#KEY_PREFIX#_Push_MEM1_1)</SHORT_CLICK_CODE>
+					<LONG_CLICK_CODE>(&gt;H:#KEY_PREFIX#_Hold_MEM1_1)</LONG_CLICK_CODE>
+					<WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
+					<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+						<WWISE_EVENT_1>autopilot_knob_push_button_on</WWISE_EVENT_1>
+						<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+						<WWISE_EVENT_2>autopilot_knob_push_button_off</WWISE_EVENT_2>
+						<NORMALIZED_TIME_2>0.3</NORMALIZED_TIME_2>
+					</Case>
+				</Switch>
+			</UseTemplate>
+			<Condition Check="EMISSIVE_KNOB">
+				<UseTemplate Name="ASOBO_GT_Emissive_Gauge"/>
+			</Condition>
+		</Component>
+	</Template>
 
 
 

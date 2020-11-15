@@ -33,15 +33,6 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
     update() {
         super.update();
         
-        const altMode = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") === 1;
-        const flcMode = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") === 1;
-        const vsMode = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean") === 1;
-        const gsMode = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean") === 1;
-        const pitMode = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") === 1;
-        //let currentAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
-        //let selectedAltLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
-        const altDelta = Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feet");
-
         //WHAT VMODE ARE WE IN? remember: VNAV is on for this class to run
         const vsModeSelected = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1;
         const flcModeSelected = SimVar.GetSimVarValue("L:WT_CJ4_FLC_ON", "number") == 1;
@@ -257,10 +248,13 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
                         setVerticalSpeed = desiredVerticalSpeed;
                     }
                 }
+                Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, setVerticalSpeed);
                 if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
                     SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
                 }
-                Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, setVerticalSpeed);
+                if (SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") != 2) {
+                    SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 2);
+                }
             }
         }
     }
@@ -300,7 +294,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
     }
 
     setTargetAltitude(targetAltitude = this._vnavTargetAltitude) {
-        Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, targetAltitude, true);
+        Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, targetAltitude, false);
         SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
         SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
     }
