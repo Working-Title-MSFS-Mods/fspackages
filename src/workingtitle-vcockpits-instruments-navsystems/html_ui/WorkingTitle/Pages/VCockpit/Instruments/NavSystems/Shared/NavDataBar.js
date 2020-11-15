@@ -41,7 +41,8 @@ class WT_NavDataBar extends NavSystemElement {
         let speedFormatter = new WT_NumberFormatter(speedOpts);
 
         let timeOpts = {
-            timeFormat: WT_TimeFormatter.Format.HH_MM_OR_MM_SS
+            timeFormat: WT_TimeFormatter.Format.HH_MM_OR_MM_SS,
+            delim: WT_TimeFormatter.Delim.COLON_OR_CROSS
         }
         let timeFormatter = new WT_TimeFormatter(timeOpts);
 
