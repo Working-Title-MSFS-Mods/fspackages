@@ -215,11 +215,11 @@ export class ManagedFlightPlan {
         if (index <= this.activeWaypointIndex) {
           this.activeWaypointIndex++;
         }
-      }
-    }
 
-    if (this.activeWaypointIndex === 0 && this.length > 1) {
-      this.activeWaypointIndex = 1;
+        if (this.activeWaypointIndex === 0 && this.length > 1) {
+          this.activeWaypointIndex = 1;
+        }
+      }
     }
   }
 
@@ -660,12 +660,12 @@ export class ManagedFlightPlan {
       if (segment === FlightPlanSegment.Empty) {
         segment = this.addSegment(SegmentType.Approach);
         startIndex = segment.offset;
-      }
 
-      const prevWaypointIndex = segment.offset - 1;
-      if (prevWaypointIndex > 0) {
-        this.getWaypoint(segment.offset - 1).endsInDiscontinuity = true;
-      }
+        const prevWaypointIndex = segment.offset - 1;
+        if (prevWaypointIndex > 0) {
+          this.getWaypoint(segment.offset - 1).endsInDiscontinuity = true;
+        }
+      }  
       
       const procedure = new LegsProcedure(legs, this.getWaypoint(startIndex - 1), this._parentInstrument);
 
