@@ -227,9 +227,16 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
             const desiredVerticalSpeed = -101.2686667 * this._groundSpeed * Math.tan(this._desiredFPA * (Math.PI / 180));
             const maxVerticalSpeed = 101.2686667 * this._groundSpeed * Math.tan(6 * (Math.PI / 180));
             const maxCorrection = maxVerticalSpeed + desiredVerticalSpeed;
+            const altSlot = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number");
+            const vsSlot = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
             
             if (this._vnavStatus == 13) {
-                if (this._distanceToTod > 1 || this._altitude < this._vnavTargetAltitude) {
+                const selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
+                const targetAltitude = Math.max(this._vnavTargetAltitude, selectedAltitude);
+                if (altSlot != 2) {
+                    this.setTargetAltitude();
+                }
+                if (this._distanceToTod > 1 || this._altitude < targetAltitude) {
                     setVerticalSpeed = 0;
                 }
                 else if (this._vnavTargetDistance < 1 && this._vnavTargetDistance > 0) {
@@ -257,6 +264,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
                 }
             }
         }
+        SimVar.SetSimVarValue("L:WT_TEMP_VNAV_STATUS", "number", this._vnavStatus);
     }
 
     /**
@@ -294,7 +302,9 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
     }
 
     setTargetAltitude(targetAltitude = this._vnavTargetAltitude) {
-        Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, targetAltitude, false);
+        let selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
+        let updatedTargetAltitude = Math.max(targetAltitude, selectedAltitude);
+        Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, updatedTargetAltitude, false);
         SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
         SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
     }
