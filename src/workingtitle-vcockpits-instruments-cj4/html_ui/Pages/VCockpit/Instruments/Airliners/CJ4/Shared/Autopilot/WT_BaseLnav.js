@@ -59,7 +59,7 @@ class WT_BaseLnav {
         //CAN LNAV EVEN RUN?
         this._activeWaypoint = this._fpm.getActiveWaypoint();
         this._previousWaypoint = this._fpm.getPreviousActiveWaypoint();
-        const isLnavActive = SimVar.GetSimVarValue("L:RADIONAV_SOURCE", "number") == 1;
+        const isLnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
         const navModeActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
 
         //CHECK IF DISCO/VECTORS
@@ -194,6 +194,7 @@ class WT_BaseLnav {
             this._setHeading = (((this._setHeading + windCorrection) % 360) + 360) % 360;
             
             //SET HEADING
+            SimVar.SetSimVarValue("L:WT_TEMP_SETHEADING", "number", this._setHeading);
             Coherent.call("HEADING_BUG_SET", 2, this._setHeading);
         }
     }
