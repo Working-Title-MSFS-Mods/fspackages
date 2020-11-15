@@ -195,6 +195,17 @@ class WT_MapViewCanvas {
             this.buffer.canvas.height = height;
         }
     }
+
+    copyBufferToCanvas(left, top, width, height) {
+        if (left === undefined) {
+            left = 0;
+            top = 0;
+            width = this.width;
+            height = this.height;
+        }
+        this.context.drawImage(this.buffer.canvas, left, top, width, height, left, top, width, height);
+        return {left: left, top: top, width: width, height: height};
+    }
 }
 
 class WT_MapViewSvgLayer extends WT_MapViewLayer {
