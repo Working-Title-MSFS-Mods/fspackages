@@ -180,6 +180,10 @@ class WT_Unit {
     convert(value, otherUnit) {
         return value * this.getConversionFactor(otherUnit);
     }
+
+    createNumber(value) {
+        return new WT_NumberUnit(value, this);
+    }
 }
 
 /**
@@ -335,6 +339,7 @@ WT_Unit.Family = {
     TIME: "time",
     WEIGHT: "weight",
     VOLUME: "volume",
+    PRESSURE: "pressure",
     TEMP: "temperature"
 };
 
@@ -343,7 +348,7 @@ WT_Unit.FOOT = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 0.3048, "foot", "feet"
 WT_Unit.KILOMETER = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 1000, "kilometer", "kilometers", "km");
 WT_Unit.MILE = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 1609.34, "mile", "miles", "m");
 WT_Unit.NMILE = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 1852, "nautical mile", "nautical miles", "nm");
-WT_Unit.GA_RADIAN = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 40075000 / (2 * Math.PI), "great arc radian", "great arc radians", "rad");
+WT_Unit.GA_RADIAN = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 6378100, "great arc radian", "great arc radians", "rad");
 
 WT_Unit.RADIAN = new WT_SimpleUnit(WT_Unit.Family.ANGLE, 1, "radian", "radians", "rad");
 WT_Unit.DEGREE = new WT_SimpleUnit(WT_Unit.Family.ANGLE, Math.PI/180, "degree", "degrees", "°");
@@ -360,12 +365,19 @@ WT_Unit.TONNE = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 1000, "tonne", "tonnes"
 WT_Unit.LITER = new WT_SimpleUnit(WT_Unit.Family.VOLUME, 1, "liter", "liters", "l");
 WT_Unit.GALLON = new WT_SimpleUnit(WT_Unit.Family.VOLUME, 3.78541, "gallon", "gallons", "gal");
 
+WT_Unit.HPA = new WT_SimpleUnit(WT_Unit.Family.PRESSURE, 1, "hectopascal", "hectopascals", "hPa");
+WT_Unit.ATM = new WT_SimpleUnit(WT_Unit.Family.PRESSURE, 1013.25, "atmosphere", "atmospheres", "atm");
+WT_Unit.IN_HG = new WT_SimpleUnit(WT_Unit.Family.PRESSURE, 33.8639, "inch of mercury", "inches of mercury", "inHg");
+WT_Unit.MM_HG = new WT_SimpleUnit(WT_Unit.Family.PRESSURE, 1.33322, "millimeter of mercury", "millimeters of mercury", "mmHg");
+
 WT_Unit.CELSIUS = new WT_TempUnit("° Celsius", "° Celsius", "°C", 273.15, 1);
 WT_Unit.FAHRENHEIT = new WT_TempUnit("° Fahrenheit", "° Fahrenheit", "°F", 459.67, 5/9);
 
 WT_Unit.KNOT = new WT_CompoundUnit([WT_Unit.NMILE], [WT_Unit.HOUR], "knot", "knots", "kt");
 WT_Unit.KPH = new WT_CompoundUnit([WT_Unit.KILOMETER], [WT_Unit.HOUR], null, null, "kph");
+WT_Unit.MPS = new WT_CompoundUnit([WT_Unit.METER], [WT_Unit.SECOND]);
 WT_Unit.FPM = new WT_CompoundUnit([WT_Unit.FOOT], [WT_Unit.MINUTE], null, null, "fpm");
+WT_Unit.FPS = new WT_CompoundUnit([WT_Unit.FOOT], [WT_Unit.SECOND]);
 WT_Unit.PPH = new WT_CompoundUnit([WT_Unit.POUND], [WT_Unit.HOUR], null, null, "pph");
 WT_Unit.GPH = new WT_CompoundUnit([WT_Unit.GALLON], [WT_Unit.HOUR], null, null, "gph");
 
