@@ -1738,33 +1738,48 @@ class CJ4_SystemEngines extends NavSystemElement {
     updateN1() {
         {
             // update thrust setting
-            let throttleMode = SimVar.GetSimVarValue("L:THROTTLE_MODE", "number");
+            let throttleModeArr = [SimVar.GetSimVarValue("L:THROTTLE1_MODE", "number"), SimVar.GetSimVarValue("L:THROTTLE2_MODE", "number")];
             let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "boolean");
 
-            let thrustSetting = "TO";
-            let modeClr = "#11d011";
-            
-            switch (throttleMode) {
-                case 0: 
-                    modeClr = "#cccac8";
-                    break;
-                case 1:
-                    thrustSetting = "CRU";
-                    break;
-                case 2:
-                    thrustSetting = "CLB";
-                    break;
-                case 3:
-                    thrustSetting = "TO";
-                    break;
-                default:
-                    break;
+            for (let i = 0; i < throttleModeArr.length; i++) {
+                let throttleMode = throttleModeArr[i];
+
+                let thrustSetting = "TO";
+                let modeClr = "#11d011";
+
+                if (throttleMode < 3 && onGround) {
+                    throttleMode = 0;
+                } else if (throttleMode == 0 && !onGround) {
+                    throttleMode = 1;
+                }
+
+                switch (throttleMode) {
+                    case 0:
+                        modeClr = "#cccac8";
+                        break;
+                    case 1:
+                        thrustSetting = "CRU";
+                        break;
+                    case 2:
+                        thrustSetting = "CLB";
+                        break;
+                    case 3:
+                        thrustSetting = "TO";
+                        break;
+                    default:
+                        break;
+                }
+
+                if(i==0){
+                    this.N1ModeLeft.textContent = thrustSetting;
+                    this.N1ModeLeft.setAttribute("fill", modeClr);
+    
+                }else {
+                    this.N1ModeRight.textContent = thrustSetting;
+                    this.N1ModeRight.setAttribute("fill", modeClr);    
+                }
             }
 
-            this.N1ModeLeft.textContent = thrustSetting;
-            this.N1ModeLeft.setAttribute("fill", modeClr);
-            this.N1ModeRight.textContent = thrustSetting;
-            this.N1ModeRight.setAttribute("fill", modeClr);
         }
         {
             let N1Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N1:1", "percent");

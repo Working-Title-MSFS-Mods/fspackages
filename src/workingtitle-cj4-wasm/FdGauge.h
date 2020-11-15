@@ -17,7 +17,7 @@
 #include "common.h"
 #include "FdController.h"
 
-int globalThrottleAxis(0);
+int globalThrottleAxis[2] {-16384, -16384};
 
 class FdGauge
 {
@@ -30,6 +30,8 @@ private:
         printf("Registering throttle events...\r\n");
 
         SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottleSet, "THROTTLE_AXIS_SET_EX1");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottle1Set, "THROTTLE1_AXIS_SET_EX1");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottle2Set, "THROTTLE2_AXIS_SET_EX1");
     }
 
     /// <summary>
@@ -40,6 +42,8 @@ private:
         printf("Registering throttle event group...\r\n");
 
         SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottleSet, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottle1Set, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottle2Set, TRUE);
         SimConnect_SetNotificationGroupPriority(hSimConnect, EventGroups::Throttle, SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
     }
 
@@ -89,7 +93,6 @@ private:
                 }
                 else
                 {
-
                     HandleThrottleAxis(evt);
                 }
             }
@@ -111,7 +114,14 @@ private:
         switch (evt->uEventID)
         {
         case ThrottleEventIDs::AxisThrottleSet:
-            globalThrottleAxis = static_cast<int>(evt->dwData);
+            globalThrottleAxis[0] = static_cast<int>(evt->dwData);
+            globalThrottleAxis[1] = static_cast<int>(evt->dwData);
+            break;
+        case ThrottleEventIDs :: AxisThrottle1Set:
+            globalThrottleAxis[0] = static_cast<int>(evt->dwData);
+            break;
+        case ThrottleEventIDs::AxisThrottle2Set:
+            globalThrottleAxis[1] = static_cast<int>(evt->dwData);
             break;
         }
     }
@@ -124,8 +134,6 @@ public:
     /// <returns>True if successful, false otherwise.</returns>
     bool InitializeFD()
     {
-        globalThrottleAxis = -16384;
-
         if (!this->InitializeSimConnect()) {
             printf("Init SimConnect failed");
             return false;
