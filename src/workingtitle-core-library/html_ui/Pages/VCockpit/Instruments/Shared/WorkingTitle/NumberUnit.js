@@ -647,6 +647,14 @@ class WT_TimeFormatter extends WT_NumberFormatter {
         this._timeFormat = val;
     }
 
+    get delim() {
+        return this._delim;
+    }
+
+    set delim(val) {
+        this._delim = val;
+    }
+
     _getAllowedOptions() {
         return WT_TimeFormatter.OPTIONS;
     }
@@ -674,7 +682,15 @@ class WT_TimeFormatter extends WT_NumberFormatter {
         if (this.timeFormat != WT_TimeFormatter.Format.MM_SS && !(this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hours == 0)) {
             hoursText = hours.toFixed(0);
             hoursText = hoursText.padStart(this.pad, "0");
-            hoursUnitText = this._formatUnit(hours, WT_Unit.HOUR) + (this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS ? "+" : ":");
+            let delim = this.delim;
+            if (this.delim === WT_TimeFormatter.Delim.COLON_OR_CROSS) {
+                if (this.timeFormat === WT_TimeFormatter.Format.HH_MM_OR_MM_SS || this.timeFormat === WT_TimeFormatter.Format.HH_MM ) {
+                    delim = delim[1];
+                } else {
+                    delim = delim[0];
+                }
+            }
+            hoursUnitText = this._formatUnit(hours, WT_Unit.HOUR) + delim;
         }
 
         let hourSubtract = 0;
@@ -689,7 +705,11 @@ class WT_TimeFormatter extends WT_NumberFormatter {
             min = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.MINUTE) - hourSubtract * 60);
             minText = min.toFixed(0);
             minText = minText.padStart(this._pad, "0");
-            minUnitText = this._formatUnit(min, WT_Unit.MINUTE) + ":";
+            let delim = this.delim;
+            if (this.delim === WT_TimeFormatter.Delim.COLON_OR_CROSS) {
+                delim = delim[0];
+            }
+            minUnitText = this._formatUnit(min, WT_Unit.MINUTE) + delim;
 
             sec = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.SECOND) % 60;
             secText = this._formatNumber(sec);
@@ -720,6 +740,11 @@ WT_TimeFormatter.Format = {
     MM_SS: 2,
     HH_MM_OR_MM_SS: 3
 };
+WT_TimeFormatter.Delim = {
+    COLON: ":",
+    COLON_OR_CROSS: ":+",
+    SPACE: " "
+}
 WT_TimeFormatter.OPTIONS = {
     precision: 1,
     round: 1,
@@ -730,7 +755,8 @@ WT_TimeFormatter.OPTIONS = {
     unitSpaceBefore: false,
     unitLong: false,
     unitCaps: false,
-    timeFormat: WT_TimeFormatter.Format.HH_MM_SS
+    timeFormat: WT_TimeFormatter.Format.HH_MM_SS,
+    delim: WT_TimeFormatter.Delim.COLON
 };
 
 /**
