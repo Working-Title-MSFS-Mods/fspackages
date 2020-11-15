@@ -83,6 +83,13 @@ class WT_GVector2 {
         return new WT_GVector2(this.x, this.y);
     }
 
+    equals(other) {
+        if (!other) {
+            return false;
+        }
+        return this.x === other.x && this.y === other.y;
+    }
+
     toString() {
         return `[${this.x} ${this.y}]`;
     }
