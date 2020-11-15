@@ -86,6 +86,10 @@ class WT_MapView extends HTMLElement {
         return this._viewPlane;
     }
 
+    get currentTime() {
+        return this._currentTime;
+    }
+
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === "dpi-scale") {
             this._dpiScale = parseFloat(newValue);
@@ -186,6 +190,7 @@ class WT_MapView extends HTMLElement {
         }
 
         let viewSizeChanged = this._checkViewSizeChanged();
+        this._currentTime = Date.now();
         this._updateProjection();
 
         let optionsToPass = this._optsManager.getOptionsFromList(WT_MapView.OPTIONS_TO_PASS);
@@ -209,9 +214,10 @@ WT_MapView.OPTIONS_DEF = {
     model: {default: undefined, readOnly: true},
     dpiScale: {},
     projection: {default: WT_MapProjection.createProjection(WT_MapProjection.Projection.MERCATOR), auto: true},
-    viewPlane: {default: undefined, auto: true}
+    viewPlane: {readOnly: true},
+    currentTime: {readOnly: true}
 };
-WT_MapView.OPTIONS_TO_PASS = ["model", "dpiScale", "projection", "viewPlane"];
+WT_MapView.OPTIONS_TO_PASS = ["model", "dpiScale", "projection", "viewPlane", "currentTime"];
 
 class WT_MapViewLayerContainer {
     constructor(view, layer) {
