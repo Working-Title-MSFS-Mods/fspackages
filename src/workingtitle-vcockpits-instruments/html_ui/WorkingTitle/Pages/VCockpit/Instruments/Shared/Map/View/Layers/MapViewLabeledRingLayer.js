@@ -136,7 +136,7 @@ class WT_MapViewLabeledRing {
     }
 
     drawRing(data, bounds) {
-        return this.ring.show ? this.ring.draw(bounds) : null;
+        return this.ring.draw(bounds);
     }
 
     drawLabel(data) {
@@ -145,10 +145,10 @@ class WT_MapViewLabeledRing {
         }
 
         if (this.label.show) {
-            Avionics.Utils.diffAndSetAttribute(this.label.htmlElement, "display", "block");
+            this.label.htmlElement.style.display = "block";
             this.label.onUpdate(data);
         } else {
-            Avionics.Utils.diffAndSetAttribute(this.label.htmlElement, "display", "none");
+            this.label.htmlElement.style.display = "none";
         }
     }
 
