@@ -251,9 +251,10 @@ class CJ4_FMC_VNavSetupPage {
                 const altVar3 = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet"));
                 const altLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") ? "TRUE" : "FALSE";
                 const altArm = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") ? "TRUE" : "FALSE";
+                const status = SimVar.GetSimVarValue("L:WT_TEMP_VNAV_STATUS", "number");
 
                 fmc._templateRenderer.setTemplateRaw([
-                    [vnavTargetWaypointIdent, "   WT VNAV[blue]" + vnavActive],
+                    [vnavTargetWaypointIdent, " WT VNAV[blue]" + vnavActive + " " + status],
                     [" T ALT[blue]", "T DIST [blue]", "FPA[blue]"],
                     [vnavTargetAltitude.toFixed(0) + "FT", vnavTargetDistance.toFixed(1) + "NM", desiredFPA.toFixed(1) + "°"],
                     [" VS:CURR[blue]", "SET [blue]", "TGT[blue]"],
@@ -298,8 +299,8 @@ class CJ4_FMC_VNavSetupPage {
 
         fmc.registerPeriodicPageRefresh(() => {
 
-            const lnavActive = SimVar.GetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'Bool') ? "LNAV ON[green]" :"LNAV OFF[white]";
-            let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
+            const lnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0 ? "LNAV ON[green]" :"LNAV OFF[white]";
+            let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "number") == 1;
             const vnavActive = isVNAVActivate ? "VNAV ON[green]" : "VNAV OFF[white]";
 
 
@@ -336,16 +337,18 @@ class CJ4_FMC_VNavSetupPage {
             const dtk = SimVar.GetSimVarValue("L:WT_CJ4_DTK", "number").toFixed(0);
             const wptDistance = SimVar.GetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number").toFixed(1);
             const activeWaypointIdent = fmc.flightPlanManager.getActiveWaypoint().ident;
-            const lnavActive = SimVar.GetSimVarValue('L:WT_CJ4_LNAV_ACTIVE', 'Bool') ? " ACTIVE[green]" :" INACTIVE[white]";
+            const lnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0 ? "LNAV ACTIVE[green]" : "LNAV INACTIVE[white]";
             const hdgIndex = SimVar.GetSimVarValue("AUTOPILOT HEADING SLOT INDEX", "number");
             const hdgLock = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degrees").toFixed(0);
             const hdgLock1 = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR:1", "degrees").toFixed(0);
             const hdgLock2 = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR:2", "degrees").toFixed(0);
             const hdgHold = SimVar.GetSimVarValue("L:AP_HEADING_HOLD_ACTIVE", "number");
+            const setHeading = SimVar.GetSimVarValue("L:WT_TEMP_SETHEADING", "number");
+            const hdgOn = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean") == 1 ? "YES[green]" : "NO[white]";
 
 
             fmc._templateRenderer.setTemplateRaw([
-                ["", "", " WT LNAV[blue]" + lnavActive],
+                ["", "", " WT [blue]" + lnavActive],
                 [" ACT WPT[blue]", "DISTANCE [blue]"],
                 [activeWaypointIdent, wptDistance + " NM"],
                 [" DTK[blue]", "XTK [blue]"],
@@ -354,9 +357,9 @@ class CJ4_FMC_VNavSetupPage {
                 [hdgIndex + "", hdgLock + "°"],
                 [" HDG LOCK:1[blue]", "HDG LOCK:2 [blue]"],
                 [hdgLock1 + "°", hdgLock2 + "°"],
-                [" HDG HOLD VAL[blue]", " [blue]"],
-                [hdgHold + ""],
-                ["-----------------------[blue]"],
+                [" HDG HLD VAL[blue]", "SET HDG [blue]"],
+                [hdgHold + "", setHeading.toFixed(0) + ""],
+                ["HDG ON? [blue]" + hdgOn],
                 ["<BACK", "VNAV MONITOR>"]
             ]);
         }, 1000, true);
