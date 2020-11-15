@@ -879,11 +879,15 @@ export class FlightPlanManager {
    * @param index The index of the runway in the origin airport runway information.
    * @param callback A callback to call when the operation completes.
    */
-  public setOriginRunwayIndex(index: number, callback = EmptyCallback.Void): void {
+  public async setOriginRunwayIndex(index: number, callback = EmptyCallback.Void): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-    currentFlightPlan.procedureDetails.originRunwayIndex = index;
+    if (currentFlightPlan.procedureDetails.originRunwayIndex !== index) {
+      currentFlightPlan.procedureDetails.originRunwayIndex = index;
+      await currentFlightPlan.buildDeparture();
 
-    this._updateFlightPlanVersion();
+      this._updateFlightPlanVersion();
+    }
+    
     callback();
   }
 
