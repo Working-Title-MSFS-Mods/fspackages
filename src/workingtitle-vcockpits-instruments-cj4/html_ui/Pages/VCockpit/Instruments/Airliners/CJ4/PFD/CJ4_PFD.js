@@ -682,37 +682,36 @@ class CJ4_APDisplay extends NavSystemElement {
     onUpdate(_deltaTime) {
         //NEW SIMPLIFIED CODE FOR SETTING FMA MODES
         //MASTER MODES
-        const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1 ? true : false;
-        const ydActive = SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Boolean") == 1 ? true : false;
-        //const isLnavActive = this.radioNav.getRADIONAVSource() == 1 ? true : false;
-        const isLnavActive = SimVar.GetSimVarValue("L:RADIONAV_SOURCE", "number") == 1 ? true : false;
-        const isWTNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1 ? true : false;
-        const isWTHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1 ? true : false;
-        const isVnavActive = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") == 1 ? true : false;
+        const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1;
+        const ydActive = SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Boolean") == 1;
+        const isLnavActive = SimVar.GetSimVarValue("L:RADIONAV_SOURCE", "number") == 1;
+        const isWTNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
+        const isWTHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1;
+        const isVnavActive = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") == 1;
 
         //VERTICAL MODES
-        const isPitchActive = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") == 1 ? true : false;
-        const isVsActive = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1 ? true : false;
-        const isFlcActive = SimVar.GetSimVarValue("L:WT_CJ4_FLC_ON", "number") == 1 ? true : false;
-        const isAltLockActive = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") == 1 ? true : false;
-        const isAltArmed = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") == 1 ? true : false;
+        const isPitchActive = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") == 1;
+        const isVsActive = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1;
+        const isFlcActive = SimVar.GetSimVarValue("L:WT_CJ4_FLC_ON", "number") == 1;
+        const isAltLockActive = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") == 1;
+        const isAltArmed = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") == 1;
         const altDelta = Math.abs(Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feet"));
-        const isVpathActive = WTDataStore.get('CJ4_VNAV_ACTIVE', 'false') == "true" ? true : false;
+        const isVpathActive = WTDataStore.get('CJ4_VNAV_ACTIVE', 'false') == "true";
 
 
         //LATERAL MODES
-        const isHdgActive = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean") == 1 ? true : false;
-        const isNavActive = SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") == 1 ? true : false;
+        const isHdgActive = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean") == 1;
+        const isNavActive = SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") == 1;
         const selectedNav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
-        const selectedNavHasLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + selectedNav, "Boolean") == 1 ? true : false;
-        const isLvlActive = SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Boolean") == 1 ? true : false;
-        const isRollActive = SimVar.GetSimVarValue("AUTOPILOT BANK HOLD", "Boolean") == 1 ? true : false;
+        const selectedNavHasLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + selectedNav, "Boolean") == 1;
+        const isLvlActive = SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Boolean") == 1;
+        const isRollActive = SimVar.GetSimVarValue("AUTOPILOT BANK HOLD", "Boolean") == 1;
 
         //APPROACH MODES
-        const isApproachActive = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Boolean") == 1 ? true : false;
-        const isGsActive = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean") == 1 ? true : false;
-        const isGsArmed = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ARM", "Boolean") == 1 ? true : false;
-        const isBcActive = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "Boolean") == 1 ? true : false;
+        const isApproachActive = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Boolean") == 1;
+        const isGsActive = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean") == 1;
+        const isGsArmed = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ARM", "Boolean") == 1;
+        const isBcActive = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "Boolean") == 1;
 
 
         //SET AP & YD VALUES

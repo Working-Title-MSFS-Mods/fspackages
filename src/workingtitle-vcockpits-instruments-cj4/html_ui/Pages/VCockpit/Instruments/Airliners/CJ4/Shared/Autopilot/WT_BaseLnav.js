@@ -59,7 +59,7 @@ class WT_BaseLnav {
         //CAN LNAV EVEN RUN?
         this._activeWaypoint = this._fpm.getActiveWaypoint();
         this._previousWaypoint = this._fpm.getPreviousActiveWaypoint();
-        const isLnavActive = SimVar.GetSimVarValue("L:RADIONAV_SOURCE", "number") == 1 ? true : false;
+        const isLnavActive = SimVar.GetSimVarValue("L:RADIONAV_SOURCE", "number") == 1;
         const navModeActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
 
         //CHECK IF DISCO/VECTORS

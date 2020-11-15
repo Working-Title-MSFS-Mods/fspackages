@@ -61,7 +61,7 @@ class CJ4_FMC extends FMCMainDisplay {
         // modes
         this._isHdgActive = false;
         this._isNavActive = false;
-        this._isLNavActive = false;
+        this._isLNavActive = true;
         this._isVsActive = false;
         this._isFlcActive = false;
     }
