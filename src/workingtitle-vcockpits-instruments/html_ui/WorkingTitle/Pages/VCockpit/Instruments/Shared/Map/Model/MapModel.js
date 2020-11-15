@@ -4,6 +4,7 @@ class WT_MapModel {
         this._optsManager = new WT_OptionsManager(this, WT_MapModel.OPTIONS_DEF);
 
         this.addComponent(new WT_MapModelAirplaneComponent());
+        this.addComponent(new WT_MapModelWeatherComponent());
     }
 
     get range() {
@@ -78,6 +79,10 @@ class WT_MapModelAirplaneComponent extends WT_MapModelComponent {
         return SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
     }
 
+    get turnSpeed() {
+        return SimVar.GetSimVarValue("DELTA HEADING RATE", "degrees per second");
+    }
+
     get magVar() {
         return SimVar.GetSimVarValue("GPS MAGVAR", "degree");
     }
@@ -86,7 +91,7 @@ class WT_MapModelAirplaneComponent extends WT_MapModelComponent {
         return new WT_NumberUnit(SimVar.GetSimVarValue("PLANE ALTITUDE", "feet"), WT_Unit.FOOT);
     }
 
-    get groundspeed() {
+    get groundSpeed() {
         return new WT_NumberUnit(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), WT_Unit.KNOT);
     }
 
@@ -97,5 +102,32 @@ class WT_MapModelAirplaneComponent extends WT_MapModelComponent {
     get verticalSpeed() {
         return new WT_NumberUnit(SimVar.GetSimVarValue("VERTICAL SPEED", "feet per minute"), WT_CompoundUnit.FPM);
     }
+
+    get isOnGround() {
+        return SimVar.GetSimVarValue("SIM ON GROUND", "bool");
+    }
 }
 WT_MapModelAirplaneComponent.NAME_DEFAULT = "airplane";
+
+class WT_MapModelWeatherComponent extends WT_MapModelComponent {
+    constructor(name = WT_MapModelWeatherComponent.NAME_DEFAULT) {
+        super(name);
+    }
+
+    get windSpeed() {
+        return new WT_NumberUnit(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), WT_Unit.KNOT);
+    }
+
+    get windDirection() {
+        return SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree");
+    }
+
+    get airPressure() {
+        return new WT_NumberUnit(SimVar.GetSimVarValue("AMBIENT PRESSURE", "inHg"), WT_Unit.IN_HG);
+    }
+
+    get temperature() {
+        return new WT_NumberUnit(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "Celsius"), WT_Unit.CELSIUS);
+    }
+}
+WT_MapModelWeatherComponent.NAME_DEFAULT = "weather";
