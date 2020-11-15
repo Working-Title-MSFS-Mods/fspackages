@@ -31,6 +31,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
 
         this._arcLastDrawnBounds = {left: 0, top: 0, width: 0, height: 0};
         this._bearingLastDrawnBounds = {left: 0, top: 0, width: 0, height: 0};
+        this._forwardTickLastDrawnBounds = {left: 0, top: 0, width: 0, height: 0};
         this._labelLastDrawnBounds = {left: 0, top: 0, width: 0, height: 0};
     }
 
@@ -503,10 +504,23 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
         let begin = this.center.add(WT_GVector2.fromPolar(this.radius, angleRad), true);
         let end = begin.add(WT_GVector2.fromPolar(lengthPx, angleRad));
 
+        this.forwardTickLayer.context.clearRect(this._forwardTickLastDrawnBounds.left, this._forwardTickLastDrawnBounds.top, this._forwardTickLastDrawnBounds.width, this._forwardTickLastDrawnBounds.height)
+
         if (this.arcOutlineWidth > 0) {
             this._drawForwardTickToCanvas(this.arcOutlineWidth * data.dpiScale, this.arcOutlineColor, begin, end);
         }
         this._drawForwardTickToCanvas(this.arcStrokeWidth * data.dpiScale, this.arcStrokeColor, begin, end);
+
+        let thick = this.arcOutlineWidth + this.arcStrokeWidth / 2;
+        let drawnLeft = Math.max(0, Math.min(begin.x, end.x) - thick);
+        let drawnTop = Math.max(0, Math.min(begin.y, end.y) - thick);
+        let drawnRight = Math.min(data.projection.viewWidth, Math.max(begin.x, end.x) + thick);
+        let drawnBottom = Math.min(data.projection.viewHeight, Math.max(begin.y, end.y) + thick);
+
+        this._forwardTickLastDrawnBounds.left = drawnLeft;
+        this._forwardTickLastDrawnBounds.top = drawnTop;
+        this._forwardTickLastDrawnBounds.width = drawnRight - drawnLeft;
+        this._forwardTickLastDrawnBounds.height = drawnBottom - drawnTop;
     }
 
     _updateForwardTick(data) {
