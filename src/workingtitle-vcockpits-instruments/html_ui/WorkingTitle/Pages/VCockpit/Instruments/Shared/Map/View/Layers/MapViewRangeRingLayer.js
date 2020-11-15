@@ -12,7 +12,7 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
         return this.rings[0].ring;
     }
 
-    _updateRingOptions(dpiScale) {
+    _updateStyles(dpiScale) {
         this.labeledRing.ring.setOptions({
             strokeWidth: this.strokeWidth * dpiScale,
             strokeColor: this.strokeColor,
@@ -36,13 +36,15 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
         for (let property of WT_MapViewRangeRingLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
-
-        this._updateRingOptions(data.dpiScale);
     }
 
     onViewSizeChanged(data) {
         super.onViewSizeChanged(data);
-        this._updateRingOptions(data.dpiScale);
+    }
+
+    onAttached(data) {
+        super.onAttached(data);
+        this._updateStyles(data.dpiScale);
     }
 }
 WT_MapViewRangeRingLayer.ID_DEFAULT = "RangeRingLayer";

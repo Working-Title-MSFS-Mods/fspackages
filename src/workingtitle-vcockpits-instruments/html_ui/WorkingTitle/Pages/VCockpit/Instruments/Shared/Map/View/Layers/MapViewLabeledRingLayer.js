@@ -78,18 +78,19 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewCanvasLayer {
         for (let i = 0; i < this.rings.length; i++) {
             let entry = this.rings[i];
             entry.ring.onUpdate(data);
-            entry.canvas.context.clearRect(entry.lastDrawn.left, entry.lastDrawn.top, entry.lastDrawn.width, entry.lastDrawn.height);
-            entry.lastDrawn = {left: 0, right: 0, top: 0, bottom: 0};
             let toDraw = entry.ring.drawRing(data, this._bounds);
-            if (toDraw) {
-                let drawn = {
-                    left: this._bounds.left + toDraw.bounds.left,
-                    top: this._bounds.top + toDraw.bounds.top,
-                    width: toDraw.bounds.width,
-                    height: toDraw.bounds.height
-                };
-                entry.canvas.context.drawImage(toDraw.image, toDraw.bounds.left, toDraw.bounds.top, toDraw.bounds.width, toDraw.bounds.height, drawn.left, drawn.top, drawn.width, drawn.height);
-                entry.lastDrawn = drawn;
+            if (toDraw.refresh) {
+                entry.canvas.context.clearRect(entry.lastDrawn.left, entry.lastDrawn.top, entry.lastDrawn.width, entry.lastDrawn.height);
+                if (toDraw.copy) {
+                    let drawn = {
+                        left: this._bounds.left + toDraw.bounds.left,
+                        top: this._bounds.top + toDraw.bounds.top,
+                        width: toDraw.bounds.width,
+                        height: toDraw.bounds.height
+                    };
+                    entry.canvas.context.drawImage(toDraw.image, toDraw.bounds.left, toDraw.bounds.top, toDraw.bounds.width, toDraw.bounds.height, drawn.left, drawn.top, drawn.width, drawn.height);
+                    entry.lastDrawn = drawn;
+                }
             }
             entry.ring.drawLabel(data);
         }
@@ -97,7 +98,7 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewCanvasLayer {
 }
 
 class WT_MapViewLabeledRing {
-    constructor(ring, label) {
+    constructor(ring = new WT_MapViewRing(), label = null) {
         this._optsManager = new WT_OptionsManager(this, WT_MapViewLabeledRing.OPTIONS_DEF);
 
         this._ring = ring;
@@ -112,11 +113,37 @@ class WT_MapViewLabeledRing {
         return this._label;
     }
 
+    get center() {
+        return this.ring.center;
+    }
+
+    set center(center) {
+        this.ring.center = center;
+        if (this.label) {
+            this.label.center = center;
+        }
+    }
+
+    get radius() {
+        return this.ring.radius;
+    }
+
+    set radius(radius) {
+        this.ring.radius = radius;
+        if (this.label) {
+            this.label.radius = radius;
+        }
+    }
+
     drawRing(data, bounds) {
         return this.ring.show ? this.ring.draw(bounds) : null;
     }
 
     drawLabel(data) {
+        if (!this.label) {
+            return;
+        }
+
         if (this.label.show) {
             Avionics.Utils.diffAndSetAttribute(this.label.htmlElement, "display", "block");
             this.label.onUpdate(data);
@@ -135,7 +162,21 @@ class WT_MapViewRing {
         this._canvasContext = this._canvas.getContext("2d");
         this._lastDrawnBounds = {left: 0, right: 0, top: 0, bottom: 0};
 
+        this._needRedraw = true;
+
+        this._center = new WT_GVector2(0, 0);
+
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRing.OPTIONS_DEF);
+    }
+
+    get center() {
+        return this._center.copy();
+    }
+
+    set center(newValue) {
+        let oldValue = this.center;
+        this._center.set(newValue);
+        this.onOptionChanged("center", oldValue, newValue);
     }
 
     _isInView(bounds, margin = 0) {
@@ -168,9 +209,25 @@ class WT_MapViewRing {
         this._optsManager.setOptions(opts);
     }
 
-    draw(bounds) {
-        if (!this.show || !this._isInView(bounds) || bounds.width <= 0 || bounds.height <= 0) {
+    onOptionChanged(name, oldValue, newValue) {
+        if (this._needRedraw) {
             return;
+        }
+
+        let needRedraw = true;
+        if (name === "center" && oldValue && newValue) {
+            needRedraw = !newValue.equals(oldValue);
+        }
+        this._needRedraw = needRedraw;
+    }
+
+    draw(bounds) {
+        if (!this._needRedraw) {
+            return {refresh: false};
+        }
+
+        if (!this.show || !this._isInView(bounds) || bounds.width <= 0 || bounds.height <= 0) {
+            return {refresh: true, copy: false};
         }
 
         this._canvasContext.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
@@ -183,7 +240,7 @@ class WT_MapViewRing {
         let radiusRounded = Math.round(this.radius);
 
         if (this.outlineWidth > 0) {
-            this._canvasContext.lineWidth = this.outlineWidth;
+            this._canvasContext.lineWidth = this.strokeWidth + this.outlineWidth * 2;
             this._canvasContext.strokeStyle = this.outlineColor;
             this._canvasContext.setLineDash(this.outlineDash);
             this._canvasContext.beginPath();
@@ -198,26 +255,28 @@ class WT_MapViewRing {
         this._canvasContext.arc(centerXRounded, centerYRounded, radiusRounded, 0, 2 * Math.PI);
         this._canvasContext.stroke();
 
-        let thick = Math.max(this.strokeWidth, this.outlineWidth);
-        let toDrawLeft = Math.max(centerXRounded - radiusRounded - thick, bounds.left);
-        let toDrawTop = Math.max(centerYRounded - radiusRounded - thick, bounds.top);
-        let toDrawWidth = Math.min(centerXRounded + radiusRounded + thick, bounds.left + bounds.width) - toDrawLeft;
-        let toDrawHeight = Math.min(centerYRounded + radiusRounded + thick, bounds.top + bounds.height) - toDrawTop;
+        let thick = this.strokeWidth / 2 + this.outlineWidth;
+        let toDrawLeft = Math.max(centerXRounded - radiusRounded - thick - 5, bounds.left);
+        let toDrawTop = Math.max(centerYRounded - radiusRounded - thick - 5, bounds.top);
+        let toDrawWidth = Math.min(centerXRounded + radiusRounded + thick + 5, bounds.left + bounds.width) - toDrawLeft;
+        let toDrawHeight = Math.min(centerYRounded + radiusRounded + thick + 5, bounds.top + bounds.height) - toDrawTop;
         this._lastDrawnBounds = {left: toDrawLeft, top: toDrawTop, width: toDrawWidth, height: toDrawHeight};
 
-        return {image: this._canvas, bounds: this._lastDrawnBounds};
+        this._needRedraw = false;
+
+        return {refresh: true, copy: true, image: this._canvas, bounds: this._lastDrawnBounds};
     }
 }
 WT_MapViewRing.OPTIONS_DEF = {
     show: {default: true, auto: true},
-    center: {default: {x: 0, y: 0}, auto: true},
-    radius: {default: 0, auto: true},
-    strokeWidth: {default: 1, auto: false},
-    strokeColor: {default: "#ffffff", auto: false},
-    strokeDash: {default: [], auto: false},
-    outlineWidth: {default: 0, auto: false},
-    outlineColor: {default: "#000000", auto: false},
-    outlineDash: {default: [], auto: false}
+    center: {},
+    radius: {default: 0, auto: true, observed: true},
+    strokeWidth: {default: 1, auto: true, observed: true},
+    strokeColor: {default: "#ffffff", auto: true, observed: true},
+    strokeDash: {default: [], auto: true, observed: true},
+    outlineWidth: {default: 0, auto: true, observed: true},
+    outlineColor: {default: "#000000", auto: true, observed: true},
+    outlineDash: {default: [], auto: true, observed: true}
 };
 
 class WT_MapViewRingLabel {
@@ -265,9 +324,13 @@ class WT_MapViewRingLabel {
     }
 
     onOptionChanged(name, oldValue, newValue) {
+        if (this._needRedraw) {
+            return;
+        }
+
         let needRedraw = true;
         if (name === "center" && oldValue && newValue) {
-            needRedraw = oldValue.x !== newValue.x || oldValue.y !== newValue.y;
+            needRedraw = !newValue.equals(oldValue);
         }
         this._needRedraw = needRedraw;
     }
