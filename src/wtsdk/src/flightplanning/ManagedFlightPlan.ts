@@ -437,11 +437,12 @@ export class ManagedFlightPlan {
    * @returns The copied flight plan.
    */
   public copy(): ManagedFlightPlan {
-    let newFlightPlan = Object.assign(new ManagedFlightPlan(), this);
-    newFlightPlan._segments = [...newFlightPlan._segments];
-
-    for (var segment of newFlightPlan._segments) {
-      segment.waypoints = [...segment.waypoints];
+    let newFlightPlan = Object.assign(new ManagedFlightPlan(), this);   
+    newFlightPlan._segments = [];
+    for (let i = 0; i < this._segments.length; i++) {
+      const seg = this._segments[i];
+      newFlightPlan._segments[i] = Object.assign(new FlightPlanSegment(seg.type, seg.offset, []), seg);  
+      newFlightPlan._segments[i].waypoints = [...seg.waypoints];    
     }
 
     return newFlightPlan;
