@@ -394,7 +394,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
         return this.center.add(WT_GVector2.fromPolar(radius, viewAngleRad), true).add(textBoundsOffset, true);
     }
 
-    _drawBearingLabel(angle, tickLengthPx, offsetPx, fontSizePx) {
+    _drawBearingLabelToBuffer(angle, tickLengthPx, offsetPx, fontSizePx) {
         let text = angle.toString().padStart(3, "0");
         let position = this._calculateBearingLabelPosition(angle, text, tickLengthPx, offsetPx, fontSizePx);
 
@@ -429,12 +429,9 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
         let offsetPx = this.bearingLabelOffset * data.dpiScale;
         let fontSizePx = this.bearingLabelFontSize * data.dpiScale;
         for (let angle of bearingLabelToDrawAngles) {
-            this._drawBearingLabel(angle, tickLengthPx, offsetPx, fontSizePx);
+            this._drawBearingLabelToBuffer(angle, tickLengthPx, offsetPx, fontSizePx);
         }
-
-        this.bearingLabelLayer.context.drawImage(this.bearingLabelLayer.buffer.canvas,
-            toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height,
-            toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height);
+        this.bearingLabelLayer.copyBufferToCanvas(toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height)
     }
 
     _updateBearings(data) {
@@ -475,11 +472,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
 
         this._drawBearingTicksToBuffer(this.arcStrokeWidth * data.dpiScale, this.arcStrokeColor, minorTicks, majorTicks);
 
-        this.bearingTickLayer.context.drawImage(this.bearingTickLayer.buffer.canvas,
-            toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height,
-            toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height);
-
-        this._bearingLastDrawnBounds = toDrawBounds;
+        this._bearingLastDrawnBounds = this.bearingTickLayer.copyBufferToCanvas(toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height);
 
         this._needRedrawBearings = false;
     }
