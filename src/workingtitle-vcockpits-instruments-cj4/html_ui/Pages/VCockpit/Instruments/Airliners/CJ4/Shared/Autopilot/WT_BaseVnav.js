@@ -174,25 +174,25 @@ class WT_BaseVnav {
         for (let i = this.waypoints.length - 1; i >= 0; i--) {
             const waypoint = this.waypoints[i];
             let altDesc = waypoint.legAltitudeDescription;
-            if (altDesc == 1 && waypoint.legAltitude1 > 1000) { //AT CASE
+            if (altDesc == 1 && waypoint.legAltitude1 > 0) { //AT CASE
                 this._vnavTargetAltitude = waypoint.legAltitude1;
                 this._vnavTargetDistance = (waypoint === this._activeWaypoint) ? this._activeWaypointDist : waypoint.cumulativeDistanceInFP - this._currentDistanceInFP;
                 this._topOfDescent = ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
                 this._vnavTargetWaypoint = waypoint;
             }
-            else if (altDesc == 2 && waypoint.legAltitude1 > 1000) { //ABOVE CASE
+            else if (altDesc == 2 && waypoint.legAltitude1 > 0) { //ABOVE CASE
                 let vnavTargetAltitudeAtWaypoint = this.getVNavTargetAltitudeAtWaypoint(waypoint);
                 if (vnavTargetAltitudeAtWaypoint < waypoint.legAltitude1) {
                     this.processWaypoint(waypoint);
                 }
             }
-            else if (altDesc == 3 && waypoint.legAltitude1 > 1000) { //BELOW CASE
+            else if (altDesc == 3 && waypoint.legAltitude1 > 0) { //BELOW CASE
                 let vnavTargetAltitudeAtWaypoint = this.getVNavTargetAltitudeAtWaypoint(waypoint);
                 if (vnavTargetAltitudeAtWaypoint > waypoint.legAltitude1) {
                     this.processWaypoint(waypoint);
                 }
             }
-            else if (altDesc == 4 && waypoint.legAltitude1 > 1000) { //ABOVE AND BELOW CASE
+            else if (altDesc == 4 && waypoint.legAltitude1 > 0) { //ABOVE AND BELOW CASE
                 let vnavTargetAltitudeAtWaypoint = this.getVNavTargetAltitudeAtWaypoint(waypoint);
                 if (vnavTargetAltitudeAtWaypoint > waypoint.legAltitude1) {
                     this.processWaypoint(waypoint);
