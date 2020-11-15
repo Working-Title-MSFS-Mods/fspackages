@@ -57,6 +57,13 @@ class CJ4_FMC extends FMCMainDisplay {
         this._currentAP = undefined
         this._vnav = undefined;
         this._lnav = undefined;
+
+        // modes
+        this._isHdgActive = false;
+        this._isNavActive = false;
+        this._isLNavActive = false;
+        this._isVsActive = false;
+        this._isFlcActive = false;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -440,18 +447,59 @@ class CJ4_FMC extends FMCMainDisplay {
             }
 
             //PARSE CJ4 AP MODES
-            const isHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1 ? true : false;
-            const isNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1 ? true : false;
-            const isLnavActive = this.radioNav.getRADIONAVSource() == 1 ? true : false;
+            const newIsHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1;
+            const newIsNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
+            const newIsLnavActive = this.radioNav.getRADIONAVSource() == 1;
 
-            if (isHdgActive) { //ACTIVATE DEFALT HEADING MODE INDEX 1
-                if (!SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean")) {
-                    SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 1);
+            if(newIsHdgActive !== this._isHdgActive){
+
+                if(!newIsNavActive){ // nav is/becomes off
+                    if(SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean") !== newIsHdgActive){
+                        SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
+                    }
                 }
-                SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+            
+                if(newIsHdgActive){ // when turning hdg on
+                    SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+                }
+
+                this._isHdgActive = newIsHdgActive;
             }
-            else if (isNavActive) { //NAV MODE SELECTED
-                if (isLnavActive) { //FMS SELECTED IN PFD AS NAV SOURCE
+
+            if((newIsNavActive !== this._isNavActive) || (newIsLnavActive !== this._isLNavActive)){
+                if(!this._isHdgActive){
+                    if(newIsNavActive){ // turning NAV on
+                        if(newIsLnavActive){ // in lnav/FMS
+                            SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
+                            if (!SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean")) {
+                                SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 1);
+                            }
+                        } else {
+                            SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+                            if (!SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean")) {
+                                SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 1);
+                            }                            
+                        }
+                    } else {
+                        if (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean")) {
+                            SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 0);
+                        }
+                        SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+                        if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean")) {
+                            SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
+                        }
+                    }
+                }
+
+                this._isNavActive = newIsNavActive;
+                this._isLNavActive = newIsLnavActive;
+            }
+
+
+
+
+            if (newIsNavActive) { //NAV MODE SELECTED
+                if (newIsLnavActive) { //FMS SELECTED IN PFD AS NAV SOURCE
                     SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
                     if (!SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean")) {
                         SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 1);
@@ -466,7 +514,39 @@ class CJ4_FMC extends FMCMainDisplay {
                         SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 1);
                     }
                 }
-                
+            }
+            else if (!newIsNavActive) {
+                if (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean")) {
+                    SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 0);
+                }
+                else {
+
+                }
+            }
+
+            const newIsVsActive = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1;
+            const newIsFlcActive = SimVar.GetSimVarValue("L:WT_CJ4_FLC_ON", "number") == 1;
+
+            if(newIsVsActive !== this._isVsActive) {
+                if(!newIsFlcActive){
+                    // if (newIsVsActive) {
+                    //     Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, Simplane.getVerticalSpeed());
+                    //     SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+                    // }
+                    if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean") !== newIsVsActive) {
+                        SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
+                    }
+                }
+                this._isVsActive = newIsVsActive;
+            }
+
+            if(newIsFlcActive !== this._isFlcActive) {
+                if(!this._isVsActive) {
+                    if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") !== newIsFlcActive) {
+                        SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE", "number", 1);
+                    }
+                }
+                this._isFlcActive = newIsFlcActive;
             }
 
             const isVNAVActive = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
