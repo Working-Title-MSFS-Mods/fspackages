@@ -11,6 +11,8 @@
 enum ThrottleEventIDs
 {
     AxisThrottleSet = 0,
+    AxisThrottle1Set = 1,
+    AxisThrottle2Set = 2,
 };
 
 /// <summary>
@@ -112,16 +114,13 @@ public:
     /// <summary>
     /// The local variable for the current throttle mode to be ready by MFD.
     /// </summary>
-    ID ThrottleMode;
+    ID Throttle1Mode;
+    ID Throttle2Mode;
 
     /// <summary>
     /// The local variable for the visible throttle position 1
     /// </summary>
     ID ThrottlePos1;
-
-    /// <summary>
-    /// The local variable for the visible throttle position 2
-    /// </summary>
     ID ThrottlePos2;
 
     SimVars()
@@ -130,19 +129,28 @@ public:
     }
 
     void initializeVars() {
-        ThrottleMode = register_named_variable("THROTTLE_MODE");
-        this->setThrottleMode(0);
+        Throttle1Mode = register_named_variable("THROTTLE1_MODE");
+        Throttle2Mode = register_named_variable("THROTTLE2_MODE");
+        this->setThrottle1Mode(0);
+        this->setThrottle2Mode(0);
         ThrottlePos1 = register_named_variable("Throttle1_Pos");
         ThrottlePos2 = register_named_variable("Throttle2_Pos");
         m_Units = new Units();
     }
 
-    void setThrottleMode(FLOAT64 value) {
-        set_named_variable_value(ThrottleMode, value);
+    void setThrottle1Mode(FLOAT64 value) {
+        set_named_variable_value(Throttle1Mode, value);
     }
 
-    void setThrottlePos(double value) {
+    void setThrottle2Mode(FLOAT64 value) {
+        set_named_variable_value(Throttle2Mode, value);
+    }
+
+    void setThrottle1Pos(double value) {
         set_named_variable_value(ThrottlePos1, value);
+    }
+
+    void setThrottle2Pos(double value) {
         set_named_variable_value(ThrottlePos2, value);
     }
 
