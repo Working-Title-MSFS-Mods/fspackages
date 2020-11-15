@@ -2,18 +2,19 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
     constructor(id = WT_MapViewRangeRingLayer.ID_DEFAULT, configName = WT_MapViewRangeRingLayer.CONFIG_NAME_DEFAULT) {
         super(id, configName);
 
-        this.addRing(new WT_MapViewRangeRing());
-        this.labeledRing.label.anchor = {x: 0.5, y: 0.5};
+        this._rangeRing = new WT_MapViewLabeledRing(new WT_MapViewRing(), new WT_MapViewRangeRingLabel());
+        this.addRing(this._rangeRing);
+        this.rangeRing.label.anchor = {x: 0.5, y: 0.5};
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRangeRingLayer.OPTIONS_DEF);
     }
 
-    get labeledRing() {
-        return this.rings[0].ring;
+    get rangeRing() {
+        return this._rangeRing;
     }
 
     _updateStyles(dpiScale) {
-        this.labeledRing.ring.setOptions({
+        this.rangeRing.ring.setOptions({
             strokeWidth: this.strokeWidth * dpiScale,
             strokeColor: this.strokeColor,
             strokeDash: this.strokeDash.map(e => e * dpiScale),
@@ -22,7 +23,7 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
             outlineDash: this.outlineDash.map(e => e * dpiScale)
         });
 
-        this.labeledRing.label.setOptions({
+        this.rangeRing.label.setOptions({
             radialAngle: this.labelAngle,
             radialOffset: this.labelOffset * dpiScale,
         });
@@ -45,6 +46,13 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
     onAttached(data) {
         super.onAttached(data);
         this._updateStyles(data.dpiScale);
+    }
+
+    onUpdate(data) {
+        super.onUpdate(data);
+
+        this.rangeRing.center = data.projection.viewTarget;
+        this.rangeRing.radius = data.model.range.ratio(data.projection.range) * data.projection.viewHeight;
     }
 }
 WT_MapViewRangeRingLayer.ID_DEFAULT = "RangeRingLayer";
@@ -69,19 +77,6 @@ WT_MapViewRangeRingLayer.CONFIG_PROPERTIES = [
     "labelAngle",
     "labelOffset"
 ];
-
-class WT_MapViewRangeRing extends WT_MapViewLabeledRing {
-    constructor() {
-        super(new WT_MapViewRing(), new WT_MapViewRangeRingLabel())
-    }
-
-    onUpdate(data) {
-        this.ring.center = data.projection.viewTarget;
-        this.ring.radius = data.model.range.ratio(data.projection.range) * data.projection.viewHeight;
-        this.label.center = this.ring.center;
-        this.label.radius = this.ring.radius;
-    }
-}
 
 class WT_MapViewRangeRingLabel extends WT_MapViewRingLabel {
     _createLabel() {
