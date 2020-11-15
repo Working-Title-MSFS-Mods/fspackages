@@ -37,6 +37,10 @@ class WT_GVector2 {
         return this;
     }
 
+    setFromPolar(r, theta) {
+        return this.set(r * Math.sin(theta), r * -Math.cos(theta));
+    }
+
     _updateLength() {
         this._length = Math.sqrt(this.x * this.x + this.y * this.y);
     }
