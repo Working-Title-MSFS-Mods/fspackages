@@ -1,13 +1,34 @@
+class WT_MFD_Waypoint_Selector_View_Factory {
+    /**
+     * @param {WT_Icao_Input_Model} icaoInputModel
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler
+     * @param {WT_Map_Input_Layer_Factory} mapInputLayerFactory
+     */
+    constructor(icaoInputModel, softKeyMenuHandler, mapInputLayerFactory) {
+        this.icaoInputModel = icaoInputModel;
+        this.softKeyMenuHandler = softKeyMenuHandler;
+        this.mapInputLayerFactory = mapInputLayerFactory;
+    }
+    /**
+     * @param {MapInstrument} map 
+     */
+    create(map) {
+        return new WT_MFD_Waypoint_Selector_View(map, this.icaoInputModel, this.softKeyMenuHandler, this.mapInputLayerFactory);
+    }
+}
+
 class WT_MFD_Waypoint_Selector_View extends WT_Waypoint_Selector_View {
     /**
      * @param {MapInstrument} map 
      * @param {WT_Icao_Input_Model} icaoInputModel
      * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler
+     * @param {WT_Map_Input_Layer_Factory} mapInputLayerFactory
      */
-    constructor(map, icaoInputModel, softKeyMenuHandler) {
+    constructor(map, icaoInputModel, softKeyMenuHandler, mapInputLayerFactory) {
         super(icaoInputModel);
         this.map = map;
         this.softKeyMenuHandler = softKeyMenuHandler;
+        this.mapInputLayerFactory = mapInputLayerFactory;
     }
     connectedCallback() {
         super.connectedCallback();
@@ -29,7 +50,7 @@ class WT_MFD_Waypoint_Selector_View extends WT_Waypoint_Selector_View {
      * @param {Input_Stack} inputStack 
      */
     enter(inputStack) {
-        const mapHandler = inputStack.push(new WT_Map_Input_Layer(this.map, true));
+        const mapHandler = inputStack.push(this.mapInputLayerFactory.create(this.map, true));
         super.enter(inputStack);
         this.inputStackHandler = mapHandler;
         this.menuHandler = this.softKeyMenuHandler.show(null);

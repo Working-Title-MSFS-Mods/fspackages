@@ -8,8 +8,8 @@ class WT_Page {
         this.view = null;
     }
     initialise(container) {
-        this.model = null;
-        this.view = null;
+        /*this.model = null;
+        this.view = null;*/
         if (this.view === null) {
             this.view = this.viewFactory();
         }

@@ -32,6 +32,10 @@ class WT_Mod_Settings_View extends WT_HTML_View {
         this.softKeyMenuHandler = softKeyMenuHandler;
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+        
         let template = document.getElementById('aux-mod-settings');
         this.appendChild(template.content.cloneNode(true));
 

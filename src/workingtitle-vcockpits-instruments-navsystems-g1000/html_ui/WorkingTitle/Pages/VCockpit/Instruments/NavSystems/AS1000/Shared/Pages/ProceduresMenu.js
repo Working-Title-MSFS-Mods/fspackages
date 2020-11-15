@@ -32,6 +32,10 @@ class WT_Procedures_Menu_View extends WT_HTML_View {
         this.onExit = new WT_Event();
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+        
         const template = document.getElementById('procedures-menu');
         this.appendChild(template.content.cloneNode(true));
 

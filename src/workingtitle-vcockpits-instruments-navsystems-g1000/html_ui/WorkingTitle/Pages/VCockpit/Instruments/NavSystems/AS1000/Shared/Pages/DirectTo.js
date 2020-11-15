@@ -4,6 +4,22 @@ class WT_Show_Direct_To_Handler {
     }
 }
 
+class WT_Direct_To_Model_Factory {
+    /**
+     * @param {NavSystem} gps 
+     * @param {WT_Waypoint_Repository} waypointRepository 
+     * @param {WT_Direct_To_Handler} directToHandler 
+     */
+    constructor(gps, waypointRepository, directToHandler) {
+        this.gps = gps;
+        this.waypointRepository = waypointRepository;
+        this.directToHandler = directToHandler;
+    }
+    create(icaoType) {
+        return new WT_Direct_To_Model(this.gps, icaoType, this.waypointRepository, this.directToHandler);
+    }
+}
+
 class WT_Direct_To_Model extends WT_Model {
     /**
      * @param {NavSystem} gps 

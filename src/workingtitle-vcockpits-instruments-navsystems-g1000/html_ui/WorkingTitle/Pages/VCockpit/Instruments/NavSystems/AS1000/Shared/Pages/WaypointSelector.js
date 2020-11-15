@@ -1,3 +1,15 @@
+class WT_Waypoint_Selector_Model_Factory {
+    /**
+     * @param {WT_Waypoint_Repository} waypointRepository 
+     */
+    constructor(waypointRepository) {
+        this.waypointRepository = waypointRepository;
+    }
+    create(icaoType) {
+        return new WT_Waypoint_Selector_Model(icaoType, this.waypointRepository);
+    }
+}
+
 class WT_Waypoint_Selector_Model extends WT_Model {
     /**
      * @param {string} type 
@@ -55,6 +67,10 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
         this.onExit = new WT_Event();
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+        
         const template = document.getElementById('template-waypoint-selector');
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();

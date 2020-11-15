@@ -28,6 +28,10 @@ class WT_Changelog_View extends WT_HTML_View {
         this.selectedSection = "all";
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+        
         const template = document.getElementById('aux-changelog');
         this.appendChild(template.content.cloneNode(true));
 

@@ -231,7 +231,7 @@ class WT_Airport_Information_View extends WT_HTML_View {
     deactivate() {
         if (this.softKeyMenuHandler)
             this.softKeyMenuHandler = this.softKeyMenuHandler.pop();
-        this.subscriptions.unsubscribe();
+        //this.subscriptions.unsubscribe();
     }
 }
 customElements.define("g1000-airport-information-page", WT_Airport_Information_View);

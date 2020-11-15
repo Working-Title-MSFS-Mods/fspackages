@@ -161,6 +161,10 @@ class WT_MFD_Flight_Plan_Header_Line extends WT_Flight_Plan_Header_Line {
         this.classList.add("selectable");
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+        
         super.connectedCallback();
         this.setAttribute("data-selectable", "flight-plan");
     }
@@ -216,6 +220,10 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         });*/
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+
         const template = document.getElementById('flight-plan-page');
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();

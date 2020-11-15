@@ -43,9 +43,9 @@ class WT_Toggle_Switch extends HTMLElement {
         DOMUtilities.ToggleAttribute(this, "showPrevious", this.index > 0);
     }
     connectedCallback() {
-        if (this.hasInitialised)
+        if (this.initialised)
             return;
-        this.hasInitialised = true;
+        this.initialised = true;
 
         this.elements.text = document.createElement("div");
         this.appendChild(this.elements.text);

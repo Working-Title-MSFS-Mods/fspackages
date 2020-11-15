@@ -1,32 +1,26 @@
 class WT_MFD_Show_Direct_To_Handler extends WT_Show_Direct_To_Handler {
     /**
      * @param {HTMLElement} paneContainer
-     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
-     * @param {WT_Waypoint_Repository} waypointRepository 
+     * @param {WT_Direct_To_Model_Factory} modelFactory
+     * @param {WT_MFD_Direct_To_View_Factory} viewFactory
      * @param {MapInstrument} map
-     * @param {WT_Icao_Input_Model} icaoInputModel
      * @param {Input_Stack} inputStack
-     * @param {WT_Direct_To_Handler} directToHandler
-     * @param {WT_Show_Page_Menu_Handler} showPageMenuHandler
      */
-    constructor(paneContainer, softKeyMenuHandler, waypointRepository, map, icaoInputModel, inputStack, directToHandler, showPageMenuHandler) {
+    constructor(paneContainer, modelFactory, viewFactory, map, inputStack) {
         super();
         this.paneContainer = paneContainer;
-        this.softKeyMenuHandler = softKeyMenuHandler;
-        this.waypointRepository = waypointRepository;
-        this.icaoInputModel = icaoInputModel;
+        this.modelFactory = modelFactory;
+        this.viewFactory = viewFactory;
         this.map = map;
         this.inputStack = inputStack;
-        this.directToHandler = directToHandler;
-        this.showPageMenuHandler = showPageMenuHandler;
     }
     show(icaoType = null, icao = null) {
         //TODO: Fix reverting flight plan
-        let model = new WT_Direct_To_Model(this, icaoType, this.waypointRepository, this.directToHandler);
+        let model = this.modelFactory.create(icaoType);
         if (icao) {
             model.setIcao(icao);
         }
-        let view = new WT_MFD_Direct_To_View(this.softKeyMenuHandler, this.map, this.icaoInputModel, this.showPageMenuHandler);
+        let view = this.viewFactory.create(this.map);// new WT_MFD_Direct_To_View(this.softKeyMenuHandler, this.map, this.icaoInputModel, this.showPageMenuHandler);
         this.paneContainer.appendChild(view);
         view.setModel(model);
 

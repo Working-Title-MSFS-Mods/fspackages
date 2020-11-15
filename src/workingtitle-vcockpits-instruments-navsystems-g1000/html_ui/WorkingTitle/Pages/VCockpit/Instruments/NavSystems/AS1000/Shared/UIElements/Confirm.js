@@ -17,6 +17,10 @@ class WT_Confirm_Dialog extends WT_HTML_View {
         this.inputLayer = new WT_Confirm_Dialog_Input_Layer(this, new Selectables_Input_Layer_Dynamic_Source(this, "selectable-button"));
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+        
         let template = document.getElementById('confirm-dialog');
         let templateContent = template.content;
         this.appendChild(templateContent.cloneNode(true));

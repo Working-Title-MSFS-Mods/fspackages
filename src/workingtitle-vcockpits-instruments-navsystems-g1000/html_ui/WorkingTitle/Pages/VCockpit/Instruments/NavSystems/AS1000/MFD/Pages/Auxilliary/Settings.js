@@ -29,6 +29,10 @@ class WT_System_Settings_View extends WT_HTML_View {
         this.softKeyMenuHandler = softKeyMenuHandler;
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+        
         const template = document.getElementById('aux-settings');
         this.appendChild(template.content.cloneNode(true));
 

@@ -17,5 +17,6 @@ Svg/SvgRangeCompassElement.js
 Svg/SvgTrackVectorElement.js
 Svg/SvgFuelRingElement.js
 Svg/SvgAltitudeInterceptElement.js
+Svg/SvgProcedureElement.js
 Svg/SvgMap.js
 MapInstrument.js

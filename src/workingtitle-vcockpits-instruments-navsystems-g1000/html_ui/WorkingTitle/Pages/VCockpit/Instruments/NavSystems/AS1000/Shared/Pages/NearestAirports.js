@@ -15,13 +15,14 @@ class WT_Nearest_Airports_Model extends WT_Model {
         this.unitChooser = unitChooser;
         this.nearestAirportList = new NearestAirportList(gps);
         this.mapInstrument = map;
+        this.nearestWaypoints = nearestWaypoints;
         this.showWaypointInfoHandler = showWaypointInfoHandler;
 
         this.airports = new Subject([], false);
         this.selectedAirport = new Subject();
 
         this.subscriptions = new Subscriptions();
-        this.subscriptions.add(nearestWaypoints.airports.subscribe(airports => this.airports.value = airports));
+        this.subscribe();
 
         this.setIcao = DOMUtilities.debounce(async icao => {
             this.selectedAirport.value = await this.waypointRepository.load(icao);
@@ -62,6 +63,9 @@ class WT_Nearest_Airports_Model extends WT_Model {
     }
     selectFrequency(frequency) {
         this.comFrequencies.selectFrequency(frequency);
+    }
+    subscribe() {
+        this.subscriptions.add(this.nearestWaypoints.airports.subscribe(airports => this.airports.value = airports));
     }
     unsubscribe() {
         this.subscriptions.unsubscribe();

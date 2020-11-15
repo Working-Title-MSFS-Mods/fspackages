@@ -56,9 +56,9 @@ class WT_Nearest_Vors_View extends WT_HTML_View {
         this.inputStackHandle = this.inputStack.push(this.frequencyInputLayer);
     }
     connectedCallback() {
-        if (this.hasInitialised)
+        if (this.initialised)
             return;
-        this.hasInitialised = true;
+        this.initialised = true;
 
         let template = document.getElementById('nearest-vors-page');
         this.appendChild(template.content.cloneNode(true));
@@ -73,7 +73,6 @@ class WT_Nearest_Vors_View extends WT_HTML_View {
         this.model = model;
         model.waypoints.subscribe(this.updateWaypoints.bind(this));
         model.selectedWaypoint.subscribe(this.updateSelectedWaypoint.bind(this));
-        model.subscribe();
 
         this.elements.waypointList.selectedIcao.subscribe(icao => {
             if (icao !== null)
@@ -127,6 +126,7 @@ class WT_Nearest_Vors_View extends WT_HTML_View {
         this.menuHandler = this.softKeyMenuHandler.show(this.menu);
         this.map.flightPlanElements.push(this.flightPlanElement);
         this.map.showFlightPlan = false;
+        this.model.subscribe();
     }
     deactivate() {
         if (this.menuHandler) {

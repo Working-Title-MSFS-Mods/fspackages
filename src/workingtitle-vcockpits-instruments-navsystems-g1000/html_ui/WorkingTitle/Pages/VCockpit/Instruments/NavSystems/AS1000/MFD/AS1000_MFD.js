@@ -38,16 +38,20 @@ class AS1000_MFD extends BaseAS1000 {
 
         d.register("pageMenuHandler", d => new WT_MFD_Show_Page_Menu_Handler(d.inputStack, d.pageContainer, d.softKeyMenuHandler));
         d.register("confirmDialogHandler", d => new WT_Show_Confirm_Dialog_Handler(d.inputStack, d.dialogContainer, d.softKeyMenuHandler));
-        d.register("showNewWaypointHandler", d => new WT_MFD_Show_New_Waypoint_Handler(d.paneContainer, d.softKeyMenuHandler, d.waypointRepository, d.miniMap, d.icaoInputModel, d.inputStack));
+        d.register("waypointSelectorModelFactory", d => new WT_Waypoint_Selector_Model_Factory(d.waypointRepository));
+        d.register("waypointSelectorViewFactory", d => new WT_MFD_Waypoint_Selector_View_Factory(d.icaoInputModel, d.softKeyMenuHandler, d.mapInputLayerFactory));
+        d.register("showNewWaypointHandler", d => new WT_MFD_Show_New_Waypoint_Handler(d.paneContainer, d.waypointSelectorModelFactory, d.waypointSelectorViewFactory, d.miniMap, d.inputStack));
         d.register("directToHandler", d => new WT_Direct_To_Handler(d.flightPlanController, d.mainMap));
-        d.register("showDirectToHandler", d => new WT_MFD_Show_Direct_To_Handler(d.paneContainer, d.softKeyMenuHandler, d.waypointRepository, d.miniMap, d.icaoInputModel, d.inputStack, d.directToHandler, d.pageMenuHandler));
+        d.register("directToModelFactory", d => new WT_Direct_To_Model_Factory(this, d.waypointRepository, d.directToHandler));
+        d.register("directToViewFactory", d => new WT_MFD_Direct_To_View_Factory(d.softKeyMenuHandler, d.icaoInputModel, d.pageMenuHandler));
+        d.register("showDirectToHandler", d => new WT_MFD_Show_Direct_To_Handler(d.paneContainer, d.directToModelFactory, d.directToViewFactory, d.miniMap, d.inputStack));
         d.register("showAirwaysHandler", d => new WT_Show_Airways_Handler(this, d.inputStack, d.overlayPageContainer, d.mainMap));
         d.register("showProcedureHandler", d => new WT_Show_Procedure_Handler(d.pageController, d.flightPlanManager, d.procedureFacilityRepository, () => d.procedurePageView));
         d.register("showWaypointInfoHandler", d => new WT_Show_Waypoint_Info_Handler(d.pageController));
         d.register("procedurePageView", d => new WT_Procedure_Page_View(d.softKeyMenuHandler, d.mainMap, d.icaoInputModel), { scope: "transient" });
         d.register("softKeyMenuHandler", d => new WT_MFD_Soft_Key_Menu_Handler(d.softKeyController));
         d.register("showDuplicatesHandler", d => new WT_MFD_Show_Duplicates_Handler(d.dialogContainer, d.waypointRepository, d.inputStack));
-        
+
         d.register("frequencyListModel", d => new WT_Frequency_List_Model(d.comFrequenciesModel, d.navFrequenciesModel), { scope: "transient" });
 
         d.register("mapModel", d => new WT_Map_Model(this, d.mainMap), { scope: "transient" });

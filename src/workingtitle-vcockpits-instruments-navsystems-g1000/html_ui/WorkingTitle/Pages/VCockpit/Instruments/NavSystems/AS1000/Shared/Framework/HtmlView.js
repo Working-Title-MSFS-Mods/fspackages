@@ -7,6 +7,7 @@ class WT_HTML_View extends HTMLElement {
         DOMUtilities.AddScopedEventListener(this, "[data-input]", "input", this.onInput.bind(this));
     }
     bindElements() {
+        this.elements = {};
         const elements = this.querySelectorAll("[data-element]");
         for (let element of elements) {
             // We only want to collect elements that aren't in another view already
@@ -15,7 +16,7 @@ class WT_HTML_View extends HTMLElement {
                 if (el == this) {
                     const elementName = element.getAttribute("data-element");
                     if (elementName in this.elements) {
-                        console.warn(`A duplicate element "${elementName}" was found`);
+                        console.warn(`A duplicate element "${elementName}" was found when binding "${this.tagName}"`);
                     }
                     this.elements[elementName] = element;
                     break;

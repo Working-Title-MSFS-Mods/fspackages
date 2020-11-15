@@ -1,11 +1,30 @@
-class WT_MFD_Direct_To_View extends WT_Direct_To_View {
+class WT_MFD_Direct_To_View_Factory {
     /**
      * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
-     * @param {MapInstrument} map
      * @param {WT_Icao_Input_Model} icaoInputModel 
      * @param {WT_Show_Page_Menu_Handler} showPageMenuHandler 
      */
-    constructor(softKeyMenuHandler, map, icaoInputModel, showPageMenuHandler) {
+    constructor(softKeyMenuHandler, icaoInputModel, showPageMenuHandler) {
+        this.softKeyMenuHandler = softKeyMenuHandler;
+        this.icaoInputModel = icaoInputModel;
+        this.showPageMenuHandler = showPageMenuHandler;
+    }
+    /**
+     * @param {MapInstrument} map
+     */
+    create(map) {
+        return new WT_MFD_Direct_To_View(this.icaoInputModel, this.showPageMenuHandler, this.softKeyMenuHandler, map);
+    }
+}
+
+class WT_MFD_Direct_To_View extends WT_Direct_To_View {
+    /**
+     * @param {WT_Icao_Input_Model} icaoInputModel 
+     * @param {WT_Show_Page_Menu_Handler} showPageMenuHandler 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
+     * @param {MapInstrument} map
+     */
+    constructor(icaoInputModel, showPageMenuHandler, softKeyMenuHandler, map) {
         super(icaoInputModel, showPageMenuHandler);
         this.softKeyMenuHandler = softKeyMenuHandler;
         this.map = map;

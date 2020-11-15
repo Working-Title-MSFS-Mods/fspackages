@@ -1,24 +1,23 @@
 class WT_MFD_Show_New_Waypoint_Handler extends WT_Show_New_Waypoint_Handler {
     /**
      * @param {HTMLElement} paneContainer
-     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      * @param {WT_Waypoint_Repository} waypointRepository 
      * @param {MapInstrument} map
-     * @param {WT_Icao_Input_Model} icaoInputModel
      * @param {Input_Stack} inputStack
+     * @param {WT_Waypoint_Selector_Model_Factory} waypointSelectorModelFactory
+     * @param {WT_MFD_Waypoint_Selector_View_Factory} waypointSelectorViewFactory
      */
-    constructor(paneContainer, softKeyMenuHandler, waypointRepository, map, icaoInputModel, inputStack) {
+    constructor(paneContainer, waypointSelectorModelFactory, waypointSelectorViewFactory, map, inputStack) {
         super();
         this.paneContainer = paneContainer;
-        this.softKeyMenuHandler = softKeyMenuHandler;
-        this.waypointRepository = waypointRepository;
-        this.icaoInputModel = icaoInputModel;
+        this.waypointSelectorModelFactory = waypointSelectorModelFactory;
+        this.waypointSelectorViewFactory = waypointSelectorViewFactory;
         this.map = map;
         this.inputStack = inputStack;
     }
     show(icaoType = null) {
-        const model = new WT_Waypoint_Selector_Model(icaoType, this.waypointRepository);
-        const view = new WT_MFD_Waypoint_Selector_View(this.map, this.icaoInputModel, this.softKeyMenuHandler);
+        const model = this.waypointSelectorModelFactory.create(icaoType);
+        const view = this.waypointSelectorViewFactory.create(this.map);
         this.paneContainer.appendChild(view);
         view.setModel(model);
 

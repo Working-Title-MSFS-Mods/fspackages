@@ -8,6 +8,10 @@ class WT_Departure_Page_View extends WT_HTML_View {
         this.onLoadProcedure = new WT_Event();
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+        
         let template = document.getElementById('departure-page');
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();

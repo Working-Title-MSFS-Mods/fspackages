@@ -117,6 +117,10 @@ class WT_PFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         });*/
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+
         const template = document.getElementById('flight-plan-page');
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();

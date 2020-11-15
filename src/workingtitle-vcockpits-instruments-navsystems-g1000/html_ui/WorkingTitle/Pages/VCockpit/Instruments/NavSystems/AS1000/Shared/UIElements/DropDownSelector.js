@@ -38,6 +38,10 @@ class WT_Drop_Down_Selector extends HTMLElement {
         }
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+
         for (let optionNode of this.querySelectorAll("drop-down-selector-option")) {
             this.options.push(optionNode);
         }

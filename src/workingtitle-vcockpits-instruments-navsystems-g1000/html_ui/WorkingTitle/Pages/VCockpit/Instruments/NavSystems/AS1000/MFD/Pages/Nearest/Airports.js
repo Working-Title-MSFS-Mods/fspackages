@@ -110,7 +110,6 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
         model.airports.subscribe(this.updateAirports.bind(this));
         model.selectedAirport.subscribe(this.updateSelectedAirport.bind(this));
         this.map = this.model.mapInstrument;
-        this.elements.map.appendChild(this.map);
 
         this.elements.waypointList.selectedIcao.subscribe(icao => {
             if (icao !== null)
@@ -164,6 +163,7 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
         this.browseAirports();
     }
     activate(inputStack) {
+        this.elements.map.appendChild(this.map);
         this.inputStack = inputStack;
         this.menuHandler = this.softKeyMenuHandler.show(this.menu);
         this.map.flightPlanElements.push(this.flightPlanElement);

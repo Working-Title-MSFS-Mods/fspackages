@@ -65,6 +65,10 @@ class WT_String_Input extends HTMLElement {
         }
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+        
         for(let i = 0; i < this.getAttribute("characters"); i++) {
             let character = document.createElement("span");
             character.className = "character";

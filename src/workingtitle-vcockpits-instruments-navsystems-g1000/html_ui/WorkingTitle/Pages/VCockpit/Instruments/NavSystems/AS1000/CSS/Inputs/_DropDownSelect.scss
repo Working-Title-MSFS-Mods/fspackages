@@ -2,6 +2,8 @@ drop-down-selector {
     position: relative;
     display: block;
 
+    --popup-width: 8em;
+
     .popup {
         display: none !important;
         z-index: 1000;
@@ -14,6 +16,7 @@ drop-down-selector {
         z-index: 1000;
         max-height: 20vh;
         overflow-y: scroll;
+        min-width: var(--popup-width);
 
         drop-down-selector-option {
             color: $input_color;
@@ -28,6 +31,13 @@ drop-down-selector {
             &[disabled] {
                 color: #666;
             }
+        }
+    }
+
+    &[align="left"] {
+        .popup {
+            right: auto;
+            left: 0;
         }
     }
 

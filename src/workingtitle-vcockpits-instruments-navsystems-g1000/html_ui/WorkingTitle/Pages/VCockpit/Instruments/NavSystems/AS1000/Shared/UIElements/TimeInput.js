@@ -71,6 +71,10 @@ class WT_Time_Input extends HTMLElement {
         }
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+        
         this.elements.hours = document.createElement("span");
         this.elements.hours.className = "digit";
         this.elements.hours.dataset.number = "hours";

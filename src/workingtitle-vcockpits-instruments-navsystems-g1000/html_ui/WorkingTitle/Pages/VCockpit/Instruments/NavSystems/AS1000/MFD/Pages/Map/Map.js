@@ -3,13 +3,12 @@ class WT_Map_Page_Menu extends WT_Page_Menu_Model {
      * @param {WT_Map_Model} model 
      */
     constructor(model) {
-        let nullFunc = () => { };
         super([
             new WT_Page_Menu_Option("Map Setup", () => model.showMapSetup()),
             new WT_Page_Menu_Option("Declutter", () => model.declutter()),
-            new WT_Page_Menu_Option("Measure Bearing/Distance", nullFunc),
-            new WT_Page_Menu_Option("Show Chart", nullFunc),
-            new WT_Page_Menu_Option("Show Proile View", nullFunc),
+            new WT_Page_Menu_Option("Measure Bearing/Distance"),
+            new WT_Page_Menu_Option("Show Chart"),
+            new WT_Page_Menu_Option("Show Proile View"),
         ])
     }
 }
@@ -77,10 +76,6 @@ class WT_Map_View extends WT_HTML_View {
      */
     setModel(model) {
         this.model = model;
-        setTimeout(() => {
-            if (this.model.mapElement.isInit())
-                this.model.mapElement.centerOnPlane();
-        }, 500); // This needs sorting out. centerOnPlane doesn't work before an initial update cycle
 
         this.menus = {
             main: new WT_Map_Main_Menu(model),
@@ -107,6 +102,11 @@ class WT_Map_View extends WT_HTML_View {
         this.storedMenu = this.softKeyController.currentMenu;
         this.softKeyController.setMenu(this.menus.main);
         this.appendChild(this.model.mapElement);
+
+        setTimeout(() => {
+            if (this.model.mapElement.isInit())
+                this.model.mapElement.centerOnPlane();
+        }, 500); // This needs sorting out. centerOnPlane doesn't work before an initial update cycle
     }
     deactivate() {
         this.softKeyController.setMenu(this.storedMenu);
