@@ -694,39 +694,19 @@ class CJ4_APDisplay extends NavSystemElement {
     }
     onUpdate(_deltaTime) {
         //NEW SIMPLIFIED CODE FOR SETTING FMA MODES
-        //MASTER MODES
-        const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1;
-        const ydActive = SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Boolean") == 1;
-        const isLnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
-        const isWTNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
-        const isWTHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1;
-        const isVnavActive = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") == 1;
-
-        //VERTICAL MODES
-        const isPitchActive = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") == 1;
-        const isVsActive = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1;
-        const isFlcActive = SimVar.GetSimVarValue("L:WT_CJ4_FLC_ON", "number") == 1;
-        const isAltLockActive = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") == 1;
-        const isAltArmed = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") == 1;
-        const altDelta = Math.abs(Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feet"));
-        const isVpathActive = WTDataStore.get('CJ4_VNAV_ACTIVE', 'false') == "true";
-
-        //LATERAL MODES
-        const isHdgActive = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean") == 1;
-        const isNavActive = SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") == 1;
-        const selectedNav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
-        const selectedNavHasLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + selectedNav, "Boolean") == 1;
-        const isLvlActive = SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Boolean") == 1;
-        const isRollActive = SimVar.GetSimVarValue("AUTOPILOT BANK HOLD", "Boolean") == 1;
-
-        //APPROACH MODES
-        const isApproachActive = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Boolean") == 1;
-        const isGsActive = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean") == 1;
-        const isGsArmed = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ARM", "Boolean") == 1;
-        const isBcActive = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "Boolean") == 1;
-
 
         //SET AP & YD VALUES
+        const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1;
+        const ydActive = SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Boolean") == 1;
+        const flightDirector = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean") == 1;
+        const isApproachActive = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Boolean") == 1;
+        const isBcActive = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "Boolean") == 1;
+        const isGsActive = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean") == 1;
+        const isGsArmed = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ARM", "Boolean") == 1;
+        const selectedNav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
+        const selectedNavHasLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + selectedNav, "Boolean") == 1;
+
+
         Avionics.Utils.diffAndSet(this.AP_Status, apMasterActive ? "AP" : "");
         if (apMasterActive && !ydActive) {
             SimVar.SetSimVarValue("K:YAW_DAMPER_TOGGLE", "number", 1);
@@ -737,207 +717,343 @@ class CJ4_APDisplay extends NavSystemElement {
             Avionics.Utils.diffAndSet(this.AP_YDStatus, ydActive ? "YD" : "");
         }
 
-        //SET VERTICAL MODES
-        if (isVnavActive) { //VNAV ACTIVE
-            if (isPitchActive) {
-                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VPTCH");
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
-            }
-            else if (isVsActive) {
-                let vsDisplay = "<span>VVS</span> ";
-                let verticalHoldVar = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute");
-                vsDisplay += "<span style=\"color: #0599fc;\">" + fastToFixed(verticalHoldVar, 0) + "</span>";
-                if (verticalHoldVar > 0) {
-                    vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↑</span>";
-                }
-                else if (verticalHoldVar < 0) {
-                    vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↓</span>";
-                }
-                Avionics.Utils.diffAndSet(this.AP_VerticalActive, vsDisplay);
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
-            }
-            else if (isFlcActive) {
-                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VFLC");
-                if (Simplane.getAutoPilotMachModeActive()) {
-                    Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2));
-                }
-                else {
-                    Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0) + "KT");
-                }
-            }
-            else if (isAltLockActive && altDelta < 200) {
-                if (isAltArmed) {
-                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VALTS");
-                }
-                else {
-                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VALT");
-                }
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet"), 0) + "FT");
-            }
-            else if (isVpathActive) {
-                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VPATH");
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
-            }
-            else {
-                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VERROR");
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
-            }
-        }
-        else { //VNAV INACTIVE
-            if (isGsActive) {
-                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "GS");
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
-            }
-            else if (isVsActive) {
-                let vsDisplay = "<span>VS</span> ";
-                let verticalHoldVar = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute");
-                vsDisplay += "<span style=\"color: #0599fc;\">" + fastToFixed(verticalHoldVar, 0) + "</span>";
-                if (verticalHoldVar > 0) {
-                    vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↑</span>";
-                }
-                else if (verticalHoldVar < 0) {
-                    vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↓</span>";
-                }
-                Avionics.Utils.diffAndSet(this.AP_VerticalActive, vsDisplay);
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
-            }
-            else if (isFlcActive) {
-                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "FLC");
-                if (Simplane.getAutoPilotMachModeActive()) {
-                    Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2));
-                }
-                else {
-                    Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0) + "KT");
-                }
-            }
-            else if (isAltLockActive && altDelta < 200) {
-                if (isAltArmed) {
-                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, "ALTS");
-                }
-                else {
-                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, "ALT");
-                }
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet"), 0) + "FT");
-            }
-            else if (isPitchActive) {
-                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "PTCH");
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
-            }
-            else {
-                Avionics.Utils.diffAndSet(this.AP_VerticalActive, "");
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
-            }
-        }
+        //SET OTHER VALUES OR BLANK IF AP/FD INACTIVE
+        if (flightDirector || apMasterActive) {
+            //GET DATA FROM DATASTORE SET BY AP UPDATE METHOD
+            const fmaValues = WTDataStore.get('CJ4_fmaValues', 'none');
+            if (fmaValues != "none") {
+                const parsedFmaValues = JSON.parse(fmaValues);
+                const lateralMode = parsedFmaValues.lateralMode;
+                const lateralArmed = parsedFmaValues.lateralArmed;
+                const verticalMode = parsedFmaValues.verticalMode;
+                const verticalArmed = parsedFmaValues.verticalArmed;
 
-        //VERTICAL ARMED MODES
-        if (isGsArmed) {
-            Avionics.Utils.diffAndSet(this.AP_Armed, "GS");
-        }
-        else {
-            Avionics.Utils.diffAndSet(this.AP_Armed, "");
-        }
-        // else if (isAltArmed) {
-        //     Avionics.Utils.diffAndSet(this.AP_Armed, "ALTS");
-        // }
-        // else if (isVnavActive && SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") == 2) {
-        //     Avionics.Utils.diffAndSet(this.AP_Armed, "PATH");
-        // }
-
-        //SET LATERAL MODES
-        if (isWTNavActive) {
-            if (isLnavActive) {
-                Avionics.Utils.diffAndSet(this.AP_LateralActive, "LNV1");
-            }
-            else if (isNavActive || isApproachActive) {
-                if (selectedNavHasLoc) {
-                    Avionics.Utils.diffAndSet(this.AP_LateralActive, "LOC" + selectedNav.toFixed(0));
+                //ACTIVE VERTICAL
+                if (verticalMode == "VS" || verticalMode == "VVS") {
+                    let vsDisplay = "<span>" + verticalMode + "</span> ";
+                    let verticalHoldVar = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute");
+                    vsDisplay += "<span style=\"color: #0599fc;\">" + fastToFixed(verticalHoldVar, 0) + "</span>";
+                    if (verticalHoldVar > 0) {
+                        vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↑</span>";
+                    }
+                    else if (verticalHoldVar < 0) {
+                        vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↓</span>";
+                    }
+                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, vsDisplay);
+                    Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+                }
+                else if (verticalMode == "FLC" || verticalMode == "VFLC") {
+                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, verticalMode);
+                    if (Simplane.getAutoPilotMachModeActive()) {
+                        Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2));
+                    }
+                    else {
+                        Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0) + "KT");
+                    }
+                }
+                else if (isGsActive) {
+                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, "GS");
+                    Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
                 }
                 else {
-                    Avionics.Utils.diffAndSet(this.AP_LateralActive, "VOR" + selectedNav.toFixed(0));
+                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, verticalMode);
+                    Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
                 }
-            }
-            else if (isBcActive) {
-                Avionics.Utils.diffAndSet(this.AP_LateralActive, "BC" + selectedNav.toFixed(0));
-            }
-            else {
-                Avionics.Utils.diffAndSet(this.AP_LateralActive, "LERROR");
+
+                //ARMED VERTICAL
+                if (isGsArmed) {
+                    Avionics.Utils.diffAndSet(this.AP_Armed, "GS");
+                }
+                else {
+                    Avionics.Utils.diffAndSet(this.AP_Armed, verticalArmed);
+                }
+
+
+                //LATERAL ACTIVE
+                if (isApproachActive) {
+                    const selectedNav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
+                    const selectedNavHasLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + selectedNav, "Boolean") == 1;
+                    if (selectedNavHasLoc) {
+                        Avionics.Utils.diffAndSet(this.AP_LateralActive, "LOC" + selectedNav);
+                    }
+                    else {
+                        Avionics.Utils.diffAndSet(this.AP_LateralActive, "VOR" + selectedNav);
+                    }
+                    Avionics.Utils.diffAndSet(this.AP_LateralActive, ""); //LATERAL ACTIVE
+                }
+                else if (isBcActive) {
+                    const selectedNav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
+                    Avionics.Utils.diffAndSet(this.AP_LateralActive, "BC" + selectedNav); //LATERAL ACTIVE
+                }
+                else if (lateralMode == "NAV") {
+                    const selectedNav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
+                    Avionics.Utils.diffAndSet(this.AP_LateralActive, "VOR" + selectedNav);
+                }
+                else {
+                    Avionics.Utils.diffAndSet(this.AP_LateralActive, lateralMode);
+                }
+
+                //LATERAL ARMED
+                Avionics.Utils.diffAndSet(this.AP_LateralArmed, lateralArmed); //LATERAL ARMED
             }
         }
         else {
-            if (isWTHdgActive && isHdgActive) {
-                Avionics.Utils.diffAndSet(this.AP_LateralActive, "HDG");
-            }
-            // else if (isNavActive) {
-            //     if (selectedNavHasLoc) {
-            //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "LOC" + selectedNav.toFixed(0));
-            //     }
-            //     else {
-            //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "VOR" + selectedNav.toFixed(0));
-            //     }
-            // }
-            else if (isBcActive) {
-                Avionics.Utils.diffAndSet(this.AP_LateralActive, "BC" + selectedNav.toFixed(0));
-            }
-            else if (isApproachActive) {
-                if (selectedNavHasLoc) {
-                    Avionics.Utils.diffAndSet(this.AP_LateralActive, "LOC" + selectedNav.toFixed(0));
-                }
-                else {
-                    Avionics.Utils.diffAndSet(this.AP_LateralActive, "VORA" + selectedNav.toFixed(0));
-                }
-            }
-            else if (isLvlActive) {
-                Avionics.Utils.diffAndSet(this.AP_LateralActive, "LVL");
-            }
-            else if (isRollActive) {
-                Avionics.Utils.diffAndSet(this.AP_LateralActive, "ROLL");
-            }
-            else {
-                Avionics.Utils.diffAndSet(this.AP_LateralActive, "");
+            Avionics.Utils.diffAndSet(this.AP_VerticalActive, ""); //VETICAL MODE
+            Avionics.Utils.diffAndSet(this.AP_ModeReference, ""); //VERTICAL MODE VAL (if needed)
+            Avionics.Utils.diffAndSet(this.AP_Armed, ""); //VERTICAL ARMED
+            Avionics.Utils.diffAndSet(this.AP_LateralActive, ""); //LATERAL ACTIVE
+            Avionics.Utils.diffAndSet(this.AP_LateralArmed, ""); //LATERAL ARMED
             }
 
-        }
-        
-        //LATERAL ARMED MODES
-        Avionics.Utils.diffAndSet(this.AP_LateralArmed, "");
 
-        // if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Bool") || SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Bool")) {
-        //     if (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean")) {
-        //         if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
-        //             Avionics.Utils.diffAndSet(this.AP_LateralArmed, "FMS");
+
+
+
+
+        // //MASTER MODES
+        // const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1;
+        // const ydActive = SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Boolean") == 1;
+        // const isLnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
+        // const isWTNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
+        // const isWTHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1;
+        // const isVnavActive = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") == 1;
+
+        // //VERTICAL MODES
+        // const isPitchActive = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") == 1;
+        // const isVsActive = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1;
+        // const isFlcActive = SimVar.GetSimVarValue("L:WT_CJ4_FLC_ON", "number") == 1;
+        // const isAltLockActive = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") == 1;
+        // const isAltArmed = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") == 1;
+        // const altDelta = Math.abs(Simplane.getAltitude() - Simplane.getAutoPilotAltitudeLockValue("feet"));
+        // const isVpathActive = WTDataStore.get('CJ4_VNAV_ACTIVE', 'false') == "true";
+
+        // //LATERAL MODES
+        // const isHdgActive = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean") == 1;
+        // const isNavActive = SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") == 1;
+        // const selectedNav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
+        // const selectedNavHasLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + selectedNav, "Boolean") == 1;
+        // const isLvlActive = SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Boolean") == 1;
+        // const isRollActive = SimVar.GetSimVarValue("AUTOPILOT BANK HOLD", "Boolean") == 1;
+
+        // //APPROACH MODES
+        // const isApproachActive = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Boolean") == 1;
+        // const isGsActive = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean") == 1;
+        // const isGsArmed = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ARM", "Boolean") == 1;
+        // const isBcActive = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "Boolean") == 1;
+
+
+        // //SET AP & YD VALUES
+        // Avionics.Utils.diffAndSet(this.AP_Status, apMasterActive ? "AP" : "");
+        // if (apMasterActive && !ydActive) {
+        //     SimVar.SetSimVarValue("K:YAW_DAMPER_TOGGLE", "number", 1);
+        // }
+        // if (apMasterActive) {
+        //     Avionics.Utils.diffAndSet(this.AP_YDStatus, "");
+        // } else {
+        //     Avionics.Utils.diffAndSet(this.AP_YDStatus, ydActive ? "YD" : "");
+        // }
+
+        // //SET VERTICAL MODES
+        // if (isVnavActive) { //VNAV ACTIVE
+        //     if (isPitchActive) {
+        //         Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VPTCH");
+        //         Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+        //     }
+        //     else if (isVsActive) {
+        //         let vsDisplay = "<span>VVS</span> ";
+        //         let verticalHoldVar = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute");
+        //         vsDisplay += "<span style=\"color: #0599fc;\">" + fastToFixed(verticalHoldVar, 0) + "</span>";
+        //         if (verticalHoldVar > 0) {
+        //             vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↑</span>";
+        //         }
+        //         else if (verticalHoldVar < 0) {
+        //             vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↓</span>";
+        //         }
+        //         Avionics.Utils.diffAndSet(this.AP_VerticalActive, vsDisplay);
+        //         Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+        //     }
+        //     else if (isFlcActive) {
+        //         Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VFLC");
+        //         if (Simplane.getAutoPilotMachModeActive()) {
+        //             Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2));
         //         }
         //         else {
-        //             if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number"), "Boolean")) {
-        //                 Avionics.Utils.diffAndSet(this.AP_LateralArmed, "LOC");
-        //             }
-        //             else {
-        //                 Avionics.Utils.diffAndSet(this.AP_LateralArmed, "VOR");
-        //             }
+        //             Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0) + "KT");
         //         }
         //     }
-        //     else if (SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "Boolean")) {
-        //         Avionics.Utils.diffAndSet(this.AP_LateralArmed, "BC");
-        //     }
-        //     else if (SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Boolean")) {
-        //         if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
-        //             Avionics.Utils.diffAndSet(this.AP_LateralArmed, "FMS");
+        //     else if (isAltLockActive && altDelta < 200) {
+        //         if (isAltArmed) {
+        //             Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VALTS");
         //         }
         //         else {
-        //             if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number"), "Boolean")) {
-        //                 Avionics.Utils.diffAndSet(this.AP_LateralArmed, "LOC");
-        //             }
-        //             else {
-        //                 Avionics.Utils.diffAndSet(this.AP_LateralArmed, "VOR");
-        //             }
+        //             Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VALT");
         //         }
+        //         Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet"), 0) + "FT");
+        //     }
+        //     else if (isVpathActive) {
+        //         Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VPATH");
+        //         Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
         //     }
         //     else {
-        //         Avionics.Utils.diffAndSet(this.AP_LateralArmed, "");
+        //         Avionics.Utils.diffAndSet(this.AP_VerticalActive, "VERROR");
+        //         Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+        //     }
+        // }
+        // else { //VNAV INACTIVE
+        //     if (isGsActive) {
+        //         Avionics.Utils.diffAndSet(this.AP_VerticalActive, "GS");
+        //         Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+        //     }
+        //     else if (isVsActive) {
+        //         let vsDisplay = "<span>VS</span> ";
+        //         let verticalHoldVar = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute");
+        //         vsDisplay += "<span style=\"color: #0599fc;\">" + fastToFixed(verticalHoldVar, 0) + "</span>";
+        //         if (verticalHoldVar > 0) {
+        //             vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↑</span>";
+        //         }
+        //         else if (verticalHoldVar < 0) {
+        //             vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↓</span>";
+        //         }
+        //         Avionics.Utils.diffAndSet(this.AP_VerticalActive, vsDisplay);
+        //         Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+        //     }
+        //     else if (isFlcActive) {
+        //         Avionics.Utils.diffAndSet(this.AP_VerticalActive, "FLC");
+        //         if (Simplane.getAutoPilotMachModeActive()) {
+        //             Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2));
+        //         }
+        //         else {
+        //             Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0) + "KT");
+        //         }
+        //     }
+        //     else if (isAltLockActive && altDelta < 200) {
+        //         if (isAltArmed) {
+        //             Avionics.Utils.diffAndSet(this.AP_VerticalActive, "ALTS");
+        //         }
+        //         else {
+        //             Avionics.Utils.diffAndSet(this.AP_VerticalActive, "ALT");
+        //         }
+        //         Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet"), 0) + "FT");
+        //     }
+        //     else if (isPitchActive) {
+        //         Avionics.Utils.diffAndSet(this.AP_VerticalActive, "PTCH");
+        //         Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+        //     }
+        //     else {
+        //         Avionics.Utils.diffAndSet(this.AP_VerticalActive, "");
+        //         Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+        //     }
+        // }
+
+        // //VERTICAL ARMED MODES
+        // if (isGsArmed) {
+        //     Avionics.Utils.diffAndSet(this.AP_Armed, "GS");
+        // }
+        // else {
+        //     Avionics.Utils.diffAndSet(this.AP_Armed, "");
+        // }
+        // // else if (isAltArmed) {
+        // //     Avionics.Utils.diffAndSet(this.AP_Armed, "ALTS");
+        // // }
+        // // else if (isVnavActive && SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") == 2) {
+        // //     Avionics.Utils.diffAndSet(this.AP_Armed, "PATH");
+        // // }
+
+        // //SET LATERAL MODES
+        // if (isWTNavActive) {
+        //     if (isLnavActive) {
+        //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "LNV1");
+        //     }
+        //     else if (isNavActive || isApproachActive) {
+        //         if (selectedNavHasLoc) {
+        //             Avionics.Utils.diffAndSet(this.AP_LateralActive, "LOC" + selectedNav.toFixed(0));
+        //         }
+        //         else {
+        //             Avionics.Utils.diffAndSet(this.AP_LateralActive, "VOR" + selectedNav.toFixed(0));
+        //         }
+        //     }
+        //     else if (isBcActive) {
+        //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "BC" + selectedNav.toFixed(0));
+        //     }
+        //     else {
+        //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "LERROR");
         //     }
         // }
         // else {
-        //     Avionics.Utils.diffAndSet(this.AP_LateralArmed, "");
+        //     if (isWTHdgActive && isHdgActive) {
+        //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "HDG");
+        //     }
+        //     // else if (isNavActive) {
+        //     //     if (selectedNavHasLoc) {
+        //     //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "LOC" + selectedNav.toFixed(0));
+        //     //     }
+        //     //     else {
+        //     //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "VOR" + selectedNav.toFixed(0));
+        //     //     }
+        //     // }
+        //     else if (isBcActive) {
+        //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "BC" + selectedNav.toFixed(0));
+        //     }
+        //     else if (isApproachActive) {
+        //         if (selectedNavHasLoc) {
+        //             Avionics.Utils.diffAndSet(this.AP_LateralActive, "LOC" + selectedNav.toFixed(0));
+        //         }
+        //         else {
+        //             Avionics.Utils.diffAndSet(this.AP_LateralActive, "VORA" + selectedNav.toFixed(0));
+        //         }
+        //     }
+        //     else if (isLvlActive) {
+        //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "LVL");
+        //     }
+        //     else if (isRollActive) {
+        //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "ROLL");
+        //     }
+        //     else {
+        //         Avionics.Utils.diffAndSet(this.AP_LateralActive, "");
+        //     }
+
         // }
+        
+        // //LATERAL ARMED MODES
+        // Avionics.Utils.diffAndSet(this.AP_LateralArmed, "");
+
+        // // if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Bool") || SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Bool")) {
+        // //     if (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean")) {
+        // //         if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
+        // //             Avionics.Utils.diffAndSet(this.AP_LateralArmed, "FMS");
+        // //         }
+        // //         else {
+        // //             if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number"), "Boolean")) {
+        // //                 Avionics.Utils.diffAndSet(this.AP_LateralArmed, "LOC");
+        // //             }
+        // //             else {
+        // //                 Avionics.Utils.diffAndSet(this.AP_LateralArmed, "VOR");
+        // //             }
+        // //         }
+        // //     }
+        // //     else if (SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "Boolean")) {
+        // //         Avionics.Utils.diffAndSet(this.AP_LateralArmed, "BC");
+        // //     }
+        // //     else if (SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Boolean")) {
+        // //         if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
+        // //             Avionics.Utils.diffAndSet(this.AP_LateralArmed, "FMS");
+        // //         }
+        // //         else {
+        // //             if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number"), "Boolean")) {
+        // //                 Avionics.Utils.diffAndSet(this.AP_LateralArmed, "LOC");
+        // //             }
+        // //             else {
+        // //                 Avionics.Utils.diffAndSet(this.AP_LateralArmed, "VOR");
+        // //             }
+        // //         }
+        // //     }
+        // //     else {
+        // //         Avionics.Utils.diffAndSet(this.AP_LateralArmed, "");
+        // //     }
+        // // }
+        // // else {
+        // //     Avionics.Utils.diffAndSet(this.AP_LateralArmed, "");
+        // // }
 
     }
     onExit() {
