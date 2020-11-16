@@ -50,10 +50,10 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewCanvasLayer {
     }
 
     _updateProjectionRendererClipExtent(data) {
-        let renderClipLeft = -data.viewWidth * WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN;
-        let renderClipRight = data.viewWidth * (1 + WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN);
-        let renderClipTop = -data.viewHeight * WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN;
-        let renderClipBottom = data.viewHeight * (1 + WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN);
+        let renderClipLeft = -data.projection.viewWidth * WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN;
+        let renderClipRight = data.projection.viewWidth * (1 + WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN);
+        let renderClipTop = -data.projection.viewHeight * WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN;
+        let renderClipBottom = data.projection.viewHeight * (1 + WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN);
         this.projectionRenderer.clipExtent = [[renderClipLeft, renderClipTop], [renderClipRight, renderClipBottom]];
     }
 
