@@ -178,8 +178,15 @@ class CJ4_FMC extends FMCMainDisplay {
         // set persisted heading
         //SimVar.SetSimVarValue('K:HEADING_BUG_SET:1', 'degrees', WTDataStore.get("AP_HEADING", Simplane.getHeadingMagnetic()));
         this._isLNavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
-        SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
-        SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
+        //set init values for AP
+        this._isHdgActive = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean");
+        this._isNavActive = SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean");
+        this._isVsActive = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean");
+        this._isFlcActive = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean");
+        SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", (this._isHdgActive ? 1 : 0));
+        SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", (this._isNavActive ? 1 : 0));      
+        SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", (this._isVsActive ? 1 : 0));
+        SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", (this._isFlcActive ? 1 : 0));
 
         // get HideYoke        
         let yokeHide = WTDataStore.get('WT_CJ4_HideYoke', 1);
@@ -443,6 +450,21 @@ class CJ4_FMC extends FMCMainDisplay {
                 this._lnav.update();
             }
 
+            //CHECK FOR LEVEL OFF CONDITION VS/FLC
+            let newIsVsActive = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1;
+            let newIsFlcActive = SimVar.GetSimVarValue("L:WT_CJ4_FLC_ON", "number") == 1;
+            const newSimFlcValue = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean");
+            const newSimVsValue = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean");
+
+            if (newIsFlcActive != newSimFlcValue) {
+                SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", (newSimFlcValue ? 1 : 0));
+                newIsFlcActive = newSimFlcValue;
+            }
+            if (newIsVsActive != newSimVsValue) {
+                SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", (newSimVsValue ? 1 : 0));
+                newIsVsActive = newSimVsValue;
+            }
+
             //PARSE CJ4 AP MODES
             const newIsHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1;
             const newIsNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
@@ -491,9 +513,6 @@ class CJ4_FMC extends FMCMainDisplay {
                 this._isNavActive = newIsNavActive;
                 this._isLNavActive = newIsLnavActive;
             }
-
-            const newIsVsActive = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1;
-            const newIsFlcActive = SimVar.GetSimVarValue("L:WT_CJ4_FLC_ON", "number") == 1;
 
             if(newIsVsActive !== this._isVsActive) {
                 if(!newIsFlcActive){
