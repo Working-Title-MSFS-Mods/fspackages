@@ -73,7 +73,7 @@ export class LegsProcedure {
       this._facilitiesLoaded = true;
     }
 
-    while (!isLegMappable) {
+    while (!isLegMappable && this._currentIndex < this._legs.length) {
       const currentLeg = this._legs[this._currentIndex];
       isLegMappable = true;
 
@@ -89,7 +89,14 @@ export class LegsProcedure {
             mappedLeg = this.mapHeadingUntilDistanceFromOrigin(currentLeg, this._previousFix);
             break;
           case 4:
-            mappedLeg = this.mapOriginRadialForDistance(currentLeg, this._previousFix);
+            //Only map if the fix is itself not a runway fix to avoid double
+            //adding runway fixes
+            if (currentLeg.fixIcao === '' || currentLeg.fixIcao[0] !== 'R') {
+              mappedLeg = this.mapOriginRadialForDistance(currentLeg, this._previousFix);
+            }
+            else {
+              isLegMappable = false;
+            }
             break;
           case 5:
             mappedLeg = this.mapHeadingToInterceptNextLeg(currentLeg, this._previousFix, this._legs[this._currentIndex + 1]);
@@ -148,7 +155,7 @@ export class LegsProcedure {
       return mappedLeg;
     }
     else {
-      throw new Error('Exited legs mapper without a mapped leg');
+      return undefined;
     }
   }
 

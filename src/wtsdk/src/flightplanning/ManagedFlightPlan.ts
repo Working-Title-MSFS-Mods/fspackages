@@ -578,7 +578,10 @@ export class ManagedFlightPlan {
 
       let waypointIndex = segment.offset;
       while (procedure.hasNext()) {
-        this.addWaypoint(await procedure.getNext(), ++waypointIndex, segment.type);
+        const waypoint = await procedure.getNext();
+        if (waypoint !== undefined) {
+          this.addWaypoint(waypoint, ++waypointIndex, segment.type);
+        }
       }
     }
   }
@@ -624,7 +627,10 @@ export class ManagedFlightPlan {
 
       let waypointIndex = segment.offset;
       while (procedure.hasNext()) {
-        this.addWaypoint(await procedure.getNext(), ++waypointIndex, segment.type);
+        const waypoint = await procedure.getNext();
+        if (waypoint) {
+          this.addWaypoint(waypoint, ++waypointIndex, segment.type);
+        }
       }
     }
   }
@@ -668,7 +674,10 @@ export class ManagedFlightPlan {
 
       let waypointIndex = startIndex;
       while (procedure.hasNext()) {
-        this.addWaypoint(await procedure.getNext(), ++waypointIndex, segment.type);
+        const waypoint = await procedure.getNext();
+        if (waypoint !== undefined) {
+          this.addWaypoint(waypoint, ++waypointIndex, segment.type);
+        }   
       }
 
       const runway = this.getRunway(destinationInfo.oneWayRunways, destinationInfo.approaches[approachIndex].runway);
