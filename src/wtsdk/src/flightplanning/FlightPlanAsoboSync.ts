@@ -65,4 +65,13 @@ export class FlightPlanAsoboSync {
       }, 200);
     });
   }
+
+  public static SaveToGame(fpln: FlightPlanManager): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      await Coherent.call("SET_CURRENT_FLIGHTPLAN_INDEX", "1");
+      await Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN");
+
+      
+    });
+  }
 }
