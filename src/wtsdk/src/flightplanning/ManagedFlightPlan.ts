@@ -541,8 +541,11 @@ export class ManagedFlightPlan {
     }
 
     if (transitionIndex !== -1 && departureIndex !== -1) {
-      const transition = airportInfo.departures[departureIndex].enRouteTransitions[transitionIndex].legs;
-      legs.push(...transition);
+      // TODO: are enroutetransitions working?
+      if(airportInfo.departures[departureIndex].enRouteTransitions.length > 0){
+        const transition = airportInfo.departures[departureIndex].enRouteTransitions[transitionIndex].legs;
+        legs.push(...transition); 
+      }
     }
 
     let segment = this.departure;
