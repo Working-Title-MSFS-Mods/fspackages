@@ -703,9 +703,6 @@ class CJ4_APDisplay extends NavSystemElement {
         const isBcActive = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "Boolean") == 1;
         const isGsActive = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean") == 1;
         const isGsArmed = SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ARM", "Boolean") == 1;
-        const selectedNav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
-        const selectedNavHasLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + selectedNav, "Boolean") == 1;
-
 
         Avionics.Utils.diffAndSet(this.AP_Status, apMasterActive ? "AP" : "");
         if (apMasterActive && !ydActive) {
