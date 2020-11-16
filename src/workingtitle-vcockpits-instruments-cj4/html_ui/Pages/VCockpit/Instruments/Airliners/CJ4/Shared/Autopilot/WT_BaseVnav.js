@@ -112,10 +112,10 @@ class WT_BaseVnav {
 
                 //SET CURRENT CONSTRAINT ALTITUDE SIMVAR -- This only needs to run when active waypoint changes
                 if (this._vnavConstraintAltitude) {
-                    SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "feet", this._vnavConstraintAltitude);
+                    SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", this._vnavConstraintAltitude);
                 }
                 else {
-                    SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "feet", 0);
+                    SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
                 }
             }
 
