@@ -2,6 +2,7 @@ import { BaseInstrument, SimVar, EmptyCallback, LatLongAlt, Avionics, AirportInf
 import { WTDataStore } from 'WorkingTitle';
 import { ManagedFlightPlan, GPS } from '../wtsdk';
 import { FlightPlanSegment, SegmentType } from './FlightPlanSegment';
+import { FlightPlanAsoboSync } from './FlightPlanAsoboSync';
 
 /**
  * A system for managing flight plan data used by various instruments.
@@ -29,20 +30,20 @@ export class FlightPlanManager {
    * parent instrument attached.
    * @param parentInstrument The parent instrument attached to this FlightPlanManager.
    */
-  constructor(private _parentInstrument: BaseInstrument) {
+  constructor(public _parentInstrument: BaseInstrument) {
     if (_parentInstrument.instrumentIdentifier == "CJ4_FMC") {
       this._isMaster = true;
 
-      _parentInstrument.addEventListener("FlightStart", function () {
-        // TODO: load game flight plan
-
-        const plan = new ManagedFlightPlan();
+      _parentInstrument.addEventListener("FlightStart", async function () {
+        let plan = new ManagedFlightPlan();
         plan.setParentInstrument(_parentInstrument);
         this._flightPlans = [];
         this._flightPlans.push(plan);
-
         this._currentFlightPlanVersion++;
         this._updateFlightPlanVersion();
+
+        await FlightPlanAsoboSync.LoadFromGame(this);
+
       }.bind(this));
     }
 
@@ -60,7 +61,7 @@ export class FlightPlanManager {
   }
 
   public update(_deltaTime: number): void {
-    
+
   }
 
   public onCurrentGameFlightLoaded(_callback: () => {}) {
@@ -852,7 +853,7 @@ export class FlightPlanManager {
 
       this._updateFlightPlanVersion();
     }
-    
+
     callback();
   }
 
@@ -870,7 +871,7 @@ export class FlightPlanManager {
 
       this._updateFlightPlanVersion();
     }
-    
+
     callback();
   }
 
@@ -887,7 +888,7 @@ export class FlightPlanManager {
 
       this._updateFlightPlanVersion();
     }
-    
+
     callback();
   }
 
@@ -913,7 +914,7 @@ export class FlightPlanManager {
 
       this._updateFlightPlanVersion();
     }
-    
+
     callback();
   }
 
@@ -979,7 +980,7 @@ export class FlightPlanManager {
 
       this._updateFlightPlanVersion();
     }
-    
+
     callback();
   }
 
@@ -1026,7 +1027,7 @@ export class FlightPlanManager {
 
       this._updateFlightPlanVersion();
     }
-    
+
     callback();
   }
 
@@ -1044,7 +1045,7 @@ export class FlightPlanManager {
 
       this._updateFlightPlanVersion();
     }
-    
+
     callback();
   }
 
@@ -1071,7 +1072,7 @@ export class FlightPlanManager {
 
       this._updateFlightPlanVersion();
     }
-    
+
     callback();
   }
 
@@ -1206,7 +1207,7 @@ export class FlightPlanManager {
 
       this._updateFlightPlanVersion();
     }
-    
+
     callback();
   }
 

@@ -195,6 +195,7 @@ class Jet_NDCompass extends HTMLElement {
     update(_deltaTime) {
         this.updateCompass(_deltaTime);
         this.updateNavigationInfo();
+        this.updateCourseNeedleAnimation(_deltaTime);
         this.updateMapRange();
     }
     updateCompass(_deltaTime) {
@@ -518,8 +519,9 @@ class Jet_NDCompass extends HTMLElement {
                 else if (this.navigationMode === Jet_NDCompass_Navigation.NAV) {
 
                     displayCourseDeviation = true;
-                    let crossTrack = SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number");
-                    let deviation = (crossTrack * 0.000539957) / 2; //Converts cross track to NM and then divides by 2 since enroute max deflection is 2nm off course)
+                    let crossTrack = SimVar.GetSimVarValue("L:WT_CJ4_XTK", "number");
+                    let deviation = -(crossTrack / 2);
+
                     let simSelectedTrack = Simplane.getNextWaypointTrack();
                     this.setAttribute("course", simSelectedTrack.toString());
                     this.setAttribute("course_deviation", deviation.toString());
@@ -633,6 +635,33 @@ class Jet_NDCompass extends HTMLElement {
             }
         }
     }
+
+    /**
+     * Updates the course needle animation.
+     * @param {number} deltaTime The deltatime, in milliseconds, since the last frame.
+     */
+    updateCourseNeedleAnimation(deltaTime) {
+
+        if (!this._courseTarget) {
+            this._courseTarget = 0;
+        }
+
+        if (!this._currentCourse) {
+            this._currentCourse = 0;
+        }
+
+        const angleDiff = Avionics.Utils.angleDiff(this._currentCourse, this._courseTarget);
+        const velocityScale = Math.pow(Math.abs(angleDiff) / 180, 1.1);
+        const velocity = ((deltaTime / 1000) * velocityScale) * 360;
+
+        this._currentCourse += angleDiff >= 0 ? velocity : -(velocity);
+        let factor = (this.displayMode === Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.PPOS) ? 1 : 10;
+
+        if (this.course) {
+            this.course.setAttribute("transform", "rotate(" + (this._currentCourse) + " " + (50 * factor) + " " + (50 * factor) + ")");
+        }
+    }
+
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
             case "toggle_bearing1":
@@ -709,7 +738,7 @@ class Jet_NDCompass extends HTMLElement {
                 break;
             case "course":
                 if (this.course) {
-                    this.course.setAttribute("transform", "rotate(" + (newValue) + " " + (50 * factor) + " " + (50 * factor) + ")");
+                    this._courseTarget = parseFloat(newValue);
                 }
                 break;
             case "course_deviation":

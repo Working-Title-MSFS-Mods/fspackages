@@ -44,7 +44,7 @@ declare module "MSFS" {
     _svgElements: any;
     routes: any[];
     UpdateInfos(_CallBack?, loadFacilitiesTransitively?);
-    CopyBaseInfosFrom(_WP:WayPoint); 
+    CopyBaseInfosFrom(_WP: WayPoint);
   }
 
   export class AirportInfo extends WayPointInfo {
@@ -135,4 +135,10 @@ declare module "MSFS" {
     static Void: () => void;
     static Boolean: (boolean) => void;
   }
+
+  export class Coherent {
+    static call(handler: string, ...params: []): Promise<any>
+  }
+
+  export function RegisterViewListener(handler: string): void
 }

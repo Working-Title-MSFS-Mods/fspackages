@@ -433,13 +433,19 @@ export class ManagedFlightPlan {
    * @returns The copied flight plan.
    */
   public copy(): ManagedFlightPlan {
-    let newFlightPlan = Object.assign(new ManagedFlightPlan(), this);   
+    let newFlightPlan = Object.assign(new ManagedFlightPlan(), this);
+    newFlightPlan.setParentInstrument(this._parentInstrument);
+
     newFlightPlan._segments = [];
     for (let i = 0; i < this._segments.length; i++) {
       const seg = this._segments[i];
       newFlightPlan._segments[i] = Object.assign(new FlightPlanSegment(seg.type, seg.offset, []), seg);  
       newFlightPlan._segments[i].waypoints = [...seg.waypoints];    
     }
+
+    newFlightPlan.procedureDetails = Object.assign(new ProcedureDetails(), this.procedureDetails);
+    newFlightPlan.directTo = Object.assign(new DirectTo(), this.directTo);
+    newFlightPlan.directTo.interceptPoints = this.directTo.interceptPoints !== undefined ? [...this.directTo.interceptPoints] : undefined;
 
     return newFlightPlan;
   }
@@ -541,8 +547,11 @@ export class ManagedFlightPlan {
     }
 
     if (transitionIndex !== -1 && departureIndex !== -1) {
-      const transition = airportInfo.departures[departureIndex].enRouteTransitions[transitionIndex].legs;
-      legs.push(...transition);
+      // TODO: are enroutetransitions working?
+      if(airportInfo.departures[departureIndex].enRouteTransitions.length > 0){
+        const transition = airportInfo.departures[departureIndex].enRouteTransitions[transitionIndex].legs;
+        legs.push(...transition); 
+      }
     }
 
     let segment = this.departure;
