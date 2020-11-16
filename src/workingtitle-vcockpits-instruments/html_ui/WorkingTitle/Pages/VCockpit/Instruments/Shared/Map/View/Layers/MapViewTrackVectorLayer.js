@@ -49,15 +49,22 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewCanvasLayer {
         }
     }
 
-    onAttached(data) {
-        super.onAttached(data);
-
+    _updateProjectionRendererClipExtent(data) {
         let renderClipLeft = -data.viewWidth * WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN;
         let renderClipRight = data.viewWidth * (1 + WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN);
         let renderClipTop = -data.viewHeight * WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN;
         let renderClipBottom = data.viewHeight * (1 + WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN);
+        this.projectionRenderer.clipExtent = [[renderClipLeft, renderClipTop], [renderClipRight, renderClipBottom]];
+    }
+
+    onViewSizeChanged(data) {
+        super.onViewSizeChanged(data);
+        this._updateProjectionRendererClipExtent(data);
+    }
+
+    onAttached(data) {
         this._projectionRenderer = data.projection.createRenderer();
-        this._projectionRenderer.clipExtent = [[renderClipLeft, renderClipTop], [renderClipRight, renderClipBottom]];
+        super.onAttached(data);
     }
 
     _setBufferStyle(lineWidth, strokeStyle) {
