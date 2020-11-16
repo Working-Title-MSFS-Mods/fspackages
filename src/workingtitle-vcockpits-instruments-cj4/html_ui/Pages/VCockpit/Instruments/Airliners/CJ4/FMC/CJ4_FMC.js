@@ -54,7 +54,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.currentInput = undefined;
         this.previousInput = undefined;
         this._frameUpdates = 0;
-        this._currentAP = undefined
+        this._currentAP = undefined;
         this._vnav = undefined;
         this._lnav = undefined;
 
