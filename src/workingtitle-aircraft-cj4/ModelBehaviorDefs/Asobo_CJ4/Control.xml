@@ -150,7 +150,7 @@
 	<Template Name="ASOBO_AUTOPILOT_Push_VerticalSpeed_Template">
 		<DefaultTemplateParameters>
 			<DEFAULT_NAME>VerticalSpeed</DEFAULT_NAME>
-			<TOOLTIPID>%((A:AUTOPILOT VERTICAL HOLD, bool))%{if}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_VS_ON%{else}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_VS_OFF%{end}</TOOLTIPID>
+			<TOOLTIPID>%((L:WT_CJ4_VS_ON, bool))%{if}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_VS_ON%{else}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_VS_OFF%{end}</TOOLTIPID>
 		</DefaultTemplateParameters>
 		<UseTemplate Name="ASOBO_AUTOPILOT_Push_Template">
 			<Switch Param="TYPE">
