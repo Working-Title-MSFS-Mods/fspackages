@@ -199,9 +199,9 @@ class WT_Icao_Input extends HTMLElement {
                 }, this.instrumentIdentifier);
             });
             try {
-                let t = this.model.showDuplicatesHandler.show(duplicates);
-                this.cancelDuplicates = t.cancel;
-                let icao = await t.promise;
+                let handler = this.model.showDuplicatesHandler.show(duplicates);
+                this.cancelDuplicates = handler.cancel;
+                let icao = await handler.promise;
                 this.cancelDuplicates = null;
                 this.icao = icao;
             } catch (e) {
@@ -288,12 +288,17 @@ class WT_Waypoint_Quick_Select_View extends WT_HTML_View {
     /**
      * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
      */
-    async setWaypointQuickSelect(waypointQuickSelect, type) {
-        const waypoints = await waypointQuickSelect.getWaypoints(type);
+    setWaypointQuickSelect(waypointQuickSelect, type) {
+       this.waypointQuickSelect = waypointQuickSelect;
+       this.type = type;
+    }
+    async updateWaypoints() {
+        const waypoints = await this.waypointQuickSelect.getWaypoints(this.type);
         const mapWaypoint = waypoint => `<li class="selectable" data-icao="${waypoint.icao}">${waypoint.ident}</li>`;
         this.elements.nrst.innerHTML = waypoints.nearest.map(mapWaypoint).join("");
         this.elements.fpl.innerHTML = waypoints.flightPlan.map(mapWaypoint).join("");
         this.elements.recent.innerHTML = waypoints.recent.map(mapWaypoint).join("");
+        this.inputLayer.refreshSelected();
     }
     chooseList(list) {
         if (this.currentList)
@@ -327,6 +332,7 @@ class WT_Waypoint_Quick_Select_View extends WT_HTML_View {
             this.removeAttribute("state");
         });
         this.setAttribute("state", "visible");
+        this.updateWaypoints();
         return new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;

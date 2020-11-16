@@ -28,6 +28,7 @@ Pages/Nearest/VORs.js
 Pages/Procedures/Procedure.js
 Pages/WaypointInformation/Airport.js
 Pages/WaypointInformation/Intersection.js
+Pages/DuplicateWaypoints.js
 Panes/DirectTo.js
 Panes/ProceduresMenu.js
 Panes/WaypointSelector.js

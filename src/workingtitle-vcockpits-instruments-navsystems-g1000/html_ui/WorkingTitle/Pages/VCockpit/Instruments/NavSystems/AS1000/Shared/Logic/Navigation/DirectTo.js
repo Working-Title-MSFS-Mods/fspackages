@@ -18,19 +18,50 @@ class WT_Direct_To_Waypoints {
 
 class WT_Direct_To_Handler {
     /**
+     * @param {WT_Shared_Instrument_Events} sharedInstrumentEvents 
+     */
+    constructor(sharedInstrumentEvents) {
+        this.sharedInstrumentEvents = sharedInstrumentEvents;
+    }
+    activate(waypoint, course) {
+        this.sharedInstrumentEvents.fire(WT_Direct_To_Handler.ACTIVATE_EVENT_NAME, {
+            waypoint: waypoint.icao,
+            course: course
+        });
+    }
+    cancel() {
+        this.sharedInstrumentEvents.fire(WT_Direct_To_Handler.CANCEL_EVENT_NAME, {});
+    }
+}
+WT_Direct_To_Handler.ACTIVATE_EVENT_NAME = "ActivateDirectTo";
+WT_Direct_To_Handler.CANCEL_EVENT_NAME = "CancelDirectTo";
+
+class WT_Master_Direct_To_Handler extends WT_Direct_To_Handler {
+    /**
+     * @param {WT_Shared_Instrument_Events} sharedInstrumentEvents 
+     * @param {WT_Waypoint_Repository} waypointRepository 
      * @param {WT_Flight_Plan_Controller} flightPlanController 
      * @param {MapInstrument} map 
      */
-    constructor(flightPlanController, map) {
+    constructor(sharedInstrumentEvents, waypointRepository, flightPlanController, map) {
+        super(sharedInstrumentEvents);
+        this.waypointRepository = waypointRepository;
         this.flightPlanController = flightPlanController;
         this.map = map;
+
+        this.sharedInstrumentEvents.addListener(WT_Direct_To_Handler.ACTIVATE_EVENT_NAME, async data => {
+            this.activateDirectTo(await waypointRepository.load(data.icao), data.course);
+        });
+
+        this.sharedInstrumentEvents.addListener(WT_Direct_To_Handler.CANCEL_EVENT_NAME, () => this.cancelDirectTo());
     }
-    activate(waypoint, course) {
-        let controller = new WT_Direct_To_Controller(waypoint, course, this.map);
+    activateDirectTo(waypoint, course) {
+        const controller = new WT_Direct_To_Controller(waypoint, course, this.map);
         this.flightPlanController.setMode(controller);
     }
-    cancel() {
-        throw new Error("Cancel direct to not implemented");
+    cancelDirectTo() {
+        const controller = new WT_Normal_Flight_Plan_Controller(this.flightPlanManager);
+        this.flightPlanController.setMode(controller);
     }
 }
 
@@ -74,8 +105,8 @@ class WT_Direct_To_Controller extends WT_Flight_Plan_Mode {
         if (this.course !== null) {
             startCoordinates = Avionics.Utils.bearingDistanceToCoordinates((this.course + 180) % 360, WT_Direct_To_Controller.COURSE_LENGTH, this.waypoint.infos.coordinates.lat, this.waypoint.infos.coordinates.long);
         } else {
-            let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
-            let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+            const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+            const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
             startCoordinates = new LatLongAlt(lat, long, 0);
         }
         this.waypoints = [

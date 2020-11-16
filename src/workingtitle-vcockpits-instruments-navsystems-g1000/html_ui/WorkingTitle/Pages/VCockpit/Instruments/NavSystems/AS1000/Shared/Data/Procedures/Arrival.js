@@ -111,7 +111,7 @@ class WT_Selected_Arrival_Procedure extends WT_Selected_Procedure {
         let waypointCollection = new WT_Procedure_Waypoints(legs);
         let waypoints = waypointCollection.waypoints;
 
-        this.outputWaypointsToConsole(waypoints);
+        //this.outputWaypointsToConsole(waypoints);
 
         return waypoints;
     }
@@ -119,22 +119,23 @@ class WT_Selected_Arrival_Procedure extends WT_Selected_Procedure {
         return this.procedure.airport;
     }
     load(flightPlan) {
-        return new Promise(resolve => {
-            console.log(`Setting desination to ${this.procedure.icao}...`);
-            flightPlan.setDesination(this.procedure.icao, () => {
-                console.log(`Setting arrival...`);
-                const promises = [];
-                promises.push(new Promise(resolve => {
-                    flightPlan.setArrivalProcIndex(this.procedure.procedureIndex, resolve);
-                }));
-                promises.push(new Promise(resolve => {
-                    flightPlan.setArrivalEnRouteTransitionIndex(this.enRouteTransitionIndex, resolve);
-                }));
-                promises.push(new Promise(resolve => {
-                    flightPlan.setArrivalRunwayIndex(this.runwayTransitionIndex, resolve);
-                }));
-                Promise.all(promises).then(resolve);
-            });
+        return new Promise(async resolve => {
+            // If there's no destination set 
+            const destination = flightPlan.getDestination();
+            if (destination == null || destination.icao != this.procedure.icao) {
+                console.log(`Setting destination to ${this.procedure.icao}...`);
+                await new Promise(resolve => flightPlan.addWaypoint(this.procedure.icao, flightPlan.getWaypointsCount(), resolve));
+                await new Promise(resolve => flightPlan.setDestination(this.procedure.icao, resolve));
+            }
+
+            // Set procedure indexes
+            await Promise.all([
+                new Promise(resolve => flightPlan.setArrivalProcIndex(this.procedure.procedureIndex, resolve)),
+                new Promise(resolve => flightPlan.setArrivalEnRouteTransitionIndex(this.enRouteTransitionIndex, resolve)),
+                new Promise(resolve => flightPlan.setArrivalRunwayIndex(this.runwayTransitionIndex, resolve)),
+            ]);
+
+            resolve();
         });
     }
 }

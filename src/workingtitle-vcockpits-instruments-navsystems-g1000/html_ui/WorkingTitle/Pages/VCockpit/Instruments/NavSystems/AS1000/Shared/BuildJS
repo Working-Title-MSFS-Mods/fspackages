@@ -39,6 +39,8 @@ Logic/Navigation/FlightPlan.js
 Logic/Navigation/OBS.js
 Logic/Coordinates.js
 Logic/PlaneState.js
+Logic/SharedData.js
+Logic/SharedEvents.js
 Logic/Sound.js
 Logic/WaypointRepository.js
 UIElements/AirportIcon.js

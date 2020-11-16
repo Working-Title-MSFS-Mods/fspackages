@@ -32,6 +32,7 @@ class WT_PFD_Show_New_Waypoint_Handler extends WT_Show_New_Waypoint_Handler {
             const onExit = () => {
                 subscriptions.unsubscribe();
                 this.miniPageController.removeChild(view);
+                this.miniPageController.closePage();
                 reject();
             };
             subscriptions.add(view.onWaypointSelected.subscribe(onWaypointSelected));

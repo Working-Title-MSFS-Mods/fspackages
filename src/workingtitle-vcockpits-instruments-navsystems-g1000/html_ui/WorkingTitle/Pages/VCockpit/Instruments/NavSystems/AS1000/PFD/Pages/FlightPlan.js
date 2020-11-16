@@ -178,7 +178,7 @@ class WT_PFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     showCreateNewWaypoint(index = -1) {
         this.newWaypointHandler.show().then(icao => {
             this.model.createNewWaypoint(icao, index);
-        });
+        }).catch(e => { });
     }
     updateActiveLeg(leg) {
         this.elements.flightPlanWaypoints.updateActiveLeg(leg);

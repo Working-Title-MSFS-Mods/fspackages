@@ -17,6 +17,8 @@
 @import "Inputs/Switch";
 @import "Inputs/Time";
 
+@import "MFD/Components/Article";
+@import "MFD/Components/PageSelector";
 @import "MFD/Pages/AirwaySelector";
 @import "MFD/Pages/Changelog";
 @import "MFD/Pages/DirectTo";
@@ -81,6 +83,8 @@ as1000-mfd-element #Mainframe #Electricity {
         //@extend %render-layer;
     }
     #MapInstrument {
+        //display: none !important;
+        overflow: hidden;
         @extend %render-layer;
     }
 
@@ -92,7 +96,6 @@ as1000-mfd-element #Mainframe #Electricity {
         //@extend %render-layer;
         grid-area: main;
         position: relative;
-        display: none;
     }
 
     .page-container,
@@ -104,6 +107,7 @@ as1000-mfd-element #Mainframe #Electricity {
     }
 
     #LeftInfos {
+        //display: none !important;
         background: $page_background_color;
         grid-area: engine;
         border-right: $border_width_thick solid $border_color;
@@ -143,9 +147,8 @@ as1000-mfd-element #Mainframe #Electricity {
     glasscockpit-xmlcolumngauge,
     glasscockpit-xmlhorizontalgauge,
     glasscockpit-xmlhorizontaldoublegauge {
-        svg {
-            @extend %render-layer;
-        }
+        @extend %render-layer;
+        overflow: hidden !important;
     }
 }
 
@@ -191,99 +194,10 @@ airport-icon {
     display: inline-block;
 }
 
-.article {
-    font-size: 1em;
-    line-height: 1.5em;
-
-    h1 {
-        font-size: 2em;
-        line-height: 1.4em;
-        margin-top: 1em;
-        margin-bottom: 0.5em;
-
-        &:first-child {
-            margin-top: 0.2em;
-        }
-    }
-    h2 {
-        font-size: 1.2em;
-        line-height: 1.4em;
-        margin-top: 0.8em;
-        margin-bottom: 0.5em;
-
-        &:first-child {
-            margin-top: 0.2em;
-        }
-    }
-    p,
-    ul {
-        margin: 1em 0;
-        font-size: 1em;
-        line-height: 1.5em;
-    }
-    ul {
-        margin-left: 1.5em;
-        list-style: square;
-    }
-}
-
 g1000-map-page {
     display: block;
     width: 100%;
     height: 100%;
-}
-
-.page-selector {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 30vh;
-    font-size: 1rem;
-    color: #666;
-    text-transform: uppercase;
-    display: none;
-
-    &[visible] {
-        display: block;
-    }
-
-    .group-list {
-        background: $category_box_background_color;
-        display: flex;
-        border-left: $border_width_thin solid $border_color;
-        padding: 0 0.5vh;
-
-        li {
-            display: block;
-            padding: 0.5vh;
-            border-left: 1px solid transparent;
-            border-right: 1px solid transparent;
-
-            &.selected {
-                color: $input_color;
-                border-color: #fff;
-                background: $category_box_background_color;
-                margin-top: -$border_width_thin;
-            }
-        }
-    }
-
-    .page-list {
-        background: $category_box_background_color;
-        display: block;
-        border: $border_width_thin solid $border_color;
-        border-right: none;
-        padding: 0 1vh;
-
-        li {
-            display: block;
-            margin: 0.5vh 0;
-
-            &.selected {
-                color: $input_color;
-            }
-        }
-    }
 }
 
 g1000-external-link {

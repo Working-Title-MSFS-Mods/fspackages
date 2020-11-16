@@ -45,7 +45,6 @@ class WT_PFD_Procedure_Page_View extends WT_HTML_View {
         this.procedurePage = procedurePage;
 
         this.inputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this));
-        this.inputLayer.setExitHandler(this);
 
         this.onExit = new WT_Event();
 
@@ -93,9 +92,6 @@ class WT_PFD_Procedure_Page_View extends WT_HTML_View {
         this.inputStackHandle.onPopped.subscribe(() => {
             this.onExit.fire();
         });
-    }
-    back() {
-        this.onExit.fire();
     }
     exit() {
         if (this.inputStackHandle) {

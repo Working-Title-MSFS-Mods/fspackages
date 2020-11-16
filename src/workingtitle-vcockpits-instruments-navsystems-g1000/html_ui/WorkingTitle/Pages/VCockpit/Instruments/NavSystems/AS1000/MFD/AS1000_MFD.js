@@ -41,7 +41,7 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("waypointSelectorModelFactory", d => new WT_Waypoint_Selector_Model_Factory(d.waypointRepository));
         d.register("waypointSelectorViewFactory", d => new WT_MFD_Waypoint_Selector_View_Factory(d.icaoInputModel, d.softKeyMenuHandler, d.mapInputLayerFactory));
         d.register("showNewWaypointHandler", d => new WT_MFD_Show_New_Waypoint_Handler(d.paneContainer, d.waypointSelectorModelFactory, d.waypointSelectorViewFactory, d.miniMap, d.inputStack));
-        d.register("directToHandler", d => new WT_Direct_To_Handler(d.flightPlanController, d.mainMap));
+        d.register("directToHandler", d => new WT_Master_Direct_To_Handler(d.sharedInstrumentEvents, d.waypointRepository, d.flightPlanController, d.mainMap));
         d.register("directToModelFactory", d => new WT_Direct_To_Model_Factory(this, d.waypointRepository, d.directToHandler));
         d.register("directToViewFactory", d => new WT_MFD_Direct_To_View_Factory(d.softKeyMenuHandler, d.icaoInputModel, d.pageMenuHandler));
         d.register("showDirectToHandler", d => new WT_MFD_Show_Direct_To_Handler(d.paneContainer, d.directToModelFactory, d.directToViewFactory, d.miniMap, d.inputStack));
@@ -79,7 +79,7 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("flightPlanView", d => new WT_MFD_Flight_Plan_Page_View(d.mainMap, d.softKeyMenuHandler, d.pageMenuHandler, d.confirmDialogHandler, d.showNewWaypointHandler), { scope: "transient" });
 
         d.register("nearestAirportsModel", d => new WT_Nearest_Airports_Model(this, d.showDirectToHandler, d.waypointRepository, d.unitChooser, d.mainMap, d.nearestWaypoints, d.showWaypointInfoHandler), { scope: "transient" });
-        d.register("nearestAirportsView", d => new WT_Nearest_Airports_View(d.frequencyListModel, d.unitChooser, d.softKeyMenuHandler), { scope: "transient" });
+        d.register("nearestAirportsView", d => new WT_Nearest_Airports_View(d.frequencyListModel, d.unitChooser, d.softKeyMenuHandler, d.showProcedureHandler), { scope: "transient" });
 
         d.register("nearestNdbsModel", d => new WT_Nearest_Ndbs_Model(d.waypointRepository, d.nearestWaypoints, d.showWaypointInfoHandler), { scope: "transient" });
         d.register("nearestNdbsView", d => new WT_Nearest_Ndbs_View(d.softKeyMenuHandler, d.mainMap, d.unitChooser), { scope: "transient" });
@@ -164,7 +164,6 @@ class AS1000_MFD extends BaseAS1000 {
         this.updatables.push(d.procedures);
         this.updatables.push(d.fuelUsed);
 
-        this.loadSavedMapOrientation();
         this.initEngineDisplay();
         this.initMainMap(this.mapInputLayerFactory);
         this.initMiniMap();
@@ -388,22 +387,6 @@ class AS1000_MFD extends BaseAS1000 {
     Update() {
         super.Update();
         SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
-    }
-
-    loadSavedMapOrientation() {
-        let state = WTDataStore.get("MFD.TrackUp", false);
-        this.setMapOrientation(state);
-    }
-
-    toggleMapOrientation() {
-        let newValue = !SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean");
-        this.setMapOrientation(newValue)
-    }
-
-    setMapOrientation(state) {
-        WTDataStore.set("MFD.TrackUp", state);
-        SimVar.SetSimVarValue("L:GPS_TRACK_UP", "boolean", state);
-        this.trackup = state;
     }
 }
 class AS1000_MFD_NavStatus extends NavSystemElement {

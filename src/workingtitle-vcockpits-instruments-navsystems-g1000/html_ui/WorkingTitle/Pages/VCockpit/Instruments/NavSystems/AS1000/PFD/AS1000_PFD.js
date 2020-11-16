@@ -33,7 +33,7 @@ class AS1000_PFD extends BaseAS1000 {
         super();
 
         window.addEventListener('unhandledrejection', function (event) {
-            console.error("Unhandled exception");
+            console.error(`Unhandled exception: ${event.reason}`);
         });
 
         this.handleReversionaryMode = false;
@@ -44,8 +44,10 @@ class AS1000_PFD extends BaseAS1000 {
         const d = new WT_Dependency_Container();
         WT_Shared_Dependencies.add(d, this);
 
+        d.register("dialogContainer", d => this.querySelector(".dialog-container"));
+
         d.register("showPageMenuHandler", d => new WT_PFD_Show_Page_Menu_Handler(d.inputStack, document.getElementById("PageMenuContainer")));
-        d.register("directToHandler", d => new WT_Direct_To_Handler(null, null)); //TODO:
+        d.register("directToHandler", d => new WT_Direct_To_Handler(d.sharedInstrumentEvents));
         d.register("showDirectToHandler", d => new WT_PFD_Show_Direct_To_Handler(d.miniPageController, d.directToModel, d.directToView));
 
         d.register("miniPageController", d => this.querySelector("g1000-pfd-mini-page-container"));
@@ -56,7 +58,7 @@ class AS1000_PFD extends BaseAS1000 {
             return view;
         });
         d.register("flightPlanView", d => {
-            const view = new WT_PFD_Flight_Plan_Page_View(d.showPageMenuHandler, null, d.showNewWaypointHandler);
+            const view = new WT_PFD_Flight_Plan_Page_View(d.showPageMenuHandler, d.confirmDialogHandler, d.showNewWaypointHandler);
             view.classList.add("mini-page");
             return view;
         });
@@ -65,9 +67,11 @@ class AS1000_PFD extends BaseAS1000 {
             view.classList.add("mini-page");
             return view;
         });
-        d.register("procedurePageModel", d => new WT_PFD_Procedure_Page_Model(d.flightPlanModel, d.procedureFacilityRepository));
+        d.register("procedurePageModel", d => new WT_PFD_Procedure_Page_Model(d.flightPlanManager, d.procedureFacilityRepository));
         d.register("showProcedureHandler", d => new WT_PFD_Show_Procedure_Handler(d.miniPageController, d.icaoInputModel, d.procedurePageModel, d.approachPageView, d.arrivalPageView, d.departurePageView));
         d.register("showNewWaypointHandler", d => new WT_PFD_Show_New_Waypoint_Handler(d.miniPageController, d.waypointRepository, d.icaoInputModel, d.inputStack));
+        d.register("confirmDialogHandler", d => new WT_PFD_Show_Confirm_Dialog_Handler(d.inputStack, d.dialogContainer));
+        d.register("showDuplicatesHandler", d => new WT_PFD_Show_Duplicates_Handler(d.miniPageController, d.waypointRepository, d.inputStack));
 
         d.register("alertsKey", d => new WT_PFD_Alert_Key(d.annunciationsModel));
 
@@ -228,10 +232,16 @@ class AS1000_PFD extends BaseAS1000 {
             this.updatables.push(model);
     }
     showFlightPlan() {
-        this.miniPageController.showPage(this.dependencies.flightPlanView);
+        this.miniPageController.showPageRoot(this.dependencies.flightPlanView);
     }
     showProcedures() {
-        this.miniPageController.showPage(this.dependencies.proceduresMenuView);
+        const proceduresMenuView = this.dependencies.proceduresMenuView;
+        /*const onExit = () => {
+            this.miniPageController.closeAllPages();    
+            proceduresMenuView.onExit.unsubscribe(onExit);
+        }
+        proceduresMenuView.onExit.subscribe(onExit);*/
+        this.miniPageController.showPageRoot(proceduresMenuView);
     }
     async pfdConfig() {
         let loader = new WTConfigLoader(this._xmlConfigPath);
@@ -282,7 +292,7 @@ class AS1000_PFD extends BaseAS1000 {
             syntheticVision = this.instrumentXmlConfig.getElementsByTagName("SyntheticVision")[0];
             reversionaryMode = this.instrumentXmlConfig.getElementsByTagName("ReversionaryMode")[0];
         }
-        this.dependencies.syntheticVision.enabled.value = WTDataStore.get(`PFD.SyntheticVision`, syntheticVision && syntheticVision.textContent == "True");
+        this.dependencies.syntheticVision.enabled.value = WTDataStore.get(WT_Synthetic_Vision.ENABLED_KEY, syntheticVision && syntheticVision.textContent == "True");
         if (reversionaryMode && reversionaryMode.textContent == "True") {
             this.handleReversionaryMode = true;
         }

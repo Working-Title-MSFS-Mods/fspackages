@@ -7,7 +7,7 @@ class WT_MFD_Show_Duplicates_Handler extends WT_Show_Duplicates_Handler {
     }
     show(duplicates) {
         const model = new WT_Duplicate_Waypoints_Model(this.waypointRepository, duplicates);
-        const view = new WT_Duplicate_Waypoints_View();
+        const view = new WT_MFD_Duplicate_Waypoints_View();
         this.dialogContainer.appendChild(view);
         view.setModel(model);
         const close = () => {

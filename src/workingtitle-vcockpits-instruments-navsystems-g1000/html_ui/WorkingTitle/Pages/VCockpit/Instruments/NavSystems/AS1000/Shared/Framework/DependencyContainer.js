@@ -65,20 +65,17 @@ class WT_Dependency_Container {
 
 class WT_Shared_Dependencies {
     static add(d, navSystem) {
+        d.register("sharedData", d => new WT_Shared_Instrument_Data());
+        d.register("sharedEvents", d => new WT_Shared_Instrument_Events(navSystem));
         d.register("inputStack", d => new Input_Stack());
         d.register("planeConfig", d => new WT_Plane_Config());
         d.register("planeState", d => new WT_Plane_State());
         d.register("radioAltimeter", d => new WT_Radio_Altimeter(d.planeConfig));
         d.register("sound", d => new WT_Sound());
         d.register("softKeyController", d => navSystem.querySelector("g1000-soft-key-menu"));
-        d.register("settings", d => {
-            const settings = new WT_Settings("g36", WT_Default_Settings.base);
-            navSystem.updatables.push(settings);
-            return settings;
-        });
+        d.register("settings", d => new WT_Settings("Settings", WT_Default_Settings.base));
         d.register("modSettings", d => {
-            const settings = new WT_Settings("mod", WT_Default_Settings.modBase);
-            navSystem.updatables.push(settings);
+            const settings = new WT_Settings("ModSettings", WT_Default_Settings.modBase);
             Selectables_Input_Layer.SCROLL_DIRECTION = settings.getValue("navigation_knob")
             settings.addListener(value => Selectables_Input_Layer.SCROLL_DIRECTION = value, "navigation_knob");
             return settings;

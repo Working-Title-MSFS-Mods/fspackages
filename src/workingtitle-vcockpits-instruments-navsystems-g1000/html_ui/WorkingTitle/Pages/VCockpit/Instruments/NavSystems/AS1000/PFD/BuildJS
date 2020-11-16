@@ -18,7 +18,9 @@ Components/Warnings.js
 Components/Wind.js
 Data/SyntheticVision.js
 Handlers/MenuPush.js
+Handlers/ShowConfirmDialog.js
 Handlers/ShowDirectTo.js
+Handlers/ShowDuplicates.js
 Handlers/ShowNewWaypoint.js
 Handlers/ShowPageMenu.js
 Handlers/ShowProcedure.js
@@ -34,6 +36,7 @@ Menus/TransponderCode.js
 Menus/Wind.js
 Pages/AdfDme.js
 Pages/DirectTo.js
+Pages/DuplicateWaypoints.js
 Pages/FlightPlan.js
 Pages/Nearest.js
 Pages/ProceduresMenu.js

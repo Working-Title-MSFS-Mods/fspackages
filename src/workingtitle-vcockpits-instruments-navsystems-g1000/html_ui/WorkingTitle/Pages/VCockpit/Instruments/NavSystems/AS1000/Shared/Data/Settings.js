@@ -26,14 +26,31 @@ WT_Default_Settings.modBase = {
 }
 
 class WT_Settings {
-    constructor(aircraft, defaults) {
-        this.aircraft = aircraft;
+    constructor(namespace, defaults) {
+        this.namespace = namespace;
         this.defaults = defaults;
         this.settings = {};
-        this.lastUpdated = 0;
         this.listeners = [];
 
+        WTDataStore.addListener((key, value) => {
+            if (value === null) {
+                delete this.settings[key];
+            } else {
+                this.settings[key] = value;
+            }
+            this.onValueChanged(key, this.getValue(key));
+        }, this.storagePrefix);
+
         this.load();
+    }
+    get storagePrefix() {
+        return `${this.namespace}.`;
+    }
+    getValueFromStore(key) {
+        if (WTDataStore.has(this.getStorageKey(key))) {
+            return WTDataStore.get(this.getStorageKey(key), this.defaults[key]);
+        }
+        return undefined;
     }
     getValue(key) {
         if (key in this.settings) {
@@ -48,38 +65,29 @@ class WT_Settings {
         if (this.settings[key] != value) {
             this.settings[key] = value;
             this.onValueChanged(key, value);
+            WTDataStore.set(this.getStorageKey(key), value);
         }
     }
-    getStorageKey() {
-        return "config_" + this.aircraft;
-    }
-    getTimestampKey() {
-        return "config_timestamp_" + this.aircraft;
+    getStorageKey(key) {
+        return `${this.storagePrefix}${key}`;
     }
     reset() {
         this.settings = {};
-        this.save();
+        for (let key in this.defaults) {
+            WTDataStore.remove(this.getStorageKey(key));
+            this.onValueChanged(key, this.defaults[key]);
+        }
     }
     save() {
-        let json = JSON.stringify(this.settings);
-        this.lastUpdated = (new Date()).getTime();
-        SetStoredData(this.getStorageKey(), json);
-        SetStoredData(this.getTimestampKey(), this.lastUpdated.toString());
-        console.log("Saving settings " + this.lastUpdated);
     }
     load() {
-        let storedData = GetStoredData(this.getStorageKey());
-        if (storedData) {
-            let settings = JSON.parse(storedData);
-            for (let name in settings) {
-                const value = settings[name];
-                if (this.settings[name] != value) {
-                    this.onValueChanged(name, value);
-                }
+        this.settings = {};
+        for (let key in this.defaults) {
+            const value = this.getValueFromStore(key);
+            if (value) {
+                this.settings[key] = value;
+                this.onValueChanged(key, value);
             }
-            this.settings = settings;
-            console.log("Loaded settings:");
-            this.lastUpdated = parseInt(GetStoredData(this.getTimestampKey()));
         }
     }
     onValueChanged(name, value) {
@@ -90,11 +98,6 @@ class WT_Settings {
         }
     }
     update() {
-        let lastUpdated = parseInt(GetStoredData(this.getTimestampKey()));
-        if (lastUpdated && lastUpdated > this.lastUpdated) {
-            console.log("Updating settings");
-            this.load();
-        }
     }
     addListener(listener, pattern) {
         this.listeners.push({

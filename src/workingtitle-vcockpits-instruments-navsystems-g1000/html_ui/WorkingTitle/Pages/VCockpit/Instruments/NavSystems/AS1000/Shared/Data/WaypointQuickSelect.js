@@ -7,7 +7,7 @@ class WT_Waypoint_Quick_Select {
         this.flightPlanManager = flightPlanManager;
         this.gps = gps;
 
-        this.recentWaypoints = JSON.parse(WTDataStore.get(this.RECENT_DATA_STORE_KEY, "[]"));
+        this.recentWaypoints = WTDataStore.get(WT_Waypoint_Quick_Select.RECENT_DATA_STORE_KEY, []);
     }
     addRecentWaypoint(icao) {
         if (this.recentWaypoints.indexOf(icao) == -1) {
@@ -17,55 +17,52 @@ class WT_Waypoint_Quick_Select {
             this.recentWaypoints.unshift(icao);
         }
         this.recentWaypoints.splice(50);
-        WTDataStore.set(this.RECENT_DATA_STORE_KEY, JSON.stringify(this.recentWaypoints));
+        WTDataStore.set(WT_Waypoint_Quick_Select.RECENT_DATA_STORE_KEY, this.recentWaypoints);
     }
     async loadWaypoints(icaos) {
-        let wps = [];
+        const promises = [];
         for (let icao of icaos) {
-            let waypoint = new WayPoint(this.gps);
-            await new Promise(resolve => waypoint.SetICAO(icao, resolve)).then(() => {
-                wps.push(waypoint);
-            });
+            const waypoint = new WayPoint(this.gps);
+            promises.push(new Promise(resolve => waypoint.SetICAO(icao, () => resolve(waypoint))));
         }
-        return wps;
+        return await Promise.all(promises);
     }
     getFlightPlanWaypoints(type) {
         return this.flightPlanManager.getWaypoints().filter(wp => {
             return type.includes(wp.icao[0]);
         });
     }
-    async getNearestList(list) {
+    getNearestList(list) {
         let i = 0;
-        await new Promise(resolve => {
-            let frame = () => {
+        return new Promise(resolve => {
+            const frame = () => {
                 if (i++ < 10) {
-                    list.Update(30, 100); // This is so mind bogglingly stupid it hurts
+                    list.Update(20, 100); // This is so mind bogglingly stupid it hurts
                     requestAnimationFrame(frame);
                 } else {
-                    resolve();
+                    resolve(list);
                 }
             };
             requestAnimationFrame(frame);
         });
     }
     async getNearestWaypoints(type) {
-        let wps = [];
+        const promises = [];
         if (type.includes("A")) {
-            await this.getNearestList(this.nearestAirportList);
-            wps.push(...this.nearestAirportList.airports);
+            promises.push(this.getNearestList(this.nearestAirportList).then(list => list.airports));
         }
         if (type.includes("N")) {
-            await this.getNearestList(this.nearestNdbsList);
-            wps.push(...this.nearestNdbsList.ndbs);
+            promises.push(this.getNearestList(this.nearestNdbsList).then(list => list.ndbs));
         }
         if (type.includes("V")) {
-            await this.getNearestList(this.nearestVorsList);
-            wps.push(...this.nearestVorsList.vors);
+            promises.push(this.getNearestList(this.nearestVorsList).then(list => list.vors));
         }
-        wps.sort((a, b) => {
-            return a.distance - b.distance;
-        });
-        return wps;
+        return (await Promise.all(promises))
+            .reduce((previous, current) => {
+                previous.push(...current);
+                return previous;
+            }, [])
+            .sort((a, b) => a.distance - b.distance);
     }
     /**
      * @param {String} type 
@@ -85,4 +82,4 @@ class WT_Waypoint_Quick_Select {
         }
     }
 }
-WT_Waypoint_Quick_Select.RECENT_DATA_STORE_KEY = "MFD.WaypointQuickSelect";
+WT_Waypoint_Quick_Select.RECENT_DATA_STORE_KEY = "WaypointQuickSelect";

@@ -1,0 +1,48 @@
+g1000-duplicate-waypoints {
+    padding: 0 1.5vh;
+    z-index: 1000;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+
+    .waypoint-ident {
+        display: grid;
+        grid-template-columns: 5ch 1fr;
+        align-items: center;
+        padding-bottom: 1vh;
+        border-bottom: $border_width_thin solid #fff;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    .ident {
+        color: $input_color;
+    }
+
+    .duplicates {
+        color: $input_color;
+        overflow-y: scroll;
+
+        li {
+            display: grid;
+            grid-gap: 2vh;
+            grid-template-columns: 20% 3ch 1fr;
+            align-items: center;
+        }
+
+        .icon img {
+            display: block !important;
+            width: 2ch;
+            height: 2ch;
+        }
+    }
+
+    .city {
+        @extend %animated-selection;
+    }
+
+    .units {
+        font-size: 0.8em;
+    }
+}

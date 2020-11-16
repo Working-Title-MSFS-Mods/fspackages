@@ -19,12 +19,14 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
      * @param {WT_Frequency_List_Model} frequencyListModel 
      * @param {WT_Unit_Chooser} unitChooser 
      * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
+     * @param {WT_Show_Procedure_Handler} showProcedureHandler 
      */
-    constructor(frequencyListModel, unitChooser, softKeyMenuHandler) {
+    constructor(frequencyListModel, unitChooser, softKeyMenuHandler, showProcedureHandler) {
         super();
         this.frequencyListModel = frequencyListModel;
         this.unitChooser = unitChooser;
         this.softKeyMenuHandler = softKeyMenuHandler;
+        this.showProcedureHandler = showProcedureHandler;
 
         this.inputStackHandle = null;
 
@@ -132,7 +134,7 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
             if (infos.approaches) {
                 let elems = [];
                 for (let i = 0; i < infos.approaches.length; i++) {
-                    elems.push(`<li class="element selectable" data-approach="${i}"><span class="name">${infos.ident}-${infos.approaches[i].name}</span></li>`);
+                    elems.push(`<li class="element selectable" data-approach="${i}" data-click="showApproach"><span class="name">${infos.ident}-${infos.approaches[i].name}</span></li>`);
                 }
                 this.elements.approachList.innerHTML = elems.join("");
             }
@@ -148,6 +150,10 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
                 }
             }, airport];
         }
+    }
+    showApproach(element) {
+        const approachIndex = element.dataset.approach;
+        this.showProcedureHandler.showApproaches(this.model.selectedAirport.value.icao, approachIndex);
     }
     updateAirports(airports) {
         this.elements.waypointList.setWaypoints(airports);

@@ -1,0 +1,52 @@
+.page-selector {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 30vh;
+    font-size: 1rem;
+    color: #666;
+    text-transform: uppercase;
+    display: none;
+
+    &[visible] {
+        display: block;
+    }
+
+    .group-list {
+        background: $category_box_background_color;
+        display: flex;
+        border-left: $border_width_thin solid $border_color;
+        padding: 0 0.5vh;
+
+        li {
+            display: block;
+            padding: 0.5vh;
+            border-left: 1px solid transparent;
+            border-right: 1px solid transparent;
+
+            &.selected {
+                color: $input_color;
+                border-color: #fff;
+                background: $category_box_background_color;
+                margin-top: -$border_width_thin;
+            }
+        }
+    }
+
+    .page-list {
+        background: $category_box_background_color;
+        display: block;
+        border: $border_width_thin solid $border_color;
+        border-right: none;
+        padding: 0 1vh;
+
+        li {
+            display: block;
+            margin: 0.5vh 0;
+
+            &.selected {
+                color: $input_color;
+            }
+        }
+    }
+}

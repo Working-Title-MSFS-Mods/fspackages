@@ -79,6 +79,16 @@ class WT_Map_Setup {
         }
     }
 }
+function zoomToIndex(zoom) {
+    const feet = 1 / 6076;
+    const ranges = [500 * feet, 800 * feet, 1000 * feet, 1500 * feet, 2000 * feet, 3000 * feet, 5000 * feet, 1, 1.5, 2, 3, 5, 8, 10, 15, 20, 30, 50, 80, 100, 150, 200, 300, 500, 800, 1000];
+    for (let i = 0; i < ranges.length; i++) {
+        const range = ranges[i];
+        if (range >= zoom)
+            return i;
+    }
+    return ranges.length - 1;
+}
 WT_Map_Setup.DEFAULT = {
     // Map
     orientation: "north",
@@ -96,37 +106,37 @@ WT_Map_Setup.DEFAULT = {
 
     // Land
     latLongText: "small",
-    latLongRange: 0,
-    freewayRange: 300,
-    nationalHighwayRange: 30,
-    localRoadRangeRange: 8,
-    railroadRange: 15,
+    latLongRange: zoomToIndex(0),
+    freewayRange: zoomToIndex(300),
+    nationalHighwayRange: zoomToIndex(30),
+    localRoadRange: zoomToIndex(8),
+    railroadRange: zoomToIndex(15),
     largeCityText: "medium",
-    largeCityRange: 800,
+    largeCityRange: zoomToIndex(800),
     mediumCityText: "medium",
-    mediumCityRange: 100,
+    mediumCityRange: zoomToIndex(100),
     smallCityText: "medium",
-    smallCityRange: 20,
+    smallCityRange: zoomToIndex(20),
     stateProvinceText: "large",
-    stateProvinceRange: 800,
+    stateProvinceRange: zoomToIndex(800),
     riverLakeText: "small",
-    riverLakeRange: 200,
+    riverLakeRange: zoomToIndex(200),
     userWaypointText: "small",
-    userWaypointRange: 150,
+    userWaypointRange: zoomToIndex(150),
 
     // Aviation
     largeAirportText: "medium",
-    largeAirportRange: 800,
+    largeAirportRange: zoomToIndex(800),
     mediumAirportText: "medium",
-    mediumAirportRange: 100,
+    mediumAirportRange: zoomToIndex(100),
     smallAirportText: "medium",
-    smallAirportRange: 20,
+    smallAirportRange: zoomToIndex(20),
     intersectionText: "medium",
-    intersectionRange: 800,
+    intersectionRange: zoomToIndex(20),
     vorText: "medium",
-    vorRange: 100,
+    vorRange: zoomToIndex(100),
     ndbText: "medium",
-    ndbRange: 20,
+    ndbRange: zoomToIndex(20),
 }
 
 class WT_Map_Setup_Handler {

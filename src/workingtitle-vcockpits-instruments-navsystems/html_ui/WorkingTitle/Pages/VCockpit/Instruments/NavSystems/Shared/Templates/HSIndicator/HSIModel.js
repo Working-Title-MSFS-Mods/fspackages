@@ -241,7 +241,7 @@ class HSIIndicatorModel {
     }
     toggleDme() {
         let display = this.dme.display.value ? 0 : 1;
-        WTDataStore.set("HSI.ShowDme", display);
+        WTDataStore.set("HSI.ShowDme", display == 1);
         SimVar.SetSimVarValue("L:PFD_DME_Displayed", "number", display);
     }
     cycleCdi() {

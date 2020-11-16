@@ -56,7 +56,7 @@ class WT_Map_Input_Layer extends Input_Layer {
         return this.allowScrolling;
     }
     canPan() {
-        return this.map.eBingMode === EBingMode.CURSOR;
+        return this.map.offsetParent && this.map.eBingMode === EBingMode.CURSOR;
     }
     onJoystickUp() {
         if (!this.canPan())

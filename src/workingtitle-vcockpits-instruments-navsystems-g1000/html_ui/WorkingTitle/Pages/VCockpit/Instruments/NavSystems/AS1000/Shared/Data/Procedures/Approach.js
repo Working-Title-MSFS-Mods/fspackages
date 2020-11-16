@@ -75,7 +75,7 @@ class WT_Selected_Approach_Procedure extends WT_Selected_Procedure {
         }
         waypoints.push(...this.finalLegsWaypoints.waypoints);
 
-        this.outputWaypointsToConsole(waypoints);
+        //this.outputWaypointsToConsole(waypoints);
 
         return waypoints;
     }
@@ -86,15 +86,18 @@ class WT_Selected_Approach_Procedure extends WT_Selected_Procedure {
      * @param {FlightPlanManager} flightPlan 
      */
     async load(flightPlan) {
-        return new Promise(resolve => {
-            console.log(`Setting destination to ${this.procedure.icao}...`);
-            flightPlan.setDestination(this.procedure.icao, () => {
-                console.log(`Loading approach ${this.procedure.procedureIndex} transition ${this.transitionIndex}...`);
-                flightPlan.setApproachIndex(this.procedure.procedureIndex, () => {
-                    console.log("Set approach index");
-                    resolve();
-                }, this.transitionIndex);
-            });
+        return new Promise(async resolve => {
+            // If there's no destination set 
+            const destination = flightPlan.getDestination();
+            if (destination == null || destination.icao != this.procedure.icao) {
+                console.log(`Setting destination to ${this.procedure.icao}...`);
+                await new Promise(resolve => flightPlan.addWaypoint(this.procedure.icao, flightPlan.getWaypointsCount(), resolve));
+                await new Promise(resolve => flightPlan.setDestination(this.procedure.icao, resolve));
+            }
+            // Load procedure
+            console.log(`Loading approach ${this.procedure.procedureIndex} transition ${this.transitionIndex}...`);
+            await new Promise(resolve => flightPlan.setApproachIndex(this.procedure.procedureIndex, resolve, this.transitionIndex));
+            resolve();
         });
     }
     /**

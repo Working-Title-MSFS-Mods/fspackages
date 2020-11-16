@@ -17,6 +17,7 @@ drop-down-selector {
         max-height: 20vh;
         overflow-y: scroll;
         min-width: var(--popup-width);
+        line-height: 1.7em;
 
         drop-down-selector-option {
             color: $input_color;

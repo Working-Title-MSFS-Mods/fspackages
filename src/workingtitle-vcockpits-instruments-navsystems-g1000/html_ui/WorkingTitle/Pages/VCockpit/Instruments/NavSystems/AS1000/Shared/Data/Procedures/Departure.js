@@ -96,7 +96,7 @@ class WT_Selected_Departure_Procedure extends WT_Selected_Procedure {
         let waypointCollection = new WT_Procedure_Waypoints(legs);
         let waypoints = waypointCollection.waypoints;
 
-        this.outputWaypointsToConsole(waypoints);
+        //this.outputWaypointsToConsole(waypoints);
 
         return waypoints;
     }
@@ -107,21 +107,23 @@ class WT_Selected_Departure_Procedure extends WT_Selected_Procedure {
      * @param {FlightPlanManager} flightPlan 
      */
     async load(flightPlan) {
-        return new Promise(resolve => {
+        return new Promise(async resolve => {
             console.log(`Setting origin to ${this.procedure.icao}...`);
             flightPlan.setOrigin(this.procedure.icao, () => {
-                console.log(`Setting departure...`);
-                const promises = [];
-                promises.push(new Promise(resolve => {
-                    flightPlan.setDepartureProcIndex(this.procedure.procedureIndex, resolve);
-                }));
-                promises.push(new Promise(resolve => {
-                    flightPlan.setDepartureEnRouteTransitionIndex(this.enRouteTransitionIndex, resolve);
-                }));
-                promises.push(new Promise(resolve => {
-                    flightPlan.setDepartureRunwayIndex(this.runwayTransitionIndex, resolve);
-                }));
-                Promise.all(promises).then(resolve);
+                // If there's no origin set 
+                const origin = flightPlan.getOrigin();
+                if (origin == null || origin.icao != this.procedure.icao) {
+                    console.log(`Setting origin to ${this.procedure.icao}...`);
+                    await new Promise(resolve => flightPlan.addWaypoint(this.procedure.icao, 0, resolve));
+                    await new Promise(resolve => flightPlan.setOrigin(this.procedure.icao, resolve));
+                }
+                // Set procedure indexes
+                await Promise.all([
+                    new Promise(resolve => flightPlan.setDepartureProcIndex(this.procedure.procedureIndex, resolve)),
+                    new Promise(resolve => flightPlan.setDepartureEnRouteTransitionIndex(this.enRouteTransitionIndex, resolve)),
+                    new Promise(resolve => flightPlan.setDepartureRunwayIndex(this.runwayTransitionIndex, resolve)),
+                ]);
+                resolve();
             });
         });
     }

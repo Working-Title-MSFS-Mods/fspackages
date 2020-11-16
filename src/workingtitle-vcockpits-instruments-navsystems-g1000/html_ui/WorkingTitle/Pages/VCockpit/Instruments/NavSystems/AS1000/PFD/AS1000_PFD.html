@@ -228,6 +228,7 @@
             </footer>
 
             <div class="page-menu-container" id="PageMenuContainer"></div>
+            <div class="dialog-container" id="DialogContainer"></div>
 
             <g1000-pfd-mini-page-container>
                 <g1000-pfd-timer-references-page class="mini-page">
@@ -345,31 +346,14 @@
     </template>
 
     <template id="duplicate-waypoints">
-        <h1 class="title">Duplicate Waypoints</h1>
-        <section class="category">
-            <h1>Waypoint</h1>
+        <h1>Duplicate Waypoints</h1>
+        <section class="waypoint-ident">
+            <label>WPT</label>
             <section class="content">
                 <div class="ident" data-element="ident"></div>
             </section>
         </section>
-        <section class="category">
-            <h1>Duplicates</h1>
-            <ul class="content duplicates scrollable-container" data-element="duplicates"></ul>
-        </section>
-        <section class="category">
-            <h1>Information</h1>
-            <section class="content information">
-                <div class="name" data-element="name">___</div>
-                <div class="city" data-element="city">___</div>
-                <div class="coordinatesLat" data-element="coordinatesLat">___</div>
-                <div class="coordinatesLong" data-element="coordinatesLong">___</div>
-                <div class="bearing" data-element="bearing">___</div>
-                <div class="distance" data-element="distance">___</div>
-            </section>
-        </section>
-        <footer>
-            Press "ENT" to select duplicate or "CLR" to cancel
-        </footer>
+        <ul class="category duplicates scrollable-container" data-element="duplicates"></ul>
     </template>
 
     <template id="template-waypoint-selector">
@@ -469,6 +453,16 @@
         <section class="load-or-activate">
             <selectable-button data-click="loadProcedure">LOAD?</selectable-button>
         </section>
+    </template>
+
+    <template id="confirm-dialog"> 
+        <div class="dialog">
+            <div class="message" data-element="message"></div>
+            <div class="buttons">
+                <selectable-button data-click="confirm">OK</selectable-button>
+                <selectable-button data-click="cancel">Cancel</selectable-button>
+            </div>
+        </div>
     </template>
 
     <template id="airport-icon">

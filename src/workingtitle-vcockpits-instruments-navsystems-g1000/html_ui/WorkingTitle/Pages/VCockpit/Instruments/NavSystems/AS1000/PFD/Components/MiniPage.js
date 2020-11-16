@@ -14,8 +14,8 @@ class WT_PFD_Mini_Page_Input_Layer extends Input_Layer {
 class WT_PFD_Mini_Page_Controller extends WT_HTML_View {
     constructor() {
         super();
-        this.currentPage = null;
         this.inputLayer = new WT_PFD_Mini_Page_Input_Layer(this);
+        this.pageStack = [];
     }
     connectedCallback() {
         this.pages = {
@@ -24,6 +24,12 @@ class WT_PFD_Mini_Page_Controller extends WT_HTML_View {
             adfDme: this.querySelector("g1000-pfd-adf-dme"),
             setupMenu: this.querySelector("g1000-pfd-setup-menu"),
         }
+    }
+    get rootPage() {
+        return this.pageStack.length > 0 ? this.pageStack[0] : null;
+    }
+    get currentPage() {
+        return this.pageStack.length > 0 ? this.pageStack[this.pageStack.length - 1] : null;
     }
     addPage(key, view) {
         this.pages[key] = view;
@@ -36,43 +42,48 @@ class WT_PFD_Mini_Page_Controller extends WT_HTML_View {
         this.inputStack.push(this.inputLayer);
     }
     closePage() {
-        if (this.currentPage) {
-            this.currentPage.removeAttribute("visible");
-            this.currentPage.exit();
-            this.currentPage = null;
+        if (this.pageStack.length > 0) {
+            const currentPage = this.pageStack.pop();
+            currentPage.removeAttribute("visible");
+            currentPage.exit();
+        }
+    }
+    closeAllPages() {
+        while (this.pageStack.length > 0) {
+            const currentPage = this.pageStack.pop();
+            currentPage.removeAttribute("visible");
+            currentPage.exit();
         }
     }
     showPage(page) {
-        if (this.currentPage) {
-            if (this.currentPage == page) {
-                this.closePage();
+        this.pageStack.push(page);
+        page.setAttribute("visible", "visible");
+        return page.enter(this.inputStack);
+    }
+    showPageRoot(page) {
+        if (this.rootPage) {
+            if (this.rootPage == page) {
+                this.closeAllPages();
                 return;
             }
-            this.closePage();
+            this.closeAllPages();
         }
-        this.currentPage = page;
-        this.currentPage.setAttribute("visible", "visible");
-        return this.currentPage.enter(this.inputStack);
+        this.showPage(page);
     }
     showTimerReferences() {
-        this.showPage(this.pages.references);
-    }
-    showFlightPlan() {
-    }
-    showProcedures() {
-
+        this.showPageRoot(this.pages.references);
     }
     showNearest() {
-        this.showPage(this.pages.nearest);
+        this.showPageRoot(this.pages.nearest);
     }
     showAdfDme() {
-        this.showPage(this.pages.adfDme);
+        this.showPageRoot(this.pages.adfDme);
     }
     showSetupMenu() {
-        this.showPage(this.pages.setupMenu);
+        this.showPageRoot(this.pages.setupMenu);
     }
     update(dt) {
-        if (this.currentPage) {
+        if (this.currentPage && this.currentPage.update) {
             this.currentPage.update(dt);
         }
     }
