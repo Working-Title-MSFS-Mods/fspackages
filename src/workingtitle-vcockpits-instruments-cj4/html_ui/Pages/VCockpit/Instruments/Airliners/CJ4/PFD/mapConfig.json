@@ -6,7 +6,7 @@
     "outlineWidth": "4"
   },
 
-  "waypointLabelFontSize": 18,
+  "waypointLabelFontSize": 24,
   "waypointLabelFontFamily": "Collins ProLine",
   "waypointLabelColor": "white",
   "waypointLabelStrokeColor": "#3f3f3f",

@@ -33,6 +33,8 @@ export class RawDataMapper {
         info.departures = facility.departures;
         info.departures.forEach(departure =>
           departure.runwayTransitions.forEach(trans => trans.name = RawDataMapper.generateRunwayTransitionName(trans)));
+        info.departures.forEach(departure =>
+          departure.enRouteTransitions.forEach(trans => trans.name = RawDataMapper.generateDepartureEnRouteTransitionName(trans)));
 
         info.arrivals = facility.arrivals;
         info.arrivals.forEach(arrival =>
@@ -128,12 +130,21 @@ export class RawDataMapper {
   };
 
   /**
-   * Generates an arrival transition name from a provided arrival enrout transition.
+   * Generates an arrival transition name from a provided arrival enroute transition.
    * @param enrouteTransition The enroute transition to generate a name for.
    * @returns The generated transition name.
    */
   public static generateArrivalTransitionName(enrouteTransition: EnrouteTransition): string {
     return enrouteTransition.legs[0].fixIcao.substring(7, 12).trim();
+  }
+
+  /**
+   * Generates a departure transition name from a provided departure enroute transition.
+   * @param enrouteTransition The enroute transition to generate a name for.
+   * @returns The generated transition name. 
+   */
+  public static generateDepartureEnRouteTransitionName(enrouteTransition: EnrouteTransition): string {
+    return enrouteTransition.legs[enrouteTransition.legs.length - 1].fixIcao.substring(7, 12).trim();
   }
 }
 
