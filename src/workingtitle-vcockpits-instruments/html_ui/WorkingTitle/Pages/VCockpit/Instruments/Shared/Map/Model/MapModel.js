@@ -106,6 +106,19 @@ class WT_MapModelAirplaneComponent extends WT_MapModelComponent {
     get isOnGround() {
         return SimVar.GetSimVarValue("SIM ON GROUND", "bool");
     }
+
+    get fuelOnboard() {
+        return new WT_NumberUnit(SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons"), WT_Unit.GALLON);
+    }
+
+    get fuelFlowTotal() {
+        let numEngines = SimVar.GetSimVarValue("NUMBER OF ENGINES", "number");
+        let fuelFlow = 0;
+        for (let i = 1; i <= numEngines; i++ ) {
+            fuelFlow += SimVar.GetSimVarValue("ENG FUEL FLOW GPH:" + i, "gallons per hour");
+        }
+        return new WT_NumberUnit(fuelFlow, WT_Unit.GPH);
+    }
 }
 WT_MapModelAirplaneComponent.NAME_DEFAULT = "airplane";
 
