@@ -453,16 +453,18 @@ class CJ4_FMC extends FMCMainDisplay {
             //CHECK FOR LEVEL OFF CONDITION VS/FLC
             let newIsVsActive = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1;
             let newIsFlcActive = SimVar.GetSimVarValue("L:WT_CJ4_FLC_ON", "number") == 1;
-            const newSimFlcValue = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean");
-            const newSimVsValue = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean");
+            const newSimFlcValue = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "number") == 1;
+            const newSimVsValue = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") == 1;
 
             if (newIsFlcActive != newSimFlcValue) {
-                SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", (newSimFlcValue ? 1 : 0));
-                newIsFlcActive = newSimFlcValue;
+                SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", newSimFlcValue);
+                newIsFlcActive = (newSimFlcValue ? true : false);
+                this._isFlcActive = newIsFlcActive;
             }
             if (newIsVsActive != newSimVsValue) {
-                SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", (newSimVsValue ? 1 : 0));
-                newIsVsActive = newSimVsValue;
+                SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", newSimVsValue);
+                newIsVsActive = (newSimVsValue ? true : false);
+                this._isVsActive = newIsVsActive;
             }
 
             //PARSE CJ4 AP MODES
