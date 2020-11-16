@@ -64,6 +64,7 @@ class WT_BaseVnav {
         //CAN VNAV EVEN RUN?
         this._destination = this._fpm.getDestination();
         this._activeWaypoint = this._fpm.getActiveWaypoint();
+        this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
         const flightPlanVersion = SimVar.GetSimVarValue("L:WT.FlightPlan.Version", "number");
 
         if (this._destination && this.waypoints && this.waypoints.length > 1 && this._activeWaypoint && flightPlanVersion) {
