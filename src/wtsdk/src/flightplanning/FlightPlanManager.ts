@@ -160,7 +160,7 @@ export class FlightPlanManager {
   public createNewFlightPlan(callback = EmptyCallback.Void): void {
     const newFlightPlan = new ManagedFlightPlan();
     newFlightPlan.setParentInstrument(this._parentInstrument);
-
+    this._flightPlans = [];
     this._flightPlans.push(newFlightPlan);
     this._updateFlightPlanVersion();
 

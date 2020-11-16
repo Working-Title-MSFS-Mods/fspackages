@@ -30,9 +30,6 @@ export class ManagedFlightPlan {
   /** The details of any direct-to procedures on this flight plan. */
   public directTo: DirectTo = new DirectTo();
 
-  /** The length of the flight plan. */
-  public length: number = 0;
-
   /** The departure segment of the flight plan. */
   public get departure(): FlightPlanSegment { return this.getSegment(SegmentType.Departure); }
 
@@ -81,6 +78,12 @@ export class ManagedFlightPlan {
     return waypoints;
   }
 
+  /** The length of the flight plan. */
+  public get length(): number {
+    const lastSeg = this._segments[this._segments.length-1];
+    return lastSeg.offset + lastSeg.waypoints.length; 
+  }
+
   /** The non-approach waypoints of the flight plan. */
   public get nonApproachWaypoints(): WayPoint[] {
     const waypoints = [];
@@ -117,7 +120,6 @@ export class ManagedFlightPlan {
 
     this.cruiseAltitude = 0;
     this.activeWaypointIndex = 0;
-    this.length = 0;
 
     this.procedureDetails = new ProcedureDetails();
     this.directTo = new DirectTo();
@@ -162,7 +164,6 @@ export class ManagedFlightPlan {
     const mappedWaypoint = (waypoint instanceof WayPoint) ? waypoint : RawDataMapper.toWaypoint(waypoint, this._parentInstrument);
     if (mappedWaypoint.type === 'A' && index === 0) {
       this.originAirfield = mappedWaypoint;
-      this.length++;
 
       this.procedureDetails.departureIndex = -1;
       this.procedureDetails.departureRunwayIndex = -1;
@@ -181,7 +182,8 @@ export class ManagedFlightPlan {
       this.procedureDetails.approachIndex = -1;
       this.procedureDetails.approachTransitionIndex = -1;
 
-      this.length++;
+      this.reflowSegments();
+      this.reflowDistances();
     }
     else {
       const segment = segmentType !== undefined
@@ -207,8 +209,6 @@ export class ManagedFlightPlan {
           segment.waypoints.push(mappedWaypoint);
         }
 
-        this.length++;
-
         this.reflowSegments();
         this.reflowDistances();
 
@@ -227,20 +227,17 @@ export class ManagedFlightPlan {
 
     if (this.originAirfield && index === 0) {
       this.originAirfield = undefined;
-      this.length--;
 
       this.reflowSegments();
       this.reflowDistances();
     }
     else if (this.destinationAirfield && index === this.length - 1) {
       this.destinationAirfield = undefined;
-      this.length--;
     }
     else {
       const segment = this.findSegmentByWaypointIndex(index);
       if (segment) {
         segment.waypoints.splice(index - segment.offset, 1);
-        this.length--;
 
         if (segment.waypoints.length === 0 && segment.type !== SegmentType.Enroute) {
           this.removeSegment(segment.type);
@@ -408,8 +405,6 @@ export class ManagedFlightPlan {
     planCopy.destinationAirfield = this.destinationAirfield && copyAirfield(this.destinationAirfield);
     planCopy.originAirfield = this.originAirfield && copyAirfield(this.originAirfield);
     
-    planCopy.length = this.length;
-
     planCopy.procedureDetails = Object.assign({}, this.procedureDetails);
     planCopy.directTo = Object.assign({}, this.directTo);
     planCopy.directTo.interceptPoints = planCopy.directTo.interceptPoints?.map(w => copyWaypoint(w) as WayPoint);
