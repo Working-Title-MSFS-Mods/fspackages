@@ -142,7 +142,7 @@ class WT_BingMapConfig {
 WT_BingMapConfig.RESOLUTION_NAME = "textureResolution";
 WT_BingMapConfig.RESOLUTION_DEFAULT = 1024;
 WT_BingMapConfig.SKY_COLOR_NAME = "skyColor";
-WT_BingMapConfig.SKY_COLOR_DEFAULT = "#ffffff";
+WT_BingMapConfig.SKY_COLOR_DEFAULT = "#000000";
 WT_BingMapConfig.WATER_COLOR_NAME = "waterColor";
 WT_BingMapConfig.WATER_COLOR_DEFAULT = "#0000ff";
 WT_BingMapConfig.ELEVATION_COLORS_NAME = "elevationColors";
