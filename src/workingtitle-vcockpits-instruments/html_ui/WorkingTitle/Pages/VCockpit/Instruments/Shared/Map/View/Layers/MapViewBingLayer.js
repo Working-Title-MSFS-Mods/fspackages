@@ -47,11 +47,6 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         this._bingMap.setBingId(data.model.bingMap.bingID);
     }
 
-    onUpdate(data) {
-        this._updateCenterAndRange(data);
-        this._updateRotation(data);
-    }
-
     _updateCenterAndRange(data) {
         let range = data.projection.range.asUnit(WT_Unit.METER) * (this.size / data.projection.viewHeight) * 0.5;
         let target = data.projection.center;
@@ -68,6 +63,26 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
 
     _updateRotation(data) {
         this.bingMap.style.transform = `rotate(${data.projection.rotation}deg)`;
+    }
+
+    _updateTerrainColors(data) {
+        let mode = data.model.terrain.mode;
+
+        if (data.model.airplane.isOnGround && mode === WT_MapModelTerrainComponent.TerrainMode.RELATIVE) {
+            mode = WT_MapModelTerrainComponent.TerrainMode.OFF;
+        }
+        this.bingMap.setConfig(mode);
+        if (mode === WT_MapModelTerrainComponent.TerrainMode.RELATIVE) {
+            this.bingMap.setReference(EBingReference.PLANE);
+        } else {
+            this.bingMap.setReference(EBingReference.SEA);
+        }
+    }
+
+    onUpdate(data) {
+        this._updateCenterAndRange(data);
+        this._updateRotation(data);
+        this._updateTerrainColors(data);
     }
 }
 WT_MapViewBingLayer.ID_DEFAULT = "BingLayer";
