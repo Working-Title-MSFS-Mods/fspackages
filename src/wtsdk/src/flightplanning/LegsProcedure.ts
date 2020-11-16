@@ -38,11 +38,11 @@ export class LegsProcedure {
   constructor(private _legs: ProcedureLeg[], private _previousFix: WayPoint, private _instrument: BaseInstrument) {
 
     for (var leg of this._legs) {
-      if (leg.fixIcao.trim() !== '' && leg.fixIcao[0] !== 'R' && !this._facilitiesToLoad.has(leg.fixIcao)) {
+      if (leg.fixIcao.trim() !== '' && leg.fixIcao[0] !== 'R' && leg.fixIcao[0] !== 'A' && !this._facilitiesToLoad.has(leg.fixIcao)) {
         this._facilitiesToLoad.set(leg.fixIcao, this._instrument.facilityLoader.getFacilityRaw(leg.fixIcao, 2000));
       }
 
-      if (leg.originIcao.trim() !== '' && leg.originIcao[0] !== 'R' && !this._facilitiesToLoad.has(leg.originIcao)) {
+      if (leg.originIcao.trim() !== '' && leg.originIcao[0] !== 'R' && leg.originIcao[0] !== 'A' && !this._facilitiesToLoad.has(leg.originIcao)) {
         this._facilitiesToLoad.set(leg.originIcao, this._instrument.facilityLoader.getFacilityRaw(leg.originIcao, 2000));
       }
     }
@@ -113,17 +113,23 @@ export class LegsProcedure {
             mappedLeg = this.mapVectors(currentLeg, this._previousFix);
             break;
           case 15: {
-            const leg = this.mapExactFix(currentLeg);
-            const prevLeg = this._previousFix;
+            if (currentLeg.fixIcao[0] !== 'A') {
+              const leg = this.mapExactFix(currentLeg);
+              const prevLeg = this._previousFix;
 
-            //If a type 15 (initial fix) comes up in the middle of a plan
-            if (leg.icao === prevLeg.icao && leg.infos.coordinates.lat === prevLeg.infos.coordinates.lat
-              && leg.infos.coordinates.long === prevLeg.infos.coordinates.long) {
-              isLegMappable = false;
+              //If a type 15 (initial fix) comes up in the middle of a plan
+              if (leg.icao === prevLeg.icao && leg.infos.coordinates.lat === prevLeg.infos.coordinates.lat
+                && leg.infos.coordinates.long === prevLeg.infos.coordinates.long) {
+                isLegMappable = false;
+              }
+              else {
+                mappedLeg = leg;
+              }
             }
+            //If type 15 is an airport itself, we don't need to map it (and the data is generally wrong)
             else {
-              mappedLeg = leg;
-            }
+              isLegMappable = false;
+            }     
           }
             break;
           case 7:
