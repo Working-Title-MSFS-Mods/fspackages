@@ -127,7 +127,6 @@ cj4-pfd-element {
           color: magenta;
           font: "Robot-Bold";
           -webkit-text-stroke: 7px black;
-          display:none;
           text-align: right;
           top: 2.75%;
           left: 80%;

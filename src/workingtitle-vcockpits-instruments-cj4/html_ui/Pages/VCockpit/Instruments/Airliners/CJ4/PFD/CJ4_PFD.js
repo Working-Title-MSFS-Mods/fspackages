@@ -83,11 +83,11 @@ class CJ4_PFD extends BaseAirliners {
 
             // TODO: refactor VNAV alt to SVG          
             
-            let isAltConstraint = (SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE") > 0);
+            let isAltConstraint = (SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number") > 0);
             let vnavAltEl = document.getElementById("VnavAlt");
             vnavAltEl.style.display = isAltConstraint ? "" : "none";
             if (isAltConstraint) {
-                vnavAltEl.textContent = SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE").toFixed(0);
+                vnavAltEl.textContent = SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number").toFixed(0);
             }
             
             this.map.setMode(this.mapDisplayMode);
