@@ -231,6 +231,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
             const vsSlot = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
             
             if (this._vnavStatus == 13 && runPath == true) {
+                console.log("running set vs");
                 const selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
                 const targetAltitude = Math.max(this._vnavTargetAltitude, selectedAltitude);
                 if (altSlot != 2) {
@@ -255,6 +256,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
                         setVerticalSpeed = desiredVerticalSpeed;
                     }
                 }
+                console.log("setvs: " + setVerticalSpeed);
                 Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, setVerticalSpeed);
                 if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
                     SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
