@@ -537,7 +537,7 @@ class CJ4_FMC extends FMCMainDisplay {
             verticalMode = "VPATH";
         }
         else {
-            lateralMode = "PTCH";
+            verticalMode = "PTCH";
         }
 
         //VERTICAL ARMED MODES
