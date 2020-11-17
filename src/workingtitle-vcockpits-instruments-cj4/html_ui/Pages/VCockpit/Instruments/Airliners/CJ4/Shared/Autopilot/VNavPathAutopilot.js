@@ -6,7 +6,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
         this._vnavTargetDistance = undefined;
         this._topOfDescent = undefined;
         this._distanceToTod = undefined;
-        this._altDeviation = undefined;
+        this._altDeviation = 0;
         //this._desiredAltitude = undefined;
         this._lastVnavTargetAltitude = undefined;
         this._interceptingLastAltitude = false;
@@ -32,6 +32,8 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
      */
     update() {
         super.update();
+
+        this._altDeviation = 0;
         
         //WHAT VMODE ARE WE IN? remember: VNAV is on for this class to run
         const vsModeSelected = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1;
@@ -149,7 +151,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
                 this.failed();
                 return;
             }
-            this._altDeviation = SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
+            
 
             //PREPARE EXECUTION VARIABLES
             //this._desiredAltitude = this._vnavTargetAltitude + (Math.tan(this._desiredFPA * (Math.PI / 180)) * this._vnavTargetDistance * 6076.12);
@@ -200,6 +202,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
 
             //IF STATUS 11 DO NOTHING WITH ALTITUDES
             //IF STATUS 14 DO NOTHING WITH ALTITUDES
+            let runPath = false;
 
             if (this._vnavStatus == 12) {
                 //VPATH APPROACHING TOD
@@ -207,34 +210,18 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
                 this._vnavStatus = 13;
             }
 
-
-
-            // //SET BEHAVIOR IF INTERCEPTING TARGET ALTITUDE & SET AP TARGET ALTITUDE
-            // //TOP OF DESCENT CASE
-            // if (this._lastVnavTargetAltitude === undefined) {
-            //     this._lastVnavTargetAltitude = this._vnavTargetAltitude;
-            //     this._interceptingLastAltitude = false;
-            //     if (this._distanceToTod <= 1) { //ACTIVATE TARGET ALT IN SLOT2 ONE MILE BEFORE TOD
-            //         this.setTargetAltitude();
-            //     }
-            // }
-            // //INTERCEPTING LAST ALTITUDE CASE WHILE DISTANCE TO NEXT PATH DESCENT TOD IS > 0
-            // else if (this._lastVnavTargetAltitude != this._vnavTargetAltitude && this._distanceToTod > 0 && this._altitude > this._lastVnavTargetAltitude) {
-            //     setVerticalSpeed = desiredVerticalSpeed;
-            //     this.setTargetAltitude(this._lastVnavTargetAltitude);
-            //     this._interceptingLastAltitude = true;
-            //     if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) { //ONCE VS MODE ENDS SET ALT HOLD
-            //         SimVar.SetSimVarValue("K:AP_ALT_HOLD", "number", 1);
-            //     }
-            // }
-            // //NOT INTERCEPTING LAST ALTITUDE CASE
-            // else {
-            //     this._lastVnavTargetAltitude = this._vnavTargetAltitude;
-            //     this._interceptingLastAltitude = false;
-            //     if (this._distanceToTod <= 1) {
-            //         this.setTargetAltitude();
-            //     }
-            // }
+            //PATH ARMED OR ACTIVE?
+            if (this._vnavStatus == 12 || this._vnavStatus == 13) {
+                this._altDeviation = SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
+                if (this._altDeviation < -400 || this._altDeviation > 1000) {
+                    WTDataStore.set('CJ4_VNAV_PATH_STATUS', 'armed');
+                    runPath = false;
+                }
+                else {
+                    WTDataStore.set('CJ4_VNAV_PATH_STATUS', 'active');
+                    runPath = true;
+                }
+            }
 
             //SET VS FOR VNAV PATH
             const desiredVerticalSpeed = -101.2686667 * this._groundSpeed * Math.tan(this._desiredFPA * (Math.PI / 180));
@@ -243,7 +230,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
             const altSlot = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number");
             const vsSlot = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
             
-            if (this._vnavStatus == 13) {
+            if (this._vnavStatus == 13 && runPath == true) {
                 const selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
                 const targetAltitude = Math.max(this._vnavTargetAltitude, selectedAltitude);
                 if (altSlot != 2) {
@@ -272,7 +259,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
                 if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
                     SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
                 }
-                if (SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") != 2) {
+                if (vsSlot != 2) {
                     SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 2);
                 }
             }

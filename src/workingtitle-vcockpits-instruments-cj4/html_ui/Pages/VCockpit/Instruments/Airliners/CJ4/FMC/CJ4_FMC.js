@@ -512,6 +512,7 @@ class CJ4_FMC extends FMCMainDisplay {
         let verticalMode = "";
         const isVNAVActive = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") == 1;
         const altLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") == 1;
+        const path = WTDataStore.get('CJ4_VNAV_PATH_STATUS', 'fail');
         if (this._isVsActive) {
             if (isVNAVActive) {
                 verticalMode = "VVS";
@@ -533,7 +534,7 @@ class CJ4_FMC extends FMCMainDisplay {
                 verticalMode = "ALT";
             }
         }
-        else if (isVNAVActive) {
+        else if (isVNAVActive && path == "active") {
             verticalMode = "VPATH";
         }
         else {
@@ -548,9 +549,12 @@ class CJ4_FMC extends FMCMainDisplay {
                 if (altSlotIndex == 1) {
                     verticalArmed = "ALTS";
                 }
-                else if (altSlotIndex == 1) {
+                else if (altSlotIndex == 2) {
                     verticalArmed = "ALTV";
                 }
+            }
+            else if (path == "armed") {
+                verticalArmed = "VPATH"
             }
         }
 

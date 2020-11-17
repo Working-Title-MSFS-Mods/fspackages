@@ -131,13 +131,13 @@ class WT_BaseVnav {
             }
 
             //BUILD VPATH DESCENT PROFILE -- This only needs to be updated when flight plan changed or when active VNAV waypoint changes
-            if (this._flightPlanChanged || this._vnavTargetChanged) {
+            if (this._currentFlightSegment.type != SegmentType.Departure && (this._flightPlanChanged || this._vnavTargetChanged)) {
                 this.updateValues();
                 this.buildDescentProfile();
             }
 
             //TRACK ALTITUDE DEVIATION
-            if (this._vnavTargetAltitude && this._vnavTargetWaypoint) {
+            if (this._currentFlightSegment.type != SegmentType.Departure && this._vnavTargetAltitude && this._vnavTargetWaypoint) {
                 if (this._valuesUpdated == false) {
                     this.updateValues();
                 }
@@ -147,6 +147,9 @@ class WT_BaseVnav {
                 this._altDeviation = this._altitude - this._desiredAltitude;
                 this._distanceToTod = this._topOfDescent < 0 ? 0 : this._vnavTargetDistance > this._topOfDescent ? (this._vnavTargetDistance - this._topOfDescent) : 0;
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", this._altDeviation);
+            }
+            else {
+                SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", 0);
             }
 
             this._vnavTargetChanged = false;

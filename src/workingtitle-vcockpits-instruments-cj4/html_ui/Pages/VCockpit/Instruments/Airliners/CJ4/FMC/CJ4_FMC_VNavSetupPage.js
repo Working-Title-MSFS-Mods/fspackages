@@ -248,9 +248,10 @@ class CJ4_FMC_VNavSetupPage {
                 const altVar1 = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet"));
                 const altVar2 = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet"));
                 const altVar3 = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet"));
-                const altLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") ? "TRUE" : "FALSE";
-                const altArm = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") ? "TRUE" : "FALSE";
+                const altLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") ? "Y" : "N";
+                const altArm = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") ? "Y" : "N";
                 const status = SimVar.GetSimVarValue("L:WT_TEMP_VNAV_STATUS", "number");
+                const armed = WTDataStore.get('CJ4_VNAV_PATH_STATUS', 'fail');
 
                 fmc._templateRenderer.setTemplateRaw([
                     [vnavTargetWaypointIdent, " WT VNAV[blue]" + vnavActive + " " + status],
@@ -264,7 +265,7 @@ class CJ4_FMC_VNavSetupPage {
                     [vsVar + "/" + vsVar1 + "/" + vsVar2 + "/" + vsVar3],
                     ["ALTVAR/VAR:1/VAR:2/VAR:3[blue]"],
                     [altVar + "/" + altVar1 + "/" + altVar2 + "/" + altVar3],
-                    ["A LK: " + altLock, "A ARM: " + altArm],
+                    ["A LK:" + altLock, armed + "[green]", "A ARM:" + altArm],
                     ["<CONSTRAINTS", "MENU>"]
                 ]);
 
