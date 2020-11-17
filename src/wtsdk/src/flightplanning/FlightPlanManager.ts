@@ -160,7 +160,6 @@ export class FlightPlanManager {
   public createNewFlightPlan(callback = EmptyCallback.Void): void {
     const newFlightPlan = new ManagedFlightPlan();
     newFlightPlan.setParentInstrument(this._parentInstrument);
-    this._flightPlans = [];
     this._flightPlans.push(newFlightPlan);
     this._updateFlightPlanVersion();
 
@@ -1303,11 +1302,16 @@ export class FlightPlanManager {
     }
   }
 
+  public getCurrentFlightPlan(): ManagedFlightPlan {
+    return this._flightPlans[this._currentFlightPlanIndex];
+  }
+
   /**
    * Updates the synchronized flight plan version and saves it to shared storage.
    */
   public _updateFlightPlanVersion(): void {
     SimVar.SetSimVarValue(FlightPlanManager.FlightPlanVersionKey, 'number', ++this._currentFlightPlanVersion);
     window.localStorage.setItem(FlightPlanManager.FlightPlanKey, JSON.stringify(this._flightPlans.map(fp => fp.serialize())));
+    //FlightPlanAsoboSync.SaveToGame(this);
   }
 }
