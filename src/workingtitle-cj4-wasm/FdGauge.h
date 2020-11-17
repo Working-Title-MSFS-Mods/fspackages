@@ -17,7 +17,7 @@
 #include "common.h"
 #include "FdController.h"
 
-int globalThrottleAxis[2] {-16384, -16384};
+int globalThrottleAxis[2]{ -16384, -16384 };
 
 class FdGauge
 {
@@ -30,8 +30,10 @@ private:
         printf("Registering throttle events...\r\n");
 
         SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottleSet, "THROTTLE_AXIS_SET_EX1");
-        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottle1Set, "THROTTLE1_AXIS_SET_EX1");
-        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottle2Set, "THROTTLE2_AXIS_SET_EX1");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottle1SetEx, "THROTTLE1_AXIS_SET_EX1");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottle2SetEx, "THROTTLE2_AXIS_SET_EX1");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::Throttle1Set, "THROTTLE1_SET");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::Throttle2Set, "THROTTLE2_SET");
     }
 
     /// <summary>
@@ -42,13 +44,15 @@ private:
         printf("Registering throttle event group...\r\n");
 
         SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottleSet, TRUE);
-        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottle1Set, TRUE);
-        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottle2Set, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottle1SetEx, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottle2SetEx, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::Throttle1Set, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::Throttle2Set, TRUE);
         SimConnect_SetNotificationGroupPriority(hSimConnect, EventGroups::Throttle, SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
     }
 
     /// <summary>
-    /// Initializes the ECU connection to SimConnect.
+    /// Initializes the connection to SimConnect.
     /// </summary>
     /// <returns>True if successful, false otherwise.</returns>
     bool InitializeSimConnect()
@@ -117,11 +121,17 @@ private:
             globalThrottleAxis[0] = static_cast<int>(evt->dwData);
             globalThrottleAxis[1] = static_cast<int>(evt->dwData);
             break;
-        case ThrottleEventIDs :: AxisThrottle1Set:
+        case ThrottleEventIDs::AxisThrottle1SetEx:
             globalThrottleAxis[0] = static_cast<int>(evt->dwData);
             break;
-        case ThrottleEventIDs::AxisThrottle2Set:
+        case ThrottleEventIDs::AxisThrottle2SetEx:
             globalThrottleAxis[1] = static_cast<int>(evt->dwData);
+            break;
+        case ThrottleEventIDs::Throttle1Set:
+            globalThrottleAxis[0] = (static_cast<int>(evt->dwData) * 2) -16384;
+            break;
+        case ThrottleEventIDs::Throttle2Set:
+            globalThrottleAxis[1] = (static_cast<int>(evt->dwData) * 2) - 16384;
             break;
         }
     }
