@@ -223,7 +223,6 @@ class CJ4_FMC_VNavSetupPage {
                 const vnavTargetWaypointIdent = WTDataStore.get('CJ4_vnavTargetWaypoint', 'none');
                 const vnavValues = WTDataStore.get('CJ4_vnavValues', 'none');
                 if (vnavValues != "none") {
-                    console.log("vnav values");
                     const parsedVnavValues = JSON.parse(vnavValues);
                     vnavTargetAltitude = parseInt(parsedVnavValues.vnavTargetAltitude);
                     vnavTargetDistance = parseFloat(parsedVnavValues.vnavTargetDistance);

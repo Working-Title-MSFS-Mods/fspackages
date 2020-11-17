@@ -44,7 +44,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
             }
 
             //GRAB THE CURRENT CONSTRAINT
-            const constraintAltitude = SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "feet");
+            const constraintAltitude = SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number");
 
             //WHERE ARE WE AT IN THE LIFECYCLE?
             if (constraintAltitude > 0 && this._vnavConstraintAltitude == constraintAltitude) {
@@ -54,7 +54,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
             else if (constraintAltitude > 0 && this._vnavConstraintAltitude != constraintAltitude) {
                 //CONSTRAINT EXISTS AND HAS CHANGED - WILL NEED TO SET NEW ALT TARGET
                 this._vnavStatus = 3;
-                this._vnavConstraintAltitude = constraintAltitude;
+                this._vnavConstraintAltitude = Math.round(constraintAltitude);
             }
             else {
                 //CONSTRAINT PASSED AND THERE IS NO NEXT CONSTRAINT
@@ -94,8 +94,8 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
                     }
                     else {
                         this._vnavStatus = 11;
-                    }                }
-
+                    }
+                }
                 else if (this._vnavStatus == 14) {
                     //LEVEL OFF
                     if (this._vnavTargetAltitude == vnavTargetAltitude) {
@@ -132,6 +132,12 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
                     //VPATH NO FURTHER TARGETS
                     this._vnavStatus = 0;
                 }
+                if (this._vnavStatus > 10) {
+                    WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'true');
+                }
+                else {
+                    WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'false');
+                }
             }
             else if (vnavValues == "none" && this._vnavStatus == 14) {
                 //VPATH HAS REACHED THE FINAL WAYPOINT AND SHOULD GRACEFULLY EXIT
@@ -148,7 +154,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
             //PREPARE EXECUTION VARIABLES
             //this._desiredAltitude = this._vnavTargetAltitude + (Math.tan(this._desiredFPA * (Math.PI / 180)) * this._vnavTargetDistance * 6076.12);
         }
-        if (this._vnavMode = 2) {
+        if (this._vnavMode == 2) {
             WTDataStore.set('CJ4_VNAV_ACTIVE', 'true');
         } else {
             WTDataStore.set('CJ4_VNAV_ACTIVE', 'false');
@@ -167,7 +173,14 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
             //WHERE ARE WE IN THE LIFECYCLE (this._vnavStatus)
             //1 = VMODE BEFORE CONSTRAINT; 2 = VMODE OBSERVING CONSTRAINT; 3 = VMODE SETTING NEW CONSTRAINT; 4 = VMODE CLEAR CONSTRAINT
             if (this._vnavStatus == 1) {
-                //DO NOTHING - NO CHANGE
+                const altSlot = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number");
+                const altSet = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet");
+                //console.log("checking alt & slot: " + altSlot + altSet);
+                //console.log("this._vnavConstraintAltitude: " + this._vnavConstraintAltitude);
+                if (altSlot != 2 || altSet != this._vnavConstraintAltitude) {
+                    this.setTargetAltitude(this._vnavConstraintAltitude);
+                }
+                //ELSE DO NOTHING - NO CHANGE
             }
             else if (this._vnavStatus == 3) {
                 //SET NEW MANAGED ALT TARGET TO NEW CONSTRAINT
@@ -282,6 +295,7 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
         }
         SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
         SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+        WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'false');
         super.deactivate();
     }
 
@@ -298,13 +312,18 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
         }
         SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
         SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+        WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'false');
         super.deactivate();
     }
 
     setTargetAltitude(targetAltitude = this._vnavTargetAltitude) {
+        console.log("setting altitude");
+        let isClimb = this._fpm.getSegmentFromWaypoint(this._activeWaypoint).type == SegmentType.Departure ? true : false;
+        console.log("climb? " + (isClimb ? "YES" : "NO"));
         let selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
-        let updatedTargetAltitude = Math.max(targetAltitude, selectedAltitude);
-        Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, updatedTargetAltitude, false);
+        let updatedTargetAltitude = isClimb ? Math.min(targetAltitude, selectedAltitude) : Math.max(targetAltitude, selectedAltitude);
+        console.log(updatedTargetAltitude);
+        Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, Math.round(updatedTargetAltitude), false);
         SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
         SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
     }

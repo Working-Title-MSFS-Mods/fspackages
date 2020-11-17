@@ -65,15 +65,26 @@ class WT_BaseVnav {
         this._destination = this._fpm.getDestination();
         this._activeWaypoint = this._fpm.getActiveWaypoint();
         this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
-        const flightPlanVersion = SimVar.GetSimVarValue("L:WT.FlightPlan.Version", "number");
+        // console.log("type: " + this._currentFlightSegment.type);
+        // console.log("string: " + JSON.stringify(this._currentFlightSegment.type));
+        
 
-        if (this._destination && this.waypoints && this.waypoints.length > 1 && this._activeWaypoint && flightPlanVersion) {
+
+        const flightPlanVersion = SimVar.GetSimVarValue("L:WT.FlightPlan.Version", "number");
+        // console.log("updating base vnav");
+        // console.log(this._destination.ident);
+        // console.log(this.waypoints.length);
+        // console.log(this._activeWaypoint.ident);
+        // console.log(flightPlanVersion);
+
+        if (this._destination && this.waypoints && this.waypoints.length > 0 && this._activeWaypoint && flightPlanVersion) {
             this._vnavType = true;
 
             //HAS THE ACTIVE WAYPOINT CHANGED?
             if (this._lastActiveWaypointIdent != this._activeWaypoint.ident) {
                 this._activeWaypointChanged = true;
             }
+            //console.log("changed? " + (this._activeWaypointChanged ? "YES" : "NO"));
 
             //HAS THE FLIGHT PLAN CHANGED?
             if (this._flightPlanVersion != flightPlanVersion) {
@@ -86,16 +97,16 @@ class WT_BaseVnav {
             }
 
             //FIND CURRENT CONSTRAINT -- This only needs to run when active waypoint changes
-            if (this._flightPlanChanged || this._activeWaypointChanged) {
+            if (this._flightPlanChanged || this._activeWaypointChanged || this._vnavTargetChanged) {
                 for (let i = 0; i < this.waypoints.length; i++) {
                     let wpt = this.waypoints[i];
-                    if (wpt.legAltitudeDescription > 0 && this._currentFlightSegment === SegmentType.Departure) {
+                    if (wpt.legAltitudeDescription > 0 && this._currentFlightSegment.type == SegmentType.Departure) {
                         if (wpt.legAltitudeDescription == 1 || wpt.legAltitudeDescription == 3 || wpt.legAltitudeDescription == 4) {
                             this._vnavConstraintAltitude = wpt.legAltitude1;
                             break;
                         }
                     }
-                    else if (wpt.legAltitudeDescription > 0 && (this._currentFlightSegment === SegmentType.Enroute || this._currentFlightSegment === SegmentType.Arrival || this._currentFlightSegment === SegmentType.Approach)) {
+                    else if (wpt.legAltitudeDescription > 0 && (this._currentFlightSegment.type == SegmentType.Enroute || this._currentFlightSegment.type == SegmentType.Arrival || this._currentFlightSegment.type == SegmentType.Approach)) {
                         if (wpt.legAltitudeDescription == 1 || wpt.legAltitudeDescription == 2) {
                             this._vnavConstraintAltitude = wpt.legAltitude1;
                             break;
@@ -112,7 +123,7 @@ class WT_BaseVnav {
 
                 //SET CURRENT CONSTRAINT ALTITUDE SIMVAR -- This only needs to run when active waypoint changes
                 if (this._vnavConstraintAltitude) {
-                    SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", this._vnavConstraintAltitude);
+                    SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", Math.round(this._vnavConstraintAltitude));
                 }
                 else {
                     SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
@@ -141,6 +152,7 @@ class WT_BaseVnav {
             this._vnavTargetChanged = false;
             this._flightPlanChanged = false;
             this._activeWaypointChanged = false;
+            this._lastActiveWaypointIdent = this._activeWaypoint.ident;
             this.writeMonitorValues(); //CAN BE REMOVED AFTER WE'RE DONE WITH MONITORING
         }
         else {
@@ -168,7 +180,6 @@ class WT_BaseVnav {
 
     buildDescentProfile() {
         this._vnavTargetAltitude = this._vnavTargetAltitude === undefined ? (this._destination.infos.oneWayRunways[0].elevation * 3.28) + 50 : this._vnavTargetAltitude;
-        this._lastActiveWaypointIdent = this._activeWaypoint.ident;
         this._desiredFPA = WTDataStore.get('CJ4_vpa', 3);
 
         //PLAN DESCENT PROFILE
