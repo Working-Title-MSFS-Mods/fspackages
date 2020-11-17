@@ -47,21 +47,13 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("dialogContainer", d => this.querySelector(".dialog-container"));
 
         d.register("showPageMenuHandler", d => new WT_PFD_Show_Page_Menu_Handler(d.inputStack, document.getElementById("PageMenuContainer")));
-        d.register("directToHandler", d => new WT_Direct_To_Handler(d.sharedInstrumentEvents));
+        d.register("directToHandler", d => new WT_Direct_To_Handler(d.sharedEvents));
         d.register("showDirectToHandler", d => new WT_PFD_Show_Direct_To_Handler(d.miniPageController, d.directToModel, d.directToView));
 
         d.register("miniPageController", d => this.querySelector("g1000-pfd-mini-page-container"));
 
-        d.register("directToView", d => {
-            const view = new WT_Direct_To_View(d.icaoInputModel, d.showPageMenuHandler);
-            view.classList.add("mini-page");
-            return view;
-        });
-        d.register("flightPlanView", d => {
-            const view = new WT_PFD_Flight_Plan_Page_View(d.showPageMenuHandler, d.confirmDialogHandler, d.showNewWaypointHandler);
-            view.classList.add("mini-page");
-            return view;
-        });
+        d.register("directToView", d => new WT_Direct_To_View(d.icaoInputModel, d.showPageMenuHandler));
+        d.register("flightPlanView", d => new WT_PFD_Flight_Plan_Page_View(d.showPageMenuHandler, d.confirmDialogHandler, d.showNewWaypointHandler));
         d.register("proceduresMenuView", d => {
             const view = new WT_PFD_Procedures_Menu_View(d.showProcedureHandler, d.procedures); //TODO:
             view.classList.add("mini-page");
@@ -152,11 +144,13 @@ class AS1000_PFD extends BaseAS1000 {
 
         const directToModel = this.dependencies.directToModel;
         const directToView = this.dependencies.directToView;
+        directToView.classList.add("mini-page");
         this.dependencies.miniPageController.appendChild(directToView);
         directToView.setModel(directToModel);
 
         const flightPlanModel = this.dependencies.flightPlanModel;
         const flightPlanView = this.dependencies.flightPlanView;
+        flightPlanView.classList.add("mini-page");
         this.dependencies.miniPageController.appendChild(flightPlanView);
         flightPlanView.setModel(flightPlanModel);
 
@@ -169,7 +163,7 @@ class AS1000_PFD extends BaseAS1000 {
 
         this.inputStack.push(this.dependencies.hsiInput);
         this.inputStack.push(this.dependencies.pfdInputLayer);
-        this.inputStack.push(new WT_Map_Input_Layer(this.dependencies.map));
+        this.inputStack.push(this.dependencies.mapInputLayerFactory.create(this.dependencies.map));
         this.dependencies.softKeyController.handleInput(this.inputStack);
 
         const syntheticVision = this.getChildById("SyntheticVision");

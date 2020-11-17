@@ -25,7 +25,7 @@ class WT_Direct_To_Handler {
     }
     activate(waypoint, course) {
         this.sharedInstrumentEvents.fire(WT_Direct_To_Handler.ACTIVATE_EVENT_NAME, {
-            waypoint: waypoint.icao,
+            icao: waypoint.icao,
             course: course
         });
     }
@@ -87,6 +87,7 @@ class WT_Direct_To_Controller extends WT_Flight_Plan_Mode {
      * @param {MapInstrument} map 
      */
     constructor(waypoint, course, map) {
+        super();
         this.waypoint = waypoint;
         this.waypoints = [];
         this.course = course;

@@ -156,7 +156,7 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         if (departure.length > 0) {
             lines.push(mapHeader("departure", `Departure - ${flightPlan.getDeparture().name}`));
             lines.push(mapWaypoint(flightPlan.getOrigin(), "origin"));
-            lines.push(...departure.map(mapWaypoint, "departure"));
+            lines.push(...departure.map(waypoint => mapWaypoint(waypoint, "departure")));
         }
         if (departure.length > 0 || arrival.length > 0 || (approach && approach.length > 0)) {
             lines.push(mapHeader("enroute", `Enroute`));
@@ -164,10 +164,10 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         if (departure.length == 0 && origin) {
             lines.push(mapWaypoint(flightPlan.getOrigin()));
         }
-        lines.push(...enroute.map(mapWaypoint, "enroute"));
+        lines.push(...enroute.map(waypoint => mapWaypoint(waypoint, "enroute")));
         if (arrival.length > 0) {
             lines.push(mapHeader("arrival", `Arrival - ${flightPlan.getArrival().name}`));
-            lines.push(...arrival.map(mapWaypoint, "arrival"));
+            lines.push(...arrival.map(waypoint => mapWaypoint(waypoint, "arrival")));
         }
         if (destination) {
             lines.push(mapWaypoint(destination, "destination"));
@@ -179,7 +179,7 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
             if (airportApproach) {
                 lines.push(mapHeader("approach", `Approach - ${airportApproach.name}`));
             }
-            lines.push(...approach.map(mapWaypoint, "approach"));
+            lines.push(...approach.map(waypoint => mapWaypoint(waypoint, "approach")));
         }
 
         this.lines.value = lines;

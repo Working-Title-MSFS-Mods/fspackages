@@ -167,16 +167,20 @@ class WT_Procedure_Page_View extends WT_HTML_View {
         this.map.procedureElement = null;
     }
     get mapToggles() {
-        return ["show-cities", "show-vors", "show-ndbs", "show-roads", "show-intersections", "show-airspaces", "show-airports"];
+        return ["showCities", "showVORs", "showNDBs", "showRoads", "showIntersections", "showAirspaces", "showAirports", "showFlightPlan"];
     }
     activate() {
         this.menuHandler = this.softKeyMenuHandler.show(this.softKeyMenu);
 
         this.elements.map.appendChild(this.map);
-        this.mapToggles.forEach(toggle => this.map.setAttribute(toggle, "false"));
+        this.mapToggleValues = {};
+        for (let toggle of this.mapToggles) {
+            this.mapToggleValues[toggle] = this.map[toggle];
+        }
+        this.mapToggles.forEach(toggle => this.map[toggle] = false);
     }
     deactivate() {
-        this.mapToggles.forEach(toggle => this.map.setAttribute(toggle, "true"));
+        this.mapToggles.forEach(toggle => this.map[toggle] = this.mapToggleValues[toggle]);
         if (this.menuHandler) {
             this.menuHandler = this.menuHandler.pop();
         }

@@ -15,6 +15,7 @@ class WT_Normal_Flight_Plan_Controller extends WT_Flight_Plan_Mode {
      * @param {FlightPlanManager} flightPlanManager 
      */
     constructor(flightPlanManager) {
+        super();
         this.flightPlanManager = flightPlanManager;
     }
     async activate() {

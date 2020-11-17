@@ -21,6 +21,7 @@ Pages/FlightPlan/Airway.js
 Pages/FlightPlan/FlightPlan.js
 Pages/Map/Map.js
 Pages/Map/MapSetup.js
+Pages/Map/Weather.js
 Pages/Nearest/Nearest.js
 Pages/Nearest/Airports.js
 Pages/Nearest/NDBs.js

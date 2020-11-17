@@ -31,6 +31,7 @@ Data/NearestWaypoints.js
 Data/RadioAltimeter.js
 Data/Settings.js
 Data/WaypointQuickSelect.js
+Data/WeatherRadar.js
 Libs/CSV.js
 Libs/markdown.js
 Logic/Navigation/Controller.js

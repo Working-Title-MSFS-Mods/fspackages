@@ -34,16 +34,15 @@ class AS1000_MFD extends BaseAS1000 {
             return map;
         });
         d.register("miniMap", d => document.querySelector("#MiniMap"));
-        d.register("mapInputLayerFactory", d => new WT_Map_Input_Layer_Factory(d.modSettings));
 
         d.register("pageMenuHandler", d => new WT_MFD_Show_Page_Menu_Handler(d.inputStack, d.pageContainer, d.softKeyMenuHandler));
         d.register("confirmDialogHandler", d => new WT_Show_Confirm_Dialog_Handler(d.inputStack, d.dialogContainer, d.softKeyMenuHandler));
         d.register("waypointSelectorModelFactory", d => new WT_Waypoint_Selector_Model_Factory(d.waypointRepository));
         d.register("waypointSelectorViewFactory", d => new WT_MFD_Waypoint_Selector_View_Factory(d.icaoInputModel, d.softKeyMenuHandler, d.mapInputLayerFactory));
         d.register("showNewWaypointHandler", d => new WT_MFD_Show_New_Waypoint_Handler(d.paneContainer, d.waypointSelectorModelFactory, d.waypointSelectorViewFactory, d.miniMap, d.inputStack));
-        d.register("directToHandler", d => new WT_Master_Direct_To_Handler(d.sharedInstrumentEvents, d.waypointRepository, d.flightPlanController, d.mainMap));
+        d.register("directToHandler", d => new WT_Master_Direct_To_Handler(d.sharedEvents, d.waypointRepository, d.flightPlanController, d.mainMap));
         d.register("directToModelFactory", d => new WT_Direct_To_Model_Factory(this, d.waypointRepository, d.directToHandler));
-        d.register("directToViewFactory", d => new WT_MFD_Direct_To_View_Factory(d.softKeyMenuHandler, d.icaoInputModel, d.pageMenuHandler));
+        d.register("directToViewFactory", d => new WT_MFD_Direct_To_View_Factory(d.softKeyMenuHandler, d.icaoInputModel, d.pageMenuHandler, d.mapInputLayerFactory));
         d.register("showDirectToHandler", d => new WT_MFD_Show_Direct_To_Handler(d.paneContainer, d.directToModelFactory, d.directToViewFactory, d.miniMap, d.inputStack));
         d.register("showAirwaysHandler", d => new WT_Show_Airways_Handler(this, d.inputStack, d.overlayPageContainer, d.mainMap));
         d.register("showProcedureHandler", d => new WT_Show_Procedure_Handler(d.pageController, d.flightPlanManager, d.procedureFacilityRepository, () => d.procedurePageView));
@@ -56,6 +55,9 @@ class AS1000_MFD extends BaseAS1000 {
 
         d.register("mapModel", d => new WT_Map_Model(this, d.mainMap), { scope: "transient" });
         d.register("mapView", d => new WT_Map_View(d.pageMenuHandler, d.softKeyController), { scope: "transient" });
+
+        d.register("weatherModel", d => new WT_Weather_Page_Model(), { scope: "transient" });
+        d.register("weatherView", d => new WT_Weather_Page_View(d.mainMap, d.softKeyMenuHandler), { scope: "transient" });
 
         d.register("airportInformationModel", d => new WT_Airport_Information_Model(d.showDirectToHandler, d.waypointRepository, d.airportDatabase, d.metarRepository), { scope: "transient" });
         d.register("airportInformationView", d => new WT_Airport_Information_View(d.mainMap, d.icaoInputModel, d.frequencyListModel, d.softKeyMenuHandler), { scope: "transient" });
@@ -126,6 +128,7 @@ class AS1000_MFD extends BaseAS1000 {
                 ]
             },
         ], d.pageTitle));
+        d.register("weatherPage", d => new WT_Page("Weather Radar", () => d.weatherModel, () => d.weatherView));
         d.register("mfdInputLayer", d => new Base_Input_Layer(this, d.navFrequenciesModel, d.comFrequenciesModel, d.showDirectToHandler, null));
 
         d.register("mapSetup", d => new WT_Map_Setup(WT_Map_Setup.DEFAULT));
@@ -302,11 +305,16 @@ class AS1000_MFD extends BaseAS1000 {
         // configuration.   Which isn't loaded when the MFD initializes.  So here I need to
         // go back and recreate the entire map page group if there's radar.  This is dumb.
         if (this.hasWeatherRadar()) {
+            this.pageController.addPage("MAP", this.dependencies.weatherPage);
             /*this.pageGroups[0] = new NavSystemPageGroup("MAP", this, [
                 new AS1000_MFD_MainMap(this.engineDisplay),
                 new AS1000_MFD_Radar()
             ]);*/
         }
+    }
+    onXMLConfigLoaded(_xml) {
+        super.onXMLConfigLoaded(_xml);
+        this.dependencies.planeConfig.updateConfig(this.xmlConfig);
     }
     onUpdate(dt) {
         try {

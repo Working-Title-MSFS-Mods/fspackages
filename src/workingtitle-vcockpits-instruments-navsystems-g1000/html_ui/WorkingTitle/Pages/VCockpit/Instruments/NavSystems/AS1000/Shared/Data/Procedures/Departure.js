@@ -50,12 +50,18 @@ class WT_Selected_Departure_Procedure extends WT_Selected_Procedure {
         this.enRouteTransitionIndex = null;
     }
     setRunwayTransitionIndex(index) {
+        if (index !== null) {
+            index = parseInt(index);
+        }
         if (this.runwayTransitionIndex !== index) {
             this.runwayTransitionIndex = index;
             this.onUpdated.fire(this);
         }
     }
     setEnRouteTransitionIndex(index) {
+        if (index !== null) {
+            index = parseInt(index);
+        }
         if (this.enRouteTransitionIndex !== index) {
             this.enRouteTransitionIndex = index;
             this.onUpdated.fire(this);
@@ -114,15 +120,15 @@ class WT_Selected_Departure_Procedure extends WT_Selected_Procedure {
                 const origin = flightPlan.getOrigin();
                 if (origin == null || origin.icao != this.procedure.icao) {
                     console.log(`Setting origin to ${this.procedure.icao}...`);
-                    await new Promise(resolve => flightPlan.addWaypoint(this.procedure.icao, 0, resolve));
-                    await new Promise(resolve => flightPlan.setOrigin(this.procedure.icao, resolve));
+                    await (new Promise(resolve => flightPlan.addWaypoint(this.procedure.icao, 0, resolve)));
+                    await (new Promise(resolve => flightPlan.setOrigin(this.procedure.icao, resolve)));
                 }
                 // Set procedure indexes
-                await Promise.all([
+                await (Promise.all([
                     new Promise(resolve => flightPlan.setDepartureProcIndex(this.procedure.procedureIndex, resolve)),
                     new Promise(resolve => flightPlan.setDepartureEnRouteTransitionIndex(this.enRouteTransitionIndex, resolve)),
                     new Promise(resolve => flightPlan.setDepartureRunwayIndex(this.runwayTransitionIndex, resolve)),
-                ]);
+                ]));
                 resolve();
             });
         });

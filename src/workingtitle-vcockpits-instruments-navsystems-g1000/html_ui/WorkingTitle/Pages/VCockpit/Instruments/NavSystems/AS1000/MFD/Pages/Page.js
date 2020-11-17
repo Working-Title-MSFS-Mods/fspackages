@@ -90,6 +90,10 @@ class WT_Page_Controller {
     get selectedPage() {
         return this.selectedGroup.pages[this.selectedGroupPageIndex];
     }
+    addPage(groupName, page) {
+        const group = this.getGroupByName(groupName);
+        group.pages.push(page);
+    }
     /**
      * @param {Input_Stack} inputStack 
      */
@@ -149,6 +153,14 @@ class WT_Page_Controller {
         } else {
             this.currentPageEntered = this.currentPageView.enter(this.inputStack) === false ? false : true;
         }
+    }
+    getGroupByName(groupName) {
+        for (let group of this.pageGroups) {
+            if (group.name == groupName) {
+                return group;
+            }
+        }
+        return null;
     }
     goTo(groupName, pageName, intent = null) {
         let i = 0;

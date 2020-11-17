@@ -7,10 +7,12 @@ class WT_Shared_Instrument_Events {
         this.index = 0;
         this.listeners = {};
         window.addEventListener("storage", event => {
-            if (event.key.startsWith(this.prefix) && event.value) {
-                const eventData = JSON.parse(event.value);
+            if (event.key.startsWith(this.prefix) && event.newValue) {
+                const eventData = JSON.parse(event.newValue);
                 const eventKey = eventData.event;
                 const data = eventData.data;
+                console.log(eventKey);
+                console.log(data);
                 if (eventKey in this.listeners) {
                     for (let listener of this.listeners[eventKey]) {
                         listener(data);

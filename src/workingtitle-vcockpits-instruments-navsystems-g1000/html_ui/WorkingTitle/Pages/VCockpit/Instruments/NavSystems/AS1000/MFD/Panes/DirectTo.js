@@ -3,17 +3,19 @@ class WT_MFD_Direct_To_View_Factory {
      * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      * @param {WT_Icao_Input_Model} icaoInputModel 
      * @param {WT_Show_Page_Menu_Handler} showPageMenuHandler 
+     * @param {WT_Map_Input_Layer_Factory} mapInputLayerFactory
      */
-    constructor(softKeyMenuHandler, icaoInputModel, showPageMenuHandler) {
+    constructor(softKeyMenuHandler, icaoInputModel, showPageMenuHandler, mapInputLayerFactory) {
         this.softKeyMenuHandler = softKeyMenuHandler;
         this.icaoInputModel = icaoInputModel;
         this.showPageMenuHandler = showPageMenuHandler;
+        this.mapInputLayerFactory = mapInputLayerFactory;
     }
     /**
      * @param {MapInstrument} map
      */
     create(map) {
-        return new WT_MFD_Direct_To_View(this.icaoInputModel, this.showPageMenuHandler, this.softKeyMenuHandler, map);
+        return new WT_MFD_Direct_To_View(this.icaoInputModel, this.showPageMenuHandler, this.softKeyMenuHandler, map, this.mapInputLayerFactory.create(map, false));
     }
 }
 
@@ -23,11 +25,13 @@ class WT_MFD_Direct_To_View extends WT_Direct_To_View {
      * @param {WT_Show_Page_Menu_Handler} showPageMenuHandler 
      * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      * @param {MapInstrument} map
+     * @param {WT_Map_Input_Layer} mapInputLayer
      */
-    constructor(icaoInputModel, showPageMenuHandler, softKeyMenuHandler, map) {
+    constructor(icaoInputModel, showPageMenuHandler, softKeyMenuHandler, map, mapInputLayer) {
         super(icaoInputModel, showPageMenuHandler);
         this.softKeyMenuHandler = softKeyMenuHandler;
         this.map = map;
+        this.mapInputLayer = mapInputLayer;
     }
     connectedCallback() {
         super.connectedCallback();
@@ -48,7 +52,7 @@ class WT_MFD_Direct_To_View extends WT_Direct_To_View {
         });
     }
     enter(inputStack) {
-        const mapHandler = inputStack.push(new WT_Map_Input_Layer(this.map, false));
+        const mapHandler = inputStack.push(this.mapInputLayer);
         const r = super.enter(inputStack);
         this.inputStackHandler = mapHandler;
         this.menuHandler = this.softKeyMenuHandler.show(null);

@@ -60,12 +60,18 @@ class WT_Selected_Arrival_Procedure extends WT_Selected_Procedure {
         this.enRouteTransitionIndex = null;
     }
     setRunwayTransitionIndex(index) {
+        if (index !== null) {
+            index = parseInt(index);
+        }
         if (this.runwayTransitionIndex !== index) {
             this.runwayTransitionIndex = index;
             this.onUpdated.fire(this);
         }
     }
     setEnRouteTransitionIndex(index) {
+        if (index !== null) {
+            index = parseInt(index);
+        }
         if (this.enRouteTransitionIndex !== index) {
             this.enRouteTransitionIndex = index;
             this.onUpdated.fire(this);
@@ -124,8 +130,8 @@ class WT_Selected_Arrival_Procedure extends WT_Selected_Procedure {
             const destination = flightPlan.getDestination();
             if (destination == null || destination.icao != this.procedure.icao) {
                 console.log(`Setting destination to ${this.procedure.icao}...`);
-                await new Promise(resolve => flightPlan.addWaypoint(this.procedure.icao, flightPlan.getWaypointsCount(), resolve));
-                await new Promise(resolve => flightPlan.setDestination(this.procedure.icao, resolve));
+                await (new Promise(resolve => flightPlan.addWaypoint(this.procedure.icao, flightPlan.getWaypointsCount(), resolve)));
+                await (new Promise(resolve => flightPlan.setDestination(this.procedure.icao, resolve)));
             }
 
             // Set procedure indexes

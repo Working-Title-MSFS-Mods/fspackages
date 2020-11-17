@@ -20,6 +20,10 @@ class WT_Nearest_Waypoint_List extends WT_HTML_View {
         })
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+
         super.connectedCallback();
 
         this.arrow = document.createElement("div");
