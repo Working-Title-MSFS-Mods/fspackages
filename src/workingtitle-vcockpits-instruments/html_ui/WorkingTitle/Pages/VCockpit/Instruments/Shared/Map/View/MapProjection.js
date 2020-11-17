@@ -96,8 +96,6 @@ class WT_MapProjection {
         rotation += Math.max(0, -Math.floor(rotation / 360)) * 360;
         this.__rotation = rotation;
         this._rotationRad = rotation * Avionics.Utils.DEG2RAD;
-        this._sin = Math.sin(rotation * Avionics.Utils.DEG2RAD);
-        this._cos = Math.cos(rotation * Avionics.Utils.DEG2RAD);
         this._d3Projection.angle(-rotation);
     }
 
@@ -123,7 +121,8 @@ class WT_MapProjection {
     }
 
     _recalculateProjection() {
-        this._d3Projection.translate([0, 0]);
+        this._d3Projection.translate([this.viewWidth / 2, this.viewHeight / 2]);
+        this._d3Projection.center([0, 0]);
         let currentTargetXY = this._d3Projection(this.latLongGameToProjection(this.target));
 
         if (isNaN(currentTargetXY[0] + currentTargetXY[1])) {
@@ -132,12 +131,8 @@ class WT_MapProjection {
 
         let currentCenter = this.xyProjectionToView(currentTargetXY).subtract(this.viewTargetOffset, true);
 
-        let delta = WT_GVector2.fromPolar(this.viewHeight / 2, this._rotationRad);
-        let viewTop = currentCenter.subtract(delta);
-        let viewBottom = currentCenter.add(delta);
-
-        let top = this._d3Projection.invert(this.xyViewToProjection(viewTop));
-        let bottom = this._d3Projection.invert(this.xyViewToProjection(viewBottom));
+        let top = this._d3Projection.invert([currentCenter.x, currentCenter.y - this.viewHeight / 2]);
+        let bottom = this._d3Projection.invert([currentCenter.x, currentCenter.y + this.viewHeight / 2]);
         let currentRange = WT_Unit.GA_RADIAN.convert(d3.geoDistance(top, bottom), this.range.unit);
         let ratio = currentRange / this.range.number;
 
@@ -149,9 +144,14 @@ class WT_MapProjection {
         this._d3Projection.scale(currentScale * ratio);
 
         currentTargetXY = this._d3Projection(this.latLongGameToProjection(this.target));
+        let center = this._d3Projection.invert([currentTargetXY[0] - this.viewTargetOffset.x, currentTargetXY[1] - this.viewTargetOffset.y]);
+        this._d3Projection.center(center);
+        this._center = this.latLongProjectionToGame(center);
+        /*
         this._d3Projection.translate([-currentTargetXY[0] + this.viewWidth / 2 + this.viewTargetOffset.x, -currentTargetXY[1] + this.viewHeight / 2 + this.viewTargetOffset.y]);
 
         this._center = this.invertXY(this.viewCenter);
+        */
     }
 
     relXYToAbsXY(xy) {
@@ -199,6 +199,16 @@ class WT_MapProjection {
     invertXY(xy) {
         let inverse = this.invert(this.xyViewToProjection(xy));
         return this.latLongProjectionToGame(inverse);
+    }
+
+    distance(point1, point2) {
+        if (point1.lat !== undefined && point1.long !== undefined) {
+            point1 = this.latLongGameToProjection(point1);
+        }
+        if (point2.lat !== undefined && point2.long !== undefined) {
+            point2 = this.latLongGameToProjection(point2);
+        }
+        return WT_Unit.GA_RADIAN.createNumber(d3.geoDistance(point1, point2));
     }
 
     isLatLongInBounds(latLong, margin = 0) {
@@ -304,9 +314,21 @@ class WT_MapProjectionRenderer {
         return this._projection;
     }
 
+    _setClipExtent() {
+        if (!this.useViewClip) {
+            return;
+        }
+
+        let clipExtent = this.viewClipExtent;
+        if (clipExtent === null) {
+            clipExtent = [[0, 0], [this.projection.viewWidth, this.projection.viewHeight]];
+        }
+        this.projection._d3Projection.clipExtent(clipExtent);
+    }
+
     _setOptions() {
         this.projection._d3Projection.precision(this.precision);
-        this.projection._d3Projection.clipExtent(this.clipExtent);
+        this._setClipExtent();
     }
 
     _resetOptions() {
@@ -338,5 +360,6 @@ class WT_MapProjectionRenderer {
 }
 WT_MapProjectionRenderer.OPTIONS_DEF = {
     precision: {default: 0.70710678118, auto: true},
-    clipExtent: {default: null, auto: true},
+    useViewClip: {default: false, auto: true},
+    viewClipExtent: {default: null, auto: true},
 };

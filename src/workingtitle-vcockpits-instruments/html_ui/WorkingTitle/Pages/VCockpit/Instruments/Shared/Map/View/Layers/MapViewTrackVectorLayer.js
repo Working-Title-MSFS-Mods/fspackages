@@ -50,11 +50,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewCanvasLayer {
     }
 
     _updateProjectionRendererClipExtent(data) {
-        let renderClipLeft = -data.projection.viewWidth * WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN;
-        let renderClipRight = data.projection.viewWidth * (1 + WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN);
-        let renderClipTop = -data.projection.viewHeight * WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN;
-        let renderClipBottom = data.projection.viewHeight * (1 + WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN);
-        this.projectionRenderer.clipExtent = [[renderClipLeft, renderClipTop], [renderClipRight, renderClipBottom]];
+        this.projectionRenderer.useViewClip = true;
     }
 
     onViewSizeChanged(data) {
@@ -230,7 +226,6 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewCanvasLayer {
 }
 WT_MapViewTrackVectorLayer.ID_DEFAULT = "TrackVector";
 WT_MapViewTrackVectorLayer.CONFIG_NAME_DEFAULT = "trackVector";
-WT_MapViewTrackVectorLayer.PROJECTION_RENDERER_CLIP_MARGIN = 0.05;
 WT_MapViewTrackVectorLayer.SMOOTHING_MAX_TIME_DELTA = 0.5;
 WT_MapViewTrackVectorLayer.OPTIONS_DEF = {
     dynamicLookaheadMax: {default: WT_Unit.SECOND.createNumber(60)},
