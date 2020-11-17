@@ -11,8 +11,10 @@
 enum ThrottleEventIDs
 {
     AxisThrottleSet = 0,
-    AxisThrottle1Set = 1,
-    AxisThrottle2Set = 2,
+    AxisThrottle1SetEx = 1,
+    AxisThrottle2SetEx = 2,
+    Throttle1Set = 3,
+    Throttle2Set = 4,
 };
 
 /// <summary>

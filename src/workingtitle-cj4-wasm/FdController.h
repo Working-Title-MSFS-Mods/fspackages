@@ -104,7 +104,7 @@ private:
 
 
         if (this->frameCount % 10000000 == 0) {
-            printf("TA %d TLP: %.4f TTHR: %.0f GTHR: %.0f MDENS: %.0f @ %.0f \r\n", this->throttleAxis[idx], throttleLeverPerc, targetThrust, grossSimThrust, maxDensityThrust, this->simVars->getPlaneAltitude());
+            //printf("TA %d TLP: %.4f TTHR: %.0f GTHR: %.0f MDENS: %.0f @ %.0f \r\n", this->throttleAxis[idx], throttleLeverPerc, targetThrust, grossSimThrust, maxDensityThrust, this->simVars->getPlaneAltitude());
         }
 
         double error = targetThrust - grossSimThrust;
