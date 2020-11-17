@@ -12,7 +12,9 @@
         "isolatedModules": true,
         "esModuleInterop": true,
         "outDir": "./.tmp",
-        "sourceMap": true
+        "sourceMap": false,
+        "skipLibCheck": true,
+
     },
     "include": [
         "src"

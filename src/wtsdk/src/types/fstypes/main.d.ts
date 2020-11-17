@@ -17,4 +17,9 @@ declare module "WorkingTitle" {
      */
     static set(key: string, value: string | number | boolean): any;
   }
+
+  export class LZUTF8 {
+    static compress(input: string, options?: {}): any;
+    static decompress(input: string, options?: {}): any;
+  }
 }
