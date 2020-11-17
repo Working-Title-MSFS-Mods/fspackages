@@ -47,8 +47,20 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         this._bingMap.setBingId(data.model.bingMap.bingID);
     }
 
+    _calculateDesiredRadius(data) {
+        let viewCenter = data.projection.viewCenter;
+
+        let delta = WT_GVector2.fromPolar(this.size / 2, data.projection.rotation * Avionics.Utils.DEG2RAD);
+        let viewTop = viewCenter.subtract(delta);
+        let viewBottom = viewCenter.add(delta);
+
+        let top = data.projection.invertXY(viewTop);
+        let bottom = data.projection.invertXY(viewBottom);
+        return data.projection.distance(top, bottom).scale(0.5);
+    }
+
     _updateCenterAndRange(data) {
-        let range = data.projection.range.asUnit(WT_Unit.METER) * (this.size / data.projection.viewHeight) * 0.5;
+        let range = this._calculateDesiredRadius(data).asUnit(WT_Unit.METER);
         let target = data.projection.center;
         if (isNaN(range) || !target) {
             return;
