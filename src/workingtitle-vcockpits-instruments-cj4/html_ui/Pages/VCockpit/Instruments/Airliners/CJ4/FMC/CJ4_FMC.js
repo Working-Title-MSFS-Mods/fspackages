@@ -179,10 +179,10 @@ class CJ4_FMC extends FMCMainDisplay {
         //SimVar.SetSimVarValue('K:HEADING_BUG_SET:1', 'degrees', WTDataStore.get("AP_HEADING", Simplane.getHeadingMagnetic()));
         this._isLNavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
         //set init values for AP
-        this._isHdgActive = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean") == 1;
-        this._isNavActive = SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") == 1;
-        this._isVsActive = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean") == 1;
-        this._isFlcActive = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") == 1;
+        this._isHdgActive = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "number") == 1;
+        this._isNavActive = SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "number") == 1;
+        this._isVsActive = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") == 1;
+        this._isFlcActive = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "number") == 1;
         SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", (this._isHdgActive ? 1 : 0));
         SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", (this._isNavActive ? 1 : 0));
         SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", (this._isVsActive ? 1 : 0));

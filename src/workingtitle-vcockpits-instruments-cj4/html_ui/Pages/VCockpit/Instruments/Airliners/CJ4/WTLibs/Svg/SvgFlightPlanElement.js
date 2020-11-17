@@ -67,7 +67,7 @@ class SvgFlightPlanElement extends SvgMapElement {
         context.strokeStyle = style;
 
         let prevWaypoint;
-        for (var i = 0; i < waypoints.length; i++) {
+        for (let i = 0; i < waypoints.length; i++) {
             const waypoint = waypoints[i];
             const pos = map.coordinatesToXY(waypoint.infos.coordinates);
 
@@ -83,8 +83,8 @@ class SvgFlightPlanElement extends SvgMapElement {
                     const endingLatLon = new LatLon(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long);
 
                     const segmentPercent = 1 / numSegments;
-                    for (i = 0; i <= numSegments; i++) {
-                        const segmentEnd = startingLatLon.intermediatePointTo(endingLatLon, i * segmentPercent);
+                    for (let j = 0; j <= numSegments; j++) {
+                        const segmentEnd = startingLatLon.intermediatePointTo(endingLatLon, j * segmentPercent);
                         const segmentEndVec = map.coordinatesToXY(new LatLongAlt(segmentEnd.lat, segmentEnd.lon));
 
                         context.lineTo(segmentEndVec.x, segmentEndVec.y);

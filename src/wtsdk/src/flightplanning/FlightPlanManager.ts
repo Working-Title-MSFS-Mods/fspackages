@@ -3,6 +3,8 @@ import { WTDataStore } from 'WorkingTitle';
 import { ManagedFlightPlan, GPS } from '../wtsdk';
 import { FlightPlanSegment, SegmentType } from './FlightPlanSegment';
 import { FlightPlanAsoboSync } from './FlightPlanAsoboSync';
+import { LZUTF8 } from 'WorkingTitle'
+import * as _LZUTF8 from '../utils/LzUtf8'
 
 /**
  * A system for managing flight plan data used by various instruments.
@@ -17,6 +19,7 @@ export class FlightPlanManager {
   public static DEBUG_INSTANCE: FlightPlanManager;
 
   public static FlightPlanKey = "WT.FlightPlan";
+  public static FlightPlanCompressedKey = "WT.FlightPlan.Compressed";
   public static FlightPlanVersionKey = "L:WT.FlightPlan.Version";
 
   /**
@@ -39,10 +42,9 @@ export class FlightPlanManager {
         plan.setParentInstrument(_parentInstrument);
         this._flightPlans = [];
         this._flightPlans.push(plan);
+        await FlightPlanAsoboSync.LoadFromGame(this);
         this._currentFlightPlanVersion++;
         this._updateFlightPlanVersion();
-
-        await FlightPlanAsoboSync.LoadFromGame(this);
 
       }.bind(this));
     }
@@ -160,7 +162,6 @@ export class FlightPlanManager {
   public createNewFlightPlan(callback = EmptyCallback.Void): void {
     const newFlightPlan = new ManagedFlightPlan();
     newFlightPlan.setParentInstrument(this._parentInstrument);
-    this._flightPlans = [];
     this._flightPlans.push(newFlightPlan);
     this._updateFlightPlanVersion();
 
@@ -1299,15 +1300,31 @@ export class FlightPlanManager {
       let initFpln = new ManagedFlightPlan();
       this._flightPlans.push(initFpln);
     } else {
-      this._flightPlans = JSON.parse(fpln);
+      if(window.localStorage.getItem(FlightPlanManager.FlightPlanCompressedKey) == "1"){
+        this._flightPlans = JSON.parse(LZUTF8.decompress(fpln, { inputEncoding: "StorageBinaryString" }));
+      }else {
+        this._flightPlans = JSON.parse(fpln);
+      }
     }
+  }
+
+  public getCurrentFlightPlan(): ManagedFlightPlan {
+    return this._flightPlans[this._currentFlightPlanIndex];
   }
 
   /**
    * Updates the synchronized flight plan version and saves it to shared storage.
    */
-  public _updateFlightPlanVersion(): void {
+  public async _updateFlightPlanVersion(): Promise<void> {
+    let fpJson = JSON.stringify(this._flightPlans.map(fp => fp.serialize()));
+    if (fpJson.length > 2500000) {
+      fpJson = LZUTF8.compress(fpJson, { outputEncoding: "StorageBinaryString" });
+      window.localStorage.setItem(FlightPlanManager.FlightPlanCompressedKey, "1");
+    } else {
+      window.localStorage.setItem(FlightPlanManager.FlightPlanCompressedKey, "0");
+    }
+    window.localStorage.setItem(FlightPlanManager.FlightPlanKey, fpJson);
     SimVar.SetSimVarValue(FlightPlanManager.FlightPlanVersionKey, 'number', ++this._currentFlightPlanVersion);
-    window.localStorage.setItem(FlightPlanManager.FlightPlanKey, JSON.stringify(this._flightPlans.map(fp => fp.serialize())));
+    //FlightPlanAsoboSync.SaveToGame(this);
   }
 }

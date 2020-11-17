@@ -251,6 +251,9 @@ class CJ4_FMC_LegsPage {
                     case CJ4_FMC_LegsPage.SELECT_MODE.NEW: {
                         if ((i >= 1 && this._currentPage == 1) || this._currentPage > 1) {
                             this._fmc.setMsg("Working...");
+                            if (waypoint && waypoint.fix && waypoint.fix.icao === "$EMPTY") {
+                                selectedWpIndex = Infinity;
+                            }
                             this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
                                 if (isSuccess) {
                                     let isDirectTo = (i == 1 && this._currentPage == 1);

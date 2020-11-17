@@ -81,7 +81,7 @@ export class ManagedFlightPlan {
   /** The length of the flight plan. */
   public get length(): number {
     const lastSeg = this._segments[this._segments.length-1];
-    return lastSeg.offset + lastSeg.waypoints.length; 
+    return lastSeg.offset + lastSeg.waypoints.length + (this.hasDestination ? 1 : 0); 
   }
 
   /** The non-approach waypoints of the flight plan. */

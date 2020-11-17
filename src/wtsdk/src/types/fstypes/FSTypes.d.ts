@@ -137,7 +137,7 @@ declare module "MSFS" {
   }
 
   export class Coherent {
-    static call(handler: string, ...params: string[]): Promise<any>
+    static call(handler: string, ...params: any[]): Promise<any>
   }
 
   export function RegisterViewListener(handler: string): void
