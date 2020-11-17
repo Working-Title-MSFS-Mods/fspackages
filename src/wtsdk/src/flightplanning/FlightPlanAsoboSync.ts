@@ -105,6 +105,8 @@ export class FlightPlanAsoboSync {
         });
       }
 
+      Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", fpln.getActiveWaypointIndex);
+
       // await Coherent.call("COPY_CURRENT_FLIGHTPLAN_TO", 0).catch(console.log);
       // await Coherent.call("SET_CURRENT_FLIGHTPLAN_INDEX", 0).catch(console.log);
     });
