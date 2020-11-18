@@ -209,18 +209,19 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.selectedCursorSVG.setAttribute("visibility", "hidden");
             this.cursorSVGGroup.appendChild(this.selectedCursorSVG);
 
-            //Disabled until Chris adds in VNAV
-            /*if (SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") == 2) {
-                    SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
-                }*/
-            /*this.pinkDonut = document.createElementNS(Avionics.SVG.NS, "circle");
+            //PINK DONUT
+            
+            let pinkDonutHeight = 12;
+            this.pinkDonutOffsetY = pinkDonutHeight * 0.9;
+            this.pinkDonut = document.createElementNS(Avionics.SVG.NS, "circle");
             this.pinkDonut.setAttribute("cx", "30");
-            this.pinkDonut.setAttribute("cy", "130");
+            this.pinkDonut.setAttribute("cy", pinkDonutHeight * 0.5 + 5);
             this.pinkDonut.setAttribute("r", "10");
             this.pinkDonut.setAttribute("fill", "none");
             this.pinkDonut.setAttribute("stroke", "magenta");
             this.pinkDonut.setAttribute("stroke-width", "3");
-            this.cursorSVGGroup.appendChild(this.pinkDonut);*/
+            this.pinkDonut.setAttribute("visibility", "hidden");
+            this.cursorSVGGroup.appendChild(this.pinkDonut);
 
             this.bottomSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
             this.bottomSpeedText.textContent = "";
@@ -696,8 +697,9 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                 this.updateVSpeed(vSpeed);
                 break;
             case "selected_vspeed_active":
+                let vnavActive = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
                 if (this.selectedCursorSVG) {
-                    if (newValue == "true")
+                    if (newValue == "true" || vnavActive != 1)
                         this.selectedCursorSVG.setAttribute("visibility", "visible");
                     else
                         this.selectedCursorSVG.setAttribute("visibility", "hidden");
@@ -785,6 +787,23 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
         }
     }
     updateSelectedVSpeed(_speed) {
+
+        let vnavActiveDonut = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
+        
+
+        if (this.gradSpeeds && this.selectedCursorSVG && vnavActiveDonut == 2) {
+            this.pinkDonut.setAttribute("visibility", "visible");
+            let vSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
+            let height = this.heightFromSpeed(vSpeed);
+            let posY = 0;
+            if (vSpeed >= 0)
+                posY = this.cursorPosY2 - height;
+            else
+                posY = this.cursorPosY2 + height;
+            this.pinkDonut.setAttribute("transform", "translate(0 " + (posY - this.pinkDonutOffsetY) + ")");
+        } else {
+            this.pinkDonut.setAttribute("visibility", "hidden");
+        }
         if (this.gradSpeeds && this.selectedCursorSVG) {
             let vSpeed = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, _speed));
             let height = this.heightFromSpeed(vSpeed);

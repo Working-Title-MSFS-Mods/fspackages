@@ -859,9 +859,9 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             let isApproachLoaded = Simplane.getAutoPilotApproachLoaded();
             let approachType = Simplane.getAutoPilotApproachType();
             
-            if (this.gs_cursorGroup && this.gsVisible && navCheck === 1) {
+            /*if (this.gs_cursorGroup && this.gsVisible && navCheck === 1) {
                 console.log("We are in Nav");
-            }
+            }*/
 
             if (this.gs_cursorGroup && this.gsVisible) {
                 //if (isApproachLoaded && approachType == 10) {
