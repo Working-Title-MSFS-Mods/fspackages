@@ -1,4 +1,4 @@
-class WT_MapViewTrackVectorLayer extends WT_MapViewCanvasLayer {
+class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
     constructor(id = WT_MapViewTrackVectorLayer.ID_DEFAULT, configName = WT_MapViewTrackVectorLayer.CONFIG_NAME_DEFAULT) {
         super(id, configName);
 
@@ -8,7 +8,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewCanvasLayer {
 
         this._vectorLayer = new WT_MapViewCanvas(true, true);
 
-        this.addCanvas(this._vectorLayer);
+        this.addSubLayer(this._vectorLayer);
 
         this._lastTime = 0;
         this._lastTurnSpeed = 0;

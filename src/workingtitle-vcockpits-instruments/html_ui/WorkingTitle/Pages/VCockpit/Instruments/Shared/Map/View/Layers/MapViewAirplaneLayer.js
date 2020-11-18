@@ -1,9 +1,9 @@
-class WT_MapViewAirplaneLayer extends WT_MapViewCanvasLayer {
+class WT_MapViewAirplaneLayer extends WT_MapViewMultiLayer {
     constructor(id = WT_MapViewAirplaneLayer.ID_DEFAULT, configName = WT_MapViewAirplaneLayer.CONFIG_NAME_DEFAULT) {
         super(id, configName);
 
         this._airplaneIcon = new WT_MapViewCanvas(false, false);
-        this.addCanvas(this._airplaneIcon);
+        this.addSubLayer(this._airplaneIcon);
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewAirplaneLayer.OPTIONS_DEF);
 
