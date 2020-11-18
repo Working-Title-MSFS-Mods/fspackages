@@ -552,7 +552,14 @@ class CJ4_FMC extends FMCMainDisplay {
                     verticalArmed = "ALTS";
                 }
                 else if (altSlotIndex == 2) {
-                    verticalArmed = "ALTV";
+                    const altVar1 = Math.round(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet"));
+                    const altVar2 = Math.round(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet"));
+                    if (altVar1 == altVar2) {
+                        verticalArmed = "ALTS";
+                    }
+                    else {
+                        verticalArmed = "ALTV";
+                    }
                 }
             }
             else if (path == "armed") {
