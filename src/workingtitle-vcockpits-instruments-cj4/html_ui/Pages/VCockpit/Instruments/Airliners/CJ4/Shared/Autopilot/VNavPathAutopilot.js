@@ -104,6 +104,12 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
                         //WE HAVE NOT PASSED THE TARGET YET 
                         this._vnavStatus = 14;
                     }
+                    else if (vnavTargetAltitude > this._vnavTargetAltitude) {
+                        //ODD CASE WHERE NEXT CONSTRAINT IS HIGHER THAN CURRENT CONSTRAINT
+                        this.setTargetAltitude(this._vnavTargetAltitude);
+                        this.deactivate();
+                        return;
+                    }
                     else {
                         if (distanceToTod > 1) {
                             //WE HAVE PASSED THE TARGET, BUT DO NOT YET NEED TO SET A NEW ALT TARGET
