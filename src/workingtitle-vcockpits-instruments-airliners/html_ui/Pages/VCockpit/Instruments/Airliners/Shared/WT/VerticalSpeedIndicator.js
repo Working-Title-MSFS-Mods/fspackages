@@ -713,6 +713,21 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
     }
     updateVSpeed(_speed) {
         if (this.gradSpeeds) {
+            let vnavActiveDonut = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
+        
+            if (this.gradSpeeds && this.selectedCursorSVG && vnavActiveDonut == 2) {
+                this.pinkDonut.setAttribute("visibility", "visible");
+                let vSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
+                let height = this.heightFromSpeed(vSpeed);
+                let posY = 0;
+                if (vSpeed >= 0)
+                    posY = this.cursorPosY2 - height;
+                else
+                    posY = this.cursorPosY2 + height;
+                this.pinkDonut.setAttribute("transform", "translate(0 " + (posY - this.pinkDonutOffsetY) + ")");
+            } else {
+                this.pinkDonut.setAttribute("visibility", "hidden");
+            }
             {
                 let vSpeed = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, _speed));
                 let height = this.heightFromSpeed(vSpeed);
@@ -789,22 +804,8 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
     updateSelectedVSpeed(_speed) {
 
         let vnavActiveDonut = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
-        
 
-        if (this.gradSpeeds && this.selectedCursorSVG && vnavActiveDonut == 2) {
-            this.pinkDonut.setAttribute("visibility", "visible");
-            let vSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
-            let height = this.heightFromSpeed(vSpeed);
-            let posY = 0;
-            if (vSpeed >= 0)
-                posY = this.cursorPosY2 - height;
-            else
-                posY = this.cursorPosY2 + height;
-            this.pinkDonut.setAttribute("transform", "translate(0 " + (posY - this.pinkDonutOffsetY) + ")");
-        } else {
-            this.pinkDonut.setAttribute("visibility", "hidden");
-        }
-        if (this.gradSpeeds && this.selectedCursorSVG) {
+        if (this.gradSpeeds && this.selectedCursorSVG && vnavActiveDonut == 1) {
             let vSpeed = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, _speed));
             let height = this.heightFromSpeed(vSpeed);
             let posY = 0;
