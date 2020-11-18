@@ -32,7 +32,6 @@ class WT_Map_Setup {
     saveKey(key) {
         const storageKey = this.getStorageKey(key);
         if (this.defaults[key] != this.values[key]) {
-            console.log(`Stored ${key} as ${this.values[key]}`);
             WTDataStore.set(storageKey, this.values[key]);
         } else {
             WTDataStore.remove(storageKey);
@@ -65,7 +64,6 @@ class WT_Map_Setup {
         if (typeof this.defaults[key] == "number") {
             value = parseInt(value);
         }
-        console.log(`Set ${key} to ${value}`);
         this.values[key] = value;
         this.saveKey(key);
         this.fireListeners(key);
@@ -285,6 +283,10 @@ class WT_Map_Setup_View extends WT_HTML_View {
         ]
     }
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+        
         const template = document.getElementById('map-setup-pane');
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();

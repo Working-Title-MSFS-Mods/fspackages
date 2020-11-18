@@ -5,6 +5,7 @@ class WT_MFD_Soft_Key_Menu_Handler {
     constructor(softKeyController) {
         this.softKeyController = softKeyController;
         this.stack = [];
+        this.backKey = new WT_Soft_Key("BACK", () => this.pop());
     }
     /**
      * @param {WT_Soft_Key_Menu} menu 
@@ -21,6 +22,9 @@ class WT_MFD_Soft_Key_Menu_Handler {
         this.softKeyController.setMenu(menu);
         return handler;
     }
+    goToMenu(menu) {
+        this.show(menu);
+    }
     pop(index = null) {
         if (index === null) {
             this.stack.pop();
@@ -34,6 +38,9 @@ class WT_MFD_Soft_Key_Menu_Handler {
         } else {
             this.softKeyController.setMenu(null);
         }
+    }
+    back() {
+        this.pop();
     }
     getBackButton() {
         return new WT_Soft_Key("BACK", () => this.pop());

@@ -11,8 +11,6 @@ class WT_Shared_Instrument_Events {
                 const eventData = JSON.parse(event.newValue);
                 const eventKey = eventData.event;
                 const data = eventData.data;
-                console.log(eventKey);
-                console.log(data);
                 if (eventKey in this.listeners) {
                     for (let listener of this.listeners[eventKey]) {
                         listener(data);

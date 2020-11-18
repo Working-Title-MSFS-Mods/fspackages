@@ -47,6 +47,16 @@ class WT_Page_Controller_Input_Layer extends Input_Layer {
     }
 }
 
+class WT_Page_Controller_Group {
+    constructor(name, pages) {
+        this.name = name;
+        this.pages = pages;
+    }
+    addPage(page) {
+        this.pages.push(page);
+    }
+}
+
 class WT_Page_Controller {
     constructor(pageGroups, pageTitle) {
         this.pageGroups = pageGroups;

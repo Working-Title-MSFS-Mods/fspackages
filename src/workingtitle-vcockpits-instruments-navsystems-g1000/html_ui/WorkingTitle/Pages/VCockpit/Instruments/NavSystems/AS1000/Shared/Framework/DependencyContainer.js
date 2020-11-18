@@ -68,8 +68,10 @@ class WT_Shared_Dependencies {
         d.register("sharedData", d => new WT_Shared_Instrument_Data());
         d.register("sharedEvents", d => new WT_Shared_Instrument_Events(navSystem));
         d.register("inputStack", d => new Input_Stack());
+        d.register("electricityAvailable", d => new Subject(navSystem.isElectricityAvailable()));
         d.register("planeConfig", d => new WT_Plane_Config());
-        d.register("planeState", d => new WT_Plane_State());
+        d.register("planeState", d => new WT_Plane_State(d.electricityAvailable));
+        d.register("fuelUsed", d => new WT_Fuel_Used(d.planeState, ["FUEL LEFT QUANTITY", "FUEL RIGHT QUANTITY"]));
         d.register("radioAltimeter", d => new WT_Radio_Altimeter(d.planeConfig));
         d.register("sound", d => new WT_Sound());
         d.register("softKeyController", d => navSystem.querySelector("g1000-soft-key-menu"));
@@ -85,7 +87,7 @@ class WT_Shared_Dependencies {
         d.register("facilityLoader", d => navSystem.facilityLoader);
         d.register("waypointRepository", d => new WT_Waypoint_Repository(d.facilityLoader));
         d.register("nearestWaypoints", d => {
-            const repository = new WT_Nearest_Waypoints_Repository(navSystem);
+            const repository = new WT_Nearest_Waypoints_Repository(navSystem, d.settings);
             navSystem.updatables.push(repository);
             return repository;
         });
@@ -121,5 +123,13 @@ class WT_Shared_Dependencies {
         d.register("icaoInputModel", d => new WT_Icao_Input_Model(d.showDuplicatesHandler, d.waypointQuickSelect), { scope: "transient" });
 
         d.register("mapInputLayerFactory", d => new WT_Map_Input_Layer_Factory(d.modSettings));
+
+        d.register("debugConsole", d => new WT_Debug_Console());
+        d.register("debugConsoleView", d => new WT_Debug_Console_View());
+
+        d.register("debugConsoleMenu", d => new WT_Debug_Console_Menu(d.softKeyMenuHandler, d.debugConsole));
+        d.register("debugDataStoreMenu", d => new WT_Debug_Data_Store_Menu(d.softKeyMenuHandler));
+
+        d.register("debugMenu", d => new WT_Debug_Menu(d.softKeyMenuHandler, d.debugConsoleMenu, d.debugDataStoreMenu));
     }
 }

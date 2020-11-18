@@ -8,7 +8,6 @@ class WT_Mod_Settings_Model extends WT_Model {
         this.onResetSettings = new WT_Event();
     }
     updateSetting(setting, value) {
-        console.log(`Modified: ${setting} -> ${value}`);
         this.settings.setValue(setting, value);
     }
     resetToDefaults() {

@@ -22,7 +22,6 @@ class WT_Nearest_Airports_Model extends WT_Model {
         this.selectedAirport = new Subject();
 
         this.subscriptions = new Subscriptions();
-        this.subscribe();
 
         this.setIcao = DOMUtilities.debounce(async icao => {
             this.selectedAirport.value = await this.waypointRepository.load(icao);

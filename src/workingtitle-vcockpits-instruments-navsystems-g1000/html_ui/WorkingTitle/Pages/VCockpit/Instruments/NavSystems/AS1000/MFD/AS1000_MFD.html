@@ -1,7 +1,7 @@
 ﻿<script>
-    Include.addScript("/JS/debug.js?19", function () {
+    /*Include.addScript("/JS/debug.js?19", function () {
         g_modDebugMgr.AddConsole(null);
-    });
+    });*/
 </script>
 
 <script type="text/html" id="AS1000_MFD">
@@ -905,14 +905,32 @@
                 </div>
             </section>
             <section class="category">
-                <h1>COM CONFIG</h1>
+                <h1>COM Config</h1>
                 <div class="content">
                     <div class="element">
                         <div class="name">CHANNEL SPACING</div>
                         <div id="Setup_ChannelConfig" class="value Selectable">25.0 kHz</div>
                     </div>
                 </div>
-            </section>            
+            </section>
+            <section class="category">
+                <h1>Nearest Airport</h1>
+                <div class="content">
+                    <div class="element">
+                        <div class="name">RNWY SURFACE</div>
+                        <drop-down-selector class="value" data-setting="nearest_runway_surface">
+                            <drop-down-selector-option value="Any">Any</drop-down-selector-option>
+                            <drop-down-selector-option value="Hard Only">Hard Only</drop-down-selector-option>
+                            <drop-down-selector-option value="Hard/Soft">Hard/Soft</drop-down-selector-option>
+                            <drop-down-selector-option value="Water">Water</drop-down-selector-option>
+                        </drop-down-selector>
+                    </div>
+                    <div class="element">
+                        <div class="name">MIN LENGTH</div>
+                        <numeric-input min="0" max="25000" digits="5" units="ft" class="value" data-setting="nearest_runway_min_length"></numeric-input>
+                    </div>
+                </div>
+            </section>
         </section>
     </template>
 
@@ -991,7 +1009,8 @@
                     <drop-down-selector-option value="enhancements">Enhancements</drop-down-selector-option>
                     <drop-down-selector-option value="performance">Performance</drop-down-selector-option>
                     <drop-down-selector-option value="visuals">Visuals</drop-down-selector-option>
-                    <drop-down-selector-option value="bugFixes">Bug Fixes</drop-down-selector-option>
+                    <drop-down-selector-option value="bug fixes">Bug Fixes</drop-down-selector-option>
+                    <drop-down-selector-option value="known issues">Known Issues</drop-down-selector-option>
                 </drop-down-selector>
             </h1>
             <scrollable-container class="content" data-element="selectedChangelogScrollable">
@@ -1147,13 +1166,10 @@
 <script type="text/html" import-script="/JS/dataStorage.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/NumberUnit.js"></script>
-<script type="text/html"
-    import-template="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/MapInstrument.html"></script>
+<script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/MapInstrument.html"></script>
 
-<script type="text/html"
-    import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
-<script type="text/html"
-    import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/XMLEngineDisplay/XMLEngineDisplay.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/XMLEngineDisplay/XMLEngineDisplay.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/AbstractGauge.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/CircularGauge.js"></script>
@@ -1165,18 +1181,13 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/ElevTrimGauge.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/RudderTrimGauge.js"></script>
 
-<script type="text/html"
-    import-template="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/EngineDisplay.html"></script>
+<script type="text/html" import-template="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/EngineDisplay.html"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
-<script type="text/html"
-    import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
-<script type="text/html"
-    import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/FileHandler.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/MetarRepository.js"></script>
 
-<script type="text/html"
-    import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Scripts.js"></script>
-<script type="text/html"
-    import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Scripts.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Scripts.js?wefdffwef"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Scripts.js"></script>

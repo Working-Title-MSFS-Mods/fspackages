@@ -14,10 +14,12 @@ WT_Default_Settings.base = {
     time_offset: 0,
     time_mode: "0",
     vfr_xpdr: 1200,
+    nearest_runway_surface: "Hard/Soft",
+    nearest_runway_min_length: 0,
 };
 
 WT_Default_Settings.modBase = {
-    range_knob: "Range",
+    range_knob: "Zoom",
     navigation_knob: "Normal",
     font_family: "default",
     font_size: "normal",

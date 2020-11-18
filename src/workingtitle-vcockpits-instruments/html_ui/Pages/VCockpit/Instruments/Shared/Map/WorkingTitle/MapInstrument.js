@@ -1376,6 +1376,8 @@ class MapInstrument extends ISvgMapRootElement {
 
     // keeping this for back-compat
     rotateWithPlane(_val) {
+        this.overdrawFactor = _val ? MapInstrument.OVERDRAW_FACTOR_DEFAULT : 1;
+        this.updateBingMapSize();
         if (this.rotationHandler instanceof MapInstrument_DefaultRotationHandler) {
             this.rotationHandler.rotateWithPlane = _val;
         }

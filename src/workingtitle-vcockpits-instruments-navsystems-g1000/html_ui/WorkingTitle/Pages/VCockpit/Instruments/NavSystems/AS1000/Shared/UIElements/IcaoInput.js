@@ -36,10 +36,12 @@ class WT_Icao_Input_Model {
     /**
      * @param {WT_Show_Duplicates_Handler} showDuplicatesHandler 
      * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
+     * @param {WT_Waypoint_Repository} waypointRepository 
      */
-    constructor(showDuplicatesHandler, waypointQuickSelect) {
+    constructor(showDuplicatesHandler, waypointQuickSelect, waypointRepository) {
         this.showDuplicatesHandler = showDuplicatesHandler;
         this.waypointQuickSelect = waypointQuickSelect;
+        this.waypointRepository = waypointRepository;
     }
     addToQuickSelect(icao) {
         this.waypointQuickSelect.addRecentWaypoint(icao);

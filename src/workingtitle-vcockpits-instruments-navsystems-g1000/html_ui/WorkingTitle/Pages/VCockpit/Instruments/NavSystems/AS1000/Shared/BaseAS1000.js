@@ -281,6 +281,7 @@ class Engine extends NavSystemElementContainer {
             let engineRoot = this.gps.xmlConfig.getElementsByTagName("EngineDisplay");
             if (engineRoot.length > 0) {
                 fromConfig = true;
+                this.gps.setAttribute("engine", "XML");
                 this.root.setAttribute("state", "XML");
                 this.xmlEngineDisplay = this.root.querySelector("glasscockpit-xmlenginedisplay");
                 this.xmlEngineDisplay.setConfiguration(this.gps, engineRoot[0]);
@@ -302,6 +303,7 @@ class Engine extends NavSystemElementContainer {
         switch (this.engineType) {
             case EngineType.ENGINE_TYPE_PISTON:
                 {
+                    this.gps.setAttribute("engine", "piston");
                     this.root.setAttribute("state", "piston");
                     this.addGauge().Set(this.gps.getChildById("Piston_VacGauge"), this.settings.Vacuum, this.getVAC.bind(this), "VAC", "inHg");
                     this.addGauge().Set(this.gps.getChildById("Piston_FuelGauge"), this.settings.FuelQuantity, this.getFuelR.bind(this), "FUEL QTY", "GAL", 0, this.getFuelL.bind(this));
@@ -327,6 +329,7 @@ class Engine extends NavSystemElementContainer {
             case EngineType.ENGINE_TYPE_TURBOPROP:
             case EngineType.ENGINE_TYPE_JET:
                 {
+                    this.gps.setAttribute("engine", "turbo");
                     this.root.setAttribute("state", "turbo");
                     this.addGauge().Set(this.gps.getChildById("Turbo_AmpGauge1"), this.settings.BatteryBusAmps, this.getAmpsBattery.bind(this), "", "AMPS B");
                     this.addGauge().Set(this.gps.getChildById("Turbo_AmpGauge2"), this.settings.GenAltBusAmps, this.getAmpsGenAlt.bind(this), "", "AMPS G");

@@ -35,13 +35,17 @@ class WT_Map_Map_Menu extends WT_Soft_Key_Menu {
 }
 
 class WT_Map_Model extends WT_Model {
-    constructor(gps, mapElement) {
+    /**
+     * @param {WT_Show_Map_Setup_Handler} showMapSetupHandler 
+     * @param {MapInstrument} mapElement 
+     */
+    constructor(showMapSetupHandler, mapElement) {
         super();
-        this.gps = gps;
+        this.showMapSetupHandler = showMapSetupHandler;
         this.mapElement = mapElement;
     }
     showMapSetup() {
-        this.gps.showMapSetup();
+        this.showMapSetupHandler.show();
     }
 }
 

@@ -59,10 +59,10 @@ class SvgProcedureElement extends SvgMapElement {
         };
     }
     createProcedurePath() {
-        return this.createPath("white", "black", 8);
+        return this.createPath("white", "black", 6);
     }
     createTransitionsPath() {
-        return this.createPath("#bbb", "black", 4);
+        return this.createPath("#bbb", "black", 3);
     }
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");

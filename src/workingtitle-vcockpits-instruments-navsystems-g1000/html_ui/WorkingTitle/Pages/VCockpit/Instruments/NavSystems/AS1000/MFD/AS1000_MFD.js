@@ -16,8 +16,6 @@ class AS1000_MFD extends BaseAS1000 {
 
         d.register("navBoxModel", d => new WT_MFD_Nav_Box_Model(d.pageTitle, d.unitChooser, d.settings));
         d.register("flightPlanController", d => new WT_Flight_Plan_Controller());
-        d.register("fuelUsed", d => new WT_Fuel_Used(["FUEL LEFT QUANTITY", "FUEL RIGHT QUANTITY"]));
-        d.register("electricityAvailable", d => new Subject(this.isElectricityAvailable()));
         d.register("changelogRepository", d => new WT_Changelog_Repository());
         d.register("metarDownloader", d => new WT_Metar_Downloader());
         d.register("metarRepository", d => new WT_Metar_Repository(d.metarDownloader));
@@ -53,7 +51,7 @@ class AS1000_MFD extends BaseAS1000 {
 
         d.register("frequencyListModel", d => new WT_Frequency_List_Model(d.comFrequenciesModel, d.navFrequenciesModel), { scope: "transient" });
 
-        d.register("mapModel", d => new WT_Map_Model(this, d.mainMap), { scope: "transient" });
+        d.register("mapModel", d => new WT_Map_Model(d.showMapSetupHandler, d.mainMap), { scope: "transient" });
         d.register("mapView", d => new WT_Map_View(d.pageMenuHandler, d.softKeyController), { scope: "transient" });
 
         d.register("weatherModel", d => new WT_Weather_Page_Model(), { scope: "transient" });
@@ -90,43 +88,30 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("nearestVorsView", d => new WT_Nearest_Vors_View(d.softKeyMenuHandler, d.mainMap, d.unitChooser), { scope: "transient" });
 
         d.register("pageTitle", d => new Subject("MAP - NAVIGATION MAP"));
+        d.register("mapPage", d => new WT_Page("Map", () => d.mapModel, () => d.mapView));
+
+        d.register("airportInformationPage", d => new WT_Page("Airport Information", () => d.airportInformationModel, () => d.airportInformationView));
+        d.register("intersectionInformationPage", d => new WT_Page("Intersection Information", () => d.intersectionInformationModel, () => d.intersectionInformationView));
+
+        d.register("systemSettingsPage", d => new WT_Page("System Settings", () => d.systemSettingsModel, () => d.systemSettingsView));
+        d.register("modSettingsPage", d => new WT_Page("Mod Settings", () => d.modSettingsModel, () => d.modSettingsView));
+        d.register("changelogPage", d => new WT_Page("Changelog", () => d.changelogModel, () => d.changelogView));
+        d.register("creditsPage", d => new WT_Page("Credits", () => d.creditsModel, () => d.creditsView));
+
+        d.register("flightPlanPage", d => new WT_Page("Flight Plan", () => d.flightPlanModel, () => d.flightPlanView));
+
+        d.register("nearestAirportsPage", d => new WT_Page("Nearest Airports", () => d.nearestAirportsModel, () => d.nearestAirportsView));
+        d.register("nearestNdbsPage", d => new WT_Page("Nearest NDBs", () => d.nearestNdbsModel, () => d.nearestNdbsView));
+        d.register("nearestVorsPage", d => new WT_Page("Nearest VORs", () => d.nearestVorsModel, () => d.nearestVorsView));
+
+        d.register("mapPageGroup", d => new WT_Page_Controller_Group("MAP", [d.mapPage]));
+
         d.register("pageController", d => new WT_Page_Controller([
-            {
-                name: "MAP",
-                pages: [
-                    new WT_Page("Map", () => d.mapModel, () => d.mapView),
-                ]
-            },
-            {
-                name: "WPT",
-                pages: [
-                    new WT_Page("Airport Information", () => d.airportInformationModel, () => d.airportInformationView),
-                    new WT_Page("Intersection Information", () => d.intersectionInformationModel, () => d.intersectionInformationView),
-                ]
-            },
-            {
-                name: "AUX",
-                pages: [
-                    new WT_Page("System Settings", () => d.systemSettingsModel, () => d.systemSettingsView),
-                    new WT_Page("Mod Settings", () => d.modSettingsModel, () => d.modSettingsView),
-                    new WT_Page("Changelog", () => d.changelogModel, () => d.changelogView),
-                    new WT_Page("Credits", () => d.creditsModel, () => d.creditsView),
-                ]
-            },
-            {
-                name: "FPL",
-                pages: [
-                    new WT_Page("Flight Plan", () => d.flightPlanModel, () => d.flightPlanView),
-                ]
-            },
-            {
-                name: "NRST",
-                pages: [
-                    new WT_Page("Nearest Airports", () => d.nearestAirportsModel, () => d.nearestAirportsView),
-                    new WT_Page("Nearest NDBs", () => d.nearestNdbsModel, () => d.nearestNdbsView),
-                    new WT_Page("Nearest VORs", () => d.nearestVorsModel, () => d.nearestVorsView),
-                ]
-            },
+            d.mapPageGroup,
+            new WT_Page_Controller_Group("WPT", [d.airportInformationPage, d.intersectionInformationPage]),
+            new WT_Page_Controller_Group("AUX", [d.systemSettingsPage, d.modSettingsPage, d.changelogPage, d.creditsPage]),
+            new WT_Page_Controller_Group("FPL", [d.flightPlanPage]),
+            new WT_Page_Controller_Group("NRST", [d.nearestAirportsPage, d.nearestNdbsPage, d.nearestVorsPage]),
         ], d.pageTitle));
         d.register("weatherPage", d => new WT_Page("Weather Radar", () => d.weatherModel, () => d.weatherView));
         d.register("mfdInputLayer", d => new Base_Input_Layer(this, d.navFrequenciesModel, d.comFrequenciesModel, d.showDirectToHandler, null));
@@ -135,6 +120,7 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("mapSetupHandler", d => new WT_Map_Setup_Handler(d.mapSetup, d.mainMap));
         d.register("mapSetupModel", d => new WT_Map_Setup_Model(d.mapSetup), { scope: "transient" });
         d.register("mapSetupView", d => new WT_Map_Setup_View(d.softKeyMenuHandler, d.mainMap), { scope: "transient" });
+        d.register("showMapSetupHandler", d => new WT_Show_Map_Setup_Handler(d.mapSetupModel, d.mapSetupView, d.paneContainer, d.inputStack));
 
         this.dependencies = d.getDependencies();
     }
@@ -151,7 +137,6 @@ class AS1000_MFD extends BaseAS1000 {
 
         this.inputStack = d.inputStack;
         this.softKeyController = d.softKeyController;
-        this.electricityAvailable = d.electricityAvailable;
         this.pageController = d.pageController;
         this.mapInputLayerFactory = d.mapInputLayerFactory;
         this.fuelUsed = d.fuelUsed;
@@ -161,6 +146,8 @@ class AS1000_MFD extends BaseAS1000 {
         this.softKeyMenuHandler = d.softKeyMenuHandler;
         this.mapSetup = d.mapSetup;
         this.mapSetupHandler = d.mapSetupHandler;
+        this.electricityAvailable = d.electricityAvailable;
+        this.planeState = d.planeState;
 
         this.updatables.push(d.flightPlanController);
         this.updatables.push(d.nearestWaypoints);
@@ -175,15 +162,13 @@ class AS1000_MFD extends BaseAS1000 {
         this.initModelView(d.comFrequenciesModel, "g1000-com-frequencies");
         this.initModelView(d.navFrequenciesModel, "g1000-nav-frequencies");
 
-        this.electricityAvailable.subscribe((electricity) => { if (electricity) this.fuelUsed.reset(); });
-
         this.initDefaultSoftKeys();
         this.softKeyMenus = {
             engine: new WT_Engine_Menu(this.engineDisplay, this.softKeyMenuHandler),
             main: new WT_Soft_Key_Menu(true)
         };
 
-        this.softKeyController.setDefaultButtons(this.defaultSoftKeys.engine, this.defaultSoftKeys.map, this.defaultSoftKeys.checklist);
+        this.softKeyController.setDefaultButtons(this.defaultSoftKeys.engine, this.defaultSoftKeys.debug, this.defaultSoftKeys.map, this.defaultSoftKeys.checklist);
         this.softKeyController.handleInput(this.inputStack);
         this.showMainMenu();
 
@@ -192,6 +177,9 @@ class AS1000_MFD extends BaseAS1000 {
         this.initPageController();
 
         this.pageController.goTo("MAP", "Map");
+
+        document.body.appendChild(this.dependencies.debugConsoleView);
+        this.dependencies.debugConsoleView.setModel(this.dependencies.debugConsole);
     }
     initModelView(model, viewSelector) {
         let view = document.querySelector(viewSelector);
@@ -222,6 +210,7 @@ class AS1000_MFD extends BaseAS1000 {
     initDefaultSoftKeys() {
         this.defaultSoftKeys = {
             engine: new WT_Soft_Key("ENGINE", this.showEngineMenu.bind(this)),
+            debug: new WT_Soft_Key("DEBUG", this.showDebugMenu.bind(this)),
             map: new WT_Soft_Key("MAP", null),
             checklist: new WT_Soft_Key("CHKLIST", null)
         };
@@ -234,6 +223,9 @@ class AS1000_MFD extends BaseAS1000 {
     }
     showEngineMenu() {
         this.softKeyMenuHandler.show(this.softKeyMenus.engine);
+    }
+    showDebugMenu() {
+        this.softKeyMenuHandler.show(this.dependencies.debugMenu);
     }
     showDirectTo(icaoType = null, icao = null) {
         this.showDirectToHandler.show(icaoType, icao);
@@ -299,17 +291,10 @@ class AS1000_MFD extends BaseAS1000 {
             if (altimeterIndexElems.length > 0) {
                 this.altimeterIndex = parseInt(altimeterIndexElems[0].textContent) + 1;
             }
-        }
 
-        // Weather radar is on by default, and has to be explicitly turned OFF in a plane's
-        // configuration.   Which isn't loaded when the MFD initializes.  So here I need to
-        // go back and recreate the entire map page group if there's radar.  This is dumb.
-        if (this.hasWeatherRadar()) {
-            this.pageController.addPage("MAP", this.dependencies.weatherPage);
-            /*this.pageGroups[0] = new NavSystemPageGroup("MAP", this, [
-                new AS1000_MFD_MainMap(this.engineDisplay),
-                new AS1000_MFD_Radar()
-            ]);*/
+            if (this.hasWeatherRadar()) {
+                this.dependencies.mapPageGroup.addPage(this.dependencies.weatherPage);
+            }
         }
     }
     onXMLConfigLoaded(_xml) {
@@ -317,18 +302,14 @@ class AS1000_MFD extends BaseAS1000 {
         this.dependencies.planeConfig.updateConfig(this.xmlConfig);
     }
     onUpdate(dt) {
-        try {
-            for (let updatable of this.updatables) {
-                updatable.update(dt);
-            }
-            this.electricityAvailable.value = this.isElectricityAvailable();
-            if (this.mainMap.offsetParent)
-                this.mainMap.update(dt);
-            if (this.miniMap.offsetParent)
-                this.miniMap.update(dt);
-        } catch (e) {
-            console.error(e.message);
+        for (let updatable of this.updatables) {
+            updatable.update(dt);
         }
+        if (this.mainMap.offsetParent)
+            this.mainMap.update(dt);
+        if (this.miniMap.offsetParent)
+            this.miniMap.update(dt);
+        this.electricityAvailable.value = this.isElectricityAvailable();
     }
     disconnectedCallback() {
     }
@@ -395,6 +376,14 @@ class AS1000_MFD extends BaseAS1000 {
     Update() {
         super.Update();
         SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
+    }
+    onShutDown() {
+        super.onShutDown();
+        this.planeState.shutDown();
+    }
+    onPowerOn() {
+        super.onPowerOn();
+        this.planeState.powerOn();
     }
 }
 class AS1000_MFD_NavStatus extends NavSystemElement {

@@ -30,7 +30,7 @@ class WT_Nearest_Vors_View extends WT_HTML_View {
         });
     }
     initMenu() {
-        let menu = new WT_Soft_Key_Menu(false);
+        let menu = new WT_Soft_Key_Menu(true);
         this.menuButtons = {
             VOR: new WT_Soft_Key("VOR", this.browseWaypoints.bind(this)),
             FREQ: new WT_Soft_Key("FREQ", this.browseFrequency.bind(this)),

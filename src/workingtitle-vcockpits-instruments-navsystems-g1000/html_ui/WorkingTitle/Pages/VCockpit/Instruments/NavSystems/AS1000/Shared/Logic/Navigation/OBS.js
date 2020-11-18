@@ -87,7 +87,6 @@ class WT_OBS_Controller {
         this.isActive = true;
 
         let numExisting = SimVar.GetSimVarValue("C:fs9gps:FlightPlanWaypointsNumber", "number");
-        console.log(`Deleting ${numExisting} waypoints`);
         for (let i = numExisting - 1; i >= 0; i--) {
             await SimVar.SetSimVarValue("C:fs9gps:FlightPlanDeleteWaypoint", "enum", i);
         }

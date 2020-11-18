@@ -121,26 +121,24 @@ as1000-mfd-element #Mainframe #Electricity {
             display: block;
         }
 
-        &[state="piston"] #TurboEngine {
-            display: none;
-        }
-        &[state="piston"] #XMLEngineDisplay {
-            display: none;
+        &[state="piston"] {
+            #TurboEngine,
+            #XMLEngineDisplay {
+                display: none;
+            }
         }
         &[state="turbo"] {
             width: 35%;
+            #PistonEngine,
+            #XMLEngineDisplay {
+                display: none;
+            }
         }
-        &[state="turbo"] #PistonEngine {
-            display: none;
-        }
-        &[state="turbo"] #XMLEngineDisplay {
-            display: none;
-        }
-        &[state="XML"] #TurboEngine {
-            display: none;
-        }
-        &[state="XML"] #PistonEngine {
-            display: none;
+        &[state="XML"] {
+            #TurboEngine,
+            #PistonEngine {
+                display: none;
+            }
         }
     }
 
@@ -150,6 +148,14 @@ as1000-mfd-element #Mainframe #Electricity {
     glasscockpit-xmlhorizontaldoublegauge {
         @extend %render-layer;
         overflow: hidden !important;
+    }
+}
+
+as1000-mfd-element {
+    &[engine="turbo"] {
+        #Mainframe #Electricity {
+            grid-template-columns: 35% 65%;
+        }
     }
 }
 

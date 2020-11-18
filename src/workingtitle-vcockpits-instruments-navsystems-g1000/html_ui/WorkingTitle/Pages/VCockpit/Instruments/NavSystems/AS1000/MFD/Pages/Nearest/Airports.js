@@ -49,7 +49,7 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
         DOMUtilities
     }
     initMenu() {
-        let menu = new WT_Soft_Key_Menu(false);
+        let menu = new WT_Soft_Key_Menu(true);
         this.menuButtons = {
             APT: new WT_Soft_Key("APT", this.browseAirports.bind(this)),
             RNWY: new WT_Soft_Key("RNWY", this.browseRunways.bind(this)),
@@ -174,6 +174,7 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
         this.menuHandler = this.softKeyMenuHandler.show(this.menu);
         this.map.flightPlanElements.push(this.flightPlanElement);
         this.map.showFlightPlan = false;
+        this.model.subscribe();
     }
     deactivate() {
         if (this.menuHandler) {

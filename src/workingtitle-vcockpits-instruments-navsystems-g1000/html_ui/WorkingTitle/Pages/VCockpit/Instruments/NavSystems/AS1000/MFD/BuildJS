@@ -8,6 +8,7 @@ Handlers/ShowAirways.js
 Handlers/ShowConfirmDialog.js
 Handlers/ShowDirectTo.js
 Handlers/ShowDuplicates.js
+Handlers/ShowMapSetup.js
 Handlers/ShowNewWaypoint.js
 Handlers/ShowPageMenu.js
 Handlers/ShowProcedure.js

@@ -1,5 +1,9 @@
 class WT_Nearest_Waypoints_Repository {
-    constructor(gps) {
+    /**
+     * @param {NavSystem} gps 
+     * @param {WT_Settings} settings 
+     */
+    constructor(gps, settings) {
         this.airports = new Subject([], false);
         this.nearestAirportList = new NearestAirportList(gps);
 
@@ -11,40 +15,54 @@ class WT_Nearest_Waypoints_Repository {
 
         this.filters = {
             airports: {
-                type: "all",
-                length: null
-            }
-        };
-        this.loadOptions = {
-            count: 25,
-            distance: 60
+                surface: settings.getValue("nearest_runway_surface"),
+                length: settings.getValue("nearest_runway_min_length"),
+                distance: 100,
+                count: 25,
+                loadCount: 100, // Airports has to load more due to post-query filtering
+            },
+            ndbs: {
+                distance: 50,
+                count: 25,
+            },
+            vors: {
+                distance: 50,
+                count: 25,
+            },
         };
 
         this.updateTimer = 0;
         this.updateFrequency = 500;
+
+        settings.addListener(value => this.filters.airports.surface = value, "nearest_runway_surface");
+        settings.addListener(value => this.filters.airports.length = value, "nearest_runway_min_length");
     }
     filterAirport(airport) {
-        let filter = this.filters.airports;
-        if (filter.length) {
-            if (airport.longestRunwayLength < filter.length)
-                return false;
-        }
+        const filter = this.filters.airports;
+        if (airport.longestRunwayLength < filter.length)
+            return false;
 
-        if (filter.type) {
-            switch (filter.type) {
-                case "hardOnly":
-                    if (airport.airportClass != 1)
-                        return false;
-                    break;
-                case "all":
-                    break;
-            }
+        switch (filter.surface) {
+            case "Hard Only":
+                if (airport.airportClass != 1)
+                    return false;
+                break;
+            case "Hard/Soft":
+                if (airport.airportClass != 1 && airport.airportClass != 2)
+                    return false;
+                break;
+            case "Water":
+                if (airport.airportClass != 3)
+                    return false;
+                break;
+            default:
+                break;
         }
 
         return true;
     }
     updateNearestAirports() {
-        this.nearestAirportList.Update(this.loadOptions.count, this.loadOptions.distance);
+        this.nearestAirportList.Update(this.filters.airports.loadCount, this.filters.airports.distance);
 
         this.airports.value = this.nearestAirportList.airports
             .filter(this.filterAirport.bind(this))
@@ -53,19 +71,21 @@ class WT_Nearest_Waypoints_Repository {
             });
     }
     updateNearestVors() {
-        this.nearestVorList.Update(this.loadOptions.count, this.loadOptions.distance);
+        this.nearestVorList.Update(this.filters.vors.count, this.filters.vors.distance);
 
-        this.vors.value = this.nearestVorList.vors.sort((a, b) => {
-            return a.distance - b.distance
-        });
+        this.vors.value = this.nearestVorList.vors
+            .sort((a, b) => {
+                return a.distance - b.distance
+            });
     }
     updateNearestNdbs() {
         try {
-            this.nearestNdbList.Update(this.loadOptions.count, this.loadOptions.distance);
+            this.nearestNdbList.Update(this.filters.ndbs.count, this.filters.ndbs.distance);
 
-            this.ndbs.value = this.nearestNdbList.ndbs.sort((a, b) => {
-                return a.distance - b.distance
-            });
+            this.ndbs.value = this.nearestNdbList.ndbs
+                .sort((a, b) => {
+                    return a.distance - b.distance
+                });
         } catch (e) {
             console.error(e.message);
         }

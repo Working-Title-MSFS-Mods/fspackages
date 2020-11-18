@@ -47,12 +47,14 @@ class WT_Soft_Key_Menu {
     constructor(defaultButtons) {
         this.softKeys = [];
         this.options = {
+            showDebug: defaultButtons,
             showEngine: defaultButtons,
             showMap: defaultButtons,
             showChecklist: defaultButtons,
         }
     }
     disableDefaultButtons() {
+        this.options.showDebug = true;
         this.options.showEngine = true;
         this.options.showMap = true;
         this.options.showChecklist = true;
@@ -112,9 +114,10 @@ class WT_Soft_Key_Controller extends HTMLElement {
             this.appendChild(element);
         }
     }
-    setDefaultButtons(engine, map, checklist) {
+    setDefaultButtons(engine, debug, map, checklist) {
         this.defaultButtons = {
             engine: engine,
+            debug: debug,
             map: map,
             checklist: checklist,
         };
@@ -142,6 +145,10 @@ class WT_Soft_Key_Controller extends HTMLElement {
             if (softKeyMenu.options.showEngine) {
                 this.buttonElements[0].appendChild(this.defaultButtons.engine);
                 buttonsDone[0] = true;
+            }
+            if (softKeyMenu.options.showDebug) {
+                this.buttonElements[1].appendChild(this.defaultButtons.debug);
+                buttonsDone[1] = true;
             }
             if (softKeyMenu.options.showMap) {
                 this.buttonElements[2].appendChild(this.defaultButtons.map);

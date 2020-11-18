@@ -24,7 +24,6 @@ class WT_Procedure_Facility {
     }
     async getRawData() {
         if (!this._rawDataPromise && !this._rawData) {
-            console.log(this.icao);
             this._rawDataPromise = new Promise(resolve => {
                 this.facilityLoader.getAirportDataCB(this.icao, data => {
                     resolve(data);
@@ -79,7 +78,6 @@ class WT_Procedure_Facility {
                     approachData.finalLegs.map(mapLegs),
                     approachData.transitions.map((data, index) => new WT_Approach_Transition(index, data.legs[0].fixIcao.substr(7, 5).trim(), data.legs.map(mapLegs))),
                 );
-                console.log(`${d.name} - ${d.transitions.length} transitions`);
                 return d;
             });
             await Promise.all(Object.values(promises));

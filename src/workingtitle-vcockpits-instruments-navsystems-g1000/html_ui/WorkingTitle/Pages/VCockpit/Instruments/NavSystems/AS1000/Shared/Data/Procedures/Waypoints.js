@@ -66,7 +66,21 @@ class WT_Procedure_Waypoints {
                         if (i == 0) {
                             this.add(leg, leg.origin.ident, leg.origin.coordinates, 0, 0);
                         }
-                        this.add(leg, `${leg.origin.ident}${leg.distance.toFixed(0)}`, Avionics.Utils.bearingDistanceToCoordinates(leg.bearing, leg.distance, leg.origin.coordinates.lat, leg.origin.coordinates.long), leg.distance, leg.bearing);
+                        const bearingToOrigin = greatCircleHeading(this.last.coordinates, leg.origin.coordinates);
+                        const distanceToOrigin = greatCircleDistance(this.last.coordinates, leg.origin.coordinates);
+
+                        const beta = deltaAngle(bearingToOrigin, leg.bearing);
+                        const b = leg.distance / f;
+                        const c = distanceToOrigin / f;
+
+                        const gamma = asin((sin(c) * sin(beta)) / sin(b));
+                        const invGamma = Math.PI - asin((sin(c) * sin(beta)) / sin(b));
+                        const a1 = 2 * atan(tan(0.5 * (b - c)) * (sin(0.5 * (beta + gamma)) / sin(0.5 * (beta - gamma))));
+                        const a2 = 2 * atan(tan(0.5 * (b - c)) * (sin(0.5 * (beta + invGamma)) / sin(0.5 * (beta - invGamma))));
+                        const a = b > c ? a1 : Math.min(a1, a2);
+                        const coordinates = Avionics.Utils.bearingDistanceToCoordinates(leg.bearing, a * f, this.last.coordinates.lat, this.last.coordinates.long);
+
+                        this.add(leg, `${leg.origin.ident}${leg.distance.toFixed(0)}`, coordinates, a, leg.bearing);
                         break;
                     }
                     case 11: {

@@ -74,11 +74,11 @@ class WT_Selected_Approach_Procedure extends WT_Selected_Procedure {
     getSequence() {
         let waypoints = [];
         if (this.transitionWaypoints !== null) {
-            waypoints.push(...this.transitionWaypoints.waypoints);
+            waypoints.push(...this.transitionWaypoints.waypoints.slice(0, this.transitionWaypoints.waypoints.length - 1));
         }
         waypoints.push(...this.finalLegsWaypoints.waypoints);
 
-        //this.outputWaypointsToConsole(waypoints);
+        this.outputWaypointsToConsole(waypoints);
 
         return waypoints;
     }

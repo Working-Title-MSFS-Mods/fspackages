@@ -80,7 +80,6 @@ class WT_Approach_Page_View extends WT_HTML_View {
      * @param {WT_Approach_Transition[]} transitions 
      */
     updateTransitions(transitions) {
-        console.log(`trans: ${transitions.length}`);
         this.elements.transitionSelector.clearOptions();
         if (transitions) {
             let i = 0;

@@ -25,7 +25,6 @@ Handlers/ShowNewWaypoint.js
 Handlers/ShowPageMenu.js
 Handlers/ShowProcedure.js
 Menus/AltUnit.js
-Menus/Debug.js
 Menus/Handler.js
 Menus/InsetMap.js
 Menus/Main.js

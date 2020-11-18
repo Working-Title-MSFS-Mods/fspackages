@@ -48,7 +48,6 @@ class WT_Changelog_View extends WT_HTML_View {
 
         model.changelogs.subscribe(changelogs => {
             this.elements.changelogSelector.clearOptions();
-            console.log(JSON.stringify(changelogs));
             let i = 0;
             for (let changelog of changelogs) {
                 if (i++ == 0) {

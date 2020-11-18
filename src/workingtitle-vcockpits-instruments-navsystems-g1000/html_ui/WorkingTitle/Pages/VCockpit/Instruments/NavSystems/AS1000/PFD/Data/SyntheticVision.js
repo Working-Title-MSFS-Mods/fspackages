@@ -1,8 +1,15 @@
 class WT_Synthetic_Vision {
-    constructor() {
+    /**
+     * @param {WT_Plane_Config} config 
+     */
+    constructor(config) {
         this.enabled = new Subject(WTDataStore.get(WT_Synthetic_Vision.ENABLED_KEY, false));
         this.airportSigns = new Subject(WTDataStore.get(WT_Synthetic_Vision.AIRPORT_SIGNS_KEY, true));
         this.horizonHeadings = new Subject(WTDataStore.get(WT_Synthetic_Vision.HORIZON_HEADINGS_KEY, true));
+
+        config.watchNode("SyntheticVision", node => {
+            this.enabled.value = WTDataStore.get(WT_Synthetic_Vision.ENABLED_KEY, node && node.textContent == "True");
+        });
     }
     toggle() {
         this.set(!this.enabled.value);

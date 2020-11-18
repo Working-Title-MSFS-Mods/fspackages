@@ -31,7 +31,7 @@ class WT_Nearest_Ndbs_View extends WT_HTML_View {
         });
     }
     initMenu() {
-        let menu = new WT_Soft_Key_Menu(false);
+        let menu = new WT_Soft_Key_Menu(true);
         this.menuButtons = {
             NDB: new WT_Soft_Key("NDB", this.browseWaypoints.bind(this)),
             FREQ: new WT_Soft_Key("FREQ", this.browseFrequency.bind(this)),

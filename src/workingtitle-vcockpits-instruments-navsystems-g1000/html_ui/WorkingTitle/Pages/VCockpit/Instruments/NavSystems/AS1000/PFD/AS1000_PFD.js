@@ -14,7 +14,6 @@ class WT_PFD_Model {
         if (this.brightnessKnobIndex !== null) {
             let brightness = Math.floor(SimVar.GetSimVarValue(`A:LIGHT POTENTIOMETER:${this.brightnessKnobIndex}`, "number") * 100);
             if (this.lastBrightnessValue != brightness) {
-                console.log("brightness " + brightness);
                 this.brightness.setMfdBrightness(brightness);
                 this.brightness.setPfdBrightness(brightness);
                 this.lastBrightnessValue = brightness;
@@ -22,7 +21,6 @@ class WT_PFD_Model {
         }
     }
     setLightKnob(knob) {
-        console.log("Set knob to " + knob);
         this.brightnessKnobIndex = knob;
         this.lastBrightnessValue = Math.floor(SimVar.GetSimVarValue(`A:LIGHT POTENTIOMETER:${this.brightnessKnobIndex}`, "number") * 100);
     }
@@ -54,11 +52,7 @@ class AS1000_PFD extends BaseAS1000 {
 
         d.register("directToView", d => new WT_Direct_To_View(d.icaoInputModel, d.showPageMenuHandler));
         d.register("flightPlanView", d => new WT_PFD_Flight_Plan_Page_View(d.showPageMenuHandler, d.confirmDialogHandler, d.showNewWaypointHandler));
-        d.register("proceduresMenuView", d => {
-            const view = new WT_PFD_Procedures_Menu_View(d.showProcedureHandler, d.procedures); //TODO:
-            view.classList.add("mini-page");
-            return view;
-        });
+        d.register("proceduresMenuView", d => new WT_PFD_Procedures_Menu_View(d.showProcedureHandler, d.procedures));
         d.register("procedurePageModel", d => new WT_PFD_Procedure_Page_Model(d.flightPlanManager, d.procedureFacilityRepository));
         d.register("showProcedureHandler", d => new WT_PFD_Show_Procedure_Handler(d.miniPageController, d.icaoInputModel, d.procedurePageModel, d.approachPageView, d.arrivalPageView, d.departurePageView));
         d.register("showNewWaypointHandler", d => new WT_PFD_Show_New_Waypoint_Handler(d.miniPageController, d.waypointRepository, d.icaoInputModel, d.inputStack));
@@ -67,7 +61,7 @@ class AS1000_PFD extends BaseAS1000 {
 
         d.register("alertsKey", d => new WT_PFD_Alert_Key(d.annunciationsModel));
 
-        d.register("syntheticVision", d => new WT_Synthetic_Vision());
+        d.register("syntheticVision", d => new WT_Synthetic_Vision(d.planeConfig));
         d.register("attitudeModel", d => new Attitude_Indicator_Model(d.syntheticVision, d.nearestWaypoints));
         d.register("hsiInput", d => new HSI_Input_Layer(d.hsiModel))
         d.register("hsiModel", d => new HSIIndicatorModel(d.syntheticVision));
@@ -92,16 +86,15 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("warningsModel", d => new WT_Warnings_Model(this, d.planeConfig, d.sound));
         d.register("markerBeaconModel", d => new WT_Marker_Beacon_Model(this, d.planeConfig, d.sound));
 
-        d.register("menuHandler", d => new WT_PFD_Menu_Handler(d.softKeyController, d.alertsKey));
-        d.register("debugMenu", d => new WT_PFD_Debug_Menu(d.menuHandler));
-        d.register("transponderMenu", d => new WT_PFD_Transponder_Menu(d.menuHandler, d.transponderModel, d.transponderCodeMenu));
-        d.register("transponderCodeMenu", d => new WT_PFD_Transponder_Code_Menu(d.menuHandler, d.transponderModel));
-        d.register("mainMenu", d => new WT_PFD_Main_Menu(d.menuHandler, d.miniPageController, d.hsiModel, d.insetMapMenu, d.pfdMenu, d.transponderMenu, d.debugMenu));
-        d.register("pfdMenu", d => new WT_PFD_PFD_Menu(d.menuHandler, d.hsiModel, d.barometricPressure, d.syntheticVisionMenu, d.altUnitMenu, d.windMenu));
-        d.register("windMenu", d => new WT_PFD_Wind_Menu(d.menuHandler, d.windModel, d.alertsKey));
-        d.register("insetMapMenu", d => new WT_PFD_Inset_Map_Menu(d.menuHandler, d.insetMap, d.alertsKey));
-        d.register("syntheticVisionMenu", d => new WT_PFD_Synthetic_Vision_Menu(d.menuHandler, d.syntheticVision, d.alertsKey));
-        d.register("altUnitMenu", d => new WT_PFD_Alt_Unit_Menu(d.menuHandler, d.barometricPressure));
+        d.register("softKeyMenuHandler", d => new WT_PFD_Menu_Handler(d.softKeyController, d.alertsKey));
+        d.register("transponderMenu", d => new WT_PFD_Transponder_Menu(d.softKeyMenuHandler, d.transponderModel, d.transponderCodeMenu));
+        d.register("transponderCodeMenu", d => new WT_PFD_Transponder_Code_Menu(d.softKeyMenuHandler, d.transponderModel));
+        d.register("mainMenu", d => new WT_PFD_Main_Menu(d.softKeyMenuHandler, d.miniPageController, d.hsiModel, d.insetMapMenu, d.pfdMenu, d.transponderMenu, d.debugMenu));
+        d.register("pfdMenu", d => new WT_PFD_PFD_Menu(d.softKeyMenuHandler, d.hsiModel, d.barometricPressure, d.syntheticVisionMenu, d.altUnitMenu, d.windMenu));
+        d.register("windMenu", d => new WT_PFD_Wind_Menu(d.softKeyMenuHandler, d.windModel, d.alertsKey));
+        d.register("insetMapMenu", d => new WT_PFD_Inset_Map_Menu(d.softKeyMenuHandler, d.insetMap, d.alertsKey));
+        d.register("syntheticVisionMenu", d => new WT_PFD_Synthetic_Vision_Menu(d.softKeyMenuHandler, d.syntheticVision, d.alertsKey));
+        d.register("altUnitMenu", d => new WT_PFD_Alt_Unit_Menu(d.softKeyMenuHandler, d.barometricPressure));
 
         d.register("insetMap", d => new WT_PFD_Inset_Map(d.map));
         d.register("map", d => {
@@ -124,7 +117,7 @@ class AS1000_PFD extends BaseAS1000 {
         this.dependencies = d.getDependencies();
 
         this.model = d.create("pfdModel");
-        this.updatables.push(this.model);
+        this.updatables.push(this.model);        
     }
     get templateID() { return "AS1000_PFD"; }
     connectedCallback() {
@@ -134,6 +127,9 @@ class AS1000_PFD extends BaseAS1000 {
         this.miniPageController = this.dependencies.miniPageController;
         this.softKeyController = this.dependencies.softKeyController;
         this.alertsKey = this.dependencies.alertsKey;
+        this.planeState = this.dependencies.planeState;
+        this.electricityAvailable = this.dependencies.electricityAvailable;
+        this.proceduresMenuView = this.dependencies.proceduresMenuView;
 
         this.updatables.push(this.miniPageController);
         this.miniPageController.handleInput(this.inputStack);
@@ -154,7 +150,8 @@ class AS1000_PFD extends BaseAS1000 {
         this.dependencies.miniPageController.appendChild(flightPlanView);
         flightPlanView.setModel(flightPlanModel);
 
-        this.dependencies.miniPageController.appendChild(this.dependencies.proceduresMenuView);
+        this.proceduresMenuView.classList.add("mini-page");
+        this.dependencies.miniPageController.appendChild(this.proceduresMenuView);
 
         this.updatables.push(this.dependencies.procedures);
         this.updatables.push(this.dependencies.altimeterModel);
@@ -177,12 +174,14 @@ class AS1000_PFD extends BaseAS1000 {
         this.dependencies.insetMap;
 
         this.pfdConfig().then(() => {
-            console.log("PFD fully configured.");
             this._pfdConfigDone = true;
         });
 
-        const menuHandler = this.dependencies.menuHandler;
+        const menuHandler = this.dependencies.softKeyMenuHandler;
         menuHandler.goToMenu(this.dependencies.mainMenu);
+
+        document.body.appendChild(this.dependencies.debugConsoleView);
+        this.dependencies.debugConsoleView.setModel(this.dependencies.debugConsole);
     }
     onXMLConfigLoaded(_xml) {
         super.onXMLConfigLoaded(_xml);
@@ -265,6 +264,7 @@ class AS1000_PFD extends BaseAS1000 {
             updatable.update(_deltaTime);
         }
         this.miniPageController.update(_deltaTime);
+        this.electricityAvailable.value = this.isElectricityAvailable();
         const syntheticVision = this.getChildById("SyntheticVision");
         if (syntheticVision.offsetParent) {
             syntheticVision.update(_deltaTime);
@@ -280,13 +280,10 @@ class AS1000_PFD extends BaseAS1000 {
     }
     parseXMLConfig() {
         super.parseXMLConfig();
-        let syntheticVision = null;
         let reversionaryMode = null;
         if (this.instrumentXmlConfig) {
-            syntheticVision = this.instrumentXmlConfig.getElementsByTagName("SyntheticVision")[0];
             reversionaryMode = this.instrumentXmlConfig.getElementsByTagName("ReversionaryMode")[0];
         }
-        this.dependencies.syntheticVision.enabled.value = WTDataStore.get(WT_Synthetic_Vision.ENABLED_KEY, syntheticVision && syntheticVision.textContent == "True");
         if (reversionaryMode && reversionaryMode.textContent == "True") {
             this.handleReversionaryMode = true;
         }
@@ -306,11 +303,11 @@ class AS1000_PFD extends BaseAS1000 {
     }
     onShutDown() {
         super.onShutDown();
-        this.dependencies.planeState.shutDown();
+        this.planeState.shutDown();
     }
     onPowerOn() {
         super.onPowerOn();
-        this.dependencies.planeState.powerOn();
+        this.planeState.powerOn();
     }
 }
 registerInstrument("as1000-pfd-element", AS1000_PFD);
