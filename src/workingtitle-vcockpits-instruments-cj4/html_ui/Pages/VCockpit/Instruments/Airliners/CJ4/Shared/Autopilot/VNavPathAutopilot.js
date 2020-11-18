@@ -7,7 +7,6 @@ class WT_VNavPathAutopilot extends WT_BaseAutopilot {
         this._topOfDescent = undefined;
         this._distanceToTod = undefined;
         this._altDeviation = 0;
-        //this._desiredAltitude = undefined;
         this._lastVnavTargetAltitude = undefined;
         this._interceptingLastAltitude = false;
         this._lastVerticalMode = undefined;

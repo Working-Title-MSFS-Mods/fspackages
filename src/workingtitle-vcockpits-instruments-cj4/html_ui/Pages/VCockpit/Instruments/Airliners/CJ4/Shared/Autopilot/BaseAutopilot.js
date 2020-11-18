@@ -1,6 +1,6 @@
 class WT_BaseAutopilot {
-    constructor(fpm) {
-        this._fpm = fpm;
+    constructor(vnav) {
+        this._vnav = vnav;
 
         this._vnavType = false;
 
