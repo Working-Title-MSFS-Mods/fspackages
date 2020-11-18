@@ -294,7 +294,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 3) ? "red" : "#52504d");
+                line.setAttribute("stroke", (i == 4) ? "red" : "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 var line = document.createElementNS(Avionics.SVG.NS, "line");
