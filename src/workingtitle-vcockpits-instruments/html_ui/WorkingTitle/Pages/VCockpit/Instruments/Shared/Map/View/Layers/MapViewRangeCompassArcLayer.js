@@ -1,4 +1,4 @@
-class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
+class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
     constructor(forwardTickBearingGetter, facingAngleGetter = {getFacingAngle: data => 0}, id = WT_MapViewRangeCompassArcLayer.ID_DEFAULT, configName = WT_MapViewRangeCompassArcLayer.CONFIG_NAME_DEFAULT) {
         super(id, configName, 4);
 
@@ -14,10 +14,10 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewCanvasLayer {
         this._forwardTickLayer = new WT_MapViewCanvas(false, true);
         this._bearingLabelLayer = new WT_MapViewCanvas(true, true);
 
-        this.addCanvas(this._arcLayer, this.compassContainer);
-        this.addCanvas(this._bearingTickLayer, this.compassContainer);
-        this.addCanvas(this._forwardTickLayer, this.compassContainer);
-        this.addCanvas(this._bearingLabelLayer, this.compassContainer);
+        this.addSubLayer(this._arcLayer, this.compassContainer);
+        this.addSubLayer(this._bearingTickLayer, this.compassContainer);
+        this.addSubLayer(this._forwardTickLayer, this.compassContainer);
+        this.addSubLayer(this._bearingLabelLayer, this.compassContainer);
 
         this._needRedrawArc = true;
         this._needRotateArc = true;

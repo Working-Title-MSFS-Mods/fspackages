@@ -51,10 +51,10 @@ class WT_MapViewLayer {
     }
 }
 
-class WT_MapViewCanvasLayer extends WT_MapViewLayer {
+class WT_MapViewMultiLayer extends WT_MapViewLayer {
     constructor(id, configName) {
         super(id, configName);
-        this._canvases = [];
+        this._subLayers = [];
 
         this._lastWidth = 0;
         this._lastHeight = 0;
@@ -70,34 +70,34 @@ class WT_MapViewCanvasLayer extends WT_MapViewLayer {
         return container;
     }
 
-    _updateCanvasSize(canvas) {
-        canvas.width = this._lastWidth;
-        canvas.height = this._lastHeight;
+    _updateSubLayerSize(subLayer) {
+        subLayer.width = this._lastWidth;
+        subLayer.height = this._lastHeight;
     }
 
-    get canvases() {
-        return this._canvases;
+    get subLayers() {
+        return this._subLayers;
     }
 
-    addCanvas(canvas, parentHTMLElement) {
+    addSubLayer(subLayer, parentHTMLElement) {
         if (!parentHTMLElement) {
             parentHTMLElement = this.htmlElement;
         }
 
-        this._canvases.push(canvas);
-        canvas.container.style.zIndex = this._canvases.length;
-        canvas.parentHTMLElement = parentHTMLElement;
-        parentHTMLElement.appendChild(canvas.container);
-        if (canvas.syncSizeToView) {
-            this._updateCanvasSize(canvas);
+        this._subLayers.push(subLayer);
+        subLayer.container.style.zIndex = this._subLayers.length;
+        subLayer.parentHTMLElement = parentHTMLElement;
+        parentHTMLElement.appendChild(subLayer.container);
+        if (subLayer.syncSizeToView) {
+            this._updateSubLayerSize(subLayer);
         }
     }
 
-    removeCanvas(canvas) {
-        let index = this._canvases.indexOf(canvas);
+    removeSubLayer(subLayer) {
+        let index = this._subLayers.indexOf(subLayer);
         if (index >= 0) {
-            if (canvas.container.parentNode === canvas.parentHTMLElement) {
-                canvas.parentHTMLElement.removeChild(canvas.container);
+            if (subLayer.container.parentNode === subLayer.parentHTMLElement) {
+                subLayer.parentHTMLElement.removeChild(subLayer.container);
             }
         }
     }
@@ -106,9 +106,9 @@ class WT_MapViewCanvasLayer extends WT_MapViewLayer {
         this._lastWidth = data.projection.viewWidth;
         this._lastHeight = data.projection.viewHeight;
 
-        for (let canvas of this._canvases) {
-            if (canvas.syncSizeToView) {
-                this._updateCanvasSize(canvas);
+        for (let subLayer of this.subLayers) {
+            if (subLayer.syncSizeToView) {
+                this._updateSubLayerSize(subLayer);
             }
         }
     }
@@ -208,60 +208,61 @@ class WT_MapViewCanvas {
     }
 }
 
-class WT_MapViewSvgLayer extends WT_MapViewLayer {
-    _createHTMLElement() {
+class WT_MapViewSvg {
+    constructor(syncSizeToView) {
+        this._syncSizeToView = syncSizeToView;
+
+        this._container = document.createElement("div");
+        this._container.style.position = "absolute";
+        this._container.style.left = 0;
+        this._container.style.top = 0;
+        this._container.style.width = "100%";
+        this._container.style.height = "100%";
+        this._container.style.transform = "rotateX(0deg)";
+
         this._svg = document.createElementNS(Avionics.SVG.NS, "svg");
+
+        this._svg.style.position = "absolute";
         this._svg.style.left = 0;
         this._svg.style.top = 0;
-        return this._svg;
+
+        this._width = 100;
+        this._height = 100;
+        this.width = 100;
+        this.height = 100;
+
+        this._container.appendChild(this._svg);
+    }
+
+    get syncSizeToView() {
+        return this._syncSizeToView;
+    }
+
+    get container() {
+        return this._container;
     }
 
     get svg() {
         return this._svg;
     }
 
-    onViewSizeChanged(data) {
-        this.svg.setAttribute("viewbox", `0 0 ${data.projection.viewWidth} ${data.projection.viewHeight}`);
-        this.svg.style.width = `${data.projection.viewWidth}px`;
-        this.svg.style.height = `${data.projection.viewHeight}px`;
+    get width() {
+        return this._width;
     }
 
-    onAttached(data) {
-        this.onViewSizeChanged(data);
+    set width(width) {
+        this._width = width;
+        this.svg.style.width = `${width}px`;
+        this.svg.setAttribute("viewBox", `0 0 ${this.width} ${this.height}`);
+    }
+
+    get height() {
+        return this._height;
+    }
+
+    set height(height) {
+        this._height = height;
+        this.svg.style.height = `${height}px`;
+        this.svg.setAttribute("viewBox", `0 0 ${this.width} ${this.height}`);
     }
 }
-/*
-class WT_MapProjectedLayerView extends WT_MapLayerView {
-    constructor(configName, projection) {
-        super(configName);
-        this.projection = projection;
-    }
-
-    get viewPortWidth() {
-        return super.viewPortWidth;
-    }
-
-    set viewPortWidth(width) {
-        super.viewPortWidth = width;
-        this.projection.viewPortWidth = width;
-    }
-
-    get viewPortHeight() {
-        return super.viewPortHeight;
-    }
-
-    set viewPortHeight(height) {
-        super.viewPortHeight = height;
-        this.projection.viewPortHeight = height;
-    }
-
-    onUpdate() {
-        let projectionOpts = {
-            center: this.model.map.center,
-            range: this.model.map.range,
-            rotation: this.model.map.rotation
-        };
-        this.projection.setOptions(projectionOpts);
-    }
-}
-*/
