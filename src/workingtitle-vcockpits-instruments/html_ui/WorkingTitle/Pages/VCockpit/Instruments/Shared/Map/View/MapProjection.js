@@ -343,7 +343,7 @@ class WT_MapProjectionRenderer {
         return bounds;
     }
 
-    renderSvg(object) {
+    renderSVG(object) {
         this._setOptions();
         let d = this._d3Path(object);
         this._resetOptions();

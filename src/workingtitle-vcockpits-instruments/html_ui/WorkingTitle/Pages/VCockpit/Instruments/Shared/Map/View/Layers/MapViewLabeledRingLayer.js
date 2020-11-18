@@ -1,4 +1,4 @@
-class WT_MapViewLabeledRingLayer extends WT_MapViewCanvasLayer {
+class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
     constructor(id, configName) {
         super(id, configName);
 
@@ -58,7 +58,7 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewCanvasLayer {
         if (label) {
             this.labelContainer.appendChild(label.htmlElement);
         }
-        this.addCanvas(entry.canvas, this.ringContainer);
+        this.addSubLayer(entry.canvas, this.ringContainer);
     }
 
     removeRing(labeledRing) {
@@ -66,7 +66,7 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewCanvasLayer {
         if (index >= 0) {
             let removed = this._rings[index];
             this._rings.splice(index, 1);
-            this.removeCanvas(removed.canvas);
+            this.removeSubLayer(removed.canvas);
             let label = labeledRing.label;
             if (label && label.htmlElement.parentNode === this.labelContainer) {
                 this.labelContainer.removeChild(label.htmlElement);
