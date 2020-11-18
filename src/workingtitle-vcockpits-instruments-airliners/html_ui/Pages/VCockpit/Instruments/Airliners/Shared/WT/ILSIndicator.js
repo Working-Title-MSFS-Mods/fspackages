@@ -872,12 +872,12 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     let y = this.gs_cursorMinY + (this.gs_cursorMaxY - this.gs_cursorMinY) * delta;
                     y = Math.min(this.gs_cursorMinY, Math.max(this.gs_cursorMaxY, y));
                     this.gs_cursorGroup.setAttribute("transform", "translate(" + this.gs_cursorPosX + ", " + y + ")");
-                    if (delta <= 0.95 && delta >= 0.05) {
+                    /*if (delta <= 0.95 && delta >= 0.05) {
                         this.vertical_snowFlake.setAttribute("visibility", "visible");
                     }
                     else {
                         this.vertical_snowFlake.setAttribute("visibility", "hidden");
-                    }
+                    }*/
                 }
                 else if (localizer.id > 0 && SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + localizer.id, "Bool")) {
                     let gsi = -SimVar.GetSimVarValue("NAV GSI:" + localizer.id, "number") / 127.0;
