@@ -211,7 +211,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
 
             //PINK DONUT
             
-            let pinkDonutHeight = 12;
+            let pinkDonutHeight = 30;
             this.pinkDonutOffsetY = pinkDonutHeight * 0.9;
             this.pinkDonut = document.createElementNS(Avionics.SVG.NS, "circle");
             this.pinkDonut.setAttribute("cx", "30");
