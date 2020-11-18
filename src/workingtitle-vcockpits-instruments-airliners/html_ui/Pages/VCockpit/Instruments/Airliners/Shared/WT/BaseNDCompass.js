@@ -651,10 +651,15 @@ class Jet_NDCompass extends HTMLElement {
         }
 
         const angleDiff = Avionics.Utils.angleDiff(this._currentCourse, this._courseTarget);
-        const velocityScale = Math.pow(Math.abs(angleDiff) / 180, 1.1);
-        const velocity = ((deltaTime / 1000) * velocityScale) * 360;
+        const absAngleDiff = Math.abs(angleDiff);
 
-        this._currentCourse += angleDiff >= 0 ? velocity : -(velocity);
+        const currentAnimationPosition = Math.pow((absAngleDiff / 180), .25);
+        let nextAnimationPosition = Math.pow(currentAnimationPosition - (deltaTime / 2000), 4);
+        if (nextAnimationPosition <= 0) {
+            nextAnimationPosition = 0;
+        }
+        
+        this._currentCourse = this._courseTarget - (nextAnimationPosition * 180 * Math.sign(angleDiff));      
         let factor = (this.displayMode === Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.PPOS) ? 1 : 10;
 
         if (this.course) {
