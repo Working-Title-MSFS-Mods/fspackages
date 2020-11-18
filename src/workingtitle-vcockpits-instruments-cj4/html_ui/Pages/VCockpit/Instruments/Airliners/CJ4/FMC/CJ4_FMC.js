@@ -452,13 +452,15 @@ class CJ4_FMC extends FMCMainDisplay {
 
             this.parseAutopilotModes();
 
+            const newIsNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
+            const newIsLnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
             const isVNAVActive = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
-            if (isVNAVActive) {
+            if (isVNAVActive && newIsNavActive && newIsLnavActive) {
                 // vnav turned on
 
                 //ACTIVATE VNAV MODE
                 if (this._currentAP === undefined) {
-                    this._currentAP = new WT_VNavPathAutopilot(this.flightPlanManager);
+                    this._currentAP = new WT_VnavAutopilot(this._vnav);
                     this._currentAP.activate();
                 }
                 //UPDATE VNAV MODE

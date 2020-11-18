@@ -3,7 +3,6 @@ class WT_BaseVnav {
         this._fpm = fpm;
 
         this._destination = undefined;
-        //this._destinationDistance = undefined;
         this._activeWaypoint = undefined;
         this._activeWaypointDist = undefined;
         this._currentDistanceInFP = undefined;
@@ -13,11 +12,9 @@ class WT_BaseVnav {
 
         //COMPONENTS TO REFRESH ONLY WHEN THERE IS A FLIGHT PLAN CHANGE
         this._desiredFPA = WTDataStore.get('CJ4_vpa', 3);
-        this._vnavType = false;
+        this._vnavCalculating = false;
 
         this._currPos = undefined;
-        //this._groundSpeed = undefined;
-        //this._apCurrentVerticalSpeed = undefined;
         this._altitude = undefined;
 
         this._vnavTargetDistance = undefined;
@@ -37,6 +34,9 @@ class WT_BaseVnav {
         this._activeWaypointChangedflightPlanChanged = false;
         this._activeWaypointChangedvnavTargetChanged = false;
         this._valuesUpdated = false;
+
+        this._setDestination = undefined;
+        this._newPath = false;
     }
 
     get waypoints() {
@@ -53,6 +53,9 @@ class WT_BaseVnav {
         this._activeWaypointChangedflightPlanChanged = true;
         this._activeWaypointChangedvnavTargetChanged = true;
         this._valuesUpdated = false;
+        this._vnavCalculating = false;
+        this._setDestination = undefined;
+        this._newPath = false;
         this.update();
     }
 
@@ -65,20 +68,11 @@ class WT_BaseVnav {
         this._destination = this._fpm.getDestination();
         this._activeWaypoint = this._fpm.getActiveWaypoint();
         this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
-        // console.log("type: " + this._currentFlightSegment.type);
-        // console.log("string: " + JSON.stringify(this._currentFlightSegment.type));
-        
-
 
         const flightPlanVersion = SimVar.GetSimVarValue("L:WT.FlightPlan.Version", "number");
-        // console.log("updating base vnav");
-        // console.log(this._destination.ident);
-        // console.log(this.waypoints.length);
-        // console.log(this._activeWaypoint.ident);
-        // console.log(flightPlanVersion);
 
         if (this._destination && this.waypoints && this.waypoints.length > 0 && this._activeWaypoint && flightPlanVersion) {
-            this._vnavType = true;
+            this._vnavCalculating = true;
 
             //HAS THE ACTIVE WAYPOINT CHANGED?
             if (this._lastActiveWaypointIdent != this._activeWaypoint.ident) {
@@ -160,30 +154,18 @@ class WT_BaseVnav {
         }
         else {
             //TODO: DO WE NEED TO FLAG WHEN NO VNAV IS BEING CALCULATED ANYWHERE?
-            this._vnavType = false;
+            this._vnavCalculating = false;
         }
         this._valuesUpdated = false;
-        this.writeDatastoreValues();
-    }
-
-    /**
-     * Execute.
-     */
-    execute() {
-
-
-    }
-
-    /**
-     * Run when deactivated.
-     */
-    deactivate() {
-
     }
 
     buildDescentProfile() {
         this._vnavTargetAltitude = this._vnavTargetAltitude === undefined ? (this._destination.infos.oneWayRunways[0].elevation * 3.28) + 50 : this._vnavTargetAltitude;
         this._desiredFPA = WTDataStore.get('CJ4_vpa', 3);
+        if (this._setDestination != this._destination) {
+            this._setDestination = this._destination; //IF NO DESTINATION RECORDED, RECORD IT SO WE CAN DETERMINE WHEN A NEW DESTINATION IS SET
+            this._newPath = true;
+        }
 
         //PLAN DESCENT PROFILE
         for (let i = this.waypoints.length - 1; i >= 0; i--) {
@@ -242,13 +224,10 @@ class WT_BaseVnav {
      */
     updateValues() {
         this._currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
-        //this._groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-        //this._apCurrentVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute");
         this._altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
         this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
         this._activeWaypointDist = Avionics.Utils.computeDistance(this._currPos, this._activeWaypoint.infos.coordinates);
         this._currentDistanceInFP = this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist;
-        //this._destinationDistance = this._destination.cumulativeDistanceInFP - this._currentDistanceInFP;
         this._valuesUpdated = true;
     }
 
