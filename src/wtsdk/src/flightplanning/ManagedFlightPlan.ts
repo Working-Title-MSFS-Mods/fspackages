@@ -80,8 +80,8 @@ export class ManagedFlightPlan {
 
   /** The length of the flight plan. */
   public get length(): number {
-    const lastSeg = this._segments[this._segments.length-1];
-    return lastSeg.offset + lastSeg.waypoints.length + (this.hasDestination ? 1 : 0); 
+    const lastSeg = this._segments[this._segments.length - 1];
+    return lastSeg.offset + lastSeg.waypoints.length + (this.hasDestination ? 1 : 0);
   }
 
   /** The non-approach waypoints of the flight plan. */
@@ -186,9 +186,19 @@ export class ManagedFlightPlan {
       this.reflowDistances();
     }
     else {
-      const segment = segmentType !== undefined
+      let segment = segmentType !== undefined
         ? this.getSegment(segmentType)
         : this.findSegmentByWaypointIndex(index);
+
+      // hitting first waypoint in segment > enroute
+      if (segment.type > SegmentType.Enroute && index == segment.offset) {
+        const segIdx = this._segments.findIndex((seg) => { return seg.type == segment.type });
+        // is prev segment enroute?
+        const prevSeg = this._segments[segIdx - 1];
+        if (prevSeg.type == SegmentType.Enroute) {
+          segment = prevSeg;
+        }
+      }
 
       if (segment) {
 
@@ -329,7 +339,7 @@ export class ManagedFlightPlan {
    */
   public findSegmentByWaypointIndex(index: number): FlightPlanSegment {
     for (var i = 0; i < this._segments.length; i++) {
-      const segMaxIdx = this._segments[i].offset + this._segments[i].waypoints.length; 
+      const segMaxIdx = this._segments[i].offset + this._segments[i].waypoints.length;
       if (segMaxIdx > index) {
         return this._segments[i];
       }
@@ -384,7 +394,7 @@ export class ManagedFlightPlan {
         coordinates: {
           lat: waypoint.infos.coordinates.lat,
           long: waypoint.infos.coordinates.long,
-          alt: waypoint.infos.coordinates.alt 
+          alt: waypoint.infos.coordinates.alt
         }
       }
     });
@@ -404,7 +414,7 @@ export class ManagedFlightPlan {
     planCopy.activeWaypointIndex = this.activeWaypointIndex;
     planCopy.destinationAirfield = this.destinationAirfield && copyAirfield(this.destinationAirfield);
     planCopy.originAirfield = this.originAirfield && copyAirfield(this.originAirfield);
-    
+
     planCopy.procedureDetails = Object.assign({}, this.procedureDetails);
     planCopy.directTo = Object.assign({}, this.directTo);
     planCopy.directTo.interceptPoints = planCopy.directTo.interceptPoints?.map(w => copyWaypoint(w) as WayPoint);
@@ -434,8 +444,8 @@ export class ManagedFlightPlan {
     newFlightPlan._segments = [];
     for (let i = 0; i < this._segments.length; i++) {
       const seg = this._segments[i];
-      newFlightPlan._segments[i] = Object.assign(new FlightPlanSegment(seg.type, seg.offset, []), seg);  
-      newFlightPlan._segments[i].waypoints = [...seg.waypoints];    
+      newFlightPlan._segments[i] = Object.assign(new FlightPlanSegment(seg.type, seg.offset, []), seg);
+      newFlightPlan._segments[i].waypoints = [...seg.waypoints];
     }
 
     newFlightPlan.procedureDetails = Object.assign(new ProcedureDetails(), this.procedureDetails);
@@ -543,9 +553,9 @@ export class ManagedFlightPlan {
 
     if (transitionIndex !== -1 && departureIndex !== -1) {
       // TODO: are enroutetransitions working?
-      if(airportInfo.departures[departureIndex].enRouteTransitions.length > 0){
+      if (airportInfo.departures[departureIndex].enRouteTransitions.length > 0) {
         const transition = airportInfo.departures[departureIndex].enRouteTransitions[transitionIndex].legs;
-        legs.push(...transition); 
+        legs.push(...transition);
       }
     }
 
@@ -619,7 +629,7 @@ export class ManagedFlightPlan {
       legs.push(...runwayTransition.legs);
     }
 
-    let {startIndex, segment} = this.truncateSegment(SegmentType.Arrival);
+    let { startIndex, segment } = this.truncateSegment(SegmentType.Arrival);
 
     if (legs.length > 0) {
       if (segment === FlightPlanSegment.Empty) {
@@ -660,7 +670,7 @@ export class ManagedFlightPlan {
       legs.push(...destinationInfo.approaches[approachIndex].finalLegs);
     }
 
-    let {startIndex, segment} = this.truncateSegment(SegmentType.Approach);
+    let { startIndex, segment } = this.truncateSegment(SegmentType.Approach);
 
     if (legs.length > 0 || approachIndex !== -1) {
 
@@ -672,8 +682,8 @@ export class ManagedFlightPlan {
         if (prevWaypointIndex > 0) {
           this.getWaypoint(segment.offset - 1).endsInDiscontinuity = true;
         }
-      }  
-      
+      }
+
       const procedure = new LegsProcedure(legs, this.getWaypoint(startIndex - 1), this._parentInstrument);
 
       let waypointIndex = startIndex;
@@ -681,7 +691,7 @@ export class ManagedFlightPlan {
         const waypoint = await procedure.getNext();
         if (waypoint !== undefined) {
           this.addWaypoint(waypoint, ++waypointIndex, segment.type);
-        }   
+        }
       }
 
       const runway = this.getRunway(destinationInfo.oneWayRunways, destinationInfo.approaches[approachIndex].runway);
@@ -702,7 +712,7 @@ export class ManagedFlightPlan {
    * @param type The type of segment to truncate.
    * @returns A segment to add to and a starting waypoint index.
    */
-  public truncateSegment(type: SegmentType): {startIndex: number, segment: FlightPlanSegment} {
+  public truncateSegment(type: SegmentType): { startIndex: number, segment: FlightPlanSegment } {
     let segment = this.getSegment(type);
     const startIndex = this.findSegmentByWaypointIndex(this.activeWaypointIndex) === segment
       ? this.activeWaypointIndex + 1
@@ -723,7 +733,7 @@ export class ManagedFlightPlan {
       segment.waypoints[Math.max((startIndex - 1) - segment.offset, 0)].endsInDiscontinuity = true;
     }
 
-    return {startIndex, segment};
+    return { startIndex, segment };
   }
 
   /**

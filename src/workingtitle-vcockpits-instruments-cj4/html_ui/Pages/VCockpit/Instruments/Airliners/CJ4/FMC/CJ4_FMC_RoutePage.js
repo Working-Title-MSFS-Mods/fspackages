@@ -339,7 +339,8 @@ class CJ4_FMC_RoutePage {
                         let value = fmc.inOut;
                         if (value.length > 0) {
                             fmc.clearUserInput();
-                            fmc.insertWaypoint(value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1, (isSuccess) => {
+                            const enroute = fmc.flightPlanManager.getCurrentFlightPlan().enroute;
+                            fmc.insertWaypoint(value, enroute.offset + enroute.waypoints.length, (isSuccess) => {
                                 if (isSuccess) {
                                     fmc.setMsg();
                                     CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
