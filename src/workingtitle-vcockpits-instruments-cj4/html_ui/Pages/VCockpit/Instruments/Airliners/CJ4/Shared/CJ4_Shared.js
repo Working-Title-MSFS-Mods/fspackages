@@ -1697,6 +1697,8 @@ class CJ4_SystemEngines extends NavSystemElement {
             }
         }
 
+        startPosY = 100;
+
         // engine modes
         this.N1ModeLeft = document.createElementNS(Avionics.SVG.NS, "text");
         this.N1ModeLeft.textContent = "TO";
