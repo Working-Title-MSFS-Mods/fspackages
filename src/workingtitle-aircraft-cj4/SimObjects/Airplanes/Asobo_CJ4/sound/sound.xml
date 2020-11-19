@@ -467,8 +467,10 @@
     <Sound WwiseData="true" WwiseEvent="deice_pitot_switch_off" ViewPoint="Inside"/>
 
     <!--- FMC ==========================================================================================   -->
-    <Sound WwiseData="true" WwiseEvent="fmc_push_button_on" ViewPoint="Inside"/>
-    <Sound WwiseData="true" WwiseEvent="fmc_push_button_off" ViewPoint="Inside"/>
+    <!--<Sound WwiseData="true" WwiseEvent="fmc_push_button_on" ViewPoint="Inside"/>
+    <Sound WwiseData="true" WwiseEvent="fmc_push_button_off" ViewPoint="Inside"/> -->
+
+    <Sound WwiseData="true" WwiseEvent="WT_fmc_push_button_on" ViewPoint="Inside"/>
 
     <!--- AS3000 ==========================================================================================   -->
     <Sound WwiseData="true" WwiseEvent="as3000_knob_turn" ViewPoint="Inside"/>

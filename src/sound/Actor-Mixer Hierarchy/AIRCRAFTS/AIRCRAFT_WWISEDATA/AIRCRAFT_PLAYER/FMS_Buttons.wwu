@@ -5,8 +5,6 @@
 			<ChildrenList>
 				<RandomSequenceContainer Name="CJ4_FMS_Button" ID="{5271B766-A6F0-470F-8AE3-D1D24DC660E4}" ShortID="895583852">
 					<PropertyList>
-						<Property Name="3DSpatialization" Type="int16" Value="2"/>
-						<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 						<Property Name="CenterPercentage" Type="int32">
 							<ValueList>
 								<Value>100</Value>
@@ -18,6 +16,27 @@
 								<Value>-4</Value>
 							</ValueList>
 						</Property>
+						<Property Name="IsGlobalLimit" Type="int16" Value="1"/>
+						<Property Name="MaxSoundPerInstance" Type="int16">
+							<ValueList>
+								<Value>2</Value>
+							</ValueList>
+						</Property>
+						<Property Name="OverLimitBehavior" Type="int16" Value="1"/>
+						<Property Name="OverrideVirtualVoice" Type="bool" Value="True"/>
+						<Property Name="Pitch" Type="int32">
+							<ModifierList>
+								<ModifierInfo>
+									<Modifier Name="" ID="{812B13B7-E69C-4BF0-9F02-DB55B4CC3481}">
+										<PropertyList>
+											<Property Name="Enabled" Type="bool" Value="True"/>
+											<Property Name="Max" Type="Real64" Value="40"/>
+											<Property Name="Min" Type="Real64" Value="-40"/>
+										</PropertyList>
+									</Modifier>
+								</ModifierInfo>
+							</ModifierList>
+						</Property>
 						<Property Name="Priority" Type="int16">
 							<ValueList>
 								<Value>100</Value>
@@ -25,6 +44,16 @@
 						</Property>
 						<Property Name="RandomAvoidRepeating" Type="bool" Value="False"/>
 						<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+						<Property Name="UseMaxSoundPerInstance" Type="bool">
+							<ValueList>
+								<Value>True</Value>
+							</ValueList>
+						</Property>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>-10</Value>
+							</ValueList>
+						</Property>
 					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Attenuation">
@@ -38,36 +67,25 @@
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
-						<Sound Name="CJ4_FMS_Button1" ID="{B4260C09-1D19-467F-8CE7-A4C33C880A42}" ShortID="352813858">
-							<ReferenceList>
-								<Reference Name="Conversion">
-									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
-								</Reference>
-								<Reference Name="OutputBus">
-									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
-								</Reference>
-							</ReferenceList>
-							<ChildrenList>
-								<AudioFileSource Name="FMS Button 1" ID="{2951E056-6163-4B62-A1E9-D3193A3D205C}">
-									<PropertyList>
-										<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
-										<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
-										<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
-										<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
-									</PropertyList>
-									<Language>SFX</Language>
-									<AudioFile>Instruments and Switches\FMS Button 1.wav</AudioFile>
-								</AudioFileSource>
-							</ChildrenList>
-							<ActiveSourceList>
-								<ActiveSource Name="FMS Button 1" ID="{2951E056-6163-4B62-A1E9-D3193A3D205C}" Platform="Linked"/>
-							</ActiveSourceList>
-						</Sound>
 						<Sound Name="CJ4_FMS_Button2" ID="{5DB9EF66-22CE-455D-BC9A-37216EBCBF7F}" ShortID="563345221">
 							<PropertyList>
+								<Property Name="CenterPercentage" Type="int32">
+									<ValueList>
+										<Value>100</Value>
+									</ValueList>
+								</Property>
+								<Property Name="EnableAttenuation" Type="bool" Value="False"/>
+								<Property Name="ListenerRelativeRouting" Type="bool" Value="False"/>
+								<Property Name="Pitch" Type="int32">
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{C1F9077B-859C-4EAE-A3F5-E02BA3F3ED40}"/>
+										</ModifierInfo>
+									</ModifierList>
+								</Property>
 								<Property Name="Weight" Type="Real64">
 									<ValueList>
-										<Value>20</Value>
+										<Value>100</Value>
 									</ValueList>
 								</Property>
 							</PropertyList>
@@ -90,9 +108,19 @@
 									<Language>SFX</Language>
 									<AudioFile>Instruments and Switches\FMS Button 2.wav</AudioFile>
 								</AudioFileSource>
+								<AudioFileSource Name="FMS Button Quicker" ID="{74FDF45C-542C-4976-BFEF-E2F1DF941264}">
+									<PropertyList>
+										<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+										<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+										<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
+										<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>FMS Button 2.wav</AudioFile>
+								</AudioFileSource>
 							</ChildrenList>
 							<ActiveSourceList>
-								<ActiveSource Name="FMS Button 2" ID="{9A72FBFB-7076-4B81-BD98-1EA48252AB25}" Platform="Linked"/>
+								<ActiveSource Name="FMS Button Quicker" ID="{74FDF45C-542C-4976-BFEF-E2F1DF941264}" Platform="Linked"/>
 							</ActiveSourceList>
 						</Sound>
 					</ChildrenList>

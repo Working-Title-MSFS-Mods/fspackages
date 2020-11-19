@@ -88,4 +88,16 @@
             </Component>
         </Condition>
 	</Template>
+	<Template Name="ASOBO_FMC_Common_Params_Template">
+    <DefaultTemplateParameters>
+        <DONT_OVERRIDE_BASE_EMISSIVE>True</DONT_OVERRIDE_BASE_EMISSIVE>
+        <SEQ1_EMISSIVE_DRIVES_VISIBILITY>False</SEQ1_EMISSIVE_DRIVES_VISIBILITY>
+        <WWISE_EVENT_1>WT_fmc_push_button_on</WWISE_EVENT_1>  
+        <NORMALIZED_TIME_1>0.05</NORMALIZED_TIME_1>
+        <NO_SEQ2/>
+    </DefaultTemplateParameters>
+    
+    <UseTemplate Name="#TEMPLATE_TO_CALL#">
+    </UseTemplate>
+</Template>
 </ModelBehaviors>

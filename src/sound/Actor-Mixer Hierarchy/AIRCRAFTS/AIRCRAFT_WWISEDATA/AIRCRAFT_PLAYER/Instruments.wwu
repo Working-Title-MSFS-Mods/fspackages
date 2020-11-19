@@ -12,6 +12,7 @@
 								<Value>100</Value>
 							</ValueList>
 						</Property>
+						<Property Name="EnableAttenuation" Type="bool" Value="False"/>
 						<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 						<Property Name="GameAuxSendVolume" Type="Real64">
 							<ValueList>
@@ -26,7 +27,7 @@
 								<Value>100</Value>
 							</ValueList>
 						</Property>
-						<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+						<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="0"/>
 						<Property Name="Volume" Type="Real64">
 							<ValueList>
 								<Value>-3</Value>
@@ -41,7 +42,7 @@
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 						</Reference>
 						<Reference Name="OutputBus">
-							<ObjectRef Name="instruments_inside" ID="{4D67557A-CB3C-4574-8DBC-4643E77C31BD}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+							<ObjectRef Name="instrument_inside_generic" ID="{E35F9E09-060D-4E8C-871C-43C5E1191F15}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>

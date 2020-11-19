@@ -18,12 +18,11 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_Asobo_CJ4_WT_fms_button" ID="{B552179A-486C-42D1-9C03-056264872073}">
+				<Event Name="Play_Asobo_CJ4_WT_fmc_push_button_on" ID="{B552179A-486C-42D1-9C03-056264872073}">
 					<ChildrenList>
-						<Action Name="" ID="{98D9746C-7F34-41AC-A259-3E2FFA724119}" ShortID="235864233">
+						<Action Name="" ID="{16F1216D-70AC-4044-99BB-058DBE54A584}" ShortID="200955937">
 							<PropertyList>
 								<Property Name="ActionType" Type="int16" Value="1"/>
-								<Property Name="FadeTime" Type="Real64" Value="1"/>
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Target">
