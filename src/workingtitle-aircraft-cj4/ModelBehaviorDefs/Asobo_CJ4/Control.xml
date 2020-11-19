@@ -283,10 +283,10 @@
 					</True>
 					<False>
 						<CLOCKWISE_CODE>
-							#INCREMENTATION_INDEX# (&gt;K:1:AP_ALT_VAR_INC)
+							#INCREMENTATION_INDEX# 1 0 (&gt;K:2:AP_ALT_VAR_INC)
 						</CLOCKWISE_CODE>
 						<ANTICLOCKWISE_CODE>
-							#INCREMENTATION_INDEX# (&gt;K:1:AP_ALT_VAR_DEC)
+							#INCREMENTATION_INDEX# 1 0 (&gt;K:2:AP_ALT_VAR_DEC)
 						</ANTICLOCKWISE_CODE>
 					</False>
 				</Condition>
