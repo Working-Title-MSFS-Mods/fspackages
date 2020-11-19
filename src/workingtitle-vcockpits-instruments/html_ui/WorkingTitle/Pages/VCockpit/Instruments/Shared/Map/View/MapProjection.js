@@ -33,8 +33,37 @@ class WT_MapProjection {
         this._recalculateProjection();
     }
 
+    get _viewTargetOffset() {
+        return this.__viewTargetOffset;
+    }
+
+    set _viewTargetOffset(offset) {
+        this.__viewTargetOffset.set(offset);
+    }
+
+    get viewTargetOffset() {
+        return this._viewTargetOffset.copy();
+    }
+
+    set viewTargetOffset(offset) {
+        this._viewTargetOffset = offset;
+        this._recalculateProjection();
+    }
+
+    get viewTarget() {
+        return this.viewCenter.add(this.viewTargetOffset, true);
+    }
+
     get viewCenter() {
         return new WT_GVector2(this.viewWidth / 2, this.viewHeight / 2);
+    }
+
+    get viewResolution() {
+        return this.range.scale(1 / this.viewHeight);
+    }
+
+    get center() {
+        return this._center;
     }
 
     get _target() {
@@ -54,23 +83,6 @@ class WT_MapProjection {
         this._recalculateProjection();
     }
 
-    get _viewTargetOffset() {
-        return this.__viewTargetOffset;
-    }
-
-    set _viewTargetOffset(offset) {
-        this.__viewTargetOffset.set(offset);
-    }
-
-    get viewTargetOffset() {
-        return this._viewTargetOffset.copy();
-    }
-
-    set viewTargetOffset(offset) {
-        this._viewTargetOffset = offset;
-        this._recalculateProjection();
-    }
-
     get _range() {
         return this.__range.copy();
     }
@@ -86,6 +98,10 @@ class WT_MapProjection {
     set range(range) {
         this._range = range;
         this._recalculateProjection();
+    }
+
+    get scaleFactor() {
+        return this._d3Projection.scale();
     }
 
     get _rotation() {
@@ -108,50 +124,45 @@ class WT_MapProjection {
         this._recalculateProjection();
     }
 
-    get center() {
-        return this._center;
-    }
-
-    get viewTarget() {
-        return this.viewCenter.add(this.viewTargetOffset, true);
-    }
-
-    get viewResolution() {
-        return this.range.scale(1 / this.viewHeight);
+    _calculateRangeAtCenter(center) {
+        let top = this._d3Projection.invert([center.x, center.y - this.viewHeight / 2]);
+        let bottom = this._d3Projection.invert([center.x, center.y + this.viewHeight / 2]);
+        return WT_Unit.GA_RADIAN.createNumber(d3.geoDistance(top, bottom));
     }
 
     _recalculateProjection() {
+        //this._d3Projection.translate([0, 0]);
         this._d3Projection.translate([this.viewWidth / 2, this.viewHeight / 2]);
-        this._d3Projection.center([0, 0]);
+
         let currentTargetXY = this._d3Projection(this.latLongGameToProjection(this.target));
 
         if (isNaN(currentTargetXY[0] + currentTargetXY[1])) {
             return;
         }
 
-        let currentCenter = this.xyProjectionToView(currentTargetXY).subtract(this.viewTargetOffset, true);
-
-        let top = this._d3Projection.invert([currentCenter.x, currentCenter.y - this.viewHeight / 2]);
-        let bottom = this._d3Projection.invert([currentCenter.x, currentCenter.y + this.viewHeight / 2]);
-        let currentRange = WT_Unit.GA_RADIAN.convert(d3.geoDistance(top, bottom), this.range.unit);
-        let ratio = currentRange / this.range.number;
+        let currentCenterXY = this.xyProjectionToView(currentTargetXY).subtract(this.viewTargetOffset, true);
+        let currentRange = this._calculateRangeAtCenter(currentCenterXY);
+        let ratio = currentRange.ratio(this.range);
 
         if (isNaN(ratio) || ratio === 0) {
             return;
         }
 
-        let currentScale = this._d3Projection.scale();
-        this._d3Projection.scale(currentScale * ratio);
+        while (Math.abs(ratio - 1) > WT_MapProjection.SCALE_FACTOR_TOLERANCE) {
+            let currentScale = this._d3Projection.scale();
+            this._d3Projection.scale(currentScale * ratio);
 
-        currentTargetXY = this._d3Projection(this.latLongGameToProjection(this.target));
-        let center = this._d3Projection.invert([currentTargetXY[0] - this.viewTargetOffset.x, currentTargetXY[1] - this.viewTargetOffset.y]);
+            currentTargetXY = this._d3Projection(this.latLongGameToProjection(this.target));
+            currentCenterXY = this.xyProjectionToView(currentTargetXY).subtract(this.viewTargetOffset, true);
+            currentRange = this._calculateRangeAtCenter(currentCenterXY);
+            ratio = currentRange.ratio(this.range);
+        }
+        let center = this._d3Projection.invert(this.xyViewToProjection(currentCenterXY));
         this._d3Projection.center(center);
         this._center = this.latLongProjectionToGame(center);
-        /*
-        this._d3Projection.translate([-currentTargetXY[0] + this.viewWidth / 2 + this.viewTargetOffset.x, -currentTargetXY[1] + this.viewHeight / 2 + this.viewTargetOffset.y]);
+        //this._d3Projection.translate([-currentTargetXY[0] + this.viewWidth / 2 + this.viewTargetOffset.x, -currentTargetXY[1] + this.viewHeight / 2 + this.viewTargetOffset.y]);
 
-        this._center = this.invertXY(this.viewCenter);
-        */
+        //this._center = this.invertXY(this.viewCenter);
     }
 
     relXYToAbsXY(xy) {
@@ -289,6 +300,7 @@ class WT_MapProjection {
         }
     }
 }
+WT_MapProjection.SCALE_FACTOR_TOLERANCE = 0.0000001;
 WT_MapProjection.Projection = {
     EQUIRECTANGULAR: "equirectangular",
     MERCATOR: "mercator"
