@@ -155,6 +155,9 @@ class WT_BaseVnav {
         else {
             //TODO: DO WE NEED TO FLAG WHEN NO VNAV IS BEING CALCULATED ANYWHERE?
             this._vnavCalculating = false;
+            if (SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number") > 0) {
+                SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
+            }
         }
         this._valuesUpdated = false;
     }
