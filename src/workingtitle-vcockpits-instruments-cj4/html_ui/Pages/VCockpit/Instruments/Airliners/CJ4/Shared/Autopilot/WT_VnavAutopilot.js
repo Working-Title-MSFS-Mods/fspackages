@@ -157,12 +157,6 @@ class WT_VnavAutopilot {
                     //VPATH NO FURTHER TARGETS
                     this._vnavStatus = 0;
                 }
-                if (this._vnavStatus > 10) {
-                    WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'true');
-                }
-                else {
-                    WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'false');
-                }
             }
             else if (!this._vnav._vnavCalculating && this._vnavStatus == 14) {
                 //VPATH HAS REACHED THE FINAL WAYPOINT AND SHOULD GRACEFULLY EXIT
