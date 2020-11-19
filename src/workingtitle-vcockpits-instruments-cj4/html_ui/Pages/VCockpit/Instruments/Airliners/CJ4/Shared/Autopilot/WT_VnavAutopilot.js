@@ -193,26 +193,31 @@ class WT_VnavAutopilot {
         if (this._vnavMode == 1 && this._vnavStatus > 0) { //V MODE ENABLED
             //WHERE ARE WE IN THE LIFECYCLE (this._vnavStatus)
             //1 = VMODE BEFORE CONSTRAINT; 2 = VMODE OBSERVING CONSTRAINT; 3 = VMODE SETTING NEW CONSTRAINT; 4 = VMODE CLEAR CONSTRAINT
-            if (this._vnavStatus == 1) {
-                const altSlot = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number");
-                const altSet = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet");
-                //console.log("checking alt & slot: " + altSlot + altSet);
-                //console.log("this._vnavConstraintAltitude: " + this._vnavConstraintAltitude);
-                if (altSlot != 2 || altSet != this._vnavConstraintAltitude) {
-                    this.setTargetAltitude(this._vnavConstraintAltitude);
-                }
-                //ELSE DO NOTHING - NO CHANGE
-            }
-            else if (this._vnavStatus == 3) {
-                //SET NEW MANAGED ALT TARGET TO NEW CONSTRAINT
-                this.setTargetAltitude(this._vnavConstraintAltitude);
-            }
-            else if (this._vnavStatus == 4) {
-                //CANCEL CONSTRAINT TARGET, RESUME SELECTED ALT SLOT & CLEAR VNAV
-                SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
-                SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-                this._vnavStatus = 0;
-                this._vnavMode = 0;
+
+            if (this._vnav._vnavConstraintWaypoint && this._vnav._vnavConstraintWaypoint == this._vnav._activeWaypoint) {
+                if (this._vnav._activeWaypointDist < 40) {
+                    if (this._vnavStatus == 1) {
+                        const altSlot = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number");
+                        const altSet = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet");
+                        //console.log("checking alt & slot: " + altSlot + altSet);
+                        //console.log("this._vnavConstraintAltitude: " + this._vnavConstraintAltitude);
+                        if (altSlot != 2 || altSet != this._vnavConstraintAltitude) {
+                            this.setTargetAltitude(this._vnavConstraintAltitude);
+                        }
+                        //ELSE DO NOTHING - NO CHANGE
+                    }
+                    else if (this._vnavStatus == 3) {
+                        //SET NEW MANAGED ALT TARGET TO NEW CONSTRAINT
+                        this.setTargetAltitude(this._vnavConstraintAltitude);
+                    }
+                    else if (this._vnavStatus == 4) {
+                        //CANCEL CONSTRAINT TARGET, RESUME SELECTED ALT SLOT & CLEAR VNAV
+                        SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
+                        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+                        this._vnavStatus = 0;
+                        this._vnavMode = 0;
+                    }
+                } 
             }
         }
         else if (this._vnavMode == 2 && this._vnavStatus > 0) { //V PATH ENABLED

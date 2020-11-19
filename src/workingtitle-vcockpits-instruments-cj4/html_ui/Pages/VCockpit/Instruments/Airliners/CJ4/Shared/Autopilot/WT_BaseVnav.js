@@ -34,6 +34,7 @@ class WT_BaseVnav {
         this._activeWaypointChangedflightPlanChanged = false;
         this._activeWaypointChangedvnavTargetChanged = false;
         this._valuesUpdated = false;
+        this._vnavConstraintWaypoint = undefined;
 
         this._setDestination = undefined;
         this._newPath = false;
@@ -73,6 +74,8 @@ class WT_BaseVnav {
 
         if (this._destination && this.waypoints && this.waypoints.length > 0 && this._activeWaypoint && flightPlanVersion) {
             this._vnavCalculating = true;
+            this._currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+            this._activeWaypointDist = Avionics.Utils.computeDistance(this._currPos, this._activeWaypoint.infos.coordinates);
 
             //HAS THE ACTIVE WAYPOINT CHANGED?
             if (this._lastActiveWaypointIdent != this._activeWaypoint.ident) {
@@ -97,31 +100,39 @@ class WT_BaseVnav {
                     if (wpt.legAltitudeDescription > 0 && this._currentFlightSegment.type == SegmentType.Departure) {
                         if (wpt.legAltitudeDescription == 1 || wpt.legAltitudeDescription == 3 || wpt.legAltitudeDescription == 4) {
                             this._vnavConstraintAltitude = wpt.legAltitude1;
+                            this._vnavConstraintWaypoint = wpt;
                             break;
                         }
                     }
                     else if (wpt.legAltitudeDescription > 0 && (this._currentFlightSegment.type == SegmentType.Enroute || this._currentFlightSegment.type == SegmentType.Arrival || this._currentFlightSegment.type == SegmentType.Approach)) {
                         if (wpt.legAltitudeDescription == 1 || wpt.legAltitudeDescription == 2) {
                             this._vnavConstraintAltitude = wpt.legAltitude1;
+                            this._vnavConstraintWaypoint = wpt;
                             break;
                         }
                         else if (wpt.legAltitudeDescription == 4) {
                             this._vnavConstraintAltitude = wpt.legAltitude2;
+                            this._vnavConstraintWaypoint = wpt;
                             break;
                         }
                     }
                     else {
                         this._vnavConstraintAltitude = undefined;
+                        this._vnavConstraintWaypoint = undefined;
                     }
                 }
-
-                //SET CURRENT CONSTRAINT ALTITUDE SIMVAR -- This only needs to run when active waypoint changes
-                if (this._vnavConstraintAltitude) {
+            }
+            //SET CURRENT CONSTRAINT ALTITUDE SIMVAR -- This only needs to run when active waypoint changes
+            if (this._vnavConstraintAltitude && this._vnavConstraintWaypoint) {
+                if (this._vnavConstraintWaypoint.cumulativeDistanceInFP - (this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist) < 40) {
                     SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", Math.round(this._vnavConstraintAltitude));
                 }
                 else {
                     SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
                 }
+            }
+            else {
+                SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
             }
 
             //BUILD VPATH DESCENT PROFILE -- This only needs to be updated when flight plan changed or when active VNAV waypoint changes
@@ -144,6 +155,13 @@ class WT_BaseVnav {
             }
             else {
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", 0);
+            }
+
+            if (Math.abs(this._altDeviation) < 1000) {
+                WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'true');
+            }
+            else {
+                WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'false');
             }
 
             this._vnavTargetChanged = false;
@@ -226,10 +244,8 @@ class WT_BaseVnav {
      * Fetch values when needed.
      */
     updateValues() {
-        this._currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
         this._altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
         this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
-        this._activeWaypointDist = Avionics.Utils.computeDistance(this._currPos, this._activeWaypoint.infos.coordinates);
         this._currentDistanceInFP = this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist;
         this._valuesUpdated = true;
     }
