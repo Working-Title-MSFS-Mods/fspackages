@@ -118,38 +118,22 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
     }
 }
 
-class WT_MapViewCanvas {
-    constructor(useBuffer, syncSizeToView) {
-        this._useBuffer = useBuffer;
+class WT_MapViewSubLayer {
+    constructor(syncSizeToView) {
         this._syncSizeToView = syncSizeToView;
 
-        if (useBuffer) {
-            let buffer = document.createElement("canvas");
-            let bufferContext = buffer.getContext("2d");
-            this._buffer = {canvas: buffer, context: bufferContext};
-        }
-
-        this._container = document.createElement("div");
-        this._container.style.position = "absolute";
-        this._container.style.left = 0;
-        this._container.style.top = 0;
-        this._container.style.width = "100%";
-        this._container.style.height = "100%";
-        this._container.style.transform = "rotateX(0deg)";
-
-        this._canvas = document.createElement("canvas");
-        this._context = this._canvas.getContext("2d");
-        this._context.imageSmoothingEnabled = false;
-
-        this._canvas.style.position = "absolute";
-        this._canvas.style.left = 0;
-        this._canvas.style.top = 0;
-
-        this._container.appendChild(this._canvas);
+        this._container = this._createContainer();
     }
 
-    get useBuffer() {
-        return this._useBuffer;
+    _createContainer() {
+        let container = document.createElement("div");
+        container.style.position = "absolute";
+        container.style.left = 0;
+        container.style.top = 0;
+        container.style.width = "100%";
+        container.style.height = "100%";
+        container.style.transform = "rotateX(0deg)";
+        return container;
     }
 
     get syncSizeToView() {
@@ -158,6 +142,44 @@ class WT_MapViewCanvas {
 
     get container() {
         return this._container;
+    }
+}
+
+class WT_MapViewCanvas extends WT_MapViewSubLayer {
+    constructor(useBuffer, syncSizeToView) {
+        super(syncSizeToView);
+        this._useBuffer = useBuffer;
+
+        if (useBuffer) {
+            this._buffer = this._createBuffer();
+        }
+
+        let canvasObject = this._createCanvas();
+        this._canvas = canvasObject.canvas;
+        this._context = canvasObject.context;
+        this._container.appendChild(this._canvas);
+    }
+
+    _createBuffer() {
+        let buffer = document.createElement("canvas");
+        let bufferContext = buffer.getContext("2d");
+        return {canvas: buffer, context: bufferContext};
+    }
+
+    _createCanvas() {
+        let canvas = document.createElement("canvas");
+        let context = canvas.getContext("2d");
+        context.imageSmoothingEnabled = false;
+
+        canvas.style.position = "absolute";
+        canvas.style.left = 0;
+        canvas.style.top = 0;
+
+        return {canvas: canvas, context: context};
+    }
+
+    get useBuffer() {
+        return this._useBuffer;
     }
 
     get canvas() {
@@ -208,38 +230,23 @@ class WT_MapViewCanvas {
     }
 }
 
-class WT_MapViewSvg {
+class WT_MapViewSvg extends WT_MapViewSubLayer {
     constructor(syncSizeToView) {
-        this._syncSizeToView = syncSizeToView;
+        super(syncSizeToView);
 
-        this._container = document.createElement("div");
-        this._container.style.position = "absolute";
-        this._container.style.left = 0;
-        this._container.style.top = 0;
-        this._container.style.width = "100%";
-        this._container.style.height = "100%";
-        this._container.style.transform = "rotateX(0deg)";
-
-        this._svg = document.createElementNS(Avionics.SVG.NS, "svg");
-
-        this._svg.style.position = "absolute";
-        this._svg.style.left = 0;
-        this._svg.style.top = 0;
-
-        this._width = 100;
-        this._height = 100;
-        this.width = 100;
-        this.height = 100;
-
+        this._svg = this._createSVG();
         this._container.appendChild(this._svg);
     }
 
-    get syncSizeToView() {
-        return this._syncSizeToView;
-    }
-
-    get container() {
-        return this._container;
+    _createSVG() {
+        let svg = document.createElementNS(Avionics.SVG.NS, "svg");
+        svg.style.position = "absolute";
+        svg.style.left = 0;
+        svg.style.top = 0;
+        svg.style.width = "100px";
+        svg.style.height = "100px";
+        svg.setAttribute("viewBox", `0 0 100 100`);
+        return svg;
     }
 
     get svg() {
