@@ -865,6 +865,11 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
 
             if (this.gs_cursorGroup && this.gsVisible) {
                 //if (isApproachLoaded && approachType == 10) {
+                if (WTDataStore.get('CJ4_VNAV_SNOWFLAKE',  'false') == 'true') {
+                    this.vertical_snowFlake.setAttribute("visibility", "visible");
+                } else {
+                    this.vertical_snowFlake.setAttribute("visibility", "hidden");
+                }
                 if (navCheck === 1) {
                     let gsiFeet = -SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
                     let gsi = gsiFeet / 3.28;
@@ -872,12 +877,6 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     let y = this.gs_cursorMinY + (this.gs_cursorMaxY - this.gs_cursorMinY) * delta;
                     y = Math.min(this.gs_cursorMinY, Math.max(this.gs_cursorMaxY, y));
                     this.gs_cursorGroup.setAttribute("transform", "translate(" + this.gs_cursorPosX + ", " + y + ")");
-                    /*if (delta <= 0.95 && delta >= 0.05) {
-                        this.vertical_snowFlake.setAttribute("visibility", "visible");
-                    }
-                    else {
-                        this.vertical_snowFlake.setAttribute("visibility", "hidden");
-                    }*/
                 }
                 else if (localizer.id > 0 && SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + localizer.id, "Bool")) {
                     let gsi = -SimVar.GetSimVarValue("NAV GSI:" + localizer.id, "number") / 127.0;

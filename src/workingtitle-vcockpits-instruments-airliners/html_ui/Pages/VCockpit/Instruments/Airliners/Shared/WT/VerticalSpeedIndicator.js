@@ -714,10 +714,12 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
     updateVSpeed(_speed) {
 
         let vnavActiveDonut = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
+        let vSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
+        let altLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") == 1;
+
         
-        if (this.gradSpeeds && this.selectedCursorSVG && vnavActiveDonut == 2) {
+        if (this.gradSpeeds && this.selectedCursorSVG && vnavActiveDonut == 2 && !altLock) {
             this.pinkDonut.setAttribute("visibility", "visible");
-            let vSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
             let height = this.heightFromSpeed(vSpeed);
             let posY = 0;
             if (vSpeed >= 0)
@@ -805,9 +807,8 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
     }
     updateSelectedVSpeed(_speed) {
 
-        let vnavActiveDonut = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
 
-        if (this.gradSpeeds && this.selectedCursorSVG && vnavActiveDonut == 1) {
+        if (this.gradSpeeds && this.selectedCursorSVG) {
             let vSpeed = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, _speed));
             let height = this.heightFromSpeed(vSpeed);
             let posY = 0;
