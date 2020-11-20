@@ -100,16 +100,6 @@
 								</Reference>
 							</ReferenceList>
 							<ChildrenList>
-								<AudioFileSource Name="FMS Button 2" ID="{9A72FBFB-7076-4B81-BD98-1EA48252AB25}">
-									<PropertyList>
-										<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
-										<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
-										<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
-										<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
-									</PropertyList>
-									<Language>SFX</Language>
-									<AudioFile>Instruments and Switches\FMS Button 2.wav</AudioFile>
-								</AudioFileSource>
 								<AudioFileSource Name="FMS Button Quicker" ID="{74FDF45C-542C-4976-BFEF-E2F1DF941264}">
 									<PropertyList>
 										<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>

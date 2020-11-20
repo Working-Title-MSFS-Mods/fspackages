@@ -53,6 +53,7 @@
 						<WorkUnit Name="Comms" ID="{24C81625-8C5E-4E75-A2BB-C680DA71EF96}" PersistMode="Reference"/>
 						<WorkUnit Name="Misc_Switches_And_Knobs" ID="{3AA131EF-2779-4588-B1E0-F574DE9CC071}" PersistMode="Reference"/>
 						<WorkUnit Name="Soft Buttons" ID="{61570D92-0B2E-462C-A21C-8982523DE3E1}" PersistMode="Reference"/>
+						<WorkUnit Name="Hard Buttons" ID="{AEF1F557-84DC-4E0B-9236-B9F1ED502CA4}" PersistMode="Reference"/>
 					</ChildrenList>
 					<StateInfo>
 						<StateGroupList>

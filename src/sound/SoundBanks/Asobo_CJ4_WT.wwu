@@ -10,6 +10,7 @@
 						<ObjectRef Name="Autopilot" ID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" WorkUnitID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Push_Buttons" ID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" WorkUnitID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Gear" ID="{578E8A29-4A61-44C9-8BCD-ED68E7432571}" WorkUnitID="{578E8A29-4A61-44C9-8BCD-ED68E7432571}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Hard Buttons" ID="{9E86C14C-A7C8-4553-8074-7566484AB9E0}" WorkUnitID="{9E86C14C-A7C8-4553-8074-7566484AB9E0}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Passenger_Announcements" ID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" WorkUnitID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Knobs" ID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" WorkUnitID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Play_Asobo_CJ4_WT_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}" WorkUnitID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" Origin="Manual" Filter="7"/>

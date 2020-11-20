@@ -8,6 +8,7 @@
 				<WorkUnit Name="Switches" ID="{7AC2DAB5-0757-4DDD-B0E6-EF4B5F0A494B}" PersistMode="Reference"/>
 				<WorkUnit Name="Autopilot" ID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" PersistMode="Reference"/>
 				<WorkUnit Name="Soft Buttons" ID="{3AD3A153-CA3C-4C60-A4F7-4D9BFCA95853}" PersistMode="Reference"/>
+				<WorkUnit Name="Hard Buttons" ID="{9E86C14C-A7C8-4553-8074-7566484AB9E0}" PersistMode="Reference"/>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>
