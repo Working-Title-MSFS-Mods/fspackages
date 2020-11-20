@@ -246,6 +246,8 @@ class WT_MapViewSvg extends WT_MapViewSubLayer {
         svg.style.width = "100px";
         svg.style.height = "100px";
         svg.setAttribute("viewBox", `0 0 100 100`);
+        this._width = 100;
+        this._height = 100;
         return svg;
     }
 
