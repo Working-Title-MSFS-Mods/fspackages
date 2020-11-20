@@ -859,6 +859,8 @@
 					<INTERACTION>Push</INTERACTION>
 					<ONLY_SEQ1/>
 					<SEQ1_EMISSIVE_DRIVES_VISIBILITY>False</SEQ1_EMISSIVE_DRIVES_VISIBILITY>
+					<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+					<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
 				</DefaultTemplateParameters>
 				<UseTemplate Name="ASOBO_FUEL_Switch_Pump_Template">
 					<ID>1</ID>
