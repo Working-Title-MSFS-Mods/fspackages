@@ -1,5 +1,6 @@
 <ModelBehaviors>
     <!-- CJ4 templates -->
+    <Include RelativeFile="Engine.xml"/>
     <Include RelativeFile="Deice.xml"/>
     <Include RelativeFile="Lighting.xml"/>
     <Include RelativeFile="Passenger.xml"/>
