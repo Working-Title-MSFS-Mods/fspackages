@@ -1,6 +1,6 @@
 class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
-    constructor(id = WT_MapViewRangeRingLayer.ID_DEFAULT, configName = WT_MapViewRangeRingLayer.CONFIG_NAME_DEFAULT) {
-        super(id, configName);
+    constructor(className = WT_MapViewRangeRingLayer.CLASS_DEFAULT, configName = WT_MapViewRangeRingLayer.CONFIG_NAME_DEFAULT) {
+        super(className, configName);
 
         this._rangeRing = new WT_MapViewLabeledRing(new WT_MapViewRing(), new WT_MapViewRangeRingLabel());
         this.addRing(this._rangeRing);
@@ -55,7 +55,7 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
         this.rangeRing.radius = data.model.range.ratio(data.projection.range) * data.projection.viewHeight;
     }
 }
-WT_MapViewRangeRingLayer.ID_DEFAULT = "RangeRingLayer";
+WT_MapViewRangeRingLayer.CLASS_DEFAULT = "rangeRingLayer";
 WT_MapViewRangeRingLayer.CONFIG_NAME_DEFAULT = "rangeRing";
 WT_MapViewRangeRingLayer.OPTIONS_DEF = {
     strokeWidth: {default: 2, auto: true},

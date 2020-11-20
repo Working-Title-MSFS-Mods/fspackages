@@ -1,6 +1,6 @@
 class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
-    constructor(forwardTickBearingGetter, facingAngleGetter = {getFacingAngle: data => 0}, id = WT_MapViewRangeCompassArcLayer.ID_DEFAULT, configName = WT_MapViewRangeCompassArcLayer.CONFIG_NAME_DEFAULT) {
-        super(id, configName, 4);
+    constructor(forwardTickBearingGetter, facingAngleGetter = {getFacingAngle: data => 0}, className = WT_MapViewRangeCompassArcLayer.CLASS_DEFAULT, configName = WT_MapViewRangeCompassArcLayer.CONFIG_NAME_DEFAULT) {
+        super(className, configName, 4);
 
         this.forwardTickBearingGetter = forwardTickBearingGetter;
         this.facingAngleGetter = facingAngleGetter;
@@ -599,7 +599,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this._updateLabel(data);
     }
 }
-WT_MapViewRangeCompassArcLayer.ID_DEFAULT = "RangeCompassLayer";
+WT_MapViewRangeCompassArcLayer.CLASS_DEFAULT = "rangeCompassLayer";
 WT_MapViewRangeCompassArcLayer.CONFIG_NAME_DEFAULT = "rangeCompass";
 WT_MapViewRangeCompassArcLayer.OPTIONS_DEF = {
     center: {},

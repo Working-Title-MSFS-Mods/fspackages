@@ -1,6 +1,6 @@
 class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
-    constructor(id = WT_MapViewFuelRingLayer.ID_DEFAULT, configName = WT_MapViewFuelRingLayer.CONFIG_NAME_DEFAULT) {
-        super(id, configName);
+    constructor(className = WT_MapViewFuelRingLayer.CLASS_DEFAULT, configName = WT_MapViewFuelRingLayer.CONFIG_NAME_DEFAULT) {
+        super(className, configName);
 
         this._outerRing = new WT_MapViewLabeledRing();
         this._innerRing = new WT_MapViewLabeledRing(new WT_MapViewFuelRingInner(), new WT_MapViewFuelRingLabel());
@@ -105,7 +105,7 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
         super.onUpdate(data);
     }
 }
-WT_MapViewFuelRingLayer.ID_DEFAULT = "FuelRing";
+WT_MapViewFuelRingLayer.CLASS_DEFAULT = "ruelRingLayer";
 WT_MapViewFuelRingLayer.CONFIG_NAME_DEFAULT = "fuelRing";
 WT_MapViewFuelRingLayer.SMOOTHING_MAX_TIME_DELTA = 0.5;
 WT_MapViewFuelRingLayer.OPTIONS_DEF = {
