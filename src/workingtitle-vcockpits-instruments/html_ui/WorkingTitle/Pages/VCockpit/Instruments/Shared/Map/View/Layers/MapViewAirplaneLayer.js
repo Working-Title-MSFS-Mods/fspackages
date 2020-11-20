@@ -1,6 +1,6 @@
 class WT_MapViewAirplaneLayer extends WT_MapViewMultiLayer {
-    constructor(id = WT_MapViewAirplaneLayer.ID_DEFAULT, configName = WT_MapViewAirplaneLayer.CONFIG_NAME_DEFAULT) {
-        super(id, configName);
+    constructor(className = WT_MapViewAirplaneLayer.CLASS_DEFAULT, configName = WT_MapViewAirplaneLayer.CONFIG_NAME_DEFAULT) {
+        super(className, configName);
 
         this._airplaneIcon = new WT_MapViewCanvas(false, false);
         this.addSubLayer(this._airplaneIcon);
@@ -62,7 +62,7 @@ class WT_MapViewAirplaneLayer extends WT_MapViewMultiLayer {
         this.airplaneIcon.canvas.style.transform = `translate(${data.viewPlane.x}px, ${data.viewPlane.y}px) rotate(${iconRotation}deg)`;
     }
 }
-WT_MapViewAirplaneLayer.ID_DEFAULT = "AirplaneLayer";
+WT_MapViewAirplaneLayer.CLASS_DEFAULT = "airplaneLayer";
 WT_MapViewAirplaneLayer.CONFIG_NAME_DEFAULT = "airplane";
 WT_MapViewAirplaneLayer.OPTIONS_DEF = {
     iconSize: {default: 60, auto: true},
