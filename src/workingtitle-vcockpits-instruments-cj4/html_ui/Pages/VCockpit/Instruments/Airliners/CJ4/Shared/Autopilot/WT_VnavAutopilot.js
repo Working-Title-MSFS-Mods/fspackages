@@ -171,9 +171,16 @@ class WT_VnavAutopilot {
         }
 
         if (this._vnavMode == 2) {
-            WTDataStore.set('CJ4_VNAV_ACTIVE', 'true');
+            //WTDataStore.set('CJ4_VNAV_ACTIVE', 'true');
+            SimVar.SetSimVarValue("L:WT_VNAV_ACTIVE", "number", 1); 
+
         } else {
-            WTDataStore.set('CJ4_VNAV_ACTIVE', 'false');
+            if (SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") != 0) {
+                SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0); 
+            }
+            if (SimVar.GetSimVarValue("L:WT_VNAV_ACTIVE", "number") != 0) {
+                SimVar.SetSimVarValue("L:WT_VNAV_ACTIVE", "number", 0); 
+            }
         }
         this.execute();
     }
@@ -232,11 +239,13 @@ class WT_VnavAutopilot {
             if (this._vnavStatus == 12 || this._vnavStatus == 13) {
                 //this._altDeviation = SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
                 if (this._vnav._altDeviation < -1000 || this._vnav._altDeviation > 1000) {
-                    WTDataStore.set('CJ4_VNAV_PATH_STATUS', 'armed');
+                    //WTDataStore.set('CJ4_VNAV_PATH_STATUS', 'armed');
+                    SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 1);
                     runPath = false;
                 }
                 else {
-                    WTDataStore.set('CJ4_VNAV_PATH_STATUS', 'active');
+                    //WTDataStore.set('CJ4_VNAV_PATH_STATUS', 'active');
+                    SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 2);
                     runPath = true;
                 }
             }
@@ -311,6 +320,7 @@ class WT_VnavAutopilot {
         SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
         SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
         WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'false');
+        SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0); 
     }
 
     failed() {
@@ -327,6 +337,7 @@ class WT_VnavAutopilot {
         SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
         SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
         WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'false');
+        SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0); 
     }
 
     setTargetAltitude(targetAltitude = this._vnavTargetAltitude) {
