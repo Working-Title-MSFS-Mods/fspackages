@@ -5,6 +5,7 @@
 			<ChildrenList>
 				<RandomSequenceContainer Name="CJ4_FMS_Button" ID="{5271B766-A6F0-470F-8AE3-D1D24DC660E4}" ShortID="895583852">
 					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
 						<Property Name="CenterPercentage" Type="int32">
 							<ValueList>
 								<Value>100</Value>
@@ -23,6 +24,7 @@
 							</ValueList>
 						</Property>
 						<Property Name="OverLimitBehavior" Type="int16" Value="1"/>
+						<Property Name="OverridePositioning" Type="bool" Value="True"/>
 						<Property Name="OverrideVirtualVoice" Type="bool" Value="True"/>
 						<Property Name="Pitch" Type="int32">
 							<ModifierList>
@@ -51,7 +53,7 @@
 						</Property>
 						<Property Name="Volume" Type="Real64">
 							<ValueList>
-								<Value>-12</Value>
+								<Value>-16</Value>
 							</ValueList>
 						</Property>
 					</PropertyList>
