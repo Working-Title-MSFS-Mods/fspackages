@@ -405,7 +405,20 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 airplaneSymbolGroup.appendChild(airplaneStick);
                 this.root.appendChild(airplaneSymbolGroup);
             }
-
+            {
+                this.noFplnGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                let noFpln = document.createElementNS(Avionics.SVG.NS, "text");
+                noFpln.textContent = "NO FLIGHT PLAN";
+                noFpln.setAttribute("x", "50");
+                noFpln.setAttribute("y", "75");
+                noFpln.setAttribute("fill", "white");
+                noFpln.setAttribute("font-size", "20");
+                noFpln.setAttribute("font-family", "Roboto-Bold");
+                noFpln.setAttribute("text-anchor", "middle");
+                noFpln.setAttribute("alignment-baseline", "central");
+                this.noFplnGroup.appendChild(noFpln);
+                this.root.appendChild(this.noFplnGroup);
+            }
             this.currentRefGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.currentRefGroup.setAttribute("id", "currentRefGroup");
             {
@@ -2812,6 +2825,19 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
         airplaneStick.setAttribute("stroke-width", "2.5");
         airplaneSymbolGroup.appendChild(airplaneStick);
         this.root.appendChild(airplaneSymbolGroup);
+
+        this.noFplnGroup = document.createElementNS(Avionics.SVG.NS, "g");
+        let noFpln = document.createElementNS(Avionics.SVG.NS, "text");
+        noFpln.textContent = "NO FLIGHT PLAN";
+        noFpln.setAttribute("x", "500");
+        noFpln.setAttribute("y", "450");
+        noFpln.setAttribute("fill", "white");
+        noFpln.setAttribute("font-size", "30");
+        noFpln.setAttribute("font-family", "Roboto-Bold");
+        noFpln.setAttribute("text-anchor", "middle");
+        noFpln.setAttribute("alignment-baseline", "central");
+        this.noFplnGroup.appendChild(noFpln);
+        this.root.appendChild(this.noFplnGroup);
 
 
         let innerCircleGroup = document.createElementNS(Avionics.SVG.NS, "g");

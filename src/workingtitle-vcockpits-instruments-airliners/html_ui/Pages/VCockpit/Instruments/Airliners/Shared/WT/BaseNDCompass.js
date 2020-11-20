@@ -440,6 +440,8 @@ class Jet_NDCompass extends HTMLElement {
                     this.courseFROMBorder.setAttribute("visibility", "hidden");
                     this.courseFROMLine.setAttribute("visibility", "hidden");
                     this.courseTOBorder.setAttribute("visibility", "hidden");
+                    this.courseGroup.setAttribute("visibility", "hidden");
+                    this.noFplnGroup.setAttribute("visibility", "visible");
                 } else {
                     this.courseDeviation.setAttribute("visibility", "visible");
                     this.courseTO.setAttribute("visibility", "visible");
@@ -448,6 +450,8 @@ class Jet_NDCompass extends HTMLElement {
                     this.courseFROMBorder.setAttribute("visibility", "visible");
                     this.courseFROMLine.setAttribute("visibility", "visible");
                     this.courseTOBorder.setAttribute("visibility", "visible");
+                    this.courseGroup.setAttribute("visibility", "visible");
+                    this.noFplnGroup.setAttribute("visibility", "hidden");
 
                     if (bearingDiff > 90 && bearingDiff < 270) {
                         this.courseTO.setAttribute("visibility", "hidden");
