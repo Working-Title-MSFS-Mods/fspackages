@@ -97,11 +97,15 @@ class WT_NumberUnit {
         if (this.unit.type !== other.unit.type) {
             return undefined;
         }
-        return this.refNumber - other.asUnit(this.refUnit);
+        let diff = this.refNumber - other.asUnit(this.refUnit);
+        if (Math.abs(diff) < 1e-14) {
+            return 0;
+        }
+        return diff;
     }
 
     equals(other) {
-        return Math.abs(this.compare(other)) < 1e-14;
+        return Math.abs(this.compare(other)) === 0;
     }
 
     copy() {
