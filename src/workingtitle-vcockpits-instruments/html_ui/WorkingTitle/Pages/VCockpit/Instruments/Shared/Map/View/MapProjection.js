@@ -124,6 +124,10 @@ class WT_MapProjection {
         this._recalculateProjection();
     }
 
+    get precision() {
+        return this._d3Projection.precision();
+    }
+
     _calculateRangeAtCenter(center) {
         let top = this._d3Projection.invert([center.x, center.y - this.viewHeight / 2]);
         let bottom = this._d3Projection.invert([center.x, center.y + this.viewHeight / 2]);
@@ -131,16 +135,16 @@ class WT_MapProjection {
     }
 
     _recalculateProjection() {
-        //this._d3Projection.translate([0, 0]);
         this._d3Projection.translate([this.viewWidth / 2, this.viewHeight / 2]);
+        this._d3Projection.clipExtent([[0, 0], [this.viewWidth, this.viewHeight]]);
 
-        let currentTargetXY = this._d3Projection(this.latLongGameToProjection(this.target));
+        let currentTargetXY = this._d3Projection(WT_MapProjection.latLongGameToProjection(this.target));
 
         if (isNaN(currentTargetXY[0] + currentTargetXY[1])) {
             return;
         }
 
-        let currentCenterXY = this.xyProjectionToView(currentTargetXY).subtract(this.viewTargetOffset, true);
+        let currentCenterXY = WT_MapProjection.xyProjectionToView(currentTargetXY).subtract(this.viewTargetOffset, true);
         let currentRange = this._calculateRangeAtCenter(currentCenterXY);
         let ratio = currentRange.ratio(this.range);
 
@@ -152,14 +156,14 @@ class WT_MapProjection {
             let currentScale = this._d3Projection.scale();
             this._d3Projection.scale(currentScale * ratio);
 
-            currentTargetXY = this._d3Projection(this.latLongGameToProjection(this.target));
-            currentCenterXY = this.xyProjectionToView(currentTargetXY).subtract(this.viewTargetOffset, true);
+            currentTargetXY = this._d3Projection(WT_MapProjection.latLongGameToProjection(this.target));
+            currentCenterXY = WT_MapProjection.xyProjectionToView(currentTargetXY).subtract(this.viewTargetOffset, true);
             currentRange = this._calculateRangeAtCenter(currentCenterXY);
             ratio = currentRange.ratio(this.range);
         }
-        let center = this._d3Projection.invert(this.xyViewToProjection(currentCenterXY));
+        let center = this._d3Projection.invert(WT_MapProjection.xyViewToProjection(currentCenterXY));
         this._d3Projection.center(center);
-        this._center = this.latLongProjectionToGame(center);
+        this._center = WT_MapProjection.latLongProjectionToGame(center);
         //this._d3Projection.translate([-currentTargetXY[0] + this.viewWidth / 2 + this.viewTargetOffset.x, -currentTargetXY[1] + this.viewHeight / 2 + this.viewTargetOffset.y]);
 
         //this._center = this.invertXY(this.viewCenter);
@@ -171,22 +175,6 @@ class WT_MapProjection {
 
     absXYToRelXY(xy) {
         return WT_GTransform2.scale(1 / this.viewWidth, 1 / this.viewHeight).apply(xy);
-    }
-
-    xyViewToProjection(xy) {
-        return [xy.x, xy.y];
-    }
-
-    xyProjectionToView(xy) {
-        return new WT_GVector2(xy[0], xy[1]);
-    }
-
-    latLongGameToProjection(latLong) {
-        return [latLong.long, latLong.lat];
-    }
-
-    latLongProjectionToGame(latLong) {
-        return new LatLong(latLong[1], latLong[0]);
     }
 
     setOptions(opts) {
@@ -203,21 +191,21 @@ class WT_MapProjection {
     }
 
     projectLatLong(latLong) {
-        let projected = this.project(this.latLongGameToProjection(latLong));
-        return this.xyProjectionToView(projected);
+        let projected = this.project(WT_MapProjection.latLongGameToProjection(latLong));
+        return WT_MapProjection.xyProjectionToView(projected);
     }
 
     invertXY(xy) {
-        let inverse = this.invert(this.xyViewToProjection(xy));
-        return this.latLongProjectionToGame(inverse);
+        let inverse = this.invert(WT_MapProjection.xyViewToProjection(xy));
+        return WT_MapProjection.latLongProjectionToGame(inverse);
     }
 
     distance(point1, point2) {
         if (point1.lat !== undefined && point1.long !== undefined) {
-            point1 = this.latLongGameToProjection(point1);
+            point1 = WT_MapProjection.latLongGameToProjection(point1);
         }
         if (point2.lat !== undefined && point2.long !== undefined) {
-            point2 = this.latLongGameToProjection(point2);
+            point2 = WT_MapProjection.latLongGameToProjection(point2);
         }
         return WT_Unit.GA_RADIAN.createNumber(d3.geoDistance(point1, point2));
     }
@@ -289,21 +277,45 @@ class WT_MapProjection {
         return xy.add(WT_GVector2.fromPolar(distance, angle * Avionics.Utils.DEG2RAD));
     }
 
+    createSyncedRenderer() {
+        return new WT_MapProjectionSyncedRenderer(this, this._d3Projection);
+    }
+
     createRenderer() {
-        return new WT_MapProjectionRenderer(this);
+        return new WT_MapProjectionRenderer(d3[this.name]());
+    }
+
+    syncRenderer(renderer) {
+        renderer.projection.center(this._d3Projection.center());
+        renderer.projection.translate(this._d3Projection.translate());
+        renderer.projection.scale(this._d3Projection.scale());
+        renderer.projection.angle(this._d3Projection.angle());
+    }
+
+    static xyViewToProjection(xy) {
+        return [xy.x, xy.y];
+    }
+
+    static xyProjectionToView(xy) {
+        return new WT_GVector2(xy[0], xy[1]);
+    }
+
+    static latLongGameToProjection(latLong) {
+        return [latLong.long, latLong.lat];
+    }
+
+    static latLongProjectionToGame(latLong) {
+        return new LatLong(latLong[1], latLong[0]);
     }
 
     static createProjection(name) {
-        switch (name) {
-            case WT_MapProjection.Projection.EQUIRECTANGULAR: return new WT_MapProjection(name, d3.geoEquirectangular());
-            case WT_MapProjection.Projection.MERCATOR: return new WT_MapProjection(name, d3.geoMercator());
-        }
+        return new WT_MapProjection(name, d3[name]());
     }
 }
 WT_MapProjection.SCALE_FACTOR_TOLERANCE = 0.0000001;
 WT_MapProjection.Projection = {
-    EQUIRECTANGULAR: "equirectangular",
-    MERCATOR: "mercator"
+    EQUIRECTANGULAR: "geoEquirectangular",
+    MERCATOR: "geoMercator"
 };
 WT_MapProjection.OPTIONS_DEF = {
     _viewWidth: {default: 1000},
@@ -316,62 +328,144 @@ WT_MapProjection.OPTIONS_DEF = {
 
 class WT_MapProjectionRenderer {
     constructor(projection) {
-        this._projection = projection;
-        this._d3Path = d3.geoPath().projection(projection._d3Projection);
-
-        this._optsManager = new WT_OptionsManager(this, WT_MapProjectionRenderer.OPTIONS_DEF);
+        this._d3Projection = projection;
+        this._d3Path = d3.geoPath().projection(projection);
     }
 
     get projection() {
-        return this._projection;
+        return this._d3Projection;
     }
 
-    _setClipExtent() {
-        if (!this.useViewClip) {
-            return;
+    get center() {
+        return WT_MapProjection.latLongProjectionToGame(this.projection.center());
+    }
+
+    set center(center) {
+        this.projection.center(WT_MapProjection.latLongGameToProjection(center));
+    }
+
+    get translate() {
+        return WT_MapProjection.xyProjectionToView(this.projection.translate());
+    }
+
+    set translate(factor) {
+        this.projection.translate(WT_MapProjection.xyViewToProjection(factor));
+    }
+
+    get scaleFactor() {
+        return this.projection.scaleFactor();
+    }
+
+    set scaleFactor(factor) {
+        this.projection.scaleFactor(factor);
+    }
+
+    get rotation() {
+        return -this.projection.angle();
+    }
+
+    set rotation(angle) {
+        this.projection.angle(-angle);
+    }
+
+    get precision() {
+        return this.projection.precision();
+    }
+
+    set precision(value) {
+        this.projection.precision(value);
+    }
+
+    get viewClipExtent() {
+        let value = this.projection.clipExtent();
+        if (value !== null) {
+            value = value.map(WT_MapProjection.xyProjectionToView);
         }
+        return value;
+    }
 
-        let clipExtent = this.viewClipExtent;
-        if (clipExtent === null) {
-            clipExtent = [[0, 0], [this.projection.viewWidth, this.projection.viewHeight]];
+    set viewClipExtent(bounds) {
+        if (bounds !== null) {
+            bounds = bounds.map(WT_MapProjection.xyViewToProjection);
         }
-        this.projection._d3Projection.clipExtent(clipExtent);
-    }
-
-    _setOptions() {
-        this.projection._d3Projection.precision(this.precision);
-        this._setClipExtent();
-    }
-
-    _resetOptions() {
-        this.projection._d3Projection.precision(0.70710678118);
-        this.projection._d3Projection.clipExtent(null);
-    }
-
-    calculateBounds(object) {
-        this._setOptions();
-        let bounds = this._d3Path.bounds(object);
-        this._resetOptions();
-        return bounds;
+        this.projection.clipExtent(bounds);
     }
 
     renderSVG(object) {
-        this._setOptions();
-        let d = this._d3Path(object);
-        this._resetOptions();
-        return d;
+        return this._d3Path(object);
     }
 
     renderCanvas(object, context) {
-        this._setOptions();
         this._d3Path.context(context);
         this._d3Path(object);
         this._d3Path.context(null);
-        this._resetOptions();
+    }
+
+    calculateBounds(object) {
+        return this._d3Path.bounds(object).map(WT_MapProjection.xyProjectionToView);
+    }
+
+    calculateCentroid(object) {
+        return this._d3Path.centroid(object).map(WT_MapProjection.xyProjectionToView);
     }
 }
-WT_MapProjectionRenderer.OPTIONS_DEF = {
-    precision: {default: 0.70710678118, auto: true},
-    useViewClip: {default: false, auto: true},
-    viewClipExtent: {default: null, auto: true},
-};
+
+class WT_MapProjectionSyncedRenderer extends WT_MapProjectionRenderer {
+    constructor(mapProjection, projection) {
+        super(projection);
+        this._mapProjection = mapProjection;
+    }
+
+    get mapProjection() {
+        return this._mapProjection;
+    }
+
+    get projection() {
+        return undefined;
+    }
+
+    get center() {
+        return this.mapProjection.center;
+    }
+
+    set center(center) {
+    }
+
+    get translate() {
+        return new WT_GVector2(this.mapProjection.viewWidth / 2, this.mapProjection.viewHeight / 2);
+    }
+
+    set translate(factor) {
+    }
+
+    get scaleFactor() {
+        return this.mapProjection.scaleFactor;
+    }
+
+    set scaleFactor(factor) {
+    }
+
+    get rotation() {
+        return this.mapProjection.rotation;
+    }
+
+    set rotation(angle) {
+    }
+
+    get precision() {
+        return this.mapProjection.precision;
+    }
+
+    set precision(value) {
+    }
+
+    get viewClipExtent() {
+        return [
+            new WT_GVector2(0, 0),
+            new WT_GVector2(this.mapProjection.viewWidth, this.mapProjection.viewHeight)
+        ];
+    }
+
+    set viewClipExtent(bounds) {
+    }
+}
