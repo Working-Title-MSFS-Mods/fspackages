@@ -5,11 +5,10 @@
 			<ChildrenList>
 				<ActorMixer Name="battery" ID="{6AE75521-3C95-4C69-90FF-BFE3B3EBA634}" ShortID="1056097228">
 					<PropertyList>
-						<Property Name="3DSpatialization" Type="int16" Value="2"/>
 						<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 						<Property Name="CenterPercentage" Type="int32">
 							<ValueList>
-								<Value>78</Value>
+								<Value>100</Value>
 							</ValueList>
 						</Property>
 						<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
@@ -26,7 +25,7 @@
 								<RTPC Name="" ID="{A63BE7F9-C852-4DDE-A74C-77B283929427}" ShortID="441186623">
 									<ReferenceList>
 										<Reference Name="ControlInput">
-											<ObjectRef Name="SIMVAR_GENERAL_ENG_RPM" ID="{2A2495B6-0158-4F47-8261-D625910D546D}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+											<ObjectRef Name="SIMVAR_TURB_ENG_N2" ID="{635265A1-4699-42D7-8E43-42E8870A38CA}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
 										</Reference>
 									</ReferenceList>
 									<Curve Name="" ID="{5880B9E3-8815-47B6-8D87-EE076131EE82}">
@@ -40,18 +39,33 @@
 												<Flags>5</Flags>
 											</Point>
 											<Point>
-												<XPos>18000</XPos>
-												<YPos>0</YPos>
+												<XPos>2</XPos>
+												<YPos>-350</YPos>
 												<Flags>0</Flags>
 											</Point>
 											<Point>
-												<XPos>21552.94118</XPos>
+												<XPos>25</XPos>
+												<YPos>-300</YPos>
+												<Flags>0</Flags>
+											</Point>
+											<Point>
+												<XPos>50</XPos>
+												<YPos>-275</YPos>
+												<Flags>0</Flags>
+											</Point>
+											<Point>
+												<XPos>52</XPos>
 												<YPos>50</YPos>
 												<Flags>0</Flags>
 											</Point>
 											<Point>
-												<XPos>40000</XPos>
-												<YPos>90</YPos>
+												<XPos>108.14639</XPos>
+												<YPos>75</YPos>
+												<Flags>0</Flags>
+											</Point>
+											<Point>
+												<XPos>200</XPos>
+												<YPos>860</YPos>
 												<Flags>37</Flags>
 											</Point>
 										</PointList>
@@ -71,16 +85,55 @@
 						</Property>
 						<Property Name="Volume" Type="Real64">
 							<ValueList>
-								<Value>-12</Value>
+								<Value>-17</Value>
 							</ValueList>
 							<RTPCList>
-								<RTPC Name="" ID="{7342872B-3CBC-45AF-8592-18DA1C8CB55F}" ShortID="479711754">
+								<RTPC Name="" ID="{61C8CB5E-7D7D-430C-8750-26EA193CDD8C}" ShortID="709769332">
+									<ReferenceList>
+										<Reference Name="ControlInput">
+											<ObjectRef Name="SIMVAR_TURB_ENG_N1" ID="{23BAD005-E61B-45C7-9ADA-EB168F71B891}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+										</Reference>
+									</ReferenceList>
+									<Curve Name="" ID="{757F3C35-5C9A-4FE2-B59E-CB42B61B7162}">
+										<PropertyList>
+											<Property Name="Flags" Type="int32" Value="3"/>
+										</PropertyList>
+										<PointList>
+											<Point>
+												<XPos>0</XPos>
+												<YPos>0</YPos>
+												<Flags>5</Flags>
+											</Point>
+											<Point>
+												<XPos>24.0458015267176</XPos>
+												<YPos>0</YPos>
+												<Flags>0</Flags>
+											</Point>
+											<Point>
+												<XPos>38.9313</XPos>
+												<YPos>-1.02305</YPos>
+												<Flags>0</Flags>
+											</Point>
+											<Point>
+												<XPos>83.20611</XPos>
+												<YPos>-4.22101</YPos>
+												<Flags>0</Flags>
+											</Point>
+											<Point>
+												<XPos>200</XPos>
+												<YPos>-5.50033</YPos>
+												<Flags>37</Flags>
+											</Point>
+										</PointList>
+									</Curve>
+								</RTPC>
+								<RTPC Name="" ID="{3EBFA193-E8EC-4ECE-A103-A875878C063D}" ShortID="568830158">
 									<ReferenceList>
 										<Reference Name="ControlInput">
 											<ObjectRef Name="SIMVAR_GENERAL_ENG_RPM" ID="{2A2495B6-0158-4F47-8261-D625910D546D}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
 										</Reference>
 									</ReferenceList>
-									<Curve Name="" ID="{1E514AC9-6E37-4A48-84D6-7FDA2B3785A6}">
+									<Curve Name="" ID="{4552AAFC-A8AE-4D84-9131-050140B93CB3}">
 										<PropertyList>
 											<Property Name="Flags" Type="int32" Value="3"/>
 										</PropertyList>
@@ -108,13 +161,13 @@
 										</PointList>
 									</Curve>
 								</RTPC>
-								<RTPC Name="" ID="{263E5C70-D95C-4B87-89D4-B9CD465E1A3A}" ShortID="494041633">
+								<RTPC Name="" ID="{C1B5A1DD-D1C3-46E5-AA1D-C0E1E7AD8FE4}" ShortID="589122175">
 									<ReferenceList>
 										<Reference Name="ControlInput">
 											<ObjectRef Name="SIMVAR_AIRSPEED_TRUE" ID="{23F33E5A-B0EE-4CD5-AE2C-178797545D5C}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
 										</Reference>
 									</ReferenceList>
-									<Curve Name="" ID="{58B878BC-D83F-449A-AC86-950D286CB678}">
+									<Curve Name="" ID="{E88405A3-0F26-423E-9BAC-91A9F97A590C}">
 										<PropertyList>
 											<Property Name="Flags" Type="int32" Value="3"/>
 										</PropertyList>
@@ -136,7 +189,7 @@
 											</Point>
 											<Point>
 												<XPos>500</XPos>
-												<YPos>-4.54488</YPos>
+												<YPos>-4.54488000000001</YPos>
 												<Flags>37</Flags>
 											</Point>
 										</PointList>
@@ -147,13 +200,13 @@
 					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Attenuation">
-							<ObjectRef Name="aircraft_player_inside_3m_spread15" ID="{F5FBB6BB-1F86-4FA7-99C5-7D1DAE906FF9}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+							<ObjectRef Name="aircraft_player_inside_3m_spread40_focus70" ID="{3C29CCF2-E94C-4D61-8780-DC2F874F1A28}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
 						</Reference>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 						</Reference>
 						<Reference Name="OutputBus">
-							<ObjectRef Name="miscellaneous_inside" ID="{A94A7A7F-2F28-46C7-9158-EA25E9E42914}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+							<ObjectRef Name="instrument_inside_generic" ID="{E35F9E09-060D-4E8C-871C-43C5E1191F15}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
@@ -366,6 +419,12 @@
 						</Sound>
 					</ChildrenList>
 					<PositioningInfo>
+						<Panner Name="" ID="{195C459E-2C11-4CB6-8DD7-AC9076EE0972}">
+							<PropertyList>
+								<Property Name="PanX" Type="Real64" Value="-45.3815261044177"/>
+								<Property Name="PanY" Type="Real64" Value="74.8936170212766"/>
+							</PropertyList>
+						</Panner>
 						<Position Name="" ID="{6595225A-C037-4E31-A139-D5347CDA3665}">
 							<ChildrenList>
 								<Path2D Name="battery_Path" ID="{3331D789-94C5-49C3-899A-698C19E1C711}">
