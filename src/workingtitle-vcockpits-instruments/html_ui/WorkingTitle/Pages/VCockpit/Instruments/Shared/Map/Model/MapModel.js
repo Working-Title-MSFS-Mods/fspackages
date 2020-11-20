@@ -5,6 +5,7 @@ class WT_MapModel {
 
         this.addComponent(new WT_MapModelAirplaneComponent());
         this.addComponent(new WT_MapModelWeatherComponent());
+        this.addComponent(new WT_MapModelAutopilotComponent());
     }
 
     get range() {
@@ -91,6 +92,10 @@ class WT_MapModelAirplaneComponent extends WT_MapModelComponent {
         return new WT_NumberUnit(SimVar.GetSimVarValue("PLANE ALTITUDE", "feet"), WT_Unit.FOOT);
     }
 
+    get altitudeIndicated() {
+        return new WT_NumberUnit(SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet"), WT_Unit.FOOT);
+    }
+
     get groundSpeed() {
         return new WT_NumberUnit(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), WT_Unit.KNOT);
     }
@@ -144,3 +149,14 @@ class WT_MapModelWeatherComponent extends WT_MapModelComponent {
     }
 }
 WT_MapModelWeatherComponent.NAME_DEFAULT = "weather";
+
+class WT_MapModelAutopilotComponent extends WT_MapModelComponent {
+    constructor(name = WT_MapModelAutopilotComponent.NAME_DEFAULT) {
+        super(name);
+    }
+
+    get altitudeTarget() {
+        return new WT_NumberUnit(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet"), WT_Unit.FOOT);
+    }
+}
+WT_MapModelAutopilotComponent.NAME_DEFAULT = "autopilot";

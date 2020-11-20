@@ -89,6 +89,11 @@ class WT_NumberUnit {
         return this.refNumber / other.asUnit(this.refUnit);
     }
 
+    abs() {
+        this.refNumber = Math.abs(this.refNumber);
+        return this;
+    }
+
     asUnit(unit) {
         return this.refUnit.convert(this.refNumber, unit);
     }
