@@ -1,6 +1,6 @@
 class WT_MapViewBingLayer extends WT_MapViewLayer {
-    constructor(id = WT_MapViewBingLayer.ID_DEFAULT, configName = WT_MapViewBingLayer.CONFIG_NAME_DEFAULT) {
-        super(id, configName);
+    constructor(className = WT_MapViewBingLayer.CLASS_DEFAULT, configName = WT_MapViewBingLayer.CONFIG_NAME_DEFAULT) {
+        super(className, configName);
 
         this.projection = new WT_MapProjection("asdf", d3.geoEquirectangular());
     }
@@ -97,7 +97,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         this._updateTerrainColors(data);
     }
 }
-WT_MapViewBingLayer.ID_DEFAULT = "BingLayer";
+WT_MapViewBingLayer.CLASS_DEFAULT = "bingLayer";
 WT_MapViewBingLayer.CONFIG_NAME_DEFAULT = "bingMap";
 WT_MapViewBingLayer.CONFIG_BING_CONFIGS_NAME = "bingConfigs";
 WT_MapViewBingLayer.OVERDRAW_FACTOR = Math.sqrt(2);

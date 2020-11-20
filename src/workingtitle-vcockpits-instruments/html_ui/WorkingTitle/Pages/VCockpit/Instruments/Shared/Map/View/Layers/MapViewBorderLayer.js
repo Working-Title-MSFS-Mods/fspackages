@@ -1,6 +1,6 @@
 class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
-    constructor(id = WT_MapViewBorderLayer.ID_DEFAULT, configName = WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT) {
-        super(id, configName, true);
+    constructor(className = WT_MapViewBorderLayer.CLASS_DEFAULT, configName = WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT) {
+        super(className, configName, true);
 
         this._borderLayer = new WT_MapViewCanvas(true, false);
         this.addSubLayer(this._borderLayer);
@@ -283,7 +283,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         }
     }
 }
-WT_MapViewBorderLayer.ID_DEFAULT = "BorderLayer";
+WT_MapViewBorderLayer.CLASS_DEFAULT = "borderLayer";
 WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT = "border";
 WT_MapViewBorderLayer.DATA_FILE_PATH = "/WorkingTitle/Pages/VCockpit/Instruments/Shared/Map/View/Data/boundaries.json";
 WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS = [

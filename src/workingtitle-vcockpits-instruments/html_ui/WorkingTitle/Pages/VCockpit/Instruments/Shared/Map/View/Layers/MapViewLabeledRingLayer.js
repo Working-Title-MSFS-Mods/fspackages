@@ -1,6 +1,6 @@
 class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
-    constructor(id, configName) {
-        super(id, configName);
+    constructor(className, configName) {
+        super(className, configName);
 
         this._rings = [];
         this._bounds = {left: 0, top: 0, width: 0, height: 0};

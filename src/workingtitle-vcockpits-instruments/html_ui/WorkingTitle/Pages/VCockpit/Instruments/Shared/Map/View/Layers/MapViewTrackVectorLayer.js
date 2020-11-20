@@ -1,6 +1,6 @@
 class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
-    constructor(id = WT_MapViewTrackVectorLayer.ID_DEFAULT, configName = WT_MapViewTrackVectorLayer.CONFIG_NAME_DEFAULT) {
-        super(id, configName);
+    constructor(className = WT_MapViewTrackVectorLayer.CLASS_DEFAULT, configName = WT_MapViewTrackVectorLayer.CONFIG_NAME_DEFAULT) {
+        super(className, configName);
 
         this._dynamicLookaheadMax = new WT_NumberUnit(0, WT_Unit.SECOND);
 
@@ -215,7 +215,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         this._lastTime = data.currentTime / 1000;
     }
 }
-WT_MapViewTrackVectorLayer.ID_DEFAULT = "TrackVector";
+WT_MapViewTrackVectorLayer.CLASS_DEFAULT = "trackVectorLayer";
 WT_MapViewTrackVectorLayer.CONFIG_NAME_DEFAULT = "trackVector";
 WT_MapViewTrackVectorLayer.SMOOTHING_MAX_TIME_DELTA = 0.5;
 WT_MapViewTrackVectorLayer.OPTIONS_DEF = {

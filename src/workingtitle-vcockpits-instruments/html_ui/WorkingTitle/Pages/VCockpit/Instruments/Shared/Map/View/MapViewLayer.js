@@ -1,10 +1,9 @@
 class WT_MapViewLayer {
-    constructor(id, configName) {
-        this._id = id;
+    constructor(className, configName) {
         this._configName = configName;
 
         this._htmlElement = this._createHTMLElement();
-        this._htmlElement.id = id;
+        this._htmlElement.classList.add(className);
     }
 
     _createHTMLElement() {
@@ -14,10 +13,6 @@ class WT_MapViewLayer {
         if (this.config[name]) {
             this[name] = this.config[name];
         }
-    }
-
-    get id() {
-        return this._id;
     }
 
     get configName() {
@@ -52,8 +47,8 @@ class WT_MapViewLayer {
 }
 
 class WT_MapViewMultiLayer extends WT_MapViewLayer {
-    constructor(id, configName) {
-        super(id, configName);
+    constructor(className, configName) {
+        super(className, configName);
         this._subLayers = [];
 
         this._lastWidth = 0;
