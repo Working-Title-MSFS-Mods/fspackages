@@ -8,8 +8,8 @@
             <INTERACTION>Switch</INTERACTION>
         </DefaultTemplateParameters>
         <OverrideTemplateParameters>
-            <WWISE_EVENT_1>WT_light_switch_on</WWISE_EVENT_1>
-            <WWISE_EVENT_2>WT_light_switch_off</WWISE_EVENT_2>
+            <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
         </OverrideTemplateParameters>
         <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_SubTemplate">
         </UseTemplate>

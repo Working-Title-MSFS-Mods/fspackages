@@ -5,8 +5,8 @@
         <DefaultTemplateParameters>
             <ID>1</ID>
             <INTERACTION>Switch</INTERACTION>
-            <WWISE_EVENT_1>WT_deice_button_on</WWISE_EVENT_1>
-            <WWISE_EVENT_2>WT_deice_button_off</WWISE_EVENT_2>
+            <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
         </DefaultTemplateParameters>
         <UseTemplate Name="ASOBO_DEICE_Switch_Engine_SubTemplate">
         </UseTemplate>
@@ -23,8 +23,8 @@
         <DefaultTemplateParameters>
             <SWITCH_TYPE>ON_OFF</SWITCH_TYPE>
             <INTERACTION>Switch</INTERACTION>
-            <WWISE_EVENT_1>WT_deice_button_on</WWISE_EVENT_1>
-            <WWISE_EVENT_2>WT_deice_button_off</WWISE_EVENT_2>
+            <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
         </DefaultTemplateParameters>
         <UseTemplate Name="ASOBO_DEICE_Switch_Airframe_SubTemplate"></UseTemplate>
     </Template>
@@ -41,8 +41,8 @@
         <DefaultTemplateParameters>
             <SWITCH_TYPE>ON_OFF</SWITCH_TYPE>
             <ID>1</ID>
-            <WWISE_EVENT_1>WT_deice_button_on</WWISE_EVENT_1>
-            <WWISE_EVENT_2>WT_deice_button_off</WWISE_EVENT_2>
+            <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
         </DefaultTemplateParameters>
         <UseTemplate Name="ASOBO_DEICE_Switch_Windshield_SubTemplate">
         </UseTemplate>
@@ -65,8 +65,8 @@
                             <ANIM_NAME_RIGHT_PITOT>DEICE_Switch_Pitot_2</ANIM_NAME_RIGHT_PITOT>
                         </Default>
                     </Switch>
-                    <WWISE_EVENT_1>WT_deice_button_on</WWISE_EVENT_1>
-                    <WWISE_EVENT_2>WT_deice_button_off</WWISE_EVENT_2>
+                    <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+                    <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
                     <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
                     <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
                     <ANIMTIP_0_L>TT:COCKPIT.TOOLTIPS.PANEL_DEICE_PITOT_L_HTR_DEICE_OFF</ANIMTIP_0_L>
@@ -97,8 +97,8 @@
                             <NODE_ID>DEICE_Switch_PitotHeat</NODE_ID>
                         </Default>
                     </Switch>
-                    <WWISE_EVENT_1>WT_deice_button_on</WWISE_EVENT_1>
-                    <WWISE_EVENT_2>WT_deice_button_off</WWISE_EVENT_2>
+                    <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+                    <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
                     <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
                     <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
                 </False>
@@ -185,8 +185,8 @@
             <ANIM_NAME>DEICE_Switch_InertSep</ANIM_NAME>
             <PART_ID>DEICE_Switch_InertSep</PART_ID>
             <NODE_ID>DEICE_Switch_InertSep</NODE_ID>
-            <WWISE_EVENT_1>WT_deice_button_on</WWISE_EVENT_1>
-            <WWISE_EVENT_2>WT_deice_button_off</WWISE_EVENT_2>
+            <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
             <ID>1</ID>
             <TIME_TO_DEPLOY_SEC>40</TIME_TO_DEPLOY_SEC>
         </DefaultTemplateParameters>
@@ -232,8 +232,8 @@
         <DefaultTemplateParameters>
             <PART_ID>DEICE_Switch_Light</PART_ID>
             <ID>1</ID>
-            <WWISE_EVENT_1>WT_deice_button_on</WWISE_EVENT_1>
-            <WWISE_EVENT_2>WT_deice_button_off</WWISE_EVENT_2>
+            <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
         </DefaultTemplateParameters>
         <UseTemplate Name="ASOBO_DEICE_Switch_Light_SubTemplate">
         </UseTemplate>
