@@ -49,18 +49,9 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         }
     }
 
-    _updateProjectionRendererClipExtent(data) {
-        this.projectionRenderer.useViewClip = true;
-    }
-
-    onViewSizeChanged(data) {
-        super.onViewSizeChanged(data);
-        this._updateProjectionRendererClipExtent(data);
-    }
-
     onAttached(data) {
-        this._projectionRenderer = data.projection.createRenderer();
         super.onAttached(data);
+        this._projectionRenderer = data.projection.createSyncedRenderer();
     }
 
     _setBufferStyle(lineWidth, strokeStyle) {
@@ -203,10 +194,10 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
 
         let bounds = this.projectionRenderer.calculateBounds(geoJSON);
         let thick = (this.outlineWidth + this.strokeWidth / 2) * data.dpiScale;
-        let toDrawLeft = Math.max(0, bounds[0][0] - thick - 5);
-        let toDrawTop = Math.max(0, bounds[0][1] - thick - 5);
-        let toDrawWidth = Math.min(data.projection.viewWidth, bounds[1][0] + thick + 5) - toDrawLeft;
-        let toDrawHeight = Math.min(data.projection.viewHeight, bounds[1][1] + thick + 5) - toDrawTop;
+        let toDrawLeft = Math.max(0, bounds[0].x - thick - 5);
+        let toDrawTop = Math.max(0, bounds[0].y - thick - 5);
+        let toDrawWidth = Math.min(data.projection.viewWidth, bounds[1].x + thick + 5) - toDrawLeft;
+        let toDrawHeight = Math.min(data.projection.viewHeight, bounds[1].y + thick + 5) - toDrawTop;
         this._lastDrawnBounds = this.vectorLayer.copyBufferToCanvas(toDrawLeft, toDrawTop, toDrawWidth, toDrawHeight);
     }
 
