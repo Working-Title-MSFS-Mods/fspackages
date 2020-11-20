@@ -51,9 +51,8 @@
 						<WorkUnit Name="FMS_Buttons" ID="{8F943296-33C9-43A6-B749-5C770DCF5C13}" PersistMode="Reference"/>
 						<WorkUnit Name="Climate_Control" ID="{C7BFFC0D-76E9-4171-A179-64C005CBED68}" PersistMode="Reference"/>
 						<WorkUnit Name="Comms" ID="{24C81625-8C5E-4E75-A2BB-C680DA71EF96}" PersistMode="Reference"/>
-						<WorkUnit Name="Lights" ID="{06E4B28D-BA80-4AC2-9AE6-5906E68C9F7B}" PersistMode="Reference"/>
 						<WorkUnit Name="Misc_Switches_And_Knobs" ID="{3AA131EF-2779-4588-B1E0-F574DE9CC071}" PersistMode="Reference"/>
-						<WorkUnit Name="Soft Buttons" ID="{61570D92-0B2E-462C-A21C-8982523DE3E1}" PersistMode="Reference"/>
+						<WorkUnit Name="Lights Soft Buttons" ID="{61570D92-0B2E-462C-A21C-8982523DE3E1}" PersistMode="Reference"/>
 					</ChildrenList>
 					<StateInfo>
 						<StateGroupList>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{61570D92-0B2E-462C-A21C-8982523DE3E1}" SchemaVersion="97" RootDocumentID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}">
 	<AudioObjects>
-		<WorkUnit Name="Soft Buttons" ID="{61570D92-0B2E-462C-A21C-8982523DE3E1}" OwnerID="{0977AE6C-8431-4438-889A-58DBE54DB723}" PersistMode="Nested">
+		<WorkUnit Name="Lights Soft Buttons" ID="{61570D92-0B2E-462C-A21C-8982523DE3E1}" OwnerID="{0977AE6C-8431-4438-889A-58DBE54DB723}" PersistMode="Nested">
 			<ChildrenList>
 				<RandomSequenceContainer Name="Soft Buttons" ID="{880A887B-7CDD-4A38-A419-EEAD5F2FA3B0}" ShortID="239761578">
 					<PropertyList>
