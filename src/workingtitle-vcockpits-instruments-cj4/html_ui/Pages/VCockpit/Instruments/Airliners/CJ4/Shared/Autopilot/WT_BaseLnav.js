@@ -200,7 +200,7 @@ class WT_BaseLnav {
             const currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
             const currCrosswind = Math.trunc(currWindSpeed * (Math.sin((this._setHeading * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
             const windCorrection = 180 * Math.asin(currCrosswind / this._groundSpeed) / Math.PI;
-            this._setHeading = (((this._setHeading + windCorrection) % 360) + 360) % 360;
+            this._setHeading = (((this._setHeading - windCorrection) % 360) + 360) % 360;
             
             //SET HEADING
             SimVar.SetSimVarValue("L:WT_TEMP_SETHEADING", "number", this._setHeading);

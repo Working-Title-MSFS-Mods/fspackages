@@ -1,9 +1,11 @@
 class WT_VnavAutopilot {
-    constructor(vnav) {
+    constructor(vnav, modeSelector) {
         this._vnav = vnav;
+        this._navModeSelector = modeSelector;
 
         this._vnavType = false;
-        
+        this._runPath = false;
+
         this._vnavConstraintAltitude = undefined;
         this._vnavTargetAltitude = undefined;
         this._vnavTargetDistance = undefined;
@@ -36,8 +38,8 @@ class WT_VnavAutopilot {
         this._altDeviation = 0;
         
         //WHAT VMODE ARE WE IN? remember: VNAV is on for this class to run
-        const vsModeSelected = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1;
-        const flcModeSelected = SimVar.GetSimVarValue("L:WT_CJ4_FLC_ON", "number") == 1;
+        const vsModeSelected = this._navModeSelector.currentVerticalActiveState === VerticalNavModeState.VS;
+        const flcModeSelected = this._navModeSelector.currentVerticalActiveState === VerticalNavModeState.FLC;
 
         if (this._vnav._vnavCalculating && (vsModeSelected || flcModeSelected)) { //WE ARE IN VVS OR VFLC VMODE (NO PATH!)
             this._vnavMode = 1; //0 = none; 1 = V Mode; 2 = V PATH
@@ -192,6 +194,7 @@ class WT_VnavAutopilot {
         let setVerticalSpeed = 0;
 
         if (this._vnavMode == 1 && this._vnavStatus > 0) { //V MODE ENABLED
+            this._runPath = false;
             //WHERE ARE WE IN THE LIFECYCLE (this._vnavStatus)
             //1 = VMODE BEFORE CONSTRAINT; 2 = VMODE OBSERVING CONSTRAINT; 3 = VMODE SETTING NEW CONSTRAINT; 4 = VMODE CLEAR CONSTRAINT
 
@@ -227,7 +230,7 @@ class WT_VnavAutopilot {
 
             //IF STATUS 11 DO NOTHING WITH ALTITUDES
             //IF STATUS 14 DO NOTHING WITH ALTITUDES
-            let runPath = false;
+            
 
             if (this._vnavStatus == 12) {
                 //VPATH APPROACHING TOD
@@ -236,31 +239,36 @@ class WT_VnavAutopilot {
             }
 
             //PATH ARMED OR ACTIVE?
-            if (this._vnavStatus == 12 || this._vnavStatus == 13) {
+            if (this._vnavStatus == 13) {
                 //this._altDeviation = SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
                 if (this._vnav._altDeviation < -1000 || this._vnav._altDeviation > 1000) {
-                    //WTDataStore.set('CJ4_VNAV_PATH_STATUS', 'armed');
-                    SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 1);
-                    runPath = false;
+                    if (this._runPath == true) {
+                        this.deactivate();
+                    }
+                    else {
+                        //WTDataStore.set('CJ4_VNAV_PATH_STATUS', 'armed');
+                        SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 1);
+                    }
+                    this._runPath = false;
                 }
                 else {
                     //WTDataStore.set('CJ4_VNAV_PATH_STATUS', 'active');
                     SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 2);
-                    runPath = true;
+                    this._runPath = true;
                 }
             }
 
             //SET VS FOR VNAV PATH
             const groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-            console.log("groundSpeed: " + groundSpeed)
-            console.log("this._vnav._desiredFPA: " + this._vnav._desiredFPA)
+            //console.log("groundSpeed: " + groundSpeed)
+            //console.log("this._vnav._desiredFPA: " + this._vnav._desiredFPA)
             const desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(this._vnav._desiredFPA * (Math.PI / 180));
             const maxVerticalSpeed = 101.2686667 * groundSpeed * Math.tan(6 * (Math.PI / 180));
             const maxCorrection = maxVerticalSpeed + desiredVerticalSpeed;
             const altSlot = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number");
             const vsSlot = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
             
-            if (this._vnavStatus == 13 && runPath == true) {
+            if (this._vnavStatus == 13 && this._runPath == true) {
                 console.log("running set vs");
                 const selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
                 const targetAltitude = Math.max(this._vnavTargetAltitude, selectedAltitude);
@@ -311,8 +319,6 @@ class WT_VnavAutopilot {
         this._vnavMode = 0; //0 = none; 1 = V Mode; 2 = V PATH
         this._vnavStatus = 0;
         SimVar.SetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean", 0);
-        SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
-        SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", 0);
         SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
         if (!SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean")) {
             SimVar.SetSimVarValue("K:AP_ALT_HOLD", "number", 1);
@@ -327,8 +333,6 @@ class WT_VnavAutopilot {
         this._vnavMode = 0; //0 = none; 1 = V Mode; 2 = V PATH
         this._vnavStatus = 0;
         SimVar.SetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean", 0);
-        SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
-        SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", 0);
         SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
         Coherent.call("AP_ALT_VAR_SET_ENGLISH", 1, this._vnav._altitude, true);
         if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {

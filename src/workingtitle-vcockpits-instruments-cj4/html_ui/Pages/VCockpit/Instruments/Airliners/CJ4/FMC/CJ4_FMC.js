@@ -57,13 +57,6 @@ class CJ4_FMC extends FMCMainDisplay {
         this._currentAP = undefined;
         this._vnav = undefined;
         this._lnav = undefined;
-
-        // modes
-        this._isHdgActive = false;
-        this._isNavActive = false;
-        this._isLNavActive = true;
-        this._isVsActive = false;
-        this._isFlcActive = false;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -174,19 +167,6 @@ class CJ4_FMC extends FMCMainDisplay {
             initRadioNav(_boot);
             this.initializeStandbyRadios(_boot);
         };
-
-        // set persisted heading
-        //SimVar.SetSimVarValue('K:HEADING_BUG_SET:1', 'degrees', WTDataStore.get("AP_HEADING", Simplane.getHeadingMagnetic()));
-        this._isLNavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
-        //set init values for AP
-        this._isHdgActive = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "number") == 1;
-        this._isNavActive = SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "number") == 1;
-        this._isVsActive = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") == 1;
-        this._isFlcActive = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "number") == 1;
-        SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", (this._isHdgActive ? 1 : 0));
-        SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", (this._isNavActive ? 1 : 0));
-        SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", (this._isVsActive ? 1 : 0));
-        SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", (this._isFlcActive ? 1 : 0));
 
         // get HideYoke        
         let yokeHide = WTDataStore.get('WT_CJ4_HideYoke', 1);
@@ -450,17 +430,19 @@ class CJ4_FMC extends FMCMainDisplay {
                 this._lnav.update();
             }
 
-            this.parseAutopilotModes();
+            if (!this._navModeSelector) {
+                this._navModeSelector = new CJ4NavModeSelector();
+            }
+    
+            this._navModeSelector.generateInputDataEvents();
+            this._navModeSelector.processEvents();
 
-            const newIsNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
-            const newIsLnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
-            const isVNAVActive = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
-            if (isVNAVActive && newIsNavActive && newIsLnavActive) {
+            if (this._navModeSelector.isVNAVOn === true) {
                 // vnav turned on
 
                 //ACTIVATE VNAV MODE
                 if (this._currentAP === undefined) {
-                    this._currentAP = new WT_VnavAutopilot(this._vnav);
+                    this._currentAP = new WT_VnavAutopilot(this._vnav, this._navModeSelector);
                     this._currentAP.activate();
                 }
                 //UPDATE VNAV MODE
@@ -476,8 +458,6 @@ class CJ4_FMC extends FMCMainDisplay {
                 }
             }
 
-            this.setFmaValues();
-
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MAX_CALCULATED", "knots", Simplane.getMaxSpeed(Aircraft.CJ4));
 
@@ -491,188 +471,6 @@ class CJ4_FMC extends FMCMainDisplay {
             this.updateAutopilotCooldown = this._apCooldown;
         }
     }
-
-    setFmaValues() {
-        //FIND LATERAL MODE
-        let lateralMode = "";
-        if (this._isHdgActive) {
-            lateralMode = "HDG";
-        }
-        else if (this._isNavActive) {
-            if (this._isLNavActive) {
-                lateralMode = "LNV1";
-            }
-            else {
-                lateralMode = "NAV";
-            }
-        }
-        else {
-            lateralMode = "ROLL";
-        }
-
-        //FIND VERTICAL MODE
-        let verticalMode = "";
-        const isVNAVActive = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") == 1;
-        const altLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") == 1;
-        const path = WTDataStore.get('CJ4_VNAV_PATH_STATUS', 'fail');
-        if (this._isVsActive) {
-            if (isVNAVActive) {
-                verticalMode = "VVS";
-            } else {
-                verticalMode = "VS";
-            }
-        }
-        else if (this._isFlcActive) {
-            if (isVNAVActive) {
-                verticalMode = "VFLC";
-            } else {
-                verticalMode = "FLC";
-            }
-        }
-        else if (altLock) {
-            if (isVNAVActive) {
-                verticalMode = "VALT";
-            } else {
-                verticalMode = "ALT";
-            }
-        }
-        else if (isVNAVActive && path == "active") {
-            verticalMode = "VPATH";
-        }
-        else {
-            verticalMode = "PTCH";
-        }
-
-        //VERTICAL ARMED MODES
-        let verticalArmed = "";
-        if (isVNAVActive || this._isFlcActive || this._isVsActive) {
-            const altSlotIndex = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number");
-            if (!altLock) {
-                if (altSlotIndex == 1) {
-                    verticalArmed = "ALTS";
-                }
-                else if (altSlotIndex == 2) {
-                    const altVar1 = Math.round(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet"));
-                    const altVar2 = Math.round(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet"));
-                    if (altVar1 == altVar2) {
-                        verticalArmed = "ALTS";
-                    }
-                    else {
-                        verticalArmed = "ALTV";
-                    }
-                }
-            }
-            else if (path == "armed") {
-                verticalArmed = "VPATH"
-            }
-        }
-
-        const fmaValues = {
-            lateralMode: lateralMode,
-            lateralArmed: "",
-            verticalMode: verticalMode,
-            verticalArmed: verticalArmed
-        };
-        WTDataStore.set('CJ4_fmaValues', JSON.stringify(fmaValues));
-    }
-
-    parseAutopilotModes() {
-        //PARSE CJ4 AP MODES
-        const newIsVsActive = SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1;
-        const newIsFlcActive = SimVar.GetSimVarValue("L:WT_CJ4_FLC_ON", "number") == 1;
-        const newIsHdgActive = SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") == 1;
-        const newIsNavActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
-        const newIsLnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
-
-        if (newIsHdgActive !== this._isHdgActive) {
-
-            if (!newIsNavActive) { // nav is/becomes off
-                if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean") !== newIsHdgActive) {
-                    SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
-                }
-            }
-
-            if (newIsHdgActive) { // when turning hdg on
-                SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
-
-                // is appr active?
-                const isApprActive = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "number") == 1;
-                if (isApprActive) {
-                    SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 0);
-                }
-            }
-
-            this._isHdgActive = newIsHdgActive;
-        }
-
-        if ((newIsNavActive !== this._isNavActive) || (newIsLnavActive !== this._isLNavActive)) {
-            if (!this._isHdgActive) {
-                if (newIsNavActive) { // turning NAV on
-                    if (newIsLnavActive) { // in lnav/FMS
-                        SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
-                        if (!SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean")) {
-                            SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 1);
-                        }
-                    } else {
-                        SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
-                        if (!SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean")) {
-                            SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 1);
-                        }
-                    }
-
-                    // is appr active?
-                    const isApprActive = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "number") == 1;
-                    if (isApprActive) {
-                        SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 0);
-                    }
-                } else {
-                    if (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean")) {
-                        SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 0);
-                    }
-                    SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
-                    if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean")) {
-                        SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
-                    }
-                }
-            }
-
-            this._isNavActive = newIsNavActive;
-            this._isLNavActive = newIsLnavActive;
-        }
-
-        const newSimVsValue = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") == 1;
-
-        if (newIsVsActive !== this._isVsActive) {
-            if (!newIsFlcActive) {
-                if (newIsVsActive) {
-                    //Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, Simplane.getVerticalSpeed());
-                    SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
-                }
-                if (newSimVsValue !== newIsVsActive) {
-                    SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
-                }
-            }
-            this._isVsActive = newIsVsActive;
-        } else if (this._isVsActive == true && newSimVsValue == false) {
-            SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
-            this._isVsActive = false;
-        }
-
-        const newSimFlcValue = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "number") == 1;
-        if (newIsFlcActive !== this._isFlcActive) {
-            if (!this._isVsActive) {
-                if (newSimFlcValue !== newIsFlcActive) {
-                    SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE", "number", 1);
-                }
-            }
-            this._isFlcActive = newIsFlcActive;
-        } else if (newIsFlcActive == true && newSimFlcValue == false) {
-            SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", 0);
-            this._isFlcActive = false;
-        }
-    }
-
-
 
     //add new method to find correct runway designation (with leading 0)
     getRunwayDesignation(selectedRunway) {
