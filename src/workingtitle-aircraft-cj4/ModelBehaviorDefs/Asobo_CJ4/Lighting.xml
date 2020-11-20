@@ -1,6 +1,21 @@
 <ModelBehaviors>
 	<!-- Lights ################################################################ -->
 
+    <Template Name="ASOBO_LIGHTING_Switch_Light_Template">
+        <DefaultTemplateParameters>
+            <ID>1</ID>
+            <SIMVAR_INDEX>0</SIMVAR_INDEX>
+            <INTERACTION>Switch</INTERACTION>
+        </DefaultTemplateParameters>
+        <OverrideTemplateParameters>
+            <WWISE_EVENT_1>WT_light_switch_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>WT_light_switch_off</WWISE_EVENT_2>
+        </OverrideTemplateParameters>
+        <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_SubTemplate">
+        </UseTemplate>
+    </Template>
+
+
 	<!-- Alot of tears were shed constructing this template :)-->
     <Template Name="ASOBO_LIGHTING_Switch_Light_Safety_Template">
         <DefaultTemplateParameters>
