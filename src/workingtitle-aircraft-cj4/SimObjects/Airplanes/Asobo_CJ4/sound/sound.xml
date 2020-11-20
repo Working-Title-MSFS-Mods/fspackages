@@ -471,7 +471,7 @@
 		<Sound WwiseData="true" WwiseEvent="landing_light_switch_off" ViewPoint="Inside"/>
 
 		<!-- This event below will play the same sound for every soft button on the tilt panel-->
-		<Sound WwiseData="true" WwiseEvent="WT_light_switch_on" ViewPoint="Inside"/>
+		<Sound WwiseData="true" WwiseEvent="WT_soft_button_on" ViewPoint="Inside"/>
 
 		<!--- DEICE ==========================================================================================  -->
 		<Sound WwiseData="true" WwiseEvent="deice_airframe_switch_on" ViewPoint="Inside"/>

@@ -12,10 +12,9 @@
 						<ObjectRef Name="Gear" ID="{578E8A29-4A61-44C9-8BCD-ED68E7432571}" WorkUnitID="{578E8A29-4A61-44C9-8BCD-ED68E7432571}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Passenger_Announcements" ID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" WorkUnitID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Knobs" ID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" WorkUnitID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Lights" ID="{DE4AAF1A-04AB-4943-9C14-B93F78436984}" WorkUnitID="{DE4AAF1A-04AB-4943-9C14-B93F78436984}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Play_Asobo_CJ4_WT_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}" WorkUnitID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Engines" ID="{56901329-1362-4C16-9FB5-DA8711422FA8}" WorkUnitID="{56901329-1362-4C16-9FB5-DA8711422FA8}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Lights Soft Buttons" ID="{3AD3A153-CA3C-4C60-A4F7-4D9BFCA95853}" WorkUnitID="{3AD3A153-CA3C-4C60-A4F7-4D9BFCA95853}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Soft Buttons" ID="{3AD3A153-CA3C-4C60-A4F7-4D9BFCA95853}" WorkUnitID="{3AD3A153-CA3C-4C60-A4F7-4D9BFCA95853}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Battery" ID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" WorkUnitID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Switches" ID="{7AC2DAB5-0757-4DDD-B0E6-EF4B5F0A494B}" WorkUnitID="{7AC2DAB5-0757-4DDD-B0E6-EF4B5F0A494B}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Spoiler Drag" ID="{E015AA16-3DD1-4DFE-B9B2-68A021A8CFEF}" WorkUnitID="{E015AA16-3DD1-4DFE-B9B2-68A021A8CFEF}" Origin="Manual" Filter="7"/>
