@@ -3,9 +3,9 @@ class WT_MapModel {
         this._range = new WT_NumberUnit(0, WT_Unit.NMILE);
         this._optsManager = new WT_OptionsManager(this, WT_MapModel.OPTIONS_DEF);
 
-        this.addComponent(new WT_MapModelAirplaneComponent());
-        this.addComponent(new WT_MapModelWeatherComponent());
-        this.addComponent(new WT_MapModelAutopilotComponent());
+        this.addComponent(new WT_MapModelAirplaneModule());
+        this.addComponent(new WT_MapModelWeatherModule());
+        this.addComponent(new WT_MapModelAutopilotModule());
     }
 
     get range() {
@@ -47,11 +47,11 @@ WT_MapModel.OPTIONS_DEF = {
     rotation: {default: 0, auto: true}
 };
 
-class WT_MapModelComponent {
+class WT_MapModelModule {
     constructor(name) {
         this._name = name;
 
-        this._optsManager = new WT_OptionsManager(this, WT_MapModelComponent.OPTIONS_DEF);
+        this._optsManager = new WT_OptionsManager(this, WT_MapModelModule.OPTIONS_DEF);
     }
 
     get name() {
@@ -63,8 +63,8 @@ class WT_MapModelComponent {
     }
 }
 
-class WT_MapModelAirplaneComponent extends WT_MapModelComponent {
-    constructor(name = WT_MapModelAirplaneComponent.NAME_DEFAULT) {
+class WT_MapModelAirplaneModule extends WT_MapModelModule {
+    constructor(name = WT_MapModelAirplaneModule.NAME_DEFAULT) {
         super(name);
     }
 
@@ -125,10 +125,10 @@ class WT_MapModelAirplaneComponent extends WT_MapModelComponent {
         return new WT_NumberUnit(fuelFlow, WT_Unit.GPH);
     }
 }
-WT_MapModelAirplaneComponent.NAME_DEFAULT = "airplane";
+WT_MapModelAirplaneModule.NAME_DEFAULT = "airplane";
 
-class WT_MapModelWeatherComponent extends WT_MapModelComponent {
-    constructor(name = WT_MapModelWeatherComponent.NAME_DEFAULT) {
+class WT_MapModelWeatherModule extends WT_MapModelModule {
+    constructor(name = WT_MapModelWeatherModule.NAME_DEFAULT) {
         super(name);
     }
 
@@ -148,10 +148,10 @@ class WT_MapModelWeatherComponent extends WT_MapModelComponent {
         return new WT_NumberUnit(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "Celsius"), WT_Unit.CELSIUS);
     }
 }
-WT_MapModelWeatherComponent.NAME_DEFAULT = "weather";
+WT_MapModelWeatherModule.NAME_DEFAULT = "weather";
 
-class WT_MapModelAutopilotComponent extends WT_MapModelComponent {
-    constructor(name = WT_MapModelAutopilotComponent.NAME_DEFAULT) {
+class WT_MapModelAutopilotModule extends WT_MapModelModule {
+    constructor(name = WT_MapModelAutopilotModule.NAME_DEFAULT) {
         super(name);
     }
 
@@ -159,4 +159,4 @@ class WT_MapModelAutopilotComponent extends WT_MapModelComponent {
         return new WT_NumberUnit(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet"), WT_Unit.FOOT);
     }
 }
-WT_MapModelAutopilotComponent.NAME_DEFAULT = "autopilot";
+WT_MapModelAutopilotModule.NAME_DEFAULT = "autopilot";

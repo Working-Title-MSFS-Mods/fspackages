@@ -585,7 +585,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this.radius = data.model.range.ratio(data.projection.range) * data.projection.viewHeight;
         this.facing = this.facingAngleGetter.getFacingAngle(data);
 
-        let magVar = data.model.units.bearing === WT_MapModelUnitsComponent.Bearing.MAGNETIC ? data.model.airplane.magVar : 0;
+        let magVar = data.model.units.bearing === WT_MapModelUnitsModule.Bearing.MAGNETIC ? data.model.airplane.magVar : 0;
         this.rotation = data.projection.rotation + magVar;
 
         this.forwardTickAngle = this.forwardTickBearingGetter.getForwardTickBearing(data) + data.projection.rotation;
