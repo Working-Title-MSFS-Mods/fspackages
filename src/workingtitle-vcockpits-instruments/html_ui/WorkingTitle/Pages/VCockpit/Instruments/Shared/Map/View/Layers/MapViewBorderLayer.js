@@ -106,9 +106,11 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     }
 
     _processBorders(topology) {
-        this._admin0Borders = [[], [], [], []];
-        this._admin1Borders = [[], [], [], []];
+        this._admin0Borders = [];
+        this._admin1Borders = [];
         for (let i = 0; i < WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS.length; i++) {
+            this._admin0Borders.push([]);
+            this._admin1Borders.push([]);
             this._processFeaturesObject(topology, topology.objects.admin0Boundaries, this._admin0Borders[i], WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS[i], 2);
             this._processFeaturesObject(topology, topology.objects.admin0MapUnitBoundaries, this._admin0Borders[i], WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS[i], Infinity);
             this._processFeaturesObject(topology, topology.objects.admin1Boundaries, this._admin1Borders[i], WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS[i], 2);
@@ -394,13 +396,15 @@ WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS = [
     Number.MIN_VALUE,
     0.00000003,
     0.0000003,
-    0.000003
+    0.000003,
+    0.00003
 ];
 WT_MapViewBorderLayer.LOD_RESOLUTION_THRESHOLDS = [
     WT_Unit.NMILE.createNumber(0),
     WT_Unit.NMILE.createNumber(0.06),
     WT_Unit.NMILE.createNumber(0.3),
-    WT_Unit.NMILE.createNumber(0.9)
+    WT_Unit.NMILE.createNumber(0.9),
+    WT_Unit.NMILE.createNumber(3)
 ];
 WT_MapViewBorderLayer.OVERDRAW_FACTOR = 1.66421356237;
 WT_MapViewBorderLayer.DRAW_TIME_BUDGET = 5; // ms
