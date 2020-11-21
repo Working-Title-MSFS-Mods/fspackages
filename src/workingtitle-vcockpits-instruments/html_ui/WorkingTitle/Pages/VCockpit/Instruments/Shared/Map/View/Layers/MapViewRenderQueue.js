@@ -33,6 +33,8 @@ class WT_MapViewRenderQueue {
         if (this.size === 0 && renderCount > 0) {
             this.clear();
             renderer.onFinished(data);
+        } else {
+            renderer.onPaused(data);
         }
         return renderCount;
     }
