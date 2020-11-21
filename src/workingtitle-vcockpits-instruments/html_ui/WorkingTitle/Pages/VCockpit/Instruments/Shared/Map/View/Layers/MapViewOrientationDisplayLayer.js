@@ -7,9 +7,6 @@ class WT_MapViewOrientationDisplayLayer extends WT_MapViewLayer {
 
     _createHTMLElement() {
         this._displayBox = document.createElement("div");
-        this._displayBox.classList.add("orientationDisplay");
-        this._displayBox.style.position = "absolute";
-
         return this._displayBox;
     }
 
