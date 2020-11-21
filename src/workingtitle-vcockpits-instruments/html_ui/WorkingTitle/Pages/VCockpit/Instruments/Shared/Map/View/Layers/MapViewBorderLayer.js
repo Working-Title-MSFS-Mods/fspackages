@@ -1,6 +1,8 @@
 class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
-    constructor(className = WT_MapViewBorderLayer.CLASS_DEFAULT, configName = WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT) {
+    constructor(labelManager, className = WT_MapViewBorderLayer.CLASS_DEFAULT, configName = WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
+
+        this._labelManager = labelManager;
 
         this._borderLayer = new WT_MapViewCanvas(true, false);
         this.addSubLayer(this._borderLayer);
@@ -12,6 +14,9 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
             render: this._resolveDrawCall.bind(this),
             onFinished: this._finishDrawBorders.bind(this)
         };
+
+        this._labelCache = new WT_MapViewBorderLabelCache();
+        this._labelsToShow = new Set();
 
         this._loadBorderJSON(WT_MapViewBorderLayer.DATA_FILE_PATH);
 
@@ -47,6 +52,10 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         return this._isReady;
     }
 
+    get labelManager() {
+        return this._labelManager;
+    }
+
     get borderLayer() {
         return this._borderLayer;
     }
@@ -72,10 +81,17 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         return feature.properties.scalerank <= threshold;
     }
 
-    _createFeatureWrapper(feature) {
+    _createFeatureInfo(feature) {
+        let bounds = d3.geoBounds(feature);
+        // avoid +90 or -90 latitude
+        bounds[0][1] = Math.min(89.9, Math.max(-89.9, bounds[0][1]));
+        bounds[1][1] = Math.min(89.9, Math.max(-89.9, bounds[1][1]));
+
         return {
             feature: feature,
-            geoBounds: d3.geoBounds(feature)
+            geoBounds: bounds,
+            geoCentroid: d3.geoCentroid(feature),
+            geoArea: d3.geoArea(feature)
         };
     }
 
@@ -83,7 +99,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         array.push(...topojson.feature(topojson.simplify(topology, simplifyThreshold), object).features.filter(
             this._filterScaleRank.bind(this, scaleRankThreshold)
         ).map(
-            this._createFeatureWrapper.bind(this)
+            this._createFeatureInfo.bind(this)
         ));
     }
 
@@ -99,10 +115,10 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 
     _processPolygons(topology) {
         this._admin0Polygons = [];
-        this._processFeaturesObject(topology, topology.objects.admin0MapUnitPolygons, this._admin0Polygons, 0.000003);
+        this._processFeaturesObject(topology, topology.objects.admin0Polygons, this._admin0Polygons, Number.MIN_VALUE, Infinity);
 
         this._admin1Polygons = [];
-        this._processFeaturesObject(topology, topology.objects.admin1Polygons, this._admin1Polygons, 0.000003);
+        this._processFeaturesObject(topology, topology.objects.admin1Polygons, this._admin1Polygons, Number.MIN_VALUE, 2);
     }
 
     _loadData(data) {
@@ -151,24 +167,22 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     }
 
     onAttached(data) {
-        this._projectionRenderer = data.projection.createRenderer();
+        this._projectionRenderer = data.projection.createCustomRenderer();
         super.onAttached(data);
     }
 
-    _cullFeatureToDraw(data, feature) {
-        let min = data.projection.project(feature.geoBounds[0]);
-        let max = data.projection.project(feature.geoBounds[1]);
+    _cullFeatureByBounds(renderer, bounds, featureInfo) {
+        let min = renderer.project(featureInfo.geoBounds[0]);
+        let max = renderer.project(featureInfo.geoBounds[1]);
         let left = Math.min(min[0], max[0]);
         let right = Math.max(min[0], max[0]);
         let top = Math.min(min[1], max[1]);
         let bottom = Math.max(min[1], max[1]);
 
-        let clipExtent = this.projectionRenderer.projection.clipExtent();
-
-        return left <= clipExtent[1][0] &&
-               right >= clipExtent[0][0] &&
-               top < clipExtent[1][1] &&
-               bottom >= clipExtent[0][1];
+        return left <= bounds[1].x &&
+               right >= bounds[0].x &&
+               top <= bounds[1].y &&
+               bottom >= bounds[0].y;
     }
 
     _clearCanvas() {
@@ -199,7 +213,8 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     }
 
     _enqueueFeaturesToDraw(data, features, lod) {
-        for (let feature of features[lod].filter(this._cullFeatureToDraw.bind(this, data))) {
+        let clipExtent = this.projectionRenderer.viewClipExtent;
+        for (let feature of features[lod].filter(this._cullFeatureByBounds.bind(this, this.projectionRenderer, clipExtent))) {
             this.projectionRenderer.renderCanvas(feature.feature, this._bufferedContext);
         }
     }
@@ -267,6 +282,44 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 
         this._copyReferenceUpdatedToDisplayed();
         this._updateTransform(data);
+        this._updateLabels(data);
+    }
+
+    _clearLabels() {
+        for (let label of this._labelsToShow.values()) {
+            this.labelManager.remove(label);
+        }
+        this._labelsToShow.clear();
+    }
+
+    _cullLabelsToShow(data, featureInfo) {
+        if (!this._cullFeatureByBounds(this.projectionRenderer, this.projectionRenderer.viewClipExtent, featureInfo)) {
+            return false;
+        }
+
+        let viewCentroid = WT_MapProjection.xyProjectionToView(data.projection.project(featureInfo.geoCentroid));
+        let sec = 1 / Math.cos(featureInfo.geoCentroid[1] * Avionics.Utils.DEG2RAD);
+        let area = featureInfo.geoArea * data.projection.scaleFactor * data.projection.scaleFactor * sec * sec; // estimate based on mercator projection
+        let viewArea = data.projection.viewWidth * data.projection.viewHeight;
+        return this.projectionRenderer.isInView(viewCentroid, -0.05) &&
+               area < viewArea * WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MAX &&
+               area > viewArea * WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MIN;
+    }
+
+    _updateLabelsToShow(newLabelsToShow) {
+        this._clearLabels();
+        for (let label of newLabelsToShow) {
+            this._labelsToShow.add(label);
+            this.labelManager.add(label);
+        }
+    }
+
+    _updateLabels(data) {
+        let toShow = this._admin0Polygons.filter(this._cullLabelsToShow.bind(this, data));
+        if (data.model.borders.showStateBorders) {
+            toShow = toShow.concat(this._admin1Polygons.filter(this._cullLabelsToShow.bind(this, data)));
+        }
+        this._updateLabelsToShow(toShow.map(featureInfo => this._labelCache.getLabel(featureInfo)));
     }
 
     onUpdate(data) {
@@ -290,6 +343,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 
         if (isImageInvalid) {
             this._clearCanvas();
+            this._clearLabels();
         } else {
             this._updateTransform(data);
         }
@@ -302,7 +356,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 }
 WT_MapViewBorderLayer.CLASS_DEFAULT = "borderLayer";
 WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT = "border";
-WT_MapViewBorderLayer.DATA_FILE_PATH = "/WorkingTitle/Pages/VCockpit/Instruments/Shared/Map/View/Data/boundaries.json";
+WT_MapViewBorderLayer.DATA_FILE_PATH = "/WorkingTitle/Pages/VCockpit/Instruments/Shared/Map/View/Data/borders.json";
 WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS = [
     Number.MIN_VALUE,
     0.00000003,
@@ -317,6 +371,8 @@ WT_MapViewBorderLayer.LOD_RESOLUTION_THRESHOLDS = [
 ];
 WT_MapViewBorderLayer.OVERDRAW_FACTOR = 1.66421356237;
 WT_MapViewBorderLayer.DRAW_TIME_BUDGET = 5; // ms
+WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MAX = 0.75; // fraction of view area
+WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MIN = 0.005; // fraction of view area
 WT_MapViewBorderLayer.OPTIONS_DEF = {
     strokeWidth: {default: 2, auto: true},
     strokeColor: {default: "white", auto: true},
@@ -329,3 +385,70 @@ WT_MapViewBorderLayer.CONFIG_PROPERTIES = [
     "outlineWidth",
     "outlineColor",
 ];
+
+class WT_MapViewBorderLabel extends WT_MapViewSimpleTextLabel {
+    constructor(featureInfo, featureClass, text, priority) {
+        super(text, priority);
+        this._feature = featureInfo.feature;
+        this._featureClass = featureClass;
+        this._geoPosition = WT_MapProjection.latLongProjectionToGame(featureInfo.geoCentroid);
+
+        this.anchor = {x: 0.5, y: 0.5};
+    }
+
+    get feature() {
+        return this._feature;
+    }
+
+    get featureClass() {
+        return this._featureClass;
+    }
+
+    get geoPosition() {
+        return this._geoPosition;
+    }
+
+    update(data) {
+        this.position = data.projection.projectLatLong(this.geoPosition);
+
+        super.update(data);
+    }
+
+    static createFromFeature(featureInfo) {
+        let text = featureInfo.feature.properties.name;
+        let featureClass;
+        let priority;
+
+        switch (featureInfo.feature.properties.featurecla) {
+            case WT_MapViewBorderLabel.Class.ADMIN0:
+                featureClass = WT_MapViewBorderLabel.Class.ADMIN0;
+                priority = 220 + featureInfo.feature.properties.labelrank;
+                break;
+            case WT_MapViewBorderLabel.Class.ADMIN1:
+                featureClass = WT_MapViewBorderLabel.Class.ADMIN1;
+                priority = 200 + featureInfo.feature.properties.labelrank;
+                break;
+        }
+
+        return new WT_MapViewBorderLabel(featureInfo, featureClass, text, priority);
+    }
+}
+WT_MapViewBorderLabel.Class = {
+    ADMIN0: "Admin-0 map subunit",
+    ADMIN1: "Admin-1 scale rank"
+}
+
+class WT_MapViewBorderLabelCache {
+    constructor() {
+        this._cache = new Map();
+    }
+
+    getLabel(featureInfo) {
+        let existing = this._cache.get(featureInfo);
+        if (!existing) {
+            existing = WT_MapViewBorderLabel.createFromFeature(featureInfo);
+            this._cache.set(featureInfo, existing);
+        }
+        return existing;
+    }
+}
