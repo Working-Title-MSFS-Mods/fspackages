@@ -153,7 +153,7 @@ class WT_MapViewFuelRingInner extends WT_MapViewRing {
         this._optsManager.addOptions(WT_MapViewFuelRingInner.OPTIONS_DEF);
     }
 
-    _drawRingComponentToBuffer(lineWidth, strokeWidth, lineDash, centerX, centerY, radius) {
+    _applyStrokeToBuffer(lineWidth, strokeWidth, lineDash, centerX, centerY, radius) {
         this._bufferContext.lineWidth = lineWidth;
         this._bufferContext.strokeStyle = strokeWidth;
         this._bufferContext.setLineDash(lineDash);
@@ -169,14 +169,14 @@ class WT_MapViewFuelRingInner extends WT_MapViewRing {
         this._bufferContext.stroke();
     }
 
-    _drawRingComponents(centerX, centerY) {
+    _drawRingToBuffer(centerX, centerY) {
         if (this.backingWidth > 0) {
-            this._drawRingComponentToBuffer(this.backingWidth, this.backingColor, [], centerX, centerY, this.radius);
+            this._applyStrokeToBuffer(this.backingWidth, this.backingColor, [], centerX, centerY, this.radius);
         }
         if (this.outlineWidth > 0) {
-            this._drawRingComponentToBuffer(this.strokeWidth + this.outlineWidth * 2, this.outlineColor, this.outlineDash, centerX, centerY, this.radius);
+            this._applyStrokeToBuffer(this.strokeWidth + this.outlineWidth * 2, this.outlineColor, this.outlineDash, centerX, centerY, this.radius);
         }
-        this._drawRingComponentToBuffer(this.strokeWidth, this.strokeColor, this.strokeDash, centerX, centerY, this.radius);
+        this._applyStrokeToBuffer(this.strokeWidth, this.strokeColor, this.strokeDash, centerX, centerY, this.radius);
     }
 }
 WT_MapViewFuelRingInner.OPTIONS_DEF = {

@@ -299,15 +299,18 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this._needRepositionLabel = true;
     }
 
-    _drawArcToCanvas(lineWidth, strokeStyle, center, radius, angularWidth, leftTickStart, leftTickEnd, rightTickStart, rightTickEnd) {
-        this.arcLayer.context.lineWidth = lineWidth;
-        this.arcLayer.context.strokeStyle = strokeStyle;
+    _applyStrokeToContext(context, lineWidth, strokeStyle) {
+        context.lineWidth = lineWidth;
+        context.strokeStyle = strokeStyle;
+        context.stroke();
+    }
+
+    _composeArcPath(center, radius, angularWidth, leftTickStart, leftTickEnd, rightTickStart, rightTickEnd) {
         this.arcLayer.context.beginPath();
         this.arcLayer.context.moveTo(leftTickStart.x, leftTickStart.y);
         this.arcLayer.context.lineTo(leftTickEnd.x, leftTickEnd.y);
         this.arcLayer.context.arc(center.x, center.y, radius, (-angularWidth - Math.PI) / 2, (angularWidth - Math.PI) / 2);
         this.arcLayer.context.lineTo(rightTickEnd.x, rightTickEnd.y);
-        this.arcLayer.context.stroke();
     }
 
     _rotateArc() {
@@ -335,21 +338,21 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         let arcLeftTickEnd = center.add(WT_GVector2.fromPolar(this.radius, -arcAngularWidthRad / 2));
         let arcRightTickStart = center.add(WT_GVector2.fromPolar(this.radius, arcAngularWidthRad / 2));
         let arcRightTickEnd = center.add(WT_GVector2.fromPolar(this.radius + this.arcEndTickLength, arcAngularWidthRad / 2));
+        this._composeArcPath(center, this.radius, arcAngularWidthRad, arcLeftTickStart, arcLeftTickEnd, arcRightTickStart, arcRightTickEnd);
 
         if (this.arcOutlineWidth > 0) {
-            this._drawArcToCanvas(this.arcOutlineWidth * data.dpiScale, this.arcOutlineColor, center, this.radius, arcAngularWidthRad, arcLeftTickStart, arcLeftTickEnd, arcRightTickStart, arcRightTickEnd);
+            this._applyStrokeToContext(this.arcLayer.context, (this.arcSrrokeWidth + this.arcOutlineWidth * 2) * data.dpiScale, this.arcOutlineColor);
         }
+        this._applyStrokeToContext(this.arcLayer.context, this.arcStrokeWidth * data.dpiScale, this.arcStrokeColor);
 
-        this._drawArcToCanvas(this.arcStrokeWidth * data.dpiScale, this.arcStrokeColor, center, this.radius, arcAngularWidthRad, arcLeftTickStart, arcLeftTickEnd, arcRightTickStart, arcRightTickEnd);
-
-        let thick = Math.max(this.arcStrokeWidth * data.dpiScale, this.arcOutlineWidth * data.dpiScale);
+        let thick = (this.arcStrokeWidth / 2 + this.arcOutlineWidth) * data.dpiScale;
         let arcApexLeft = center.x - this.radius;
         let arcApexRight = center.x + this.radius;
         let arcApexTop = center.y - this.radius;
-        this._arcLastDrawnBounds.left = Math.min(arcApexLeft, arcLeftTickStart.x) - thick;
-        this._arcLastDrawnBounds.top = Math.min(arcApexTop, arcLeftTickStart.y) - thick;
-        this._arcLastDrawnBounds.width = Math.max(arcApexRight, arcRightTickEnd.x) + thick - this._arcLastDrawnBounds.left;
-        this._arcLastDrawnBounds.height = Math.max(arcLeftTickStart.y, arcLeftTickEnd.y) + thick - this._arcLastDrawnBounds.top;
+        this._arcLastDrawnBounds.left = Math.min(arcApexLeft, arcLeftTickStart.x) - thick - 5;
+        this._arcLastDrawnBounds.top = Math.min(arcApexTop, arcLeftTickStart.y) - thick - 5;
+        this._arcLastDrawnBounds.width = Math.max(arcApexRight, arcRightTickEnd.x) + thick + 5 - this._arcLastDrawnBounds.left;
+        this._arcLastDrawnBounds.height = Math.max(arcLeftTickStart.y, arcLeftTickEnd.y) + thick + 5 - this._arcLastDrawnBounds.top;
 
         this._needRedrawArc = false;
     }
@@ -362,10 +365,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         return {left: left, top: top, width: width, height: height};
     }
 
-    _drawBearingTicksToBuffer(lineWidth, strokeStyle, minorTicks, majorTicks) {
-        this.bearingTickLayer.buffer.context.lineWidth = lineWidth;
-        this.bearingTickLayer.buffer.context.strokeStyle = strokeStyle;
-
+    _composeBearingTicksPath(minorTicks, majorTicks) {
         this.bearingTickLayer.buffer.context.beginPath();
         for (let tick of minorTicks) {
             this.bearingTickLayer.buffer.context.moveTo(tick.start.x, tick.start.y);
@@ -375,7 +375,6 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
             this.bearingTickLayer.buffer.context.moveTo(tick.start.x, tick.start.y);
             this.bearingTickLayer.buffer.context.lineTo(tick.end.x, tick.end.y);
         }
-        this.bearingTickLayer.buffer.context.stroke();
     }
 
     _rotateBearingTicks() {
@@ -466,11 +465,12 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
             };
         }).bind(this));
 
-        if (this.arcOutlineWidth > 0) {
-            this._drawBearingTicksToBuffer(this.arcOutlineWidth * data.dpiScale, this.arcOutlineColor, minorTicks, majorTicks);
-        }
+        this._composeBearingTicksPath(minorTicks, majorTicks);
 
-        this._drawBearingTicksToBuffer(this.arcStrokeWidth * data.dpiScale, this.arcStrokeColor, minorTicks, majorTicks);
+        if (this.arcOutlineWidth > 0) {
+            this._applyStrokeToContext(this.bearingTickLayer.buffer.context, (this.arcStrokeWidth + 2 * this.arcOutlineWidth) * data.dpiScale, this.arcOutlineColor);
+        }
+        this._applyStrokeToContext(this.bearingTickLayer.buffer.context, this.arcStrokeWidth * data.dpiScale, this.arcStrokeColor);
 
         this._bearingLastDrawnBounds = this.bearingTickLayer.copyBufferToCanvas(toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height);
 
@@ -482,13 +482,10 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this.forwardTickLayer.canvas.style.transform = `rotate(${this.forwardTickAngle}deg)`;
     }
 
-    _drawForwardTickToCanvas(lineWidth, strokeStyle, begin, end) {
-        this.forwardTickLayer.context.lineWidth = lineWidth;
-        this.forwardTickLayer.context.strokeStyle = strokeStyle;
+    _composeForwardTickPath(begin, end) {
         this.forwardTickLayer.context.beginPath();
         this.forwardTickLayer.context.moveTo(begin.x, begin.y);
         this.forwardTickLayer.context.lineTo(end.x, end.y);
-        this.forwardTickLayer.context.stroke();
     }
 
     _drawForwardTick(data) {
@@ -498,17 +495,18 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         let end = begin.add(WT_GVector2.fromPolar(lengthPx, angleRad));
 
         this.forwardTickLayer.context.clearRect(this._forwardTickLastDrawnBounds.left, this._forwardTickLastDrawnBounds.top, this._forwardTickLastDrawnBounds.width, this._forwardTickLastDrawnBounds.height)
+        this._composeForwardTickPath(begin, end);
 
         if (this.arcOutlineWidth > 0) {
-            this._drawForwardTickToCanvas(this.arcOutlineWidth * data.dpiScale, this.arcOutlineColor, begin, end);
+            this._applyStrokeToContext(this.forwardTickLayer.context, (this.arcStrokeWidth + 2 * this.arcOutlineWidth) * data.dpiScale, this.arcOutlineColor);
         }
-        this._drawForwardTickToCanvas(this.arcStrokeWidth * data.dpiScale, this.arcStrokeColor, begin, end);
+        this._applyStrokeToContext(this.forwardTickLayer.context, this.arcStrokeWidth * data.dpiScale, this.arcStrokeColor);
 
         let thick = this.arcOutlineWidth + this.arcStrokeWidth / 2;
-        let drawnLeft = Math.max(0, Math.min(begin.x, end.x) - thick);
-        let drawnTop = Math.max(0, Math.min(begin.y, end.y) - thick);
-        let drawnRight = Math.min(data.projection.viewWidth, Math.max(begin.x, end.x) + thick);
-        let drawnBottom = Math.min(data.projection.viewHeight, Math.max(begin.y, end.y) + thick);
+        let drawnLeft = Math.max(0, Math.min(begin.x, end.x) - thick - 5);
+        let drawnTop = Math.max(0, Math.min(begin.y, end.y) - thick - 5);
+        let drawnRight = Math.min(data.projection.viewWidth, Math.max(begin.x, end.x) + thick + 5);
+        let drawnBottom = Math.min(data.projection.viewHeight, Math.max(begin.y, end.y) + thick + 5);
 
         this._forwardTickLastDrawnBounds.left = drawnLeft;
         this._forwardTickLastDrawnBounds.top = drawnTop;
@@ -536,8 +534,8 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
             return;
         }
 
-        let thick = Math.max(this.arcStrokeWidth * data.dpiScale, this.arcOutlineWidth * data.dpiScale);
-        let innerToOuterLength = Math.max(this.arcEndTickLength * data.dpiScale, this.forwardTickLength * data.dpiScale) + thick;
+        let thick = (this.arcStrokeWidth / 2 + this.arcOutlineWidth) * data.dpiScale;
+        let innerToOuterLength = Math.max(this.arcEndTickLength * data.dpiScale, this.forwardTickLength * data.dpiScale) + thick + 5;
         let totalRadius = this.radius + Math.max(this.arcEndTickLength * data.dpiScale, this.forwardTickLength * data.dpiScale);
         let facingRad = this.facing * Avionics.Utils.DEG2RAD;
         let leftAngleRad = (-this.arcAngularWidth / 2 + this.facing) * Avionics.Utils.DEG2RAD;
