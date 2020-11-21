@@ -326,9 +326,21 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
                area > viewArea * WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MIN;
     }
 
+    _setLabelStyles(label, fontSize, fontColor, outlineWidth, outlineColor) {
+        label.fontSize = fontSize;
+        label.fontColor = fontColor;
+        label.outlineWidth = outlineWidth;
+        label.outlineColor = outlineColor;
+    }
+
     _updateLabelsToShow(newLabelsToShow) {
         this._clearLabels();
         for (let label of newLabelsToShow) {
+            if (label.featureClass === WT_MapViewBorderLabel.Class.ADMIN0) {
+                this._setLabelStyles(label, this.countryFontSize, this.countryFontColor, this.countryFontOutlineWidth, this.countryFontOutlineColor);
+            } else {
+                this._setLabelStyles(label, this.stateFontSize, this.stateFontColor, this.stateFontOutlineWidth, this.stateFontOutlineColor);
+            }
             this._labelsToShow.add(label);
             this.labelManager.add(label);
         }
@@ -399,12 +411,30 @@ WT_MapViewBorderLayer.OPTIONS_DEF = {
     strokeColor: {default: "white", auto: true},
     outlineWidth: {default: 0, auto: true},
     outlineColor: {default: "black", auto: true},
+
+    countryFontSize: {default: 25, auto: true},
+    countryFontColor: {default: "white", auto: true},
+    countryFontOutlineWidth: {default: 6, auto: true},
+    countryFontOutlineColor: {default: "black", auto: true},
+
+    stateFontSize: {default: 20, auto: true},
+    stateFontColor: {default: "white", auto: true},
+    stateFontOutlineWidth: {default: 6, auto: true},
+    stateFontOutlineColor: {default: "black", auto: true}
 };
 WT_MapViewBorderLayer.CONFIG_PROPERTIES = [
     "strokeWidth",
     "strokeColor",
     "outlineWidth",
     "outlineColor",
+    "countryFontSize",
+    "countryFontColor",
+    "countryFontOutlineWidth",
+    "countryFontOutlineColor",
+    "stateFontSize",
+    "stateFontColor",
+    "stateFontOutlineWidth",
+    "stateFontOutlineColor",
 ];
 
 class WT_MapViewBorderLabel extends WT_MapViewSimpleTextLabel {
