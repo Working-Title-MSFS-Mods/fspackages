@@ -18,7 +18,9 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
         return [
             "vspeed",
             "selected_vspeed",
-            "selected_vspeed_active"
+            "selected_vspeed_active",
+            "vnav_vspeed",
+            "vnav_vspeed_active"
         ];
     }
     static get observedAttributes() {
@@ -697,9 +699,8 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                 this.updateVSpeed(vSpeed);
                 break;
             case "selected_vspeed_active":
-                let vnavActive = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
                 if (this.selectedCursorSVG) {
-                    if (newValue == "true" || vnavActive != 1)
+                    if (newValue == "true")
                         this.selectedCursorSVG.setAttribute("visibility", "visible");
                     else
                         this.selectedCursorSVG.setAttribute("visibility", "hidden");
@@ -709,28 +710,21 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                 let selVSpeed = parseFloat(newValue);
                 this.updateSelectedVSpeed(selVSpeed);
                 break;
+            case "vnav_vspeed_active":
+                if (this.pinkDonut) {
+                    if (newValue == "true")
+                        this.pinkDonut.setAttribute("visibility", "visible");
+                    else
+                        this.pinkDonut.setAttribute("visibility", "hidden");
+                }
+                break;
+            case "vnav_vspeed":
+                let vNavVSpeed = parseFloat(newValue);
+                this.updateSelectedVSpeed(vNavVSpeed);
+                break;
         }
     }
     updateVSpeed(_speed) {
-
-        let vnavActiveDonut = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
-        let vSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
-        let altLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") == 1;
-
-        
-        if (this.gradSpeeds && this.selectedCursorSVG && vnavActiveDonut == 2 && !altLock) {
-            this.pinkDonut.setAttribute("visibility", "visible");
-            let height = this.heightFromSpeed(vSpeed);
-            let posY = 0;
-            if (vSpeed >= 0)
-                posY = this.cursorPosY2 - height;
-            else
-                posY = this.cursorPosY2 + height;
-            this.pinkDonut.setAttribute("transform", "translate(0 " + (posY - this.pinkDonutOffsetY) + ")");
-        } else {
-            this.pinkDonut.setAttribute("visibility", "hidden");
-        }
-
         if (this.gradSpeeds) {
             {
                 let vSpeed = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, _speed));
@@ -806,8 +800,6 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
         }
     }
     updateSelectedVSpeed(_speed) {
-
-
         if (this.gradSpeeds && this.selectedCursorSVG) {
             let vSpeed = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, _speed));
             let height = this.heightFromSpeed(vSpeed);
@@ -819,6 +811,19 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.selectedCursorSVG.setAttribute("transform", "translate(0 " + (posY - this.selectedCursorOffsetY) + ")");
         }
     }
+
+    updateVNavVSpeed(_speed) {
+        if (this.gradSpeeds && this.selectedCursorSVG) {
+            let height = this.heightFromSpeed(_speed);
+            let posY = 0;
+            if (_speed >= 0)
+                posY = this.cursorPosY2 - height;
+            else
+                posY = this.cursorPosY2 + height;
+            this.pinkDonut.setAttribute("transform", "translate(0 " + (posY - this.pinkDonutOffsetY) + ")");
+        }
+    }
+
     heightFromSpeed(_speed) {
         var absSpeed = Math.abs(_speed);
         var height = 0;

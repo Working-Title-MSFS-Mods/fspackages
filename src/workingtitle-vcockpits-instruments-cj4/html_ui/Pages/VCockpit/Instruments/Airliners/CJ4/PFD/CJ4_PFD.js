@@ -569,15 +569,28 @@ class CJ4_VSpeed extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
+
+        const fmaValues = JSON.parse(WTDataStore.get('CJ4_fmaValues', '{ }'));
+
         var vSpeed = Math.round(Simplane.getVerticalSpeed());
         this.vsi.setAttribute("vspeed", vSpeed.toString());
-        if (Simplane.getAutoPilotVerticalSpeedHoldActive()) {
-            var selVSpeed = Math.round(Simplane.getAutoPilotVerticalSpeedHoldValue());
+
+        if (Simplane.getAutoPilotVerticalSpeedHoldActive() && fmaValues.verticalMode !== 'VPATH') {
+            let selVSpeed = Math.round(Simplane.getAutoPilotVerticalSpeedHoldValue());
             this.vsi.setAttribute("selected_vspeed", selVSpeed.toString());
             this.vsi.setAttribute("selected_vspeed_active", "true");
         }
         else {
             this.vsi.setAttribute("selected_vspeed_active", "false");
+        }
+
+        if (Simplane.getAutoPilotVerticalSpeedHoldActive() && fmaValues.verticalMode === 'VPATH') {
+            let selVSpeed = Math.round(Simplane.getAutoPilotVerticalSpeedHoldValue());
+            this.vsi.setAttribute("vnav_vspeed", selVSpeed.toString());
+            this.vsi.setAttribute("vnav_vspeed_active", "true");
+        }
+        else {
+            this.vsi.setAttribute("vnav_vspeed_active", "false");
         }
     }
     onExit() {
