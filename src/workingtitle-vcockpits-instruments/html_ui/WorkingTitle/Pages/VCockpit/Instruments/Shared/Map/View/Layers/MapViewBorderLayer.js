@@ -36,8 +36,11 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
             rotation: 0
         };
 
+        this._optsManager = new WT_OptionsManager(this, WT_MapViewBorderLayer.OPTIONS_DEF);
+
         this._isReady = false;
         this._lastShowStateBorders = false;
+        this._viewSizeChanged = false;
     }
 
     get isReady() {
@@ -135,17 +138,21 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this.borderLayer.canvas.style.height = `${size}px`;
     }
 
+    onConfigLoaded(data) {
+        for (let property of WT_MapViewBorderLayer.CONFIG_PROPERTIES) {
+            this._setPropertyFromConfig(property);
+        }
+    }
+
     onViewSizeChanged(data) {
         super.onViewSizeChanged(data);
         this._updateCanvasSize(data);
+        this._viewSizeChanged = true;
     }
 
     onAttached(data) {
         this._projectionRenderer = data.projection.createRenderer();
         super.onAttached(data);
-
-        this.borderLayer.buffer.context.lineWidth = 2;
-        this.borderLayer.buffer.context.strokeStyle = "white";
     }
 
     _cullFeatureToDraw(data, feature) {
@@ -242,8 +249,18 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._renderQueue.resume(this._renderer, data);
     }
 
-    _finishDrawBorders(data) {
+    _applyStrokeToBuffer(lineWidth, strokeColor) {
+        this.borderLayer.buffer.context.lineWidth = lineWidth;
+        this.borderLayer.buffer.context.strokeStyle = strokeColor;
         this.borderLayer.buffer.context.stroke();
+    }
+
+    _finishDrawBorders(data) {
+        if (this.outlineWidth > 0) {
+            this._applyStrokeToBuffer((this.strokeWidth + 2 * this.outlineWidth) * data.dpiScale, this.outlineColor);
+        }
+        this._applyStrokeToBuffer(this.strokeWidth * data.dpiScale, this.strokeColor);
+
         this.borderLayer.buffer.context.resetTransform();
         this.borderLayer.context.clearRect(0, 0, this.borderLayer.width, this.borderLayer.height);
         this.borderLayer.copyBufferToCanvas();
@@ -300,3 +317,15 @@ WT_MapViewBorderLayer.LOD_RESOLUTION_THRESHOLDS = [
 ];
 WT_MapViewBorderLayer.OVERDRAW_FACTOR = 1.66421356237;
 WT_MapViewBorderLayer.DRAW_TIME_BUDGET = 5; // ms
+WT_MapViewBorderLayer.OPTIONS_DEF = {
+    strokeWidth: {default: 2, auto: true},
+    strokeColor: {default: "white", auto: true},
+    outlineWidth: {default: 0, auto: true},
+    outlineColor: {default: "black", auto: true},
+};
+WT_MapViewBorderLayer.CONFIG_PROPERTIES = [
+    "strokeWidth",
+    "strokeColor",
+    "outlineWidth",
+    "outlineColor",
+];
