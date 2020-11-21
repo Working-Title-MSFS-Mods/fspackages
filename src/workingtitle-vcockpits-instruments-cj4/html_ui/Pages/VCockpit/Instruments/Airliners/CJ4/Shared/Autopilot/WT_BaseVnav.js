@@ -35,6 +35,7 @@ class WT_BaseVnav {
         this._activeWaypointChangedvnavTargetChanged = false;
         this._valuesUpdated = false;
         this._vnavConstraintWaypoint = undefined;
+        this._vnavConstraintType = undefined;
         this._firstApproachWaypointConstraint = undefined;
 
         this._setDestination = undefined;
@@ -102,6 +103,7 @@ class WT_BaseVnav {
                         if (wpt.legAltitudeDescription == 1 || wpt.legAltitudeDescription == 3 || wpt.legAltitudeDescription == 4) {
                             this._vnavConstraintAltitude = wpt.legAltitude1;
                             this._vnavConstraintWaypoint = wpt;
+                            this._vnavConstraintType = "below";
                             break;
                         }
                     }
@@ -109,36 +111,30 @@ class WT_BaseVnav {
                         if (wpt.legAltitudeDescription == 1 || wpt.legAltitudeDescription == 2) {
                             this._vnavConstraintAltitude = wpt.legAltitude1;
                             this._vnavConstraintWaypoint = wpt;
+                            this._vnavConstraintType = "above";
                             break;
                         }
                         else if (wpt.legAltitudeDescription == 4) {
                             this._vnavConstraintAltitude = wpt.legAltitude2;
                             this._vnavConstraintWaypoint = wpt;
+                            this._vnavConstraintType = "above";
                             break;
                         }
                     }
                     else {
                         this._vnavConstraintAltitude = undefined;
                         this._vnavConstraintWaypoint = undefined;
+                        this._vnavConstraintType = undefined;
                     }
                 }
             }
+
             //SET CURRENT CONSTRAINT ALTITUDE SIMVAR -- This only needs to run when active waypoint changes
-            if (this._vnavConstraintAltitude && this._vnavConstraintWaypoint) {
-                if (this._vnavConstraintWaypoint.cumulativeDistanceInFP - (this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist) < 40) {
-                    SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", Math.round(this._vnavConstraintAltitude));
-                }
-                else {
-                    SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
-                }
-            }
-            else {
-                SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
-            }
+            this.setConstraintAltitude();
+
 
             //BUILD VPATH DESCENT PROFILE -- This only needs to be updated when flight plan changed or when active VNAV waypoint changes
             if (this._currentFlightSegment.type != SegmentType.Departure && (this._flightPlanChanged || this._vnavTargetChanged)) {
-                this.updateValues();
                 this.buildDescentProfile();
             }
 
@@ -183,6 +179,9 @@ class WT_BaseVnav {
     }
 
     buildDescentProfile() {
+        if (this._valuesUpdated == false) {
+            this.updateValues();
+        }
         this._vnavTargetAltitude = this._vnavTargetAltitude === undefined ? (this._destination.infos.oneWayRunways[0].elevation * 3.28) + 50 : this._vnavTargetAltitude;
         this._desiredFPA = WTDataStore.get('CJ4_vpa', 3);
         if (this._setDestination != this._destination) {
@@ -202,7 +201,6 @@ class WT_BaseVnav {
                 }
             }
         }
-
         //PLAN DESCENT PROFILE
         for (let i = this.waypoints.length - 1; i >= 0; i--) {
             const waypoint = this.waypoints[i];
@@ -266,14 +264,41 @@ class WT_BaseVnav {
         this._vnavTargetWaypoint = waypoint;
     }
 
-     /**
-     * Fetch values when needed.
-     */
+    /**
+    * Fetch values when needed.
+    */
     updateValues() {
         this._altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
         this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
         this._currentDistanceInFP = this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist;
         this._valuesUpdated = true;
+    }
+
+    /**
+    * Set the constraint altitude.
+    */
+    setConstraintAltitude() {
+        //SET CURRENT CONSTRAINT ALTITUDE SIMVAR -- This only needs to run when active waypoint changes
+        if (this._valuesUpdated === false) {
+            this.updateValues();
+        }
+        let constraint = false;
+        if (this._vnavConstraintAltitude && this._vnavConstraintWaypoint) {
+            if (this._vnavConstraintWaypoint.cumulativeDistanceInFP - (this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist) < 40) {
+                let selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
+                if (this._vnavConstraintType == "above" && selectedAltitude < this._vnavConstraintAltitude) {
+                    SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", Math.round(this._vnavConstraintAltitude));
+                    constraint = true;
+                }
+                else if (this._vnavConstraintType == "below" && selectedAltitude > this._vnavConstraintAltitude) {
+                    SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", Math.round(this._vnavConstraintAltitude));
+                    constraint = true;
+                }
+            }
+        }
+        if (constraint === false) {
+            SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
+        }
     }
 
     writeDatastoreValues() {
