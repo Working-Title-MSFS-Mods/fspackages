@@ -9,6 +9,8 @@ class WT_MapProjection {
         this.__viewTargetOffset = new WT_GVector2(0, 0);
 
         this._optsManager = new WT_OptionsManager(this, WT_MapProjection.OPTIONS_DEF);
+
+        this._syncedRenderer = new WT_MapProjectionSyncedRenderer(this, this._d3Projection);
     }
 
     get name() {
@@ -128,6 +130,10 @@ class WT_MapProjection {
         return this._d3Projection.precision();
     }
 
+    get renderer() {
+        return this._syncedRenderer;
+    }
+
     _calculateRangeAtCenter(center) {
         let top = this._d3Projection.invert([center.x, center.y - this.viewHeight / 2]);
         let bottom = this._d3Projection.invert([center.x, center.y + this.viewHeight / 2]);
@@ -214,11 +220,14 @@ class WT_MapProjection {
         return this.isXYInBounds(this.projectLatLong(latLong), margin);
     }
 
-    isXYInBounds(xy, margin = 0) {
-        return (xy.x >= -this.viewWidth * margin) &&
-               (xy.y <= this.viewWidth * (1 + margin)) &&
-               (xy.y >= -this.viewHeight * margin) &&
-               (xy.y <= this.viewHeight * (1 + margin));
+    isInView(point, margin = 0) {
+        if (point.lat !== undefined && point.long !== undefined) {
+            point = this.projectLatLong(point);
+        }
+        return (point.x >= -this.viewWidth * margin) &&
+               (point.x <= this.viewWidth * (1 + margin)) &&
+               (point.y >= -this.viewHeight * margin) &&
+               (point.y <= this.viewHeight * (1 + margin));
     }
 
     offsetByViewAngle(point, distance, angle) {
@@ -277,11 +286,7 @@ class WT_MapProjection {
         return xy.add(WT_GVector2.fromPolar(distance, angle * Avionics.Utils.DEG2RAD));
     }
 
-    createSyncedRenderer() {
-        return new WT_MapProjectionSyncedRenderer(this, this._d3Projection);
-    }
-
-    createRenderer() {
+    createCustomRenderer() {
         return new WT_MapProjectionRenderer(d3[this.name]());
     }
 
