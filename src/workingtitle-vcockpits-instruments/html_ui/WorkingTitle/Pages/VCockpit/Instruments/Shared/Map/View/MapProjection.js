@@ -221,13 +221,7 @@ class WT_MapProjection {
     }
 
     isInView(point, margin = 0) {
-        if (point.lat !== undefined && point.long !== undefined) {
-            point = this.projectLatLong(point);
-        }
-        return (point.x >= -this.viewWidth * margin) &&
-               (point.x <= this.viewWidth * (1 + margin)) &&
-               (point.y >= -this.viewHeight * margin) &&
-               (point.y <= this.viewHeight * (1 + margin));
+        return this.renderer.isInView(point, margin);
     }
 
     offsetByViewAngle(point, distance, angle) {
@@ -396,6 +390,24 @@ class WT_MapProjectionRenderer {
         this.projection.clipExtent(bounds);
     }
 
+    project(point) {
+        return this.projection(point);
+    }
+
+    invert(point) {
+        return this.projection.invert(point);
+    }
+
+    projectLatLong(latLong) {
+        let projected = this.project(WT_MapProjection.latLongGameToProjection(latLong));
+        return WT_MapProjection.xyProjectionToView(projected);
+    }
+
+    invertXY(xy) {
+        let inverse = this.invert(WT_MapProjection.xyViewToProjection(xy));
+        return WT_MapProjection.latLongProjectionToGame(inverse);
+    }
+
     renderSVG(object) {
         return this._d3Path(object);
     }
@@ -411,7 +423,25 @@ class WT_MapProjectionRenderer {
     }
 
     calculateCentroid(object) {
-        return this._d3Path.centroid(object).map(WT_MapProjection.xyProjectionToView);
+        return WT_MapProjection.xyProjectionToView(this._d3Path.centroid(object));
+    }
+
+    calculateArea(object) {
+        return this._d3Path.area(object);
+    }
+
+    isInView(point, margin = 0) {
+        let clip = this.viewClipExtent;
+        let width = clip[1].x - clip[0].x;
+        let height = clip[0].y - clip[0].y;
+
+        if (point.lat !== undefined && point.long !== undefined) {
+            point = this.projectLatLong(point);
+        }
+        return (point.x >= clip[0].x - width * margin) &&
+               (point.x <= clip[1].x + width * margin) &&
+               (point.y >= clip[0].y - height * margin) &&
+               (point.y <= clip[1].y + height * margin);
     }
 }
 
@@ -472,5 +502,21 @@ class WT_MapProjectionSyncedRenderer extends WT_MapProjectionRenderer {
     }
 
     set viewClipExtent(bounds) {
+    }
+
+    project(point) {
+        return this.mapProjection.project(point);
+    }
+
+    invert(point) {
+        return this.mapProjection.invert(point);
+    }
+
+    projectLatLong(latLong) {
+        return this.mapProjection.projectLatLong(latLong);
+    }
+
+    invertXY(xy) {
+        return this.mapProjection.invertXY(xy);
     }
 }
