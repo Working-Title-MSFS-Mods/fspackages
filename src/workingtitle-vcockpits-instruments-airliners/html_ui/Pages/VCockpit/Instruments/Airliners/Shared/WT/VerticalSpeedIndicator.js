@@ -720,7 +720,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                 break;
             case "vnav_vspeed":
                 let vNavVSpeed = parseFloat(newValue);
-                this.updateSelectedVSpeed(vNavVSpeed);
+                this.updateVNavVSpeed(vNavVSpeed);
                 break;
         }
     }
