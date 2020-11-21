@@ -173,6 +173,9 @@ class CJ4_FMC extends FMCMainDisplay {
         SimVar.SetSimVarValue("L:XMLVAR_YOKEHidden1", "number", yokeHide);
         SimVar.SetSimVarValue("L:XMLVAR_YOKEHidden2", "number", yokeHide);
 
+        // set constraint altitude to 0 on flight start/FMC reboot
+        SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
+
         const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
         this.initialFuelLeft = Math.trunc(SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * fuelWeight);
         this.initialFuelRight = Math.trunc(SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * fuelWeight);
