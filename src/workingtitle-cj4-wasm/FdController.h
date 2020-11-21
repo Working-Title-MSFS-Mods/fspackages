@@ -62,7 +62,7 @@ private:
     double getDesiredThrottle(int idx, double deltaTime) {
         double throttleLeverPerc = (this->throttleAxis[idx] + 16384) / 32768.0;
         double throttleExp = pow(throttleLeverPerc, 3.5);
-        double targetThrust = (3400 * throttleExp); // flat target thrust
+        double targetThrust = (3600 * throttleExp); // flat target thrust
 
         if (!enabled) {
             return throttleLeverPerc * 100;
@@ -90,7 +90,7 @@ private:
         case CRU: {
             double cruThrPerc = (this->throttleAxis[idx] + 16384) / 25444.0; // -16384 -> 9060
             double cruThrExp = pow(cruThrPerc, 3.5);
-            targetThrust = (3400 * cruThrPerc); // flat target thrust
+            targetThrust = (3600 * cruThrPerc); // flat target thrust
             if ((maxDensityThrust < targetThrust)) {
                 targetThrust = (maxDensityThrust * cruThrPerc); // TODO 100% = 0 -> CRU
             }
