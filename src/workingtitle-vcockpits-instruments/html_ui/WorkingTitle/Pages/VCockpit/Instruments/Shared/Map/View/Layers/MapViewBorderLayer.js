@@ -12,6 +12,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._renderer = {
             canRender: this._canContinueRender.bind(this),
             render: this._resolveDrawCall.bind(this),
+            onPaused: this._updateDrawBorders.bind(this),
             onFinished: this._finishDrawBorders.bind(this)
         };
 
@@ -46,6 +47,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._isReady = false;
         this._lastShowStateBorders = false;
         this._viewSizeChanged = false;
+        this._drawUnfinishedBorders = false;
     }
 
     get isReady() {
@@ -254,6 +256,10 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
             this._enqueueFeaturesToDraw(data, this._admin1Borders, lod);
         }
 
+        if (this._drawUnfinishedBorders) {
+            this._copyReferenceUpdatedToDisplayed();
+        }
+
         this.borderLayer.buffer.context.resetTransform();
         this.borderLayer.buffer.context.clearRect(0, 0, this.borderLayer.width, this.borderLayer.height);
         this.borderLayer.buffer.context.beginPath();
@@ -270,7 +276,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this.borderLayer.buffer.context.stroke();
     }
 
-    _finishDrawBorders(data) {
+    _drawBordersToBuffer(data) {
         if (this.outlineWidth > 0) {
             this._applyStrokeToBuffer((this.strokeWidth + 2 * this.outlineWidth) * data.dpiScale, this.outlineColor);
         }
@@ -279,10 +285,24 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this.borderLayer.buffer.context.resetTransform();
         this.borderLayer.context.clearRect(0, 0, this.borderLayer.width, this.borderLayer.height);
         this.borderLayer.copyBufferToCanvas();
+    }
 
-        this._copyReferenceUpdatedToDisplayed();
+    _updateDrawBorders(data) {
+        if (this._drawUnfinishedBorders) {
+            this._drawBordersToBuffer(data);
+            this._updateTransform(data);
+        }
+    }
+
+    _finishDrawBorders(data) {
+        this._drawBordersToBuffer(data);
+
+        if (!this._drawUnfinishedBorders) {
+            this._copyReferenceUpdatedToDisplayed();
+        }
         this._updateTransform(data);
         this._updateLabels(data);
+        this._drawUnfinishedBorders = false;
     }
 
     _clearLabels() {
@@ -344,6 +364,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         if (isImageInvalid) {
             this._clearCanvas();
             this._clearLabels();
+            this._drawUnfinishedBorders = true;
         } else {
             this._updateTransform(data);
         }
