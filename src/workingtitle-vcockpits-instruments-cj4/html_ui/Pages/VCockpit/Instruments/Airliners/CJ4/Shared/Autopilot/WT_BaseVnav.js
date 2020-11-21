@@ -35,6 +35,7 @@ class WT_BaseVnav {
         this._activeWaypointChangedvnavTargetChanged = false;
         this._valuesUpdated = false;
         this._vnavConstraintWaypoint = undefined;
+        this._firstApproachWaypointConstraint = undefined;
 
         this._setDestination = undefined;
         this._newPath = false;
@@ -169,6 +170,7 @@ class WT_BaseVnav {
             this._activeWaypointChanged = false;
             this._lastActiveWaypointIdent = this._activeWaypoint.ident;
             this.writeMonitorValues(); //CAN BE REMOVED AFTER WE'RE DONE WITH MONITORING
+            this.writeDatastoreValues(); //CAN BE REMOVED AFTER WE'RE DONE WITH MONITORING
         }
         else {
             //TODO: DO WE NEED TO FLAG WHEN NO VNAV IS BEING CALCULATED ANYWHERE?
@@ -187,12 +189,36 @@ class WT_BaseVnav {
             this._setDestination = this._destination; //IF NO DESTINATION RECORDED, RECORD IT SO WE CAN DETERMINE WHEN A NEW DESTINATION IS SET
             this._newPath = true;
         }
+        //FIND FIRST WAYPOINT ON APPROACH WITH CONSTRAINT
+        this._firstApproachWaypointConstraint = undefined;
+        let approachWaypoints = this._fpm.getApproachWaypoints();
+        if (approachWaypoints) {
+            for (let i = 0; i < approachWaypoints.length; i++) {
+                const waypoint = approachWaypoints[i];
+                let altDesc = waypoint.legAltitudeDescription;
+                if (altDesc == 1 || altDesc == 2 || altDesc == 4) {
+                    this._firstApproachWaypointConstraint = waypoint;
+                    break;
+                }
+            }
+        }
 
         //PLAN DESCENT PROFILE
         for (let i = this.waypoints.length - 1; i >= 0; i--) {
             const waypoint = this.waypoints[i];
             let altDesc = waypoint.legAltitudeDescription;
-            if (altDesc == 1 && waypoint.legAltitude1 > 0) { //AT CASE
+            if (this._firstApproachWaypointConstraint && waypoint == this._firstApproachWaypointConstraint) { // FIRST APPROACH WAYPOINT WITH CONSTRAINT
+                if (altDesc == 4) {
+                    this._vnavTargetAltitude = waypoint.legAltitude2;
+                }
+                else {
+                    this._vnavTargetAltitude = waypoint.legAltitude1;
+                }
+                this._vnavTargetDistance = (waypoint === this._activeWaypoint) ? this._activeWaypointDist : waypoint.cumulativeDistanceInFP - this._currentDistanceInFP;
+                this._topOfDescent = ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
+                this._vnavTargetWaypoint = waypoint;
+            }
+            else if (altDesc == 1 && waypoint.legAltitude1 > 0) { //AT CASE
                 this._vnavTargetAltitude = waypoint.legAltitude1;
                 this._vnavTargetDistance = (waypoint === this._activeWaypoint) ? this._activeWaypointDist : waypoint.cumulativeDistanceInFP - this._currentDistanceInFP;
                 this._topOfDescent = ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
@@ -267,9 +293,9 @@ class WT_BaseVnav {
     }
 
     writeMonitorValues() {
-        // const monitorValues = {
-        //     vnavTargetWaypointIdent: this._vnavTargetWaypoint.ident,
-        // };
+        const monitorValues = {
+            vnavTargetWaypointIdent: this._vnavTargetWaypoint.ident,
+        };
         if (this._vnavTargetWaypoint) {
             WTDataStore.set('CJ4_vnavTargetWaypoint', this._vnavTargetWaypoint.ident);
         }
