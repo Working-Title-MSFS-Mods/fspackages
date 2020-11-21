@@ -93,7 +93,7 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
         let position = this.position;
         let anchor = this.anchor;
 
-        context.font = `${this.fontSize}px ${this.font}`;
+        context.font = `${this.fontSize * data.dpiScale}px ${this.font}`;
         let width = context.measureText(text).width;
         let height = this.fontSize;
 
