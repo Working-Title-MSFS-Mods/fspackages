@@ -29,9 +29,10 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         }
     }
 
-    _setContextStyle(lineWidth, strokeStyle) {
+    _applyStrokeToCanvas(lineWidth, strokeStyle) {
         this.arcLayer.context.lineWidth = lineWidth;
         this.arcLayer.context.strokeStyle = strokeStyle;
+        this.arcLayer.context.stroke();
     }
 
     _calculateSmoothingFactor(data) {
@@ -56,11 +57,9 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         this.arcLayer.context.beginPath();
         this.arcLayer.context.arc(center.x, center.y, radius, startAngle * Avionics.Utils.DEG2RAD - Math.PI / 2, endAngle * Avionics.Utils.DEG2RAD - Math.PI / 2);
         if (this.outlineWidth > 0) {
-            this._setContextStyle((this.strokeWidth + 2 * this.outlineWidth) * data.dpiScale, this.outlineColor);
-            this.arcLayer.context.stroke();
+            this._applyStrokeToCanvas((this.strokeWidth + 2 * this.outlineWidth) * data.dpiScale, this.outlineColor);
         }
-        this._setContextStyle(this.strokeWidth * data.dpiScale, this.strokeColor);
-        this.arcLayer.context.stroke();
+        this._applyStrokeToCanvas(this.strokeWidth * data.dpiScale, this.strokeColor);
 
         let start = center.add(WT_GVector2.fromPolar(radius, startAngle * Avionics.Utils.DEG2RAD));
         let end = center.add(WT_GVector2.fromPolar(radius, endAngle * Avionics.Utils.DEG2RAD));

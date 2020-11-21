@@ -230,20 +230,20 @@ class WT_MapViewRing {
         return {left: toDrawLeft, top: toDrawTop, width: toDrawWidth, height: toDrawHeight};
     }
 
-    _drawRingComponentToBuffer(lineWidth, strokeWidth, lineDash, centerX, centerY, radius) {
+    _applyStrokeToBuffer(lineWidth, strokeWidth, lineDash) {
         this._bufferContext.lineWidth = lineWidth;
         this._bufferContext.strokeStyle = strokeWidth;
         this._bufferContext.setLineDash(lineDash);
-        this._bufferContext.beginPath();
-        this._bufferContext.arc(centerX, centerY, radius, 0, Math.PI * 2);
         this._bufferContext.stroke();
     }
 
-    _drawRingComponents(centerX, centerY) {
+    _drawRingToBuffer(centerX, centerY) {
+        this._bufferContext.beginPath();
+        this._bufferContext.arc(centerX, centerY, this.radius, 0, Math.PI * 2);
         if (this.outlineWidth > 0) {
-            this._drawRingComponentToBuffer(this.strokeWidth + this.outlineWidth * 2, this.outlineColor, this.outlineDash, centerX, centerY, this.radius);
+            this._applyStrokeToBuffer(this.strokeWidth + this.outlineWidth * 2, this.outlineColor, this.outlineDash);
         }
-        this._drawRingComponentToBuffer(this.strokeWidth, this.strokeColor, this.strokeDash, centerX, centerY, this.radius);
+        this._applyStrokeToBuffer(this.strokeWidth, this.strokeColor, this.strokeDash);
     }
 
     draw(bounds) {
@@ -264,7 +264,7 @@ class WT_MapViewRing {
         let centerX = center.x - bounds.left;
         let centerY = center.y - bounds.top;
 
-        this._drawRingComponents(centerX, centerY);
+        this._drawRingToBuffer(centerX, centerY);
 
         this._lastDrawnBounds = this._calculateToDrawBounds(centerX, centerY, this.radius, bounds);
 

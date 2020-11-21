@@ -54,11 +54,6 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         this._projectionRenderer = data.projection.createSyncedRenderer();
     }
 
-    _setBufferStyle(lineWidth, strokeStyle) {
-        this.vectorLayer.buffer.context.lineWidth = lineWidth;
-        this.vectorLayer.buffer.context.strokeStyle = strokeStyle;
-    }
-
     _calculateSmoothingFactor(data) {
         let dt = data.currentTime / 1000 - this._lastTime;
         if (dt > WT_MapViewTrackVectorLayer.SMOOTHING_MAX_TIME_DELTA) {
@@ -127,10 +122,8 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         return points;
     }
 
-    _drawPointsToBuffer(points, lineWidth, strokeStyle) {
-        this._setBufferStyle(lineWidth, strokeStyle);
+    _composeVectorPath(points) {
         this.vectorLayer.buffer.context.beginPath();
-
         let i = 0;
         let currentPoint = points[i++];
         this.vectorLayer.buffer.context.moveTo(currentPoint.x, currentPoint.y);
@@ -138,7 +131,11 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
             this.vectorLayer.buffer.context.lineTo(currentPoint.x, currentPoint.y);
             currentPoint = points[i++];
         }
+    }
 
+    _applyStrokeToBuffer(lineWidth, strokeStyle) {
+        this.vectorLayer.buffer.context.lineWidth = lineWidth;
+        this.vectorLayer.buffer.context.strokeStyle = strokeStyle;
         this.vectorLayer.buffer.context.stroke();
     }
 
@@ -147,10 +144,11 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
 
         this.vectorLayer.buffer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
         this.vectorLayer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
+        this._composeVectorPath(points);
         if (this.outlineWidth > 0) {
-            this._drawPointsToBuffer(points, (this.outlineWidth * 2 + this.strokeWidth) * data.dpiScale, this.outlineColor);
+            this._applyStrokeToBuffer((this.outlineWidth * 2 + this.strokeWidth) * data.dpiScale, this.outlineColor);
         }
-        this._drawPointsToBuffer(points, this.strokeWidth * data.dpiScale, this.strokeColor);
+        this._applyStrokeToBuffer(this.strokeWidth * data.dpiScale, this.strokeColor);
 
         let thick = (this.outlineWidth + this.strokeWidth / 2) * data.dpiScale;
         let toDrawLeft = Math.max(0, Math.min(...points.map(point => point.x)) - thick - 5);
@@ -167,13 +165,6 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         };
     }
 
-    _drawGeoJSONToBuffer(geoJSON, outlineWidth, strokeStyle) {
-        this._setBufferStyle(outlineWidth, strokeStyle);
-        this.vectorLayer.buffer.context.beginPath();
-        this.projectionRenderer.renderCanvas(geoJSON, this.vectorLayer.buffer.context);
-        this.vectorLayer.buffer.context.stroke();
-    }
-
     _drawSimpleVector(data) {
         let planePos = data.model.airplane.position;
         let gs = data.model.airplane.groundSpeed.asUnit(WT_Unit.KNOT);
@@ -187,10 +178,12 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         this.vectorLayer.buffer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
         this.vectorLayer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
+        this.vectorLayer.buffer.context.beginPath();
+        this.projectionRenderer.renderCanvas(geoJSON, this.vectorLayer.buffer.context);
         if (this.outlineWidth > 0) {
-            this._drawGeoJSONToBuffer(geoJSON, (this.outlineWidth * 2 + this.strokeWidth) * data.dpiScale, this.outlineColor);
+            this._applyStrokeToBuffer((this.outlineWidth * 2 + this.strokeWidth) * data.dpiScale, this.outlineColor);
         }
-        this._drawGeoJSONToBuffer(geoJSON, this.strokeWidth * data.dpiScale, this.strokeColor);
+        this._applyStrokeToBuffer(this.strokeWidth * data.dpiScale, this.strokeColor);
 
         let bounds = this.projectionRenderer.calculateBounds(geoJSON);
         let thick = (this.outlineWidth + this.strokeWidth / 2) * data.dpiScale;
