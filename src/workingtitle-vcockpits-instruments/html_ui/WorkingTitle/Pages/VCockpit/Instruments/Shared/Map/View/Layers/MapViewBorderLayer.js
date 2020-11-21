@@ -1,6 +1,6 @@
 class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     constructor(className = WT_MapViewBorderLayer.CLASS_DEFAULT, configName = WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT) {
-        super(className, configName, true);
+        super(className, configName);
 
         this._borderLayer = new WT_MapViewCanvas(true, false);
         this.addSubLayer(this._borderLayer);
