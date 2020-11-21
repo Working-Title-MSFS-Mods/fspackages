@@ -874,6 +874,14 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     let gsiFeet = -SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
                     let gsi = gsiFeet / 3.28;
                     let delta = 0.5 + (gsi / 150.0) / 2;
+                    
+                    // This is to double the sensitivity when you are on an approach.  But we can't call from FPM in here.  Need a simvar
+                    /*if (flightPlanManager.getSegmentFromWaypoint(activeWaypoint) == SegmentType.Approach) {
+                        let delta = 0.5 + (gsi / 150.0);
+                    } else {
+                        let delta = 0.5 + (gsi / 150.0) / 2;
+                    }*/
+                
                     let y = this.gs_cursorMinY + (this.gs_cursorMaxY - this.gs_cursorMinY) * delta;
                     y = Math.min(this.gs_cursorMinY, Math.max(this.gs_cursorMaxY, y));
                     this.gs_cursorGroup.setAttribute("transform", "translate(" + this.gs_cursorPosX + ", " + y + ")");
