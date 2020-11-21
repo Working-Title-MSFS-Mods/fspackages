@@ -27,10 +27,6 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         return this._vectorLayer;
     }
 
-    get projectionRenderer() {
-        return this._projectionRenderer;
-    }
-
     get dynamicLookaheadMax() {
         return this._dynamicLookaheadMax.copy();
     }
@@ -47,11 +43,6 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         for (let property of WT_MapViewTrackVectorLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
-    }
-
-    onAttached(data) {
-        super.onAttached(data);
-        this._projectionRenderer = data.projection.createSyncedRenderer();
     }
 
     _calculateSmoothingFactor(data) {
@@ -179,13 +170,13 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         this.vectorLayer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
         this.vectorLayer.buffer.context.beginPath();
-        this.projectionRenderer.renderCanvas(geoJSON, this.vectorLayer.buffer.context);
+        data.projection.renderer.renderCanvas(geoJSON, this.vectorLayer.buffer.context);
         if (this.outlineWidth > 0) {
             this._applyStrokeToBuffer((this.outlineWidth * 2 + this.strokeWidth) * data.dpiScale, this.outlineColor);
         }
         this._applyStrokeToBuffer(this.strokeWidth * data.dpiScale, this.strokeColor);
 
-        let bounds = this.projectionRenderer.calculateBounds(geoJSON);
+        let bounds = data.projection.renderer.calculateBounds(geoJSON);
         let thick = (this.outlineWidth + this.strokeWidth / 2) * data.dpiScale;
         let toDrawLeft = Math.max(0, bounds[0].x - thick - 5);
         let toDrawTop = Math.max(0, bounds[0].y - thick - 5);
