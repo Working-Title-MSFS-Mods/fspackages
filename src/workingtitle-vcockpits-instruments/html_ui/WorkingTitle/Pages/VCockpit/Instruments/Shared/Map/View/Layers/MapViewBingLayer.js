@@ -80,11 +80,11 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
     _updateTerrainColors(data) {
         let mode = data.model.terrain.mode;
 
-        if (data.model.airplane.isOnGround && mode === WT_MapModelTerrainComponent.TerrainMode.RELATIVE) {
-            mode = WT_MapModelTerrainComponent.TerrainMode.OFF;
+        if (data.model.airplane.isOnGround && mode === WT_MapModelTerrainModule.TerrainMode.RELATIVE) {
+            mode = WT_MapModelTerrainModule.TerrainMode.OFF;
         }
         this.bingMap.setConfig(mode);
-        if (mode === WT_MapModelTerrainComponent.TerrainMode.RELATIVE) {
+        if (mode === WT_MapModelTerrainModule.TerrainMode.RELATIVE) {
             this.bingMap.setReference(EBingReference.PLANE);
         } else {
             this.bingMap.setReference(EBingReference.SEA);
