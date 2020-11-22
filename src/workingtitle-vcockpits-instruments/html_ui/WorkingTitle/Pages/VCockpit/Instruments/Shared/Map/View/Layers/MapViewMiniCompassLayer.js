@@ -4,14 +4,24 @@ class WT_MapViewMiniCompassLayer extends WT_MapViewLayer {
     }
 
     _createHTMLElement() {
-        this._miniCompassWrapper = document.createElement("div");
-        return this._miniCompassWrapper;
+        this._miniCompassContainer = document.createElement("div");
+        return this._miniCompassContainer;
     }
 
-    get miniCompassWrapper() {
-        return this._miniCompassWrapper;
+    /**
+     * @readonly
+     * @property {HTMLDivElement} miniCompassContainer - the top-level container element for the mini compass.
+     * @type {HTMLDivElement}
+     */
+    get miniCompassContainer() {
+        return this._miniCompassContainer;
     }
 
+    /**
+     * @readonly
+     * @property {HTMLImageElement} compassIcon - the compass arrow image element.
+     * @type {HTMLImageElement}
+     */
     get compassIcon() {
         return this._compassIcon;
     }
@@ -21,7 +31,7 @@ class WT_MapViewMiniCompassLayer extends WT_MapViewLayer {
         this._compassIcon.classList.add(WT_MapViewMiniCompassLayer.ICON_IMAGE_CLASS);
         this._compassIcon.style.zIndex = 1;
         this._compassIcon.src = path;
-        this.miniCompassWrapper.appendChild(this._compassIcon);
+        this.miniCompassContainer.appendChild(this._compassIcon);
     }
 
     _initTextLayer() {
@@ -29,16 +39,22 @@ class WT_MapViewMiniCompassLayer extends WT_MapViewLayer {
         text.classList.add(WT_MapViewMiniCompassLayer.TEXT_CLASS);
         text.style.zIndex = 2;
         text.innerHTML = "N";
-        this.miniCompassWrapper.appendChild(text);
+        this.miniCompassContainer.appendChild(text);
     }
 
-    onConfigLoaded(data) {
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onConfigLoaded(state) {
         this._initIconLayer(this.config.iconPath);
         this._initTextLayer();
     }
 
-    onUpdate(data) {
-        this.compassIcon.style.transform = `rotate(${data.projection.rotation}deg)`;
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
+        this.compassIcon.style.transform = `rotate(${state.projection.rotation}deg)`;
     }
 }
 WT_MapViewMiniCompassLayer.CLASS_DEFAULT = "miniCompassLayer";

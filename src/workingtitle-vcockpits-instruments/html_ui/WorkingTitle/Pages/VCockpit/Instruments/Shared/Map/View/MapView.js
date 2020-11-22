@@ -1,3 +1,7 @@
+/**
+ * A view implementation of a navigational map. The base view only maintains a map projection and a viewing window.
+ * Additional graphical features are added to the view through the use of layers.
+ */
 class WT_MapView extends HTMLElement {
     constructor() {
         super();
@@ -12,7 +16,7 @@ class WT_MapView extends HTMLElement {
         this._lastPixelDensity = 1;
 
         this.setTargetOffsetHandler({getTargetOffset(model) {return {x: 0, y: 0}}});
-        this.setRangeInterpreter({getRangeFactor(model) {return 1}});
+        this.setRangeInterpreter({getTrueRange(model) {return model.range}});
 
         this._optsManager = new WT_OptionsManager(this, WT_MapView.OPTIONS_DEF);
     }
@@ -62,30 +66,64 @@ class WT_MapView extends HTMLElement {
         return "MapView";
     }
 
+    /**
+     * @readonly
+     * @property {Number} viewWidth - the width, in pixels, of the viewing window.
+     * @type {Number}
+     */
     get viewWidth() {
         return this.clientWidth;
     }
 
+    /**
+     * @readonly
+     * @property {Number} viewHeight - the height, in pixels, of the viewing window.
+     * @type {Number}
+     */
     get viewHeight() {
         return this.clientHeight;
     }
 
+    /**
+     * @readonly
+     * @property {Number} dpiScale - the dpi scaling factor of the viewing window.
+     * @type {Number}
+     */
     get dpiScale() {
         return this._dpiScale;
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapModel} model - the model associated with this view.
+     * @type {WT_MapModel}
+     */
     get model() {
         return this._model;
     }
 
+    /**
+     * @readonly
+     * @property {*} config - the config object for this view.
+     */
     get config() {
         return this._config;
     }
 
+    /**
+     * @readonly
+     * @property {WT_GVector2} viewPlane - the projected location of the player aircraft in the viewing window.
+     * @type {WT_GVector2}
+     */
     get viewPlane() {
         return this._viewPlane;
     }
 
+    /**
+     * @readonly
+     * @property {Number} currentTime - the current time, in milliseconds since the Epoch.
+     * @type {Number}
+     */
     get currentTime() {
         return this._currentTime;
     }
@@ -96,6 +134,10 @@ class WT_MapView extends HTMLElement {
         }
     }
 
+    /**
+     * Sets the model for this view.
+     * @param {WT_MapModel} model - a map model.
+     */
     setModel(model) {
         if (!model) {
             return;
@@ -108,20 +150,40 @@ class WT_MapView extends HTMLElement {
         }
     }
 
+    /**
+     * Sets this view's target offset handler. The target offset handler defines the target offset of this view's map projection
+     * by implementing the getTargetOffset() method. The getTargetOffset() method should return the offset of the projected location
+     * of the map's target from center of the viewing window (in pixel coordinates)
+     * @param {{getTargetOffset(model:WT_MapModel):{x:Number, y:Number}}} handler
+     */
     setTargetOffsetHandler(handler) {
         this._targetOffsetHandler = handler;
     }
 
+    /**
+     * Sets this view's range interpreter. The target offset handler defines how this view should interpret the nominal range set
+     * by the model by implementing the getTrueRange() method. The getTrueRange() method should return the top-to-bottom range
+     * that this view's map projection should use.
+     * @param {{getTrueRange(model:WT_MapModel):WT_NumberUnit}} interpreter
+     */
     setRangeInterpreter(interpreter) {
         this._rangeInterpreter = interpreter;
     }
 
+    /**
+     * Adds a layer to this map view. When added, layers form a stack, with each layer always appearing above layers added before it.
+     * @param {WT_MapViewLayer} layer - the layer to add.
+     */
     addLayer(layer) {
         let layerContainer = new WT_MapViewLayerContainer(this, layer);
         this._layers.push(layerContainer);
         layerContainer.container.style.zIndex = this._layers.length;
     }
 
+    /**
+     * Removes a layer from this map view.
+     * @param {WT_MapViewLayer} layer - the layer to remove.
+     */
     removeLayer(layer) {
         let index = this._layers.findIndex(layerContainer => layerContainer.layer === layer);
         if (index >= 0) {
@@ -129,6 +191,10 @@ class WT_MapView extends HTMLElement {
         }
     }
 
+    /**
+     * Removes a layer from this map view by index.
+     * @param {Number} index - the index of the layer to remove.
+     */
     removeLayerByIndex(index) {
         let removed = this._layers[index];
         if (removed) {
@@ -138,13 +204,6 @@ class WT_MapView extends HTMLElement {
             }
             removed.layer.config = undefined;
             this._layers.splice(index, 1);
-        }
-    }
-
-    removeLayerByName(name) {
-        let index = this._layers.findIndex(layerContainer => layerContainer.layer.name === name);
-        if (index >= 0) {
-            this.removeLayerByIndex(index);
         }
     }
 
@@ -172,7 +231,7 @@ class WT_MapView extends HTMLElement {
             _target: this.model.target,
             _viewTargetOffset: this.projection.relXYToAbsXY(this._targetOffsetHandler.getTargetOffset(this.model)),
             _rotation: this.model.rotation,
-            _range: new WT_NumberUnit(this.model.range.asUnit(WT_Unit.METER) / this._rangeInterpreter.getRangeFactor(this.model), WT_Unit.METER)
+            _range: this._rangeInterpreter.getTrueRange(this.model)
         });
 
         if (this.model.airplane) {
@@ -180,10 +239,18 @@ class WT_MapView extends HTMLElement {
         }
     }
 
+    /**
+     * Indicates whether this map view is ready to begin rendering its graphical elements. To be considered ready, the map view
+     * must have an associated model, it must have finished loading its config file, and it must have a non-zero-sized viewing window.
+     * @returns {Boolean} whether this map view is ready to begin rendering.
+     */
     isReady() {
         return this.model && this.viewWidth > 0 && this.viewHeight > 0 && this._configLoaded;
     }
 
+    /**
+     * Updates the map view. This method should be called every rendering frame.
+     */
     update() {
         if (!this.isReady()) {
             return;
@@ -219,6 +286,15 @@ WT_MapView.OPTIONS_DEF = {
 };
 WT_MapView.OPTIONS_TO_PASS = ["model", "dpiScale", "projection", "viewPlane", "currentTime"];
 
+/**
+ * @typedef {Object} WT_MapViewState
+ * @property {WT_MapModel} model - the current map model.
+ * @property {Number} dpiScale - the current dpi scale.
+ * @property {WT_MapProjection} projection - the current map projection.
+ * @property {WT_GVector2} viewPlane - the current projected position of the player aircraft in the viewing window.
+ * @property {Number} currentTime - the current time, in milliseconds since the Epoch.
+ */
+
 class WT_MapViewLayerContainer {
     constructor(view, layer) {
         this._view = view;
@@ -251,14 +327,14 @@ class WT_MapViewLayerContainer {
         return this._isInit;
     }
 
-    init(data) {
+    init(state) {
         let config = this.view.config[this.layer.configName];
         if (config) {
             this.layer.config = config;
-            this.layer.onConfigLoaded(data);
+            this.layer.onConfigLoaded(state);
         }
         this.view.appendChild(this.container);
-        this.layer.onAttached(data);
+        this.layer.onAttached(state);
         this._isInit = true;
     }
 }
