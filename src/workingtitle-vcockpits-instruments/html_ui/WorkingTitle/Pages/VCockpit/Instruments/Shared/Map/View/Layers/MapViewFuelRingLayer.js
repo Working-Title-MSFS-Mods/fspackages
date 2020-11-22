@@ -198,20 +198,20 @@ class WT_MapViewFuelRingInner extends WT_MapViewRing {
         this._optsManager.addOptions(WT_MapViewFuelRingInner.OPTIONS_DEF);
     }
 
-    _drawRingToBuffer(centerX, centerY, radius) {
+    _drawRingToCanvas(context, center, radius) {
         let half_pi = Math.PI / 2;
-        this._bufferContext.beginPath();
-        this._bufferContext.arc(centerX, centerY, radius, -half_pi, -half_pi + Math.PI);
-        this._bufferContext.moveTo(centerX, centerY - radius);
-        this._bufferContext.arc(centerX, centerY, radius, -half_pi, -half_pi + Math.PI, true);
+        context.beginPath();
+        context.arc(center.x, center.y, radius, -half_pi, -half_pi + Math.PI);
+        context.moveTo(center.x, center.y - radius);
+        context.arc(center.x, center.y, radius, -half_pi, -half_pi + Math.PI, true);
 
         if (this.backingWidth > 0) {
-            this._applyStrokeToBuffer(this.backingWidth, this.backingColor, []);
+            this._applyStrokeToContext(context, this.backingWidth, this.backingColor, []);
         }
         if (this.outlineWidth > 0) {
-            this._applyStrokeToBuffer(this.strokeWidth + this.outlineWidth * 2, this.outlineColor, this.outlineDash);
+            this._applyStrokeToContext(context, this.strokeWidth + this.outlineWidth * 2, this.outlineColor, this.outlineDash);
         }
-        this._applyStrokeToBuffer(this.strokeWidth, this.strokeColor, this.strokeDash);
+        this._applyStrokeToContext(context, this.strokeWidth, this.strokeColor, this.strokeDash);
     }
 }
 WT_MapViewFuelRingInner.OPTIONS_DEF = {
