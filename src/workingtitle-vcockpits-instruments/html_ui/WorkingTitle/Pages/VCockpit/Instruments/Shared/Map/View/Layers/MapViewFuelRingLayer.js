@@ -1,3 +1,11 @@
+/**
+ * A fuel ring. This layer draws two rings centered on the player aircraft. The outer ring marks the maximum range of the plane given the
+ * current ground speed, fuel consumption and remaining fuel onboard. The inner ring marks the distance the plane can fly until only
+ * reserve fuel is left. The inner ring also has an attached label displaying the time remaining to reserve fuel. If only reserve fuel
+ * currently remains, the inner ring is not displayed, and the outer ring (optionally) changes color. Reserve fuel is defined
+ * by the map model in terms of time of flight, not amount of fuel. The use of this layer requires the .fuelRing module to be added
+ * to the map model.
+ */
 class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
     constructor(className = WT_MapViewFuelRingLayer.CLASS_DEFAULT, configName = WT_MapViewFuelRingLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
@@ -14,14 +22,28 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
         this._lastHoursRemaining = 0;
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapViewLabeledRing} outerRing - this layer's outer ring.
+     * @type {WT_MapViewLabeledRing}
+     */
     get outerRing() {
         return this._outerRing;
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapViewLabeledRing} innerRing - this layer's inner ring.
+     * @type {WT_MapViewLabeledRing}
+     */
     get innerRing() {
         return this._innerRing;
     }
 
+    /**
+     * Updates the styling of this layer's rings.
+     * @param {Number} dpiScale - the current dpi scale of the map view.
+     */
     _updateStyles(dpiScale) {
         this.outerRing.ring.setOptions({
             strokeWidth: this.outerRingStrokeWidth * dpiScale,
@@ -41,23 +63,37 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
         });
     }
 
-    isVisible(data) {
-        return data.model.fuelRing.show;
+    /**
+     * @param {WT_MapViewState} state
+     */
+    isVisible(state) {
+        return state.model.fuelRing.show;
     }
 
-    onConfigLoaded(data) {
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onConfigLoaded(state) {
         for (let property of WT_MapViewFuelRingLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
     }
 
-    onAttached(data) {
-        super.onAttached(data);
-        this._updateStyles(data.dpiScale);
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onAttached(state) {
+        super.onAttached(state);
+        this._updateStyles(state.dpiScale);
     }
 
-    _calculateSmoothingFactor(data) {
-        let currentTimeSec = data.currentTime / 1000;
+    /**
+     * Calculates an appropriate exponential smoothing factor to use.
+     * @param {WT_MapViewState} state - the current map view state.
+     * @returns {Number} - a smoothing factor.
+     */
+    _calculateSmoothingFactor(state) {
+        let currentTimeSec = state.currentTime / 1000;
         let dt = currentTimeSec - this._lastTime;
         this._lastTime = currentTimeSec;
         if (dt > WT_MapViewFuelRingLayer.SMOOTHING_MAX_TIME_DELTA) {
@@ -67,22 +103,31 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
         }
     }
 
+    /**
+     * Applies exponential smoothing (i.e. exponential moving average) to a time fuel remaining value.
+     * @param {Number} hoursRemaining - the value to smooth.
+     * @param {Number} factor - the smoothing factor to use.
+     * @returns {Number} - the smoothed value.
+     */
     _smoothHoursRemaining(hoursRemaining, factor) {
         let smoothed = hoursRemaining * factor + this._lastHoursRemaining * (1 - factor);
         this._lastHoursRemaining = smoothed;
         return smoothed;
     }
 
-    onUpdate(data) {
-        let fob = data.model.airplane.fuelOnboard.number; // gallons
-        let fuelFlow = data.model.airplane.fuelFlowTotal.number; // gallons per hour
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
+        let fob = state.model.airplane.fuelOnboard.number; // gallons
+        let fuelFlow = state.model.airplane.fuelFlowTotal.number; // gallons per hour
 
         let hoursRemainingTotal = fob / fuelFlow;
-        let smoothingFactor = this._calculateSmoothingFactor(data);
+        let smoothingFactor = this._calculateSmoothingFactor(state);
         hoursRemainingTotal = this._smoothHoursRemaining(hoursRemainingTotal, smoothingFactor);
 
-        let hoursRemainingReserve = Math.max(0, hoursRemainingTotal - data.model.fuelRing.reserveTime.asUnit(WT_Unit.HOUR));
-        let gs = data.model.airplane.groundSpeed.number; // knots
+        let hoursRemainingReserve = Math.max(0, hoursRemainingTotal - state.model.fuelRing.reserveTime.asUnit(WT_Unit.HOUR));
+        let gs = state.model.airplane.groundSpeed.number; // knots
         if (hoursRemainingReserve > 0) {
             this.outerRing.ring.strokeColor = this.outerRingStrokeColor;
             this.innerRing.ring.show = true;
@@ -93,16 +138,16 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
             this.innerRing.label.show = false;
         }
 
-        let resolution = data.projection.viewResolution.number; //nautical miles per pixel
+        let resolution = state.projection.viewResolution.number; //nautical miles per pixel
 
-        let center = data.viewPlane;
+        let center = state.viewPlane;
         this.outerRing.center = center;
         this.outerRing.radius = gs * hoursRemainingTotal / resolution;
         this.innerRing.center = center;
         this.innerRing.radius = gs * hoursRemainingReserve / resolution;
         this.innerRing.label.time = new WT_NumberUnit(hoursRemainingReserve, WT_Unit.HOUR);
 
-        super.onUpdate(data);
+        super.onUpdate(state);
     }
 }
 WT_MapViewFuelRingLayer.CLASS_DEFAULT = "ruelRingLayer";
@@ -196,6 +241,10 @@ class WT_MapViewFuelRingLabel extends WT_MapViewRingLabel {
         });
     }
 
+    /**
+     * @property {WT_NumberUnit} time - the time to display on this label.
+     * @type {WT_NumberUnit}
+     */
     get time() {
         return this._time.copy();
     }
@@ -204,6 +253,10 @@ class WT_MapViewFuelRingLabel extends WT_MapViewRingLabel {
         this._time.copyFrom(time);
     }
 
+    /**
+     * @property {HTMLDivElement} timeElement - the HTML element used to display the time.
+     * @type {HTMLDivElement}
+     */
     get timeElement() {
         return this._timeElement;
     }
@@ -220,8 +273,11 @@ class WT_MapViewFuelRingLabel extends WT_MapViewRingLabel {
         return element;
     }
 
-    onUpdate(data) {
-        super.onUpdate(data);
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
+        super.onUpdate(state);
         this.timeElement.innerHTML = this._formatter.getFormattedString(this.time);
     }
 }

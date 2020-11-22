@@ -20,11 +20,14 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         return this._bingMap;
     }
 
-    onViewSizeChanged(data) {
-        let long = Math.max(data.projection.viewWidth, data.projection.viewHeight);
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onViewSizeChanged(state) {
+        let long = Math.max(state.projection.viewWidth, state.projection.viewHeight);
         this._size = long * WT_MapViewBingLayer.OVERDRAW_FACTOR;
-        let offsetX = (data.projection.viewWidth - this._size) / 2;
-        let offsetY = (data.projection.viewHeight - this._size) / 2;
+        let offsetX = (state.projection.viewWidth - this._size) / 2;
+        let offsetY = (state.projection.viewHeight - this._size) / 2;
 
         this.bingMap.style.left = `${offsetX}px`;
         this.bingMap.style.top = `${offsetY}px`;
@@ -32,36 +35,48 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         this.bingMap.style.height = `${this._size}px`;
     }
 
-    onConfigLoaded(data) {
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onConfigLoaded(state) {
         for (let i = 0; i < this.config[WT_MapViewBingLayer.CONFIG_BING_CONFIGS_NAME].length; i++) {
-            this.bingMap.addConfig(new WT_BingMapConfig(this.config[WT_MapViewBingLayer.CONFIG_BING_CONFIGS_NAME][i]).parse());
+            this.bingMap.addConfig(new WT_BingMapConfigParser(this.config[WT_MapViewBingLayer.CONFIG_BING_CONFIGS_NAME][i]).parse());
         }
         this.bingMap.setConfig(1);
     }
 
-    onAttached(data) {
-        this.onViewSizeChanged(data);
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onAttached(state) {
+        this.onViewSizeChanged(state);
         this._bingMap.setMode(EBingMode.PLANE);
         this._bingMap.setReference(EBingReference.SEA);
         this._bingMap.setVisible(true);
-        this._bingMap.setBingId(data.model.bingMap.bingID);
+        this._bingMap.setBingId(state.model.bingMap.bingID);
     }
 
-    _calculateDesiredRadius(data) {
-        let viewCenter = data.projection.viewCenter;
+    /**
+     * @param {WT_MapViewState} state
+     */
+    _calculateDesiredRadius(state) {
+        let viewCenter = state.projection.viewCenter;
 
-        let delta = WT_GVector2.fromPolar(data.projection.viewHeight / 2, data.projection.rotation * Avionics.Utils.DEG2RAD);
+        let delta = WT_GVector2.fromPolar(state.projection.viewHeight / 2, state.projection.rotation * Avionics.Utils.DEG2RAD);
         let viewTop = viewCenter.subtract(delta);
         let viewBottom = viewCenter.add(delta);
 
-        let top = data.projection.invertXY(viewTop);
-        let bottom = data.projection.invertXY(viewBottom);
-        return data.projection.distance(top, bottom).scale(this.size / data.projection.viewHeight * 0.5);
+        let top = state.projection.invertXY(viewTop);
+        let bottom = state.projection.invertXY(viewBottom);
+        return state.projection.distance(top, bottom).scale(this.size / state.projection.viewHeight * 0.5);
     }
 
-    _updateCenterAndRange(data) {
-        let range = this._calculateDesiredRadius(data).asUnit(WT_Unit.METER);
-        let target = data.projection.center;
+    /**
+     * @param {WT_MapViewState} state
+     */
+    _updateCenterAndRange(state) {
+        let range = this._calculateDesiredRadius(state).asUnit(WT_Unit.METER);
+        let target = state.projection.center;
         if (isNaN(range) || !target) {
             return;
         }
@@ -73,14 +88,20 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         this.bingMap.setParams(params);
     }
 
-    _updateRotation(data) {
-        this.bingMap.style.transform = `rotate(${data.projection.rotation}deg)`;
+    /**
+     * @param {WT_MapViewState} state
+     */
+    _updateRotation(state) {
+        this.bingMap.style.transform = `rotate(${state.projection.rotation}deg)`;
     }
 
-    _updateTerrainColors(data) {
-        let mode = data.model.terrain.mode;
+    /**
+     * @param {WT_MapViewState} state
+     */
+    _updateTerrainColors(state) {
+        let mode = state.model.terrain.mode;
 
-        if (data.model.airplane.isOnGround && mode === WT_MapModelTerrainModule.TerrainMode.RELATIVE) {
+        if (state.model.airplane.isOnGround && mode === WT_MapModelTerrainModule.TerrainMode.RELATIVE) {
             mode = WT_MapModelTerrainModule.TerrainMode.OFF;
         }
         this.bingMap.setConfig(mode);
@@ -91,10 +112,13 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         }
     }
 
-    onUpdate(data) {
-        this._updateCenterAndRange(data);
-        this._updateRotation(data);
-        this._updateTerrainColors(data);
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
+        this._updateCenterAndRange(state);
+        this._updateRotation(state);
+        this._updateTerrainColors(state);
     }
 }
 WT_MapViewBingLayer.CLASS_DEFAULT = "bingLayer";
@@ -102,7 +126,7 @@ WT_MapViewBingLayer.CONFIG_NAME_DEFAULT = "bingMap";
 WT_MapViewBingLayer.CONFIG_BING_CONFIGS_NAME = "bingConfigs";
 WT_MapViewBingLayer.OVERDRAW_FACTOR = Math.sqrt(2);
 
-class WT_BingMapConfig {
+class WT_BingMapConfigParser {
     constructor(config) {
         this.config = config;
     }
@@ -111,15 +135,15 @@ class WT_BingMapConfig {
         let returnValue = new BingMapsConfig();
 
         returnValue.aspectRatio = 1;
-        returnValue.resolution = WT_BingMapConfig.readPropertyFromConfig(this.config, WT_BingMapConfig.RESOLUTION_NAME, WT_BingMapConfig.RESOLUTION_DEFAULT);
-        returnValue.clearColor = WT_BingMapConfig.hextoRGB(WT_BingMapConfig.readPropertyFromConfig(this.config, WT_BingMapConfig.SKY_COLOR_NAME, WT_BingMapConfig.SKY_COLOR_DEFAULT));
+        returnValue.resolution = WT_BingMapConfigParser.readPropertyFromConfig(this.config, WT_BingMapConfigParser.RESOLUTION_NAME, WT_BingMapConfigParser.RESOLUTION_DEFAULT);
+        returnValue.clearColor = WT_BingMapConfigParser.hextoRGB(WT_BingMapConfigParser.readPropertyFromConfig(this.config, WT_BingMapConfigParser.SKY_COLOR_NAME, WT_BingMapConfigParser.SKY_COLOR_DEFAULT));
 
         let bingColors = [];
 
-        let waterColor = WT_BingMapConfig.readPropertyFromConfig(this.config, WT_BingMapConfig.WATER_COLOR_NAME, WT_BingMapConfig.WATER_COLOR_DEFAULT);
+        let waterColor = WT_BingMapConfigParser.readPropertyFromConfig(this.config, WT_BingMapConfigParser.WATER_COLOR_NAME, WT_BingMapConfigParser.WATER_COLOR_DEFAULT);
         bingColors[0] = waterColor;
 
-        let elevationColors = WT_BingMapConfig.readPropertyFromConfig(this.config, WT_BingMapConfig.ELEVATION_COLORS_NAME, WT_BingMapConfig.ELEVATION_COLORS_DEFAULT);
+        let elevationColors = WT_BingMapConfigParser.readPropertyFromConfig(this.config, WT_BingMapConfigParser.ELEVATION_COLORS_NAME, WT_BingMapConfigParser.ELEVATION_COLORS_DEFAULT);
         let curve = new Avionics.Curve();
         curve.interpolationFunction = Avionics.CurveTool.StringColorRGBInterpolation;
         for (let i = 0; i < elevationColors.length; i++) {
@@ -129,7 +153,7 @@ class WT_BingMapConfig {
             let color = curve.evaluate(i * 30000 / 60);
             bingColors[i + 1] = color;
         }
-        returnValue.heightColors = bingColors.map(color => WT_BingMapConfig.hextoRGB(color));
+        returnValue.heightColors = bingColors.map(color => WT_BingMapConfigParser.hextoRGB(color));
 
         return returnValue;
     }
@@ -151,11 +175,11 @@ class WT_BingMapConfig {
         return rgb;
     }
 }
-WT_BingMapConfig.RESOLUTION_NAME = "textureResolution";
-WT_BingMapConfig.RESOLUTION_DEFAULT = 1024;
-WT_BingMapConfig.SKY_COLOR_NAME = "skyColor";
-WT_BingMapConfig.SKY_COLOR_DEFAULT = "#000000";
-WT_BingMapConfig.WATER_COLOR_NAME = "waterColor";
-WT_BingMapConfig.WATER_COLOR_DEFAULT = "#0000ff";
-WT_BingMapConfig.ELEVATION_COLORS_NAME = "elevationColors";
-WT_BingMapConfig.ELEVATION_COLORS_DEFAULT = [{alt: 0, color: "#000000"}, {alt: 30000, color: "#000000"}];
+WT_BingMapConfigParser.RESOLUTION_NAME = "textureResolution";
+WT_BingMapConfigParser.RESOLUTION_DEFAULT = 1024;
+WT_BingMapConfigParser.SKY_COLOR_NAME = "skyColor";
+WT_BingMapConfigParser.SKY_COLOR_DEFAULT = "#000000";
+WT_BingMapConfigParser.WATER_COLOR_NAME = "waterColor";
+WT_BingMapConfigParser.WATER_COLOR_DEFAULT = "#0000ff";
+WT_BingMapConfigParser.ELEVATION_COLORS_NAME = "elevationColors";
+WT_BingMapConfigParser.ELEVATION_COLORS_DEFAULT = [{alt: 0, color: "#000000"}, {alt: 30000, color: "#000000"}];

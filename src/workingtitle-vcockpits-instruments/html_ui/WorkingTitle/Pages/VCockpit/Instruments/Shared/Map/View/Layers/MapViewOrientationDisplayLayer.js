@@ -1,3 +1,7 @@
+/**
+ * A text box which displays the current map orientation. The use of this layer requires the .orientation module to be added to
+ * the map model.
+ */
 class WT_MapViewOrientationDisplayLayer extends WT_MapViewLayer {
     constructor(displayTexts, className = WT_MapViewOrientationDisplayLayer.CLASS_DEFAULT, configName = WT_MapViewOrientationDisplayLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
@@ -10,16 +14,29 @@ class WT_MapViewOrientationDisplayLayer extends WT_MapViewLayer {
         return this._displayBox;
     }
 
+    /**
+     * @readonly
+     * @property {HTMLDivElement} displayBox - the orientation display box element.
+     * @type {HTMLDivElement}
+     */
     get displayBox() {
         return this._displayBox;
     }
 
+    /**
+     * @readonly
+     * @property {String[]} displayTexts - the text to display for each orientation mode.
+     * @type {String[]}
+     */
     get displayTexts() {
         return this._displayTexts;
     }
 
-    onUpdate(data) {
-        this.displayBox.innerHTML = this.displayTexts[data.model.orientation.mode];
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
+        this.displayBox.innerHTML = this.displayTexts[state.model.orientation.mode];
     }
 }
 WT_MapViewOrientationDisplayLayer.CLASS_DEFAULT = "orientationDisplayLayer";

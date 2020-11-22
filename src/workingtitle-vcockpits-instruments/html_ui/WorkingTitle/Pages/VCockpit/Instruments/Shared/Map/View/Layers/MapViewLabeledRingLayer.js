@@ -1,3 +1,6 @@
+/**
+ * A layer with one or more circular rings with attached labels. Labels are always drawn on top of any rings they overlap.
+ */
 class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
     constructor(className, configName) {
         super(className, configName);
@@ -6,14 +9,40 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
         this._bounds = {left: 0, top: 0, width: 0, height: 0};
     }
 
+    /**
+     * @typedef {Object} WT_MapViewLabeledRingEntry
+     * @property {HTMLCanvasElement} canvas - the canvas element to which the ring is drawn.
+     * @property {WT_MapViewLabeledRing} ring - the labeled ring object.
+     * @property {{top:Number, left:Number, width:Number, height:Number}} lastDrawn - the bounds for the last drawn area on the canvas.
+     */
+
+    /**
+     * @readonly
+     * @property {WT_MapViewLabeledRingEntry[]} rings - an array of labeled ring entries added to this layer. Eacn entry contains the
+     *                                                  following properties:
+     *                                                  * canvas - the canvas element to which the ring is drawn.
+     *                                                  * ring - the labeled ring object.
+     *                                                  * lastDrawn - the bounds for the last drawn area on the canvas.
+     * @type {WT_MapViewLabeledRingEntry[]}
+     */
     get rings() {
         return this._rings;
     }
 
+    /**
+     * @readonly
+     * @property {HTMLDivElement} ringContainer - the parent HTML element of all rings.
+     * @type {HTMLDivElement}
+     */
     get ringContainer() {
         return this._ringContainer;
     }
 
+    /**
+     * @readonly
+     * @property {HTMLDivElement} labelContainer - the parent HTML element of all labels.
+     * @type {HTMLDivElement}
+     */
     get labelContainer() {
         return this._labelContainer;
     }
@@ -38,15 +67,25 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
         return topLevel;
     }
 
-    _updateBounds(data) {
-        this._bounds = {left: 0, top: 0, width: data.projection.viewWidth, height: data.projection.viewHeight};
+    /**
+     * @param {WT_MapViewState} state
+     */
+    _updateBounds(state) {
+        this._bounds = {left: 0, top: 0, width: state.projection.viewWidth, height: state.projection.viewHeight};
     }
 
-    onViewSizeChanged(data) {
-        super.onViewSizeChanged(data);
-        this._updateBounds(data);
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onViewSizeChanged(state) {
+        super.onViewSizeChanged(state);
+        this._updateBounds(state);
     }
 
+    /**
+     * Adds a labeled ring to this layer. Once added, rings form a stack, with each ring always drawn on top of rings added before it.
+     * @param {WT_MapViewLabeledRing} labeledRing - the labeled ring to add.
+     */
     addRing(labeledRing) {
         let entry = {
             canvas: new WT_MapViewCanvas(false, true),
@@ -61,6 +100,10 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
         this.addSubLayer(entry.canvas, this.ringContainer);
     }
 
+    /**
+     * Removes a labeled ring from this layer.
+     * @param {WT_MapViewLabeledRing} labeledRing - the labeled ring to remove.
+     */
     removeRing(labeledRing) {
         let index = this._rings.findIndex(entry => entry.ring === labeledRing);
         if (index >= 0) {
@@ -74,11 +117,14 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
         }
     }
 
-    onUpdate(data) {
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
         for (let i = 0; i < this.rings.length; i++) {
             let entry = this.rings[i];
-            entry.ring.onUpdate(data);
-            let toDraw = entry.ring.drawRing(data, this._bounds);
+            entry.ring.onUpdate(state);
+            let toDraw = entry.ring.drawRing(state, this._bounds);
             if (toDraw.refresh) {
                 entry.canvas.context.clearRect(entry.lastDrawn.left, entry.lastDrawn.top, entry.lastDrawn.width, entry.lastDrawn.height);
                 if (toDraw.copy) {
@@ -92,12 +138,20 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
                     entry.lastDrawn = drawn;
                 }
             }
-            entry.ring.drawLabel(data);
+            entry.ring.drawLabel(state);
         }
     }
 }
 
+/**
+ * A circular ring with an optional attached label.
+ */
 class WT_MapViewLabeledRing {
+    /**
+     * @param {WT_MapViewRing} [ring] - the ring object for the new labeled ring. If no ring is specified, the ring will be created with a default
+     *                                  WT_MapViewRing object.
+     * @param {WT_MapViewRingLabel} [label] - the label object for the new labeled ring. If no label is specified, the ring will be created without a label.
+     */
     constructor(ring = new WT_MapViewRing(), label = null) {
         this._optsManager = new WT_OptionsManager(this, WT_MapViewLabeledRing.OPTIONS_DEF);
 
@@ -105,14 +159,28 @@ class WT_MapViewLabeledRing {
         this._label = label;
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapViewRing} ring - this labeled ring's ring object
+     * @type {WT_MapViewRing}
+     */
     get ring() {
         return this._ring;
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapViewRingLabel} label - this labeled ring's label object
+     * @type {WT_MapViewRingLabel}
+     */
     get label() {
         return this._label;
     }
 
+    /**
+     * @property {WT_GVector2} center - the center point of the ring, in pixel coordinates.
+     * @type {WT_GVector2}
+     */
     get center() {
         return this.ring.center;
     }
@@ -124,6 +192,10 @@ class WT_MapViewLabeledRing {
         }
     }
 
+    /**
+     * @property {Number} radius - the radius of the ring, in pixels.
+     * @type {Number}
+     */
     get radius() {
         return this.ring.radius;
     }
@@ -135,27 +207,52 @@ class WT_MapViewLabeledRing {
         }
     }
 
-    drawRing(data, bounds) {
+    /**
+     * @typedef {Object} WT_MapViewRingDrawResult
+     * @property {Boolean} refresh - whether the ring canvas should be refreshed (i.e. cleared).
+     * @property {Boolean} [copy] - whether the internal buffer should be copied to the ring canvas. Only defined if refresh is true.
+     * @property {HTMLCanvasElement} [image] - the internal buffer image to copy to the ring canvas. Only defined if copy is true.
+     * @property {{top:Number, left:Number, width:Number, height:Number}} [bounds] - the bounds of the area to copy from the internal buffer. Only defined if copy is true.
+     */
+
+    /**
+     * Draws the ring to an internal buffer.
+     * @param {WT_MapViewState} state - the current state of the map view.
+     * @param {{top:Number, left:Number, width:Number, height:Number}} bounds - the draw-able bounds, in pixel coordinates.
+     * @returns {WT_MapViewRingDrawResult} an object containing information on the draw operation. Contains the following properties:
+     *                                     * refresh - whether the ring canvas should be refreshed (i.e. cleared).
+     *                                     * copy - whether the internal buffer should be copied to the ring canvas. Only defined if refresh is true.
+     *                                     * image - the internal buffer image to copy to the ring canvas. Only defined if copy is true.
+     *                                     * bounds - the bounds of the area to copy from the internal buffer. Only defined if copy is true.
+     */
+    drawRing(state, bounds) {
         return this.ring.draw(bounds);
     }
 
-    drawLabel(data) {
+    /**
+     * Draws the label.
+     * @param {WT_MapViewState} state - the current state of the map view.
+     */
+    drawLabel(state) {
         if (!this.label) {
             return;
         }
 
         if (this.label.show) {
             this.label.htmlElement.style.display = "block";
-            this.label.onUpdate(data);
+            this.label.onUpdate(state);
         } else {
             this.label.htmlElement.style.display = "none";
         }
     }
 
-    onUpdate(data) {
+    onUpdate(state) {
     }
 }
 
+/**
+ * A circular ring that is drawn to canvas.
+ */
 class WT_MapViewRing {
     constructor() {
         this._buffer = document.createElement("canvas");
@@ -169,6 +266,10 @@ class WT_MapViewRing {
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRing.OPTIONS_DEF);
     }
 
+    /**
+     * @property {WT_GVector2} center - the center point of the ring, in pixel coordinates.
+     * @type {WT_GVector2}
+     */
     get center() {
         return this._center.copy();
     }
@@ -246,6 +347,15 @@ class WT_MapViewRing {
         this._applyStrokeToBuffer(this.strokeWidth, this.strokeColor, this.strokeDash);
     }
 
+    /**
+     * Draws the ring to an internal buffer.
+     * @param {{top:Number, left:Number, width:Number, height:Number}} bounds - the draw-able bounds, in pixel coordinates.
+     * @returns {WT_MapViewRingDrawResult} an object containing information on the draw operation. Contains the following properties:
+     *                                     * refresh - whether the ring canvas should be refreshed (i.e. cleared).
+     *                                     * copy - whether the internal buffer should be copied to the ring canvas. Only defined if refresh is true.
+     *                                     * image - the internal buffer image to copy to the ring canvas. Only defined if copy is true.
+     *                                     * bounds - the bounds of the area to copy from the internal buffer. Only defined if copy is true.
+     */
     draw(bounds) {
         if (!this._needRedraw) {
             return {refresh: false};
@@ -285,6 +395,9 @@ WT_MapViewRing.OPTIONS_DEF = {
     outlineDash: {default: [], auto: true, observed: true}
 };
 
+/**
+ * A label for a circular ring.
+ */
 class WT_MapViewRingLabel {
     constructor() {
         this._htmlElement = this._createLabel();
@@ -302,10 +415,19 @@ class WT_MapViewRingLabel {
         return element;
     }
 
+    /**
+     * @readonly
+     * @property {HTMLElement} htmlElement - the top-level HTML element of the label.
+     * @type {HTMLElement}
+     */
     get htmlElement() {
         return this._htmlElement;
     }
 
+    /**
+     * @property {WT_GVector2} center - the center point of the ring, in pixel coordinates.
+     * @type {WT_GVector2}
+     */
     get center() {
         return this._center.copy();
     }
@@ -316,6 +438,10 @@ class WT_MapViewRingLabel {
         this.onOptionChanged("center", oldValue, newValue);
     }
 
+    /**
+     * @property {{x:Number, y:Number}} anchor - the anchor point of the label, expressed in relative x and y units.
+     * @type {{x:Number, y:Number}}
+     */
     get anchor() {
         return this._anchor;
     }
@@ -341,7 +467,10 @@ class WT_MapViewRingLabel {
         this._needRedraw = needRedraw;
     }
 
-    onUpdate(data) {
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
         if (!this.show || !this._needRedraw) {
             return;
         }
