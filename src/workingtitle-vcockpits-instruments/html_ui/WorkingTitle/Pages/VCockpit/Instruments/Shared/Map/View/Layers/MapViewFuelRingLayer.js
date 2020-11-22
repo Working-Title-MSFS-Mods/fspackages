@@ -198,30 +198,20 @@ class WT_MapViewFuelRingInner extends WT_MapViewRing {
         this._optsManager.addOptions(WT_MapViewFuelRingInner.OPTIONS_DEF);
     }
 
-    _applyStrokeToBuffer(lineWidth, strokeWidth, lineDash, centerX, centerY, radius) {
-        this._bufferContext.lineWidth = lineWidth;
-        this._bufferContext.strokeStyle = strokeWidth;
-        this._bufferContext.setLineDash(lineDash);
+    _drawRingToBuffer(centerX, centerY, radius) {
+        let half_pi = Math.PI / 2;
         this._bufferContext.beginPath();
-        if (lineDash.length === 0) {
-            this._bufferContext.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        } else {
-            let half_pi = Math.PI / 2;
-            this._bufferContext.arc(centerX, centerY, radius, -half_pi, -half_pi + Math.PI);
-            this._bufferContext.moveTo(centerX, centerY - radius);
-            this._bufferContext.arc(centerX, centerY, radius, -half_pi, -half_pi + Math.PI, true);
-        }
-        this._bufferContext.stroke();
-    }
+        this._bufferContext.arc(centerX, centerY, radius, -half_pi, -half_pi + Math.PI);
+        this._bufferContext.moveTo(centerX, centerY - radius);
+        this._bufferContext.arc(centerX, centerY, radius, -half_pi, -half_pi + Math.PI, true);
 
-    _drawRingToBuffer(centerX, centerY) {
         if (this.backingWidth > 0) {
-            this._applyStrokeToBuffer(this.backingWidth, this.backingColor, [], centerX, centerY, this.radius);
+            this._applyStrokeToBuffer(this.backingWidth, this.backingColor, []);
         }
         if (this.outlineWidth > 0) {
-            this._applyStrokeToBuffer(this.strokeWidth + this.outlineWidth * 2, this.outlineColor, this.outlineDash, centerX, centerY, this.radius);
+            this._applyStrokeToBuffer(this.strokeWidth + this.outlineWidth * 2, this.outlineColor, this.outlineDash);
         }
-        this._applyStrokeToBuffer(this.strokeWidth, this.strokeColor, this.strokeDash, centerX, centerY, this.radius);
+        this._applyStrokeToBuffer(this.strokeWidth, this.strokeColor, this.strokeDash);
     }
 }
 WT_MapViewFuelRingInner.OPTIONS_DEF = {
