@@ -1,3 +1,8 @@
+/**
+ * A range ring. This layer draws a ring around the map model's target position with range equal to the map model's nominal range.
+ * A label which displays the map's nominal range is also drawn next to the ring. The use of this layer requires the .rangeRing
+ * module to be added to the map model.
+ */
 class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
     constructor(className = WT_MapViewRangeRingLayer.CLASS_DEFAULT, configName = WT_MapViewRangeRingLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
@@ -9,6 +14,11 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRangeRingLayer.OPTIONS_DEF);
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapViewLabeledRing} rangeRing - this layer's range ring object.
+     * @type {WT_MapViewLabeledRing}
+     */
     get rangeRing() {
         return this._rangeRing;
     }
@@ -29,30 +39,45 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
         });
     }
 
-    isVisible(data) {
-        return data.model.rangeRing.show;
+    /**
+     * @param {WT_MapViewState} state
+     */
+    isVisible(state) {
+        return state.model.rangeRing.show;
     }
 
-    onConfigLoaded(data) {
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onConfigLoaded(state) {
         for (let property of WT_MapViewRangeRingLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
     }
 
-    onViewSizeChanged(data) {
-        super.onViewSizeChanged(data);
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onViewSizeChanged(state) {
+        super.onViewSizeChanged(state);
     }
 
-    onAttached(data) {
-        super.onAttached(data);
-        this._updateStyles(data.dpiScale);
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onAttached(state) {
+        super.onAttached(state);
+        this._updateStyles(state.dpiScale);
     }
 
-    onUpdate(data) {
-        super.onUpdate(data);
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
+        super.onUpdate(state);
 
-        this.rangeRing.center = data.projection.viewTarget;
-        this.rangeRing.radius = data.model.range.ratio(data.projection.range) * data.projection.viewHeight;
+        this.rangeRing.center = state.projection.viewTarget;
+        this.rangeRing.radius = state.model.range.ratio(state.projection.range) * state.projection.viewHeight;
     }
 }
 WT_MapViewRangeRingLayer.CLASS_DEFAULT = "rangeRingLayer";
@@ -84,12 +109,20 @@ class WT_MapViewRangeRingLabel extends WT_MapViewRingLabel {
         return this._rangeLabel.labelElement;
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapViewRangeLabel} rangeRing - this label's range label object.
+     * @type {WT_MapViewRangeLabel}
+     */
     get rangeLabel() {
         return this._rangeLabel;
     }
 
-    onUpdate(data) {
-        super.onUpdate(data);
-        this.rangeLabel.onUpdate(data);
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
+        super.onUpdate(state);
+        this.rangeLabel.onUpdate(state);
     }
 }

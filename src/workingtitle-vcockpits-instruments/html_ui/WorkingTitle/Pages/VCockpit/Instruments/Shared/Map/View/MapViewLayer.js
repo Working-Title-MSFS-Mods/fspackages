@@ -1,4 +1,11 @@
+/**
+ * A map view layer.
+ */
 class WT_MapViewLayer {
+    /**
+     * @param {String} className - the name of the class to add to the new layer's top-level HTML element's class list.
+     * @param {String} configName - the name of the property in the map view's config file to be associated with the new layer.
+     */
     constructor(className, configName) {
         this._configName = configName;
 
@@ -6,6 +13,10 @@ class WT_MapViewLayer {
         this._htmlElement.classList.add(className);
     }
 
+    /**
+     * @abstract
+     * @returns {HTMLElement} the top-level element of this layer.
+     */
     _createHTMLElement() {
     }
 
@@ -15,37 +26,78 @@ class WT_MapViewLayer {
         }
     }
 
+    /**
+     * @readonly
+     * @property {String} configName - the name of the property in the map view's config file associated with this layer.
+     * @type {String}
+     */
     get configName() {
         return this._configName;
     }
 
+    /**
+     * @readonly
+     * @property {HTMLElement} - the top-level element of this layer.
+     * @type {HTMLElement}
+     */
     get htmlElement() {
         return this._htmlElement;
     }
 
-    isVisible(data) {
+    /**
+     * Indicates whether this layer is visible.
+     * @param {WT_MapViewState} state - the current state of this layer's parent map view.
+     */
+    isVisible(state) {
         return true;
     }
 
-    onViewSizeChanged(data) {
+    /**
+     * This method is called whenever the size of the viewing window of this layer's parent map view changes.
+     * @abstract
+     * @param {WT_MapViewState} state - the current state of this layer's parent map view.
+     */
+    onViewSizeChanged(state) {
     }
 
-    onConfigLoaded(data) {
+    /**
+     * This method is called when this layer's config is loaded.
+     * @param {WT_MapViewState} state - the current state of this layer's parent map view.
+     */
+    onConfigLoaded(state) {
     }
 
-    onModelChanged(data) {
+    /**
+     * This method is called whenever the model associated with this layer's parent map view changes.
+     * @param {WT_MapViewState} state - the current state of this layer's parent map view.
+     */
+    onModelChanged(state) {
     }
 
-    onAttached(data) {
+    /**
+     * This method is called whenever this layer is added to a map view.
+     * @param {WT_MapViewState} state - the current state of this layer's parent map view.
+     */
+    onAttached(state) {
     }
 
-    onUpdate(data) {
+    /**
+     * This method is called on every rendering frame while this layer is visible.
+     * @param {WT_MapViewState} state - the current state of this layer's parent map view.
+     */
+    onUpdate(state) {
     }
 
+    /**
+     * This method is called whenever this layer is removed from a map view.
+     */
     onDetached() {
     }
 }
 
+/**
+ * A map view layer that has one or more sublayers.
+ */
 class WT_MapViewMultiLayer extends WT_MapViewLayer {
     constructor(className, configName) {
         super(className, configName);
@@ -74,6 +126,13 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
         return this._subLayers;
     }
 
+    /**
+     * Adds a sublayer to this layer.
+     * @param {WT_MapViewSubLayer} subLayer - the sublayer to add.
+     * @param {HTMLElement} [parentHTMLElement] - the HTML element to which to append the top-level element of the new sublayer. If this
+     *                                            argument is not supplied, then the sublayer will be appended to this layer's top-level
+     *                                            element.
+     */
     addSubLayer(subLayer, parentHTMLElement) {
         if (!parentHTMLElement) {
             parentHTMLElement = this.htmlElement;
@@ -88,6 +147,10 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
         }
     }
 
+    /**
+     * Removes a sublayer from this layer.
+     * @param {WT_MapViewSubLayer} subLayer - the sublayer to remove.
+     */
     removeSubLayer(subLayer) {
         let index = this._subLayers.indexOf(subLayer);
         if (index >= 0) {
@@ -97,9 +160,9 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
         }
     }
 
-    onViewSizeChanged(data) {
-        this._lastWidth = data.projection.viewWidth;
-        this._lastHeight = data.projection.viewHeight;
+    onViewSizeChanged(state) {
+        this._lastWidth = state.projection.viewWidth;
+        this._lastHeight = state.projection.viewHeight;
 
         for (let subLayer of this.subLayers) {
             if (subLayer.syncSizeToView) {
@@ -108,12 +171,18 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
         }
     }
 
-    onAttached(data) {
-        this.onViewSizeChanged(data);
+    onAttached(state) {
+        this.onViewSizeChanged(state);
     }
 }
 
+/**
+ * A map view sublayer.
+ */
 class WT_MapViewSubLayer {
+    /**
+     * @param {Boolean} syncSizeToView - whether to automatically sync the new sublayer's size to the size of the map view's viewing window.
+     */
     constructor(syncSizeToView) {
         this._syncSizeToView = syncSizeToView;
 
@@ -131,16 +200,33 @@ class WT_MapViewSubLayer {
         return container;
     }
 
+    /**
+     * @readonly
+     * @property {Boolean} syncSizeToView - whether to automatically sync this sublayer's size to the size of the map view's viewing window.
+     * @type {Boolean}
+     */
     get syncSizeToView() {
         return this._syncSizeToView;
     }
 
+    /**
+     * @readonly
+     * @property {HTMLElement} container - the top-level HTML element of this sublayer.
+     * @type {HTMLElement}
+     */
     get container() {
         return this._container;
     }
 }
 
+/**
+ * A canvas sublayer.
+ */
 class WT_MapViewCanvas extends WT_MapViewSubLayer {
+    /**
+     * @param {Boolean} useBuffer - whether to automatically create a offscreen buffer for the new canvas.
+     * @param {Boolean} syncSizeToView - whether to automatically sync the new sublayer's size to the size of the map view's viewing window.
+     */
     constructor(useBuffer, syncSizeToView) {
         super(syncSizeToView);
         this._useBuffer = useBuffer;
@@ -173,22 +259,46 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
         return {canvas: canvas, context: context};
     }
 
+    /**
+     * @readonly
+     * @property {Boolean} useBuffer - whether this canvas sublayer has an offscreen buffer.
+     * @type {Boolean}
+     */
     get useBuffer() {
         return this._useBuffer;
     }
 
+    /**
+     * @readonly
+     * @property {HTMLCanvasElement} canvas - this sublayer's canvas element.
+     * @type {HTMLCanvasElement}
+     */
     get canvas() {
         return this._canvas;
     }
 
+    /**
+     * @readonly
+     * @property {CanvasRenderingContext2D} context - the rendering context for this sublayer's canvas element.
+     * @type {CanvasRenderingContext2D}
+     */
     get context() {
         return this._context;
     }
 
+    /**
+     * @readonly
+     * @property {{canvas:HTMLCanvasElement, context:CanvasRenderingContext2D}} buffer - an object containing this sublayer's offscreen buffer and its rendering context, if they exist.
+     * @type {{canvas:HTMLCanvasElement, context:CanvasRenderingContext2D}}
+     */
     get buffer() {
         return this._buffer;
     }
 
+    /**
+     * @property {Number} width - the width, in pixels, of this sublayer.
+     * @type {Number}
+     */
     get width() {
         return this.canvas.width;
     }
@@ -201,6 +311,10 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
         }
     }
 
+    /**
+     * @property {Number} height - the height, in pixels, of this sublayer.
+     * @type {Number}
+     */
     get height() {
         return this.canvas.height;
     }
@@ -213,7 +327,20 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
         }
     }
 
+    /**
+     * Copies the contents of this sublayer's offscreen buffer to the canvas. If this sublayer does not have an offscreen buffer,
+     * this method does nothing. This method optionally takes in arguments to define the bounds of the area to copy to the canvas.
+     * If these arguments are not supplied, by default the entire buffer is copied over.
+     * @param {Number} [left] - the x-coordinate of the left edge of the area to copy, in pixels.
+     * @param {Number} [top] - the y-coordinate of the top edge of the area to copy, in pixels.
+     * @param {Number} [width] - the width of the area to copy, in pixels.
+     * @param {Number} [height] - the height of the area to copy, in pixels.
+     */
     copyBufferToCanvas(left, top, width, height) {
+        if (!this.buffer) {
+            return;
+        }
+
         if (left === undefined) {
             left = 0;
             top = 0;
@@ -225,6 +352,9 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
     }
 }
 
+/**
+ * An SVG sublayer.
+ */
 class WT_MapViewSvg extends WT_MapViewSubLayer {
     constructor(syncSizeToView) {
         super(syncSizeToView);
@@ -246,10 +376,19 @@ class WT_MapViewSvg extends WT_MapViewSubLayer {
         return svg;
     }
 
+    /**
+     * @readonly
+     * @property {HTMLElement} canvas - this sublayer's svg element.
+     * @type {HTMLElement}
+     */
     get svg() {
         return this._svg;
     }
 
+    /**
+     * @property {Number} width - the width, in pixels, of this sublayer.
+     * @type {Number}
+     */
     get width() {
         return this._width;
     }
@@ -260,6 +399,10 @@ class WT_MapViewSvg extends WT_MapViewSubLayer {
         this.svg.setAttribute("viewBox", `0 0 ${this.width} ${this.height}`);
     }
 
+    /**
+     * @property {Number} height - the height, in pixels, of this sublayer.
+     * @type {Number}
+     */
     get height() {
         return this._height;
     }

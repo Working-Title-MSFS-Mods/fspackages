@@ -1,5 +1,16 @@
+/**
+ * An altitude intercept arc. This layer draws an arc marking the distance from the player aircraft at which the plane is predicted
+ * to intercept the current set target altitude.
+ */
 class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
-    constructor(facingAngleGetter = {getFacingAngle: data => data.model.airplane.trackTrue + data.projection.rotation}, className = WT_MapViewAltitudeInterceptLayer.CLASS_DEFAULT, configName = WT_MapViewAltitudeInterceptLayer.CONFIG_NAME_DEFAULT) {
+    /**
+     * @param {{getFacingAngle(state:WT_MapViewState):Number}} [facingAngleGetter] - defines the facing angle (in viewing window space) of the arc by implementing the
+     *                                                                               getFacingAngle() method. If this argument is not supplied, by default the arc will
+     *                                                                               face the current true ground track of the plane.
+     * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
+     * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
+     */
+    constructor(facingAngleGetter = {getFacingAngle: state => state.model.airplane.trackTrue + state.projection.rotation}, className = WT_MapViewAltitudeInterceptLayer.CLASS_DEFAULT, configName = WT_MapViewAltitudeInterceptLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
         this.facingAngleGetter = facingAngleGetter;
@@ -15,28 +26,48 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         this._lastDrawnBounds = {left: 0, top: 0, width: 0, height: 0};
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapViewCanvas} arcLayer - the canvas sublayer on which the arc is drawn.
+     */
     get arcLayer() {
         return this._arcLayer;
     }
 
-    isVisible(data) {
-        return data.model.altitudeIntercept.show;
+    /**
+     * @param {WT_MapViewState} state
+     */
+    isVisible(state) {
+        return state.model.altitudeIntercept.show;
     }
 
-    onConfigLoaded(data) {
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onConfigLoaded(state) {
         for (let property of WT_MapViewAltitudeInterceptLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
     }
 
+    /**
+     * Applies a stroke to this layer's canvas rendering context using the specified styles.
+     * @param {Number} lineWidth - the width of the stroke, in pixels.
+     * @param {String|CanvasGradient|CanvasPattern} strokeStyle - the style of the stroke.
+     */
     _applyStrokeToCanvas(lineWidth, strokeStyle) {
         this.arcLayer.context.lineWidth = lineWidth;
         this.arcLayer.context.strokeStyle = strokeStyle;
         this.arcLayer.context.stroke();
     }
 
-    _calculateSmoothingFactor(data) {
-        let dt = data.currentTime / 1000 - this._lastTime;
+    /**
+     * Calculates an appropriate exponential smoothing factor to use.
+     * @param {WT_MapViewState} state - the current map view state.
+     * @returns {Number} - a smoothing factor.
+     */
+    _calculateSmoothingFactor(state) {
+        let dt = state.currentTime / 1000 - this._lastTime;
         if (dt > WT_MapViewAltitudeInterceptLayer.SMOOTHING_MAX_TIME_DELTA) {
             return 1;
         } else {
@@ -44,12 +75,25 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         }
     }
 
+    /**
+     * Applies exponential smoothing (i.e. exponential moving average) to a radius value.
+     * @param {Number} radius - the value to smooth.
+     * @param {Number} factor - the smoothing factor to use.
+     * @returns {Number} - the smoothed value.
+     */
     _smoothRadius(radius, factor) {
         return radius * factor + this._lastRadius * (1 - factor);
     }
 
-    _drawArc(data, radius, facing) {
-        let center = data.viewPlane;
+    /**
+     * Draws the arc to canvas.
+     * @param {WT_MapViewState} state - the current map view state
+     * @param {Number} radius - the distance from the plane to the arc, in pixels.
+     * @param {Number} facing - the facing angle of the arc, in degrees. A value of 0 degrees indicates straight up, with positive values
+     *                          proceeding clockwise.
+     */
+    _drawArc(state, radius, facing) {
+        let center = state.viewPlane;
         let angularWidth = Math.min(this.angularWidth, 360);
         let startAngle = facing - angularWidth / 2;
         let endAngle = facing + angularWidth / 2;
@@ -57,9 +101,9 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         this.arcLayer.context.beginPath();
         this.arcLayer.context.arc(center.x, center.y, radius, startAngle * Avionics.Utils.DEG2RAD - Math.PI / 2, endAngle * Avionics.Utils.DEG2RAD - Math.PI / 2);
         if (this.outlineWidth > 0) {
-            this._applyStrokeToCanvas((this.strokeWidth + 2 * this.outlineWidth) * data.dpiScale, this.outlineColor);
+            this._applyStrokeToCanvas((this.strokeWidth + 2 * this.outlineWidth) * state.dpiScale, this.outlineColor);
         }
-        this._applyStrokeToCanvas(this.strokeWidth * data.dpiScale, this.strokeColor);
+        this._applyStrokeToCanvas(this.strokeWidth * state.dpiScale, this.strokeColor);
 
         let start = center.add(WT_GVector2.fromPolar(radius, startAngle * Avionics.Utils.DEG2RAD));
         let end = center.add(WT_GVector2.fromPolar(radius, endAngle * Avionics.Utils.DEG2RAD));
@@ -81,42 +125,45 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
             delta += 90;
         }
 
-        let thick = (this.strokeWidth / 2 + this.outlineWidth) * data.dpiScale;
+        let thick = (this.strokeWidth / 2 + this.outlineWidth) * state.dpiScale;
         this._lastDrawnBounds.left = left - thick - 5;
         this._lastDrawnBounds.top = top - thick - 5;
         this._lastDrawnBounds.width = right - left + 2 * (thick + 5);
         this._lastDrawnBounds.height = bottom - top + 2 * (thick + 5);
     }
 
-    onUpdate(data) {
-        if (data.model.airplane.isOnGround) {
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
+        if (state.model.airplane.isOnGround) {
             return;
         }
 
         this.arcLayer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
-        let vSpeed = data.model.airplane.verticalSpeed;
-        let currentAlt = data.model.airplane.altitudeIndicated;
-        let targetAlt = data.model.autopilot.altitudeTarget;
+        let vSpeed = state.model.airplane.verticalSpeed;
+        let currentAlt = state.model.airplane.altitudeIndicated;
+        let targetAlt = state.model.autopilot.altitudeTarget;
         let deltaAlt = targetAlt.copy().subtract(currentAlt);
         let time = deltaAlt.asUnit(WT_Unit.FOOT) / vSpeed.asUnit(WT_Unit.FPM) / 60; // hours
         if (vSpeed.copy().abs().compare(WT_MapViewAltitudeInterceptLayer.VSPEED_THRESHOLD) < 0 || time < 0 || deltaAlt.copy().abs().compare(WT_MapViewAltitudeInterceptLayer.ALTITUDE_DELTA_THRESHOLD) < 0) {
             return;
         }
 
-        let gs = data.model.airplane.groundSpeed;
+        let gs = state.model.airplane.groundSpeed;
         let distance = new WT_NumberUnit(gs.asUnit(WT_Unit.KNOT) * time, WT_Unit.NMILE);
-        let angle = this.facingAngleGetter.getFacingAngle(data);
-        let arcTarget = data.projection.offsetByViewAngle(data.model.airplane.position, distance, angle);
-        let viewArcTarget = data.projection.projectLatLong(arcTarget);
-        let radius = viewArcTarget.subtract(data.viewPlane).length;
-        if (data.projection.range.equals(this._lastRange)) {
-            radius = this._smoothRadius(radius, this._calculateSmoothingFactor(data));
+        let angle = this.facingAngleGetter.getFacingAngle(state);
+        let arcTarget = state.projection.offsetByViewAngle(state.model.airplane.position, distance, angle);
+        let viewArcTarget = state.projection.projectLatLong(arcTarget);
+        let radius = viewArcTarget.subtract(state.viewPlane).length;
+        if (state.projection.range.equals(this._lastRange)) {
+            radius = this._smoothRadius(radius, this._calculateSmoothingFactor(state));
         }
-        this._drawArc(data, radius, angle);
+        this._drawArc(state, radius, angle);
 
-        this._lastTime = data.currentTime / 1000;
-        this._lastRange.copyFrom(data.projection.range);
+        this._lastTime = state.currentTime / 1000;
+        this._lastRange.copyFrom(state.projection.range);
         this._lastRadius = radius;
     }
 }

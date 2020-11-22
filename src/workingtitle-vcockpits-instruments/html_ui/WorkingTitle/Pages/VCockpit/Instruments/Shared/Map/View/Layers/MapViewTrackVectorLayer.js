@@ -1,3 +1,9 @@
+/**
+ * A track vector. This layer draws a line from the position of the airplane which marks the plane's predicted path.
+ * The amount of time to look forward (lookahead time) in constructing the predicted path is governed by the map model.
+ * The predicted path can be either dynamic, taking into account the current turn speed, or not, depending on the lookahead time.
+ * The use of this layer requires the .trackVector module to be added to the map model.
+ */
 class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
     constructor(className = WT_MapViewTrackVectorLayer.CLASS_DEFAULT, configName = WT_MapViewTrackVectorLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
@@ -23,10 +29,19 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         }
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapViewCanvas} vectorLayer - the canvas sublayer on which the track vector is drawn.
+     * @type {WT_MapViewCanvas}
+     */
     get vectorLayer() {
         return this._vectorLayer;
     }
 
+    /**
+     * @property {WT_NumberUnit} dynamicLookaheadMax - the maximum lookahead time to use when calculating dynamic track vectors.
+     * @type {WT_NumberUnit}
+     */
     get dynamicLookaheadMax() {
         return this._dynamicLookaheadMax.copy();
     }
@@ -35,18 +50,29 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         this._dynamicLookaheadMax.copyFrom(value);
     }
 
-    isVisible(data) {
-        return data.model.trackVector.show;
+    /**
+     * @param {WT_MapViewState} state
+     */
+    isVisible(state) {
+        return state.model.trackVector.show;
     }
 
-    onConfigLoaded(data) {
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onConfigLoaded(state) {
         for (let property of WT_MapViewTrackVectorLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
     }
 
-    _calculateSmoothingFactor(data) {
-        let dt = data.currentTime / 1000 - this._lastTime;
+    /**
+     * Calculates an appropriate exponential smoothing factor to use.
+     * @param {WT_MapViewState} state - the current map view state.
+     * @returns {Number} - a smoothing factor.
+     */
+    _calculateSmoothingFactor(state) {
+        let dt = state.currentTime / 1000 - this._lastTime;
         if (dt > WT_MapViewTrackVectorLayer.SMOOTHING_MAX_TIME_DELTA) {
             return 1;
         } else {
@@ -54,13 +80,24 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         }
     }
 
+    /**
+     * Applies exponential smoothing (i.e. exponential moving average) to a turn speed value.
+     * @param {Number} turnSpeed - the value to smooth.
+     * @param {Number} factor - the smoothing factor to use.
+     * @returns {Number} - the smoothed value.
+     */
     _smoothTurnSpeed(turnSpeed, factor) {
         return turnSpeed * factor + this._lastTurnSpeed * (1 - factor);
     }
 
-    _calculateDynamicTimeStep(data) {
-        let tas = data.model.airplane.tas;
-        let resolution = data.projection.viewResolution;
+    /**
+     * Determines the time step to use when calculating a dynamic track vector in order to achieve this layer's desired spatial
+     * resolution.
+     * @param {WT_MapViewState} state - the current map view state.
+     */
+    _calculateDynamicTimeStep(state) {
+        let tas = state.model.airplane.tas;
+        let resolution = state.projection.viewResolution;
         tas.unit = WT_Unit.MPS;
         resolution.unit = WT_Unit.METER;
 
@@ -69,28 +106,32 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         return targetResolutionDistance / tas.number;
     }
 
-    _calculateDynamicVector(data) {
-        let timeStep = this._calculateDynamicTimeStep(data);
-        let smoothingFactor = this._calculateSmoothingFactor(data);
+    /**
+     * Calculates the path for a dynamic track vector using current aircraft parameters to build the predicted path.
+     * @param {WT_MapViewState} state - the current map view state.
+     */
+    _calculateDynamicVector(state) {
+        let timeStep = this._calculateDynamicTimeStep(state);
+        let smoothingFactor = this._calculateSmoothingFactor(state);
 
-        let resolution = data.projection.viewResolution;
+        let resolution = state.projection.viewResolution;
         resolution.unit = WT_Unit.METER;
 
-        let trackRad = (data.model.airplane.trackTrue + data.projection.rotation) * Avionics.Utils.DEG2RAD;
-        let tasPx = data.model.airplane.tas.asUnit(WT_Unit.MPS) / resolution.number;
-        let headingRad = (data.model.airplane.headingTrue + data.projection.rotation) * Avionics.Utils.DEG2RAD;
-        let turnSpeedRad = data.model.airplane.turnSpeed * Avionics.Utils.DEG2RAD;
-        let windSpeedPx = data.model.weather.windSpeed.asUnit(WT_Unit.MPS) / resolution.number;
-        let windDirectionRad = (data.model.weather.windDirection + data.projection.rotation + 180) * Avionics.Utils.DEG2RAD;
+        let trackRad = (state.model.airplane.trackTrue + state.projection.rotation) * Avionics.Utils.DEG2RAD;
+        let tasPx = state.model.airplane.tas.asUnit(WT_Unit.MPS) / resolution.number;
+        let headingRad = (state.model.airplane.headingTrue + state.projection.rotation) * Avionics.Utils.DEG2RAD;
+        let turnSpeedRad = state.model.airplane.turnSpeed * Avionics.Utils.DEG2RAD;
+        let windSpeedPx = state.model.weather.windSpeed.asUnit(WT_Unit.MPS) / resolution.number;
+        let windDirectionRad = (state.model.weather.windDirection + state.projection.rotation + 180) * Avionics.Utils.DEG2RAD;
         let dynamicHeadingDeltaMaxRad = this.dynamicHeadingDeltaMax * Avionics.Utils.DEG2RAD;
 
         turnSpeedRad = this._smoothTurnSpeed(turnSpeedRad, smoothingFactor);
         this._lastTurnSpeed = turnSpeedRad;
 
-        let lookahead = data.model.trackVector.lookahead.asUnit(WT_Unit.SECOND);
+        let lookahead = state.model.trackVector.lookahead.asUnit(WT_Unit.SECOND);
         let planeVelocityPx = new WT_GVector2(0, 0);
         let windVelocityPx = new WT_GVector2(0, 0);
-        let points = [data.viewPlane];
+        let points = [state.viewPlane];
         let i = 0;
         for (let t = 0; t < lookahead; t += timeStep) {
             let angleDelta = Math.abs((headingRad - trackRad) % (2 * Math.PI));
@@ -105,7 +146,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
             let nextPoint = currentPoint.add(planeVelocityPx.add(windVelocityPx).scale(timeStep, true));
             points.push(nextPoint);
 
-            if (!data.projection.isXYInBounds(nextPoint, 0.05)) {
+            if (!state.projection.isXYInBounds(nextPoint, 0.05)) {
                 break;
             }
             headingRad += turnSpeedRad * timeStep;
@@ -113,6 +154,10 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         return points;
     }
 
+    /**
+     * Loads a path definition into this layer's buffer rendering context.
+     * @param {{x:Number, y:Number}[]} points - a list of points, in pixel coordinates, comprising the path.
+     */
     _composeVectorPath(points) {
         this.vectorLayer.buffer.context.beginPath();
         let i = 0;
@@ -124,31 +169,44 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         }
     }
 
+    /**
+     * Applies a stroke to this layer's buffer rendering context using the specified styles.
+     * @param {Number} lineWidth - the width of the stroke, in pixels.
+     * @param {String|CanvasGradient|CanvasPattern} strokeStyle - the style of the stroke.
+     */
     _applyStrokeToBuffer(lineWidth, strokeStyle) {
         this.vectorLayer.buffer.context.lineWidth = lineWidth;
         this.vectorLayer.buffer.context.strokeStyle = strokeStyle;
         this.vectorLayer.buffer.context.stroke();
     }
 
-    _drawDynamicVector(data) {
-        let points = this._calculateDynamicVector(data);
+    /**
+     * Draws a dynamic track vector.
+     * @param {WT_MapViewState} state - the current map view state.
+     */
+    _drawDynamicVector(state) {
+        let points = this._calculateDynamicVector(state);
 
         this.vectorLayer.buffer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
         this.vectorLayer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
         this._composeVectorPath(points);
         if (this.outlineWidth > 0) {
-            this._applyStrokeToBuffer((this.outlineWidth * 2 + this.strokeWidth) * data.dpiScale, this.outlineColor);
+            this._applyStrokeToBuffer((this.outlineWidth * 2 + this.strokeWidth) * state.dpiScale, this.outlineColor);
         }
-        this._applyStrokeToBuffer(this.strokeWidth * data.dpiScale, this.strokeColor);
+        this._applyStrokeToBuffer(this.strokeWidth * state.dpiScale, this.strokeColor);
 
-        let thick = (this.outlineWidth + this.strokeWidth / 2) * data.dpiScale;
+        let thick = (this.outlineWidth + this.strokeWidth / 2) * state.dpiScale;
         let toDrawLeft = Math.max(0, Math.min(...points.map(point => point.x)) - thick - 5);
         let toDrawTop = Math.max(0, Math.min(...points.map(point => point.y)) - thick - 5);
-        let toDrawWidth = Math.min(data.projection.viewWidth, Math.max(...points.map(point => point.x)) + thick + 5) - toDrawLeft;
-        let toDrawHeight = Math.min(data.projection.viewHeight, Math.max(...points.map(point => point.y)) + thick + 5) - toDrawTop;
+        let toDrawWidth = Math.min(state.projection.viewWidth, Math.max(...points.map(point => point.x)) + thick + 5) - toDrawLeft;
+        let toDrawHeight = Math.min(state.projection.viewHeight, Math.max(...points.map(point => point.y)) + thick + 5) - toDrawTop;
         this._lastDrawnBounds = this.vectorLayer.copyBufferToCanvas(toDrawLeft, toDrawTop, toDrawWidth, toDrawHeight);
     }
 
+    /**
+     * Builds a GeoJSON LineString Feature object from a list of lat/long coordinates.
+     * @param {{lat:Number, long:Number}[]} points - a list of lat/long coordinates.
+     */
     _buildGeoJSON(points) {
         return {
             type: "LineString",
@@ -156,13 +214,17 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         };
     }
 
-    _drawSimpleVector(data) {
-        let planePos = data.model.airplane.position;
-        let gs = data.model.airplane.groundSpeed.asUnit(WT_Unit.KNOT);
-        let lookahead = data.model.trackVector.lookahead.asUnit(WT_Unit.HOUR);
+    /**
+     * Draws a non-dynamic track vector.
+     * @param {WT_MapViewState} state - the current map view state.
+     */
+    _drawSimpleVector(state) {
+        let planePos = state.model.airplane.position;
+        let gs = state.model.airplane.groundSpeed.asUnit(WT_Unit.KNOT);
+        let lookahead = state.model.trackVector.lookahead.asUnit(WT_Unit.HOUR);
         let points = [
             planePos,
-            data.projection.offsetByBearing(planePos, new WT_NumberUnit(gs * lookahead, WT_Unit.NMILE), data.model.airplane.trackTrue)
+            state.projection.offsetByBearing(planePos, new WT_NumberUnit(gs * lookahead, WT_Unit.NMILE), state.model.airplane.trackTrue)
         ];
         let geoJSON = this._buildGeoJSON(points);
 
@@ -170,33 +232,36 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         this.vectorLayer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
         this.vectorLayer.buffer.context.beginPath();
-        data.projection.renderer.renderCanvas(geoJSON, this.vectorLayer.buffer.context);
+        state.projection.renderer.renderCanvas(geoJSON, this.vectorLayer.buffer.context);
         if (this.outlineWidth > 0) {
-            this._applyStrokeToBuffer((this.outlineWidth * 2 + this.strokeWidth) * data.dpiScale, this.outlineColor);
+            this._applyStrokeToBuffer((this.outlineWidth * 2 + this.strokeWidth) * state.dpiScale, this.outlineColor);
         }
-        this._applyStrokeToBuffer(this.strokeWidth * data.dpiScale, this.strokeColor);
+        this._applyStrokeToBuffer(this.strokeWidth * state.dpiScale, this.strokeColor);
 
-        let bounds = data.projection.renderer.calculateBounds(geoJSON);
-        let thick = (this.outlineWidth + this.strokeWidth / 2) * data.dpiScale;
+        let bounds = state.projection.renderer.calculateBounds(geoJSON);
+        let thick = (this.outlineWidth + this.strokeWidth / 2) * state.dpiScale;
         let toDrawLeft = Math.max(0, bounds[0].x - thick - 5);
         let toDrawTop = Math.max(0, bounds[0].y - thick - 5);
-        let toDrawWidth = Math.min(data.projection.viewWidth, bounds[1].x + thick + 5) - toDrawLeft;
-        let toDrawHeight = Math.min(data.projection.viewHeight, bounds[1].y + thick + 5) - toDrawTop;
+        let toDrawWidth = Math.min(state.projection.viewWidth, bounds[1].x + thick + 5) - toDrawLeft;
+        let toDrawHeight = Math.min(state.projection.viewHeight, bounds[1].y + thick + 5) - toDrawTop;
         this._lastDrawnBounds = this.vectorLayer.copyBufferToCanvas(toDrawLeft, toDrawTop, toDrawWidth, toDrawHeight);
     }
 
-    onUpdate(data) {
-        if (data.model.airplane.isOnGround) {
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
+        if (state.model.airplane.isOnGround) {
             return;
         }
 
-        let lookahead = data.model.trackVector.lookahead;
+        let lookahead = state.model.trackVector.lookahead;
         if (lookahead.compare(this.dynamicLookaheadMax) <= 0) {
-            this._drawDynamicVector(data);
+            this._drawDynamicVector(state);
         } else {
-            this._drawSimpleVector(data);
+            this._drawSimpleVector(state);
         }
-        this._lastTime = data.currentTime / 1000;
+        this._lastTime = state.currentTime / 1000;
     }
 }
 WT_MapViewTrackVectorLayer.CLASS_DEFAULT = "trackVectorLayer";
