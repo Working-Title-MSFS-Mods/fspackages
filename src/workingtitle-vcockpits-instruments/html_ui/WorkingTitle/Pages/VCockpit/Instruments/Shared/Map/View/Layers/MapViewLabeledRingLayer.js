@@ -6,14 +6,12 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
         super(className, configName);
 
         this._rings = [];
-        this._bounds = {left: 0, top: 0, width: 0, height: 0};
     }
 
     /**
      * @typedef {Object} WT_MapViewLabeledRingEntry
-     * @property {HTMLCanvasElement} canvas - the canvas element to which the ring is drawn.
+     * @property {WT_MapViewCanvas} canvas - the canvas element to which the ring is drawn.
      * @property {WT_MapViewLabeledRing} ring - the labeled ring object.
-     * @property {{top:Number, left:Number, width:Number, height:Number}} lastDrawn - the bounds for the last drawn area on the canvas.
      */
 
     /**
@@ -68,21 +66,6 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
     }
 
     /**
-     * @param {WT_MapViewState} state
-     */
-    _updateBounds(state) {
-        this._bounds = {left: 0, top: 0, width: state.projection.viewWidth, height: state.projection.viewHeight};
-    }
-
-    /**
-     * @param {WT_MapViewState} state
-     */
-    onViewSizeChanged(state) {
-        super.onViewSizeChanged(state);
-        this._updateBounds(state);
-    }
-
-    /**
      * Adds a labeled ring to this layer. Once added, rings form a stack, with each ring always drawn on top of rings added before it.
      * @param {WT_MapViewLabeledRing} labeledRing - the labeled ring to add.
      */
@@ -90,7 +73,6 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
         let entry = {
             canvas: new WT_MapViewCanvas(false, true),
             ring: labeledRing,
-            lastDrawn: {left: 0, top: 0, width: 0, height: 0}
         }
         this._rings.push(entry);
         let label = labeledRing.label;
@@ -124,21 +106,8 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
         for (let i = 0; i < this.rings.length; i++) {
             let entry = this.rings[i];
             entry.ring.onUpdate(state);
-            let toDraw = entry.ring.drawRing(state, this._bounds);
-            if (toDraw.refresh) {
-                entry.canvas.context.clearRect(entry.lastDrawn.left, entry.lastDrawn.top, entry.lastDrawn.width, entry.lastDrawn.height);
-                if (toDraw.copy) {
-                    let drawn = {
-                        left: this._bounds.left + toDraw.bounds.left,
-                        top: this._bounds.top + toDraw.bounds.top,
-                        width: toDraw.bounds.width,
-                        height: toDraw.bounds.height
-                    };
-                    entry.canvas.context.drawImage(toDraw.image, toDraw.bounds.left, toDraw.bounds.top, toDraw.bounds.width, toDraw.bounds.height, drawn.left, drawn.top, drawn.width, drawn.height);
-                    entry.lastDrawn = drawn;
-                }
-            }
-            entry.ring.drawLabel(state);
+            entry.ring.updateRing(state, entry.canvas.context, entry.canvas.width, entry.canvas.height);
+            entry.ring.updateLabel(state);
         }
     }
 }
@@ -208,32 +177,21 @@ class WT_MapViewLabeledRing {
     }
 
     /**
-     * @typedef {Object} WT_MapViewRingDrawResult
-     * @property {Boolean} refresh - whether the ring canvas should be refreshed (i.e. cleared).
-     * @property {Boolean} [copy] - whether the internal buffer should be copied to the ring canvas. Only defined if refresh is true.
-     * @property {HTMLCanvasElement} [image] - the internal buffer image to copy to the ring canvas. Only defined if copy is true.
-     * @property {{top:Number, left:Number, width:Number, height:Number}} [bounds] - the bounds of the area to copy from the internal buffer. Only defined if copy is true.
-     */
-
-    /**
-     * Draws the ring to an internal buffer.
+     * Draws the ring to a canvas.
      * @param {WT_MapViewState} state - the current state of the map view.
-     * @param {{top:Number, left:Number, width:Number, height:Number}} bounds - the draw-able bounds, in pixel coordinates.
-     * @returns {WT_MapViewRingDrawResult} an object containing information on the draw operation. Contains the following properties:
-     *                                     * refresh - whether the ring canvas should be refreshed (i.e. cleared).
-     *                                     * copy - whether the internal buffer should be copied to the ring canvas. Only defined if refresh is true.
-     *                                     * image - the internal buffer image to copy to the ring canvas. Only defined if copy is true.
-     *                                     * bounds - the bounds of the area to copy from the internal buffer. Only defined if copy is true.
+     * @param {CanvasRenderingContext2D} context - the rendering context of the canvas to which to draw the ring.
+     * @param {Number} width - the width of the canvas to which to draw.
+     * @param {Number} height - the height of the canvas to which to draw.
      */
-    drawRing(state, bounds) {
-        return this.ring.draw(bounds);
+    updateRing(state, context, width, height) {
+        return this.ring.update(context, width, height);
     }
 
     /**
      * Draws the label.
      * @param {WT_MapViewState} state - the current state of the map view.
      */
-    drawLabel(state) {
+    updateLabel(state) {
         if (!this.label) {
             return;
         }
@@ -255,10 +213,7 @@ class WT_MapViewLabeledRing {
  */
 class WT_MapViewRing {
     constructor() {
-        this._buffer = document.createElement("canvas");
-        this._bufferContext = this._buffer.getContext("2d");
         this._lastDrawnBounds = {left: 0, right: 0, top: 0, bottom: 0};
-
         this._needRedraw = true;
 
         this._center = new WT_GVector2(0, 0);
@@ -280,7 +235,7 @@ class WT_MapViewRing {
         this.onOptionChanged("center", oldValue, newValue);
     }
 
-    _isInView(bounds, margin = 0) {
+    _isInView(width, height, margin = 0) {
         let innerHalfLength = this.radius / Math.sqrt(2);
         let innerLeft = this.center.x - innerHalfLength;
         let innerRight = this.center.x + innerHalfLength;
@@ -292,10 +247,10 @@ class WT_MapViewRing {
         let outerTop = this.center.y - this.radius;
         let outerBottom = this.center.y + this.radius;
 
-        let left = bounds.left - margin;
-        let right = bounds.left + bounds.width + margin;
-        let top = bounds.top - margin;
-        let bottom = bounds.top + bounds.height + margin;
+        let left = -margin * width;
+        let right = (1 + margin) * width;
+        let top = -margin * height;
+        let bottom = (1 + margin) * height;
 
         if (innerLeft < left && innerRight > right && innerTop < top && innerBottom > bottom) {
             return false;
@@ -322,65 +277,73 @@ class WT_MapViewRing {
         this._needRedraw = needRedraw;
     }
 
-    _calculateToDrawBounds(centerX, centerY, radius, bounds) {
+    /**
+     * Determines the minimum bounds of the area required to draw the ring.
+     * @param {{x: Number, y: Number}} center - the center of the ring, in pixel coordinates.
+     * @param {Number} radius - the radius of the ring, in pixels.
+     * @param {Number} width - the width of the canvas to which to draw.
+     * @param {Number} height - the height of the canvas to which to draw.
+     * @returns {{left:Number, top:Number, width:Number, height:Number}} the minimum bounds of the area required to draw the ring.
+     */
+    _calculateToDrawBounds(center, radius, width, height) {
         let thick = this.strokeWidth / 2 + this.outlineWidth;
-        let toDrawLeft = Math.max(centerX - radius - thick - 5, bounds.left);
-        let toDrawTop = Math.max(centerY - radius - thick - 5, bounds.top);
-        let toDrawWidth = Math.min(centerX + radius + thick + 5, bounds.left + bounds.width) - toDrawLeft;
-        let toDrawHeight = Math.min(centerY + radius + thick + 5, bounds.top + bounds.height) - toDrawTop;
-        return {left: toDrawLeft, top: toDrawTop, width: toDrawWidth, height: toDrawHeight};
-    }
-
-    _applyStrokeToBuffer(lineWidth, strokeWidth, lineDash) {
-        this._bufferContext.lineWidth = lineWidth;
-        this._bufferContext.strokeStyle = strokeWidth;
-        this._bufferContext.setLineDash(lineDash);
-        this._bufferContext.stroke();
-    }
-
-    _drawRingToBuffer(centerX, centerY, radius) {
-        this._bufferContext.beginPath();
-        this._bufferContext.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        if (this.outlineWidth > 0) {
-            this._applyStrokeToBuffer(this.strokeWidth + this.outlineWidth * 2, this.outlineColor, this.outlineDash);
-        }
-        this._applyStrokeToBuffer(this.strokeWidth, this.strokeColor, this.strokeDash);
+        let drawLeft = Math.max(0, center.x - radius - thick - 5);
+        let drawTop = Math.max(0, center.y - radius - thick - 5);
+        let drawWidth = Math.min(width, center.x + radius + thick + 5) - drawLeft;
+        let drawHeight = Math.min(height, center.y + radius + thick + 5) - drawTop;
+        return {left: drawLeft, top: drawTop, width: drawWidth, height: drawHeight};
     }
 
     /**
-     * Draws the ring to an internal buffer.
-     * @param {{top:Number, left:Number, width:Number, height:Number}} bounds - the draw-able bounds, in pixel coordinates.
-     * @returns {WT_MapViewRingDrawResult} an object containing information on the draw operation. Contains the following properties:
-     *                                     * refresh - whether the ring canvas should be refreshed (i.e. cleared).
-     *                                     * copy - whether the internal buffer should be copied to the ring canvas. Only defined if refresh is true.
-     *                                     * image - the internal buffer image to copy to the ring canvas. Only defined if copy is true.
-     *                                     * bounds - the bounds of the area to copy from the internal buffer. Only defined if copy is true.
+     * Applies a stroke to the buffer rendering context using the specified styles.
+     * @param {CanvasRenderingContext2D} context - the rendering context of the canvas to which to draw.
+     * @param {Number} lineWidth - the width of the stroke, in pixels.
+     * @param {String|CanvasGradient|CanvasPattern} strokeStyle - the style of the stroke.
+     * @param {Number[]} lineDash - the dash of the stroke.
      */
-    draw(bounds) {
+    _applyStrokeToContext(context, lineWidth, strokeWidth, lineDash) {
+        context.lineWidth = lineWidth;
+        context.strokeStyle = strokeWidth;
+        context.setLineDash(lineDash);
+        context.stroke();
+    }
+
+    /**
+     * Draws the ring to a canvas.
+     * @param {CanvasRenderingContext2D} context - the rendering context of the canvas to which to draw.
+     * @param {{x: Number, y: Number}} center - the center of the ring, in pixel coordinates.
+     * @param {Number} radius - the radius of the ring, in pixels.
+     */
+    _drawRingToCanvas(context, center, radius) {
+        context.beginPath();
+        context.arc(center.x, center.y, radius, 0, Math.PI * 2);
+        if (this.outlineWidth > 0) {
+            this._applyStrokeToContext(context, this.strokeWidth + this.outlineWidth * 2, this.outlineColor, this.outlineDash);
+        }
+        this._applyStrokeToContext(context, this.strokeWidth, this.strokeColor, this.strokeDash);
+    }
+
+    /**
+     * Updates the ring.
+     * @param {CanvasRenderingContext2D} context - the rendering context of the canvas to which to draw the ring.
+     * @param {Number} width - the width of the canvas to which to draw.
+     * @param {Number} height - the height of the canvas to which to draw.
+     */
+    update(context, width, height) {
         if (!this._needRedraw) {
-            return {refresh: false};
+            return;
         }
 
-        if (!this.show || !this._isInView(bounds) || bounds.width <= 0 || bounds.height <= 0) {
-            return {refresh: true, copy: false};
+        context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
+
+        if (!this.show || !this._isInView(width, height) || width <= 0 || height <= 0) {
+            return;
         }
-
-        this._bufferContext.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
-
-        this._buffer.width = bounds.width;
-        this._buffer.height = bounds.height;
 
         let center = this.center;
-        let centerX = center.x - bounds.left;
-        let centerY = center.y - bounds.top;
-
-        this._drawRingToBuffer(centerX, centerY, this.radius);
-
-        this._lastDrawnBounds = this._calculateToDrawBounds(centerX, centerY, this.radius, bounds);
-
+        this._drawRingToCanvas(context, center, this.radius);
+        this._lastDrawnBounds = this._calculateToDrawBounds(center, this.radius, width, height);
         this._needRedraw = false;
-
-        return {refresh: true, copy: true, image: this._buffer, bounds: this._lastDrawnBounds};
     }
 }
 WT_MapViewRing.OPTIONS_DEF = {
