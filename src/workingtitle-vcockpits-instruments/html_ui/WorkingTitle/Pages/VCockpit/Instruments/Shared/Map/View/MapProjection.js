@@ -252,7 +252,8 @@ class WT_MapProjection {
 
     /**
      * Converts relative pixel coordinates (where x and y are between 0 and 1) to absolute pixel coordinates in viewing window space.
-     * @param {WT_GVector2} xy - relative pixel coordinates.
+     * @param {{x:Number, y:Number}} xy - relative pixel coordinates.
+     * @returns {WT_GVector2} absolute pixel coordinates.
      */
     relXYToAbsXY(xy) {
         return WT_GTransform2.scale(this.viewWidth, this.viewHeight).apply(xy);
@@ -260,7 +261,8 @@ class WT_MapProjection {
 
     /**
      * Converts absolute pixel coordinates in viewing window space to relative pixel coordinates.
-     * @param {WT_GVector2} xy - absolute pixel coordinates.
+     * @param {{x:Number, y:Number}} xy - absolute pixel coordinates.
+     * @returns {WT_GVector2} relative pixel coordinates.
      */
     absXYToRelXY(xy) {
         return WT_GTransform2.scale(1 / this.viewWidth, 1 / this.viewHeight).apply(xy);
@@ -270,7 +272,7 @@ class WT_MapProjection {
      * Sets this projection's options using an options object. Because the projection needs to recalculate its parameters when certain
      * options are changed (namely: target, targetOffset, range, rotation), changing multiple options through this method is more
      * efficient than changing them individually.
-     * @param {*} opts - the options object containing the new options values.
+     * @param {Object} opts - the options object containing the new options values.
      */
     setOptions(opts) {
         this._optsManager.setOptions(opts);
@@ -297,7 +299,7 @@ class WT_MapProjection {
 
     /**
      * Projects spherical coordinates (lat/long) onto the viewing window.
-     * @param {LatLong} latLong - the LatLong object representing the point to project.
+     * @param {{lat:Number, long:Number}} latLong - the lat/long object representing the point to project.
      * @returns {WT_GVector2} a 2-vector representing the projected point, in pixel coordinates.
      */
     projectLatLong(latLong) {
@@ -307,7 +309,7 @@ class WT_MapProjection {
 
     /**
      * Applies this projection's inverse to coordinates in the viewing window to get the corresponding point in spherical coordinates.
-     * @param {WT_GVector2} point - the 2-vector represeinting the pixel coordinates to invert.
+     * @param {{x:Number, y:Number}} point - the 2-vector represeinting the pixel coordinates to invert.
      * @returns {LatLong} a LatLong object representing the location whose projection equals the inverted point.
      */
     invertXY(xy) {
@@ -317,9 +319,9 @@ class WT_MapProjection {
 
     /**
      * Calculates the great-circle distance between two points on the Earth's surface. The arguments to this method may be supplied as
-     * either LatLong objects or [long, lat] pairs.
-     * @param {LatLong|Number[]} point1 - the first point.
-     * @param {LatLong|Number[]} point2 - the second point.
+     * either lat/long objects or [long, lat] pairs.
+     * @param {{lat:Number, long:Number}|Number[]} point1 - the first point.
+     * @param {{lat:Number, long:Number}|Number[]} point2 - the second point.
      * @returns {WT_NumberUnit} the distance. Default unit is great-arc radians (1 great-arc radian = radius of the Earth).
      */
     distance(point1, point2) {
@@ -336,7 +338,7 @@ class WT_MapProjection {
      * Checks whether a point lies within the bounds of the viewing window. The point to check can either be in
      * spherical coordinates or pixel coordinates in the viewing window. If the former, the point will first be
      * projected before the bounds check is made.
-     * @param {LatLong|WT_GVector2} point - the point to check.
+     * @param {{lat:Number, long:Number}|WT_GVector2} point - the point to check.
      * @param {Number} margin - the margin to use, expressed as a fraction of the width/height of the viewing window.
      *                          (a positive margin extends the bounds beyond the true bounds of the viewing window)
      * @returns {Boolean} whether the projection of the specified point lies within the bounds of the viewing window.
@@ -352,7 +354,7 @@ class WT_MapProjection {
      * will be calculated in viewing window (projected) space. If a WT_NumberUnit is supplied, the distance is interpreted as
      * real-world distance and the offset will be calculated in spherical space. Regardless of in which space the calculation is
      * performed, the offset point will be expressed in the same coordinate space as the one in which the origin point was expressed.
-     * @param {LatLong|WT_GVector2} point - the origin point.
+     * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point - the origin point.
      * @param {Number|WT_NumberUnit} distance - the distance to offset.
      * @param {Number} angle - the angle to offset.
      * @returns {LatLong|WT_GVector2} the offset point.
@@ -372,7 +374,7 @@ class WT_MapProjection {
      * will be calculated in viewing window (projected) space. If a WT_NumberUnit is supplied, the distance is interpreted as
      * real-world distance and the offset will be calculated in spherical space. Regardless of in which space the calculation is
      * performed, the offset point will be expressed in the same coordinate space as the one in which the origin point was expressed.
-     * @param {LatLong|WT_GVector2} point - the origin point.
+     * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point - the origin point.
      * @param {Number|WT_NumberUnit} distance - the distance to offset.
      * @param {Number} angle - the angle to offset.
      * @returns {LatLong|WT_GVector2} the offset point.
@@ -446,7 +448,7 @@ class WT_MapProjection {
 
     /**
      * Converts a 2-vector to a [x, y] pair.
-     * @param {WT_GVector2} xy - the 2-vector to convert.
+     * @param {{x:Number, y:Number}} xy - the 2-vector to convert.
      * @returns {Number[]} - a [x, y] pair.
      */
     static xyViewToProjection(xy) {
@@ -463,8 +465,8 @@ class WT_MapProjection {
     }
 
     /**
-     * Converts a LatLong object to a [long, lat] pair.
-     * @param {LatLong} latLong - the LatLong object to convert.
+     * Converts a lat/long object to a [long, lat] pair.
+     * @param {{lat:Number, long:Number}} latLong - the lat/long object to convert.
      * @returns {Number[]} - a [long, lat] pair.
      */
     static latLongGameToProjection(latLong) {
@@ -627,7 +629,7 @@ class WT_MapProjectionRenderer {
 
     /**
      * Projects spherical coordinates (lat/long) onto the viewing plane.
-     * @param {LatLong} latLong - the LatLong object representing the point to project.
+     * @param {{lat:Number, long:Number}} latLong - the lat/long object representing the point to project.
      * @returns {WT_GVector2} a 2-vector representing the projected point, in pixel coordinates.
      */
     projectLatLong(latLong) {
@@ -637,7 +639,7 @@ class WT_MapProjectionRenderer {
 
     /**
      * Applies this projection's inverse to coordinates in the viewing plane to get the corresponding point in spherical coordinates.
-     * @param {WT_GVector2} point - the 2-vector represeinting the pixel coordinates to invert.
+     * @param {{x:Number, y:Number}} point - the 2-vector represeinting the pixel coordinates to invert.
      * @returns {LatLong} a LatLong object representing the location whose projection equals the inverted point.
      */
     invertXY(xy) {
@@ -647,7 +649,7 @@ class WT_MapProjectionRenderer {
 
     /**
      * Renders a GeoJSON Feature or FeatureCollection and returns a SVG path string representing the rendered object.
-     * @param {*} object - a GeoJSON Feature or FeatureCollection object.
+     * @param {Object} object - a GeoJSON Feature or FeatureCollection object.
      * @returns {String} a SVG path string representing the rendered object.
      */
     renderSVG(object) {
@@ -656,7 +658,7 @@ class WT_MapProjectionRenderer {
 
     /**
      * Renders a GeoJSON Feature or FeatureCollection directly to a canvas context.
-     * @param {*} object - a GeoJSON Feature or FeatureCollection object.
+     * @param {Object} object - a GeoJSON Feature or FeatureCollection object.
      * @param {CanvasRenderingContext2D} - the canvas context to render to.
      */
     renderCanvas(object, context) {
@@ -667,7 +669,7 @@ class WT_MapProjectionRenderer {
 
     /**
      * Calculates the axis-aligned bounding box of a projected GeoJSON Feature or FeatureCollection.
-     * @param {*} object - a GeoJSON Feature or FeatureCollection object.
+     * @param {Object} object - a GeoJSON Feature or FeatureCollection object.
      * @returns {WT_GVector2[]} - a [topLeft, bottomRight] pair of 2-vectors representing the axis-aligned bounding box
      *                            of the projected object.
      */
@@ -677,7 +679,7 @@ class WT_MapProjectionRenderer {
 
     /**
      * Calculates the centroid of a projected GeoJSON Feature or FeatureCollection.
-     * @param {*} object - a GeoJSON Feature or FeatureCollection object.
+     * @param {Object} object - a GeoJSON Feature or FeatureCollection object.
      * @returns {WT_GVector2} - a 2-vector representing the centroid of the projected object.
      */
     calculateCentroid(object) {
@@ -686,7 +688,7 @@ class WT_MapProjectionRenderer {
 
     /**
      * Calculates the area of a projected GeoJSON Feature or FeatureCollection.
-     * @param {*} object - a GeoJSON Feature or FeatureCollection object.
+     * @param {Object} object - a GeoJSON Feature or FeatureCollection object.
      * @returns {Number} - the area of the projected object, in square pixels.
      */
     calculateArea(object) {
@@ -695,9 +697,9 @@ class WT_MapProjectionRenderer {
 
     /**
      * Checks whether a point lies within the bounds of this renderer's post-projection clipping bounds.
-     * The point to check can either be in  spherical coordinates or pixel coordinates in the viewing window.
+     * The point to check can either be in spherical coordinates or pixel coordinates in the viewing window.
      * If the former, the point will first be projected before the bounds check is made.
-     * @param {LatLong|WT_GVector2} point - the point to check.
+     * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point - the point to check.
      * @param {Number} margin - the margin to use, expressed as a fraction of the width/height of the viewing window.
      *                          (a positive margin extends the bounds beyond the true bounds of the viewing window)
      * @returns {Boolean} whether the projection of the specified point lies within the bounds of the viewing window.
@@ -834,18 +836,38 @@ class WT_MapProjectionSyncedRenderer extends WT_MapProjectionRenderer {
     set viewClipExtent(bounds) {
     }
 
+    /**
+     * Projects spherical coordinates (lat/long) onto the viewing plane.
+     * @param {Number[]} point - the [long, lat] coordinate pair to project.
+     * @returns {Number[]} a [x, y] pair representing the projected point, in pixel coordinates.
+     */
     project(point) {
         return this.mapProjection.project(point);
     }
 
+    /**
+     * Applies this projection's inverse to coordinates in the viewing plane to get the corresponding point in spherical coordinates.
+     * @param {Number[]} point - the [x, y] pair, in pixel coordinates, to invert.
+     * @returns {Number[]} a [long, lat] pair representing the location whose projection equals the inverted point.
+     */
     invert(point) {
         return this.mapProjection.invert(point);
     }
 
+    /**
+     * Projects spherical coordinates (lat/long) onto the viewing plane.
+     * @param {{lat:Number, long:Number}} latLong - the lat/long object representing the point to project.
+     * @returns {WT_GVector2} a 2-vector representing the projected point, in pixel coordinates.
+     */
     projectLatLong(latLong) {
         return this.mapProjection.projectLatLong(latLong);
     }
 
+    /**
+     * Applies this projection's inverse to coordinates in the viewing plane to get the corresponding point in spherical coordinates.
+     * @param {{x:Number, y:Number}} point - the 2-vector represeinting the pixel coordinates to invert.
+     * @returns {LatLong} a LatLong object representing the location whose projection equals the inverted point.
+     */
     invertXY(xy) {
         return this.mapProjection.invertXY(xy);
     }
