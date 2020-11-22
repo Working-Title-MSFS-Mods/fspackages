@@ -81,7 +81,7 @@ private:
             return 100;
             break;
         case CLB:
-            targetThrust = 2000;
+            targetThrust = 2050;
             if ((maxDensityThrust * thrustF) < targetThrust) {
                 targetThrust = (maxDensityThrust * thrustF);
             }
