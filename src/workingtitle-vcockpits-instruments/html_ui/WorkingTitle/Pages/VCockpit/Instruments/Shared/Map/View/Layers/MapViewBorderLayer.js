@@ -31,14 +31,14 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._referenceDisplayed = {
             range: new WT_NumberUnit(-1, WT_Unit.NMILE),
             center: new LatLong(0, 0),
-            scaleFactor: 150,
+            scale: 150,
             rotation: 0,
         };
 
         this._referenceUpdated = {
             range: new WT_NumberUnit(-1, WT_Unit.NMILE),
             center: new LatLong(0, 0),
-            scaleFactor: 150,
+            scale: 150,
             rotation: 0
         };
 
@@ -194,7 +194,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     }
 
     _calculateTransform(data, reference) {
-        let scale = data.projection.scaleFactor / reference.scaleFactor;
+        let scale = data.projection.scale / reference.scale;
         let rotation = data.projection.rotation - reference.rotation;
         let centerOffset = data.projection.projectLatLong(reference.center).subtract(data.projection.viewCenter, true);
         let margin = this._display.margin * scale;
@@ -236,14 +236,14 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     _setReferenceUpdated(data) {
         this._referenceUpdated.range = data.projection.range;
         this._referenceUpdated.center = data.projection.center;
-        this._referenceUpdated.scaleFactor = data.projection.scaleFactor;
+        this._referenceUpdated.scale = data.projection.scale;
         this._referenceUpdated.rotation = data.projection.rotation;
     }
 
     _copyReferenceUpdatedToDisplayed() {
         this._referenceDisplayed.range = this._referenceUpdated.range;
         this._referenceDisplayed.center = this._referenceUpdated.center;
-        this._referenceDisplayed.scaleFactor = this._referenceUpdated.scaleFactor;
+        this._referenceDisplayed.scale = this._referenceUpdated.scale;
         this._referenceDisplayed.rotation = this._referenceUpdated.rotation;
     }
 
@@ -321,7 +321,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 
         let viewCentroid = WT_MapProjection.xyProjectionToView(data.projection.project(featureInfo.geoCentroid));
         let sec = 1 / Math.cos(featureInfo.geoCentroid[1] * Avionics.Utils.DEG2RAD);
-        let area = featureInfo.geoArea * data.projection.scaleFactor * data.projection.scaleFactor * sec * sec; // estimate based on mercator projection
+        let area = featureInfo.geoArea * data.projection.scale * data.projection.scale * sec * sec; // estimate based on mercator projection
         let viewArea = data.projection.viewWidth * data.projection.viewHeight;
         return this.projectionRenderer.isInView(viewCentroid, -0.05) &&
                area < viewArea * WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MAX &&
