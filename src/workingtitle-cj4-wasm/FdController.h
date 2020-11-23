@@ -91,11 +91,11 @@ private:
             double cruThrPerc = (this->throttleAxis[idx] + 16384) / 25444.0; // -16384 -> 9060
             double cruThrExp = pow(cruThrPerc, 3.5);
             targetThrust = (3600 * cruThrPerc); // flat target thrust
-            if ((maxDensityThrust < targetThrust)) {
+            if ((maxDensityThrust * cruThrPerc) < targetThrust) {
                 targetThrust = (maxDensityThrust * cruThrPerc); // TODO 100% = 0 -> CRU
             }
             targetThrust *= thrustF;
-            //targetThrottle = this->throttleAxis;
+            throttleExp = cruThrExp*thrustF;
             break;
         }
         default:
@@ -111,7 +111,14 @@ private:
         double pidOut = 0;
         pidOut = this->throttleController[idx]->GetOutput(error, deltaTime);
 
-        return max(0, min(100, this->simVars->getThrottleLeverPosition(idx + 1) + pidOut));
+        if (this->throttleMode[idx] == CLB)
+        {
+            return max(0, min(100, this->simVars->getThrottleLeverPosition(idx + 1) + pidOut));
+        }
+        else {
+            // target throttle for cru
+            return max(0, min(100, throttleExp*100));
+        }
     }
 
     void updateVisibleThrottle(int idx) {
