@@ -70,14 +70,14 @@ private:
 
         double grossSimThrust = wt_utils::convertToGrossThrust(this->simVars->getThrust(idx + 1), this->simVars->getMach());
         double maxDensityThrust = wt_utils::getMaxDensityThrust(this->simVars->getAmbientDensity());
-        double thrustF = 0.95;
+        double thrustF = 0.93;
 
 
         // TODO: extract the modes later
         switch (this->throttleMode[idx])
         {
         case TO:
-            targetThrust = 3400;
+            targetThrust = 3600;
             return 100;
             break;
         case CLB:
