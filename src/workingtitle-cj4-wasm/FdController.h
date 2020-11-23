@@ -90,11 +90,7 @@ private:
         case CRU: {
             double cruThrPerc = (this->throttleAxis[idx] + 16384) / 25444.0; // -16384 -> 9060
             double cruThrExp = pow(cruThrPerc, 3.5);
-            targetThrust = (3600 * cruThrPerc); // flat target thrust
-            if ((maxDensityThrust * cruThrPerc) < targetThrust) {
-                targetThrust = (maxDensityThrust * cruThrPerc); // TODO 100% = 0 -> CRU
-            }
-            targetThrust *= thrustF;
+
             throttleExp = cruThrExp*thrustF;
             break;
         }
