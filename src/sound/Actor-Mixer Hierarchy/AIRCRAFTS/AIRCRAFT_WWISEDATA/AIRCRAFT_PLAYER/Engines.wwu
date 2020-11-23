@@ -90,8 +90,8 @@
 														<Flags>0</Flags>
 													</Point>
 													<Point>
-														<XPos>200</XPos>
-														<YPos>17</YPos>
+														<XPos>105</XPos>
+														<YPos>16</YPos>
 														<Flags>37</Flags>
 													</Point>
 												</PointList>
@@ -132,8 +132,8 @@
 														<Flags>0</Flags>
 													</Point>
 													<Point>
-														<XPos>200</XPos>
-														<YPos>810</YPos>
+														<XPos>105</XPos>
+														<YPos>337</YPos>
 														<Flags>37</Flags>
 													</Point>
 												</PointList>
@@ -331,8 +331,8 @@
 														<Flags>0</Flags>
 													</Point>
 													<Point>
-														<XPos>200</XPos>
-														<YPos>65</YPos>
+														<XPos>105</XPos>
+														<YPos>59</YPos>
 														<Flags>37</Flags>
 													</Point>
 												</PointList>
@@ -692,6 +692,89 @@
 								<Property Name="OverrideAnalysis" Type="bool" Value="True"/>
 								<Property Name="OverridePositioning" Type="bool" Value="True"/>
 								<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
+								<Property Name="Pitch" Type="int32">
+									<RTPCList>
+										<RTPC Name="" ID="{3B972E88-6581-4890-9AFB-0318C67B428B}" ShortID="490669775">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="SIMVAR_TURB_ENG_N1" ID="{23BAD005-E61B-45C7-9ADA-EB168F71B891}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{36B46622-D2A9-4CF2-8AD0-18C606E2E3DD}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="65537"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>-4800</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>0.8203125</XPos>
+														<YPos>-4800</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>1.640625</XPos>
+														<YPos>-4681</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>3.28125</XPos>
+														<YPos>-3481</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>6.5625</XPos>
+														<YPos>-2281</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>9.84375</XPos>
+														<YPos>-1579</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>13.125</XPos>
+														<YPos>-1081</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>19.6875</XPos>
+														<YPos>-379</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>26.25</XPos>
+														<YPos>119</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>39.375</XPos>
+														<YPos>821</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>52.5</XPos>
+														<YPos>1319</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>78.75</XPos>
+														<YPos>2021</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>105</XPos>
+														<YPos>2519</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
+									</RTPCList>
+								</Property>
 								<Property Name="Priority" Type="int16">
 									<ValueList>
 										<Value>100</Value>
@@ -748,8 +831,8 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>200</XPos>
-																<YPos>41</YPos>
+																<XPos>105</XPos>
+																<YPos>22</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -791,8 +874,8 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>200</XPos>
-																<YPos>395</YPos>
+																<XPos>105</XPos>
+																<YPos>495</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -832,8 +915,8 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>200</XPos>
-																<YPos>-200</YPos>
+																<XPos>105</XPos>
+																<YPos>-13.0612</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -908,6 +991,11 @@
 												<Value>66</Value>
 											</ValueList>
 										</Property>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
 										<Property Name="Lowpass" Type="int16">
 											<ValueList>
@@ -943,8 +1031,8 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>200</XPos>
-																<YPos>515</YPos>
+																<XPos>105</XPos>
+																<YPos>310</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -1015,7 +1103,7 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>200</XPos>
+																<XPos>105</XPos>
 																<YPos>0</YPos>
 																<Flags>37</Flags>
 															</Point>
@@ -1056,6 +1144,11 @@
 												<Value>67</Value>
 											</ValueList>
 										</Property>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
 										<Property Name="Lowpass" Type="int16">
 											<ValueList>
@@ -1091,8 +1184,8 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>200</XPos>
-																<YPos>515</YPos>
+																<XPos>105</XPos>
+																<YPos>310</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -1132,8 +1225,8 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>200</XPos>
-																<YPos>0</YPos>
+																<XPos>105</XPos>
+																<YPos>-1.99616</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -1207,6 +1300,11 @@
 												<Value>69</Value>
 											</ValueList>
 										</Property>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
 										<Property Name="Lowpass" Type="int16">
 											<ValueList>
@@ -1242,8 +1340,8 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>200</XPos>
-																<YPos>515</YPos>
+																<XPos>105</XPos>
+																<YPos>438</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -1317,8 +1415,8 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>200</XPos>
-																<YPos>-2.75266</YPos>
+																<XPos>105</XPos>
+																<YPos>-2.21052</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -1354,6 +1452,11 @@
 								<Sound Name="Compressor_Whine_Loop_2wav" ID="{BC51DE57-9C3B-4481-9AE9-C4F6107D6D1B}" ShortID="524451252">
 									<PropertyList>
 										<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
 										<Property Name="Pitch" Type="int32">
 											<RTPCList>
@@ -1384,8 +1487,8 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>200</XPos>
-																<YPos>515</YPos>
+																<XPos>105</XPos>
+																<YPos>215</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -1425,7 +1528,7 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>200</XPos>
+																<XPos>105</XPos>
 																<YPos>0</YPos>
 																<Flags>37</Flags>
 															</Point>
@@ -1496,6 +1599,232 @@
 										<ActiveSource Name="Compressor_Whine_Loop_2wav" ID="{F00467D7-84BF-4308-AA00-A41DCD206744}" Platform="Linked"/>
 									</ActiveSourceList>
 								</Sound>
+								<BlendContainer Name="Whines" ID="{124CF342-7C0E-403C-B0F4-3EE44977E065}" ShortID="1037497981">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="2"/>
+										<Property Name="OverridePositioning" Type="bool" Value="True"/>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-8</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="3 Quarters" ID="{93A50983-B864-4D86-90EF-1897EC10DDBD}" ShortID="404593355">
+											<PropertyList>
+												<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+												<Property Name="Pitch" Type="int32">
+													<ValueList>
+														<Value>-1540</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="3 Quarters" ID="{3C3F4ED9-1D71-4196-BE30-082D84B82C56}">
+													<PropertyList>
+														<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+														<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+														<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
+														<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>3 Quarters.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="3 Quarters" ID="{3C3F4ED9-1D71-4196-BE30-082D84B82C56}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Full" ID="{B8C832A2-C252-4F0B-8F72-0377ADD98EE7}" ShortID="942813907">
+											<PropertyList>
+												<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+												<Property Name="Pitch" Type="int32">
+													<ValueList>
+														<Value>-2020</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Full" ID="{A26594B5-09E7-41D9-9C2C-774FC442869A}">
+													<PropertyList>
+														<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+														<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+														<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
+														<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Full.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Full" ID="{A26594B5-09E7-41D9-9C2C-774FC442869A}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Half" ID="{B0843AF4-0AE2-4CF2-A855-2B54E4B68A9E}" ShortID="329854622">
+											<PropertyList>
+												<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+												<Property Name="Pitch" Type="int32">
+													<ValueList>
+														<Value>-660</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Half" ID="{953C2AF7-F2F2-43C0-956A-E6CE5A1D9A65}">
+													<PropertyList>
+														<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+														<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+														<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
+														<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Half.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Half" ID="{953C2AF7-F2F2-43C0-956A-E6CE5A1D9A65}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Quarter" ID="{B87A2E3B-018A-418C-AE9E-E81BC28E3D94}" ShortID="179652643">
+											<PropertyList>
+												<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Quarter" ID="{1E960D18-0515-4CA3-A81A-1007DEA62545}">
+													<PropertyList>
+														<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+														<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+														<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
+														<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Quarter.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Quarter" ID="{1E960D18-0515-4CA3-A81A-1007DEA62545}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+									<BlendTrackList>
+										<BlendTrack Name="New Blend Track" ID="{1CE40E2B-BB82-4CC5-B852-A5F2CD4502EE}" ShortID="409881945">
+											<PropertyList>
+												<Property Name="EnableCrossFading" Type="bool" Value="True"/>
+												<Property Name="Volume" Type="Real64">
+													<RTPCList>
+														<RTPC Name="" ID="{A2EB324D-EADC-4950-97F8-303AF094CC6D}" ShortID="797327442">
+															<ReferenceList>
+																<Reference Name="ControlInput">
+																	<ObjectRef Name="SIMVAR_TURB_ENG_N1" ID="{23BAD005-E61B-45C7-9ADA-EB168F71B891}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+																</Reference>
+															</ReferenceList>
+															<Curve Name="" ID="{A0F170DC-EA52-4CE3-A6B0-DD69B9A6C504}">
+																<PropertyList>
+																	<Property Name="Flags" Type="int32" Value="3"/>
+																</PropertyList>
+																<PointList>
+																	<Point>
+																		<XPos>0</XPos>
+																		<YPos>-200</YPos>
+																		<Flags>5</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>105</XPos>
+																		<YPos>0</YPos>
+																		<Flags>37</Flags>
+																	</Point>
+																</PointList>
+															</Curve>
+														</RTPC>
+													</RTPCList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="LayerCrossFadeControlInput">
+													<ObjectRef Name="SIMVAR_TURB_ENG_N1" ID="{23BAD005-E61B-45C7-9ADA-EB168F71B891}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+												</Reference>
+											</ReferenceList>
+											<BlendTrackAssocList>
+												<BlendTrackAssoc>
+													<ItemRef Name="Quarter" ID="{B87A2E3B-018A-418C-AE9E-E81BC28E3D94}"/>
+													<CrossfadingInfo>
+														<LeftEdgePos>0</LeftEdgePos>
+														<LeftFadingMode>Automatic</LeftFadingMode>
+														<RightEdgePos>43.2727402216428</RightEdgePos>
+														<RightFadingMode>Automatic</RightFadingMode>
+													</CrossfadingInfo>
+												</BlendTrackAssoc>
+												<BlendTrackAssoc>
+													<ItemRef Name="Half" ID="{B0843AF4-0AE2-4CF2-A855-2B54E4B68A9E}"/>
+													<CrossfadingInfo>
+														<LeftEdgePos>22.3471807366362</LeftEdgePos>
+														<LeftFadingMode>Automatic</LeftFadingMode>
+														<RightEdgePos>67.2363593546284</RightEdgePos>
+														<RightFadingMode>Automatic</RightFadingMode>
+													</CrossfadingInfo>
+												</BlendTrackAssoc>
+												<BlendTrackAssoc>
+													<ItemRef Name="3 Quarters" ID="{93A50983-B864-4D86-90EF-1897EC10DDBD}"/>
+													<CrossfadingInfo>
+														<LeftEdgePos>47.7581529905476</LeftEdgePos>
+														<LeftFadingMode>Automatic</LeftFadingMode>
+														<RightEdgePos>90.9098247229465</RightEdgePos>
+														<RightFadingMode>Automatic</RightFadingMode>
+													</CrossfadingInfo>
+												</BlendTrackAssoc>
+												<BlendTrackAssoc>
+													<ItemRef Name="Full" ID="{B8C832A2-C252-4F0B-8F72-0377ADD98EE7}"/>
+													<CrossfadingInfo>
+														<LeftEdgePos>72.5365102265319</LeftEdgePos>
+														<LeftFadingMode>Automatic</LeftFadingMode>
+														<RightEdgePos>105</RightEdgePos>
+														<RightFadingMode>Automatic</RightFadingMode>
+													</CrossfadingInfo>
+												</BlendTrackAssoc>
+											</BlendTrackAssocList>
+										</BlendTrack>
+									</BlendTrackList>
+								</BlendContainer>
 							</ChildrenList>
 							<StateInfo>
 								<StateGroupList>
