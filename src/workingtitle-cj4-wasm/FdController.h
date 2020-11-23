@@ -107,12 +107,11 @@ private:
             //printf("TA %d TLP: %.4f TTHR: %.0f GTHR: %.0f MDENS: %.0f @ %.0f \r\n", this->throttleAxis[idx], throttleLeverPerc, targetThrust, grossSimThrust, maxDensityThrust, this->simVars->getPlaneAltitude());
         }
 
-        double error = targetThrust - grossSimThrust;
-        double pidOut = 0;
-        pidOut = this->throttleController[idx]->GetOutput(error, deltaTime);
-
         if (this->throttleMode[idx] == CLB)
         {
+            double error = targetThrust - grossSimThrust;
+            double pidOut = 0;
+            pidOut = this->throttleController[idx]->GetOutput(error, deltaTime);
             return max(0, min(100, this->simVars->getThrottleLeverPosition(idx + 1) + pidOut));
         }
         else {
