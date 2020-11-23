@@ -5,6 +5,7 @@ declare module "MSFS" {
     ident: string;
     endsInDiscontinuity?: boolean;
     isVectors?: boolean;
+    isRunway?: boolean;
     infos: WayPointInfo;
     type: string;
     bearingInFP: number;

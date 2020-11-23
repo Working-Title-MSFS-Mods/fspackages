@@ -144,12 +144,12 @@ class WT_BaseLnav {
                     let toCurrentFixHeading = Avionics.Utils.computeGreatCircleHeading(new LatLongAlt(this._planePos._lat, this._planePos._lon), this._activeWaypoint.infos.coordinates);
                     let toNextFixHeading = Avionics.Utils.computeGreatCircleHeading(this._activeWaypoint.infos.coordinates, nextActiveWaypoint.infos.coordinates);
                     
-                    let nextFixTurnAngle = Avionics.Utils.angleDiff(planeHeading, toNextFixHeading);
+                    let nextFixTurnAngle = Avionics.Utils.angleDiff(this._dtk, toNextFixHeading);
                     let currentFixTurnAngle = Avionics.Utils.angleDiff(planeHeading, toCurrentFixHeading);
 
                     let enterBankDistance = (this._groundSpeed / 3600) * 4;
 
-                    const getDistanceToActivate = turnAngle => Math.min((turnRadius * Math.tan((Math.abs(turnAngle) / 2) * (Math.PI / 180))) + enterBankDistance, maxAnticipationDistance);
+                    const getDistanceToActivate = turnAngle => Math.min((turnRadius * Math.tan((Math.abs(turnAngle * Avionics.Utils.DEG2RAD) / 2))) + enterBankDistance, maxAnticipationDistance);
 
                     let activateDistance = Math.max(getDistanceToActivate(nextFixTurnAngle), getDistanceToActivate(currentFixTurnAngle));
                     let alertDistance = activateDistance + (this._groundSpeed / 3600) * 5; //Alert approximately 5 seconds prior to waypoint change

@@ -143,7 +143,7 @@ class CJ4_FMC_LegsPage {
             displayWaypoints.push({index: i, fix: waypoints[i]});
 
             if (waypoints[i].endsInDiscontinuity) {
-                displayWaypoints.push({index: i, fix: {icao: "$DISCO"}});
+                displayWaypoints.push({index: i, fix: {icao: "$DISCO", isRemovable: waypoints[i].isVectors === true}});
             }
         }
 
@@ -217,15 +217,20 @@ class CJ4_FMC_LegsPage {
 
                             if (isDirectTo) { // DIRECT TO
                                 // this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                this._fmc.flightPlanManager.activateDirectTo(this._fmc.selectedWaypoint.icao, () => {
+                                this._fmc.flightPlanManager.activateDirectTo(this._fmc.selectedWaypoint.fix.icao, () => {
                                     this.resetAfterOp();
                                     // });
                                 });
                             }
                             else { // MOVE TO POSITION IN FPLN
                                 if (waypoint.fix.icao === '$DISCO') {
-                                    this._fmc.flightPlanManager.clearDiscontinuity(waypoint.index);
-                                    lskWaypointIndex += 1;
+                                    if (waypoint.fix.isRemovable) {
+                                        this._fmc.flightPlanManager.clearDiscontinuity(waypoint.index);
+                                        lskWaypointIndex += 1;
+                                    }
+                                    else {
+                                        this._fmc.showErrorMessage("UNABLE CLR DISCONTINUITY");
+                                    }
                                 }
 
                                 let removeWaypointForLegsMethod = (callback = EmptyCallback.Void) => {
