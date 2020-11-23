@@ -71,6 +71,7 @@ class WT_Shared_Dependencies {
         d.register("electricityAvailable", d => new Subject(navSystem.isElectricityAvailable()));
         d.register("planeConfig", d => new WT_Plane_Config());
         d.register("planeState", d => new WT_Plane_State(d.electricityAvailable));
+        d.register("planeStatistics", d => new WT_Plane_Statistics());
         d.register("fuelUsed", d => new WT_Fuel_Used(d.planeState, ["FUEL LEFT QUANTITY", "FUEL RIGHT QUANTITY"]));
         d.register("radioAltimeter", d => new WT_Radio_Altimeter(d.planeConfig));
         d.register("sound", d => new WT_Sound());
@@ -97,6 +98,7 @@ class WT_Shared_Dependencies {
 
         d.register("procedures", d => new Procedures(d.flightPlanManager));
         d.register("brightnessSettings", d => new WT_Brightness_Settings());
+        d.register("clock", d => new WT_Clock());
         d.register("barometricPressure", d => {
             const pressure = new WT_Barometric_Pressure();
             navSystem.updatables.push(pressure);
@@ -121,6 +123,7 @@ class WT_Shared_Dependencies {
 
         d.register("showDuplicatesHandler", d => new WT_Show_Duplicates_Handler());
         d.register("icaoInputModel", d => new WT_Icao_Input_Model(d.showDuplicatesHandler, d.waypointQuickSelect), { scope: "transient" });
+        d.register("waypointInputModel", d => new WT_Waypoint_Input_Model(d.icaoInputModel, d.waypointRepository), { scope: "transient" });
 
         d.register("mapInputLayerFactory", d => new WT_Map_Input_Layer_Factory(d.modSettings));
 

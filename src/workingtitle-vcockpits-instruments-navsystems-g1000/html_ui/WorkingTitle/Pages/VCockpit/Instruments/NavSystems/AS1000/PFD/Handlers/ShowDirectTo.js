@@ -26,6 +26,6 @@ class WT_PFD_Show_Direct_To_Handler extends WT_Show_Direct_To_Handler {
         subscriptions.add(view.onCancel.subscribe(onCancel));
         subscriptions.add(view.onExit.subscribe(onExit));
 
-        this.miniPageController.showPage(view);
+        this.miniPageController.showPageRoot(view);
     }
 }

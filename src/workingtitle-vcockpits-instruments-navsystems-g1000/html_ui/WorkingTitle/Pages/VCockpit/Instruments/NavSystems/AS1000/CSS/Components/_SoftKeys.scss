@@ -1,7 +1,8 @@
 g1000-soft-key-menu {
     background-color: $page_background_color;
     display: grid;
-    grid-template-columns: repeat(12, percentage(1/12));
+    width: 100%;
+    grid-template-columns: repeat(12, 1fr);
     font-size: 1rem;
 
     g1000-soft-key,
@@ -23,11 +24,11 @@ g1000-soft-key-menu {
         &[hover] {
             &:not([disabled]) {
                 color: #000;
-                background-color: #777;
+                background-color: #aaa;
 
-                box-shadow: 0px $border_width_thin 0px 0px #333 inset;
-                border-right-color: #bbb;
-                border-left-color: #000;
+                box-shadow: 0px $border_width_thin 0px 0px #888 inset;
+                border-right-color: #ddd;
+                border-left-color: #444;
             }
         }
     }

@@ -37,12 +37,11 @@ class WT_Direct_To_Model extends WT_Model {
         this.waypoint = new Subject(null);
         this.bearing = new Subject(null);
         this.distance = new Subject(null);
-        this.name = new Subject(null);
-        this.city = new Subject(null);
     }
-    async setIcao(icao) {
-        let waypoint = await this.waypointRepository.load(icao);
-
+    /**
+     * @param {WayPoint} waypoint 
+     */
+    setWaypoint(waypoint) {
         if (waypoint && waypoint.infos) {
             this.waypoint.value = waypoint;
             let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
@@ -51,14 +50,10 @@ class WT_Direct_To_Model extends WT_Model {
             this.bearing.value = Avionics.Utils.computeGreatCircleHeading(planeCoordinates, waypoint.infos.coordinates);
             let distance = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, waypoint.infos.coordinates);
             this.distance.value = distance;
-            this.name.value = waypoint.infos.name;
-            this.city.value = waypoint.infos.city;
         } else {
             this.waypoint.value = null;
             this.bearing.value = null;
             this.distance.value = null;
-            this.name.value = null;
-            this.city.value = null;
         }
     }
     activateDirectTo(course) {
@@ -104,12 +99,12 @@ class WT_Direct_To_Page_Menu extends WT_Page_Menu_Model {
 
 class WT_Direct_To_View extends WT_HTML_View {
     /**
-     * @param {WT_Icao_Input_Model} icaoInputModel 
+     * @param {WT_Waypoint_Input_Model} waypointInputModel 
      * @param {WT_Show_Page_Menu_Handler} showPageMenuHandler 
      */
-    constructor(icaoInputModel, showPageMenuHandler) {
+    constructor(waypointInputModel, showPageMenuHandler) {
         super();
-        this.icaoInputModel = icaoInputModel;
+        this.waypointInputModel = waypointInputModel;
         this.showPageMenuHandler = showPageMenuHandler;
         this.inputLayer = new WT_Direct_To_Input_Layer(this);
         this.userSelectedCourse = false;
@@ -125,8 +120,6 @@ class WT_Direct_To_View extends WT_HTML_View {
         if (this.map) {
             this.elements.mapContainer.appendChild(this.map);
         }
-        this.elements.icaoInput.addEventListener("change", e => this.icaoChanged(e.target.icao))
-        this.elements.icaoInput.addEventListener("input", DOMUtilities.debounce(e => this.icaoInput(e.target.icao), 500, false))
         this.elements.course.addEventListener("change", e => this.userSelectedCourse = true)
     }
     disconnectedCallback() {
@@ -135,11 +128,13 @@ class WT_Direct_To_View extends WT_HTML_View {
             this.closeMenuHandler = null;
         }
     }
-    icaoInput(icao) {
-        this.model.setIcao(icao);
-    }
-    icaoChanged(icao) {
-        this.model.setIcao(icao);
+    /**
+     * @param {WayPoint} waypoint 
+     */
+    updateWaypoint(waypoint) {
+        if (waypoint instanceof WayPoint) {
+            this.model.setWaypoint(waypoint);
+        }
     }
     centerOnCoordinates(coordinates) {
         if (this.map) {
@@ -151,15 +146,13 @@ class WT_Direct_To_View extends WT_HTML_View {
      */
     setModel(model) {
         this.model = model;
-        this.elements.icaoInput.setModel(this.icaoInputModel);
+        this.elements.waypointInput.setModel(this.waypointInputModel);
         this.model.waypoint.subscribe(waypoint => {
             if (waypoint) {
-                this.elements.icaoInput.icao = waypoint.icao;
+                this.elements.waypointInput.value = waypoint;
                 this.centerOnCoordinates(waypoint.infos.coordinates);
             }
         });
-        this.model.name.subscribe(name => this.elements.icaoName.innerHTML = `${name === null ? `__________________` : name}`);
-        this.model.city.subscribe(city => this.elements.icaoCity.innerHTML = `${city === null ? `__________________` : city}`);
         this.model.bearing.subscribe(bearing => {
             this.elements.bearing.innerHTML = `${bearing === null ? `___` : bearing.toFixed(0)}°`;
             this.userSelectedCourse = false;

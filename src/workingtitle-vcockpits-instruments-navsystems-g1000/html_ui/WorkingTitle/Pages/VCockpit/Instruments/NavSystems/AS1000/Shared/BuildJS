@@ -9,6 +9,7 @@ Framework/Observables.js
 Framework/UnitChooser.js
 BaseAS1000.js
 Components/FlightPlan.js
+Components/Map.js
 Components/RadioFrequencies.js
 Components/ComFrequencies.js
 Components/NavFrequencies.js
@@ -23,13 +24,16 @@ Data/Procedures/Procedures.js
 Data/Procedures/Transitions.js
 Data/Procedures/Waypoints.js
 Data/AirportDatabase.js
+Data/Barometer.js
 Data/Brightness.js
 Data/Changelog.js
+Data/Clock.js
 Data/FuelUsed.js
 Data/PlaneConfig.js
 Data/NearestWaypoints.js
 Data/RadioAltimeter.js
 Data/Settings.js
+Data/Statistics.js
 Data/WaypointQuickSelect.js
 Data/WeatherRadar.js
 Libs/CSV.js
@@ -55,6 +59,7 @@ UIElements/StringInput.js
 UIElements/SoftKeys.js
 UIElements/TimeInput.js
 UIElements/ToggleSwitch.js
+UIElements/WaypointInput.js
 Pages/DirectTo.js
 Pages/DuplicateWaypoints.js
 Pages/FlightPlan/PageMenu.js

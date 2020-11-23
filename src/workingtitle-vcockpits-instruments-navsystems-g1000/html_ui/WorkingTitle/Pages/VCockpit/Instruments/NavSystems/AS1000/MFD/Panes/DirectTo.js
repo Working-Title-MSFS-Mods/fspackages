@@ -1,13 +1,13 @@
 class WT_MFD_Direct_To_View_Factory {
     /**
      * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
-     * @param {WT_Icao_Input_Model} icaoInputModel 
+     * @param {WT_Waypoint_Input_Model} waypointInputModel 
      * @param {WT_Show_Page_Menu_Handler} showPageMenuHandler 
      * @param {WT_Map_Input_Layer_Factory} mapInputLayerFactory
      */
-    constructor(softKeyMenuHandler, icaoInputModel, showPageMenuHandler, mapInputLayerFactory) {
+    constructor(softKeyMenuHandler, waypointInputModel, showPageMenuHandler, mapInputLayerFactory) {
         this.softKeyMenuHandler = softKeyMenuHandler;
-        this.icaoInputModel = icaoInputModel;
+        this.waypointInputModel = waypointInputModel;
         this.showPageMenuHandler = showPageMenuHandler;
         this.mapInputLayerFactory = mapInputLayerFactory;
     }
@@ -15,20 +15,20 @@ class WT_MFD_Direct_To_View_Factory {
      * @param {MapInstrument} map
      */
     create(map) {
-        return new WT_MFD_Direct_To_View(this.icaoInputModel, this.showPageMenuHandler, this.softKeyMenuHandler, map, this.mapInputLayerFactory.create(map, false));
+        return new WT_MFD_Direct_To_View(this.waypointInputModel, this.showPageMenuHandler, this.softKeyMenuHandler, map, this.mapInputLayerFactory.create(map, false));
     }
 }
 
 class WT_MFD_Direct_To_View extends WT_Direct_To_View {
     /**
-     * @param {WT_Icao_Input_Model} icaoInputModel 
+     * @param {WT_Waypoint_Input_Model} waypointInputModel 
      * @param {WT_Show_Page_Menu_Handler} showPageMenuHandler 
      * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      * @param {MapInstrument} map
      * @param {WT_Map_Input_Layer} mapInputLayer
      */
-    constructor(icaoInputModel, showPageMenuHandler, softKeyMenuHandler, map, mapInputLayer) {
-        super(icaoInputModel, showPageMenuHandler);
+    constructor(waypointInputModel, showPageMenuHandler, softKeyMenuHandler, map, mapInputLayer) {
+        super(waypointInputModel, showPageMenuHandler);
         this.softKeyMenuHandler = softKeyMenuHandler;
         this.map = map;
         this.mapInputLayer = mapInputLayer;

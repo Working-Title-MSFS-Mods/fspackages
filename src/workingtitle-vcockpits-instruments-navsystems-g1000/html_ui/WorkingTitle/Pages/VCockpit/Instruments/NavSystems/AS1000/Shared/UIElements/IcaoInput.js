@@ -36,12 +36,10 @@ class WT_Icao_Input_Model {
     /**
      * @param {WT_Show_Duplicates_Handler} showDuplicatesHandler 
      * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
-     * @param {WT_Waypoint_Repository} waypointRepository 
      */
-    constructor(showDuplicatesHandler, waypointQuickSelect, waypointRepository) {
+    constructor(showDuplicatesHandler, waypointQuickSelect) {
         this.showDuplicatesHandler = showDuplicatesHandler;
         this.waypointQuickSelect = waypointQuickSelect;
-        this.waypointRepository = waypointRepository;
     }
     addToQuickSelect(icao) {
         this.waypointQuickSelect.addRecentWaypoint(icao);
@@ -57,7 +55,6 @@ class WT_Icao_Input extends HTMLElement {
         this.elements = {
             characters: []
         };
-        this.active = false;
         this.editingPosition = null;
 
         this.addEventListener("selected", this.enter.bind(this));
@@ -67,9 +64,6 @@ class WT_Icao_Input extends HTMLElement {
                 this.confirm(false);
             });
         });
-
-        this.quickSelect = document.createElement("waypoint-quick-select");
-        this.appendChild(this.quickSelect);
     }
     set ident(value) {
         if (this._ident !== value) {
@@ -142,9 +136,12 @@ class WT_Icao_Input extends HTMLElement {
         this.selectEditingPosition(SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCursorPosition", "number", this.instrumentIdentifier));
     }
     connectedCallback() {
-        if (this.hasInitialised)
+        if (this.initialised)
             return;
-        this.hasInitialised = true;
+        this.initialised = true;
+
+        this.quickSelect = document.createElement("waypoint-quick-select");
+        this.appendChild(this.quickSelect);
 
         for (let i = 0; i < this.getAttribute("characters"); i++) {
             let character = document.createElement("span");
@@ -166,20 +163,22 @@ class WT_Icao_Input extends HTMLElement {
         this.exit();
     }
     enter(e) {
-        let inputStack = e.detail.inputStack;
-        let inputLayer = new WT_Icao_Input_Input_Layer(this);
+        const inputStack = e.detail.inputStack;
+        const inputLayer = new WT_Icao_Input_Input_Layer(this);
         this.inputStackManipulator = inputStack.push(inputLayer);
+
+        let shouldUpdate = true;
+        this.inputStackManipulator.onPopped.subscribe(() => shouldUpdate = false);
 
         this.setEditingSimVars();
 
-        let cb = () => {
-            if (this.active) {
-                this.updateFromSimVars();
-                requestAnimationFrame(cb);
+        const update = () => {
+            this.updateFromSimVars();
+            if (shouldUpdate) {
+                requestAnimationFrame(update);
             }
         }
-        this.active = true;
-        requestAnimationFrame(cb);
+        requestAnimationFrame(update);
 
         this.updateDisplay();
     }
@@ -213,7 +212,6 @@ class WT_Icao_Input extends HTMLElement {
         if (this.model) {
             this.model.addToQuickSelect(this.icao);
         }
-        this.active = false;
 
         const evt = document.createEvent("HTMLEvents");
         evt.initEvent("change", true, true);
@@ -225,7 +223,6 @@ class WT_Icao_Input extends HTMLElement {
         this.exit();
     }
     exit() {
-        this.active = false;
         this.selectEditingPosition(null);
 
         if (this.inputStackManipulator) {
@@ -291,8 +288,8 @@ class WT_Waypoint_Quick_Select_View extends WT_HTML_View {
      * @param {WT_Waypoint_Quick_Select} waypointQuickSelect 
      */
     setWaypointQuickSelect(waypointQuickSelect, type) {
-       this.waypointQuickSelect = waypointQuickSelect;
-       this.type = type;
+        this.waypointQuickSelect = waypointQuickSelect;
+        this.type = type;
     }
     async updateWaypoints() {
         const waypoints = await this.waypointQuickSelect.getWaypoints(this.type);

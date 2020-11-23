@@ -13,8 +13,11 @@ class WT_Airport_Information_Model {
         this.waypoint = new Subject(null);
         this.metar = new Subject(null);
     }
-    async setIcao(icao) {
-        this.waypoint.value = await this.waypointRepository.load(icao);
+    setIcao(icao) {
+
+    }
+    async setWaypoint(waypoint) {
+        this.waypoint.value = waypoint;
         try {
             this.metar.value = this.metarRepository.get(this.waypoint.value.ident);
         } catch (e) {
@@ -85,14 +88,14 @@ class WT_Airport_Information_Input_Layer extends Selectables_Input_Layer {
 class WT_Airport_Information_View extends WT_HTML_View {
     /**
      * @param {MapInstrument} map 
-     * @param {WT_Icao_Input_Model} icaoInputModel 
+     * @param {WT_Waypoint_Input_Model} waypointInputModel 
      * @param {WT_Frequency_List_Model} frequencyListModel 
      * @param {WT_MFD_Menu_Handler} menuHandler 
      */
-    constructor(map, icaoInputModel, frequencyListModel, menuHandler) {
+    constructor(map, waypointInputModel, frequencyListModel, menuHandler) {
         super();
         this.map = map;
-        this.icaoInputModel = icaoInputModel;
+        this.waypointInputModel = waypointInputModel;
         this.frequencyListModel = frequencyListModel;
         this.menuHandler = menuHandler;
 
@@ -102,35 +105,37 @@ class WT_Airport_Information_View extends WT_HTML_View {
         this.subscriptions = new Subscriptions();
     }
     connectedCallback() {
-        if (this.hasInitialised)
-            return;
-        this.hasInitialised = true;
+        try {
+            if (this.hasInitialised)
+                return;
+            this.hasInitialised = true;
 
-        let template = document.getElementById('airport-information-page');
-        let templateContent = template.content;
+            let template = document.getElementById('airport-information-page');
+            let templateContent = template.content;
 
-        this.appendChild(templateContent.cloneNode(true));
-        super.connectedCallback();
+            this.appendChild(templateContent.cloneNode(true));
+            super.connectedCallback();
 
-        this.elements.frequencyList.setModel(this.frequencyListModel);
-        this.elements.icaoInput.setModel(this.icaoInputModel);
-        this.elements.icaoInput.addEventListener("change", e => this.model.setIcao(e.target.icao));
-        this.elements.icaoInput.addEventListener("input", DOMUtilities.debounce(e => this.model.setIcao(e.target.icao), 500, false));
-        this.elements.runwaySelector.selectedRunway.subscribe(runway => {
-            if (runway) {
-                let coordinates = [];
-                coordinates.push(Avionics.Utils.bearingDistanceToCoordinates(runway.direction, (runway.length / 2) * 0.000539957, runway.latitude, runway.longitude));
-                coordinates.push(Avionics.Utils.bearingDistanceToCoordinates((runway.direction + 180) % 360, (runway.length / 2) * 0.000539957, runway.latitude, runway.longitude));
-                this.map.centerOnCoordinates(coordinates);
-            }
-        })
+            this.elements.frequencyList.setModel(this.frequencyListModel);
+            this.elements.waypointInput.setModel(this.waypointInputModel);
+            this.elements.runwaySelector.selectedRunway.subscribe(runway => {
+                if (runway) {
+                    let coordinates = [];
+                    coordinates.push(Avionics.Utils.bearingDistanceToCoordinates(runway.direction, (runway.length / 2) * 0.000539957, runway.latitude, runway.longitude));
+                    coordinates.push(Avionics.Utils.bearingDistanceToCoordinates((runway.direction + 180) % 360, (runway.length / 2) * 0.000539957, runway.latitude, runway.longitude));
+                    this.map.centerOnCoordinates(coordinates);
+                }
+            })
 
-        this.viewMode.subscribe(mode => {
-            this.setAttribute("mode", mode);
-        });
+            this.viewMode.subscribe(mode => {
+                this.setAttribute("mode", mode);
+            });
 
-        this.elements.directoryInformation.addEventListener("focus", () => this.elements.directory.setAttribute("highlighted", ""));
-        this.elements.directoryInformation.addEventListener("blur", () => this.elements.directory.removeAttribute("highlighted"));
+            this.elements.directoryInformation.addEventListener("focus", () => this.elements.directory.setAttribute("highlighted", ""));
+            this.elements.directoryInformation.addEventListener("blur", () => this.elements.directory.removeAttribute("highlighted"));
+        } catch (e) {
+            console.error(e.message);
+        }
     }
     /**
      * @param {WT_Airport_Information_Model} model 
@@ -141,21 +146,8 @@ class WT_Airport_Information_View extends WT_HTML_View {
         this.subscriptions.add(model.waypoint.subscribe(airport => {
             if (airport) {
                 let infos = airport.infos;
-                let elevation = 0;
-                let longest = 0;
-                let longestDirection = 0;
-                for (let runway of infos.runways) {
-                    if (runway.length > longest) {
-                        longestDirection = runway.direction;
-                        longest = runway.length;
-                    }
-                    elevation = Math.max(elevation, runway.elevation);
-                }
+                const elevation = Math.max(...infos.runways.map(runway => runway.elevation));
 
-                this.elements.name.textContent = infos.name;
-                this.elements.city.textContent = infos.city;
-                this.elements.icon.applyInfo(infos); // This doesn't fully work because the tower status is broken when loaded in this manner
-                this.elements.icon.angle = longestDirection;
                 switch (infos.privateType) {
                     case 0:
                         this.elements.public.textContent = "Unknown";
@@ -178,8 +170,6 @@ class WT_Airport_Information_View extends WT_HTML_View {
                 let timezone = this.model.getTimezone(airport.ident);
                 this.elements.timezone.textContent = timezone !== null ? `UTC${timezone >= 0 ? "+" : ""}${timezone}` : "Unknown Timezone";
             } else {
-                this.elements.name.textContent = `____________`;
-                this.elements.city.textContent = `____________`;
                 this.elements.public.textContent = `________`
                 this.elements.country.textContent = `____________`;
                 this.elements.elevation.innerHTML = `_____<span class="units">FT</span>`;
@@ -199,10 +189,13 @@ class WT_Airport_Information_View extends WT_HTML_View {
             lines.push(`<b>Wind:</b> ${metarData.wind.direction} @ ${metarData.wind.speed}kts`);
             lines.push(`<b>Visiblity:</b> ${metarData.visibility}`);
             lines.push(`<b>Clouds:</b> ${metarData.clouds.map(cloud => {
-                return `${cloud.meaning.toUpperCase()}${cloud.altitude ? ` at ${cloud.altitude}ft`: ``}`
+                return `${cloud.meaning.toUpperCase()}${cloud.altitude ? ` at ${cloud.altitude}ft` : ``}`
             }).join(", ")}`)
             this.elements.metar.innerHTML = lines.join("<br/>");
         }));
+    }
+    updateWaypoint(waypoint) {
+        this.model.setWaypoint(waypoint);
     }
     toggleInfoMode() {
         this.viewMode.value = this.viewMode.value == "Info-1" ? "Info-2" : "Info-1";

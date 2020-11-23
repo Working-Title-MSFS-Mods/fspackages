@@ -28,6 +28,15 @@ class WT_Airport_Icon extends HTMLElement {
         this.setAttribute("angle", this.angle);
     }
     applyInfo(info) {
+        if (info.runways) {
+            this.angle = info.runways.reduce((previous, current) => {
+                if (current.length > previous.length) {
+                    previous.direction = current.direction;
+                }
+                return previous;
+            }, { length: 0, direction: 0 }).direction;
+        }
+
         let toweredColor = "#3080FF";
         let untoweredColor = "#A03080";
 

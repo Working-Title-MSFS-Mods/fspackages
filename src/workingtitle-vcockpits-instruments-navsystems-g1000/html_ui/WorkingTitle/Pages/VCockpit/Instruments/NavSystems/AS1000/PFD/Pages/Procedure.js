@@ -12,9 +12,9 @@ class WT_PFD_Procedure_Page_Model extends WT_Model {
         this.airport = new Subject();
         this.initialProcedureIndex = 0;
     }
-    setICAO(icao) {
-        this.icao = icao;
-        this.airport.value = this.procedureFacilityRepository.get(icao);
+    setWaypoint(waypoint) {
+        this.icao = waypoint.icao;
+        this.airport.value = this.procedureFacilityRepository.get(this.icao);
     }
     setInitialProcedureIndex(index) {
         this.initialProcedureIndex = index;
@@ -35,13 +35,13 @@ class WT_PFD_Procedure_Page_Model extends WT_Model {
 
 class WT_PFD_Procedure_Page_View extends WT_HTML_View {
     /**
-     * @param {WT_Icao_Input_Model} icaoInputModel 
+     * @param {WT_Waypoint_Input_Model} waypointInputModel 
      * @param {WT_HTML_View} procedurePage
      */
-    constructor(icaoInputModel, procedurePage) {
+    constructor(waypointInputModel, procedurePage) {
         super();
 
-        this.icaoInputModel = icaoInputModel;
+        this.waypointInputModel = waypointInputModel;
         this.procedurePage = procedurePage;
 
         this.inputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this));
@@ -76,13 +76,13 @@ class WT_PFD_Procedure_Page_View extends WT_HTML_View {
         super.connectedCallback();
 
         this.elements.page.appendChild(this.procedurePage);
-        this.elements.icaoInput.setModel(this.icaoInputModel);
+        this.elements.waypointInput.setModel(this.waypointInputModel);
     };
     disconnectedCallback() {
         this.procedurePage.setAirport(null);
     }
-    updateIcao(icao) {
-        this.model.setICAO(icao);
+    updateWaypoint(waypoint) {
+        this.model.setWaypoint(waypoint);
     }
     /**
      * @param {Input_Stack} inputStack 

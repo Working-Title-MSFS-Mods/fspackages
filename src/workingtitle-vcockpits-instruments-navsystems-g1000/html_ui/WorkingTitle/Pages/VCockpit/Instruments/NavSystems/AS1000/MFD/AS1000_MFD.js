@@ -1,6 +1,11 @@
 class AS1000_MFD extends BaseAS1000 {
     constructor() {
         super();
+
+        window.addEventListener('unhandledrejection', function (event) {
+            console.error(`Unhandled exception: ${event.reason}`);
+        });
+
         this.altimeterIndex = 0;
         this.initDuration = 5500;
         this.needValidationAfterInit = true;
@@ -20,6 +25,7 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("metarDownloader", d => new WT_Metar_Downloader());
         d.register("metarRepository", d => new WT_Metar_Repository(d.metarDownloader));
 
+        //d.register("mainMap", d => document.querySelector("#MapInstrument"));
         d.register("mainMap", d => {
             const map = document.querySelector("#MapInstrument");
             map.rangeRingElement = new SvgRangeRingElement();
@@ -36,16 +42,16 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("pageMenuHandler", d => new WT_MFD_Show_Page_Menu_Handler(d.inputStack, d.pageContainer, d.softKeyMenuHandler));
         d.register("confirmDialogHandler", d => new WT_Show_Confirm_Dialog_Handler(d.inputStack, d.dialogContainer, d.softKeyMenuHandler));
         d.register("waypointSelectorModelFactory", d => new WT_Waypoint_Selector_Model_Factory(d.waypointRepository));
-        d.register("waypointSelectorViewFactory", d => new WT_MFD_Waypoint_Selector_View_Factory(d.icaoInputModel, d.softKeyMenuHandler, d.mapInputLayerFactory));
+        d.register("waypointSelectorViewFactory", d => new WT_MFD_Waypoint_Selector_View_Factory(d.waypointInputModel, d.softKeyMenuHandler, d.mapInputLayerFactory));
         d.register("showNewWaypointHandler", d => new WT_MFD_Show_New_Waypoint_Handler(d.paneContainer, d.waypointSelectorModelFactory, d.waypointSelectorViewFactory, d.miniMap, d.inputStack));
         d.register("directToHandler", d => new WT_Master_Direct_To_Handler(d.sharedEvents, d.waypointRepository, d.flightPlanController, d.mainMap));
         d.register("directToModelFactory", d => new WT_Direct_To_Model_Factory(this, d.waypointRepository, d.directToHandler));
-        d.register("directToViewFactory", d => new WT_MFD_Direct_To_View_Factory(d.softKeyMenuHandler, d.icaoInputModel, d.pageMenuHandler, d.mapInputLayerFactory));
+        d.register("directToViewFactory", d => new WT_MFD_Direct_To_View_Factory(d.softKeyMenuHandler, d.waypointInputModel, d.pageMenuHandler, d.mapInputLayerFactory));
         d.register("showDirectToHandler", d => new WT_MFD_Show_Direct_To_Handler(d.paneContainer, d.directToModelFactory, d.directToViewFactory, d.miniMap, d.inputStack));
         d.register("showAirwaysHandler", d => new WT_Show_Airways_Handler(this, d.inputStack, d.overlayPageContainer, d.mainMap));
         d.register("showProcedureHandler", d => new WT_Show_Procedure_Handler(d.pageController, d.flightPlanManager, d.procedureFacilityRepository, () => d.procedurePageView));
         d.register("showWaypointInfoHandler", d => new WT_Show_Waypoint_Info_Handler(d.pageController));
-        d.register("procedurePageView", d => new WT_Procedure_Page_View(d.softKeyMenuHandler, d.mainMap, d.icaoInputModel), { scope: "transient" });
+        d.register("procedurePageView", d => new WT_Procedure_Page_View(d.softKeyMenuHandler, d.mainMap, d.waypointInputModel), { scope: "transient" });
         d.register("softKeyMenuHandler", d => new WT_MFD_Soft_Key_Menu_Handler(d.softKeyController));
         d.register("showDuplicatesHandler", d => new WT_MFD_Show_Duplicates_Handler(d.dialogContainer, d.waypointRepository, d.inputStack));
 
@@ -58,10 +64,13 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("weatherView", d => new WT_Weather_Page_View(d.mainMap, d.softKeyMenuHandler), { scope: "transient" });
 
         d.register("airportInformationModel", d => new WT_Airport_Information_Model(d.showDirectToHandler, d.waypointRepository, d.airportDatabase, d.metarRepository), { scope: "transient" });
-        d.register("airportInformationView", d => new WT_Airport_Information_View(d.mainMap, d.icaoInputModel, d.frequencyListModel, d.softKeyMenuHandler), { scope: "transient" });
+        d.register("airportInformationView", d => new WT_Airport_Information_View(d.mainMap, d.waypointInputModel, d.frequencyListModel, d.softKeyMenuHandler), { scope: "transient" });
 
         d.register("intersectionInformationModel", d => new WT_Intersection_Information_Model(d.showDirectToHandler, d.waypointRepository), { scope: "transient" });
         d.register("intersectionInformationView", d => new WT_Intersection_Information_View(d.mainMap, d.icaoInputModel), { scope: "transient" });
+
+        d.register("utilityModel", d => new WT_Utility_Page_Model(d.planeStatistics), { scope: "transient" });
+        d.register("utilityView", d => new WT_Utility_Page_View(), { scope: "transient" });
 
         d.register("systemSettingsModel", d => new WT_System_Settings_Model(d.settings), { scope: "transient" });
         d.register("systemSettingsView", d => new WT_System_Settings_View(d.softKeyMenuHandler), { scope: "transient" });
@@ -71,6 +80,9 @@ class AS1000_MFD extends BaseAS1000 {
 
         d.register("changelogModel", d => new WT_Changelog_Model(d.changelogRepository), { scope: "transient" });
         d.register("changelogView", d => new WT_Changelog_View(), { scope: "transient" });
+
+        d.register("tripPlanningModel", d => new WT_Trip_Planning_Model(d.clock, d.barometricPressure, d.flightPlanManager), { scope: "transient" });
+        d.register("tripPlanningView", d => new WT_Trip_Planning_View(d.softKeyMenuHandler, d.showNewWaypointHandler, d.mainMap), { scope: "transient" });
 
         d.register("creditsModel", d => new WT_Credits_Model(), { scope: "transient" });
         d.register("creditsView", d => new WT_Credits_View(), { scope: "transient" });
@@ -93,6 +105,8 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("airportInformationPage", d => new WT_Page("Airport Information", () => d.airportInformationModel, () => d.airportInformationView));
         d.register("intersectionInformationPage", d => new WT_Page("Intersection Information", () => d.intersectionInformationModel, () => d.intersectionInformationView));
 
+        d.register("utilityPage", d => new WT_Page("Utility", () => d.utilityModel, () => d.utilityView));
+        d.register("tripPlanningPage", d => new WT_Page("Trip Planning", () => d.tripPlanningModel, () => d.tripPlanningView));
         d.register("systemSettingsPage", d => new WT_Page("System Settings", () => d.systemSettingsModel, () => d.systemSettingsView));
         d.register("modSettingsPage", d => new WT_Page("Mod Settings", () => d.modSettingsModel, () => d.modSettingsView));
         d.register("changelogPage", d => new WT_Page("Changelog", () => d.changelogModel, () => d.changelogView));
@@ -109,7 +123,7 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("pageController", d => new WT_Page_Controller([
             d.mapPageGroup,
             new WT_Page_Controller_Group("WPT", [d.airportInformationPage, d.intersectionInformationPage]),
-            new WT_Page_Controller_Group("AUX", [d.systemSettingsPage, d.modSettingsPage, d.changelogPage, d.creditsPage]),
+            new WT_Page_Controller_Group("AUX", [d.tripPlanningPage, d.utilityPage, d.systemSettingsPage, d.modSettingsPage, d.changelogPage, d.creditsPage]),
             new WT_Page_Controller_Group("FPL", [d.flightPlanPage]),
             new WT_Page_Controller_Group("NRST", [d.nearestAirportsPage, d.nearestNdbsPage, d.nearestVorsPage]),
         ], d.pageTitle));
@@ -121,6 +135,8 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("mapSetupModel", d => new WT_Map_Setup_Model(d.mapSetup), { scope: "transient" });
         d.register("mapSetupView", d => new WT_Map_Setup_View(d.softKeyMenuHandler, d.mainMap), { scope: "transient" });
         d.register("showMapSetupHandler", d => new WT_Show_Map_Setup_Handler(d.mapSetupModel, d.mapSetupView, d.paneContainer, d.inputStack));
+
+        d.register("mapMenu", d => new WT_Map_Menu(d.softKeyMenuHandler, d.mapSetup));
 
         this.dependencies = d.getDependencies();
     }
@@ -148,11 +164,15 @@ class AS1000_MFD extends BaseAS1000 {
         this.mapSetupHandler = d.mapSetupHandler;
         this.electricityAvailable = d.electricityAvailable;
         this.planeState = d.planeState;
+        this.planeStatistics = d.planeStatistics;
+        this.clock = d.clock;
 
         this.updatables.push(d.flightPlanController);
         this.updatables.push(d.nearestWaypoints);
         this.updatables.push(d.procedures);
         this.updatables.push(d.fuelUsed);
+        this.updatables.push(d.planeStatistics);
+        this.updatables.push(d.clock);
 
         this.initEngineDisplay();
         this.initMainMap(this.mapInputLayerFactory);
@@ -165,6 +185,7 @@ class AS1000_MFD extends BaseAS1000 {
         this.initDefaultSoftKeys();
         this.softKeyMenus = {
             engine: new WT_Engine_Menu(this.engineDisplay, this.softKeyMenuHandler),
+            map: d.mapMenu,
             main: new WT_Soft_Key_Menu(true)
         };
 
@@ -211,7 +232,7 @@ class AS1000_MFD extends BaseAS1000 {
         this.defaultSoftKeys = {
             engine: new WT_Soft_Key("ENGINE", this.showEngineMenu.bind(this)),
             debug: new WT_Soft_Key("DEBUG", this.showDebugMenu.bind(this)),
-            map: new WT_Soft_Key("MAP", null),
+            map: new WT_Soft_Key("MAP", this.showMapMenu.bind(this)),
             checklist: new WT_Soft_Key("CHKLIST", null)
         };
     }
@@ -224,31 +245,14 @@ class AS1000_MFD extends BaseAS1000 {
     showEngineMenu() {
         this.softKeyMenuHandler.show(this.softKeyMenus.engine);
     }
+    showMapMenu() {
+        this.softKeyMenuHandler.show(this.softKeyMenus.map);
+    }
     showDebugMenu() {
         this.softKeyMenuHandler.show(this.dependencies.debugMenu);
     }
     showDirectTo(icaoType = null, icao = null) {
         this.showDirectToHandler.show(icaoType, icao);
-    }
-    showDuplicates(duplicates) {
-        let dialogContainer = this.getChildById("DialogContainer");
-        let model = new WT_Duplicate_Waypoints_Model(this.dependencies.waypointRepository, duplicates);
-        let view = new WT_Duplicate_Waypoints_View();
-        dialogContainer.appendChild(view);
-        view.setModel(model);
-        let close = () => {
-            dialogContainer.removeChild(view);
-            view.exit();
-        }
-        return {
-            promise: view.enter(this.inputStack).catch(e => {
-                close();
-            }).then(icao => {
-                close();
-                return icao;
-            }),
-            cancel: close,
-        }
     }
     revertToFlightPlan() {
         let controller = new WT_Normal_Flight_Plan_Controller(this.dependencies.currFlightPlanManager);
@@ -271,18 +275,6 @@ class AS1000_MFD extends BaseAS1000 {
             element.parentNode.removeChild(element);
         });
         this.pageTitle.value = "PROC - PROCEDURES";
-    }
-    showMapSetup() {
-        const view = this.dependencies.mapSetupView;
-        const model = this.dependencies.mapSetupModel;
-        this.paneContainer.appendChild(view);
-        view.setModel(model);
-        view.onExit.subscribe(() => {
-            this.paneContainer.removeChild(view);
-            view.deactivate();
-        });
-        view.enter(this.inputStack);
-        view.activate();
     }
     parseXMLConfig() {
         super.parseXMLConfig();

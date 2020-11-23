@@ -1,11 +1,11 @@
 class WT_MFD_Waypoint_Selector_View_Factory {
     /**
-     * @param {WT_Icao_Input_Model} icaoInputModel
+     * @param {WT_Waypoint_Input_Model} waypointInputModel
      * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler
      * @param {WT_Map_Input_Layer_Factory} mapInputLayerFactory
      */
-    constructor(icaoInputModel, softKeyMenuHandler, mapInputLayerFactory) {
-        this.icaoInputModel = icaoInputModel;
+    constructor(waypointInputModel, softKeyMenuHandler, mapInputLayerFactory) {
+        this.waypointInputModel = waypointInputModel;
         this.softKeyMenuHandler = softKeyMenuHandler;
         this.mapInputLayerFactory = mapInputLayerFactory;
     }
@@ -13,19 +13,19 @@ class WT_MFD_Waypoint_Selector_View_Factory {
      * @param {MapInstrument} map 
      */
     create(map) {
-        return new WT_MFD_Waypoint_Selector_View(map, this.icaoInputModel, this.softKeyMenuHandler, this.mapInputLayerFactory);
+        return new WT_MFD_Waypoint_Selector_View(map, this.waypointInputModel, this.softKeyMenuHandler, this.mapInputLayerFactory);
     }
 }
 
 class WT_MFD_Waypoint_Selector_View extends WT_Waypoint_Selector_View {
     /**
      * @param {MapInstrument} map 
-     * @param {WT_Icao_Input_Model} icaoInputModel
+     * @param {WT_Waypoint_Input_Model} waypointInputModel
      * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler
      * @param {WT_Map_Input_Layer_Factory} mapInputLayerFactory
      */
-    constructor(map, icaoInputModel, softKeyMenuHandler, mapInputLayerFactory) {
-        super(icaoInputModel);
+    constructor(map, waypointInputModel, softKeyMenuHandler, mapInputLayerFactory) {
+        super(waypointInputModel);
         this.map = map;
         this.softKeyMenuHandler = softKeyMenuHandler;
         this.mapInputLayerFactory = mapInputLayerFactory;

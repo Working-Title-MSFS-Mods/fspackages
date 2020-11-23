@@ -113,5 +113,12 @@ class WT_PFD_Nearest_View extends WT_HTML_View {
             this.inputHandle = this.inputHandle.pop();
         }
     }
+    activate() {
+        this.model.subscribe();
+        this.inputLayer.refreshSelected();
+    }
+    deactivate() {
+        this.model.unsubscribe();
+    }
 }
 customElements.define("g1000-pfd-nearest-airports", WT_PFD_Nearest_View);

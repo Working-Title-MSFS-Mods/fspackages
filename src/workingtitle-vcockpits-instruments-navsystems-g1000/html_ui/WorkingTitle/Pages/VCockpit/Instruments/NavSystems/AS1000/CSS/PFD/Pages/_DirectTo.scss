@@ -6,38 +6,31 @@ g1000-direct-to {
     }
 
     > section {
-        margin: 0.5vh 0;
+        margin: 0.75vh 0;
     }
 
     .vnav,
     .info {
-        padding-bottom: 0.5vh;
+        padding-bottom: 0.75vh;
         border-bottom: $border_width_thin solid #666;
-    }
-
-    .info {
-        display: grid;
-        grid-gap: 0.5vh;
-        grid-template-columns: 30% 1fr;
-        grid-template-rows: auto auto;
     }
 
     .vnav {
         display: grid;
         grid-gap: 2vh;
-        grid-template-columns: 1fr 2fr 1fr 2fr;
+        grid-template-columns: 1fr 2fr 2fr 2fr;
     }
 
     .location {
         display: grid;
         grid-gap: 2vh;
-        grid-template-columns: 1fr 2fr 1fr 2fr;
+        grid-template-columns: 1fr 2fr 2fr 2fr;
     }
 
     .course {
         display: grid;
         grid-gap: 2vh;
-        grid-template-columns: 1fr 2fr 1fr 2fr;
+        grid-template-columns: 1fr 2fr 2fr 2fr;
     }
 
     .bearing,

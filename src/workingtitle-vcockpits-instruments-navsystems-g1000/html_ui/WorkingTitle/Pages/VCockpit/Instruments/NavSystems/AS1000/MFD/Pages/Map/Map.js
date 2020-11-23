@@ -25,15 +25,6 @@ class WT_Map_Main_Menu extends WT_Soft_Key_Menu {
     }
 }
 
-class WT_Map_Map_Menu extends WT_Soft_Key_Menu {
-    /**
-     * @param {WT_Map_Model} model 
-     */
-    constructor(model) {
-        super();
-    }
-}
-
 class WT_Map_Model extends WT_Model {
     /**
      * @param {WT_Show_Map_Setup_Handler} showMapSetupHandler 
@@ -83,7 +74,6 @@ class WT_Map_View extends WT_HTML_View {
 
         this.menus = {
             main: new WT_Map_Main_Menu(model),
-            map: new WT_Map_Map_Menu(model),
         }
         this.pageMenu = new WT_Map_Page_Menu(model);
     }

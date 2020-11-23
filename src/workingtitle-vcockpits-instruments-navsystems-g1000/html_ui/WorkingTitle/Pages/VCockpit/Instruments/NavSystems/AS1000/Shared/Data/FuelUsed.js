@@ -17,10 +17,7 @@ class WT_Fuel_Used {
         this.lastFuelUpdateTime = 0;
         this.tanks = tanks;
 
-        this.planeState.electricity.subscribe(electricity => {
-            if (electricity)
-                this.reset();
-        });
+        this.planeState.onPowerOn.subscribe(() => this.reset());
     }
     reset() {
         SimVar.SetSimVarValue(this.totalSimVar, "number", 0);

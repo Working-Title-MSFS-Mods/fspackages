@@ -58,15 +58,17 @@ class WT_Map_Setup {
         throw new Error("Map setting key was invalid");
     }
     setValue(key, value) {
-        if (typeof this.defaults[key] == "boolean") {
-            value = value == "On";
-        }
         if (typeof this.defaults[key] == "number") {
             value = parseInt(value);
         }
         this.values[key] = value;
         this.saveKey(key);
         this.fireListeners(key);
+    }
+    toggleValue(key) {
+        if (typeof this.defaults[key] == "boolean") {
+            this.setValue(key, !this.getValue(key));
+        }
     }
     resetToDefaults() {
         for (let key in this.defaults) {
@@ -101,6 +103,7 @@ WT_Map_Setup.DEFAULT = {
     fuelRingEnabled: true,
     fuelRingReserveTime: 45 * 60,
     fieldOfViewEnabled: true,
+    nexradEnabled: false,
 
     // Land
     latLongText: "small",
@@ -281,18 +284,48 @@ class WT_Map_Setup_View extends WT_HTML_View {
             "largeAirport", "mediumAirport", "smallAirport",
             "intersection", "vor", "ndb",
         ]
+
+        const setBoolHandler = value => value == "On";
+        this.setHandlers = {
+            trackVectorEnabled: setBoolHandler,
+            windVectorEnabled: setBoolHandler,
+            navRangeRingEnabled: setBoolHandler,
+            topographyEnabled: setBoolHandler,
+            terrainDataEnabled: setBoolHandler,
+            fuelRingEnabled: setBoolHandler,
+            fieldOfViewEnabled: setBoolHandler,
+            nexradEnabled: setBoolHandler,
+        }
+
+        const getBoolHandler = value => value ? "On" : "Off";
+        this.getHandlers = {
+            trackVectorEnabled: getBoolHandler,
+            windVectorEnabled: getBoolHandler,
+            navRangeRingEnabled: getBoolHandler,
+            topographyEnabled: getBoolHandler,
+            terrainDataEnabled: getBoolHandler,
+            fuelRingEnabled: getBoolHandler,
+            fieldOfViewEnabled: getBoolHandler,
+            nexradEnabled: getBoolHandler,
+        }
     }
     connectedCallback() {
         if (this.initialised)
             return;
         this.initialised = true;
-        
+
         const template = document.getElementById('map-setup-pane');
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();
 
-        DOMUtilities.AddScopedEventListener(this, ".options", "input", (e) => {
-            this.model.setValue(e.target.dataset.setting, e.target.value);
+        DOMUtilities.AddScopedEventListener(this, ".options", "input", e => {
+            const key = e.target.dataset.setting;
+            let value = e.target.value;
+            if (key in this.setHandlers) {
+                value = this.setHandlers[key](value);
+            }
+            console.log(`Set ${key} to ${value}`);
+            this.model.setValue(key, value);
         });
     }
     /**
@@ -317,12 +350,12 @@ class WT_Map_Setup_View extends WT_HTML_View {
         }
 
         for (let element of this.querySelectorAll("[data-setting]")) {
-            const value = this.model.getValue(element.dataset.setting);
-            if (typeof variable === "boolean") {
-                element.value = value ? "On" : "Off";
-            } else {
-                element.value = value;
+            const key = element.dataset.setting;
+            let value = this.model.getValue(key);
+            if (key in this.getHandlers) {
+                value = this.getHandlers[key](value);
             }
+            element.value = value;
         }
     }
     setGroup(group) {

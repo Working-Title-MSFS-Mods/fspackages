@@ -33,6 +33,7 @@ class WT_Numeric_Input extends HTMLElement {
         this.min = null;
         this.max = null;
         this.increment = 1;
+        this.precision = 0;
         this.elements = {
             digits: []
         };
@@ -46,6 +47,9 @@ class WT_Numeric_Input extends HTMLElement {
         return this._value;
     }
     set value(value) {
+        if (!(typeof value == "number") && value !== null) {
+            value = this.precision > 0 ? parseFloat(value) : parseInt(value);
+        }
         if (this._value !== value) {
             this._value = value;
             let evt = document.createEvent("HTMLEvents");
@@ -83,7 +87,7 @@ class WT_Numeric_Input extends HTMLElement {
                 break;
             }
             case "full": {
-                this.elements.digits[0].textContent = value;
+                this.elements.digits[0].textContent = value !== null ? value.toFixed(this.precision) : 0;
                 break;
             }
         }
@@ -111,10 +115,13 @@ class WT_Numeric_Input extends HTMLElement {
             this.min = parseInt(this.getAttribute("min"));
         }
         if (this.hasAttribute("increment")) {
-            this.increment = parseInt(this.getAttribute("increment"));
+            this.increment = parseFloat(this.getAttribute("increment"));
         }
         if (this.hasAttribute("max")) {
             this.max = parseInt(this.getAttribute("max"));
+        }
+        if (this.hasAttribute("precision")) {
+            this.precision = parseInt(this.getAttribute("precision"));
         }
         if (this.hasAttribute("empty")) {
             this.empty = parseInt(this.getAttribute("empty"));
@@ -176,7 +183,7 @@ class WT_Numeric_Input extends HTMLElement {
             value = Math.max(this.min, value);
         if (this.max !== null)
             value = Math.min(this.max, value);
-        return parseInt(value);
+        return value;
     }
     selectNextDigit() {
         switch (this.inputMode) {

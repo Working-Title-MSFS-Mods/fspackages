@@ -44,6 +44,7 @@ class WT_PFD_Mini_Page_Controller extends WT_HTML_View {
     closePage() {
         if (this.pageStack.length > 0) {
             const currentPage = this.pageStack.pop();
+            currentPage.deactivate();
             currentPage.removeAttribute("visible");
             currentPage.exit();
         }
@@ -51,6 +52,7 @@ class WT_PFD_Mini_Page_Controller extends WT_HTML_View {
     closeAllPages() {
         while (this.pageStack.length > 0) {
             const currentPage = this.pageStack.pop();
+            currentPage.deactivate();
             currentPage.removeAttribute("visible");
             currentPage.exit();
         }
@@ -58,6 +60,7 @@ class WT_PFD_Mini_Page_Controller extends WT_HTML_View {
     showPage(page) {
         this.pageStack.push(page);
         page.setAttribute("visible", "visible");
+        page.activate();
         return page.enter(this.inputStack);
     }
     showPageRoot(page) {

@@ -30,32 +30,38 @@ class WT_HTML_View extends HTMLElement {
         this.bindElements();
     }
     onButtonClick(e, node) {
+        if (e.target == this)
+            return;
         if (node.dataset.click) {
             let click = node.dataset.click;
             if (this[click])
                 this[click](e.target);
             else
-                console.warn(`An expected click event "${click}" did not have a handler`);
+                console.warn(`An expected click event "${click}" did not have a handler (${this.tagName})`);
         }
         e.stopPropagation();
     }
     onChange(e, node) {
+        if (e.target == this)
+            return;
         if (node.dataset.change) {
             let change = node.dataset.change;
             if (this[change])
                 this[change](e.target.value, e.target);
             else
-                console.warn(`An expected change event "${change}" did not have a handler`);
+                console.warn(`An expected change event "${change}" did not have a handler (${this.tagName})`);
         }
         e.stopPropagation();
     }
     onInput(e, node) {
+        if (e.target == this)
+            return;
         if (node.dataset.input) {
             let input = node.dataset.input;
             if (this[input])
                 this[input](e.target.value, e.target);
             else
-                console.warn(`An expected input event "${input}" did not have a handler`);
+                console.warn(`An expected input event "${input}" did not have a handler (${this.tagName})`);
         }
         e.stopPropagation();
     }

@@ -28,35 +28,32 @@ g1000-airport-information-page {
 
     .information {
         display: grid;
-        grid-template-columns: 1fr 3ch 1fr;
+        grid-template-columns: 2fr 1fr;
         grid-template-rows: auto auto auto auto auto auto;
         grid-gap: 0vh 2vh;
         grid-template-areas:
-            "icao airport-icon public"
-            "name name name"
-            "city city city"
-            "country country elevation"
-            "a a a"
-            "timezone timezone timezone";
+            "waypoint public"
+            "country elevation"
+            "a a"
+            "timezone timezone";
 
-        icao-input {
-            grid-area: icao;
-        }
+        g1000-waypoint-input {
+            grid-area: waypoint;
+            grid-template-columns: 1fr 2.5vh;
+            grid-template-rows: auto auto auto;
 
-        airport-icon {
-            grid-area: airport-icon;
+            grid-template-areas:
+                "icao icon"
+                "name name"
+                "city city";
+
+            .country {
+                display: none;
+            }
         }
 
         .public {
             grid-area: public;
-        }
-
-        .name {
-            grid-area: name;
-        }
-
-        .city {
-            grid-area: city;
         }
 
         .country {

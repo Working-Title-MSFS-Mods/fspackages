@@ -55,7 +55,7 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
     getNumWaypoints() {
         return this.flightPlan.getWaypointsCount();
     }
-    createNewWaypoint(icao, index = -1) {
+    createNewWaypoint(waypoint, index = -1) {
         if (index == -1) {
             if (this.selectedWaypointIndex !== null) {
                 index = this.selectedWaypointIndex;
@@ -63,7 +63,7 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
                 index = this.getNumWaypoints();
             }
         }
-        this.addWaypoint(icao, index);
+        this.addWaypoint(waypoint.icao, index);
     }
     updateWaypoints() {
         this.t++;

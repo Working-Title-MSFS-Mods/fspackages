@@ -123,6 +123,7 @@
         .element {
             display: flex;
 
+            label,
             .name {
                 flex: 1;
             }
@@ -130,6 +131,7 @@
             .value {
                 text-align: right;
                 color: $input_color;
+                font-size: 1.1em;
             }
 
             &.highlighted {

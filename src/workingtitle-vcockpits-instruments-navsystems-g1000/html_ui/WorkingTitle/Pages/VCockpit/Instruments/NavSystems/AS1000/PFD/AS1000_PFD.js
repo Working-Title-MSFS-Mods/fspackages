@@ -50,12 +50,12 @@ class AS1000_PFD extends BaseAS1000 {
 
         d.register("miniPageController", d => this.querySelector("g1000-pfd-mini-page-container"));
 
-        d.register("directToView", d => new WT_Direct_To_View(d.icaoInputModel, d.showPageMenuHandler));
+        d.register("directToView", d => new WT_Direct_To_View(d.waypointInputModel, d.showPageMenuHandler));
         d.register("flightPlanView", d => new WT_PFD_Flight_Plan_Page_View(d.showPageMenuHandler, d.confirmDialogHandler, d.showNewWaypointHandler));
         d.register("proceduresMenuView", d => new WT_PFD_Procedures_Menu_View(d.showProcedureHandler, d.procedures));
         d.register("procedurePageModel", d => new WT_PFD_Procedure_Page_Model(d.flightPlanManager, d.procedureFacilityRepository));
-        d.register("showProcedureHandler", d => new WT_PFD_Show_Procedure_Handler(d.miniPageController, d.icaoInputModel, d.procedurePageModel, d.approachPageView, d.arrivalPageView, d.departurePageView));
-        d.register("showNewWaypointHandler", d => new WT_PFD_Show_New_Waypoint_Handler(d.miniPageController, d.waypointRepository, d.icaoInputModel, d.inputStack));
+        d.register("showProcedureHandler", d => new WT_PFD_Show_Procedure_Handler(d.miniPageController, d.waypointInputModel, d.procedurePageModel, d.approachPageView, d.arrivalPageView, d.departurePageView));
+        d.register("showNewWaypointHandler", d => new WT_PFD_Show_New_Waypoint_Handler(d.miniPageController, d.waypointRepository, d.waypointInputModel, d.inputStack));
         d.register("confirmDialogHandler", d => new WT_PFD_Show_Confirm_Dialog_Handler(d.inputStack, d.dialogContainer));
         d.register("showDuplicatesHandler", d => new WT_PFD_Show_Duplicates_Handler(d.miniPageController, d.waypointRepository, d.inputStack));
 

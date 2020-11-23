@@ -10,15 +10,20 @@ class WT_Page {
     initialise(container) {
         /*this.model = null;
         this.view = null;*/
-        if (this.view === null) {
-            this.view = this.viewFactory();
+        try {
+            if (this.view === null) {
+                this.view = this.viewFactory();
+            }
+            container.appendChild(this.view);
+            if (this.model === null) {
+                this.model = this.modelFactory();
+                this.view.setModel(this.model);
+            }
+            return this.view;
+        } catch (e) {
+            console.error(e.message);
+            throw e;
         }
-        container.appendChild(this.view);
-        if (this.model === null) {
-            this.model = this.modelFactory();
-            this.view.setModel(this.model);
-        }
-        return this.view;
     }
 }
 

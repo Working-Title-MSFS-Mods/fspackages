@@ -196,3 +196,15 @@ g1000-pfd-mini-page-container {
         margin: 1vh 0;
     }
 }
+
+g1000-waypoint-input {
+    grid-template-columns: auto 2.5vh 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+        "icao icon city"
+        "name name name";
+
+    .country {
+        display: none;
+    }
+}

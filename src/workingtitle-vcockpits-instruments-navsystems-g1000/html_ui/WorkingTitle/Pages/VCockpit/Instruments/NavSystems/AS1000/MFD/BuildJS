@@ -13,11 +13,14 @@ Handlers/ShowNewWaypoint.js
 Handlers/ShowPageMenu.js
 Handlers/ShowProcedure.js
 Handlers/ShowWaypointInfo.js
+Menus/Map.js
 Pages/Page.js
 Pages/Auxilliary/Changelog.js
 Pages/Auxilliary/Credits.js
 Pages/Auxilliary/ModSettings.js
 Pages/Auxilliary/Settings.js
+Pages/Auxilliary/TripPlanning.js
+Pages/Auxilliary/Utility.js
 Pages/FlightPlan/Airway.js
 Pages/FlightPlan/FlightPlan.js
 Pages/Map/Map.js

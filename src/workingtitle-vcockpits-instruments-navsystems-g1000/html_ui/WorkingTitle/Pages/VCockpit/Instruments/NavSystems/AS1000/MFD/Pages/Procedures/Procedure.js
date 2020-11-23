@@ -12,6 +12,12 @@ class WT_Procedure_Page_Model extends WT_Model {
         this.airport = new Subject();
         this.initialProcedureIndex = 0;
     }
+    /**
+     * @param {WayPoint} waypoint 
+     */
+    setWaypoint(waypoint) {
+        this.setICAO(waypoint.icao);
+    }
     setICAO(icao) {
         this.icao = icao;
         this.airport.value = this.procedureFacilityRepository.get(icao);
@@ -56,14 +62,14 @@ class WT_Procedure_Page_View extends WT_HTML_View {
     /**
      * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      * @param {MapInstrument} map 
-     * @param {WT_Icao_Input_Model} icaoInputModel 
+     * @param {WT_Waypoint_Input_Model} waypointInputModel 
      */
-    constructor(softKeyMenuHandler, map, icaoInputModel) {
+    constructor(softKeyMenuHandler, map, waypointInputModel) {
         super();
 
         this.map = map;
         this.softKeyMenuHandler = softKeyMenuHandler;
-        this.icaoInputModel = icaoInputModel;
+        this.waypointInputModel = waypointInputModel;
 
         this.subPageIndex = new Subject(null);
         this.selectedPage = null;
@@ -136,15 +142,20 @@ class WT_Procedure_Page_View extends WT_HTML_View {
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();
 
-        this.elements.icaoInput.setModel(this.icaoInputModel);
+        this.elements.waypointInput.setModel(this.waypointInputModel);
         this.pages = {
             DP: this.elements.departurePage,
             STAR: this.elements.arrivalPage,
             APR: this.elements.approachPage,
         }
     };
-    updateIcao(icao) {
-        this.model.setICAO(icao);
+    /**
+     * @param {WayPoint} waypoint 
+     */
+    updateWaypoint(waypoint) {
+        if (waypoint instanceof WayPoint) {
+            this.model.setWaypoint(waypoint);
+        }
     }
     /**
      * @param {Input_Stack} inputStack 

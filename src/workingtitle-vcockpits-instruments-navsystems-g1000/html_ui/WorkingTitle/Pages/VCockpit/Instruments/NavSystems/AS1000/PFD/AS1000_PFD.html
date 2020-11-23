@@ -1,16 +1,14 @@
 ﻿<script>
-    /*Include.addScript("/JS/debug.js?asdasss", function () {
+    Include.addScript("/JS/debug.js?asdasss", function () {
         g_modDebugMgr.AddConsole(null);
-    });*/
+    });
 </script>
 
 <script type="text/html" id="AS1000_PFD">
     <template id="template-direct-to">
         <h1>Direct To</h1>
         <section class="info">
-            <icao-input data-element="icaoInput" characters="6"></icao-input>
-            <div data-element="icaoName"></div>
-            <div data-element="icaoCity"></div>
+            <g1000-waypoint-input data-element="waypointInput" data-input="updateWaypoint"></g1000-waypoint-input>
         </section>
         <section class="vnav">
             <label>ALT</label>
@@ -359,10 +357,7 @@
     <template id="template-waypoint-selector">
         <h1>Waypoint Information</h1>
         <section class="content waypoint-info">
-            <!--<string-input characters="10" value="EGLL"></string-input>-->
-            <icao-input data-element="icaoInput" characters="6"></icao-input>
-            <div class="icao-name" data-element="icaoName"></div>
-            <div class="icao-city" data-element="icaoCity"></div>
+            <g1000-waypoint-input data-element="waypointInput" data-input="updateWaypoint"></g1000-waypoint-input>
         </section>
         <hr />
         <section class="content location">
@@ -387,7 +382,7 @@
     <template id="procedure-page">
         <h1>Select Procedure</h1>
         <section class="content">
-            <icao-input data-element="icaoInput" characters="6" data-change="updateIcao"></icao-input>
+            <g1000-waypoint-input data-element="waypointInput" data-input="updateWaypoint" type="A"></g1000-waypoint-input>
         </section>
         <section data-element="page"></section>
     </template>

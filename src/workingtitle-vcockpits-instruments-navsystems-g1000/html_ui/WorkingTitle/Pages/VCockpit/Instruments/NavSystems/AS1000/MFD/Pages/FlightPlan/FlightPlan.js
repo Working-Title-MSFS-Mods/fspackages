@@ -292,8 +292,8 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         return this.model.directToSelected();
     }
     showCreateNewWaypoint(index = -1) {
-        this.newWaypointHandler.show().then(icao => {
-            this.model.createNewWaypoint(icao, index);
+        this.newWaypointHandler.show().then(waypoint => {
+            this.model.createNewWaypoint(waypoint, index);
         });
     }
     updateActiveLeg(leg) {

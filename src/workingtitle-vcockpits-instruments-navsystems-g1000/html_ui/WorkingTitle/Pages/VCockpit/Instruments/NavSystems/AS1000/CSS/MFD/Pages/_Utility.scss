@@ -1,0 +1,10 @@
+g1000-utility {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 2vh;
+    padding: 0 2vh;
+
+    .units {
+        font-size: 0.8em;
+    }
+}

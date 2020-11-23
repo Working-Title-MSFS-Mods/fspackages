@@ -22,8 +22,11 @@ class WT_Waypoint_Selector_Model extends WT_Model {
 
         this.waypoint = new Subject();
     }
-    async setIcao(icao) {
-        this.waypoint.value = await this.waypointRepository.load(icao);
+    /**
+     * @param {WayPoint} waypoint 
+     */
+    setWaypoint(waypoint) {
+        this.waypoint.value = waypoint;
     }
     getCountry(ident) {
         return "";
@@ -54,12 +57,12 @@ class WT_Show_New_Waypoint_Handler {
 
 class WT_Waypoint_Selector_View extends WT_HTML_View {
     /**
-     * @param {WT_Icao_Input_Model} icaoInputModel
+     * @param {WT_Waypoint_Input_Model} waypointInputModel
      */
-    constructor(icaoInputModel) {
+    constructor(waypointInputModel) {
         super();
 
-        this.icaoInputModel = icaoInputModel;
+        this.waypointInputModel = waypointInputModel;
         this.inputLayer = new WT_Waypoint_Selector_Input_Layer(this);
 
         this.onWaypointSelected = new WT_Event();
@@ -70,23 +73,22 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
         if (this.initialised)
             return;
         this.initialised = true;
-        
+
         const template = document.getElementById('template-waypoint-selector');
         this.appendChild(template.content.cloneNode(true));
         super.connectedCallback();
-
-        this.elements.icaoInput.addEventListener("change", (e) => this.icaoChanged(e.target.icao))
-        this.elements.icaoInput.addEventListener("input", DOMUtilities.debounce(e => this.icaoInput(e.target.icao), 500, false));
     }
-    icaoInput(icao) {
-        this.model.setIcao(icao);
-    }
-    icaoChanged(icao) {
-        this.model.setIcao(icao);
+    /**
+     * @param {WayPoint} waypoint 
+     */
+    updateWaypoint(waypoint) {
+        if (waypoint instanceof WayPoint) {
+            this.model.setWaypoint(waypoint);
+        }
     }
     confirm() {
         if (this.model.waypoint.value) {
-            this.onWaypointSelected.fire(this.model.waypoint.value.icao);
+            this.onWaypointSelected.fire(this.model.waypoint.value);
         }
     }
     /**
@@ -94,18 +96,10 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
      */
     setModel(model) {
         this.model = model;
-        this.elements.icaoInput.setModel(this.icaoInputModel);
+        this.elements.waypointInput.setModel(this.waypointInputModel);
         this.model.waypoint.subscribe(waypoint => {
             if (waypoint && waypoint.infos) {
                 const infos = waypoint.infos;
-
-                this.elements.icaoName.textContent = infos.name || `__________________`;
-                this.elements.icaoCity.textContent = infos.city || `__________________`;
-                this.elements.country.textContent = this.model.getCountry(infos.ident);
-                if (this.elements.city) {
-                    this.elements.city.textContent = infos.city;
-                }
-
                 const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
                 const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
                 const planeCoordinates = new LatLong(lat, long);
@@ -113,8 +107,6 @@ class WT_Waypoint_Selector_View extends WT_HTML_View {
                 const distance = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, infos.coordinates);
                 this.elements.distance.innerHTML = `${distance.toFixed(distance < 100 ? 1 : 0)}<span class="units">NM</span>`;
             } else {
-                this.elements.icaoName.innerHTML = `__________________`;
-                this.elements.icaoCity.innerHTML = `__________________`;
                 this.elements.bearing.innerHTML = `___°`;
                 this.elements.distance.innerHTML = `__._<span class="units">NM</span>`;
             }

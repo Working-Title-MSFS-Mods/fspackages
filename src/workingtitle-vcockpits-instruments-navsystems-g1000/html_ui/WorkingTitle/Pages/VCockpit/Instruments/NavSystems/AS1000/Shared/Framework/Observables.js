@@ -8,16 +8,26 @@ class Subject {
         return this._value;
     }
     set value(value) {
-        if (this._value !== value || !this.inhibitDuplicates) {
-            this._value = value;
-            for (let listener of this.listeners) {
-                listener(this.value);
+        try {
+            if (this._value !== value || !this.inhibitDuplicates) {
+                this._value = value;
+                for (let listener of this.listeners) {
+                    listener(this.value);
+                }
             }
+        } catch (e) {
+            console.error(e.message);
+            throw e;
         }
     }
     subscribe(callback) {
         this.listeners.push(callback);
-        callback(this.value);
+        try {
+            callback(this.value);
+        } catch (e) {
+            console.error(e.message);
+            throw e;
+        }
         return () => this.unsubscribe(callback);
     }
     unsubscribe(callback) {

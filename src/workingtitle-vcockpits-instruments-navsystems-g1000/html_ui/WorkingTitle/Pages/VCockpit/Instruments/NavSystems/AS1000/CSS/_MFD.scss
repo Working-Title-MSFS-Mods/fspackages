@@ -33,6 +33,8 @@
 @import "MFD/Pages/Procedure";
 @import "MFD/Pages/ProceduresMenu";
 @import "MFD/Pages/Settings";
+@import "MFD/Pages/TripPlanning";
+@import "MFD/Pages/Utility";
 @import "MFD/Pages/WaypointInformation/WaypointInformation";
 @import "MFD/Pages/WaypointInformation/Airport";
 @import "MFD/Pages/WaypointInformation/Intersection";
@@ -59,9 +61,10 @@ g1000-page-menu {
 
 as1000-mfd-element #Mainframe #Electricity {
     height: 100%;
+    width: 100%;
     display: grid;
-    grid-template-columns: 16.66666% 83.3333%;
-    grid-template-rows: 8% 88% 4%;
+    grid-template-columns: 16.66666% minmax(0, 1fr);
+    grid-template-rows: 8% minmax(0, 1fr) 4%;
     grid-template-areas:
         "nav nav"
         "engine main"
@@ -195,10 +198,6 @@ as1000-mfd-element {
 
 .page-menu-container {
     position: relative;
-}
-
-airport-icon {
-    display: inline-block;
 }
 
 g1000-map-page {
