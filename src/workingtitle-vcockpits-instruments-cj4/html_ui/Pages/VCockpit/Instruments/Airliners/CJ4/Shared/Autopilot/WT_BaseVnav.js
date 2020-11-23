@@ -319,7 +319,7 @@ class WT_BaseVnav {
 
     writeMonitorValues() {
         const monitorValues = {
-            vnavTargetWaypointIdent: this._vnavTargetWaypoint.ident,
+            vnavTargetWaypointIdent: this._vnavTargetWaypoint && this._vnavTargetWaypoint.ident,
         };
         if (this._vnavTargetWaypoint) {
             WTDataStore.set('CJ4_vnavTargetWaypoint', this._vnavTargetWaypoint.ident);

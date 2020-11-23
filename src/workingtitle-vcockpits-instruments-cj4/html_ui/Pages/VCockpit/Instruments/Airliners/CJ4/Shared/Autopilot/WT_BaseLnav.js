@@ -97,14 +97,21 @@ class WT_BaseLnav {
             const nextActiveWaypoint = this._fpm.getNextActiveWaypoint();
 
             //Remove heading instruction inhibition when near desired track
-            if (Math.abs(Avionics.Utils.angleDiff(this._dtk, planeHeading)) < 10) {
+            if (Math.abs(Avionics.Utils.angleDiff(this._dtk, planeHeading)) < 15) {
                 this._executeInhibited = false;
             }
             
             if (isLnavActive) {
                 this._setHeading = this._dtk;
 
-                const absInterceptAngle = Math.min(Math.pow(Math.abs(this._xtk) * 10, 1.35), 45);
+                //Intercept angle curve based on XTK
+                let absInterceptAngle = Math.min(Math.pow(Math.abs(this._xtk) * 10, 1.35), 45);
+
+                //If we still have some XTK, bake in a minimum intercept angle of 2.5 degrees to keep us on the line
+                if (Math.abs(this._xtk) > 0.025) {
+                    absInterceptAngle = Math.max(absInterceptAngle, 2.5);
+                }
+
                 const interceptAngle = this._xtk < 0 ? absInterceptAngle : -1 * absInterceptAngle;
                 
                 let deltaAngle = Avionics.Utils.angleDiff(this._dtk, this._bearingToWaypoint);
