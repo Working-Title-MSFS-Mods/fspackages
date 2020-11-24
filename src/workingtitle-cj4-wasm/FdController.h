@@ -75,20 +75,22 @@ private:
         // TODO: extract the modes later
         switch (this->throttleMode[idx])
         {
-        case TO:
+        case TO: {
             targetThrust = 3600;
             return 100;
             break;
-        case CLB:
+        }
+        case CLB: {
             targetThrust = 2050;
             if ((maxDensityThrust * thrustF) < targetThrust) {
                 targetThrust = (maxDensityThrust * thrustF);
             }
             break;
-        case UNDEF:
-        case CRU: {
+        }
+        case UNDEF: {
+        case CRU:
             double cruThrPerc = (this->throttleAxis[idx] + 16384) / 25444.0; // -16384 -> 9060
-            double cruThrExp = pow(cruThrPerc, 3.5);
+            double cruThrExp = pow(cruThrPerc, 2.5);
 
             throttleExp = cruThrExp * thrustF;
             break;
@@ -172,8 +174,8 @@ public:
         float p = 0.0012;
         float i = 0.0001;
         float d = 0.0018;
-        this->throttleController[0] = new PidController(p, i, d, -2, 2);
-        this->throttleController[1] = new PidController(p, i, d, -2, 2);
+        this->throttleController[0] = new PidController(p, i, d, -3, 3);
+        this->throttleController[1] = new PidController(p, i, d, -3, 3);
     }
 
     void update(int throttleAxis[], double deltaTime)

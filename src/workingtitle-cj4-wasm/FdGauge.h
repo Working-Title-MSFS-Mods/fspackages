@@ -171,7 +171,7 @@ public:
         uint64_t currTime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         uint64_t timeDiff_ms = currTime_ms - this->prevTime_ms;
 
-        if (timeDiff_ms > 250) {
+        if (timeDiff_ms > 50) {
             FdCtrlInstance.update(globalThrottleAxis, deltaTime);
             this->prevTime_ms = currTime_ms;
         }
