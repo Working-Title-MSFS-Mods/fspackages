@@ -474,6 +474,12 @@ class CJ4_FMC extends FMCMainDisplay {
                 }
             }
 
+            //SET FMC ALERT FOR TOD
+            if (SimVar.GetSimVarValue("L:WT_VNAV_TOD_FMC_ALERT", "bool") == 1) {
+                this.showErrorMessage("CHECK PRESELECTOR");
+                SimVar.SetSimVarValue("L:WT_VNAV_TOD_FMC_ALERT", "bool", 0);
+            }
+
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MAX_CALCULATED", "knots", Simplane.getMaxSpeed(Aircraft.CJ4));
 

@@ -31,12 +31,14 @@ class WT_BaseVnav {
         this._vnavConstraintAltitude = undefined;
         this._flightPlanVersion = undefined;
         this._activeWaypointChanged = false;
-        this._activeWaypointChangedflightPlanChanged = false;
-        this._activeWaypointChangedvnavTargetChanged = false;
+        this._vnavTargetChanged = false;
+        this._flightPlanChanged = false;
         this._valuesUpdated = false;
         this._vnavConstraintWaypoint = undefined;
         this._vnavConstraintType = undefined;
         this._firstApproachWaypointConstraint = undefined;
+
+        this._pathCalculating = false;
 
         this._setDestination = undefined;
         this._newPath = false;
@@ -89,11 +91,17 @@ class WT_BaseVnav {
             if (this._flightPlanVersion != flightPlanVersion) {
                 this._flightPlanChanged = true;
             }
-
+            
             //HAS THE VNAV TARGET WAYTPOINT CHANGED?
-            if (this._vnavTargetWaypoint != this._lastVnavTargetWaypoint) {
+            let targetWaypointIndex = this.waypoints.indexOf(this._vnavTargetWaypoint) >= 0;
+            console.log("targetWaypointIndex: " + targetWaypointIndex);
+            if (targetWaypointIndex === false) {
                 this._vnavTargetChanged = true;
             }
+            // this._vnavTargetWaypoint
+            // if (this._vnavTargetWaypoint != this._lastVnavTargetWaypoint) {
+            //     this._vnavTargetChanged = true;
+            // }
 
             //FIND CURRENT CONSTRAINT -- This only needs to run when active waypoint changes
             if (this._flightPlanChanged || this._activeWaypointChanged || this._vnavTargetChanged) {
@@ -135,7 +143,9 @@ class WT_BaseVnav {
 
             //BUILD VPATH DESCENT PROFILE -- This only needs to be updated when flight plan changed or when active VNAV waypoint changes
             if (this._currentFlightSegment.type != SegmentType.Departure && (this._flightPlanChanged || this._vnavTargetChanged)) {
+                console.log("build profile started");
                 this.buildDescentProfile();
+                console.log("profile written: " + this._vnavTargetWaypoint.ident + " " + this._vnavTargetAltitude);
             }
 
             //TRACK ALTITUDE DEVIATION
@@ -149,28 +159,29 @@ class WT_BaseVnav {
                 this._altDeviation = this._altitude - this._desiredAltitude;
                 this._distanceToTod = this._topOfDescent < 0 ? 0 : this._vnavTargetDistance > this._topOfDescent ? (this._vnavTargetDistance - this._topOfDescent) : 0;
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", this._altDeviation);
+                this._pathCalculating = true;
             }
             else {
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", 0);
+                this._pathCalculating = false;
             }
 
-            if (Math.abs(this._altDeviation) < 1000) {
-                WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'true');
-            }
-            else {
-                WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'false');
-            }
+
 
             this._vnavTargetChanged = false;
             this._flightPlanChanged = false;
             this._activeWaypointChanged = false;
             this._lastActiveWaypointIdent = this._activeWaypoint.ident;
+            this._flightPlanVersion = flightPlanVersion;
             this.writeMonitorValues(); //CAN BE REMOVED AFTER WE'RE DONE WITH MONITORING
             this.writeDatastoreValues(); //CAN BE REMOVED AFTER WE'RE DONE WITH MONITORING
         }
         else {
-            //TODO: DO WE NEED TO FLAG WHEN NO VNAV IS BEING CALCULATED ANYWHERE?
             this._vnavCalculating = false;
+            this._pathCalculating = false;
+            this._vnavConstraintAltitude = undefined;
+            this._vnavConstraintWaypoint = undefined;
+            this._vnavConstraintType = undefined;
             if (SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number") > 0) {
                 SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
             }
@@ -182,12 +193,10 @@ class WT_BaseVnav {
         if (this._valuesUpdated == false) {
             this.updateValues();
         }
-        this._vnavTargetAltitude = this._vnavTargetAltitude === undefined ? (this._destination.infos.oneWayRunways[0].elevation * 3.28) + 50 : this._vnavTargetAltitude;
+        this._vnavTargetAltitude = (this._destination.infos.oneWayRunways[0].elevation * 3.28) + 50;
         this._desiredFPA = WTDataStore.get('CJ4_vpa', 3);
-        if (this._setDestination != this._destination) {
-            this._setDestination = this._destination; //IF NO DESTINATION RECORDED, RECORD IT SO WE CAN DETERMINE WHEN A NEW DESTINATION IS SET
-            this._newPath = true;
-        }
+  
+
         //FIND FIRST WAYPOINT ON APPROACH WITH CONSTRAINT
         this._firstApproachWaypointConstraint = undefined;
         let approachWaypoints = this._fpm.getApproachWaypoints();
@@ -248,6 +257,7 @@ class WT_BaseVnav {
                 }
             }
         }
+        this._newPath = true;
     }
 
     getVNavTargetAltitudeAtWaypoint(waypoint) {
@@ -284,7 +294,7 @@ class WT_BaseVnav {
         }
         let constraint = false;
         if (this._vnavConstraintAltitude && this._vnavConstraintWaypoint) {
-            if (this._vnavConstraintWaypoint.cumulativeDistanceInFP - (this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist) < 40) {
+            if (this._vnavConstraintWaypoint.cumulativeDistanceInFP - (this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist) < 20) {
                 let selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
                 if (this._vnavConstraintType == "above" && selectedAltitude < this._vnavConstraintAltitude) {
                     SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", Math.round(this._vnavConstraintAltitude));
@@ -302,18 +312,14 @@ class WT_BaseVnav {
     }
 
     writeDatastoreValues() {
-        if (this._vnavType == false) {
-            WTDataStore.set('CJ4_vnavValues', 'none');
-        }
-        else {
-            const vnavValues = {
-                vnavTargetAltitude: this._vnavTargetAltitude,
-                vnavTargetDistance: this._vnavTargetDistance,
-                topOfDescent: this._topOfDescent,
-                distanceToTod: this._distanceToTod
-            };
-            WTDataStore.set('CJ4_vnavValues', JSON.stringify(vnavValues));
-        }
+        const vnavValues = {
+            vnavTargetAltitude: this._vnavTargetAltitude,
+            vnavTargetDistance: this._vnavTargetDistance,
+            topOfDescent: this._topOfDescent,
+            distanceToTod: this._distanceToTod
+        };
+        WTDataStore.set('CJ4_vnavValues', JSON.stringify(vnavValues));
+
 
     }
 
@@ -321,8 +327,9 @@ class WT_BaseVnav {
         const monitorValues = {
             vnavTargetWaypointIdent: this._vnavTargetWaypoint && this._vnavTargetWaypoint.ident,
         };
+
         if (this._vnavTargetWaypoint) {
-            WTDataStore.set('CJ4_vnavTargetWaypoint', this._vnavTargetWaypoint.ident);
+            WTDataStore.set('CJ4_vnavTargetWaypoint', monitorValues.vnavTargetWaypointIdent);
         }
     }
 }

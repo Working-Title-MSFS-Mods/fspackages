@@ -179,6 +179,10 @@ class CJ4NavModeSelector {
   handleVSPressed() {
     SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
 
+    if (!this.isVNAVOn) {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+    }
+
     switch (this.currentVerticalActiveState) {
       case VerticalNavModeState.PTCH:
       case VerticalNavModeState.FLC:
@@ -211,6 +215,10 @@ class CJ4NavModeSelector {
    * Handles when the FLC button is pressed.
    */
   handleFLCPressed() {
+    if (!this.isVNAVOn) {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+    }
+
     switch (this.currentVerticalActiveState) {
       case VerticalNavModeState.PTCH:
       case VerticalNavModeState.VS:
@@ -244,6 +252,9 @@ class CJ4NavModeSelector {
    */
   handleVNAVPressed() {
     this.isVNAVOn = !this.isVNAVOn;
+    if (this.isVNAVOn) {
+      this.handleVPathChanged();
+    }
   }
 
   /**
@@ -300,6 +311,10 @@ class CJ4NavModeSelector {
     if (this.vPathState === VPathState.ARMED) {
       this.pushVerticalArmedMode(VerticalNavModeState.PATH);
     }
+    else if (this.vPathState === VPathState.UNABLEARMED) {
+      this.pushVerticalArmedMode(VerticalNavModeState.NOPATH);
+    }
+
   }
 
   /**
@@ -432,6 +447,12 @@ class CJ4NavModeSelector {
   handleAltCaptured() {
     if (this.isAltitudeLocked) {
       this.currentVerticalActiveState = VerticalNavModeState.ALT;
+      if (SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") != 1) {
+        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+      }
+      if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number") != 3) {
+        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
+      }
     }
   }
 
@@ -444,6 +465,15 @@ class CJ4NavModeSelector {
 
     if (this.vPathState === VPathState.ACTIVE) {
       this.currentVerticalActiveState = VerticalNavModeState.PATH;
+      if (SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") != 2) {
+        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 2);
+      }
+      if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number") != 2) {
+        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
+      }
+      if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
+        SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
+      }
     }
   }
 }
@@ -468,11 +498,13 @@ VerticalNavModeState.ALTC = 'ALTC';
 VerticalNavModeState.ALTS = 'ALTS';
 VerticalNavModeState.ALTV = 'ALTV';
 VerticalNavModeState.PATH = 'PATH';
+VerticalNavModeState.NOPATH = 'NOPATH';
 
 class VPathState { }
 VPathState.NONE = 0;
 VPathState.ARMED = 1;
-VPathState.ACTIVE = 2;
+VPathState.UNABLEARMED = 2;
+VPathState.ACTIVE = 3;
 
 class LNavModeState { }
 LNavModeState.FMS = 'fms';
