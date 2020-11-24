@@ -16,12 +16,17 @@
 
 #include "common.h"
 #include "FdController.h"
+#include <sys/time.h>
+#include <chrono>
 
 int globalThrottleAxis[2]{ -16384, -16384 };
 
 class FdGauge
 {
 private:
+
+    uint64_t prevTime_ms = 0;
+
     /// <summary>
     /// Registers all the throttle SimConnect client events.
     /// </summary>
@@ -128,7 +133,7 @@ private:
             globalThrottleAxis[1] = static_cast<int>(evt->dwData);
             break;
         case ThrottleEventIDs::Throttle1Set:
-            globalThrottleAxis[0] = (static_cast<int>(evt->dwData) * 2) -16384;
+            globalThrottleAxis[0] = (static_cast<int>(evt->dwData) * 2) - 16384;
             break;
         case ThrottleEventIDs::Throttle2Set:
             globalThrottleAxis[1] = (static_cast<int>(evt->dwData) * 2) - 16384;
@@ -163,7 +168,13 @@ public:
     {
         SimConnect_CallDispatch(hSimConnect, HandleAxisEvent, this);
 
-        FdCtrlInstance.update(globalThrottleAxis, deltaTime);
+        uint64_t currTime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        uint64_t timeDiff_ms = currTime_ms - this->prevTime_ms;
+
+        if (timeDiff_ms > 250) {
+            FdCtrlInstance.update(globalThrottleAxis, deltaTime);
+            this->prevTime_ms = currTime_ms;
+        }
 
         return true;
     }

@@ -31,7 +31,6 @@ private:
 
     ThrottleMode throttleMode[2] = { UNDEF, UNDEF };
 
-    int frameCount = 0;
     bool enabled = true;
 
     /// <summary>
@@ -91,17 +90,14 @@ private:
             double cruThrPerc = (this->throttleAxis[idx] + 16384) / 25444.0; // -16384 -> 9060
             double cruThrExp = pow(cruThrPerc, 3.5);
 
-            throttleExp = cruThrExp*thrustF;
+            throttleExp = cruThrExp * thrustF;
             break;
         }
         default:
             break;
         }
 
-
-        if (this->frameCount % 10000000 == 0) {
-            //printf("TA %d TLP: %.4f TTHR: %.0f GTHR: %.0f MDENS: %.0f @ %.0f \r\n", this->throttleAxis[idx], throttleLeverPerc, targetThrust, grossSimThrust, maxDensityThrust, this->simVars->getPlaneAltitude());
-        }
+        //printf("TA %d TLP: %.4f TTHR: %.0f GTHR: %.0f MDENS: %.0f @ %.0f \r\n", this->throttleAxis[idx], throttleLeverPerc, targetThrust, grossSimThrust, maxDensityThrust, this->simVars->getPlaneAltitude());
 
         if (this->throttleMode[idx] == CLB)
         {
@@ -112,7 +108,7 @@ private:
         }
         else {
             // target throttle for cru
-            return max(0, min(100, throttleExp*100));
+            return max(0, min(100, throttleExp * 100));
         }
     }
 
@@ -182,11 +178,6 @@ public:
 
     void update(int throttleAxis[], double deltaTime)
     {
-        this->frameCount += deltaTime;
-        if (this->frameCount > 1147483647) {
-            this->frameCount = 0;
-        }
-
         this->throttleAxis[0] = throttleAxis[0];
         this->throttleAxis[1] = throttleAxis[1];
         this->updateThrottleMode(0);
