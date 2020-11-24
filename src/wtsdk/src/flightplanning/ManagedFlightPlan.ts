@@ -225,6 +225,9 @@ export class ManagedFlightPlan {
         if (this.activeWaypointIndex === 0 && this.length > 1) {
           this.activeWaypointIndex = 1;
         }
+        else if (this.activeWaypointIndex === 1 && waypoint.isRunway) {
+          this.activeWaypointIndex = 2;
+        }
       }
     }
   }

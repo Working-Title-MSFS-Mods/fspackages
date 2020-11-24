@@ -654,20 +654,22 @@ class Jet_NDCompass extends HTMLElement {
             this._currentCourse = 0;
         }
 
-        const angleDiff = Avionics.Utils.angleDiff(this._currentCourse, this._courseTarget);
-        const absAngleDiff = Math.abs(angleDiff);
+        if (this._currentCourse !== this._courseTarget) {
+            const angleDiff = Avionics.Utils.angleDiff(this._currentCourse, this._courseTarget);
+            const absAngleDiff = Math.abs(angleDiff);
 
-        const currentAnimationPosition = Math.pow((absAngleDiff / 180), .25);
-        let nextAnimationPosition = Math.pow(currentAnimationPosition - (deltaTime / 2000), 4);
-        if (nextAnimationPosition <= 0) {
-            nextAnimationPosition = 0;
-        }
-        
-        this._currentCourse = this._courseTarget - (nextAnimationPosition * 180 * Math.sign(angleDiff));      
-        let factor = (this.displayMode === Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.PPOS) ? 1 : 10;
+            const currentAnimationPosition = Math.pow((absAngleDiff / 180), .25);
+            let nextAnimationPosition = Math.pow(currentAnimationPosition - (deltaTime / 2000), 4);
+            if (nextAnimationPosition <= 0) {
+                nextAnimationPosition = 0;
+            }
+            
+            this._currentCourse = this._courseTarget - (nextAnimationPosition * 180 * Math.sign(angleDiff));      
+            let factor = (this.displayMode === Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.PPOS) ? 1 : 10;
 
-        if (this.course) {
-            this.course.setAttribute("transform", "rotate(" + (this._currentCourse) + " " + (50 * factor) + " " + (50 * factor) + ")");
+            if (this.course) {
+                this.course.setAttribute("transform", "rotate(" + (this._currentCourse) + " " + (50 * factor) + " " + (50 * factor) + ")");
+            }
         }
     }
 

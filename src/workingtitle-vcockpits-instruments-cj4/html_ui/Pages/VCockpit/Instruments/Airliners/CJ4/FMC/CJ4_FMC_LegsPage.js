@@ -143,7 +143,7 @@ class CJ4_FMC_LegsPage {
             displayWaypoints.push({index: i, fix: waypoints[i]});
 
             if (waypoints[i].endsInDiscontinuity) {
-                displayWaypoints.push({index: i, fix: {icao: "$DISCO", isRemovable: waypoints[i].isVectors === true}});
+                displayWaypoints.push({index: i, fix: {icao: "$DISCO", isRemovable: waypoints[i].isVectors !== true}});
             }
         }
 
@@ -223,32 +223,36 @@ class CJ4_FMC_LegsPage {
                                 });
                             }
                             else { // MOVE TO POSITION IN FPLN
+                                let isMovable = true;
                                 if (waypoint.fix.icao === '$DISCO') {
                                     if (waypoint.fix.isRemovable) {
                                         this._fmc.flightPlanManager.clearDiscontinuity(waypoint.index);
                                         lskWaypointIndex += 1;
                                     }
                                     else {
-                                        this._fmc.showErrorMessage("UNABLE CLR DISCONTINUITY");
+                                        this._fmc.showErrorMessage("UNABLE MOD DISCON");
+                                        isMovable = false;
                                     }
                                 }
 
-                                let removeWaypointForLegsMethod = (callback = EmptyCallback.Void) => {
-                                    if (lskWaypointIndex < scratchPadWaypointIndex) {
-                                        this._fmc.flightPlanManager.removeWaypoint(lskWaypointIndex, false, () => {
-                                            scratchPadWaypointIndex--;
-                                            removeWaypointForLegsMethod(callback);
+                                if (isMovable) {
+                                    let removeWaypointForLegsMethod = (callback = EmptyCallback.Void) => {
+                                        if (lskWaypointIndex < scratchPadWaypointIndex) {
+                                            this._fmc.flightPlanManager.removeWaypoint(lskWaypointIndex, false, () => {
+                                                scratchPadWaypointIndex--;
+                                                removeWaypointForLegsMethod(callback);
+                                            });
+                                        }
+                                        else {
+                                            callback();
+                                        }
+                                    };
+                                    this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                        removeWaypointForLegsMethod(() => {
+                                            this.resetAfterOp();
                                         });
-                                    }
-                                    else {
-                                        callback();
-                                    }
-                                };
-                                this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                    removeWaypointForLegsMethod(() => {
-                                        this.resetAfterOp();
                                     });
-                                });
+                                }  
                             }
                         }
                         break;
@@ -284,8 +288,13 @@ class CJ4_FMC_LegsPage {
                             this._fmc.setMsg("Working...");
                             this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
                                 if (waypoint.fix.icao === '$DISCO') {
-                                    this._fmc.flightPlanManager.clearDiscontinuity(waypoint.index);
-                                    this.resetAfterOp();
+                                    if (waypoint.fix.isRemovable) {
+                                        this._fmc.flightPlanManager.clearDiscontinuity(waypoint.index);
+                                        this.resetAfterOp();
+                                    }
+                                    else {
+                                        this._fmc.showErrorMessage("UNABLE CLR DISCON");
+                                    }
                                 }
                                 else {
                                     this._fmc.flightPlanManager.removeWaypoint(selectedWpIndex, false, () => {

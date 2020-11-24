@@ -84,19 +84,21 @@ class Jet_MFD_NDInfo extends HTMLElement {
             this._isWaypointAlerting = isAlertSet;
 
             if (!isAlertSet) {
-                this._displayWaypointName = true;
+                this._displayWaypointInfo = true;
                 this.waypointName.style.visibility = 'visible';
+                this.waypointDistance.parentElement.style.visibility = 'visible';
             }
         }
 
         if (this._isWaypointAlerting) {
             this._alertAnimationElapsed += deltaTime;
             while (this._alertAnimationElapsed >= this._alertAnimationNextTime) {
-                this._displayWaypointName = this._displayWaypointName ? false : true;
+                this._displayWaypointInfo = this._displayWaypointInfo ? false : true;
                 this._alertAnimationNextTime += 500;
             }
 
-            this.waypointName.style.visibility = this._displayWaypointName ? 'visible' : 'hidden';
+            this.waypointName.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
+            this.waypointDistance.parentElement.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
         }      
     }
 
