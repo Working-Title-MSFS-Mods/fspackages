@@ -11,8 +11,14 @@ class CJ4_FMC_FplnRecallPage {
             // fmc.tryUpdateFromTo(json.origin.icao_code + "/" + json.destination.icao_code, updateRunways);
             fmc.setMsg("LOAD FPLN...CLEAR FPLN[yellow]");
             fmc.flightPlanManager.setActiveWaypointIndex(0, () => {
-                fmc.setMsg("LOAD FPLN...ORIG [yellow]" + from);
-                fmc.updateRouteOrigin(from, updateRunways);
+                fmc.eraseTemporaryFlightPlan(() => {
+                    fmc.flightPlanManager.clearFlightPlan(() => {
+                        fmc.setMsg("LOAD FPLN...ORIG [yellow]" + from);
+                        fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                            fmc.updateRouteOrigin(from, updateRunways);
+                        });
+                    });
+                });
             });
         };
 
