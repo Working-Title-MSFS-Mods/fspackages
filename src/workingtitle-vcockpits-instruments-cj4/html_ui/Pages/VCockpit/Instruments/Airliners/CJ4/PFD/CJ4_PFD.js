@@ -10,6 +10,7 @@ class CJ4_PFD extends BaseAirliners {
         this.mapNavigationSource = 0;
         this.systemPage = CJ4_SystemPage.ANNUNCIATIONS;
         this.modeChangeTimer = -1;
+        this.autoSwitchedToILS1 = false;
         this.radioSrc1 = "OFF";
         this.radioSrc2 = "OFF";
         this.initDuration = 7000;
@@ -71,14 +72,14 @@ class CJ4_PFD extends BaseAirliners {
                 this.readDictionary(dict);
                 dict.changed = false;
             }
-			
-			if (this.mapNavigationMode === Jet_NDCompass_Navigation.VOR) {
+
+            if (this.mapNavigationMode === Jet_NDCompass_Navigation.VOR) {
                 const radioFix = this.radioNav.getVORBeacon(this.mapNavigationSource);
                 if (radioFix.name && radioFix.name.indexOf("ILS") !== -1) {
                     this.mapNavigationMode = Jet_NDCompass_Navigation.ILS;
-                }       
+                }
             }
-			
+
             this.map.setMode(this.mapDisplayMode);
             this.mapOverlay.setMode(this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource);
 
@@ -108,7 +109,7 @@ class CJ4_PFD extends BaseAirliners {
             if (this.showTerrain) {
                 this.map.showMap(true);
 
-                if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {               
+                if (this.mapDisplayMode === Jet_NDCompass_Display.ARC || this.mapDisplayMode === Jet_NDCompass_Display.ROSE) {
                     this.map.showRoute(false);
                     this.map.map.instrument.setAttribute('show-airplane', 'false');
                 }
@@ -177,6 +178,27 @@ class CJ4_PFD extends BaseAirliners {
             this.map.map.instrument.showAltitudeIntercept = true;
         }
 
+        if (this.currFlightPlanManager.isActiveApproach() && this.currFlightPlanManager.getActiveWaypointIndex() != -1 && Simplane.getAutoPilotApproachType() == 4 && SimVar.GetSimVarValue("AUTOPILOT APPROACH ACTIVE", "boolean")) {
+            if (this.radioNav.getRADIONAVSource() == NavSource.GPS) {
+                this.radioNav.setRADIONAVSource(NavSource.VOR1);
+                this.autoSwitchedToILS1 = true;
+            }
+        }
+        else {
+            if (this.autoSwitchedToILS1) {
+                if (this.mapNavigationMode == Jet_NDCompass_Navigation.NAV) {
+                    this.radioNav.setRADIONAVSource(NavSource.GPS);
+                }
+                else if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1) {
+                    this.radioNav.setRADIONAVSource(NavSource.VOR1);
+                }
+                else if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 2) {
+                    this.radioNav.setRADIONAVSource(NavSource.VOR2);
+                }
+                this.autoSwitchedToILS1 = false;
+            }
+        }
+
         this.updateMachTransition();
     }
     onEvent(_event) {
@@ -222,7 +244,7 @@ class CJ4_PFD extends BaseAirliners {
 
                 else if (this.mapDisplayMode == Jet_NDCompass_Display.ROSE)
                     this.mapDisplayMode = Jet_NDCompass_Display.PPOS;
-                
+
                 else this.mapDisplayMode = Jet_NDCompass_Display.ARC;
 
                 this.onModeChanged();
@@ -309,7 +331,7 @@ class CJ4_PFD extends BaseAirliners {
             if (this.mapDisplayMode != Jet_NDCompass_Display.PPOS) {
                 this.mapDisplayMode = Jet_NDCompass_Display.PPOS;
                 modeChanged = true;
-             }
+            }
         }
         let range = _dict.get(CJ4_PopupMenu_Key.MAP_RANGE);
         this.map.range = parseInt(range);
