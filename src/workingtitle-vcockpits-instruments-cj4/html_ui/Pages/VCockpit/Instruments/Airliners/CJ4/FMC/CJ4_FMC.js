@@ -71,6 +71,19 @@ class CJ4_FMC extends FMCMainDisplay {
         }
     }
 
+    updateRouteOrigin(newRouteOrigin, callback = EmptyCallback.Boolean) {
+        this.dataManager.GetAirportByIdent(newRouteOrigin).then(airport => {
+            if (!airport) {
+                this.showErrorMessage("NOT IN DATABASE");
+                return callback(false);
+            }
+            this.flightPlanManager.setOrigin(airport.icao, () => {
+                this.tmpOrigin = airport.ident;
+                callback(true);
+            });
+        });
+    }
+
     connectedCallback() {
         super.connectedCallback();
         this.radioNav.init(NavMode.TWO_SLOTS);

@@ -1,11 +1,41 @@
 # Working Title CJ4 Mod
 
 ## UPDATES
-Latest Version: [v0.7.1](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.7.1)
+Latest Version: [v0.7.2](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.7.2)
 
 Changelog: [CHANGES.md](https://github.com/Working-Title-MSFS-Mods/fspackages/blob/main/docs/workingtitle-cj4/CHANGES.md)
 
 Track Updates and Progress on Discord [https://discord.com/invite/Fa6w2xK](https://discord.com/invite/Fa6w2xK)
+
+## KEY FEATURES
+
+*   FMS - Rockwell Collins Pro Line 21 represented at over 75% accuracy
+    *   Over 40 screens/pages of the FMS have been developed
+    *   Route planning complete with departure and arrival procedures, airways and direct waypoints, including many procedures and procedure types missing from the default aircraft
+    *   Performance init pages including complete takeoff and approach performance calculations, with field lengths and Vspeeds
+    *   Custom developed and implemented a flight plan import directly from Simbrief via the FMS, allowing users to spawn without a flight plan, then load a Simbrief OFP/Flight Plan directly over the web (requires internet connection); this feature also makes it easier to fly multiple legs without exiting the simulation session
+    *   Improved performance of FMS by streamlining data access behind the code
+    *   Added custom mechanism for saving and storing default settings to remain persistent between sim sessions
+    *   Added transponder functionality and completely redesigned the TUN page for radio tuning
+*   PFD/MFD - Major functional and visual enhancements
+    *   Custom font, sizing and coloring introduced to PFD and MFD to improve readability and accuracy of displays
+    *   Customized Vspeeds and visibility behavior to reflect the real aircraft
+    *   Adjusted the display of data, the visibility of the AoA and other functions to match the real world
+    *   Added complete, tracked and stepable checklists to the MFD
+    *   Added passenger briefing menu and announcement playing to the MFD
+    *   Added capability to customize the MFD display and use the PLAN view to step through flight plan via the MFD ADV and DSPL MENU functions on the FMS
+    *   Added bearing pointer functionality
+    *   Rebuilt pitch trim gauge because it was reversed and mislabeled in the default model
+*   Flight Model
+    *   Adjusted engines to reflect real world performance, including the elimination of reverse thrust.
+    *   Adjusted fuel flow with a custom fuel flow utility that accurately tracks and reports fuel usage reflective of real aircraft performance
+    *   Tweaked autopilot performance, gear/flap/spoiler drag and other QoL improvements on the flight characteristics
+*   Lights & Sounds
+    *   Enhanced exterior lighting, including volumetric lights
+    *   Enhanced interior lighting, including cabin lights with adjustable dim level (controlled through our custom MOD SETTINGS menu in the FMS)
+    *   Enhanced and growing soundset, including fans and passenger briefings
+*   Cockpit Model
+    *   Added lighting and functionality to many buttons and knobs in the cockpit model.
 
 ## BETA
 This is a beta, and as such you will surely encounter bugs and problems with the aircraft and functions. Please log these bugs under Issues at the [Working Title Github Repo](https://github.com/Working-Title-MSFS-Mods/fspackages/issues), and please **TAG THEM** as CJ4 issues. 
@@ -41,6 +71,9 @@ This list is incomplete, but thanks to everyone that contributed from inside and
 * aznricepuff
 * musurca
 * uwajimaya
+* tscharlii
+* knighty
+* hosky
 * dihedral (QA)
 * Danice (QA)
 * Viralwhite (QA)

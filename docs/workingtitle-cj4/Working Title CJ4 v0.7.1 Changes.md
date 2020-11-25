@@ -1,6 +1,6 @@
-# Working Title CJ4 v0.7.2 Changes
+# Working Title CJ4 v0.7.1 Changes
 
-Welcome to the latest update of the Working Title CJ4 (v0.7.2). This is a hotfix for v0.7.1 for some compatibility changes after MSFS update 1.11.6.0! Thanks to all the helpful folks who contributed to this release.
+Welcome to the latest update of the Working Title CJ4 (v0.7.1). This is a hotfix for v0.7.0 but also brings lights to the lower CCP panel! Thanks to all the helpful folks who contributed to this release.
 
 ## Important Feature Change from v0.7.0 Onward
 
@@ -23,9 +23,25 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
-## Changes
-* Fixed SimBrief import for compatibility with 1.11.6.0
-* Fixed Mach Hold not synchronizing with mach changes
+## Key Features
+* Added backlighting to lower CCP panel to complete lighting on the panel
+* Fixed bugs with freezing MFD and FMC in some situations
+
+### FMC
+* Fix Metric conversion errors on perf init
+* Fix Metric conversion errors on fuel mgmt
+
+#### FPLN
+* Fixed error with certain navaid loading when search query returns an empty value (example case NDB HM)
+
+### PFD/MFD
+* Repaired map conflict with other WT mods that share the same common mapping code
+* Resolve freezing MFD/PFD error with altitude constraint selection (this option has been disabled as the data is inaccurate)
+* Fixed bug displaying waypoint names in black on black background
+* Adjusted leg colors to show active leg magenta, and others in white
+
+### PROG
+* Fixed metric conversion display errors
 
 ## Known Issues
 * Altitude constraints are not currently selectable on the map due to incorrect data being displayed.
