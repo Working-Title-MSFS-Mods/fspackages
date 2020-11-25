@@ -146,7 +146,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
             let nextPoint = currentPoint.add(planeVelocityPx.add(windVelocityPx).scale(timeStep, true));
             points.push(nextPoint);
 
-            if (!state.projection.isXYInBounds(nextPoint, 0.05)) {
+            if (!state.projection.isInView(nextPoint, 0.05)) {
                 break;
             }
             headingRad += turnSpeedRad * timeStep;
