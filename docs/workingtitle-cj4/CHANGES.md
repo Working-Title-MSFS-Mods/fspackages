@@ -24,7 +24,6 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
 ## Changes
-* Incorporated most of the 1.11.6.0 stock changes, like new Aerodynamics
 * Fixed SimBrief import for compatibility with 1.11.6.0
 * Fixed Mach Hold not synchronizing with mach changes
 
