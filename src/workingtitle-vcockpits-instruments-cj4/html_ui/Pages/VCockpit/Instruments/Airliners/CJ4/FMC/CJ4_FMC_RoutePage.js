@@ -85,8 +85,11 @@ class CJ4_FMC_RoutePage {
         }
 
         this._rows = CJ4_FMC_RoutePage._GetAllRows(this._fmc);
-        this._rows.rows.push(["-----", "-----"]);
-        this._pageCount = (Math.floor(this._rows.rows.length / 4) + 2);
+        if (this._rows.rows.length > 0) {
+            this._rows.rows.push(["-----", "-----"]);
+            this._rows.fpIndexes.push(this._rows.fpIndexes[this._rows.fpIndexes.length - 1] + 1);
+        }
+        this._pageCount = (Math.ceil((this._rows.rows.length - 1) / 5) + 1);
 
         this._modStr = this._fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
     }
@@ -121,17 +124,17 @@ class CJ4_FMC_RoutePage {
         let idx = this._offset;
 
         this._fmc._templateRenderer.setTemplateRaw([
-            [" " + this._modStr + " FPLN[blue]", (this._currentPage+1) + "/" + this._pageCount + " [blue]"],
+            [" " + this._modStr + " FPLN[blue]", (this._currentPage + 1) + "/" + this._pageCount + " [blue]"],
             ["VIA[s-text blue]", "TO[s-text blue]"],
-            this._rows.rows[idx++],
+            this._rows.rows[idx],
             [""],
-            this._rows.rows[idx++],
+            this._rows.rows[idx+1],
             [""],
-            this._rows.rows[idx++],
+            this._rows.rows[idx+2],
             [""],
-            this._rows.rows[idx++],
+            this._rows.rows[idx+3],
             [""],
-            this._rows.rows[idx++],
+            this._rows.rows[idx+4],
             ["-----------------------[blue]"],
             [this._lsk6Field, this._activateCell]
         ]);
@@ -169,17 +172,12 @@ class CJ4_FMC_RoutePage {
                     CJ4_FMC_PerfInitPage.ShowPage2(this._fmc);
                 }
             };
-            this._fmc.onLeftInput[5] = () => {
-                if (this._lsk6Field == "<CANCEL MOD") {
-                    if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
-                        this._fmc.fpHasChanged = false;
-                        this._fmc.eraseTemporaryFlightPlan(() => { this.invalidate(); });
-                    }
-                }
-            };
-
         } else {
             // other pages
+            for (let i = 0; i < 5; i++) {
+                const row = this._rows.rows[i];
+                this.bindRowEvents(i);
+            }
         }
 
         // paging
@@ -191,14 +189,22 @@ class CJ4_FMC_RoutePage {
         };
 
         // exec stuff
+        this._fmc.onLeftInput[5] = () => {
+            if (this._lsk6Field == "<CANCEL MOD") {
+                if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
+                    this._fmc.fpHasChanged = false;
+                    this._fmc.eraseTemporaryFlightPlan(() => { this.invalidate(); });
+                }
+            }
+        };
+
         this._fmc.onExecPage = () => {
             if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                 if (!this._fmc.getIsRouteActivated()) {
                     this._fmc.activateRoute();
                 }
+                this._fmc.refreshPageCallback = () => this.invalidate(); // TODO see why this would be needed
                 this._fmc.onExecDefault();
-                // fmc.refreshPageCallback = () => CJ4_FMC_RoutePage.ShowPage1(fmc); // TODO see why this would be needed
-                this.invalidate();
             } else {
                 this._fmc._isRouteActivated = false;
                 this._fmc.fpHasChanged = false;
@@ -212,8 +218,40 @@ class CJ4_FMC_RoutePage {
      * Bind the LSK events to a plan row.
      * @param {Number} idx 
      */
-    bindRowEvent(idx) {
+    bindRowEvents(lskIdx) {
+        this._fmc.onLeftInput[lskIdx] = () => {
 
+        };
+
+        this._fmc.onRightInput[lskIdx] = () => {
+            this._fmc.setMsg("Working...");
+            const value = this._fmc.inOut;
+            // TODO: handle departure wp offset, is hacky, better ideas?
+            let departure = this._fmc.flightPlanManager.getDeparture();
+            if (departure !== undefined) {
+                lskIdx--;
+            }
+            const wpIdx = this._rows.fpIndexes[lskIdx + this._offset];
+
+            if (value === FMCMainDisplay.clrValue) {
+                this._fmc.clearUserInput();
+                this._fmc.removeWaypoint(wpIdx, () => {
+                    this._fmc.setMsg();
+                    this.invalidate();
+                });
+            } else if (value.length > 0) {
+                this._fmc.clearUserInput();
+                // const enroute = this._fmc.flightPlanManager.getCurrentFlightPlan().enroute;
+                this._fmc.insertWaypoint(value, wpIdx, (isSuccess) => {
+                    if (isSuccess) {
+                        this._fmc.setMsg();
+                        this.invalidate();
+                    }
+                });
+            } else {
+                this._fmc.setMsg();
+            }
+        };
     }
 
     invalidate() {
@@ -523,9 +561,6 @@ class CJ4_FMC_RoutePage {
             }
         };
 
-        //end of CWB edited activation and exec handling
-
-        let modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
 
 
         fmc.onPrevPage = () => {
@@ -604,28 +639,28 @@ class CJ4_FMC_RoutePage {
         let allRows = [];
         let allWaypoints = [];
         let allFPIndexes = [];
-        let flightPlan = fmc.flightPlanManager;
+        let flightPlanManager = fmc.flightPlanManager;
         let lastDepartureWaypoint = undefined;
-        if (flightPlan) {
-            let departure = flightPlan.getDeparture();
+        if (flightPlanManager) {
+            const departure = flightPlanManager.getDeparture();
             if (departure) {
-                let departureWaypoints = flightPlan.getDepartureWaypointsMap();
+                const departureWaypoints = flightPlanManager.getDepartureWaypointsMap();
                 lastDepartureWaypoint = departureWaypoints[departureWaypoints.length - 1];
                 if (lastDepartureWaypoint) {
                     allRows.push([departure.name, lastDepartureWaypoint.ident]);
                 }
             }
             let fpIndexes = [];
-            let routeWaypoints = flightPlan.getEnRouteWaypoints(fpIndexes);
+            const routeWaypoints = flightPlanManager.getEnRouteWaypoints(fpIndexes);
             for (let i = 0; i < routeWaypoints.length; i++) {
-                let prev = (i == 0) ? lastDepartureWaypoint : routeWaypoints[i - 1]; // check with dep on first waypoint
-                let wp = routeWaypoints[i];
+                const prev = (i == 0) ? lastDepartureWaypoint : routeWaypoints[i - 1]; // check with dep on first waypoint
+                const wp = routeWaypoints[i];
                 if (wp) {
                     if (wp.infos.airwayIn !== undefined && prev && prev.infos.airwayOut === wp.infos.airwayIn) {
                         // is there a next waypoint?
-                        let nextWp = routeWaypoints[i + 1];
+                        const nextWp = routeWaypoints[i + 1];
                         if (nextWp) {
-                            let airwayContinues = (wp.infos.airwayIn === wp.infos.airwayOut && nextWp.infos.airwayIn === wp.infos.airwayOut);
+                            const airwayContinues = (wp.infos.airwayIn === wp.infos.airwayOut && nextWp.infos.airwayIn === wp.infos.airwayOut);
                             if (airwayContinues)
                                 continue;
                         }
@@ -640,6 +675,18 @@ class CJ4_FMC_RoutePage {
                     }
                 }
             }
+
+            // const fpln = flightPlanManager.getCurrentFlightPlan();
+            // const arrival = fpln.getSegment(SegmentType.Arrival);
+            // if (arrival !== undefined) {
+
+            // }
+
+            // const approach = fpln.getSegment(SegmentType.Approach);
+            // if (approach !== undefined) {
+
+            // }
+
         }
         return {
             rows: allRows,
