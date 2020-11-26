@@ -1,5 +1,4 @@
 import { BaseInstrument, SimVar, EmptyCallback, LatLongAlt, Avionics, AirportInfo, WayPoint, OneWayRunway, Simplane, RegisterViewListener } from 'MSFS';
-import { WTDataStore } from 'WorkingTitle';
 import { ManagedFlightPlan, GPS } from '../wtsdk';
 import { FlightPlanSegment, SegmentType } from './FlightPlanSegment';
 import { FlightPlanAsoboSync } from './FlightPlanAsoboSync';

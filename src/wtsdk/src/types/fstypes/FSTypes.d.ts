@@ -40,6 +40,9 @@ declare module "MSFS" {
     coordinates: LatLongAlt;
     icao: string;
     ident: string;
+    airwayIn: string;
+    airwayOut: string;
+    routes: any[];
     instrument: BaseInstrument;
     magneticVariation?: number;
     _svgElements: any;

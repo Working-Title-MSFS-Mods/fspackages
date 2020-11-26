@@ -395,6 +395,9 @@ export class ManagedFlightPlan {
       infos: {
         icao: waypoint.infos.icao,
         ident: waypoint.infos.ident,
+        airwayIn: waypoint.infos.airwayIn,
+        airwayOut: waypoint.infos.airwayOut,
+        routes: waypoint.infos.routes,
         coordinates: {
           lat: waypoint.infos.coordinates.lat,
           long: waypoint.infos.coordinates.long,
