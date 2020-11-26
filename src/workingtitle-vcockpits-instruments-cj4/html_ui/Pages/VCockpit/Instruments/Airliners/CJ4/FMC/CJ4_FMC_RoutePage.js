@@ -116,7 +116,7 @@ class CJ4_FMC_RoutePage {
             ["", "ORIG RWY[blue] "],
             [""],
             [" VIA[blue]", "TO[blue] "],
-            this._rows[0].getTemplate(),
+            this._rows[0].getTemplate()[0],
             ["----------------[blue]", "FLT NO[blue] "],
             ["", this._flightNoCell],
             [""],
@@ -130,15 +130,15 @@ class CJ4_FMC_RoutePage {
         this._fmc._templateRenderer.setTemplateRaw([
             [" " + this._modStr + " FPLN[blue]", (this._currentPage + 1) + "/" + this._pageCount + " [blue]"],
             ["VIA[s-text blue]", "TO[s-text blue]"],
-            this._rows[idx] ? this._rows[idx].getTemplate() : [""],
-            [""],
-            this._rows[idx + 1] ? this._rows[idx + 1].getTemplate() : [""],
-            [""],
-            this._rows[idx + 2] ? this._rows[idx + 2].getTemplate() : [""],
-            [""],
-            this._rows[idx + 3] ? this._rows[idx + 3].getTemplate() : [""],
-            [""],
-            this._rows[idx + 4] ? this._rows[idx + 4].getTemplate() : [""],
+            this._rows[idx] ? this._rows[idx].getTemplate()[0] : [""],
+            this._rows[idx] ? this._rows[idx].getTemplate()[1] : [""],
+            this._rows[idx + 1] ? this._rows[idx + 1].getTemplate()[0] : [""],
+            this._rows[idx + 1] ? this._rows[idx + 1].getTemplate()[1] : [""],
+            this._rows[idx + 2] ? this._rows[idx + 2].getTemplate()[0] : [""],
+            this._rows[idx + 2] ? this._rows[idx + 2].getTemplate()[1] : [""],
+            this._rows[idx + 3] ? this._rows[idx + 3].getTemplate()[0] : [""],
+            this._rows[idx + 3] ? this._rows[idx + 3].getTemplate()[1] : [""],
+            this._rows[idx + 4] ? this._rows[idx + 4].getTemplate()[0] : [""],
             ["-----------------------[blue]"],
             [this._lsk6Field, this._activateCell]
         ]);
@@ -479,19 +479,23 @@ class FpRow {
     set airwayIn(val) { this._airwayIn = val; }
 
     getTemplate() {
-        let tmpl;
+        let row1tmpl, row2tmpl = ["", ""];
         if (this._airwayIn === undefined) {
-            tmpl = ["-----", this._ident];
+            row1tmpl = ["-----", this._ident];
         } else {
-            tmpl = [this._airwayIn, this._ident];
+            row1tmpl = [this._airwayIn, this._ident];
+            if (this.airwayIn !== undefined && this._ident === "-----") {
+                row1tmpl[1] = "□□□□□[s-text]";
+                row2tmpl = ["----[s-text]", "----[s-text]", "DISCONTINUITY[s-text]"];
+            }
         }
 
         if (this._isActive) {
-            tmpl[0] += "[magenta]";
-            tmpl[1] += "[magenta]";
+            row1tmpl[0] += "[magenta]";
+            row1tmpl[1] += "[magenta]";
         }
 
-        return tmpl;
+        return [row1tmpl, row2tmpl];
     }
 }
 
