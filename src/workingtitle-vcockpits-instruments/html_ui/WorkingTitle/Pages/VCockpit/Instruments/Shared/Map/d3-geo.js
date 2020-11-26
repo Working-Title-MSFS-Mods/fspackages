@@ -538,19 +538,26 @@ function constant(x) {
 
 function compose(a, b) {
 
-  function compose(x, y) {
-    return x = a(x, y), b(x[0], x[1]);
+  function compose(x, y, ref) {
+    return x = a(x, y, ref), b(x[0], x[1], ref);
   }
 
-  if (a.invert && b.invert) compose.invert = function(x, y) {
-    return x = b.invert(x, y), x && a.invert(x[0], x[1]);
+  if (a.invert && b.invert) compose.invert = function(x, y, ref) {
+    return x = b.invert(x, y, ref), x && a.invert(x[0], x[1], ref);
   };
 
   return compose;
 }
 
-function rotationIdentity(lambda, phi) {
-  return [abs(lambda) > pi ? lambda + Math.round(-lambda / tau) * tau : lambda, phi];
+function rotationIdentity(lambda, phi, ref) {
+  let _0 = abs(lambda) > pi ? lambda + Math.round(-lambda / tau) * tau : lambda;
+  let _1 = phi;
+  if (ref) {
+    ref[0] = _0;
+    ref[1] = _1;
+    return ref;
+  }
+  return [_0, _1];
 }
 
 rotationIdentity.invert = rotationIdentity;
@@ -563,8 +570,16 @@ function rotateRadians(deltaLambda, deltaPhi, deltaGamma) {
 }
 
 function forwardRotationLambda(deltaLambda) {
-  return function(lambda, phi) {
-    return lambda += deltaLambda, [lambda > pi ? lambda - tau : lambda < -pi ? lambda + tau : lambda, phi];
+  return function(lambda, phi, ref) {
+    lambda += deltaLambda;
+    let _0 = lambda > pi ? lambda - tau : lambda < -pi ? lambda + tau : lambda;
+    let _1 = phi;
+    if (ref) {
+      ref[0] = _0;
+      ref[1] = _1;
+      return ref;
+    }
+    return [_0, _1];
   };
 }
 
@@ -580,28 +595,36 @@ function rotationPhiGamma(deltaPhi, deltaGamma) {
       cosDeltaGamma = cos(deltaGamma),
       sinDeltaGamma = sin(deltaGamma);
 
-  function rotation(lambda, phi) {
+  function rotation(lambda, phi, ref) {
     var cosPhi = cos(phi),
         x = cos(lambda) * cosPhi,
         y = sin(lambda) * cosPhi,
         z = sin(phi),
         k = z * cosDeltaPhi + x * sinDeltaPhi;
-    return [
-      atan2(y * cosDeltaGamma - k * sinDeltaGamma, x * cosDeltaPhi - z * sinDeltaPhi),
-      asin(k * cosDeltaGamma + y * sinDeltaGamma)
-    ];
+    let _0 = atan2(y * cosDeltaGamma - k * sinDeltaGamma, x * cosDeltaPhi - z * sinDeltaPhi);
+    let _1 = asin(k * cosDeltaGamma + y * sinDeltaGamma);
+    if (ref) {
+      ref[0] = _0;
+      ref[1] = _1;
+      return ref;
+    }
+    return [_0, _1];
   }
 
-  rotation.invert = function(lambda, phi) {
+  rotation.invert = function(lambda, phi, ref) {
     var cosPhi = cos(phi),
         x = cos(lambda) * cosPhi,
         y = sin(lambda) * cosPhi,
         z = sin(phi),
         k = z * cosDeltaGamma - y * sinDeltaGamma;
-    return [
-      atan2(y * cosDeltaGamma + z * sinDeltaGamma, x * cosDeltaPhi + k * sinDeltaPhi),
-      asin(k * cosDeltaPhi - x * sinDeltaPhi)
-    ];
+    let _0 = atan2(y * cosDeltaGamma + z * sinDeltaGamma, x * cosDeltaPhi + k * sinDeltaPhi);
+    let _1 = asin(k * cosDeltaPhi - x * sinDeltaPhi);
+    if (ref) {
+      ref[0] = _0;
+      ref[1] = _1;
+      return ref;
+    }
+    return [_0, _1];
   };
 
   return rotation;
@@ -610,13 +633,13 @@ function rotationPhiGamma(deltaPhi, deltaGamma) {
 function rotation(rotate) {
   rotate = rotateRadians(rotate[0] * radians, rotate[1] * radians, rotate.length > 2 ? rotate[2] * radians : 0);
 
-  function forward(coordinates) {
-    coordinates = rotate(coordinates[0] * radians, coordinates[1] * radians);
+  function forward(coordinates, ref) {
+    coordinates = rotate(coordinates[0] * radians, coordinates[1] * radians, ref);
     return coordinates[0] *= degrees, coordinates[1] *= degrees, coordinates;
   }
 
-  forward.invert = function(coordinates) {
-    coordinates = rotate.invert(coordinates[0] * radians, coordinates[1] * radians);
+  forward.invert = function(coordinates, ref) {
+    coordinates = rotate.invert(coordinates[0] * radians, coordinates[1] * radians, ref);
     return coordinates[0] *= degrees, coordinates[1] *= degrees, coordinates;
   };
 
@@ -2365,12 +2388,26 @@ function transformRotate(rotate) {
 }
 
 function scaleTranslate(k, dx, dy, sx, sy) {
-  function transform(x, y) {
+  function transform(x, y, ref) {
     x *= sx; y *= sy;
-    return [dx + k * x, dy - k * y];
+    let _0 = dx + k * x;
+    let _1 = dy - k * y;
+    if (ref) {
+      ref[0] = _0;
+      ref[1] = _1;
+      return ref;
+    }
+    return [_0, _1];
   }
-  transform.invert = function(x, y) {
-    return [(x - dx) / k * sx, (dy - y) / k * sy];
+  transform.invert = function(x, y, ref) {
+    let _0 = (x - dx) / k * sx;
+    let _1 = (dy - y) / k * sy;
+    if (ref) {
+      ref[0] = _0;
+      ref[1] = _1;
+      return ref;
+    }
+    return [_0, _1];
   };
   return transform;
 }
@@ -2385,12 +2422,26 @@ function scaleTranslateRotate(k, dx, dy, sx, sy, alpha) {
       bi = sinAlpha / k,
       ci = (sinAlpha * dy - cosAlpha * dx) / k,
       fi = (sinAlpha * dx + cosAlpha * dy) / k;
-  function transform(x, y) {
+  function transform(x, y, ref) {
     x *= sx; y *= sy;
-    return [a * x - b * y + dx, dy - b * x - a * y];
+    let _0 = a * x - b * y + dx;
+    let _1 = dy - b * x - a * y;
+    if (ref) {
+      ref[0] = _0;
+      ref[1] = _1;
+      return ref;
+    }
+    return [_0, _1];
   }
-  transform.invert = function(x, y) {
-    return [sx * (ai * x - bi * y + ci), sy * (fi - bi * x - ai * y)];
+  transform.invert = function(x, y, ref) {
+    let _0 = sx * (ai * x - bi * y + ci);
+    let _1 = sy * (fi - bi * x - ai * y);
+    if (ref) {
+      ref[0] = _0;
+      ref[1] = _1;
+      return ref;
+    }
+    return [_0, _1];
   };
   return transform;
 }
@@ -2417,13 +2468,17 @@ function projectionMutator(projectAt) {
       cache,
       cacheStream;
 
-  function projection(point) {
-    return projectRotateTransform(point[0] * radians, point[1] * radians);
+  function projection(point, ref) {
+    return projectRotateTransform(point[0] * radians, point[1] * radians, ref);
   }
 
-  function invert(point) {
-    point = projectRotateTransform.invert(point[0], point[1]);
-    return point && [point[0] * degrees, point[1] * degrees];
+  function invert(point, ref) {
+    point = projectRotateTransform.invert(point[0], point[1], ref);
+    if (point) {
+        point[0] *= degrees;
+        point[1] *= degrees;
+    }
+    return point;
   }
 
   projection.stream = function(stream) {
@@ -2743,12 +2798,26 @@ function azimuthalEquidistant() {
       .clipAngle(180 - 1e-3);
 }
 
-function mercatorRaw(lambda, phi) {
-  return [lambda, log(tan((halfPi + phi) / 2))];
+function mercatorRaw(lambda, phi, ref) {
+  let x = lambda;
+  let y = log(tan((halfPi + phi) / 2));
+  if (ref) {
+    ref[0] = x;
+    ref[1] = y;
+    return ref;
+  }
+  return [x, y];
 }
 
-mercatorRaw.invert = function(x, y) {
-  return [x, 2 * atan(exp(y)) - halfPi];
+mercatorRaw.invert = function(x, y, ref) {
+  let lambda = x;
+  let phi = 2 * atan(exp(y)) - halfPi;
+  if (ref) {
+    ref[0] = lambda;
+    ref[1] = phi;
+    return ref;
+  }
+  return [lambda, phi];
 };
 
 function mercator() {
@@ -2827,7 +2896,12 @@ function conicConformal() {
       .parallels([30, 30]);
 }
 
-function equirectangularRaw(lambda, phi) {
+function equirectangularRaw(lambda, phi, ref) {
+  if (ref) {
+    ref[0] = lambda;
+    ref[1] = phi;
+    return ref;
+  }
   return [lambda, phi];
 }
 
@@ -2942,7 +3016,7 @@ function identity$1() {
       var t = y * ca - x * sa;
       x = x * ca + y * sa;
       y = t;
-    }    
+    }
     return [x + tx, y + ty];
   }
   projection.invert = function(p) {
