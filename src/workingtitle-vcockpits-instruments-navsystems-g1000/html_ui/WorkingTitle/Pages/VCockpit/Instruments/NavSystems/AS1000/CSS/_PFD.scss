@@ -48,6 +48,8 @@ $mini_page_height: 27vh;
 @import "PFD/Pages/WaypointSelector";
 @import "PFD/HSIndicator";
 
+@import "Shared/DebugConsole";
+
 body:after {
     display: none !important;
 }

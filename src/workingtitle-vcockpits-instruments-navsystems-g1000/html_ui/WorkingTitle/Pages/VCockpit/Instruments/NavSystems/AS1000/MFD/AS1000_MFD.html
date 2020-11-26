@@ -1,7 +1,7 @@
 ﻿<script>
-    Include.addScript("/JS/debug.js?19", function () {
+    /*Include.addScript("/JS/debug.js?19", function () {
         g_modDebugMgr.AddConsole(null);
-    });
+    });*/
 </script>
 
 <script type="text/html" id="AS1000_MFD">
@@ -1055,7 +1055,7 @@
                 <h1>Flight Plan</h1>
                 <div class="content flight-plan">
                     <div class="flight-plan-header">
-                        <div class="flight-plan-name"></div>
+                        <string-input class="flight-plan-name" data-element="flightPlanName" value="" characters="25" data-change="setName"></string-input>
                         <div class="flight-plan-header-labels">
                             <div></div>
                             <div data-label="DTK">DTK</div>
@@ -1192,14 +1192,13 @@
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 <script type="text/html" import-script="/JS/dataStorage.js"></script>
 
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/NumberUnit.js"></script>
-<script type="text/html"
-    import-template="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/MapInstrument.html"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Libs/rxjs.js"></script>
 
-<script type="text/html"
-    import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
-<script type="text/html"
-    import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/XMLEngineDisplay/XMLEngineDisplay.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/NumberUnit.js"></script>
+<script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/MapInstrument.html"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/XMLEngineDisplay/XMLEngineDisplay.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/AbstractGauge.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/CircularGauge.js"></script>
@@ -1211,18 +1210,13 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/ElevTrimGauge.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/RudderTrimGauge.js"></script>
 
-<script type="text/html"
-    import-template="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/EngineDisplay.html"></script>
+<script type="text/html" import-template="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/EngineDisplay.html"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
-<script type="text/html"
-    import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
-<script type="text/html"
-    import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/FileHandler.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/MetarRepository.js"></script>
 
-<script type="text/html"
-    import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Scripts.js"></script>
-<script type="text/html"
-    import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Scripts.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Scripts.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Scripts.js"></script>

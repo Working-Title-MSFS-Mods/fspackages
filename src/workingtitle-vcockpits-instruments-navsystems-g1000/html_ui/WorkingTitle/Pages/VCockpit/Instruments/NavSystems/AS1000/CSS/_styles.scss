@@ -163,77 +163,6 @@ ul {
     }
 }
 
-wt-debug-console {
-    display: none;
-    position: absolute;
-    bottom: 6vh;
-    left: 2vh;
-    right: 2vh;
-    height: 40vh;
-    font-size: 0.8rem;
-    font-weight: normal;
-    font-family: $font_family_mono;
-    color: #fff;
-    z-index: 10000;
-
-    /*background: rgba(lighten($page_background_color, 10%), 0.8);
-    border: 1vh outset rgba(#111, 0.8);
-    box-shadow: 0px 0px 0px $border_width_thick rgba($border_color, 0.8);*/
-    background: rgba(#000, 0.8);
-    border: 0.2vh solid #fff;
-
-    .console {
-        list-style: none;
-        height: 100%;
-        overflow-y: scroll;
-        padding: 1vh;
-
-        &::-webkit-scrollbar {
-            width: 0.5vh;
-            display: block;
-        }
-
-        &::-webkit-scrollbar-track {
-            display: block;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            display: block;
-            border-radius: 0;
-            background: #fff;
-        }
-
-        wt-debug-console-message {
-            display: block;
-            margin: 0.5vh 0;
-            white-space: pre-wrap;
-            display: grid;
-            grid-template-columns: auto 1fr;
-            grid-gap: 1vh;
-
-            span:first-child {
-                font-weight: bold;
-            }
-
-            span:last-child {
-                word-break: break-all;
-            }
-        }
-
-        .error {
-            color: red;
-        }
-
-        .warning {
-            color: yellow;
-        }
-    }
-
-    &[state="enabled"] {
-        display: block;
-    }
-}
-
 airport-icon {
     display: inline-block;
 }
@@ -265,7 +194,7 @@ g1000-waypoint-input {
 
     .icon {
         grid-area: icon;
-        height:2.5vh;
+        height: 2.5vh;
     }
 
     .city {
@@ -276,9 +205,18 @@ g1000-waypoint-input {
         display: none;
     }
 
+    img {
+        display: block;
+        width: 2.5vh;
+        height: 2.5vh;
+    }
+
     &[waypoint-type="A"] {
         airport-icon {
             display: block;
+        }
+        img {
+            display: none;
         }
     }
 }

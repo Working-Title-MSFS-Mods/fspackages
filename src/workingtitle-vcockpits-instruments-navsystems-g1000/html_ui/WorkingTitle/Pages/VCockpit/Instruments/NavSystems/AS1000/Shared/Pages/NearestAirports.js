@@ -54,11 +54,12 @@ class WT_Nearest_Airports_Model extends WT_Model {
             this.showWaypointInfoHandler.show(waypoint);
         }
     }
-    directTo(icao) {
-        if (icao)
-            this.showDirectToHandler.show(null, icao);
-        if (this.selectedAirport.value)
-            this.showDirectToHandler.show(null, this.selectedAirport.value.icao);
+    async directTo(icao = null) {
+        if (icao) {
+            this.showDirectToHandler.show(null, await this.waypointRepository.load(icao));
+        } else if (this.selectedAirport.value) {
+            this.showDirectToHandler.show(null, this.selectedAirport.value);
+        }
     }
     selectFrequency(frequency) {
         this.comFrequencies.selectFrequency(frequency);

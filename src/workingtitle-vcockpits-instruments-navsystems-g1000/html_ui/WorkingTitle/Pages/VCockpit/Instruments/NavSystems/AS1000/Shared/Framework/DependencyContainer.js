@@ -67,7 +67,8 @@ class WT_Shared_Dependencies {
     static add(d, navSystem) {
         d.register("sharedData", d => new WT_Shared_Instrument_Data());
         d.register("sharedEvents", d => new WT_Shared_Instrument_Events(navSystem));
-        d.register("inputStack", d => new Input_Stack());
+        d.register("flightSimEvents", d => new WT_Flight_Sim_Events());
+        d.register("inputStack", d => new Input_Stack(d.flightSimEvents));
         d.register("electricityAvailable", d => new Subject(navSystem.isElectricityAvailable()));
         d.register("planeConfig", d => new WT_Plane_Config());
         d.register("planeState", d => new WT_Plane_State(d.electricityAvailable));
@@ -97,7 +98,11 @@ class WT_Shared_Dependencies {
         d.register("airportDatabase", d => new WT_Airport_Database());
 
         d.register("procedures", d => new Procedures(d.flightPlanManager));
-        d.register("brightnessSettings", d => new WT_Brightness_Settings());
+        d.register("brightnessSettings", d => {
+            const settings = new WT_Brightness_Settings(d.clock);
+            navSystem.updatables.push(settings);
+            return settings;
+        });
         d.register("clock", d => new WT_Clock());
         d.register("barometricPressure", d => {
             const pressure = new WT_Barometric_Pressure();
@@ -127,8 +132,8 @@ class WT_Shared_Dependencies {
 
         d.register("mapInputLayerFactory", d => new WT_Map_Input_Layer_Factory(d.modSettings));
 
-        d.register("debugConsole", d => new WT_Debug_Console());
-        d.register("debugConsoleView", d => new WT_Debug_Console_View());
+        d.register("debugConsole", d => new WT_Debug_Console(navSystem));
+        d.register("debugConsoleView", d => new WT_Debug_Console_View(navSystem));
 
         d.register("debugConsoleMenu", d => new WT_Debug_Console_Menu(d.softKeyMenuHandler, d.debugConsole));
         d.register("debugDataStoreMenu", d => new WT_Debug_Data_Store_Menu(d.softKeyMenuHandler));

@@ -87,7 +87,8 @@ class WT_Annunciations_Model {
                     case Annunciation_MessageType.CAUTION:
                         alertLevel = Math.max(alertLevel, 2);
                         hasCautions = true;
-                        this.playSound("tone_caution", "tone");
+                        if (this.alertLevel.value < 2)
+                            this.playSound("tone_caution", "tone");
                         break;
                     case Annunciation_MessageType.ADVISORY:
                         alertLevel = Math.max(alertLevel, 1);

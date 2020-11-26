@@ -9,8 +9,9 @@ class WT_PFD_Nearest_Airports_Input_Layer extends Selectables_Input_Layer {
         this.view = view;
     }
     onDirectTo() {
-        if (this.selectedElement)
+        if (this.selectedElement) {
             this.model.directTo(this.selectedElement.parentNode.dataset.icao);
+        }
     }
 }
 

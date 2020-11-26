@@ -4,6 +4,7 @@ Input/Layers/Map.js
 Input/Layers/Selectables.js
 Framework/DependencyContainer.js
 Framework/DOMUtilities.js
+Framework/FlightSimEvents.js
 Framework/HtmlView.js
 Framework/Observables.js
 Framework/UnitChooser.js
@@ -72,4 +73,5 @@ Pages/Procedures/Departure.js
 Pages/WaypointSelector.js
 BaseInputLayer.js
 Debug.js
+DebugConsole.js
 Engine.js

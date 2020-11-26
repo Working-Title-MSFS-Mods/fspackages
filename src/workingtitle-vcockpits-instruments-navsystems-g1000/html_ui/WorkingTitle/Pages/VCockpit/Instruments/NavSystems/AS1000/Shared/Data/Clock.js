@@ -20,22 +20,24 @@ class WT_Clock {
         const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
         return new LatLong(lat, long);
     }
+    getCurrentDate() {
+        let month = SimVar.GetSimVarValue("E:ZULU MONTH OF YEAR", "number");
+        let day = SimVar.GetSimVarValue("E:ZULU DAY OF MONTH", "number");
+        let year = SimVar.GetSimVarValue("E:ZULU YEAR", "number");
+        return new Date(year, month - 1, day);
+    }
     /**
      * @param {LatLong} coordinates 
      */
     getSunrise(coordinates) {
-        if (!coordinates) {
-            coordinates = this.getPlaneCoordinates();
-        }
-        return SunriseSunsetJS.getSunrise(coordinates.lat, coordinates.long);
+        coordinates = coordinates || this.getPlaneCoordinates();
+        return SunriseSunsetJS.getSunrise(coordinates.lat, coordinates.long, this.getCurrentDate());
     }
     /**
      * @param {LatLong} coordinates 
      */
     getSunset(coordinates) {
-        if (!coordinates) {
-            coordinates = this.getPlaneCoordinates();
-        }
-        return SunriseSunsetJS.getSunset(coordinates.lat, coordinates.long);
+        coordinates = coordinates || this.getPlaneCoordinates();
+        return SunriseSunsetJS.getSunset(coordinates.lat, coordinates.long, this.getCurrentDate());
     }
 }

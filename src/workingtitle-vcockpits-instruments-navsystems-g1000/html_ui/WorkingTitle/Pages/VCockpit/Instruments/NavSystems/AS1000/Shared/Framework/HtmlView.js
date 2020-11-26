@@ -2,6 +2,7 @@ class WT_HTML_View extends HTMLElement {
     constructor() {
         super();
         this.elements = {};
+        DOMUtilities.AddScopedEventListener(this, "[data-click]", "click", this.onButtonClick.bind(this));
         DOMUtilities.AddScopedEventListener(this, "[data-click]", "selected", this.onButtonClick.bind(this));
         DOMUtilities.AddScopedEventListener(this, "[data-change]", "change", this.onChange.bind(this));
         DOMUtilities.AddScopedEventListener(this, "[data-input]", "input", this.onInput.bind(this));

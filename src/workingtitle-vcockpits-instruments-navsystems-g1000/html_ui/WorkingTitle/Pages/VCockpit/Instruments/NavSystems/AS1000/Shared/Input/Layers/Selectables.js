@@ -120,7 +120,7 @@ class Selectables_Input_Layer_Dynamic_Source {
         return this.element.querySelectorAll(this.selector);
     }
 }
-Selectables_Input_Layer_Dynamic_Source.DEFAULT = "numeric-input, drop-down-selector, time-input, selectable-button, toggle-switch, icao-input, scrollable-container, adf-input, .selectable, g1000-external-link"
+Selectables_Input_Layer_Dynamic_Source.DEFAULT = "numeric-input, string-input, drop-down-selector, time-input, selectable-button, toggle-switch, icao-input, scrollable-container, adf-input, .selectable, g1000-external-link"
     .split(",").map(selector => `${selector}:not([disabled])`).join(",");
 
 class Selectables_Input_Layer extends Input_Layer {

@@ -47,8 +47,8 @@ class Procedures {
             }
         }
         else {
-            waypoints.destination = flightPlanManager.getGPSActiveWaypointIndex();
-            waypoints.origin = flightPlanManager.getGPSActiveWaypointIndex() - 1;
+            waypoints.destination = flightPlanManager.getGPSActiveWaypointIndex(true);
+            waypoints.origin = flightPlanManager.getGPSActiveWaypointIndex(true) - 1;
         }
         if (waypoints.origin === null || waypoints.destination === null)
             return null;

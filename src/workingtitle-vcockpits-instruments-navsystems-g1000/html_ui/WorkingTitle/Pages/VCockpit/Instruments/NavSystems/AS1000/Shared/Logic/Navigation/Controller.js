@@ -48,7 +48,7 @@ class WT_Flight_Plan_Leg_Information {
     }
     static decode(str) {
         const data = JSON.decode(str);
-        return new WT_Flight_Plan_Leg_Information(data[0], data[1], data[2], data[3], data[4], data[5]);
+        return new WT_Flight_Plan_Leg_Information(...data);
     }
 }
 

@@ -38,7 +38,10 @@ class WT_Waypoint_Input extends WT_HTML_View {
 
         this.innerHTML = `
             <icao-input data-element="icao" characters="5" ${this.hasAttribute("type") ? `type="${this.getAttribute("type")}"` : ``}></icao-input>
-            <div class="icon" data-element="icon"><airport-icon data-element="airportIcon"></airport-icon></div>
+            <div class="icon">
+                <airport-icon data-element="airportIcon"></airport-icon>
+                <img data-element="icon" />
+            </div>
             <div class="country" data-element="country"></div>
             <div class="name" data-element="name"></div>
             <div class="city" data-element="city"></div>
@@ -61,7 +64,6 @@ class WT_Waypoint_Input extends WT_HTML_View {
      */
     setModel(model) {
         this.model = model;
-        console.log(typeof this.elements.icao);
         this.elements.icao.setModel(model.icaoInputModel);
         this.waypoint.subscribe(waypoint => {
             const hasValue = (value) => {
@@ -74,11 +76,12 @@ class WT_Waypoint_Input extends WT_HTML_View {
             this.setAttribute("waypoint-type", waypoint ? waypoint.icao[0] : "");
             if (waypoint && waypoint.icao[0] == "A") {
                 this.elements.airportIcon.applyInfo(waypoint.infos)
+            } else if (waypoint) {
+                this.elements.icon.setAttribute("src", `/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/Waypoints/${waypoint.infos.imageFileName().replace(".png", ".svg")}`);
             }
         });
     }
     async updateIcao(icao) {
-        console.log(`ICAO: ${icao}`);
         if (icao && icao != "") {
             this.waypoint.value = await this.model.waypointRepository.load(icao);
             this.fireInputEvent();

@@ -15,6 +15,8 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         this.activeLeg = procedures.activeLeg;
         this.waypoints = new Subject();
         this.lines = new Subject();
+        this.name = new rxjs.BehaviorSubject();
+        this.customName = null;
         this.viewMode = new Subject("narrow");
         this.distanceMode = new Subject("leg");
         this.selectedWaypointIndex = null;
@@ -54,6 +56,9 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
     }
     getNumWaypoints() {
         return this.flightPlan.getWaypointsCount();
+    }
+    setName(name) {
+        this.customName = name;
     }
     createNewWaypoint(waypoint, index = -1) {
         if (index == -1) {
@@ -183,6 +188,10 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         }
 
         this.lines.value = lines;
+
+        if (this.customName == null && this.customName != "") {
+            this.name.next(`${origin ? origin.ident : "_____"} / ${destination ? destination.ident : "_____"}`);
+        }
     }
     newWaypointLineSelected() {
         const waypoints = this.flightPlan.getWaypoints();

@@ -141,6 +141,7 @@ class AS1000_MFD extends BaseAS1000 {
         this.dependencies = d.getDependencies();
     }
     get templateID() { return "AS1000_MFD"; }
+    get isInteractive() { return true; }
     connectedCallback() {
         super.connectedCallback();
 
@@ -151,6 +152,7 @@ class AS1000_MFD extends BaseAS1000 {
         this.paneContainer = d.paneContainer;
         this.dialogContainer = d.dialogContainer;
 
+        this.flightSimEvents = d.flightSimEvents;
         this.inputStack = d.inputStack;
         this.softKeyController = d.softKeyController;
         this.pageController = d.pageController;
@@ -172,7 +174,6 @@ class AS1000_MFD extends BaseAS1000 {
         this.updatables.push(d.procedures);
         this.updatables.push(d.fuelUsed);
         this.updatables.push(d.planeStatistics);
-        this.updatables.push(d.clock);
 
         this.initEngineDisplay();
         this.initMainMap(this.mapInputLayerFactory);
@@ -255,7 +256,7 @@ class AS1000_MFD extends BaseAS1000 {
         this.showDirectToHandler.show(icaoType, icao);
     }
     revertToFlightPlan() {
-        let controller = new WT_Normal_Flight_Plan_Controller(this.dependencies.currFlightPlanManager);
+        let controller = new WT_Normal_Flight_Plan_Controller(this.dependencies.flightPlanManager);
         this.flightPlanController.setMode(controller);
     }
     showFlightPlan() {
@@ -268,7 +269,7 @@ class AS1000_MFD extends BaseAS1000 {
         if (this.currentPageMenu) {
             this.currentPageMenu.exit();
         }
-        const element = new WT_MFD_Procedures_Menu_View(this.dependencies.showProcedureHandler, this.dependencies.procedures);
+        const element = new WT_MFD_Procedures_Menu_View(this.dependencies.showProcedureHandler, this.dependencies.procedures, this.dependencies.flightPlanManager);
         this.paneContainer.appendChild(element);
         element.enter(this.inputStack);
         element.onExit.subscribe(() => {
@@ -311,58 +312,13 @@ class AS1000_MFD extends BaseAS1000 {
         }
 
         if (this.isBootProcedureComplete()) {
-            let r = this.inputStack.processEvent(_event);
+            let r = this.flightSimEvents.processEvent(_event);
             if (r === false) {
                 switch (_event) {
                     case "ActiveFPL_Modified":
                         this.currFlightPlan.FillWithCurrentFP();
                 }
             }
-        }
-    }
-    onEvent(_event) {
-        super.onEvent(_event);
-        let isGPSDrived = SimVar.GetSimVarValue("GPS DRIVES NAV1", "Bool");
-        let cdiSource = isGPSDrived ? 3 : SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
-        switch (_event) {
-            case "CLR_Long":
-                this.currentInteractionState = 0;
-                this.closePopUpElement();
-                this.SwitchToPageName("MAP", "NAVIGATION MAP");
-                break;
-            case "BARO_INC":
-                SimVar.SetSimVarValue("K:KOHLSMAN_INC", "number", this.altimeterIndex);
-                break;
-            case "BARO_DEC":
-                SimVar.SetSimVarValue("K:KOHLSMAN_DEC", "number", this.altimeterIndex);
-                break;
-            case "CRS_INC":
-                if (cdiSource == 1) {
-                    SimVar.SetSimVarValue("K:VOR1_OBI_INC", "number", 0);
-                }
-                else if (cdiSource == 2) {
-                    SimVar.SetSimVarValue("K:VOR2_OBI_INC", "number", 0);
-                }
-                break;
-            case "CRS_DEC":
-                if (cdiSource == 1) {
-                    SimVar.SetSimVarValue("K:VOR1_OBI_DEC", "number", 0);
-                }
-                else if (cdiSource == 2) {
-                    SimVar.SetSimVarValue("K:VOR2_OBI_DEC", "number", 0);
-                }
-                break;
-            case "CRS_PUSH":
-                if (cdiSource == 1) {
-                    SimVar.SetSimVarValue("K:VOR1_SET", "number", ((180 + SimVar.GetSimVarValue("NAV RADIAL:1", "degree")) % 360));
-                }
-                else if (cdiSource == 2) {
-                    SimVar.SetSimVarValue("K:VOR2_SET", "number", ((180 + SimVar.GetSimVarValue("NAV RADIAL:2", "degree")) % 360));
-                }
-                break;
-            case "SOFTKEYS_12":
-                this.acknowledgeInit();
-                break;
         }
     }
     Update() {
@@ -376,6 +332,9 @@ class AS1000_MFD extends BaseAS1000 {
     onPowerOn() {
         super.onPowerOn();
         this.planeState.powerOn();
+    }
+    onSoundEnd(_event) {
+        this.dependencies.sound.onSoundEnd(_event);
     }
 }
 class AS1000_MFD_NavStatus extends NavSystemElement {

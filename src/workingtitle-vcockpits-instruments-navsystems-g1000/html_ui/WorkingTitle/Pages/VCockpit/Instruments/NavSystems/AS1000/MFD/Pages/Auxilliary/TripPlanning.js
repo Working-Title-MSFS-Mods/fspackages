@@ -227,7 +227,7 @@ class WT_Trip_Planning_Model {
     update(dt) {
         this.updateTimer += dt;
         this.positionWaypoint.infos.coordinates = this.getPlaneCoordinates();
-        if (this.updateTimer > 200) {
+        if (this.updateTimer > 100) {
             const waypoints = this.getWaypoints();
             this.inputData.update(dt);
             if (waypoints.length > 1) {

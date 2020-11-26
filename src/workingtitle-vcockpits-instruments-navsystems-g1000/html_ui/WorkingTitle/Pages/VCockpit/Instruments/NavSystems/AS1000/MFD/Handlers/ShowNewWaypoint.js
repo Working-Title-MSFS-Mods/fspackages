@@ -1,3 +1,15 @@
+class WT_Cancel_Dialog_Error extends Error {
+
+}
+WT_Cancel_Dialog_Error.HANDLER = e => {
+    if (e instanceof WT_Cancel_Dialog_Error) {
+        console.log("Closed new waypoint handler");
+    } else {
+        console.error(e.message);
+        return e;
+    }
+}
+
 class WT_MFD_Show_New_Waypoint_Handler extends WT_Show_New_Waypoint_Handler {
     /**
      * @param {HTMLElement} paneContainer
@@ -33,7 +45,7 @@ class WT_MFD_Show_New_Waypoint_Handler extends WT_Show_New_Waypoint_Handler {
             const onExit = () => {
                 subscriptions.unsubscribe();
                 this.paneContainer.removeChild(view);
-                reject();
+                reject(new WT_Cancel_Dialog_Error());
             };
             subscriptions.add(view.onWaypointSelected.subscribe(onWaypointSelected));
             subscriptions.add(view.onCancel.subscribe(onCancel));

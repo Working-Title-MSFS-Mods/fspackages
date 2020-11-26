@@ -1,0 +1,119 @@
+wt-debug-console {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto minmax(0, 1fr);
+    position: absolute;
+    transform: translate(0, 0);
+    font-size: 0.8rem;
+    font-weight: normal;
+    font-family: $font_family_mono;
+    color: #fff;
+    z-index: 10000;
+
+    /*background: rgba(lighten($page_background_color, 10%), 0.8);
+    border: 1vh outset rgba(#111, 0.8);
+    box-shadow: 0px 0px 0px $border_width_thick rgba($border_color, 0.8);*/
+    background: rgba(#222, 0.8);
+    border: 0.3vh solid #fff;
+    box-shadow: 0 0 0 0.2vh #000;
+
+    .resize {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 0 2vh 2vh;
+        border-color: transparent transparent #fff transparent;
+
+        &:hover {
+            border-color: transparent transparent #07ca69 transparent;
+        }
+    }
+
+    .buttons {
+        background: #075cca;
+        padding: 0.4vh;
+        display: flex;
+        border-bottom: 0.2vh solid rgba(0, 0, 0, 0.6);
+
+        button {
+            padding: 0.2vh 1vh;
+            background: rgba(#000, 0.4);
+            color: #fff;
+            margin: 0 0.2vh;
+            border-radius: 0.4vh;
+            border: 0.1vh solid rgba(0, 0, 0, 0.15);
+            font-family: $font_family_normal;
+            font-weight: bold;
+            font-size: 0.8rem;
+
+            &:hover {
+                background: rgba(#000, 0.6);
+            }
+
+            &:active {
+                box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) inset;
+            }
+
+            &.selected {
+                background: rgba(#000, 0.8);
+            }
+        }
+    }
+
+    .console {
+        display: block;
+        list-style: none;
+        overflow-y: scroll;
+        padding: 1vh;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+
+        &::-webkit-scrollbar {
+            width: 1vh;
+            display: block;
+        }
+
+        &::-webkit-scrollbar-track {
+            display: block;
+            background: #777;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            display: block;
+            background: #fff;
+        }
+
+        wt-debug-console-message {
+            display: block;
+            margin: 0.2vh 0;
+            white-space: pre-wrap;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-gap: 1vh;
+
+            span:first-child {
+                font-weight: bold;
+            }
+
+            span:last-child {
+                word-break: break-all;
+            }
+        }
+
+        .error {
+            color: red;
+        }
+
+        .warning {
+            color: yellow;
+        }
+    }
+
+    &:not([state="enabled"]) {
+        display: none;
+    }
+}

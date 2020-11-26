@@ -1,7 +1,7 @@
 ﻿<script>
-    Include.addScript("/JS/debug.js?asdasss", function () {
+    /*Include.addScript("/JS/debug.js?asdasss", function () {
         g_modDebugMgr.AddConsole(null);
-    });
+    });*/
 </script>
 
 <script type="text/html" id="AS1000_PFD">
@@ -105,7 +105,7 @@
                     </section>
                     <div class="ap-divider"></div>
                     <section class="ap-center">
-                        <div class="active" data-element="apStatus">AP</div>
+                        <div class="active" data-element="apStatus" status="disabled">AP</div>
                     </section>
                     <div class="ap-divider"></div>
                     <section class="ap-right">
@@ -286,12 +286,12 @@
                     <h1>PFD Setup Menu</h1>
                     <div class="element">
                         <label>PFD Display</label>
-                        <toggle-switch values="Auto,Manual" value="Manual"></toggle-switch>
+                        <toggle-switch values="Auto,Manual" value="Manual" data-input="setPfdMode" data-element="pfdMode"></toggle-switch>
                         <numeric-input data-input="setPfdBrightness" min="0" max="100" units="%" increment="5" data-element="pfdBrightness"></numeric-input>
                     </div>
                     <div class="element">
                         <label>MFD Display</label>
-                        <toggle-switch values="Auto,Manual" value="Manual"></toggle-switch>
+                        <toggle-switch values="Auto,Manual" value="Manual" data-input="setMfdMode" data-element="mfdMode"></toggle-switch>
                         <numeric-input data-input="setMfdBrightness" min="0" max="100" units="%" increment="5" data-element="mfdBrightness"></numeric-input>
                     </div>
                 </g1000-pfd-setup-menu>
@@ -520,6 +520,8 @@
 
 <!--<link rel="stylesheet" href="AS1000_PFD.css" />-->
 <link rel="stylesheet" href="AS1000_PFD_WT.css" />
+
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Libs/rxjs.js"></script>
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 <script type="text/html" import-script="/JS/dataStorage.js"></script>

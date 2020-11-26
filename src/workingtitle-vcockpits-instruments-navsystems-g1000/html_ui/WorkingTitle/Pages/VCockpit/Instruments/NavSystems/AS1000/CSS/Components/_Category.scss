@@ -73,6 +73,13 @@
         margin: 1.5vh 0;
         --border-color: #{$category_box_outline_color};
 
+        hr {
+            height: $border_width_thin;
+            border: none;
+            background: $category_box_outline_color;
+            margin: 1vh 0;
+        }
+
         &[highlighted] {
             --border-color: #00ffff;
         }

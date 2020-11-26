@@ -11,6 +11,12 @@ class WT_PFD_Setup_Menu_Model {
     setMfdBrightness(brightness) {
         this.brightnessSettings.setMfdBrightness(brightness);
     }
+    setPfdMode(mode) {
+        this.brightnessSettings.setPfdMode(mode);
+    }
+    setMfdMode(mode) {
+        this.brightnessSettings.setMfdMode(mode);
+    }
 }
 
 class WT_PFD_Setup_Menu_View extends WT_HTML_View {
@@ -25,12 +31,20 @@ class WT_PFD_Setup_Menu_View extends WT_HTML_View {
         this.model = model;
         model.brightnessSettings.pfd.subscribe(brightness => this.elements.pfdBrightness.value = brightness);
         model.brightnessSettings.mfd.subscribe(brightness => this.elements.mfdBrightness.value = brightness);
+        model.brightnessSettings.pfdMode.subscribe(mode => this.elements.pfdMode.value = mode);
+        model.brightnessSettings.mfdMode.subscribe(mode => this.elements.mfdMode.value = mode);
     }
     setPfdBrightness(brightness) {
         this.model.setPfdBrightness(brightness);
     }
     setMfdBrightness(brightness) {
         this.model.setMfdBrightness(brightness);
+    }
+    setPfdMode(mode) {
+        this.model.setPfdMode(mode);
+    }
+    setMfdMode(mode) {
+        this.model.setMfdMode(mode);
     }
     enter(inputStack) {
         this.inputHandle = inputStack.push(this.inputLayer);

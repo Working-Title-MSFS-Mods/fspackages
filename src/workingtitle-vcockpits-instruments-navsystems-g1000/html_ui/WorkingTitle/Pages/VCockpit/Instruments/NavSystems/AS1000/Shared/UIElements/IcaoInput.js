@@ -167,14 +167,14 @@ class WT_Icao_Input extends HTMLElement {
         const inputLayer = new WT_Icao_Input_Input_Layer(this);
         this.inputStackManipulator = inputStack.push(inputLayer);
 
-        let shouldUpdate = true;
-        this.inputStackManipulator.onPopped.subscribe(() => shouldUpdate = false);
+        this.shouldUpdate = true;
+        this.inputStackManipulator.onPopped.subscribe(() => this.shouldUpdate = false);
 
         this.setEditingSimVars();
 
         const update = () => {
             this.updateFromSimVars();
-            if (shouldUpdate) {
+            if (this.shouldUpdate) {
                 requestAnimationFrame(update);
             }
         }
@@ -183,6 +183,7 @@ class WT_Icao_Input extends HTMLElement {
         this.updateDisplay();
     }
     async confirm(checkDupes = true) {
+        this.shouldUpdate = false;
         let batch = new SimVar.SimVarBatch("C:fs9gps:IcaoSearchMatchedIcaosNumber", "C:fs9gps:IcaoSearchMatchedIcao");
         batch.add("C:fs9gps:IcaoSearchCurrentIcaoType", "string", "string");
         batch.add("C:fs9gps:IcaoSearchCurrentIcao", "string", "string");
@@ -209,7 +210,7 @@ class WT_Icao_Input extends HTMLElement {
                 return;
             }
         }
-        if (this.model) {
+        if (this.model && this.icao) {
             this.model.addToQuickSelect(this.icao);
         }
 

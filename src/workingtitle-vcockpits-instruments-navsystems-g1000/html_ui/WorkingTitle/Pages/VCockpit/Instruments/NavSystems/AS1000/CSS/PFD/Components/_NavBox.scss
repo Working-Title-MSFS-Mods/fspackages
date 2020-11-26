@@ -88,29 +88,36 @@ g1000-nav-box {
     .ap-status {
         .active {
             display: inline-block;
+            --flash-color: yellow;
             @keyframes ap-status-disable-animation {
                 0% {
-                    background: yellow;
+                    background: var(--flash-color);
                     color: #000;
                 }
                 45% {
-                    background: yellow;
+                    background: var(--flash-color);
                     color: #000;
                 }
                 50% {
                     background: transparent;
-                    color: yellow;
+                    color: var(--flash-color);
                 }
                 95% {
                     background: transparent;
-                    color: yellow;
+                    color: var(--flash-color);
                 }
                 100% {
-                    background: yellow;
+                    background: var(--flash-color);
                     color: #000;
                 }
             }
             &[status="disabling"] {
+                --flash-color: yellow;
+                animation: ap-status-disable-animation infinite 1s !important;
+                animation-timing-function: cubic-bezier(1, 0, 0, 0.99);
+            }
+            &[status="disconnected"] {
+                --flash-color: red;
                 animation: ap-status-disable-animation infinite 1s !important;
                 animation-timing-function: cubic-bezier(1, 0, 0, 0.99);
             }

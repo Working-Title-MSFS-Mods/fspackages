@@ -1,6 +1,7 @@
 string-input,
 icao-input {
     color: $input_color;
+    font-family: $font_family_mono;
 
     &[disabled] {
         color: #fff;

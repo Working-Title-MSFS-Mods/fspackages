@@ -84,11 +84,11 @@ class WT_Duplicate_Waypoints_View extends WT_HTML_View {
         this.elements.ident.textContent = this.model.ident;
         this.model.duplicates.subscribe(duplicates => {
             this.elements.duplicates.innerHTML = duplicates.map(waypoint => {
-                const img = waypoint.infos.imageFileName();
+                const img = waypoint.infos.imageFileName().replace(".png", ".svg");
                 return `
                     <li>
                         <span class="type">${this.typeToString(waypoint.infos.getWaypointType())}</span>
-                        <span class="icon">${img ? `<img src="/Pages/VCockpit/Instruments/Shared/Map/Images/${img}" />` : ``}</span>
+                        <span class="icon">${img ? `<img src="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Images/Waypoints/${img}" />` : ``}</span>
                         <span class="city selectable" data-icao="${waypoint.icao}">${waypoint.infos.region}</span>
                     </li>
                 `;

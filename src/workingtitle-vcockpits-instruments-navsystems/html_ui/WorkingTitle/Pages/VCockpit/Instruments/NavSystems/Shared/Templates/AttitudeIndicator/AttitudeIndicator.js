@@ -30,7 +30,7 @@ class Attitude_Indicator_Model {
                 bank: xyz.bank / Math.PI * 180
             };
 
-            this.flightDirector.show.value = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool");
+            this.flightDirector.show.value = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") || SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool");
             this.flightDirector.pitchBank.value = {
                 pitch: xyz.pitch / Math.PI * 180 - SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR PITCH", "degree"),
                 bank: xyz.bank / Math.PI * 180 - SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degree")

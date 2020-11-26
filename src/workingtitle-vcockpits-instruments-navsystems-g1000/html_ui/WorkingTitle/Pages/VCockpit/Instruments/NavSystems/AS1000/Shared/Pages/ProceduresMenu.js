@@ -21,11 +21,13 @@ class WT_Procedures_Menu_View extends WT_HTML_View {
     /**
      * @param {WT_Show_Procedure_Handler} showProcedureHandler 
      * @param {Procedures} procedures
+     * @param {FlightPlanManager} flightPlanManager
      */
-    constructor(showProcedureHandler, procedures) {
+    constructor(showProcedureHandler, procedures, flightPlanManager) {
         super();
         this.showProcedureHandler = showProcedureHandler;
         this.procedures = procedures;
+        this.flightPlanManager = flightPlanManager;
 
         this.subscriptions = new Subscriptions();
         this.inputLayer = new WT_Procedures_Input_Layer(this, new Selectables_Input_Layer_Dynamic_Source(this, "selectable-button:not([disabled])"));
@@ -71,17 +73,25 @@ class WT_Procedures_Menu_View extends WT_HTML_View {
             this.inputStackHandle = this.inputStackHandle.pop();
         }
     }
+    getDestinationIcao() {
+        const destination = this.flightPlanManager.getDestination();
+        return destination ? destination.icao : null;
+    }
+    getOriginIcao() {
+        const origin = this.flightPlanManager.getOrigin();
+        return origin ? origin.icao : null;
+    }
     selectApproach() {
         this.exit();
-        this.showProcedureHandler.showApproaches();
+        this.showProcedureHandler.showApproaches(this.getDestinationIcao());
     }
     selectArrival() {
         this.exit();
-        this.showProcedureHandler.showArrivals();
+        this.showProcedureHandler.showArrivals(this.getDestinationIcao());
     }
     selectDeparture() {
         this.exit();
-        this.showProcedureHandler.showDepartures();
+        this.showProcedureHandler.showDepartures(this.getOriginIcao());
     }
 }
 customElements.define("g1000-procedures-menu", WT_Procedures_Menu_View);

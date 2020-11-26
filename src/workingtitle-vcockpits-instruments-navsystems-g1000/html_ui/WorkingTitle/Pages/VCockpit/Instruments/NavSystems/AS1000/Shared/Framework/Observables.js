@@ -1,14 +1,17 @@
 class Subject {
-    constructor(value, inhibitDuplicates = true) {
+    constructor(value = null, inhibitDuplicates = true) {
         this._value = value;
         this.inhibitDuplicates = inhibitDuplicates;
         this.listeners = [];
+        this.subject = new rxjs.BehaviorSubject(value);
+        this.observable = inhibitDuplicates ? this.subject.pipe(rxjs.operators.distinctUntilChanged()) : this.subject;
     }
     get value() {
-        return this._value;
+        return this.subject.getValue();
     }
     set value(value) {
-        try {
+        this.subject.next(value);
+        /*try {
             if (this._value !== value || !this.inhibitDuplicates) {
                 this._value = value;
                 for (let listener of this.listeners) {
@@ -18,9 +21,26 @@ class Subject {
         } catch (e) {
             console.error(e.message);
             throw e;
-        }
+        }*/
     }
     subscribe(callback) {
+        this.observable.subscribe(callback);
+    }
+    unsubscribe(callback) {
+        //this.observable.unsubscribe(callback); TODO:
+    }
+    hasSubscribers() {
+        return this.observable.observers.length > 0;
+        //return this.listeners.length > 0;
+    }
+    combineWith(others) {
+        if (others instanceof Array) {
+            return rxjs.combineLatest([this, ...others].map(s => s.observable));
+        } else {
+            return rxjs.combineLatest([this, others].map(s => s.observable));
+        }
+    }
+    /*subscribe(callback) {
         this.listeners.push(callback);
         try {
             callback(this.value);
@@ -44,7 +64,7 @@ class Subject {
         } else {
             return new CombinedSubject([this, others]);
         }
-    }
+    }*/
 }
 
 class WT_Event {

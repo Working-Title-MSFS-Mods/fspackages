@@ -3,20 +3,28 @@ class WT_Warnings_Model {
      * @param {NavSystem} gps 
      * @param {WT_Plane_Config} planeConfig 
      * @param {WT_Sound} sound
+     * @param {WT_Plane_State} planeState
      */
-    constructor(gps, planeConfig, sound) {
+    constructor(gps, planeConfig, sound, planeState) {
         this.gps = gps;
         this.sound = sound;
 
         this.UID = parseInt(this.gps.getAttribute("Guid")) + 1;
         this.warnings = [];
-        this.playingSounds = [];
+        this.playingSounds = {};
         this.pullUp_sinkRate_Points = [
             [1160, 0, 0],
             [2320, 1070, 1460],
             [4930, 2380, 2980],
             [11600, 4285, 5360]
         ];
+
+        planeState.onPowerOn.subscribe(() => {
+            for (let i = 0; i < this.warnings.length; i++) {
+                this.warnings[i].hasPlayed = false;
+            }
+            this.playingSounds = {};
+        });
 
         this.activeWarning = new Subject(null);
 
@@ -92,10 +100,13 @@ class WT_Warnings_Model {
             let bestWarning = 0;
             for (let i = 0; i < this.warnings.length; i++) {
                 const warning = this.warnings[i];
-                if (!warning.once || !warning.hasPlayed) {
+                const hasntPlayed = !warning.hasPlayed;
+                const canRepeat = !warning.once;
+                if (canRepeat || hasntPlayed) {
                     if (warning.callback()) {
-                        if (warning.soundEvent != "") {
-                            this.sound.play(warning.soundEvent).then(() => warning.hasPlayed = false);
+                        if (warning.soundEvent != "" && !this.playingSounds[i]) {
+                            this.playingSounds[i] = true;
+                            this.sound.play(warning.soundEvent).then(() => this.playingSounds[i] = false);
                             warning.hasPlayed = true;
                         }
 

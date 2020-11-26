@@ -52,7 +52,7 @@ class AS1000_PFD extends BaseAS1000 {
 
         d.register("directToView", d => new WT_Direct_To_View(d.waypointInputModel, d.showPageMenuHandler));
         d.register("flightPlanView", d => new WT_PFD_Flight_Plan_Page_View(d.showPageMenuHandler, d.confirmDialogHandler, d.showNewWaypointHandler));
-        d.register("proceduresMenuView", d => new WT_PFD_Procedures_Menu_View(d.showProcedureHandler, d.procedures));
+        d.register("proceduresMenuView", d => new WT_PFD_Procedures_Menu_View(d.showProcedureHandler, d.procedures, d.flightPlanManager));
         d.register("procedurePageModel", d => new WT_PFD_Procedure_Page_Model(d.flightPlanManager, d.procedureFacilityRepository));
         d.register("showProcedureHandler", d => new WT_PFD_Show_Procedure_Handler(d.miniPageController, d.waypointInputModel, d.procedurePageModel, d.approachPageView, d.arrivalPageView, d.departurePageView));
         d.register("showNewWaypointHandler", d => new WT_PFD_Show_New_Waypoint_Handler(d.miniPageController, d.waypointRepository, d.waypointInputModel, d.inputStack));
@@ -69,7 +69,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("airspeedModel", d => new WT_Airspeed_Model(d.airspeedReferences, d.unitChooser));
         d.register("airspeedReferences", d => new WT_Airspeed_References());
 
-        d.register("navBoxModel", d => new AS1000_PFD_Nav_Box_Model(d.unitChooser, d.flightPlanManager));
+        d.register("navBoxModel", d => new AS1000_PFD_Nav_Box_Model(d.unitChooser, d.flightPlanManager, d.flightSimEvents));
 
         d.register("annunciationsModel", d => new WT_Annunciations_Model(d.planeConfig, d.sound, d.planeState));
         d.register("localTimeModel", d => new WT_Local_Time_Model(d.settings));
@@ -83,7 +83,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("setMinimumsModel", d => new WT_Set_Minimums_Model(d.minimums));
         d.register("minimumsModel", d => new WT_Minimums_Model(d.minimums));
         d.register("radioAltimeterModel", d => new WT_Radio_Altimeter_Model(d.radioAltimeter));
-        d.register("warningsModel", d => new WT_Warnings_Model(this, d.planeConfig, d.sound));
+        d.register("warningsModel", d => new WT_Warnings_Model(this, d.planeConfig, d.sound, d.planeState));
         d.register("markerBeaconModel", d => new WT_Marker_Beacon_Model(this, d.planeConfig, d.sound));
 
         d.register("softKeyMenuHandler", d => new WT_PFD_Menu_Handler(d.softKeyController, d.alertsKey));
@@ -117,12 +117,14 @@ class AS1000_PFD extends BaseAS1000 {
         this.dependencies = d.getDependencies();
 
         this.model = d.create("pfdModel");
-        this.updatables.push(this.model);        
+        this.updatables.push(this.model);
     }
     get templateID() { return "AS1000_PFD"; }
+    get isInteractive() { return true; }
     connectedCallback() {
         super.connectedCallback();
 
+        this.flightSimEvents = this.dependencies.flightSimEvents;
         this.inputStack = this.dependencies.inputStack;
         this.miniPageController = this.dependencies.miniPageController;
         this.softKeyController = this.dependencies.softKeyController;
@@ -130,8 +132,10 @@ class AS1000_PFD extends BaseAS1000 {
         this.planeState = this.dependencies.planeState;
         this.electricityAvailable = this.dependencies.electricityAvailable;
         this.proceduresMenuView = this.dependencies.proceduresMenuView;
+        this.clock = this.dependencies.clock;
 
         this.updatables.push(this.miniPageController);
+        this.updatables.push(this.clock);
         this.miniPageController.handleInput(this.inputStack);
 
         this.addIndependentElementContainer(new Engine("Engine", "EngineDisplay"));
@@ -271,12 +275,19 @@ class AS1000_PFD extends BaseAS1000 {
         }
     }
     computeEvent(_event) {
-        let r = this.inputStack.processEvent(_event);
-        if (r === false) {
-            super.computeEvent(_event);
+        if (_event == "SOFTKEYS_12") {
+            this.acknowledgeInit();
         }
-    }
-    onEvent(_event) {
+
+        if (this.isBootProcedureComplete()) {
+            let r = this.flightSimEvents.processEvent(_event);
+            if (r === false) {
+                switch (_event) {
+                    case "ActiveFPL_Modified":
+                        this.currFlightPlan.FillWithCurrentFP();
+                }
+            }
+        }
     }
     parseXMLConfig() {
         super.parseXMLConfig();

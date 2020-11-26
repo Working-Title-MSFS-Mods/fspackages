@@ -10,7 +10,13 @@ class WT_Input_Stack_Handle {
 }
 
 class Input_Stack {
-    constructor() {
+    /**
+     * @param {WT_Flight_Sim_Events} events 
+     */
+    constructor(events) {
+        this.events = events;
+
+        this.events.subscribe(e => this.processEvent(e));
         this.stack = [];
         this.handlers = [];
     }

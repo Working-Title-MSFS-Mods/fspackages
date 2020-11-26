@@ -185,13 +185,22 @@ class WT_Airport_Information_View extends WT_HTML_View {
 
             const lines = [];
             const metarData = metar.getMetar();
-            lines.push(`<b>Time:</b> ${metarData.time}`);
+            const currentZuluSeconds = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
+            const metarZuluSeconds = metarData.getUTCHours() * 3600 + metarData.getUTCMinutes() * 60 + metarData.getUTCSeconds();
+            const metarAgeSeconds = currentZuluSeconds - metarZuluSeconds;
+            lines.push(`<b>Time:</b> ${metarData.getUTCHours()}${metarData.getUTCMinutes()}Z - <b>Age:</b> ${(metarAgeSeconds / 60).toFixed(0)}:${metarAgeSeconds % 60}`);
+            lines.push(`<b>Pressure:</b> ${metarData.altimeterInHpa}HPA`);
             lines.push(`<b>Wind:</b> ${metarData.wind.direction} @ ${metarData.wind.speed}kts`);
             lines.push(`<b>Visiblity:</b> ${metarData.visibility}`);
+            lines.push(`<b>Temperature:</b> ${metarData.temperature}°C`);
+            lines.push(`<b>Dewpoint:</b> ${metarData.dewpoint}°C`);
             lines.push(`<b>Clouds:</b> ${metarData.clouds.map(cloud => {
                 return `${cloud.meaning.toUpperCase()}${cloud.altitude ? ` at ${cloud.altitude}ft` : ``}`
             }).join(", ")}`)
-            this.elements.metar.innerHTML = lines.join("<br/>");
+            this.elements.metar.innerHTML = `
+            ${lines.join("<br/>")}
+            <hr />
+            ${metar.metar}`;
         }));
     }
     updateWaypoint(waypoint) {

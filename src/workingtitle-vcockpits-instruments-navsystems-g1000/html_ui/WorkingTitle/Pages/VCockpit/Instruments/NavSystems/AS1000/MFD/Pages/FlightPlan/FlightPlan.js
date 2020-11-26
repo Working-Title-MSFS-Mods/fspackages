@@ -164,7 +164,7 @@ class WT_MFD_Flight_Plan_Header_Line extends WT_Flight_Plan_Header_Line {
         if (this.initialised)
             return;
         this.initialised = true;
-        
+
         super.connectedCallback();
         this.setAttribute("data-selectable", "flight-plan");
     }
@@ -215,6 +215,9 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         this.waypointLines = [];
         this.headerLines = [];
 
+        this.isInputActive = new rxjs.BehaviorSubject(false);
+        this.selectedLeg = new rxjs.BehaviorSubject(null);
+
         /*DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line .ident", "selected", e => {
             this.showCreateNewWaypoint(e.detail.element.parentNode.waypointIndex);
         });*/
@@ -249,15 +252,33 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         const linesElement = this.elements.flightPlanWaypoints;
         linesElement.onWaypointSelected.subscribe(waypointIndex => this.model.setSelectedWaypointIndex(waypointIndex));
         linesElement.onWaypointSelected.subscribe(DOMUtilities.debounce(waypointIndex => {
-            this.centerOnLeg(waypointIndex);
-        }, 500, false));
-        linesElement.onWaypointAltitudeChanged.subscribe((waypointIndex, altitude) => {
-            this.model.setAltitude(waypointIndex, altitude);
+            this.selectedLeg.next(waypointIndex);
+        }, 200, false));
+        linesElement.onWaypointAltitudeChanged.subscribe(e => {
+            this.model.setAltitude(e.waypointIndex, e.altitude);
         });
         linesElement.onWaypointClicked.subscribe(waypointIndex => this.showCreateNewWaypoint(waypointIndex));
         linesElement.onNewWaypointLineSelected.subscribe(() => {
             this.model.newWaypointLineSelected();
         })
+
+        rxjs.combineLatest(this.isInputActive, this.selectedLeg.pipe(rxjs.operators.distinctUntilChanged())).subscribe({
+            next: values => {
+                if (values[0]) {
+                    if (values[1] !== null) {
+                        this.centerOnLeg(values[1]);
+                    }
+                } else {
+                    this.centerOnFlightPlan();
+                }
+            }
+        });
+
+        model.name.pipe(rxjs.distinctUntilChanged()).subscribe(name => this.elements.flightPlanName.value = name);
+
+        this.elements.flightPlanName.addEventListener("selected", () => {
+            this.elements.flightPlanName.value = this.model.customName || "";
+        }, true);
     }
     updateLines(lines) {
         this.elements.flightPlanWaypoints.updateLines(lines);
@@ -291,10 +312,13 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     onDirectTo() {
         return this.model.directToSelected();
     }
+    setName(name) {
+        this.model.setName(name);
+    }
     showCreateNewWaypoint(index = -1) {
         this.newWaypointHandler.show().then(waypoint => {
             this.model.createNewWaypoint(waypoint, index);
-        });
+        }).catch(WT_Cancel_Dialog_Error.HANDLER);
     }
     updateActiveLeg(leg) {
         this.elements.flightPlanWaypoints.updateActiveLeg(leg);
@@ -309,6 +333,14 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
             centerOn.push(previous.latitudeFP ? new LatLong(previous.latitudeFP, previous.longitudeFP) : previous.infos.coordinates);
         }
         this.map.centerOnCoordinates(centerOn, centerOn.length > 1 ? null : 20);
+    }
+    centerOnFlightPlan() {
+        const waypoints = this.model.flightPlan.getWaypoints();
+        if (waypoints.length > 1) {
+            this.map.centerOnCoordinates(waypoints.map(waypoint => {
+                return waypoint.latitudeFP ? new LatLong(waypoint.latitudeFP, waypoint.longitudeFP) : waypoint.infos.coordinates;
+            }));
+        }
     }
     showMainMenu() {
         this.softKeyMenuHandler.show(this.softKeyMenus.main);
@@ -332,9 +364,11 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         if (this.inputStackHandle) {
             this.inputStackHandle = this.inputStackHandle.pop();
         }
+        this.isInputActive.next(false);
     }
     enter(inputStack) {
         this.inputStackHandle = inputStack.push(this.inputLayer);
+        this.isInputActive.next(true);
     }
     activate() {
         this.menuHandler = this.softKeyMenuHandler.show(this.softKeyMenus.main);

@@ -1,5 +1,5 @@
 class WT_Show_Direct_To_Handler {
-    show(icaoType = null, icao = null) {
+    show(icaoType = null, waypoint = null) {
         throw new Error("Direct to not implemented");
     }
 }

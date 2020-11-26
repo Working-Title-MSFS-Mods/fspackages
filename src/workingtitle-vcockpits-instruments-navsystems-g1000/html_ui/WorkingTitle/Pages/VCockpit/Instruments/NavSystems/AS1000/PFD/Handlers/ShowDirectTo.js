@@ -10,10 +10,10 @@ class WT_PFD_Show_Direct_To_Handler extends WT_Show_Direct_To_Handler {
         this.directToModel = directToModel;
         this.directToView = directToView;
     }
-    show(icaoType = null, icao = null) {
+    show(icaoType = null, waypoint = null) {
         const view = this.directToView;
-        if (icao) {
-            this.directToModel.setIcao(icao);
+        if (waypoint) {
+            this.directToModel.setWaypoint(waypoint);
         }
 
         const subscriptions = new Subscriptions();

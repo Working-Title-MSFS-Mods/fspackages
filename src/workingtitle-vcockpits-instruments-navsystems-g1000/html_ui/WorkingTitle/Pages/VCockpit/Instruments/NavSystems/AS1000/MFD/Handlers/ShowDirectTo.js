@@ -14,13 +14,13 @@ class WT_MFD_Show_Direct_To_Handler extends WT_Show_Direct_To_Handler {
         this.map = map;
         this.inputStack = inputStack;
     }
-    show(icaoType = null, icao = null) {
+    show(icaoType = null, waypoint = null) {
         //TODO: Fix reverting flight plan
         let model = this.modelFactory.create(icaoType);
-        if (icao) {
-            model.setIcao(icao);
+        if (waypoint) {
+            model.setWaypoint(waypoint);
         }
-        let view = this.viewFactory.create(this.map);// new WT_MFD_Direct_To_View(this.softKeyMenuHandler, this.map, this.icaoInputModel, this.showPageMenuHandler);
+        let view = this.viewFactory.create(this.map);
         this.paneContainer.appendChild(view);
         view.setModel(model);
 

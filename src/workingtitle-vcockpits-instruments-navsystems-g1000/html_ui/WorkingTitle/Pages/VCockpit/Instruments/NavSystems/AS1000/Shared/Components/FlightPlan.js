@@ -25,19 +25,23 @@ class WT_Flight_Plan_Lines extends WT_HTML_View {
         this.waypointLines = [];
         this.headerLines = [];
 
-        this.onWaypointClicked = new WT_Event();
-        this.onWaypointSelected = new WT_Event();
-        this.onWaypointAltitudeChanged = new WT_Event();
-        this.onNewWaypointLineSelected = new WT_Event();
+        this.onWaypointClicked = new rxjs.Subject();
+        this.onWaypointSelected = new rxjs.Subject();
+        this.onWaypointAltitudeChanged = new rxjs.Subject();
+        this.onNewWaypointLineSelected = new rxjs.Subject();
 
         DOMUtilities.AddScopedEventListener(this, "*", WT_Flight_Plan_Waypoint_Line.EVENT_ALTITUDE_CHANGED,
-            e => this.onWaypointAltitudeChanged.fire(e.detail.waypointIndex, e.detail.altitude));
+            e => this.onWaypointAltitudeChanged.next({
+                waypointIndex: e.detail.waypointIndex,
+                altitude: e.detail.altitude
+            });
+        );
 
         DOMUtilities.AddScopedEventListener(this, ".ident", "selected",
-            e => this.onWaypointClicked.fire(e.detail.element.parentNode.waypointIndex));
+            e => this.onWaypointClicked.next(e.detail.element.parentNode.waypointIndex));
 
         DOMUtilities.AddScopedEventListener(this, "*", WT_Flight_Plan_Waypoint_Line.EVENT_WAYPOINT_SELECTED,
-            e => this.onWaypointSelected.fire(e.detail.waypointIndex));
+            e => this.onWaypointSelected.next(e.detail.waypointIndex));
     }
     connectedCallback() {
         if (this.initialised)
@@ -65,7 +69,7 @@ class WT_Flight_Plan_Lines extends WT_HTML_View {
             </div>`;
         super.connectedCallback();
 
-        this.elements.newWaypointButton.addEventListener("focus", () => this.onNewWaypointLineSelected.fire());
+        this.elements.newWaypointButton.addEventListener("focus", () => this.onNewWaypointLineSelected.next());
     }
     /**
      * @param {WT_Flight_Plan_Line_Factory} factory 
@@ -106,6 +110,7 @@ class WT_Flight_Plan_Lines extends WT_HTML_View {
         DOMUtilities.repopulateElement(this, lineElements);
     }
     updateActiveLeg(leg) {
+        console.log(JSON.stringify(leg));
         if (leg) {
             const beginIndex = this.waypointIndexToLineIndex(leg.origin + (leg.originIsApproach ? this.approachIndex : 0));
             const endIndex = this.waypointIndexToLineIndex(leg.destination + (leg.destinationIsApproach ? this.approachIndex : 0));

@@ -64,21 +64,17 @@ class WT_Waypoint_Quick_Select {
             }, [])
             .sort((a, b) => a.distance - b.distance);
     }
+    async getRecentWaypoints(type) {
+        return await this.loadWaypoints(this.recentWaypoints.filter(wp => type.includes(wp[0])))
+    }
     /**
      * @param {String} type 
      */
     async getWaypoints(type) {
-        let filter = waypoint => {
-            /*if (type)
-                return waypoint.type == type;*/
-            return true;
-        };
         return {
-            nearest: (await this.getNearestWaypoints(type)).filter(filter),
-            flightPlan: this.getFlightPlanWaypoints(type).filter(filter),
-            recent: (await this.loadWaypoints(this.recentWaypoints.filter(wp => {
-                return type.includes(wp[0]);
-            }))).filter(filter),
+            nearest: await this.getNearestWaypoints(type),
+            flightPlan: this.getFlightPlanWaypoints(type),
+            recent: await this.getRecentWaypoints(type),
         }
     }
 }

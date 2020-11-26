@@ -1,11 +1,14 @@
 class AS1000_PFD_Nav_Box_Model {
     /**
      * @param {WT_Unit_Chooser} unitChooser 
+     * @param {FlightPlanManager} flightPlanManager 
+     * @param {WT_Flight_Sim_Events} events 
      */
-    constructor(unitChooser, flightPlanManager, flightPlanController) {
+    constructor(unitChooser, flightPlanManager, events) {
         this.unitChooser = unitChooser;
         this.flightPlanManager = flightPlanManager;
-        this.flightPlanController = flightPlanController;
+        this.events = events;
+
         this.leg = {
             from: new Subject(""),
             symbol: new Subject(""),
@@ -26,6 +29,18 @@ class AS1000_PFD_Nav_Box_Model {
             },
         };
         this.updateCounter = 0;
+
+        this.onDisabled = new WT_Event();
+        this.events.subscribe(event => {
+            switch (event) {
+                case "Autopilot_Manual_Off":
+                    this.onDisabled.fire("manual");
+                    break;
+                case "Autopilot_Disc":
+                    this.onDisabled.fire("disconnected");
+                    break;
+            }
+        })
     }
     updateVerticalActive() {
         if (SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean")) {
@@ -185,6 +200,7 @@ class AS1000_PFD_Nav_Box_Model {
 class AS1000_PFD_Nav_Box_View extends WT_HTML_View {
     constructor() {
         super();
+        this.disableType = "disconnected";
     }
     /**
      * @param {AS1000_PFD_Nav_Box_Model} model 
@@ -204,21 +220,35 @@ class AS1000_PFD_Nav_Box_View extends WT_HTML_View {
         model.leg.symbol.subscribe(value => this.elements.legSymbol.innerHTML = value);
         model.leg.distance.subscribe(distance => this.elements.legDistance.innerHTML = distance);
         model.leg.bearing.subscribe(bearing => this.elements.legBearing.innerHTML = bearing);
+
+        model.onDisabled.subscribe(type => {
+            this.disableType = type;
+            setTimeout(() => this.disableType = "disconnected", 200);
+        });
     }
     updateAutoPilotStatus(status) {
-        if (!status) {
-            if (this.loaded) {
-                this.elements.apStatus.setAttribute("status", "disabling");
-                this.apStatusTimeout = setTimeout(() => {
-                    this.elements.apStatus.setAttribute("status", "disabled");
-                }, 5000);
-            } else {
-                this.elements.apStatus.setAttribute("status", "disabled");
-            }
-            this.loaded = true;
-        } else {
+        if (status) {
             clearTimeout(this.apStatusTimeout);
             this.elements.apStatus.setAttribute("status", "enabled");
+        } else {
+            switch (this.disableType) {
+                case "manual": {
+                    clearTimeout(this.apStatusTimeout);
+                    this.elements.apStatus.setAttribute("status", "disabling");
+                    this.apStatusTimeout = setTimeout(() => {
+                        this.elements.apStatus.setAttribute("status", "disabled");
+                    }, 5000);
+                    break;
+                }
+                case "disconnected": {
+                    clearTimeout(this.apStatusTimeout);
+                    this.elements.apStatus.setAttribute("status", "disconnected");
+                    this.apStatusTimeout = setTimeout(() => {
+                        this.elements.apStatus.setAttribute("status", "disabled");
+                    }, 5000);
+                    break;
+                }
+            }
         }
     }
 }
