@@ -18,6 +18,10 @@ class WT_MapProjection {
         this._optsManager = new WT_OptionsManager(this, WT_MapProjection.OPTIONS_DEF);
 
         this._syncedRenderer = new WT_MapProjectionSyncedRenderer(this, this._d3Projection);
+
+        this._tempVector = new WT_GVector2(0, 0);
+        this._tempArray1 = [0, 0];
+        this._tempArray2 = [0, 0];
     }
 
     /**
@@ -219,13 +223,13 @@ class WT_MapProjection {
         this._d3Projection.translate([this.viewWidth / 2, this.viewHeight / 2]);
         this._d3Projection.clipExtent([[0, 0], [this.viewWidth, this.viewHeight]]);
 
-        let currentTargetXY = this._d3Projection(WT_MapProjection.latLongGameToProjection(this.target));
+        let currentTargetXY = this._d3Projection(WT_MapProjection.latLongGameToProjection(this.target, this._tempArray1));
 
         if (isNaN(currentTargetXY[0] + currentTargetXY[1])) {
             return;
         }
 
-        let currentCenterXY = WT_MapProjection.xyProjectionToView(currentTargetXY).subtract(this.viewTargetOffset, true);
+        let currentCenterXY = WT_MapProjection.xyProjectionToView(currentTargetXY, this._tempVector).subtract(this._viewTargetOffset, true);
         let currentRange = this._calculateRangeAtCenter(currentCenterXY);
         let ratio = currentRange.ratio(this.range);
 
@@ -237,8 +241,8 @@ class WT_MapProjection {
             let currentScale = this._d3Projection.scale();
             this._d3Projection.scale(currentScale * ratio);
 
-            currentTargetXY = this._d3Projection(WT_MapProjection.latLongGameToProjection(this.target));
-            currentCenterXY = WT_MapProjection.xyProjectionToView(currentTargetXY).subtract(this.viewTargetOffset, true);
+            currentTargetXY = this._d3Projection(WT_MapProjection.latLongGameToProjection(this.target, this._tempArray1));
+            currentCenterXY = WT_MapProjection.xyProjectionToView(currentTargetXY, this._tempVector).subtract(this._viewTargetOffset, true);
             currentRange = this._calculateRangeAtCenter(currentCenterXY);
             ratio = currentRange.ratio(this.range);
         }
@@ -282,38 +286,44 @@ class WT_MapProjection {
     /**
      * Projects spherical coordinates (lat/long) onto the viewing window.
      * @param {Number[]} point - the [long, lat] coordinate pair to project.
+     * @param {Number[]} [reference] - a [x, y] pair to which to store the results. If this argument is not supplied, a new
+     *                                    [x, y] pair is created to store the results.
      * @returns {Number[]} a [x, y] pair representing the projected point, in pixel coordinates.
      */
-    project(point) {
-        return this._d3Projection(point);
+    project(point, reference) {
+        return this._d3Projection(point, reference);
     }
 
     /**
      * Applies this projection's inverse to coordinates in the viewing window to get the corresponding point in spherical coordinates.
      * @param {Number[]} point - the [x, y] pair, in pixel coordinates, to invert.
+     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. If this argument is not supplied, a new
+     *                                    [long, lat] pair is created to store the results.
      * @returns {Number[]} a [long, lat] pair representing the location whose projection equals the inverted point.
      */
-    invert(point) {
-        return this._d3Projection.invert(point);
+    invert(point, reference = undefined) {
+        return this._d3Projection.invert(point, reference);
     }
 
     /**
      * Projects spherical coordinates (lat/long) onto the viewing window.
      * @param {{lat:Number, long:Number}} latLong - the lat/long object representing the point to project.
+     * @param {WT_GVector2} [reference] - a 2-vector object to which to store the results. If this argument is not supplied, a new
+     *                                    vector object is created to store the results.
      * @returns {WT_GVector2} a 2-vector representing the projected point, in pixel coordinates.
      */
-    projectLatLong(latLong) {
-        let projected = this.project(WT_MapProjection.latLongGameToProjection(latLong));
-        return WT_MapProjection.xyProjectionToView(projected);
+    projectLatLong(latLong, reference) {
+        let projected = this.project(WT_MapProjection.latLongGameToProjection(latLong, this._tempArray1), this._tempArray2);
+        return WT_MapProjection.xyProjectionToView(projected, reference);
     }
 
     /**
      * Applies this projection's inverse to coordinates in the viewing window to get the corresponding point in spherical coordinates.
-     * @param {{x:Number, y:Number}} point - the 2-vector represeinting the pixel coordinates to invert.
+     * @param {{x:Number, y:Number}} xy - the 2-vector represeinting the pixel coordinates to invert.
      * @returns {LatLong} a LatLong object representing the location whose projection equals the inverted point.
      */
     invertXY(xy) {
-        let inverse = this.invert(WT_MapProjection.xyViewToProjection(xy));
+        let inverse = this.invert(WT_MapProjection.xyViewToProjection(xy, this._tempArray1), this._tempArray2);
         return WT_MapProjection.latLongProjectionToGame(inverse);
     }
 
@@ -326,10 +336,10 @@ class WT_MapProjection {
      */
     distance(point1, point2) {
         if (point1.lat !== undefined && point1.long !== undefined) {
-            point1 = WT_MapProjection.latLongGameToProjection(point1);
+            point1 = WT_MapProjection.latLongGameToProjection(point1, this._tempArray1);
         }
         if (point2.lat !== undefined && point2.long !== undefined) {
-            point2 = WT_MapProjection.latLongGameToProjection(point2);
+            point2 = WT_MapProjection.latLongGameToProjection(point2, this._tempArray2);
         }
         return WT_Unit.GA_RADIAN.createNumber(d3.geoDistance(point1, point2));
     }
@@ -391,7 +401,7 @@ class WT_MapProjection {
         if (point instanceof WT_GVector2) {
             return this._xyOffsetByViewAngle(point, distance, angle);
         } else if (point.lat !== undefined && point.long !== undefined) {
-            return this._xyOffsetByViewAngle(this.projectLatLong(latLong), distance, angle);
+            return this._xyOffsetByViewAngle(this.projectLatLong(latLong, this._tempVector), distance, angle);
         }
         return undefined;
     }
@@ -449,27 +459,46 @@ class WT_MapProjection {
     /**
      * Converts a 2-vector to a [x, y] pair.
      * @param {{x:Number, y:Number}} xy - the 2-vector to convert.
+     * @param {Number[]} [reference] - a [x, y] pair to which to store the results. If this argument is not supplied, a new
+     *                                    [x, y] pair is created to store the results.
      * @returns {Number[]} - a [x, y] pair.
      */
-    static xyViewToProjection(xy) {
+    static xyViewToProjection(xy, reference) {
+        if (reference) {
+            reference[0] = xy.x;
+            reference[1] = xy.y;
+            return reference;
+        }
         return [xy.x, xy.y];
     }
 
     /**
      * Converts a [x, y] pair to a 2-vector.
      * @param {Number[]} xy - the [x, y] pair to convert.
+     * @param {WT_GVector2} [reference] - a 2-vector object to which to store the results. If this argument is not supplied, a new
+     *                                    vector object is created to store the results.
      * @returns {WT_GVector2} - a 2-vector.
      */
-    static xyProjectionToView(xy) {
+    static xyProjectionToView(xy, reference) {
+        if (reference) {
+            return reference.set(xy[0], xy[1]);
+        }
         return new WT_GVector2(xy[0], xy[1]);
     }
 
     /**
      * Converts a lat/long object to a [long, lat] pair.
      * @param {{lat:Number, long:Number}} latLong - the lat/long object to convert.
+     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. If this argument is not supplied, a new
+     *                                    [long, lat] pair is created to store the results.
      * @returns {Number[]} - a [long, lat] pair.
      */
-    static latLongGameToProjection(latLong) {
+    static latLongGameToProjection(latLong, reference) {
+        if (reference) {
+            reference[0] = latLong.long;
+            reference[1] = latLong.lat;
+            return reference;
+        }
         return [latLong.long, latLong.lat];
     }
 
@@ -514,6 +543,10 @@ class WT_MapProjectionRenderer {
     constructor(projection) {
         this._d3Projection = projection;
         this._d3Path = d3.geoPath().projection(projection);
+
+        this._tempVector = new WT_GVector2(0, 0);
+        this._tempArray1 = [0, 0];
+        this._tempArray2 = [0, 0];
     }
 
     /**
@@ -597,14 +630,20 @@ class WT_MapProjectionRenderer {
     get viewClipExtent() {
         let value = this.projection.clipExtent();
         if (value !== null) {
-            value = value.map(WT_MapProjection.xyProjectionToView);
+            value = [
+                WT_MapProjection.xyProjectionToView(value[0]),
+                WT_MapProjection.xyProjectionToView(value[1])
+            ];
         }
         return value;
     }
 
     set viewClipExtent(bounds) {
         if (bounds !== null) {
-            bounds = bounds.map(WT_MapProjection.xyViewToProjection);
+            bounds = [
+                WT_MapProjection.xyProjectionToView(bounds[0]),
+                WT_MapProjection.xyProjectionToView(bounds[1])
+            ];
         }
         this.projection.clipExtent(bounds);
     }
@@ -621,20 +660,24 @@ class WT_MapProjectionRenderer {
     /**
      * Applies this projection's inverse to coordinates in the viewing plane to get the corresponding point in spherical coordinates.
      * @param {Number[]} point - the [x, y] pair, in pixel coordinates, to invert.
+     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. If this argument is not supplied, a new
+     *                                    [long, lat] pair is created to store the results.
      * @returns {Number[]} a [long, lat] pair representing the location whose projection equals the inverted point.
      */
-    invert(point) {
-        return this.projection.invert(point);
+    invert(point, reference) {
+        return this.projection.invert(point, reference);
     }
 
     /**
      * Projects spherical coordinates (lat/long) onto the viewing plane.
      * @param {{lat:Number, long:Number}} latLong - the lat/long object representing the point to project.
+     * @param {WT_GVector2} [reference] - a 2-vector object to which to store the results. If this argument is not supplied, a new
+     *                                    vector object is created to store the results.
      * @returns {WT_GVector2} a 2-vector representing the projected point, in pixel coordinates.
      */
-    projectLatLong(latLong) {
+    projectLatLong(latLong, reference) {
         let projected = this.project(WT_MapProjection.latLongGameToProjection(latLong));
-        return WT_MapProjection.xyProjectionToView(projected);
+        return WT_MapProjection.xyProjectionToView(projected, reference);
     }
 
     /**
@@ -643,7 +686,7 @@ class WT_MapProjectionRenderer {
      * @returns {LatLong} a LatLong object representing the location whose projection equals the inverted point.
      */
     invertXY(xy) {
-        let inverse = this.invert(WT_MapProjection.xyViewToProjection(xy));
+        let inverse = this.invert(WT_MapProjection.xyViewToProjection(xy, this._tempArray1), this._tempArray2);
         return WT_MapProjection.latLongProjectionToGame(inverse);
     }
 
@@ -714,7 +757,7 @@ class WT_MapProjectionRenderer {
         let height = clip[0].y - clip[0].y;
 
         if (point.lat !== undefined && point.long !== undefined) {
-            point = this.projectLatLong(point);
+            point = this.projectLatLong(point, this._tempVector);
         }
         return (point.x >= clip[0].x - width * margin) &&
                (point.x <= clip[1].x + width * margin) &&
@@ -839,28 +882,34 @@ class WT_MapProjectionSyncedRenderer extends WT_MapProjectionRenderer {
     /**
      * Projects spherical coordinates (lat/long) onto the viewing plane.
      * @param {Number[]} point - the [long, lat] coordinate pair to project.
+     * @param {Number[]} [reference] - a [x, y] pair to which to store the results. If this argument is not supplied, a new
+     *                                    [x, y] pair is created to store the results.
      * @returns {Number[]} a [x, y] pair representing the projected point, in pixel coordinates.
      */
-    project(point) {
-        return this.mapProjection.project(point);
+    project(point, reference) {
+        return this.mapProjection.project(point, reference);
     }
 
     /**
      * Applies this projection's inverse to coordinates in the viewing plane to get the corresponding point in spherical coordinates.
      * @param {Number[]} point - the [x, y] pair, in pixel coordinates, to invert.
+     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. If this argument is not supplied, a new
+     *                                    [long, lat] pair is created to store the results.
      * @returns {Number[]} a [long, lat] pair representing the location whose projection equals the inverted point.
      */
-    invert(point) {
-        return this.mapProjection.invert(point);
+    invert(point, reference) {
+        return this.mapProjection.invert(point, reference);
     }
 
     /**
      * Projects spherical coordinates (lat/long) onto the viewing plane.
      * @param {{lat:Number, long:Number}} latLong - the lat/long object representing the point to project.
+     * @param {WT_GVector2} [reference] - a 2-vector object to which to store the results. If this argument is not supplied, a new
+     *                                    vector object is created to store the results.
      * @returns {WT_GVector2} a 2-vector representing the projected point, in pixel coordinates.
      */
-    projectLatLong(latLong) {
-        return this.mapProjection.projectLatLong(latLong);
+    projectLatLong(latLong, reference = undefined) {
+        return this.mapProjection.projectLatLong(latLong, reference);
     }
 
     /**

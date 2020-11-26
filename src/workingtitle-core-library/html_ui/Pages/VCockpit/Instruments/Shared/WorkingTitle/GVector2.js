@@ -26,13 +26,20 @@ class WT_GVector2 {
     }
 
     set(...args) {
-        let xy = WT_GVector2._parseXYArgs(args);
-        if (!xy) {
+        let x;
+        let y;
+        if (args.length === 1) {
+            x = args[0].x;
+            y = args[0].y;
+        } else if (args.length === 2) {
+            x = args[0];
+            y = args[1];
+        } else {
             return undefined;
         }
 
-        this._x = xy.x;
-        this._y = xy.y;
+        this._x = x;
+        this._y = y;
         this._updateLength();
         return this;
     }
@@ -92,16 +99,6 @@ class WT_GVector2 {
 
     toString() {
         return `[${this.x} ${this.y}]`;
-    }
-
-    static _parseXYArgs(args) {
-        if (args.length === 1) {
-            return {x: args[0].x, y: args[0].y};
-        } else if (args.length === 2) {
-            return {x: args[0], y: args[1]};
-        } else {
-            return undefined;
-        }
     }
 
     static fromPolar(r, theta) {
@@ -207,14 +204,21 @@ class WT_GTransform2 {
     }
 
     static translate(...args) {
-        let xy = WT_GVector2._parseXYArgs(args);
-        if (!xy) {
+        let x;
+        let y;
+        if (args.length === 1) {
+            x = args[0].x;
+            y = args[0].y;
+        } else if (args.length === 2) {
+            x = args[0];
+            y = args[1];
+        } else {
             return undefined;
         }
 
         return new WT_GTransform2([
-            [1, 0, xy.x],
-            [0, 1, xy.y],
+            [1, 0, x],
+            [0, 1, y],
             [0, 0, 1]
         ]);
     }
@@ -229,12 +233,13 @@ class WT_GTransform2 {
         ]);
         if (args.length > 0) {
             // handle rotation around arbitrary point
-            let xy = WT_GVector2._parseXYArgs(args);
-            if (!xy) {
+            if (args.length === 1) {
+                transform = WT_GTransform2._offsetOrigin(transform, args[0].x, args[0].y);
+            } else if (args.length === 2) {
+                transform = WT_GTransform2._offsetOrigin(transform, args[0], args[1]);
+            } else {
                 return undefined;
             }
-
-            transform = WT_GTransform2._offsetOrigin(transform, xy.x, xy.y);
         }
         return transform;
     }
@@ -268,12 +273,13 @@ class WT_GTransform2 {
         ])
         if (args.length > 0) {
             // handle reflection around arbitrary line
-            let xy = WT_GVector2._parseXYArgs(args);
-            if (!xy) {
+            if (args.length === 1) {
+                transform = WT_GTransform2._offsetOrigin(transform, args[0].x, args[0].y);
+            } else if (args.length === 2) {
+                transform = WT_GTransform2._offsetOrigin(transform, args[0], args[1]);
+            } else {
                 return undefined;
             }
-
-            transform = WT_GTransform2._offsetOrigin(transform, xy.x, xy.y);
         }
         return transform;
     }
