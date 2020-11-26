@@ -276,7 +276,7 @@ class CJ4_FMC_RoutePage {
                                     this._fmc.setMsg();
                                     this.invalidate();
                                 } else
-                                this._fmc.showErrorMessage("NOT ON AIRWAY");
+                                    this._fmc.showErrorMessage("NOT ON AIRWAY");
                             });
                         });
                     });
@@ -405,13 +405,16 @@ class CJ4_FMC_RoutePage {
         let allRows = [];
         let flightPlanManager = fmc.flightPlanManager;
         let lastDepartureWaypoint = undefined;
+        let foundActive = false; // haaaaackyyy
         if (flightPlanManager) {
             const departure = flightPlanManager.getDeparture();
             if (departure) {
                 const departureWaypoints = flightPlanManager.getDepartureWaypointsMap();
-                lastDepartureWaypoint = departureWaypoints[departureWaypoints.length - 1];
+                const lastDepartureIdx = departureWaypoints.length - 1;
+                lastDepartureWaypoint = departureWaypoints[lastDepartureIdx];
                 if (lastDepartureWaypoint) {
-                    allRows.push(new FpRow(lastDepartureWaypoint.ident, -1, departure.name));
+                    foundActive = flightPlanManager.getActiveWaypointIndex() <= lastDepartureIdx;
+                    allRows.push(new FpRow(lastDepartureWaypoint.ident, -1, departure.name, undefined, foundActive));
                 }
             }
             let fpIndexes = [];
@@ -420,6 +423,11 @@ class CJ4_FMC_RoutePage {
                 const prev = (i == 0) ? lastDepartureWaypoint : routeWaypoints[i - 1]; // check with dep on first waypoint
                 const wp = routeWaypoints[i];
                 if (wp) {
+                    let tmpFoundActive = !foundActive && flightPlanManager.getActiveWaypointIndex() <= fpIndexes[i];
+                    if (tmpFoundActive) {
+                        foundActive = true;
+                    }
+
                     if (wp.infos.airwayIn !== undefined && prev && prev.infos.airwayOut === wp.infos.airwayIn) {
                         // is there a next waypoint?
                         const nextWp = routeWaypoints[i + 1];
@@ -428,10 +436,10 @@ class CJ4_FMC_RoutePage {
                             if (airwayContinues)
                                 continue;
                         }
-                        allRows.push(new FpRow(wp.ident, fpIndexes[i], wp.infos.airwayIn, wp.infos.airwayOut));
+                        allRows.push(new FpRow(wp.ident, fpIndexes[i], wp.infos.airwayIn, wp.infos.airwayOut, tmpFoundActive));
                     }
                     else {
-                        allRows.push(new FpRow(wp.ident, fpIndexes[i], "DIRECT", wp.infos.airwayOut));
+                        allRows.push(new FpRow(wp.ident, fpIndexes[i], "DIRECT", wp.infos.airwayOut, tmpFoundActive));
                     }
                 }
             }
@@ -453,11 +461,12 @@ class CJ4_FMC_RoutePage {
 }
 
 class FpRow {
-    constructor(ident = "-----", fpIdx = -1, airwayIn = undefined, airwayOut = undefined) {
+    constructor(ident = "-----", fpIdx = -1, airwayIn = undefined, airwayOut = undefined, isActive = false) {
         this._ident = ident;
         this._fpIdx = fpIdx;
         this._airwayIn = airwayIn;
         this._airwayOut = airwayOut;
+        this._isActive = isActive;
     }
 
     get ident() { return this._ident; }
@@ -470,11 +479,19 @@ class FpRow {
     set airwayIn(val) { this._airwayIn = val; }
 
     getTemplate() {
+        let tmpl;
         if (this._airwayIn === undefined) {
-            return ["-----", this._ident];
+            tmpl = ["-----", this._ident];
         } else {
-            return [this._airwayIn, this._ident];
+            tmpl = [this._airwayIn, this._ident];
         }
+
+        if (this._isActive) {
+            tmpl[0] += "[magenta]";
+            tmpl[1] += "[magenta]";
+        }
+
+        return tmpl;
     }
 }
 
