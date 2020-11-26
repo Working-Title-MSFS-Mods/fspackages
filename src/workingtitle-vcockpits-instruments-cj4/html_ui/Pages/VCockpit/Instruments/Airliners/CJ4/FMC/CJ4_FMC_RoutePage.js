@@ -89,8 +89,11 @@ class CJ4_FMC_RoutePage {
         // fill in empty row
         let emptyRow = new FpRow();
         const prevRow = this._rows[this._rows.length - 1];
-        emptyRow.fpIdx = (prevRow.fpIdx + 1);
-        emptyRow.airwayIn = prevRow.airwayOut;
+        if (prevRow !== undefined) {
+            emptyRow.fpIdx = (prevRow.fpIdx + 2);
+            emptyRow.airwayIn = prevRow.airwayOut;
+            prevRow.airwayOut = undefined;
+        }
         this._rows.push(emptyRow);
 
         this._pageCount = Math.max(2, (Math.ceil((this._rows.length - 1) / 5) + 1));
@@ -414,7 +417,7 @@ class CJ4_FMC_RoutePage {
                 lastDepartureWaypoint = departureWaypoints[lastDepartureIdx];
                 if (lastDepartureWaypoint) {
                     foundActive = flightPlanManager.getActiveWaypointIndex() <= lastDepartureIdx;
-                    allRows.push(new FpRow(lastDepartureWaypoint.ident, -1, departure.name, undefined, foundActive));
+                    allRows.push(new FpRow(lastDepartureWaypoint.ident, lastDepartureIdx, departure.name, undefined, foundActive));
                 }
             }
             let fpIndexes = [];
@@ -439,7 +442,7 @@ class CJ4_FMC_RoutePage {
                         allRows.push(new FpRow(wp.ident, fpIndexes[i], wp.infos.airwayIn, wp.infos.airwayOut, tmpFoundActive));
                     }
                     else {
-                        allRows.push(new FpRow(wp.ident, fpIndexes[i], "DIRECT", wp.infos.airwayOut, tmpFoundActive));
+                        allRows.push(new FpRow(wp.ident, fpIndexes[i], undefined, wp.infos.airwayOut, tmpFoundActive));
                     }
                 }
             }
@@ -461,7 +464,7 @@ class CJ4_FMC_RoutePage {
 }
 
 class FpRow {
-    constructor(ident = "-----", fpIdx = -1, airwayIn = undefined, airwayOut = undefined, isActive = false) {
+    constructor(ident = "-----", fpIdx = Infinity, airwayIn = undefined, airwayOut = undefined, isActive = false) {
         this._ident = ident;
         this._fpIdx = fpIdx;
         this._airwayIn = airwayIn;
@@ -481,10 +484,16 @@ class FpRow {
     getTemplate() {
         let row1tmpl, row2tmpl = ["", ""];
         if (this._airwayIn === undefined) {
-            row1tmpl = ["-----", this._ident];
+            if (this._ident !== "-----") {
+                row1tmpl = ["DIRECT", this._ident];
+            }
+            else {
+                row1tmpl = ["-----", this._ident];
+
+            }
         } else {
             row1tmpl = [this._airwayIn, this._ident];
-            if (this.airwayIn !== undefined && this._ident === "-----") {
+            if (this._ident === "-----") {
                 row1tmpl[1] = "□□□□□[s-text]";
                 row2tmpl = ["----[s-text]", "----[s-text]", "DISCONTINUITY[s-text]"];
             }
