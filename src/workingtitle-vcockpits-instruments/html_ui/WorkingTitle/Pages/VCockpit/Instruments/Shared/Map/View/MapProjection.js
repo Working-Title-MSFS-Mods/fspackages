@@ -717,7 +717,12 @@ class WT_MapProjectionRenderer {
      *                            of the projected object.
      */
     calculateBounds(object) {
-        return this._d3Path.bounds(object).map(WT_MapProjection.xyProjectionToView);
+        let bounds = this._d3Path.bounds(object);
+        bounds = [
+            WT_MapProjection.xyProjectionToView(bounds[0]),
+            WT_MapProjection.xyProjectionToView(bounds[1])
+        ];
+        return bounds;
     }
 
     /**
