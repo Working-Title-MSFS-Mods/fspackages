@@ -10,6 +10,7 @@ class CJ4_FMC_RoutePage {
         this._currentPage = 0;
         this._pageCount = 2;
         this._offset = 0;
+        this._fplnVersion = -1;
 
         this._lsk6Field = "<SEC FPLN";
         this._activateCell = "PERF INIT>";
@@ -85,20 +86,24 @@ class CJ4_FMC_RoutePage {
             this._lsk6Field = "<SEC FPLN";
         }
 
-        this._rows = CJ4_FMC_RoutePage._GetAllRows(this._fmc);
+        const currFplnVer = SimVar.GetSimVarValue(FlightPlanManager.FlightPlanVersionKey, 'number');
+        if (this._fplnVersion < currFplnVer) {
+            this._rows = CJ4_FMC_RoutePage._GetAllRows(this._fmc);
+            this._fplnVersion = currFplnVer;
 
-        // fill in empty row
-        let emptyRow = new FpRow();
-        const prevRow = this._rows[this._rows.length - 1];
-        if (prevRow !== undefined) {
-            emptyRow.fpIdx = (prevRow.fpIdx + 2);
-            if (this._airwayInput !== "") {
-                emptyRow.airwayIn = this._airwayInput;
+            // fill in empty row
+            let emptyRow = new FpRow();
+            const prevRow = this._rows[this._rows.length - 1];
+            if (prevRow !== undefined) {
+                emptyRow.fpIdx = (prevRow.fpIdx + 2);
+                if (this._airwayInput !== "") {
+                    emptyRow.airwayIn = this._airwayInput;
+                }
+            } else {
+                emptyRow.fpIdx = 1;
             }
-        } else {
-            emptyRow.fpIdx = 1;
+            this._rows.push(emptyRow);
         }
-        this._rows.push(emptyRow);
 
         this._pageCount = Math.max(2, (Math.ceil((this._rows.length - 1) / 5) + 1));
 
