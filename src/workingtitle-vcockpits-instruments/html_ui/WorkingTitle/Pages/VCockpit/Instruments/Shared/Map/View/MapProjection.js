@@ -287,7 +287,7 @@ class WT_MapProjection {
      * Projects spherical coordinates (lat/long) onto the viewing window.
      * @param {Number[]} point - the [long, lat] coordinate pair to project.
      * @param {Number[]} [reference] - a [x, y] pair to which to store the results. If this argument is not supplied, a new
-     *                                    [x, y] pair is created to store the results.
+     *                                 [x, y] pair is created to store the results.
      * @returns {Number[]} a [x, y] pair representing the projected point, in pixel coordinates.
      */
     project(point, reference) {
@@ -298,7 +298,7 @@ class WT_MapProjection {
      * Applies this projection's inverse to coordinates in the viewing window to get the corresponding point in spherical coordinates.
      * @param {Number[]} point - the [x, y] pair, in pixel coordinates, to invert.
      * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. If this argument is not supplied, a new
-     *                                    [long, lat] pair is created to store the results.
+     *                                 [long, lat] pair is created to store the results.
      * @returns {Number[]} a [long, lat] pair representing the location whose projection equals the inverted point.
      */
     invert(point, reference = undefined) {
@@ -460,7 +460,7 @@ class WT_MapProjection {
      * Converts a 2-vector to a [x, y] pair.
      * @param {{x:Number, y:Number}} xy - the 2-vector to convert.
      * @param {Number[]} [reference] - a [x, y] pair to which to store the results. If this argument is not supplied, a new
-     *                                    [x, y] pair is created to store the results.
+     *                                 [x, y] pair is created to store the results.
      * @returns {Number[]} - a [x, y] pair.
      */
     static xyViewToProjection(xy, reference) {
@@ -490,7 +490,7 @@ class WT_MapProjection {
      * Converts a lat/long object to a [long, lat] pair.
      * @param {{lat:Number, long:Number}} latLong - the lat/long object to convert.
      * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. If this argument is not supplied, a new
-     *                                    [long, lat] pair is created to store the results.
+     *                                 [long, lat] pair is created to store the results.
      * @returns {Number[]} - a [long, lat] pair.
      */
     static latLongGameToProjection(latLong, reference) {
@@ -651,17 +651,19 @@ class WT_MapProjectionRenderer {
     /**
      * Projects spherical coordinates (lat/long) onto the viewing plane.
      * @param {Number[]} point - the [long, lat] coordinate pair to project.
+     * @param {Number[]} [reference] - a [x, y] pair to which to store the results. If this argument is not supplied, a new
+     *                                 [x, y] pair is created to store the results.
      * @returns {Number[]} a [x, y] pair representing the projected point, in pixel coordinates.
      */
-    project(point) {
-        return this.projection(point);
+    project(point, reference) {
+        return this.projection(point, reference);
     }
 
     /**
      * Applies this projection's inverse to coordinates in the viewing plane to get the corresponding point in spherical coordinates.
      * @param {Number[]} point - the [x, y] pair, in pixel coordinates, to invert.
      * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. If this argument is not supplied, a new
-     *                                    [long, lat] pair is created to store the results.
+     *                                 [long, lat] pair is created to store the results.
      * @returns {Number[]} a [long, lat] pair representing the location whose projection equals the inverted point.
      */
     invert(point, reference) {
@@ -888,7 +890,7 @@ class WT_MapProjectionSyncedRenderer extends WT_MapProjectionRenderer {
      * Projects spherical coordinates (lat/long) onto the viewing plane.
      * @param {Number[]} point - the [long, lat] coordinate pair to project.
      * @param {Number[]} [reference] - a [x, y] pair to which to store the results. If this argument is not supplied, a new
-     *                                    [x, y] pair is created to store the results.
+     *                                 [x, y] pair is created to store the results.
      * @returns {Number[]} a [x, y] pair representing the projected point, in pixel coordinates.
      */
     project(point, reference) {
@@ -899,7 +901,7 @@ class WT_MapProjectionSyncedRenderer extends WT_MapProjectionRenderer {
      * Applies this projection's inverse to coordinates in the viewing plane to get the corresponding point in spherical coordinates.
      * @param {Number[]} point - the [x, y] pair, in pixel coordinates, to invert.
      * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. If this argument is not supplied, a new
-     *                                    [long, lat] pair is created to store the results.
+     *                                 [long, lat] pair is created to store the results.
      * @returns {Number[]} a [long, lat] pair representing the location whose projection equals the inverted point.
      */
     invert(point, reference) {
