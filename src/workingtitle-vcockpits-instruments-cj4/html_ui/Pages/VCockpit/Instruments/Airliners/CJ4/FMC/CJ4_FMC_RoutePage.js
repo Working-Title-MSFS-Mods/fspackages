@@ -462,7 +462,7 @@ class CJ4_FMC_RoutePage {
             const fpln = flightPlanManager.getCurrentFlightPlan();
             const arrivalSeg = fpln.getSegment(SegmentType.Arrival);
             if (arrivalSeg !== FlightPlanSegment.Empty) {
-                const arrName = flightPlanManager.getArrival().name;
+                const arrName = (flightPlanManager.getArrival() !== undefined) ? flightPlanManager.getArrival().name : "ARR";
                 for (let i = 0; i < arrivalSeg.waypoints.length; i++) {
                     const wp = arrivalSeg.waypoints[i];
                     const fpIdx = arrivalSeg.offset + i;
@@ -476,7 +476,7 @@ class CJ4_FMC_RoutePage {
 
             const approachSeg = fpln.getSegment(SegmentType.Approach);
             if (approachSeg !== FlightPlanSegment.Empty) {
-                const appName = flightPlanManager.getAirportApproach().name;
+                const appName = (flightPlanManager.getAirportApproach() !== undefined) ? flightPlanManager.getAirportApproach().name : "APP";
                 for (let i = 0; i < approachSeg.waypoints.length; i++) {
                     const wp = approachSeg.waypoints[i];
                     const fpIdx = approachSeg.offset + i;
