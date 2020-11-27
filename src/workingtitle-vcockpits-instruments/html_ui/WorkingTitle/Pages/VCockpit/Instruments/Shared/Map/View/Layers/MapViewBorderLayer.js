@@ -175,9 +175,9 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         super.onAttached(data);
     }
 
-    _cullFeatureByBounds(renderer, bounds, featureInfo) {
-        let min = renderer.project(featureInfo.geoBounds[0]);
-        let max = renderer.project(featureInfo.geoBounds[1]);
+    _cullFeatureByBounds(renderer, bounds, temp, featureInfo) {
+        let min = renderer.project(featureInfo.geoBounds[0], temp[0]);
+        let max = renderer.project(featureInfo.geoBounds[1], temp[1]);
         let left = Math.min(min[0], max[0]);
         let right = Math.max(min[0], max[0]);
         let top = Math.min(min[1], max[1]);
@@ -218,7 +218,8 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 
     _enqueueFeaturesToDraw(data, features, lod) {
         let clipExtent = this.projectionRenderer.viewClipExtent;
-        for (let feature of features[lod].filter(this._cullFeatureByBounds.bind(this, this.projectionRenderer, clipExtent))) {
+        let temp = [[0, 0], [0, 0]];
+        for (let feature of features[lod].filter(this._cullFeatureByBounds.bind(this, this.projectionRenderer, clipExtent, temp))) {
             this.projectionRenderer.renderCanvas(feature.feature, this._bufferedContext);
         }
     }
@@ -314,12 +315,12 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._labelsToShow.clear();
     }
 
-    _cullLabelsToShow(data, featureInfo) {
-        if (!this._cullFeatureByBounds(this.projectionRenderer, this.projectionRenderer.viewClipExtent, featureInfo)) {
+    _cullLabelsToShow(data, tempArrays, tempVector, featureInfo) {
+        if (!this._cullFeatureByBounds(this.projectionRenderer, this.projectionRenderer.viewClipExtent, tempArrays, featureInfo)) {
             return false;
         }
 
-        let viewCentroid = WT_MapProjection.xyProjectionToView(data.projection.project(featureInfo.geoCentroid));
+        let viewCentroid = WT_MapProjection.xyProjectionToView(data.projection.project(featureInfo.geoCentroid, tempArrays[0]), tempVector);
         let sec = 1 / Math.cos(featureInfo.geoCentroid[1] * Avionics.Utils.DEG2RAD);
         let area = featureInfo.geoArea * data.projection.scale * data.projection.scale * sec * sec; // estimate based on mercator projection
         let viewArea = data.projection.viewWidth * data.projection.viewHeight;
@@ -349,9 +350,11 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     }
 
     _updateLabels(data) {
-        let toShow = this._admin0Polygons.filter(this._cullLabelsToShow.bind(this, data));
+        let tempArrays = [[0, 0], [0, 0]];
+        let tempVector = new WT_GVector2(0, 0);
+        let toShow = this._admin0Polygons.filter(this._cullLabelsToShow.bind(this, data, tempArrays, tempVector));
         if (data.model.borders.showStateBorders) {
-            toShow = toShow.concat(this._admin1Polygons.filter(this._cullLabelsToShow.bind(this, data)));
+            toShow = toShow.concat(this._admin1Polygons.filter(this._cullLabelsToShow.bind(this, data, tempArrays, tempVector)));
         }
         this._updateLabelsToShow(toShow.map(featureInfo => this._labelCache.getLabel(featureInfo)));
     }
