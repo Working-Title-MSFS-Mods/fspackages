@@ -26,6 +26,8 @@
         "Coherent": "writable",
         "WT_BaseAutopilot": "writable",
         "WT_VNavPathAutopilot": "writable",
+        "SegmentType": "writable",
+        "FlightPlanSegment": "writable",
         "SimVar": "writable",
         "Simplane": "writable",
         "fastToFixed": "writable",

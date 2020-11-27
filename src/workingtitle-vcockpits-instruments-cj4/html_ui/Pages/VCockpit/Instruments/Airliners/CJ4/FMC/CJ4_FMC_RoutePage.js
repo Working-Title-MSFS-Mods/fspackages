@@ -297,7 +297,6 @@ class CJ4_FMC_RoutePage {
                         });
                     });
                 } else {
-                    // const enroute = this._fmc.flightPlanManager.getCurrentFlightPlan().enroute;
                     this._fmc.insertWaypoint(value, wpIdx, (isSuccess) => {
                         if (isSuccess) {
                             this._fmc.setMsg();
@@ -460,16 +459,34 @@ class CJ4_FMC_RoutePage {
                 }
             }
 
-            // const fpln = flightPlanManager.getCurrentFlightPlan();
-            // const arrival = fpln.getSegment(SegmentType.Arrival);
-            // if (arrival !== undefined) {
+            const fpln = flightPlanManager.getCurrentFlightPlan();
+            const arrivalSeg = fpln.getSegment(SegmentType.Arrival);
+            if (arrivalSeg !== FlightPlanSegment.Empty) {
+                const arrName = flightPlanManager.getArrival().name;
+                for (let i = 0; i < arrivalSeg.waypoints.length; i++) {
+                    const wp = arrivalSeg.waypoints[i];
+                    const fpIdx = arrivalSeg.offset + i;
+                    let tmpFoundActive = !foundActive && flightPlanManager.getActiveWaypointIndex() <= fpIdx;
+                    if (tmpFoundActive) {
+                        foundActive = true;
+                    }
+                    allRows.push(new FpRow(wp.ident, fpIdx, arrName, undefined, tmpFoundActive));
+                }
+            }
 
-            // }
-
-            // const approach = fpln.getSegment(SegmentType.Approach);
-            // if (approach !== undefined) {
-
-            // }
+            const approachSeg = fpln.getSegment(SegmentType.Approach);
+            if (approachSeg !== FlightPlanSegment.Empty) {
+                const appName = flightPlanManager.getAirportApproach().name;
+                for (let i = 0; i < approachSeg.waypoints.length; i++) {
+                    const wp = approachSeg.waypoints[i];
+                    const fpIdx = approachSeg.offset + i;
+                    let tmpFoundActive = !foundActive && flightPlanManager.getActiveWaypointIndex() <= fpIdx;
+                    if (tmpFoundActive) {
+                        foundActive = true;
+                    }
+                    allRows.push(new FpRow(wp.ident, fpIdx, appName, undefined, tmpFoundActive));
+                }
+            }
 
         }
         return allRows;
