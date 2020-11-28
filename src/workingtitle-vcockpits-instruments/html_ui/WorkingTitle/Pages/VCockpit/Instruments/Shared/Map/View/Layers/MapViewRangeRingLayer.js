@@ -9,22 +9,13 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
 
         this._rangeRing = new WT_MapViewLabeledRing(new WT_MapViewRing(), new WT_MapViewRangeRingLabel());
         this.addRing(this._rangeRing);
-        this.rangeRing.label.anchor = {x: 0.5, y: 0.5};
+        this._rangeRing.label.anchor = {x: 0.5, y: 0.5};
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRangeRingLayer.OPTIONS_DEF);
     }
 
-    /**
-     * @readonly
-     * @property {WT_MapViewLabeledRing} rangeRing - this layer's range ring object.
-     * @type {WT_MapViewLabeledRing}
-     */
-    get rangeRing() {
-        return this._rangeRing;
-    }
-
     _updateStyles(dpiScale) {
-        this.rangeRing.ring.setOptions({
+        this._rangeRing.ring.setOptions({
             strokeWidth: this.strokeWidth * dpiScale,
             strokeColor: this.strokeColor,
             strokeDash: this.strokeDash.map(e => e * dpiScale),
@@ -33,7 +24,7 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
             outlineDash: this.outlineDash.map(e => e * dpiScale)
         });
 
-        this.rangeRing.label.setOptions({
+        this._rangeRing.label.setOptions({
             radialAngle: this.labelAngle,
             radialOffset: this.labelOffset * dpiScale,
         });
@@ -76,8 +67,8 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
     onUpdate(state) {
         super.onUpdate(state);
 
-        this.rangeRing.center = state.projection.viewTarget;
-        this.rangeRing.radius = state.model.range.ratio(state.projection.range) * state.projection.viewHeight;
+        this._rangeRing.center = state.projection.viewTarget;
+        this._rangeRing.radius = state.model.range.ratio(state.projection.range) * state.projection.viewHeight;
     }
 }
 WT_MapViewRangeRingLayer.CLASS_DEFAULT = "rangeRingLayer";

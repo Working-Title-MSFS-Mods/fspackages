@@ -30,15 +30,6 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
     }
 
     /**
-     * @readonly
-     * @property {WT_MapViewCanvas} vectorLayer - the canvas sublayer on which the track vector is drawn.
-     * @type {WT_MapViewCanvas}
-     */
-    get vectorLayer() {
-        return this._vectorLayer;
-    }
-
-    /**
      * @property {WT_NumberUnit} dynamicLookaheadMax - the maximum lookahead time to use when calculating dynamic track vectors.
      * @type {WT_NumberUnit}
      */
@@ -159,12 +150,12 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
      * @param {{x:Number, y:Number}[]} points - a list of points, in pixel coordinates, comprising the path.
      */
     _composeVectorPath(points) {
-        this.vectorLayer.buffer.context.beginPath();
+        this._vectorLayer.buffer.context.beginPath();
         let i = 0;
         let currentPoint = points[i++];
-        this.vectorLayer.buffer.context.moveTo(currentPoint.x, currentPoint.y);
+        this._vectorLayer.buffer.context.moveTo(currentPoint.x, currentPoint.y);
         while (i < points.length) {
-            this.vectorLayer.buffer.context.lineTo(currentPoint.x, currentPoint.y);
+            this._vectorLayer.buffer.context.lineTo(currentPoint.x, currentPoint.y);
             currentPoint = points[i++];
         }
     }
@@ -175,9 +166,9 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
      * @param {String|CanvasGradient|CanvasPattern} strokeStyle - the style of the stroke.
      */
     _applyStrokeToBuffer(lineWidth, strokeStyle) {
-        this.vectorLayer.buffer.context.lineWidth = lineWidth;
-        this.vectorLayer.buffer.context.strokeStyle = strokeStyle;
-        this.vectorLayer.buffer.context.stroke();
+        this._vectorLayer.buffer.context.lineWidth = lineWidth;
+        this._vectorLayer.buffer.context.strokeStyle = strokeStyle;
+        this._vectorLayer.buffer.context.stroke();
     }
 
     /**
@@ -187,8 +178,8 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
     _drawDynamicVector(state) {
         let points = this._calculateDynamicVector(state);
 
-        this.vectorLayer.buffer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
-        this.vectorLayer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
+        this._vectorLayer.buffer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
+        this._vectorLayer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
         this._composeVectorPath(points);
         if (this.outlineWidth > 0) {
             this._applyStrokeToBuffer((this.outlineWidth * 2 + this.strokeWidth) * state.dpiScale, this.outlineColor);
@@ -200,7 +191,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         let toDrawTop = Math.max(0, Math.min(...points.map(point => point.y)) - thick - 5);
         let toDrawWidth = Math.min(state.projection.viewWidth, Math.max(...points.map(point => point.x)) + thick + 5) - toDrawLeft;
         let toDrawHeight = Math.min(state.projection.viewHeight, Math.max(...points.map(point => point.y)) + thick + 5) - toDrawTop;
-        this._lastDrawnBounds = this.vectorLayer.copyBufferToCanvas(toDrawLeft, toDrawTop, toDrawWidth, toDrawHeight);
+        this._lastDrawnBounds = this._vectorLayer.copyBufferToCanvas(toDrawLeft, toDrawTop, toDrawWidth, toDrawHeight);
     }
 
     /**
@@ -228,11 +219,11 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         ];
         let geoJSON = this._buildGeoJSON(points);
 
-        this.vectorLayer.buffer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
-        this.vectorLayer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
+        this._vectorLayer.buffer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
+        this._vectorLayer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
-        this.vectorLayer.buffer.context.beginPath();
-        state.projection.renderer.renderCanvas(geoJSON, this.vectorLayer.buffer.context);
+        this._vectorLayer.buffer.context.beginPath();
+        state.projection.renderer.renderCanvas(geoJSON, this._vectorLayer.buffer.context);
         if (this.outlineWidth > 0) {
             this._applyStrokeToBuffer((this.outlineWidth * 2 + this.strokeWidth) * state.dpiScale, this.outlineColor);
         }
@@ -244,7 +235,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         let toDrawTop = Math.max(0, bounds[0].y - thick - 5);
         let toDrawWidth = Math.min(state.projection.viewWidth, bounds[1].x + thick + 5) - toDrawLeft;
         let toDrawHeight = Math.min(state.projection.viewHeight, bounds[1].y + thick + 5) - toDrawTop;
-        this._lastDrawnBounds = this.vectorLayer.copyBufferToCanvas(toDrawLeft, toDrawTop, toDrawWidth, toDrawHeight);
+        this._lastDrawnBounds = this._vectorLayer.copyBufferToCanvas(toDrawLeft, toDrawTop, toDrawWidth, toDrawHeight);
     }
 
     /**
