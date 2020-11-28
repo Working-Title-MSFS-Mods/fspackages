@@ -97,10 +97,14 @@ class WT_VnavAutopilot {
                 }
                 else if (this._pathArmAbove && !this._pathActive) {
                     //WE NEED TO ATTEMPT TO INTERCEPT FROM ABOVE
+                    const indicatedAltitude = SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet");
                     const altitudeDifference = indicatedAltitude - this._vnav._vnavTargetAltitude;
+
                     const requiredFpa = (180 / Math.PI) * (Math.atan(altitudeDifference / (this._vnav._vnavTargetDistance * 6076.12)));
                     const groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+
                     this._pathFromAboveRequiredVs = -101.2686667 * groundSpeed * Math.tan(requiredFpa * (Math.PI / 180));
+                    
                     if (this._vnav._altDeviation > -300 && this._vnav._altDeviation < 300) {
                         //TIME TO ACTIVATE PATH
                         this._vnavTargetAltitude = this._vnav._vnavTargetAltitude;
