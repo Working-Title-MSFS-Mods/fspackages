@@ -259,6 +259,11 @@ export class FlightPlanManager {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (index >= 0 && index < currentFlightPlan.length) {
       currentFlightPlan.activeWaypointIndex = index;
+
+      if (currentFlightPlan.directTo.isActive && currentFlightPlan.directTo.waypointIsInFlightPlan 
+        && currentFlightPlan.activeWaypointIndex > currentFlightPlan.directTo.planWaypointIndex) {
+          currentFlightPlan.directTo.isActive = false;
+      }
     }
 
     this._updateFlightPlanVersion();
