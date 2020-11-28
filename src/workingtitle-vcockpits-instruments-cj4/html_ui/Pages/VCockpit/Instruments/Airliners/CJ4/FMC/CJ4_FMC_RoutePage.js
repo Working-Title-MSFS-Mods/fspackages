@@ -464,18 +464,24 @@ class CJ4_FMC_RoutePage {
                 }
             }
 
+            /** @type {ManagedFlightPlan} */
             const fpln = flightPlanManager.getCurrentFlightPlan();
+
             const arrivalSeg = fpln.getSegment(SegmentType.Arrival);
             if (arrivalSeg !== FlightPlanSegment.Empty) {
-                const arrName = (flightPlanManager.getArrival() !== undefined) ? flightPlanManager.getArrival().name : "ARR";
-                for (let i = 0; i < arrivalSeg.waypoints.length; i++) {
-                    const wp = arrivalSeg.waypoints[i];
-                    const fpIdx = arrivalSeg.offset + i;
-                    let tmpFoundActive = !foundActive && flightPlanManager.getActiveWaypointIndex() <= fpIdx;
-                    if (tmpFoundActive) {
-                        foundActive = true;
-                    }
-                    allRows.push(new FpRow(wp.ident, fpIdx, arrName, undefined, tmpFoundActive));
+                const arrival = flightPlanManager.getArrival();
+                const currentWaypointIndex = fpln.activeWaypointIndex;
+
+                if (arrival) {
+                    const transitionIndex = fpln.procedureDetails.arrivalTransitionIndex;
+                    const arrivalName = transitionIndex !== -1 
+                        ? `${arrival.enRouteTransitions[transitionIndex].name}.${arrival.name}`
+                        : `${arrival.name}`;
+                    
+                    const finalFix = arrivalSeg.waypoints[arrivalSeg.waypoints.length - 1];
+                    const isSegmentActive = currentWaypointIndex >= arrivalSeg.offset && currentWaypointIndex < arrivalSeg.offset + arrivalSeg.waypoints.length;
+
+                    allRows.push(new FpRow(finalFix.ident, arrivalSeg.offset, arrivalName, undefined, isSegmentActive));
                 }
             }
 

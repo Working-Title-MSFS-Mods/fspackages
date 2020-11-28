@@ -145,7 +145,7 @@ class WT_BaseVnav {
             if (this._currentFlightSegment.type != SegmentType.Departure && (this._flightPlanChanged || this._vnavTargetChanged)) {
                 console.log("build profile started");
                 this.buildDescentProfile();
-                console.log("profile written: " + this._vnavTargetWaypoint.ident + " " + this._vnavTargetAltitude);
+                console.log(`profile written: ${this._vnavTargetWaypoint && this._vnavTargetWaypoint.ident} ${this._vnavTargetAltitude}`);
             }
 
             //TRACK ALTITUDE DEVIATION
