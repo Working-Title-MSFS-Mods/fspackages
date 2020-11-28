@@ -154,19 +154,19 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.groundRibbonSVG.setAttribute("height", groundRibbonHeight.toString());
             this.groundRibbonSVG.setAttribute("viewBox", "0 0 " + groundRibbonWidth + " " + groundRibbonHeight);
             {
-                var dashHeight = 4;
+                var dashHeight = 6;
                 var dashEndPos = _height;
-                var dashPos = -120;
+                var dashPos = -240;
                 while (dashPos < dashEndPos) {
                     let dashLine = document.createElementNS(Avionics.SVG.NS, "rect");
                     dashLine.setAttribute("x", "0");
                     dashLine.setAttribute("y", dashPos.toString());
                     dashLine.setAttribute("width", groundRibbonWidth.toString());
                     dashLine.setAttribute("height", dashHeight.toString());
-                    dashLine.setAttribute("transform", "skewY(45)");
+                    dashLine.setAttribute("transform", "skewY(53)");
                     dashLine.setAttribute("fill", "orange");
                     this.groundRibbonSVG.appendChild(dashLine);
-                    dashPos += dashHeight * 6;
+                    dashPos += dashHeight * 6.5;
                 }
                 if (!this.groundRibbonSVGShape)
                     this.groundRibbonSVGShape = document.createElementNS(Avionics.SVG.NS, "rect");
