@@ -72,6 +72,14 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
         return this._text;
     }
 
+    get anchor() {
+        return this._anchor.copy();
+    }
+
+    set anchor(value) {
+        this._anchor.set(value);
+    }
+
     draw(state, context) {
         context.font = `${this.fontSize * state.dpiScale}px ${this.font}`;
         let width = context.measureText(this.text).width;
