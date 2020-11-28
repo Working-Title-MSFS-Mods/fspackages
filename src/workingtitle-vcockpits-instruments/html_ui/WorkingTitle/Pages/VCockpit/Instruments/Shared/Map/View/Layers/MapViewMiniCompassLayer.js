@@ -8,30 +8,12 @@ class WT_MapViewMiniCompassLayer extends WT_MapViewLayer {
         return this._miniCompassContainer;
     }
 
-    /**
-     * @readonly
-     * @property {HTMLDivElement} miniCompassContainer - the top-level container element for the mini compass.
-     * @type {HTMLDivElement}
-     */
-    get miniCompassContainer() {
-        return this._miniCompassContainer;
-    }
-
-    /**
-     * @readonly
-     * @property {HTMLImageElement} compassIcon - the compass arrow image element.
-     * @type {HTMLImageElement}
-     */
-    get compassIcon() {
-        return this._compassIcon;
-    }
-
     _initIconLayer(path) {
         this._compassIcon = document.createElement("img");
         this._compassIcon.classList.add(WT_MapViewMiniCompassLayer.ICON_IMAGE_CLASS);
         this._compassIcon.style.zIndex = 1;
         this._compassIcon.src = path;
-        this.miniCompassContainer.appendChild(this._compassIcon);
+        this._miniCompassContainer.appendChild(this._compassIcon);
     }
 
     _initTextLayer() {
@@ -39,7 +21,7 @@ class WT_MapViewMiniCompassLayer extends WT_MapViewLayer {
         text.classList.add(WT_MapViewMiniCompassLayer.TEXT_CLASS);
         text.style.zIndex = 2;
         text.innerHTML = "N";
-        this.miniCompassContainer.appendChild(text);
+        this._miniCompassContainer.appendChild(text);
     }
 
     /**
@@ -54,7 +36,7 @@ class WT_MapViewMiniCompassLayer extends WT_MapViewLayer {
      * @param {WT_MapViewState} state
      */
     onUpdate(state) {
-        this.compassIcon.style.transform = `rotate(${state.projection.rotation}deg)`;
+        this._compassIcon.style.transform = `rotate(${state.projection.rotation}deg)`;
     }
 }
 WT_MapViewMiniCompassLayer.CLASS_DEFAULT = "miniCompassLayer";

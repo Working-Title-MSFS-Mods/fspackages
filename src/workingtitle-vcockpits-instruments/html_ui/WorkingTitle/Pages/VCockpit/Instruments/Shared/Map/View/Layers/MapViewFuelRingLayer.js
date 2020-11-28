@@ -23,36 +23,18 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
     }
 
     /**
-     * @readonly
-     * @property {WT_MapViewLabeledRing} outerRing - this layer's outer ring.
-     * @type {WT_MapViewLabeledRing}
-     */
-    get outerRing() {
-        return this._outerRing;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_MapViewLabeledRing} innerRing - this layer's inner ring.
-     * @type {WT_MapViewLabeledRing}
-     */
-    get innerRing() {
-        return this._innerRing;
-    }
-
-    /**
      * Updates the styling of this layer's rings.
      * @param {Number} dpiScale - the current dpi scale of the map view.
      */
     _updateStyles(dpiScale) {
-        this.outerRing.ring.setOptions({
+        this._outerRing.ring.setOptions({
             strokeWidth: this.outerRingStrokeWidth * dpiScale,
             strokeColor: this.outerRingStrokeColor,
             outlineWidth: this.outerRingOutlineWidth * dpiScale,
             outlineColor: this.outerRingOutlineColor
         });
 
-        this.innerRing.ring.setOptions({
+        this._innerRing.ring.setOptions({
             strokeWidth: this.innerRingStrokeWidth * dpiScale,
             strokeColor: this.innerRingStrokeColor,
             strokeDash: this.innerRingStrokeDash.map(e => e * dpiScale),
@@ -129,23 +111,23 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
         let hoursRemainingReserve = Math.max(0, hoursRemainingTotal - state.model.fuelRing.reserveTime.asUnit(WT_Unit.HOUR));
         let gs = state.model.airplane.groundSpeed.number; // knots
         if (hoursRemainingReserve > 0) {
-            this.outerRing.ring.strokeColor = this.outerRingStrokeColor;
-            this.innerRing.ring.show = true;
-            this.innerRing.label.show = true;
+            this._outerRing.ring.strokeColor = this.outerRingStrokeColor;
+            this._innerRing.ring.show = true;
+            this._innerRing.label.show = true;
         } else {
-            this.outerRing.ring.strokeColor = this.outerRingStrokeColorReserve;
-            this.innerRing.ring.show = false;
-            this.innerRing.label.show = false;
+            this._outerRing.ring.strokeColor = this.outerRingStrokeColorReserve;
+            this._innerRing.ring.show = false;
+            this._innerRing.label.show = false;
         }
 
         let resolution = state.projection.viewResolution.number; //nautical miles per pixel
 
         let center = state.viewPlane;
-        this.outerRing.center = center;
-        this.outerRing.radius = gs * hoursRemainingTotal / resolution;
-        this.innerRing.center = center;
-        this.innerRing.radius = gs * hoursRemainingReserve / resolution;
-        this.innerRing.label.time = new WT_NumberUnit(hoursRemainingReserve, WT_Unit.HOUR);
+        this._outerRing.center = center;
+        this._outerRing.radius = gs * hoursRemainingTotal / resolution;
+        this._innerRing.center = center;
+        this._innerRing.radius = gs * hoursRemainingReserve / resolution;
+        this._innerRing.label.time = new WT_NumberUnit(hoursRemainingReserve, WT_Unit.HOUR);
 
         super.onUpdate(state);
     }

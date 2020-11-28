@@ -15,28 +15,10 @@ class WT_MapViewOrientationDisplayLayer extends WT_MapViewLayer {
     }
 
     /**
-     * @readonly
-     * @property {HTMLDivElement} displayBox - the orientation display box element.
-     * @type {HTMLDivElement}
-     */
-    get displayBox() {
-        return this._displayBox;
-    }
-
-    /**
-     * @readonly
-     * @property {String[]} displayTexts - the text to display for each orientation mode.
-     * @type {String[]}
-     */
-    get displayTexts() {
-        return this._displayTexts;
-    }
-
-    /**
      * @param {WT_MapViewState} state
      */
     onUpdate(state) {
-        this.displayBox.innerHTML = this.displayTexts[state.model.orientation.mode];
+        this._displayBox.innerHTML = this._displayTexts[state.model.orientation.mode];
     }
 }
 WT_MapViewOrientationDisplayLayer.CLASS_DEFAULT = "orientationDisplayLayer";
