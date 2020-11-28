@@ -451,7 +451,7 @@ class WT_MapViewBorderLabel extends WT_MapViewSimpleTextLabel {
         this._featureClass = featureClass;
         this._geoPosition = WT_MapProjection.latLongProjectionToGame(featureInfo.geoCentroid);
 
-        this.anchor = {x: 0.5, y: 0.5};
+        this._anchor.set(0.5, 0.5);
     }
 
     get feature() {
@@ -462,14 +462,10 @@ class WT_MapViewBorderLabel extends WT_MapViewSimpleTextLabel {
         return this._featureClass;
     }
 
-    get geoPosition() {
-        return this._geoPosition;
-    }
+    update(state) {
+        state.projection.projectLatLong(this._geoPosition, this._position);
 
-    update(data) {
-        this.position = data.projection.projectLatLong(this.geoPosition);
-
-        super.update(data);
+        super.update(state);
     }
 
     static createFromFeature(featureInfo) {

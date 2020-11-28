@@ -72,59 +72,36 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
         return this._text;
     }
 
-    get position() {
-        return this._position.copy();
-    }
-
-    set position(position) {
-        this._position.set(position);
-    }
-
-    get anchor() {
-        return this._anchor.copy();
-    }
-
-    set anchor(anchor) {
-        this._anchor.set(anchor);
-    }
-
-    draw(data, context) {
-        let text = this.text;
-        let position = this.position;
-        let anchor = this.anchor;
-
-        context.font = `${this.fontSize * data.dpiScale}px ${this.font}`;
-        let width = context.measureText(text).width;
+    draw(state, context) {
+        context.font = `${this.fontSize * state.dpiScale}px ${this.font}`;
+        let width = context.measureText(this.text).width;
         let height = this.fontSize;
 
-        let left = position.x - anchor.x * width;
-        let bottom = position.y + (1 - anchor.x) * height;
+        let left = this._position.x - this._anchor.x * width;
+        let bottom = this._position.y + (1 - this._anchor.x) * height;
 
         if (this.outlineWidth > 0) {
-            context.lineWidth = this.outlineWidth * 2 * data.dpiScale;
+            context.lineWidth = this.outlineWidth * 2 * state.dpiScale;
             context.strokeStyle = this.outlineColor;
-            context.strokeText(text, left, bottom);
+            context.strokeText(this.text, left, bottom);
         }
         context.fillStyle = this.fontColor;
-        context.fillText(text, left, bottom);
+        context.fillText(this.text, left, bottom);
     }
 
-    _updateBounds(data) {
-        let text = this.text;
-        let position = this.position;
-        let anchor = this.anchor;
-        let width = 0.6 * this.fontSize * text.length;
+    _updateBounds(state) {
+        let width = 0.6 * this.fontSize * this.text.length;
         let height = this.fontSize;
 
-        let left = position.x - anchor.x * width;
+        let left = this._position.x - this._anchor.x * width;
         let right = left + width;
-        let top = position.y - anchor.y * height;
+        let top = this._position.y - this._anchor.y * height;
         let bottom = top + height;
         this._bounds = {left: left, right: right, top: top, bottom: bottom};
     }
 
-    update(data) {
-        this._updateBounds(data);
+    update(state) {
+        this._updateBounds(state);
     }
 }
 WT_MapViewSimpleTextLabel.OPTIONS_DEF = {
