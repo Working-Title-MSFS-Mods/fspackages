@@ -216,7 +216,7 @@ class WT_MapViewTextLabelManager {
                     toCompare.collisions.add(managedLabelToAdd);
                     managedLabelToAdd.collisions.add(toCompare);
                     if (toCompare.show) {
-                        show = show && managedLabelToAdd.label.priority < toCompare.label.priority;
+                        show = show && managedLabelToAdd.label.priority > toCompare.label.priority;
                     }
                 }
             }
@@ -261,7 +261,7 @@ class WT_MapViewTextLabelManager {
                 queries++;
                 let showTextConflicted = true;
                 for (let conflictedOfConflicted of conflicted.collisions) {
-                    if (conflictedOfConflicted.show && conflictedOfConflicted.priority <= conflicted.priority) {
+                    if (conflictedOfConflicted.show && conflictedOfConflicted.priority >= conflicted.priority) {
                         showTextConflicted = false;
                         break;
                     }
@@ -340,7 +340,7 @@ class WT_MapViewTextLabelManager {
 
         this._lastPerformanceMode = this._isInPerformanceMode();
 
-        this._collisionUpdateBuffer = Array.from(this._managedLabels.values()).sort((a, b) => a.label.priority - b.label.priority);
+        this._collisionUpdateBuffer = Array.from(this._managedLabels.values()).sort((a, b) => b.label.priority - a.label.priority);
         this._collisionUpdateHead = 0;
         for (let managedLabel of this._collisionUpdateBuffer) {
             managedLabel.label.update(data);
