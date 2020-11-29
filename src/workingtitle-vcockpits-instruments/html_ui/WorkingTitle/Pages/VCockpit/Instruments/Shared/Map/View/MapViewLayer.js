@@ -117,13 +117,12 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
         return container;
     }
 
-    _updateSubLayerSize(subLayer) {
-        subLayer.width = this._lastWidth;
-        subLayer.height = this._lastHeight;
-    }
-
     get subLayers() {
         return this._subLayers;
+    }
+
+    _updateSubLayerSize(subLayer) {
+        subLayer.updateSize(this._lastWidth, this._lastHeight);
     }
 
     /**
@@ -138,8 +137,8 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
             parentHTMLElement = this.htmlElement;
         }
 
-        this._subLayers.push(subLayer);
-        subLayer.container.style.zIndex = this._subLayers.length;
+        this.subLayers.push(subLayer);
+        subLayer.container.style.zIndex = this.subLayers.length;
         subLayer.parentHTMLElement = parentHTMLElement;
         parentHTMLElement.appendChild(subLayer.container);
         if (subLayer.syncSizeToView) {
@@ -152,7 +151,7 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
      * @param {WT_MapViewSubLayer} subLayer - the sublayer to remove.
      */
     removeSubLayer(subLayer) {
-        let index = this._subLayers.indexOf(subLayer);
+        let index = this.subLayers.indexOf(subLayer);
         if (index >= 0) {
             if (subLayer.container.parentNode === subLayer.parentHTMLElement) {
                 subLayer.parentHTMLElement.removeChild(subLayer.container);
@@ -217,6 +216,16 @@ class WT_MapViewSubLayer {
     get container() {
         return this._container;
     }
+
+    /**
+     * Updates the size of this sublayer.
+     * @param {Number} width - the new width of this sublayer, in pixels.
+     * @param {Number} height - the new height of this sublayer, in pixels.
+     */
+    updateSize(width, height) {
+        this.width = width;
+        this.height = height;
+    }
 }
 
 /**
@@ -236,9 +245,8 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
         }
 
         let canvasObject = this._createCanvas();
-        this._canvas = canvasObject.canvas;
-        this._context = canvasObject.context;
-        this._container.appendChild(this._canvas);
+        this._display = canvasObject;
+        this._container.appendChild(this._display.canvas);
     }
 
     _createBuffer() {
@@ -270,20 +278,11 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
 
     /**
      * @readonly
-     * @property {HTMLCanvasElement} canvas - this sublayer's canvas element.
-     * @type {HTMLCanvasElement}
+     * @property {{canvas:HTMLCanvasElement, context:CanvasRenderingContext2D}} display - an object containing this sublayer's display canvas and its rendering context.
+     * @type {{canvas:HTMLCanvasElement, context:CanvasRenderingContext2D}}
      */
-    get canvas() {
-        return this._canvas;
-    }
-
-    /**
-     * @readonly
-     * @property {CanvasRenderingContext2D} context - the rendering context for this sublayer's canvas element.
-     * @type {CanvasRenderingContext2D}
-     */
-    get context() {
-        return this._context;
+    get display() {
+        return this._display;
     }
 
     /**
@@ -300,12 +299,12 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
      * @type {Number}
      */
     get width() {
-        return this.canvas.width;
+        return this.display.canvas.width;
     }
 
     set width(width) {
-        this.canvas.width = width;
-        this.canvas.style.width = `${width}px`;
+        this.display.canvas.width = width;
+        this.display.canvas.style.width = `${width}px`;
         if (this.useBuffer) {
             this.buffer.canvas.width = width;
         }
@@ -316,12 +315,12 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
      * @type {Number}
      */
     get height() {
-        return this.canvas.height;
+        return this.display.canvas.height;
     }
 
     set height(height) {
-        this.canvas.height = height;
-        this.canvas.style.height = `${height}px`;
+        this.display.canvas.height = height;
+        this.display.canvas.style.height = `${height}px`;
         if (this.useBuffer) {
             this.buffer.canvas.height = height;
         }
@@ -347,7 +346,7 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
             width = this.width;
             height = this.height;
         }
-        this.context.drawImage(this.buffer.canvas, left, top, width, height, left, top, width, height);
+        this.display.context.drawImage(this.buffer.canvas, left, top, width, height, left, top, width, height);
         return {left: left, top: top, width: width, height: height};
     }
 }

@@ -444,14 +444,12 @@ class WT_MapProjection {
     /**
      * Syncs a projection renderer to this projection. The following parameters are synced:
      * * center
-     * * translation (defines the point in projected space to which the center of the projection is projected)
      * * scale
      * * post-projection rotation
      * @param {WT_MapProjectionRenderer} renderer - the renderer to sync.
      */
     syncRenderer(renderer) {
         renderer.projection.center(this._d3Projection.center());
-        renderer.projection.translate(this._d3Projection.translate());
         renderer.projection.scale(this._d3Projection.scale());
         renderer.projection.angle(this._d3Projection.angle());
     }

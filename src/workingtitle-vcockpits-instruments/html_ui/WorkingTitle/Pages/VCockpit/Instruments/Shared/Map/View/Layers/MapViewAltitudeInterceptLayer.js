@@ -48,9 +48,9 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
      * @param {String|CanvasGradient|CanvasPattern} strokeStyle - the style of the stroke.
      */
     _applyStrokeToCanvas(lineWidth, strokeStyle) {
-        this._arcLayer.context.lineWidth = lineWidth;
-        this._arcLayer.context.strokeStyle = strokeStyle;
-        this._arcLayer.context.stroke();
+        this._arcLayer.display.context.lineWidth = lineWidth;
+        this._arcLayer.display.context.strokeStyle = strokeStyle;
+        this._arcLayer.display.context.stroke();
     }
 
     /**
@@ -90,8 +90,8 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         let startAngle = facing - angularWidth / 2;
         let endAngle = facing + angularWidth / 2;
 
-        this._arcLayer.context.beginPath();
-        this._arcLayer.context.arc(center.x, center.y, radius, startAngle * Avionics.Utils.DEG2RAD - Math.PI / 2, endAngle * Avionics.Utils.DEG2RAD - Math.PI / 2);
+        this._arcLayer.display.context.beginPath();
+        this._arcLayer.display.context.arc(center.x, center.y, radius, startAngle * Avionics.Utils.DEG2RAD - Math.PI / 2, endAngle * Avionics.Utils.DEG2RAD - Math.PI / 2);
         if (this.outlineWidth > 0) {
             this._applyStrokeToCanvas((this.strokeWidth + 2 * this.outlineWidth) * state.dpiScale, this.outlineColor);
         }
@@ -132,7 +132,7 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
             return;
         }
 
-        this._arcLayer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
+        this._arcLayer.display.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
         let vSpeed = state.model.airplane.verticalSpeed;
         let currentAlt = state.model.airplane.altitudeIndicated;

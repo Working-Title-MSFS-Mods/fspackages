@@ -179,7 +179,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         let points = this._calculateDynamicVector(state);
 
         this._vectorLayer.buffer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
-        this._vectorLayer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
+        this._vectorLayer.display.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
         this._composeVectorPath(points);
         if (this.outlineWidth > 0) {
             this._applyStrokeToBuffer((this.outlineWidth * 2 + this.strokeWidth) * state.dpiScale, this.outlineColor);
@@ -220,7 +220,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         let geoJSON = this._buildGeoJSON(points);
 
         this._vectorLayer.buffer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
-        this._vectorLayer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
+        this._vectorLayer.display.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
         this._vectorLayer.buffer.context.beginPath();
         state.projection.renderer.renderCanvas(geoJSON, this._vectorLayer.buffer.context);

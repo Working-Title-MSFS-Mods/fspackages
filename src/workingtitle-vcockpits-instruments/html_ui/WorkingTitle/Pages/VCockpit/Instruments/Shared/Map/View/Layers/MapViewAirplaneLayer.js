@@ -11,16 +11,16 @@ class WT_MapViewAirplaneLayer extends WT_MapViewMultiLayer {
     }
 
     _resizeCanvas() {
-        this._airplaneIcon.canvas.width = this.iconSizePx;
-        this._airplaneIcon.canvas.height = this.iconSizePx;
-        this._airplaneIcon.canvas.style.left = `${-this.iconSizePx / 2}px`;
-        this._airplaneIcon.canvas.style.top = `${-this.iconSizePx / 2}px`;
-        this._airplaneIcon.canvas.style.width = `${this.iconSizePx}px`;
-        this._airplaneIcon.canvas.style.height = `${this.iconSizePx}px`;
+        this._airplaneIcon.display.canvas.width = this.iconSizePx;
+        this._airplaneIcon.display.canvas.height = this.iconSizePx;
+        this._airplaneIcon.display.canvas.style.left = `${-this.iconSizePx / 2}px`;
+        this._airplaneIcon.display.canvas.style.top = `${-this.iconSizePx / 2}px`;
+        this._airplaneIcon.display.canvas.style.width = `${this.iconSizePx}px`;
+        this._airplaneIcon.display.canvas.style.height = `${this.iconSizePx}px`;
     }
 
     _redrawIcon() {
-        this._airplaneIcon.context.drawImage(this._iconImage, 0, 0, this.iconSizePx, this.iconSizePx);
+        this._airplaneIcon.display.context.drawImage(this._iconImage, 0, 0, this.iconSizePx, this.iconSizePx);
     }
 
     _drawIconToCanvas() {
@@ -64,7 +64,7 @@ class WT_MapViewAirplaneLayer extends WT_MapViewMultiLayer {
             return;
         }
         let iconRotation = state.model.airplane.headingTrue + state.projection.rotation;
-        this._airplaneIcon.canvas.style.transform = `translate(${state.viewPlane.x}px, ${state.viewPlane.y}px) rotate(${iconRotation}deg)`;
+        this._airplaneIcon.display.canvas.style.transform = `translate(${state.viewPlane.x}px, ${state.viewPlane.y}px) rotate(${iconRotation}deg)`;
     }
 }
 WT_MapViewAirplaneLayer.CLASS_DEFAULT = "airplaneLayer";
