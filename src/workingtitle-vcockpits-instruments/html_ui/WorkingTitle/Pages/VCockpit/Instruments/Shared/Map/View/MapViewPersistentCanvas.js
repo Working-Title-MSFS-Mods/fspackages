@@ -118,8 +118,8 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     /**
      * @readonly
      * @property {Boolean} isBufferInvalid - whether the buffer is invalid. The buffer is invalid if the current map projection range has
-     *                                       changed since the last time the buffer was synchronized to the map view projection or if the
-     *                                       offset of the buffer in either the x- or y- axes is greater than the margin.
+     *                                       changed since the last time the buffer was reset or if the offset of the buffer in either the
+     *                                       x- or y- axes is greater than the margin.
      * @type {Boolean}
      */
     get isBufferInvalid() {
@@ -187,12 +187,14 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     /**
      * @param {WT_MapViewState} state
      */
-    syncBufferToMapProjection(state) {
+    resetBuffer(state) {
+        this._isBufferInvalid = false;
         this._updateReference(state, this._bufferReference);
         state.projection.syncRenderer(this.buffer.projectionRenderer);
     }
 
-    redraw(state, fromBuffer = true) {
+    redrawDisplay(state, fromBuffer = true) {
+        this._isDisplayInvalid = false;
         if (fromBuffer) {
             this.copyBufferToCanvas();
             this._syncDisplayFromBuffer();
@@ -206,10 +208,12 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     }
 
     invalidateDisplay() {
+        this._isDisplayInvalid = true;
         this.display.context.clearRect(0, 0, this.width, this.height);
     }
 
     invalidateBuffer() {
+        this._isBufferInvalid = true;
         this.buffer.context.clearRect(0, 0, this.width, this.height);
     }
 
@@ -226,11 +230,15 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         let offsetXAbsBuffer = Math.abs(this.bufferTransform.offset.x);
         let offsetYAbsBuffer = Math.abs(this.bufferTransform.offset.y);
 
-        this._isDisplayInvalid = !this._displayReference.range.equals(range) ||
-                                 (offsetXAbsDisplay > this._displayTransform.margin || offsetYAbsDisplay > this._displayTransform.margin);
+        if (!this._isDisplayInvalid) {
+            this._isDisplayInvalid = !this._displayReference.range.equals(range) ||
+                                    (offsetXAbsDisplay > this._displayTransform.margin || offsetYAbsDisplay > this._displayTransform.margin);
+        }
 
-        this._isBufferInvalid = !this._bufferReference.range.equals(range) ||
-                                (offsetXAbsBuffer > this._bufferTransform.margin || offsetYAbsBuffer > this._bufferTransform.margin);
+        if (!this._isBufferInvalid) {
+            this._isBufferInvalid = !this._bufferReference.range.equals(range) ||
+                                    (offsetXAbsBuffer > this._bufferTransform.margin || offsetYAbsBuffer > this._bufferTransform.margin);
+        }
 
         if (!this.isDisplayInvalid) {
             this._transformDisplay();
