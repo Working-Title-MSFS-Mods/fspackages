@@ -348,11 +348,17 @@ class CJ4_FMC_LegsPage {
             if (this._currentPage > 1) {
                 this._currentPage--;
                 this.update(true);
+            } else {
+                this._currentPage = this._pageCount;
+                this.update(true);
             }
         };
         this._fmc.onNextPage = () => {
             if (this._currentPage < this._pageCount) {
                 this._currentPage++;
+                this.update(true);
+            } else {
+                this._currentPage = 1;
                 this.update(true);
             }
         };
