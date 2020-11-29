@@ -162,7 +162,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     }
 
     _startDrawBorders(state) {
-        this._borderLayer.syncBufferToMapProjection(state);
+        this._borderLayer.resetBuffer(state);
 
         let lod = this._selectLOD(state.projection.viewResolution);
         this._renderQueue.clear();
@@ -193,7 +193,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._applyStrokeToBuffer(this.strokeWidth * state.dpiScale, this.strokeColor);
 
         this._borderLayer.display.context.clearRect(0, 0, this._borderLayer.width, this._borderLayer.height);
-        this._borderLayer.redraw(state);
+        this._borderLayer.redrawDisplay(state);
     }
 
     _updateDrawBorders(data) {
