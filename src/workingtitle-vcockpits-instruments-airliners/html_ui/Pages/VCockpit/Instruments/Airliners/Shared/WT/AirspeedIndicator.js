@@ -202,9 +202,10 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     line.SVGLine.setAttribute("fill", "#cccac8");
                     if (line.IsPrimary) {
                         line.SVGText1 = document.createElementNS(Avionics.SVG.NS, "text");
-                        line.SVGText1.setAttribute("x", (linePosX - 8).toString());
+                        line.SVGText1.setAttribute("x", (linePosX - 4).toString());
+                        line.SVGText1.setAttribute("y", "4");
                         line.SVGText1.setAttribute("fill", "white");
-                        line.SVGText1.setAttribute("font-size", (this.fontSize * 0.75).toString());
+                        line.SVGText1.setAttribute("font-size", (this.fontSize * 1.0).toString());
                         line.SVGText1.setAttribute("font-family", "Roboto-Light");
                         line.SVGText1.setAttribute("text-anchor", "end");
                         line.SVGText1.setAttribute("alignment-baseline", "central");
@@ -249,10 +250,10 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 this.cursorSVGShape.setAttribute("fill", "black");
                 this.cursorSVGShape.setAttribute("d", "M24 22 L62 22 L62 8 L86 8 L86 28 L105 39 L86 50 L86 71 L62 71 L62 56 L24 56 Z");
                 this.cursorSVGShape.setAttribute("stroke", "white");
-                this.cursorSVGShape.setAttribute("stroke-width", "0.85");
+                this.cursorSVGShape.setAttribute("stroke-width", "1.5");
                 this.cursorSVG.appendChild(this.cursorSVGShape);
                 var _cursorPosX = -2;
-                var _cursorPosY = cursorHeight * 0.5 + 7;
+                var _cursorPosY = cursorHeight * 0.5 + 10.5;
                 this.cursorIntegrals[0].construct(this.cursorSVG, _cursorPosX + 48, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.2, "green");
                 this.cursorIntegrals[1].construct(this.cursorSVG, _cursorPosX + 66, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.2, "green");
                 this.cursorDecimals.construct(this.cursorSVG, _cursorPosX + 86, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.2, "green");
@@ -2017,7 +2018,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             if (this.graduationVLine) {
                 var factor = 10 / this.graduationScroller.increment;
                 var offsetY = (Math.min((startVal - this.graduationMinValue), 0) / 10) * this.graduationSpacing * (this.nbSecondaryGraduations) * factor;
-                this.graduationVLine.setAttribute("y1", Math.ceil(startY + offsetY).toString());
+                this.graduationVLine.setAttribute("y1", (startY + offsetY - 81).toString());
                 this.graduationVLine.setAttribute("y2", Math.floor(currentY + offsetY).toString());
             }
         }
