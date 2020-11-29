@@ -16,7 +16,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         this.graduationScrollPosX = 0;
         this.graduationScrollPosY = 0;
         this.graduationSpacing = 30;
-        this.graduationMinValue = 30;
+        this.graduationMinValue = 40;
         this.nbPrimaryGraduations = 11;
         this.nbSecondaryGraduations = 1;
         this.totalGraduations = this.nbPrimaryGraduations + ((this.nbPrimaryGraduations - 1) * this.nbSecondaryGraduations);
@@ -1815,7 +1815,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateVSpeeds() {
         if (this.vSpeedSVG) {
-            if (Simplane.getIndicatedSpeed() < 30) {
+            if (Simplane.getIndicatedSpeed() < 40) {
                 this.vSpeedSVG.setAttribute("visibility", "visible");
                 this.v1Speed.textContent = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots").toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool")) {
@@ -2018,7 +2018,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             if (this.graduationVLine) {
                 var factor = 10 / this.graduationScroller.increment;
                 var offsetY = (Math.min((startVal - this.graduationMinValue), 0) / 10) * this.graduationSpacing * (this.nbSecondaryGraduations) * factor;
-                this.graduationVLine.setAttribute("y1", (startY + offsetY - 81).toString());
+                this.graduationVLine.setAttribute("y1", (startY + offsetY - 109).toString());
                 this.graduationVLine.setAttribute("y2", Math.floor(currentY + offsetY).toString());
             }
         }
@@ -2212,6 +2212,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                         if (pointerPosY > 0) {
                             if (this.targetSpeedPointerSVG) {
                                 this.targetSpeedPointerSVG.setAttribute("visibility", "visible");
+                                this.speedBackground.setAttribute("visibility", "visible"); 
                                 this.targetSpeedPointerSVG.setAttribute("y", (pointerPosY - this.targetSpeedPointerHeight * 0.5).toString());
                             }
                             hidePointer = false;
@@ -2221,6 +2222,8 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     }
                     else {
                         this.targetSpeedSVG.textContent = "";
+                        this.speedBackground.setAttribute("visibility", "hidden"); 
+                        this.targetSpeedPointerSVG.setAttribute("visibility", "hidden");
                     }
                 }
                 else {
@@ -2243,6 +2246,18 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         if (this.hudAPSpeed != hudSpeed) {
             this.hudAPSpeed = Math.round(hudSpeed);
             SimVar.SetSimVarValue("L:HUD_AP_SELECTED_SPEED", "Number", this.hudAPSpeed);
+        }
+
+        let flcActive = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "number");
+        console.log("FLC Active: " + flcActive);
+        if (flcActive != 1) {
+            this.speedBackground.setAttribute("visibility", "hidden");  
+            this.targetSpeedIconSVG.setAttribute("visibility", "hidden");  
+            this.targetSpeedSVG.setAttribute("visibility", "hidden");  
+            this.targetSpeedPointerSVG.setAttribute("visibility", "hidden");  
+        } else { 
+            this.targetSpeedIconSVG.setAttribute("visibility", "visible");  
+            this.targetSpeedSVG.setAttribute("visibility", "visible");  
         }
     }
     updateNextFlapSpeedIndicator(currentAirspeed, nextFlapSpeed) {
