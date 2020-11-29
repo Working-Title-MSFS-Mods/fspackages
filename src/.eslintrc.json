@@ -14,7 +14,7 @@
         "no-unused-vars": [
             "error", {
                 "vars": "all",
-                "varsIgnorePattern": "^CJ4_|^WT|Loader$|^Jet_"
+                "varsIgnorePattern": "^CJ4|^WT|Loader$|^Jet_"
             }
         ],
         "semi": [2, "always"]
