@@ -356,7 +356,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         if (data.model.borders.showStateBorders) {
             toShow = toShow.concat(this._admin1Polygons.filter(this._cullLabelsToShow.bind(this, data, tempArrays, tempVector)));
         }
-        this._updateLabelsToShow(toShow.map(featureInfo => this._labelCache.getLabel(featureInfo)));
+        this._updateLabelsToShow(toShow.map(featureInfo => this._labelCache.getLabel(featureInfo, this.countryLabelPriority, this.stateLabelPriority)));
     }
 
     onUpdate(data) {
@@ -419,6 +419,9 @@ WT_MapViewBorderLayer.OPTIONS_DEF = {
     outlineWidth: {default: 0, auto: true},
     outlineColor: {default: "black", auto: true},
 
+    countryLabelPriority: {default: 90, auto: true},
+    stateLabelPriority: {default: 70, auto: true},
+
     countryFontSize: {default: 25, auto: true},
     countryFontColor: {default: "white", auto: true},
     countryFontOutlineWidth: {default: 6, auto: true},
@@ -434,6 +437,8 @@ WT_MapViewBorderLayer.CONFIG_PROPERTIES = [
     "strokeColor",
     "outlineWidth",
     "outlineColor",
+    "countryLabelPriority",
+    "stateLabelPriority",
     "countryFontSize",
     "countryFontColor",
     "countryFontOutlineWidth",
@@ -468,19 +473,19 @@ class WT_MapViewBorderLabel extends WT_MapViewSimpleTextLabel {
         super.update(state);
     }
 
-    static createFromFeature(featureInfo) {
+    static createFromFeature(featureInfo, admin0Priority, admin1Priority) {
         let text = featureInfo.feature.properties.name;
+        let priority = 0;
         let featureClass;
-        let priority;
 
         switch (featureInfo.feature.properties.featurecla) {
             case WT_MapViewBorderLabel.Class.ADMIN0:
                 featureClass = WT_MapViewBorderLabel.Class.ADMIN0;
-                priority = 220 + featureInfo.feature.properties.labelrank;
+                priority = admin0Priority - featureInfo.feature.properties.labelrank;
                 break;
             case WT_MapViewBorderLabel.Class.ADMIN1:
                 featureClass = WT_MapViewBorderLabel.Class.ADMIN1;
-                priority = 200 + featureInfo.feature.properties.labelrank;
+                priority = admin1Priority - featureInfo.feature.properties.labelrank;
                 break;
         }
 
@@ -497,10 +502,10 @@ class WT_MapViewBorderLabelCache {
         this._cache = new Map();
     }
 
-    getLabel(featureInfo) {
+    getLabel(featureInfo, admin0Priority, admin1Priority) {
         let existing = this._cache.get(featureInfo);
         if (!existing) {
-            existing = WT_MapViewBorderLabel.createFromFeature(featureInfo);
+            existing = WT_MapViewBorderLabel.createFromFeature(featureInfo, admin0Priority, admin1Priority);
             this._cache.set(featureInfo, existing);
         }
         return existing;
