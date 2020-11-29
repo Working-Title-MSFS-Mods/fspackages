@@ -4,7 +4,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 
         this._labelManager = labelManager;
 
-        this._borderLayer = new WT_MapViewCanvas(true, false);
+        this._borderLayer = new WT_MapViewPersistentCanvas(WT_MapViewBorderLayer.OVERDRAW_FACTOR);
         this.addSubLayer(this._borderLayer);
 
         this._renderQueue = new WT_MapViewRenderQueue();
@@ -21,32 +21,10 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 
         this._loadBorderJSON(WT_MapViewBorderLayer.DATA_FILE_PATH);
 
-        this._display = {
-            viewCenter: new WT_GVector2(0, 0),
-            topLeft: new WT_GVector2(0, 0),
-            size: 1,
-            margin: 0
-        };
-
-        this._referenceDisplayed = {
-            range: new WT_NumberUnit(-1, WT_Unit.NMILE),
-            center: new LatLong(0, 0),
-            scale: 150,
-            rotation: 0,
-        };
-
-        this._referenceUpdated = {
-            range: new WT_NumberUnit(-1, WT_Unit.NMILE),
-            center: new LatLong(0, 0),
-            scale: 150,
-            rotation: 0
-        };
-
         this._optsManager = new WT_OptionsManager(this, WT_MapViewBorderLayer.OPTIONS_DEF);
 
         this._isReady = false;
         this._lastShowStateBorders = false;
-        this._viewSizeChanged = false;
         this._drawUnfinishedBorders = false;
     }
 
@@ -56,10 +34,6 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 
     get labelManager() {
         return this._labelManager;
-    }
-
-    get borderLayer() {
-        return this._borderLayer;
     }
 
     get projectionRenderer() {
@@ -137,42 +111,15 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         return data.model.borders.show;
     }
 
-    _updateCanvasSize(data) {
-        let long = Math.max(data.projection.viewWidth, data.projection.viewHeight);
-        let size = long * WT_MapViewBorderLayer.OVERDRAW_FACTOR;
-
-        let left = -(size - data.projection.viewWidth) / 2;
-        let top = -(size - data.projection.viewHeight) / 2;
-        this.projectionRenderer.projection.clipExtent([[left, top], [left + size, top + size]]);
-
-        this._display.viewCenter.set(data.projection.viewCenter);
-        this._display.topLeft.set(left, top);
-        this._display.size = size;
-        this._display.margin = long * (WT_MapViewBorderLayer.OVERDRAW_FACTOR - 1.41421356237) / 2;
-
-        this.borderLayer.width = size;
-        this.borderLayer.height = size;
-        this.borderLayer.canvas.style.left = `${left}px`;
-        this.borderLayer.canvas.style.top = `${top}px`;
-        this.borderLayer.canvas.style.width = `${size}px`;
-        this.borderLayer.canvas.style.height = `${size}px`;
-    }
-
     onConfigLoaded(data) {
         for (let property of WT_MapViewBorderLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
     }
 
-    onViewSizeChanged(data) {
-        super.onViewSizeChanged(data);
-        this._updateCanvasSize(data);
-        this._viewSizeChanged = true;
-    }
-
-    onAttached(data) {
-        this._projectionRenderer = data.projection.createCustomRenderer();
-        super.onAttached(data);
+    onAttached(state) {
+        super.onAttached(state);
+        this._borderLayer.initProjectionRenderers(state.projection);
     }
 
     _cullFeatureByBounds(renderer, bounds, temp, featureInfo) {
@@ -189,24 +136,6 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
                bottom >= bounds[0].y;
     }
 
-    _clearCanvas() {
-        this.borderLayer.context.clearRect(0, 0, this.borderLayer.width, this.borderLayer.height);
-    }
-
-    _calculateTransform(data, reference) {
-        let scale = data.projection.scale / reference.scale;
-        let rotation = data.projection.rotation - reference.rotation;
-        let centerOffset = data.projection.projectLatLong(reference.center).subtract(data.projection.viewCenter, true);
-        let margin = this._display.margin * scale;
-        return {scale: scale, rotation: rotation, centerOffset: centerOffset, margin: margin};
-    }
-
-    _updateTransform(data) {
-        let transform = this._calculateTransform(data, this._referenceDisplayed);
-        transform.centerOffset.scale(1 / transform.scale, true);
-        this.borderLayer.canvas.style.transform = `scale(${transform.scale}) translate(${transform.centerOffset.x}px, ${transform.centerOffset.y}px) rotate(${transform.rotation}deg)`;
-    }
-
     _selectLOD(viewResolution) {
         for (let i = WT_MapViewBorderLayer.LOD_RESOLUTION_THRESHOLDS.length - 1; i >= 0; i--) {
             if (viewResolution.compare(WT_MapViewBorderLayer.LOD_RESOLUTION_THRESHOLDS[i]) >= 0) {
@@ -217,10 +146,10 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     }
 
     _enqueueFeaturesToDraw(data, features, lod) {
-        let clipExtent = this.projectionRenderer.viewClipExtent;
+        let clipExtent = this._borderLayer.buffer.projectionRenderer.viewClipExtent;
         let temp = [[0, 0], [0, 0]];
-        for (let feature of features[lod].filter(this._cullFeatureByBounds.bind(this, this.projectionRenderer, clipExtent, temp))) {
-            this.projectionRenderer.renderCanvas(feature.feature, this._bufferedContext);
+        for (let feature of features[lod].filter(this._cullFeatureByBounds.bind(this, this._borderLayer.buffer.projectionRenderer, clipExtent, temp))) {
+            this._borderLayer.buffer.projectionRenderer.renderCanvas(feature.feature, this._bufferedContext);
         }
     }
 
@@ -228,45 +157,23 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         return renderTime < WT_MapViewBorderLayer.DRAW_TIME_BUDGET;
     }
 
-    _resolveDrawCall(current, data) {
-        this.borderLayer.buffer.context.resetTransform();
-        this.borderLayer.buffer.context.translate(-this._display.topLeft.x, -this._display.topLeft.y);
+    _resolveDrawCall(current, state) {
         current();
     }
 
-    _setReferenceUpdated(data) {
-        this._referenceUpdated.range = data.projection.range;
-        this._referenceUpdated.center = data.projection.center;
-        this._referenceUpdated.scale = data.projection.scale;
-        this._referenceUpdated.rotation = data.projection.rotation;
-    }
+    _startDrawBorders(state) {
+        this._borderLayer.syncBufferToMapProjection(state);
 
-    _copyReferenceUpdatedToDisplayed() {
-        this._referenceDisplayed.range = this._referenceUpdated.range;
-        this._referenceDisplayed.center = this._referenceUpdated.center;
-        this._referenceDisplayed.scale = this._referenceUpdated.scale;
-        this._referenceDisplayed.rotation = this._referenceUpdated.rotation;
-    }
-
-    _startDrawBorders(data) {
-        this._setReferenceUpdated(data);
-        data.projection.syncRenderer(this.projectionRenderer);
-
-        let lod = this._selectLOD(data.projection.viewResolution);
+        let lod = this._selectLOD(state.projection.viewResolution);
         this._renderQueue.clear();
-        this._enqueueFeaturesToDraw(data, this._admin0Borders, lod);
-        if (data.model.borders.showStateBorders) {
-            this._enqueueFeaturesToDraw(data, this._admin1Borders, lod);
+        this._enqueueFeaturesToDraw(state, this._admin0Borders, lod);
+        if (state.model.borders.showStateBorders) {
+            this._enqueueFeaturesToDraw(state, this._admin1Borders, lod);
         }
 
-        if (this._drawUnfinishedBorders) {
-            this._copyReferenceUpdatedToDisplayed();
-        }
-
-        this.borderLayer.buffer.context.resetTransform();
-        this.borderLayer.buffer.context.clearRect(0, 0, this.borderLayer.width, this.borderLayer.height);
-        this.borderLayer.buffer.context.beginPath();
-        this._renderQueue.start(this._renderer, data);
+        this._borderLayer.buffer.context.clearRect(0, 0, this._borderLayer.width, this._borderLayer.height);
+        this._borderLayer.buffer.context.beginPath();
+        this._renderQueue.start(this._renderer, state);
     }
 
     _continueDrawBorders(data) {
@@ -274,37 +181,30 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     }
 
     _applyStrokeToBuffer(lineWidth, strokeColor) {
-        this.borderLayer.buffer.context.lineWidth = lineWidth;
-        this.borderLayer.buffer.context.strokeStyle = strokeColor;
-        this.borderLayer.buffer.context.stroke();
+        this._borderLayer.buffer.context.lineWidth = lineWidth;
+        this._borderLayer.buffer.context.strokeStyle = strokeColor;
+        this._borderLayer.buffer.context.stroke();
     }
 
-    _drawBordersToBuffer(data) {
+    _drawBordersToBuffer(state) {
         if (this.outlineWidth > 0) {
-            this._applyStrokeToBuffer((this.strokeWidth + 2 * this.outlineWidth) * data.dpiScale, this.outlineColor);
+            this._applyStrokeToBuffer((this.strokeWidth + 2 * this.outlineWidth) * state.dpiScale, this.outlineColor);
         }
-        this._applyStrokeToBuffer(this.strokeWidth * data.dpiScale, this.strokeColor);
+        this._applyStrokeToBuffer(this.strokeWidth * state.dpiScale, this.strokeColor);
 
-        this.borderLayer.buffer.context.resetTransform();
-        this.borderLayer.context.clearRect(0, 0, this.borderLayer.width, this.borderLayer.height);
-        this.borderLayer.copyBufferToCanvas();
+        this._borderLayer.display.context.clearRect(0, 0, this._borderLayer.width, this._borderLayer.height);
+        this._borderLayer.redraw(state);
     }
 
     _updateDrawBorders(data) {
         if (this._drawUnfinishedBorders) {
             this._drawBordersToBuffer(data);
-            this._updateTransform(data);
         }
     }
 
-    _finishDrawBorders(data) {
-        this._drawBordersToBuffer(data);
-
-        if (!this._drawUnfinishedBorders) {
-            this._copyReferenceUpdatedToDisplayed();
-        }
-        this._updateTransform(data);
-        this._updateLabels(data);
+    _finishDrawBorders(state) {
+        this._drawBordersToBuffer(state);
+        this._updateLabels(state);
         this._drawUnfinishedBorders = false;
     }
 
@@ -315,16 +215,16 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._labelsToShow.clear();
     }
 
-    _cullLabelsToShow(data, tempArrays, tempVector, featureInfo) {
-        if (!this._cullFeatureByBounds(this.projectionRenderer, this.projectionRenderer.viewClipExtent, tempArrays, featureInfo)) {
+    _cullLabelsToShow(state, tempArrays, tempVector, featureInfo) {
+        if (!this._cullFeatureByBounds(this._borderLayer.buffer.projectionRenderer, this._borderLayer.buffer.projectionRenderer.viewClipExtent, tempArrays, featureInfo)) {
             return false;
         }
 
-        let viewCentroid = WT_MapProjection.xyProjectionToView(data.projection.project(featureInfo.geoCentroid, tempArrays[0]), tempVector);
+        let viewCentroid = WT_MapProjection.xyProjectionToView(this._borderLayer.buffer.projectionRenderer.project(featureInfo.geoCentroid, tempArrays[0]), tempVector);
         let sec = 1 / Math.cos(featureInfo.geoCentroid[1] * Avionics.Utils.DEG2RAD);
-        let area = featureInfo.geoArea * data.projection.scale * data.projection.scale * sec * sec; // estimate based on mercator projection
-        let viewArea = data.projection.viewWidth * data.projection.viewHeight;
-        return this.projectionRenderer.isInView(viewCentroid, -0.05) &&
+        let area = featureInfo.geoArea * state.projection.scale * state.projection.scale * sec * sec; // estimate based on mercator projection
+        let viewArea = state.projection.viewWidth * state.projection.viewHeight;
+        return this._borderLayer.buffer.projectionRenderer.isInView(viewCentroid, -0.05) &&
                area < viewArea * WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MAX &&
                area > viewArea * WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MIN;
     }
@@ -359,36 +259,34 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._updateLabelsToShow(toShow.map(featureInfo => this._labelCache.getLabel(featureInfo, this.countryLabelPriority, this.stateLabelPriority)));
     }
 
-    onUpdate(data) {
+    onUpdate(state) {
         if (!this.isReady) {
             return;
         }
 
-        let transform = this._calculateTransform(data, this._referenceUpdated);
-        let centerOffsetXAbs = Math.abs(transform.centerOffset.x);
-        let centerOffsetYAbs = Math.abs(transform.centerOffset.y);
+        this._borderLayer.update(state);
+        let transform = this._borderLayer.displayTransform;
+        let offsetXAbs = Math.abs(transform.offset.x);
+        let offsetYAbs = Math.abs(transform.offset.y);
 
-        let isImageInvalid = !this._referenceUpdated.range.equals(data.projection.range) ||
-                             (!data.model.borders.showStateBorders && this._lastShowStateBorders) ||
-                             (centerOffsetXAbs > transform.margin || centerOffsetYAbs > transform.margin);
+        let isImageInvalid = this._borderLayer.isBufferInvalid ||
+                             (!state.model.borders.showStateBorders && this._lastShowStateBorders);
 
         let shouldRedraw = isImageInvalid ||
-                           (data.model.borders.showStateBorders != this._lastShowStateBorders) ||
-                           (centerOffsetXAbs > transform.margin * 0.75 || centerOffsetYAbs > transform.margin * 0.75);
+                           (state.model.borders.showStateBorders != this._lastShowStateBorders) ||
+                           (offsetXAbs > transform.margin * 0.9 || offsetYAbs > transform.margin * 0.9);
 
-        this._lastShowStateBorders = data.model.borders.showStateBorders;
+        this._lastShowStateBorders = state.model.borders.showStateBorders;
 
         if (isImageInvalid) {
-            this._clearCanvas();
+            this._borderLayer.invalidateDisplay();
             this._clearLabels();
             this._drawUnfinishedBorders = true;
-        } else {
-            this._updateTransform(data);
         }
         if (shouldRedraw) {
-            this._startDrawBorders(data);
+            this._startDrawBorders(state);
         } else if (this._renderQueue.isBusy) {
-            this._continueDrawBorders(data);
+            this._continueDrawBorders(state);
         }
     }
 }
