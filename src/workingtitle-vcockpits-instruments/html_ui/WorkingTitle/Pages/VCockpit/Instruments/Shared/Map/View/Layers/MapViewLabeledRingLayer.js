@@ -106,7 +106,7 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
         for (let i = 0; i < this.rings.length; i++) {
             let entry = this.rings[i];
             entry.ring.onUpdate(state);
-            entry.ring.updateRing(state, entry.canvas.context, entry.canvas.width, entry.canvas.height);
+            entry.ring.updateRing(state, entry.canvas.display.context, entry.canvas.width, entry.canvas.height);
             entry.ring.updateLabel(state);
         }
     }

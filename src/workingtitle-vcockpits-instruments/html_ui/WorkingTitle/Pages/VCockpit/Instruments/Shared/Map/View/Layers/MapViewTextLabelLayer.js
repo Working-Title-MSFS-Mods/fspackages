@@ -21,7 +21,7 @@ class WT_MapViewTextLabelLayer extends WT_MapViewMultiLayer {
         for (let label of labels) {
             label.draw(data, this.textLayer.buffer.context);
         }
-        this.textLayer.context.clearRect(0, 0, this.textLayer.width, this.textLayer.height);
+        this.textLayer.display.context.clearRect(0, 0, this.textLayer.width, this.textLayer.height);
         this.textLayer.copyBufferToCanvas();
     }
 
