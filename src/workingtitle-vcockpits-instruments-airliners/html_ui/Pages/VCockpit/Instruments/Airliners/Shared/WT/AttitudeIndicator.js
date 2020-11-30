@@ -1248,6 +1248,14 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
             pitchSvg.setAttribute("viewBox", "-200 -200 400 300");
             pitchSvg.setAttribute("overflow", "visible");
             pitchSvg.setAttribute("style", "position:absolute; z-index: -2;");
+            let pitchSvgDefs = document.createElementNS(Avionics.SVG.NS, "defs");
+            let pitchSvgClip = document.createElementNS(Avionics.SVG.NS, "clipPath");
+            pitchSvgClip.setAttribute("id", "pitchClip");
+            let pitchSvgClipShape = document.createElementNS(Avionics.SVG.NS, "circle");
+            pitchSvgClipShape.setAttribute("r", "165");
+            pitchSvgClip.appendChild(pitchSvgClipShape);
+            pitchSvgDefs.appendChild(pitchSvgClip);
+            pitchSvg.appendChild(pitchSvgDefs);
             pitchContainer.appendChild(pitchSvg);
             {
                 this.pitch_root = document.createElementNS(Avionics.SVG.NS, "g");
@@ -1264,9 +1272,12 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 attitudePitchContainer.setAttribute("viewBox", x + " " + y + " " + w + " " + h);
                 attitudePitchContainer.setAttribute("overflow", "hidden");
                 this.pitch_root.appendChild(attitudePitchContainer);
+                let attitudePitchInnerContainer = document.createElementNS(Avionics.SVG.NS, "g");
+                attitudePitchInnerContainer.setAttribute("clip-path", "url(#pitchClip)");
+                attitudePitchContainer.appendChild(attitudePitchInnerContainer);
                 {
                     this.attitude_pitch.push(document.createElementNS(Avionics.SVG.NS, "g"));
-                    attitudePitchContainer.appendChild(this.attitude_pitch[0]);
+                    attitudePitchInnerContainer.appendChild(this.attitude_pitch[0]);
                     let maxDash = 80;
                     let fullPrecisionLowerLimit = -20;
                     let fullPrecisionUpperLimit = 20;
@@ -1280,7 +1291,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                     let mediumHeight = 3;
                     let smallWidth = 10;
                     let smallHeight = 2;
-                    let fontSize = 20;
+                    let fontSize = 25;
                     let angle = -maxDash;
                     let nextAngle;
                     let width;
@@ -1329,13 +1340,12 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                             rect.setAttribute("height", 1);
                             this.attitude_pitch[0].appendChild(rect);
                             if (text) {
-                                
                                 let rightText = document.createElementNS(Avionics.SVG.NS, "text");
                                 rightText.textContent = Math.abs(angle).toString();
                                 rightText.setAttribute("x", ((width / 2) + 5).toString());
-                                rightText.setAttribute("y", (pitchFactor * angle - height / 2 + fontSize / 2).toString() - 2);
+                                rightText.setAttribute("y", (pitchFactor * angle - height / 2 + fontSize / 2).toString() - 4);
                                 rightText.setAttribute("text-anchor", "start");
-                                rightText.setAttribute("font-size", "20");
+                                rightText.setAttribute("font-size", fontSize.toString());
                                 rightText.setAttribute("font-family", "Roboto-Light");
                                 rightText.setAttribute("fill", "white");
                                 this.attitude_pitch[0].appendChild(rightText);
