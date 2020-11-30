@@ -23,6 +23,8 @@ class WT_VnavAutopilot {
         this._pathActive = false;
         this._pathActivate = false;
 
+        this._indicatedAltitude = undefined;
+
     }
 
     /**
@@ -39,9 +41,14 @@ class WT_VnavAutopilot {
         //*****START OF REVISED VNAV UPDATE METHOD*****
         if (this._pathActive === true && this._navModeSelector.currentVerticalActiveState === VerticalNavModeState.ALTC) {
             //ALT INTERCEPT HAS STARTED
-            this._interceptingLastAltitude = true;
+            SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 1);
+            // this._interceptingLastAltitude = true;
+            // if (this._interceptingLastAltitude === true && this._navModeSelector.currentVerticalActiveState === VerticalNavModeState.ALTV) {
+            //     this._interceptingLastAltitude = false;
+            // }
         }
         if (this._vnav._vnavCalculating) {
+            this._indicatedAltitude = SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet");
 
             //CONSTRAINT DATA
             if (this._vnav._vnavConstraintType) {
@@ -66,13 +73,12 @@ class WT_VnavAutopilot {
 
                 //CAN PATH ARM?
                 if (!this._pathActive) {
-                    const indicatedAltitude = SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet");
-                    if (this._vnav._altDeviation < 0 && this._vnav._distanceToTod < 20 && this._vnav._distanceToTod > 0 && this._navModeSelector.selectedAlt1 + 75 < indicatedAltitude) {
+                    if (this._vnav._altDeviation < 0 && this._vnav._distanceToTod < 20 && this._vnav._distanceToTod > 0 && this._navModeSelector.selectedAlt1 + 75 < this._indicatedAltitude) {
                         //CAN ARM INTERCEPT FROM BELOW
                         this._pathArm = true;
                         this._pathArmAbove = false;
                     }
-                    else if (this._vnav._altDeviation > 0 && this._vnav._topOfDescent > this._vnav._vnavTargetDistance && this._navModeSelector.selectedAlt1 + 75 < indicatedAltitude) {
+                    else if (this._vnav._altDeviation > 0 && this._vnav._topOfDescent > this._vnav._vnavTargetDistance && this._navModeSelector.selectedAlt1 + 75 < this._indicatedAltitude) {
                         //CAN ARM INTERCEPT FROM ABOVE
                         this._pathArmAbove = true;
                         this._pathArm = false;
@@ -96,7 +102,7 @@ class WT_VnavAutopilot {
                 }
                 else if (this._pathArmAbove && !this._pathActive) {
                     //WE NEED TO ATTEMPT TO INTERCEPT FROM ABOVE
-                    const altitudeDifference = indicatedAltitude - this._vnav._vnavTargetAltitude;
+                    const altitudeDifference = this._indicatedAltitude - this._vnav._vnavTargetAltitude;
                     const requiredFpa = (180 / Math.PI) * (Math.atan(altitudeDifference / (this._vnav._vnavTargetDistance * 6076.12)));
                     const groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
                     this._pathFromAboveRequiredVs = -101.2686667 * groundSpeed * Math.tan(requiredFpa * (Math.PI / 180));
@@ -360,8 +366,7 @@ class WT_VnavAutopilot {
             const constraintDistance = this._vnav._vnavConstraintWaypoint.cumulativeDistanceInFP;
             const currentDistance = this._vnav._activeWaypoint.cumulativeDistanceInFP - this._vnav._activeWaypointDist;
             const distanceToConstraint = constraintDistance - currentDistance;
-            const indicatedAltitude = SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet");
-            const altitudeDifference = indicatedAltitude - this._vnav._vnavConstraintAltitude;
+            const altitudeDifference = this._indicatedAltitude - this._vnav._vnavConstraintAltitude;
             const requiredFpa = (180 / Math.PI) * (Math.atan(altitudeDifference / (distanceToConstraint * 6076.12)));
             const groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
             const reqVs = -101.2686667 * groundSpeed * Math.tan(requiredFpa * (Math.PI / 180));
