@@ -719,6 +719,7 @@ class CJ4_APDisplay extends NavSystemElement {
         this.AP_LateralActive = this.gps.getChildById("AP_LateralActive");
         this.AP_LateralArmed = this.gps.getChildById("AP_LateralArmed");
         this.AP_Status = this.gps.getChildById("AP_Status");
+        this.AP_FDIndicatorArrow = this.gps.getChildById("AP_FDIndicatorArrow");
         this.AP_VerticalActive = this.gps.getChildById("AP_VerticalActive");
         this.AP_ModeReference = this.gps.getChildById("AP_ModeReference");
         this.AP_Armed = this.gps.getChildById("AP_Armed");
@@ -747,8 +748,10 @@ class CJ4_APDisplay extends NavSystemElement {
         }
         if (apMasterActive) {
             Avionics.Utils.diffAndSet(this.AP_YDStatus, "");
+            this.AP_FDIndicatorArrow.setAttribute("state", "Engaged");
         } else {
             Avionics.Utils.diffAndSet(this.AP_YDStatus, ydActive ? "YD" : "");
+            this.AP_FDIndicatorArrow.removeAttribute("state");
         }
 
         //SET OTHER VALUES OR BLANK IF AP/FD INACTIVE
