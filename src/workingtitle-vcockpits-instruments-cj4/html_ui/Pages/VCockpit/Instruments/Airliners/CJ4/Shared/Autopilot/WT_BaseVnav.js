@@ -92,12 +92,15 @@ class WT_BaseVnav {
                 this._flightPlanChanged = true;
             }
             
-            //HAS THE VNAV TARGET WAYTPOINT CHANGED?
-            let targetWaypointIndex = this.waypoints.indexOf(this._vnavTargetWaypoint) >= 0;
-            console.log("targetWaypointIndex: " + targetWaypointIndex);
-            if (targetWaypointIndex === false) {
-                this._vnavTargetChanged = true;
+            //HAS THE VNAV TARGET WAYPOINT CHANGED?
+            if (this._vnavTargetWaypoint) {
+                let targetWaypointIndex = this.waypoints.indexOf(this._vnavTargetWaypoint) >= 0;
+                console.log("targetWaypointIndex: " + targetWaypointIndex);
+                if (targetWaypointIndex === false) {
+                    this._vnavTargetChanged = true;
+                }
             }
+
             // this._vnavTargetWaypoint
             // if (this._vnavTargetWaypoint != this._lastVnavTargetWaypoint) {
             //     this._vnavTargetChanged = true;
@@ -145,7 +148,7 @@ class WT_BaseVnav {
             if (this._currentFlightSegment.type != SegmentType.Departure && (this._flightPlanChanged || this._vnavTargetChanged)) {
                 console.log("build profile started");
                 this.buildDescentProfile();
-                console.log("profile written: " + this._vnavTargetWaypoint.ident + " " + this._vnavTargetAltitude);
+                console.log(`profile written: ${this._vnavTargetWaypoint && this._vnavTargetWaypoint.ident} ${this._vnavTargetAltitude}`);
             }
 
             //TRACK ALTITUDE DEVIATION
@@ -281,6 +284,7 @@ class WT_BaseVnav {
         this._altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
         this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
         this._currentDistanceInFP = this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist;
+        this._topOfDescent = ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
         this._valuesUpdated = true;
     }
 
@@ -324,12 +328,8 @@ class WT_BaseVnav {
     }
 
     writeMonitorValues() {
-        const monitorValues = {
-            vnavTargetWaypointIdent: this._vnavTargetWaypoint && this._vnavTargetWaypoint.ident,
-        };
-
         if (this._vnavTargetWaypoint) {
-            WTDataStore.set('CJ4_vnavTargetWaypoint', monitorValues.vnavTargetWaypointIdent);
+            WTDataStore.set('CJ4_vnavTargetWaypoint', this._vnavTargetWaypoint.ident);
         }
     }
 }

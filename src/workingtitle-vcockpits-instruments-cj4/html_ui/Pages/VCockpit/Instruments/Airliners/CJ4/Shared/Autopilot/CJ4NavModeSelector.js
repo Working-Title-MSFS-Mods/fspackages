@@ -224,6 +224,13 @@ class CJ4NavModeSelector {
       case VerticalNavModeState.VS:
       case VerticalNavModeState.ALTC:
       case VerticalNavModeState.ALT:
+        if (Simplane.getAutoPilotMachModeActive()) {
+          const mach = Simplane.getMachSpeed();
+          Coherent.call("AP_MACH_VAR_SET", 0, parseFloat(mach.toFixed(2)));
+        } else {
+          const airspeed = Simplane.getIndicatedSpeed();
+          Coherent.call("AP_SPD_VAR_SET", 0, airspeed);
+        }
         SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE", "number", 1);
         this.currentVerticalActiveState = VerticalNavModeState.FLC;
         break;

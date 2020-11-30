@@ -10,7 +10,6 @@ class WT_VnavAutopilot {
         this._vnavTargetDistance = undefined;
         this._topOfDescent = undefined;
         this._distanceToTod = undefined;
-        this._altDeviation = 0;
         this._lastVnavTargetAltitude = undefined;
         this._interceptingLastAltitude = false;
         this._lastVerticalMode = undefined;
@@ -37,11 +36,11 @@ class WT_VnavAutopilot {
      * Update data if needed.
      */
     update() {
-        this._altDeviation = 0;
-        
-
-
         //*****START OF REVISED VNAV UPDATE METHOD*****
+        if (this._pathActive === true && this._navModeSelector.currentVerticalActiveState === VerticalNavModeState.ALTC) {
+            //ALT INTERCEPT HAS STARTED
+            this._interceptingLastAltitude = true;
+        }
         if (this._vnav._vnavCalculating) {
 
             //CONSTRAINT DATA
@@ -121,6 +120,7 @@ class WT_VnavAutopilot {
                         return;
                     }
                     else {
+                        this._pathArmFired = false;
                         if (this._vnav._distanceToTod > 1) {
                             //WE HAVE PASSED THE TARGET, BUT DO NOT YET NEED TO SET A NEW ALT TARGET
                             this._pathActive = false;
@@ -293,13 +293,14 @@ class WT_VnavAutopilot {
         this._pathArmAbove = false;
         this._pathActive = false;
         this._pathActivate = false;
-        SimVar.SetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean", 0);
-        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-        if (!SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean")) {
-            SimVar.SetSimVarValue("K:AP_ALT_HOLD", "number", 1);
-        }
+        this._pathArmFired = false;
+        // SimVar.SetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean", 0);
+        // SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+        // if (!SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean")) {
+        //     SimVar.SetSimVarValue("K:AP_ALT_HOLD", "number", 1);
+        // }
         SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
-        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+        // SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
         WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'false');
         SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_DONUT", "number", 0);
@@ -311,14 +312,15 @@ class WT_VnavAutopilot {
         this._pathArm = false;
         this._pathActive = false;
         this._pathActivate = false;
-        SimVar.SetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean", 0);
-        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+        this._pathArmFired = false;
+        // SimVar.SetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean", 0);
+        // SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
         Coherent.call("AP_ALT_VAR_SET_ENGLISH", 1, this._vnav._altitude, true);
-        if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
-            SimVar.SetSimVarValue("K:AP_ALT_HOLD", "number", 1);
-        }
+        // if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
+        //     SimVar.SetSimVarValue("K:AP_ALT_HOLD", "number", 1);
+        // }
         SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
-        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+        // SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
         WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'false');
         SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_DONUT", "number", 0);
