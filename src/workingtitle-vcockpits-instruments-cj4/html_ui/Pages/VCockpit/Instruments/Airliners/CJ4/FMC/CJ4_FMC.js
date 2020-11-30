@@ -57,6 +57,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._currentAP = undefined;
         this._vnav = undefined;
         this._lnav = undefined;
+        this._startInitialized = false;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -95,6 +96,15 @@ class CJ4_FMC extends FMCMainDisplay {
                     this._registered = true;
                 });
             });
+
+            RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
+
+            this.addEventListener("FlightStart", async function () {
+                if (!this._navModeSelector) {
+                    this._navModeSelector = new CJ4NavModeSelector();
+                }
+                this._startInitialized = true;
+            }.bind(this));
         }
     }
 
@@ -413,6 +423,8 @@ class CJ4_FMC extends FMCMainDisplay {
         let dt = now - this._lastUpdateAPTime;
         this._lastUpdateAPTime = now;
 
+        if(!this._startInitialized) return;
+
         if (isFinite(dt)) {
             this.updateAutopilotCooldown -= dt;
         }
@@ -446,10 +458,6 @@ class CJ4_FMC extends FMCMainDisplay {
                 this._lnav.update();
             }
 
-            if (!this._navModeSelector) {
-                this._navModeSelector = new CJ4NavModeSelector();
-            }
-    
             this._navModeSelector.generateInputDataEvents();
             this._navModeSelector.processEvents();
 
