@@ -57,6 +57,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._currentAP = undefined;
         this._vnav = undefined;
         this._lnav = undefined;
+        this.afcsPage = new AFCSPage(this);
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -165,7 +166,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     this.refreshPageCallback();
                 }
             }
-            this.onMsg = () => { CJ4_FMC_VNavSetupPage.ShowPage6(this); };
+
             this._activatingDirectToExisting = false;
         };
 
@@ -203,6 +204,8 @@ class CJ4_FMC extends FMCMainDisplay {
 
         this._frameUpdates++;
         if (this._frameUpdates > 64000) this._frameUpdates = 0;
+
+        this.afcsPage.updateControllers(_deltaTime);
     }
     onInputAircraftSpecific(input) {
         console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
@@ -260,9 +263,7 @@ class CJ4_FMC extends FMCMainDisplay {
             return true;
         }
         if (input === "MSG") {
-            if (this.onMsg) {
-                this.onMsg();
-            }
+            this.afcsPage.render();
             return true;
         }
 
