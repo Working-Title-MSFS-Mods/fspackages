@@ -65,7 +65,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("attitudeModel", d => new Attitude_Indicator_Model(d.syntheticVision, d.nearestWaypoints));
         d.register("hsiInput", d => new HSI_Input_Layer(d.hsiModel))
         d.register("hsiModel", d => new HSIIndicatorModel(d.syntheticVision));
-        d.register("altimeterModel", d => new WT_Altimeter_Model(this, d.barometricPressure, d.minimums, d.radioAltimeter));
+        d.register("altimeterModel", d => new WT_Altimeter_Model(d.update$, this, d.barometricPressure, d.minimums, d.radioAltimeter, d.sound));
         d.register("airspeedModel", d => new WT_Airspeed_Model(d.airspeedReferences, d.unitChooser));
         d.register("airspeedReferences", d => new WT_Airspeed_References());
 
@@ -73,10 +73,10 @@ class AS1000_PFD extends BaseAS1000 {
 
         d.register("annunciationsModel", d => new WT_Annunciations_Model(d.planeConfig, d.sound, d.planeState));
         d.register("localTimeModel", d => new WT_Local_Time_Model(d.settings));
-        d.register("oatModel", d => new WT_OAT_Model(d.unitChooser));
+        d.register("oatModel", d => new WT_OAT_Model(d.unitChooser, d.thermometer));
         d.register("transponderModel", d => new WT_Transponder_Model(d.modSettings));
         d.register("referencesModel", d => new WT_Airspeed_References_Model(d.settings, d.airspeedReferences));
-        d.register("timerModel", d => new WT_PFD_Timer_Model());
+        d.register("timerModel", d => new WT_PFD_Timer_Model(d.clock));
         d.register("setupMenuModel", d => new WT_PFD_Setup_Menu_Model(d.brightnessSettings));
         d.register("nearestAirportsModel", d => new WT_Nearest_Airports_Model(this, d.showDirectToHandler, d.waypointRepository, d.unitChooser, null, d.nearestWaypoints));
         d.register("windModel", d => new WT_PFD_Wind_Model());
@@ -132,10 +132,8 @@ class AS1000_PFD extends BaseAS1000 {
         this.planeState = this.dependencies.planeState;
         this.electricityAvailable = this.dependencies.electricityAvailable;
         this.proceduresMenuView = this.dependencies.proceduresMenuView;
-        this.clock = this.dependencies.clock;
 
         this.updatables.push(this.miniPageController);
-        this.updatables.push(this.clock);
         this.miniPageController.handleInput(this.inputStack);
 
         this.addIndependentElementContainer(new Engine("Engine", "EngineDisplay"));

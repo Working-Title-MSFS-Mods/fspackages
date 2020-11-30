@@ -1,7 +1,6 @@
 Components/AlertKey.js
 Components/Altimeter.js
 Components/Annunciations.js
-Components/DataModels.js
 Components/InsetMap.js
 Components/LocalTime.js
 Components/Minimums.js

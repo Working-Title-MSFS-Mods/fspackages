@@ -30,11 +30,71 @@ class WT_Flight_Plan_Lines extends WT_HTML_View {
         this.onWaypointAltitudeChanged = new rxjs.Subject();
         this.onNewWaypointLineSelected = new rxjs.Subject();
 
+        this.activeLeg = new rxjs.BehaviorSubject(null);
+        this.lines = new rxjs.Subject(null);
+
+        this.lines.subscribe(lines => {
+            const lineElements = [];
+
+            let waypointLineIndex = 0;
+            let headerLineIndex = 0;
+            const waypointLines = [];
+            const headerLines = [];
+            const approachLines = [];
+            for (const line of lines) {
+                switch (line.type) {
+                    case "waypoint": {
+                        const element = this.waypointLines[waypointLineIndex++] || this.factory.createWaypointLine();
+                        element.line = line;
+                        waypointLines.push(element);
+                        if (line.waypointType == "approach") {
+                            approachLines.push(element);
+                        }
+                        lineElements.push(element);
+                        break;
+                    }
+                    case "header": {
+                        const element = this.headerLines[headerLineIndex++] || this.factory.createHeaderLine();
+                        element.line = line;
+                        headerLines.push(element);
+                        lineElements.push(element);
+                    }
+                }
+            }
+
+            this.approachLines = approachLines;
+            this.waypointLines = waypointLines;
+            this.headerLines = headerLines;
+
+            lineElements.unshift(this.elements.activeLegMarker);
+            lineElements.push(this.elements.newWaypointLine);
+            DOMUtilities.repopulateElement(this, lineElements);
+        });
+
+        rxjs.combineLatest(this.lines, this.activeLeg).subscribe(values => {
+            const lines = values[0];
+            const leg = values[1];
+
+            if (leg && lines) {
+                const beginIndex = this.waypointIndexToLineIndex(leg.origin, leg.originIsApproach);
+                const endIndex = this.waypointIndexToLineIndex(leg.destination, leg.destinationIsApproach);
+                if (beginIndex !== null && endIndex !== null) {
+                    this.elements.activeLegMarker.style.gridRowStart = beginIndex + 1;
+                    this.elements.activeLegMarker.style.gridRowEnd = endIndex + 2;
+                    this.elements.activeLegMarker.style.visibility = "visible";
+                } else {
+                    this.elements.activeLegMarker.style.visibility = "hidden";
+                }
+            } else {
+                this.elements.activeLegMarker.style.visibility = "hidden";
+            }
+        })
+
         DOMUtilities.AddScopedEventListener(this, "*", WT_Flight_Plan_Waypoint_Line.EVENT_ALTITUDE_CHANGED,
             e => this.onWaypointAltitudeChanged.next({
                 waypointIndex: e.detail.waypointIndex,
                 altitude: e.detail.altitude
-            });
+            })
         );
 
         DOMUtilities.AddScopedEventListener(this, ".ident", "selected",
@@ -78,57 +138,16 @@ class WT_Flight_Plan_Lines extends WT_HTML_View {
         this.factory = factory;
     }
     updateLines(lines) {
-        const lineElements = [];
-
-        let waypointLineIndex = 0;
-        let headerLineIndex = 0;
-        const waypointLines = [];
-        const headerLines = [];
-        for (const line of lines) {
-            switch (line.type) {
-                case "waypoint": {
-                    const element = this.waypointLines[waypointLineIndex++] || this.factory.createWaypointLine();
-                    element.line = line;
-                    waypointLines.push(element);
-                    lineElements.push(element);
-                    break;
-                }
-                case "header": {
-                    const element = this.headerLines[headerLineIndex++] || this.factory.createHeaderLine();
-                    element.line = line;
-                    headerLines.push(element);
-                    lineElements.push(element);
-                }
-            }
-        }
-
-        this.waypointLines = waypointLines;
-        this.headerLines = headerLines;
-
-        lineElements.unshift(this.elements.activeLegMarker);
-        lineElements.push(this.elements.newWaypointLine);
-        DOMUtilities.repopulateElement(this, lineElements);
+        this.lines.next(lines);
     }
     updateActiveLeg(leg) {
+        this.activeLeg.next(leg);
         console.log(JSON.stringify(leg));
-        if (leg) {
-            const beginIndex = this.waypointIndexToLineIndex(leg.origin + (leg.originIsApproach ? this.approachIndex : 0));
-            const endIndex = this.waypointIndexToLineIndex(leg.destination + (leg.destinationIsApproach ? this.approachIndex : 0));
-            if (beginIndex !== null && endIndex !== null) {
-                this.elements.activeLegMarker.style.gridRowStart = beginIndex + 1;
-                this.elements.activeLegMarker.style.gridRowEnd = endIndex + 2;
-                this.elements.activeLegMarker.style.visibility = "visible";
-            } else {
-                this.elements.activeLegMarker.style.visibility = "hidden";
-            }
-        } else {
-            this.elements.activeLegMarker.style.visibility = "hidden";
-        }
-        this.activeLeg = leg;
     }
-    waypointIndexToLineIndex(waypointIndex) {
-        if (this.waypointLines[waypointIndex]) {
-            return this.waypointLines[waypointIndex].lineIndex;
+    waypointIndexToLineIndex(waypointIndex, approach = false) {
+        const source = approach ? this.approachLines : this.waypointLines;
+        if (source[waypointIndex]) {
+            return source[waypointIndex].lineIndex;
         } else {
             return null;
         }

@@ -31,7 +31,6 @@ class WT_Set_Minimums_View extends WT_HTML_View {
             }
         });
         model.minimums.value.subscribe(altitude => {
-            console.log(altitude);
             this.elements.altitude.value = altitude;
         });
         model.minimums.modes.subscribe(modes => {

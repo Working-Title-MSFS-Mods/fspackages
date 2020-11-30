@@ -20,13 +20,15 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
      * @param {WT_Unit_Chooser} unitChooser 
      * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
      * @param {WT_Show_Procedure_Handler} showProcedureHandler 
+     * @param {WT_Plane_State} planeState 
      */
-    constructor(frequencyListModel, unitChooser, softKeyMenuHandler, showProcedureHandler) {
+    constructor(frequencyListModel, unitChooser, softKeyMenuHandler, showProcedureHandler, planeState) {
         super();
         this.frequencyListModel = frequencyListModel;
         this.unitChooser = unitChooser;
         this.softKeyMenuHandler = softKeyMenuHandler;
         this.showProcedureHandler = showProcedureHandler;
+        this.planeState = planeState;
 
         this.inputStackHandle = null;
 
@@ -46,7 +48,7 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
             this.menuButtons.APR.selected = menu == "APR";
         });
 
-        DOMUtilities
+        this.subscriptions = new Subscriptions();
     }
     initMenu() {
         let menu = new WT_Soft_Key_Menu(true);
@@ -110,7 +112,6 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
     setModel(model) {
         this.model = model;
         model.airports.subscribe(this.updateAirports.bind(this));
-        model.selectedAirport.subscribe(this.updateSelectedAirport.bind(this));
         this.map = this.model.mapInstrument;
 
         this.elements.waypointList.selectedIcao.subscribe(icao => {
@@ -138,17 +139,6 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
                 }
                 this.elements.approachList.innerHTML = elems.join("");
             }
-
-            let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
-            let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-            let planeCoordinates = new LatLong(lat, long);
-            this.map.centerOnCoordinate(planeCoordinates, [infos.coordinates], 50);
-            this.flightPlanElement.source.waypoints = [{
-                ident: "",
-                infos: {
-                    coordinates: new LatLongAlt(planeCoordinates.lat, planeCoordinates.long, 0)
-                }
-            }, airport];
         }
     }
     showApproach(element) {
@@ -175,6 +165,37 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
         this.map.flightPlanElements.push(this.flightPlanElement);
         this.map.showFlightPlan = false;
         this.model.subscribe();
+
+        this.subscriptions.add(
+            rxjs.combineLatest(
+                this.model.selectedAirport.observable,
+                this.planeState.coordinates
+            ).subscribe(([airport, coordinates]) => {
+                if (!airport)
+                    return;
+                this.flightPlanElement.source.waypoints = [{
+                    ident: "",
+                    infos: {
+                        coordinates: new LatLongAlt(coordinates.lat, coordinates.long, 0)
+                    }
+                }, airport];
+            })
+        );
+
+        this.subscriptions.add(
+            rxjs.combineLatest(
+                this.model.selectedAirport.observable,
+                this.planeState.getLowResCoordinates(5)
+            ).subscribe(([airport, coordinates]) => {
+                if (!airport)
+                    return;
+                this.map.centerOnCoordinate(coordinates, [airport.infos.coordinates], 50);
+            })
+        );
+
+        this.subscriptions.add(
+            this.model.selectedAirport.observable.subscribe(this.updateSelectedAirport.bind(this))
+        );
     }
     deactivate() {
         if (this.menuHandler) {
@@ -183,6 +204,7 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
         this.map.flightPlanElements.splice(this.map.flightPlanElements.findIndex(item => item == this.flightPlanElement), 1);
         this.map.showFlightPlan = true;
         this.model.unsubscribe();
+        this.subscriptions.unsubscribe();
     }
 }
 customElements.define("g1000-nearest-airports-page", WT_Nearest_Airports_View);

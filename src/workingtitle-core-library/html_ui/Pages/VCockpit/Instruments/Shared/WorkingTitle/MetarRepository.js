@@ -4,7 +4,6 @@ class WT_Metar_Entry {
         this.metar = metar;
     }
     getMetar() {
-        console.log(this.metar);
         return parseMETAR(this.metar);
     }
 }
@@ -25,35 +24,42 @@ class WT_Metar_Repository {
     /**
      * @param {WT_Metar_Downloader} downloader 
      */
-    constructor(downloader) {
-        this.downloader = downloader;
-        this.metars = {};
-        this.load();
+    constructor(downloader, update$) {
+        const metar$ = rxjs.defer(() =>
+            rxjs.from(downloader.download()).pipe(
+                rxjs.operators.map(text => {
+                    const results = {};
+                    const regex = /^([A-Z]{1,5}) (.*)$/gm;
+                    let match;
+                    while ((match = regex.exec(text)) !== null) {
+                        results[match[1]] = new WT_Metar_Entry(match[1], match[0]);
+                    }
+                    return results;
+                }),
+                rxjs.operators.tap(metars => console.log(`Loaded ${Object.keys(metars).length} METARs`))
+            )
+        );
+        this.data$ = update$.pipe(
+            rxjs.operators.throttleTime(WT_Metar_Repository.REFRESH_TIME),
+            rxjs.operators.switchMapTo(metar$),
+            rxjs.operators.shareReplay(1),
+        )
     }
-    async load() {
-        try {
-            function processText(text) {
-                const results = {};
-                const regex = /^([A-Z]{1,5}) (.*)$/gm;
-                let match;
-                while ((match = regex.exec(text)) !== null) {
-                    results[match[1]] = new WT_Metar_Entry(match[1], match[0]);
+    observe(ident) {
+        ident = ident.trim();
+        return this.data$.pipe(
+            rxjs.operators.map(metars => {
+                if (ident in metars) {
+                    return metars[ident];
                 }
-                console.log(`Loaded ${results.length} METARs`);
-                return results;
-            }
-            this.metars = await this.downloader.download().then(processText);
-            setTimeout(() => this.load(), WT_Metar_Repository.REFRESH_TIME);
-        } catch (e) {
-            throw new Error("Error loading metar database");
-        }
+                return null;
+            })
+        )
     }
     get(ident) {
-        ident = ident.trim();
-        if (ident in this.metars) {
-            return this.metars[ident];
-        }
-        throw new Error(`Metar for ${ident} not found`);
+        return this.observe(ident).pipe(
+            rxjs.operators.take(1)
+        );
     }
 }
 WT_Metar_Repository.REFRESH_TIME = 1000 * 60 * 15; // 15 minutes

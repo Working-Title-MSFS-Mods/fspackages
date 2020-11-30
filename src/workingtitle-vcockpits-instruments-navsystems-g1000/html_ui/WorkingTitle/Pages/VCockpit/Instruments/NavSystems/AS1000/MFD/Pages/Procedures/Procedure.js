@@ -110,7 +110,7 @@ class WT_Procedure_Page_View extends WT_HTML_View {
                 this.procedureElement = new SvgProcedureElement(procedure);
                 this.map.procedureElement = this.procedureElement;
                 if (this.procedureSubscription) {
-                    this.procedureSubscription = this.procedureSubscription();
+                    this.procedureSubscription = this.procedureSubscription.unsubscribe();
                 }
                 const updateMap = procedure => {
                     this.map.centerOnCoordinates(procedure.getSequence().map(leg => {
@@ -124,12 +124,13 @@ class WT_Procedure_Page_View extends WT_HTML_View {
         if (this.selectedPage.onLoadProcedure) {
             this.selectedPageSubscriptions.add(this.selectedPage.onLoadProcedure.subscribe(selectedProcedure => {
                 this.model.loadProcedure(selectedProcedure);
+                this.back();
             }));
         }
         if (this.selectedPage.onActivateProcedure) {
             this.selectedPageSubscriptions.add(this.selectedPage.onActivateProcedure.subscribe(selectedProcedure => {
-                console.log("activate");
                 this.model.activateProcedure(selectedProcedure);
+                this.back();
             }));
         }
     }

@@ -93,5 +93,9 @@ class WT_Procedures_Menu_View extends WT_HTML_View {
         this.exit();
         this.showProcedureHandler.showDepartures(this.getOriginIcao());
     }
+    activateApproach() {
+        this.exit();
+        this.flightPlanManager.activateApproach();
+    }
 }
 customElements.define("g1000-procedures-menu", WT_Procedures_Menu_View);

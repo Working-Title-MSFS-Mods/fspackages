@@ -10,23 +10,42 @@ class WT_Brightness_Settings {
         this.mfdMode = new Subject(WTDataStore.get(`MFD.BrightnessMode`, "Manual"));
         this.pfdMode = new Subject(WTDataStore.get(`PFD.BrightnessMode`, "Manual"));
 
-        this.currentTime = 0;
-
         this.setPfdBrightness(WTDataStore.get(`MFD.Brightness`, 100));
         this.setMfdBrightness(WTDataStore.get(`PFD.Brightness`, 100));
 
-        this.mfdMode.subscribe(mode => {
-            if (mode == "Manual") {
-                SimVar.SetSimVarValue(`L:XMLVAR_AS1000_MFD_Brightness`, "number", this.mfd.value);
+        const getSecondsFromMidnight = date => date.getSeconds() + (60 * date.getMinutes()) + (60 * 60 * date.getHours());
+        const autoBrightness = rxjs.combineLatest(
+            this.clock.sunrise.pipe(rxjs.operators.map(getSecondsFromMidnight)),
+            this.clock.sunset.pipe(rxjs.operators.map(getSecondsFromMidnight)),
+            this.clock.localTime.pipe(
+                rxjs.operators.scan((prev, current) => Math.abs(prev - current) > WT_Brightness_Settings.AUTO_BRIGHTNESS_UPDATE_FREQUENCY ? current : prev, 0),
+                rxjs.operators.distinctUntilChanged()
+            ),
+            (sunrise, sunset, localTime) => {
+                const clamp = x => Math.max(-1, Math.min(1, x)) * 0.5 + 0.5;
+                const sunriseOffset = localTime - sunrise;
+                const sunsetOffset = sunset - localTime;
+                const sunriseModifier = clamp(sunriseOffset / WT_Brightness_Settings.AUTO_BRIGHTNESS_INTERPOLATION_DURATION);
+                const sunsetModifier = clamp(sunsetOffset / WT_Brightness_Settings.AUTO_BRIGHTNESS_INTERPOLATION_DURATION);
+                return sunriseModifier * sunsetModifier * 100;
             }
-        });
-        this.pfdMode.subscribe(mode => {
-            if (mode == "Manual") {
-                SimVar.SetSimVarValue(`L:XMLVAR_AS1000_PFD_Brightness`, "number", this.pfd.value);
-            }
+        ).pipe(
+            rxjs.operators.shareReplay(1)
+        )
+
+        const mfdManualBrightness = this.mfd.observable;
+        this.mfdMode.observable.pipe(
+            rxjs.operators.switchMap(mode => mode == "Auto" ? autoBrightness : mfdManualBrightness)
+        ).subscribe(brightness => {
+            SimVar.SetSimVarValue(`L:XMLVAR_AS1000_MFD_Brightness`, "number", brightness);
         });
 
-        this.clock.localTime.subscribe(time => this.currentTime = time);
+        const pfdManualBrightness = this.pfd.observable;
+        this.pfdMode.observable.pipe(
+            rxjs.operators.switchMap(mode => mode == "Auto" ? autoBrightness : pfdManualBrightness)
+        ).subscribe(brightness => {
+            SimVar.SetSimVarValue(`L:XMLVAR_AS1000_PFD_Brightness`, "number", brightness);
+        });
     }
     clamp(value, min, max) {
         return Math.max(Math.min(value, max), min);
@@ -34,17 +53,11 @@ class WT_Brightness_Settings {
     setPfdBrightness(brightness) {
         brightness = this.clamp(brightness, 0, 100);
         WTDataStore.set(`PFD.Brightness`, brightness);
-        if (this.pfdMode.value == "Manual") {
-            SimVar.SetSimVarValue(`L:XMLVAR_AS1000_PFD_Brightness`, "number", brightness);
-        }
         this.pfd.value = brightness;
     }
     setMfdBrightness(brightness) {
         brightness = this.clamp(brightness, 0, 100);
         WTDataStore.set(`MFD.Brightness`, brightness);
-        if (this.mfdMode.value == "Manual") {
-            SimVar.SetSimVarValue(`L:XMLVAR_AS1000_MFD_Brightness`, "number", brightness);
-        }
         this.mfd.value = brightness;
     }
     setPfdMode(mode) {
@@ -56,23 +69,7 @@ class WT_Brightness_Settings {
         WTDataStore.set(`MFD.BrightnessMode`, mode);
     }
     update(dt) {
-        const autoMfd = this.mfdMode.value == "Auto";
-        const autoPfd = this.pfdMode.value == "Auto";
-        if (autoMfd || autoPfd) {
-            const getSecondsFromMidnight = date => date.getSeconds() + (60 * date.getMinutes()) + (60 * 60 * date.getHours());
-            const clamp = x => Math.max(-1, Math.min(1, x)) * 0.5 + 0.5;
-            const sunrise = getSecondsFromMidnight(this.clock.getSunrise());
-            const sunset = getSecondsFromMidnight(this.clock.getSunset());
-            const current = this.currentTime;
-            const sunriseOffset = current - sunrise;
-            const sunsetOffset = sunset - current;
-            const sunriseModifier = clamp(sunriseOffset / 3600);
-            const sunsetModifier = clamp(sunsetOffset / 3600);
-            const brightness = sunriseModifier * sunsetModifier;
-            if (autoPfd)
-                SimVar.SetSimVarValue(`L:XMLVAR_AS1000_PFD_Brightness`, "number", brightness * 100);
-            if (autoMfd)
-                SimVar.SetSimVarValue(`L:XMLVAR_AS1000_MFD_Brightness`, "number", brightness * 100);
-        }
     }
 }
+WT_Brightness_Settings.AUTO_BRIGHTNESS_UPDATE_FREQUENCY = 600;
+WT_Brightness_Settings.AUTO_BRIGHTNESS_INTERPOLATION_DURATION = 1800;

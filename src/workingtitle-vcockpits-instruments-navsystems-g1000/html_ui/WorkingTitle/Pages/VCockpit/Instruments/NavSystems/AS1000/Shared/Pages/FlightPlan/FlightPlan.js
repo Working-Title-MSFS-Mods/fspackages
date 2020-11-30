@@ -36,11 +36,21 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         });
     }
     setActiveWaypoint(waypointIndex = null) {
-        this.flightPlan.setActiveWaypointIndex(waypointIndex === null ? this.selectedWaypointIndex : waypointIndex);
+        waypointIndex = waypointIndex === null ? this.selectedWaypointIndex : waypointIndex;
+        if (this.isWaypointIndexApproach(waypointIndex)) {
+            waypointIndex -= this.approachWaypointIndex;
+        }
+        console.log(`Set active waypoint to ${waypointIndex}`);
+        this.flightPlan.setActiveWaypointIndex(waypointIndex);
     }
     deleteWaypoint(waypointIndex) {
+        if (this.isWaypointIndexApproach(waypointIndex))
+            return;
         waypointIndex = parseInt(waypointIndex);
         this.flightPlan.removeWaypoint(waypointIndex, false, this.updateWaypoints.bind(this));
+    }
+    isWaypointIndexApproach(waypointIndex) {
+        return waypointIndex >= this.approachWaypointIndex;
     }
     deleteDeparture() {
         this.flightPlan.removeDeparture();
@@ -50,6 +60,7 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
     }
     deleteApproach() {
         this.flightPlan.deactivateApproach();
+        this.flightPlan.setApproachIndex(-1);
     }
     deleteFlightPlan() {
         this.flightPlan.clearFlightPlan();
@@ -96,8 +107,9 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
 
         const hasActiveLeg = this.activeLeg.value ? true : false;
         let waypointIndex = 0;
+        let approachWaypointIndex = 0;
         let cumulativeDistance = null;
-        const mapWaypoint = (waypoint) => {
+        const mapWaypoint = (waypoint, type) => {
             const infos = waypoint.GetInfos();
 
             const isBeforeActiveLeg = hasActiveLeg && waypointIndex <= this.activeLeg.value.origin;
@@ -130,6 +142,8 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
 
             return {
                 type: "waypoint",
+                waypointType: type,
+                approachWaypointIndex: type == "approach" ? approachWaypointIndex++ : null,
                 lineIndex: lineIndex++,
                 waypointIndex: waypointIndex++,
                 ident: infos.ident != "" ? infos.ident : waypoint.ident,
@@ -177,6 +191,7 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         if (destination) {
             lines.push(mapWaypoint(destination, "destination"));
         }
+        this.approachWaypointIndex = waypointIndex;
         if (approach && approach.length > 0) {
             // Approaches are special cased to always start at 0 index, so we save a copy of what the current index is to add to our active leg values later
             //this.approachIndex = waypointIndex;
@@ -193,15 +208,18 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
             this.name.next(`${origin ? origin.ident : "_____"} / ${destination ? destination.ident : "_____"}`);
         }
     }
+    getAllWaypoints() {
+        return [...this.flightPlan.getWaypoints(), ...this.flightPlan.getApproachWaypoints()];
+    }
     newWaypointLineSelected() {
-        const waypoints = this.flightPlan.getWaypoints();
+        const waypoints = this.getAllWaypoints();
         const previousIndex = waypoints.length - 1;
         this.selectedWaypointIndex = null;
         this.previousWaypoint = (previousIndex >= 0) ? waypoints[previousIndex] : null;
     }
     setSelectedWaypointIndex(index) {
         this.selectedWaypointIndex = index;
-        const waypoints = this.flightPlan.getWaypoints();
+        const waypoints = this.getAllWaypoints();
         this.selectedWaypoint = waypoints[index];
         this.previousWaypoint = (index > 0) ? waypoints[index - 1] : null;
     }

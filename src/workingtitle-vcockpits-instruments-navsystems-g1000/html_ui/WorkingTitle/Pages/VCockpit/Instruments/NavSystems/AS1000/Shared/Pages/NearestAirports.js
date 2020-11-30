@@ -49,9 +49,9 @@ class WT_Nearest_Airports_Model extends WT_Model {
     setSelectedAirport(icao) {
         this.setIcao(icao);
     }
-    showWaypointInfo(waypoint) {
-        if (waypoint) {
-            this.showWaypointInfoHandler.show(waypoint);
+    showWaypointInfo() {
+        if (this.selectedAirport.value) {
+            this.showWaypointInfoHandler.show(this.selectedAirport.value);
         }
     }
     async directTo(icao = null) {

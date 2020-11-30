@@ -4,14 +4,11 @@ class WT_Radio_Altimeter_Model {
      */
     constructor(radioAltimeter) {
         this.radioAltimeter = radioAltimeter;
-        this.isAvailable = new Subject(false);
-        this.altitude = new Subject(0);
+        this.isAvailable = radioAltimeter.available;
+        this.altitude = radioAltimeter.altitude;
     }
     update(dt) {
-        this.isAvailable.value = this.radioAltimeter.isAvailable && this.radioAltimeter.isHeightAcceptable();
-        if (this.isAvailable.value) {
-            this.altitude.value = this.radioAltimeter.getAltitude();
-        }
+
     }
 }
 

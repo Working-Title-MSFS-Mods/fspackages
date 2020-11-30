@@ -86,7 +86,6 @@ class WTEngine extends Engine {
      * @returns {Map} The configuration for the selected page 
      */
     selectEnginePage(id) {
-        console.log("Changed to page " + id);
         this.selectedEnginePage = id;
         let engineDisplayPage = this.engineDisplayPages.value[this.selectedEnginePage];
 

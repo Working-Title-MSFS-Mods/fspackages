@@ -107,4 +107,9 @@ class WT_Settings {
             listener: listener
         });
     }
+    observe(setting) {
+        const observable = new rxjs.BehaviorSubject(this.settings[setting]);
+        this.addListener(value => observable.next(value), setting);
+        return observable;
+    }
 }

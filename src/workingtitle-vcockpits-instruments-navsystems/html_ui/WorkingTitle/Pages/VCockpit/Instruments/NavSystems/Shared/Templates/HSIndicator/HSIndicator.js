@@ -507,10 +507,8 @@ class HSIndicator extends HTMLElement {
             });
         }
 
-        const showXtkText = new CombinedSubject([model.cdi.deviationAmount, model.cdi.source], (deviation, source) => {
-            return deviation > 0.95 && source == "FMS"
-        });
-        showXtkText.subscribe(full => this.crossTrackError.setAttribute("visibility", full ? "visible" : "hidden"));
+        rxjs.combineLatest(model.cdi.deviationAmount.observable, model.cdi.source.observable, (deviation, source) => deviation > 0.95 && source == "FMS")
+            .subscribe(full => this.crossTrackError.setAttribute("visibility", full ? "visible" : "hidden"));
 
         if (this.CDI) {
             model.cdi.deviationAmount.subscribe(deviation => {

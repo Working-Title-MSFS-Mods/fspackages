@@ -5,15 +5,18 @@ class WT_Show_Waypoint_Info_Handler {
     constructor(pageController) {
         this.pageController = pageController;
     }
-    show(icao) {
-        const type = icao[0];
+    /**
+     * @param {WayPoint} waypoint 
+     */
+    show(waypoint) {
+        const type = waypoint.icao[0];
         switch (type) {
             case "A": {
-                this.pageController.goTo("WPT", "Airport Information", icao);
+                this.pageController.goTo("WPT", "Airport Information", { waypoint: waypoint });
                 break;
             }
             case "W": {
-                this.pageController.goTo("WPT", "Intersection Information", icao);
+                this.pageController.goTo("WPT", "Intersection Information", { waypoint: waypoint });
                 break;
             }
             case "V": {

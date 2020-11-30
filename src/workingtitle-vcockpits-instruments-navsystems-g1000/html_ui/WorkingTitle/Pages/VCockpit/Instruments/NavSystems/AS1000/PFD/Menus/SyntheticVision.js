@@ -21,18 +21,20 @@ class WT_PFD_Synthetic_Vision_Menu extends WT_Soft_Key_Menu {
         this.subscriptions = new Subscriptions();
     }
     activate() {
-        this.subscriptions.add(this.syntheticVision.enabled.subscribe(enabled => {
-            this.synVis.selected = enabled;
-            this.pathway.disabled = true;//!enabled;
-            this.horizonHeadings.disabled = !enabled;
-            this.airportSigns.disabled = !enabled;
-        }));
-        this.subscriptions.add(this.syntheticVision.airportSigns.subscribe(enabled => {
-            this.airportSigns.selected = enabled;
-        }));
-        this.subscriptions.add(this.syntheticVision.horizonHeadings.subscribe(enabled => {
-            this.horizonHeadings.selected = enabled;
-        }));
+        this.subscriptions.add(
+            this.syntheticVision.enabled.subscribe(enabled => {
+                this.synVis.selected = enabled;
+                this.pathway.disabled = true;//!enabled;
+                this.horizonHeadings.disabled = !enabled;
+                this.airportSigns.disabled = !enabled;
+            }),
+            this.syntheticVision.airportSigns.subscribe(enabled => {
+                this.airportSigns.selected = enabled;
+            }),
+            this.syntheticVision.horizonHeadings.subscribe(enabled => {
+                this.horizonHeadings.selected = enabled;
+            })
+        );
     }
     deactivate() {
         this.subscriptions.unsubscribe();

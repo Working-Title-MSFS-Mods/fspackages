@@ -134,7 +134,6 @@ class WT_PFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     setModel(model) {
         this.model = model;
         model.lines.subscribe(this.updateLines.bind(this));
-        this.subscriptions.add(model.activeLeg.subscribe(this.updateActiveLeg.bind(this)));
 
         this.pageMenu = new WT_Flight_Plan_Page_Menu(model, this, this.confirmDialogHandler);
 
@@ -204,9 +203,10 @@ class WT_PFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         this.inputStackHandle = inputStack.push(this.inputLayer);
     }
     activate() {
+        this.subscriptions.add(this.model.activeLeg.subscribe(this.updateActiveLeg.bind(this)))
     }
     deactivate() {
-
+        this.subscriptions.unsubscribe();
     }
 }
 customElements.define("g1000-pfd-flight-plan-page", WT_PFD_Flight_Plan_Page_View);

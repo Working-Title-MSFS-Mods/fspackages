@@ -7,4 +7,13 @@ g1000-utility {
     .units {
         font-size: 0.8em;
     }
+
+    .flight-timer {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr 1fr;
+
+        .value {
+            text-align: right;
+        }
+    }
 }

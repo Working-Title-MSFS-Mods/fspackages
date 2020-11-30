@@ -1,21 +1,22 @@
 class WT_OAT_Model {
     /**
      * @param {WT_Unit_Chooser} unitChooser 
+     * @param {WT_Thermometer} thermometer
      */
-    constructor(unitChooser) {
-        this.oat = new Subject();
+    constructor(unitChooser, thermometer) {
         this.unitChooser = unitChooser;
-        this.updateTimer = 0;
-    }
-    update(dt) {
-        this.updateTimer += dt;
-        if (this.updateTimer < 1000)
-            return;
-        this.updateTimer = 0;
-        this.oat.value = this.getATMTemperature();
-    }
-    getATMTemperature() {
-        return this.unitChooser.chooseTemperature(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius").toFixed(0) + "°<span class='units'>C</span>", SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "farenheit").toFixed(0) + "°<span class='units'>F</span>");
+
+        this.oat = this.unitChooser.observeTemperature(
+            thermometer.outsideAirTemperature.celsius.pipe(
+                rxjs.operators.map(degrees => `${degrees.toFixed(0)}°<span class='units'>C</span>`)
+            ),
+            thermometer.outsideAirTemperature.farenheit.pipe(
+                rxjs.operators.map(degrees => `${degrees.toFixed(0)}°<span class='units'>F</span>`)
+            )
+        ).pipe(
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.shareReplay(1),
+        );
     }
 }
 
@@ -24,7 +25,6 @@ class WT_OAT_View extends WT_HTML_View {
      * @param {WT_OAT_Model} model 
      */
     setModel(model) {
-        this.model = model;
         model.oat.subscribe(oat => this.elements.oat.innerHTML = oat);
     }
 }

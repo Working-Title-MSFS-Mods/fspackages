@@ -42,7 +42,7 @@ class WT_Approach_Page_View extends WT_HTML_View {
      */
     setAirport(airport, initialProcedureIndex = 0) {
         if (this.airportSubscription) {
-            this.airportSubscription = this.airportSubscription();
+            this.airportSubscription = this.airportSubscription.unsubscribe();
         }
         if (airport) {
             this.airportSubscription = airport.subscribe(async airport => {

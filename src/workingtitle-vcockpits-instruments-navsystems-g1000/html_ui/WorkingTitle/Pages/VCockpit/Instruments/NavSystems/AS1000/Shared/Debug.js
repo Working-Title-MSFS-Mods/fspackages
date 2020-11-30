@@ -64,6 +64,7 @@ class WT_Debug_Console_Menu extends WT_Soft_Key_Menu {
         super(false);
 
         this.debugConsole = debugConsole;
+        this.subscriptions = new Subscriptions();
 
         this.buttons = {
             notices: new WT_Soft_Key("Notices", () => debugConsole.toggleNotices()),
@@ -79,16 +80,21 @@ class WT_Debug_Console_Menu extends WT_Soft_Key_Menu {
         this.addSoftKey(3, this.buttons.notices);
         this.addSoftKey(4, this.buttons.warnings);
         this.addSoftKey(5, this.buttons.errors);
-        /*this.addSoftKey(6, new WT_Soft_Key("Size +", () => debugConsole.increaseHeight()));
-        this.addSoftKey(7, new WT_Soft_Key("Size -", () => debugConsole.decreaseHeight()));*/
-
-        debugConsole.types.errors.subscribe(enabled => this.buttons.errors.selected = enabled);
-        debugConsole.types.warnings.subscribe(enabled => this.buttons.warnings.selected = enabled);
-        debugConsole.types.notices.subscribe(enabled => this.buttons.notices.selected = enabled);
-
         this.addSoftKey(11, menus.backKey);
     }
     activate() {
         this.debugConsole.toggleEnabled(true);
+
+        const types = this.debugConsole.types;
+        const buttons = this.buttons;
+
+        this.subscriptions.add(
+            types.errors.subscribe(enabled => buttons.errors.selected = enabled),
+            types.warnings.subscribe(enabled => buttons.warnings.selected = enabled),
+            types.notices.subscribe(enabled => buttons.notices.selected = enabled)
+        );
+    }
+    deactivate() {
+        this.subscriptions.unsubscribe();
     }
 }

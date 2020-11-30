@@ -452,10 +452,14 @@
 
     <template id="confirm-dialog"> 
         <div class="dialog">
-            <div class="message" data-element="message"></div>
-            <div class="buttons">
-                <selectable-button data-click="confirm">OK</selectable-button>
-                <selectable-button data-click="cancel">Cancel</selectable-button>
+            <div class="dialog-inner">
+                <div class="dialog-inner-2">
+                    <div class="message" data-element="message"></div>
+                    <div class="buttons">
+                        <selectable-button data-click="confirm">OK</selectable-button>
+                        <selectable-button data-click="cancel">Cancel</selectable-button>
+                    </div>
+                </div>
             </div>
         </div>
     </template>
@@ -559,5 +563,6 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/FileHandler.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/MetarRepository.js"></script>
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/PFD/Scripts.js?wefw"></script>

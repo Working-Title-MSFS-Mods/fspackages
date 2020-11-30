@@ -32,6 +32,6 @@ class WT_PFD_Transponder_Menu extends WT_Soft_Key_Menu {
     }
     deactivate() {
         if (this.modeSubscription)
-            this.modeSubscription = this.modeSubscription();
+            this.modeSubscription = this.modeSubscription.unsubscribe();
     }
 }

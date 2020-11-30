@@ -32,80 +32,120 @@ class WT_Debug_Console_Message extends HTMLElement {
 }
 customElements.define("wt-debug-console-message", WT_Debug_Console_Message);
 
+class WT_Toggleable_Subject {
+    constructor(initial = true) {
+        this.subject = new rxjs.Subject();
+        this.observable = this.subject.pipe(
+            rxjs.operators.scan((result, current) => {
+                if (current === undefined) {
+                    return !result;
+                } else {
+                    return current
+                }
+            }, initial),
+            rxjs.operators.startWith(initial),
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.shareReplay(1)
+        )
+    }
+    subscribe() {
+        return this.observable.subscribe(...arguments);
+    }
+    pipe() {
+        return this.observable.pipe(...arguments);
+    }
+    toggle() {
+        this.subject.next();
+    }
+    set(value) {
+        this.subject.next(value);
+    }
+}
+
 class WT_Debug_Console {
     /**
      * @param {NavSystem} instrument 
      */
     constructor(instrument) {
         this.prefix = instrument.templateID;
-        this.enabled = new Subject(WTDataStore.get(this.dataStoreKey("visible"), false));
+        this.enabled = new WT_Toggleable_Subject(WTDataStore.get(this.dataStoreKey("visible"), false));
         this.types = {
-            errors: new Subject(WTDataStore.get(this.dataStoreKey("errors"), true)),
-            warnings: new Subject(WTDataStore.get(this.dataStoreKey("warnings"), true)),
-            notices: new Subject(WTDataStore.get(this.dataStoreKey("notices"), false)),
+            errors: new WT_Toggleable_Subject(WTDataStore.get(this.dataStoreKey("errors"), true)),
+            warnings: new WT_Toggleable_Subject(WTDataStore.get(this.dataStoreKey("warnings"), true)),
+            notices: new WT_Toggleable_Subject(WTDataStore.get(this.dataStoreKey("notices"), false)),
         }
-        this.messages = [];
-        this.filteredMessages = new Subject([], false);
+
+        this.newMessage = new rxjs.Subject();
+        this.clearMessages = new rxjs.BehaviorSubject(null);
+
+        this.enabled.subscribe(visible => WTDataStore.set(this.dataStoreKey("visible"), visible));
+        this.types.notices.subscribe(show => WTDataStore.set(this.dataStoreKey("notices"), show));
+        this.types.warnings.subscribe(show => WTDataStore.set(this.dataStoreKey("warnings"), show));
+        this.types.errors.subscribe(show => WTDataStore.set(this.dataStoreKey("errors"), show));
+
+        const messageStream$ = this.newMessage.pipe(
+            rxjs.operators.scan((messages, newMessage) => {
+                const existingMessageIndex = messages.findIndex(message => message.message == newMessage.text);
+                if (existingMessageIndex != -1) {
+                    const existingMessage = messages[existingMessageIndex];
+                    messages.splice(existingMessageIndex, 1);
+                    existingMessage.time = new Date();
+                    existingMessage.incrementCount();
+                    messages.push(existingMessage);
+                } else {
+                    messages.push(new WT_Debug_Console_Message(newMessage.type, new Date(), newMessage.text));
+                }
+                return messages.slice(-100);
+            }, []),
+            rxjs.operators.startWith([])
+        );
+
+        const messages$ = this.clearMessages.pipe(rxjs.operators.switchMapTo(messageStream$));
+        const filter$ = rxjs.combineLatest(this.types.notices.observable, this.types.warnings.observable, this.types.errors.observable).pipe(
+            rxjs.operators.map(([notices, warnings, errors]) => ({ notices: notices, warnings: warnings, errors: errors })),
+            rxjs.operators.shareReplay(1)
+        );
+        this.filteredMessages = rxjs.combineLatest(messages$, filter$).pipe(
+            rxjs.operators.map(([messages, filter]) => messages.filter(message => {
+                switch (message.type) {
+                    case "notice": return filter.notices;
+                    case "warning": return filter.warnings;
+                    case "error": return filter.errors;
+                }
+            })),
+            rxjs.operators.shareReplay(1),
+        )
         this.bindConsole();
 
-        window.onerror = function (message, source, lineno, colno, error) { this.addMessage("error", message); };
+        window.onerror = function (message, source, lineno, colno, error) { console.error(message); };
     }
     dataStoreKey(variable) {
         return `DebugConsole.${this.prefix}.${variable}`;
     }
     clear() {
-        this.messages = [];
-        this.updateFilteredMessages();
+        this.clearMessages.next(null);
     }
     toggleEnabled(enabled) {
-        this.enabled.value = enabled !== undefined ? enabled : !this.enabled.value;
-        WTDataStore.set(this.dataStoreKey("visible"), this.enabled.value);
+        this.enabled.set(enabled);
     }
     toggleNotices() {
-        this.types.notices.value = !this.types.notices.value;
-        this.updateFilteredMessages();
-        WTDataStore.set(this.dataStoreKey("notices"), this.types.notices.value);
+        this.types.notices.toggle();
     }
     toggleWarnings() {
-        this.types.warnings.value = !this.types.warnings.value;
-        this.updateFilteredMessages();
-        WTDataStore.set(this.dataStoreKey("warnings"), this.types.warnings.value);
+        this.types.warnings.toggle();
     }
     toggleErrors() {
-        this.types.errors.value = !this.types.errors.value;
-        this.updateFilteredMessages();
-        WTDataStore.set(this.dataStoreKey("errors"), this.types.errors.value);
+        this.types.errors.toggle();
     }
     addMessage(type, args) {
-        const messageText = Array.prototype.slice.call(args).join(" ");
-        const existingMessageIndex = this.messages.findIndex(message => message.message == messageText);
-        if (existingMessageIndex != -1) {
-            const existingMessage = this.messages[existingMessageIndex];
-            this.messages.splice(existingMessageIndex, 1);
-            existingMessage.time = new Date();
-            existingMessage.incrementCount();
-            this.messages.push(existingMessage);
-        } else {
-            this.messages.push(new WT_Debug_Console_Message(type, new Date(), messageText));
-        }
-        this.messages = this.messages.slice(Math.max(0, this.messages.length - 200), 200);
-        this.updateFilteredMessages();
-
-        if (type == "error" || type == "warning") {
-            this.enabled.value = true;
-        }
-    }
-    getMessages() {
-        return this.messages.filter(message => {
-            switch (message.type) {
-                case "notice": return this.types.notices.value;
-                case "warning": return this.types.warnings.value;
-                case "error": return this.types.errors.value;
-            }
+        this.newMessage.next({
+            text: Array.prototype.slice.call(args).join(" "),
+            type: type
         });
-    }
-    updateFilteredMessages() {
-        this.filteredMessages.value = this.getMessages();
+
+        if (type == "error") {
+            this.enabled.set(true);
+        }
     }
     bindConsole() {
         const log = console.log;
@@ -142,50 +182,6 @@ class WT_Debug_Console_View extends WT_HTML_View {
         `;
         super.connectedCallback();
     }
-    initResizeHandle() {
-        const handle = this.elements.resize;
-        const w = WTDataStore.get(this.model.dataStoreKey("w"), 500);
-        const h = WTDataStore.get(this.model.dataStoreKey("h"), 200);
-        this.updateDimensions(w, h);
-
-        let mousePosition = null;
-        const moveHandler = e => {
-            const width = Math.max(200, e.clientX - this.offsetLeft);
-            const height = Math.max(200, e.clientY - this.offsetTop);
-            this.updateDimensions(width, height);
-            this.saveDimensions(width, height);
-        };
-        const mouseUpHandler = e => {
-            window.document.removeEventListener("mousemove", moveHandler);
-            window.document.removeEventListener("mouseup", mouseUpHandler);
-        }
-
-        handle.addEventListener("mousedown", e => {
-            if (e.button != 0)
-                return;
-            mousePosition = { x: e.clientX, y: e.clientY };
-            window.document.addEventListener("mousemove", moveHandler);
-            window.document.addEventListener("mouseup", mouseUpHandler);
-            e.cancelBubble = true;
-            e.preventDefault();
-            return false;
-        });
-    }
-    updatePosition(x, y) {
-        this.style.left = `${x}px`;
-        this.style.top = `${y}px`;
-
-        WTDataStore.set(this.model.dataStoreKey("x"), x);
-        WTDataStore.set(this.model.dataStoreKey("y"), y);
-    }
-    updateDimensions(width, height) {
-        this.style.width = `${width}px`;
-        this.style.height = `${height}px`;
-    }
-    saveDimensions(width, height) {
-        WTDataStore.set(this.model.dataStoreKey("w"), width);
-        WTDataStore.set(this.model.dataStoreKey("h"), height);
-    }
     toggleNotices() {
         this.model.toggleNotices();
     }
@@ -213,37 +209,105 @@ class WT_Debug_Console_View extends WT_HTML_View {
             }
         });
 
-        model.enabled.subscribe(enabled => this.setAttribute("state", enabled ? "enabled" : "disabled"));
+        model.enabled.observable.subscribe(enabled => this.setAttribute("state", enabled ? "enabled" : "disabled"));
 
-        this.position = { x: WTDataStore.get(this.model.dataStoreKey("x"), this.offsetLeft), y: WTDataStore.get(this.model.dataStoreKey("y"), this.offsetTop) };
-        this.beginMousePosition = { x: 0, y: 0 };
+        model.types.errors.observable.subscribe(enabled => this.elements.errorsButton.classList.toggle("selected", enabled));
+        model.types.warnings.observable.subscribe(enabled => this.elements.warningsButton.classList.toggle("selected", enabled));
+        model.types.notices.observable.subscribe(enabled => this.elements.noticesButton.classList.toggle("selected", enabled));
 
-        const moveHandler = e => {
-            const x = Math.max(0, Math.min(window.innerWidth - this.offsetWidth, e.clientX - this.beginMousePosition.x + this.position.x));
-            const y = Math.max(0, Math.min(window.innerHeight - this.offsetHeight, e.clientY - this.beginMousePosition.y + this.position.y));
-            this.updatePosition(x, y);
-        };
-        const mouseUpHandler = e => {
-            window.document.removeEventListener("mousemove", moveHandler);
-            window.document.removeEventListener("mouseup", mouseUpHandler);
-        };
-        this.addEventListener("mousedown", e => {
-            if (e.button != 0)
-                return;
-            this.position.x = this.offsetLeft;
-            this.position.y = this.offsetTop;
-            this.beginMousePosition.x = e.clientX;
-            this.beginMousePosition.y = e.clientY;
-            window.document.addEventListener("mousemove", moveHandler);
-            window.document.addEventListener("mouseup", mouseUpHandler);
-        });
+        function mouseEventToXY(e) {
+            return {
+                x: e.clientX,
+                y: e.clientY
+            }
+        }
 
-        this.updatePosition(this.position.x, this.position.y);
-        this.initResizeHandle();
+        const mouseMove$ = rxjs.fromEvent(window.document, "mousemove").pipe(
+            rxjs.operators.map(mouseEventToXY)
+        )
 
-        model.types.errors.subscribe(enabled => this.elements.errorsButton.classList.toggle("selected", enabled));
-        model.types.warnings.subscribe(enabled => this.elements.warningsButton.classList.toggle("selected", enabled));
-        model.types.notices.subscribe(enabled => this.elements.noticesButton.classList.toggle("selected", enabled));
+        const mouseUp$ = rxjs.fromEvent(window.document, "mouseup").pipe(
+            rxjs.operators.filter(e => e.button == 0)
+        );
+
+        rxjs.fromEvent(this, "mousedown").pipe(
+            rxjs.operators.filter(e => e.button == 0),
+            rxjs.operators.switchMap(e => {
+                const startMousePosition = mouseEventToXY(e);
+                const startPosition = {
+                    x: this.offsetLeft,
+                    y: this.offsetTop
+                };
+                return mouseMove$.pipe(
+                    rxjs.operators.takeUntil(mouseUp$),
+                    rxjs.operators.map(position => ({
+                        x: position.x - startMousePosition.x,
+                        y: position.y - startMousePosition.y
+                    })),
+                    rxjs.operators.map(delta => ({
+                        x: startPosition.x + delta.x,
+                        y: startPosition.y + delta.y
+                    }))
+                )
+            }),
+            rxjs.operators.startWith({
+                x: WTDataStore.get(this.model.dataStoreKey("x"), this.offsetLeft),
+                y: WTDataStore.get(this.model.dataStoreKey("y"), this.offsetTop)
+            }),
+            rxjs.operators.map(position => ({
+                x: Math.max(0, Math.min(window.innerWidth - this.offsetWidth, position.x)),
+                y: Math.max(0, Math.min(window.innerHeight - this.offsetHeight, position.y))
+            })),
+            rxjs.operators.tap(position => {
+                this.style.left = `${position.x}px`;
+                this.style.top = `${position.y}px`;
+            }),
+            rxjs.operators.debounceTime(1000),
+            rxjs.operators.tap(position => {
+                WTDataStore.set(this.model.dataStoreKey("x"), position.x);
+                WTDataStore.set(this.model.dataStoreKey("y"), position.y);
+            })
+        ).subscribe();
+
+        rxjs.fromEvent(this.elements.resize, "mousedown").pipe(
+            rxjs.operators.tap(e => e.cancelBubble = true),
+            rxjs.operators.filter(e => e.button == 0),
+            rxjs.operators.switchMap(e => {
+                const startMousePosition = mouseEventToXY(e);
+                const startDimensions = {
+                    x: this.offsetWidth,
+                    y: this.offsetHeight
+                };
+                return mouseMove$.pipe(
+                    rxjs.operators.takeUntil(mouseUp$),
+                    rxjs.operators.map(position => ({
+                        x: position.x - startMousePosition.x,
+                        y: position.y - startMousePosition.y
+                    })),
+                    rxjs.operators.map(delta => ({
+                        x: startDimensions.x + delta.x,
+                        y: startDimensions.y + delta.y
+                    }))
+                )
+            }),
+            rxjs.operators.startWith({
+                x: WTDataStore.get(this.model.dataStoreKey("w"), 500),
+                y: WTDataStore.get(this.model.dataStoreKey("h"), 200)
+            }),
+            rxjs.operators.map(dimensions => ({
+                x: Math.max(400, dimensions.x),
+                y: Math.max(200, dimensions.y)
+            })),
+            rxjs.operators.tap(dimensions => {
+                this.style.width = `${dimensions.x}px`;
+                this.style.height = `${dimensions.y}px`;
+            }),
+            rxjs.operators.debounceTime(1000),
+            rxjs.operators.tap(dimensions => {
+                WTDataStore.set(this.model.dataStoreKey("w"), dimensions.x);
+                WTDataStore.set(this.model.dataStoreKey("h"), dimensions.y);
+            })
+        ).subscribe();
     }
 }
 customElements.define("wt-debug-console", WT_Debug_Console_View);

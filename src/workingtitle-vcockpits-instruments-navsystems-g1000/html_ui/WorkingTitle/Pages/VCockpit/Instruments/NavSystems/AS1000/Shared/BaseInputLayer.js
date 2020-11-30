@@ -4,7 +4,7 @@ class Base_Input_Layer extends Input_Layer {
      * @param {WT_Nav_Frequencies_Model} navFrequenciesModel 
      * @param {WT_Com_Frequencies_Model} comFrequenciesModel 
      * @param {WT_Show_Direct_To_Handler} showDirectToHandler 
-     * @param {WT_Barometric_Pressure} barometricPressure
+     * @param {WT_Barometer} barometricPressure
      * @param {WT_Menu_Push_Handler} menuPushHandler 
      */
     constructor(navSystem, navFrequenciesModel, comFrequenciesModel, showDirectToHandler, barometricPressure, menuPushHandler) {

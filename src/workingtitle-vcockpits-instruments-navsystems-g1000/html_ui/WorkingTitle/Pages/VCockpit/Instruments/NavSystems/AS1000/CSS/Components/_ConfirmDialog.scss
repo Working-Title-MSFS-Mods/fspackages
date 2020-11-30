@@ -14,8 +14,15 @@ g1000-confirm-dialog {
         border-right: 0.8vh solid #202020;
         border-bottom: 0.8vh solid #202020;
         outline: $border_width_thin solid #fff;
-        box-shadow: 0px 0px 0px 3px #404040 inset, 0px 0px 0px 4px #fff inset;
-        padding: 4vh;
+
+        .dialog-inner {
+            border: $border_width_thin * 3 solid #404040;
+        }
+
+        .dialog-inner-2 {
+            padding: 4vh;
+            border: $border_width_thin solid #fff;
+        }
 
         .message {
             text-align: center;

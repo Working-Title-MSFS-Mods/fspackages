@@ -7,6 +7,8 @@ class Attitude_Indicator_Model {
         this.syntheticVision = syntheticVision;
         this.nearestWaypointsRepository = nearestWaypointsRepository;
 
+        this.updateObservable = new rxjs.Subject();
+
         this.flightPathMarker = {
             show: new Subject(true),
             position: new Subject({ x: 0, y: 0 })
@@ -21,8 +23,24 @@ class Attitude_Indicator_Model {
         this.airportSigns = new Subject([]);
 
         this.nearestAirports = [];
+
+        this.airportSigns = rxjs.combineLatest(this.updateObservable, this.nearestWaypointsRepository.airports, (update, airports) => airports)
+            .pipe(
+                rxjs.operators.map(airports => airports
+                    .map(airport => ({
+                        projectedPosition: this.projectLatLongAlt(airport.coordinates),
+                        name: airport.ident
+                    }))
+                    .filter(airport => airport.projectedPosition.x > -1.1 && airport.projectedPosition.x < 1.1 &&
+                        airport.projectedPosition.y > -1.1 && airport.projectedPosition.y < 1.1 &&
+                        airport.projectedPosition.z > 0)
+                    .slice(0, 5)
+                )
+            );
     }
     update(dt) {
+        this.updateObservable.next();
+
         const xyz = Simplane.getOrientationAxis();
         if (xyz) {
             this.pitchBank.value = {
@@ -54,26 +72,6 @@ class Attitude_Indicator_Model {
             }
 
             this.heading.value = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
-        }
-
-        if (this.airportSigns.hasSubscribers()) {
-            this.airportSigns.value = this.nearestAirports.map(airport => {
-                return {
-                    projectedPosition: this.projectLatLongAlt(airport.coordinates),
-                    name: airport.ident
-                }
-            }).filter(airport => {
-                return airport.projectedPosition.x > -1.1 && airport.projectedPosition.x < 1.1 &&
-                    airport.projectedPosition.y > -1.1 && airport.projectedPosition.y < 1.1 &&
-                    airport.projectedPosition.z > 0
-            }).slice(0, 5);
-            if (!this.nearestWaypointsSubscription) {
-                this.nearestWaypointsSubscription = this.nearestWaypointsRepository.airports.subscribe(airports => this.updateNearestAirports(airports));
-            };
-        } else {
-            if (this.nearestWaypointsSubscription) {
-                this.nearestWaypointsSubscription = this.nearestWaypointsSubscription();
-            }
         }
     }
     getDeltaAngle(a, b) {
@@ -181,38 +179,31 @@ class AttitudeIndicator extends HTMLElement {
             this.horizonTop.style.display = enabled ? "none" : "block";
             this.horizonTopGradient.style.display = enabled ? "none" : "block";
         });
-        const signsEnabled = new CombinedSubject([this.model.syntheticVision.enabled, this.model.syntheticVision.airportSigns], (signs, enabled) => {
-            return enabled && signs;
-        });
-        signsEnabled.subscribe(enabled => {
-            this.airportSignsGroup.style.display = enabled ? "block" : "none";
-            if (enabled) {
-                this.signsSubscription = this.model.airportSigns.subscribe(airportSigns => {
-                    let i = 4;
-                    for (let airportSign of airportSigns) {
-                        const sign = this.airportSigns[i];
-                        sign.style.display = airportSign.projectedPosition.z > 0 ? "block" : "none";
-                        if (airportSign.projectedPosition.z > 0) {
-                            sign.setAttribute("transform", `translate(${airportSign.projectedPosition.x * screenSize}, ${airportSign.projectedPosition.y * screenSize})`);
-                            Avionics.Utils.diffAndSet(sign.querySelector("text"), airportSign.name);
-                            i--;
-                        }
+        rxjs.combineLatest(this.model.syntheticVision.enabled, this.model.syntheticVision.airportSigns, (signs, enabled) => enabled && signs)
+            .pipe(
+                rxjs.operators.tap(enabled => this.airportSignsGroup.style.display = enabled ? "block" : "none"),
+                rxjs.operators.switchMap(enabled => enabled ? this.model.airportSigns : rxjs.empty())
+            )
+            .subscribe(airportSigns => {
+                if (!airportSigns)
+                    return;
+                let i = 4;
+                for (let airportSign of airportSigns) {
+                    const sign = this.airportSigns[i];
+                    sign.style.display = airportSign.projectedPosition.z > 0 ? "block" : "none";
+                    if (airportSign.projectedPosition.z > 0) {
+                        sign.setAttribute("transform", `translate(${airportSign.projectedPosition.x * screenSize}, ${airportSign.projectedPosition.y * screenSize})`);
+                        Avionics.Utils.diffAndSet(sign.querySelector("text"), airportSign.name);
+                        i--;
                     }
-                    for (; i >= 0; i--) {
-                        const sign = this.airportSigns[i];
-                        sign.style.display = "none";
-                    }
-                });
-            } else {
-                if (this.signsSubscription) {
-                    this.signsSubscription = this.signsSubscription();
                 }
-            }
-        });
-        const horizonHeadingsEnabled = new CombinedSubject([this.model.syntheticVision.enabled, this.model.syntheticVision.horizonHeadings], (horizonHeadings, enabled) => {
-            return enabled && horizonHeadings;
-        });
-        horizonHeadingsEnabled.subscribe(enabled => this.horizonHeadingsGroup.style.display = enabled ? "block" : "none");
+                for (; i >= 0; i--) {
+                    const sign = this.airportSigns[i];
+                    sign.style.display = "none";
+                }
+            });
+        rxjs.combineLatest(this.model.syntheticVision.enabled, this.model.syntheticVision.horizonHeadings, (horizonHeadings, enabled) => enabled && horizonHeadings)
+            .subscribe(enabled => this.horizonHeadingsGroup.style.display = enabled ? "block" : "none");
         this.model.flightPathMarker.show.subscribe(show => {
             this.flightPathMarker.style.display = show ? "block" : "none";
         });

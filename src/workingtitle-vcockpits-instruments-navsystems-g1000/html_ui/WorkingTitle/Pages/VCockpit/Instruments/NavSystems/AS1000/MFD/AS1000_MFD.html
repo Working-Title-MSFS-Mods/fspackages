@@ -390,10 +390,14 @@
 
     <template id="confirm-dialog"> 
         <div class="dialog">
-            <div class="message" data-element="message"></div>
-            <div class="buttons">
-                <selectable-button data-click="confirm">OK</selectable-button>
-                <selectable-button data-click="cancel">Cancel</selectable-button>
+            <div class="dialog-inner">
+                <div class="dialog-inner-2">
+                    <div class="message" data-element="message"></div>
+                    <div class="buttons">
+                        <selectable-button data-click="confirm">OK</selectable-button>
+                        <selectable-button data-click="cancel">Cancel</selectable-button>
+                    </div>
+                </div>
             </div>
         </div>
     </template>
@@ -686,6 +690,27 @@
 
     <template id="template-utility-page">
         <section>
+            <section class="category">
+                <h1>Timers</h1>
+                <section class="content">
+                    <div class="element flight-timer">
+                        <label>Flight</label>
+                        <drop-down-selector data-input="setFlightTimeMode">
+                            <drop-down-selector-option value="inAir">In Air</drop-down-selector-option>
+                            <drop-down-selector-option value="powerOn">Power On</drop-down-selector-option>
+                        </drop-down-selector>
+                        <div class="value" data-element="flightTime"></div>
+                    </div>
+                    <div class="element flight-timer">
+                        <label>Departure Time</label>
+                        <drop-down-selector data-input="setDepartureTimeMode">
+                            <drop-down-selector-option value="inAir">In Air</drop-down-selector-option>
+                            <drop-down-selector-option value="powerOn">Power On</drop-down-selector-option>
+                        </drop-down-selector>
+                        <div class="value" data-element="departureTime"></div>
+                    </div>
+                </section>
+            </section>
             <section class="category">
                 <h1>Trip Statistics</h1>
                 <section class="content">

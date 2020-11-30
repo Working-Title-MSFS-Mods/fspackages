@@ -55,14 +55,14 @@ class AS1000_PFD_Nav_Box_Model {
             }
         } else if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean")) {
             this.autopilot.vertical.active.value = "FLC";
-            this.autopilot.vertical.reference.value = this.unitChooser.chooseSpeed(`${fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "kilometers per hour"), 0)}KPH`, `${fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0)}KT`);
+            this.autopilot.vertical.reference.value = `${fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0)}KT`;
         } else if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean")) {
             if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean")) {
                 this.autopilot.vertical.active.value = "ALT*";
             } else {
                 this.autopilot.vertical.active.value = "ALT";
             }
-            this.autopilot.vertical.reference.value = this.unitChooser.chooseDistance(`${fastToFixed(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "meters"), 0)}M`, `${fastToFixed(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet"), 0)}FT`);
+            this.autopilot.vertical.reference.value = `${fastToFixed(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet"), 0)}FT`;
         } else if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
             this.autopilot.vertical.active.value = "VS";
             this.autopilot.vertical.reference.value = this.unitChooser.chooseSpeed(`${fastToFixed(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "meters per minute"), 0)}MPM`, `${fastToFixed(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute"), 0)}FPM`);

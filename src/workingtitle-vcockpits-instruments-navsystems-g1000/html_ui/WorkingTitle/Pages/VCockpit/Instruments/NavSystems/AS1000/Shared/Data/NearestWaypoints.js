@@ -2,43 +2,84 @@ class WT_Nearest_Waypoints_Repository {
     /**
      * @param {NavSystem} gps 
      * @param {WT_Settings} settings 
+     * @param {WT_Plane_State} planeState 
      */
-    constructor(gps, settings) {
-        this.airports = new Subject([], false);
-        this.nearestAirportList = new NearestAirportList(gps);
+    constructor(update$, gps, settings, planeState) {
+        this.updateFrequency = 1000; // How often we poll for nearest waypoints
 
-        this.vors = new Subject([], false);
-        this.nearestVorList = new NearestVORList(gps);
-
-        this.ndbs = new Subject([], false);
-        this.nearestNdbList = new NearestNDBList(gps);
-
-        this.filters = {
+        this.loadSettings = {
             airports: {
-                surface: settings.getValue("nearest_runway_surface"),
-                length: settings.getValue("nearest_runway_min_length"),
                 distance: 100,
-                count: 25,
+                count: 50,
                 loadCount: 100, // Airports has to load more due to post-query filtering
             },
             ndbs: {
                 distance: 50,
-                count: 25,
+                count: 50,
             },
             vors: {
                 distance: 50,
-                count: 25,
+                count: 50,
             },
         };
 
-        this.updateTimer = 0;
-        this.updateFrequency = 500;
+        this.nearestAirportList = new NearestAirportList(gps);
+        this.nearestVorList = new NearestVORList(gps);
+        this.nearestNdbList = new NearestNDBList(gps);
 
-        settings.addListener(value => this.filters.airports.surface = value, "nearest_runway_surface");
-        settings.addListener(value => this.filters.airports.length = value, "nearest_runway_min_length");
+        const throttledUpdate$ = update$.pipe(
+            rxjs.operators.throttleTime(this.updateFrequency),
+            rxjs.operators.share(),
+        );
+
+        const lowResCoordinates$ = planeState.getLowResCoordinates(0.5)
+            .pipe(rxjs.operators.shareReplay(1));
+
+        const airportFilter$ = rxjs.combineLatest(
+            settings.observe("nearest_runway_surface"),
+            settings.observe("nearest_runway_min_length"),
+            (surface, length) => ({
+                surface: surface,
+                length: length,
+                distance: 100,
+                count: 25,
+                loadCount: 100, // Airports has to load more due to post-query filtering
+            })
+        ).pipe(rxjs.operators.share());
+
+        const sortByDistance = (a, b) => a.distance - b.distance;
+
+        const waypointsObservable = (updater, waypointsObservable) => rxjs.merge(
+            lowResCoordinates$.pipe(
+                rxjs.operators.switchMapTo(rxjs.interval(100).pipe(
+                    rxjs.operators.takeWhile(i => i < 8),
+                    rxjs.operators.tap(updater)
+                )),
+                rxjs.operators.ignoreElements()
+            ), waypointsObservable
+        ).pipe(rxjs.operators.share())
+
+        this.airports = waypointsObservable(
+            () => this.updateNearestAirports(),
+            rxjs.combineLatest(
+                throttledUpdate$.pipe(rxjs.operators.map(dt => this.nearestAirportList.airports)),
+                airportFilter$,
+                (airports, filter) => airports.filter(airport => this.filterAirport(airport, filter))
+                    .sort(sortByDistance)
+                    .slice(0, this.loadSettings.airports.count)),
+        );
+
+        this.vors = waypointsObservable(
+            () => this.updateNearestVors(),
+            throttledUpdate$.pipe(rxjs.operators.map(dt => this.nearestVorList.vors.sort(sortByDistance)))
+        );
+
+        this.ndbs = waypointsObservable(
+            () => this.updateNearestNdbs(),
+            throttledUpdate$.pipe(rxjs.operators.map(dt => this.nearestNdbList.ndbs.sort(sortByDistance)))
+        );
     }
-    filterAirport(airport) {
-        const filter = this.filters.airports;
+    filterAirport(airport, filter) {
         if (airport.longestRunwayLength < filter.length)
             return false;
 
@@ -62,49 +103,15 @@ class WT_Nearest_Waypoints_Repository {
         return true;
     }
     updateNearestAirports() {
-        this.nearestAirportList.Update(this.filters.airports.loadCount, this.filters.airports.distance);
-
-        this.airports.value = this.nearestAirportList.airports
-            .filter(this.filterAirport.bind(this))
-            .sort((a, b) => {
-                return a.distance - b.distance
-            });
+        //console.log("Fired off update for airports");
+        this.nearestAirportList.Update(this.loadSettings.airports.loadCount, this.loadSettings.airports.distance);
     }
     updateNearestVors() {
-        this.nearestVorList.Update(this.filters.vors.count, this.filters.vors.distance);
-
-        this.vors.value = this.nearestVorList.vors
-            .sort((a, b) => {
-                return a.distance - b.distance
-            });
+        //console.log("Fired off update for vors");
+        this.nearestVorList.Update(this.loadSettings.vors.count, this.loadSettings.vors.distance);
     }
     updateNearestNdbs() {
-        try {
-            this.nearestNdbList.Update(this.filters.ndbs.count, this.filters.ndbs.distance);
-
-            this.ndbs.value = this.nearestNdbList.ndbs
-                .sort((a, b) => {
-                    return a.distance - b.distance
-                });
-        } catch (e) {
-            console.error(e.message);
-        }
-    }
-    update(dt) {
-        this.updateTimer += dt;
-        if (this.updateTimer < this.updateFrequency) {
-            return;
-        }
-        this.updateTimer = 0;
-
-        if (this.airports.hasSubscribers()) {
-            this.updateNearestAirports();
-        }
-        if (this.vors.hasSubscribers()) {
-            this.updateNearestVors();
-        }
-        if (this.ndbs.hasSubscribers()) {
-            this.updateNearestNdbs();
-        }
+        //console.log("Fired off update for ndbs");
+        this.nearestNdbList.Update(this.loadSettings.ndbs.count, this.loadSettings.ndbs.distance);
     }
 }

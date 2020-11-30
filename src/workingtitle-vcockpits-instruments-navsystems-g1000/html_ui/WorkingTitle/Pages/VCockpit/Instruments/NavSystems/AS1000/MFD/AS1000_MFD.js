@@ -3,7 +3,7 @@ class AS1000_MFD extends BaseAS1000 {
         super();
 
         window.addEventListener('unhandledrejection', function (event) {
-            console.error(`Unhandled exception: ${event.reason}`);
+            console.error(`Unhandled rejection: ${event.reason}`);
         });
 
         this.altimeterIndex = 0;
@@ -21,9 +21,7 @@ class AS1000_MFD extends BaseAS1000 {
 
         d.register("navBoxModel", d => new WT_MFD_Nav_Box_Model(d.pageTitle, d.unitChooser, d.settings));
         d.register("flightPlanController", d => new WT_Flight_Plan_Controller());
-        d.register("changelogRepository", d => new WT_Changelog_Repository());
-        d.register("metarDownloader", d => new WT_Metar_Downloader());
-        d.register("metarRepository", d => new WT_Metar_Repository(d.metarDownloader));
+        d.register("changelogRepository", d => new WT_Changelog_Repository());        
 
         //d.register("mainMap", d => document.querySelector("#MapInstrument"));
         d.register("mainMap", d => {
@@ -70,7 +68,7 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("intersectionInformationView", d => new WT_Intersection_Information_View(d.mainMap, d.icaoInputModel), { scope: "transient" });
 
         d.register("utilityModel", d => new WT_Utility_Page_Model(d.planeStatistics), { scope: "transient" });
-        d.register("utilityView", d => new WT_Utility_Page_View(), { scope: "transient" });
+        d.register("utilityView", d => new WT_Utility_Page_View(d.softKeyMenuHandler, d.confirmDialogHandler, d.unitChooser), { scope: "transient" });
 
         d.register("systemSettingsModel", d => new WT_System_Settings_Model(d.settings), { scope: "transient" });
         d.register("systemSettingsView", d => new WT_System_Settings_View(d.softKeyMenuHandler), { scope: "transient" });
@@ -91,7 +89,7 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("flightPlanView", d => new WT_MFD_Flight_Plan_Page_View(d.mainMap, d.softKeyMenuHandler, d.pageMenuHandler, d.confirmDialogHandler, d.showNewWaypointHandler), { scope: "transient" });
 
         d.register("nearestAirportsModel", d => new WT_Nearest_Airports_Model(this, d.showDirectToHandler, d.waypointRepository, d.unitChooser, d.mainMap, d.nearestWaypoints, d.showWaypointInfoHandler), { scope: "transient" });
-        d.register("nearestAirportsView", d => new WT_Nearest_Airports_View(d.frequencyListModel, d.unitChooser, d.softKeyMenuHandler, d.showProcedureHandler), { scope: "transient" });
+        d.register("nearestAirportsView", d => new WT_Nearest_Airports_View(d.frequencyListModel, d.unitChooser, d.softKeyMenuHandler, d.showProcedureHandler, d.planeState), { scope: "transient" });
 
         d.register("nearestNdbsModel", d => new WT_Nearest_Ndbs_Model(d.waypointRepository, d.nearestWaypoints, d.showWaypointInfoHandler), { scope: "transient" });
         d.register("nearestNdbsView", d => new WT_Nearest_Ndbs_View(d.softKeyMenuHandler, d.mainMap, d.unitChooser), { scope: "transient" });
@@ -170,10 +168,8 @@ class AS1000_MFD extends BaseAS1000 {
         this.clock = d.clock;
 
         this.updatables.push(d.flightPlanController);
-        this.updatables.push(d.nearestWaypoints);
         this.updatables.push(d.procedures);
         this.updatables.push(d.fuelUsed);
-        this.updatables.push(d.planeStatistics);
 
         this.initEngineDisplay();
         this.initMainMap(this.mapInputLayerFactory);

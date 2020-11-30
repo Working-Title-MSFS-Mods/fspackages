@@ -29,14 +29,11 @@ class Altimeter extends HTMLElement {
      * @param {WT_Altimeter_Model} model 
      */
     setModel(model) {
-        let baro = new CombinedSubject([model.barometricPressure.altUnit, model.barometricPressure.pressure], (unit, pressure) => {
-            return {
-                unit: unit,
-                pressure: pressure,
-                isStandard: (unit == WT_Barometric_Pressure.IN_MG && (Math.abs(pressure - 29.92) < 0.005)) || (unit == WT_Barometric_Pressure.HPA && (Math.abs(pressure - 1013) < 0.5))
-            }
-        });
-        baro.subscribe(settings => {
+        rxjs.combineLatest(model.barometricPressure.altUnit, model.barometricPressure.pressure, (unit, pressure) => ({
+            unit: unit,
+            pressure: pressure,
+            isStandard: (unit == WT_Barometer.IN_MG && (Math.abs(pressure - 29.92) < 0.005)) || (unit == WT_Barometer.HPA && (Math.abs(pressure - 1013) < 0.5))
+        })).subscribe(settings => {
             if (settings.isStandard) {
                 this.baroText.textContent = "STD BARO";
             } else {
@@ -45,7 +42,7 @@ class Altimeter extends HTMLElement {
         });
 
         model.altitude.subscribe(altitude => this.setAttribute("altitude", altitude));
-        model.radarAltitude.subscribe(altitude => {
+        model.radioAltimeter.altitude.subscribe(altitude => {
             if (altitude !== null) {
                 this.setAttribute("radar-altitude", altitude);
             }
@@ -358,7 +355,7 @@ class Altimeter extends HTMLElement {
                 let graduationSize = Altimeter.GRADUATION_SCALE;
                 this.graduationTexts = [];
                 const graduationSegments = [];
-                for (let i = -4; i <= 3; i++) {
+                for (let i = -3; i <= 3; i++) {
                     graduationSegments.push(...this.getRectSegments(0, center - 2 + i * graduationSize, 40, 4), "Z");
                     const gradText = this.createSvgElement("text", { x: Altimeter.ALTIMETER_WIDTH - 48, y: fastToFixed(center + 11 + i * graduationSize, 0), class: "graduation-text" });
                     const gradTextSmall = this.createSvgElement("text", { x: Altimeter.ALTIMETER_WIDTH - 10, y: fastToFixed(center + 11 + i * graduationSize, 0), class: "graduation-text-small" });

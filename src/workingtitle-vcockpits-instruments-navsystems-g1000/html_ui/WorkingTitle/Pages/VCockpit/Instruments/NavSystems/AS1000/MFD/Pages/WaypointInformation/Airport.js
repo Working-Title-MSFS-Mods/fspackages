@@ -11,30 +11,21 @@ class WT_Airport_Information_Model {
         this.airportDatabase = airportDatabase;
         this.metarRepository = metarRepository;
         this.waypoint = new Subject(null);
-        this.metar = new Subject(null);
+        this.metar = this.waypoint.observable.pipe(
+            rxjs.operators.switchMap(waypoint => waypoint ? this.metarRepository.observe(this.waypoint.value.ident) : rxjs.of(null)),
+            rxjs.operators.share()
+        );
+        this.airportData = this.waypoint.observable.pipe(
+            rxjs.operators.switchMap(waypoint => waypoint ? this.airportDatabase.get(waypoint.ident) : rxjs.of(null))
+        );
     }
-    setIcao(icao) {
-
-    }
-    async setWaypoint(waypoint) {
+    setWaypoint(waypoint) {
         this.waypoint.value = waypoint;
-        try {
-            this.metar.value = this.metarRepository.get(this.waypoint.value.ident);
-        } catch (e) {
-            this.metar.value = null;
-        }
     }
     getCountry(ident) {
         let airport = this.airportDatabase.get(ident);
         if (airport) {
             return airport.country;
-        }
-        return null;
-    }
-    getTimezone(ident) {
-        let airport = this.airportDatabase.get(ident);
-        if (airport) {
-            return Math.floor(airport.timezoneOffset / 3600 * 10) / 10;
         }
         return null;
     }
@@ -105,37 +96,33 @@ class WT_Airport_Information_View extends WT_HTML_View {
         this.subscriptions = new Subscriptions();
     }
     connectedCallback() {
-        try {
-            if (this.hasInitialised)
-                return;
-            this.hasInitialised = true;
+        if (this.hasInitialised)
+            return;
+        this.hasInitialised = true;
 
-            let template = document.getElementById('airport-information-page');
-            let templateContent = template.content;
+        let template = document.getElementById('airport-information-page');
+        let templateContent = template.content;
 
-            this.appendChild(templateContent.cloneNode(true));
-            super.connectedCallback();
+        this.appendChild(templateContent.cloneNode(true));
+        super.connectedCallback();
 
-            this.elements.frequencyList.setModel(this.frequencyListModel);
-            this.elements.waypointInput.setModel(this.waypointInputModel);
-            this.elements.runwaySelector.selectedRunway.subscribe(runway => {
-                if (runway) {
-                    let coordinates = [];
-                    coordinates.push(Avionics.Utils.bearingDistanceToCoordinates(runway.direction, (runway.length / 2) * 0.000539957, runway.latitude, runway.longitude));
-                    coordinates.push(Avionics.Utils.bearingDistanceToCoordinates((runway.direction + 180) % 360, (runway.length / 2) * 0.000539957, runway.latitude, runway.longitude));
-                    this.map.centerOnCoordinates(coordinates);
-                }
-            })
+        this.elements.frequencyList.setModel(this.frequencyListModel);
+        this.elements.waypointInput.setModel(this.waypointInputModel);
+        this.elements.runwaySelector.selectedRunway.subscribe(runway => {
+            if (runway) {
+                let coordinates = [];
+                coordinates.push(Avionics.Utils.bearingDistanceToCoordinates(runway.direction, (runway.length / 2) * 0.000539957, runway.latitude, runway.longitude));
+                coordinates.push(Avionics.Utils.bearingDistanceToCoordinates((runway.direction + 180) % 360, (runway.length / 2) * 0.000539957, runway.latitude, runway.longitude));
+                this.map.centerOnCoordinates(coordinates);
+            }
+        })
 
-            this.viewMode.subscribe(mode => {
-                this.setAttribute("mode", mode);
-            });
+        this.viewMode.subscribe(mode => {
+            this.setAttribute("mode", mode);
+        });
 
-            this.elements.directoryInformation.addEventListener("focus", () => this.elements.directory.setAttribute("highlighted", ""));
-            this.elements.directoryInformation.addEventListener("blur", () => this.elements.directory.removeAttribute("highlighted"));
-        } catch (e) {
-            console.error(e.message);
-        }
+        this.elements.directoryInformation.addEventListener("focus", () => this.elements.directory.setAttribute("highlighted", ""));
+        this.elements.directoryInformation.addEventListener("blur", () => this.elements.directory.removeAttribute("highlighted"));
     }
     /**
      * @param {WT_Airport_Information_Model} model 
@@ -143,65 +130,6 @@ class WT_Airport_Information_View extends WT_HTML_View {
     setModel(model) {
         this.model = model;
         this.inputLayer = new WT_Airport_Information_Input_Layer(this.model, this);
-        this.subscriptions.add(model.waypoint.subscribe(airport => {
-            if (airport) {
-                let infos = airport.infos;
-                const elevation = Math.max(...infos.runways.map(runway => runway.elevation));
-
-                switch (infos.privateType) {
-                    case 0:
-                        this.elements.public.textContent = "Unknown";
-                        break;
-                    case 1:
-                        this.elements.public.textContent = "Public";
-                        break;
-                    case 2:
-                        this.elements.public.textContent = "Military";
-                        break;
-                    case 3:
-                        this.elements.public.textContent = "Private";
-                        break;
-                }
-                let country = this.model.getCountry(airport.ident);
-                this.elements.country.textContent = country ? country : `____________`;
-                this.elements.elevation.innerHTML = `${(elevation * 3.28084).toFixed(0)}<span class="units">FT</span>`;
-                this.elements.runwaySelector.setFromWaypoint(airport);
-                this.frequencyListModel.setFrequencies(infos.frequencies);
-                let timezone = this.model.getTimezone(airport.ident);
-                this.elements.timezone.textContent = timezone !== null ? `UTC${timezone >= 0 ? "+" : ""}${timezone}` : "Unknown Timezone";
-            } else {
-                this.elements.public.textContent = `________`
-                this.elements.country.textContent = `____________`;
-                this.elements.elevation.innerHTML = `_____<span class="units">FT</span>`;
-                this.elements.timezone.textContent = `___`;
-            }
-        }));
-
-        this.subscriptions.add(model.metar.subscribe(metar => {
-            if (metar == null) {
-                this.elements.metar.innerHTML = "None";
-                return;
-            }
-
-            const lines = [];
-            const metarData = metar.getMetar();
-            const currentZuluSeconds = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
-            const metarZuluSeconds = metarData.getUTCHours() * 3600 + metarData.getUTCMinutes() * 60 + metarData.getUTCSeconds();
-            const metarAgeSeconds = currentZuluSeconds - metarZuluSeconds;
-            lines.push(`<b>Time:</b> ${metarData.getUTCHours()}${metarData.getUTCMinutes()}Z - <b>Age:</b> ${(metarAgeSeconds / 60).toFixed(0)}:${metarAgeSeconds % 60}`);
-            lines.push(`<b>Pressure:</b> ${metarData.altimeterInHpa}HPA`);
-            lines.push(`<b>Wind:</b> ${metarData.wind.direction} @ ${metarData.wind.speed}kts`);
-            lines.push(`<b>Visiblity:</b> ${metarData.visibility}`);
-            lines.push(`<b>Temperature:</b> ${metarData.temperature}°C`);
-            lines.push(`<b>Dewpoint:</b> ${metarData.dewpoint}°C`);
-            lines.push(`<b>Clouds:</b> ${metarData.clouds.map(cloud => {
-                return `${cloud.meaning.toUpperCase()}${cloud.altitude ? ` at ${cloud.altitude}ft` : ``}`
-            }).join(", ")}`)
-            this.elements.metar.innerHTML = `
-            ${lines.join("<br/>")}
-            <hr />
-            ${metar.metar}`;
-        }));
     }
     updateWaypoint(waypoint) {
         this.model.setWaypoint(waypoint);
@@ -227,13 +155,86 @@ class WT_Airport_Information_View extends WT_HTML_View {
         this.softKeyMenuHandler = this.menuHandler.show(this.softKeyMenu);
 
         if (intent) {
-            this.model.setIcao(intent);
+            this.model.setWaypoint(intent.waypoint);
         }
+
+        this.subscriptions.add(
+            rxjs.combineLatest(this.model.waypoint.observable, this.model.airportData).subscribe(([airport, airportData]) => {
+                if (airport) {
+                    this.elements.waypointInput.value = airport;
+                    let infos = airport.infos;
+                    const elevation = Math.max(...infos.runways.map(runway => runway.elevation));
+
+                    switch (infos.privateType) {
+                        case 0:
+                            this.elements.public.textContent = "Unknown";
+                            break;
+                        case 1:
+                            this.elements.public.textContent = "Public";
+                            break;
+                        case 2:
+                            this.elements.public.textContent = "Military";
+                            break;
+                        case 3:
+                            this.elements.public.textContent = "Private";
+                            break;
+                    }
+                    const timezone = airportData ? Math.floor(airportData.timezoneOffset / 3600 * 10) / 10 : null;
+                    const country = airportData ? airportData.country : null;
+                    this.elements.country.textContent = country ? country : `____________`;
+                    this.elements.elevation.innerHTML = `${(elevation * 3.28084).toFixed(0)}<span class="units">FT</span>`;
+                    this.elements.runwaySelector.setFromWaypoint(airport);
+                    this.frequencyListModel.setFrequencies(infos.frequencies);
+                    this.elements.timezone.textContent = timezone !== null ? `UTC${timezone >= 0 ? "+" : ""}${timezone}` : "___";
+                } else {
+                    this.elements.public.textContent = `________`
+                    this.elements.country.textContent = `____________`;
+                    this.elements.elevation.innerHTML = `_____<span class="units">FT</span>`;
+                    this.elements.timezone.textContent = `___`;
+                }
+            }),
+            this.viewMode.observable.pipe(
+                rxjs.operators.switchMap(mode => {
+                    if (mode == "WX") {
+                        return this.model.metar.pipe(
+                            rxjs.operators.map(metar => {
+                                if (metar == null)
+                                    return "None";
+
+                                const lines = [];
+                                const metarData = metar.getMetar();
+                                const currentZuluSeconds = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
+                                const metarZuluSeconds = metarData.time.getUTCHours() * 3600 + metarData.time.getUTCMinutes() * 60 + metarData.time.getUTCSeconds();
+                                const metarAgeSeconds = Math.floor(currentZuluSeconds - metarZuluSeconds);
+                                lines.push(`<b>Time:</b> ${metarData.time.getUTCHours()}:${metarData.time.getUTCMinutes()}Z - <b>Age:</b> ${(metarAgeSeconds / 60).toFixed(0)}:${metarAgeSeconds % 60}`);
+                                if (metarData.altimeterInHpa) {
+                                    lines.push(`<b>Pressure:</b> ${metarData.altimeterInHpa}HPA`);
+                                } else if (metarData.altimeterInHg) {
+                                    lines.push(`<b>Pressure:</b> ${metarData.altimeterInHg}IN`);
+                                }
+                                lines.push(`<b>Wind Direction:</b> ${metarData.wind.direction}°`);
+                                lines.push(`<b>Wind Speed:</b> ${metarData.wind.speed}kts`);
+                                lines.push(`<b>Visiblity:</b> ${metarData.visibility}`);
+                                lines.push(`<b>Temperature:</b> ${metarData.temperature}°C`);
+                                lines.push(`<b>Dewpoint:</b> ${metarData.dewpoint}°C`);
+                                lines.push(`<b>Clouds:</b> ${metarData.clouds.map(cloud => {
+                                    return `${cloud.meaning.toUpperCase()}${cloud.altitude ? ` at ${cloud.altitude}ft` : ``}`
+                                }).join(", ")}`)
+                                return `${lines.join("<br/>")}<hr />${metar.metar}`;
+                            }),
+                            rxjs.operators.startWith("Loading..."),
+                            rxjs.operators.tap(html => this.elements.metar.innerHTML = html)
+                        )
+                    }
+                    return rxjs.empty()
+                })
+            ).subscribe()
+        );
     }
     deactivate() {
         if (this.softKeyMenuHandler)
             this.softKeyMenuHandler = this.softKeyMenuHandler.pop();
-        //this.subscriptions.unsubscribe();
+        this.subscriptions.unsubscribe();
     }
 }
 customElements.define("g1000-airport-information-page", WT_Airport_Information_View);

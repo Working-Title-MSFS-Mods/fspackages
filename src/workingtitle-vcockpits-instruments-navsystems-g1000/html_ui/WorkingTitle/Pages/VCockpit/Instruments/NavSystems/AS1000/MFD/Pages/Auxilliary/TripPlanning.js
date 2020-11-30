@@ -17,15 +17,16 @@ class WT_Trip_Planning_Input_Data {
 class WT_Trip_Planning_Auto_Input_Data extends WT_Trip_Planning_Input_Data {
     /**
      * @param {WT_Clock} clock 
-     * @param {WT_Barometric_Pressure} barometricPressure 
+     * @param {WT_Barometer} barometricPressure 
      */
     constructor(clock, barometricPressure) {
         super();
         this.clock = clock;
         this.barometricPressure = barometricPressure;
+
+        clock.localTime.subscribe(time => this.departureTime = time); //TODO: this wont unsubcribe
     }
     update(dt) {
-        this.departureTime = this.clock.localTime.value;
         this.calibratedAirspeed = Simplane.getIndicatedSpeed();
         this.fuelFlow = parseFloat(SimVar.GetSimVarValue("ENG FUEL FLOW GPH:1", "gallons per hour"));
         this.fuelOnBoard = parseFloat(SimVar.GetSimVarValue("FUEL TOTAL QUANTITY:1", "gallon"));
@@ -39,7 +40,7 @@ class WT_Trip_Planning_Auto_Input_Data extends WT_Trip_Planning_Input_Data {
 class WT_Trip_Planning_Model {
     /**
      * @param {WT_Clock} clock 
-     * @param {WT_Barometric_Pressure} barometricPressure 
+     * @param {WT_Barometer} barometricPressure 
      * @param {FlightPlanManager} flightPlanManager
      */
     constructor(clock, barometricPressure, flightPlanManager) {
@@ -53,8 +54,8 @@ class WT_Trip_Planning_Model {
             ete: new Subject(0),
             eta: new Subject(0),
             esa: new Subject(0),
-            sunrise: new Subject(null),
-            sunset: new Subject(null),
+            sunrise: clock.sunrise,
+            sunset: clock.sunset,
         };
         this.fuelStats = {
             efficiency: new Subject(0),
@@ -141,8 +142,6 @@ class WT_Trip_Planning_Model {
             tripStats.eta.value = null;
             tripStats.track.value = null;
         }
-        tripStats.sunrise.value = this.clock.getSunrise();
-        tripStats.sunset.value = this.clock.getSunset();
 
         // Fuel stats
         const fuelStats = this.fuelStats;
@@ -335,6 +334,8 @@ class WT_Trip_Planning_View extends WT_HTML_View {
         this.showWaypointSelector = showWaypointSelector;
         this.map = map;
 
+        this.subscriptions = new Subscriptions();
+
         this.inputLayer = new Selectables_Input_Layer(new Selectables_Input_Layer_Dynamic_Source(this));
     }
     connectedCallback() {
@@ -362,8 +363,6 @@ class WT_Trip_Planning_View extends WT_HTML_View {
         model.tripStats.ete.subscribe(value => this.elements.ete.innerHTML = value !== null ? this.formatTime(value) : ``);
         model.tripStats.eta.subscribe(value => this.elements.eta.innerHTML = value !== null ? this.formatTime(value) : ``);
         model.tripStats.track.subscribe(value => this.elements.dtk.innerHTML = value !== null ? `${value.toFixed(0)}°` : ``);
-        model.tripStats.sunrise.subscribe(date => this.elements.sunrise.textContent = date !== null ? `${date.getHours().toFixed(0).padStart(2, "0")}:${date.getMinutes().toFixed(0).padStart(2, "0")}` : `__:__`);
-        model.tripStats.sunset.subscribe(date => this.elements.sunset.textContent = date !== null ? `${date.getHours().toFixed(0).padStart(2, "0")}:${date.getMinutes().toFixed(0).padStart(2, "0")}` : `__:__`);
 
         model.fuelStats.efficiency.subscribe(efficiency => this.elements.efficiency.textContent = efficiency.toFixed(1));
         model.fuelStats.fuelRequired.subscribe(fuelRequired => this.elements.fuelRequired.textContent = fuelRequired.toFixed(1));
@@ -483,11 +482,19 @@ class WT_Trip_Planning_View extends WT_HTML_View {
     activate() {
         this.softKeyMenuHandle = this.softKeyMenuHandler.show(this.softKeyMenu);
         this.elements.mapContainer.appendChild(this.map);
+
+        this.subscriptions.add(
+            this.model.tripStats.sunrise.subscribe(date => this.elements.sunrise.textContent = date !== null ? `${date.getHours().toFixed(0).padStart(2, "0")}:${date.getMinutes().toFixed(0).padStart(2, "0")}` : `__:__`)
+        );
+        this.subscriptions.add(
+            this.model.tripStats.sunset.subscribe(date => this.elements.sunset.textContent = date !== null ? `${date.getHours().toFixed(0).padStart(2, "0")}:${date.getMinutes().toFixed(0).padStart(2, "0")}` : `__:__`)
+        );
     }
     deactivate() {
         if (this.softKeyMenuHandle) {
             this.softKeyMenuHandle = this.softKeyMenuHandle.pop();
         }
+        this.subscriptions.unsubscribe();
     }
     showWaypointFromSelector() {
         this.showWaypointSelector.show().then(waypoint => this.model.setFromWaypoint(waypoint)).catch(e => { });

@@ -37,46 +37,54 @@ WT_Airport_Database_Airport.countries = { "BD": "Bangladesh", "BE": "Belgium", "
 
 class WT_Airport_Database {
     constructor() {
-        this.load();
+        this.airports$ = rxjs.defer(() => {
+            return rxjs.from(new Promise(async (resolve, reject) => {
+                let start = performance.now();
+
+                const timezones = {};
+                const airports = {};
+
+                await fetch("/VFS/html_ui/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/tz_info.csv").then(response => {
+                    return response.text();
+                }).then(text => {
+                    let lines = text.split("\n");
+                    for (let line of lines) {
+                        let data = line.split("\t");
+                        if (data.length == 2)
+                            timezones[data[0]] = new WT_Airport_Database_Timezone(data[1]);
+                    }
+                }).catch(e => {
+                    reject(error(`Failed to load timezones: ${e.message}`));
+                });
+
+                let num = 0;
+                await fetch("/VFS/html_ui/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/tz_airports.csv").then(response => {
+                    return response.text();
+                }).then(text => {
+                    let lines = text.split("\n");
+                    for (let line of lines) {
+                        if (line != "") {
+                            let data = line.split(",");
+                            airports[data[0]] = new WT_Airport_Database_Airport(data, timezones[data[2]]);
+                            num++;
+                        }
+                    }
+                }).catch(e => {
+                    reject(`Failed to load airports: ${e.message}`);
+                });
+
+                console.log(`Loaded ${num} airports into DB in ${(performance.now() - start).toFixed(0)}ms`);
+
+                resolve(airports);
+            }))
+        }).pipe(
+            rxjs.operators.shareReplay(1)
+        );
     }
-    async load() {
-        this.airports = {};
-        this.timezones = [];
-
-        let start = performance.now();
-
-        await fetch("/VFS/html_ui/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/tz_info.csv").then(response => {
-            return response.text();
-        }).then(text => {
-            let lines = text.split("\n");
-            for (let line of lines) {
-                let data = line.split("\t");
-                if (data.length == 2)
-                    this.timezones[data[0]] = new WT_Airport_Database_Timezone(data[1]);
-            }
-        }).catch(e => {
-            console.error(`Failed to load timezones: ${e.message}`);
-        });
-
-        let num = 0;
-        await fetch("/VFS/html_ui/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Data/tz_airports.csv").then(response => {
-            return response.text();
-        }).then(text => {
-            let lines = text.split("\n");
-            for (let line of lines) {
-                if (line != "") {
-                    let data = line.split(",");
-                    this.airports[data[0]] = new WT_Airport_Database_Airport(data, this.timezones[data[2]]);
-                    num++;
-                }
-            }
-        }).catch(e => {
-            console.error(`Failed to load airports: ${e.message}`);
-        });
-
-        console.log(`Loaded ${num} airports into DB in ${(performance.now() - start).toFixed(0)}ms`);
-    }
-    get(icao) {
-        return this.airports[icao];
+    get(ident) {
+        return this.airports$.pipe(
+            rxjs.operators.map(airports => airports[ident]),
+            rxjs.operators.take(1)
+        )
     }
 }

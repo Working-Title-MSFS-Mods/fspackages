@@ -2,7 +2,7 @@ class WT_PFD_PFD_Menu extends WT_Soft_Key_Menu {
     /**
      * @param {WT_PFD_Menu_Handler} menus 
      * @param {HSIIndicatorModel} hsiModel
-     * @param {WT_Barometric_Pressure} barometricPressure
+     * @param {WT_Barometer} barometricPressure
      * @param {WT_PFD_Synthetic_Vision_Menu} syntheticVisionMenu
      * @param {WT_PFD_Alt_Unit_Menu} altUnitMenu
      * @param {WT_PFD_Wind_Menu} windMenu

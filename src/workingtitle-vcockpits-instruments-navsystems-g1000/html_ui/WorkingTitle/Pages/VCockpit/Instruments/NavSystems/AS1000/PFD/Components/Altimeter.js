@@ -1,34 +1,113 @@
 class WT_Altimeter_Model {
     /**
      * @param {NavSystem} gps 
-     * @param {WT_Barometric_Pressure} barometricPressure 
+     * @param {WT_Barometer} barometricPressure 
      * @param {WT_Minimums} minimums
      * @param {WT_Radio_Altimeter} radioAltimeter
+     * @param {WT_Sound} sound
      */
-    constructor(gps, barometricPressure, minimums, radioAltimeter) {
+    constructor(update$, gps, barometricPressure, minimums, radioAltimeter, sound) {
         this.gps = gps;
         this.barometricPressure = barometricPressure;
         this.minimums = minimums;
         this.radioAltimeter = radioAltimeter;
+        this.sound = sound;
 
         this.lastPressure = -10000;
         this.lastSelectedAltitude = -10000;
-        this.selectedAltWasCaptured = false;
-        this.blinkTime = 0;
-        this.alertState = 0;
         this.altimeterIndex = 1;
 
-        this.altitude = new Subject(0);
-        this.radarAltitude = new Subject(null);
         this.vspeed = new Subject(0);
         this.referenceVSpeed = new Subject(0);
-        this.referenceAltitude = new Subject(0);
-        this.selectedAltitudeAlert = new Subject(null);
         this.verticalDeviation = {
             mode: new Subject(null),
             value: new Subject(0),
         }
         this.pressure = new Subject(0);
+
+        this.units = new rxjs.BehaviorSubject("nautical");
+
+        this.altitude = update$.pipe(
+            rxjs.operators.withLatestFrom(this.units),
+            rxjs.operators.map(([dt, units]) => {
+                switch (units) {
+                    case "nautical":
+                        return SimVar.GetSimVarValue("INDICATED ALTITUDE:" + this.altimeterIndex, "feet");
+                    case "metric":
+                        return SimVar.GetSimVarValue("INDICATED ALTITUDE:" + this.altimeterIndex, "metres");
+                }
+            }),
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.shareReplay(1)
+        );
+
+        this.referenceAltitude = update$.pipe(
+            rxjs.operators.map(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet")),
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.shareReplay(1)
+        )
+
+        this.selectedAltitudeAlert = this.initSelectedAltitudeAlert();
+    }
+    initSelectedAltitudeAlert() {
+        const deltaAltitudeSelected$ = rxjs.combineLatest(this.altitude, this.referenceAltitude).pipe(
+            rxjs.operators.map(([altitude, selected]) => Math.abs(altitude - selected)),
+            rxjs.operators.share()
+        );
+        const altitudeAtSelected$ = deltaAltitudeSelected$.pipe(
+            rxjs.operators.map(delta => delta <= 200),
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.debounceTime(100)
+        );
+        const altitudeCloseToSelected$ = deltaAltitudeSelected$.pipe(
+            rxjs.operators.map(delta => delta <= 1000),
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.debounceTime(100)
+        );
+
+        const selectedAltWasCaptured$ = this.referenceAltitude.pipe(
+            rxjs.operators.switchMapTo(altitudeAtSelected$.pipe(
+                rxjs.operators.takeWhile(at => !at, true)
+            )),
+            rxjs.operators.distinctUntilChanged(),
+        )
+
+        const flashAnimation$ = rxjs.interval(250).pipe(
+            rxjs.operators.map(i => i % 2 == 0),
+            rxjs.operators.takeUntil(rxjs.timer(5000)),
+            rxjs.operators.endWith(true)
+        );
+        const flashAt$ = selectedAltWasCaptured$.pipe(
+            rxjs.operators.switchMap(() => flashAnimation$.pipe(rxjs.operators.map(show => show ? "BlueText" : "Empty"))),
+            rxjs.operators.shareReplay(1)
+        );
+        const capturedLost$ = flashAnimation$.pipe(rxjs.operators.map(show => show ? "YellowText" : "Empty"));
+        const uncapturedFlashClose$ = flashAnimation$.pipe(rxjs.operators.map(show => show ? "BlueBackground" : "BlueText"));
+
+        const capturedAnimation$ = altitudeAtSelected$.pipe(rxjs.operators.switchMap(at => {
+            if (at) {
+                return flashAt$;
+            } else {
+                this.sound.play("tone_altitude_alert_default");
+                return capturedLost$;
+            }
+        }));
+        const uncapturedAnimation$ = rxjs.combineLatest(altitudeAtSelected$, altitudeCloseToSelected$).pipe(
+            rxjs.operators.switchMap(([at, close]) => {
+                if (at) {
+                    return flashAt$;
+                } else if (close) {
+                    return uncapturedFlashClose$;
+                } else {
+                    return rxjs.of("BlueText");
+                }
+            })
+        )
+
+        return selectedAltWasCaptured$.pipe(
+            rxjs.operators.switchMap(captured => captured ? capturedAnimation$ : uncapturedAnimation$),
+            rxjs.operators.startWith("BlueText")
+        )
     }
     updateVdi() {
         const cdiSource = SimVar.GetSimVarValue("GPS DRIVES NAV1", "Bool") ? 3 : SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
@@ -67,86 +146,17 @@ class WT_Altimeter_Model {
                 break;
         }
     }
-    updateRadarAltitude() {
-        if (this.radioAltimeter.isAvailable) {
-            this.radarAltitude.value = this.radioAltimeter.getAltitude();
-        }
-    }
     updatePressure() {
         this.pressure.value = this.barometricPressure.getPressure();
     }
     update(dt) {
-        const altitude = SimVar.GetSimVarValue("INDICATED ALTITUDE:" + this.altimeterIndex, "feet");
-        const selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
-        const altitudeAtSelected = Math.abs(altitude - selectedAltitude) <= 200;
-        const altitudeCloseToSelected = Math.abs(altitude - selectedAltitude) <= 1000;
-
-        this.altitude.value = altitude;
         this.vspeed.value = Simplane.getVerticalSpeed();
         if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "bool")) {
             this.referenceVSpeed.value = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute");
         } else {
             this.referenceVSpeed.value = null;
         }
-        if (selectedAltitude != this.lastSelectedAltitude) {
-            this.referenceAltitude.value = selectedAltitude;
-            this.lastSelectedAltitude = selectedAltitude;
-            this.selectedAltWasCaptured = false;
-        }
-        if (!this.selectedAltWasCaptured) {
-            if (altitudeAtSelected) {
-                this.selectedAltWasCaptured = true;
-                if (this.alertState < 2) {
-                    this.blinkTime = 5000;
-                }
-                if (this.blinkTime > 0) {
-                    this.selectedAltitudeAlert.value = Math.floor(this.blinkTime / 250) % 2 == 0 ? "BlueText" : "Empty";
-                    this.blinkTime -= dt;
-                } else {
-                    this.selectedAltitudeAlert.value = "BlueText";
-                }
-            } else if (altitudeCloseToSelected) {
-                if (this.alertState < 1) {
-                    this.blinkTime = 5000;
-                }
-                if (this.blinkTime > 0) {
-                    this.selectedAltitudeAlert.value = Math.floor(this.blinkTime / 250) % 2 == 0 ? "BlueBackground" : "BlueText";
-                    this.blinkTime -= dt;
-                } else {
-                    this.selectedAltitudeAlert.value = "BlueBackground";
-                }
-            } else {
-                this.alertState = 0;
-                this.selectedAltitudeAlert.value = "BlueText";
-            }
-        } else {
-            if (altitudeAtSelected) {
-                if (this.alertState != 2) {
-                    this.blinkTime = 5000;
-                    this.alertState = 2;
-                }
-                if (this.blinkTime > 0) {
-                    this.selectedAltitudeAlert.value = Math.floor(this.blinkTime / 250) % 2 == 0 ? "BlueText" : "Empty";
-                    this.blinkTime -= dt;
-                } else {
-                    this.selectedAltitudeAlert.value = "BlueText";
-                }
-            } else {
-                if (this.alertState != 3) {
-                    this.blinkTime = 5000;
-                    this.gps.playInstrumentSound("tone_altitude_alert_default");
-                    this.alertState = 3;
-                }
-                if (this.blinkTime > 0) {
-                    this.selectedAltitudeAlert.value = Math.floor(this.blinkTime / 250) % 2 == 0 ? "YellowText" : "Empty";
-                    this.blinkTime -= dt;
-                } else {
-                    this.selectedAltitudeAlert.value = "YellowText";
-                }
-            }
-        }
         this.updateVdi();
-        this.updateRadarAltitude();
         this.updatePressure();
     }
 }

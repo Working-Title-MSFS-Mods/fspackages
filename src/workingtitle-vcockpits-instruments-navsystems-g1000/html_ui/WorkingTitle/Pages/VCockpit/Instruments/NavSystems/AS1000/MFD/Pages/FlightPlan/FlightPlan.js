@@ -218,6 +218,8 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         this.isInputActive = new rxjs.BehaviorSubject(false);
         this.selectedLeg = new rxjs.BehaviorSubject(null);
 
+        this.subscriptions = new Subscriptions();
+
         /*DOMUtilities.AddScopedEventListener(this, "g1000-flight-plan-waypoint-line .ident", "selected", e => {
             this.showCreateNewWaypoint(e.detail.element.parentNode.waypointIndex);
         });*/
@@ -240,7 +242,6 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     setModel(model) {
         this.model = model;
         model.lines.subscribe(this.updateLines.bind(this));
-        this.activeLegSubscription = model.activeLeg.subscribe(this.updateActiveLeg.bind(this));
 
         model.viewMode.subscribe(viewMode => this.setAttribute("view-mode", viewMode));
 
@@ -260,10 +261,10 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         linesElement.onWaypointClicked.subscribe(waypointIndex => this.showCreateNewWaypoint(waypointIndex));
         linesElement.onNewWaypointLineSelected.subscribe(() => {
             this.model.newWaypointLineSelected();
-        })
+        });
 
-        rxjs.combineLatest(this.isInputActive, this.selectedLeg.pipe(rxjs.operators.distinctUntilChanged())).subscribe({
-            next: values => {
+        rxjs.combineLatest(this.isInputActive, this.selectedLeg.pipe(rxjs.operators.distinctUntilChanged())).subscribe(values => {
+            try {
                 if (values[0]) {
                     if (values[1] !== null) {
                         this.centerOnLeg(values[1]);
@@ -271,10 +272,12 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
                 } else {
                     this.centerOnFlightPlan();
                 }
+            } catch (e) {
+                console.error(e.message);
             }
         });
 
-        model.name.pipe(rxjs.distinctUntilChanged()).subscribe(name => this.elements.flightPlanName.value = name);
+        model.name.pipe(rxjs.operators.distinctUntilChanged()).subscribe(name => this.elements.flightPlanName.value = name);
 
         this.elements.flightPlanName.addEventListener("selected", () => {
             this.elements.flightPlanName.value = this.model.customName || "";
@@ -294,13 +297,13 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         } else if (selectedElement.tagName == "G1000-FLIGHT-PLAN-HEADER-LINE") {
             switch (selectedElement.type) {
                 case "departure":
-                    this.model.deleteDeparture();
+                    this.confirmDialogHandler.show("Delete departure?").then(() => this.model.deleteDeparture());
                     break;
                 case "arrival":
-                    this.model.deleteArrival();
+                    this.confirmDialogHandler.show("Delete arrival?").then(() => this.model.deleteArrival());
                     break;
                 case "approach":
-                    this.model.deleteApproach();
+                    this.confirmDialogHandler.show("Delete approach?").then(() => this.model.deleteApproach());
                     break;
             }
         }
@@ -324,8 +327,8 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         this.elements.flightPlanWaypoints.updateActiveLeg(leg);
     }
     centerOnLeg(waypointIndex) {
-        const waypoints = this.model.flightPlan.getWaypoints();
-
+        const waypoints = [...this.model.flightPlan.getWaypoints(), ...this.model.flightPlan.getApproachWaypoints()];
+        //console.log(`Index: ${waypointIndex}, Num: ${waypoints.length}`);
         const current = waypoints[waypointIndex];
         const centerOn = current.latitudeFP ? [new LatLong(current.latitudeFP, current.longitudeFP)] : [current.infos.coordinates];
         if (waypointIndex > 0) {
@@ -335,7 +338,7 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         this.map.centerOnCoordinates(centerOn, centerOn.length > 1 ? null : 20);
     }
     centerOnFlightPlan() {
-        const waypoints = this.model.flightPlan.getWaypoints();
+        const waypoints = [...this.model.flightPlan.getWaypoints(), ...this.model.flightPlan.getApproachWaypoints()];
         if (waypoints.length > 1) {
             this.map.centerOnCoordinates(waypoints.map(waypoint => {
                 return waypoint.latitudeFP ? new LatLong(waypoint.latitudeFP, waypoint.longitudeFP) : waypoint.infos.coordinates;
@@ -373,14 +376,14 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     activate() {
         this.menuHandler = this.softKeyMenuHandler.show(this.softKeyMenus.main);
         this.elements.map.appendChild(this.map);
+
+        this.subscriptions.add(this.model.activeLeg.subscribe(this.updateActiveLeg.bind(this)))
     }
     deactivate() {
-        if (this.activeLegSubscription) {
-            this.activeLegSubscription = this.activeLegSubscription();
-        }
         if (this.menuHandler) {
             this.menuHandler = this.menuHandler.pop();
         }
+        this.subscriptions.unsubscribe();
     }
 }
 customElements.define("g1000-flight-plan-page", WT_MFD_Flight_Plan_Page_View);

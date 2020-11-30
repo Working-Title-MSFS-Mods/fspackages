@@ -779,11 +779,11 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
         this.tokens = [];
         while (s.length > 0) {
             let m = s.match(/^(h+|m+|s+|:)/);
-            if (m == null ) {
+            if (m == null) {
                 console.log("Invalid duration format");
                 return;
             } else {
-                switch(m[0]) {
+                switch (m[0]) {
                     case ":":
                         this.tokens.push({
                             type: "string",
@@ -805,7 +805,7 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
     }
 
     getHours(v) {
-        return v/3600;
+        return v / 3600;
     }
 
     getMinutes(v) {
@@ -824,7 +824,7 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
 
         let result = "";
         let isValidValue = !isNaN(value) && value < 86400; // A day is probably more than worth showing...
-        for(let i = 0; i < this.tokens.length; i++) {
+        for (let i = 0; i < this.tokens.length; i++) {
             let token = this.tokens[i];
             switch (token.type) {
                 case "string":
@@ -845,17 +845,17 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
 
     getVariable(variable, length, value) {
         let v = 0;
-        switch(variable) {
-            case "h" : v = this.getHours(value); break;
-            case "m" : v = this.getMinutes(value); break;
-            case "s" : v = this.getSeconds(value); break;
+        switch (variable) {
+            case "h": v = this.getHours(value); break;
+            case "m": v = this.getMinutes(value); break;
+            case "s": v = this.getSeconds(value); break;
         }
         v = Math.floor(v);
         return this.pad(v, length);
     }
 
     pad(num, size) {
-        var s = num+"";
+        var s = num + "";
         while (s.length < size) s = "0" + s;
         return s;
     }
