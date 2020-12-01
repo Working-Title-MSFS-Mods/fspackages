@@ -260,7 +260,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.cursorIntegrals[0].construct(this.cursorSVGIntegralContainer, _cursorPosX + 25, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
                 this.cursorIntegrals[1].construct(this.cursorSVGIntegralContainer, _cursorPosX + 44, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
                 this.cursorIntegrals[2].construct(this.cursorSVGIntegralContainer, _cursorPosX + 63, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
-                this.cursorDecimals.construct(this.cursorSVGIntegralContainer, _cursorPosX + 95, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.05, "green");
+                this.cursorDecimals.construct(this.cursorSVGIntegralContainer, _cursorPosX + 95, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 0.95, "green");
                 this.cursorSVG.appendChild(this.cursorSVGIntegralContainer);
                 this.centerSVG.appendChild(this.cursorSVG);
             }
