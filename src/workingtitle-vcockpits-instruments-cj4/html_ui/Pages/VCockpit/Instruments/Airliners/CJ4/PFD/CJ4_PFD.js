@@ -42,6 +42,8 @@ class CJ4_PFD extends BaseAirliners {
     Init() {
         super.Init();
         this.radioNav.setRADIONAVSource(NavSource.GPS);
+        this.radioNav.setRADIONAVActive(1, true);
+        this.radioNav.setRADIONAVActive(2, true);
         SimVar.SetSimVarValue("L:WT_CJ4_VAP", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "knots", 0);
@@ -232,7 +234,7 @@ class CJ4_PFD extends BaseAirliners {
 
                     const apOnGPS = SimVar.GetSimVarValue('GPS DRIVES NAV1', 'Bool');
                     if (!apOnGPS) {
-                        SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0)
+                        SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0);
                     }
 
                     this.onModeChanged();
@@ -410,7 +412,6 @@ class CJ4_PFD extends BaseAirliners {
         this.radioSrc2 = _dict.get(CJ4_PopupMenu_Key.BRG_PTR2_SRC);
 
         if (this.radioSrc1 !== 'OFF') {
-            this.radioNav.setRADIONAVActive(1, true);
             if (this.radioSrc1 == "VOR1") {
                 SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_1', 'number', 2);
             }
@@ -422,12 +423,10 @@ class CJ4_PFD extends BaseAirliners {
             }
         }
         else {
-            this.radioNav.setRADIONAVActive(1, false);
             SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_1', 'number', 0);
         }
 
         if (this.radioSrc2 !== 'OFF') {
-            this.radioNav.setRADIONAVActive(2, true);
             if (this.radioSrc2 == "VOR2") {
                 SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_2', 'number', 2);
             }
@@ -439,7 +438,6 @@ class CJ4_PFD extends BaseAirliners {
             }
         }
         else {
-            this.radioNav.setRADIONAVActive(2, false);
             SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_2', 'number', 0);
         }
 
