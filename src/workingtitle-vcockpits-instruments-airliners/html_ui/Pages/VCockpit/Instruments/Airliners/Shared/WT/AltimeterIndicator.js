@@ -237,30 +237,32 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.cursorSVG.setAttribute("height", cursorHeight.toString());
             this.cursorSVG.setAttribute("viewBox", "0 0 " + cursorWidth + " " + cursorHeight);
             {
+                this.cursorSVGDefs = document.createElementNS(Avionics.SVG.NS, "defs");
+                this.cursorSVGClip = document.createElementNS(Avionics.SVG.NS, "clipPath");
+                this.cursorSVGClip.setAttribute("id", "AltCursorClip");
+                this.cursorSVGClipShape = document.createElementNS(Avionics.SVG.NS, "path");
+                this.cursorSVGClipShape.setAttribute("d", "M0 5 L95 5 L95 30 L105 40 L95 50 L95 75 L0 75 Z");
+                this.cursorSVGClip.appendChild(this.cursorSVGClipShape);
+                this.cursorSVGDefs.appendChild(this.cursorSVGClip);
+                this.cursorSVG.appendChild(this.cursorSVGDefs);
+
                 if (!this.cursorSVGShape)
                     this.cursorSVGShape = document.createElementNS(Avionics.SVG.NS, "path");
                 this.cursorSVGShape.setAttribute("fill", "black");
-                this.cursorSVGShape.setAttribute("d", "M0 0 L95 0 L95 30 L105 40 L95 50 L95 80 L0 80 Z");
+                this.cursorSVGShape.setAttribute("d", "M0 5 L95 5 L95 30 L105 40 L95 50 L95 75 L0 75 Z");
                 this.cursorSVGShape.setAttribute("stroke", "white");
-                this.cursorSVGShape.setAttribute("stroke-width", "0.85");
+                this.cursorSVGShape.setAttribute("stroke-width", "1.5");
                 this.cursorSVG.appendChild(this.cursorSVGShape);
                 var _cursorPosX = -3;
                 var _cursorPosY = cursorHeight * 0.5;
-                this.cursorIntegrals[0].construct(this.cursorSVG, _cursorPosX + 25, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
-                this.cursorIntegrals[1].construct(this.cursorSVG, _cursorPosX + 44, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
-                this.cursorIntegrals[2].construct(this.cursorSVG, _cursorPosX + 63, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.25, "green");
-                this.cursorDecimals.construct(this.cursorSVG, _cursorPosX + 95, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 0.95, "green");
+                this.cursorSVGIntegralContainer = document.createElementNS(Avionics.SVG.NS, "g");
+                this.cursorSVGIntegralContainer.setAttribute("clip-path", "url(#AltCursorClip)");
+                this.cursorIntegrals[0].construct(this.cursorSVGIntegralContainer, _cursorPosX + 25, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
+                this.cursorIntegrals[1].construct(this.cursorSVGIntegralContainer, _cursorPosX + 44, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
+                this.cursorIntegrals[2].construct(this.cursorSVGIntegralContainer, _cursorPosX + 63, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
+                this.cursorDecimals.construct(this.cursorSVGIntegralContainer, _cursorPosX + 95, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.05, "green");
+                this.cursorSVG.appendChild(this.cursorSVGIntegralContainer);
                 this.centerSVG.appendChild(this.cursorSVG);
-
-                this.cursorSVGShapeBox = document.createElementNS(Avionics.SVG.NS, "path");
-                this.cursorSVGShapeBox.setAttribute("fill", "none");
-                this.cursorSVGShapeBox.setAttribute("d", "M0 0 L95 0 L95 30 L105 40 L95 50 L95 80 L0 80 Z");
-                this.cursorSVGShapeBox.setAttribute("stroke", "#cccac8");
-                this.cursorSVGShapeBox.setAttribute("stroke-width", "2.0");
-                this.cursorSVG.appendChild(this.cursorSVGShapeBox);
-
-
-
             }
             var targetAltitudeIndicatorPosX = gradWidth - 13;
             var targetAltitudeIndicatorPosY = _top + _height * 0.5;

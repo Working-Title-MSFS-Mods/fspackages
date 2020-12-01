@@ -247,7 +247,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             {
                 this.cursorSVGDefs = document.createElementNS(Avionics.SVG.NS, "defs");
                 this.cursorSVGClip = document.createElementNS(Avionics.SVG.NS, "clipPath");
-                this.cursorSVGClip.setAttribute("id", "cursorClip");
+                this.cursorSVGClip.setAttribute("id", "SpdCursorClip");
                 this.cursorSVGClipShape = document.createElementNS(Avionics.SVG.NS, "path");
                 this.cursorSVGClipShape.setAttribute("d", "M24 22 L62 22 L62 8 L86 8 L86 28 L105 39 L86 50 L86 71 L62 71 L62 56 L24 56 Z");
                 this.cursorSVGClip.appendChild(this.cursorSVGClipShape);
@@ -264,7 +264,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 var _cursorPosX = -2;
                 var _cursorPosY = cursorHeight * 0.5 + 10.5;
                 this.cursorSVGIntegralContainer = document.createElementNS(Avionics.SVG.NS, "g");
-                this.cursorSVGIntegralContainer.setAttribute("clip-path", "url(#cursorClip)");
+                this.cursorSVGIntegralContainer.setAttribute("clip-path", "url(#SpdCursorClip)");
                 this.cursorIntegrals[0].construct(this.cursorSVGIntegralContainer, _cursorPosX + 48, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.2, "green");
                 this.cursorIntegrals[1].construct(this.cursorSVGIntegralContainer, _cursorPosX + 66, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.2, "green");
                 this.cursorDecimals.construct(this.cursorSVGIntegralContainer, _cursorPosX + 86, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.2, "green");
