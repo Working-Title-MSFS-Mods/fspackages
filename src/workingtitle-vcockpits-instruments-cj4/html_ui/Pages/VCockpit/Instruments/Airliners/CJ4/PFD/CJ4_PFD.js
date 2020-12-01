@@ -410,6 +410,7 @@ class CJ4_PFD extends BaseAirliners {
         this.radioSrc2 = _dict.get(CJ4_PopupMenu_Key.BRG_PTR2_SRC);
 
         if (this.radioSrc1 !== 'OFF') {
+            this.radioNav.setRADIONAVActive(1, true);
             if (this.radioSrc1 == "VOR1") {
                 SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_1', 'number', 2);
             }
@@ -421,10 +422,12 @@ class CJ4_PFD extends BaseAirliners {
             }
         }
         else {
+            this.radioNav.setRADIONAVActive(1, false);
             SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_1', 'number', 0);
         }
 
         if (this.radioSrc2 !== 'OFF') {
+            this.radioNav.setRADIONAVActive(2, true);
             if (this.radioSrc2 == "VOR2") {
                 SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_2', 'number', 2);
             }
@@ -436,6 +439,7 @@ class CJ4_PFD extends BaseAirliners {
             }
         }
         else {
+            this.radioNav.setRADIONAVActive(2, false);
             SimVar.SetSimVarValue('L:WT.CJ4.BearingPointerMode_2', 'number', 0);
         }
 
