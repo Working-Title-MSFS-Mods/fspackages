@@ -526,7 +526,9 @@ class Jet_NDCompass extends HTMLElement {
                     let crossTrack = SimVar.GetSimVarValue("L:WT_CJ4_XTK", "number");
                     let deviation = -(crossTrack / 2);
 
-                    let simSelectedTrack = Simplane.getNextWaypointTrack();
+                    //let simSelectedTrack = Simplane.getNextWaypointTrack();
+                    let simSelectedTrack = SimVar.GetSimVarValue("L:WT_CJ4_DTK", "number");
+
                     this.setAttribute("course", simSelectedTrack.toString());
                     this.setAttribute("course_deviation", deviation.toString());
 
