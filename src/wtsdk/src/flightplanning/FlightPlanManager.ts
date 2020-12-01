@@ -12,6 +12,7 @@ export class FlightPlanManager {
 
   private _isRegistered = false;
   private _isMaster = false;
+  private _isSyncPaused = false;
   private _currentFlightPlanVersion = 0;
   private __currentFlightPlanIndex = 0;
 
@@ -260,9 +261,9 @@ export class FlightPlanManager {
     if (index >= 0 && index < currentFlightPlan.length) {
       currentFlightPlan.activeWaypointIndex = index;
 
-      if (currentFlightPlan.directTo.isActive && currentFlightPlan.directTo.waypointIsInFlightPlan 
+      if (currentFlightPlan.directTo.isActive && currentFlightPlan.directTo.waypointIsInFlightPlan
         && currentFlightPlan.activeWaypointIndex > currentFlightPlan.directTo.planWaypointIndex) {
-          currentFlightPlan.directTo.isActive = false;
+        currentFlightPlan.directTo.isActive = false;
       }
     }
 
@@ -1305,9 +1306,9 @@ export class FlightPlanManager {
       let initFpln = new ManagedFlightPlan();
       this._flightPlans.push(initFpln);
     } else {
-      if(window.localStorage.getItem(FlightPlanManager.FlightPlanCompressedKey) == "1"){
+      if (window.localStorage.getItem(FlightPlanManager.FlightPlanCompressedKey) == "1") {
         this._flightPlans = JSON.parse(LZUTF8.decompress(fpln, { inputEncoding: "StorageBinaryString" }));
-      }else {
+      } else {
         this._flightPlans = JSON.parse(fpln);
       }
     }
@@ -1321,6 +1322,8 @@ export class FlightPlanManager {
    * Updates the synchronized flight plan version and saves it to shared storage.
    */
   public async _updateFlightPlanVersion(): Promise<void> {
+    if (this._isSyncPaused) { return; }
+
     let fpJson = JSON.stringify(this._flightPlans.map(fp => fp.serialize()));
     if (fpJson.length > 2500000) {
       fpJson = LZUTF8.compress(fpJson, { outputEncoding: "StorageBinaryString" });
@@ -1332,4 +1335,14 @@ export class FlightPlanManager {
     SimVar.SetSimVarValue(FlightPlanManager.FlightPlanVersionKey, 'number', ++this._currentFlightPlanVersion);
     //FlightPlanAsoboSync.SaveToGame(this);
   }
+
+  public pauseSync(): void {
+    this._isSyncPaused = true;
+  }
+
+  public resumeSync(): void {
+    this._isSyncPaused = false;
+    this._updateFlightPlanVersion();
+  }
+
 }
