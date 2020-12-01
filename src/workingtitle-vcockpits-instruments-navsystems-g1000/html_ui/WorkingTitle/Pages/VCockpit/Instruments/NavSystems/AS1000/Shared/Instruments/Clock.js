@@ -9,23 +9,20 @@ class WT_Clock {
     constructor(update$, planeState) {
         this.planeState = planeState;
 
-        const throttledUpdate$ = update$.pipe(rxjs.operators.throttleTime(1000));
+        const throttledUpdate$ = update$.pipe(
+            rxjs.operators.throttleTime(1000),
+            rxjs.operators.share()
+        );
 
-        this.absoluteTime = update$.pipe(
-            rxjs.operators.map(() => SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds")),
-            rxjs.operators.shareReplay(1)
-        )
-        this.localTime = throttledUpdate$.pipe(
-            rxjs.operators.map(() => SimVar.GetGlobalVarValue("LOCAL TIME", "seconds")),
-            rxjs.operators.shareReplay(1)
-        );
-        this.zuluTime = throttledUpdate$.pipe(
-            rxjs.operators.map(() => SimVar.GetGlobalVarValue("ZULU TIME", "seconds")),
-            rxjs.operators.shareReplay(1)
-        );
-        this.date = throttledUpdate$.pipe(
-            rxjs.operators.map(this.getCurrentDate.bind(this)),
-            rxjs.operators.distinctUntilChanged((a, b) => a.getTime() == b.getTime()),
+        this.absoluteTime = WT_RX.observeSimVar(update$, "E:ABSOLUTE TIME", "seconds");
+        this.localTime = WT_RX.observeGlobalVar(throttledUpdate$, "LOCAL TIME", "seconds");
+        this.zuluTime = WT_RX.observeGlobalVar(throttledUpdate$, "ZULU TIME", "seconds");
+        this.date = rxjs.combineLatest(
+            WT_RX.observeSimVar(throttledUpdate$, "E:ZULU DAY OF MONTH", "number"),
+            WT_RX.observeSimVar(throttledUpdate$, "E:ZULU MONTH OF YEAR", "number"),
+            WT_RX.observeSimVar(throttledUpdate$, "E:ZULU YEAR", "number"),
+        ).pipe(
+            rxjs.operators.map(([day, month, year]) => new Date(year, month - 1, day)),
             rxjs.operators.shareReplay(1)
         );
 
@@ -33,38 +30,13 @@ class WT_Clock {
         this.sunrise = rxjs.combineLatest(
             lowResCoordinates$,
             this.date,
-            (coordinates, date) => this.getSunrise(coordinates, date),
+            (coordinates, date) => SunriseSunsetJS.getSunrise(coordinates.lat, coordinates.long, date),
         ).pipe(rxjs.operators.shareReplay(1));
         this.sunset = rxjs.combineLatest(
             lowResCoordinates$,
             this.date,
-            (coordinates, date) => this.getSunset(coordinates, date)
+            (coordinates, date) => SunriseSunsetJS.getSunset(coordinates.lat, coordinates.long, date)
         ).pipe(rxjs.operators.shareReplay(1));
     }
-    getPlaneCoordinates() {
-        const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
-        const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-        return new LatLong(lat, long);
-    }
-    getCurrentDate() {
-        let month = SimVar.GetSimVarValue("E:ZULU MONTH OF YEAR", "number");
-        let day = SimVar.GetSimVarValue("E:ZULU DAY OF MONTH", "number");
-        let year = SimVar.GetSimVarValue("E:ZULU YEAR", "number");
-        return new Date(year, month - 1, day);
-    }
-    /**
-     * @param {LatLong} coordinates 
-     */
-    getSunrise(coordinates, date) {
-        coordinates = coordinates || this.getPlaneCoordinates();
-        return SunriseSunsetJS.getSunrise(coordinates.lat, coordinates.long, date || this.getCurrentDate());
-    }
-    /**
-     * @param {LatLong} coordinates 
-     */
-    getSunset(coordinates, date) {
-        coordinates = coordinates || this.getPlaneCoordinates();
-        return SunriseSunsetJS.getSunset(coordinates.lat, coordinates.long, date || this.getCurrentDate());
-    }
 }
-WT_Clock.SUN_EVENT_RESOLUTION = 20; // How far the plane needs to move before we bother recalculating sunrise/sunset
+WT_Clock.SUN_EVENT_RESOLUTION = 20; // How far in NM the plane needs to move before we bother recalculating sunrise/sunset

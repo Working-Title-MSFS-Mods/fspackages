@@ -203,7 +203,6 @@ class HSIndicator extends HTMLElement {
         const course = this.createSvgElement("g", { class: "course" });
 
         [-20, -10, 10, 20].forEach(position => {
-            //course.appendChild(this.createSvgElement("circle", { cx: position, cy: 0, r: 2, class: "circle-outline" }));
             course.appendChild(this.createSvgElement("path", { d: this.createCirclePath(2, 60), class: "circle", transform: `translate(${position}, 0)` }));
         });
 
@@ -431,99 +430,118 @@ class HSIndicator extends HTMLElement {
             model.flightPhase.subscribe(phase => this.flightPhase.textContent = phase);
         }
 
-        model.rotation.subscribe(rotation => {
-            this.querySelector(".compass-background-circle").style.transform = `rotate(${-rotation}deg)`;
-            this.querySelector(".compass-overlay").style.transform = `rotate(${-rotation}deg)`;
-            if (this.bearingText) {
-                let brg = Math.round(parseFloat(rotation));
-                brg = (brg == 0) ? 360 : brg;
-                this.bearingText.textContent = `${brg.toFixed(0).padStart(3, "0")}°`;
-            }
+        const mapHeading = heading => {
+            return (heading == 0 ? 360 : heading).toFixed(0).padStart(3, "0");
+        };
+
+        // Rotation
+        model.rotation.pipe(
+            WT_RX.distinctUntilSignificantChange(0.1),
+            rxjs.operators.map(rotation => `rotate(${-rotation}deg)`),
+        ).subscribe(transform => {
+            this.querySelector(".compass-background-circle").style.transform = transform;
+            this.querySelector(".compass-overlay").style.transform = transform;
         });
 
-        if (this.turnRateArc) {
-            model.turnRate.subscribe(turnRate => {
-                if (!this.smoothedTurnRate)
-                    this.smoothedTurnRate = 0;
-                this.smoothedTurnRate += (turnRate - this.smoothedTurnRate) / 5;
+        // Bearing
+        model.rotation.pipe(
+            rxjs.operators.map(Math.round),
+            rxjs.operators.map(mapHeading),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(text => this.bearingText.textContent = `${text}°`);
 
-                let value = Math.max(Math.min(parseFloat(this.smoothedTurnRate), 4), -4);
-                let arcAngle = 6 * value * Math.PI / 180;
-                let arcRadius = 53;
-                let arcWidth = 2;
-                let arrowWidth = 6;
-                let beginPointTopX = 0;
-                let beginPointBotX = 0;
-                let beginPointTopY = 0 - arcRadius - (arcWidth / 2);
-                let beginPointBotY = 0 - arcRadius + (arcWidth / 2);
-                let endPointTopX = 0 + Math.sin(arcAngle) * (arcRadius + arcWidth / 2);
-                let endPointBotX = 0 + Math.sin(arcAngle) * (arcRadius - arcWidth / 2);
-                let endPointTopY = 0 - Math.cos(arcAngle) * (arcRadius + arcWidth / 2);
-                let endPointBotY = 0 - Math.cos(arcAngle) * (arcRadius - arcWidth / 2);
-                let path;
-                if (value == 4 || value == -4) {
-                    let endPointArrowTopX = 0 + Math.sin(arcAngle) * (arcRadius + arrowWidth / 2);
-                    let endPointArrowBotX = 0 + Math.sin(arcAngle) * (arcRadius - arrowWidth / 2);
-                    let endPointArrowTopY = 0 - Math.cos(arcAngle) * (arcRadius + arrowWidth / 2);
-                    let endPointArrowBotY = 0 - Math.cos(arcAngle) * (arcRadius - arrowWidth / 2);
-                    let endPointArrowEndX = 0 + Math.sin(arcAngle + (value > 0 ? 0.1 : -0.1)) * (arcRadius);
-                    let endPointArrowEndY = 0 - Math.cos(arcAngle + (value > 0 ? 0.1 : -0.1)) * (arcRadius);
-                    path = "M" + beginPointBotX + " " + beginPointBotY + "A " + (arcRadius - arcWidth / 2) + " " + (arcRadius - arcWidth / 2) + " 0 0 " + (arcAngle > 0 ? "1" : "0") + " " + endPointBotX + " " + endPointBotY;
-                    path += "L" + endPointArrowBotX + " " + endPointArrowBotY + " L" + endPointArrowEndX + " " + endPointArrowEndY + " L" + endPointArrowTopX + " " + endPointArrowTopY;
-                    path += "L" + endPointTopX + " " + endPointTopY + "A " + (arcRadius + arcWidth / 2) + " " + (arcRadius + arcWidth / 2) + " 0 0 " + (arcAngle > 0 ? "0" : "1") + " " + beginPointTopX + " " + beginPointTopY;
-                }
-                else {
-                    path = "M" + beginPointBotX + " " + beginPointBotY + "A " + (arcRadius - arcWidth / 2) + " " + (arcRadius - arcWidth / 2) + " 0 0 " + (arcAngle > 0 ? "1" : "0") + " " + endPointBotX + " " + endPointBotY;
-                    path += "L" + endPointTopX + " " + endPointTopY + "A " + (arcRadius + arcWidth / 2) + " " + (arcRadius + arcWidth / 2) + " 0 0 " + (arcAngle > 0 ? "0" : "1") + " " + beginPointTopX + " " + beginPointTopY;
-                }
-                this.turnRateArc.setAttribute("d", path);
-            });
+        // Turn Rate
+        if (this.turnRateArc) {
+            model.turnRate.pipe(
+                rxjs.operators.scan((acc, turnRate) => acc + (turnRate - acc) / 5, 0),
+                rxjs.operators.map(turnRate => Math.round(turnRate * 10) / 10),
+                rxjs.operators.map(turnRate => Math.max(Math.min(turnRate, 4), -4)),
+                rxjs.operators.distinctUntilChanged(),
+                rxjs.operators.map(smoothedTurnRate => {
+                    let value = smoothedTurnRate;
+                    let arcAngle = 6 * value * Math.PI / 180;
+                    let arcRadius = 53;
+                    let arcWidth = 2;
+                    let arrowWidth = 6;
+                    let beginPointTopX = 0;
+                    let beginPointBotX = 0;
+                    let beginPointTopY = 0 - arcRadius - (arcWidth / 2);
+                    let beginPointBotY = 0 - arcRadius + (arcWidth / 2);
+                    let endPointTopX = 0 + Math.sin(arcAngle) * (arcRadius + arcWidth / 2);
+                    let endPointBotX = 0 + Math.sin(arcAngle) * (arcRadius - arcWidth / 2);
+                    let endPointTopY = 0 - Math.cos(arcAngle) * (arcRadius + arcWidth / 2);
+                    let endPointBotY = 0 - Math.cos(arcAngle) * (arcRadius - arcWidth / 2);
+                    let path;
+                    if (value == 4 || value == -4) {
+                        let endPointArrowTopX = 0 + Math.sin(arcAngle) * (arcRadius + arrowWidth / 2);
+                        let endPointArrowBotX = 0 + Math.sin(arcAngle) * (arcRadius - arrowWidth / 2);
+                        let endPointArrowTopY = 0 - Math.cos(arcAngle) * (arcRadius + arrowWidth / 2);
+                        let endPointArrowBotY = 0 - Math.cos(arcAngle) * (arcRadius - arrowWidth / 2);
+                        let endPointArrowEndX = 0 + Math.sin(arcAngle + (value > 0 ? 0.1 : -0.1)) * (arcRadius);
+                        let endPointArrowEndY = 0 - Math.cos(arcAngle + (value > 0 ? 0.1 : -0.1)) * (arcRadius);
+                        path = `
+                            M${beginPointBotX} ${beginPointBotY} A ${arcRadius - arcWidth / 2} ${arcRadius - arcWidth / 2} 0 0 ${arcAngle > 0 ? "1" : "0"} ${endPointBotX} ${endPointBotY}
+                            L${endPointArrowBotX} ${endPointArrowBotY} L${endPointArrowEndX} ${endPointArrowEndY} L${endPointArrowTopX} ${endPointArrowTopY}
+                            L${endPointTopX} ${endPointTopY} A ${arcRadius + arcWidth / 2} ${arcRadius + arcWidth / 2} 0 0 ${arcAngle > 0 ? "0" : "1"} ${beginPointTopX} ${beginPointTopY}
+                        `;
+                    }
+                    else {
+                        path = `
+                            M${beginPointBotX} ${beginPointBotY} A ${arcRadius - arcWidth / 2} ${arcRadius - arcWidth / 2} 0 0 ${arcAngle > 0 ? "1" : "0"} ${endPointBotX} ${endPointBotY}
+                            L${endPointTopX} ${endPointTopY} A ${arcRadius + arcWidth / 2} ${arcRadius + arcWidth / 2} 0 0 ${arcAngle > 0 ? "0" : "1"} ${beginPointTopX} ${beginPointTopY}
+                        `;
+                    }
+                    return path;
+                }),
+                rxjs.operators.distinctUntilChanged(),
+            ).subscribe(path => this.turnRateArc.setAttribute("d", path));
         }
 
-        model.heading.subscribe(heading => {
-            this.headingBug.setAttribute("transform", "rotate(" + (heading) + ")");
-            if (this.headingText) {
-                let headingValue = parseFloat(heading);
-                if (headingValue == 0) {
-                    headingValue = 360;
-                }
-                let hdg = fastToFixed(headingValue, 0);
-                this.headingText.textContent = "000".slice(hdg.length) + hdg + "°";
-            }
-        });
+        // Heading
+        model.heading.pipe(
+            rxjs.operators.tap(heading => this.headingBug.setAttribute("transform", `rotate(${heading})`)),
+            rxjs.operators.map(mapHeading),
+        ).subscribe(text => this.headingText.textContent = `${text}°`);
 
+        // Course
         if (this.course) {
-            model.cdi.bearing.subscribe(bearing => {
-                if (this.courseText) {
-                    if (bearing == 0) {
-                        bearing = 360;
-                    }
-                    let crs = fastToFixed(parseFloat(bearing), 0);
-                    this.courseText.textContent = "000".slice(crs.length) + crs + "°";
-                }
-            });
-            model.cdi.bearingAmount.subscribe(bearing => {
+            model.cdi.bearing.observable.pipe(
+                rxjs.operators.map(mapHeading),
+            ).subscribe(bearing => this.courseText.textContent = `${bearing}°`);
+
+            model.cdi.bearingAmount.observable.pipe(
+                WT_RX.distinctUntilSignificantChange(0.2)
+            ).subscribe(bearing => {
                 this.course.setAttribute("transform", `rotate(${bearing})`);
             });
         }
 
-        rxjs.combineLatest(model.cdi.deviationAmount.observable, model.cdi.source.observable, (deviation, source) => deviation > 0.95 && source == "FMS")
-            .subscribe(full => this.crossTrackError.setAttribute("visibility", full ? "visible" : "hidden"));
+        rxjs.combineLatest(model.cdi.deviationAmount.observable, model.cdi.source.observable, (deviation, source) => deviation > 0.95 && source == "FMS").pipe(
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(full => this.crossTrackError.setAttribute("visibility", full ? "visible" : "hidden"));
 
+        // CDI
         if (this.CDI) {
-            model.cdi.deviationAmount.subscribe(deviation => {
-                this.CDI.setAttribute("transform", `translate(${deviation * 20} 0)`);
+            model.cdi.displayDeviation.observable.pipe(
+                rxjs.operators.switchMap(show => show ? model.cdi.deviationAmount.observable : rxjs.of(0)),
+                rxjs.operators.map(deviation => deviation * 20),
+                WT_RX.distinctUntilSignificantChange(0.2)
+            ).subscribe(deviation => {
+                this.CDI.setAttribute("transform", `translate(${deviation} 0)`);
             });
+
             model.cdi.deviation.subscribe(deviation => {
                 deviation = parseFloat(deviation);
                 if (this.sourceIsGps) {
                     this.crossTrackError.textContent = `XTK ${deviation.toFixed(2)}NM`;
                 }
             });
+
             model.cdi.displayDeviation.subscribe(display => this.CDI.setAttribute("display", display ? "block" : "none"));
             model.cdi.toFrom.subscribe(toFrom => toFrom == 0 ? this.course.removeAttribute("direction") : this.course.setAttribute("direction", toFrom == 1 ? "to" : "from"))
         }
 
+        // Nav Source
         if (this.navSource) {
             model.cdi.source.subscribe(source => {
                 this.navSource.textContent = source == "FMS" ? this.fmsAlias : source;
@@ -550,10 +568,19 @@ class HSIndicator extends HTMLElement {
             modelBearing.display.subscribe(display => tab.element.setAttribute("display", display ? "block" : "none"));
             modelBearing.displayNeedle.subscribe(display => tab.needle.setAttribute("visibility", display ? "visible" : "hidden"));
             modelBearing.ident.subscribe(ident => tab.ident.textContent = ident ? ident : "NO DATA");
-            modelBearing.distance.subscribe(distance => tab.distance.textContent = distance == "" ? "" : fastToFixed(parseFloat(distance), 1) + "NM");
-            modelBearing.bearing.subscribe(bearing => tab.needle.setAttribute("transform", `rotate(${bearing})`));
+
+            modelBearing.distance.observable.pipe(
+                rxjs.operators.map(distance => distance !== null ? `${distance.toFixed(1)}NM` : ""),
+                rxjs.operators.distinctUntilChanged(),
+            ).subscribe(text => tab.distance.textContent = text);
+
+            modelBearing.bearing.observable.pipe(
+                rxjs.operators.map(Math.round),
+                rxjs.operators.distinctUntilChanged()
+            ).subscribe(bearing => tab.needle.setAttribute("transform", `rotate(${bearing})`));
         }
 
+        // DME
         if (this.dme) {
             model.dme.display.subscribe(display => this.dme.style.display = display ? "block" : "none");
             model.dme.ident.subscribe(value => this.dmeIdent.textContent = value);
@@ -561,6 +588,7 @@ class HSIndicator extends HTMLElement {
             model.dme.source.subscribe(value => this.dmeSource.textContent = value);
         }
 
+        // Track Indicator
         if (this.currentTrackIndicator) {
             model.track.subscribe(track => this.currentTrackIndicator.setAttribute("transform", `rotate(${track})`));
         }

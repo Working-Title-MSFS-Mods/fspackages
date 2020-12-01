@@ -56,7 +56,7 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("frequencyListModel", d => new WT_Frequency_List_Model(d.comFrequenciesModel, d.navFrequenciesModel), { scope: "transient" });
 
         d.register("mapModel", d => new WT_Map_Model(d.showMapSetupHandler, d.mainMap), { scope: "transient" });
-        d.register("mapView", d => new WT_Map_View(d.pageMenuHandler, d.softKeyController), { scope: "transient" });
+        d.register("mapView", d => new WT_Map_View(d.pageMenuHandler, d.softKeyController, d.planeState), { scope: "transient" });
 
         d.register("weatherModel", d => new WT_Weather_Page_Model(), { scope: "transient" });
         d.register("weatherView", d => new WT_Weather_Page_View(d.mainMap, d.softKeyMenuHandler), { scope: "transient" });

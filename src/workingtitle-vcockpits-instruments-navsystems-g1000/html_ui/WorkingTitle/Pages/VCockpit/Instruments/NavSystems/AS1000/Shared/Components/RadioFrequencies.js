@@ -1,15 +1,7 @@
 class WT_Radio_Frequencies_Model {
-    constructor() {
-        this.radio1 = {
-            active: new Subject(),
-            standby: new Subject(),
-            volume: new Subject(),
-        }
-        this.radio2 = {
-            active: new Subject(),
-            standby: new Subject(),
-            volume: new Subject(),
-        }
+    constructor(radio1, radio2) {
+        this.radio1 = radio1;
+        this.radio2 = radio2;
         this.selected = new Subject(1);
     }
 }

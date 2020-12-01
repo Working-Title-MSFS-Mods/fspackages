@@ -1,15 +1,21 @@
 class WT_Transponder_Model {
     /**
      * @param {WT_Settings} settings 
+     * @param {WT_Plane_State} planeState 
      */
-    constructor(settings) {
+    constructor(settings, planeState) {
         this.settings = settings;
+        this.planeState = planeState;
         this.code = new Subject(this.getSimCode());
         this.mode = new Subject();
         this.editing = new Subject(false);
         this.interrogated = new Subject(false);
         this.interrogatedTimeout = null;
         this.editingCode = null;
+
+        /*planeState.inAir.subscribe(inAir => {
+            this.setMode(4);
+        })*/
     }
     getSimCode() {
         return ("0000" + SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number")).slice(-4);

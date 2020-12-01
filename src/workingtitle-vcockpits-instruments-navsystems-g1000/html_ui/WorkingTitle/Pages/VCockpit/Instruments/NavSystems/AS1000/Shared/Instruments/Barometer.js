@@ -16,7 +16,7 @@ class WT_Barometer {
             }
         ).pipe(
             rxjs.operators.distinctUntilChanged(),
-            rxjs.operators.share(),
+            rxjs.operators.shareReplay(1),
         );
     }
     setInMG() {

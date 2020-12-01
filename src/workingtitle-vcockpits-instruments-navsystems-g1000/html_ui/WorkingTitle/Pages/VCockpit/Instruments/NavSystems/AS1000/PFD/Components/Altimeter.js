@@ -1,14 +1,14 @@
 class WT_Altimeter_Model {
     /**
      * @param {NavSystem} gps 
-     * @param {WT_Barometer} barometricPressure 
+     * @param {WT_Barometer} barometer 
      * @param {WT_Minimums} minimums
      * @param {WT_Radio_Altimeter} radioAltimeter
      * @param {WT_Sound} sound
      */
-    constructor(update$, gps, barometricPressure, minimums, radioAltimeter, sound) {
+    constructor(update$, gps, barometer, minimums, radioAltimeter, sound) {
         this.gps = gps;
-        this.barometricPressure = barometricPressure;
+        this.barometer = barometer;
         this.minimums = minimums;
         this.radioAltimeter = radioAltimeter;
         this.sound = sound;
@@ -41,11 +41,7 @@ class WT_Altimeter_Model {
             rxjs.operators.shareReplay(1)
         );
 
-        this.referenceAltitude = update$.pipe(
-            rxjs.operators.map(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet")),
-            rxjs.operators.distinctUntilChanged(),
-            rxjs.operators.shareReplay(1)
-        )
+        this.referenceAltitude = WT_RX.observeSimVar(update$, "AUTOPILOT ALTITUDE LOCK VAR", "feet");
 
         this.selectedAltitudeAlert = this.initSelectedAltitudeAlert();
     }
@@ -147,7 +143,7 @@ class WT_Altimeter_Model {
         }
     }
     updatePressure() {
-        this.pressure.value = this.barometricPressure.getPressure();
+        this.pressure.value = this.barometer.getPressure();
     }
     update(dt) {
         this.vspeed.value = Simplane.getVerticalSpeed();

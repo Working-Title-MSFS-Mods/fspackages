@@ -35,6 +35,7 @@ Data/Settings.js
 Data/Statistics.js
 Data/Timers.js
 Data/WaypointQuickSelect.js
+Instruments/Anemometer.js
 Instruments/Barometer.js
 Instruments/Clock.js
 Instruments/RadioAltimeter.js

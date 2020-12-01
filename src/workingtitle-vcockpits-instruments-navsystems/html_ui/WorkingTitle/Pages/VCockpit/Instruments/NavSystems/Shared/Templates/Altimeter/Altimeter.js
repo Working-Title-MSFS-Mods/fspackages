@@ -29,17 +29,13 @@ class Altimeter extends HTMLElement {
      * @param {WT_Altimeter_Model} model 
      */
     setModel(model) {
-        rxjs.combineLatest(model.barometricPressure.altUnit, model.barometricPressure.pressure, (unit, pressure) => ({
-            unit: unit,
-            pressure: pressure,
-            isStandard: (unit == WT_Barometer.IN_MG && (Math.abs(pressure - 29.92) < 0.005)) || (unit == WT_Barometer.HPA && (Math.abs(pressure - 1013) < 0.5))
-        })).subscribe(settings => {
-            if (settings.isStandard) {
-                this.baroText.textContent = "STD BARO";
-            } else {
-                this.baroText.textContent = settings.pressure.toFixed(settings.unit == "IN" ? 2 : 0) + settings.unit;
-            }
-        });
+        rxjs.combineLatest(model.barometer.altUnit, model.barometer.pressure).pipe(
+            rxjs.operators.map(([unit, pressure]) => {
+                const isStandard = (unit == WT_Barometer.IN_MG && (Math.abs(pressure - 29.92) < 0.005)) || (unit == WT_Barometer.HPA && (Math.abs(pressure - 1013) < 0.5));
+                return isStandard ? "STD BARO" : pressure.toFixed(unit == "IN" ? 2 : 0) + unit;
+            }),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(text => this.baroText.textContent = text);
 
         model.altitude.subscribe(altitude => this.setAttribute("altitude", altitude));
         model.radioAltimeter.altitude.subscribe(altitude => {

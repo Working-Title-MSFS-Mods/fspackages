@@ -1,10 +1,10 @@
 class HSIIndicatorModel {
-    constructor() {
-        this.rotation = new Subject(0);
-        this.heading = new Subject(0);
-        this.track = new Subject(0);
+    /**
+     * @param {rxjs.Observable} update$ 
+     * @param {WT_Plane_State} planeState 
+     */
+    constructor(update$, planeState) {
         this.flightPhase = new Subject();
-        this.turnRate = new Subject(0);
         this.cdi = {
             sourceId: new Subject(null),
             source: new Subject("FMS"),
@@ -21,7 +21,7 @@ class HSIIndicatorModel {
                 sourceId: new Subject(),
                 source: new Subject(""),
                 ident: new Subject(""),
-                distance: new Subject(),
+                distance: new Subject(null),
                 bearing: new Subject(0),
                 bearingGoal: 0,
                 display: new Subject(),
@@ -32,7 +32,7 @@ class HSIIndicatorModel {
                 sourceId: new Subject(),
                 source: new Subject(""),
                 ident: new Subject(""),
-                distance: new Subject(),
+                distance: new Subject(null),
                 bearing: new Subject(0),
                 bearingGoal: 0,
                 display: new Subject(),
@@ -60,6 +60,13 @@ class HSIIndicatorModel {
 
         this.updateIndex = 0;
         this.lastUpdate = performance.now() / 1000;
+
+        this.rotation = WT_RX.observeSimVar(update$, "PLANE HEADING DEGREES MAGNETIC", "degree");
+        this.track = planeState.inAir.pipe(
+            rxjs.operators.switchMap(inAir => inAir ? WT_RX.observeSimVar(update$, "GPS GROUND MAGNETIC TRACK", "degrees") : rxjs.of(0))
+        );
+        this.heading = WT_RX.observeSimVar(update$, "AUTOPILOT HEADING LOCK DIR", "degree");
+        this.turnRate = WT_RX.observeSimVar(update$, "TURN INDICATOR RATE", "degree per second");
     }
     updateCdi(dt) {
         let now = performance.now() / 1000;
@@ -144,13 +151,13 @@ class HSIIndicatorModel {
                 bearing.source.value = "NAV1";
                 if (SimVar.GetSimVarValue("NAV HAS NAV:1", "Bool")) {
                     bearing.ident.value = SimVar.GetSimVarValue("NAV IDENT:1", "string");
-                    bearing.distance.value = SimVar.GetSimVarValue("NAV HAS DME:1", "Bool") ? SimVar.GetSimVarValue("NAV DME:1", "nautical miles") : "";
+                    bearing.distance.value = SimVar.GetSimVarValue("NAV HAS DME:1", "Bool") ? parseFloat(SimVar.GetSimVarValue("NAV DME:1", "nautical miles")) : null;
                     bearing.bearingGoal = (180 + SimVar.GetSimVarValue("NAV RADIAL:1", "degree")) % 360;
                     bearing.displayNeedle.value = true;
                 }
                 else {
                     bearing.ident.value = null;
-                    bearing.distance.value = "";
+                    bearing.distance.value = null;
                     bearing.displayNeedle.value = false;
                     //bearing.bearing.value = "";
                 }
@@ -159,13 +166,13 @@ class HSIIndicatorModel {
                 bearing.source.value = "NAV2";
                 if (SimVar.GetSimVarValue("NAV HAS NAV:2", "Bool")) {
                     bearing.ident.value = SimVar.GetSimVarValue("NAV IDENT:2", "string");
-                    bearing.distance.value = SimVar.GetSimVarValue("NAV HAS DME:2", "Bool") ? SimVar.GetSimVarValue("NAV DME:2", "nautical miles") : "";
+                    bearing.distance.value = SimVar.GetSimVarValue("NAV HAS DME:2", "Bool") ? parseFloat(SimVar.GetSimVarValue("NAV DME:2", "nautical miles")) : null;
                     bearing.bearingGoal = (180 + SimVar.GetSimVarValue("NAV RADIAL:2", "degree")) % 360;
                     bearing.displayNeedle.value = true;
                 }
                 else {
                     bearing.ident.value = null;
-                    bearing.distance.value = "";
+                    bearing.distance.value = null;
                     bearing.displayNeedle.value = false;
                     //bearing.bearing.value = "";
                 }
@@ -173,13 +180,13 @@ class HSIIndicatorModel {
             case 3:
                 bearing.source.value = "GPS";
                 bearing.ident.value = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
-                bearing.distance.value = SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles");
+                bearing.distance.value = parseFloat(SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles"));
                 bearing.bearingGoal = SimVar.GetSimVarValue("GPS WP BEARING", "degree");
                 bearing.displayNeedle.value = SimVar.GetSimVarValue("GPS WP NEXT ID", "string") != "";
                 break;
             case 4:
                 bearing.source.value = "ADF";
-                bearing.distance.value = "";
+                bearing.distance.value = null;
                 if (SimVar.GetSimVarValue("ADF SIGNAL:1", "number")) {
                     bearing.ident.value = parseFloat(SimVar.GetSimVarValue("ADF ACTIVE FREQUENCY:1", "KHz")).toFixed(1);
                     bearing.bearingGoal = (SimVar.GetSimVarValue("ADF RADIAL:1", "degree") + SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree")) % 360;
@@ -229,11 +236,6 @@ class HSIIndicatorModel {
         }
     }
     update(dt) {
-        this.rotation.value = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
-        this.turnRate.value = this.turnRate.value + (SimVar.GetSimVarValue("TURN INDICATOR RATE", "degree per second") - this.turnRate.value) / 5;
-        this.heading.value = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degree");
-        this.track.value = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees");
-
         this.updateCdi(dt);
         this.updateBearing(1, this.bearing[0]);
         this.updateBearing(2, this.bearing[1]);

@@ -93,6 +93,7 @@ class WT_Shared_Dependencies {
         d.register("planeStatistics", d => new WT_Plane_Statistics(d.update$, d.planeState, d.clock));
 
         // Instrumentation
+        d.register("anemometer", d => new WT_Anemometer(d.update$, d.planeState));
         d.register("electricityAvailable", d => new Subject(navSystem.isElectricityAvailable()));
         d.register("fuelUsed", d => new WT_Fuel_Used(d.planeState, ["FUEL LEFT QUANTITY", "FUEL RIGHT QUANTITY"]));
         d.register("radioAltimeter", d => new WT_Radio_Altimeter(d.planeConfig, d.update$));
@@ -130,8 +131,8 @@ class WT_Shared_Dependencies {
         d.register("arrivalPageView", d => new WT_Arrival_Page_View());
         d.register("procedureFacilityRepository", d => new WT_Procedure_Facility_Repository(d.facilityLoader));
 
-        d.register("comFrequenciesModel", d => new WT_Com_Frequencies_Model());
-        d.register("navFrequenciesModel", d => new WT_Nav_Frequencies_Model());
+        d.register("comFrequenciesModel", d => new WT_Com_Frequencies_Model(d.update$));
+        d.register("navFrequenciesModel", d => new WT_Nav_Frequencies_Model(d.update$));
 
         d.register("showDuplicatesHandler", d => new WT_Show_Duplicates_Handler());
         d.register("icaoInputModel", d => new WT_Icao_Input_Model(d.showDuplicatesHandler, d.waypointQuickSelect), { scope: "transient" });

@@ -76,3 +76,45 @@ class Subscriptions {
         this.subscriptions = [];
     }
 }
+
+class WT_RX {
+    static observeSimVar(update$, simvar, units, distinct = true) {
+        let observable = update$;
+
+        observable = observable.pipe(
+            rxjs.operators.map(() => SimVar.GetSimVarValue(simvar, units))
+        );
+
+        if (distinct)
+            observable = observable.pipe(rxjs.operators.distinctUntilChanged())
+
+        return observable.pipe(
+            rxjs.operators.shareReplay(1)
+        );
+    }
+    static observeGlobalVar(update$, globalvar, units, distinct = true) {
+        let observable = update$;
+
+        observable = observable.pipe(
+            rxjs.operators.map(() => SimVar.GetGlobalVarValue(globalvar, units))
+        );
+
+        if (distinct)
+            observable = observable.pipe(rxjs.operators.distinctUntilChanged())
+
+        return observable.pipe(
+            rxjs.operators.shareReplay(1)
+        );
+    }
+    static distinctUntilSignificantChange(delta) {
+        return rxjs.pipe(
+            rxjs.operators.scan((acc, current) => {
+                if (acc === null) {
+                    return current;
+                }
+                return Math.abs(acc - current) > delta ? current : acc
+            }, null),
+            rxjs.operators.distinctUntilChanged()
+        );
+    }
+}

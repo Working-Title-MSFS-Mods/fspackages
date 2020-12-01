@@ -89,7 +89,7 @@ class WT_Utility_Page_View extends WT_HTML_View {
             ).subscribe(html => element.innerHTML = html);
         }
 
-        this.subscriptions.add([
+        this.subscriptions.add(
             renderStatistic(this.unitChooser.observeDistance(observeSource(statistics.odometer, 1, 1, "KM"), observeSource(statistics.odometer, 0.539957, 1, "NM")), this.elements.odometer),
             renderStatistic(this.unitChooser.observeDistance(observeSource(statistics.tripOdometer, 1, 1, "KM"), observeSource(statistics.tripOdometer, 0.539957, 1, "NM")), this.elements.tripOdometer),
             renderStatistic(this.unitChooser.observeSpeed(observeSource(statistics.averageGroundSpeed, 1, 1, "KPH"), observeSource(statistics.averageGroundSpeed, 0.539957, 1, "KTS")), this.elements.averageGroundSpeed),
@@ -122,7 +122,7 @@ class WT_Utility_Page_View extends WT_HTML_View {
             ).subscribe(time => {
                 this.elements.departureTime.innerHTML = time === null ? "-" : `${this.formatTime(time)}<span class="units">LCL</span>`;
             })
-        ]);
+        );
 
         this.softKeyMenuHandle = this.softKeyMenuHandler.show(this.softKeyMenu);
     }

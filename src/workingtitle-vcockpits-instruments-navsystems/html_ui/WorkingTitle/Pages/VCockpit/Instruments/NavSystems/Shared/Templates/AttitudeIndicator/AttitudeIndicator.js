@@ -179,6 +179,8 @@ class AttitudeIndicator extends HTMLElement {
             this.horizonTop.style.display = enabled ? "none" : "block";
             this.horizonTopGradient.style.display = enabled ? "none" : "block";
         });
+
+        // Airport Signs
         rxjs.combineLatest(this.model.syntheticVision.enabled, this.model.syntheticVision.airportSigns, (signs, enabled) => enabled && signs)
             .pipe(
                 rxjs.operators.tap(enabled => this.airportSignsGroup.style.display = enabled ? "block" : "none"),
@@ -202,45 +204,79 @@ class AttitudeIndicator extends HTMLElement {
                     sign.style.display = "none";
                 }
             });
-        rxjs.combineLatest(this.model.syntheticVision.enabled, this.model.syntheticVision.horizonHeadings, (horizonHeadings, enabled) => enabled && horizonHeadings)
-            .subscribe(enabled => this.horizonHeadingsGroup.style.display = enabled ? "block" : "none");
+
+
+        // Flight Path Marker
         this.model.flightPathMarker.show.subscribe(show => {
             this.flightPathMarker.style.display = show ? "block" : "none";
         });
-        this.model.flightPathMarker.position.subscribe(position => {
-            if (position) {
-                this.flightPathMarker.setAttribute("transform", `translate(${position.x * screenSize}, ${position.y * screenSize})`);
-            }
+
+        this.model.flightPathMarker.position.observable.pipe(
+            rxjs.operators.filter(position => position),
+            rxjs.operators.map(position => ({ x: Math.floor(position.x * screenSize), y: Math.floor(position.y * screenSize) })),
+            rxjs.operators.distinctUntilChanged((a, b) => a.x == b.x && a.y == b.y)
+        ).subscribe(position => {
+            this.flightPathMarker.setAttribute("transform", `translate(${position.x}, ${position.y})`);
         });
-        this.model.pitchBank.subscribe(pitchBank => {
-            const pitch = pitchBank.pitch;
-            const bank = pitchBank.bank;
 
-            // We quantize the angle to 5 degree increments and move the text group by that amount so we always see 5 sets of text at once
-            // Then we update the text values to correspond to the correct angle
-            const quantizedAngle = Math.floor(pitch / 10) * 10;
-            if (quantizedAngle !== this.lastQuantizedAngle) {
-                this.angleGroup.setAttribute("transform", `translate(0,${-quantizedAngle * this.bankSizeRatio})`);
-                for (const angleTextElement of this.angleTextElements) {
-                    let angle = -(quantizedAngle + angleTextElement.position * 10);
-                    angle = angle == 0 ? "" : angle;
-                    angleTextElement.left.textContent = angle;
-                    angleTextElement.right.textContent = angle;
-                }
-                this.lastQuantizedAngle = quantizedAngle;
+        // Pitch / Bank
+        const pitch$ = this.model.pitchBank.observable.pipe(
+            rxjs.operators.map(pitchBank => pitchBank.pitch),
+            WT_RX.distinctUntilSignificantChange(0.1),
+            rxjs.operators.shareReplay(1)
+        );
+        const bank$ = this.model.pitchBank.observable.pipe(
+            rxjs.operators.map(pitchBank => pitchBank.bank),
+            WT_RX.distinctUntilSignificantChange(0.1),
+            rxjs.operators.shareReplay(1)
+        );
+
+        // Attitude ladder
+        pitch$.pipe(
+            rxjs.operators.map(pitch => Math.floor(pitch / 10) * 10),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(quantizedAngle => {
+            this.angleGroup.setAttribute("transform", `translate(0,${-quantizedAngle * this.bankSizeRatio})`);
+            for (const angleTextElement of this.angleTextElements) {
+                let angle = -(quantizedAngle + angleTextElement.position * 10);
+                angle = angle == 0 ? "" : angle;
+                angleTextElement.left.textContent = angle;
+                angleTextElement.right.textContent = angle;
             }
-
+        })
+      
+        // Background
+        rxjs.combineLatest(pitch$, bank$).pipe(
+            rxjs.operators.map(([pitch, bank]) => {
+                return `rotate(${bank}, 0, 0) translate(0,${pitch * this.bankSizeRatio})`
+            })
+        ).subscribe(transform => {
+            this.bottomPart.setAttribute("transform", transform);
+            this.attitudePitch.setAttribute("transform", transform);
+        });
+        bank$.subscribe(bank => {
             this.attitudeBank.setAttribute("transform", `rotate(${bank}, 0, 0)`);
-            this.bottomPart.setAttribute("transform", `rotate(${bank}, 0, 0) translate(0,${pitch * this.bankSizeRatio})`);
-            this.attitudePitch.setAttribute("transform", `rotate(${bank}, 0, 0) translate(0,${pitch * this.bankSizeRatio})`);
         });
+
+        // Flight Director
         this.model.flightDirector.pitchBank.subscribe(pitchBank => {
             this.flightDirector.setAttribute("transform", `rotate(${pitchBank.bank}) translate(0 ${(pitchBank.pitch) * this.bankSizeRatio})`);
         });
         this.model.flightDirector.show.subscribe(show => this.flightDirector.style.display = show ? "block" : "none");
-        this.model.slipSkid.subscribe(value => this.slipSkid.setAttribute("transform", `translate(${value * 40}, 0)`));
 
-        this.model.heading.subscribe(heading => {
+        // Slip Skid
+        this.model.slipSkid.observable.pipe(
+            rxjs.operators.map(value => Math.round(value * 40)),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(value => this.slipSkid.setAttribute("transform", `translate(${value}, 0)`));
+
+        // Horizon Headings
+        rxjs.combineLatest(this.model.syntheticVision.enabled, this.model.syntheticVision.horizonHeadings, (horizonHeadings, enabled) => enabled && horizonHeadings)
+            .subscribe(enabled => this.horizonHeadingsGroup.style.display = enabled ? "block" : "none");
+
+        this.model.syntheticVision.horizonHeadings.pipe(
+            rxjs.operators.switchMap(enabled => enabled ? this.model.heading.observable : rxjs.of(0))
+        ).subscribe(heading => {
             const quantizedHeading = Math.floor(heading / 30) * 30;
             const delta = quantizedHeading - heading;
             for (let i = 0; i < this.horizonHeadings.length; i++) {
@@ -250,8 +286,9 @@ class AttitudeIndicator extends HTMLElement {
                 this.horizonHeadings[i].querySelector("text").textContent = text == 0 ? 360 : text;
                 this.horizonHeadings[i].setAttribute("transform", `translate(${projected.x * screenSize}, 0)`);
             }
-        });
+        })
 
+        // Synthetic Vision
         this.model.syntheticVision.enabled.subscribe(enabled => {
             this.lastQuantizedAngle = null;
             this.setAttribute("bank_size_ratio", enabled ? "-17" : "-6");

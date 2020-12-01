@@ -64,7 +64,7 @@ class WT_Toggleable_Subject {
 
 class WT_Debug_Console {
     /**
-     * @param {NavSystem} instrument 
+     * @param {string} instrumentID
      */
     constructor(instrument) {
         this.prefix = instrument.templateID;
@@ -222,8 +222,13 @@ class WT_Debug_Console_View extends WT_HTML_View {
             }
         }
 
+        function compareXY(a, b) {
+            return a.x == b.x && a.y == b.y;
+        }
+
         const mouseMove$ = rxjs.fromEvent(window.document, "mousemove").pipe(
-            rxjs.operators.map(mouseEventToXY)
+            rxjs.operators.map(mouseEventToXY),
+            rxjs.operators.share()
         )
 
         const mouseUp$ = rxjs.fromEvent(window.document, "mouseup").pipe(
@@ -258,6 +263,7 @@ class WT_Debug_Console_View extends WT_HTML_View {
                 x: Math.max(0, Math.min(window.innerWidth - this.offsetWidth, position.x)),
                 y: Math.max(0, Math.min(window.innerHeight - this.offsetHeight, position.y))
             })),
+            rxjs.operators.distinctUntilChanged(compareXY),
             rxjs.operators.tap(position => {
                 this.style.left = `${position.x}px`;
                 this.style.top = `${position.y}px`;
@@ -298,6 +304,7 @@ class WT_Debug_Console_View extends WT_HTML_View {
                 x: Math.max(400, dimensions.x),
                 y: Math.max(200, dimensions.y)
             })),
+            rxjs.operators.distinctUntilChanged(compareXY),
             rxjs.operators.tap(dimensions => {
                 this.style.width = `${dimensions.x}px`;
                 this.style.height = `${dimensions.y}px`;

@@ -35,7 +35,8 @@ class WT_Airspeed_Model {
                     case "metric":
                         return Simplane.getIndicatedSpeed() * 1.852
                 }
-            })
+            }),
+            rxjs.operators.shareReplay(1)
         );
 
         this.airspeedUnits = units$.pipe(rxjs.operators.map(units => units == "nautical" ? "KTS" : "KPH"));
@@ -48,7 +49,8 @@ class WT_Airspeed_Model {
                     case "metric":
                         return Simplane.getTrueSpeed() * 1.852
                 }
-            })
+            }),
+            rxjs.operators.shareReplay(1)
         );
 
         this.trend = rxjs.combineLatest(
@@ -68,22 +70,20 @@ class WT_Airspeed_Model {
             }, 0)
         );
 
-        const showReferenceSpeed$ = update$.pipe(
-            rxjs.operators.map(units => SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean")),
-            rxjs.operators.distinctUntilChanged()
-        );
+        const showReferenceSpeed$ = WT_RX.observeSimVar(update$, "AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean");
+        const referenceSpeedKnots$ = WT_RX.observeSimVar(update$, "AUTOPILOT AIRSPEED HOLD VAR", "knots");
+        const referenceSpeedKph$ = WT_RX.observeSimVar(update$, "AUTOPILOT AIRSPEED HOLD VAR", "kilometers per hour");
         this.referenceSpeed = {
             show: showReferenceSpeed$,
             speed: update$.pipe(
                 rxjs.operators.withLatestFrom(showReferenceSpeed$),
                 rxjs.operators.filter(values => values[1]),
-                rxjs.operators.map(values => {
-                    const units = values[0];
-                    switch (units) {
+                rxjs.operators.switchMap(values => {
+                    switch (values[0]) {
                         case "nautical":
-                            return SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots")
+                            return referenceSpeedKnots$
                         case "metric":
-                            return SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "kilometers per hour")
+                            return referenceSpeedKph$
                     }
                 })
             )
@@ -165,16 +165,16 @@ class AirspeedIndicator extends HTMLElement {
     constructor() {
         super();
         this.trendValue = 0;
-        this.redBegin = 0;
-        this.redEnd = 0;
-        this.greenBegin = 0;
-        this.greenEnd = 0;
-        this.flapsBegin = 0;
-        this.flapsEnd = 0;
-        this.yellowBegin = 0;
-        this.yellowEnd = 0;
-        this.minValue = 0;
-        this.maxValue = 0;
+        this.redBegin = new rxjs.BehaviorSubject(0);
+        this.redEnd = new rxjs.BehaviorSubject(0);
+        this.greenBegin = new rxjs.BehaviorSubject(0);
+        this.greenEnd = new rxjs.BehaviorSubject(0);
+        this.flapsBegin = new rxjs.BehaviorSubject(0);
+        this.flapsEnd = new rxjs.BehaviorSubject(0);
+        this.yellowBegin = new rxjs.BehaviorSubject(0);
+        this.yellowEnd = new rxjs.BehaviorSubject(0);
+        this.minValue = new rxjs.BehaviorSubject(0);
+        this.maxValue = new rxjs.BehaviorSubject(0);
         this.currentCenterGrad = -1000;
         this.referenceBugs = [];
         this.nocolor = false;
@@ -185,72 +185,298 @@ class AirspeedIndicator extends HTMLElement {
     setModel(model) {
         this.model = model;
 
-        model.airspeed.subscribe(this.updateAirspeed.bind(this));
+        const airspeed$ = model.airspeed.pipe(
+            rxjs.operators.map(speed => Math.max(20, speed)),
+            rxjs.operators.shareReplay(1)
+        );
 
-        model.trueAirspeed.subscribe(tas => {
-            this.tasText.textContent = tas.toFixed(0);
+        const center$ = airspeed$.pipe(
+            rxjs.operators.map(airspeed => Math.max(Math.round(airspeed / 10) * 10, 60)),
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.shareReplay(1)
+        );
+
+        rxjs.combineLatest(airspeed$, center$).pipe(
+            rxjs.operators.map(([airspeed, center]) => airspeed - center),
+            rxjs.operators.map(delta => Math.floor(delta * 10)),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(translate => {
+            this.centerGroup.setAttribute("transform", `translate(0, ${translate})`);
         });
 
-        model.references.subscribe(references => {
-            for (let i = 0; i < references.length; i++) {
-                if (i >= this.referenceBugs.length) {
-                    const bug = new ReferenceBug();
-                    bug.group = this.createSvgElement("g", { class: "reference-bug" });
-                    this.centerSvg.appendChild(bug.group);
-                    bug.bug = this.createSvgElement("polygon", { points: "0,300 10,315 50,315 50,285 10,285" });
-                    bug.group.appendChild(bug.bug);
-                    bug.text = this.createSvgElement("text", { x: 30, y: 310 });
-                    bug.group.appendChild(bug.text);
-                    this.referenceBugs.push(bug);
+        const updateDigit = (top, bottom) => digits => {
+            if (digits === null) {
+                bottom.textContent = "-";
+                top.textContent = "-";
+            } else {
+                bottom.textContent = digits[0];
+                top.textContent = digits[1];
+            }
+        }
+
+        const endValue$ = airspeed$.pipe(
+            rxjs.operators.map(speed => speed % 10),
+            rxjs.operators.shareReplay(1)
+        );
+
+        const airspeedAlive$ = airspeed$.pipe(
+            rxjs.operators.map(airspeed => airspeed > 20),
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.shareReplay(1)
+        )
+
+        // First digit
+        const airspeedFirstValidDigit$ = airspeed$.pipe(
+            rxjs.operators.map(airspeed => (Math.abs(airspeed) % 1000) / 100),
+            rxjs.operators.map(Math.floor),
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.map(digit => [digit > 0 ? digit : "", (digit + 1) % 10]),
+            rxjs.operators.shareReplay(1)
+        );
+
+        const airspeedFirstInvalidDigit$ = rxjs.of(["", ""]);
+
+        const airspeedFirstDigit$ = airspeed$.pipe(
+            rxjs.operators.map(speed => speed >= 99),
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.switchMap(above99 => above99 ? airspeedFirstValidDigit$ : airspeedFirstInvalidDigit$)
+        );
+
+        airspeedAlive$.pipe(
+            rxjs.operators.switchMap(alive => alive ? airspeedFirstDigit$ : rxjs.of(null)),
+        ).subscribe(updateDigit(this.digit1Top, this.digit1Bot));
+
+        // Second digit
+        const airspeedSecondDigit$ = airspeed$.pipe(
+            rxjs.operators.map(airspeed => (Math.abs(airspeed) % 100) / 10),
+            rxjs.operators.map(Math.floor),
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.map(digit => [digit, (digit + 1) % 10]),
+            rxjs.operators.shareReplay(1)
+        );
+
+        airspeedAlive$.pipe(
+            rxjs.operators.switchMap(alive => alive ? airspeedSecondDigit$ : rxjs.of(null))
+        ).subscribe(updateDigit(this.digit2Top, this.digit2Bot));
+
+        airspeedAlive$.pipe(
+            rxjs.operators.switchMap(alive => {
+                if (alive) {
+                    return endValue$.pipe(
+                        rxjs.operators.map(endValue => {
+                            if (endValue > 9)
+                                return (endValue - 9) * 55
+                            return 0;
+                        }),
+                        rxjs.operators.distinctUntilChanged()
+                    )
+                } else {
+                    return rxjs.of(0)
                 }
-                this.referenceBugs[i].value = references[i].speed;
-                this.referenceBugs[i].text.textContent = references[i].id;
-                this.referenceBugs[i].group.setAttribute("display", "");
+            })
+        ).subscribe(translate => {
+            this.digit2Bot.setAttribute("transform", `translate(0,${translate})`);
+            this.digit2Top.setAttribute("transform", `translate(0,${translate})`);
+        });
+
+        rxjs.combineLatest(endValue$, airspeedSecondDigit$).pipe(
+            rxjs.operators.map(([endValue, secondDigits]) => {
+                if (endValue > 9 && secondDigits[0] >= 9)
+                    return (endValue - 9) * 55;
+                return 0;
+            }),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(translate => {
+            this.digit1Bot.setAttribute("transform", `translate(0, ${translate})`);
+            this.digit1Top.setAttribute("transform", `translate(0, ${translate})`);
+        });
+
+        // End digits
+        const endCenter$ = endValue$.pipe(
+            rxjs.operators.map(Math.round),
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.shareReplay(1)
+        );
+
+        rxjs.combineLatest(airspeedAlive$, endCenter$, endValue$).pipe(
+            rxjs.operators.map(([airspeedAlive, endCenter, endValue]) => {
+                if (airspeedAlive) {
+                    return (endValue - endCenter) * 45;
+                }
+                return 0;
+            }),
+            rxjs.operators.map(Math.floor),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(translate => {
+            this.endDigitsGroup.setAttribute("transform", `translate(0, ${translate})`);
+        });
+
+        airspeedAlive$.pipe(
+            rxjs.operators.switchMap(alive => alive ? endCenter$ : rxjs.of(null))
+        ).subscribe(endCenter => {
+            for (let i = 0; i < this.endDigits.length; i++) {
+                const digitValue = (2 - i + endCenter + 10) % 10;
+                const emptyValue = i == 2 ? "-" : " ";
+                this.endDigits[i].textContent = endCenter === null ? emptyValue : digitValue;
             }
-            for (let i = references.length; i < this.referenceBugs.length; i++) {
-                this.referenceBugs[i].group.setAttribute("display", "none");
+        })
+
+        // Reference bugs
+        const referenceBugs$ = model.references.pipe(
+            rxjs.operators.scan((elements, references) => {
+                for (let i = 0; i < references.length; i++) {
+                    if (i >= elements.length) {
+                        const bug = new ReferenceBug();
+                        bug.group = this.createSvgElement("g", { class: "reference-bug" });
+                        this.centerSvg.appendChild(bug.group);
+                        bug.bug = this.createSvgElement("polygon", { points: "0,300 10,315 50,315 50,285 10,285" });
+                        bug.group.appendChild(bug.bug);
+                        bug.text = this.createSvgElement("text", { x: 30, y: 310 });
+                        bug.group.appendChild(bug.text);
+                        elements.push(bug);
+                    }
+                    elements[i].value = references[i].speed;
+                    elements[i].text.textContent = references[i].id;
+                    elements[i].group.setAttribute("display", "");
+                }
+                for (let i = references.length; i < elements.length; i++) {
+                    elements[i].group.setAttribute("display", "none");
+                }
+                return elements;
+            }, [])
+        );
+
+        rxjs.combineLatest(
+            referenceBugs$,
+            airspeed$.pipe(WT_RX.distinctUntilSignificantChange(0.1))
+        ).subscribe(([referenceBugs, airspeed]) => {
+            for (let i = 0; i < referenceBugs.length; i++) {
+                referenceBugs[i].group.setAttribute("transform", `translate(${AirspeedIndicator.WIDTH + 1.5},${(airspeed - referenceBugs[i].value) * 10})`);
             }
         });
 
-        model.trend.subscribe(trend => {
-            trend = Math.min(Math.max(300 + parseFloat(trend) * 6 * -10, 0), 600);
-            this.trendElement.setAttribute("y", Math.min(trend, 300));
-            this.trendElement.setAttribute("height", Math.abs(trend - 300));
-        });
+        // Selected speed
+        rxjs.combineLatest(airspeed$, model.referenceSpeed.speed, (airspeed, selectedSpeed) => (airspeed - selectedSpeed) * 10).pipe(
+            rxjs.operators.map(Math.floor),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(translate => this.selectedSpeedBug.setAttribute("transform", `translate(${AirspeedIndicator.WIDTH},${translate})`));
+
+        model.referenceSpeed.speed.pipe(
+            rxjs.operators.map(Math.floor)
+        ).subscribe(speed => this.selectedSpeedText.textContent = speed);
 
         model.referenceSpeed.show.subscribe(show => {
             this.airspeedReferenceGroup.setAttribute("display", show ? "" : "none");
             this.selectedSpeedBug.setAttribute("display", show ? "" : "none");
         });
 
-        model.referenceSpeed.speed.subscribe(speed => {
-            this.selectedSpeedBugValue = speed;
-            this.selectedSpeedText.textContent = Math.round(speed);
+        // True Air Speed
+        model.trueAirspeed.pipe(
+            rxjs.operators.map(speed => speed.toFixed(0)),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(tas => {
+            this.tasText.textContent = tas;
         });
 
+        // Graduations
+        center$.subscribe(center => {
+            for (let i = 0; i < this.gradTexts.length; i++) {
+                this.gradTexts[i].textContent = fastToFixed((4 - i) * 10 + center, 0);
+            }
+        });
+
+        // Lines
+        const handleBar = (element, begin, end) => {
+            const getValue = (value, center) => {
+                return Math.min(Math.max(-100, 300 - 10 * (value - center)), 700);
+            }
+            rxjs.combineLatest(center$, begin, end)
+                .subscribe(([center, begin, end]) => {
+                    if (!this.nocolor) {
+                        const beginValue = getValue(begin, center);
+                        const endValue = getValue(end, center);
+                        element.setAttribute("y", endValue);
+                        element.setAttribute("height", beginValue - endValue);
+                    }
+                })
+        }
+        handleBar(this.bottomRedElement, rxjs.of(20), this.minValue);
+        handleBar(this.greenElement, this.greenBegin, this.greenEnd);
+        handleBar(this.yellowElement, this.yellowBegin, this.yellowEnd);
+        handleBar(this.redElement, this.redBegin, this.redEnd);
+        handleBar(this.flapsElement, this.flapsBegin, this.flapsEnd);
+
+        // End speed line
+        rxjs.combineLatest(center$, airspeed$, this.maxValue).pipe(
+            rxjs.operators.map(([center, airspeed, maxSpeed]) => {
+                if (maxSpeed) {
+                    return ((Math.min(Math.max(center + 40 - maxSpeed, -10), 80) * 10) + (airspeed - center) * 10);
+                }
+                return 0;
+            }),
+            rxjs.operators.map(Math.floor),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(translate => this.endElement.setAttribute("transform", `translate(0,${translate})`))
+
+        // Speed color
+        const compareSpeeds = (airspeed, maxSpeed) => maxSpeed && airspeed > maxSpeed;
+        const isAboveMaxSpeed$ = rxjs.combineLatest(airspeed$, this.maxValue, compareSpeeds).pipe(
+            rxjs.operators.distinctUntilChanged(),
+        );
+        const isAboveYellowSpeed$ = rxjs.combineLatest(airspeed$, this.yellowBegin, compareSpeeds).pipe(
+            rxjs.operators.distinctUntilChanged(),
+        );
+        const isAboveRedSpeed$ = rxjs.combineLatest(airspeed$, this.redBegin, compareSpeeds).pipe(
+            rxjs.operators.distinctUntilChanged(),
+        );
+        rxjs.combineLatest(isAboveMaxSpeed$, isAboveYellowSpeed$, isAboveRedSpeed$).pipe(
+            rxjs.operators.map(([max, yellow, red]) => {
+                if (max) {
+                    return "red";
+                } else if (red) {
+                    return "red";
+                } else if (yellow) {
+                    return "yellow";
+                } else {
+                    return "white";
+                }
+            })
+        ).subscribe(color => this.setAttribute("speed", color));
+
+        // Trend Line
+        model.trend.pipe(
+            rxjs.operators.map(trend => Math.min(Math.max(300 + parseFloat(trend) * 6 * -10, 0), 600)),
+            rxjs.operators.map(Math.floor),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(trend => {
+            this.trendElement.setAttribute("y", Math.min(trend, 300));
+            this.trendElement.setAttribute("height", Math.abs(trend - 300));
+        });
+
+        // Reference Speeds
         model.referenceSpeeds.subscribe(speeds => {
             if (!speeds)
                 return;
             if ("min-speed" in speeds)
-                this.minValue = speeds["min-speed"];
+                this.minValue.next(speeds["min-speed"]);
             if ("green-begin" in speeds)
-                this.greenBegin = speeds["green-begin"];
+                this.greenBegin.next(speeds["green-begin"]);
             if ("green-end" in speeds)
-                this.greenEnd = speeds["green-end"];
+                this.greenEnd.next(speeds["green-end"]);
             if ("yellow-begin" in speeds)
-                this.yellowBegin = speeds["yellow-begin"];
+                this.yellowBegin.next(speeds["yellow-begin"]);
             if ("yellow-end" in speeds)
-                this.yellowEnd = speeds["yellow-end"];
+                this.yellowEnd.next(speeds["yellow-end"]);
             if ("flaps-begin" in speeds)
-                this.flapsBegin = speeds["flaps-begin"];
+                this.flapsBegin.next(speeds["flaps-begin"]);
             if ("flaps-end" in speeds)
-                this.flapsEnd = speeds["flaps-end"];
+                this.flapsEnd.next(speeds["flaps-end"]);
             if ("red-begin" in speeds)
-                this.redBegin = speeds["red-begin"];
+                this.redBegin.next(speeds["red-begin"]);
             if ("red-end" in speeds)
-                this.redEnd = speeds["red-end"];
+                this.redEnd.next(speeds["red-end"]);
             if ("max-speed" in speeds)
-                this.maxValue = speeds["max-speed"];
+                this.maxValue.next(speeds["max-speed"]);
         });
 
         model.airspeedUnits.subscribe(units => {
@@ -402,118 +628,6 @@ class AirspeedIndicator extends HTMLElement {
         g.appendChild(this.tasText);
         g.appendChild(units);
         return g;
-    }
-    updateAirspeed(airspeed) {
-        this.value = Math.max(airspeed, 20);
-        const isAirspeedAlive = this.value > 20;
-        const useColors = !this.nocolor;
-        const center = Math.max(Math.round(this.value / 10) * 10, 60);
-        const hasMinSpeed = this.minValue > 0;
-        const hasMaxSpeed = this.maxValue > 0;
-        const isAboveMaxSpeed = hasMaxSpeed && this.value > this.maxValue;
-        const isBelowMinSpeed = hasMinSpeed && this.value < this.minValue;
-        const isAboveYellowSpeed = this.yellowBegin && this.value > this.yellowBegin;
-        const isAboveRedSpeed = this.redBegin && this.value > this.redBegin;
-
-        // Update min / max speeds
-        this.centerGroup.setAttribute("transform", `translate(0, ${(this.value - center) * 10})`);
-        if (useColors) {
-            if (isAboveMaxSpeed) {
-                this.setAttribute("speed", "red");
-            } else if (isAboveRedSpeed) {
-                this.setAttribute("speed", "red");
-            } else if (isAboveYellowSpeed) {
-                this.setAttribute("speed", "yellow");
-            } else {
-                this.setAttribute("speed", "white");
-            }
-            /*if (hasMinSpeed) {
-                const val = 835 + ((center + 40 - this.minValue) * 10) + ((this.value - center) * 10);
-                this.startElement.setAttribute("transform", `translate(0,${val})`);
-            }*/
-            if (hasMaxSpeed) {
-                const val = ((Math.min(Math.max(center + 40 - this.maxValue, -10), 80) * 10) + (this.value - center) * 10);
-                this.endElement.setAttribute("transform", `translate(0,${val})`);
-            }
-        }
-
-        // Update reference bugs
-        for (let i = 0; i < this.referenceBugs.length; i++) {
-            this.referenceBugs[i].group.setAttribute("transform", `translate(${AirspeedIndicator.WIDTH + 1.5},${(this.value - this.referenceBugs[i].value) * 10})`);
-        }
-        this.selectedSpeedBug.setAttribute("transform", `translate(${AirspeedIndicator.WIDTH},${(this.value - this.selectedSpeedBugValue) * 10})`);
-
-        // Update color lines        
-        if (this.currentCenterGrad != center) {
-            this.currentCenterGrad = center;
-            for (let i = 0; i < this.gradTexts.length; i++) {
-                this.gradTexts[i].textContent = fastToFixed((4 - i) * 10 + center, 0);
-            }
-            if (useColors) {
-                const getValue = (value) => {
-                    return Math.min(Math.max(-100, 300 - 10 * (value - center)), 700);
-                }
-                function handleBar(element, begin, end) {
-                    const beginValue = getValue(begin);
-                    const endValue = getValue(end);
-                    element.setAttribute("y", endValue);
-                    element.setAttribute("height", beginValue - endValue);
-                }
-                handleBar(this.bottomRedElement, 20, this.minValue);
-                handleBar(this.greenElement, this.greenBegin, this.greenEnd);
-                handleBar(this.yellowElement, this.yellowBegin, this.yellowEnd);
-                handleBar(this.redElement, this.redBegin, this.redEnd);
-                handleBar(this.flapsElement, this.flapsBegin, this.flapsEnd);
-            }
-        }
-
-        // Update end digits
-        const endValue = this.value % 10;
-        const endCenter = Math.round(endValue);
-        this.endDigitsGroup.setAttribute("transform", `translate(0, ${(endValue - endCenter) * 45})`);
-        for (let i = 0; i < this.endDigits.length; i++) {
-            const digitValue = (2 - i + endCenter + 10) % 10;
-            const emptyValue = i == 2 ? "-" : " ";
-            this.endDigits[i].textContent = isAirspeedAlive ? digitValue : emptyValue;
-        }
-
-        // Update digits
-        if (isAirspeedAlive) {
-            const d2Value = (Math.abs(this.value) % 100) / 10;
-            this.digit2Bot.textContent = fastToFixed(Math.floor(d2Value), 0);
-            this.digit2Top.textContent = fastToFixed((Math.floor(d2Value) + 1) % 10, 0);
-            if (endValue > 9) {
-                const translate = (endValue - 9) * 55;
-                this.digit2Bot.setAttribute("transform", `translate(0,${translate})`);
-                this.digit2Top.setAttribute("transform", `translate(0,${translate})`);
-            } else {
-                this.digit2Bot.setAttribute("transform", "");
-                this.digit2Top.setAttribute("transform", "");
-            }
-            if (Math.abs(this.value) >= 99) {
-                const d1Value = (Math.abs(this.value) % 1000) / 100;
-                this.digit1Bot.textContent = Math.abs(this.value) < 100 ? "" : fastToFixed(Math.floor(d1Value), 0);
-                this.digit1Top.textContent = fastToFixed((Math.floor(d1Value) + 1) % 10, 0);
-                if (endValue > 9 && d2Value > 9) {
-                    const translate = (endValue - 9) * 55;
-                    this.digit1Bot.setAttribute("transform", "translate(0, " + translate + ")");
-                    this.digit1Top.setAttribute("transform", "translate(0, " + translate + ")");
-                } else {
-                    this.digit1Bot.setAttribute("transform", "");
-                    this.digit1Top.setAttribute("transform", "");
-                }
-            } else {
-                this.digit1Bot.textContent = "";
-                this.digit1Top.textContent = "";
-            }
-        } else {
-            this.digit2Bot.textContent = "-";
-            this.digit1Bot.textContent = "-";
-            this.digit1Bot.setAttribute("transform", "");
-            this.digit1Top.setAttribute("transform", "");
-            this.digit2Bot.setAttribute("transform", "");
-            this.digit2Top.setAttribute("transform", "");
-        }
     }
 }
 AirspeedIndicator.WIDTH = 150;

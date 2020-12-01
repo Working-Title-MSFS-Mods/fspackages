@@ -14,7 +14,7 @@ class WT_Brightness_Settings {
         this.setMfdBrightness(WTDataStore.get(`PFD.Brightness`, 100));
 
         const getSecondsFromMidnight = date => date.getSeconds() + (60 * date.getMinutes()) + (60 * 60 * date.getHours());
-        const autoBrightness = rxjs.combineLatest(
+        const autoBrightness$ = rxjs.combineLatest(
             this.clock.sunrise.pipe(rxjs.operators.map(getSecondsFromMidnight)),
             this.clock.sunset.pipe(rxjs.operators.map(getSecondsFromMidnight)),
             this.clock.localTime.pipe(
@@ -33,16 +33,16 @@ class WT_Brightness_Settings {
             rxjs.operators.shareReplay(1)
         )
 
-        const mfdManualBrightness = this.mfd.observable;
+        const mfdManualBrightness$ = this.mfd.observable;
         this.mfdMode.observable.pipe(
-            rxjs.operators.switchMap(mode => mode == "Auto" ? autoBrightness : mfdManualBrightness)
+            rxjs.operators.switchMap(mode => mode == "Auto" ? autoBrightness$ : mfdManualBrightness$)
         ).subscribe(brightness => {
             SimVar.SetSimVarValue(`L:XMLVAR_AS1000_MFD_Brightness`, "number", brightness);
         });
 
-        const pfdManualBrightness = this.pfd.observable;
+        const pfdManualBrightness$ = this.pfd.observable;
         this.pfdMode.observable.pipe(
-            rxjs.operators.switchMap(mode => mode == "Auto" ? autoBrightness : pfdManualBrightness)
+            rxjs.operators.switchMap(mode => mode == "Auto" ? autoBrightness$ : pfdManualBrightness$)
         ).subscribe(brightness => {
             SimVar.SetSimVarValue(`L:XMLVAR_AS1000_PFD_Brightness`, "number", brightness);
         });
