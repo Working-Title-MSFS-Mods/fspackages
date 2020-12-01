@@ -1,6 +1,6 @@
 # Working Title CJ4 v0.7.3 Changes
 
-Welcome to the latest update of the Working Title CJ4 (v0.7.2). This is a hotfix for v0.7.2 for adjusting the autopilot PIDs to get rid of the bugs introduces with MSFS update 1.11.6.0! 
+Welcome to the latest update of the Working Title CJ4 (v0.7.2). This is a hotfix for adjusting the autopilot PIDs to get rid of the bugs introduces with MSFS update 1.11.6.0! 
 
 Thanks to Asobo and FBW for finding a solution to this pressing issue.
 
