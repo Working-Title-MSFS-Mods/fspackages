@@ -57,7 +57,6 @@ class CJ4_FMC extends FMCMainDisplay {
         this._currentAP = undefined;
         this._vnav = undefined;
         this._lnav = undefined;
-        this._startInitialized = false;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -97,14 +96,9 @@ class CJ4_FMC extends FMCMainDisplay {
                 });
             });
 
-            RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
-
-            this.addEventListener("FlightStart", async function () {
-                if (!this._navModeSelector) {
-                    this._navModeSelector = new CJ4NavModeSelector();
-                }
-                this._startInitialized = true;
-            }.bind(this));
+            // RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
+            // this.addEventListener("FlightStart", async function () {
+            // }.bind(this));
         }
     }
 
@@ -279,6 +273,15 @@ class CJ4_FMC extends FMCMainDisplay {
         return false;
     }
 
+    onInteractionEvent(args) {
+        super.onInteractionEvent(args);
+
+        const apPrefix = "WT_CJ4_AP_";
+        if (args[0].startsWith(apPrefix)) {
+            this._navModeSelector.onNavChangedEvent(args[0].substring(apPrefix.length));
+        }
+    }
+
     //Overwrite of FMCMainDisplay to disable always settings nav hold to GPS mode
     updateRadioNavState() {
         if (this.isPrimary) {
@@ -423,8 +426,6 @@ class CJ4_FMC extends FMCMainDisplay {
         let dt = now - this._lastUpdateAPTime;
         this._lastUpdateAPTime = now;
 
-        if(!this._startInitialized) return;
-
         if (isFinite(dt)) {
             this.updateAutopilotCooldown -= dt;
         }
@@ -447,6 +448,10 @@ class CJ4_FMC extends FMCMainDisplay {
             }
             else {
                 this._vnav.update();
+            }
+
+            if (!this._navModeSelector) {
+                this._navModeSelector = new CJ4NavModeSelector();
             }
 
             //RUN LNAV ALWAYS

@@ -44,6 +44,7 @@ class CJ4_FMC_FplnRecallPage {
                 if (idx >= routeArr.length - 1) {
                     // DONE
                     fmc.setMsg("FPLN LOADED[green]");
+                    fmc.flightPlanManager.resumeSync();
                     fmc.flightPlanManager.setActiveWaypointIndex(1);
                     CJ4_FMC_RoutePage.ShowPage1(fmc);
                     return;
@@ -73,6 +74,7 @@ class CJ4_FMC_FplnRecallPage {
                             addWaypoint();
                         }
                         else {
+                            fmc.flightPlanManager.resumeSync();
                             fmc.setMsg("ERROR WPT " + icao + "[red]");
                         }
 
@@ -96,6 +98,7 @@ class CJ4_FMC_FplnRecallPage {
                                     if (res) {
                                         addWaypoint();
                                     } else {
+                                        fmc.flightPlanManager.resumeSync();
                                         fmc.setMsg("ERROR AIRWAY " + icao + "[red]");
                                     }
                                 });
@@ -131,6 +134,7 @@ class CJ4_FMC_FplnRecallPage {
             let crz = json.general.initial_altitude;
             fmc.setMsg("LOAD FPLN...CRZ[green]" + crz);
             fmc.setCruiseFlightLevelAndTemperature(crz);
+            fmc.flightPlanManager.pauseSync();
             updateFrom();
         }, () => {
             // wrong pilot id is the most obvious error here, so lets show that

@@ -90,7 +90,7 @@ private:
         case UNDEF: {
         case CRU:
             double cruThrPerc = (this->throttleAxis[idx] + 16384) / 25444.0; // -16384 -> 9060
-            double cruThrExp = pow(cruThrPerc, 2.5);
+            double cruThrExp = cruThrPerc;
 
             throttleExp = cruThrExp * thrustF;
             break;

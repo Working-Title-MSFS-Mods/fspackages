@@ -218,7 +218,7 @@ class CJ4_FMC_VNavSetupPage {
         //RUN ACTUAL VNAV PATH CONTROL
         if (fmc._vnav) {
             fmc.registerPeriodicPageRefresh(() => {
-                let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean") === 1;
+                let isVNAVActivate = SimVar.GetSimVarValue("L:WT_CJ4_VNAV_ON", "boolean") === 1;
                 const vnavActive = isVNAVActivate ? " ACTIVE[green]" : " INACTIVE[white]";
                 const vnavTargetWaypointIdent = WTDataStore.get('CJ4_vnavTargetWaypoint', 'none');
                 const vnavValues = WTDataStore.get('CJ4_vnavValues', 'none');
@@ -300,7 +300,7 @@ class CJ4_FMC_VNavSetupPage {
         fmc.registerPeriodicPageRefresh(() => {
 
             const lnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0 ? "LNAV ON[green]" :"LNAV OFF[white]";
-            let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "number") == 1;
+            let isVNAVActivate = SimVar.GetSimVarValue("L:WT_CJ4_VNAV_ON", "number") == 1;
             const vnavActive = isVNAVActivate ? "VNAV ON[green]" : "VNAV OFF[white]";
 
 

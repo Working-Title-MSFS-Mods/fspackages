@@ -5,7 +5,8 @@ Simplane.getNextWaypointName = () => {
 };
 
 Simplane.getNextWaypointTrack = () => {
-    return FlightPlanManager.DEBUG_INSTANCE.getBearingToActiveWaypoint();
+    return SimVar.GetSimVarValue("L:WT_CJ4_DTK", "number");
+    // return FlightPlanManager.DEBUG_INSTANCE.getBearingToActiveWaypoint();
 };
 
 Simplane.getNextWaypointDistance = () => {
