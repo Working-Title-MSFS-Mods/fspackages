@@ -169,8 +169,8 @@ class SvgWaypointElement extends SvgMapElement {
                 this._lastX = this.x;
                 this._lastY = this.y;
                 iconSize *= (this.minimize ? 0.5 : 1);
-                let x = (this.x - iconSize * 0.5);
-                let y = (this.y - iconSize * 0.5);
+                let x = (this.x - iconSize * 0.5) + 2;
+                let y = (this.y - iconSize * 0.5) + 2;
                 this.svgElement.setAttribute("x", x + "");
                 this.svgElement.setAttribute("y", y + "");
                 if (this.source instanceof AirportInfo) {
@@ -261,7 +261,7 @@ class SvgWaypointTextElement {
         let fontSize = this.waypointElement.getLabelFontSize(map);
         let text = this.waypointElement.ident;
         let c = document.createElement("canvas");
-        let ctx = c.getContext("2d", {alpha: false});
+        let ctx = c.getContext("2d", { alpha: false });
         ctx.font = fontSize + "px " + map.config.waypointLabelFontFamily;
         this._textWidth = ctx.measureText(text).width;
         this._textHeight = fontSize * 0.675;
@@ -301,7 +301,7 @@ class SvgWaypointTextElement {
             return;
         }
 
-        let context = canvas.getContext("2d", {alpha: false});
+        let context = canvas.getContext("2d", { alpha: false });
         if (map.config.waypointLabelUseBackground) {
             context.fillStyle = "black";
             context.fillRect(0, 0, this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight, this._textHeight + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom);
