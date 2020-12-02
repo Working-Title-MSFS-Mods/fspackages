@@ -358,6 +358,7 @@ class MapInstrument extends ISvgMapRootElement {
         if (arg !== undefined) {
             if (arg instanceof BaseInstrument) {
                 this.instrument = arg;
+                this.useSvgImages = true;
                 this.selfManagedInstrument = false;
             }
             else {
@@ -800,6 +801,7 @@ class MapInstrument extends ISvgMapRootElement {
                                             if (!this.navMap.mapElements.find(w => {
                                                 return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
                                             })) {
+                                                waypoint.isInFlightPlan = true;
                                                 this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
                                             }
                                         }
@@ -815,6 +817,7 @@ class MapInstrument extends ISvgMapRootElement {
                                     if (!this.navMap.mapElements.find(w => {
                                         return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
                                     })) {
+                                        waypoint.isInFlightPlan = true;
                                         this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
                                     }
                                 }
@@ -830,6 +833,7 @@ class MapInstrument extends ISvgMapRootElement {
                                 if (!this.navMap.mapElements.find(w => {
                                     return (w instanceof SvgWaypointElement) && w.source.ident === apprWaypoint.ident;
                                 })) {
+                                    apprWaypoint.isInFlightPlan = true;
                                     this.navMap.mapElements.push(apprWaypoint.getSvgElement(this.navMap.index));
                                 }
                             }

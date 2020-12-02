@@ -39,7 +39,7 @@
   "airplaneIcon1": "ICON_MAP_PLANE",
   "airplaneIcon2": "ICON_MAP_PLANE",
 
-  "imagesDir": "/Pages/VCockpit/Instruments/Airliners/Shared/MFD/Images/",
+  "imagesDir": "/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/Images/",
 
   "runwayFillColor": "white",
   "runwayStrokeColor": "gray",
