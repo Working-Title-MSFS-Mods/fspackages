@@ -542,7 +542,7 @@ class MapInstrument extends ISvgMapRootElement {
                     });
                 }
             }
-            
+
             this.flightPlanManager.updateWaypointIndex();
             this.updateFlightPlanVisibility();
             this.flightPlanManager.updateFlightPlan();
@@ -786,7 +786,6 @@ class MapInstrument extends ISvgMapRootElement {
                         this.navMap.mapElements.push(this.rangeCompassElement);
                     }
                 }
-
                 if (this.flightPlanManager && this.bIsFlightPlanVisible) {
                     let l = this.flightPlanManager.getWaypointsCount();
                     if (l > 1) {

@@ -16,9 +16,9 @@
   "waypointLabelBackgroundStrokeColor": "black",
   "waypointLabelBackgroundStrokeWidth": 0,
   "waypointLabelBackgroundPadding": "2 2 2 2",
-  "waypointLabelDistanceX": 35,
-  "waypointLabelDistance": 8,
-  "waypointIconSize": 22,
+  "waypointLabelDistanceX": 43,
+  "waypointLabelDistance": 0,
+  "waypointIconSize": 26,
 
   "preventLabelOverlap": false,
 
