@@ -41,14 +41,19 @@ class SvgFlightPlanElement extends SvgMapElement {
             /** @type {FlightPlanManager} */
             const fpm = this.source;
             /** @type {WayPoint[]} */
-            const waypoints = fpm.getAllWaypoints();
-            const activeWaypointIndex = fpm.getActiveWaypointIndex();
 
             const context = this._flightPathCanvas.getContext('2d');
             context.clearRect(0, 0, 1024, 1024);
-            if (waypoints.length > 1) {
-                this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex - 1, activeWaypointIndex + 1), map, 'magenta');
-                this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex), map);
+
+            const fplnCount = (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) ? 2 : 1;            
+            for (let index = 0; index < fplnCount; index++) {
+                const waypoints = fpm.getAllWaypoints(index);
+                const activeWaypointIndex = fpm.getActiveWaypointIndex();
+
+                if (waypoints.length > 1) {
+                    this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex - 1, activeWaypointIndex + 1), map, 'magenta');
+                    this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex), map, index == 0 ? 'white' : 'yellow');
+                }
             }
         }
     }
@@ -97,7 +102,7 @@ class SvgFlightPlanElement extends SvgMapElement {
 
             prevWaypoint = waypoint;
         }
-     
+
         context.stroke();
     }
 

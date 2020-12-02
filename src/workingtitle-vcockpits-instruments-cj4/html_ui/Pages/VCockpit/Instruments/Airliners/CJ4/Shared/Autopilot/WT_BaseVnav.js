@@ -95,7 +95,7 @@ class WT_BaseVnav {
             //HAS THE VNAV TARGET WAYPOINT CHANGED?
             if (this._vnavTargetWaypoint) {
                 let targetWaypointIndex = this.waypoints.indexOf(this._vnavTargetWaypoint) >= 0;
-                console.log("targetWaypointIndex: " + targetWaypointIndex);
+                // console.log("targetWaypointIndex: " + targetWaypointIndex);
                 if (targetWaypointIndex === false) {
                     this._vnavTargetChanged = true;
                 }
