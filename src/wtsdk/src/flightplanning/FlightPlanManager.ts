@@ -1,4 +1,4 @@
-import { BaseInstrument, SimVar, EmptyCallback, LatLongAlt, Avionics, AirportInfo, WayPoint, OneWayRunway, Simplane, RegisterViewListener } from 'MSFS';
+import { BaseInstrument, SimVar, EmptyCallback, LatLongAlt, Avionics, AirportInfo, WayPoint, OneWayRunway, Simplane, RegisterViewListener, Coherent } from 'MSFS';
 import { ManagedFlightPlan, GPS } from '../wtsdk';
 import { FlightPlanSegment, SegmentType } from './FlightPlanSegment';
 import { FlightPlanAsoboSync } from './FlightPlanAsoboSync';
@@ -43,10 +43,10 @@ export class FlightPlanManager {
         plan.setParentInstrument(_parentInstrument);
         this._flightPlans = [];
         this._flightPlans.push(plan);
+        this.pauseSync();
         await FlightPlanAsoboSync.LoadFromGame(this);
         this._currentFlightPlanVersion++;
-        this._updateFlightPlanVersion();
-
+        this.resumeSync();
       }.bind(this));
     }
 
@@ -260,6 +260,7 @@ export class FlightPlanManager {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (index >= 0 && index < currentFlightPlan.length) {
       currentFlightPlan.activeWaypointIndex = index;
+      Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", index+1);
 
       if (currentFlightPlan.directTo.isActive && currentFlightPlan.directTo.waypointIsInFlightPlan
         && currentFlightPlan.activeWaypointIndex > currentFlightPlan.directTo.planWaypointIndex) {
@@ -1333,7 +1334,7 @@ export class FlightPlanManager {
     }
     window.localStorage.setItem(FlightPlanManager.FlightPlanKey, fpJson);
     SimVar.SetSimVarValue(FlightPlanManager.FlightPlanVersionKey, 'number', ++this._currentFlightPlanVersion);
-    //FlightPlanAsoboSync.SaveToGame(this);
+    FlightPlanAsoboSync.SaveToGame(this);
   }
 
   public pauseSync(): void {
