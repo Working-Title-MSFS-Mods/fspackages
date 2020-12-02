@@ -15,10 +15,10 @@
   "waypointLabelBackgroundColor": "#3f4851",
   "waypointLabelBackgroundStrokeColor": "black",
   "waypointLabelBackgroundStrokeWidth": 0,
-  "waypointLabelBackgroundPadding": "4 9 4 9",
-  "waypointLabelDistanceX": 35,
-  "waypointLabelDistance": 5,
-  "waypointIconSize": 22,
+  "waypointLabelBackgroundPadding": "2 2 2 2",
+  "waypointLabelDistanceX": 43,
+  "waypointLabelDistance": 0,
+  "waypointIconSize": 27,
 
   "preventLabelOverlap": false,
 
@@ -39,7 +39,7 @@
   "airplaneIcon1": "ICON_MAP_PLANE",
   "airplaneIcon2": "ICON_MAP_PLANE",
 
-  "imagesDir": "/Pages/VCockpit/Instruments/Airliners/Shared/MFD/Images/",
+  "imagesDir": "/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/Images/",
 
   "runwayFillColor": "white",
   "runwayStrokeColor": "gray",
@@ -130,6 +130,7 @@
     }
   ]
 }
+
 
 
 
