@@ -107,7 +107,7 @@ class CJ4_FMC_LegsPage {
                     else {
                         this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM"];
                         this._rows[2 * i + 1] = [waypoint.fix.ident != "" ? waypoint.fix.ident : "USR"];
-                    }               
+                    }
                 }
 
                 if (!isFromWpt && waypoint.fix.icao !== '$DISCO') {
@@ -140,14 +140,14 @@ class CJ4_FMC_LegsPage {
     buildLegs(waypoints, activeWaypointIndex) {
         const displayWaypoints = [];
         for (var i = Math.max(0, activeWaypointIndex - 1); i < waypoints.length; i++) {
-            displayWaypoints.push({index: i, fix: waypoints[i]});
+            displayWaypoints.push({ index: i, fix: waypoints[i] });
 
             if (waypoints[i].endsInDiscontinuity) {
-                displayWaypoints.push({index: i, fix: {icao: "$DISCO", isRemovable: waypoints[i].isVectors !== true}});
+                displayWaypoints.push({ index: i, fix: { icao: "$DISCO", isRemovable: waypoints[i].isVectors !== true } });
             }
         }
 
-        displayWaypoints.push({index: -1, fix: {icao: "$EMPTY"}});
+        displayWaypoints.push({ index: -1, fix: { icao: "$EMPTY" } });
         return displayWaypoints;
     }
 
@@ -252,7 +252,7 @@ class CJ4_FMC_LegsPage {
                                             this.resetAfterOp();
                                         });
                                     });
-                                }  
+                                }
                             }
                         }
                         break;
@@ -260,8 +260,15 @@ class CJ4_FMC_LegsPage {
                     case CJ4_FMC_LegsPage.SELECT_MODE.NEW: {
                         if ((i >= 1 && this._currentPage == 1) || this._currentPage > 1) {
                             this._fmc.setMsg("Working...");
-                            if (waypoint && waypoint.fix && waypoint.fix.icao === "$EMPTY") {
-                                selectedWpIndex = Infinity;
+                            if (waypoint && waypoint.fix) {
+                                if (waypoint.fix.icao === "$EMPTY") {
+                                    selectedWpIndex = Infinity;
+                                }
+                                if (waypoint.fix.icao === '$DISCO') {
+                                    this._fmc.showErrorMessage("UNABLE MOD DISCON");
+                                    this._fmc.setMsg();
+                                    return;
+                                }
                             }
                             this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
                                 if (isSuccess) {
