@@ -824,21 +824,21 @@ class MapInstrument extends ISvgMapRootElement {
                             }
                         }
                     }
-                    let approachWaypoints = this.flightPlanManager.getApproachWaypoints();
-                    let lAppr = approachWaypoints.length;
-                    for (let i = 0; i < lAppr; i++) {
-                        let apprWaypoint = approachWaypoints[i];
-                        if (apprWaypoint && apprWaypoint.ident !== "" && apprWaypoint.ident !== "USER") {
-                            if (apprWaypoint.getSvgElement(this.navMap.index)) {
-                                if (!this.navMap.mapElements.find(w => {
-                                    return (w instanceof SvgWaypointElement) && w.source.ident === apprWaypoint.ident;
-                                })) {
-                                    apprWaypoint.isInFlightPlan = true;
-                                    this.navMap.mapElements.push(apprWaypoint.getSvgElement(this.navMap.index));
-                                }
-                            }
-                        }
-                    }
+                    // let approachWaypoints = this.flightPlanManager.getApproachWaypoints();
+                    // let lAppr = approachWaypoints.length;
+                    // for (let i = 0; i < lAppr; i++) {
+                    //     let apprWaypoint = approachWaypoints[i];
+                    //     if (apprWaypoint && apprWaypoint.ident !== "" && apprWaypoint.ident !== "USER") {
+                    //         if (apprWaypoint.getSvgElement(this.navMap.index)) {
+                    //             if (!this.navMap.mapElements.find(w => {
+                    //                 return (w instanceof SvgWaypointElement) && w.source.ident === apprWaypoint.ident;
+                    //             })) {
+                    //                 apprWaypoint.isInFlightPlan = true;
+                    //                 this.navMap.mapElements.push(apprWaypoint.getSvgElement(this.navMap.index));
+                    //             }
+                    //         }
+                    //     }
+                    // }
                     if (this.flightPlanManager.getIsDirectTo()) {
                         this.directToElement.llaRequested = this.flightPlanManager.getDirecToOrigin();
                         this.directToElement.targetWaypoint = this.flightPlanManager.getDirectToTarget();
