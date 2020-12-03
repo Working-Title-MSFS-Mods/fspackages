@@ -11,7 +11,7 @@ class WT_VnavAutopilot {
         this._topOfDescent = undefined;
         this._distanceToTod = undefined;
         this._lastVnavTargetAltitude = undefined;
-        this._interceptingLastAltitude = false;
+        this._inhibitExecute = false;
         this._lastVerticalMode = undefined;
 
         this._constraintExists = false;
@@ -38,15 +38,12 @@ class WT_VnavAutopilot {
      * Update data if needed.
      */
     update() {
-        //*****START OF REVISED VNAV UPDATE METHOD*****
-        if (this._pathActive === true && this._navModeSelector.currentVerticalActiveState === VerticalNavModeState.ALTC) {
-            //ALT INTERCEPT HAS STARTED
-            SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 1);
-            // this._interceptingLastAltitude = true;
-            // if (this._interceptingLastAltitude === true && this._navModeSelector.currentVerticalActiveState === VerticalNavModeState.ALTV) {
-            //     this._interceptingLastAltitude = false;
-            // }
+        //We are intercepting the constraint, inhibit execution until we change path conditions
+        if (this._pathActive === true && this._navModeSelector.currentVerticalActiveState === VerticalNavModeState.ALTC && this._inhibitExecute !== true) {
+            this._inhibitExecute = true;
+            SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0);
         }
+
         if (this._vnav._vnavCalculating) {
             this._indicatedAltitude = SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet");
 
@@ -64,6 +61,7 @@ class WT_VnavAutopilot {
 
                 //IS THERE A NEW PATH?
                 if (this._vnav._newPath) {
+                    this._inhibitExecute = false;
                     this._pathArm = false;
                     this._pathArmAbove = false;
                     this._pathActive = false;
@@ -73,7 +71,16 @@ class WT_VnavAutopilot {
 
                 //CAN PATH ARM?
                 if (!this._pathActive) {
-                    if (this._vnav._altDeviation < 0 && this._vnav._distanceToTod < 20 && this._vnav._distanceToTod > 0 && this._navModeSelector.selectedAlt1 + 75 < this._indicatedAltitude) {
+                    const verticalMode = this._navModeSelector.currentVerticalActiveState;
+                    const currentAlt3 = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet");
+
+                    if((verticalMode === VerticalNavModeState.ALTC || verticalMode === VerticalNavModeState.ALT)
+                        && Math.round(currentAlt3) === Math.round(this._vnav._vnavTargetAltitude)) {
+                        //DO NOT ARM OR ACTIVATE IF ALREADY AT OR CAPTURING DESIRED RESTRICTION
+                        this._pathArm = false;
+                        this._pathArmAbove = false;
+                    }
+                    else if (this._vnav._altDeviation < 0 && this._vnav._distanceToTod < 20 && this._vnav._distanceToTod > 0 && this._navModeSelector.selectedAlt1 + 75 < this._indicatedAltitude) {
                         //CAN ARM INTERCEPT FROM BELOW
                         this._pathArm = true;
                         this._pathArmAbove = false;
@@ -155,9 +162,14 @@ class WT_VnavAutopilot {
      * Execute.
      */
     execute() {
+        
         this.checkPreselector();
         this.setSnowflake();
         this.setDonut();
+
+        if (this._inhibitExecute) {
+            return;
+        }
 
         // //TODO: SORT OUT THESE LVARS
         // if (t == 2) {

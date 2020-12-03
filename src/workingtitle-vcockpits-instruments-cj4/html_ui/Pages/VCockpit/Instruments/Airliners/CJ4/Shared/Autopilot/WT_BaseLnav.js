@@ -106,7 +106,7 @@ class WT_BaseLnav {
                 this._setHeading = this._dtk;
 
                 //Intercept angle curve based on XTK
-                let absInterceptAngle = Math.min(Math.pow(Math.abs(this._xtk) * 10, 1.35), 45);
+                let absInterceptAngle = Math.min(Math.pow(Math.abs(this._xtk) * 20, 1.35), 45);
 
                 //If we still have some XTK, bake in a minimum intercept angle of 2.5 degrees to keep us on the line
                 if (Math.abs(this._xtk) > 0.025) {
