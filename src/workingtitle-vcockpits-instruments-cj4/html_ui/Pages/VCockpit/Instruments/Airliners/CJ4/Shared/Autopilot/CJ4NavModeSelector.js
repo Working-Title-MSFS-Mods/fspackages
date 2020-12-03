@@ -42,7 +42,7 @@ class CJ4NavModeSelector {
     this.selectedAlt2 = 0;
 
     /** The currently selected approach type. */
-    this.approachMode = ApproachType.NONE;
+    this.approachMode = WT_ApproachType.NONE;
 
     /**
      * The queue of state change events to process.
@@ -76,7 +76,6 @@ class CJ4NavModeSelector {
       [`${NavModeEvent.ALT_SLOT_CHANGED}`]: this.handleAltSlotChanged.bind(this),
       [`${NavModeEvent.SELECTED_ALT1_CHANGED}`]: this.handleAlt1Changed.bind(this),
       [`${NavModeEvent.SELECTED_ALT2_CHANGED}`]: this.handleAlt2Changed.bind(this),
-      []
     };
 
     this.initialize();
@@ -596,11 +595,11 @@ NavModeEvent.SELECTED_ALT1_CHANGED = 'selected_alt1_changed';
 NavModeEvent.SELECTED_ALT2_CHANGED = 'selected_alt2_changed';
 NavModeEvent.APPROACH_CHANGED = 'approach_changed';
 
-class ApproachType { }
-ApproachType.NONE = 'none';
-ApproachType.ILS = 'ils';
-ApproachType.RNAV = 'rnav';
-ApproachType.VISUAL = 'visual';
+class WT_ApproachType { }
+WT_ApproachType.NONE = 'none';
+WT_ApproachType.ILS = 'ils';
+WT_ApproachType.RNAV = 'rnav';
+WT_ApproachType.VISUAL = 'visual';
 
 class ValueStateTracker {
   constructor(valueGetter, handler) {
