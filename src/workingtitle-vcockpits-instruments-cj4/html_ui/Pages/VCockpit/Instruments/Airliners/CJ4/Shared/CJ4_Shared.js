@@ -3671,8 +3671,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("RA/BARO MIN", this.textSize, 0.6);
-                this.addRadioRange("RA", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
-                this.addRadioRange("BARO", this.textSize, 0, 12100, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
+                this.addRadioRange("RA", this.textSize, 0, 2500, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
+                this.addRadioRange("BARO", this.textSize, 0, 14000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
             }
             this.endSection();
         }
@@ -3728,8 +3728,8 @@ class CJ4_PopupMenu_REF extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("RA/BARO MIN", this.textSize, 0.6);
-                this.addRadioRange("RA", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
-                this.addRadioRange("BARO", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
+                this.addRadioRange("RA", this.textSize, 0, 2500, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
+                this.addRadioRange("BARO", this.textSize, 0, 14000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
             }
             this.endSection();
         }

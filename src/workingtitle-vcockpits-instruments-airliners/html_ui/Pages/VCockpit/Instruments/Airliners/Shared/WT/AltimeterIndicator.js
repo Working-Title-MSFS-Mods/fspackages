@@ -306,11 +306,11 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             {
                 if (!this.baroMinsShape)
                 this.baroMinsPointer = document.createElementNS(Avionics.SVG.NS, "path");
+                this.baroMinsPointer.setAttribute("d", "M -50 50 L 24 50 L 39 30 L 39 70 L 24 50 Z");
                 this.baroMinsPointer.setAttribute("fill", "none");
                 this.baroMinsPointer.setAttribute("stroke", "cyan");
                 this.baroMinsPointer.setAttribute("stroke-width", "3");
                 this.baroMinsPointer.setAttribute("fill", "cyan");
-                this.baroMinsPointer.setAttribute("d", "M -50 50 L 24 50 L 39 30 L 39 70 L 24 50 Z");
                 this.baroMinsSVG.appendChild(this.baroMinsPointer);
             }
             this.centerSVG.appendChild(this.baroMinsSVG);
@@ -1647,7 +1647,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         if (this.baroMinsSVG) {
             let refDelta = 275;
             let deltaAltitude = baroMinsSet - indicatedAltitude;
-            if (deltaAltitude < -refDelta || deltaAltitude > refDelta) {
+            if (deltaAltitude < -refDelta || deltaAltitude > refDelta || baroMinsSet == 0) {
                 this.baroMinsSVG.setAttribute("visibility", "hidden");
             }
             else {
