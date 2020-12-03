@@ -2261,7 +2261,6 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         }
 
         let flcActive = SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "number");
-        console.log("FLC Active: " + flcActive);
         if (flcActive != 1) {
             this.speedBackground.setAttribute("visibility", "hidden");  
             this.targetSpeedIconSVG.setAttribute("visibility", "hidden");  

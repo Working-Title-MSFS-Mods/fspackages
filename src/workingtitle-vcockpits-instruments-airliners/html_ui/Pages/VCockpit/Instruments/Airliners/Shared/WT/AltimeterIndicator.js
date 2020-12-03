@@ -289,6 +289,33 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.targetAltitudeIndicatorSVG.appendChild(this.targetAltitudeIndicatorSVGShape);
             }
             this.centerSVG.appendChild(this.targetAltitudeIndicatorSVG);
+
+            var baroMinsPosX = gradWidth - 13;
+            var baroMinsPosY = _top + _height * 0.5;
+            var baroMinsWidth = 100;
+            var baroMinsHeight = 100;
+            if (!this.baroMinsSVG) {
+                this.baroMinsSVG = document.createElementNS(Avionics.SVG.NS, "svg");
+                this.baroMinsSVG.setAttribute("id", "BaroMinsIndicator");
+            }
+            else
+                Utils.RemoveAllChildren(this.baroMinsSVG);
+            this.baroMinsSVG.setAttribute("x", baroMinsPosX.toString());
+            this.baroMinsSVG.setAttribute("y", (baroMinsPosY - baroMinsHeight * 0.5).toString());
+            this.baroMinsSVG.setAttribute("width", baroMinsWidth.toString());
+            this.baroMinsSVG.setAttribute("height", baroMinsHeight.toString());
+            this.baroMinsSVG.setAttribute("viewBox", "0 0 100 100");
+            {
+                if (!this.baroMinsShape)
+                this.baroMinsPointer = document.createElementNS(Avionics.SVG.NS, "path");
+                this.baroMinsPointer.setAttribute("d", "M -50 50 L 24 50 L 39 30 L 39 70 L 24 50 Z");
+                this.baroMinsPointer.setAttribute("fill", "none");
+                this.baroMinsPointer.setAttribute("stroke", "cyan");
+                this.baroMinsPointer.setAttribute("stroke-width", "3");
+                this.baroMinsPointer.setAttribute("fill", "cyan");
+                this.baroMinsSVG.appendChild(this.baroMinsPointer);
+            }
+            this.centerSVG.appendChild(this.baroMinsSVG);
         }
         this.rootGroup.appendChild(this.centerSVG);
         this.targetAltitudeBgSVG = document.createElementNS(Avionics.SVG.NS, "rect");
@@ -1322,6 +1349,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         var groundReference = indicatedAltitude - Simplane.getAltitudeAboveGround();
         var baroMode = Simplane.getPressureSelectedMode(this.aircraft);
         var selectedAltitude;
+        let baroMinsSet = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
         if (this.aircraft === Aircraft.AS01B || this.aircraft === Aircraft.B747_8 || this.aircraft === Aircraft.A320_NEO) {
             selectedAltitude = Math.max(0, Simplane.getAutoPilotDisplayedAltitudeLockValue());
         }
@@ -1334,6 +1362,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.updateGroundReference(indicatedAltitude, groundReference);
         this.updateTargetAltitude(indicatedAltitude, selectedAltitude, baroMode);
         this.updateBaroPressure(baroMode);
+        this.updateBaroMinimums(baroMinsSet, indicatedAltitude);
         this.updateMtrs(indicatedAltitude, selectedAltitude);
     }
     updateMtrs(_altitude, _selected) {
@@ -1614,6 +1643,25 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         if (this.hudAPAltitude != hudAltitude) {
             this.hudAPAltitude = Math.round(hudAltitude);
             SimVar.SetSimVarValue("L:HUD_AP_SELECTED_ALTITUDE", "Number", this.hudAPAltitude);
+        }
+    }
+    updateBaroMinimums(baroMinsSet, indicatedAltitude) {
+        if (this.baroMinsSVG) {
+            let refDelta = 275;
+            let deltaAltitude = baroMinsSet - indicatedAltitude;
+            if (deltaAltitude < -refDelta || deltaAltitude > refDelta || baroMinsSet == 0) {
+                this.baroMinsSVG.setAttribute("visibility", "hidden");
+            }
+            else {
+                var _top = 0;
+                var _height = this.refHeight;
+                let deltaValue = indicatedAltitude - baroMinsSet;
+                let deltaSVG = deltaValue * this.graduationSpacing * (this.nbSecondaryGraduations + 1) / 100;
+                let offsetY = _top + _height * 0.5 + deltaSVG;
+                offsetY -= 48;
+                this.baroMinsSVG.setAttribute("y", offsetY.toString());
+                this.baroMinsSVG.setAttribute("visibility", "visible");
+            }
         }
     }
 }

@@ -84,66 +84,72 @@ export class LegsProcedure {
         this._addedProcedureStart = true;
       }
       else {
-        switch (currentLeg.type) {
-          case 3:
-            mappedLeg = this.mapHeadingUntilDistanceFromOrigin(currentLeg, this._previousFix);
-            break;
-          case 4:
-            //Only map if the fix is itself not a runway fix to avoid double
-            //adding runway fixes
-            if (currentLeg.fixIcao === '' || currentLeg.fixIcao[0] !== 'R') {
-              mappedLeg = this.mapOriginRadialForDistance(currentLeg, this._previousFix);
-            }
-            else {
-              isLegMappable = false;
-            }
-            break;
-          case 5:
-            mappedLeg = this.mapHeadingToInterceptNextLeg(currentLeg, this._previousFix, this._legs[this._currentIndex + 1]);
-            break;
-          case 6:
-            mappedLeg = this.mapHeadingUntilRadialCrossing(currentLeg, this._previousFix);
-            break;
-          case 9:
-          case 10:
-            mappedLeg = this.mapBearingAndDistanceFromOrigin(currentLeg);
-            break;
-          case 11:
-          case 22:
-            mappedLeg = this.mapVectors(currentLeg, this._previousFix);
-            break;
-          case 15: {
-            if (currentLeg.fixIcao[0] !== 'A') {
-              const leg = this.mapExactFix(currentLeg);
-              const prevLeg = this._previousFix;
-
-              //If a type 15 (initial fix) comes up in the middle of a plan
-              if (leg.icao === prevLeg.icao && leg.infos.coordinates.lat === prevLeg.infos.coordinates.lat
-                && leg.infos.coordinates.long === prevLeg.infos.coordinates.long) {
-                isLegMappable = false;
+        try {
+          switch (currentLeg.type) {
+            case 3:
+              mappedLeg = this.mapHeadingUntilDistanceFromOrigin(currentLeg, this._previousFix);
+              break;
+            case 4:
+              //Only map if the fix is itself not a runway fix to avoid double
+              //adding runway fixes
+              if (currentLeg.fixIcao === '' || currentLeg.fixIcao[0] !== 'R') {
+                mappedLeg = this.mapOriginRadialForDistance(currentLeg, this._previousFix);
               }
               else {
-                mappedLeg = leg;
+                isLegMappable = false;
               }
+              break;
+            case 5:
+            case 21:
+              mappedLeg = this.mapHeadingToInterceptNextLeg(currentLeg, this._previousFix, this._legs[this._currentIndex + 1]);
+              break;
+            case 6:
+              mappedLeg = this.mapHeadingUntilRadialCrossing(currentLeg, this._previousFix);
+              break;
+            case 9:
+            case 10:
+              mappedLeg = this.mapBearingAndDistanceFromOrigin(currentLeg);
+              break;
+            case 11:
+            case 22:
+              mappedLeg = this.mapVectors(currentLeg, this._previousFix);
+              break;
+            case 15: {
+              if (currentLeg.fixIcao[0] !== 'A') {
+                const leg = this.mapExactFix(currentLeg);
+                const prevLeg = this._previousFix;
+
+                //If a type 15 (initial fix) comes up in the middle of a plan
+                if (leg.icao === prevLeg.icao && leg.infos.coordinates.lat === prevLeg.infos.coordinates.lat
+                  && leg.infos.coordinates.long === prevLeg.infos.coordinates.long) {
+                  isLegMappable = false;
+                }
+                else {
+                  mappedLeg = leg;
+                }
+              }
+              //If type 15 is an airport itself, we don't need to map it (and the data is generally wrong)
+              else {
+                isLegMappable = false;
+              }     
             }
-            //If type 15 is an airport itself, we don't need to map it (and the data is generally wrong)
-            else {
+              break;
+            case 7:
+            case 17:
+            case 18:
+              mappedLeg = this.mapExactFix(currentLeg);
+              break;
+            case 2:
+            case 19:
+              mappedLeg = this.mapHeadingUntilAltitude(currentLeg, this._previousFix);
+              break;
+            default:
               isLegMappable = false;
-            }     
+              break;
           }
-            break;
-          case 7:
-          case 17:
-          case 18:
-            mappedLeg = this.mapExactFix(currentLeg);
-            break;
-          case 2:
-          case 19:
-            mappedLeg = this.mapHeadingUntilAltitude(currentLeg, this._previousFix);
-            break;
-          default:
-            isLegMappable = false;
-            break;
+        }
+        catch (err) {
+          console.log(`LegsProcedure: Unexpected unmappable leg: ${err}`);
         }
 
         if (mappedLeg !== undefined) {
