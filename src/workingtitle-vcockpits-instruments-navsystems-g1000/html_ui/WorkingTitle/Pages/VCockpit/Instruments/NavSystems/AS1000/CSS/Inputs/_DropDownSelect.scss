@@ -46,10 +46,6 @@ drop-down-selector {
         color: $input_color;
     }
 
-    .units {
-        font-size: 0.8em;
-    }
-
     &[ACTIVE] {
         .popup {
             display: block !important;

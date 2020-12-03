@@ -10,16 +10,23 @@ class WT_Plane_State {
 
         this.coordinates = rxjs.zip(
             WT_RX.observeSimVar(update$, "PLANE LATITUDE", "degree latitude", false),
-            WT_RX.observeSimVar(update$, "PLANE LONGITUDE", "degree longitude", false)
+            WT_RX.observeSimVar(update$, "PLANE LONGITUDE", "degree longitude", false),
+            WT_RX.observeSimVar(update$, "INDICATED ALTITUDE:1", "feet", false),
         ).pipe(
-            rxjs.operators.map(([lat, long]) => new LatLong(lat, long)),
+            rxjs.operators.map(([lat, long, alt]) => new LatLongAlt(lat, long, alt)),
             rxjs.operators.shareReplay(1),
         );
 
-        this.indicatedAltitude = WT_RX.observeSimVar(update$, "INDICATED ALTITUDE", "feet");
         this.groundSpeed = WT_RX.observeSimVar(update$, "GPS GROUND SPEED", "kilometers per hour");
         
         this.heading = WT_RX.observeSimVar(update$, "PLANE HEADING DEGREES MAGNETIC", "degree");
+        this.track = WT_RX.observeSimVar(update$, "GPS GROUND MAGNETIC TRACK", "degrees");
+
+        this.indicatedAltitude = WT_RX.observeSimVar(update$, "INDICATED ALTITUDE", "feet");
+        this.verticalSpeed = WT_RX.observeSimVar(update$, "VERTICAL SPEED", "feet per minute");
+
+        this.orientation = WT_RX.observeGameVar(update$, "AIRCRAFT ORIENTATION AXIS", "XYZ");
+        this.turnCoordinator = WT_RX.observeSimVar(update$, "TURN COORDINATOR BALL", "position");
 
         this.onGround = this.groundSpeed.pipe(
             rxjs.operators.map(speed => speed < 90),

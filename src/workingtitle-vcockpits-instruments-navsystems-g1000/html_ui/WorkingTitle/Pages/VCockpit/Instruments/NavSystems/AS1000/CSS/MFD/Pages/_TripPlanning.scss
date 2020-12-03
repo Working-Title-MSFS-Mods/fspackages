@@ -2,7 +2,7 @@ g1000-trip-planning {
     display: grid;
     height: 100%;
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 3fr 2fr;
     grid-template-areas:
         "input-data input-data input-data"
         "trip-stats fuel-stats other-stats";
@@ -56,7 +56,7 @@ g1000-trip-planning {
             display: grid;
             height: 100%;
             grid-gap: 2vh;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1.5fr 1fr 1fr;
             grid-template-rows: auto 1fr;
             grid-template-areas:
                 "map header header"
@@ -81,11 +81,15 @@ g1000-trip-planning {
                 border-bottom: $border_width_thin solid $border_color;
                 padding-bottom: 1.5vh;
                 text-align: center;
-                line-height: 1.0em;
+                line-height: 1em;
+                text-transform: uppercase;
+                font-weight: bold;
 
                 .mode {
                     color: $input_color;
                     font-size: 1.1em;
+                    font-weight: normal;
+                    text-transform: none;
                 }
             }
 
@@ -111,9 +115,5 @@ g1000-trip-planning {
 
     .other-stats {
         grid-area: other-stats;
-    }
-
-    .units {
-        font-size: 0.8em;
     }
 }

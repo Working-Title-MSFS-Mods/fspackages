@@ -129,7 +129,7 @@ class WT_Numeric_Input extends HTMLElement {
         let units = this.getAttribute("units");
         if (units) {
             let unitsNode = document.createElement("span");
-            unitsNode.style.fontSize = "0.8em";
+            unitsNode.className = "units";
             unitsNode.textContent = units;
             this.appendChild(unitsNode);
         }

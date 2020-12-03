@@ -9,7 +9,7 @@ g1000-nav-box {
     background: $page_background_color;
     line-height: 1;
     font-weight: normal;
-    font-family: "Roboto-Regular";
+    font-family: $font_family_mono;
     font-size: $font_size_regular;
 
     > .center {
@@ -59,6 +59,7 @@ g1000-nav-box {
             font-size: 1.1em;
             line-height: 1;
             font-weight: bold;
+            font-family: $font_family_normal;
         }
     }
 }
@@ -69,7 +70,6 @@ g1000-com-frequencies {
     grid-template-rows: 50% 50%;
     height: 100%;
     padding: 0 1vh;
-    font-family: "Roboto-Mono";
 
     .active {
         grid-area: active;

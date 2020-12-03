@@ -6,14 +6,11 @@ class WT_Radio_Altimeter {
         this.isAvailable = true;
         this.enabled = new rxjs.BehaviorSubject(false);
         config.watchNode("RadarAltitude").subscribe(node => {
-            this.isAvailable = true;// node && node.textContent == "True"; //TODO:
-            this.enabled.next(true);//node && node.textContent == "True");
+            this.isAvailable = node && node.textContent == "True";
+            this.enabled.next(node && node.textContent == "True");
         });
 
-        const height$ = update$.pipe(
-            rxjs.operators.map(() => SimVar.GetSimVarValue("RADIO HEIGHT", "feet")),
-            rxjs.operators.shareReplay(1)
-        )
+        const height$ = WT_RX.observeSimVar(update$, "RADIO HEIGHT", "feet");
 
         const acceptable$ = update$.pipe(
             rxjs.operators.withLatestFrom(height$),
@@ -22,7 +19,8 @@ class WT_Radio_Altimeter {
                 const xyz = Simplane.getOrientationAxis();
                 const bankAcceptable = Math.abs(xyz.bank) < Math.PI * 0.35;
                 return (bankAcceptable && heightAcceptable);
-            })
+            }),
+            rxjs.operators.distinctUntilChanged()
         )
 
         this.available = rxjs.combineLatest(update$, acceptable$).pipe(
@@ -32,9 +30,8 @@ class WT_Radio_Altimeter {
         this.altitude = this.enabled.pipe(
             rxjs.operators.switchMap(enabled => {
                 if (enabled) {
-                    return update$.pipe(
-                        rxjs.operators.withLatestFrom(acceptable$),
-                        rxjs.operators.switchMap(([dt, available]) => available ? height$ : rxjs.of(1000)),
+                    return acceptable$.pipe(
+                        rxjs.operators.switchMap(available => available ? height$ : rxjs.of(1000)),
                         rxjs.operators.distinctUntilChanged(),
                         rxjs.operators.shareReplay(1)
                     )

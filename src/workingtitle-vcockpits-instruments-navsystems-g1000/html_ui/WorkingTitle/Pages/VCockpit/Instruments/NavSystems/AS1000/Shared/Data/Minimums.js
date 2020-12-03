@@ -5,16 +5,6 @@ class WT_Minimums {
      * @param {WT_Plane_State} planeState 
      */
     constructor(update$, radioAltimeter, planeState) {
-        this.mode = new Subject();
-        this.source = new Subject();
-        this.value = new Subject();
-        this.state = new Subject();
-
-        this.mode.subscribe(mode => {
-            this.wasUpper = false;
-        });
-        this.wasUpper = false;
-
         this.modes = new Subject([0, 1]);
 
         radioAltimeter.enabled.subscribe(enabled => {
@@ -25,15 +15,21 @@ class WT_Minimums {
             }
         });
 
-        this.value = update$.pipe(
-            rxjs.operators.throttleTime(1000),
+        this.forceUpdate$ = new rxjs.Subject();
+        const throttledUpdate$ = rxjs.merge(
+            this.forceUpdate$,
+            update$.pipe(rxjs.operators.throttleTime(1000))
+        ).pipe(
+            rxjs.operators.share()
+        );
+
+        this.value = throttledUpdate$.pipe(
             rxjs.operators.map(() => SimVar.GetSimVarValue("L:AS3000_MinimalsValue", "number")),
             rxjs.operators.distinctUntilChanged(),
             rxjs.operators.shareReplay(1)
         );
 
-        this.mode = update$.pipe(
-            rxjs.operators.throttleTime(1000),
+        this.mode = throttledUpdate$.pipe(
             rxjs.operators.map(() => SimVar.GetSimVarValue("L:AS3000_MinimalsMode", "number")),
             rxjs.operators.distinctUntilChanged(),
             rxjs.operators.shareReplay(1)
@@ -103,8 +99,10 @@ class WT_Minimums {
     }
     setMode(mode) {
         SimVar.SetSimVarValue("L:AS3000_MinimalsMode", "number", mode);
+        this.forceUpdate$.next();
     }
     setAltitude(value) {
         SimVar.SetSimVarValue("L:AS3000_MinimalsValue", "number", value);
+        this.forceUpdate$.next();
     }
 }

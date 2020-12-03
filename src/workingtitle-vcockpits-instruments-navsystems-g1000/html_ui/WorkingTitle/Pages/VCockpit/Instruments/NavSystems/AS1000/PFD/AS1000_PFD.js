@@ -62,7 +62,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("alertsKey", d => new WT_PFD_Alert_Key(d.annunciationsModel));
 
         d.register("syntheticVision", d => new WT_Synthetic_Vision(d.planeConfig));
-        d.register("attitudeModel", d => new Attitude_Indicator_Model(d.syntheticVision, d.nearestWaypoints));
+        d.register("attitudeModel", d => new Attitude_Indicator_Model(d.syntheticVision, d.nearestWaypoints, d.planeState, d.autoPilot, d.update$));
         d.register("hsiInput", d => new HSI_Input_Layer(d.hsiModel))
         d.register("hsiModel", d => new HSIIndicatorModel(d.update$, d.planeState));
         d.register("altimeterModel", d => new WT_Altimeter_Model(d.update$, this, d.barometricPressure, d.minimums, d.radioAltimeter, d.sound));
@@ -79,7 +79,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("timerModel", d => new WT_PFD_Timer_Model(d.clock));
         d.register("setupMenuModel", d => new WT_PFD_Setup_Menu_Model(d.brightnessSettings));
         d.register("nearestAirportsModel", d => new WT_Nearest_Airports_Model(this, d.showDirectToHandler, d.waypointRepository, d.unitChooser, null, d.nearestWaypoints));
-        d.register("windModel", d => new WT_PFD_Wind_Model(d.anemometer, d.planeState));
+        d.register("windModel", d => new WT_PFD_Wind_Model(d.update$, d.anemometer, d.planeState));
         d.register("setMinimumsModel", d => new WT_Set_Minimums_Model(d.minimums));
         d.register("minimumsModel", d => new WT_Minimums_Model(d.minimums));
         d.register("radioAltimeterModel", d => new WT_Radio_Altimeter_Model(d.radioAltimeter));
@@ -261,6 +261,10 @@ class AS1000_PFD extends BaseAS1000 {
             }
         }
     }
+    beforeUpdate() {
+        this.dependencies.beforeUpdate$.next();
+        super.beforeUpdate();
+    }
     onUpdate(_deltaTime) {
         for (let updatable of this.updatables) {
             updatable.update(_deltaTime);
@@ -271,6 +275,10 @@ class AS1000_PFD extends BaseAS1000 {
         if (syntheticVision.offsetParent) {
             syntheticVision.update(_deltaTime);
         }
+    }
+    afterUpdate() {
+        this.dependencies.afterUpdate$.next();
+        super.afterUpdate();
     }
     computeEvent(_event) {
         if (_event == "SOFTKEYS_12") {

@@ -7,8 +7,8 @@ class WT_Brightness_Settings {
 
         this.mfd = new Subject(SimVar.GetSimVarValue(`L:XMLVAR_AS1000_MFD_Brightness`, "number"));
         this.pfd = new Subject(SimVar.GetSimVarValue(`L:XMLVAR_AS1000_PFD_Brightness`, "number"));
-        this.mfdMode = new Subject(WTDataStore.get(`MFD.BrightnessMode`, "Manual"));
-        this.pfdMode = new Subject(WTDataStore.get(`PFD.BrightnessMode`, "Manual"));
+        this.mfdMode = new Subject(WTDataStore.get(`MFD.BrightnessMode`, "Auto"));
+        this.pfdMode = new Subject(WTDataStore.get(`PFD.BrightnessMode`, "Auto"));
 
         this.setPfdBrightness(WTDataStore.get(`MFD.Brightness`, 100));
         this.setMfdBrightness(WTDataStore.get(`PFD.Brightness`, 100));
@@ -17,10 +17,7 @@ class WT_Brightness_Settings {
         const autoBrightness$ = rxjs.combineLatest(
             this.clock.sunrise.pipe(rxjs.operators.map(getSecondsFromMidnight)),
             this.clock.sunset.pipe(rxjs.operators.map(getSecondsFromMidnight)),
-            this.clock.localTime.pipe(
-                rxjs.operators.scan((prev, current) => Math.abs(prev - current) > WT_Brightness_Settings.AUTO_BRIGHTNESS_UPDATE_FREQUENCY ? current : prev, 0),
-                rxjs.operators.distinctUntilChanged()
-            ),
+            this.clock.localTime.pipe(WT_RX.distinctUntilSignificantChange(WT_Brightness_Settings.AUTO_BRIGHTNESS_UPDATE_FREQUENCY)),
             (sunrise, sunset, localTime) => {
                 const clamp = x => Math.max(-1, Math.min(1, x)) * 0.5 + 0.5;
                 const sunriseOffset = localTime - sunrise;

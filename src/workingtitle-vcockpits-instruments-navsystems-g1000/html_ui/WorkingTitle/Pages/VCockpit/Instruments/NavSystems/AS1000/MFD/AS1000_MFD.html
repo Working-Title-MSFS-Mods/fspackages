@@ -57,7 +57,7 @@
                         <div class="value" data-element="value1"></div>
                         <div data-element="id2"></div>
                         <div class="value" data-element="value2"></div>
-                        <div data-element="id3">\</div>
+                        <div data-element="id3"></div>
                         <div class="value" data-element="value3"></div>
                     </div>
                     <div class="page-title">
@@ -1245,15 +1245,3 @@
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Scripts.js"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Scripts.js"></script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const model = new WT_Debug_Console("AS1000_MFD")
-        const view = new WT_Debug_Console_View();
-        document.body.appendChild(view);
-        view.setModel(model);
-        window.debugConsoleModel = model;
-        window.debugConsoleView = view;
-    });
-
-</script>

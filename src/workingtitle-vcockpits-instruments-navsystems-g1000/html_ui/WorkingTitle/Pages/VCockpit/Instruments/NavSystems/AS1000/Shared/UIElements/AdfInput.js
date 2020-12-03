@@ -73,10 +73,10 @@ class WT_Adf_Input extends HTMLElement {
         this.elements.editableDigits[this._editingDigitIndex].removeAttribute("state");
     }
     connectedCallback() {
+        this.isVisible = true;
         if (this.initialised)
             return;
         this.initialised = true;
-        this.isVisible = true;
 
         const addDigit = (position = null) => {
             let digit = document.createElement("span");
@@ -103,6 +103,9 @@ class WT_Adf_Input extends HTMLElement {
                 requestAnimationFrame(frame);
         }
         requestAnimationFrame(frame);
+    }
+    disconnectedCallback() {
+        this.isVisible = false;
     }
     selectNextDigit() {
         this.elements.editableDigits[this._editingDigitIndex].removeAttribute("state");

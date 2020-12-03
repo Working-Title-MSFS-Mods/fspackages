@@ -31,11 +31,13 @@ Data/FuelUsed.js
 Data/PlaneConfig.js
 Data/Minimums.js
 Data/NearestWaypoints.js
+Data/Releases.js
 Data/Settings.js
 Data/Statistics.js
 Data/Timers.js
 Data/WaypointQuickSelect.js
 Instruments/Anemometer.js
+Instruments/AutoPilot.js
 Instruments/Barometer.js
 Instruments/Clock.js
 Instruments/RadioAltimeter.js

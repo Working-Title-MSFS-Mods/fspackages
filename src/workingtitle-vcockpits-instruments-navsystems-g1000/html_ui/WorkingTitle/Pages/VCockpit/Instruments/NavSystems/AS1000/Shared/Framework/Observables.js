@@ -106,6 +106,20 @@ class WT_RX {
             rxjs.operators.shareReplay(1)
         );
     }
+    static observeGameVar(update$, gameVar, units, distinct = true) {
+        let observable = update$;
+
+        observable = observable.pipe(
+            rxjs.operators.map(() => SimVar.GetGameVarValue(gameVar, units))
+        );
+
+        if (distinct)
+            observable = observable.pipe(rxjs.operators.distinctUntilChanged())
+
+        return observable.pipe(
+            rxjs.operators.shareReplay(1)
+        );
+    }
     static distinctUntilSignificantChange(delta) {
         return rxjs.pipe(
             rxjs.operators.scan((acc, current) => {
@@ -116,5 +130,36 @@ class WT_RX {
             }, null),
             rxjs.operators.distinctUntilChanged()
         );
+    }
+    static distinctMap(map) {
+        return rxjs.pipe(
+            rxjs.operators.map(map),
+            rxjs.operators.distinctUntilChanged()
+        );
+    }
+    static interpolateTo(divisor, threshhold = null) {
+        if (threshhold) {
+            return rxjs.pipe(
+                rxjs.operators.scan((result, current) => {
+                    const delta = current - result;
+                    if (Math.abs(delta) < threshhold) {
+                        return current;
+                    }
+                    return result + delta / divisor
+                }, 0),
+                rxjs.operators.distinctUntilChanged()
+            );
+        } else {
+            return rxjs.pipe(
+                rxjs.operators.scan((result, current) => {
+                    if (current === null)
+                        return null;
+                    if (result === null)
+                        result = 0;
+                    return result + (current - result) / divisor
+                }, 0),
+                rxjs.operators.distinctUntilChanged()
+            );
+        }
     }
 }

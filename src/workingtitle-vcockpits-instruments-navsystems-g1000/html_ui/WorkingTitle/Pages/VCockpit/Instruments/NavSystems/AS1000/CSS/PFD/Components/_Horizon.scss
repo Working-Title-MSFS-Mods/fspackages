@@ -29,10 +29,14 @@
 
     glasscockpit-attitude-indicator {
         position: absolute;
-        left: 23.2%;
+        /*left: 23.2%;
         top: 12%;
         width: 47%;
-        height: 41%;
+        height: 41%;*/
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
         border: none;
 
         #Attitude {

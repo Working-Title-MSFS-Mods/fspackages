@@ -66,7 +66,7 @@ class WT_Debug_Console {
     /**
      * @param {string} instrumentID
      */
-    constructor(instrument) {
+    constructor(instrument, update$, beginUpdate$, endUpdate$) {
         this.prefix = instrument.templateID;
         this.enabled = new WT_Toggleable_Subject(WTDataStore.get(this.dataStoreKey("visible"), false));
         this.types = {
@@ -116,6 +116,43 @@ class WT_Debug_Console {
             rxjs.operators.shareReplay(1),
         )
         this.bindConsole();
+
+        const frameTime$ = rxjs.zip(
+            beginUpdate$.pipe(
+                rxjs.operators.map(() => window.performance.now())
+            ),
+            endUpdate$.pipe(
+                rxjs.operators.map(() => window.performance.now())
+            ),
+            (begin, end) => end - begin
+        );
+
+        const sampleFrames = 20;
+        /*this.avionicsUpdateFps = frameTime$.pipe(
+            rxjs.operators.map(time => time / 1000),
+            rxjs.operators.bufferCount(sampleFrames),
+            rxjs.operators.map(values => sampleFrames / values.reduce((total, value) => total + value, 0))
+        );*/
+
+        this.avionicsUpdateFps = frameTime$.pipe(
+            rxjs.operators.map(time => time),
+            rxjs.operators.bufferCount(sampleFrames),
+            rxjs.operators.map(values => values.reduce((total, value) => total + value, 0) / sampleFrames)
+        );
+
+        this.avionicsFps = update$.pipe(
+            rxjs.operators.scan(total => (total + 1) % sampleFrames, 0),
+            rxjs.operators.filter(value => value == 0),
+            rxjs.operators.map(() => window.performance.now()),
+            rxjs.operators.pairwise(),
+            rxjs.operators.map(([a, b]) => sampleFrames / ((b - a) / 1000))
+        );
+
+        this.gameFps = update$.pipe(
+            rxjs.operators.bufferTime(1000),
+            rxjs.operators.map(frameTimes => frameTimes.reduce((total, current) => total + current, 0) / frameTimes.length),
+            rxjs.operators.map(averageFrameTime => 1000 / averageFrameTime)
+        );
 
         window.onerror = function (message, source, lineno, colno, error) { console.error(message); };
     }
@@ -171,7 +208,12 @@ class WT_Debug_Console {
 class WT_Debug_Console_View extends WT_HTML_View {
     connectedCallback() {
         this.innerHTML = `
-            <div class="buttons">
+            <div class="toolbar">
+                <span data-element="avionicsUpdateFps"></span>
+                <span data-element="avionicsFps"></span>
+                <span data-element="gameFps"></span>
+            </div>
+            <div class="buttons">                
                 <button data-click="clear">Clear</button>
                 <button data-click="toggleNotices" data-element="noticesButton">Notices</button>
                 <button data-click="toggleWarnings" data-element="warningsButton">Warnings</button>
@@ -315,6 +357,10 @@ class WT_Debug_Console_View extends WT_HTML_View {
                 WTDataStore.set(this.model.dataStoreKey("h"), dimensions.y);
             })
         ).subscribe();
+
+        model.avionicsUpdateFps.subscribe(fps => this.elements.avionicsUpdateFps.textContent = `U: ${fps.toFixed(1)}`);
+        model.avionicsFps.subscribe(fps => this.elements.avionicsFps.textContent = `AV: ${fps.toFixed(1)}`);
+        model.gameFps.subscribe(fps => this.elements.gameFps.textContent = `GM: ${fps.toFixed(1)}`);
     }
 }
 customElements.define("wt-debug-console", WT_Debug_Console_View);

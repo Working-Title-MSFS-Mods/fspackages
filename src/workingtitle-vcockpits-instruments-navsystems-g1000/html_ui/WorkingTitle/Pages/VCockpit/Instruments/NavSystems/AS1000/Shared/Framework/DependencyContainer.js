@@ -65,10 +65,14 @@ class WT_Dependency_Container {
 
 class WT_Shared_Dependencies {
     static add(d, navSystem) {
+        d.register("beforeUpdate$", d => new rxjs.Subject());
+        d.register("afterUpdate$", d => new rxjs.Subject());
         d.register("update$", d => {
             const update$ = new rxjs.Subject();
             navSystem.updatables.push({
-                update: dt => update$.next(dt)
+                update: dt => {
+                    update$.next(dt);
+                }
             });
             return update$;
         });
@@ -82,6 +86,7 @@ class WT_Shared_Dependencies {
         d.register("procedures", d => new Procedures(d.flightPlanManager));
         d.register("metarDownloader", d => new WT_Metar_Downloader());
         d.register("metarRepository", d => new WT_Metar_Repository(d.metarDownloader, d.update$));
+        d.register("releaseRepository", d => new WT_Release_Repository("g1000"));
 
         // Input
         d.register("inputStack", d => new Input_Stack(d.flightSimEvents));
@@ -94,6 +99,7 @@ class WT_Shared_Dependencies {
 
         // Instrumentation
         d.register("anemometer", d => new WT_Anemometer(d.update$, d.planeState));
+        d.register("autoPilot", d => new WT_Auto_Pilot(d.update$));
         d.register("electricityAvailable", d => new Subject(navSystem.isElectricityAvailable()));
         d.register("fuelUsed", d => new WT_Fuel_Used(d.planeState, ["FUEL LEFT QUANTITY", "FUEL RIGHT QUANTITY"]));
         d.register("radioAltimeter", d => new WT_Radio_Altimeter(d.planeConfig, d.update$));
@@ -139,7 +145,7 @@ class WT_Shared_Dependencies {
         d.register("waypointInputModel", d => new WT_Waypoint_Input_Model(d.icaoInputModel, d.waypointRepository), { scope: "transient" });
 
         // Debug
-        d.register("debugConsole", d => new WT_Debug_Console(navSystem));
+        d.register("debugConsole", d => new WT_Debug_Console(navSystem, d.update$, d.beforeUpdate$, d.afterUpdate$));
         d.register("debugConsoleView", d => new WT_Debug_Console_View(navSystem));
 
         d.register("debugConsoleMenu", d => new WT_Debug_Console_Menu(d.softKeyMenuHandler, d.debugConsole));

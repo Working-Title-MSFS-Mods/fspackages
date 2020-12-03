@@ -34,10 +34,6 @@ g1000-duplicate-waypoints {
         @extend %animated-selection;
     }
 
-    .units {
-        font-size: 0.8em;
-    }
-
     .information {
         color: $input_color;
         display: grid;

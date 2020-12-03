@@ -3,7 +3,7 @@ class WT_PFD_Wind_Model {
      * @param {WT_Anemometer} anemometer 
      * @param {WT_Plane_State} planeState 
      */
-    constructor(anemometer, planeState) {
+    constructor(update$, anemometer, planeState) {
         this.mode = new Subject(WTDataStore.get(`PFD.WindMode`, 1));
 
         this.activeMode = rxjs.combineLatest(planeState.onGround, this.mode.observable).pipe(
@@ -17,12 +17,17 @@ class WT_PFD_Wind_Model {
             rxjs.operators.shareReplay(1)
         )
 
-        this.xSpeed = rxjs.combineLatest(anemometer.relativeDirection, anemometer.speed).pipe(
+        const directionSpeed$ = rxjs.combineLatest(anemometer.relativeDirection, anemometer.speed).pipe(
+            rxjs.operators.sample(update$),
+            rxjs.operators.shareReplay(1)
+        );
+
+        this.xSpeed = directionSpeed$.pipe(
             rxjs.operators.map(([relativeDirection, speed]) => speed * Math.sin(relativeDirection / 180 * Math.PI)),
             rxjs.operators.shareReplay(1)
         )
 
-        this.ySpeed = rxjs.combineLatest(anemometer.relativeDirection, anemometer.speed).pipe(
+        this.ySpeed = directionSpeed$.pipe(
             rxjs.operators.map(([relativeDirection, speed]) => speed * Math.cos(relativeDirection / 180 * Math.PI)),
             rxjs.operators.shareReplay(1)
         )

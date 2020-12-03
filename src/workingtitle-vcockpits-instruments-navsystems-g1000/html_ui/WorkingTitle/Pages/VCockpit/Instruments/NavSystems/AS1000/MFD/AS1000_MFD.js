@@ -21,7 +21,7 @@ class AS1000_MFD extends BaseAS1000 {
 
         d.register("navBoxModel", d => new WT_MFD_Nav_Box_Model(d.pageTitle, d.unitChooser, d.settings));
         d.register("flightPlanController", d => new WT_Flight_Plan_Controller());
-        d.register("changelogRepository", d => new WT_Changelog_Repository());        
+        d.register("changelogRepository", d => new WT_Changelog_Repository());
 
         //d.register("mainMap", d => document.querySelector("#MapInstrument"));
         d.register("mainMap", d => {
@@ -198,6 +198,12 @@ class AS1000_MFD extends BaseAS1000 {
 
         document.body.appendChild(this.dependencies.debugConsoleView);
         this.dependencies.debugConsoleView.setModel(this.dependencies.debugConsole);
+
+        const releaseRepository = this.dependencies.releaseRepository
+        rxjs.zip(releaseRepository.getLatestRelease(), releaseRepository.getCurrentRelease()).subscribe(([latest, current]) => {
+            console.log(`Latest release: ${latest.tag}`);
+            console.log(`Current release: ${current.tag}`);
+        });
     }
     initModelView(model, viewSelector) {
         let view = document.querySelector(viewSelector);
@@ -290,6 +296,10 @@ class AS1000_MFD extends BaseAS1000 {
         super.onXMLConfigLoaded(_xml);
         this.dependencies.planeConfig.updateConfig(this.xmlConfig);
     }
+    beforeUpdate() {
+        this.dependencies.beforeUpdate$.next();
+        super.beforeUpdate();
+    }
     onUpdate(dt) {
         for (let updatable of this.updatables) {
             updatable.update(dt);
@@ -299,6 +309,10 @@ class AS1000_MFD extends BaseAS1000 {
         if (this.miniMap.offsetParent)
             this.miniMap.update(dt);
         this.electricityAvailable.value = this.isElectricityAvailable();
+    }
+    afterUpdate() {
+        this.dependencies.afterUpdate$.next();
+        super.afterUpdate();
     }
     disconnectedCallback() {
     }

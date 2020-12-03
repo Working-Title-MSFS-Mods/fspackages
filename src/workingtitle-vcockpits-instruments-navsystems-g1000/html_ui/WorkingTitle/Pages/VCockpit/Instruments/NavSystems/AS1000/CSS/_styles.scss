@@ -1,18 +1,18 @@
 $theme: "1000";
 
 $page_background_color: #111;
-$page_background_color_2: rgb(12, 12, 12);
+$page_background_color_2: #181818;
 
 $border_width_thick: 0.3vh;
 $border_width_thin: 0.2vh;
-$border_color: #e8e8e8;
+$border_color: #bbb;//#e8e8e8;
 
 $color_gps: #ff00ff;
 $color_ap_active: #00ff00;
 $color_green: #00ff00;
 
-$category_box_outline_color: #999;
-$category_box_background_color: #000;
+$category_box_outline_color: #666;
+$category_box_background_color: #111;
 $category_border_width: $border_width_thin;
 $category_text_color: #fff;
 
@@ -165,4 +165,10 @@ ul {
 
 airport-icon {
     display: inline-block;
+}
+
+.units {
+    font-size: 0.9em;
+    margin-left: 0.15em;
+    font-family: $font_family_mono;
 }

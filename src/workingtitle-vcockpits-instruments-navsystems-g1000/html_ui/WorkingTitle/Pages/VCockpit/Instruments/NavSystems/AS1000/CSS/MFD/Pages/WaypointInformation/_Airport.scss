@@ -77,10 +77,6 @@ g1000-airport-information-page {
         overflow-y: scroll;
     }
 
-    .units {
-        font-size: 0.8em;
-    }
-
     &[mode="WX"] {
         .sidebar {
             grid-template-rows: auto minmax(0, 1fr);

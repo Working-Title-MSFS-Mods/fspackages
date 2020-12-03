@@ -29,33 +29,21 @@ class Altimeter extends HTMLElement {
      * @param {WT_Altimeter_Model} model 
      */
     setModel(model) {
-        rxjs.combineLatest(model.barometer.altUnit, model.barometer.pressure).pipe(
-            rxjs.operators.map(([unit, pressure]) => {
-                const isStandard = (unit == WT_Barometer.IN_MG && (Math.abs(pressure - 29.92) < 0.005)) || (unit == WT_Barometer.HPA && (Math.abs(pressure - 1013) < 0.5));
-                return isStandard ? "STD BARO" : pressure.toFixed(unit == "IN" ? 2 : 0) + unit;
-            }),
-            rxjs.operators.distinctUntilChanged()
-        ).subscribe(text => this.baroText.textContent = text);
-
         model.altitude.subscribe(altitude => this.setAttribute("altitude", altitude));
         model.radioAltimeter.altitude.subscribe(altitude => {
             if (altitude !== null) {
                 this.setAttribute("radar-altitude", altitude);
             }
         });
-        model.vspeed.subscribe(vspeed => this.setAttribute("vspeed", vspeed));
+        //model.vspeed.subscribe(vspeed => this.setAttribute("vspeed", vspeed));
         model.referenceVSpeed.subscribe(speed => this.setAttribute("reference-vspeed", speed));
         model.referenceAltitude.subscribe(altitude => this.setAttribute("reference-altitude", altitude));
         model.selectedAltitudeAlert.subscribe(alert => this.setAttribute("selected-altitude-alert", alert));
         model.verticalDeviation.mode.subscribe(mode => this.setAttribute("vertical-deviation-mode", mode));
         model.verticalDeviation.value.subscribe(value => this.setAttribute("vertical-deviation-value", value));
-        model.pressure.subscribe(pressure => this.setAttribute("pressure", pressure));
 
         model.minimums.value.subscribe(value => {
             this.minimumAltitudeBug.setAttribute("display", value === null ? "none" : "block");
-            if (value !== null) {
-                this.minimumAltitudeBug.setAttribute("transform", `translate(0, ${(Math.round(this.altitude / 100) * 100 - value) * Altimeter.GRADUATION_SCALE / 100})`);
-            }
         });
         model.minimums.state.subscribe(state => {
             switch (state) {
@@ -70,6 +58,130 @@ class Altimeter extends HTMLElement {
                     break;
             }
         });
+
+        const altitude$ = model.altitude;
+        const center$ = model.altitude.pipe(
+            rxjs.operators.map(altitude => Math.round(altitude / Altimeter.GRADUATION_SCALE) * 100),
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.shareReplay(1)
+        );
+
+        // Graduations
+        center$.subscribe(center => {
+            for (let i = 0; i < this.graduationTexts.length; i++) {
+                this.graduationTexts[i].textContent = Math.floor((((3 - i) * 100) + center) / 100);
+            }
+        });
+
+        // Ladder
+        rxjs.combineLatest(model.altitude, center$).pipe(
+            rxjs.operators.map(([altitude, center]) => (altitude - center) * Altimeter.GRADUATION_SCALE / 100),
+            rxjs.operators.map(Math.round),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(translate => {
+            this.graduationGroup.setAttribute("transform", `translate(0, ${translate})`);
+            this.bugsGroup.setAttribute("transform", `translate(0, ${translate})`);
+        });
+
+        // Selected altitude bug
+        rxjs.combineLatest(model.referenceAltitude, center$).pipe(
+            rxjs.operators.map(([altitude, center]) => (center - altitude) * Altimeter.GRADUATION_SCALE / 100),
+            rxjs.operators.map(Math.round),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(translate => {
+            this.selectedAltitudeBug.setAttribute("transform", `translate(0, ${translate})`);
+        });
+
+        // Minimums
+        const minimumsTranslate$ = rxjs.combineLatest(model.minimums.value, center$).pipe(
+            rxjs.operators.map(([altitude, center]) => (center - altitude) * Altimeter.GRADUATION_SCALE / 100),
+            rxjs.operators.map(Math.round),
+            rxjs.operators.distinctUntilChanged(),
+        );
+        model.minimums.mode.pipe(
+            rxjs.operators.switchMap(mode => mode != 0 ? minimumsTranslate$ : rxjs.empty())
+        ).subscribe(translate => {
+            this.minimumAltitudeBug.setAttribute("transform", `translate(0, ${translate})`);
+        });
+
+        // Pressure
+        rxjs.combineLatest(model.barometer.altUnit, model.barometer.pressure).pipe(
+            rxjs.operators.map(([unit, pressure]) => {
+                const isStandard = (unit == WT_Barometer.IN_MG && (Math.abs(pressure - 29.92) < 0.005)) || (unit == WT_Barometer.HPA && (Math.abs(pressure - 1013) < 0.5));
+                return isStandard ? "STD BARO" : pressure.toFixed(unit == "IN" ? 2 : 0) + unit;
+            }),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(text => this.baroText.textContent = text);
+
+        // VSpeed
+        model.vspeed.observable.pipe(
+            rxjs.operators.map(vSpeed => Math.round(vSpeed / 50) * 50),
+            rxjs.operators.distinctUntilChanged(),
+        ).subscribe(vSpeed => this.indicatorText.textContent = Math.abs(vSpeed) >= 100 ? vSpeed : "");
+
+        model.vspeed.observable.pipe(
+            rxjs.operators.map(vSpeed => Math.max(Math.min(vSpeed, 2500), -2500)),
+            rxjs.operators.map(vSpeed => vSpeed / 10),
+            WT_RX.distinctMap(Math.round)
+        ).subscribe(translate => this.indicator.setAttribute("transform", `translate(0, ${-translate})`));
+
+        // Trend Line
+        model.vspeed.observable.pipe(
+            WT_RX.interpolateTo(5),
+            rxjs.operators.map(smoothed => Math.min(Math.max(Altimeter.ALTIMETER_HEIGHT / 2 + (smoothed / 10) * -1, 0), Altimeter.ALTIMETER_HEIGHT))
+        ).subscribe(trend => {
+            this.trendElement.setAttribute("y", Math.min(trend, Altimeter.ALTIMETER_HEIGHT / 2));
+            this.trendElement.setAttribute("height", Math.abs(trend - Altimeter.ALTIMETER_HEIGHT / 2));
+        });
+
+        // Digits
+        const handleDigit = (position, topElement, bottomElement) => {
+            const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+            const digitMove = 57 / 20;
+            const modulo = Math.pow(10, position);
+            const divisor = Math.pow(10, position - 1);
+            const digit$ = model.altitude.pipe(
+                rxjs.operators.map(altitude => Math.floor((altitude % modulo) / divisor)),
+                rxjs.operators.shareReplay(1)
+            );
+            const textBottom$ = digit$.pipe(
+                rxjs.operators.combineLatest(model.altitude),
+                WT_RX.distinctMap(([digit, altitude]) => altitude > divisor ? digit : "")
+            );
+            const textTop$ = digit$.pipe(WT_RX.distinctMap(digit => (digit + 1) % 10));
+            const translate$ = altitude$.pipe(
+                WT_RX.distinctMap(altitude => clamp(altitude % divisor - (divisor - 20), 0, 20) * digitMove)
+            );
+            textTop$.subscribe(top => topElement.textContent = top);
+            textBottom$.subscribe(bottom => bottomElement.textContent = bottom);
+            translate$.subscribe(translate => {
+                topElement.setAttribute("transform", `translate(0, ${translate})`);
+                bottomElement.setAttribute("transform", `translate(0, ${translate})`);
+            });
+        }
+        handleDigit(5, this.digit1Top, this.digit1Bot);
+        handleDigit(4, this.digit2Top, this.digit2Bot);
+        handleDigit(3, this.digit3Top, this.digit3Bot);
+
+        // End digits
+        const roundAltitude$ = model.altitude.pipe(
+            WT_RX.distinctMap(v => Math.round(v * 5) / 5),
+            rxjs.operators.shareReplay(1)
+        );
+
+        roundAltitude$.pipe(
+            rxjs.operators.map(altitude => (altitude % 20) / 20 * 45),
+        ).subscribe(translate => this.endDigitsGroup.setAttribute("transform", `translate(0, ${translate})`));
+
+        roundAltitude$.pipe(
+            rxjs.operators.map(altitude => Math.floor(altitude % 100 / 20) * 20),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(altitude => {
+            for (let i = 0; i < this.endDigits.length; i++) {
+                this.endDigits[i].textContent = Avionics.Utils.fmod((2 - i) * 20 + altitude, 100).toFixed(0).padStart(2, "0");
+            }
+        });
+
     }
     createSvgElement(tagName, attributes = []) {
         return DOMUtilities.createElementNS(Avionics.SVG.NS, tagName, attributes);
@@ -475,7 +587,7 @@ class Altimeter extends HTMLElement {
             case "altitude":
                 let value = parseFloat(newValue);
                 this.altitude = value;
-                let center = Math.round(value / Altimeter.GRADUATION_SCALE) * 100;
+                /*let center = Math.round(value / Altimeter.GRADUATION_SCALE) * 100;
                 this.graduationGroup.setAttribute("transform", "translate(0, " + ((value - center) * Altimeter.GRADUATION_SCALE / 100) + ")");
                 this.bugsGroup.setAttribute("transform", "translate(0, " + ((value - center) * Altimeter.GRADUATION_SCALE / 100) + ")");
                 this.selectedAltitudeBug.setAttribute("transform", "translate(0, " + (center - this.selectedAltitude) * Altimeter.GRADUATION_SCALE / 100 + ")");
@@ -487,15 +599,15 @@ class Altimeter extends HTMLElement {
                     for (let i = 0; i < this.graduationTexts.length; i++) {
                         this.graduationTexts[i].textContent = Math.floor((((3 - i) * 100) + center) / 100);
                     }
-                }
-                let endValue = value % 100;
+                }*/
+                /*let endValue = value % 100;
                 let endCenter = Math.round(endValue / 10) * 10;
                 this.endDigitsGroup.setAttribute("transform", "translate(0, " + ((endValue - endCenter) * 45 / 10) + ")");
                 for (let i = 0; i < this.endDigits.length; i++) {
                     let digitValue = Math.round((((2 - i) * 10) + value) % 100 / 10) * 10;
                     this.endDigits[i].textContent = fastToFixed(Math.abs((digitValue % 100) / 10), 0) + "0";
-                }
-                if (Math.abs(value) >= 90) {
+                }*/
+                /*if (Math.abs(value) >= 90) {
                     let d3Value = (Math.abs(value) % 1000) / 100;
                     this.digit3Bot.textContent = Math.abs(value) < 100 ? "" : fastToFixed(Math.floor(d3Value), 0);
                     this.digit3Top.textContent = fastToFixed((Math.floor(d3Value) + 1) % 10, 0);
@@ -586,7 +698,7 @@ class Altimeter extends HTMLElement {
                     this.digit1Top.textContent = "";
                     this.digit3Bot.setAttribute("transform", "");
                     this.digit3Top.setAttribute("transform", "");
-                }
+                }*/
                 break;
             case "radar-altitude":
                 this.groundLine.setAttribute("transform", "translate(0," + Math.min(300 + parseFloat(newValue) * Altimeter.GRADUATION_SCALE / 100, 700) + ")");
@@ -646,9 +758,6 @@ class Altimeter extends HTMLElement {
                     this.indicator.setAttribute("transform", `translate(0, ${-Math.max(Math.min(vSpeed, 2500), -2500) / 10})`);
                     this.indicatorText.textContent = Math.abs(vSpeed) >= 100 ? fastToFixed(Math.round(vSpeed / 50) * 50, 0) : "";
                 }
-                let trendValue = Math.min(Math.max(Altimeter.ALTIMETER_HEIGHT / 2 + (vSpeed / 10) * -1, 0), Altimeter.ALTIMETER_HEIGHT);
-                this.trendElement.setAttribute("y", Math.min(trendValue, Altimeter.ALTIMETER_HEIGHT / 2));
-                this.trendElement.setAttribute("height", Math.abs(trendValue - Altimeter.ALTIMETER_HEIGHT / 2));
                 break;
             case "vertical-deviation-mode":
                 switch (newValue) {

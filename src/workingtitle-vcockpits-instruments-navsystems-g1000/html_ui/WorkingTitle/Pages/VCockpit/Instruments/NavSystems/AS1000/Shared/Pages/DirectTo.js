@@ -158,7 +158,7 @@ class WT_Direct_To_View extends WT_HTML_View {
             this.userSelectedCourse = false;
             this.elements.course.value = Math.round(bearing);
         });
-        this.model.distance.subscribe(distance => this.elements.distance.innerHTML = `${distance === null ? `__._` : distance.toFixed(distance < 100 ? 1 : 0)}<span class="units">NM</span>°`);
+        this.model.distance.subscribe(distance => this.elements.distance.innerHTML = `${distance === null ? `__._` : distance.toFixed(distance < 100 ? 1 : 0)}<span class="units">NM</span>`);
     }
     showMenu() {
         this.closeMenuHandler = this.showPageMenuHandler.show(new WT_Direct_To_Page_Menu(this.model));

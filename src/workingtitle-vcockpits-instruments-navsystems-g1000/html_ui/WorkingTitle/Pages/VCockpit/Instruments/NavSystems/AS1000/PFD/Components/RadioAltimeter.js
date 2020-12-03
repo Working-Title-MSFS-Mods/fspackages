@@ -18,7 +18,7 @@ class WT_Radio_Altimeter_View extends WT_HTML_View {
      */
     setModel(model) {
         model.isAvailable.subscribe(available => this.setAttribute("state", available ? "active" : "inactive"));
-        model.altitude.subscribe(altitude => this.elements.altitude.textContent = altitude.toFixed(0));
+        model.altitude.subscribe(altitude => this.elements.altitude.textContent = altitude ? altitude.toFixed(0) : "");
     }
 }
 customElements.define("g1000-radio-altimeter", WT_Radio_Altimeter_View);

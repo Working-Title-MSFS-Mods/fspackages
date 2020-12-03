@@ -2,76 +2,66 @@ class Attitude_Indicator_Model {
     /**
      * @param {WT_Synthetic_Vision} syntheticVision 
      * @param {WT_Nearest_Waypoints_Repository} nearestWaypointsRepository
+     * @param {WT_Plane_State} planeState
+     * @param {WT_Auto_Pilot} autoPilot
+     * @param {rxjs.Observable} update$
      */
-    constructor(syntheticVision, nearestWaypointsRepository) {
+    constructor(syntheticVision, nearestWaypointsRepository, planeState, autoPilot, update$) {
+        this.update$ = update$;
+
         this.syntheticVision = syntheticVision;
         this.nearestWaypointsRepository = nearestWaypointsRepository;
 
-        this.updateObservable = new rxjs.Subject();
+        this.pitchBank = planeState.orientation.pipe(
+            rxjs.operators.map(orientation => ({
+                pitch: orientation.pitch / Math.PI * 180,
+                bank: orientation.bank / Math.PI * 180
+            }))
+        )
+        this.heading = planeState.heading;
+        this.flightDirector = autoPilot.flightDirector;
+        this.turnCoordinator = planeState.turnCoordinator;
 
-        this.flightPathMarker = {
-            show: new Subject(true),
-            position: new Subject({ x: 0, y: 0 })
-        }
-        this.pitchBank = new Subject({ pitch: 0, bank: 0 });
-        this.heading = new Subject(0);
-        this.flightDirector = {
-            pitchBank: new Subject({ pitch: 0, bank: 0 }),
-            show: new Subject(false),
-        };
-        this.slipSkid = new Subject(0);
-        this.airportSigns = new Subject([]);
-
-        this.nearestAirports = [];
-
-        this.airportSigns = rxjs.combineLatest(this.updateObservable, this.nearestWaypointsRepository.airports, (update, airports) => airports)
-            .pipe(
-                rxjs.operators.map(airports => airports
+        this.airportSigns = rxjs.combineLatest(planeState.coordinates, planeState.heading, this.nearestWaypointsRepository.airports).pipe(
+            rxjs.operators.sample(update$),
+            rxjs.operators.map(([planeCoordinates, heading, airports]) => {
+                return airports
                     .map(airport => ({
-                        projectedPosition: this.projectLatLongAlt(airport.coordinates),
+                        projectedPosition: this.projectLatLongAlt(airport.coordinates, planeCoordinates, heading),
                         name: airport.ident
                     }))
                     .filter(airport => airport.projectedPosition.x > -1.1 && airport.projectedPosition.x < 1.1 &&
                         airport.projectedPosition.y > -1.1 && airport.projectedPosition.y < 1.1 &&
                         airport.projectedPosition.z > 0)
                     .slice(0, 5)
-                )
-            );
-    }
-    update(dt) {
-        this.updateObservable.next();
+            })
+        );
 
-        const xyz = Simplane.getOrientationAxis();
-        if (xyz) {
-            this.pitchBank.value = {
-                pitch: xyz.pitch / Math.PI * 180,
-                bank: xyz.bank / Math.PI * 180
-            };
+        this.flightPathMarker = {
+            show: rxjs.combineLatest(
+                planeState.groundSpeed.pipe(
+                    rxjs.operators.map(speed => speed > 30)
+                ),
+                syntheticVision.enabled,
+                (a, b) => a && b
+            ).pipe(
+                rxjs.operators.distinctUntilChanged(),
+                rxjs.operators.shareReplay(1)
+            ),
 
-            this.flightDirector.show.value = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") || SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool");
-            this.flightDirector.pitchBank.value = {
-                pitch: xyz.pitch / Math.PI * 180 - SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR PITCH", "degree"),
-                bank: xyz.bank / Math.PI * 180 - SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degree")
-            };
-
-            this.slipSkid.value = Simplane.getInclinometer();
-
-            this.flightPathMarker.show.value = Simplane.getGroundSpeed() > 30 && this.syntheticVision.enabled.value;
-            const markerPos = this.getFlightPathMarkerPosition(
-                Simplane.getGroundSpeed() * 1.68781 * 60, // Knots -> FPM
-                Simplane.getVerticalSpeed(),
-                SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees"),
-                SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree")
-            );
-            if (!isNaN(markerPos.x) && !isNaN(markerPos.y)) {
-                const current = this.flightPathMarker.position.value;
-                this.flightPathMarker.position.value = {
-                    x: (current.x + (markerPos.x - current.x) / 5),
-                    y: (current.y + (markerPos.y - current.y) / 5),
-                };
-            }
-
-            this.heading.value = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
+            position: rxjs.combineLatest(planeState.groundSpeed, planeState.verticalSpeed, planeState.track, planeState.heading).pipe(
+                rxjs.operators.sample(update$),
+                rxjs.operators.map(([groundSpeed, verticalSpeed, track, heading]) => {
+                    return this.getFlightPathMarkerPosition(groundSpeed * 1.68781 * 60, verticalSpeed, track, heading);
+                }),
+                rxjs.operators.scan((smoothed, position) => {
+                    if (isNaN(position.x) || isNaN(position.y))
+                        return smoothed;
+                    smoothed.x = smoothed.x + (position.x - smoothed.x) / 5;
+                    smoothed.y = smoothed.y + (position.y - smoothed.y) / 5;
+                    return smoothed;
+                }, { x: 0, y: 0 })
+            )
         }
     }
     getDeltaAngle(a, b) {
@@ -82,7 +72,7 @@ class Attitude_Indicator_Model {
     project(x, y, z) {
         const screenWidth = 1;
         const screenHeight = screenWidth;// * 3 / 4;
-        const fov = (57 / 2) * Math.PI / 180.0;
+        const fov = (55 / 2) * Math.PI / 180.0;
         const focalLength = 1 / Math.tan(fov);
         return {
             x: (x * (focalLength / z)) * screenWidth,
@@ -120,13 +110,7 @@ class Attitude_Indicator_Model {
         const yaw = this.getDeltaAngle(track, heading);
         return this.projectYawPitch(yaw, pitch);
     }
-    projectLatLongAlt(latLongAlt) {
-        const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
-        const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-        const alt = SimVar.GetSimVarValue("INDICATED ALTITUDE:1", "feet");
-        const planeCoordinates = new LatLongAlt(lat, long, alt);
-
-        const heading = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
+    projectLatLongAlt(latLongAlt, planeCoordinates, heading) {
         const directionToPos = Avionics.Utils.computeGreatCircleHeading(planeCoordinates, latLongAlt);
         const yaw = this.getDeltaAngle(directionToPos, heading);
 
@@ -136,9 +120,6 @@ class Attitude_Indicator_Model {
 
         return this.projectYawPitch(yaw, pitch);
     }
-    updateNearestAirports(airports) {
-        this.nearestAirports = airports;
-    }
 }
 
 class AttitudeIndicator extends HTMLElement {
@@ -146,9 +127,6 @@ class AttitudeIndicator extends HTMLElement {
         super();
         this.bankSizeRatio = -24;
         this.backgroundVisible = true;
-        this.flightDirectorActive = false;
-        this.flightDirectorPitch = 0;
-        this.flightDirectorBank = 0;
         this.aspectRatio = 1.0;
         this.isBackup = false;
         this.horizonTopColor = "#004cff";
@@ -171,63 +149,62 @@ class AttitudeIndicator extends HTMLElement {
      * @param {Attitude_Indicator_Model} model 
      */
     setModel(model) {
-        const screenSize = 200 * 100.0 / 41.0;
+        const screenSize = 1000 / 2;
 
         this.model = model;
-        this.model.syntheticVision.enabled.subscribe(enabled => {
+        model.syntheticVision.enabled.subscribe(enabled => {
             this.horizonBottom.style.display = enabled ? "none" : "block";
             this.horizonTop.style.display = enabled ? "none" : "block";
             this.horizonTopGradient.style.display = enabled ? "none" : "block";
         });
 
         // Airport Signs
-        rxjs.combineLatest(this.model.syntheticVision.enabled, this.model.syntheticVision.airportSigns, (signs, enabled) => enabled && signs)
-            .pipe(
-                rxjs.operators.tap(enabled => this.airportSignsGroup.style.display = enabled ? "block" : "none"),
-                rxjs.operators.switchMap(enabled => enabled ? this.model.airportSigns : rxjs.empty())
-            )
-            .subscribe(airportSigns => {
-                if (!airportSigns)
-                    return;
-                let i = 4;
-                for (let airportSign of airportSigns) {
-                    const sign = this.airportSigns[i];
-                    sign.style.display = airportSign.projectedPosition.z > 0 ? "block" : "none";
-                    if (airportSign.projectedPosition.z > 0) {
-                        sign.setAttribute("transform", `translate(${airportSign.projectedPosition.x * screenSize}, ${airportSign.projectedPosition.y * screenSize})`);
-                        Avionics.Utils.diffAndSet(sign.querySelector("text"), airportSign.name);
-                        i--;
-                    }
+        rxjs.combineLatest(model.syntheticVision.enabled, model.syntheticVision.airportSigns, (signs, enabled) => enabled && signs).pipe(
+            rxjs.operators.tap(enabled => this.airportSignsGroup.style.display = enabled ? "block" : "none"),
+            rxjs.operators.switchMap(enabled => enabled ? model.airportSigns : rxjs.empty())
+        ).subscribe(airportSigns => {
+            let i = 4;
+            for (let airportSign of airportSigns) {
+                const sign = this.airportSigns[i];
+                sign.style.display = airportSign.projectedPosition.z > 0 ? "block" : "none";
+                if (airportSign.projectedPosition.z > 0) {
+                    sign.setAttribute("transform", `translate(${airportSign.projectedPosition.x * screenSize}, ${airportSign.projectedPosition.y * screenSize})`);
+                    Avionics.Utils.diffAndSet(sign.querySelector("text"), airportSign.name);
+                    i--;
                 }
-                for (; i >= 0; i--) {
-                    const sign = this.airportSigns[i];
-                    sign.style.display = "none";
-                }
-            });
+            }
+            for (; i >= 0; i--) {
+                const sign = this.airportSigns[i];
+                sign.style.display = "none";
+            }
+        });
 
 
         // Flight Path Marker
-        this.model.flightPathMarker.show.subscribe(show => {
-            this.flightPathMarker.style.display = show ? "block" : "none";
-        });
-
-        this.model.flightPathMarker.position.observable.pipe(
-            rxjs.operators.filter(position => position),
-            rxjs.operators.map(position => ({ x: Math.floor(position.x * screenSize), y: Math.floor(position.y * screenSize) })),
-            rxjs.operators.distinctUntilChanged((a, b) => a.x == b.x && a.y == b.y)
+        model.flightPathMarker.show.pipe(
+            rxjs.operators.tap(show => this.flightPathMarker.style.display = show ? "block" : "none"),
+            rxjs.operators.switchMap(show => {
+                if (show) {
+                    return model.flightPathMarker.position.pipe(
+                        rxjs.operators.map(position => ({ x: Math.floor(position.x * screenSize), y: Math.floor(position.y * screenSize) })),
+                        rxjs.operators.distinctUntilChanged((a, b) => a.x == b.x && a.y == b.y)
+                    )
+                } else {
+                    return rxjs.of({ x: 0, y: 0 })
+                }
+            })
         ).subscribe(position => {
             this.flightPathMarker.setAttribute("transform", `translate(${position.x}, ${position.y})`);
         });
 
         // Pitch / Bank
-        const pitch$ = this.model.pitchBank.observable.pipe(
+        const pitch$ = model.pitchBank.pipe(
             rxjs.operators.map(pitchBank => pitchBank.pitch),
-            WT_RX.distinctUntilSignificantChange(0.1),
             rxjs.operators.shareReplay(1)
         );
-        const bank$ = this.model.pitchBank.observable.pipe(
+        const bank$ = model.pitchBank.pipe(
             rxjs.operators.map(pitchBank => pitchBank.bank),
-            WT_RX.distinctUntilSignificantChange(0.1),
+            WT_RX.distinctMap(v => Math.floor(v * 10) / 10),
             rxjs.operators.shareReplay(1)
         );
 
@@ -243,13 +220,27 @@ class AttitudeIndicator extends HTMLElement {
                 angleTextElement.left.textContent = angle;
                 angleTextElement.right.textContent = angle;
             }
-        })
-      
+        });
+
         // Background
-        rxjs.combineLatest(pitch$, bank$).pipe(
-            rxjs.operators.map(([pitch, bank]) => {
-                return `rotate(${bank}, 0, 0) translate(0,${pitch * this.bankSizeRatio})`
-            })
+        rxjs.combineLatest(
+            rxjs.combineLatest(pitch$, model.syntheticVision.enabled).pipe(
+                rxjs.operators.map(([pitch, syntheticVision]) => {
+                    if (syntheticVision) {
+                        const projectedPitch = this.model.projectYawPitch(0, pitch * Math.PI / 180);
+                        return projectedPitch.y * 500; // 500 = half screen height
+                    } else {
+                        return pitch * this.bankSizeRatio;
+                    }
+                }),
+                rxjs.operators.map(v => Math.floor(v * 2) / 2),
+                rxjs.operators.distinctUntilChanged(),
+                rxjs.operators.map(pitch => `translate(0,${pitch})`),
+            ),
+            bank$.pipe(rxjs.operators.map(bank => `rotate(${bank}, 0, 0)`))
+        ).pipe(
+            rxjs.operators.sample(model.update$),
+            rxjs.operators.map(([translate, rotate]) => `${rotate} ${translate}`)
         ).subscribe(transform => {
             this.bottomPart.setAttribute("transform", transform);
             this.attitudePitch.setAttribute("transform", transform);
@@ -259,37 +250,70 @@ class AttitudeIndicator extends HTMLElement {
         });
 
         // Flight Director
-        this.model.flightDirector.pitchBank.subscribe(pitchBank => {
-            this.flightDirector.setAttribute("transform", `rotate(${pitchBank.bank}) translate(0 ${(pitchBank.pitch) * this.bankSizeRatio})`);
+        const flightDirectorPitchBank$ = rxjs.combineLatest(
+            model.flightDirector.pitch.pipe(
+                rxjs.operators.combineLatest(model.pitchBank),
+                rxjs.operators.map(([pitch, pitchBank]) => pitchBank.pitch - pitch),
+                rxjs.operators.map(pitch => Math.round(pitch * 10) / 10 * this.bankSizeRatio),
+                rxjs.operators.distinctUntilChanged(),
+                rxjs.operators.map(pitch => `translate(0 ${pitch})`)
+            ),
+            model.flightDirector.bank.pipe(
+                rxjs.operators.combineLatest(model.pitchBank),
+                rxjs.operators.map(([bank, pitchBank]) => pitchBank.bank - bank),
+                rxjs.operators.map(bank => Math.round(bank * 10) / 10),
+                rxjs.operators.distinctUntilChanged(),
+                rxjs.operators.map(bank => `rotate(${bank})`)
+            )
+        );
+        model.flightDirector.enabled.pipe(
+            rxjs.operators.tap(show => this.flightDirector.style.display = show ? "block" : "none"),
+            rxjs.operators.switchMap(show => show ? flightDirectorPitchBank$ : rxjs.of(["", ""]))
+        ).subscribe(([rotate, translate]) => {
+            this.flightDirector.setAttribute("transform", `${rotate} ${translate}`);
         });
-        this.model.flightDirector.show.subscribe(show => this.flightDirector.style.display = show ? "block" : "none");
 
         // Slip Skid
-        this.model.slipSkid.observable.pipe(
+        model.turnCoordinator.pipe(
             rxjs.operators.map(value => Math.round(value * 40)),
             rxjs.operators.distinctUntilChanged()
         ).subscribe(value => this.slipSkid.setAttribute("transform", `translate(${value}, 0)`));
 
         // Horizon Headings
-        rxjs.combineLatest(this.model.syntheticVision.enabled, this.model.syntheticVision.horizonHeadings, (horizonHeadings, enabled) => enabled && horizonHeadings)
-            .subscribe(enabled => this.horizonHeadingsGroup.style.display = enabled ? "block" : "none");
+        const horizonHeadingsEnabled$ = rxjs.combineLatest(model.syntheticVision.enabled, model.syntheticVision.horizonHeadings, (horizonHeadings, enabled) => enabled && horizonHeadings).pipe(
+            rxjs.operators.distinctUntilChanged(),
+            rxjs.operators.shareReplay(1)
+        );
 
-        this.model.syntheticVision.horizonHeadings.pipe(
-            rxjs.operators.switchMap(enabled => enabled ? this.model.heading.observable : rxjs.of(0))
-        ).subscribe(heading => {
-            const quantizedHeading = Math.floor(heading / 30) * 30;
+        horizonHeadingsEnabled$.subscribe(enabled => this.horizonHeadingsGroup.style.display = enabled ? "block" : "none");
+
+        const quantizedHorizonHeading$ = horizonHeadingsEnabled$.pipe(
+            rxjs.operators.switchMap(enabled => enabled ? model.heading : rxjs.of(0)),
+            rxjs.operators.map(heading => [heading, Math.floor(heading / 30) * 30]),
+            rxjs.operators.shareReplay(1),
+        )
+
+        quantizedHorizonHeading$.pipe(
+            rxjs.operators.map(([heading, quantizedHeading]) => quantizedHeading),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(quantizedHeading => {
+            for (let i = 0; i < this.horizonHeadings.length; i++) {
+                const j = i - 1;
+                const text = quantizedHeading + j * 30;
+                this.horizonHeadings[i].querySelector("text").textContent = text == 0 ? 360 : text;
+            }
+        });
+        quantizedHorizonHeading$.subscribe(([heading, quantizedHeading]) => {
             const delta = quantizedHeading - heading;
             for (let i = 0; i < this.horizonHeadings.length; i++) {
                 const j = i - 1;
-                const projected = this.model.projectYawPitch((j * 30 + delta) * Math.PI / 180, 0);
-                const text = quantizedHeading + j * 30;
-                this.horizonHeadings[i].querySelector("text").textContent = text == 0 ? 360 : text;
+                const projected = model.projectYawPitch((j * 30 + delta) * Math.PI / 180, 0);
                 this.horizonHeadings[i].setAttribute("transform", `translate(${projected.x * screenSize}, 0)`);
             }
-        })
+        });
 
         // Synthetic Vision
-        this.model.syntheticVision.enabled.subscribe(enabled => {
+        model.syntheticVision.enabled.subscribe(enabled => {
             this.lastQuantizedAngle = null;
             this.setAttribute("bank_size_ratio", enabled ? "-17" : "-6");
         });
@@ -422,25 +446,26 @@ class AttitudeIndicator extends HTMLElement {
     construct() {
         Utils.RemoveAllChildren(this);
 
-        this.horizon = this.createHorizon()
+        const centerX = 47;
+        const centerY = 39;
+        const width = 1000;
+        const height = width * 3 / 4;
+        const refHeight = (this.isBackup) ? 330 : 230;
+        const viewBox = `${-width * (centerX / 100)} ${-height * (centerY / 100)} ${width} ${height}`;
+
+        // Horizon
+        this.horizon = this.createHorizon(viewBox);
         this.appendChild(this.horizon);
 
-        const attitudeContainer = DOMUtilities.createElement("div");
-        attitudeContainer.setAttribute("id", "Attitude");
-        attitudeContainer.style.width = "100%";
-        attitudeContainer.style.height = "100%";
-        attitudeContainer.style.position = "absolute";
-        this.appendChild(attitudeContainer);
-
-        this.root = document.createElementNS(Avionics.SVG.NS, "svg");
-        this.root.setAttribute("width", "100%");
-        this.root.setAttribute("height", "100%");
-        this.root.setAttribute("viewBox", "-200 -200 400 300");
-        this.root.setAttribute("overflow", "visible");
-        this.root.setAttribute("style", "position:absolute");
-        attitudeContainer.appendChild(this.root);
-
-        var refHeight = (this.isBackup) ? 330 : 230;
+        // Root
+        this.root = this.createSvgElement("svg", {
+            width: "100%",
+            height: "100%",
+            viewBox: viewBox,
+            overflow: "hidden",
+            style: "position:absolute",
+        });
+        this.appendChild(this.root);
 
         const attitudePitchContainer = this.createSvgElement("svg", {
             width: "300",
@@ -452,14 +477,16 @@ class AttitudeIndicator extends HTMLElement {
         });
         this.root.appendChild(attitudePitchContainer);
 
+        // Graduations
         this.attitudePitch = this.createSvgElement("g");
         attitudePitchContainer.appendChild(this.attitudePitch);
-
         this.buildGraduations();
 
+        // Flight Director
         this.flightDirector = this.createFlightDirector();
         attitudePitchContainer.appendChild(this.flightDirector);
 
+        // Attitude Bank
         this.attitudeBank = this.createBankIndicator();
         this.root.appendChild(this.attitudeBank);
 
@@ -469,20 +496,13 @@ class AttitudeIndicator extends HTMLElement {
         this.root.appendChild(this.slipSkid);
 
         this.root.appendChild(this.createCursors());
-        this.flightPathMarker = this.createFlightPathMarker();
-        this.bottomPart.appendChild(this.flightPathMarker);
-
-        this.bottomPart.appendChild(this.createHorizonHeadings());
-        this.bottomPart.appendChild(this.createAirportSigns());
     }
-    createHorizon() {
+    createHorizon(viewBox) {
         const horizon = this.createSvgElement("svg", {
             width: "100%",
             height: "100%",
-            viewBox: "-200 -200 400 300",
-            x: "-100",
-            y: "-100",
-            overflow: "visible",
+            viewBox: viewBox,
+            overflow: "hidden",
             style: "position:absolute; width: 100%; height:100%;",
         });
         const defs = this.createSvgElement("defs");
@@ -509,11 +529,17 @@ class AttitudeIndicator extends HTMLElement {
             x: "-1500", y: "-2", width: "3000", height: "4", class: "separator"
         });
 
+        this.flightPathMarker = this.createFlightPathMarker();
+
         this.bottomPart = this.createSvgElement("g");
         this.bottomPart.appendChild(this.horizonTop);
         this.bottomPart.appendChild(this.horizonTopGradient);
         this.bottomPart.appendChild(this.horizonBottom);
         this.bottomPart.appendChild(separator);
+        this.bottomPart.appendChild(this.flightPathMarker);
+        this.bottomPart.appendChild(this.createHorizonHeadings());
+        this.bottomPart.appendChild(this.createAirportSigns());
+
         horizon.appendChild(this.bottomPart);
 
         return horizon;
@@ -657,31 +683,25 @@ class AttitudeIndicator extends HTMLElement {
         const flightDirectorWidth = 110;
         const g = this.createSvgElement("g", { class: "flight-director" });
 
-        // Left
         g.appendChild(this.createSvgElement("path", {
-            "d": `M-${flightDirectorWidth} ${trianglePitch} l-${flightDirectorTriangle} 0 l0 -${flightDirectorTriangleHeight} L-${originOffsetX} 0 Z`,
+            "d": `
+                M-${flightDirectorWidth} ${trianglePitch} l-${flightDirectorTriangle} 0 l0 -${flightDirectorTriangleHeight} L-${originOffsetX} 0 Z
+                M${flightDirectorWidth} ${trianglePitch} l${flightDirectorTriangle} 0 l0 -${flightDirectorTriangleHeight} L${originOffsetX} 0 Z
+            `,
             class: "outline"
         }));
         g.appendChild(this.createSvgElement("path", {
-            "d": `M-${flightDirectorWidth} ${trianglePitch} l-${flightDirectorTriangle} -${flightDirectorTriangleHeight} L-${originOffsetX} 0 Z`,
+            "d": `
+                M-${flightDirectorWidth} ${trianglePitch} l-${flightDirectorTriangle} -${flightDirectorTriangleHeight} L-${originOffsetX} 0 Z
+                M${flightDirectorWidth} ${trianglePitch} l${flightDirectorTriangle} -${flightDirectorTriangleHeight} L${originOffsetX} 0 Z
+            `,
             class: "fill"
         }));
         g.appendChild(this.createSvgElement("path", {
-            "d": `M-${flightDirectorWidth} ${trianglePitch} l-${flightDirectorTriangle} 0 l0 -${flightDirectorTriangleHeight} Z`,
-            class: "fill-dark"
-        }));
-
-        // Right
-        g.appendChild(this.createSvgElement("path", {
-            "d": `M${flightDirectorWidth} ${trianglePitch} l${flightDirectorTriangle} 0 l0 -${flightDirectorTriangleHeight} L${originOffsetX} 0 Z`,
-            class: "outline"
-        }));
-        g.appendChild(this.createSvgElement("path", {
-            "d": `M${flightDirectorWidth} ${trianglePitch} l${flightDirectorTriangle} -${flightDirectorTriangleHeight} L${originOffsetX} 0 Z`,
-            class: "fill"
-        }));
-        g.appendChild(this.createSvgElement("path", {
-            "d": `M${flightDirectorWidth} ${trianglePitch} l${flightDirectorTriangle} 0 l0 -${flightDirectorTriangleHeight} Z`,
+            "d": `
+                M-${flightDirectorWidth} ${trianglePitch} l-${flightDirectorTriangle} 0 l0 -${flightDirectorTriangleHeight} Z
+                M${flightDirectorWidth} ${trianglePitch} l${flightDirectorTriangle} 0 l0 -${flightDirectorTriangleHeight} Z
+            `,
             class: "fill-dark"
         }));
 
