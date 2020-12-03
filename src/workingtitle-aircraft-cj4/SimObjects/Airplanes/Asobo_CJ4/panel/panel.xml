@@ -459,6 +459,36 @@
 				</StateMachine>
 			</Condition>
 		</Alert>
+
+		<Alert>
+			<Type>SoundOnly</Type>
+			<SoundEvent>aural_minimums</SoundEvent>
+			<Condition>
+				<StateMachine>
+					<State id="Under" value="0">
+						<Transition to="Over">
+							<GreaterEqual>
+								<Simvar name="INDICATED ALTITUDE" unit="feet"/>
+								<Simvar name="L:WT_CJ4_BARO_SET" unit="number"/>
+							</GreaterEqual>
+						</Transition>
+					</State>
+					<State id="Over" value="0">
+						<Transition to="Alerting">
+							<LowerEqual>
+								<Simvar name="INDICATED ALTITUDE" unit="feet"/>
+								<Simvar name="L:WT_CJ4_BARO_SET" unit="number"/>
+							</LowerEqual>
+						</Transition>
+					</State>
+					<State id="Alerting" value="1">
+						<Transition to="Under">
+							<Constant>1</Constant>
+						</Transition>
+					</State>
+				</StateMachine>
+			</Condition>
+		</Alert>
 		
 		<Alert>
 			<Type>SoundOnly</Type>

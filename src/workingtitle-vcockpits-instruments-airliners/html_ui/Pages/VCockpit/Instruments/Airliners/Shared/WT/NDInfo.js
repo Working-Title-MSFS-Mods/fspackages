@@ -39,6 +39,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.VORRight = new VORDMENavAid(this.querySelector("#VORDMENavaid_Right"), 2);
         this.elapsedTime = this.querySelector("#ElapsedTime");
         this.elapsedTimeValue = this.querySelector("#ET_Value");
+        this.minimums = this.querySelector("#MinimumsValue");
         this.setGroundSpeed(0, true);
         this.setTrueAirSpeed(0, true);
         this.setWind(0, 0, 0, true);
@@ -54,6 +55,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.updateVOR();
         this.updateApproach();
         this.updateElapsedTime();
+        this.updateMinimums();
         this.updateWaypointAlert(_dTime);
     }
     onEvent(_event) {
@@ -469,6 +471,13 @@ class Jet_MFD_NDInfo extends HTMLElement {
             else {
                 this.elapsedTime.style.display = "none";
             }
+        }
+    }
+    updateMinimums() {
+        if (this.minimums) {
+            let baroSet = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
+            this.minimums.textContent = baroSet;
+            this.minimums.parentElement.style.display = (baroSet==0) ? 'none' : '';
         }
     }
     getILSIdent() {

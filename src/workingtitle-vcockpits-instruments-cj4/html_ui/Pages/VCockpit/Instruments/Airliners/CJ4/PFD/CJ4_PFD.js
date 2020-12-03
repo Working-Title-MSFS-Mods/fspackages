@@ -472,6 +472,9 @@ class CJ4_PFD extends BaseAirliners {
 
         if (modeChanged)
             this.onModeChanged();
+        
+        let baroSet = parseInt(_dict.get(CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL));
+        SimVar.SetSimVarValue("L:WT_CJ4_BARO_SET", "Number", baroSet);
     }
     fillDictionary(_dict) {
         if (this.mapDisplayMode == Jet_NDCompass_Display.ROSE)
