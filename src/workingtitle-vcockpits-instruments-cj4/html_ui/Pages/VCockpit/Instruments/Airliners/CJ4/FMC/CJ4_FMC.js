@@ -538,6 +538,8 @@ class CJ4_FMC extends FMCMainDisplay {
      * interval. If false, it will start after the supplied interval.
      */
     registerPeriodicPageRefresh(action, interval, runImmediately) {
+        this.unregisterPeriodicPageRefresh();
+
         let refreshHandler = () => {
             let isBreak = action();
             if (isBreak) return;
