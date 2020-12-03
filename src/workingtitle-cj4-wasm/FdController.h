@@ -81,11 +81,13 @@ private:
             break;
         }
         case CLB: {
-            double lowAltThrust = max(0, (8000 - this->simVars->getPlaneAltitude()) / 25);
+            double planeAlt = this->simVars->getPlaneAltitude();
+            double lowAltThrust = max(0, (7000 - planeAlt) / 25);
 
             targetThrust = 2050 + lowAltThrust;
             if ((maxDensityThrust * thrustF) < targetThrust) {
-                targetThrust = (maxDensityThrust * thrustF);
+                double highAltThrust = max(0, (-35000 + planeAlt) / 45);
+                targetThrust = (maxDensityThrust * thrustF) - highAltThrust;
             }
             break;
         }
