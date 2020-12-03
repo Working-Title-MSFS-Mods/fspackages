@@ -244,27 +244,21 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
             this._buffer = this._createBuffer();
         }
 
-        let canvasObject = this._createCanvas();
+        let canvasObject = this._createDisplay();
         this._display = canvasObject;
         this._container.appendChild(this._display.canvas);
     }
 
     _createBuffer() {
-        let buffer = document.createElement("canvas");
-        let bufferContext = buffer.getContext("2d");
-        return {canvas: buffer, context: bufferContext};
+        return new WT_MapViewCanvasDrawable();
     }
 
-    _createCanvas() {
-        let canvas = document.createElement("canvas");
-        let context = canvas.getContext("2d");
-        context.imageSmoothingEnabled = false;
-
-        canvas.style.position = "absolute";
-        canvas.style.left = 0;
-        canvas.style.top = 0;
-
-        return {canvas: canvas, context: context};
+    _createDisplay() {
+        let display = new WT_MapViewCanvasDrawable();
+        display.canvas.style.position = "absolute";
+        display.canvas.style.left = 0;
+        display.canvas.style.top = 0;
+        return display;
     }
 
     /**
@@ -327,8 +321,8 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
     }
 
     /**
-     * Copies the contents of this sublayer's offscreen buffer to the canvas. If this sublayer does not have an offscreen buffer,
-     * this method does nothing. This method optionally takes in arguments to define the bounds of the area to copy to the canvas.
+     * Copies the contents of this sublayer's offscreen buffer to the display. If this sublayer does not have an offscreen buffer,
+     * this method does nothing. This method optionally takes in arguments to define the bounds of the area to copy to the display.
      * If these arguments are not supplied, by default the entire buffer is copied over.
      * @param {Number} [left] - the x-coordinate of the left edge of the area to copy, in pixels.
      * @param {Number} [top] - the y-coordinate of the top edge of the area to copy, in pixels.
@@ -348,6 +342,50 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
         }
         this.display.context.drawImage(this.buffer.canvas, left, top, width, height, left, top, width, height);
         return {left: left, top: top, width: width, height: height};
+    }
+}
+
+class WT_MapViewCanvasDrawable {
+    constructor() {
+        this._canvas = document.createElement("canvas");
+        this._context = this._canvas.getContext("2d");
+        this._context.imageSmoothingEnabled = false;
+    }
+
+    /**
+     * @readonly
+     * @property {HTMLCanvasElement} canvas - this drawable's canvas element.
+     * @type {HTMLCanvasElement}
+     */
+    get canvas() {
+        return this._canvas;
+    }
+
+    /**
+     * @readonly
+     * @property {CanvasRenderingContext2D} context - this drawable's 2D rendering context.
+     * @type {CanvasRenderingContext2D}
+     */
+    get context() {
+        return this._context;
+    }
+
+    /**
+     * Clears the contents of this drawable. This method optionally takes in arguments to define the bounds of the area to clear.
+     * If these arguments are not supplied, by default the entire drawable is cleared.
+     * @param {Number} [left] - the x-coordinate of the left edge of the area to clear, in pixels.
+     * @param {Number} [top] - the y-coordinate of the top edge of the area to clear, in pixels.
+     * @param {Number} [width] - the width of the area to clear, in pixels.
+     * @param {Number} [height] - the height of the area to clear, in pixels.
+     */
+    clear(left, top, width, height) {
+        if (left === undefined) {
+            left = 0;
+            top = 0;
+            width = this.canvas.width;
+            height = this.canvas.height;
+        }
+        this.context.clearRect(left, top, width, height);
     }
 }
 

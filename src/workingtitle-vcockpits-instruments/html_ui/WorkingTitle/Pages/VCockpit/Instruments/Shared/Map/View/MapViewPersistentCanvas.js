@@ -8,37 +8,21 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         this._nominalHeight = 0;
         this._topLeft = new WT_GVector2(0, 0);
         this._margin = 0;
-        this._displayTransform = {
-            scale: 1,
-            rotation: 0,
-            offset: new WT_GVector2(0, 0),
-            margin: 0
-        };
-        this._bufferTransform = {
-            scale: 1,
-            rotation: 0,
-            offset: new WT_GVector2(0, 0),
-            margin: 0
-        };
-        this._isDisplayInvalid = true;
-        this._isBufferInvalid = true;
 
         this._clipExtent = [[0, 0], [0, 0]];
         this._translate = [0, 0];
+    }
 
-        this._displayReference = {
-            range: new WT_NumberUnit(-1, WT_Unit.NMILE),
-            center: new LatLong(0, 0),
-            scale: 150,
-            rotation: 0,
-        };
+    _createBuffer() {
+        return new WT_MapViewPersistenCanvasDrawable();
+    }
 
-        this._bufferReference = {
-            range: new WT_NumberUnit(-1, WT_Unit.NMILE),
-            center: new LatLong(0, 0),
-            scale: 150,
-            rotation: 0
-        };
+    _createDisplay() {
+        let display = new WT_MapViewPersistenCanvasDrawable();
+        display.canvas.style.position = "absolute";
+        display.canvas.style.left = 0;
+        display.canvas.style.top = 0;
+        return display;
     }
 
     /**
@@ -96,14 +80,6 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         return this._margin;
     }
 
-    get displayTransform() {
-        return this._displayTransform;
-    }
-
-    get bufferTransform() {
-        return this._bufferTransform;
-    }
-
     /**
      * @readonly
      * @property {Boolean} isDisplayInvalid - whether the displayed canvas is invalid. The canvas is invalid if the current map projection
@@ -148,10 +124,10 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     }
 
     _syncDisplayFromBuffer() {
-        this._displayReference.range.copyFrom(this._bufferReference.range);
-        this._displayReference.center = this._bufferReference.center;
-        this._displayReference.scale = this._bufferReference.scale;
-        this._displayReference.rotation = this._bufferReference.rotation;
+        this.display.reference.range.copyFrom(this.buffer.reference.range);
+        this.display.reference.center = this.buffer.reference.center;
+        this.display.reference.scale = this.buffer.reference.scale;
+        this.display.reference.rotation = this.buffer.reference.rotation;
 
         this.display.projectionRenderer.projection.center(this.buffer.projectionRenderer.projection.center());
         this.display.projectionRenderer.projection.scale(this.buffer.projectionRenderer.projection.scale());
@@ -166,8 +142,8 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     }
 
     initProjectionRenderers(projection) {
-        this.display.projectionRenderer = projection.createCustomRenderer();
-        this.buffer.projectionRenderer = projection.createCustomRenderer();
+        this.display._projectionRenderer = projection.createCustomRenderer();
+        this.buffer._projectionRenderer = projection.createCustomRenderer();
         this._updateProjectionRenderers();
     }
 
@@ -179,7 +155,7 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     }
 
     _transformDisplay() {
-        let transform = this.displayTransform;
+        let transform = this.display.transform;
         transform.offset.scale(1 / transform.scale, true);
         this.display.canvas.style.transform = `scale(${transform.scale}) translate(${transform.offset.x}px, ${transform.offset.y}px) rotate(${transform.rotation}deg)`;
     }
@@ -188,33 +164,25 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
      * @param {WT_MapViewState} state
      */
     resetBuffer(state) {
-        this._isBufferInvalid = false;
-        this._updateReference(state, this._bufferReference);
+        this.buffer.clear();
+        this.buffer._isInvalid = false;
+        this._updateReference(state, this.buffer.reference);
         state.projection.syncRenderer(this.buffer.projectionRenderer);
     }
 
     redrawDisplay(state, fromBuffer = true) {
-        this._isDisplayInvalid = false;
+        this.display._isInvalid = false;
+        this.display.clear();
         if (fromBuffer) {
             this.copyBufferToCanvas();
             this._syncDisplayFromBuffer();
         } else {
-            this._updateReference(state, this._displayReference);
+            this._updateReference(state, this.display.reference);
             state.projection.syncRenderer(this.display.projectionRenderer);
 
         }
-        this._updateTransform(state, this._displayReference, this._displayTransform);
+        this._updateTransform(state, this.display.reference, this.display.transform);
         this._transformDisplay();
-    }
-
-    invalidateDisplay() {
-        this._isDisplayInvalid = true;
-        this.display.context.clearRect(0, 0, this.width, this.height);
-    }
-
-    invalidateBuffer() {
-        this._isBufferInvalid = true;
-        this.buffer.context.clearRect(0, 0, this.width, this.height);
     }
 
     /**
@@ -223,25 +191,66 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     update(state) {
         let range = state.projection.range;
 
-        this._updateTransform(state, this._displayReference, this._displayTransform);
-        this._updateTransform(state, this._bufferReference, this._bufferTransform);
-        let offsetXAbsDisplay = Math.abs(this.displayTransform.offset.x);
-        let offsetYAbsDisplay = Math.abs(this.displayTransform.offset.y);
-        let offsetXAbsBuffer = Math.abs(this.bufferTransform.offset.x);
-        let offsetYAbsBuffer = Math.abs(this.bufferTransform.offset.y);
+        this._updateTransform(state, this.display.reference, this.display.transform);
+        this._updateTransform(state, this.buffer.reference, this.buffer.transform);
+        let offsetXAbsDisplay = Math.abs(this.display.transform.offset.x);
+        let offsetYAbsDisplay = Math.abs(this.display.transform.offset.y);
+        let offsetXAbsBuffer = Math.abs(this.buffer.transform.offset.x);
+        let offsetYAbsBuffer = Math.abs(this.buffer.transform.offset.y);
 
-        if (!this._isDisplayInvalid) {
-            this._isDisplayInvalid = !this._displayReference.range.equals(range) ||
-                                    (offsetXAbsDisplay > this._displayTransform.margin || offsetYAbsDisplay > this._displayTransform.margin);
+        if (!this.display.isInvalid) {
+            this.display._isInvalid = !this.display.reference.range.equals(range) ||
+                                      (offsetXAbsDisplay > this.display.transform.margin || offsetYAbsDisplay > this.display.transform.margin);
         }
 
-        if (!this._isBufferInvalid) {
-            this._isBufferInvalid = !this._bufferReference.range.equals(range) ||
-                                    (offsetXAbsBuffer > this._bufferTransform.margin || offsetYAbsBuffer > this._bufferTransform.margin);
+        if (!this.buffer.isInvalid) {
+            this.buffer._isInvalid = !this.buffer.reference.range.equals(range) ||
+                                     (offsetXAbsBuffer > this.buffer.transform.margin || offsetYAbsBuffer > this.buffer.transform.margin);
         }
 
-        if (!this.isDisplayInvalid) {
+        if (!this.display.isInvalid) {
             this._transformDisplay();
         }
+    }
+}
+
+class WT_MapViewPersistenCanvasDrawable extends WT_MapViewCanvasDrawable {
+    constructor() {
+        super();
+
+        this._reference = {
+            range: new WT_NumberUnit(-1, WT_Unit.NMILE),
+            center: new LatLong(0, 0),
+            scale: 150,
+            rotation: 0,
+        };
+        this._transform = {
+            scale: 1,
+            rotation: 0,
+            offset: new WT_GVector2(0, 0),
+            margin: 0
+        };
+        this._isInvalid = false;
+    }
+
+    get reference() {
+        return this._reference;
+    }
+
+    get transform() {
+        return this._transform;
+    }
+
+    get isInvalid() {
+        return this._isInvalid;
+    }
+
+    get projectionRenderer() {
+        return this._projectionRenderer;
+    }
+
+    invalidate() {
+        this._isInvalid = true;
+        this.clear();
     }
 }
