@@ -69,7 +69,7 @@ private:
 
         double grossSimThrust = wt_utils::convertToGrossThrust(this->simVars->getThrust(idx + 1), this->simVars->getMach());
         double maxDensityThrust = wt_utils::getMaxDensityThrust(this->simVars->getAmbientDensity());
-        double thrustF = 0.93;
+        double thrustF = 0.92;
 
 
         // TODO: extract the modes later
@@ -81,9 +81,13 @@ private:
             break;
         }
         case CLB: {
-            targetThrust = 2050;
+            double planeAlt = this->simVars->getPlaneAltitude();
+            double lowAltThrust = max(0, (7000 - planeAlt) / 25);
+
+            targetThrust = 2050 + lowAltThrust;
             if ((maxDensityThrust * thrustF) < targetThrust) {
-                targetThrust = (maxDensityThrust * thrustF);
+                double highAltThrust = max(0, (-35000 + planeAlt) / 45);
+                targetThrust = (maxDensityThrust * thrustF) - highAltThrust;
             }
             break;
         }
@@ -174,8 +178,8 @@ public:
         float p = 0.0012;
         float i = 0.0001;
         float d = 0.0018;
-        this->throttleController[0] = new PidController(p, i, d, -3, 3);
-        this->throttleController[1] = new PidController(p, i, d, -3, 3);
+        this->throttleController[0] = new PidController(p, i, d, -2, 2);
+        this->throttleController[1] = new PidController(p, i, d, -2, 2);
     }
 
     void update(int throttleAxis[], double deltaTime)
