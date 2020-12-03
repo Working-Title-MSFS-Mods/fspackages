@@ -171,7 +171,6 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
             this._enqueueFeaturesToDraw(state, this._admin1Borders, lod);
         }
 
-        this._borderLayer.buffer.context.clearRect(0, 0, this._borderLayer.width, this._borderLayer.height);
         this._borderLayer.buffer.context.beginPath();
         this._renderQueue.start(this._renderer, state);
     }
@@ -191,8 +190,6 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
             this._applyStrokeToBuffer((this.strokeWidth + 2 * this.outlineWidth) * state.dpiScale, this.outlineColor);
         }
         this._applyStrokeToBuffer(this.strokeWidth * state.dpiScale, this.strokeColor);
-
-        this._borderLayer.display.context.clearRect(0, 0, this._borderLayer.width, this._borderLayer.height);
         this._borderLayer.redrawDisplay(state);
     }
 
@@ -265,11 +262,11 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         }
 
         this._borderLayer.update(state);
-        let transform = this._borderLayer.displayTransform;
+        let transform = this._borderLayer.display.transform;
         let offsetXAbs = Math.abs(transform.offset.x);
         let offsetYAbs = Math.abs(transform.offset.y);
 
-        let isImageInvalid = this._borderLayer.isBufferInvalid ||
+        let isImageInvalid = this._borderLayer.display.isInvalid ||
                              (!state.model.borders.showStateBorders && this._lastShowStateBorders);
 
         let shouldRedraw = isImageInvalid ||
@@ -279,7 +276,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._lastShowStateBorders = state.model.borders.showStateBorders;
 
         if (isImageInvalid) {
-            this._borderLayer.invalidateDisplay();
+            this._borderLayer.display.invalidate();
             this._clearLabels();
             this._drawUnfinishedBorders = true;
         }
