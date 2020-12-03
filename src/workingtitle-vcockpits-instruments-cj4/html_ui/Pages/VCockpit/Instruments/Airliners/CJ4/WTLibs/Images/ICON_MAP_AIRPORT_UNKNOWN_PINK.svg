@@ -61,10 +61,10 @@
      id="layer1"
      transform="translate(0,-263.13332)">
     <circle
-       style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#00F2FF;stroke-width:2.36421657;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers stroke fill"
+       style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#00F2FF;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers stroke fill"
        id="path2491"
        cx="16.933332"
        cy="280.06665"
-       r="15.135562" />
+       r="12.135562" />
   </g>
 </svg>

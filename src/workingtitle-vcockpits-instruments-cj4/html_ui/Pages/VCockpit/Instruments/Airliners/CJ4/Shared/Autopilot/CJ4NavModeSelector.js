@@ -1,5 +1,3 @@
-//@ts-check
-
 /**
  * A class that handles state transitions to the different autopilot modes of
  * the CJ4.
@@ -43,12 +41,15 @@ class CJ4NavModeSelector {
     /** The selected altitude in altitude lock slot 2. */
     this.selectedAlt2 = 0;
 
+    /** The currently selected approach type. */
+    this.approachMode = ApproachType.NONE;
+
     /**
      * The queue of state change events to process.
      * @type {string[]}
      */
     this._eventQueue = [];
-
+    
     /** The current states of the input data. */
     this._inputDataStates = {
       altLocked: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean"), () => NavModeEvent.ALT_LOCK_CHANGED),
@@ -74,7 +75,8 @@ class CJ4NavModeSelector {
       [`${NavModeEvent.VPATH_CHANGED}`]: this.handleVPathChanged.bind(this),
       [`${NavModeEvent.ALT_SLOT_CHANGED}`]: this.handleAltSlotChanged.bind(this),
       [`${NavModeEvent.SELECTED_ALT1_CHANGED}`]: this.handleAlt1Changed.bind(this),
-      [`${NavModeEvent.SELECTED_ALT2_CHANGED}`]: this.handleAlt2Changed.bind(this)
+      [`${NavModeEvent.SELECTED_ALT2_CHANGED}`]: this.handleAlt2Changed.bind(this),
+      []
     };
 
     this.initialize();
@@ -210,6 +212,10 @@ class CJ4NavModeSelector {
           SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
         }
         break;
+      case VerticalNavModeState.PATH:
+        SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 1);
+        this.currentVerticalActiveState = VerticalNavModeState.VS;
+        break;
     }
 
     this.setProperVerticalArmedStates();
@@ -268,6 +274,15 @@ class CJ4NavModeSelector {
 
     if (this.isVNAVOn) {
       this.handleVPathChanged();
+    }
+    else {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+      SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+
+      if (this.currentVerticalActiveState === VerticalNavModeState.PATH) {    
+        SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
+        this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+      }
     }
   }
 
@@ -357,7 +372,7 @@ class CJ4NavModeSelector {
         this.currentLateralActiveState = LateralNavModeState.ROLL;
         break;
       case LateralNavModeState.APPR:
-        // SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 1);
         break;
     }
   }
@@ -392,7 +407,6 @@ class CJ4NavModeSelector {
         break;
       case LateralNavModeState.APPR:
         SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 1);
-        // SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 0);
         break;
     }
   }
@@ -442,10 +456,33 @@ class CJ4NavModeSelector {
    * Handles when the APPR button is pressed.
    */
   handleAPPRPressed() {
-    // SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
-    // if (SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "number") != 1) {
-    //   SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
-    // }
+    SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
+    SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
+
+    switch (this.currentLateralActiveState) {
+      case LateralNavModeState.ROLL:
+        SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
+        this.currentLateralActiveState = LateralNavModeState.APPR;
+        break;
+      case LateralNavModeState.HDG:
+        SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
+        this.currentLateralActiveState = LateralNavModeState.APPR;
+        break;
+      case LateralNavModeState.NAV:
+        SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
+        this.currentLateralActiveState = LateralNavModeState.APPR;
+        break;
+      case LateralNavModeState.LNAV:
+        SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
+        this.currentLateralActiveState = LateralNavModeState.APPR;
+        break;
+      case LateralNavModeState.APPR:
+        SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+        this.currentLateralActiveState = LateralNavModeState.ROLL;
+        break;
+    }
+
+
 
     // this.currentLateralActiveState = LateralNavModeState.APPR;
   }
@@ -557,6 +594,13 @@ NavModeEvent.ALT_SLOT_CHANGED = 'alt_slot_changed';
 NavModeEvent.VPATH_CHANGED = 'vpath_changed';
 NavModeEvent.SELECTED_ALT1_CHANGED = 'selected_alt1_changed';
 NavModeEvent.SELECTED_ALT2_CHANGED = 'selected_alt2_changed';
+NavModeEvent.APPROACH_CHANGED = 'approach_changed';
+
+class ApproachType { }
+ApproachType.NONE = 'none';
+ApproachType.ILS = 'ils';
+ApproachType.RNAV = 'rnav';
+ApproachType.VISUAL = 'visual';
 
 class ValueStateTracker {
   constructor(valueGetter, handler) {
