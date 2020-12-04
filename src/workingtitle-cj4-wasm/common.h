@@ -15,10 +15,18 @@
 #include "SimConnectDefs.h"
 
 #include "WtUtils.h"
+#include <cassert>
 
 /// <summary>
 /// The handle to the SimConnect instance.
 /// </summary>
 HANDLE hSimConnect;
+
+double clamp(double v, double lo, double hi)
+{
+    assert(!(hi < lo));
+    return (v < lo) ? lo : (hi < v) ? hi : v;
+}
+
 
 #endif

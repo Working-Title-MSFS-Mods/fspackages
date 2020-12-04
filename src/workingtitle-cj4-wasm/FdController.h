@@ -5,7 +5,6 @@
 
 #include "common.h"
 #include "PidController.h"
-#include <cassert>
 
 class FdController
 {
@@ -87,7 +86,7 @@ private:
 
             targetThrust = 2050 + lowAltThrust;
             if ((maxDensityThrust * thrustF) < targetThrust) {
-                double highAltThrust = this->clamp((-35000 + planeAlt) / 64, 0, 110);
+                double highAltThrust = clamp((-35000 + planeAlt) / 64, 0, 110);
                 printf("highaltdecrease: %.1f \r\n", highAltThrust);
                 targetThrust = (maxDensityThrust * thrustF) - highAltThrust;
             }
@@ -168,12 +167,6 @@ private:
         else {
             this->simVars->setThrottle2Mode(this->throttleMode[1]);
         }
-    }
-
-    double clamp(double v, double lo, double hi)
-    {
-        assert(!(hi < lo));
-        return (v < lo) ? lo : (hi < v) ? hi : v;
     }
 
 public:
