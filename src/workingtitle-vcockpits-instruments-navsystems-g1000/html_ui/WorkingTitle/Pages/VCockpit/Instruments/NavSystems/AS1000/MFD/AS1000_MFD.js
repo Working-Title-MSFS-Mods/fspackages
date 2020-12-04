@@ -20,7 +20,7 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("dialogContainer", d => this.getChildById("DialogContainer"));
 
         d.register("navBoxModel", d => new WT_MFD_Nav_Box_Model(d.pageTitle, d.unitChooser, d.settings));
-        d.register("flightPlanController", d => new WT_Flight_Plan_Controller());
+        d.register("flightPlanController", d => new WT_Flight_Plan_Controller(d.flightPlanManager, d.update$, d.activeLegInformation));
         d.register("changelogRepository", d => new WT_Changelog_Repository());
 
         //d.register("mainMap", d => document.querySelector("#MapInstrument"));

@@ -66,6 +66,7 @@ as1000-mfd-element #Mainframe #Electricity {
     height: 100%;
     width: 100%;
     display: grid;
+    overflow: hidden;
     grid-template-columns: 16.66666% minmax(0, 1fr);
     grid-template-rows: 8% minmax(0, 1fr) 4%;
     grid-template-areas:

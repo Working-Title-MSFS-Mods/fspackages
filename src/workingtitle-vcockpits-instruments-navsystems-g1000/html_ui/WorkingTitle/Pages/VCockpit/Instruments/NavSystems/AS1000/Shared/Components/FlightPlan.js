@@ -142,7 +142,7 @@ class WT_Flight_Plan_Lines extends WT_HTML_View {
     }
     updateActiveLeg(leg) {
         this.activeLeg.next(leg);
-        console.log(JSON.stringify(leg));
+        //console.log(JSON.stringify(leg));
     }
     waypointIndexToLineIndex(waypointIndex, approach = false) {
         const source = approach ? this.approachLines : this.waypointLines;

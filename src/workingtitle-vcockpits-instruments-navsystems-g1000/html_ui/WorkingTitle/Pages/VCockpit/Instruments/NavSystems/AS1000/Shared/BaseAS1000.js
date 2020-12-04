@@ -1166,3 +1166,15 @@ class WT_Menu_Push_Handler {
     }
 }
 //# sourceMappingURL=BaseAS1000.js.map
+
+class WT_Cancel_Dialog_Error extends Error {
+
+}
+WT_Cancel_Dialog_Error.HANDLER = e => {
+    if (e instanceof WT_Cancel_Dialog_Error) {
+        console.log("Closed new waypoint handler");
+    } else {
+        console.error(e.message);
+        return e;
+    }
+}

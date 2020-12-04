@@ -137,6 +137,10 @@ DOMUtilities.createElementNS = function (namespace, tagName, attributes = {}) {
     return el;
 }
 
+DOMUtilities.createSvgElement = function (tagName, attributes = []) {
+    return DOMUtilities.createElementNS(Avionics.SVG.NS, tagName, attributes);
+}
+
 DOMUtilities.createElement = function (tagName, attributes = {}) {
     let el = document.createElement(tagName);
     for (let key in attributes) {

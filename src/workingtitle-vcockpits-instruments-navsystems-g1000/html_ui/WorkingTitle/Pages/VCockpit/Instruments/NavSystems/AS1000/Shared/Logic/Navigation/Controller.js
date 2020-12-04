@@ -1,10 +1,20 @@
 class WT_Flight_Plan_Controller {
     /**
-     * @param {FlightPlanManager} flightPlan 
+     * @param {FlightPlanManager} flightPlanManager 
+     * @param {WT_Flight_Plan_Active_Leg_Information} activeLegInformation 
      */
-    constructor(flightPlan) {
+    constructor(flightPlanManager, update$, activeLegInformation) {
         this.mode = null;
-        this.flightPlan = flightPlan;
+        this.flightPlanManager = flightPlanManager;
+
+        update$.pipe(
+            rxjs.operators.throttleTime(1000)
+        ).subscribe(() => {
+            if (this.mode)
+                activeLegInformation.setInformation(this.mode.getLegInformation())
+        });
+
+        this.reset();
     }
     /**
      * @param {WT_Flight_Plan_Mode} mode 
@@ -23,6 +33,10 @@ class WT_Flight_Plan_Controller {
     }
     getMode() {
         return this.mode;
+    }
+    reset() {
+        const controller = new WT_Normal_Flight_Plan_Controller(this.flightPlanManager);
+        this.setMode(controller);
     }
 }
 
@@ -47,7 +61,7 @@ class WT_Flight_Plan_Leg_Information {
         return JSON.stringify([this.mode, this.from, this.to, this.symbol, this.distance, this.bearing]);
     }
     static decode(str) {
-        const data = JSON.decode(str);
+        const data = JSON.parse(str);
         return new WT_Flight_Plan_Leg_Information(...data);
     }
 }
@@ -63,27 +77,20 @@ WT_Flight_Plan_Mode.MODE_OBS = 3;
 WT_Flight_Plan_Mode.MODE_HOLD = 3;
 
 class WT_Flight_Plan_Active_Leg_Information {
-    constructor() {
-        this.activeLeg = new Subject(null);
-        window.addEventListener('storage', async e => {
-            if (e.key == "UpdateActiveLegInformation") {
-                const json = JSON.decode(e.newValue);
-                this.processUpdate(json);
-            }
-        });
+    /**
+     * @param {WT_Shared_Instrument_Events} sharedEvents 
+     */
+    constructor(sharedEvents) {
+        this.sharedEvents = sharedEvents;
+        this.activeLeg = sharedEvents.observe("ActiveLegInformation").pipe(
+            rxjs.operators.map(data => WT_Flight_Plan_Leg_Information.decode(data))
+        );
     }
     /**
      * @param {WT_Flight_Plan_Leg_Information} information
      */
     setInformation(information) {
-        window.localStorage.setItem("UpdateActiveLegInformation", information.encode());
-        this.activeLeg.value = item;
-    }
-    /**
-     * @param {string} json 
-     */
-    processUpdate(json) {
-        this.activeLeg.value = WT_Flight_Plan_Leg_Information.decode(json);
+        this.sharedEvents.fire("ActiveLegInformation", information.encode())
     }
 }
 

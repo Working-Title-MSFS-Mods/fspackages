@@ -81,6 +81,7 @@ as1000-pfd-element {
 
 .instruments-container {
     @extend %render-layer;
+    overflow: hidden;
     grid-area: main;
     display: grid;
     grid-template-columns: 100%;

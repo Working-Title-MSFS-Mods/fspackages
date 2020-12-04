@@ -3,8 +3,9 @@ class AS1000_PFD_Nav_Box_Model {
      * @param {WT_Unit_Chooser} unitChooser 
      * @param {FlightPlanManager} flightPlanManager 
      * @param {WT_Flight_Sim_Events} events 
+     * @param {WT_Flight_Plan_Active_Leg_Information} activeLegInformation 
      */
-    constructor(unitChooser, flightPlanManager, events) {
+    constructor(unitChooser, flightPlanManager, events, activeLegInformation) {
         this.unitChooser = unitChooser;
         this.flightPlanManager = flightPlanManager;
         this.events = events;
@@ -13,8 +14,8 @@ class AS1000_PFD_Nav_Box_Model {
             from: new Subject(""),
             symbol: new Subject(""),
             to: new Subject(""),
-            distance: new Subject(""),
-            bearing: new Subject(""),
+            distance: new Subject(null),
+            bearing: new Subject(null),
         };
         this.autopilot = {
             lateral: {
@@ -41,6 +42,14 @@ class AS1000_PFD_Nav_Box_Model {
                     break;
             }
         })
+
+        activeLegInformation.activeLeg.subscribe(leg => {
+            this.leg.from.value = leg.from;
+            this.leg.symbol.value = leg.symbol;
+            this.leg.to.value = leg.to;
+            this.leg.distance.value = leg.distance;
+            this.leg.bearing.value = leg.bearing;
+        });
     }
     updateVerticalActive() {
         if (SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean")) {
@@ -191,7 +200,7 @@ class AS1000_PFD_Nav_Box_Model {
             case 2: this.updateVerticalArmed(); break;
             case 3: this.updateLateralActive(); break;
             case 4: this.updateLateralArmed(); break;
-            case 5: this.updateLeg(); break;
+            //case 5: this.updateLeg(); break;
         }
         this.updateCounter = (this.updateCounter + 1) % 6;
     }
@@ -217,9 +226,21 @@ class AS1000_PFD_Nav_Box_View extends WT_HTML_View {
 
         model.leg.from.subscribe(value => this.elements.legFrom.innerHTML = value);
         model.leg.to.subscribe(value => this.elements.legTo.innerHTML = value);
-        model.leg.symbol.subscribe(value => this.elements.legSymbol.innerHTML = value);
-        model.leg.distance.subscribe(distance => this.elements.legDistance.innerHTML = distance);
-        model.leg.bearing.subscribe(bearing => this.elements.legBearing.innerHTML = bearing);
+        model.leg.symbol.subscribe(value => this.elements.legSymbol.innerHTML = `<img src="${value}" />`);
+
+        model.unitChooser.observeDistance(
+            model.leg.distance.observable.pipe(
+                WT_RX.distinctMap(distance => distance !== null ? `${distance.toFixed(distance < 10 ? 1 : 0)}KM` : "")
+            ),
+            model.leg.distance.observable.pipe(
+                rxjs.operators.map(v => v * 0.539957),
+                WT_RX.distinctMap(distance => distance !== null ? `${distance.toFixed(distance < 10 ? 1 : 0)}NM` : "")
+            )
+        ).subscribe(text => this.elements.legDistance.innerHTML = text);
+
+        model.leg.bearing.observable.pipe(
+            WT_RX.distinctMap(bearing => bearing !== null ? `${bearing.toFixed(0)}°` : "")
+        ).subscribe(text => this.elements.legBearing.innerHTML = text);
 
         model.onDisabled.subscribe(type => {
             this.disableType = type;

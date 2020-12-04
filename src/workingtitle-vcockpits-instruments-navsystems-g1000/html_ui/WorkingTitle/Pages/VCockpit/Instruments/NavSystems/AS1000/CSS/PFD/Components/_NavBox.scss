@@ -31,12 +31,16 @@ g1000-nav-box {
         display: grid;
         width: 100%;
         grid-gap: 2vh;
-        grid-template-columns: 40% 1fr 40%;
+        grid-template-columns: 40% 2ch 40%;
         color: $color_gps;
         font-weight: bold;
 
         .leg-symbol {
             text-align: center;
+
+            img {
+                height: 1ch;
+            }
         }
 
         .leg-to {

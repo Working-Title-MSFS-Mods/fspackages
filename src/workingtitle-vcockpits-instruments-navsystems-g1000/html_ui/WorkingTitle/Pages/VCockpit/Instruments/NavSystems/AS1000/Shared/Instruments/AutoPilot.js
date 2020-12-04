@@ -6,12 +6,8 @@ class WT_Auto_Pilot {
         this.enabled = WT_RX.observeSimVar(update$, "AUTOPILOT MASTER", "Bool");
 
         this.flightDirector = {
-            enabled: rxjs.combineLatest(
-                this.enabled,
-                WT_RX.observeSimVar(update$, "AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool"),
-                (autopilotEnabled, flightDirectorEnabled) => autopilotEnabled || flightDirectorEnabled
-            ).pipe(
-                rxjs.operators.distinctUntilChanged(),
+            enabled: rxjs.combineLatest(this.enabled, WT_RX.observeSimVar(update$, "AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool")).pipe(
+                WT_RX.distinctMap(([autopilotEnabled, flightDirectorEnabled]) => autopilotEnabled || flightDirectorEnabled),
                 rxjs.operators.shareReplay(1)
             ),
             pitch: WT_RX.observeSimVar(update$, "AUTOPILOT FLIGHT DIRECTOR PITCH", "degree"),

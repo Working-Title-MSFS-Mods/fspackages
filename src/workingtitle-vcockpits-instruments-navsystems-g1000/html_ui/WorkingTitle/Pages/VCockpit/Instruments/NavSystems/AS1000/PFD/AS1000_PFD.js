@@ -69,7 +69,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("airspeedModel", d => new WT_Airspeed_Model(d.airspeedReferences, d.unitChooser));
         d.register("airspeedReferences", d => new WT_Airspeed_References());
 
-        d.register("navBoxModel", d => new AS1000_PFD_Nav_Box_Model(d.unitChooser, d.flightPlanManager, d.flightSimEvents));
+        d.register("navBoxModel", d => new AS1000_PFD_Nav_Box_Model(d.unitChooser, d.flightPlanManager, d.flightSimEvents, d.activeLegInformation));
 
         d.register("annunciationsModel", d => new WT_Annunciations_Model(d.planeConfig, d.sound, d.planeState));
         d.register("localTimeModel", d => new WT_Local_Time_Model(d.settings, d.clock));
@@ -269,7 +269,6 @@ class AS1000_PFD extends BaseAS1000 {
         for (let updatable of this.updatables) {
             updatable.update(_deltaTime);
         }
-        this.miniPageController.update(_deltaTime);
         this.electricityAvailable.value = this.isElectricityAvailable();
         const syntheticVision = this.getChildById("SyntheticVision");
         if (syntheticVision.offsetParent) {
@@ -277,8 +276,8 @@ class AS1000_PFD extends BaseAS1000 {
         }
     }
     afterUpdate() {
-        this.dependencies.afterUpdate$.next();
         super.afterUpdate();
+        this.dependencies.afterUpdate$.next();
     }
     computeEvent(_event) {
         if (_event == "SOFTKEYS_12") {

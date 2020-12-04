@@ -87,6 +87,7 @@ class WT_Shared_Dependencies {
         d.register("metarDownloader", d => new WT_Metar_Downloader());
         d.register("metarRepository", d => new WT_Metar_Repository(d.metarDownloader, d.update$));
         d.register("releaseRepository", d => new WT_Release_Repository("g1000"));
+        d.register("activeLegInformation", d => new WT_Flight_Plan_Active_Leg_Information(d.sharedEvents));
 
         // Input
         d.register("inputStack", d => new Input_Stack(d.flightSimEvents));

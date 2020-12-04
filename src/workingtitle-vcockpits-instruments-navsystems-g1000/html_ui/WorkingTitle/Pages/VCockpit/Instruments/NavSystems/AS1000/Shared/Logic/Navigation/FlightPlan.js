@@ -43,16 +43,16 @@ class WT_Normal_Flight_Plan_Controller extends WT_Flight_Plan_Mode {
                 to = "---";
             //images: Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/
             if (this.flightPlanManager.getIsDirectTo()) {
-                symbol = "direct_to.bmp";
+                symbol = "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to.png";
             } else {
                 from = SimVar.GetSimVarValue("GPS WP PREV ID", "string");
                 if (!from)
                     from = "---";
-                symbol = "course_to.bmp";
+                symbol = "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/course_to.png";
             }
 
-            distance = SimVar.GetSimVarValue("GPS WP DISTANCE", "kilometers");
-            bearing = Math.round(SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
+            distance = parseFloat(SimVar.GetSimVarValue("GPS WP DISTANCE", "kilometers"));
+            bearing = parseFloat(SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
         }
 
         return new WT_Flight_Plan_Leg_Information(WT_Flight_Plan_Mode.MODE_NORMAL, from, to, symbol, distance, bearing);

@@ -42,23 +42,6 @@ class Altimeter extends HTMLElement {
         model.verticalDeviation.mode.subscribe(mode => this.setAttribute("vertical-deviation-mode", mode));
         model.verticalDeviation.value.subscribe(value => this.setAttribute("vertical-deviation-value", value));
 
-        model.minimums.value.subscribe(value => {
-            this.minimumAltitudeBug.setAttribute("display", value === null ? "none" : "block");
-        });
-        model.minimums.state.subscribe(state => {
-            switch (state) {
-                case "low":
-                    this.minimumAltitudeBug.setAttribute("stroke", "yellow");
-                    break;
-                case "near":
-                    this.minimumAltitudeBug.setAttribute("stroke", "white");
-                    break;
-                default:
-                    this.minimumAltitudeBug.setAttribute("stroke", "#36c8d2");
-                    break;
-            }
-        });
-
         const altitude$ = model.altitude;
         const center$ = model.altitude.pipe(
             rxjs.operators.map(altitude => Math.round(altitude / Altimeter.GRADUATION_SCALE) * 100),
@@ -102,6 +85,23 @@ class Altimeter extends HTMLElement {
             rxjs.operators.switchMap(mode => mode != 0 ? minimumsTranslate$ : rxjs.empty())
         ).subscribe(translate => {
             this.minimumAltitudeBug.setAttribute("transform", `translate(0, ${translate})`);
+        });
+
+        model.minimums.mode.subscribe(mode => {
+            this.minimumAltitudeBug.setAttribute("display", mode === 0 ? "none" : "block");
+        });
+        model.minimums.state.subscribe(state => {
+            switch (state) {
+                case "low":
+                    this.minimumAltitudeBug.setAttribute("stroke", "yellow");
+                    break;
+                case "near":
+                    this.minimumAltitudeBug.setAttribute("stroke", "white");
+                    break;
+                default:
+                    this.minimumAltitudeBug.setAttribute("stroke", "#36c8d2");
+                    break;
+            }
         });
 
         // Pressure

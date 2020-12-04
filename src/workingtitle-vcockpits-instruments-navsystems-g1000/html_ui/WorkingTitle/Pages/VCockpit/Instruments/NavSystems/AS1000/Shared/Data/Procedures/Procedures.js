@@ -20,7 +20,6 @@ class Procedures {
         this.activeWaypoint = update(() => this.flightPlanManager.getGPSActiveWaypointIndex());
         this.activeLeg = this.updateObservable.pipe(
             rxjs.operators.map(() => this.getActiveLeg()),
-            rxjs.operators.tap(value => console.log(JSON.stringify(value))),
             rxjs.operators.distinctUntilChanged((a, b) => {
                 if (a === null || b === null)
                     return false;

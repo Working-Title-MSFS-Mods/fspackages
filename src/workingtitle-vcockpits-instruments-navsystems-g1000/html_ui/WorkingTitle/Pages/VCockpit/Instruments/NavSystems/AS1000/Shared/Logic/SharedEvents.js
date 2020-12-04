@@ -54,4 +54,12 @@ class WT_Shared_Instrument_Events {
             }
         }
     }
+    observe(event) {
+        const observable = new rxjs.Subject();
+        const listener = data => observable.next(data);
+        this.addListener(event, listener);
+        return observable.pipe(
+            rxjs.operators.finalize(() => this.removeListener(event, listener))
+        );
+    }
 }

@@ -60,8 +60,7 @@ class WT_Master_Direct_To_Handler extends WT_Direct_To_Handler {
         this.flightPlanController.setMode(controller);
     }
     cancelDirectTo() {
-        const controller = new WT_Normal_Flight_Plan_Controller(this.flightPlanManager);
-        this.flightPlanController.setMode(controller);
+        this.flightPlanController.reset();
     }
 }
 
@@ -124,14 +123,15 @@ class WT_Direct_To_Controller extends WT_Flight_Plan_Mode {
         this.isActive = true;
 
         let numExisting = SimVar.GetSimVarValue("C:fs9gps:FlightPlanWaypointsNumber", "number");
+        console.log(`Deleting ${numExisting} existing waypoints`);
         for (let i = numExisting - 1; i >= 0; i--) {
             await SimVar.SetSimVarValue("C:fs9gps:FlightPlanDeleteWaypoint", "enum", i);
         }
-        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", this.waypoints[0].infos.coordinates.lat);
-        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", this.waypoints[0].infos.coordinates.long);
+        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", this.waypoints[0].infos.coordinates.lat);
+        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", this.waypoints[0].infos.coordinates.long);
         await SimVar.SetSimVarValue("C:fs9gps:FlightPlanAddWaypoint", "enum", 0);
-        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", this.waypoints[1].infos.coordinates.lat);
-        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", this.waypoints[1].infos.coordinates.long);
+        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", this.waypoints[1].infos.coordinates.lat);
+        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", this.waypoints[1].infos.coordinates.long);
         await SimVar.SetSimVarValue("C:fs9gps:FlightPlanAddWaypoint", "enum", 1);
         await SimVar.SetSimVarValue("C:fs9gps:FlightPlanActiveWaypoint", "enum", 1);
 
@@ -151,8 +151,8 @@ class WT_Direct_To_Controller extends WT_Flight_Plan_Mode {
     }
     getLegInformation() {
         const from = null;
-        const to = this.waypoint.icao;
-        const symbol = "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to.bmp";
+        const to = this.waypoint.ident;
+        const symbol = "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/GPS/direct_to.png";
         const distance = SimVar.GetSimVarValue("GPS WP DISTANCE", "kilometers");
         const bearing = Math.round(SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
 
