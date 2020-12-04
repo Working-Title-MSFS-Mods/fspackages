@@ -19,7 +19,11 @@
 #include <sys/time.h>
 #include <chrono>
 
-int globalThrottleAxis[2]{ -16384, -16384 };
+const int MIN_THR = -16384;
+const int MAX_THR = 16384;
+const int THR_STEP = 256;
+
+int globalThrottleAxis[2]{ MIN_THR, MIN_THR };
 
 class FdGauge
 {
@@ -37,8 +41,23 @@ private:
         SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottleSet, "THROTTLE_AXIS_SET_EX1");
         SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottle1SetEx, "THROTTLE1_AXIS_SET_EX1");
         SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottle2SetEx, "THROTTLE2_AXIS_SET_EX1");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::ThrottleSet, "THROTTLE_SET");
         SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::Throttle1Set, "THROTTLE1_SET");
         SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::Throttle2Set, "THROTTLE2_SET");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::ThrottleFull, "THROTTLE_FULL");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::ThrottleIncr, "THROTTLE_INCR");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::ThrottleDecr, "THROTTLE_DECR");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::ThrottleCut, "THROTTLE_CUT");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::IncreaseThrottle, "INCREASE_THROTTLE");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::DecreaseThrottle, "DECREASE_THROTTLE");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::Throttle1Full, "THROTTLE1_FULL");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::Throttle1Incr, "THROTTLE1_INCR");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::Throttle1Decr, "THROTTLE1_DECR");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::Throttle1Cut, "THROTTLE1_CUT");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::Throttle2Full, "THROTTLE2_FULL");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::Throttle2Incr, "THROTTLE2_INCR");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::Throttle2Decr, "THROTTLE2_DECR");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::Throttle2Cut, "THROTTLE2_CUT");
     }
 
     /// <summary>
@@ -51,8 +70,25 @@ private:
         SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottleSet, TRUE);
         SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottle1SetEx, TRUE);
         SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottle2SetEx, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::ThrottleSet, TRUE);
         SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::Throttle1Set, TRUE);
         SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::Throttle2Set, TRUE);
+
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::ThrottleFull, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::ThrottleIncr, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::ThrottleDecr, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::ThrottleCut, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::IncreaseThrottle, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::DecreaseThrottle, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::Throttle1Full, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::Throttle1Incr, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::Throttle1Decr, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::Throttle1Cut, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::Throttle2Full, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::Throttle2Incr, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::Throttle2Decr, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::Throttle2Cut, TRUE);
+
         SimConnect_SetNotificationGroupPriority(hSimConnect, EventGroups::Throttle, SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
     }
 
@@ -132,13 +168,62 @@ private:
         case ThrottleEventIDs::AxisThrottle2SetEx:
             globalThrottleAxis[1] = static_cast<int>(evt->dwData);
             break;
+        case ThrottleEventIDs::ThrottleSet:
+            globalThrottleAxis[0] = (static_cast<int>(evt->dwData) * 2) - MAX_THR;
+            globalThrottleAxis[1] = (static_cast<int>(evt->dwData) * 2) - MAX_THR;
+            break;
         case ThrottleEventIDs::Throttle1Set:
-            globalThrottleAxis[0] = (static_cast<int>(evt->dwData) * 2) - 16384;
+            globalThrottleAxis[0] = (static_cast<int>(evt->dwData) * 2) - MAX_THR;
             break;
         case ThrottleEventIDs::Throttle2Set:
-            globalThrottleAxis[1] = (static_cast<int>(evt->dwData) * 2) - 16384;
+            globalThrottleAxis[1] = (static_cast<int>(evt->dwData) * 2) - MAX_THR;
+            break;
+        case ThrottleEventIDs::ThrottleFull:
+            globalThrottleAxis[0] = MAX_THR;
+            globalThrottleAxis[1] = MAX_THR;
+            break;
+        case ThrottleEventIDs::Throttle1Full:
+            globalThrottleAxis[0] = MAX_THR;
+            break;
+        case ThrottleEventIDs::Throttle2Full:
+            globalThrottleAxis[1] = MAX_THR;
+            break;
+        case ThrottleEventIDs::ThrottleCut:
+            globalThrottleAxis[0] = MIN_THR;
+            globalThrottleAxis[1] = MIN_THR;
+            break;
+        case ThrottleEventIDs::Throttle1Cut:
+            globalThrottleAxis[0] = MIN_THR;
+            break;
+        case ThrottleEventIDs::Throttle2Cut:
+            globalThrottleAxis[1] = MIN_THR;
+            break;
+        case ThrottleEventIDs::IncreaseThrottle:
+        case ThrottleEventIDs::ThrottleIncr:
+            globalThrottleAxis[0] += THR_STEP; // TODO: CLAMP ALL INCR/DECR EVENTS
+            globalThrottleAxis[1] += THR_STEP;
+            break;
+        case ThrottleEventIDs::Throttle1Incr:
+            globalThrottleAxis[0] += THR_STEP;
+            break;
+        case ThrottleEventIDs::Throttle2Incr:
+            globalThrottleAxis[1] += THR_STEP;
+            break;
+        case ThrottleEventIDs::DecreaseThrottle:
+        case ThrottleEventIDs::ThrottleDecr:
+            globalThrottleAxis[0] -= THR_STEP;
+            globalThrottleAxis[1] -= THR_STEP;
+            break;
+        case ThrottleEventIDs::Throttle1Decr:
+            globalThrottleAxis[0] -= THR_STEP;
+            break;
+        case ThrottleEventIDs::Throttle2Decr:
+            globalThrottleAxis[1] -= THR_STEP;
             break;
         }
+
+        globalThrottleAxis[0] = clamp(globalThrottleAxis[0], MIN_THR, MAX_THR);
+        globalThrottleAxis[1] = clamp(globalThrottleAxis[1], MIN_THR, MAX_THR);
     }
 
 public:
