@@ -26,6 +26,8 @@
         "Coherent": "writable",
         "WT_BaseAutopilot": "writable",
         "WT_VNavPathAutopilot": "writable",
+        "WT_VnavAutopilot": "writable",
+        "CJ4NavModeSelector": "writable",
         "FlightPlanManager": "writable",
         "SegmentType": "writable",
         "FlightPlanSegment": "writable",

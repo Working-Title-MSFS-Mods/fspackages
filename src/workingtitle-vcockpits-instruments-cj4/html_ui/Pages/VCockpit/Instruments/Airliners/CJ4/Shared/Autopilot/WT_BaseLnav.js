@@ -2,10 +2,12 @@ class WT_BaseLnav {
 
     /**
      * Creates an instance of WT_BaseLnav.
-     * @param {FlightPlanManager} fpm The flight plan manager to use with this instance. 
+     * @param {FlightPlanManager} fpm The flight plan manager to use with this instance.
+     * @param {CJ4NavModeSelector} navModeSelector The nav mode selector to use with this instance.
      */
-    constructor(fpm) {
+    constructor(fpm, navModeSelector) {
         this._fpm = fpm;
+        this._navModeSelector = navModeSelector;
 
         this._flightPlanVersion = undefined;
         this._activeWaypointChanged = true;
@@ -76,18 +78,37 @@ class WT_BaseLnav {
             this._lnavDeactivated = false;
 
             this._planePos = new LatLon(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+            const destination = this._fpm.getDestination();
+
+            const planePosLatLong = new LatLong(this._planePos.lat, this._planePos.lon);
+            const destinationDistance = Avionics.Utils.computeGreatCircleDistance(planePosLatLong, destination.infos.coordinates);
+            let xtkMultiplier = 1;
+
+            /*
+            if (destinationDistance <= 30) {
+                xtkMultiplier = 10;
+                SimVar.SetSimVarValue("L:WT_CJ4_NAV_SENSITIVITY", "number", 1);
+            }
+            else if (destinationDistance <= 5 && this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
+                xtkMultiplier = 30;
+                SimVar.SetSimVarValue("L:WT_CJ4_NAV_SENSITIVITY", "number", 2);
+            }
+            else {
+                SimVar.SetSimVarValue("L:WT_CJ4_NAV_SENSITIVITY", "number", 0);
+            }
+            */
 
             //LNAV CAN RUN, UPDATE DATA
             this._groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
             const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG;
 
-            this._activeWaypointDist = Avionics.Utils.computeGreatCircleDistance(new LatLong(this._planePos.lat, this._planePos.lon), this._activeWaypoint.infos.coordinates);
-            this._previousWaypointDist = Avionics.Utils.computeGreatCircleDistance(new LatLong(this._planePos.lat, this._planePos.lon), this._previousWaypoint.infos.coordinates);
-            this._bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(new LatLong(this._planePos.lat, this._planePos.lon), this._activeWaypoint.infos.coordinates);
+            this._activeWaypointDist = Avionics.Utils.computeGreatCircleDistance(planePosLatLong, this._activeWaypoint.infos.coordinates);
+            this._previousWaypointDist = Avionics.Utils.computeGreatCircleDistance(planePosLatLong, this._previousWaypoint.infos.coordinates);
+            this._bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(planePosLatLong, this._activeWaypoint.infos.coordinates);
 
             const prevWptPos = new LatLon(this._previousWaypoint.infos.coordinates.lat, this._previousWaypoint.infos.coordinates.long);
             const nextWptPos = new LatLon(this._activeWaypoint.infos.coordinates.lat, this._activeWaypoint.infos.coordinates.long);
-            this._xtk = this._planePos.crossTrackDistanceTo(prevWptPos, nextWptPos) * (0.000539957); //meters to NM conversion
+            this._xtk = this._planePos.crossTrackDistanceTo(prevWptPos, nextWptPos) * (0.000539957) * xtkMultiplier; //meters to NM conversion
             this._dtk = Avionics.Utils.computeGreatCircleHeading(this._previousWaypoint.infos.coordinates, this._activeWaypoint.infos.coordinates);
             const correctedDtk = GeoMath.correctMagvar(this._dtk, SimVar.GetSimVarValue("MAGVAR", "degrees"));
             
@@ -106,7 +127,7 @@ class WT_BaseLnav {
                 this._setHeading = this._dtk;
 
                 //Intercept angle curve based on XTK
-                let absInterceptAngle = Math.min(Math.pow(Math.abs(this._xtk) * 10, 1.35), 45);
+                let absInterceptAngle = Math.min(Math.pow(Math.abs(this._xtk) * 20, 1.35), 45);
 
                 //If we still have some XTK, bake in a minimum intercept angle of 2.5 degrees to keep us on the line
                 if (Math.abs(this._xtk) > 0.025) {

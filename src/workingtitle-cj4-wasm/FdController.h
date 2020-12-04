@@ -5,6 +5,7 @@
 
 #include "common.h"
 #include "PidController.h"
+#include <cassert>
 
 class FdController
 {
@@ -69,7 +70,7 @@ private:
 
         double grossSimThrust = wt_utils::convertToGrossThrust(this->simVars->getThrust(idx + 1), this->simVars->getMach());
         double maxDensityThrust = wt_utils::getMaxDensityThrust(this->simVars->getAmbientDensity());
-        double thrustF = 0.92;
+        double thrustF = 0.93;
 
 
         // TODO: extract the modes later
@@ -82,11 +83,12 @@ private:
         }
         case CLB: {
             double planeAlt = this->simVars->getPlaneAltitude();
-            double lowAltThrust = max(0, (7000 - planeAlt) / 25);
+            double lowAltThrust = max(0, (7000 - planeAlt) / 24);
 
             targetThrust = 2050 + lowAltThrust;
             if ((maxDensityThrust * thrustF) < targetThrust) {
-                double highAltThrust = max(0, (-35000 + planeAlt) / 45);
+                double highAltThrust = this->clamp((-35000 + planeAlt) / 64, 0, 110);
+                printf("highaltdecrease: %.1f \r\n", highAltThrust);
                 targetThrust = (maxDensityThrust * thrustF) - highAltThrust;
             }
             break;
@@ -166,6 +168,12 @@ private:
         else {
             this->simVars->setThrottle2Mode(this->throttleMode[1]);
         }
+    }
+
+    double clamp(double v, double lo, double hi)
+    {
+        assert(!(hi < lo));
+        return (v < lo) ? lo : (hi < v) ? hi : v;
     }
 
 public:

@@ -19,6 +19,9 @@ class CJ4_PFD extends BaseAirliners {
     get IsGlassCockpit() { return true; }
     connectedCallback() {
         super.connectedCallback();
+        RegisterViewListener("JS_LISTENER_KEYEVENT", () => {
+            console.log("JS_LISTENER_KEYEVENT registered.");
+        });
         this.radioNav.init(NavMode.TWO_SLOTS);
         this.horizon = new CJ4_HorizonContainer("Horizon", "PFD");
         this.systems = new CJ4_SystemContainer("System", "SystemInfos");
@@ -85,14 +88,14 @@ class CJ4_PFD extends BaseAirliners {
 
 
             // TODO: refactor VNAV alt to SVG          
-            
+
             let isAltConstraint = (SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number") > 0);
             let vnavAltEl = document.getElementById("VnavAlt");
             vnavAltEl.style.display = isAltConstraint ? "" : "none";
             if (isAltConstraint) {
                 vnavAltEl.textContent = SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number").toFixed(0);
             }
-            
+
             this.map.setMode(this.mapDisplayMode);
             this.mapOverlay.setMode(this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource);
 
@@ -214,6 +217,48 @@ class CJ4_PFD extends BaseAirliners {
 
         this.updateMachTransition();
     }
+    updateMachTransition() {
+        let cruiseMach = 0.64; // TODO: change this when cruise mach becomes settable
+        // let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
+        let mach = Simplane.getMachSpeed();
+        switch (this.machTransition) {
+            case 0:
+                if (mach >= cruiseMach) {
+                    this.machTransition = 1;
+                    SimVar.SetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "bool", true);
+                    SimVar.SetSimVarValue("L:AIRLINER_FMC_FORCE_NEXT_UPDATE", "number", 1);
+                }
+                break;
+            case 1:
+                if (mach < cruiseMach - 0.01) {
+                    this.machTransition = 0;
+                    SimVar.SetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "bool", false);
+                    SimVar.SetSimVarValue("L:AIRLINER_FMC_FORCE_NEXT_UPDATE", "number", 1);
+                }
+                break;
+        }
+        let isMachActive = SimVar.GetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "bool");
+        if (this.isMachActive != isMachActive) {
+            this.isMachActive = isMachActive;
+            if (isMachActive) {
+                // let mach = SimVar.GetGameVarValue("FROM KIAS TO MACH", "number", SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR:1", "knots"));
+                Coherent.call("AP_MACH_VAR_SET", 0, cruiseMach);
+            }
+            else {
+                let knots = SimVar.GetGameVarValue("FROM MACH TO KIAS", "number", Simplane.getAutoPilotMachHoldValue());
+                Coherent.call("AP_SPD_VAR_SET", 1, knots);
+            }
+            return true;
+        } else {
+            // DONT DELETE: mach mode fix
+            const machMode = Simplane.getAutoPilotMachModeActive();
+            if (machMode) {
+                const machAirspeed = Simplane.getAutoPilotMachHoldValue();
+                Coherent.call("AP_MACH_VAR_SET", 0, parseFloat(machAirspeed.toFixed(2)));
+            }
+        }
+        return false;
+    }
     onEvent(_event) {
         switch (_event) {
             case "Upr_Push_NAV":
@@ -227,7 +272,7 @@ class CJ4_PFD extends BaseAirliners {
                     //     SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0)
                     //         .then(() => SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 1));
                     // }
-                    
+
                     //UPDATED FOR WT LNAV
                     // SimVar.SetSimVarValue("L:WT_CJ4_LNAV_MODE", "number", 0);
                     // if (SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1) {
@@ -264,7 +309,7 @@ class CJ4_PFD extends BaseAirliners {
                     //         SimVar.SetSimVarValue('K:AP_NAV1_HOLD', 'number', 0);
                     //     }
                     // }
-                    
+
                     this.onModeChanged();
                 }
                 break;
@@ -472,7 +517,7 @@ class CJ4_PFD extends BaseAirliners {
 
         if (modeChanged)
             this.onModeChanged();
-        
+
         let baroSet = parseInt(_dict.get(CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL));
         SimVar.SetSimVarValue("L:WT_CJ4_BARO_SET", "Number", baroSet);
     }

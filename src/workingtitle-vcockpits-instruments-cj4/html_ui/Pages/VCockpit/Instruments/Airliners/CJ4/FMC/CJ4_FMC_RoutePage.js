@@ -50,7 +50,7 @@ class CJ4_FMC_RoutePage {
         this.update(true);
     }
 
-    update(forceUpdate) {
+    update(forceUpdate = false) {
         // check if active wpt changed
         const actWptIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
         if (this._activeWptIndex != actWptIndex) {
