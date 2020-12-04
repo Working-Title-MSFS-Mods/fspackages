@@ -80,16 +80,18 @@ class WT_VnavAutopilot {
                         this._pathArm = false;
                         this._pathArmAbove = false;
                     }
-                    else if (this._vnav._altDeviation < 0 && this._vnav._distanceToTod < 20 && this._vnav._distanceToTod > 0 && this._navModeSelector.selectedAlt1 + 75 < this._indicatedAltitude) {
+                    else if (this._vnav._altDeviation < 0 && this._vnav._distanceToTod < 20 && this._vnav._distanceToTod > 0 
+                        && (this._navModeSelector.selectedAlt1 + 75 < this._indicatedAltitude || this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR)) {
                         //CAN ARM INTERCEPT FROM BELOW
                         this._pathArm = true;
                         this._pathArmAbove = false;
                     }
-                    else if (this._vnav._altDeviation > 0 && this._vnav._topOfDescent > this._vnav._vnavTargetDistance && this._navModeSelector.selectedAlt1 + 75 < this._indicatedAltitude) {
+                    else if (this._vnav._altDeviation > 0 && this._vnav._topOfDescent > this._vnav._vnavTargetDistance 
+                        && (this._navModeSelector.selectedAlt1 + 75 < this._indicatedAltitude || this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR)) {
                         //CAN ARM INTERCEPT FROM ABOVE
                         this._pathArmAbove = true;
                         this._pathArm = false;
-                    }
+                    }        
                     else {
                         this._pathArm = false;
                         this._pathArmAbove = false;
@@ -346,12 +348,21 @@ class WT_VnavAutopilot {
     }
 
     setTargetAltitude(targetAltitude = this._vnavTargetAltitude) {
-        let isClimb = this._vnav._currentFlightSegment.type == SegmentType.Departure ? true : false;
-        let selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
-        let updatedTargetAltitude = isClimb ? Math.min(targetAltitude, selectedAltitude) : Math.max(targetAltitude, selectedAltitude);
-        Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, Math.round(updatedTargetAltitude), false);
-        //SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
-        SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
+
+        if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
+            Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, Math.round(targetAltitude - 500), false);
+            SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
+        }
+        else {
+            let isClimb = this._vnav._currentFlightSegment.type == SegmentType.Departure ? true : false;
+
+            let selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
+            let updatedTargetAltitude = isClimb ? Math.min(targetAltitude, selectedAltitude) : Math.max(targetAltitude, selectedAltitude);
+
+            Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, Math.round(updatedTargetAltitude), false);
+            //SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
+            SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
+        }
     }
 
     setSnowflake() {

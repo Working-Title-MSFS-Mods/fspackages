@@ -1,6 +1,13 @@
 class WT_BaseVnav {
-    constructor(fpm) {
+
+    /**
+     * Creates an instance of WT_BaseVnav.
+     * @param {FlightPlanManager} fpm The flight plan manager to use with this instance.
+     * @param {CJ4NavModeSelector} navModeSelector The nav mode selector to use with this instance.
+     */
+    constructor(fpm, navModeSelector) {
         this._fpm = fpm;
+        this._navModeSelector = navModeSelector;
 
         this._destination = undefined;
         this._activeWaypoint = undefined;
@@ -80,6 +87,20 @@ class WT_BaseVnav {
             this._vnavCalculating = true;
             this._currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
             this._activeWaypointDist = Avionics.Utils.computeDistance(this._currPos, this._activeWaypoint.infos.coordinates);
+
+            const currentLateralMode = this._navModeSelector.currentLateralActiveState;
+            if (currentLateralMode !== this._currentLateralMode) {
+                
+                if (this.currentLateralMode !== LateralNavModeState.APPR && currentLateralMode === LateralNavModeState.APPR) {
+                    this.buildGlidepath();
+                }
+
+                if (this.currentLateralMode === LateralNavModeState.APPR && currentLateralMode !== LateralNavModeState.APPR) {
+                    this._vnavTargetChanged = true;
+                }
+
+                this._currentLateralMode = currentLateralMode;
+            }
 
             //HAS THE ACTIVE WAYPOINT CHANGED?
             if (this._lastActiveWaypointIdent != this._activeWaypoint.ident) {
@@ -323,13 +344,29 @@ class WT_BaseVnav {
             distanceToTod: this._distanceToTod
         };
         WTDataStore.set('CJ4_vnavValues', JSON.stringify(vnavValues));
-
-
     }
 
     writeMonitorValues() {
         if (this._vnavTargetWaypoint) {
             WTDataStore.set('CJ4_vnavTargetWaypoint', this._vnavTargetWaypoint.ident);
+        }
+    }
+
+    buildGlidepath() {
+        const approach = this._fpm.getApproachWaypoints();
+
+        if (approach.length > 0) {
+            const lastApproachWaypoint = approach[approach.length - 1];
+
+            if (lastApproachWaypoint.isRunway) {               
+                this._vnavTargetDistance = Avionics.Utils.computeGreatCircleDistance(lastApproachWaypoint.infos.coordinates, this._currPos);
+                this._vnavTargetAltitude = lastApproachWaypoint.legAltitude1;
+
+                this._vnavTargetWaypoint = lastApproachWaypoint;
+                this._topOfDescent = ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
+
+                this._vnavTargetChanged = true;
+            }
         }
     }
 }

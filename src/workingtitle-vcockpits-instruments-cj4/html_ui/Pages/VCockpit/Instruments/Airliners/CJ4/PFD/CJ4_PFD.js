@@ -878,7 +878,8 @@ class CJ4_ILS extends NavSystemElement {
         if (this.ils) {
             let showIls = false;
             let localizer = this.gps.radioNav.getBestILSBeacon(false);
-            if (localizer.id != 0) {
+            let navSensitivity = SimVar.GetSimVarValue("L:WT_NAV_SENSITIVITY", "number");
+            if (localizer.id != 0 || navSensitivity === 4) {
                 showIls = true;
             }
             this.ils.showLocalizer(showIls);

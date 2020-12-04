@@ -369,19 +369,24 @@ class CJ4NavModeSelector {
       }
     };
 
-    if (!this.isAltitudeLocked) {
-      if (this.vPathState === VPathState.ACTIVE || (this.currentVerticalActiveState === VerticalNavModeState.FLC || this.currentVerticalActiveState === VerticalNavModeState.VS)) {
-        selectVerticalArmedModeBySlot();
+    if (this.currentLateralActiveState !== LateralNavModeState.APPR) {
+      if (!this.isAltitudeLocked) {
+        if (this.vPathState === VPathState.ACTIVE || (this.currentVerticalActiveState === VerticalNavModeState.FLC || this.currentVerticalActiveState === VerticalNavModeState.VS)) {
+          selectVerticalArmedModeBySlot();
+        }
+      }
+  
+      if (this.vPathState === VPathState.ARMED) {
+        this.pushVerticalArmedMode(VerticalNavModeState.PATH);
+      }
+      else if (this.vPathState === VPathState.UNABLEARMED) {
+        this.pushVerticalArmedMode(VerticalNavModeState.NOPATH);
       }
     }
-
-    if (this.vPathState === VPathState.ARMED) {
-      this.pushVerticalArmedMode(VerticalNavModeState.PATH);
+    
+    if (this.currentLateralActiveState === LateralNavModeState.APPR && this.vPathState !== VPathState.ACTIVE) {
+        this.currentVerticalArmedStates = [VerticalNavModeState.GP];
     }
-    else if (this.vPathState === VPathState.UNABLEARMED) {
-      this.pushVerticalArmedMode(VerticalNavModeState.NOPATH);
-    }
-
   }
 
   /**
@@ -501,6 +506,14 @@ class CJ4NavModeSelector {
         case WT_ApproachType.RNAV:
         case WT_ApproachType.VISUAL:
           this.isVNAVOn = true;
+
+          if (this.vPathState === VPathState.ACTIVE) {
+            this.currentVerticalActiveState = VerticalNavModeState.GP;
+          }
+          else {
+            this.currentVerticalArmedStates = [VerticalNavModeState.GP];
+          }
+
           break;
         case WT_ApproachType.ILS:
           this.isVNAVOn = false;
@@ -540,12 +553,20 @@ class CJ4NavModeSelector {
         break;
       case LateralNavModeState.APPR:
         SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
-        if (this.isVNAVOn) {
+
+        if (this.approachMode === WT_ApproachType.RNAV) {
           this.isVNAVOn = false;
+          this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+
+          if (this.vPathState === VPathState.ACTIVE) {
+            SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+            SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
+          }
+          
+          SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
         }
 
         if (this.approachMode === WT_ApproachType.ILS) {
-          SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
           SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 0);
         }
 
@@ -607,6 +628,20 @@ class CJ4NavModeSelector {
       }
       if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
         SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
+      }
+    }
+
+    if (this.currentLateralActiveState === LateralNavModeState.APPR) {
+      switch (this.vPathState) {
+        case VPathState.NONE:
+        case VPathState.ARMED:
+        case VPathState.UNABLEARMED:
+          this.currentVerticalArmedStates = [VerticalNavModeState.GP];
+          break;
+        case VPathState.ACTIVE:
+          this.currentVerticalArmedStates = [];
+          this.currentVerticalActiveState = VerticalNavModeState.GP;
+          break;
       }
     }
   }

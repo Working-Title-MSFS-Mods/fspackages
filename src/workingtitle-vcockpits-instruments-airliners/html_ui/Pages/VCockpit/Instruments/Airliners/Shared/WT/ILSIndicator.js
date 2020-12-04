@@ -854,6 +854,8 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             this.vertical_snowFlake.setAttribute("display", "none");
        }
 
+       const navSensitivity = SimVar.GetSimVarValue("L:WT_NAV_SENSITIVITY", "number");
+
         if (this.gsVisible || this.locVisible || this.infoVisible) {
             let localizer = this.gps.radioNav.getBestILSBeacon();
             let isApproachLoaded = Simplane.getAutoPilotApproachLoaded();
@@ -873,14 +875,18 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 if (navCheck === 1) {
                     let gsiFeet = -SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
                     let gsi = gsiFeet / 3.28;
-                    let delta = 0.5 + (gsi / 150.0) / 2;
-                    
-                    // This is to double the sensitivity when you are on an approach.  But we can't call from FPM in here.  Need a simvar
-                    /*if (flightPlanManager.getSegmentFromWaypoint(activeWaypoint) == SegmentType.Approach) {
-                        let delta = 0.5 + (gsi / 150.0);
-                    } else {
-                        let delta = 0.5 + (gsi / 150.0) / 2;
-                    }*/
+                    let delta = 0.5 + ((gsi / 500.0) / 2);
+
+                    switch (navSensitivity) {
+                        case 3:
+                            delta = 0.5 + ((gsi / 250.0) / 2);
+                            break;
+                        case 4: {
+                            const sensitivityScalar = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number');
+                            delta = 0.5 + ((gsi / (250.0 * sensitivityScalar)) / 2);
+                            break;
+                        }
+                    }
                 
                     let y = this.gs_cursorMinY + (this.gs_cursorMaxY - this.gs_cursorMinY) * delta;
                     y = Math.min(this.gs_cursorMinY, Math.max(this.gs_cursorMaxY, y));
@@ -915,8 +921,23 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 }
             }
             if (this.loc_cursorGroup && this.locVisible) {
-                if ((!isApproachLoaded || approachType != 10) && localizer.id > 0) {
-                    let cdi = SimVar.GetSimVarValue("NAV CDI:" + localizer.id, "number") / 127.0;
+                const hasCDI = ((!isApproachLoaded || approachType != 10) && localizer.id > 0)
+                    || navSensitivity === 4;
+                
+                if (hasCDI) {
+                    let cdi = 0;
+
+                    if (navSensitivity === 4) {
+                        const xtk = SimVar.GetSimVarValue("L:WT_CJ4_XTK", "number");
+                        const sensitivityScalar = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number');
+                        const deviation = (-(xtk / 2) / 0.3) / sensitivityScalar;
+
+                        cdi = Math.min(Math.max(deviation, -1.0), 1.0);
+                    }
+                    else {
+                        cdi = SimVar.GetSimVarValue("NAV CDI:" + localizer.id, "number") / 127.0;
+                    }
+                    
                     let delta = (cdi + 1.0) * 0.5;
                     let x = this.loc_cursorMinX + (this.loc_cursorMaxX - this.loc_cursorMinX) * delta;
                     x = Math.max(this.loc_cursorMinX, Math.min(this.loc_cursorMaxX, x));

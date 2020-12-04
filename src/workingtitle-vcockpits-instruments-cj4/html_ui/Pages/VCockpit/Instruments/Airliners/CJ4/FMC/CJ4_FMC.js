@@ -439,19 +439,19 @@ class CJ4_FMC extends FMCMainDisplay {
                 this._apMasterStatus = currentApMasterStatus;
             }
             this._apHasDeactivated = !currentApMasterStatus && this._previousApMasterStatus;
-            this._previousApMasterStatus = currentApMasterStatus;
+            this._previousApMasterStatus = currentApMasterStatus;      
+
+            if (!this._navModeSelector) {
+                this._navModeSelector = new CJ4NavModeSelector(this.flightPlanManager);
+            }
 
             //RUN VNAV ALWAYS
             if (this._vnav === undefined) {
-                this._vnav = new WT_BaseVnav(this.flightPlanManager);
+                this._vnav = new WT_BaseVnav(this.flightPlanManager, this._navModeSelector);
                 this._vnav.activate();
             }
             else {
                 this._vnav.update();
-            }
-
-            if (!this._navModeSelector) {
-                this._navModeSelector = new CJ4NavModeSelector(this.flightPlanManager);
             }
 
             //RUN LNAV ALWAYS
