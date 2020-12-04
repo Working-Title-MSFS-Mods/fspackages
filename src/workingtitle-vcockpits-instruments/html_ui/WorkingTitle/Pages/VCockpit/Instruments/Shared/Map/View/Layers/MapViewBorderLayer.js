@@ -193,9 +193,9 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._borderLayer.redrawDisplay(state);
     }
 
-    _updateDrawBorders(data) {
+    _updateDrawBorders(state) {
         if (this._drawUnfinishedBorders) {
-            this._drawBordersToBuffer(data);
+            this._drawBordersToBuffer(state);
         }
     }
 
@@ -276,7 +276,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._lastShowStateBorders = state.model.borders.showStateBorders;
 
         if (isImageInvalid) {
-            this._borderLayer.display.invalidate();
+            this._borderLayer.redrawDisplay(state, false);
             this._clearLabels();
             this._drawUnfinishedBorders = true;
         }
