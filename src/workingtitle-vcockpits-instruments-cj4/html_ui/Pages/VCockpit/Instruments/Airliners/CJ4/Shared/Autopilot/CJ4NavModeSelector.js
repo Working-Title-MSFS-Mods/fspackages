@@ -69,7 +69,8 @@ class CJ4NavModeSelector {
       selectedAlt2: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet"), () => NavModeEvent.SELECTED_ALT2_CHANGED),
       navmode: new ValueStateTracker(() => SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number"), value => value === 0 ? NavModeEvent.NAV_MODE_CHANGED_TO_FMS : NavModeEvent.NAV_MODE_CHANGED_TO_NAV),
       vpath: new ValueStateTracker(() => SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number"), () => NavModeEvent.VPATH_CHANGED),
-      flightplan: new ValueStateTracker(() => SimVar.GetSimVarValue("L:WT.FlightPlan.Version", "number"), () => NavModeEvent.FLIGHTPLAN_CHANGED)
+      gs_arm: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ARM", "Boolean"), () => NavModeEvent.GS_ARM_CHANGED),
+      gs_active: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean"), () => NavModeEvent.GS_ACTIVE_CHANGED)
     };
 
     /** The event handlers for each event type. */
@@ -88,7 +89,9 @@ class CJ4NavModeSelector {
       [`${NavModeEvent.ALT_SLOT_CHANGED}`]: this.handleAltSlotChanged.bind(this),
       [`${NavModeEvent.SELECTED_ALT1_CHANGED}`]: this.handleAlt1Changed.bind(this),
       [`${NavModeEvent.SELECTED_ALT2_CHANGED}`]: this.handleAlt2Changed.bind(this),
-      [`${NavModeEvent.APPROACH_CHANGED}`]: this.handleApproachChanged.bind(this)
+      [`${NavModeEvent.APPROACH_CHANGED}`]: this.handleApproachChanged.bind(this),
+      [`${NavModeEvent.GS_ARM_CHANGED}`]: this.handleGSArmChanged.bind(this),
+      [`${NavModeEvent.GS_ACTIVE_CHANGED}`]: this.handleGSActiveChanged.bind(this)
     };
 
     this.initialize();
@@ -491,8 +494,7 @@ class CJ4NavModeSelector {
    * Handles when the APPR button is pressed.
    */
   handleAPPRPressed() {
-    SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
-    SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
+    
 
     const setProperVNAVState = () => {
       switch(this.approachMode) {
@@ -502,6 +504,9 @@ class CJ4NavModeSelector {
           break;
         case WT_ApproachType.ILS:
           this.isVNAVOn = false;
+          SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
+          SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
+
           break;
         case WT_ApproachType.NONE:
           break;
@@ -537,6 +542,11 @@ class CJ4NavModeSelector {
         SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
         if (this.isVNAVOn) {
           this.isVNAVOn = false;
+        }
+
+        if (this.approachMode === WT_ApproachType.ILS) {
+          SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+          SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 0);
         }
 
         this.currentLateralActiveState = LateralNavModeState.ROLL;
@@ -631,6 +641,32 @@ class CJ4NavModeSelector {
       }
     }
   }
+
+  /**
+   * Handles when glideslope arm changes in the sim autopilot.
+   */
+  handleGSArmChanged() {
+    const isArmed = this._inputDataStates.gs_arm.state;
+    if (isArmed) {
+      this.currentVerticalArmedStates = [VerticalNavModeState.GS];
+    }
+    else if (this.currentVerticalArmedStates.includes(VerticalNavModeState.GS)) {
+      this.currentVerticalArmedStates = [];
+    }
+  }
+
+  /**
+   * Handles when glideslope active changes in the sim autopilot.
+   */
+  handleGSActiveChanged() {
+    const isActive = this._inputDataStates.gs_active.state;
+    if (isActive) {
+      this.currentVerticalActiveState = VerticalNavModeState.GS;
+    }
+    else if (this.currentVerticalActiveState === VerticalNavModeState.GS) {
+      this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+    }
+  }
 }
 
 class LateralNavModeState { }
@@ -683,6 +719,8 @@ NavModeEvent.VPATH_CHANGED = 'vpath_changed';
 NavModeEvent.SELECTED_ALT1_CHANGED = 'selected_alt1_changed';
 NavModeEvent.SELECTED_ALT2_CHANGED = 'selected_alt2_changed';
 NavModeEvent.APPROACH_CHANGED = 'approach_changed';
+NavModeEvent.GS_ARM_CHANGED = 'gs_arm_changed';
+NavModeEvent.GS_ACTIVE_CHANGED = 'gs_active_changed';
 
 class WT_ApproachType { }
 WT_ApproachType.NONE = 'none';

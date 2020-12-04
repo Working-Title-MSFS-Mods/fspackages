@@ -451,12 +451,12 @@ class CJ4_FMC extends FMCMainDisplay {
             }
 
             if (!this._navModeSelector) {
-                this._navModeSelector = new CJ4NavModeSelector();
+                this._navModeSelector = new CJ4NavModeSelector(this.flightPlanManager);
             }
 
             //RUN LNAV ALWAYS
             if (this._lnav === undefined) {
-                this._lnav = new WT_BaseLnav(this.flightPlanManager);
+                this._lnav = new WT_BaseLnav(this.flightPlanManager, this._navModeSelector);
                 this._lnav.activate();
             }
             else {
