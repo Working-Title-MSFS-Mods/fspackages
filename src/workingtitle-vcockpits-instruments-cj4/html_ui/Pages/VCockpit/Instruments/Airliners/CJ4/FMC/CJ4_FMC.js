@@ -496,13 +496,6 @@ class CJ4_FMC extends FMCMainDisplay {
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MAX_CALCULATED", "knots", Simplane.getMaxSpeed(Aircraft.CJ4));
 
-            // DONT DELETE: mach mode fix
-            const machMode = Simplane.getAutoPilotMachModeActive();
-            if (machMode) {
-                const machAirspeed = Simplane.getAutoPilotMachHoldValue();
-                Coherent.call("AP_MACH_VAR_SET", 0, parseFloat(machAirspeed.toFixed(2)));
-            }
-
             this.updateAutopilotCooldown = this._apCooldown;
         }
     }
