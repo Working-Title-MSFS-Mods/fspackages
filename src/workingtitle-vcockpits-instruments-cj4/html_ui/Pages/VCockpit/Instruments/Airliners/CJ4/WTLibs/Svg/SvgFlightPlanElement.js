@@ -52,7 +52,7 @@ class SvgFlightPlanElement extends SvgMapElement {
 
                 if (waypoints.length > 1) {
                     this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex - 1, activeWaypointIndex + 1), map, 'magenta');
-                    this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex), map, index == 0 ? 'white' : 'yellow');
+                    this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex), map, 'white', (index !== 0));
                 }
             }
         }
@@ -64,12 +64,15 @@ class SvgFlightPlanElement extends SvgMapElement {
      * @param {MapInstrument} map The map instrument to convert coordinates with.
      * @returns {string} A path string.
      */
-    buildPathFromWaypoints(waypoints, map, style = 'white') {
+    buildPathFromWaypoints(waypoints, map, style = 'white', isDashed = false) {
         const context = this._flightPathCanvas.getContext('2d');
         context.beginPath();
 
         context.lineWidth = 3;
         context.strokeStyle = style;
+        if(isDashed === true){
+            context.setLineDash([10, 5]);
+        }
 
         let prevWaypoint;
         for (let i = 0; i < waypoints.length; i++) {
