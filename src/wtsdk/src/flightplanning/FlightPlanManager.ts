@@ -1174,7 +1174,6 @@ export class FlightPlanManager {
     } else {
       return this.getWaypointsCount();
     }
-
   }
 
   /**

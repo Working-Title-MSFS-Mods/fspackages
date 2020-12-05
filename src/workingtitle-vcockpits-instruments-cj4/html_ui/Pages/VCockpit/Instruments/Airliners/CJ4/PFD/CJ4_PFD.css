@@ -762,3 +762,10 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
   font-size: 26px;
   letter-spacing: 0px; 
 }
+
+#PFDMessage {
+  top: 1%;
+  left: 1%;
+  position: absolute;
+  font-size: 22px;
+}
