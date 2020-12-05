@@ -1150,7 +1150,22 @@ export class FlightPlanManager {
   /**
    * Get the nav frequency for the selected approach in the current flight plan.
    */
-  public getApproachNavFrequency() {
+  public async getApproachNavFrequency(): Promise<any> {
+    if (this.getApproach()) {
+      let destination = this.getDestination();
+      let approachName = this.getApproach().runway;
+      console.log("approachName: " + approachName);
+      let aptInfo = destination.infos as AirportInfo;
+      await aptInfo.UpdateNamedFrequencies();
+      let namedFrequencies = aptInfo.namedFrequencies;
+      let frequency = aptInfo.namedFrequencies.find(f => {
+        return f.name.replace("RW0", "").replace("RW", "").indexOf(approachName) !== -1;
+      });
+      if (frequency) {
+        console.log("frequency value: " + frequency.value);
+        return frequency.value;
+      }
+    }
     return NaN;
   }
 
