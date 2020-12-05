@@ -2,10 +2,12 @@ class WT_BaseLnav {
 
     /**
      * Creates an instance of WT_BaseLnav.
-     * @param {FlightPlanManager} fpm The flight plan manager to use with this instance. 
+     * @param {FlightPlanManager} fpm The flight plan manager to use with this instance.
+     * @param {CJ4NavModeSelector} navModeSelector The nav mode selector to use with this instance.
      */
-    constructor(fpm) {
+    constructor(fpm, navModeSelector) {
         this._fpm = fpm;
+        this._navModeSelector = navModeSelector;
 
         this._flightPlanVersion = undefined;
         this._activeWaypointChanged = true;
@@ -72,21 +74,29 @@ class WT_BaseLnav {
             }
         }
 
+        this._planePos = new LatLon(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+        const planePosLatLong = new LatLong(this._planePos.lat, this._planePos.lon);
+
+        const navSensitivity = this.getNavSensitivity(planePosLatLong);
+        SimVar.SetSimVarValue('L:WT_NAV_SENSITIVITY', 'number', navSensitivity);
+
+        const navSensitivityScalar = this.getNavSensitivityScalar(planePosLatLong, navSensitivity);
+        SimVar.SetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number', navSensitivityScalar);
+
         if (!this._onDiscontinuity && this.waypoints.length > 0 && this._activeWaypoint && this._previousWaypoint) {
             this._lnavDeactivated = false;
-
-            this._planePos = new LatLon(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
 
             //LNAV CAN RUN, UPDATE DATA
             this._groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
             const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG;
 
-            this._activeWaypointDist = Avionics.Utils.computeGreatCircleDistance(new LatLong(this._planePos.lat, this._planePos.lon), this._activeWaypoint.infos.coordinates);
-            this._previousWaypointDist = Avionics.Utils.computeGreatCircleDistance(new LatLong(this._planePos.lat, this._planePos.lon), this._previousWaypoint.infos.coordinates);
-            this._bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(new LatLong(this._planePos.lat, this._planePos.lon), this._activeWaypoint.infos.coordinates);
+            this._activeWaypointDist = Avionics.Utils.computeGreatCircleDistance(planePosLatLong, this._activeWaypoint.infos.coordinates);
+            this._previousWaypointDist = Avionics.Utils.computeGreatCircleDistance(planePosLatLong, this._previousWaypoint.infos.coordinates);
+            this._bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(planePosLatLong, this._activeWaypoint.infos.coordinates);
 
             const prevWptPos = new LatLon(this._previousWaypoint.infos.coordinates.lat, this._previousWaypoint.infos.coordinates.long);
             const nextWptPos = new LatLon(this._activeWaypoint.infos.coordinates.lat, this._activeWaypoint.infos.coordinates.long);
+
             this._xtk = this._planePos.crossTrackDistanceTo(prevWptPos, nextWptPos) * (0.000539957); //meters to NM conversion
             this._dtk = Avionics.Utils.computeGreatCircleHeading(this._previousWaypoint.infos.coordinates, this._activeWaypoint.infos.coordinates);
             const correctedDtk = GeoMath.correctMagvar(this._dtk, SimVar.GetSimVarValue("MAGVAR", "degrees"));
@@ -104,17 +114,8 @@ class WT_BaseLnav {
             
             if (isLnavActive) {
                 this._setHeading = this._dtk;
-
-                //Intercept angle curve based on XTK
-                let absInterceptAngle = Math.min(Math.pow(Math.abs(this._xtk) * 10, 1.35), 45);
-
-                //If we still have some XTK, bake in a minimum intercept angle of 2.5 degrees to keep us on the line
-                if (Math.abs(this._xtk) > 0.025) {
-                    absInterceptAngle = Math.max(absInterceptAngle, 2.5);
-                }
-
-                const interceptAngle = this._xtk < 0 ? absInterceptAngle : -1 * absInterceptAngle;
-                
+                const interceptAngle = this.calculateDesiredInterceptAngle(this._xtk, navSensitivity);
+                      
                 let deltaAngle = Avionics.Utils.angleDiff(this._dtk, this._bearingToWaypoint);
                 this._setHeading = (((this._dtk + interceptAngle) % 360) + 360) % 360;
 
@@ -250,5 +251,150 @@ class WT_BaseLnav {
         SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", 0);
         this._lnavDeactivated = true;
     }
+
+    /**
+     * Gets the distance from the destination airfield.
+     * @param {LatLongAlt} planeCoords The current coordinates of the aircraft.
+     * @returns {number} The distance from the airfield in NM.
+     */
+    getDestinationDistance(planeCoords) {
+        const destination = this._fpm.getDestination();
+
+        if (destination) {
+            const destinationDistance = Avionics.Utils.computeGreatCircleDistance(planeCoords, destination.infos.coordinates);
+            return destinationDistance;
+        }
+        
+        return NaN;
+    }
+
+    /**
+     * Gets the distance from the final approach fix.
+     * @param {LatLongAlt} planeCoords The current coordinates of the aircraft.
+     * @returns {number} The distance from the final approach fix in NM.
+     */
+    getFinalApproachFixDistance(planeCoords) {
+        const approach = this._fpm.getApproachWaypoints();
+        if (approach.length > 1) {
+            const finalApproachFix = approach[approach.length - 2];
+            const finalApproachFixDistance = Avionics.Utils.computeGreatCircleDistance(planeCoords, finalApproachFix.infos.coordinates);
+
+            return finalApproachFixDistance;
+        }
+
+        return NaN;
+    }
+
+    /**
+     * Gets the current system nav sensitivity.
+     * @param {LatLongAlt} planeCoords 
+     */
+    getNavSensitivity(planeCoords) {
+        const destinationDistance = this.getDestinationDistance(planeCoords);
+        const fafDistance = this.getFinalApproachFixDistance(planeCoords);
+        const currentWaypoint = this._fpm.getActiveWaypoint();
+        const runway = this.getRunway();
+
+        if (fafDistance <= 2 || (currentWaypoint && currentWaypoint.isRunway)) {
+            if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR && this._navModeSelector.approachMode === WT_ApproachType.RNAV) {
+                return NavSensitivity.APPROACHLPV;
+            }
+            else {
+                return NavSensitivity.APPROACH;
+            }
+        }
+
+        if (destinationDistance <= 30) {
+            if (this._navModeSelector.approachMode === WT_ApproachType.RNAV) {
+                return NavSensitivity.TERMINALLPV;
+            }
+            else {
+                return NavSensitivity.TERMINAL;
+            }
+        }
+
+        return NavSensitivity.NORMAL;
+    }
+
+    /**
+     * Gets the navigational sensitivity scalar for the approach modes.
+     * @param {LatLong} planeCoords The current plane location coordinates.
+     * @param {number} sensitivity The current navigational sensitivity mode.
+     */
+    getNavSensitivityScalar(planeCoords, sensitivity) {
+        if (sensitivity === NavSensitivity.APPROACHLPV) {
+            const runway = this.getRunway();
+            if (runway) {
+                const distance = Avionics.Utils.computeGreatCircleDistance(runway.infos.coordinates, planeCoords);
+                return Math.min(0.1 + ((distance / 7) * 0.9), 1);
+            }
+        }
+        
+        return 1;
+    }
+
+    /**
+     * Calculates the desired intercept angle, taking the current nav sensitivity into account.
+     * @param {number} xtk The current cross-track error, in NM.
+     * @param {number} navSensitivity The current nav sensitity mode.
+     * @returns {number} The desired intercept angle, in degrees.
+     */
+    calculateDesiredInterceptAngle(xtk, navSensitivity) {
+        let sensitivityModifier = 1;
+        let minimumInterceptAngle = 2.5;
+        let minimumXtk = 0.025;
+
+        switch (navSensitivity) {
+            case NavSensitivity.TERMINALLPV:
+            case NavSensitivity.TERMINAL:
+                sensitivityModifier = 1.1;
+                minimumInterceptAngle = 3.0;
+                minimumXtk = 0.015;
+                break;
+            case NavSensitivity.APPROACH:
+            case NavSensitivity.APPROACHLPV:
+                sensitivityModifier = 1.25;
+                minimumInterceptAngle = 3.0;
+                minimumXtk = 0.005;
+                break;
+        }
+
+        let absInterceptAngle = Math.min(Math.pow(Math.abs(xtk) * 20, 1.35) * sensitivityModifier, 45);
+
+        //If we still have some XTK, bake in a minimum intercept angle to keep us on the line
+        if (Math.abs(xtk) > minimumXtk) {
+            absInterceptAngle = Math.max(absInterceptAngle, minimumInterceptAngle);
+        }
+
+        const interceptAngle = xtk < 0 ? absInterceptAngle : -1 * absInterceptAngle;
+        return interceptAngle;
+    }
+
+    /**
+     * Gets the approach runway from the flight plan.
+     * @returns {WayPoint} The approach runway waypoint.
+     */
+    getRunway() {
+        const approach = this._fpm.getApproachWaypoints();
+        if (approach.length > 0) {
+            const lastApproachWaypoint = approach[approach.length - 1];
+            
+            if (lastApproachWaypoint.isRunway) {
+                return lastApproachWaypoint;
+            }
+        }
+    }
 }
 
+/** The sensitivity of the navigation solution. */
+class NavSensitivity { }
+/** Vertical and lateral sensitivity is at normal +/- 2.0NM enroute levels. */
+NavSensitivity.NORMAL = 0;
+/** Vertical and lateral sensitivity is at +/- 1.0NM terminal levels. */
+NavSensitivity.TERMINAL = 1;
+/** Vertical and lateral sensitivity is at +/- 1.0NM terminal levels. */
+NavSensitivity.TERMINALLPV = 2;
+/** Vertical and lateral sensitivity is at +/- 0.3NM approach levels. */
+NavSensitivity.APPROACH = 3;
+/** Vertical and lateral sensitivity increases as distance remaining on final decreases. */
+NavSensitivity.APPROACHLPV = 4;

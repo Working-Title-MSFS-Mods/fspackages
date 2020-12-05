@@ -439,24 +439,24 @@ class CJ4_FMC extends FMCMainDisplay {
                 this._apMasterStatus = currentApMasterStatus;
             }
             this._apHasDeactivated = !currentApMasterStatus && this._previousApMasterStatus;
-            this._previousApMasterStatus = currentApMasterStatus;
+            this._previousApMasterStatus = currentApMasterStatus;      
+
+            if (!this._navModeSelector) {
+                this._navModeSelector = new CJ4NavModeSelector(this.flightPlanManager);
+            }
 
             //RUN VNAV ALWAYS
             if (this._vnav === undefined) {
-                this._vnav = new WT_BaseVnav(this.flightPlanManager);
+                this._vnav = new WT_BaseVnav(this.flightPlanManager, this._navModeSelector);
                 this._vnav.activate();
             }
             else {
                 this._vnav.update();
             }
 
-            if (!this._navModeSelector) {
-                this._navModeSelector = new CJ4NavModeSelector();
-            }
-
             //RUN LNAV ALWAYS
             if (this._lnav === undefined) {
-                this._lnav = new WT_BaseLnav(this.flightPlanManager);
+                this._lnav = new WT_BaseLnav(this.flightPlanManager, this._navModeSelector);
                 this._lnav.activate();
             }
             else {
@@ -496,13 +496,6 @@ class CJ4_FMC extends FMCMainDisplay {
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MAX_CALCULATED", "knots", Simplane.getMaxSpeed(Aircraft.CJ4));
 
-            // DONT DELETE: mach mode fix
-            const machMode = Simplane.getAutoPilotMachModeActive();
-            if (machMode) {
-                const machAirspeed = Simplane.getAutoPilotMachHoldValue();
-                Coherent.call("AP_MACH_VAR_SET", 0, parseFloat(machAirspeed.toFixed(2)));
-            }
-
             this.updateAutopilotCooldown = this._apCooldown;
         }
     }
@@ -538,6 +531,8 @@ class CJ4_FMC extends FMCMainDisplay {
      * interval. If false, it will start after the supplied interval.
      */
     registerPeriodicPageRefresh(action, interval, runImmediately) {
+        this.unregisterPeriodicPageRefresh();
+
         let refreshHandler = () => {
             let isBreak = action();
             if (isBreak) return;

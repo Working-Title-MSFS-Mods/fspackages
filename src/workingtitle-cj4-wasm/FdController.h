@@ -81,9 +81,14 @@ private:
             break;
         }
         case CLB: {
-            targetThrust = 2050;
+            double planeAlt = this->simVars->getPlaneAltitude();
+            double lowAltThrust = max(0, (7000 - planeAlt) / 24);
+
+            targetThrust = 2050 + lowAltThrust;
             if ((maxDensityThrust * thrustF) < targetThrust) {
-                targetThrust = (maxDensityThrust * thrustF);
+                double highAltThrust = clamp((-35000 + planeAlt) / 64, 0, 110);
+                printf("highaltdecrease: %.1f \r\n", highAltThrust);
+                targetThrust = (maxDensityThrust * thrustF) - highAltThrust;
             }
             break;
         }
@@ -174,8 +179,8 @@ public:
         float p = 0.0012;
         float i = 0.0001;
         float d = 0.0018;
-        this->throttleController[0] = new PidController(p, i, d, -3, 3);
-        this->throttleController[1] = new PidController(p, i, d, -3, 3);
+        this->throttleController[0] = new PidController(p, i, d, -2, 2);
+        this->throttleController[1] = new PidController(p, i, d, -2, 2);
     }
 
     void update(int throttleAxis[], double deltaTime)

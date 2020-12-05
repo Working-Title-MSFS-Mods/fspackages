@@ -39,6 +39,8 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.VORRight = new VORDMENavAid(this.querySelector("#VORDMENavaid_Right"), 2);
         this.elapsedTime = this.querySelector("#ElapsedTime");
         this.elapsedTimeValue = this.querySelector("#ET_Value");
+        this.minimums = this.querySelector("#MinimumsValue");
+        this.pfdMessage = this.querySelector('#PFDMessage');
         this.setGroundSpeed(0, true);
         this.setTrueAirSpeed(0, true);
         this.setWind(0, 0, 0, true);
@@ -54,7 +56,9 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.updateVOR();
         this.updateApproach();
         this.updateElapsedTime();
+        this.updateMinimums();
         this.updateWaypointAlert(_dTime);
+        this.updatePFDMessage();
     }
     onEvent(_event) {
         if (_event == "Push_ET") {
@@ -100,6 +104,41 @@ class Jet_MFD_NDInfo extends HTMLElement {
             this.waypointName.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
             this.waypointDistance.parentElement.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
         }      
+    }
+
+    /**
+     * Updates the PFD message line as necessary.
+     */
+    updatePFDMessage() {
+        if (this.pfdMessage) {
+            const navSensitivity = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number');
+            if (navSensitivity !== this._currentNavSensitivity) {
+                this._currentNavSensitivity = navSensitivity;
+
+                switch (navSensitivity) {
+                    case 0:
+                        this.pfdMessage.textContent = '';
+                        this.pfdMessage.style.color = 'white';
+                        break;
+                    case 1:
+                        this.pfdMessage.textContent = 'TERM';
+                        this.pfdMessage.style.color = 'white';
+                        break;
+                    case 2:
+                        this.pfdMessage.textContent = 'LPV TERM';
+                        this.pfdMessage.style.color = 'white';
+                        break;
+                    case 3:
+                        this.pfdMessage.textContent = 'APPR';
+                        this.pfdMessage.style.color = 'white';
+                        break;
+                    case 4:
+                        this.pfdMessage.textContent = 'LPV APPR';
+                        this.pfdMessage.style.color = 'white';
+                        break;
+                }
+            }
+        }  
     }
 
     showILS(_val) {
@@ -469,6 +508,13 @@ class Jet_MFD_NDInfo extends HTMLElement {
             else {
                 this.elapsedTime.style.display = "none";
             }
+        }
+    }
+    updateMinimums() {
+        if (this.minimums) {
+            let baroSet = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
+            this.minimums.textContent = baroSet;
+            this.minimums.parentElement.style.display = (baroSet==0) ? 'none' : '';
         }
     }
     getILSIdent() {

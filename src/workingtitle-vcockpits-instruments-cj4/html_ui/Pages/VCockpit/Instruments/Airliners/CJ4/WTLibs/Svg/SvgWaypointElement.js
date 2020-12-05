@@ -121,7 +121,7 @@ class SvgWaypointElement extends SvgMapElement {
             this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_ACTIVE.svg");
         }
         this._lastIsActiveWaypoint = isActiveWaypoint;
-        let iconSize = this.getIconSize(map);
+        let iconSize = this.getIconSize(map) +4;
         this._image.setAttribute("width", fastToFixed(iconSize, 0));
         this._image.setAttribute("height", fastToFixed(iconSize, 0));
         return this._image;
@@ -152,7 +152,7 @@ class SvgWaypointElement extends SvgMapElement {
             this._lastIsActiveWaypoint = isActiveWaypoint;
         }
         if (isFinite(this.x) && isFinite(this.y)) {
-            let iconSize = this.getIconSize(map);
+            let iconSize = this.getIconSize(map) +4;
             if (this._image && this._lastMinimize !== this.minimize) {
                 if (this.minimize) {
                     this._image.setAttribute("width", fastToFixed(iconSize * 0.5, 0));
@@ -245,8 +245,8 @@ class SvgWaypointTextElement {
                 let y = (this.waypointElement.y - iconSize * 0.5);
 
                 if (this._label) {
-                    let textX = (x + iconSize * 0.5 - this._textWidth * 0.5 + map.config.waypointLabelDistanceX);
-                    let textY = y - map.config.waypointLabelDistance;
+                    let textX = (x + iconSize * 0.5 - this._textWidth * 0.5 + map.config.waypointLabelDistanceX +6);
+                    let textY = y - map.config.waypointLabelDistance +4;
                     this._label.setAttribute("x", textX);
                     this._label.setAttribute("y", textY);
                     this._needRepaint = false;
