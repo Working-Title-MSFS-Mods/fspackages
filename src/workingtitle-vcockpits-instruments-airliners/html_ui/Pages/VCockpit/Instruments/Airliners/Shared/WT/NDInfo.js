@@ -110,31 +110,33 @@ class Jet_MFD_NDInfo extends HTMLElement {
      * Updates the PFD message line as necessary.
      */
     updatePFDMessage() {
-        const navSensitivity = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number');
-        if (navSensitivity !== this._currentNavSensitivity) {
-            this._currentNavSensitivity = navSensitivity;
+        if (this.pfdMessage) {
+            const navSensitivity = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number');
+            if (navSensitivity !== this._currentNavSensitivity) {
+                this._currentNavSensitivity = navSensitivity;
 
-            switch (navSensitivity) {
-                case 0:
-                    this.pfdMessage.textContent = '';
-                    this.pfdMessage.style.color = 'white';
-                    break;
-                case 1:
-                    this.pfdMessage.textContent = 'TERM';
-                    this.pfdMessage.style.color = 'white';
-                    break;
-                case 2:
-                    this.pfdMessage.textContent = 'LPV TERM';
-                    this.pfdMessage.style.color = 'white';
-                    break;
-                case 3:
-                    this.pfdMessage.textContent = 'APPR';
-                    this.pfdMessage.style.color = 'white';
-                    break;
-                case 4:
-                    this.pfdMessage.textContent = 'LPV APPR';
-                    this.pfdMessage.style.color = 'white';
-                    break;
+                switch (navSensitivity) {
+                    case 0:
+                        this.pfdMessage.textContent = '';
+                        this.pfdMessage.style.color = 'white';
+                        break;
+                    case 1:
+                        this.pfdMessage.textContent = 'TERM';
+                        this.pfdMessage.style.color = 'white';
+                        break;
+                    case 2:
+                        this.pfdMessage.textContent = 'LPV TERM';
+                        this.pfdMessage.style.color = 'white';
+                        break;
+                    case 3:
+                        this.pfdMessage.textContent = 'APPR';
+                        this.pfdMessage.style.color = 'white';
+                        break;
+                    case 4:
+                        this.pfdMessage.textContent = 'LPV APPR';
+                        this.pfdMessage.style.color = 'white';
+                        break;
+                }
             }
         }  
     }
