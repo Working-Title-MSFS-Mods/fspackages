@@ -45,7 +45,7 @@ class SvgFlightPlanElement extends SvgMapElement {
             const context = this._flightPathCanvas.getContext('2d');
             context.clearRect(0, 0, 1024, 1024);
 
-            const fplnCount = (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) ? 2 : 1;            
+            const fplnCount = (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) ? 2 : 1;
             for (let index = 0; index < fplnCount; index++) {
                 const waypoints = fpm.getAllWaypoints(index);
                 const activeWaypointIndex = fpm.getActiveWaypointIndex();
@@ -70,8 +70,10 @@ class SvgFlightPlanElement extends SvgMapElement {
 
         context.lineWidth = 3;
         context.strokeStyle = style;
-        if(isDashed === true){
+        if (isDashed === true) {
             context.setLineDash([10, 5]);
+        } else {
+            context.setLineDash([]);
         }
 
         let prevWaypoint;
