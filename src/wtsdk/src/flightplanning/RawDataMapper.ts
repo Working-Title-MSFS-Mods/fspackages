@@ -25,6 +25,7 @@ export class RawDataMapper {
       case 'A': {
         const info = new AirportInfo(instrument);
         info.CopyBaseInfosFrom(waypoint);
+        info.UpdateNamedFrequencies();
 
         info.approaches = facility.approaches;
         info.approaches.forEach(approach =>
