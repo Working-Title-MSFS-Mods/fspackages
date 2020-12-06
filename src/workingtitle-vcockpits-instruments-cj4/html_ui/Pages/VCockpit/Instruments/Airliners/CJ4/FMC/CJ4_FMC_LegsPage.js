@@ -210,7 +210,7 @@ class CJ4_FMC_LegsPage {
                         if (isFinite(alt)) {
                             const multi = (fl === "F" || fl === "FL") ? 100 : 1;
                             alt *= multi;
-                            if (alt >= 0 || alt <= 65000) {
+                            if (alt >= 1300 || alt <= 65000) {
                                 waypoint.legAltitude1 = alt;
                             }
                             // alt desc
@@ -230,7 +230,7 @@ class CJ4_FMC_LegsPage {
                         if (isFinite(alt)) {
                             const multi = (fl === "F" || fl === "FL") ? 100 : 1;
                             alt *= multi;
-                            if (alt >= 0 || alt <= 65000) {
+                            if (alt >= 1300 || alt <= 65000) {
                                 waypoint.legAltitude2 = alt;
                             }
                             // alt desc
