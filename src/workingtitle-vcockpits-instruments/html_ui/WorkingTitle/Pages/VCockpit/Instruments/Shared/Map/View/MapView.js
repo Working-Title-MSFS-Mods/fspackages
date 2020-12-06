@@ -37,7 +37,6 @@ class WT_MapView extends HTMLElement {
             this._loadConfig("{}");
         }
 
-        this.style.webkitClipPath = `polygon(0 0, 100% 0, 100% 100%, 0 100%)`;
         this.style.overflow = "hidden";
     }
 
