@@ -164,9 +164,10 @@ class CJ4_FMC_LegsPage {
                     let waypoint = this._fmc.flightPlanManager.getWaypoint(wptIndex);
                     let value = this._fmc.inOut;
 
-                    if (value === FMCMainDisplay.clrValue){
+                    if (value === FMCMainDisplay.clrValue) {
                         waypoint.legAltitudeDescription = -1;
                         waypoint.speedConstraint = -1;
+                        this._fmc.flightPlanManager._updateFlightPlanVersion();
                         this.resetAfterOp();
                         return;
                     }
@@ -242,6 +243,7 @@ class CJ4_FMC_LegsPage {
                         }
                     }
 
+                    this._fmc.flightPlanManager._updateFlightPlanVersion();
                     this.resetAfterOp();
                 };
             }
