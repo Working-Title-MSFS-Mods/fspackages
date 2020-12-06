@@ -109,8 +109,8 @@
 														<Flags>5</Flags>
 													</Point>
 													<Point>
-														<XPos>37.70833</XPos>
-														<YPos>-30.5009</YPos>
+														<XPos>31.73388</XPos>
+														<YPos>-200</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
@@ -168,7 +168,7 @@
 															</Point>
 															<Point>
 																<XPos>500</XPos>
-																<YPos>53</YPos>
+																<YPos>61</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -214,10 +214,38 @@
 								<Sound Name="Cj4 Interior during Cruise 2" ID="{0BE34122-32C8-4B0A-AB5D-098D99B27489}" ShortID="486700346">
 									<PropertyList>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+										<Property Name="Lowpass" Type="int16">
+											<RTPCList>
+												<RTPC Name="" ID="{28094223-4C04-44F5-A564-FA857E6C4453}" ShortID="167833196">
+													<ReferenceList>
+														<Reference Name="ControlInput">
+															<ObjectRef Name="SIMVAR_AIRSPEED_TRUE" ID="{23F33E5A-B0EE-4CD5-AE2C-178797545D5C}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+														</Reference>
+													</ReferenceList>
+													<Curve Name="" ID="{84830909-819E-4B64-BA4B-35D7F27D3F2C}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="65537"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>84</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>500</XPos>
+																<YPos>0</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</RTPC>
+											</RTPCList>
+										</Property>
 										<Property Name="OverridePositioning" Type="bool" Value="True"/>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>4</Value>
+												<Value>5</Value>
 											</ValueList>
 										</Property>
 									</PropertyList>
@@ -329,13 +357,13 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>105.52413</XPos>
-																<YPos>-9.66191</YPos>
+																<XPos>128.62788</XPos>
+																<YPos>-7.07065</YPos>
 																<Flags>0</Flags>
 															</Point>
 															<Point>
 																<XPos>500</XPos>
-																<YPos>-5.67994</YPos>
+																<YPos>-3.95431</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>

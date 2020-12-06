@@ -7,11 +7,15 @@
 					<PropertyList>
 						<Property Name="CenterPercentage" Type="int32">
 							<ValueList>
-								<Value>50</Value>
+								<Value>100</Value>
 							</ValueList>
 						</Property>
-						<Property Name="OverrideOutput" Type="bool" Value="True"/>
 						<Property Name="OverridePositioning" Type="bool" Value="True"/>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>-2</Value>
+							</ValueList>
+						</Property>
 					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Conversion">
@@ -193,6 +197,9 @@
 							</ActiveSourceList>
 						</Sound>
 					</ChildrenList>
+					<PositioningInfo>
+						<Panner Name="" ID="{D2C1520A-3074-421A-B54D-2BC02FA2B902}"/>
+					</PositioningInfo>
 					<StateInfo>
 						<StateGroupList>
 							<StateGroupInfo>

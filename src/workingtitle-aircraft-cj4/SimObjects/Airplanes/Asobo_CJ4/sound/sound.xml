@@ -86,10 +86,12 @@
 		</Sound>
 		<Sound WwiseEvent="Combustion" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="0.1">
 			<WwiseRTPC SimVar="AIRSPEED INDICATED" Units="KNOTS" Index="0" RTPCName="SIMVAR_AIRSPEED_INDICATED" />
+			<WwiseRTPC SimVar="AIRSPEED TRUE" Units="KNOTS" Index="0" RTPCName="SIMVAR_AIRSPEED_TRUE"/>
 			<WwiseRTPC SimVar="TURB ENG N1" Units="percent" Index="1" RTPCName="SIMVAR_TURB_ENG_N1" />
 		</Sound>
 		<Sound WwiseEvent="Combustion" CustomSuffix="wt" RPMMin="18500" ConeHeading="180" WwiseData="true" EngineIndex="2" FadeOutType="2" FadeOutTime="0.1">
 			<WwiseRTPC SimVar="AIRSPEED INDICATED" Units="KNOTS" Index="0" RTPCName="SIMVAR_AIRSPEED_INDICATED" />
+			<WwiseRTPC SimVar="AIRSPEED TRUE" Units="KNOTS" Index="0" RTPCName="SIMVAR_AIRSPEED_TRUE"/>
 			<WwiseRTPC SimVar="TURB ENG N1" Units="percent" Index="2" RTPCName="SIMVAR_TURB_ENG_N1" />
 		</Sound>
 		<Sound WwiseEvent="Shutdown" CustomSuffix="wt" RPMMin="19500" ConeHeading="180" WwiseData="true" EngineIndex="1" FadeOutType="2" FadeOutTime="5" />

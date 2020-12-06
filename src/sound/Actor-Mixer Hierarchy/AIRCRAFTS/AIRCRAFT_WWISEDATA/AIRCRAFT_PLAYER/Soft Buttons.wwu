@@ -6,6 +6,12 @@
 				<RandomSequenceContainer Name="Soft Buttons" ID="{880A887B-7CDD-4A38-A419-EEAD5F2FA3B0}" ShortID="239761578">
 					<PropertyList>
 						<Property Name="3DSpatialization" Type="int16" Value="2"/>
+						<Property Name="Lowpass" Type="int16">
+							<ValueList>
+								<Value>34</Value>
+							</ValueList>
+						</Property>
+						<Property Name="OverridePositioning" Type="bool" Value="True"/>
 						<Property Name="Pitch" Type="int32">
 							<ModifierList>
 								<ModifierInfo>
