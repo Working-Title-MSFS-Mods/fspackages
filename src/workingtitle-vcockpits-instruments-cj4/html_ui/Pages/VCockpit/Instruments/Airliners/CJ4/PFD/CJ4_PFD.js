@@ -45,8 +45,6 @@ class CJ4_PFD extends BaseAirliners {
     Init() {
         super.Init();
         this.radioNav.setRADIONAVSource(NavSource.GPS);
-        this.radioNav.setRADIONAVActive(1, true);
-        this.radioNav.setRADIONAVActive(2, true);
         SimVar.SetSimVarValue("L:WT_CJ4_VAP", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "knots", 0);

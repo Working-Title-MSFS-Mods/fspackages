@@ -153,6 +153,101 @@ class CJ4_FMC_LegsPage {
 
     bindInputs() {
         for (let i = 0; i < this._wayPointsToRender.length; i++) {
+
+            let offsetRender = Math.floor((this._currentPage - 1) * 5);
+            let wptRender = this._wayPointsToRender[i + offsetRender];
+            // if its a real fix 
+            if (wptRender && (wptRender.fix.ident !== "$EMPTY" || wptRender.fix.ident !== "$DISCO")) {
+                this._fmc.onRightInput[i] = () => {
+                    let offset = Math.floor((this._currentPage - 1) * 5);
+                    let wptIndex = this._wayPointsToRender[i + offset].index;
+                    let waypoint = this._fmc.flightPlanManager.getWaypoint(wptIndex);
+                    let value = this._fmc.inOut;
+
+                    if (value === FMCMainDisplay.clrValue) {
+                        waypoint.legAltitudeDescription = -1;
+                        waypoint.speedConstraint = -1;
+                        this._fmc.flightPlanManager._updateFlightPlanVersion();
+                        this.resetAfterOp();
+                        return;
+                    }
+
+                    let re = /(\d*)\/(F?|FL?)(\d+)([AB]?)(F?|FL?)(\d+)?([AB]?)/;
+                    // 1 = speed
+                    // 2 = F/FL
+                    // 3 = ALT
+                    // 4 = A/B
+                    // 5 = F/FL
+                    // 6 = ALT
+                    // 7 = A/B
+                    let match = value.match(re);
+                    if (!match) {
+                        // no match, input without speed?
+                        re = /()(F?|FL?)(\d+)([AB]?)(F?|FL?)(\d+)?([AB]?)/;
+                        match = value.match(re);
+                        if (!match) return;
+                        // if "alt" is < 500 its a speed
+                        if (match[3] !== "" && isFinite(match[3])) {
+                            const speed = Number(match[3]);
+                            if (speed < 500) {
+                                match[1] = speed;
+                                match[3] = "";
+                            }
+                        }
+                    }
+
+                    // speed
+                    if (match[1] !== "") {
+                        const speed = Number(match[1]);
+                        if (isFinite(speed) && speed > 0 && speed < 500) {
+                            waypoint.speedConstraint = speed;
+                        }
+                    }
+
+                    // alt 1
+                    if (match[3] !== "") {
+                        const fl = match[2];
+                        let alt = Number(match[3]);
+                        if (isFinite(alt)) {
+                            const multi = (fl === "F" || fl === "FL") ? 100 : 1;
+                            alt *= multi;
+                            if (alt >= -1300 || alt <= 65000) {
+                                waypoint.legAltitude1 = alt;
+                            }
+                            // alt desc
+                            if (match[4] !== "") {
+                                waypoint.legAltitudeDescription = (match[4] === "A") ? 2 : 3;
+                            }
+                            else {
+                                waypoint.legAltitudeDescription = 1;
+                            }
+                        }
+                    }
+
+                    // alt 2
+                    if (match[6] !== "") {
+                        const fl = match[5];
+                        let alt = Number(match[6]);
+                        if (isFinite(alt)) {
+                            const multi = (fl === "F" || fl === "FL") ? 100 : 1;
+                            alt *= multi;
+                            if (alt >= -1300 || alt <= 65000) {
+                                waypoint.legAltitude2 = alt;
+                            }
+                            // alt desc
+                            if (match[7] !== "") {
+                                waypoint.legAltitudeDescription = 4;
+                            } else {
+                                waypoint.legAltitudeDescription = 1;
+                            }
+                        }
+                    }
+
+                    this._fmc.flightPlanManager._updateFlightPlanVersion();
+                    this.resetAfterOp();
+                };
+            }
+
             // ENROUTE
             this._fmc.onLeftInput[i] = () => {
                 let offset = Math.floor((this._currentPage - 1) * 5);
@@ -387,9 +482,9 @@ class CJ4_FMC_LegsPage {
         let altitudeConstraint = "----- ";
         let wpt = waypoint;
 
-        // if (wpt.speedConstraint && wpt.speedConstraint > 100) {
-        //     speedConstraint = wpt.speedConstraint;
-        // }
+        if (wpt.speedConstraint && wpt.speedConstraint > 100) {
+            speedConstraint = wpt.speedConstraint;
+        }
         if (wpt.legAltitudeDescription > 0) {
             if (wpt.legAltitudeDescription == 1) {
                 altitudeConstraint = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100

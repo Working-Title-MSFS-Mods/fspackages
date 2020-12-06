@@ -53,11 +53,14 @@ declare module "MSFS" {
 
   export class AirportInfo extends WayPointInfo {
     constructor(_instrument: BaseInstrument);
+    frequencies: any[];
+    namedFrequencies: any[];
     departures: any[];
     approaches: any[];
     arrivals: any[];
     runways: any[];
     oneWayRunways: OneWayRunway[];
+    UpdateNamedFrequencies(icao? : string) : Promise<void>
   }
 
   export class IntersectionInfo extends WayPointInfo {
