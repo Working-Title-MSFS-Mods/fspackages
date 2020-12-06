@@ -185,21 +185,46 @@ function area(object) {
   return areaSum * 2;
 }
 
-function spherical(cartesian) {
-  return [atan2(cartesian[1], cartesian[0]), asin(cartesian[2])];
+function spherical(cartesian, ref) {
+  let lambda = atan2(cartesian[1], cartesian[0]);
+  let phi = asin(cartesian[2]);
+  if (ref) {
+    ref[0] = lambda;
+    ref[1] = phi;
+    return ref;
+  }
+  return [lambda, phi];
 }
 
-function cartesian(spherical) {
+function cartesian(spherical, ref) {
   var lambda = spherical[0], phi = spherical[1], cosPhi = cos(phi);
-  return [cosPhi * cos(lambda), cosPhi * sin(lambda), sin(phi)];
+  let x = cosPhi * cos(lambda);
+  let y = cosPhi * sin(lambda);
+  let z = sin(phi);
+  if (ref) {
+    ref[0] = x;
+    ref[1] = y;
+    ref[2] = z;
+    return ref;
+  }
+  return [x, y, z];
 }
 
 function cartesianDot(a, b) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-function cartesianCross(a, b) {
-  return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+function cartesianCross(a, b, ref) {
+  let x = a[1] * b[2] - a[2] * b[1];
+  let y = a[2] * b[0] - a[0] * b[2];
+  let z = a[0] * b[1] - a[1] * b[0];
+  if (ref) {
+    ref[0] = x;
+    ref[1] = y;
+    ref[2] = z;
+    return ref;
+  }
+  return [x, y, z];
 }
 
 // TODO return a
@@ -207,8 +232,16 @@ function cartesianAddInPlace(a, b) {
   a[0] += b[0], a[1] += b[1], a[2] += b[2];
 }
 
-function cartesianScale(vector, k) {
-  return [vector[0] * k, vector[1] * k, vector[2] * k];
+function cartesianScale(vector, k, ref) {
+  let x = vector[0] * k;
+  let y = vector[1] * k;
+  let z = vector[2] * k;
+  if (ref) {
+    ref[0] = x;
+    ref[1] = y;
+    ref[2] = z;
+  }
+  return [x, y, z];
 }
 
 // TODO return d
@@ -1419,6 +1452,9 @@ function clipRectangle(x0, y0, x1, y1) {
         first,
         clean;
 
+    let tempArray1 = [0, 0];
+    let tempArray2 = [0, 0];
+
     var clipStream = {
       point: point,
       lineStart: lineStart,
@@ -1503,14 +1539,16 @@ function clipRectangle(x0, y0, x1, y1) {
       } else {
         if (v && v_) activeStream.point(x, y);
         else {
-          var a = [x_ = Math.max(clipMin, Math.min(clipMax, x_)), y_ = Math.max(clipMin, Math.min(clipMax, y_))],
-              b = [x = Math.max(clipMin, Math.min(clipMax, x)), y = Math.max(clipMin, Math.min(clipMax, y))];
-          if (clipLine(a, b, x0, y0, x1, y1)) {
+          tempArray1[0] = x_ = Math.max(clipMin, Math.min(clipMax, x_));
+          tempArray1[1] = y_ = Math.max(clipMin, Math.min(clipMax, y_));
+          tempArray2[0] = x = Math.max(clipMin, Math.min(clipMax, x));
+          tempArray2[1] = y = Math.max(clipMin, Math.min(clipMax, y));
+          if (clipLine(tempArray1, tempArray2, x0, y0, x1, y1)) {
             if (!v_) {
               activeStream.lineStart();
-              activeStream.point(a[0], a[1]);
+              activeStream.point(tempArray1[0], tempArray1[1]);
             }
-            activeStream.point(b[0], b[1]);
+            activeStream.point(tempArray2[0], tempArray2[1]);
             if (!v) activeStream.lineEnd();
             clean = false;
           } else if (v) {
@@ -1817,17 +1855,26 @@ function interpolate(a, b) {
       d = 2 * asin(sqrt(haversin(y1 - y0) + cy0 * cy1 * haversin(x1 - x0))),
       k = sin(d);
 
-  var interpolate = d ? function(t) {
+  var interpolate = d ? function(t, ref) {
     var B = sin(t *= d) / k,
         A = sin(d - t) / k,
         x = A * kx0 + B * kx1,
         y = A * ky0 + B * ky1,
         z = A * sy0 + B * sy1;
-    return [
-      atan2(y, x) * degrees,
-      atan2(z, sqrt(x * x + y * y)) * degrees
-    ];
-  } : function() {
+    let lambda = atan2(y, x) * degrees;
+    let phi = atan2(z, sqrt(x * x + y * y)) * degrees;
+    if (ref) {
+      ref[0] = lambda;
+      ref[1] = phi;
+      return ref;
+    }
+    return [lambda, phi];
+  } : function(t, ref) {
+    if (ref) {
+      ref[0] = x0 * degrees;
+      ref[1] = y0 * degrees;
+      return ref;
+    }
     return [x0 * degrees, y0 * degrees];
   };
 
@@ -2219,6 +2266,7 @@ function transformer(methods) {
 function TransformStream() {}
 
 TransformStream.prototype = {
+  _tempArray: [0, 0],
   constructor: TransformStream,
   point: function(x, y) { this.stream.point(x, y); },
   sphere: function() { this.stream.sphere(); },
@@ -2283,7 +2331,7 @@ function resample(project, delta2) {
 function resampleNone(project) {
   return transformer({
     point: function(x, y) {
-      x = project(x, y);
+      x = project(x, y, this._tempArray);
       this.stream.point(x[0], x[1]);
     }
   });
@@ -2291,7 +2339,7 @@ function resampleNone(project) {
 
 function resample$1(project, delta2) {
 
-  function resampleLineTo(x0, y0, lambda0, a0, b0, c0, x1, y1, lambda1, a1, b1, c1, depth, stream) {
+  function resampleLineTo(x0, y0, lambda0, a0, b0, c0, x1, y1, lambda1, a1, b1, c1, depth, stream, tempArray) {
     var dx = x1 - x0,
         dy = y1 - y0,
         d2 = dx * dx + dy * dy;
@@ -2302,7 +2350,7 @@ function resample$1(project, delta2) {
           m = sqrt(a * a + b * b + c * c),
           phi2 = asin(c /= m),
           lambda2 = abs(abs(c) - 1) < epsilon || abs(lambda0 - lambda1) < epsilon ? (lambda0 + lambda1) / 2 : atan2(b, a),
-          p = project(lambda2, phi2),
+          p = project(lambda2, phi2, tempArray),
           x2 = p[0],
           y2 = p[1],
           dx2 = x2 - x0,
@@ -2311,15 +2359,17 @@ function resample$1(project, delta2) {
       if (dz * dz / d2 > delta2 // perpendicular projected distance
           || abs((dx * dx2 + dy * dy2) / d2 - 0.5) > 0.3 // midpoint close to an end
           || a0 * a1 + b0 * b1 + c0 * c1 < cosMinDistance) { // angular distance
-        resampleLineTo(x0, y0, lambda0, a0, b0, c0, x2, y2, lambda2, a /= m, b /= m, c, depth, stream);
+        resampleLineTo(x0, y0, lambda0, a0, b0, c0, x2, y2, lambda2, a /= m, b /= m, c, depth, stream, tempArray);
         stream.point(x2, y2);
-        resampleLineTo(x2, y2, lambda2, a, b, c, x1, y1, lambda1, a1, b1, c1, depth, stream);
+        resampleLineTo(x2, y2, lambda2, a, b, c, x1, y1, lambda1, a1, b1, c1, depth, stream, tempArray);
       }
     }
   }
   return function(stream) {
     var lambda00, x00, y00, a00, b00, c00, // first point
         lambda0, x0, y0, a0, b0, c0; // previous point
+    let tempArray2 = [0, 0];
+    let tempArray3 = [0, 0, 0];
 
     var resampleStream = {
       point: point,
@@ -2330,7 +2380,7 @@ function resample$1(project, delta2) {
     };
 
     function point(x, y) {
-      x = project(x, y);
+      x = project(x, y, tempArray2);
       stream.point(x[0], x[1]);
     }
 
@@ -2341,8 +2391,10 @@ function resample$1(project, delta2) {
     }
 
     function linePoint(lambda, phi) {
-      var c = cartesian([lambda, phi]), p = project(lambda, phi);
-      resampleLineTo(x0, y0, lambda0, a0, b0, c0, x0 = p[0], y0 = p[1], lambda0 = lambda, a0 = c[0], b0 = c[1], c0 = c[2], maxDepth, stream);
+      tempArray2[0] = lambda;
+      tempArray2[1] = phi;
+      var c = cartesian(tempArray2, tempArray3), p = project(lambda, phi, tempArray2);
+      resampleLineTo(x0, y0, lambda0, a0, b0, c0, x0 = p[0], y0 = p[1], lambda0 = lambda, a0 = c[0], b0 = c[1], c0 = c[2], maxDepth, stream, tempArray2);
       stream.point(x0, y0);
     }
 
@@ -2363,7 +2415,7 @@ function resample$1(project, delta2) {
     }
 
     function ringEnd() {
-      resampleLineTo(x0, y0, lambda0, a0, b0, c0, x00, y00, lambda00, a00, b00, c00, maxDepth, stream);
+      resampleLineTo(x0, y0, lambda0, a0, b0, c0, x00, y00, lambda00, a00, b00, c00, maxDepth, stream, tempArray2);
       resampleStream.lineEnd = lineEnd;
       lineEnd();
     }
@@ -2381,7 +2433,7 @@ var transformRadians = transformer({
 function transformRotate(rotate) {
   return transformer({
     point: function(x, y) {
-      var r = rotate(x, y);
+      var r = rotate(x, y, this._tempArray);
       return this.stream.point(r[0], r[1]);
     }
   });
