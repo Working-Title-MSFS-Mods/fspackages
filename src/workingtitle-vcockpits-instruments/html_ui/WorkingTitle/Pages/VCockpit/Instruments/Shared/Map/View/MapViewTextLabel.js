@@ -136,32 +136,3 @@ WT_MapViewSimpleTextLabel.OPTIONS_DEF = {
     backgroundOutlineWidth: {default: 0, auto: true},
     backgroundOutlineColor: {default: "white", auto: true}
 }
-
-class WT_MapViewManagedTextLabel {
-    constructor(label) {
-        this._label = label;
-        this._collisions = new Set();
-
-        this._optsManager = new WT_OptionsManager(this, WT_MapViewManagedTextLabel.OPTIONS_DEF);
-    }
-
-    get label() {
-        return this._label;
-    }
-
-    get collisions() {
-        return this._collisions;
-    }
-
-    doesCollide(other) {
-        let thisBounds = this.label.bounds;
-        let otherBounds = other.label.bounds;
-        return thisBounds.left < otherBounds.right &&
-               thisBounds.right > otherBounds.left &&
-               thisBounds.top < otherBounds.bottom &&
-               thisBounds.bottom > otherBounds.top;
-    }
-}
-WT_MapViewManagedTextLabel.OPTIONS_DEF = {
-    show: {default: false, auto: true}
-};

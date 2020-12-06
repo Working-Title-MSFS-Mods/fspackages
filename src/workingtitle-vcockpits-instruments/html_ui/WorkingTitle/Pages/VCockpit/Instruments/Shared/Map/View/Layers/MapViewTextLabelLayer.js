@@ -65,7 +65,7 @@ class WT_MapViewTextLabelManager {
     }
 
     getVisibleLabels() {
-        return Array.from(this._visibleLabels.values()).map(managedLabel => managedLabel.label);
+        return new WT_MapViewManagedTextLabelIterator(this._visibleLabels.values());
     }
 
     add(label) {
@@ -145,7 +145,7 @@ class WT_MapViewTextLabelManager {
                 queries++;
                 let showTextConflicted = true;
                 for (let conflictedOfConflicted of conflicted.collisions) {
-                    if (conflictedOfConflicted.show && conflictedOfConflicted.priority >= conflicted.priority) {
+                    if (conflictedOfConflicted.show && conflictedOfConflicted.label.priority >= conflicted.label.priority) {
                         showTextConflicted = false;
                         break;
                     }
@@ -336,3 +336,53 @@ WT_MapViewTextLabelManager.OPTIONS_DEF = {
     addRemoveForceUpdateThreshold: {default: 20, auto: true},
     collisionUpdateMaxQueries: {default: 500, auto: true}
 };
+
+class WT_MapViewManagedTextLabel {
+    constructor(label) {
+        this._label = label;
+        this._collisions = new Set();
+
+        this._optsManager = new WT_OptionsManager(this, WT_MapViewManagedTextLabel.OPTIONS_DEF);
+    }
+
+    get label() {
+        return this._label;
+    }
+
+    get collisions() {
+        return this._collisions;
+    }
+
+    doesCollide(other) {
+        let thisBounds = this.label.bounds;
+        let otherBounds = other.label.bounds;
+        return thisBounds.left < otherBounds.right &&
+               thisBounds.right > otherBounds.left &&
+               thisBounds.top < otherBounds.bottom &&
+               thisBounds.bottom > otherBounds.top;
+    }
+}
+WT_MapViewManagedTextLabel.OPTIONS_DEF = {
+    show: {default: false, auto: true}
+};
+
+class WT_MapViewManagedTextLabelIterator {
+    constructor(iterator) {
+        this._iterator = iterator;
+        this._nextObject = {
+            done: false,
+            value: undefined
+        };
+    }
+
+    next() {
+        let next = this._iterator.next();
+        this._nextObject.done = next.done;
+        this._nextObject.value = next.value ? next.value.label : undefined;
+        return this._nextObject;
+    }
+
+    [Symbol.iterator]() {
+        return this;
+    }
+}
