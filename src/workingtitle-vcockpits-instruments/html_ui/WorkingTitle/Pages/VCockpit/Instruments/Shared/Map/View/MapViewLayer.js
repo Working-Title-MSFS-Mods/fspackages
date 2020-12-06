@@ -196,6 +196,7 @@ class WT_MapViewSubLayer {
         container.style.width = "100%";
         container.style.height = "100%";
         container.style.transform = "rotateX(0deg)";
+        container.style.overflow = "hidden";
         return container;
     }
 
