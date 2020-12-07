@@ -674,7 +674,7 @@ export class ManagedFlightPlan {
       legs.push(...transition);
     }
 
-    if (approachIndex !== -1 && approachTransitionIndex === -1) {
+    if (approachIndex !== -1) {
       legs.push(...destinationInfo.approaches[approachIndex].finalLegs);
     }
 
@@ -758,7 +758,7 @@ export class ManagedFlightPlan {
 
       const runwayLetter = runwayName[runwayName.length - 1];
       if (runwayLetter === ' ' || runwayLetter === 'C') {
-        const runwayDirection = runwayName.substring(0, -1);
+        const runwayDirection = runwayName.trim();
         runwayIndex = runways.findIndex(r => r.designation === runwayDirection || r.designation === `${runwayDirection}C`);
       }
       else {
