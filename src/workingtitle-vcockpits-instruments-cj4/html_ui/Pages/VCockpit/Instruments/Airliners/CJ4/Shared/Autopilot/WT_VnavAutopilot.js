@@ -22,6 +22,7 @@ class WT_VnavAutopilot {
         this._pathFromAboveRequiredVs = undefined;
         this._pathActive = false;
         this._pathActivate = false;
+        this._obeyingConstraint = false;
 
         this._indicatedAltitude = undefined;
 
@@ -54,6 +55,9 @@ class WT_VnavAutopilot {
             }
             else {
                 this._constraintExists = false;
+                if (this._obeyingConstraint === true) {
+                    this.cancelConstraint();
+                }
             }
 
             //PATH DATA
@@ -257,6 +261,7 @@ class WT_VnavAutopilot {
                         if (this._vnav._currentFlightSegment.type == SegmentType.Departure) {
                             //CLIMB CONSTRAINTS
                             console.log("climb constraint");
+                            this._obeyingConstraint = true;
                             if (altSet1 > altSet2 && altSlot == 1) {
                                 console.log("set slot 2");
                                 SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
@@ -265,14 +270,11 @@ class WT_VnavAutopilot {
                                 console.log("set slot 1");
                                 SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
                             }
-                            // else (altSlot == 2) {
-                            //     console.log("set slot 1");
-                            //     SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-                            // }
                         }
                         else if (this._vnav._currentFlightSegment.type != SegmentType.Departure) {
                             //DESCENT CONSTRAINTS
                             console.log("descent constraint");
+                            this._obeyingConstraint = true;
                             if (altSet1 < altSet2 && altSlot == 1) {
                                 console.log("set slot 2");
                                 SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
@@ -445,6 +447,13 @@ class WT_VnavAutopilot {
                 this._pathArmFired = true;
             }
         }
+    }
+
+    cancelConstraint() {
+        //method to reset after adhereing to a constraint when no more constraints exist
+        console.log("set slot 1 after passing constraints");
+        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+        this._obeyingConstraint = false;
     }
 
     recalculate() {
