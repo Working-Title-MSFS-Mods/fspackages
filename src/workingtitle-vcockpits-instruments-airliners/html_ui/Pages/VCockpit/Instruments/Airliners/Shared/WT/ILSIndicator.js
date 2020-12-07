@@ -867,7 +867,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
 
             if (this.gs_cursorGroup && this.gsVisible) {
                 //if (isApproachLoaded && approachType == 10) {
-                if (WTDataStore.get('CJ4_VNAV_SNOWFLAKE',  'false') == 'true') {
+                if (SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') == 1) {
                     this.vertical_snowFlake.setAttribute("visibility", "visible");
                 } else {
                     this.vertical_snowFlake.setAttribute("visibility", "hidden");

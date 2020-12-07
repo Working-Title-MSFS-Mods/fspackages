@@ -387,13 +387,13 @@ class WT_VnavAutopilot {
     setSnowflake() {
         //SET SNOWFLAKE -- TODO: NEED MORE RESTRICTIONS?
         if (this._vnav._pathCalculating && Math.abs(this._vnav._altDeviation) < 1001) {
-            if (WTDataStore.get('CJ4_VNAV_SNOWFLAKE', 'false') != 'true') {
-                WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'true');
+            if (SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') != 1) {
+                SimVar.SetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number', 1);
             }
         }
         else {
-            if (WTDataStore.get('CJ4_VNAV_SNOWFLAKE', 'true') != 'false') {
-                WTDataStore.set('CJ4_VNAV_SNOWFLAKE', 'false');
+            if (SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') == 1) {
+                SimVar.SetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number', 0);
             }
         }
     }
