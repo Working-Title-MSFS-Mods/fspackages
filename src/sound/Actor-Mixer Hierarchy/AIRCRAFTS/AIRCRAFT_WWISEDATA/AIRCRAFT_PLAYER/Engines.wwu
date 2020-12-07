@@ -68,17 +68,17 @@
 												<PointList>
 													<Point>
 														<XPos>0</XPos>
-														<YPos>58</YPos>
+														<YPos>0</YPos>
 														<Flags>5</Flags>
 													</Point>
 													<Point>
-														<XPos>24.98147</XPos>
-														<YPos>56</YPos>
+														<XPos>24.50558</XPos>
+														<YPos>0</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
 														<XPos>105</XPos>
-														<YPos>79</YPos>
+														<YPos>74</YPos>
 														<Flags>37</Flags>
 													</Point>
 												</PointList>
@@ -108,13 +108,13 @@
 														<Flags>5</Flags>
 													</Point>
 													<Point>
-														<XPos>30</XPos>
+														<XPos>24.5</XPos>
 														<YPos>0</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
 														<XPos>105</XPos>
-														<YPos>707</YPos>
+														<YPos>623</YPos>
 														<Flags>37</Flags>
 													</Point>
 												</PointList>
@@ -199,8 +199,8 @@
 														<Flags>0</Flags>
 													</Point>
 													<Point>
-														<XPos>70.17306</XPos>
-														<YPos>-2.01827</YPos>
+														<XPos>64.37577</XPos>
+														<YPos>-7.449</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
@@ -236,7 +236,6 @@
 							<ChildrenList>
 								<Sound Name="CJ4_Engine_Combustion" ID="{3E271439-0D48-4004-BF3C-0C4E5E3C5CF2}" ShortID="1071408214">
 									<PropertyList>
-										<Property Name="3DSpatialization" Type="int16" Value="1"/>
 										<Property Name="EnableAttenuation" Type="bool" Value="False"/>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
 										<Property Name="OverridePositioning" Type="bool" Value="True"/>
@@ -725,7 +724,6 @@
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 								<Property Name="OverrideAnalysis" Type="bool" Value="True"/>
 								<Property Name="OverrideOutput" Type="bool" Value="True"/>
-								<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 								<Property Name="Priority" Type="int16">
 									<ValueList>
 										<Value>100</Value>
@@ -778,13 +776,8 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>99.84779</XPos>
-																<YPos>21</YPos>
-																<Flags>0</Flags>
-															</Point>
-															<Point>
 																<XPos>105</XPos>
-																<YPos>22</YPos>
+																<YPos>54</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -1569,8 +1562,18 @@
 														<PointList>
 															<Point>
 																<XPos>0</XPos>
-																<YPos>59</YPos>
+																<YPos>60</YPos>
 																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>24.57355</XPos>
+																<YPos>59</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>26.43387</XPos>
+																<YPos>46</YPos>
+																<Flags>0</Flags>
 															</Point>
 															<Point>
 																<XPos>105</XPos>
@@ -1668,7 +1671,7 @@
 										</Property>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>-3</Value>
+												<Value>-10</Value>
 											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{6424A141-AB6D-4189-83DD-4C426DBD7B11}" ShortID="3266468">
@@ -1859,7 +1862,7 @@
 												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
 												<CustomState Name="" ID="{58F7DC9C-8E59-4997-A889-EF672B506685}" ShortID="230700781">
 													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-7"/>
+														<Property Name="Volume" Type="Real64" Value="-3"/>
 													</PropertyList>
 												</CustomState>
 											</CustomState>
@@ -2444,6 +2447,225 @@
 										<ActiveSource Name="Jet Thrust Very Low" ID="{1D60379C-AC71-4206-B549-CE0D4C0B2C2D}" Platform="Linked"/>
 									</ActiveSourceList>
 								</Sound>
+								<Sound Name="DualTones" ID="{80BE01D6-016C-4CD4-BADF-E58FFE42EA8E}" ShortID="948486865">
+									<PropertyList>
+										<Property Name="CenterPercentage" Type="int32">
+											<ValueList>
+												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+										<Property Name="OverrideOutput" Type="bool" Value="True"/>
+										<Property Name="OverridePositioning" Type="bool" Value="True"/>
+										<Property Name="Pitch" Type="int32">
+											<RTPCList>
+												<RTPC Name="" ID="{4C1BA264-72C1-4359-9F12-ACB84081454A}" ShortID="334791891">
+													<ReferenceList>
+														<Reference Name="ControlInput">
+															<ObjectRef Name="SIMVAR_TURB_ENG_N1" ID="{23BAD005-E61B-45C7-9ADA-EB168F71B891}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+														</Reference>
+													</ReferenceList>
+													<Curve Name="" ID="{E95C638C-E3BC-418F-A0B5-65CBAC927B2B}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="65537"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>-4800</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>0.8203125</XPos>
+																<YPos>-4800</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>1.640625</XPos>
+																<YPos>-4681</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>3.28125</XPos>
+																<YPos>-3481</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>6.5625</XPos>
+																<YPos>-2281</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>9.84375</XPos>
+																<YPos>-1579</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>13.125</XPos>
+																<YPos>-1081</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>16.70233</XPos>
+																<YPos>-330</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>19.29543</XPos>
+																<YPos>0</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>24.5</XPos>
+																<YPos>0</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>40.93248</XPos>
+																<YPos>523</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>55.31212</XPos>
+																<YPos>701</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>80.99969</XPos>
+																<YPos>1040</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>105</XPos>
+																<YPos>2519</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</RTPC>
+											</RTPCList>
+										</Property>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-8</Value>
+											</ValueList>
+											<RTPCList>
+												<RTPC Name="" ID="{3E414716-F5A8-4536-95AC-CAF7397AA454}" ShortID="214201735">
+													<ReferenceList>
+														<Reference Name="ControlInput">
+															<ObjectRef Name="SIMVAR_TURB_ENG_N1" ID="{23BAD005-E61B-45C7-9ADA-EB168F71B891}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+														</Reference>
+													</ReferenceList>
+													<Curve Name="" ID="{D8036A8C-D120-45E1-9F49-C279C4112AD8}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="3"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>-200</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>19.90111</XPos>
+																<YPos>-8.46492</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>24.9629171817058</XPos>
+																<YPos>0</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>66.32262</XPos>
+																<YPos>-3.12148</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>105</XPos>
+																<YPos>-200</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</RTPC>
+												<RTPC Name="" ID="{A3D777E4-3AAF-4DEA-906A-CB0A358E0DCE}" ShortID="1036699126">
+													<ReferenceList>
+														<Reference Name="ControlInput">
+															<ObjectRef Name="SIMVAR_AIRSPEED_TRUE" ID="{23F33E5A-B0EE-4CD5-AE2C-178797545D5C}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+														</Reference>
+													</ReferenceList>
+													<Curve Name="" ID="{E438252C-7C10-41D1-B56E-E40235711448}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="3"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>-1.12004999999999</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>249.27894</XPos>
+																<YPos>-8.98595</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>500</XPos>
+																<YPos>-200</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</RTPC>
+											</RTPCList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="dualtonesloop" ID="{F8EFA7B9-C616-45A9-A165-BCF8F05FEB1A}">
+											<PropertyList>
+												<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+												<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+												<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
+												<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>dualtonesloop.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<StateInfo>
+										<StateGroupList>
+											<StateGroupInfo>
+												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+											</StateGroupInfo>
+										</StateGroupList>
+										<CustomStateList>
+											<CustomState>
+												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+												<CustomState Name="" ID="{96946669-2704-4271-AFB8-09165F292A82}" ShortID="408848655"/>
+											</CustomState>
+											<CustomState>
+												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+												<CustomState Name="" ID="{A3CDD1EF-34AF-42F9-AB78-E59EAF97C335}" ShortID="781169400">
+													<PropertyList>
+														<Property Name="Volume" Type="Real64" Value="-6"/>
+													</PropertyList>
+												</CustomState>
+											</CustomState>
+										</CustomStateList>
+									</StateInfo>
+									<ActiveSourceList>
+										<ActiveSource Name="dualtonesloop" ID="{F8EFA7B9-C616-45A9-A165-BCF8F05FEB1A}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
 							</ChildrenList>
 							<StateInfo>
 								<StateGroupList>
@@ -2685,7 +2907,6 @@
 										<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
 										<Property Name="OverrideOutput" Type="bool" Value="True"/>
-										<Property Name="OverridePositioning" Type="bool" Value="True"/>
 										<Property Name="Priority" Type="int16">
 											<ValueList>
 												<Value>100</Value>
