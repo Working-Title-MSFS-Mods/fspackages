@@ -122,6 +122,10 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._borderLayer.initProjectionRenderers(state.projection);
     }
 
+    _shouldShowStateBorders(state) {
+        return state.model.borders.stateBorderShow && state.model.range.compare(state.model.borders.stateBorderRange) <= 0;
+    }
+
     _cullFeatureByBounds(renderer, bounds, temp, featureInfo) {
         let min = renderer.project(featureInfo.geoBounds[0], temp[0]);
         let max = renderer.project(featureInfo.geoBounds[1], temp[1]);
@@ -161,13 +165,13 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         current();
     }
 
-    _startDrawBorders(state) {
+    _startDrawBorders(state, showStateBorders) {
         this._borderLayer.resetBuffer(state);
 
         let lod = this._selectLOD(state.projection.viewResolution);
         this._renderQueue.clear();
         this._enqueueFeaturesToDraw(state, this._admin0Borders, lod);
-        if (state.model.borders.showStateBorders) {
+        if (showStateBorders) {
             this._enqueueFeaturesToDraw(state, this._admin1Borders, lod);
         }
 
@@ -246,12 +250,12 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         }
     }
 
-    _updateLabels(data) {
+    _updateLabels(state) {
         let tempArrays = [[0, 0], [0, 0]];
         let tempVector = new WT_GVector2(0, 0);
-        let toShow = this._admin0Polygons.filter(this._cullLabelsToShow.bind(this, data, tempArrays, tempVector));
-        if (data.model.borders.showStateBorders) {
-            toShow = toShow.concat(this._admin1Polygons.filter(this._cullLabelsToShow.bind(this, data, tempArrays, tempVector)));
+        let toShow = this._admin0Polygons.filter(this._cullLabelsToShow.bind(this, state, tempArrays, tempVector));
+        if (this._shouldShowStateBorders(state)) {
+            toShow = toShow.concat(this._admin1Polygons.filter(this._cullLabelsToShow.bind(this, state, tempArrays, tempVector)));
         }
         this._updateLabelsToShow(toShow.map(featureInfo => this._labelCache.getLabel(featureInfo, this.countryLabelPriority, this.stateLabelPriority)));
     }
@@ -266,14 +270,16 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         let offsetXAbs = Math.abs(transform.offset.x);
         let offsetYAbs = Math.abs(transform.offset.y);
 
+        let shouldShowStateBorders = this._shouldShowStateBorders(state);
+
         let isImageInvalid = this._borderLayer.display.isInvalid ||
-                             (!state.model.borders.showStateBorders && this._lastShowStateBorders);
+                             (!shouldShowStateBorders && this._lastShowStateBorders);
 
         let shouldRedraw = isImageInvalid ||
-                           (state.model.borders.showStateBorders != this._lastShowStateBorders) ||
+                           (shouldShowStateBorders != this._lastShowStateBorders) ||
                            (offsetXAbs > transform.margin * 0.9 || offsetYAbs > transform.margin * 0.9);
 
-        this._lastShowStateBorders = state.model.borders.showStateBorders;
+        this._lastShowStateBorders = shouldShowStateBorders;
 
         if (isImageInvalid) {
             this._borderLayer.redrawDisplay(state, false);
@@ -281,7 +287,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
             this._drawUnfinishedBorders = true;
         }
         if (shouldRedraw) {
-            this._startDrawBorders(state);
+            this._startDrawBorders(state, shouldShowStateBorders);
         } else if (this._renderQueue.isBusy) {
             this._continueDrawBorders(state);
         }
