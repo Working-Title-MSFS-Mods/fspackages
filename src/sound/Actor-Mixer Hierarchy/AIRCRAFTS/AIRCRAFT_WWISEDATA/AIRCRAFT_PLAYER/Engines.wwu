@@ -52,11 +52,6 @@
 								<Property Name="3DSpatialization" Type="int16" Value="2"/>
 								<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 								<Property Name="BlendBehavior" Type="int16" Value="1"/>
-								<Property Name="CenterPercentage" Type="int32">
-									<ValueList>
-										<Value>48</Value>
-									</ValueList>
-								</Property>
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 								<Property Name="Lowpass" Type="int16">
 									<RTPCList>
@@ -92,7 +87,6 @@
 									</RTPCList>
 								</Property>
 								<Property Name="OverrideAnalysis" Type="bool" Value="True"/>
-								<Property Name="OverrideOutput" Type="bool" Value="True"/>
 								<Property Name="OverridePositioning" Type="bool" Value="True"/>
 								<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 								<Property Name="Pitch" Type="int32">
@@ -186,8 +180,18 @@
 												<PointList>
 													<Point>
 														<XPos>0</XPos>
-														<YPos>-0.01643</YPos>
+														<YPos>-200</YPos>
 														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>15.44499</XPos>
+														<YPos>-200</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>19.8578491965389</XPos>
+														<YPos>-0.00406420688726911</YPos>
+														<Flags>0</Flags>
 													</Point>
 													<Point>
 														<XPos>26.39061</XPos>
@@ -521,7 +525,7 @@
 								<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="79"/>
 								<Property Name="Volume" Type="Real64">
 									<ValueList>
-										<Value>-96</Value>
+										<Value>-3</Value>
 									</ValueList>
 								</Property>
 							</PropertyList>
@@ -540,11 +544,11 @@
 								</Reference>
 							</ReferenceList>
 							<ChildrenList>
-								<Sound Name="CJ4_Engine_Shutdown" ID="{F24CC2A4-AA6A-4F94-AF4A-03F1C690F3A9}" ShortID="896590407">
+								<Sound Name="Shutdown Interior" ID="{DF864DF4-B3AD-4DFD-A7F9-61F64AF08831}" ShortID="986626399">
 									<PropertyList>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>-16</Value>
+												<Value>-12</Value>
 											</ValueList>
 										</Property>
 									</PropertyList>
@@ -557,24 +561,25 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<AudioFileSource Name="CJ4 Engine Shutdown Interior_clean" ID="{F061A938-EA2F-46CD-B64A-4196BA8029BF}">
+										<AudioFileSource Name="Shutdown Interior" ID="{DF9477D7-5F84-495F-9500-8CD4F679318E}">
 											<PropertyList>
-												<Property Name="FadeOutDuration" Type="Real64" Value="11.95652498787"/>
 												<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
 												<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
-												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
 												<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
 												<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
 											</PropertyList>
 											<Language>SFX</Language>
-											<AudioFile>Engines\CJ4 Engine Shutdown Interior_clean.wav</AudioFile>
+											<AudioFile>Shutdown Interior.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
 									<ActiveSourceList>
-										<ActiveSource Name="CJ4 Engine Shutdown Interior_clean" ID="{F061A938-EA2F-46CD-B64A-4196BA8029BF}" Platform="Linked"/>
+										<ActiveSource Name="Shutdown Interior" ID="{DF9477D7-5F84-495F-9500-8CD4F679318E}" Platform="Linked"/>
 									</ActiveSourceList>
 								</Sound>
 							</ChildrenList>
+							<PositioningInfo>
+								<Panner Name="" ID="{598904EE-A5DA-4280-98FD-7362FD72E686}"/>
+							</PositioningInfo>
 							<StateInfo>
 								<StateGroupList>
 									<StateGroupInfo>
@@ -2845,6 +2850,27 @@
 											<AudioFile>Engines\Williams FJ44-4A Shutdown Exterior_edit.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
+									<StateInfo>
+										<StateGroupList>
+											<StateGroupInfo>
+												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+											</StateGroupInfo>
+										</StateGroupList>
+										<CustomStateList>
+											<CustomState>
+												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+												<CustomState Name="" ID="{8B66AA21-D2C8-4122-9ECE-0AE9F017EAF6}" ShortID="1037727262">
+													<PropertyList>
+														<Property Name="Volume" Type="Real64" Value="-108"/>
+													</PropertyList>
+												</CustomState>
+											</CustomState>
+											<CustomState>
+												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+												<CustomState Name="" ID="{5C5B531F-6F84-4E13-8C50-4C4BC2A6F586}" ShortID="740712804"/>
+											</CustomState>
+										</CustomStateList>
+									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Williams FJ44-4A Shutdown Exterior_edit" ID="{4544FA1C-6B42-438E-B73E-0886548AF3DE}" Platform="Linked"/>
 									</ActiveSourceList>

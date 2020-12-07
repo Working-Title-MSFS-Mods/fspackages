@@ -6,6 +6,11 @@
 				<RandomSequenceContainer Name="Soft Buttons" ID="{880A887B-7CDD-4A38-A419-EEAD5F2FA3B0}" ShortID="239761578">
 					<PropertyList>
 						<Property Name="3DSpatialization" Type="int16" Value="2"/>
+						<Property Name="CenterPercentage" Type="int32">
+							<ValueList>
+								<Value>100</Value>
+							</ValueList>
+						</Property>
 						<Property Name="Lowpass" Type="int16">
 							<ValueList>
 								<Value>34</Value>
@@ -25,6 +30,7 @@
 								</ModifierInfo>
 							</ModifierList>
 						</Property>
+						<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="49"/>
 						<Property Name="Volume" Type="Real64">
 							<ValueList>
 								<Value>-17</Value>
@@ -54,6 +60,11 @@
 											</Modifier>
 										</ModifierInfo>
 									</ModifierList>
+								</Property>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-4</Value>
+									</ValueList>
 								</Property>
 								<Property Name="Weight" Type="Real64">
 									<ValueList>
@@ -86,6 +97,14 @@
 							</ActiveSourceList>
 						</Sound>
 					</ChildrenList>
+					<PositioningInfo>
+						<Panner Name="" ID="{AC3683A5-CAD4-41D2-82C1-DEFE99E875BD}">
+							<PropertyList>
+								<Property Name="PanX" Type="Real64" Value="0.233644859813084"/>
+								<Property Name="PanY" Type="Real64" Value="-0.245700245700233"/>
+							</PropertyList>
+						</Panner>
+					</PositioningInfo>
 				</RandomSequenceContainer>
 			</ChildrenList>
 		</WorkUnit>

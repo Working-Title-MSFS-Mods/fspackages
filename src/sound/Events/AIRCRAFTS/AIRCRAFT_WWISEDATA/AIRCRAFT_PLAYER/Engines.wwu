@@ -29,16 +29,6 @@
 				</Event>
 				<Event Name="Play_Asobo_CJ4_eng1_shutdown_wt" ID="{1E10D9F3-1B15-42F5-A52E-945CE30386D6}">
 					<ChildrenList>
-						<Action Name="" ID="{27A29FF7-4CE2-47FD-B4AE-B344571ECC4E}" ShortID="22246084">
-							<PropertyList>
-								<Property Name="ActionType" Type="int16" Value="1"/>
-							</PropertyList>
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="shutdown_inside" ID="{69EC2F71-B690-4087-B1CE-E95A0C2786AF}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
 						<Action Name="" ID="{14DAC51B-A276-4ED8-BFF4-6545A530CC77}" ShortID="519735255">
 							<PropertyList>
 								<Property Name="ActionType" Type="int16" Value="1"/>
@@ -46,6 +36,16 @@
 							<ReferenceList>
 								<Reference Name="Target">
 									<ObjectRef Name="shutdown_outside" ID="{D3C0F242-76AE-4804-AF9A-4170CC8A7614}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{86735565-7465-45B5-A07B-30F4FB2A7A85}" ShortID="763794885">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="shutdown_inside" ID="{69EC2F71-B690-4087-B1CE-E95A0C2786AF}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
