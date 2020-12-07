@@ -261,10 +261,14 @@ class WT_VnavAutopilot {
                                 console.log("set slot 2");
                                 SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
                             }
-                            else if (altSlot == 2) {
+                            else if (altSet1 <= altSet2 && altSlot == 2) {
                                 console.log("set slot 1");
                                 SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
                             }
+                            // else (altSlot == 2) {
+                            //     console.log("set slot 1");
+                            //     SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+                            // }
                         }
                         else if (this._vnav._currentFlightSegment.type != SegmentType.Departure) {
                             //DESCENT CONSTRAINTS
@@ -273,7 +277,7 @@ class WT_VnavAutopilot {
                                 console.log("set slot 2");
                                 SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
                             }
-                            else if (altSlot == 2) {
+                            else if (altSet1 >= altSet2 && altSlot == 2) {
                                 console.log("set slot 1");
                                 SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
                             }
