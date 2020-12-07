@@ -252,7 +252,7 @@
 														<PointList>
 															<Point>
 																<XPos>0</XPos>
-																<YPos>-0</YPos>
+																<YPos>0</YPos>
 																<Flags>5</Flags>
 															</Point>
 															<Point>
@@ -839,7 +839,7 @@
 										</Property>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>-10</Value>
+												<Value>-7</Value>
 											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{A62812F7-01C2-4C47-9DEF-69E65CCE8009}" ShortID="252007089">
@@ -855,8 +855,13 @@
 														<PointList>
 															<Point>
 																<XPos>0</XPos>
-																<YPos>-0.43989</YPos>
+																<YPos>-200</YPos>
 																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>17.73795</XPos>
+																<YPos>-200</YPos>
+																<Flags>0</Flags>
 															</Point>
 															<Point>
 																<XPos>25.2663622526636</XPos>
@@ -2537,6 +2542,7 @@
 									<PropertyList>
 										<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 										<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
+										<Property Name="OverrideOutput" Type="bool" Value="True"/>
 										<Property Name="Priority" Type="int16">
 											<ValueList>
 												<Value>100</Value>
@@ -2668,6 +2674,7 @@
 											</ValueList>
 										</Property>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+										<Property Name="OverrideOutput" Type="bool" Value="True"/>
 										<Property Name="Priority" Type="int16">
 											<ValueList>
 												<Value>100</Value>
@@ -2797,12 +2804,15 @@
 							</ReferenceList>
 							<ChildrenList>
 								<Sound Name="Williams FJ44-4A Shutdown Exterior_edit" ID="{ADD76001-F7DF-4CEC-AFEC-3687180E689F}" ShortID="146167410">
+									<PropertyList>
+										<Property Name="OverrideOutput" Type="bool" Value="True"/>
+									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 										</Reference>
 										<Reference Name="OutputBus">
-											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+											<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
