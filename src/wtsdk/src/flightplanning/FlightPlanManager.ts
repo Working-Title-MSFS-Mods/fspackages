@@ -260,7 +260,7 @@ export class FlightPlanManager {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (index >= 0 && index < currentFlightPlan.length) {
       currentFlightPlan.activeWaypointIndex = index;
-      Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", index+1);
+      Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", index + 1);
 
       if (currentFlightPlan.directTo.isActive && currentFlightPlan.directTo.waypointIsInFlightPlan
         && currentFlightPlan.activeWaypointIndex > currentFlightPlan.directTo.planWaypointIndex) {
@@ -1255,6 +1255,10 @@ export class FlightPlanManager {
    */
   public async activateDirectTo(icao: string, callback = EmptyCallback.Void): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+
+    while (currentFlightPlan.waypoints.findIndex(w => w.ident === "$DIR") > -1) {
+      currentFlightPlan.removeWaypoint(currentFlightPlan.waypoints.findIndex(w => w.ident === "$DIR"));
+    }
 
     const waypointIndex = currentFlightPlan.waypoints.findIndex(w => w.icao === icao);
     if (waypointIndex !== -1) {
