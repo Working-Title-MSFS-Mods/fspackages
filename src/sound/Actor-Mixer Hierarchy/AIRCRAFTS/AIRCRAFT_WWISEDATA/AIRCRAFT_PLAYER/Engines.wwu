@@ -184,8 +184,13 @@
 														<Flags>5</Flags>
 													</Point>
 													<Point>
-														<XPos>15.44499</XPos>
+														<XPos>9.51177</XPos>
 														<YPos>-200</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>17.26027</XPos>
+														<YPos>-3.71927</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
@@ -358,8 +363,8 @@
 														<Flags>0</Flags>
 													</Point>
 													<Point>
-														<XPos>20</XPos>
-														<YPos>53</YPos>
+														<XPos>20.53938</XPos>
+														<YPos>23</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
@@ -404,18 +409,28 @@
 														<Flags>5</Flags>
 													</Point>
 													<Point>
-														<XPos>16000</XPos>
-														<YPos>0</YPos>
+														<XPos>7164.379</XPos>
+														<YPos>-0</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
-														<XPos>18039.21569</XPos>
-														<YPos>-3.75475</YPos>
+														<XPos>13356.16438</XPos>
+														<YPos>-1.1872</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
-														<XPos>19973.85621</XPos>
-														<YPos>-5.32672</YPos>
+														<XPos>15573.46226</XPos>
+														<YPos>-3.11781</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>18698.63014</XPos>
+														<YPos>-5.65966</YPos>
+														<Flags>0</Flags>
+													</Point>
+													<Point>
+														<XPos>21343.71922</XPos>
+														<YPos>-7.32113</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
@@ -524,7 +539,7 @@
 								<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="79"/>
 								<Property Name="Volume" Type="Real64">
 									<ValueList>
-										<Value>-3</Value>
+										<Value>-5</Value>
 									</ValueList>
 								</Property>
 							</PropertyList>
@@ -718,12 +733,11 @@
 								<Property Name="BlendBehavior" Type="int16" Value="1"/>
 								<Property Name="CenterPercentage" Type="int32">
 									<ValueList>
-										<Value>55</Value>
+										<Value>39</Value>
 									</ValueList>
 								</Property>
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 								<Property Name="OverrideAnalysis" Type="bool" Value="True"/>
-								<Property Name="OverrideOutput" Type="bool" Value="True"/>
 								<Property Name="Priority" Type="int16">
 									<ValueList>
 										<Value>100</Value>
@@ -738,7 +752,7 @@
 									<ObjectRef Name="NoDCOffset_Conversion_Settings" ID="{2463764E-1C92-49C9-B7B9-69C9CD89583D}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 								</Reference>
 								<Reference Name="OutputBus">
-									<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+									<ObjectRef Name="combustion_outside_generic" ID="{7FF9CAE6-1D75-4441-8E63-E1F32BD1EEC0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 								</Reference>
 								<Reference Name="UserAuxSend0">
 									<ObjectRef Name="rev_outdoor_aircraft" ID="{3070D14E-37F3-4DB4-8C7E-262318A02693}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
@@ -1671,7 +1685,7 @@
 										</Property>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>-10</Value>
+												<Value>-8</Value>
 											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{6424A141-AB6D-4189-83DD-4C426DBD7B11}" ShortID="3266468">
@@ -1750,7 +1764,9 @@
 										</Sound>
 										<Sound Name="Full" ID="{B8C832A2-C252-4F0B-8F72-0377ADD98EE7}" ShortID="942813907">
 											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="2"/>
 												<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+												<Property Name="OverridePositioning" Type="bool" Value="True"/>
 												<Property Name="Pitch" Type="int32">
 													<ValueList>
 														<Value>-2020</Value>
@@ -1758,6 +1774,9 @@
 												</Property>
 											</PropertyList>
 											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="aircraft_player_outside_turbofan_jet_5000m_jetwhine" ID="{7C768AD4-32ED-40D6-9E2D-E407E92E6761}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+												</Reference>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 												</Reference>
@@ -1783,7 +1802,9 @@
 										</Sound>
 										<Sound Name="Half" ID="{B0843AF4-0AE2-4CF2-A855-2B54E4B68A9E}" ShortID="329854622">
 											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="2"/>
 												<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+												<Property Name="OverridePositioning" Type="bool" Value="True"/>
 												<Property Name="Pitch" Type="int32">
 													<ValueList>
 														<Value>-660</Value>
@@ -1791,6 +1812,9 @@
 												</Property>
 											</PropertyList>
 											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="aircraft_player_outside_turbofan_airliner_10000m_jetwhine" ID="{9B7C91F2-7078-448C-814B-1EAA5D87F4E7}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+												</Reference>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 												</Reference>
@@ -1816,7 +1840,14 @@
 										</Sound>
 										<Sound Name="Quarter" ID="{B87A2E3B-018A-418C-AE9E-E81BC28E3D94}" ShortID="179652643">
 											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="2"/>
+												<Property Name="CenterPercentage" Type="int32">
+													<ValueList>
+														<Value>18</Value>
+													</ValueList>
+												</Property>
 												<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+												<Property Name="OverridePositioning" Type="bool" Value="True"/>
 											</PropertyList>
 											<ReferenceList>
 												<Reference Name="Conversion">
@@ -1950,6 +1981,9 @@
 								<Sound Name="Jet Noise High" ID="{09F1AD2C-7D2E-4E97-A926-747470144E1C}" ShortID="50026413">
 									<PropertyList>
 										<Property Name="Highpass" Type="int16">
+											<ValueList>
+												<Value>33</Value>
+											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{BCF3893B-634E-47E5-AB7F-7CA88F2CC4F5}" ShortID="1057063170">
 													<ReferenceList>
@@ -2022,7 +2056,7 @@
 										</Property>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>-3</Value>
+												<Value>-5</Value>
 											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{1FEE2454-E58E-4599-A58C-FD3A55A54B0F}" ShortID="748997045">
@@ -2104,6 +2138,11 @@
 								</Sound>
 								<Sound Name="Jet Noise Low" ID="{46DA06E2-46CD-4AAC-9D70-820BD8AC5F66}" ShortID="200793640">
 									<PropertyList>
+										<Property Name="Highpass" Type="int16">
+											<ValueList>
+												<Value>4</Value>
+											</ValueList>
+										</Property>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
 										<Property Name="Lowpass" Type="int16">
 											<RTPCList>
@@ -2244,6 +2283,9 @@
 								<Sound Name="Pink Noise" ID="{15426926-8D7D-4067-8D09-995F985A97F3}" ShortID="219020506">
 									<PropertyList>
 										<Property Name="Highpass" Type="int16">
+											<ValueList>
+												<Value>6</Value>
+											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{F432A74D-CCF5-4572-8790-5BEDC8BA574A}" ShortID="83198411">
 													<ReferenceList>
@@ -2272,6 +2314,11 @@
 											</RTPCList>
 										</Property>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+										<Property Name="Lowpass" Type="int16">
+											<ValueList>
+												<Value>9</Value>
+											</ValueList>
+										</Property>
 										<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 										<Property Name="Pitch" Type="int32">
 											<RTPCList>
@@ -2383,6 +2430,11 @@
 								<Sound Name="Jet Noise Very Low" ID="{3F0D59D1-F886-451C-9650-3B06FD041242}" ShortID="831616612">
 									<PropertyList>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+										<Property Name="Lowpass" Type="int16">
+											<ValueList>
+												<Value>68</Value>
+											</ValueList>
+										</Property>
 										<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 										<Property Name="Volume" Type="Real64">
 											<RTPCList>
@@ -2449,13 +2501,13 @@
 								</Sound>
 								<Sound Name="DualTones" ID="{80BE01D6-016C-4CD4-BADF-E58FFE42EA8E}" ShortID="948486865">
 									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="2"/>
 										<Property Name="CenterPercentage" Type="int32">
 											<ValueList>
-												<Value>100</Value>
+												<Value>24</Value>
 											</ValueList>
 										</Property>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
-										<Property Name="OverrideOutput" Type="bool" Value="True"/>
 										<Property Name="OverridePositioning" Type="bool" Value="True"/>
 										<Property Name="Pitch" Type="int32">
 											<RTPCList>
@@ -2547,7 +2599,7 @@
 										</Property>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>-5</Value>
+												<Value>-9</Value>
 											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{3E414716-F5A8-4536-95AC-CAF7397AA454}" ShortID="214201735">
@@ -2622,6 +2674,9 @@
 										</Property>
 									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="aircraft_player_outside_turbofan_jet_5000m_jetwhine" ID="{7C768AD4-32ED-40D6-9E2D-E407E92E6761}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 										</Reference>
@@ -2650,7 +2705,11 @@
 										<CustomStateList>
 											<CustomState>
 												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{96946669-2704-4271-AFB8-09165F292A82}" ShortID="408848655"/>
+												<CustomState Name="" ID="{96946669-2704-4271-AFB8-09165F292A82}" ShortID="408848655">
+													<PropertyList>
+														<Property Name="Volume" Type="Real64" Value="-2"/>
+													</PropertyList>
+												</CustomState>
 											</CustomState>
 											<CustomState>
 												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
