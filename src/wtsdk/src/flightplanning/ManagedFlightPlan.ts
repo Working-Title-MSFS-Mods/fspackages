@@ -84,6 +84,14 @@ export class ManagedFlightPlan {
     return lastSeg.offset + lastSeg.waypoints.length + (this.hasDestination ? 1 : 0);
   }
 
+  public get checksum():number {
+    let checksum = 0;
+    const waypoints = this.waypoints;
+    for( let i = 0; i < waypoints.length; i++)
+        checksum += waypoints[i].infos.coordinates.lat;
+    return checksum;
+  }
+
   /** The non-approach waypoints of the flight plan. */
   public get nonApproachWaypoints(): WayPoint[] {
     const waypoints = [];
