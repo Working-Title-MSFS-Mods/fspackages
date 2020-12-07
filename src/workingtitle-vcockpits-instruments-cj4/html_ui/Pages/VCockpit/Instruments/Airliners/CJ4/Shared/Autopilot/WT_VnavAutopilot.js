@@ -50,6 +50,7 @@ class WT_VnavAutopilot {
             //CONSTRAINT DATA
             if (this._vnav._vnavConstraintType) {
                 this._constraintExists = true;
+                console.log("this._constraintExists = true");
             }
             else {
                 this._constraintExists = false;
