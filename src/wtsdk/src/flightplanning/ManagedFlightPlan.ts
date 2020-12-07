@@ -752,10 +752,9 @@ export class ManagedFlightPlan {
    * @returns The found runway, if any.
    */
   public getRunway(runways: OneWayRunway[], runwayName: string): OneWayRunway {
-    if (this.destinationAirfield) {
-      const runways = (this.destinationAirfield.infos as AirportInfo).oneWayRunways;
+    if (runways.length > 0) {
       let runwayIndex;
-
+      runwayName = runwayName.replace('RW', '');
       const runwayLetter = runwayName[runwayName.length - 1];
       if (runwayLetter === ' ' || runwayLetter === 'C') {
         const runwayDirection = runwayName.trim();
