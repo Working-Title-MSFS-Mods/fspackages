@@ -12,6 +12,7 @@ class WT_Frequency_List_Model {
         this.frequencies.value = frequencies;
     }
     selectFrequency(mhz, bcd) {
+        console.log(bcd);
         if (mhz >= 118) {
             this.comFrequencies.selectFrequency(bcd);
         } else {
@@ -34,6 +35,10 @@ class WT_Frequency_List_Input_Layer extends Selectables_Input_Layer {
 
 class WT_Frequency_List_View extends WT_HTML_View {
     connectedCallback() {
+        if (this.initialised)
+            return;
+        this.initialised = true;
+
         super.connectedCallback();
         DOMUtilities.AddScopedEventListener(this, ".value", "selected", e => {
             this.model.selectFrequency(parseFloat(e.target.dataset.mhz), parseInt(e.target.dataset.bcd));

@@ -152,47 +152,63 @@ class WT_Airport_Information_View extends WT_HTML_View {
     }
     activate(inputStack, intent) {
         this.elements.map.appendChild(this.map);
+        this.map.setZoom(15);
+
         this.softKeyMenuHandler = this.menuHandler.show(this.softKeyMenu);
 
         if (intent) {
             this.model.setWaypoint(intent.waypoint);
         }
 
-        this.subscriptions.add(
-            rxjs.combineLatest(this.model.waypoint.observable, this.model.airportData).subscribe(([airport, airportData]) => {
-                if (airport) {
-                    this.elements.waypointInput.value = airport;
-                    let infos = airport.infos;
-                    const elevation = Math.max(...infos.runways.map(runway => runway.elevation));
+        const info$ = this.model.waypoint.observable.pipe(
+            rxjs.operators.map(airport => airport ? airport.infos : null),
+            rxjs.operators.shareReplay(1)
+        );
+        const airportData$ = this.model.airportData;
 
-                    switch (infos.privateType) {
-                        case 0:
-                            this.elements.public.textContent = "Unknown";
-                            break;
-                        case 1:
-                            this.elements.public.textContent = "Public";
-                            break;
-                        case 2:
-                            this.elements.public.textContent = "Military";
-                            break;
-                        case 3:
-                            this.elements.public.textContent = "Private";
-                            break;
-                    }
-                    const timezone = airportData ? Math.floor(airportData.timezoneOffset / 3600 * 10) / 10 : null;
-                    const country = airportData ? airportData.country : null;
-                    this.elements.country.textContent = country ? country : `____________`;
-                    this.elements.elevation.innerHTML = `${(elevation * 3.28084).toFixed(0)}<span class="units">FT</span>`;
-                    this.elements.runwaySelector.setFromWaypoint(airport);
-                    this.frequencyListModel.setFrequencies(infos.frequencies);
-                    this.elements.timezone.textContent = timezone !== null ? `UTC${timezone >= 0 ? "+" : ""}${timezone}` : "___";
-                } else {
-                    this.elements.public.textContent = `________`
-                    this.elements.country.textContent = `____________`;
-                    this.elements.elevation.innerHTML = `_____<span class="units">FT</span>`;
-                    this.elements.timezone.textContent = `___`;
+        const handleInfo = (source$, map, empty, element) => {
+            return source$.pipe(
+                rxjs.operators.map(info => info ? map(info) : empty),
+                rxjs.operators.distinctUntilChanged(),
+            ).subscribe(html => element.innerHTML = html);
+        }
+
+        this.subscriptions.add(
+            // Elevation
+            handleInfo(info$, airport => {
+                const elevation = Math.max(...airport.runways.map(runway => runway.elevation));
+                return `${(elevation * 3.28084).toFixed(0)}<span class="units">FT</span>`;
+            }, `_____<span class="units">FT</span>`, this.elements.elevation),
+
+            // Public
+            handleInfo(info$, airport => {
+                switch (airport.privateType) {
+                    case 1:
+                        return "Public";
+                    case 2:
+                        return "Military";
+                    case 3:
+                        return "Private";
                 }
-            }),
+                return "Unknown";
+            }, `________`, this.elements.public),
+
+            // Country
+            handleInfo(airportData$, airport => airport.country, `____________`, this.elements.country),
+
+            // Runways
+            this.model.waypoint.observable.subscribe(airport => this.elements.runwaySelector.setFromWaypoint(airport)),
+
+            // Frequencies
+            info$.subscribe(airport => this.frequencyListModel.setFrequencies(airport ? airport.frequencies : [])),
+
+            // Timezone
+            handleInfo(airportData$, airport => {
+                const timezone = Math.floor(airport.timezoneOffset / 3600 * 10) / 10;
+                return timezone !== null ? `UTC${timezone >= 0 ? "+" : ""}${timezone}` : "___";
+            }, `___`, this.elements.timezone),
+
+            // Weather
             this.viewMode.observable.pipe(
                 rxjs.operators.switchMap(mode => {
                     if (mode == "WX") {
@@ -223,12 +239,11 @@ class WT_Airport_Information_View extends WT_HTML_View {
                                 return `${lines.join("<br/>")}<hr />${metar.metar}`;
                             }),
                             rxjs.operators.startWith("Loading..."),
-                            rxjs.operators.tap(html => this.elements.metar.innerHTML = html)
                         )
                     }
                     return rxjs.empty()
                 })
-            ).subscribe()
+            ).subscribe(html => this.elements.metar.innerHTML = html)
         );
     }
     deactivate() {

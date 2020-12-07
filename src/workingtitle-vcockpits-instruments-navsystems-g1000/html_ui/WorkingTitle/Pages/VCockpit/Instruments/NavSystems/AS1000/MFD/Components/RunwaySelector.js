@@ -36,6 +36,10 @@ class WT_Runway_Selector_View extends WT_HTML_View {
      * @param {Waypoint} waypoint 
      */
     setFromWaypoint(waypoint) {
+        if (!waypoint) {
+            this.setRunways([]);
+            return;
+        }
         let infos = waypoint.infos;
         let runways = {};
         let selectedRunway = "";

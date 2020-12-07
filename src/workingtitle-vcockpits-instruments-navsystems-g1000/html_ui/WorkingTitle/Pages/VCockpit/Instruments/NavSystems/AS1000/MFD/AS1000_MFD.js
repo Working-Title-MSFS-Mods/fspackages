@@ -72,7 +72,7 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("utilityView", d => new WT_Utility_Page_View(d.softKeyMenuHandler, d.confirmDialogHandler, d.unitChooser), { scope: "transient" });
 
         d.register("systemSettingsModel", d => new WT_System_Settings_Model(d.settings), { scope: "transient" });
-        d.register("systemSettingsView", d => new WT_System_Settings_View(d.softKeyMenuHandler), { scope: "transient" });
+        d.register("systemSettingsView", d => new WT_System_Settings_View(d.update$, d.softKeyMenuHandler), { scope: "transient" });
 
         d.register("modSettingsModel", d => new WT_Mod_Settings_Model(d.modSettings), { scope: "transient" });
         d.register("modSettingsView", d => new WT_Mod_Settings_View(d.softKeyMenuHandler), { scope: "transient" });

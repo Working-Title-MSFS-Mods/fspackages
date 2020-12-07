@@ -97,9 +97,11 @@ class WT_Map_View extends WT_HTML_View {
         this.softKeyController.setMenu(this.menus.main);
         this.appendChild(this.model.mapElement);
 
+        this.model.mapElement.setZoom(15);
         setTimeout(() => {
-            if (this.model.mapElement.isInit())
+            if (this.model.mapElement.isInit()) {
                 this.model.mapElement.centerOnPlane();
+            }
         }, 500); // This needs sorting out. centerOnPlane doesn't work before an initial update cycle
     }
     deactivate() {

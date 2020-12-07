@@ -962,7 +962,10 @@
             <section class="category">
                 <h1>COM Config</h1>
                 <div class="content">
-                    <div class="element"><label>Channel Spacing</label><div id="Setup_ChannelConfig" class="value Selectable">25.0 kHz</div></div>
+                    <div class="element">
+                        <label>Channel Spacing</label>
+                        <toggle-switch class="value" values="25 kHz,8.33 kHz" data-element="channelSpacing" data-change="setChannelSpacing"></toggle-switch>
+                    </div>
                 </div>
             </section>
             <section class="category">
