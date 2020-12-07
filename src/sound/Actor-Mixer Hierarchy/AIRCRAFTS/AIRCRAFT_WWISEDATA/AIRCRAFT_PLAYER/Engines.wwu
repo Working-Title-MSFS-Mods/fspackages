@@ -747,12 +747,7 @@
 							<ChildrenList>
 								<Sound Name="CJ4_Engine_Combustion_Outside" ID="{388B99E6-D34A-495A-BEA3-09C3F0AB6A69}" ShortID="37099382">
 									<PropertyList>
-										<Property Name="3DSpatialization" Type="int16" Value="2"/>
-										<Property Name="CenterPercentage" Type="int32">
-											<ValueList>
-												<Value>100</Value>
-											</ValueList>
-										</Property>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
 										<Property Name="Lowpass" Type="int16">
 											<RTPCList>
@@ -837,9 +832,10 @@
 												</RTPC>
 											</RTPCList>
 										</Property>
+										<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="52"/>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>-7</Value>
+												<Value>-5</Value>
 											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{A62812F7-01C2-4C47-9DEF-69E65CCE8009}" ShortID="252007089">
@@ -859,8 +855,13 @@
 																<Flags>5</Flags>
 															</Point>
 															<Point>
-																<XPos>17.73795</XPos>
+																<XPos>12.89246</XPos>
 																<YPos>-200</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>19.2089</XPos>
+																<YPos>0</YPos>
 																<Flags>0</Flags>
 															</Point>
 															<Point>
@@ -869,8 +870,8 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>67.0225</XPos>
-																<YPos>-15.79911</YPos>
+																<XPos>67.28208</XPos>
+																<YPos>-7.63381</YPos>
 																<Flags>0</Flags>
 															</Point>
 															<Point>
@@ -1563,7 +1564,7 @@
 														<PointList>
 															<Point>
 																<XPos>0</XPos>
-																<YPos>52</YPos>
+																<YPos>59</YPos>
 																<Flags>5</Flags>
 															</Point>
 															<Point>
@@ -1662,7 +1663,7 @@
 										</Property>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>-5</Value>
+												<Value>-3</Value>
 											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{6424A141-AB6D-4189-83DD-4C426DBD7B11}" ShortID="3266468">
@@ -2540,12 +2541,20 @@
 							<ChildrenList>
 								<Sound Name="CJ4_Engine_Combustion_Outside" ID="{F3030412-070C-47DB-9E46-A27240792FEC}" ShortID="418630270">
 									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
 										<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 										<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 										<Property Name="OverrideOutput" Type="bool" Value="True"/>
+										<Property Name="OverridePositioning" Type="bool" Value="True"/>
 										<Property Name="Priority" Type="int16">
 											<ValueList>
 												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="52"/>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-4</Value>
 											</ValueList>
 										</Property>
 									</PropertyList>
@@ -2666,18 +2675,21 @@
 							<ChildrenList>
 								<Sound Name="CJ4_Engine_Combustion_Outside" ID="{6E304D43-43B7-4EAB-A6AB-228A4A06C8F3}" ShortID="548089303">
 									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
 										<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 										<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
-										<Property Name="InitialDelay" Type="Real64">
-											<ValueList>
-												<Value>5</Value>
-											</ValueList>
-										</Property>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
 										<Property Name="OverrideOutput" Type="bool" Value="True"/>
+										<Property Name="OverridePositioning" Type="bool" Value="True"/>
 										<Property Name="Priority" Type="int16">
 											<ValueList>
 												<Value>100</Value>
+											</ValueList>
+										</Property>
+										<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="52"/>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-4</Value>
 											</ValueList>
 										</Property>
 									</PropertyList>
@@ -2806,6 +2818,11 @@
 								<Sound Name="Williams FJ44-4A Shutdown Exterior_edit" ID="{ADD76001-F7DF-4CEC-AFEC-3687180E689F}" ShortID="146167410">
 									<PropertyList>
 										<Property Name="OverrideOutput" Type="bool" Value="True"/>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-2</Value>
+											</ValueList>
+										</Property>
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Conversion">
@@ -2818,10 +2835,10 @@
 									<ChildrenList>
 										<AudioFileSource Name="Williams FJ44-4A Shutdown Exterior_edit" ID="{4544FA1C-6B42-438E-B73E-0886548AF3DE}">
 											<PropertyList>
-												<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+												<Property Name="LoopBegin" Type="Real64" Value="1.78625925019491"/>
 												<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
 												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-												<Property Name="TrimBegin" Type="Real64" Value="1.19197684675123"/>
+												<Property Name="TrimBegin" Type="Real64" Value="1.24398"/>
 												<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
 											</PropertyList>
 											<Language>SFX</Language>
