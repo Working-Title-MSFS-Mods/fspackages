@@ -235,16 +235,35 @@ class WT_VnavAutopilot {
             this.recalculate();
         }
         
-        if (!this._pathActive) {
+        if (!this._pathActive && this._constraintExists) {
             //NO PATH, SET ALT CONSTRAINTS
             if (this._vnav._vnavConstraintWaypoint && this._vnav._vnavConstraintWaypoint == this._vnav._activeWaypoint) {
                 if (this._navModeSelector.currentVerticalActiveState == VerticalNavModeState.PTCH
                      || this._navModeSelector.currentVerticalActiveState == VerticalNavModeState.VS 
                      || this._navModeSelector.currentVerticalActiveState == VerticalNavModeState.FLC) {
-                        //const altSlot = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number");
-                        const altSet = this._navModeSelector.selectedAlt2;
-                        if (altSet != this._vnavConstraintAltitude) {
+                        const altSlot = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number");
+                        const altSet1 = this._navModeSelector.selectedAlt1;
+                        const altSet2 = this._navModeSelector.selectedAlt2;
+                        if (Math.round(altSet2) != Math.round(this._vnav._vnavConstraintAltitude)) {
                             this.setTargetAltitude(this._vnav._vnavConstraintAltitude);
+                        }
+                        if (this._vnav._currentFlightSegment.type == SegmentType.Departure) {
+                            //CLIMB CONSTRAINTS
+                            if (altSet1 > altSet2 && altSlot == 1) {
+                                SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
+                            }
+                            else if (altSlot == 2) {
+                                SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+                            }
+                        }
+                        else if (this._vnav._currentFlightSegment.type != SegmentType.Departure) {
+                            //DESCENT CONSTRAINTS
+                            if (altSet1 < altSet2 && altSlot == 1) {
+                                SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
+                            }
+                            else if (altSlot == 2) {
+                                SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+                            }
                         }
                      }
             }
