@@ -2547,7 +2547,7 @@
 										</Property>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>-8</Value>
+												<Value>-5</Value>
 											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{3E414716-F5A8-4536-95AC-CAF7397AA454}" ShortID="214201735">
@@ -2656,7 +2656,7 @@
 												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
 												<CustomState Name="" ID="{A3CDD1EF-34AF-42F9-AB78-E59EAF97C335}" ShortID="781169400">
 													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-6"/>
+														<Property Name="Volume" Type="Real64" Value="-9"/>
 													</PropertyList>
 												</CustomState>
 											</CustomState>
@@ -2703,7 +2703,6 @@
 								<Property Name="OverrideAnalysis" Type="bool" Value="True"/>
 								<Property Name="OverrideOutput" Type="bool" Value="True"/>
 								<Property Name="OverridePositioning" Type="bool" Value="True"/>
-								<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 								<Property Name="Priority" Type="int16">
 									<ValueList>
 										<Value>100</Value>
@@ -2756,7 +2755,7 @@
 									<ObjectRef Name="NoDCOffset_Conversion_Settings" ID="{2463764E-1C92-49C9-B7B9-69C9CD89583D}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 								</Reference>
 								<Reference Name="OutputBus">
-									<ObjectRef Name="combustion_outside_generic" ID="{7FF9CAE6-1D75-4441-8E63-E1F32BD1EEC0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+									<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 								</Reference>
 								<Reference Name="UserAuxSend0">
 									<ObjectRef Name="rev_outdoor_aircraft" ID="{3070D14E-37F3-4DB4-8C7E-262318A02693}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
@@ -2781,7 +2780,7 @@
 										<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="52"/>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>-4</Value>
+												<Value>-6</Value>
 											</ValueList>
 										</Property>
 									</PropertyList>
@@ -2890,7 +2889,7 @@
 									<ObjectRef Name="NoDCOffset_Conversion_Settings" ID="{2463764E-1C92-49C9-B7B9-69C9CD89583D}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 								</Reference>
 								<Reference Name="OutputBus">
-									<ObjectRef Name="combustion_outside_generic" ID="{7FF9CAE6-1D75-4441-8E63-E1F32BD1EEC0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+									<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 								</Reference>
 								<Reference Name="UserAuxSend0">
 									<ObjectRef Name="rev_outdoor_aircraft" ID="{3070D14E-37F3-4DB4-8C7E-262318A02693}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
