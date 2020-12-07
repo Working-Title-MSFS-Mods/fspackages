@@ -162,4 +162,19 @@ class WT_RX {
             );
         }
     }
+    /**
+     * @param {HTMLElement} element 
+     */
+    static setInnerHtml(element) {
+        return v => element.innerHTML = v;
+    }
+    /**
+     * @param {HTMLElement} element 
+     */
+    static setTextContent(element) {
+        return v => element.textContent = v;
+    }
+    static setValue(element) {
+        return v => element.value = v;
+    }
 }

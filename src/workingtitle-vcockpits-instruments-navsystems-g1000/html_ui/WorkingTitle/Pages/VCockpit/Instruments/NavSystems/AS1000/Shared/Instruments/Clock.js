@@ -38,5 +38,14 @@ class WT_Clock {
             (coordinates, date) => SunriseSunsetJS.getSunset(coordinates.lat, coordinates.long, date)
         ).pipe(rxjs.operators.shareReplay(1));
     }
+    getTimer(frequency = 1000) {
+        return this.absoluteTime.pipe(
+            rxjs.operators.throttleTime(frequency),
+            rxjs.operators.pairwise(),
+            rxjs.operators.map(([a, b]) => b - a),
+            rxjs.operators.filter(delta => delta < (frequency * 2) && delta >= 0), // Values over 2x the frequency probably caused by pausing the game so we should ignore those
+            rxjs.operators.scan((previous, current) => previous + current, 0),
+        );
+    }
 }
 WT_Clock.SUN_EVENT_RESOLUTION = 20; // How far in NM the plane needs to move before we bother recalculating sunrise/sunset

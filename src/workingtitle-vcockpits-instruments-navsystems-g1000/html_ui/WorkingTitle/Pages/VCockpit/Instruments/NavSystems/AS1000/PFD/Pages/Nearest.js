@@ -18,6 +18,8 @@ class WT_PFD_Nearest_Airports_Input_Layer extends Selectables_Input_Layer {
 class WT_PFD_Nearest_View extends WT_HTML_View {
     constructor() {
         super();
+
+        this.activated$ = new rxjs.Subject();
     }
     /**
      * @param {WT_Nearest_Airports_Model} model 
@@ -25,7 +27,16 @@ class WT_PFD_Nearest_View extends WT_HTML_View {
     setModel(model) {
         this.model = model;
         this.inputLayer = new WT_PFD_Nearest_Airports_Input_Layer(this.model, this);
-        model.airports.subscribe(this.updateAirports.bind(this));
+
+        this.activated$.pipe(
+            rxjs.operators.switchMap(activated => {
+                if (activated) {
+                    return model.airports;
+                } else {
+                    return rxjs.empty();
+                }
+            })
+        ).subscribe(this.updateAirports.bind(this));
     }
     updateAirports(airports) {
         const listElement = this.elements.airportList;
@@ -91,9 +102,11 @@ class WT_PFD_Nearest_View extends WT_HTML_View {
     activate() {
         this.model.subscribe();
         this.inputLayer.refreshSelected();
+        this.activated$.next(true);
     }
     deactivate() {
         this.model.unsubscribe();
+        this.activated$.next(false);
     }
 }
 customElements.define("g1000-pfd-nearest-airports", WT_PFD_Nearest_View);

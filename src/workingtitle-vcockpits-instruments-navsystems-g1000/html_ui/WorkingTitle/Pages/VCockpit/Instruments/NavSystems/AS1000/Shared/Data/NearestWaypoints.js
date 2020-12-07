@@ -49,18 +49,23 @@ class WT_Nearest_Waypoints_Repository {
 
         const sortByDistance = (a, b) => a.distance - b.distance;
 
-        const waypointsObservable = (updater, waypointsObservable) => rxjs.merge(
+        const waypointsObservable = (updater, upToDateCheck, waypointsObservable) => rxjs.merge(
             lowResCoordinates$.pipe(
-                rxjs.operators.switchMapTo(rxjs.interval(100).pipe(
-                    rxjs.operators.takeWhile(i => i < 8),
-                    rxjs.operators.tap(updater)
-                )),
+                rxjs.operators.switchMap(d => {
+                    //updater();
+                    return rxjs.interval(100).pipe(
+                        rxjs.operators.tap(updater),
+                        //rxjs.operators.takeWhile(upToDateCheck),
+                        rxjs.operators.take(4)
+                    )
+                }),
                 rxjs.operators.ignoreElements()
             ), waypointsObservable
         ).pipe(rxjs.operators.share())
 
         this.airports = waypointsObservable(
             () => this.updateNearestAirports(),
+            () => !this.nearestAirportList.IsUpToDate(),
             rxjs.combineLatest(
                 throttledUpdate$.pipe(rxjs.operators.map(dt => this.nearestAirportList.airports)),
                 airportFilter$,
@@ -69,13 +74,21 @@ class WT_Nearest_Waypoints_Repository {
                     .slice(0, this.loadSettings.airports.count)),
         );
 
+        this.allAirports = waypointsObservable(
+            () => this.updateNearestAirports(),
+            () => !this.nearestAirportList.IsUpToDate(),
+            throttledUpdate$.pipe(rxjs.operators.map(dt => this.nearestAirportList.airports.sort(sortByDistance)))
+        );
+
         this.vors = waypointsObservable(
             () => this.updateNearestVors(),
+            () => !this.nearestVorList.IsUpToDate(),
             throttledUpdate$.pipe(rxjs.operators.map(dt => this.nearestVorList.vors.sort(sortByDistance)))
         );
 
         this.ndbs = waypointsObservable(
             () => this.updateNearestNdbs(),
+            () => !this.nearestNdbList.IsUpToDate(),
             throttledUpdate$.pipe(rxjs.operators.map(dt => this.nearestNdbList.ndbs.sort(sortByDistance)))
         );
     }
@@ -103,7 +116,7 @@ class WT_Nearest_Waypoints_Repository {
         return true;
     }
     updateNearestAirports() {
-        //console.log("Fired off update for airports");
+        console.log("Fired off update for airports");
         this.nearestAirportList.Update(this.loadSettings.airports.loadCount, this.loadSettings.airports.distance);
     }
     updateNearestVors() {

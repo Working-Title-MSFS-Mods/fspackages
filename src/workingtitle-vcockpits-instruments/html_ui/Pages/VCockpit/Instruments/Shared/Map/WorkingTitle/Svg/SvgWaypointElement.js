@@ -138,6 +138,8 @@ class SvgWaypointElement extends SvgMapElement {
             this.x = pos.x;
             this.y = pos.y;
         }
+        this.x = Math.floor(this.x / 10) * 10;
+        this.y = Math.floor(this.y / 10) * 10;
         let isActiveWaypoint = this.isActiveWaypoint();
         if (isActiveWaypoint != this._lastIsActiveWaypoint) {
             if (this._image) {

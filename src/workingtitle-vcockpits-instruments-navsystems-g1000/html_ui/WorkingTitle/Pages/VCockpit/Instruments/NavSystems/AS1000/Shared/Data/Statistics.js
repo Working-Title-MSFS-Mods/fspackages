@@ -13,7 +13,6 @@ class WT_Plane_Statistics {
         );
 
         const movement$ = planeState.getLowResCoordinates(0.02).pipe(
-            rxjs.operators.shareReplay(1),
             rxjs.operators.pairwise(),
             rxjs.operators.map(([a, b]) => Avionics.Utils.computeDistance(a, b) * 1.852),
             rxjs.operators.startWith(0)
@@ -48,13 +47,7 @@ class WT_Plane_Statistics {
             rxjs.operators.shareReplay(1)
         );
 
-        const totalTime$ = clock.absoluteTime.pipe(
-            rxjs.operators.throttleTime(500),
-            rxjs.operators.pairwise(),
-            rxjs.operators.map(([a, b]) => b - a),
-            rxjs.operators.filter(delta => delta < 1), // Values over 1 probably caused by pausing the game so we should ignore those
-            rxjs.operators.scan((previous, current) => previous + current, 0),
-        );
+        const totalTime$ = clock.getTimer();
 
         const distanceTime$ = movement$.pipe(
             rxjs.operators.scan((previous, current) => previous + current, 0),
@@ -67,8 +60,8 @@ class WT_Plane_Statistics {
             rxjs.operators.shareReplay(1)
         );
 
-        this.averageGroundSpeed.subscribe(() => { });
-        this.tripOdometer.subscribe(() => { });
+        this.averageGroundSpeed.subscribe();
+        this.tripOdometer.subscribe();
 
         update$.pipe(
             rxjs.operators.throttleTime(WT_Plane_Statistics.PERSIST_FREQUENCY),
@@ -79,32 +72,36 @@ class WT_Plane_Statistics {
         });
 
         this.inAirTimer = inAir$.pipe(
-            rxjs.operators.switchMap(inAir => inAir ? totalTime$ : rxjs.of(null)),
+            rxjs.operators.switchMap(inAir => inAir ? totalTime$ : rxjs.empty()),
+            rxjs.operators.startWith(null),
             rxjs.operators.shareReplay(1)
         );
-        this.inAirTimer.subscribe(() => { });
+        this.inAirTimer.subscribe();
 
         this.powerOnTimer = planeState.electricity.observable.pipe(
-            rxjs.operators.switchMap(on => on ? totalTime$ : rxjs.of(null)),
+            rxjs.operators.switchMap(on => on ? totalTime$ : rxjs.empty()),
+            rxjs.operators.startWith(null),
             rxjs.operators.shareReplay(1)
         );
-        this.powerOnTimer.subscribe(() => { });
+        this.powerOnTimer.subscribe();
 
         this.inAirDepartureTime = inAir$.pipe(
             rxjs.operators.switchMap(inAir => inAir ? clock.localTime.pipe(
                 rxjs.operators.first()
-            ) : rxjs.of(null)),
+            ) : rxjs.empty()),
+            rxjs.operators.startWith(null),
             rxjs.operators.shareReplay(1)
         );
-        this.inAirDepartureTime.subscribe(() => { });
+        this.inAirDepartureTime.subscribe();
 
         this.powerOnDepartureTime = planeState.electricity.observable.pipe(
             rxjs.operators.switchMap(inAir => inAir ? clock.localTime.pipe(
                 rxjs.operators.first()
-            ) : rxjs.of(null)),
+            ) : rxjs.empty()),
+            rxjs.operators.startWith(null),
             rxjs.operators.shareReplay(1)
         );
-        this.powerOnDepartureTime.subscribe(() => { });
+        this.powerOnDepartureTime.subscribe();
     }
     resetStatistics() {
         this.resetOdometer$.next(0);

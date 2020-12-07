@@ -17,18 +17,23 @@ class WT_Show_Airways_Handler {
             this.pageContainer.appendChild(view);
             view.setModel(model);
 
-            view.onLoad.subscribe(waypoints => {
-                resolve(waypoints);
-                view.exit();
-            });
-            view.onCancel.subscribe(() => {
-                view.exit();
-            });
-            view.onExit.subscribe(() => {
-                view.deactivate();
-                this.pageContainer.removeChild(view);
-                reject();
-            });
+            const subscriptions = new Subscriptions();
+
+            subscriptions.add(
+                view.onLoad.subscribe(waypoints => {
+                    resolve(waypoints);
+                    view.exit();
+                }),
+                view.onCancel.subscribe(() => {
+                    view.exit();
+                }),
+                view.onExit.subscribe(() => {
+                    view.deactivate();
+                    this.pageContainer.removeChild(view);
+                    subscriptions.unsubscribe();
+                    reject();
+                })
+            );
 
             view.enter(this.inputStack);
             view.activate();

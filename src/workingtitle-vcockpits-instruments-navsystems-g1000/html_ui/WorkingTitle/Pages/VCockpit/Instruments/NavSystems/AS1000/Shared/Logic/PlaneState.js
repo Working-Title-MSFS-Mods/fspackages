@@ -20,6 +20,7 @@ class WT_Plane_State {
         this.groundSpeed = WT_RX.observeSimVar(update$, "GPS GROUND SPEED", "kilometers per hour");
         
         this.heading = WT_RX.observeSimVar(update$, "PLANE HEADING DEGREES MAGNETIC", "degree");
+        this.trueHeading = WT_RX.observeSimVar(update$, "PLANE HEADING DEGREES TRUE", "degree");
         this.track = WT_RX.observeSimVar(update$, "GPS GROUND MAGNETIC TRACK", "degrees");
 
         this.indicatedAltitude = WT_RX.observeSimVar(update$, "INDICATED ALTITUDE", "feet");

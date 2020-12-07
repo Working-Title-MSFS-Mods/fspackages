@@ -78,7 +78,7 @@ class WT_Page_Controller {
 
         this.pageSelection = new Subject();
 
-        this.debounceShowPage = DOMUtilities.debounce((intent) => {
+        this.debounceShowPage = DOMUtilities.debounce(intent => {
             let page = this.selectedPage;
             if (this.currentPage == page)
                 return;
@@ -86,6 +86,58 @@ class WT_Page_Controller {
 
             this.pageTitle.value = `${this.selectedGroup.name} - ${page.title}`;
         }, 300, false);
+
+
+        /*this.showPage$ = new rxjs.Subject();
+
+        const page$ = this.showPage$.pipe(
+            rxjs.operators.startWith(null),
+            rxjs.operators.distinctUntilChanged((a, b) => {
+                if (a == null)
+                    return false;
+                return a.page != b.page;
+            }),
+            rxjs.operators.pairwise()
+        );
+
+        this.toggleEnter$ = new rxjs.Subject();
+
+        page$.pipe(
+            rxjs.operators.switchMap(([previousPageState, pageState]) => {
+                if (pageState == null)
+                    return rxjs.empty();
+
+
+                const page = pageState.page;
+                const view = page.initialise(this.pageContainer);
+                view.activate(this.inputStack, pageState.intent);
+
+                let obs = this.toggleEnter$;
+                if (pageState.enter)
+                    obs = obs.pipe(rxjs.operators.startWith(null));
+                obs = obs.pipe(
+                    rxjs.operators.scan(entered => {
+                        if (entered) {
+                            view.exit();
+                            return false;
+                        } else {
+                            return view.enter(this.inputStack) === false ? false : true;
+                        }
+                    }, false),
+                    rxjs.operators.startWith(false),
+                    rxjs.operators.last(),
+                    rxjs.operators.tap(entered => {
+                        if (entered) {
+                            view.exit();
+                        }
+                        view.deactivate();
+                        this.pageContainer.removeChild(view);
+                    })
+                );
+                return obs;
+            })
+        ).subscribe();*/
+
     }
     get numGroups() {
         return this.pageGroups.length;
@@ -117,6 +169,14 @@ class WT_Page_Controller {
         this.inputStack.push(this.inputLayer);
     }
     showPage(page, activate = false, intent = null) {
+        /*this.showPage$.next({
+            page: page,
+            enter: activate,
+            intent: intent,
+        });
+
+        return;*/
+
         if (this.currentPageView) {
             this.currentPageView.deactivate();
             if (this.currentPageEntered)
@@ -162,6 +222,8 @@ class WT_Page_Controller {
         this.showSelectedPage();
     }
     togglePageEntered() {
+        /*this.toggleEnter$.next();
+        return;*/
         if (this.currentPageEntered) {
             this.currentPageView.exit();
             this.currentPageEntered = false;

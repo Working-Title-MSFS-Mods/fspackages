@@ -25,6 +25,152 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
 
         this.t = 0;
 
+        // Waypoints
+        this.waypoints$ = new rxjs.BehaviorSubject([]);
+        const numWaypoints$ = this.waypoints$.pipe(rxjs.operators.map(waypoints => waypoints.length));
+
+        // Flight Plan
+        this.flightPlan$ = new rxjs.Subject();
+        this.newWaypointLineSelected$ = new rxjs.Subject();
+
+        this.canRemoveApproach$ = this.flightPlan$.pipe(rxjs.operators.map(flightPlan => flightPlan.approach.length > 0))
+        this.canRemoveDeparture$ = this.flightPlan$.pipe(rxjs.operators.map(flightPlan => flightPlan.departure.length > 0))
+        this.canRemoveArrival$ = this.flightPlan$.pipe(rxjs.operators.map(flightPlan => flightPlan.arrival.length > 0))
+        this.canDeleteFlightPlan$ = numWaypoints$.pipe(rxjs.operators.map(num => num > 0));
+
+        // Selected waypoints
+        this.selectedWaypointIndex$ = new rxjs.BehaviorSubject(null);
+        this.selectedWaypoint$ = rxjs.combineLatest(
+            this.waypoints$,
+            this.selectedWaypointIndex$,
+            (waypoints, index) => index !== null ? waypoints[index] : null
+        );
+
+        const mapEventToSelectedindex = rxjs.pipe(
+            rxjs.operators.withLatestFrom(this.selectedWaypointIndex$),
+            rxjs.operators.map(([_, selectedWaypointIndex]) => selectedWaypointIndex),
+            rxjs.operators.filter(waypointIndex => waypointIndex !== null)
+        );
+
+        const lastWaypointIndex$ = numWaypoints$.pipe(
+            rxjs.operators.map(num => num > 0 ? num - 1 : null)
+        );
+
+        const addWaypointIndex$ = rxjs.combineLatest(
+            this.selectedWaypointIndex$,
+            numWaypoints$,
+            (index, lastIndex) => index !== null ? index : lastIndex
+        );
+
+        // Previous waypoint
+        this.previousWaypointIndex$ = rxjs.combineLatest(
+            lastWaypointIndex$,
+            this.selectedWaypointIndex$,
+            (lastIndex, selectedIndex) => selectedIndex > 0 ? (selectedIndex - 1) : lastIndex
+        )
+        this.previousWaypoint$ = rxjs.combineLatest(
+            this.waypoints$,
+            this.previousWaypointIndex$,
+            (waypoints, index) => index !== null ? waypoints[index] : null
+        );
+
+        // Activate leg
+        this.canActivateLeg$ = this.selectedWaypoint$.pipe(
+            rxjs.operators.map(waypoint => waypoint != null)
+        );
+
+        // Activate waypoint
+        this.activateWaypointIndex$ = new rxjs.Subject();
+        this.activateWaypointIndex$.pipe(
+            mapEventToSelectedindex,
+            rxjs.operators.switchMap(waypointIndex => {
+                if (this.isWaypointIndexApproach(waypointIndex)) {
+                    return rxjs.from(
+                        new Promise(resolve => this.flightPlan.activateApproach(resolve))
+                    ).pipe(
+                        rxjs.operators.mapTo(waypointIndex - this.approachWaypointIndex)
+                    );
+                }
+                return rxjs.of(waypointIndex);
+            }),
+            rxjs.operators.switchMap(waypointIndex => rxjs.from(new Promise(resolve => {
+                this.flightPlan.setActiveWaypointIndex(waypointIndex, resolve)
+            })))
+        ).subscribe();
+
+        // Delete waypoint
+        this.deleteWaypointIndex$ = new rxjs.Subject();
+        this.deleteWaypointIndex$.pipe(
+            mapEventToSelectedindex,
+            rxjs.operators.filter(waypointIndex => !this.isWaypointIndexApproach(waypointIndex)),
+            rxjs.operators.switchMap(waypointIndex =>
+                rxjs.from(new Promise(resolve => {
+                    this.flightPlan.removeWaypoint(waypointIndex, false, resolve)
+                }))
+            )
+        ).subscribe(() => this.updateWaypoints());
+
+        // Name
+        this.customName$ = new rxjs.BehaviorSubject(null);
+        this.name$ = rxjs.combineLatest(this.flightPlan$, this.customName$).pipe(
+            rxjs.operators.map(([flightPlan, custom]) => {
+                if (custom)
+                    return custom;
+                return `${flightPlan.origin ? flightPlan.origin.ident : "_____"} / ${flightPlan.destination ? flightPlan.destination.ident : "_____"}`;
+            })
+        );
+
+        // Airways
+        this.canSelectAirway$ = this.previousWaypoint$.pipe(
+            rxjs.operators.map(waypoint => waypoint ? (waypoint.infos.routes && waypoint.infos.routes.length > 0) : false)
+        );
+        this.showAirwaySelector$ = new rxjs.Subject();
+
+        //const selectedIndexNotNull = rxjs.operators.filter(e => e.selectedWaypointIndex != null);
+        const previousWaypointNotNull = rxjs.operators.filter(e => e.previousWaypoint != null);
+        const airwayWaypoints$ = this.showAirwaySelector$.pipe(
+            rxjs.operators.withLatestFrom(
+                this.previousWaypoint$,
+                addWaypointIndex$,
+                (_, previousWaypoint, index) => ({ previousWaypoint, index })
+            ),
+            previousWaypointNotNull,
+            rxjs.operators.switchMap(e => rxjs.from(
+                this.showAirwaysHandler.show(e.previousWaypoint.infos)
+                    .then(waypoints => waypoints.map((waypoint, i) => ({ index: e.index + i, icao: waypoint.icao })))
+            )),
+            rxjs.operators.switchMap(addWaypoints => rxjs.from(addWaypoints))
+        );
+
+        // Add waypoint
+        this.addWaypoint$ = new rxjs.Subject();
+        this.addWaypointAtIndex$ = new rxjs.Subject();
+
+        const concatMapAddWaypoints = rxjs.operators.concatMap(event => {
+            return rxjs.from(new Promise(resolve => {
+                if (this.getNumWaypoints() == 0) {
+                    console.log(`Added origin ${event.icao} at ${event.index}`);
+                    this.flightPlan.setOrigin(event.icao, resolve);
+                } else {
+                    console.log(`Added ${event.icao} at ${event.index}`);
+                    this.flightPlan.addWaypoint(event.icao, event.index, resolve);
+                }
+            }));
+        });
+
+        rxjs.merge(
+            this.addWaypointAtIndex$,
+            this.addWaypoint$.pipe(
+                rxjs.operators.withLatestFrom(addWaypointIndex$, (icao, index) => ({ icao, index })),
+                rxjs.operators.filter(e => e.index !== null)
+            ),
+        ).pipe(concatMapAddWaypoints).subscribe(() => this.updateWaypoints());
+
+        airwayWaypoints$.pipe(
+            concatMapAddWaypoints,
+            rxjs.operators.debounceTime(500),
+        ).subscribe(() => this.updateWaypoints())
+
         this.updateWaypoints();
     }
     setAltitude(waypointIndex, altitudeInFt) {
@@ -35,19 +181,11 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
             console.log(`Updated waypoint ${waypointIndex} altitude to ${altitudeInFt}`);
         });
     }
-    setActiveWaypoint(waypointIndex = null) {
-        waypointIndex = waypointIndex === null ? this.selectedWaypointIndex : waypointIndex;
-        if (this.isWaypointIndexApproach(waypointIndex)) {
-            waypointIndex -= this.approachWaypointIndex;
-        }
-        console.log(`Set active waypoint to ${waypointIndex}`);
-        this.flightPlan.setActiveWaypointIndex(waypointIndex);
+    setActiveWaypoint() {
+        this.activateWaypointIndex$.next();
     }
-    deleteWaypoint(waypointIndex) {
-        if (this.isWaypointIndexApproach(waypointIndex))
-            return;
-        waypointIndex = parseInt(waypointIndex);
-        this.flightPlan.removeWaypoint(waypointIndex, false, this.updateWaypoints.bind(this));
+    deleteWaypoint() {
+        this.deleteWaypointIndex$.next();
     }
     isWaypointIndexApproach(waypointIndex) {
         return waypointIndex >= this.approachWaypointIndex;
@@ -69,17 +207,8 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         return this.flightPlan.getWaypointsCount();
     }
     setName(name) {
-        this.customName = name;
-    }
-    createNewWaypoint(waypoint, index = -1) {
-        if (index == -1) {
-            if (this.selectedWaypointIndex !== null) {
-                index = this.selectedWaypointIndex;
-            } else {
-                index = this.getNumWaypoints();
-            }
-        }
-        this.addWaypoint(waypoint.icao, index);
+        console.log(`Set name: ${name}`);
+        this.customName$.next(name == "" ? null : name);
     }
     updateWaypoints() {
         this.t++;
@@ -95,6 +224,9 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         const enroute = flightPlan.getEnRouteWaypoints();
         const origin = flightPlan.getOrigin();
         const destination = flightPlan.getDestination();
+
+        this.waypoints$.next(this.getAllWaypoints());
+        this.flightPlan$.next({ departure, arrival, approach, enroute, origin, destination });
 
         const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
         const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
@@ -212,31 +344,11 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         return [...this.flightPlan.getWaypoints(), ...this.flightPlan.getApproachWaypoints()];
     }
     newWaypointLineSelected() {
-        const waypoints = this.getAllWaypoints();
-        const previousIndex = waypoints.length - 1;
-        this.selectedWaypointIndex = null;
-        this.previousWaypoint = (previousIndex >= 0) ? waypoints[previousIndex] : null;
+        this.selectedWaypointIndex$.next(null);
+        this.newWaypointLineSelected$.next(true);
     }
     setSelectedWaypointIndex(index) {
-        this.selectedWaypointIndex = index;
-        const waypoints = this.getAllWaypoints();
-        this.selectedWaypoint = waypoints[index];
-        this.previousWaypoint = (index > 0) ? waypoints[index - 1] : null;
-    }
-    canDeleteFlightPlan() {
-        return this.flightPlan.getWaypointsCount() > 0;
-    }
-    canRemoveApproach() {
-        return this.flightPlan.getApproachWaypoints().length > 0;
-    }
-    canRemoveDeparture() {
-        return this.flightPlan.getDepartureWaypointsCount() > 0;
-    }
-    canRemoveArrival() {
-        return this.flightPlan.getArrivalWaypointsCount() > 0;
-    }
-    canShowAirwaySelector() {
-        return this.previousWaypoint !== null && this.previousWaypoint.infos.routes && this.previousWaypoint.infos.routes.length > 0;
+        this.selectedWaypointIndex$.next(index);
     }
     directToSelected() {
         if (this.selectedWaypoint) {
@@ -245,40 +357,12 @@ class WT_Flight_Plan_Page_Model extends WT_Model {
         }
         return false;
     }
-    showAirwaySelector() {
-        if (this.canShowAirwaySelector()) {
-            this.showAirwaysHandler.show(this.previousWaypoint.infos).then(waypoints => {
-                this.addWaypoints(waypoints.map(waypoint => waypoint.icao), this.selectedWaypointIndex !== null ? this.selectedWaypointIndex : this.getNumWaypoints());
-            });
+    addWaypoint(waypoint, index = null) {
+        if (index === null) {
+            this.addWaypoint$.next(waypoint.icao);
+        } else {
+            this.addWaypointAtIndex$.next({ icao: waypoint.icao, index });
         }
-    }
-    addWaypoint(icao, index) {
-        return new Promise(resolve => {
-            if (this.getNumWaypoints() == 0) {
-                this.flightPlan.setOrigin(icao, index, () => {
-                    this.updateWaypoints();
-                    resolve();
-                });
-            } else {
-                this.flightPlan.addWaypoint(icao, index, () => {
-                    this.updateWaypoints();
-                    resolve();
-                });
-            }
-        });
-    }
-    addWaypoints(icaos, index) {
-        return new Promise(async resolve => {
-            let i = 0;
-            for (let icao of icaos) {
-                await new Promise(resolve => {
-                    this.flightPlan.addWaypoint(icao, index + i++, () => {
-                        resolve();
-                    });
-                });
-            }
-            resolve();
-        });
     }
 }
 

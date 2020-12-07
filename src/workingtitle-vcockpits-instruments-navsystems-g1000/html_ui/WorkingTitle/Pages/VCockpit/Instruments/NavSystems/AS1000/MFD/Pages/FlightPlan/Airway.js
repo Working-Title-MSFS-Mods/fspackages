@@ -53,9 +53,11 @@ class WT_Airway_Selector_Model {
     async loadAirways(waypoint) {
         this.entry.value = waypoint;
         this.airways.value = await this.gps.facilityLoader.getAllAirways(waypoint);
+        this.setSelectedAirwayIndex(0);
     }
     setSelectedAirwayIndex(index) {
         this.selectedAirway.value = this.airways.value[index];
+        this.setSelectedExitIndex(0);
     }
     setSelectedExitIndex(index) {
         this.selectedExit.value = this.exits.value[index];
@@ -105,7 +107,7 @@ class WT_Airway_Selector_View extends WT_HTML_View {
         this.onExit = new WT_Event();
         this.flightPlanElement = new SvgFlightPlanElement();
         this.flightPlanElement.source = new WT_Flight_Plan_Waypoints();
-        this.flightPlanElement.flightPlanIndex = 10;
+        this.flightPlanElement.flightPlanIndex = WT_Flight_Plan_Waypoints.index++;
     }
     connectedCallback() {
         let template = document.getElementById('airway-selector-page');

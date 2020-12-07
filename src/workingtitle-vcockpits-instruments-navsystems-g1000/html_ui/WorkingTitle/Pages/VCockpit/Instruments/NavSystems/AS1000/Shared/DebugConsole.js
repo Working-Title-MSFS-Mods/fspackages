@@ -117,17 +117,18 @@ class WT_Debug_Console {
         )
         this.bindConsole();
 
+        const now = () => window.performance.now();
         const frameTime$ = rxjs.zip(
             beginUpdate$.pipe(
-                rxjs.operators.map(() => window.performance.now())
+                rxjs.operators.map(now)
             ),
             endUpdate$.pipe(
-                rxjs.operators.map(() => window.performance.now())
+                rxjs.operators.map(now)
             ),
             (begin, end) => end - begin
         );
 
-        const sampleFrames = 20;
+        const sampleFrames = 5;
         /*this.avionicsUpdateFps = frameTime$.pipe(
             rxjs.operators.map(time => time / 1000),
             rxjs.operators.bufferCount(sampleFrames),
@@ -154,7 +155,11 @@ class WT_Debug_Console {
             rxjs.operators.map(averageFrameTime => 1000 / averageFrameTime)
         );
 
-        window.onerror = function (message, source, lineno, colno, error) { console.error(message); };
+        window.onerror = function (message, source, lineno, colno, error) {
+            console.error(`${source}:${lineno}`);
+            console.error(message);
+            console.error(error.stack);
+        };
     }
     dataStoreKey(variable) {
         return `DebugConsole.${this.prefix}.${variable}`;

@@ -127,11 +127,11 @@ class WT_Direct_To_Controller extends WT_Flight_Plan_Mode {
         for (let i = numExisting - 1; i >= 0; i--) {
             await SimVar.SetSimVarValue("C:fs9gps:FlightPlanDeleteWaypoint", "enum", i);
         }
-        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", this.waypoints[0].infos.coordinates.lat);
-        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", this.waypoints[0].infos.coordinates.long);
+        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", this.waypoints[0].infos.coordinates.lat);
+        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", this.waypoints[0].infos.coordinates.long);
         await SimVar.SetSimVarValue("C:fs9gps:FlightPlanAddWaypoint", "enum", 0);
-        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", this.waypoints[1].infos.coordinates.lat);
-        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", this.waypoints[1].infos.coordinates.long);
+        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", this.waypoints[1].infos.coordinates.lat);
+        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", this.waypoints[1].infos.coordinates.long);
         await SimVar.SetSimVarValue("C:fs9gps:FlightPlanAddWaypoint", "enum", 1);
         await SimVar.SetSimVarValue("C:fs9gps:FlightPlanActiveWaypoint", "enum", 1);
 
@@ -140,11 +140,11 @@ class WT_Direct_To_Controller extends WT_Flight_Plan_Mode {
         this.flightPlanElement.source = this.flightPlan;
         this.flightPlanElement.flightPlanIndex = WT_Direct_To_Controller.FLIGHT_PLAN_INDEX++;
         this.map.flightPlanElements.push(this.flightPlanElement);
-        this.map.showFlightPlan = false;
+        //this.map.showFlightPlan = false;
     }
     deactivate() {
         this.isActive = false;
-        this.map.showFlightPlan = true;
+        //this.map.showFlightPlan = true;
         this.map.flightPlanElements.splice(this.map.flightPlanElements.findIndex(item => item == this.flightPlanElement), 1);
     }
     update(dt) {

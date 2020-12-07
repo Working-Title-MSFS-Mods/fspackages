@@ -34,14 +34,14 @@ class WT_Settings {
         this.settings = {};
         this.listeners = [];
 
-        WTDataStore.addListener((key, value) => {
+        WTDataStore.observe(this.storagePrefix).subscribe(([key, value]) => {
             if (value === null) {
                 delete this.settings[key];
             } else {
                 this.settings[key] = value;
             }
             this.onValueChanged(key, this.getValue(key));
-        }, this.storagePrefix);
+        });
 
         this.load();
     }

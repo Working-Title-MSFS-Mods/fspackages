@@ -52,6 +52,7 @@ class AS1000_MFD extends BaseAS1000 {
         d.register("procedurePageView", d => new WT_Procedure_Page_View(d.softKeyMenuHandler, d.mainMap, d.waypointInputModel), { scope: "transient" });
         d.register("softKeyMenuHandler", d => new WT_MFD_Soft_Key_Menu_Handler(d.softKeyController));
         d.register("showDuplicatesHandler", d => new WT_MFD_Show_Duplicates_Handler(d.dialogContainer, d.waypointRepository, d.inputStack));
+        d.register("showReleaseHandler", d => new WT_Show_Release_Handler(d.pageController));
 
         d.register("frequencyListModel", d => new WT_Frequency_List_Model(d.comFrequenciesModel, d.navFrequenciesModel), { scope: "transient" });
 
@@ -199,11 +200,24 @@ class AS1000_MFD extends BaseAS1000 {
         document.body.appendChild(this.dependencies.debugConsoleView);
         this.dependencies.debugConsoleView.setModel(this.dependencies.debugConsole);
 
-        const releaseRepository = this.dependencies.releaseRepository
+        /*const releaseRepository = this.dependencies.releaseRepository
         rxjs.zip(releaseRepository.getLatestRelease(), releaseRepository.getCurrentRelease()).subscribe(([latest, current]) => {
             console.log(`Latest release: ${latest.tag}`);
             console.log(`Current release: ${current.tag}`);
-        });
+            this.dependencies.showReleaseHandler.show(latest);
+        });*/
+
+        this.test = [];
+        /*for (let i = 0; i < 300; i++) {
+            const obj = DOMUtilities.createElement("div", {
+                style: "position: absolute; left:0; top:0;"
+            });
+            obj.textContent = "Hello";
+            obj.i = Math.random() * Math.PI * 2;
+            this.test.push(obj);
+            document.body.appendChild(obj);
+        }*/
+        this.time = 0;
     }
     initModelView(model, viewSelector) {
         let view = document.querySelector(viewSelector);
@@ -309,6 +323,18 @@ class AS1000_MFD extends BaseAS1000 {
         if (this.miniMap.offsetParent)
             this.miniMap.update(dt);
         this.electricityAvailable.value = this.isElectricityAvailable();
+
+        let i = 0;
+        this.time += 0.001;
+        for (let obj of this.test) {
+            i++;
+            let dis = i % 50 * 10;
+            let x = 1440 / 2 + Math.cos(obj.i + this.time) * dis;
+            let y = 1080 / 2 + Math.sin(obj.i + this.time) * dis;
+            x = Math.floor(x);
+            y = Math.floor(y);
+            obj.style.transform = `translate(${x}px, ${y}px)`;
+        }
     }
     afterUpdate() {
         this.dependencies.afterUpdate$.next();

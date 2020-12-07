@@ -2,15 +2,19 @@
     grid-area: main;
     @extend %render-layer;
     position: relative;
+    overflow: hidden;
 
     #SyntheticVision {
         @extend %render-layer;
         position: absolute;
-        left: -13.5%;
-        top: -21%;
+        left: -13%; // Center is 47, so we shift left by 3 then 20% * 0.5
+        top: -21%; // Center is 39, so we shift up by 11 then 20% * 0.5
         width: 120%;
         height: 120%;
-        ///display: none;
+        /*left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;*/
 
         #MapSVG,
         #road-network-canvas,

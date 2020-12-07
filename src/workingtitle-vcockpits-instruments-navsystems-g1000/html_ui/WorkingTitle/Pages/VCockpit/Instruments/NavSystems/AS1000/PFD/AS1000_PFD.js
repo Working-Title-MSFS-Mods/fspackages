@@ -102,7 +102,7 @@ class AS1000_PFD extends BaseAS1000 {
             mainMap.init(this);
             this.updatables.push({
                 update: dt => {
-                    if (mainMap.offsetParent) {
+                    if (mainMap.offsetParent && document.getElementById("InnerMap").style.display != "none") {
                         mainMap.update(dt);
                     }
                 }

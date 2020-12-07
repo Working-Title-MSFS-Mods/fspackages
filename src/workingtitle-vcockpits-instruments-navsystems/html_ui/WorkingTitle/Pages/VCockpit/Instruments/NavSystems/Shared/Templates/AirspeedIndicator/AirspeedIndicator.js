@@ -5,7 +5,7 @@ class WT_Airspeed_Model {
      */
     constructor(airspeedReferences, unitChooser) {
         this.updateObservable = new rxjs.Subject();
-        this.units = new rxjs.BehaviorSubject("nautical");
+        this.units = unitChooser.observeSpeed(rxjs.of("metric"), rxjs.of("nautical"));
         this.planeReferenceSpeeds = new rxjs.Subject();
 
         this.airspeedReferences = airspeedReferences;
@@ -53,20 +53,16 @@ class WT_Airspeed_Model {
             rxjs.operators.shareReplay(1)
         );
 
-        this.trend = rxjs.combineLatest(
-            this.updateObservable,
-            this.airspeed.pipe(
-                rxjs.operators.pairwise(),
-                rxjs.operators.map(values => {
-                    return values[1] - values[0]
-                })
+        this.trend = this.updateObservable.pipe(
+            rxjs.operators.withLatestFrom(
+                this.airspeed.pipe(
+                    rxjs.operators.pairwise(),
+                    rxjs.operators.map(values => values[1] - values[0])
+                )
             ),
-            (dt, instantAcceleration) => {
-                return [instantAcceleration / dt, dt];
-            }
-        ).pipe(
             rxjs.operators.scan((acceleration, instant) => {
-                return acceleration + (instant[0] - acceleration) * Math.min(1, 1 - Math.pow(0.5, instant[1]));
+                instant[1] = instant[1] / instant[0];
+                return acceleration + (instant[1] - acceleration) * Math.min(1, 1 - Math.pow(0.5, instant[0]));
             }, 0)
         );
 
@@ -144,15 +140,14 @@ class WT_Airspeed_Model {
         dt /= 1000;
 
         this.updateObservable.next(dt);
-        this.units.next(this.unitChooser.chooseSpeed("metric", "nautical"));
 
         //TODO:
-        let crossSpeed = SimVar.GetGameVarValue("AIRCRAFT CROSSOVER SPEED", "Knots");
+        /*let crossSpeed = SimVar.GetGameVarValue("AIRCRAFT CROSSOVER SPEED", "Knots");
         let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
         let crossSpeedFactor = Simplane.getCrossoverSpeedFactor(this.maxSpeed, cruiseMach);
         if (crossSpeed != 0) {
             //this.airspeedElement.setAttribute("max-speed", (Math.min(crossSpeedFactor, 1) * this.maxSpeed).toString()); // TODO:
-        }
+        }*/
     }
     convertSpeed(speed) {
         return this.unitChooser.chooseSpeed(speed * 1.852, speed);

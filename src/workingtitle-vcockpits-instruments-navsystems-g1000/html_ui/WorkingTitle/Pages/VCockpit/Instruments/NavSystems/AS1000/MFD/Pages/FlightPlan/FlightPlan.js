@@ -34,18 +34,39 @@ class WT_Flight_Plan_View_Menu extends WT_Soft_Key_Menu {
 class WT_Flight_Plan_Main_Menu extends WT_Soft_Key_Menu {
     /**
      * @param {WT_Flight_Plan_Page_Model} model 
-     * @param {WT_Flight_Plan_Page_View} view 
+     * @param {WT_MFD_Flight_Plan_Page_View} view 
      */
     constructor(model, view) {
         super(true);
-        this.addSoftKey(4, new WT_Soft_Key("NEW WPT", view.showCreateNewWaypoint.bind(view)));
-        this.addSoftKey(5, new WT_Soft_Key("VIEW", view.showViewMenu.bind(view)));
-        this.addSoftKey(6, new WT_Soft_Key("VNV PROF"));
-        this.addSoftKey(7, new WT_Soft_Key("CNCL VNV"));
-        this.addSoftKey(8, new WT_Soft_Key("VNV ->"));
-        this.addSoftKey(9, new WT_Soft_Key("ATK OFST"));
-        this.addSoftKey(10, new WT_Soft_Key("ACT LEG", model.setActiveWaypoint.bind(model)));
-        this.addSoftKey(11, new WT_Soft_Key("SHW CHRT"));
+        this.model = model;
+
+        this.buttons = {
+            newWpt: this.addSoftKey(4, new WT_Soft_Key("NEW WPT", view.showCreateNewWaypoint.bind(view))),
+            view: this.addSoftKey(5, new WT_Soft_Key("VIEW", view.showViewMenu.bind(view))),
+            actLeg: this.addSoftKey(10, new WT_Soft_Key("ACT LEG", model.setActiveWaypoint.bind(model))),
+            vnavProf: this.addSoftKey(6, new WT_Soft_Key("VNV PROF")),
+            cancelVnav: this.addSoftKey(7, new WT_Soft_Key("CNCL VNV")),
+            vnavDirectTo: this.addSoftKey(8, new WT_Soft_Key("VNV ->")),
+            atkOffset: this.addSoftKey(9, new WT_Soft_Key("ATK OFST")),
+            showChart: this.addSoftKey(11, new WT_Soft_Key("SHW CHRT")),
+        }
+
+        this.buttons.newWpt.disabled = true;
+        this.buttons.vnavProf.disabled = true;
+        this.buttons.cancelVnav.disabled = true;
+        this.buttons.vnavDirectTo.disabled = true;
+        this.buttons.atkOffset.disabled = true;
+        this.buttons.showChart.disabled = true;
+
+        this.subscriptions = new Subscriptions();
+    }
+    activate() {
+        this.subscriptions.add(
+            this.model.canActivateLeg$.subscribe(can => this.buttons.actLeg.disabled = !can)
+        );
+    }
+    deactivate() {
+        this.subscriptions.unsubscribe();
     }
 }
 
@@ -252,36 +273,32 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
 
         const linesElement = this.elements.flightPlanWaypoints;
         linesElement.onWaypointSelected.subscribe(waypointIndex => this.model.setSelectedWaypointIndex(waypointIndex));
-        linesElement.onWaypointSelected.subscribe(DOMUtilities.debounce(waypointIndex => {
-            this.selectedLeg.next(waypointIndex);
-        }, 200, false));
-        linesElement.onWaypointAltitudeChanged.subscribe(e => {
-            this.model.setAltitude(e.waypointIndex, e.altitude);
-        });
+        linesElement.onWaypointSelected.subscribe(DOMUtilities.debounce(waypointIndex => this.selectedLeg.next(waypointIndex), 200, false));
+        linesElement.onWaypointAltitudeChanged.subscribe(e => this.model.setAltitude(e.waypointIndex, e.altitude));
         linesElement.onWaypointClicked.subscribe(waypointIndex => this.showCreateNewWaypoint(waypointIndex));
-        linesElement.onNewWaypointLineSelected.subscribe(() => {
-            this.model.newWaypointLineSelected();
-        });
+        linesElement.onNewWaypointLineSelected.subscribe(() => this.model.newWaypointLineSelected());
 
         rxjs.combineLatest(this.isInputActive, this.selectedLeg.pipe(rxjs.operators.distinctUntilChanged())).subscribe(values => {
-            try {
-                if (values[0]) {
-                    if (values[1] !== null) {
-                        this.centerOnLeg(values[1]);
-                    }
-                } else {
-                    this.centerOnFlightPlan();
+            if (values[0]) {
+                if (values[1] !== null) {
+                    this.centerOnLeg(values[1]);
                 }
-            } catch (e) {
-                console.error(e.message);
+            } else {
+                this.centerOnFlightPlan();
             }
         });
 
-        model.name.pipe(rxjs.operators.distinctUntilChanged()).subscribe(name => this.elements.flightPlanName.value = name);
+        model.name$.pipe(
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(name => this.elements.flightPlanName.value = name);
 
         this.elements.flightPlanName.addEventListener("selected", () => {
-            this.elements.flightPlanName.value = this.model.customName || "";
+            this.model.customName$.pipe(
+                rxjs.operators.take(1)
+            ).subscribe(WT_RX.setValue(this.elements.flightPlanName));
         }, true);
+
+        this.pageMenu = new WT_Flight_Plan_Page_Menu(this.model, this, this.confirmDialogHandler);
     }
     updateLines(lines) {
         this.elements.flightPlanWaypoints.updateLines(lines);
@@ -309,8 +326,7 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         }
     }
     showPageMenu() {
-        const pageMenu = new WT_Flight_Plan_Page_Menu(this.model, this, this.confirmDialogHandler);
-        this.pageMenuHandler.show(pageMenu);
+        this.pageMenuHandler.show(this.pageMenu);
     }
     onDirectTo() {
         return this.model.directToSelected();
@@ -318,9 +334,9 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     setName(name) {
         this.model.setName(name);
     }
-    showCreateNewWaypoint(index = -1) {
+    showCreateNewWaypoint(index = null) {
         this.newWaypointHandler.show().then(waypoint => {
-            this.model.createNewWaypoint(waypoint, index);
+            this.model.addWaypoint(waypoint, index);
         }).catch(WT_Cancel_Dialog_Error.HANDLER);
     }
     updateActiveLeg(leg) {

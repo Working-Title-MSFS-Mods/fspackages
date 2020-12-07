@@ -33,6 +33,7 @@
 @import "MFD/Pages/Nearest/VORs";
 @import "MFD/Pages/Procedure";
 @import "MFD/Pages/ProceduresMenu";
+@import "MFD/Pages/Release";
 @import "MFD/Pages/Settings";
 @import "MFD/Pages/TripPlanning";
 @import "MFD/Pages/Utility";
@@ -43,6 +44,7 @@
 @import "MFD/Pages/Weather";
 
 @import "Shared/DebugConsole";
+@import "Shared/XMLEngineDisplay";
 
 as1000-mfd-element {
     font-family: $font_family_normal;
@@ -79,7 +81,7 @@ as1000-mfd-element #Mainframe #Electricity {
 
     #MapSVG,
     #road-network-canvas {
-        //@extend %render-layer;
+        @extend %render-layer;
     }
     #WindData {
         position: absolute;
@@ -88,7 +90,7 @@ as1000-mfd-element #Mainframe #Electricity {
         right: 10%;
     }
     #Map bing-map {
-        //@extend %render-layer;
+        @extend %render-layer;
     }
     #MapInstrument {
         //display: none !important;
@@ -116,7 +118,7 @@ as1000-mfd-element #Mainframe #Electricity {
 
     #LeftInfos {
         //display: none !important;
-        background: $page_background_color;
+        background: $page_background_color_2;
         grid-area: engine;
         border-right: $border_width_thick solid $border_color;
         position: relative;

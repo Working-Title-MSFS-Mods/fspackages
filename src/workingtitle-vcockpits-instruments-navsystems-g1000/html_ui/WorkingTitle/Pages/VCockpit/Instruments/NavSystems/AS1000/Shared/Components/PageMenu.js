@@ -33,7 +33,7 @@ class WT_Page_Menu_Model {
 
 class WT_Page_Menu_Input_Layer extends Selectables_Input_Layer {
     constructor(view) {
-        super(new Selectables_Input_Layer_Dynamic_Source(view, "li:not([disabled])"));
+        super(new Selectables_Input_Layer_Dynamic_Source(view, "li:not([disabled])"), true);
         this.view = view;
     }
     onCLR() {

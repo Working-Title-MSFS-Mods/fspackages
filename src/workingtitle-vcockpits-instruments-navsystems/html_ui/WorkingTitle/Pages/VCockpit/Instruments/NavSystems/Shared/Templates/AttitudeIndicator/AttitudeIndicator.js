@@ -16,25 +16,28 @@ class Attitude_Indicator_Model {
             rxjs.operators.map(orientation => ({
                 pitch: orientation.pitch / Math.PI * 180,
                 bank: orientation.bank / Math.PI * 180
-            }))
+            })),
+            //rxjs.operators.delay(1) // This is super weird but the synthetic vision lags behind by a frame so we need to delay our frames to match
         )
         this.heading = planeState.heading;
         this.flightDirector = autoPilot.flightDirector;
         this.turnCoordinator = planeState.turnCoordinator;
 
-        this.airportSigns = rxjs.combineLatest(planeState.coordinates, planeState.heading, this.nearestWaypointsRepository.airports).pipe(
+        const airportRange = 30;
+        this.airportSigns = rxjs.combineLatest(planeState.coordinates, planeState.trueHeading, this.nearestWaypointsRepository.allAirports).pipe(
             rxjs.operators.sample(update$),
             rxjs.operators.map(([planeCoordinates, heading, airports]) => {
                 return airports
+                    .filter(airport => airport.distance < airportRange)
                     .map(airport => ({
                         projectedPosition: this.projectLatLongAlt(airport.coordinates, planeCoordinates, heading),
-                        name: airport.ident
+                        name: airport.ident,
+                        opacity: 1 - Math.max(0, Math.min(1, Avionics.Utils.computeGreatCircleDistance(planeCoordinates, airport.coordinates) - (airportRange - 2))),
                     }))
-                    .filter(airport => airport.projectedPosition.x > -1.1 && airport.projectedPosition.x < 1.1 &&
-                        airport.projectedPosition.y > -1.1 && airport.projectedPosition.y < 1.1 &&
-                        airport.projectedPosition.z > 0)
-                    .slice(0, 5)
-            })
+                    .filter(airport => Math.abs(airport.projectedPosition.x) < 1.5 && Math.abs(airport.projectedPosition.y) < 1.5 && airport.projectedPosition.z > 0)
+                    .slice(0, 25)
+            }),
+            rxjs.operators.shareReplay(1)
         );
 
         this.flightPathMarker = {
@@ -163,15 +166,14 @@ class AttitudeIndicator extends HTMLElement {
             rxjs.operators.tap(enabled => this.airportSignsGroup.style.display = enabled ? "block" : "none"),
             rxjs.operators.switchMap(enabled => enabled ? model.airportSigns : rxjs.empty())
         ).subscribe(airportSigns => {
-            let i = 4;
+            let i = 24;
             for (let airportSign of airportSigns) {
                 const sign = this.airportSigns[i];
-                sign.style.display = airportSign.projectedPosition.z > 0 ? "block" : "none";
-                if (airportSign.projectedPosition.z > 0) {
-                    sign.setAttribute("transform", `translate(${airportSign.projectedPosition.x * screenSize}, ${airportSign.projectedPosition.y * screenSize})`);
-                    Avionics.Utils.diffAndSet(sign.querySelector("text"), airportSign.name);
-                    i--;
-                }
+                sign.style.display = "block";
+                sign.style.opacity = airportSign.opacity;
+                sign.setAttribute("transform", `translate(${airportSign.projectedPosition.x * screenSize}, ${airportSign.projectedPosition.y * screenSize})`);
+                Avionics.Utils.diffAndSet(sign.querySelector("text"), airportSign.name);
+                i--;
             }
             for (; i >= 0; i--) {
                 const sign = this.airportSigns[i];
@@ -710,7 +712,7 @@ class AttitudeIndicator extends HTMLElement {
     createAirportSigns() {
         const g = this.createSvgElement("g");
         const signs = [];
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 25; i++) {
             const sign = this.createSvgElement("g");
             const background = this.createSvgElement("rect", {
                 fill: "rgba(30,30,30,0.75)",

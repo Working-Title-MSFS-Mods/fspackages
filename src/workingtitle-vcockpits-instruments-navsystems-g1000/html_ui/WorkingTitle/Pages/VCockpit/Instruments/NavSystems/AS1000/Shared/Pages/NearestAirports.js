@@ -18,7 +18,7 @@ class WT_Nearest_Airports_Model extends WT_Model {
         this.nearestWaypoints = nearestWaypoints;
         this.showWaypointInfoHandler = showWaypointInfoHandler;
 
-        this.airports = new Subject([], false);
+        this.airports = this.nearestWaypoints.airports;
         this.selectedAirport = new Subject();
 
         this.subscriptions = new Subscriptions();
@@ -65,9 +65,7 @@ class WT_Nearest_Airports_Model extends WT_Model {
         this.comFrequencies.selectFrequency(frequency);
     }
     subscribe() {
-        this.subscriptions.add(this.nearestWaypoints.airports.subscribe(airports => this.airports.value = airports));
     }
     unsubscribe() {
-        this.subscriptions.unsubscribe();
     }
 }

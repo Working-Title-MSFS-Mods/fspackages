@@ -120,5 +120,19 @@ class WTDataStore {
     static removeListener(listener) {
         window.removeEventListener("storage", listener);
     }
+
+    /**
+     * Observe using RXJS
+     * @param {string} prefix 
+     * @returns {rxjs.Observable}
+     */
+    static observe(prefix) {
+        const obs = new rxjs.Subject();
+        const listener = (key, value, previous) => obs.next([key, value, previous]);
+        WTDataStore.addListener(listener, prefix);
+        return obs.pipe(
+            rxjs.operators.finalize(() => WTDataStore.removeListener(listener))
+        );
+    }
 }
 WTDataStore.listeners = [];

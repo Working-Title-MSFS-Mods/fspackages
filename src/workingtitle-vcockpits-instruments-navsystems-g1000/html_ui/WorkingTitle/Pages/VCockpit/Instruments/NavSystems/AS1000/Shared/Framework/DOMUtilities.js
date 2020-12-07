@@ -148,3 +148,10 @@ DOMUtilities.createElement = function (tagName, attributes = {}) {
     }
     return el;
 }
+
+DOMUtilities.setAttributes = function (el, attributes = {}) {
+    for (let key in attributes) {
+        el.setAttribute(key, attributes[key]);
+    }
+    return el;
+}

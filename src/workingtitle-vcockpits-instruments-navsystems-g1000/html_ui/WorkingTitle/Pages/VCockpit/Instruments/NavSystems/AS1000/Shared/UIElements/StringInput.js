@@ -29,7 +29,7 @@ class WT_String_Input_Input_Layer extends Input_Layer {
 class WT_String_Input extends HTMLElement {
     constructor() {
         super();
-        this._value = "          ";
+        this._value = "";
         this.elements = {
             characters: []
         };
@@ -48,6 +48,8 @@ class WT_String_Input extends HTMLElement {
         return this._value.trim();
     }
     set value(value) {
+        value = value || "";
+
         if (this._value !== value) {
             this._value = value;
             if (this.mode == "edit") {
@@ -98,7 +100,7 @@ class WT_String_Input extends HTMLElement {
         this.updateDisplay();
     }
     confirm() {
-        this.value = this._editingValue;
+        this.value = this._editingValue.trim();
 
         let evt = document.createEvent("HTMLEvents");
         evt.initEvent("change", true, true);

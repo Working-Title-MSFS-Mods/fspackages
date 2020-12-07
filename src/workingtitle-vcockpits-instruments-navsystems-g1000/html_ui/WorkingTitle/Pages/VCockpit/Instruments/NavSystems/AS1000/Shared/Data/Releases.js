@@ -15,6 +15,7 @@ class WT_Release_Repository {
                             tag: release.tag_name,
                             body: release.body,
                             url: release.html_url,
+                            download_url: release.assets[0] ? release.assets[0].browser_download_url : null,
                             published_at: new Date(release.published_at)
                         }))
                         .sort((a, b) => b.published_at - a.published_at)

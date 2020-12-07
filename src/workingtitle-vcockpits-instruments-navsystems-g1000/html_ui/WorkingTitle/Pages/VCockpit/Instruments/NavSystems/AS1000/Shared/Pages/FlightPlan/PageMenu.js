@@ -10,8 +10,6 @@ class WT_Flight_Plan_Page_Menu extends WT_Page_Menu_Model {
         this.view = view;
         this.confirmDialogHandler = confirmDialogHandler;
 
-        let nullFunc = () => { };
-
         this.buttons = {
             deleteFlightPlan: new WT_Page_Menu_Option("Delete Flight Plan", this.deleteFlightPlan.bind(this)),
             loadAirway: new WT_Page_Menu_Option("Load Airway", this.showAirwaySelector.bind(this)),
@@ -19,12 +17,6 @@ class WT_Flight_Plan_Page_Menu extends WT_Page_Menu_Model {
             removeArrival: new WT_Page_Menu_Option("Remove Arrival", this.deleteArrival.bind(this)),
             removeApproach: new WT_Page_Menu_Option("Remove Approach", this.deleteApproach.bind(this)),
         };
-
-        this.buttons.deleteFlightPlan.enabled = this.model.canDeleteFlightPlan();
-        this.buttons.loadAirway.enabled = this.model.canShowAirwaySelector();
-        this.buttons.removeApproach.enabled = this.model.canRemoveApproach();
-        this.buttons.removeArrival.enabled = this.model.canRemoveArrival();
-        this.buttons.removeDeparture.enabled = this.model.canRemoveDeparture();
 
         this.options = [
             new WT_Page_Menu_Option("Search and Rescue"),
@@ -48,9 +40,11 @@ class WT_Flight_Plan_Page_Menu extends WT_Page_Menu_Model {
             new WT_Page_Menu_Option("Hold At Waypoint"),
             new WT_Page_Menu_Option("Hold At Present Position"),
         ];
+
+        this.subscriptions = new Subscriptions();
     }
     showAirwaySelector() {
-        this.model.showAirwaySelector();
+        this.model.showAirwaySelector$.next();
     }
     deleteDeparture() {
         this.confirmDialogHandler.show("Are you sure you want to delete the departure?")
@@ -69,6 +63,15 @@ class WT_Flight_Plan_Page_Menu extends WT_Page_Menu_Model {
             .then(this.model.deleteFlightPlan.bind(this.model));
     }
     activate() {
-        
+        this.subscriptions.add(
+            this.model.canSelectAirway$.subscribe(can => this.buttons.loadAirway.enabled = can),
+            this.model.canRemoveApproach$.subscribe(can => this.buttons.removeApproach.enabled = can),
+            this.model.canRemoveArrival$.subscribe(can => this.buttons.removeArrival.enabled = can),
+            this.model.canRemoveDeparture$.subscribe(can => this.buttons.removeDeparture.enabled = can),
+            this.model.canDeleteFlightPlan$.subscribe(can => this.buttons.deleteFlightPlan.enabled = can),
+        )
+    }
+    deactivate() {
+        this.subscriptions.unsubscribe();
     }
 }

@@ -102,6 +102,18 @@ class WT_Flight_Plan_Lines extends WT_HTML_View {
 
         DOMUtilities.AddScopedEventListener(this, "*", WT_Flight_Plan_Waypoint_Line.EVENT_WAYPOINT_SELECTED,
             e => this.onWaypointSelected.next(e.detail.waypointIndex));
+
+        /*const selectedWaypointLine$ = new rxjs.Subject();
+        const selectedNewWaypointLine$ = new rxjs.Subject();
+
+        const selectedElement$ = rxjs.merge(
+            selectedWaypointLine$,
+            selectedNewWaypointLine$
+        );
+
+        this.selectedWaypointIndex$ = selectedElement$.pipe(
+            rxjs.operators.map(element => element.type == "waypoint" ? element.event : null)
+        );*/
     }
     connectedCallback() {
         if (this.initialised)

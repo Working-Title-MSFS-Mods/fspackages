@@ -1121,13 +1121,13 @@
             <div class="category">
                 <h1>Airway</h1>
                 <div class="content">
-                    <drop-down-selector align="left" data-element="airways"></drop-down-selector>
+                    <drop-down-selector align="left" data-element="airways" empty-value="Loading..."></drop-down-selector>
                 </div>
             </div>
             <div class="category">
                 <h1>Exit</h1>
                 <div class="content">
-                    <drop-down-selector align="left" data-element="exits"></drop-down-selector>
+                    <drop-down-selector align="left" data-element="exits" empty-value="Loading..."></drop-down-selector>
                 </div>
             </div>
             <div class="category">
@@ -1136,6 +1136,25 @@
             </div>
             <selectable-button class="load-button" data-element="load" data-click="load">LOAD</selectable-button>
         </section>
+    </template>
+
+    <template id="release-page-template">
+        <section class="header">
+            <h1>New Release</h1>
+            <h2></h2>
+        </section>
+        <div class="category category-fill-container">
+            <h1>G1000-0.3.2</h1>
+            <scrollable-container class="content" data-element="selectedChangelogScrollable">
+                <article data-element="body" class="article"></article>
+            </scrollable-container>
+        </div>        
+        <footer>
+            <g1000-external-link data-element="releaseButton">Release Page</g1000-external-link>
+            <g1000-external-link data-element="downloadButton">Download</g1000-external-link>
+            <g1000-external-link href="https://discord.gg/Fa6w2xK">Discord</g1000-external-link>
+            <g1000-external-link href="https://github.com/Working-Title-MSFS-Mods/fspackages/releases">All Releases</g1000-external-link>
+        </footer>
     </template>
 
     <template id="airport-icon">

@@ -164,7 +164,6 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
         this.menuHandler = this.softKeyMenuHandler.show(this.menu);
         this.map.flightPlanElements.push(this.flightPlanElement);
         this.map.showFlightPlan = false;
-        this.model.subscribe();
 
         this.subscriptions.add(
             rxjs.combineLatest(
@@ -203,7 +202,6 @@ class WT_Nearest_Airports_View extends WT_HTML_View {
         }
         this.map.flightPlanElements.splice(this.map.flightPlanElements.findIndex(item => item == this.flightPlanElement), 1);
         this.map.showFlightPlan = true;
-        this.model.unsubscribe();
         this.subscriptions.unsubscribe();
     }
 }
