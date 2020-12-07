@@ -441,7 +441,7 @@ class WT_VnavAutopilot {
     checkPreselector() {
         //FLAG "CHECK PRESELECTOR" IN FMC
         const approachingTodDistance = 0.0125 * SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-        if (!this._pathArm && !this._pathArmFired && this._vnav._distanceToTod < approachingTodDistance) {
+        if (!this._pathArm && !this._pathArmFired && this._vnav._distanceToTod < approachingTodDistance && this._vnav._distanceToTod > 0) {
             if (SimVar.GetSimVarValue("L:WT_VNAV_TOD_FMC_ALERT", "bool") != 1) {
                 SimVar.SetSimVarValue("L:WT_VNAV_TOD_FMC_ALERT", "bool", 1); 
                 this._pathArmFired = true;
