@@ -242,7 +242,7 @@ class WT_VnavAutopilot {
         if (!this._pathActive && this._constraintExists) {
             //NO PATH, SET ALT CONSTRAINTS
             console.log("constraint exists execute");
-            if (this._vnav._vnavConstraintWaypoint && this._vnav._vnavConstraintWaypoint == this._vnav._activeWaypoint) {
+            if (this._vnav._vnavConstraintWaypoint) {
                 if (this._navModeSelector.currentVerticalActiveState == VerticalNavModeState.PTCH
                      || this._navModeSelector.currentVerticalActiveState == VerticalNavModeState.VS 
                      || this._navModeSelector.currentVerticalActiveState == VerticalNavModeState.FLC) {
