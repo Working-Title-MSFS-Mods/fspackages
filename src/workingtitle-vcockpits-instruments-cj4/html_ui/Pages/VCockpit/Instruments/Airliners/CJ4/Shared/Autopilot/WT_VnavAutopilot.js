@@ -150,6 +150,9 @@ class WT_VnavAutopilot {
                     }
                 }
             }
+            else if (this._constraintExists === true) {
+                //run execute for constraints
+            }
             else {
                 this.recalculate();
                 return;
