@@ -310,19 +310,21 @@ class CJ4NavModeSelector {
    * Handles when the VNAV button is pressed.
    */
   handleVNAVPressed() {
-    this.isVNAVOn = !this.isVNAVOn;
-    SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", this.isVNAVOn ? 1 : 0);
+    if (this.currentLateralActiveState !== LateralNavModeState.APPR) {
+      this.isVNAVOn = !this.isVNAVOn;
+      SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", this.isVNAVOn ? 1 : 0);
 
-    if (this.isVNAVOn) {
-      this.handleVPathChanged();
-    }
-    else {
-      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-      SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
-
-      if (this.currentVerticalActiveState === VerticalNavModeState.PATH) {    
-        SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
-        this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+      if (this.isVNAVOn) {
+        this.handleVPathChanged();
+      }
+      else {
+        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+  
+        if (this.currentVerticalActiveState === VerticalNavModeState.PATH) {    
+          SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
+          this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+        }
       }
     }
   }
@@ -399,7 +401,9 @@ class CJ4NavModeSelector {
       }
     }
     
-    if (this.currentLateralActiveState === LateralNavModeState.APPR && this.vPathState !== VPathState.ACTIVE) {
+    if (this.currentLateralActiveState === LateralNavModeState.APPR 
+      && (this.approachMode === WT_ApproachType.RNAV || this.approachMode === WT_ApproachType.VISUAL) 
+      && this.vPathState !== VPathState.ACTIVE) {
         this.currentVerticalArmedStates = [VerticalNavModeState.GP];
     }
   }
@@ -430,7 +434,11 @@ class CJ4NavModeSelector {
         this.currentLateralActiveState = LateralNavModeState.ROLL;
         break;
       case LateralNavModeState.APPR:
+        this.cancelApproachMode(true);
+        SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
         SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 1);
+
+        this.currentLateralActiveState = LateralNavModeState.HDG;
         break;
     }
   }
@@ -464,7 +472,11 @@ class CJ4NavModeSelector {
         this.currentLateralActiveState = LateralNavModeState.ROLL;
         break;
       case LateralNavModeState.APPR:
+        this.cancelApproachMode(true);
+        this.changeToCorrectLNavForMode(true);
+
         SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 1);
+        this.currentLateralActiveState = LateralNavModeState.LNAV;
         break;
     }
   }
@@ -515,8 +527,9 @@ class CJ4NavModeSelector {
    */
   handleAPPRPressed() {
     
-
     const setProperVNAVState = () => {
+      SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
+
       switch(this.approachMode) {
         case WT_ApproachType.RNAV:
         case WT_ApproachType.VISUAL:
@@ -543,7 +556,6 @@ class CJ4NavModeSelector {
 
     switch (this.currentLateralActiveState) {
       case LateralNavModeState.ROLL:
-        SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
         setProperVNAVState();
 
         this.currentLateralActiveState = LateralNavModeState.APPR;
@@ -567,26 +579,35 @@ class CJ4NavModeSelector {
         this.currentLateralActiveState = LateralNavModeState.APPR;
         break;
       case LateralNavModeState.APPR:
-        SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
-
-        if (this.approachMode === WT_ApproachType.RNAV) {
-          this.isVNAVOn = false;
-          this.currentVerticalActiveState = VerticalNavModeState.PTCH;
-
-          if (this.vPathState === VPathState.ACTIVE) {
-            SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
-            SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
-          }
-          
-          SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
-        }
-
-        if (this.approachMode === WT_ApproachType.ILS) {
-          SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 0);
-        }
-
+        this.cancelApproachMode(true);
         this.currentLateralActiveState = LateralNavModeState.ROLL;
         break;
+    }
+  }
+
+  /**
+   * Cancels approach mode.
+   * @param {boolean} cancelHeadingHold Whether or not to cancel heading mode while disabling approach mode.
+   */
+  cancelApproachMode(cancelHeadingHold) {
+    SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+
+    if (this.approachMode === WT_ApproachType.RNAV) {
+      this.isVNAVOn = false;
+      this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+
+      if (this.vPathState === VPathState.ACTIVE) {
+        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+        SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
+      }
+
+      if (cancelHeadingHold) {
+        SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
+      }
+    }
+
+    if (this.approachMode === WT_ApproachType.ILS) {
+      SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 0);
     }
   }
 

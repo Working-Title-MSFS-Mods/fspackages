@@ -1149,21 +1149,23 @@ export class FlightPlanManager {
 
   /**
    * Get the nav frequency for the selected approach in the current flight plan.
+   * @returns The approach nav frequency, if an ILS approach.
    */
-  public getApproachNavFrequency(): any {
-    if (this.getApproach()) {
-      let destination = this.getDestination();
-      let approachName = this.getApproach().runway.trim();
-      console.log("approachName: " + approachName);
+  public getApproachNavFrequency(): number {
+    const approach = this.getApproach();
+
+    if (approach && approach.name.includes('ILS')) {
+      const destination = this.getDestination();
+      let approachRunway = this.getApproach().runway.trim();
+
       let aptInfo = destination.infos as AirportInfo;
-      let frequency = aptInfo.namedFrequencies.find(f => {
-        return f.name.replace("RW0", "").replace("RW", "").indexOf(approachName) !== -1;
-      });
+      let frequency = aptInfo.namedFrequencies.find(f => f.name.replace("RW0", "").replace("RW", "").indexOf(approachRunway) !== -1);
+
       if (frequency) {
-        console.log("frequency value: " + frequency.value);
         return frequency.value;
       }
     }
+
     return NaN;
   }
 
