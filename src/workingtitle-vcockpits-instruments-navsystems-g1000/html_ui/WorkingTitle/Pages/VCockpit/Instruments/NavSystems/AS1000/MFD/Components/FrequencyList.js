@@ -12,7 +12,6 @@ class WT_Frequency_List_Model {
         this.frequencies.value = frequencies;
     }
     selectFrequency(mhz, bcd) {
-        console.log(bcd);
         if (mhz >= 118) {
             this.comFrequencies.selectFrequency(bcd);
         } else {

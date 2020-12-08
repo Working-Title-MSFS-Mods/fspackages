@@ -28,6 +28,7 @@ class WT_Plane_State {
 
         this.orientation = WT_RX.observeGameVar(update$, "AIRCRAFT ORIENTATION AXIS", "XYZ");
         this.turnCoordinator = WT_RX.observeSimVar(update$, "TURN COORDINATOR BALL", "position");
+        this.turnRate = WT_RX.observeSimVar(update$, "TURN INDICATOR RATE", "degree per second");
 
         this.onGround = this.groundSpeed.pipe(
             rxjs.operators.map(speed => speed < 90),

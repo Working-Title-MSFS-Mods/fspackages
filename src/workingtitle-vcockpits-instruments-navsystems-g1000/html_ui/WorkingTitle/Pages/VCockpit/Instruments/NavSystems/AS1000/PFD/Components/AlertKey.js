@@ -1,9 +1,12 @@
 class WT_PFD_Alert_Key extends WT_Soft_Key {
     /**
      * @param {WT_Annunciations_Model} annunciationsModel 
+     * @param {WT_PFD_Mini_Page_Controller} miniPageController 
      */
-    constructor(annunciationsModel) {
+    constructor(annunciationsModel, miniPageController) {
         super("ALERTS", null);
+        this.miniPageController = miniPageController;
+
         this.setOnClick(this.click.bind(this));
         this.pressAcknowledgesAnnunciations = false;
 
@@ -20,8 +23,11 @@ class WT_PFD_Alert_Key extends WT_Soft_Key {
         });
     }
     click() {
-        if (this.pressAcknowledgesAnnunciations)
+        if (this.pressAcknowledgesAnnunciations) {
             this.annunciationsModel.acknowledgeAll();
+        } else {
+            this.miniPageController.showAlerts();
+        }
     }
     updateAlertLevel(level) {
         this.pressAcknowledgesAnnunciations = true;

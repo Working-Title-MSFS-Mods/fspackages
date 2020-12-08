@@ -14,9 +14,13 @@ class WT_Metar_Downloader {
     }
     download() {
         console.log(`Downloading METARS from ${this.url}`);
-        return fetch(this.url)
-            .catch(e => console.error("Failed to download METARS"))
-            .then(response => response.text());
+        return rxjs.from(
+            fetch(this.url).then(response => {
+                if (!response.ok)
+                    throw new Error("Not 2xx response");
+                return response.text();
+            })
+        );
     }
 }
 
@@ -26,7 +30,7 @@ class WT_Metar_Repository {
      */
     constructor(downloader, update$) {
         const metar$ = rxjs.defer(() =>
-            rxjs.from(downloader.download()).pipe(
+            downloader.download().pipe(
                 rxjs.operators.map(text => {
                     const results = {};
                     const regex = /^([A-Z]{1,5}) (.*)$/gm;
@@ -36,7 +40,10 @@ class WT_Metar_Repository {
                     }
                     return results;
                 }),
-                rxjs.operators.tap(metars => console.log(`Loaded ${Object.keys(metars).length} METARs`))
+                rxjs.operators.tap({
+                    next: metars => console.log(`Loaded ${Object.keys(metars).length} METARs`),
+                    error: e => console.warn(`Failed to download metars: ${e.message}`)
+                })
             )
         );
         this.data$ = update$.pipe(

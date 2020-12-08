@@ -1,3 +1,18 @@
+class WT_Release {
+    constructor(tag, body, url, download_url, published_at) {
+        this.tag = tag;
+        this.body = body;
+        this.url = url;
+        this.download_url = download_url;
+        this.published_at = published_at;
+    }
+    isNewerThan(other) {
+        if (!other)
+            return true;
+        return this.published_at > other.published_at;
+    }
+}
+
 class WT_Release_Repository {
     /**
      * @param {string} project 
@@ -5,19 +20,22 @@ class WT_Release_Repository {
     constructor(project) {
         this.releases = rxjs.defer(() => {
             return rxjs.from(fetch(WT_Release_Repository.API)
-                .catch(e => console.error("Failed to download releases"))
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok)
+                        throw new Error("Not 2xx response");
+                    return response.json();
+                })
                 .then(releases => {
                     console.log(`Loaded ${releases.length} releases`);
                     return releases
                         .filter(release => release.tag_name.startsWith(project))
-                        .map(release => ({
-                            tag: release.tag_name,
-                            body: release.body,
-                            url: release.html_url,
-                            download_url: release.assets[0] ? release.assets[0].browser_download_url : null,
-                            published_at: new Date(release.published_at)
-                        }))
+                        .map(release => new WT_Release(
+                            release.tag_name,
+                            release.body,
+                            release.html_url,
+                            release.assets[0] ? release.assets[0].browser_download_url : null,
+                            new Date(release.published_at)
+                        ))
                         .sort((a, b) => b.published_at - a.published_at)
                 })
             )
@@ -44,10 +62,13 @@ class WT_Release_Repository {
             .then(json => json.tag)
         );
 
-        return currentRelease$.pipe(
-            rxjs.operators.tap(console.log),
-            rxjs.operators.switchMap(tag => this.getRelease(tag))
-        )
+        return currentRelease$.pipe(rxjs.operators.switchMap(tag => this.getRelease(tag)))
+    }
+    observeNewRelease() {
+        return rxjs.zip(this.getLatestRelease(), this.getCurrentRelease()).pipe(
+            rxjs.operators.filter(([latest, current]) => latest ? latest.isNewerThan(current) : false),
+            rxjs.operators.map(([latest, current]) => latest)
+        );
     }
 }
 WT_Release_Repository.VERSION_FILE = "/VFS/html_ui/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Version.json";

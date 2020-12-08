@@ -84,9 +84,8 @@ class WT_PFD_Nearest_View extends WT_HTML_View {
             elements.push(element);
         }
 
-        this.inputLayer.refreshSelected();
-
         DOMUtilities.repopulateElement(listElement, elements);
+        this.inputLayer.refreshSelected();
     }
     update(dt) {
         this.model.update(dt);

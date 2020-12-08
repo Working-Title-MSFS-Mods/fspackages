@@ -59,7 +59,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("confirmDialogHandler", d => new WT_PFD_Show_Confirm_Dialog_Handler(d.inputStack, d.dialogContainer));
         d.register("showDuplicatesHandler", d => new WT_PFD_Show_Duplicates_Handler(d.miniPageController, d.waypointRepository, d.inputStack));
 
-        d.register("alertsKey", d => new WT_PFD_Alert_Key(d.annunciationsModel));
+        d.register("alertsKey", d => new WT_PFD_Alert_Key(d.annunciationsModel, d.miniPageController));
 
         d.register("syntheticVision", d => new WT_Synthetic_Vision(d.planeConfig));
         d.register("attitudeModel", d => new Attitude_Indicator_Model(d.syntheticVision, d.nearestWaypoints, d.planeState, d.autoPilot, d.update$));
@@ -72,6 +72,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("navBoxModel", d => new AS1000_PFD_Nav_Box_Model(d.unitChooser, d.flightPlanManager, d.flightSimEvents, d.activeLegInformation));
 
         d.register("annunciationsModel", d => new WT_Annunciations_Model(d.planeConfig, d.sound, d.planeState));
+        d.register("alertsModel", d => new WT_PFD_Alerts_Model());
         d.register("localTimeModel", d => new WT_Local_Time_Model(d.settings, d.clock));
         d.register("oatModel", d => new WT_OAT_Model(d.unitChooser, d.thermometer));
         d.register("transponderModel", d => new WT_Transponder_Model(d.modSettings));
@@ -132,6 +133,8 @@ class AS1000_PFD extends BaseAS1000 {
         this.planeState = this.dependencies.planeState;
         this.electricityAvailable = this.dependencies.electricityAvailable;
         this.proceduresMenuView = this.dependencies.proceduresMenuView;
+        this.alertsModel = this.dependencies.alertsModel;
+        this.sharedEvents = this.dependencies.sharedEvents;
 
         this.updatables.push(this.miniPageController);
         this.miniPageController.handleInput(this.inputStack);
@@ -184,6 +187,19 @@ class AS1000_PFD extends BaseAS1000 {
 
         document.body.appendChild(this.dependencies.debugConsoleView);
         this.dependencies.debugConsoleView.setModel(this.dependencies.debugConsole);
+
+        this.sharedEvents.observe(WT_Shared_Instrument_Events.EVENT_ADD_PFD_ALERT).subscribe(alert => {
+            this.alertsModel.addAlert(new WT_PFD_Alert(alert.title, alert.body, () => {
+                this.sharedEvents.fire(WT_Shared_Instrument_Events.EVENT_PFD_ALERT_CLICKED, alert.id);
+            }));
+            this.miniPageController.showAlerts();
+        });
+
+        this.sharedEvents.observe(WT_Shared_Instrument_Events.EVENT_PFD_ALERT_CLICKED).subscribe(id => {
+            switch (id) {
+
+            }
+        });
     }
     onXMLConfigLoaded(_xml) {
         super.onXMLConfigLoaded(_xml);
@@ -212,6 +228,7 @@ class AS1000_PFD extends BaseAS1000 {
         this.initModelView(dependencies.oatModel, "g1000-oat");
         this.initModelView(dependencies.transponderModel, "g1000-transponder");
 
+        this.initModelView(dependencies.alertsModel, "g1000-pfd-alerts");
         this.initModelView(dependencies.referencesModel, "g1000-pfd-airspeed-references");
         this.initModelView(dependencies.setMinimumsModel, "g1000-pfd-minimums");
         this.initModelView(dependencies.timerModel, "g1000-pfd-timer");

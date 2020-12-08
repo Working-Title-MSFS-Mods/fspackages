@@ -122,24 +122,30 @@ class WT_Direct_To_Controller extends WT_Flight_Plan_Mode {
     async activate() {
         this.isActive = true;
 
-        let numExisting = SimVar.GetSimVarValue("C:fs9gps:FlightPlanWaypointsNumber", "number");
-        console.log(`Deleting ${numExisting} existing waypoints`);
-        for (let i = numExisting - 1; i >= 0; i--) {
-            await SimVar.SetSimVarValue("C:fs9gps:FlightPlanDeleteWaypoint", "enum", i);
-        }
-        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", this.waypoints[0].infos.coordinates.lat);
-        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", this.waypoints[0].infos.coordinates.long);
-        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanAddWaypoint", "enum", 0);
-        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", this.waypoints[1].infos.coordinates.lat);
-        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", this.waypoints[1].infos.coordinates.long);
-        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanAddWaypoint", "enum", 1);
-        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanActiveWaypoint", "enum", 1);
-
         this.flightPlanElement = new SvgFlightPlanElement();
         this.flightPlanElement.hideReachedWaypoints = false;
         this.flightPlanElement.source = this.flightPlan;
         this.flightPlanElement.flightPlanIndex = WT_Direct_To_Controller.FLIGHT_PLAN_INDEX++;
         this.map.flightPlanElements.push(this.flightPlanElement);
+
+        let numExisting = SimVar.GetSimVarValue("C:fs9gps:FlightPlanWaypointsNumber", "number");
+        console.log(`Deleting ${numExisting} existing waypoints`);
+        for (let i = numExisting - 1; i >= 0; i--) {
+            await SimVar.SetSimVarValue("C:fs9gps:FlightPlanDeleteWaypoint", "enum", i);
+        }
+        
+        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", this.waypoints[0].infos.coordinates.lat);
+        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", this.waypoints[0].infos.coordinates.long);
+        SimVar.SetSimVarValue("C:fs9gps:FlightPlanAddWaypoint", "enum", 0);
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLatitude", "degrees", this.waypoints[1].infos.coordinates.lat);
+        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointLongitude", "degrees", this.waypoints[1].infos.coordinates.long);
+        SimVar.SetSimVarValue("C:fs9gps:FlightPlanAddWaypoint", "enum", 1);
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        await SimVar.SetSimVarValue("C:fs9gps:FlightPlanActiveWaypoint", "enum", 1);
+
         //this.map.showFlightPlan = false;
     }
     deactivate() {

@@ -74,6 +74,13 @@ class WT_Adf_Input extends HTMLElement {
     }
     connectedCallback() {
         this.isVisible = true;
+        const frame = () => {
+            this.updateDisplay();
+            if (this.isVisible)
+                requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+
         if (this.initialised)
             return;
         this.initialised = true;
@@ -96,13 +103,6 @@ class WT_Adf_Input extends HTMLElement {
         addDigit(3);
 
         this.updateDisplay();
-
-        const frame = () => {
-            this.updateDisplay();
-            if (this.isVisible)
-                requestAnimationFrame(frame);
-        }
-        requestAnimationFrame(frame);
     }
     disconnectedCallback() {
         this.isVisible = false;

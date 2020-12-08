@@ -151,6 +151,7 @@ class AS1000_MFD extends BaseAS1000 {
         this.paneContainer = d.paneContainer;
         this.dialogContainer = d.dialogContainer;
 
+        this.sharedEvents = d.sharedEvents;
         this.flightSimEvents = d.flightSimEvents;
         this.inputStack = d.inputStack;
         this.softKeyController = d.softKeyController;
@@ -200,12 +201,26 @@ class AS1000_MFD extends BaseAS1000 {
         document.body.appendChild(this.dependencies.debugConsoleView);
         this.dependencies.debugConsoleView.setModel(this.dependencies.debugConsole);
 
-        /*const releaseRepository = this.dependencies.releaseRepository
-        rxjs.zip(releaseRepository.getLatestRelease(), releaseRepository.getCurrentRelease()).subscribe(([latest, current]) => {
-            console.log(`Latest release: ${latest.tag}`);
-            console.log(`Current release: ${current.tag}`);
-            this.dependencies.showReleaseHandler.show(latest);
-        });*/
+        const releaseRepository = this.dependencies.releaseRepository
+        setTimeout(() => {
+            releaseRepository.observeNewRelease().subscribe(latest => {
+                this.sharedEvents.fire(WT_Shared_Instrument_Events.EVENT_ADD_PFD_ALERT, {
+                    title: `${latest.tag} available`,
+                    body: `Click to view the release on the MFD`,
+                    id: "show-latest-release"
+                })
+            }, e => console.warn("Failed to check new releases. You're probably offline or Github is down."));
+        }, 2000); // Gives time for the PFD to be started up
+
+        this.sharedEvents.observe(WT_Shared_Instrument_Events.EVENT_PFD_ALERT_CLICKED).subscribe(id => {
+            console.log(`Got message: ${id}`);
+            switch (id) {
+                case "show-latest-release": {
+                    releaseRepository.getLatestRelease().subscribe(latest => this.dependencies.showReleaseHandler.show(latest));
+                    break;
+                }
+            }
+        });
 
         this.test = [];
         /*for (let i = 0; i < 300; i++) {
@@ -333,7 +348,10 @@ class AS1000_MFD extends BaseAS1000 {
             let y = 1080 / 2 + Math.sin(obj.i + this.time) * dis;
             x = Math.floor(x);
             y = Math.floor(y);
-            obj.style.transform = `translate(${x}px, ${y}px)`;
+            const n = `translate(${x}px, ${y}px)`;
+            if (obj.style.transform != n) {
+                obj.style.transform = n;
+            }
         }
     }
     afterUpdate() {

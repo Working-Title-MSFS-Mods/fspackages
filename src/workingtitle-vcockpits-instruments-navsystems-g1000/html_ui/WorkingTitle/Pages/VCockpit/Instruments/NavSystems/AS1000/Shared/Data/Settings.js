@@ -35,6 +35,7 @@ class WT_Settings {
         this.listeners = [];
 
         WTDataStore.observe(this.storagePrefix).subscribe(([key, value]) => {
+            console.log(`Obseved ${key} -> ${value}`)
             if (value === null) {
                 delete this.settings[key];
             } else {

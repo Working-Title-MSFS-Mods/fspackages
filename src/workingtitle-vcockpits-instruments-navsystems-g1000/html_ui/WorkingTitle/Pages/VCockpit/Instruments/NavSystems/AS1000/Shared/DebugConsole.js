@@ -136,29 +136,34 @@ class WT_Debug_Console {
         );*/
 
         this.avionicsUpdateFps = frameTime$.pipe(
-            rxjs.operators.map(time => time),
-            rxjs.operators.bufferCount(sampleFrames),
-            rxjs.operators.map(values => values.reduce((total, value) => total + value, 0) / sampleFrames)
+            /*rxjs.operators.bufferCount(sampleFrames, 1),
+            rxjs.operators.map(values => values.reduce((total, value) => total + value, 0) / sampleFrames)*/
+            rxjs.operators.scan((acc, current) => acc + (current - acc) / 5, 0)
         );
 
-        this.avionicsFps = update$.pipe(
+        /*this.avionicsFps = update$.pipe(
             rxjs.operators.scan(total => (total + 1) % sampleFrames, 0),
             rxjs.operators.filter(value => value == 0),
             rxjs.operators.map(() => window.performance.now()),
             rxjs.operators.pairwise(),
             rxjs.operators.map(([a, b]) => sampleFrames / ((b - a) / 1000))
+        );*/
+
+        this.avionicsFps = update$.pipe(
+            rxjs.operators.map(() => window.performance.now()),
+            rxjs.operators.pairwise(),
+            rxjs.operators.map(([a, b]) => b - a),
+            rxjs.operators.scan((acc, current) => acc + (current - acc) / 5, 0),
+            rxjs.operators.map(u => 1 / (u / 1000))
         );
 
         this.gameFps = update$.pipe(
-            rxjs.operators.bufferTime(1000),
-            rxjs.operators.map(frameTimes => frameTimes.reduce((total, current) => total + current, 0) / frameTimes.length),
+            rxjs.operators.scan((acc, current) => acc + (current - acc) / 5, 0),
             rxjs.operators.map(averageFrameTime => 1000 / averageFrameTime)
         );
 
         window.onerror = function (message, source, lineno, colno, error) {
-            console.error(`${source}:${lineno}`);
-            console.error(message);
-            console.error(error.stack);
+            console.error(`${source}:${lineno}:${colno}\n${message}\n${error.stack}`);
         };
     }
     dataStoreKey(variable) {
@@ -363,9 +368,20 @@ class WT_Debug_Console_View extends WT_HTML_View {
             })
         ).subscribe();
 
-        model.avionicsUpdateFps.subscribe(fps => this.elements.avionicsUpdateFps.textContent = `U: ${fps.toFixed(1)}`);
-        model.avionicsFps.subscribe(fps => this.elements.avionicsFps.textContent = `AV: ${fps.toFixed(1)}`);
-        model.gameFps.subscribe(fps => this.elements.gameFps.textContent = `GM: ${fps.toFixed(1)}`);
+        model.avionicsUpdateFps.pipe(
+            rxjs.operators.map(fps => fps.toFixed(1)),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(fps => this.elements.avionicsUpdateFps.textContent = `U: ${fps}`);
+
+        model.avionicsFps.pipe(
+            rxjs.operators.map(fps => fps.toFixed()),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(fps => this.elements.avionicsFps.textContent = `AV: ${fps}`);
+
+        model.gameFps.pipe(
+            rxjs.operators.map(fps => fps.toFixed()),
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(fps => this.elements.gameFps.textContent = `GM: ${fps}`);
     }
 }
 customElements.define("wt-debug-console", WT_Debug_Console_View);

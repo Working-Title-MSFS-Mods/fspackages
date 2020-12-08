@@ -99,8 +99,12 @@ class WT_Map_View extends WT_HTML_View {
 
         this.model.mapElement.setZoom(15);
         setTimeout(() => {
-            if (this.model.mapElement.isInit()) {
-                this.model.mapElement.centerOnPlane();
+            try {
+                if (this.model.mapElement.isInit()) {
+                    this.model.mapElement.centerOnPlane();
+                }
+            } catch (e) {
+
             }
         }, 500); // This needs sorting out. centerOnPlane doesn't work before an initial update cycle
     }

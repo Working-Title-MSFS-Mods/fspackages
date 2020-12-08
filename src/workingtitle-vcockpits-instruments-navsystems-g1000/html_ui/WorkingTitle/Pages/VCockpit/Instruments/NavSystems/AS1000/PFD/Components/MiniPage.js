@@ -19,6 +19,7 @@ class WT_PFD_Mini_Page_Controller extends WT_HTML_View {
     }
     connectedCallback() {
         this.pages = {
+            alerts: this.querySelector("g1000-pfd-alerts"),
             references: this.querySelector("g1000-pfd-timer-references-page"),
             nearest: this.querySelector("g1000-pfd-nearest-airports"),
             adfDme: this.querySelector("g1000-pfd-adf-dme"),
@@ -72,6 +73,9 @@ class WT_PFD_Mini_Page_Controller extends WT_HTML_View {
             this.closeAllPages();
         }
         this.showPage(page);
+    }
+    showAlerts() {
+        this.showPageRoot(this.pages.alerts);
     }
     showTimerReferences() {
         this.showPageRoot(this.pages.references);

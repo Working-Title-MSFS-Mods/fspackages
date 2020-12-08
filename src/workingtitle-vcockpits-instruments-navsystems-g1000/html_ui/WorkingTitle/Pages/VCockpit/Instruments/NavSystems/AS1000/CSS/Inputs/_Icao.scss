@@ -53,9 +53,7 @@ waypoint-quick-select {
                 font-family: $font_family_mono;
             }
 
-            &[state="Selected"] {
-                animation: SelectionBlink 0.5s infinite !important;
-            }
+            @extend %animated-selection;
         }
     }
 }

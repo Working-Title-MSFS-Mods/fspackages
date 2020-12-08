@@ -37,7 +37,7 @@ class WT_Procedures_Menu_View extends WT_HTML_View {
         if (this.initialised)
             return;
         this.initialised = true;
-        
+
         const template = document.getElementById('procedures-menu');
         this.appendChild(template.content.cloneNode(true));
 
@@ -75,11 +75,21 @@ class WT_Procedures_Menu_View extends WT_HTML_View {
     }
     getDestinationIcao() {
         const destination = this.flightPlanManager.getDestination();
-        return destination ? destination.icao : null;
+        if (destination) {
+            if (destination.icao[0] == "A") {
+                return destination.icao;
+            }
+        }
+        return null;
     }
     getOriginIcao() {
         const origin = this.flightPlanManager.getOrigin();
-        return origin ? origin.icao : null;
+        if (origin) {
+            if (origin.icao[0] == "A") {
+                return origin.icao;
+            }
+        }
+        return null;
     }
     selectApproach() {
         this.exit();

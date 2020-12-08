@@ -42,6 +42,8 @@ html {
 
     --color-ap: #{$color_ap_active};
     --color-ap-outline: #{darken($color_ap_active, 20%)};
+
+    --blink-color: #{$input_color};
 }
 
 ul {
@@ -50,28 +52,36 @@ ul {
 
 @keyframes SelectionBlink {
     0% {
-        background: $input_color;
+        background: var(--blink-color);
         color: #000;
     }
     25% {
-        background: $input_color;
+        background: var(--blink-color);
         color: #000;
     }
     50% {
         background: none;
-        color: $input_color;
+        color: var(--blink-color);
     }
     75% {
         background: none;
-        color: $input_color;
+        color: var(--blink-color);
     }
     100% {
-        background: $input_color;
+        background: var(--blink-color);
         color: #000;
     }
 }
 
 %animated-selection {
+    --blink-color: #{$input_color};
+    &[state="Selected"] {
+        animation: SelectionBlink 0.5s infinite !important;
+    }
+}
+
+%animated-selection-white {
+    --blink-color: #fff;
     &[state="Selected"] {
         animation: SelectionBlink 0.5s infinite !important;
     }

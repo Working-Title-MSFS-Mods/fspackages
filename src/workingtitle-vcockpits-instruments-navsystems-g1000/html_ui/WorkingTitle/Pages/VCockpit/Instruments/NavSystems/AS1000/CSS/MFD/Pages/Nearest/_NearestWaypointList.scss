@@ -31,9 +31,7 @@ g1000-nearest-waypoint-list {
             font-family: $font_family_mono;
             font-weight: bold;
 
-            &[state="Selected"] {
-                animation: SelectionBlink 0.5s infinite !important;
-            }
+            @extend %animated-selection;
         }
 
         airport-icon {

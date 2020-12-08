@@ -75,8 +75,6 @@ g1000-sequence-list {
             text-align: right;
         }
 
-        &[state="Selected"] {
-            animation: SelectionBlink 0.5s infinite !important;
-        }
+        @extend %animated-selection;
     }
 }

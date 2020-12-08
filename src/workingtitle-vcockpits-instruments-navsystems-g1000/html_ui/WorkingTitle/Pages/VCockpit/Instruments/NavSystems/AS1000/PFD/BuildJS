@@ -33,6 +33,7 @@ Menus/Transponder.js
 Menus/TransponderCode.js
 Menus/Wind.js
 Pages/AdfDme.js
+Pages/Alerts.js
 Pages/DirectTo.js
 Pages/DuplicateWaypoints.js
 Pages/FlightPlan.js

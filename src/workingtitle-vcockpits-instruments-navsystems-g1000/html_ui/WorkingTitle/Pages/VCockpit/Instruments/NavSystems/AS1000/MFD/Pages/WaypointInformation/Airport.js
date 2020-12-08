@@ -242,7 +242,8 @@ class WT_Airport_Information_View extends WT_HTML_View {
                         )
                     }
                     return rxjs.empty()
-                })
+                }),
+                rxjs.operators.catchError(e => rxjs.of("Failed to load METARs"))
             ).subscribe(html => this.elements.metar.innerHTML = html)
         );
     }

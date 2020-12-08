@@ -63,3 +63,5 @@ class WT_Shared_Instrument_Events {
         );
     }
 }
+WT_Shared_Instrument_Events.EVENT_ADD_PFD_ALERT = "ADD_PFD_ALERT";
+WT_Shared_Instrument_Events.EVENT_PFD_ALERT_CLICKED = "PFD_ALERT_CLICKED";

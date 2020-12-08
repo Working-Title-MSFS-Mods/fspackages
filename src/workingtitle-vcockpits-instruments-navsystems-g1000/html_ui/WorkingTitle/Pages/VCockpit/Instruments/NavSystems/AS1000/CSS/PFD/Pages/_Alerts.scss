@@ -1,0 +1,23 @@
+g1000-pfd-alerts {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100%;
+
+    div {
+        overflow: hidden;
+    }
+}
+
+g1000-pfd-alert {
+    display: block;
+
+    label {
+        @extend %animated-selection-white;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    margin: 0.5em 0;
+    padding-bottom: 0.5em;
+    border-bottom: $border_width_thin solid #fff;
+}

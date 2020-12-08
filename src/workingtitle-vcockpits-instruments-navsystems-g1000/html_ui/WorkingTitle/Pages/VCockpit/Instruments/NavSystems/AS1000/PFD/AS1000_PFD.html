@@ -245,7 +245,7 @@
                     <g1000-pfd-minimums>
                         <label>Minimums</label>
                         <toggle-switch data-change="changeMode" values="Off,Baro,Radar" value="Off" data-element="mode"></toggle-switch>
-                        <numeric-input data-input="setAltitude" value="0" increment="10" data-element="altitude" units="ft"></numeric-input>
+                        <numeric-input data-input="setAltitude" value="0" increment="10" data-element="altitude" units="FT"></numeric-input>
                     </g1000-pfd-minimums>
                 </g1000-pfd-timer-references-page>
 
@@ -329,6 +329,11 @@
                         </div>
                     </section>
                 </g1000-pfd-flight-plan>
+
+                <g1000-pfd-alerts class="mini-page">
+                    <h1>Alerts</h1>
+                    <div class="scrollable-container" data-element="alerts"></div>
+                </g1000-pfd-alerts>
             </g1000-pfd-mini-page-container>
         </section>
     </section>

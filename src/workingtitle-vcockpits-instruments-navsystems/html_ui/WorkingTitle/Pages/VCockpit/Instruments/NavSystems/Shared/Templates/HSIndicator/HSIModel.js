@@ -61,12 +61,12 @@ class HSIIndicatorModel {
         this.updateIndex = 0;
         this.lastUpdate = performance.now() / 1000;
 
-        this.rotation = WT_RX.observeSimVar(update$, "PLANE HEADING DEGREES MAGNETIC", "degree");
+        this.rotation = planeState.heading;
         this.track = planeState.inAir.pipe(
             rxjs.operators.switchMap(inAir => inAir ? WT_RX.observeSimVar(update$, "GPS GROUND MAGNETIC TRACK", "degrees") : rxjs.of(0))
         );
         this.heading = WT_RX.observeSimVar(update$, "AUTOPILOT HEADING LOCK DIR", "degree");
-        this.turnRate = WT_RX.observeSimVar(update$, "TURN INDICATOR RATE", "degree per second");
+        this.turnRate = planeState.turnRate;
     }
     updateCdi(dt) {
         let now = performance.now() / 1000;

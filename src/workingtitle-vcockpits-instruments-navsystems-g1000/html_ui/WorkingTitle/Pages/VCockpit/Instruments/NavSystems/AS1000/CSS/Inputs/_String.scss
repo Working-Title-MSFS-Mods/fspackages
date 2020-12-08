@@ -14,8 +14,6 @@ icao-input {
     }
 
     .character {
-        &[state="Selected"] {
-            animation: SelectionBlink 0.5s infinite !important;
-        }
+        @extend %animated-selection;
     }
 }

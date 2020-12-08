@@ -81,6 +81,10 @@ DOMUtilities.AddScopedEventListener = function (node, selector, e, func, capture
 
 // Repopulates an element minimising adding/removing nodes
 DOMUtilities.repopulateElement = function (listElement, elements) {
+    if (elements.length == 0) {
+        listElement.innerHTML = "";
+    }
+
     const firstElement = listElement.firstChild;
     let previousElement = null;
     let first = true;

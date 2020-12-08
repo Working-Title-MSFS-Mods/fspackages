@@ -12,7 +12,9 @@ class WT_Show_Procedure_Handler {
     }
     getView(icao, procedureIndex = null) {
         let model = new WT_Procedure_Page_Model(this.flightPlanManager, this.procedureFacilityRepository);
-        model.setICAO(icao === null ? "A      EGLL " : icao);
+        if (icao !== null) {
+            model.setICAO(icao);
+        }
         model.setInitialProcedureIndex(procedureIndex);
         let view = this.pageController.showPage(new WT_Page("PROC - Procedures", () => model, this.viewFactory), true);
         view.onExit.subscribe(() => {

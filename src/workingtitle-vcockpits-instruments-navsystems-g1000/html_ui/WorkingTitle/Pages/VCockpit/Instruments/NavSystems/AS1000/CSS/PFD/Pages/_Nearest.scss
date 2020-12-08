@@ -6,8 +6,8 @@ g1000-pfd-nearest-airports {
     grid-template-rows: auto minmax(0, 1fr);
     line-height: 1;
 
-    [state="Selected"] {
-        animation: SelectionBlink 0.5s infinite !important;
+    .ident, .frequency {
+        @extend %animated-selection;
     }
 
     ul {

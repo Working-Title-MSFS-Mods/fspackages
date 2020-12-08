@@ -6,13 +6,9 @@ adf-input {
         color: #fff;
     }
 
-    &[state="Selected"] {
-        animation: SelectionBlink 0.5s infinite !important;
-    }
+    @extend %animated-selection;
 
     .digit {
-        &[state="Selected"] {
-            animation: SelectionBlink 0.5s infinite !important;
-        }
+        @extend %animated-selection;
     }
 }

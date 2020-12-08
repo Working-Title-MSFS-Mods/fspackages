@@ -67,10 +67,7 @@ class WT_Airspeed_References_Model extends WT_Model {
     constructor(settings, airspeedReferences) {
         super();
         this.airspeedReferences = airspeedReferences;
-        this.units = new Subject("kts");//settings.getValue("dis_spd"));
-        /*settings.addListener(units => {
-            this.units.value = (units == "nautical" ? "kts" : "kph");
-        }, "dis_spd");*/
+        this.units = new Subject("KTS");
     }
     updateSpeed(id, speed) {
         this.airspeedReferences.updateSpeed(id, speed);
@@ -92,7 +89,7 @@ class WT_Airspeed_References_View extends WT_HTML_View {
      */
     setModel(model) {
         this.model = model;
-        this.units = "kts";
+        this.units = "KTS";
         this.model.units.subscribe(units => {
             this.units = units;
         });
