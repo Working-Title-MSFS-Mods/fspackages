@@ -22,11 +22,11 @@ class WT_MapModel {
      * @type {WT_NumberUnit}
      */
     get range() {
-        return this._range.copy();
+        return this._range.readonly();
     }
 
     set range(range) {
-        this._range.copyFrom(range);
+        this._range.set(range);
     }
 
     /**

@@ -137,9 +137,9 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         let vSpeed = state.model.airplane.verticalSpeed;
         let currentAlt = state.model.airplane.altitudeIndicated;
         let targetAlt = state.model.autopilot.altitudeTarget;
-        let deltaAlt = targetAlt.copy().subtract(currentAlt);
+        let deltaAlt = targetAlt.minus(currentAlt);
         let time = deltaAlt.asUnit(WT_Unit.FOOT) / vSpeed.asUnit(WT_Unit.FPM) / 60; // hours
-        if (vSpeed.copy().abs().compare(WT_MapViewAltitudeInterceptLayer.VSPEED_THRESHOLD) < 0 || time < 0 || deltaAlt.copy().abs().compare(WT_MapViewAltitudeInterceptLayer.ALTITUDE_DELTA_THRESHOLD) < 0) {
+        if (vSpeed.abs(true).compare(WT_MapViewAltitudeInterceptLayer.VSPEED_THRESHOLD) < 0 || time < 0 || deltaAlt.abs(true).compare(WT_MapViewAltitudeInterceptLayer.ALTITUDE_DELTA_THRESHOLD) < 0) {
             return;
         }
 
@@ -155,7 +155,7 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         this._drawArc(state, radius, angle);
 
         this._lastTime = state.currentTime / 1000;
-        this._lastRange.copyFrom(state.projection.range);
+        this._lastRange.set(state.projection.range);
         this._lastRadius = radius;
     }
 }

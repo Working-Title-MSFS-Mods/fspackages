@@ -8,11 +8,11 @@ class WT_MapModelFuelRingModule extends WT_MapModelModule {
     }
 
     get reserveTime() {
-        return this._reserveTime.copy();
+        return this._reserveTime.readonly();
     }
 
     set reserveTime(time) {
-        this._reserveTime.copyFrom(time);
+        this._reserveTime.set(time);
     }
 }
 WT_MapModelFuelRingModule.NAME_DEFAULT = "fuelRing";

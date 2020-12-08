@@ -13,6 +13,7 @@ class WT_MapProjection {
         this._d3Projection.translate([0, 0]);
 
         this.__range = new WT_NumberUnit(1, WT_Unit.NMILE);
+        this._viewResolution = new WT_NumberUnit(1, WT_Unit.NMILE);
         this.__viewTargetOffset = new WT_GVector2(0, 0);
 
         this._optsManager = new WT_OptionsManager(this, WT_MapProjection.OPTIONS_DEF);
@@ -104,7 +105,7 @@ class WT_MapProjection {
      * @type {WT_NumberUnit}
      */
     get viewResolution() {
-        return this.range.scale(1 / this.viewHeight);
+        return this._viewResolution.readonly();
     }
 
     /**
@@ -138,11 +139,11 @@ class WT_MapProjection {
     }
 
     get _range() {
-        return this.__range.copy();
+        return this.__range.readonly();
     }
 
     set _range(range) {
-        this.__range.copyFrom(range);
+        this.__range.set(range);
     }
 
     /**
@@ -220,6 +221,7 @@ class WT_MapProjection {
     }
 
     _recalculateProjection() {
+        this._viewResolution.set(this.range.number / this.viewHeight);
         this._d3Projection.translate([this.viewWidth / 2, this.viewHeight / 2]);
         this._d3Projection.clipExtent([[0, 0], [this.viewWidth, this.viewHeight]]);
 
@@ -249,9 +251,6 @@ class WT_MapProjection {
         let center = this._d3Projection.invert(WT_MapProjection.xyViewToProjection(currentCenterXY));
         this._d3Projection.center(center);
         this._center = WT_MapProjection.latLongProjectionToGame(center);
-        //this._d3Projection.translate([-currentTargetXY[0] + this.viewWidth / 2 + this.viewTargetOffset.x, -currentTargetXY[1] + this.viewHeight / 2 + this.viewTargetOffset.y]);
-
-        //this._center = this.invertXY(this.viewCenter);
     }
 
     /**

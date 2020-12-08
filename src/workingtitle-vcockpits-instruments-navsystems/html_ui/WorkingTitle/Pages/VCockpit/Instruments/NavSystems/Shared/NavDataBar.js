@@ -228,24 +228,12 @@ class WT_NavInfo {
         this._defaultChecker = defaultChecker;
     }
 
-    get value() {
-        return this._value.number;
-    }
-
-    get unit() {
-        return this._value.unit;
-    }
-
-    set unit(val) {
-        this._value.unit = val;
-    }
-
     /**
      * Gets the number part of the formatted display text of this nav info's value.
      * @returns {string} a formatted text representation of this nav info's current value.
      */
     getDisplayNumber() {
-        this._value.refNumber = this.valueGetter.getCurrentValue();
+        this._value.set(this.valueGetter.getCurrentValue());
         let displayText;
         let defaultText = this._defaultChecker.showDefault(this._value.number);
         if (defaultText) {
