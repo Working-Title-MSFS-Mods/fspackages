@@ -624,6 +624,8 @@
 		<!-- PRESSURIZATION -->
 		<Component ID="PRESSURIZATION">
 			<UseTemplate Name="ASOBO_PRESSURIZATION_Push_Dump_Template">
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
 				<IS_AIRLINER>True</IS_AIRLINER>
 				<SEQ1_EMISSIVE_CODE>(A:PRESSURIZATION DUMP SWITCH, Bool)</SEQ1_EMISSIVE_CODE>
 				<NO_SEQ2/>
@@ -774,7 +776,7 @@
 				<ANIM_NAME>PASSENGER_KNOB_CLIMATECONTROL_1</ANIM_NAME>
 				<NODE_ID>PASSENGER_KNOB_CLIMATECONTROL_1</NODE_ID>
 				<PART_ID>PASSENGER_KNOB_CLIMATECONTROL_1</PART_ID>
-				<WWISE_EVENT>fuel_crossfeed_switch</WWISE_EVENT>
+				<WWISE_EVENT>climate_control_knob</WWISE_EVENT>
 				<SWITCH_DIRECTION>Horizontal</SWITCH_DIRECTION>
 				<LEFTARROW>TurnLeft</LEFTARROW>
 				<RIGHTARROW>TurnRight</RIGHTARROW>
@@ -790,7 +792,7 @@
 				<ANIM_NAME>KNOB_PRESSOURCE</ANIM_NAME>
 				<NODE_ID>knob_pressSource</NODE_ID>
 				<PART_ID>knob_pressSource</PART_ID>
-				<WWISE_EVENT>fuel_crossfeed_switch</WWISE_EVENT>
+				<WWISE_EVENT>climate_control_knob</WWISE_EVENT>
 				<SWITCH_DIRECTION>Horizontal</SWITCH_DIRECTION>
 				<LEFTARROW>TurnLeft</LEFTARROW>
 				<RIGHTARROW>TurnRight</RIGHTARROW>
@@ -863,6 +865,8 @@
 					<INTERACTION>Push</INTERACTION>
 					<ONLY_SEQ1/>
 					<SEQ1_EMISSIVE_DRIVES_VISIBILITY>False</SEQ1_EMISSIVE_DRIVES_VISIBILITY>
+					<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+					<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
 				</DefaultTemplateParameters>
 				<UseTemplate Name="ASOBO_FUEL_Switch_Pump_Template">
 					<ID>1</ID>

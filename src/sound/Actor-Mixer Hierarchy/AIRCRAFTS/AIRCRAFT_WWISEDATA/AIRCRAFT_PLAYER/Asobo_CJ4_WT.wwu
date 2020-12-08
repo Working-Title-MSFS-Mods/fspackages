@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}" SchemaVersion="97">
+	<AudioObjects>
+		<WorkUnit Name="Asobo_CJ4_WT" ID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}" PersistMode="Standalone">
+			<ChildrenList>
+				<ActorMixer Name="3D" ID="{17E3FED6-BD2E-4086-8581-62B73B953F10}" ShortID="516312089">
+					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
+						<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
+						<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
+						<Property Name="Priority" Type="int16">
+							<ValueList>
+								<Value>100</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<WorkUnit Name="Cabin_Announcements" ID="{DA339109-38A0-457A-AE85-174A4DED155C}" PersistMode="Reference"/>
+						<WorkUnit Name="Instruments" ID="{0FEBD8CE-49EC-46F6-9131-E3B4EA066A69}" PersistMode="Reference"/>
+						<WorkUnit Name="Engines" ID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}" PersistMode="Reference"/>
+						<WorkUnit Name="Ambience" ID="{8066802F-8FED-4C99-B3A9-9777472C1FD5}" PersistMode="Reference"/>
+						<WorkUnit Name="Aural" ID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}" PersistMode="Reference"/>
+						<WorkUnit Name="Warnings" ID="{17F89ACC-A515-462A-895C-F7C85636DC3D}" PersistMode="Reference"/>
+						<WorkUnit Name="Wind" ID="{CAB3256F-F41F-49E3-A292-8974A514FB46}" PersistMode="Reference"/>
+						<WorkUnit Name="Gear" ID="{5F163F45-FC04-446F-AD64-57E60E134AA1}" PersistMode="Reference"/>
+						<WorkUnit Name="Spoiler Drag" ID="{30DABAEE-CADC-4B29-B080-211845AEA85F}" PersistMode="Reference"/>
+						<WorkUnit Name="Rain" ID="{EFE87A9B-AD09-425F-BCC3-E047B92CE33D}" PersistMode="Reference"/>
+					</ChildrenList>
+				</ActorMixer>
+			</ChildrenList>
+		</WorkUnit>
+	</AudioObjects>
+</WwiseDocument>

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{5C6052E2-BB5C-4BA5-9122-9487C64614EB}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
+	<Events>
+		<WorkUnit Name="System Test" ID="{5C6052E2-BB5C-4BA5-9122-9487C64614EB}" OwnerID="{A2476568-8A3D-4287-AA7D-D5CE4405BC8F}" PersistMode="Nested">
+			<ChildrenList>
+				<Event Name="Play_Asobo_CJ4_WT_aoa_warning" ID="{F00CE565-4C69-4021-BBE7-2073A4F2BD96}">
+					<ChildrenList>
+						<Action Name="" ID="{21AFDD12-629A-49A5-9FFC-40D7D8D0C997}" ShortID="1061921938">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CJ4_Vertical_Speed_Wheel" ID="{09F4BC27-9D17-44E6-8271-9E44684F7068}" WorkUnitID="{61628032-0E82-4AC0-BDEE-354882EFAC79}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_fire_warning" ID="{00ED1A58-EDFA-4420-8F15-203C67AAAF2E}">
+					<ChildrenList>
+						<Action Name="" ID="{B8BBA201-5FF6-4CDB-AB08-BEAF2EEB5B1E}" ShortID="54666706">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Left_Engine_Fire" ID="{F9E4086E-5262-46A0-B028-5621357F5DC1}" WorkUnitID="{63366764-36C4-4158-87D7-B64E40EF5172}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{FC5DB772-E102-4DD8-B274-1F5177600A3D}" ShortID="642094024">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+								<Property Name="Delay" Type="Real64" Value="3"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Right_Engine_Fire" ID="{4A10EE71-70C3-4FDE-A52F-AF0FEDB8F580}" WorkUnitID="{63366764-36C4-4158-87D7-B64E40EF5172}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{2096E886-48D0-43E5-B426-E5CDB125B320}" ShortID="18008499">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+								<Property Name="Delay" Type="Real64" Value="6"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Aft_Baggage_Smoke" ID="{DD4D8D65-C79A-4307-A018-125486D56208}" WorkUnitID="{63366764-36C4-4158-87D7-B64E40EF5172}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{C4B3D37A-670C-4636-91EC-F6063B118196}" ShortID="441924311">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+								<Property Name="Delay" Type="Real64" Value="9"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Forward_Baggage_Smoke" ID="{27E5C92E-B0EA-4D40-97BF-7D2FA5F365D3}" WorkUnitID="{63366764-36C4-4158-87D7-B64E40EF5172}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_cas_alert" ID="{4A1F2136-2B31-43C3-BE04-3DE898C1AE51}">
+					<ChildrenList>
+						<Action Name="" ID="{F057E763-2DE4-4C72-8FA8-92B73DA9E6CF}" ShortID="312596465">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CAS_Alert" ID="{453E35A2-CE89-4163-A4BE-FEEBF7A9F0F9}" WorkUnitID="{63366764-36C4-4158-87D7-B64E40EF5172}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_landing_gear" ID="{637CFF6B-3C55-49CD-9109-1DC1FEB9EC4B}">
+					<ChildrenList>
+						<Action Name="" ID="{A981632A-91A6-4806-8CD1-B9C488E3A7D3}" ShortID="165335230">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Landing_Gear" ID="{9BFC9131-BEAA-4488-9DBD-53CAF7AB5E65}" WorkUnitID="{63366764-36C4-4158-87D7-B64E40EF5172}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_overspeed" ID="{36EA6CC3-09CC-45D7-9550-375FFF7EAB42}">
+					<ChildrenList>
+						<Action Name="" ID="{85DC8680-DC3F-4EBE-BEB4-EBBB298529FB}" ShortID="595552383">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Overspeed_Beeper" ID="{C235E731-BBAA-43AC-935E-30F8E2886140}" WorkUnitID="{63366764-36C4-4158-87D7-B64E40EF5172}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{AB8D6508-E01F-4660-AEA1-F8919B30C947}" ShortID="699087254">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+								<Property Name="Delay" Type="Real64" Value="0.2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Overspeed_Beeper" ID="{C235E731-BBAA-43AC-935E-30F8E2886140}" WorkUnitID="{63366764-36C4-4158-87D7-B64E40EF5172}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{AC397A03-DFDA-45DC-9C95-661A86FE81C7}" ShortID="217002123">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+								<Property Name="Delay" Type="Real64" Value="0.4"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Overspeed_Beeper" ID="{C235E731-BBAA-43AC-935E-30F8E2886140}" WorkUnitID="{63366764-36C4-4158-87D7-B64E40EF5172}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{638C4020-76F3-41CE-98C7-76971B7313A7}" ShortID="916275137">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+								<Property Name="Delay" Type="Real64" Value="0.6"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Overspeed_Beeper" ID="{C235E731-BBAA-43AC-935E-30F8E2886140}" WorkUnitID="{63366764-36C4-4158-87D7-B64E40EF5172}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_cabin_pressure" ID="{6F848D58-9920-4AF6-8B83-C10D164866E7}">
+					<ChildrenList>
+						<Action Name="" ID="{867A928B-F925-4D76-A576-26AB20291AB0}" ShortID="149786551">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Cabin_Altitude" ID="{50E1BA4F-7F80-481B-8E80-8FF45653E26F}" WorkUnitID="{63366764-36C4-4158-87D7-B64E40EF5172}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_taws" ID="{4EEF750B-0F14-4DB0-9A4A-44FF9202F9A8}">
+					<Comment>Need to add a "pull up" at start of terrian audio clip
+</Comment>
+					<ChildrenList>
+						<Action Name="" ID="{BD936348-CF51-45CB-B156-5278D79EE802}" ShortID="496120238">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Glideslope" ID="{6E0AE565-4DAC-4AD5-B342-C7147F291FE9}" WorkUnitID="{63366764-36C4-4158-87D7-B64E40EF5172}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{46A75D4F-B189-4095-80CF-1BDAA6435964}" ShortID="179523788">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+								<Property Name="Delay" Type="Real64" Value="1.5"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Terrain_Terrain_Pull_Up" ID="{48EC5B7D-9CA0-422F-8CDD-684281559743}" WorkUnitID="{63366764-36C4-4158-87D7-B64E40EF5172}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>
