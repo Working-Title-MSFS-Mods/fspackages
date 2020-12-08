@@ -8,11 +8,11 @@ class WT_MapModelTrackVectorModule extends WT_MapModelModule {
     }
 
     get lookahead() {
-        return this._lookahead.copy();
+        return this._lookahead.readonly();
     }
 
     set lookahead(lookahead) {
-        this._lookahead.copyFrom(lookahead);
+        this._lookahead.set(lookahead);
     }
 }
 WT_MapModelTrackVectorModule.NAME_DEFAULT = "trackVector";

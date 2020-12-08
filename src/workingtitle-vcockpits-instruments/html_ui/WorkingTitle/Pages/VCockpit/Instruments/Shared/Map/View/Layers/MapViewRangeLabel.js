@@ -16,7 +16,7 @@ class WT_MapViewRangeLabel {
 
         this._formatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(formatterOpts), htmlFormatterOpts);
 
-        this._lastRange = undefined;
+        this._lastRange = new WT_NumberUnit(0, WT_Unit.NMILE);
     }
 
     _createLabel(id, classList, autoClassList, rangeClassList) {
@@ -59,24 +59,25 @@ class WT_MapViewRangeLabel {
         return this._rangeElement;
     }
 
-    _updateAutoElement(data) {
+    _updateAutoElement(state) {
     }
 
-    _updateRangeElement(data) {
-        let range = data.model.range;
+    _updateRangeElement(state) {
+        let range = state.model.range;
 
-        if (this._lastRange && range.compare(this._lastRange) == 0) {
+        if (range.compare(this._lastRange) == 0) {
             return;
         }
 
+        let unit;
         if (range.asUnit(WT_Unit.FOOT) <= 1001) {
-            range.unit = WT_Unit.FOOT;
+            unit = WT_Unit.FOOT;
         } else {
-            range.unit = WT_Unit.NMILE;
+            unit = WT_Unit.NMILE;
         }
 
-        this.rangeElement.innerHTML = this._formatter.getFormattedHTML(range);
-        this._lastRange = range;
+        this.rangeElement.innerHTML = this._formatter.getFormattedHTML(range, unit);
+        this._lastRange.set(range);
     }
 
     onUpdate(data) {

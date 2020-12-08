@@ -271,7 +271,7 @@ class WT_MapViewTextLabelManager {
                 this._visibleLabels.clear();
                 this._mapZoomTimer = this.mapZoomUpdateDelay;
                 this._lastTime = currentTime;
-                this._lastRange.copyFrom(data.projection.range);
+                this._lastRange.set(data.projection.range);
                 return;
             }
 

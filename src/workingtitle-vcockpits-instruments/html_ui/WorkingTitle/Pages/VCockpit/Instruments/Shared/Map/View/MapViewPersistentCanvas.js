@@ -124,7 +124,7 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     }
 
     _syncDisplayFromBuffer() {
-        this.display.reference.range.copyFrom(this.buffer.reference.range);
+        this.display.reference.range.set(this.buffer.reference.range);
         this.display.reference.center = this.buffer.reference.center;
         this.display.reference.scale = this.buffer.reference.scale;
         this.display.reference.rotation = this.buffer.reference.rotation;
@@ -135,7 +135,7 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     }
 
     _updateReference(state, reference) {
-        reference.range.copyFrom(state.projection.range);
+        reference.range.set(state.projection.range);
         reference.center = state.projection.center;
         reference.scale = state.projection.scale;
         reference.rotation = state.projection.rotation;

@@ -6,122 +6,307 @@
  */
 class WT_NumberUnit {
     /**
-     * @param {number} refNumber - an initial reference value.
-     * @param {WT_Unit} refUnit - the reference unit type. This also determines the initial active unit type.
+     * @param {Number} number - the initial numeric value of the new NumberUnit.
+     * @param {WT_Unit} unit - the unit type of the new NumberUnit.
      */
-    constructor(refNumber, refUnit) {
-        this._refNumber = refNumber;
-        this._refUnit = refUnit;
-        this._unit = refUnit;
-    }
-
-    /**
-     * @property {number} - the current value in reference units.
-     */
-    get refNumber() {
-        return this._refNumber;
-    }
-
-    set refNumber(val) {
-        this._refNumber = val;
+    constructor(number, unit) {
+        this._number = number;
+        this._unit = unit;
+        this._readonly = new WT_NumberUnitReadOnly(this);
     }
 
     /**
      * @readonly
-     * @property {WT_Unit} - the current value in active units.
-     */
-    get refUnit() {
-        return this._refUnit;
-    }
-
-    /**
-     * @property {number} - the current value in active units.
+     * @property {Number} - this NumberUnit's numeric value.
+     * @type {Number}
      */
     get number() {
-        if (this._unit === this._refUnit) {
-            return this._refNumber;
-        }
-        return this._refUnit.convert(this._refNumber, this._unit);
-    }
-
-    set number(val) {
-        this._refNumber = this._unit.convert(val, this._refUnit);
+        return this._number;
     }
 
     /**
-     * @property {WT_Unit} - the current active unit type
+     * @readonly
+     * @property {WT_Unit} - this NumberUnit's unit type.
+     * @type {WT_Unit}
      */
     get unit() {
         return this._unit;
     }
 
-    set unit(unit) {
-        if (this._unit.type === unit.type) {
-            this._unit = unit;
+    _toNumberOfThisUnit(value, unit) {
+        if ((value instanceof WT_NumberUnit || value instanceof WT_NumberUnitReadOnly) && this.unit.family === value.unit.family) {
+            return value.unit.convert(value.number, this.unit);
         }
+        if (typeof value === "number") {
+            if (!(unit instanceof WT_Unit)) {
+                unit = this.unit;
+            }
+            return unit.convert(value, this.unit);
+        }
+        return undefined;
     }
 
-    add(other) {
-        if (this.unit.type !== other.unit.type) {
-            return;
+    /**
+     * Sets this NumberUnit's numeric value. This method will not change this NumberUnit's unit type.
+     * @param {WT_NumberUnit|Number} value - the new value.
+     * @param {WT_Unit} [unit] - the unit type of the new value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *                           is a WT_NumberUnit object.
+     */
+    set(value, unit) {
+        let converted = this._toNumberOfThisUnit(value, unit);
+        if (converted !== undefined) {
+            this._number = converted;
         }
-        this.refNumber += other.asUnit(this.refUnit);
         return this;
     }
 
-    subtract(other) {
-        if (this.unit.type !== other.unit.type) {
-            return;
+    /**
+     * Adds a value to this NumberUnit and returns the result as a new WT_NumberUnit object. The operation is only valid if the unit type of
+     * the value to add can be converted to this NumberUnit's unit type.
+     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *                           is a WT_NumberUnit object.
+     * @returns {WT_NumberUnit} the sum as a new WT_NumberUnit object, or undefined if the the operation was invalid.
+     */
+    plus(value, unit) {
+        let converted = this._toNumberOfThisUnit(value, unit);
+        if (converted !== undefined) {
+            converted = new WT_NumberUnit(this.number + converted, this.unit);
         }
-        this.refNumber -= other.asUnit(this.refUnit);
-        return this;
+        return converted;
     }
 
-    scale(factor) {
-        this.refNumber *= factor;
-        return this;
-    }
-
-    ratio(other) {
-        if (this.unit.type !== other.unit.type) {
-            return;
+    /**
+     * Adds a value to this NumberUnit in place and returns this NumberUnit. The operation is only valid if the unit type of the value to
+     * add can be converted to this NumberUnit's unit type. An invalid operation will not be carried out, but this NumberUnit will still be
+     * returned.
+     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *                           is a WT_NumberUnit object.
+     * @returns {WT_NumberUnit} this NumberUnit.
+     */
+    add(value, unit) {
+        let converted = this._toNumberOfThisUnit(value, unit);
+        if (converted !== undefined) {
+            this._number += converted;
         }
-        return this.refNumber / other.asUnit(this.refUnit);
-    }
-
-    abs() {
-        this.refNumber = Math.abs(this.refNumber);
         return this;
     }
 
+    /**
+     * Subtracts a value from this NumberUnit and returns the result as a new WT_NumberUnit object. The operation is only valid if the
+     * unit type of the value to subtract can be converted to this NumberUnit's unit type.
+     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *                           is a WT_NumberUnit object.
+     * @returns {WT_NumberUnit} the difference as a new WT_NumberUnit object, or undefined if the the operation was invalid.
+     */
+    minus(value, unit) {
+        let converted = this._toNumberOfThisUnit(value, unit);
+        if (converted !== undefined) {
+            converted = new WT_NumberUnit(this.number - converted, this.unit);
+        }
+        return converted;
+    }
+
+    /**
+     * Subtracts a value from this NumberUnit in place and returns this NumberUnit. The operation is only valid if the unit type of the
+     * value to subtract can be converted to this NumberUnit's unit type. An invalid operation will not be carried out, but this NumberUnit
+     * will still be returned.
+     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *                           is a WT_NumberUnit object.
+     * @returns {WT_NumberUnit} this NumberUnit.
+     */
+    subtract(value, unit) {
+        let converted = this._toNumberOfThisUnit(value, unit);
+        if (converted !== undefined) {
+            this._number -= converted;
+        }
+        return this;
+    }
+
+    /**
+     * Scales this NumberUnit by a unit-less factor. The operation can either be performed in-place or a new WT_NumberUnit object can
+     * be returned.
+     * @param {Number} factor - the factor by which to scale.
+     * @param {Boolean} mutate - whether to perform the operation in place.
+     * @returns {WT_NumberUnit} the scaled NumberUnit, either as a new WT_NumberUnit object or this NumberUnit after being changed.
+     */
+    scale(factor, mutate = false) {
+        if (mutate) {
+            this._number *= factor;
+            return this;
+        } else {
+            return new WT_NumberUnit(this.number * factor, this.unit);
+        }
+    }
+
+    /**
+     * Calculates the ratio of this NumberUnit to another value.
+     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *                           is a WT_NumberUnit object.
+     * @returns {Number} the ratio.
+     */
+    ratio(value, unit) {
+        let converted = this._toNumberOfThisUnit(value, unit);
+        return this.number / converted;
+    }
+
+    /**
+     * Calculates the absolute value of this NumberUnit, then either returns the result as a new WT_NumberUnit object or sets the value of
+     * this number to the result.
+     * @param {Boolean} mutate - whether to perform the operation in place.
+     * @returns {WT_NumberUnit} the absolute value of this NumberUnit, either as a new WT_NumberUnit object or this NumberUnit after
+     *                          being changed.
+     */
+    abs(mutate = false) {
+        if (mutate) {
+            this._number = Math.abs(this.number);
+            return this;
+        } else {
+            return new WT_NumberUnit(Math.abs(this.number), this.unit);
+        }
+    }
+
+    /**
+     * Returns the numeric value of this NumberUnit after conversion to a specified unit.
+     * @param {WT_Unit} unit - the unit to which to convert.
+     * @returns {Number} the converted numeric value.
+     */
     asUnit(unit) {
-        return this.refUnit.convert(this.refNumber, unit);
+        return this.unit.convert(this.number, unit);
     }
 
-    compare(other) {
-        if (this.unit.type !== other.unit.type) {
+    /**
+     * Checks whether this NumberUnit is greater than, equal to, or less than another value.
+     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *                           is a WT_NumberUnit object.
+     * @returns {Number} 0 if this NumberUnit is equal to the other value, -1 if this number is less, and 1 if this number is greater.
+     */
+    compare(value, unit) {
+        let converted = this._toNumberOfThisUnit(value, unit);
+        if (converted === undefined) {
             return undefined;
         }
-        let diff = this.refNumber - other.asUnit(this.refUnit);
+
+        let diff = this.number - converted;
         if (Math.abs(diff) < 1e-14) {
             return 0;
         }
         return diff;
     }
 
+    /**
+     * Checks whether this NumberUnit is equal to another value. This method is a synonym for this.compare(value, unit) === 0.
+     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *                           is a WT_NumberUnit object.
+     * @returns {Boolean} whether this NumberUnit is equal to the other value.
+     */
+    equals(value, unit) {
+        return this.compare(value, unit) === 0;
+    }
+
+    /**
+     * Copies this NumberUnit.
+     * @returns {WT_NumberUnit} a copy of this NumberUnit.
+     */
+    copy() {
+        return new WT_NumberUnit(this.number, this.unit);
+    }
+
+    /**
+     * Gets a read-only version of this NumberUnit. The read-only version is updated as this NumberUnit is changed. Attempting to call
+     * any mutating method on the read-only version will create and return a mutated copy of this NumberUnit instead.
+     * @returns {WT_NumberUnitReadOnly} a read-only version of this NumberUnit.
+     */
+    readonly() {
+        return this._readonly;
+    }
+}
+
+/**
+ * A read-only interface for a WT_NumberUnit.
+ */
+class WT_NumberUnitReadOnly {
+    /**
+     * @param {WT_NumberUnit} source
+     */
+    constructor(source) {
+        this._source = source;
+    }
+
+    /**
+     * @readonly
+     * @property {Number} - this NumberUnit's numeric value.
+     * @type {Number}
+     */
+    get number() {
+        return this._source.number;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_Unit} - this NumberUnit's unit type.
+     * @type {WT_Unit}
+     */
+    get unit() {
+        return this._source.unit;
+    }
+
+    set(value, unit) {
+        return this._source.copy().set(value, unit);
+    }
+
+    plus(value, unit) {
+        return this._source.plus(value, unit);
+    }
+
+    add(value, unit) {
+        return this._source.plus(value, unit);
+    }
+
+    minus(value, unit) {
+        return this._source.minus(value, unit);
+    }
+
+    subtract(value, unit) {
+        return this._source.minus(value, unit);
+    }
+
+    scale(factor, mutate = false) {
+        return this._source.scale(factor, false);
+    }
+
+    ratio(value, unit) {
+        return this._source.ratio(value, unit);
+    }
+
+    abs(mutate = false) {
+        return this._source.abs(false);
+    }
+
+    asUnit(unit) {
+        return this._source.asUnit(unit);
+    }
+
+    compare(other) {
+        return this._source.compare(other);
+    }
+
     equals(other) {
-        return Math.abs(this.compare(other)) === 0;
+        return this._source.equals(other);
     }
 
     copy() {
-        return new WT_NumberUnit(this.refNumber, this.refUnit);
+        return this._source.copy();
     }
 
-    copyFrom(other) {
-        if (this.unit.type !== other.unit.type) {
-            return;
-        }
-        this.refNumber = other.refUnit.convert(other.refNumber, this.refUnit);
+    readonly() {
+        return this;
     }
 }
 
@@ -143,8 +328,9 @@ class WT_Unit {
 
     /**
      * @readonly
-     * @property {string} - the family this unit belongs to. a.family === b.family
+     * @property {String} - the family this unit belongs to. a.family === b.family
      *                      must be true if and only if conversions between a and b are valid.
+     * @type {String}
      */
     get family() {
         return this._family;
@@ -152,7 +338,8 @@ class WT_Unit {
 
     /**
      * @readonly
-     * @property {string} - the name of this unit in singular form.
+     * @property {String} - the name of this unit in singular form.
+     * @type {String}
      */
     get fullNameSingular() {
         return this._fullNameSingular;
@@ -160,7 +347,8 @@ class WT_Unit {
 
     /**
      * @readonly
-     * @property {string} - the name of this unit in multiple form.
+     * @property {String} - the name of this unit in multiple form.
+     * @type {String}
      */
     get fullNameMultiple() {
         return this._fullNameMultiple;
@@ -168,7 +356,8 @@ class WT_Unit {
 
     /**
      * @readonly
-     * @property {string} - the abbreviated name of this unit.
+     * @property {String} - the abbreviated name of this unit.
+     * @type {String}
      */
     get abbrevName() {
         return this._abbrevName;
@@ -176,20 +365,27 @@ class WT_Unit {
 
     /**
      * Gets the conversion factor to convert from this unit to another unit.
-     * @param {WT_Unit} otherUnit - the other unit to convert to.
+     * @param {WT_Unit} otherUnit - the other unit to which to convert.
+     * @returns {Number} the conversion factor.
      */
     getConversionFactor(otherUnit) {
     }
 
     /**
      * Converts a value of this unit to another unit.
-     * @param {number} value - the value to convert.
-     * @param {WT_Unit} otherUnit - the unit to convert to.
+     * @param {Number} value - the value to convert.
+     * @param {WT_Unit} otherUnit - the unit to which to convert.
+     * @returns {Number} the converted value.
      */
     convert(value, otherUnit) {
         return value * this.getConversionFactor(otherUnit);
     }
 
+    /**
+     * Creates a NumberUnit with a specified initial value of this unit type.
+     * @param {Number} value - the numeric value of the new NumberUnit.
+     * @returns {WT_NumberUnit} a NumberUnit of this unit type.
+     */
     createNumber(value) {
         return new WT_NumberUnit(value, this);
     }
@@ -200,11 +396,12 @@ class WT_Unit {
  */
 class WT_SimpleUnit extends WT_Unit {
     /**
-     * @param {string} family - the family the unit belongs to.
-     * @param {number} scaleFactor - the relative scale of one unit of the new unit compared to one unit of the standard unit of the same family.
-     * @param {string} fullNameSingular - the name of the unit in singular form.
-     * @param {string} fullNameMultiple - the name of the unit in multiple form.
-     * @param {string} abbrevName - the abbreviated name of the unit.
+     * @param {String} family - the family to which the new unit belongs.
+     * @param {Number} scaleFactor - the relative scale of one of the new unit compared to one of the standard unit of the
+     *                               same family.
+     * @param {String} fullNameSingular - the name of the new unit in singular form.
+     * @param {String} fullNameMultiple - the name of the new unit in multiple form.
+     * @param {String} abbrevName - the abbreviated name of the new unit.
      */
     constructor(family, scaleFactor, fullNameSingular, fullNameMultiple, abbrevName) {
         super(fullNameSingular, fullNameMultiple, abbrevName);
@@ -212,6 +409,11 @@ class WT_SimpleUnit extends WT_Unit {
         this._scaleFactor = scaleFactor;
     }
 
+    /**
+     * Gets the conversion factor to convert from this unit to another unit.
+     * @param {WT_Unit} otherUnit - the other unit to which to convert.
+     * @returns {Number} the conversion factor.
+     */
     getConversionFactor(otherUnit) {
         if (this.family === otherUnit.family) {
             return this._scaleFactor / otherUnit._scaleFactor;
@@ -242,6 +444,12 @@ class WT_TempUnit extends WT_Unit {
         return NaN;
     }
 
+    /**
+     * Converts a value of this unit to another unit.
+     * @param {Number} value - the value to convert.
+     * @param {WT_Unit} otherUnit - the unit to which to convert.
+     * @returns {Number} the converted value.
+     */
     convert(value, otherUnit) {
         if (this.family === otherUnit.family) {
             if (this.id === otherUnit.id) {
@@ -258,11 +466,11 @@ class WT_TempUnit extends WT_Unit {
  */
 class WT_CompoundUnit extends WT_Unit {
     /**
-     * @param numerator - an iterable of WT_Unit containing all the units in the numerator of the compound unit.
-     * @param denominator - an iterable of WT_Unit containing all the units in the denominator of the compound unit.
-     * @param {string} fullNameSingular - the name of the unit in singular form.
-     * @param {string} fullNameMultiple - the name of the unit in multiple form.
-     * @param {string} abbrevName - the abbreviated name of the unit.
+     * @param {Iterable<WT_Unit>} numerator - an Iterable of WT_Unit containing all the units in the numerator of the compound unit.
+     * @param {Iterable<WT_Unit>} denominator - an Iterable of WT_Unit containing all the units in the denominator of the compound unit.
+     * @param {String} fullNameSingular - the name of the unit in singular form.
+     * @param {String} fullNameMultiple - the name of the unit in multiple form.
+     * @param {String} abbrevName - the abbreviated name of the unit.
      */
     constructor(numerator, denominator, fullNameSingular = null, fullNameMultiple = null, abbrevName = null) {
         super(fullNameSingular, fullNameMultiple, abbrevName);
@@ -327,6 +535,11 @@ class WT_CompoundUnit extends WT_Unit {
         this._family += this._denominator.length > 0 ? "/" + this._denominator.map(e => e.family) + "" : "";
     }
 
+    /**
+     * Gets the conversion factor to convert from this unit to another unit.
+     * @param {WT_Unit} otherUnit - the other unit to which to convert.
+     * @returns {Number} the conversion factor.
+     */
     getConversionFactor(otherUnit) {
         if (this.family === otherUnit.family) {
             let factor = 1;
@@ -585,7 +798,6 @@ class WT_NumberFormatter {
     _formatUnit(number, unit) {
         let formatted = "";
         if (this.unitShow) {
-            formatted = this.unitSpaceBefore ? " " : "";
             if (this.unitLong) {
                 formatted += number == 1 ? unit.fullNameSingular : unit.fullNameMultiple;
             } else {
@@ -599,28 +811,42 @@ class WT_NumberFormatter {
         return formatted;
     }
 
+    _getFormattedString(numberUnit, forceUnit, showNumber, showUnit) {
+        let unit = numberUnit.unit;
+        if (forceUnit && numberUnit.unit.family === forceUnit.family) {
+            unit = forceUnit;
+        }
+        let number = numberUnit.asUnit(unit);
+        return (showNumber ? this._formatNumber(number) : "") +
+               ((showNumber && showUnit && this.unitSpaceBefore) ? " " : "") +
+               (showUnit ? this._formatUnit(number, unit) : "");
+    }
+
     /**
      * Gets a complete formatted string representation of a NumberUnit.
      * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
+     * @param {WT_Unit} [forceUnit] - the unit type to which to convert the NumberUnit before formatting.
      */
-    getFormattedString(numberUnit) {
-        return this._formatNumber(numberUnit.number) + this._formatUnit(numberUnit.number, numberUnit.unit);
+    getFormattedString(numberUnit, forceUnit) {
+        return this._getFormattedString(numberUnit, forceUnit, true, true);
     }
 
     /**
      * Gets a string representation of the number part of a NumberUnit.
      * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
+     * @param {WT_Unit} [forceUnit] - the unit type to which to convert the NumberUnit before formatting.
      */
-    getFormattedNumber(numberUnit) {
-        return this._formatNumber(numberUnit.number);
+    getFormattedNumber(numberUnit, forceUnit) {
+        return this._getFormattedString(numberUnit, forceUnit, true, false);
     }
 
     /**
      * Gets a string representation of the unit part of a NumberUnit.
      * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
+     * @param {WT_Unit} [forceUnit] - the unit type to which to convert the NumberUnit before formatting.
      */
-    getFormattedUnit(numberUnit) {
-        return this._formatUnit(numberUnit.number, numberUnit.unit).trim();
+    getFormattedUnit(numberUnit, forceUnit) {
+        return this._getFormattedString(numberUnit, forceUnit, false, true);
     }
 }
 WT_NumberFormatter.OPTIONS = {
@@ -687,7 +913,7 @@ class WT_TimeFormatter extends WT_NumberFormatter {
         let minUnitText = "";
         let secUnitText = "";
 
-        hours = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.HOUR));
+        hours = Math.floor(numberUnit.asUnit(WT_Unit.HOUR));
         if (this.timeFormat != WT_TimeFormatter.Format.MM_SS && !(this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hours == 0)) {
             hoursText = hours.toFixed(0);
             hoursText = hoursText.padStart(this.pad, "0");
@@ -707,11 +933,11 @@ class WT_TimeFormatter extends WT_NumberFormatter {
             hourSubtract = hours;
         }
         if (this.timeFormat == WT_TimeFormatter.Format.HH_MM || (this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hours)) {
-            min = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.MINUTE) % 60;
+            min = numberUnit.asUnit(WT_Unit.MINUTE) % 60;
             minText = this._formatNumber(min);
             minUnitText = this._formatUnit(min, WT_Unit.MINUTE);
         } else {
-            min = Math.floor(numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.MINUTE) - hourSubtract * 60);
+            min = Math.floor(numberUnit.asUnit(WT_Unit.MINUTE) - hourSubtract * 60);
             minText = min.toFixed(0);
             minText = minText.padStart(this._pad, "0");
             let delim = this.delim;
@@ -720,7 +946,7 @@ class WT_TimeFormatter extends WT_NumberFormatter {
             }
             minUnitText = this._formatUnit(min, WT_Unit.MINUTE) + delim;
 
-            sec = numberUnit.refUnit.convert(numberUnit.refNumber, WT_Unit.SECOND) % 60;
+            sec = numberUnit.asUnit(WT_Unit.SECOND) % 60;
             secText = this._formatNumber(sec);
             secUnitText = this._formatUnit(sec, WT_Unit.SECOND);
         }
@@ -837,30 +1063,33 @@ class WT_NumberHTMLFormatter {
     /**
      * Gets a html string for displaying the number part of the text representation of a WT_NumberUnit object.
      * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
+     * @param {WT_Unit} [forceUnit] - the unit type to which to convert the NumberUnit before formatting.
      */
-    getFormattedNumberHTML(numberUnit) {
-        let classText = this._generateClassText(this.classGetter.getNumberClassList(numberUnit));
-        return `<span${classText}>${this.numberFormatter.getFormattedNumber(numberUnit)}</span>`;
+    getFormattedNumberHTML(numberUnit, forceUnit) {
+        let classText = this._generateClassText(this.classGetter.getNumberClassList(numberUnit, forceUnit));
+        return `<span${classText}>${this.numberFormatter.getFormattedNumber(numberUnit, forceUnit)}</span>`;
     }
 
     /**
      * Gets a html string for displaying the unit part of the text representation of a WT_NumberUnit object.
      * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
+     * @param {WT_Unit} [forceUnit] - the unit type to which to convert the NumberUnit before formatting.
      */
-    getFormattedUnitHTML(numberUnit) {
-        let classText = this._generateClassText(this.classGetter.getUnitClassList(numberUnit));
-        return `<span${classText}>${this.numberFormatter.getFormattedUnit(numberUnit)}</span>`;
+    getFormattedUnitHTML(numberUnit, forceUnit) {
+        let classText = this._generateClassText(this.classGetter.getUnitClassList(numberUnit, forceUnit));
+        return `<span${classText}>${this.numberFormatter.getFormattedUnit(numberUnit, forceUnit)}</span>`;
     }
 
     /**
      * Gets a html string for displaying the full text representation of a WT_NumberUnit object.
      * @param {WT_NumberUnit} numberUnit - the NumberUnit to format.
+     * @param {WT_Unit} [forceUnit] - the unit type to which to convert the NumberUnit before formatting.
      */
-    getFormattedHTML(numberUnit) {
-        return this.getFormattedNumberHTML(numberUnit) + (this.numberFormatter.unitShow ? this.numberUnitDelim + this.getFormattedUnitHTML(numberUnit) : "");
+    getFormattedHTML(numberUnit, forceUnit) {
+        return this.getFormattedNumberHTML(numberUnit, forceUnit) + (this.numberFormatter.unitShow ? this.numberUnitDelim + this.getFormattedUnitHTML(numberUnit, forceUnit) : "");
     }
 }
 WT_NumberHTMLFormatter.OPTIONS = {
-    classGetter: {getNumberClassList: numberUnit => [], getUnitClassList: numberUnit => []},
+    classGetter: {getNumberClassList: (numberUnit, forceUnit) => [], getUnitClassList: (numberUnit, forceUnit) => []},
     numberUnitDelim: " "
 };
