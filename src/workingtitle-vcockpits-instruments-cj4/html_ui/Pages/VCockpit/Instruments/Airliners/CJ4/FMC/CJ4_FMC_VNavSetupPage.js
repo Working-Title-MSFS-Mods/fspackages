@@ -250,22 +250,26 @@ class CJ4_FMC_VNavSetupPage {
                 const altVar3 = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet"));
                 const altLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") ? "Y" : "N";
                 const altArm = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") ? "Y" : "N";
-                const status = SimVar.GetSimVarValue("L:WT_TEMP_VNAV_STATUS", "number");
-                const armed = WTDataStore.get('CJ4_VNAV_PATH_STATUS', 'fail');
+                const constraint = SimVar.GetSimVarValue("L:WT_VNAV_constraintExists", "number");
+                const pathArm = SimVar.GetSimVarValue("L:WT_VNAV_pathArm", "number");
+                const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_pathActive", "number");
+                const inhibit = SimVar.GetSimVarValue("L:WT_VNAV_inhibitExecute", "number");
+                const obeyConstraint = SimVar.GetSimVarValue("L:WT_VNAV_obeyingConstraint", "number");
+                const pathStatus = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number");
 
                 fmc._templateRenderer.setTemplateRaw([
-                    [vnavTargetWaypointIdent, " WT VNAV[blue]" + vnavActive + " " + status],
+                    [vnavTargetWaypointIdent, " WT VNAV[blue]" + vnavActive + " " + pathStatus],
                     [" T ALT[blue]", "T DIST [blue]", "FPA[blue]"],
                     [vnavTargetAltitude.toFixed(0) + "FT", vnavTargetDistance.toFixed(1) + "NM", desiredFPA.toFixed(1) + "°"],
-                    [" VS:CURR[blue]", "SET [blue]", "TGT[blue]"],
-                    [apCurrentVerticalSpeed.toFixed(0) + "FPM", setVerticalSpeed.toFixed(0) + "FPM[green]", desiredVerticalSpeed.toFixed(0) + "FPM"],
+                    [" ARM[blue]", "INHIB [blue]", "ACT[blue]"],
+                    [pathArm == 1 ? "YES[green]" : "NO", inhibit == 1 ? "YES[green]" : "NO", pathActive == 1 ? "YES[green]" : "NO"],
                     ["ALTDEV [blue]", "TOD[blue]", " ALT/VS SLOT[blue]"],
                     [altDeviation.toFixed(0) + "FT", distanceToTod.toFixed(1) + "NM", altSlot + "/" + vsSlot],
                     ["VSVAR/VAR:1/VAR:2/VAR:3[blue]"],
                     [vsVar + "/" + vsVar1 + "/" + vsVar2 + "/" + vsVar3],
                     ["ALTVAR/VAR:1/VAR:2/VAR:3[blue]"],
                     [altVar + "/" + altVar1 + "/" + altVar2 + "/" + altVar3],
-                    ["A LK:" + altLock, armed + "[green]", "A ARM:" + altArm],
+                    ["ALK:" + altLock, "OBEY? [white]" + obeyConstraint == 1 ? "Y[green]" : "N", "CSTR? [white]" + constraint == 1 ? "Y[green]" : "N"],
                     ["<CONSTRAINTS", "MENU>"]
                 ]);
 
