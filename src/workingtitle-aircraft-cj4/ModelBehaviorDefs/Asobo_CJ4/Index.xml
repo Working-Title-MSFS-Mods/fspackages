@@ -3,6 +3,7 @@
     <Include RelativeFile="AS3000.xml"/>
     <Include RelativeFile="Engine.xml"/>
     <Include RelativeFile="Deice.xml"/>
+    <Include RelativeFile="WT_Autopilot.xml"/>
     <Include RelativeFile="Lighting.xml"/>
     <Include RelativeFile="Passenger.xml"/>
     <Include RelativeFile="Control.xml"/>

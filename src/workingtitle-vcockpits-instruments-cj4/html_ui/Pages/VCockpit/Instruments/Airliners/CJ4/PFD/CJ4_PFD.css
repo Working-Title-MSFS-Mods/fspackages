@@ -120,6 +120,18 @@ cj4-pfd-element {
           left: 7.95%;
           width: 28%;
           height: 100%; }
+        cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #VnavAlt {
+          transform: rotateX(0);
+          position: absolute;
+          font-size: 26px;
+          color: magenta;
+          font: "Robot-Bold";
+          -webkit-text-stroke: 7px black;
+          text-align: right;
+          top: 2.75%;
+          left: 80%;
+          width: 150px;
+          height: 100px; }
         cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #VSpeed {
           transform: rotateX(0);
           position: absolute;
@@ -169,7 +181,8 @@ cj4-pfd-element {
               width: 100%;
               color: green;
               font-size: 1.5vh;
-              top: 1%;
+              top: 8%;
+              right: -85%;
               text-align: center; }
             cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #AP_LateralArmed {
               position: absolute;
@@ -189,22 +202,22 @@ cj4-pfd-element {
               width: 50%;
               color: green;
               font-size: 1.5vh;
-              top: 1%;
-              left: 0%;
+              top: 8%;
+              left: 75%;
               text-align: center; }
             cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_YDStatus {
               position: absolute;
               width: 50%;
               color: green;
               font-size: 1.5vh;
-              top: 1%;
+              top: 8%;
               right: 0%;
               text-align: center; }
             cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow {
               position: absolute;
               width: 30%;
-              left: 35%;
-              bottom: 5%; }
+              left: 82%;
+              bottom: -15%; }
               cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow[state=Inactive] {
                 display: none; }
           cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right {
@@ -216,18 +229,18 @@ cj4-pfd-element {
             cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_VerticalActive {
               position: absolute;
               width: 50%;
-              color: green;
+              color: white;
               font-size: 1.5vh;
-              top: 1%;
-              left: 0%;
-              text-align: center; }
+              top: 8%;
+              left: 16%;
+              text-align: left; }
             cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference {
               position: absolute;
               width: 50%;
               color: green;
               font-size: 1.25vh;
-              top: 1%;
-              right: 0%;
+              top: 8%;
+              right: 20%;
               text-align: center; }
             cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_Armed {
               position: absolute;
@@ -235,7 +248,7 @@ cj4-pfd-element {
               color: white;
               font-size: 1.25vh;
               bottom: 8%;
-              left: 0%;
+              left: 2%;
               text-align: center; }
             cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ArmedReference {
               position: absolute;
@@ -379,6 +392,14 @@ cj4-pfd-element {
       cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo[masks=off] #LeftMask,
       cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo[masks=off] #RightMask {
         display: none; }
+      cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Minimums {
+        top: 3%;
+        right: 2%;
+        width: 22%;
+        height: 8%; 
+        font-size: 25px;
+        color: cyan;
+        position: absolute; }
       cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox {
         top: 2%;
         left: 2%;
@@ -732,4 +753,11 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 #Altimeter #CenterGroup #CursorGroup > text[font-size="23.75"] {
   font-size: 26px;
   letter-spacing: 0px; 
+}
+
+#PFDMessage {
+  top: 1%;
+  left: 1%;
+  position: absolute;
+  font-size: 22px;
 }

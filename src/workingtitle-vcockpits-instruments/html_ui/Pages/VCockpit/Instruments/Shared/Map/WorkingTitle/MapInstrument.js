@@ -544,18 +544,9 @@ class MapInstrument extends ISvgMapRootElement {
                 }
             }
             this.flightPlanManager.updateWaypointIndex();
-            if (this.drawCounter === 25) {
-                this.updateFlightPlanVisibility();
-                this.flightPlanManager.updateFlightPlan();
-            }
-            if (this.drawCounter === 75) {
-                this.flightPlanManager.updateCurrentApproach();
-                if (this.debugApproachFlightPlanElement) {
-                    Coherent.call("GET_APPROACH_FLIGHTPLAN").then(data => {
-                        this.debugApproachFlightPlanElement.source = data;
-                    });
-                }
-            }
+            this.updateFlightPlanVisibility();
+            this.flightPlanManager.updateFlightPlan();
+
             if (!this.showConstraints && this.constraints && this.constraints.length > 0) {
                 this.constraints = [];
             }

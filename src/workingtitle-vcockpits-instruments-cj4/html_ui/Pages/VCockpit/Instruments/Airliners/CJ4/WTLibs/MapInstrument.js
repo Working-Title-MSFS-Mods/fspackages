@@ -358,6 +358,7 @@ class MapInstrument extends ISvgMapRootElement {
         if (arg !== undefined) {
             if (arg instanceof BaseInstrument) {
                 this.instrument = arg;
+                this.useSvgImages = true;
                 this.selfManagedInstrument = false;
             }
             else {
@@ -542,19 +543,11 @@ class MapInstrument extends ISvgMapRootElement {
                     });
                 }
             }
+
             this.flightPlanManager.updateWaypointIndex();
-            if (this.drawCounter === 25) {
-                this.updateFlightPlanVisibility();
-                this.flightPlanManager.updateFlightPlan();
-            }
-            if (this.drawCounter === 75) {
-                this.flightPlanManager.updateCurrentApproach();
-                if (this.debugApproachFlightPlanElement) {
-                    Coherent.call("GET_APPROACH_FLIGHTPLAN").then(data => {
-                        this.debugApproachFlightPlanElement.source = data;
-                    });
-                }
-            }
+            this.updateFlightPlanVisibility();
+            this.flightPlanManager.updateFlightPlan();
+
             if (!this.showConstraints && this.constraints && this.constraints.length > 0) {
                 this.constraints = [];
             }
@@ -794,7 +787,6 @@ class MapInstrument extends ISvgMapRootElement {
                         this.navMap.mapElements.push(this.rangeCompassElement);
                     }
                 }
-
                 if (this.flightPlanManager && this.bIsFlightPlanVisible) {
                     let l = this.flightPlanManager.getWaypointsCount();
                     if (l > 1) {
@@ -809,6 +801,7 @@ class MapInstrument extends ISvgMapRootElement {
                                             if (!this.navMap.mapElements.find(w => {
                                                 return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
                                             })) {
+                                                waypoint.isInFlightPlan = true;
                                                 this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
                                             }
                                         }
@@ -818,32 +811,20 @@ class MapInstrument extends ISvgMapRootElement {
                         }
                         this.navMap.mapElements.push(this.flightPlanElement);
                         for (let i = 0; i < l; i++) {
-                            let waypoint = this.flightPlanManager.getWaypoint(i);
+                            let waypoint = this.flightPlanManager.getWaypoint(i, 0);
                             if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
                                 if (waypoint.getSvgElement(this.navMap.index)) {
                                     if (!this.navMap.mapElements.find(w => {
                                         return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
                                     })) {
+                                        waypoint.isInFlightPlan = true;
                                         this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
                                     }
                                 }
                             }
                         }
                     }
-                    let approachWaypoints = this.flightPlanManager.getApproachWaypoints();
-                    let lAppr = approachWaypoints.length;
-                    for (let i = 0; i < lAppr; i++) {
-                        let apprWaypoint = approachWaypoints[i];
-                        if (apprWaypoint && apprWaypoint.ident !== "" && apprWaypoint.ident !== "USER") {
-                            if (apprWaypoint.getSvgElement(this.navMap.index)) {
-                                if (!this.navMap.mapElements.find(w => {
-                                    return (w instanceof SvgWaypointElement) && w.source.ident === apprWaypoint.ident;
-                                })) {
-                                    this.navMap.mapElements.push(apprWaypoint.getSvgElement(this.navMap.index));
-                                }
-                            }
-                        }
-                    }
+
                     if (this.flightPlanManager.getIsDirectTo()) {
                         this.directToElement.llaRequested = this.flightPlanManager.getDirecToOrigin();
                         this.directToElement.targetWaypoint = this.flightPlanManager.getDirectToTarget();

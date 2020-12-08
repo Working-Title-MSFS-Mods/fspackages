@@ -536,8 +536,10 @@
 		<Component ID="ENGINE_PEDESTAL">
 			<DefaultTemplateParameters>
 				<LEVER_TYPE>REVERSE_IDLE_FULL</LEVER_TYPE>
-				<DRAG_ANIM_VAR_1>(O:XMLVAR_ENGINE_Lever_Throttle_1_Animation_Position)</DRAG_ANIM_VAR_1>
-				<DRAG_ANIM_VAR_2>(O:XMLVAR_ENGINE_Lever_Throttle_2_Animation_Position)</DRAG_ANIM_VAR_2>
+				<!-- <DRAG_ANIM_VAR_1>(O:XMLVAR_ENGINE_Lever_Throttle_1_Animation_Position)</DRAG_ANIM_VAR_1>
+				<DRAG_ANIM_VAR_2>(O:XMLVAR_ENGINE_Lever_Throttle_2_Animation_Position)</DRAG_ANIM_VAR_2> -->
+				<DRAG_ANIM_VAR_1>(L:Throttle1_Pos)</DRAG_ANIM_VAR_1>
+				<DRAG_ANIM_VAR_2>(L:Throttle2_Pos)</DRAG_ANIM_VAR_2>
 				<HAS_IDLE_GATE/>
 				<!-- idle position percent in anim -->
 				<IDLE Process="Float">1 9 /</IDLE>
@@ -649,6 +651,10 @@
 				<SEQ1_SUFFIX></SEQ1_SUFFIX>
 				<NO_BRT_DIM_EMISSIVE>True</NO_BRT_DIM_EMISSIVE>
 			</DefaultTemplateParameters>
+			<Update Once="True">
+        		1 (&gt;I:XMLVAR_MCDU_1_Brightness)
+        		1 (&gt;I:XMLVAR_MCDU_2_Brightness)
+			</Update>
 			<UseTemplate Name="ASOBO_FMC_CJ4">
 				<FAILURE>(A:CIRCUIT ON:47, Bool)</FAILURE>
 				<ANIM_NEVER_FAILS>True</ANIM_NEVER_FAILS>

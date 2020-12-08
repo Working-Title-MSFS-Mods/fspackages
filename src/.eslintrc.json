@@ -1,4 +1,5 @@
 {
+    "root": true,
     "env": {
         "browser": true,
         "es2017": true
@@ -13,7 +14,7 @@
         "no-unused-vars": [
             "error", {
                 "vars": "all",
-                "varsIgnorePattern": "^CJ4_|^WT|Loader$|^Jet_"
+                "varsIgnorePattern": "^CJ4|^WT|Loader$|^Jet_"
             }
         ],
         "semi": [2, "always"]
@@ -23,6 +24,13 @@
         "EmptyCallback": "writable",
         "LatLong": "writable",
         "Coherent": "writable",
+        "WT_BaseAutopilot": "writable",
+        "WT_VNavPathAutopilot": "writable",
+        "WT_VnavAutopilot": "writable",
+        "CJ4NavModeSelector": "writable",
+        "FlightPlanManager": "writable",
+        "SegmentType": "writable",
+        "FlightPlanSegment": "writable",
         "SimVar": "writable",
         "Simplane": "writable",
         "fastToFixed": "writable",
@@ -48,6 +56,9 @@
         "NavSystemElement": "writable",
         "MFD_NearestNDB_Element": "writable",
         "AS1000": "writable",
+        "MemoryState": "writable",
+        "WT_BaseLnav": "writable",
+        "WT_BaseVnav": "writable",
         "g_modDebugMgr": "writable",
         "BaseAS1000": "writable",
         "NearestWaypointRoute": "writable",
@@ -88,6 +99,7 @@
         "CJ4_FMC_TakeoffRefPage": "writable",
         "CJ4_FMC_FuelMgmtPage": "writable",
         "CJ4_MapSymbol": "writable",
+        "CJ4_FMC_VNavSetupPage": "writable",
         "CJ4_PopupMenu": "writable",
         "CJ4_PopupMenu_Key": "writable",
         "CJ4_SystemPage": "writable",

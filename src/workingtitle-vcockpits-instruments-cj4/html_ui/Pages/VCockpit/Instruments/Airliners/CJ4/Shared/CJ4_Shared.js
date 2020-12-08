@@ -146,7 +146,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
                 line.setAttribute("y2", posY.toString());
                 line.setAttribute("stroke", (i == 1) ? "red" : "#52504d");
-                line.setAttribute("stroke-width", "2");
+                line.setAttribute("stroke-width", "3");
                 n1Group.appendChild(line);
                 var line = document.createElementNS(Avionics.SVG.NS, "line");
                 line.setAttribute("x1", (startPosX + halfWidth - gradLength[i]).toString());
@@ -154,7 +154,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("x2", (startPosX + halfWidth).toString());
                 line.setAttribute("y2", posY.toString());
                 line.setAttribute("stroke", (i == 1) ? "red" : "#52504d");
-                line.setAttribute("stroke-width", "2");
+                line.setAttribute("stroke-width", "3");
                 n1Group.appendChild(line);
                 posY += gradSpacing[i];
             }
@@ -227,6 +227,32 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N1RightValue.setAttribute("text-anchor", "end");
             this.N1RightValue.setAttribute("alignment-baseline", "central");
             n1Group.appendChild(this.N1RightValue);
+
+            startPosY = 70;
+
+            // engine modes
+            this.N1ModeLeft = document.createElementNS(Avionics.SVG.NS, "text");
+            this.N1ModeLeft.textContent = "TO";
+            this.N1ModeLeft.setAttribute("x", 100);
+            this.N1ModeLeft.setAttribute("y", startPosY);
+            this.N1ModeLeft.setAttribute("fill", "#cccac8");
+            this.N1ModeLeft.setAttribute("font-size", "24");
+            this.N1ModeLeft.setAttribute("writing-mode", "tb-rl");
+            this.N1ModeLeft.setAttribute("glyph-orientation-vertical", "0");
+            this.N1ModeLeft.setAttribute("font-family", "Roboto-Bold");
+            n1Group.appendChild(this.N1ModeLeft);
+
+            this.N1ModeRight = document.createElementNS(Avionics.SVG.NS, "text");
+            this.N1ModeRight.textContent = "TO";
+            this.N1ModeRight.setAttribute("x", 180);
+            this.N1ModeRight.setAttribute("y", startPosY);
+            this.N1ModeRight.setAttribute("fill", "#cccac8");
+            this.N1ModeRight.setAttribute("font-size", "24");
+            this.N1ModeRight.setAttribute("writing-mode", "tb-rl");
+            this.N1ModeRight.setAttribute("glyph-orientation-vertical", "0");
+            this.N1ModeRight.setAttribute("font-family", "Roboto-Bold");
+            n1Group.appendChild(this.N1ModeRight);
+
         }
         {
             var ittGroup = document.createElementNS(Avionics.SVG.NS, "g");
@@ -268,7 +294,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 3) ? "red" : "#52504d");
+                line.setAttribute("stroke", (i == 4) ? "red" : "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -1670,6 +1696,31 @@ class CJ4_SystemEngines extends NavSystemElement {
                 trimGroup.appendChild(text);
             }
         }
+
+        startPosY = 100;
+
+        // engine modes
+        this.N1ModeLeft = document.createElementNS(Avionics.SVG.NS, "text");
+        this.N1ModeLeft.textContent = "TO";
+        this.N1ModeLeft.setAttribute("x", 100);
+        this.N1ModeLeft.setAttribute("y", startPosY);
+        this.N1ModeLeft.setAttribute("fill", "#cccac8");
+        this.N1ModeLeft.setAttribute("font-size", "24");
+        this.N1ModeLeft.setAttribute("writing-mode", "tb-rl");
+        this.N1ModeLeft.setAttribute("glyph-orientation-vertical", "0");
+        this.N1ModeLeft.setAttribute("font-family", "Roboto-Bold");
+        n1Group.appendChild(this.N1ModeLeft);
+
+        this.N1ModeRight = document.createElementNS(Avionics.SVG.NS, "text");
+        this.N1ModeRight.textContent = "TO";
+        this.N1ModeRight.setAttribute("x", 180);
+        this.N1ModeRight.setAttribute("y", startPosY);
+        this.N1ModeRight.setAttribute("fill", "#cccac8");
+        this.N1ModeRight.setAttribute("font-size", "24");
+        this.N1ModeRight.setAttribute("writing-mode", "tb-rl");
+        this.N1ModeRight.setAttribute("glyph-orientation-vertical", "0");
+        this.N1ModeRight.setAttribute("font-family", "Roboto-Bold");
+        n1Group.appendChild(this.N1ModeRight);
     }
     onUpdate(_deltaTime) {
         if (!this.root)
@@ -1688,7 +1739,52 @@ class CJ4_SystemEngines extends NavSystemElement {
     }
     updateN1() {
         {
-            let N1Eng1 = SimVar.GetSimVarValue("ENG N1 RPM:1", "percent");
+            // update thrust setting
+            let throttleModeArr = [SimVar.GetSimVarValue("L:THROTTLE1_MODE", "number"), SimVar.GetSimVarValue("L:THROTTLE2_MODE", "number")];
+            let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "boolean");
+
+            for (let i = 0; i < throttleModeArr.length; i++) {
+                let throttleMode = throttleModeArr[i];
+
+                let thrustSetting = "TO";
+                let modeClr = "#11d011";
+
+                if (throttleMode < 3 && onGround) {
+                    throttleMode = 0;
+                } else if (throttleMode == 0 && !onGround) {
+                    throttleMode = 1;
+                }
+
+                switch (throttleMode) {
+                    case 0:
+                        modeClr = "#cccac8";
+                        break;
+                    case 1:
+                        thrustSetting = "CRU";
+                        break;
+                    case 2:
+                        thrustSetting = "CLB";
+                        break;
+                    case 3:
+                        thrustSetting = "TO";
+                        break;
+                    default:
+                        break;
+                }
+
+                if(i==0){
+                    this.N1ModeLeft.textContent = thrustSetting;
+                    this.N1ModeLeft.setAttribute("fill", modeClr);
+    
+                }else {
+                    this.N1ModeRight.textContent = thrustSetting;
+                    this.N1ModeRight.setAttribute("fill", modeClr);    
+                }
+            }
+
+        }
+        {
+            let N1Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N1:1", "percent");
             let n1_y = this.N1ToPixels(N1Eng1);
             if ((this.N1LeftZoneY1 - n1_y) > 10)
                 this.N1LeftCursor.setAttribute("d", "M" + (this.N1LeftZoneX - 1) + " " + n1_y + " l-10 0 l0 " + (this.N1LeftZoneY1 - n1_y) + " l5 0 l0 " + -(this.N1LeftZoneY1 - n1_y - 8) + " Z");
@@ -1697,7 +1793,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.N1LeftValue.textContent = N1Eng1.toFixed(1);
         }
         {
-            let N1Eng2 = SimVar.GetSimVarValue("ENG N1 RPM:2", "percent");
+            let N1Eng2 = SimVar.GetSimVarValue("TURB ENG CORRECTED N1:2", "percent");
             let n1_y = this.N1ToPixels(N1Eng2);
             if ((this.N1LeftZoneY1 - n1_y) > 10)
                 this.N1RightCursor.setAttribute("d", "M" + (this.N1RightZoneX + 1) + " " + n1_y + " l10 0 l0 " + (this.N1RightZoneY1 - n1_y) + " l-5 0 l0 " + -(this.N1RightZoneY1 - n1_y - 8) + " Z");
@@ -1738,11 +1834,11 @@ class CJ4_SystemEngines extends NavSystemElement {
     }
     updateN2() {
         {
-            let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
+            let N2Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:1", "percent");
             this.N2LeftValue.textContent = N2Eng1.toFixed(1);
         }
         {
-            let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
+            let N2Eng2 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:2", "percent");
             this.N2RightValue.textContent = N2Eng2.toFixed(1);
         }
     }
@@ -2385,7 +2481,7 @@ class CJ4_SystemFMS extends NavSystemElement {
                     let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
                     let aircraftPosition = new LatLong(lat, long);
                     let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-                    const FPWaypoints = flightPlanManager._waypoints[flightPlanManager._currentFlightPlanIndex];
+                    const FPWaypoints = flightPlanManager.getWaypoints();
                     const UTCTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
 
                     if (FPWaypoints) {
@@ -2708,7 +2804,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             case Jet_NDCompass_Display.PLAN:
                 this.zoomFactor = 4.1;
                 break;
-            case Jet_NDCompass_Display.PPOS:           
+            case Jet_NDCompass_Display.PPOS:
                 this.zoomFactor = 2.8;
                 break;
             default:
@@ -2882,7 +2978,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         }
         else {
             this.map.instrument.setAttribute('style', 'display: none');
-        } 
+        }
     }
 }
 class CJ4_Map extends MapInstrumentElement {
@@ -3575,8 +3671,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("RA/BARO MIN", this.textSize, 0.6);
-                this.addRadioRange("RA", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
-                this.addRadioRange("BARO", this.textSize, 0, 12100, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
+                this.addRadioRange("RA", this.textSize, 0, 2500, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
+                this.addRadioRange("BARO", this.textSize, 0, 14000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
             }
             this.endSection();
         }
@@ -3632,8 +3728,8 @@ class CJ4_PopupMenu_REF extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("RA/BARO MIN", this.textSize, 0.6);
-                this.addRadioRange("RA", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
-                this.addRadioRange("BARO", this.textSize, 0, 5000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
+                this.addRadioRange("RA", this.textSize, 0, 2500, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
+                this.addRadioRange("BARO", this.textSize, 0, 14000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
             }
             this.endSection();
         }
