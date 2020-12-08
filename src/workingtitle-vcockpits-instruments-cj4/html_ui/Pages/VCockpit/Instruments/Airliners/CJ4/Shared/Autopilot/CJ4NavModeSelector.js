@@ -55,6 +55,9 @@ class CJ4NavModeSelector {
     /** The currently selected approach type. */
     this.approachMode = WT_ApproachType.NONE;
 
+    /** The vnav requested slot. */
+    this.vnavRequestedSlot = undefined;
+
     /**
      * The queue of state change events to process.
      * @type {string[]}
@@ -91,7 +94,9 @@ class CJ4NavModeSelector {
       [`${NavModeEvent.SELECTED_ALT2_CHANGED}`]: this.handleAlt2Changed.bind(this),
       [`${NavModeEvent.APPROACH_CHANGED}`]: this.handleApproachChanged.bind(this),
       [`${NavModeEvent.GS_ARM_CHANGED}`]: this.handleGSArmChanged.bind(this),
-      [`${NavModeEvent.GS_ACTIVE_CHANGED}`]: this.handleGSActiveChanged.bind(this)
+      [`${NavModeEvent.GS_ACTIVE_CHANGED}`]: this.handleGSActiveChanged.bind(this),
+      [`${NavModeEvent.VNAV_REQUEST_SLOT_1}`]: this.handleVnavRequestSlot1.bind(this),
+      [`${NavModeEvent.VNAV_REQUEST_SLOT_2}`]: this.handleVnavRequestSlot2.bind(this)
     };
 
     this.initialize();
@@ -213,10 +218,6 @@ class CJ4NavModeSelector {
   handleVSPressed() {
     SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
 
-    if (!this.isVNAVOn) {
-      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-    }
-
     switch (this.currentVerticalActiveState) {
       case VerticalNavModeState.PTCH:
       case VerticalNavModeState.FLC:
@@ -247,6 +248,12 @@ class CJ4NavModeSelector {
         this.currentVerticalActiveState = VerticalNavModeState.VS;
         break;
     }
+    if (this.isVNAVOn) {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", this.vnavRequestedSlot);
+    }
+    else {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+    }
 
     this.setProperVerticalArmedStates();
   }
@@ -255,10 +262,6 @@ class CJ4NavModeSelector {
    * Handles when the FLC button is pressed.
    */
   handleFLCPressed() {
-    if (!this.isVNAVOn) {
-      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-    }
-
     switch (this.currentVerticalActiveState) {
       case VerticalNavModeState.PTCH:
       case VerticalNavModeState.VS:
@@ -292,6 +295,14 @@ class CJ4NavModeSelector {
         break;
     }
 
+    if (this.isVNAVOn) {
+      console.log("handleFLCPressed - VNAV ON: " + this.vnavRequestedSlot);
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", this.vnavRequestedSlot);
+    }
+    else {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+    }
+
     this.setProperVerticalArmedStates();
   }
 
@@ -321,10 +332,12 @@ class CJ4NavModeSelector {
    */
   handleAltSlotChanged() {
     this.currentAltSlotIndex = this._inputDataStates.altSlot.state;
+    console.log("alt slot changed to: " + this.currentAltSlotIndex);
 
     //Prevent sim from changing to alt slot 1 automatically if we're trying to drive via
     //VNAV and PATH
     if (this.currentAltSlotIndex === 1 && this.vPathState === VPathState.ACTIVE && this.isVNAVOn === true) {
+      console.log("alt slot changed to 2 for path");
       SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
       this.currentAltSlotIndex = 2;
     }
@@ -337,6 +350,7 @@ class CJ4NavModeSelector {
    */
   handleAlt1Changed() {
     this.selectedAlt1 = this._inputDataStates.selectedAlt1.state;
+    console.log("handleAlt1Changed: " + this.selectedAlt1);
     this.setProperVerticalArmedStates();
   }
 
@@ -345,6 +359,7 @@ class CJ4NavModeSelector {
    */
   handleAlt2Changed() {
     this.selectedAlt2 = this._inputDataStates.selectedAlt2.state;
+    console.log("handleAlt2Changed: " + this.selectedAlt2);
     this.setProperVerticalArmedStates();
   }
 
@@ -702,6 +717,22 @@ class CJ4NavModeSelector {
       this.currentVerticalActiveState = VerticalNavModeState.PTCH;
     }
   }
+
+  /**
+   * Handles when vnav autopilot requests alt slot 1 in the sim autopilot.
+   */
+  handleVnavRequestSlot1() {
+    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+    this.vnavRequestedSlot = 1;
+  }
+
+  /**
+   * Handles when vnav autopilot requests alt slot 2 in the sim autopilot.
+   */
+  handleVnavRequestSlot2() {
+    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
+    this.vnavRequestedSlot = 2;
+  }
 }
 
 class LateralNavModeState { }
@@ -756,6 +787,8 @@ NavModeEvent.SELECTED_ALT2_CHANGED = 'selected_alt2_changed';
 NavModeEvent.APPROACH_CHANGED = 'approach_changed';
 NavModeEvent.GS_ARM_CHANGED = 'gs_arm_changed';
 NavModeEvent.GS_ACTIVE_CHANGED = 'gs_active_changed';
+NavModeEvent.VNAV_REQUEST_SLOT_1 = 'vnav_request_slot_1';
+NavModeEvent.VNAV_REQUEST_SLOT_2 = 'vnav_request_slot_2';
 
 class WT_ApproachType { }
 WT_ApproachType.NONE = 'none';
