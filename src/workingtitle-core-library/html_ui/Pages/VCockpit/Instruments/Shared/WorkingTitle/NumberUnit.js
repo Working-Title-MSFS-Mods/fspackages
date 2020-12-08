@@ -611,26 +611,15 @@ class WT_NumberFormatter {
      * @param {object} opts - options definition object containing properties to initialize to the new formatter.
      */
     constructor(opts = {}) {
-        this.setOptions(WT_NumberFormatter.OPTIONS);
+        this._optsManager = new WT_OptionsManager(this, WT_NumberFormatter.OPTIONS_DEF);
 
-        this.setOptions(opts);
+        this._optsManager.setOptions(opts);
     }
 
     /**
-     * @property {number} - the precision to which this formatter will round when generating the string representation.
-     *                      A value of 0 indicates infinite precision (no rounding).
-     */
-    get precision() {
-        return this._precision;
-    }
-
-    set precision(val) {
-        this._precision = val;
-    }
-
-    /**
-     * @property {number} - determines the rounding behavior of this formatter. A value of 0 indicates normal rounding.
+     * @property {Number} - determines the rounding behavior of this formatter. A value of 0 indicates normal rounding.
      *                      A positive value indicates always round up. A negative value indicates always round down.
+     * @type {Number}
      */
     get round() {
         return this._round;
@@ -652,105 +641,11 @@ class WT_NumberFormatter {
     }
 
     /**
-     * @property {number} - determines the maximum number of digits shown in the number string representation. Digits to the
-     *                      right of the decimal point will be removed (via rounding) until the total number of digits is less
-     *                      than or equal to the value of this property. Digits to the left of the decimal point will never be
-     *                      removed.
-     *
-     */
-    get maxDigits() {
-        return this._maxDigits;
-    }
-
-    set maxDigits(val) {
-        this._maxDigits = val;
-    }
-
-    /**
-     * @property {boolean} - indicates whether to show ending zeroes to the right of the decimal point. If this value is true,
-     *                       ending zeroes will be added up to the least significant non-zero digit in the value of the
-     *                       .precision property.
-     */
-    get forceDecimalZeroes() {
-        return this._forceDecimalZeroes;
-    }
-
-    set forceDecimalZeroes(val) {
-        this._forceDecimalZeroes = val;
-    }
-
-    /**
-     * @property {number} - determines the number of leading zeroes to the left of the decimal point. Leading zeroes will be
-     *                      added until the number of digits to the left of the decimal point is greater than or equal to
-     *                      the value of this property.
-     */
-    get pad() {
-        return this._pad;
-    }
-
-    set pad(val) {
-        this._pad = val;
-    }
-
-    /**
-     * @property {boolean} - indicates whether to include the unit string representation in the full string representation.
-     */
-    get unitShow() {
-        return this._unitShow;
-    }
-
-    set unitShow(val) {
-        this._unitShow = val;
-    }
-
-    /**
-     * @property {boolean} - indicates whether to include a space before the number and unit string representations in the full string
-     *                       representation.
-     */
-    get unitSpaceBefore() {
-        return this._unitSpaceBefore;
-    }
-
-    set unitSpaceBefore(val) {
-        this._unitSpaceBefore = val;
-    }
-
-    /**
-     * @property {boolean} - indicates whether to use the full name of the unit when creating the unit string representation.
-     */
-    get unitLong() {
-        return this._unitLong;
-    }
-
-    set unitLong(val) {
-        this._unitLong = val;
-    }
-
-    /**
-     * @property {boolean} - indicates whether to use all capital letters when creating the unit string representation.
-     */
-    get unitCaps() {
-        return this._unitCaps;
-    }
-
-    set unitCaps(val) {
-        this._unitCaps = val;
-    }
-
-    /**
      * Sets this formatter's options en bloc using an options definition object.
      * @param {object} opts - options definition object containing properties to copy to this formatter.
      */
     setOptions(opts) {
-        for (let opt in opts) {
-            if (this._getAllowedOptions()[opt] !== undefined) {
-                this[opt] = opts[opt];
-            }
-        }
-    }
-
-    _getAllowedOptions() {
-        return WT_NumberFormatter.OPTIONS;
+        this._optsManager.setOptions(opts);
     }
 
     _formatNumber(number) {
@@ -849,16 +744,16 @@ class WT_NumberFormatter {
         return this._getFormattedString(numberUnit, forceUnit, false, true);
     }
 }
-WT_NumberFormatter.OPTIONS = {
-    precision: 0,
-    round: 0,
-    maxDigits: Infinity,
-    forceDecimalZeroes: true,
-    pad: 1,
-    unitShow: true,
-    unitSpaceBefore: true,
-    unitLong: false,
-    unitCaps: false
+WT_NumberFormatter.OPTIONS_DEF = {
+    precision: {default: 0, auto: true},
+    round: {default: 0},
+    maxDigits: {default: Infinity, auto: true},
+    forceDecimalZeroes: {default: true, auto: true},
+    pad: {default: 1, auto: true},
+    unitShow: {default: true, auto: true},
+    unitSpaceBefore: {default: true, auto: true},
+    unitLong: {default: false, auto: true},
+    unitCaps: {default: false, auto: true}
 };
 
 /**
@@ -869,29 +764,11 @@ class WT_TimeFormatter extends WT_NumberFormatter {
      * @param {object} opts - options definition object containing properties to initialize to the new formatter.
      */
     constructor(opts = {}) {
-        super(WT_TimeFormatter.OPTIONS);
+        super();
 
-        this.setOptions(opts);
-    }
-
-    get timeFormat() {
-        return this._timeFormat;
-    }
-
-    set timeFormat(val) {
-        this._timeFormat = val;
-    }
-
-    get delim() {
-        return this._delim;
-    }
-
-    set delim(val) {
-        this._delim = val;
-    }
-
-    _getAllowedOptions() {
-        return WT_TimeFormatter.OPTIONS;
+        this._optsManager.addOptions(WT_TimeFormatter.OPTIONS_DEF);
+        this._optsManager.setOptions(WT_TimeFormatter.OPTIONS_DEFAULT);
+        this._optsManager.setOptions(opts);
     }
 
     getFormattedNumber(numberUnit) {
@@ -969,29 +846,33 @@ class WT_TimeFormatter extends WT_NumberFormatter {
         return hoursText + hoursUnitText + minText + minUnitText + secText + secUnitText;
     }
 }
+/**
+ * @enum {Number}
+ */
 WT_TimeFormatter.Format = {
     HH_MM_SS: 0,
     HH_MM: 1,
     MM_SS: 2,
     HH_MM_OR_MM_SS: 3
 };
+/**
+ * @enum {String}
+ */
 WT_TimeFormatter.Delim = {
     COLON: ":",
     COLON_OR_CROSS: ":+",
     SPACE: " "
 }
-WT_TimeFormatter.OPTIONS = {
+WT_TimeFormatter.OPTIONS_DEF = {
+    timeFormat: {default: WT_TimeFormatter.Format.HH_MM_SS, auto: true},
+    delim: {default: WT_TimeFormatter.Delim.COLON, auto: true}
+};
+WT_TimeFormatter.OPTIONS_DEFAULT = {
     precision: 1,
     round: 1,
-    maxDigits: Infinity,
-    forceDecimalZeroes: true,
     pad: 2,
     unitShow: false,
-    unitSpaceBefore: false,
-    unitLong: false,
-    unitCaps: false,
-    timeFormat: WT_TimeFormatter.Format.HH_MM_SS,
-    delim: WT_TimeFormatter.Delim.COLON
+    unitSpaceBefore: false
 };
 
 /**
@@ -1004,31 +885,9 @@ class WT_NumberHTMLFormatter {
      */
     constructor(numberFormatter, opts = {}) {
         this.numberFormatter = numberFormatter;
-        this.setOptions(WT_NumberHTMLFormatter.OPTIONS);
+
+        this._optsManager = new WT_OptionsManager(this, WT_NumberHTMLFormatter.OPTIONS_DEF);
         this.setOptions(opts);
-    }
-
-    /**
-     * @property {*} - An object that generates a class list for the number- and unit-containing span elements given a WT_NumberUnit object
-     *                 by implementing the .getNumberClassList(numberUnit) and .getUnitClassList(numberUnit) methods.
-     */
-    get classGetter() {
-        return this._classGetter;
-    }
-
-    set classGetter(val) {
-        this._classGetter = val;
-    }
-
-    /**
-     * @property {string} - A valid html string to be placed between the number and unit-containing span elements.
-     */
-    get numberUnitDelim() {
-        return this._numberUnitDelim;
-    }
-
-    set numberUnitDelim(val) {
-        this._numberUnitDelim = val;
     }
 
     /**
@@ -1036,11 +895,7 @@ class WT_NumberHTMLFormatter {
      * @param {object} opts - options definition object containing properties to copy to this formatter.
      */
     setOptions(opts) {
-        for (let opt in opts) {
-            if (this._getAllowedOptions()[opt] !== undefined) {
-                this[opt] = opts[opt];
-            }
-        }
+        this._optsManager.setOptions(opts);
     }
 
     _getAllowedOptions() {
@@ -1089,7 +944,7 @@ class WT_NumberHTMLFormatter {
         return this.getFormattedNumberHTML(numberUnit, forceUnit) + (this.numberFormatter.unitShow ? this.numberUnitDelim + this.getFormattedUnitHTML(numberUnit, forceUnit) : "");
     }
 }
-WT_NumberHTMLFormatter.OPTIONS = {
-    classGetter: {getNumberClassList: (numberUnit, forceUnit) => [], getUnitClassList: (numberUnit, forceUnit) => []},
-    numberUnitDelim: " "
+WT_NumberHTMLFormatter.OPTIONS_DEF = {
+    classGetter: {default: {getNumberClassList: (numberUnit, forceUnit) => [], getUnitClassList: (numberUnit, forceUnit) => []}, auto: true},
+    numberUnitDelim: {default: " ", auto: true}
 };
