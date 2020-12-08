@@ -410,7 +410,7 @@
 													</Point>
 													<Point>
 														<XPos>7164.379</XPos>
-														<YPos>-0</YPos>
+														<YPos>0</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
@@ -1705,8 +1705,8 @@
 																<Flags>5</Flags>
 															</Point>
 															<Point>
-																<XPos>249.27894</XPos>
-																<YPos>-8.98595</YPos>
+																<XPos>330.03708</XPos>
+																<YPos>-7.58602</YPos>
 																<Flags>0</Flags>
 															</Point>
 															<Point>
@@ -2495,6 +2495,27 @@
 											<AudioFile>Jet Thrust Very Low.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
+									<StateInfo>
+										<StateGroupList>
+											<StateGroupInfo>
+												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
+											</StateGroupInfo>
+										</StateGroupList>
+										<CustomStateList>
+											<CustomState>
+												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
+												<CustomState Name="" ID="{5EF11D35-A49B-4E6B-8E7A-087C735B838E}" ShortID="623978097">
+													<PropertyList>
+														<Property Name="Volume" Type="Real64" Value="-108"/>
+													</PropertyList>
+												</CustomState>
+											</CustomState>
+											<CustomState>
+												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
+												<CustomState Name="" ID="{4B0352FA-4EBF-44A1-8D4C-A85ADDCC3A84}" ShortID="119959229"/>
+											</CustomState>
+										</CustomStateList>
+									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Jet Thrust Very Low" ID="{1D60379C-AC71-4206-B549-CE0D4C0B2C2D}" Platform="Linked"/>
 									</ActiveSourceList>

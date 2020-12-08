@@ -18,6 +18,7 @@
 					<ChildrenList>
 						<BlendContainer Name="wind_inside" ID="{B4BE83F6-815E-4145-BE4D-DD31BC0C95DB}" ShortID="452461171">
 							<PropertyList>
+								<Property Name="BlendBehavior" Type="int16" Value="1"/>
 								<Property Name="CenterPercentage" Type="int32">
 									<ValueList>
 										<Value>80</Value>
