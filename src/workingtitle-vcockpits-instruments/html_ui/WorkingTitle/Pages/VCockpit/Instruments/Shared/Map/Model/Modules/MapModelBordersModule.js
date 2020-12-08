@@ -8,11 +8,11 @@ class WT_MapModelBordersModule extends WT_MapModelModule {
     }
 
     get stateBorderRange() {
-        return this._stateBorderRange.copy();
+        return this._stateBorderRange.readonly();
     }
 
     set stateBorderRange(range) {
-        this._stateBorderRange.copyFrom(range);
+        this._stateBorderRange.set(range);
     }
 }
 WT_MapModelBordersModule.NAME_DEFAULT = "borders";

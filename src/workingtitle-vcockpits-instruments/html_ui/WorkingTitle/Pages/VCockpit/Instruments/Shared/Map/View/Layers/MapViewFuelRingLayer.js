@@ -132,7 +132,7 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
         super.onUpdate(state);
     }
 }
-WT_MapViewFuelRingLayer.CLASS_DEFAULT = "ruelRingLayer";
+WT_MapViewFuelRingLayer.CLASS_DEFAULT = "fuelRingLayer";
 WT_MapViewFuelRingLayer.CONFIG_NAME_DEFAULT = "fuelRing";
 WT_MapViewFuelRingLayer.SMOOTHING_MAX_TIME_DELTA = 0.5;
 WT_MapViewFuelRingLayer.OPTIONS_DEF = {
@@ -222,7 +222,7 @@ class WT_MapViewFuelRingLabel extends WT_MapViewRingLabel {
     }
 
     set time(time) {
-        this._time.copyFrom(time);
+        this._time.set(time);
     }
 
     /**

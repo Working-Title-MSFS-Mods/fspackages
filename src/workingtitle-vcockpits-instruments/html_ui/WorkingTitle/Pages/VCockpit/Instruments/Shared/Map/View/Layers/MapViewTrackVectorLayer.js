@@ -38,7 +38,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
     }
 
     set dynamicLookaheadMax(value) {
-        this._dynamicLookaheadMax.copyFrom(value);
+        this._dynamicLookaheadMax.set(value);
     }
 
     /**
@@ -89,12 +89,10 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
     _calculateDynamicTimeStep(state) {
         let tas = state.model.airplane.tas;
         let resolution = state.projection.viewResolution;
-        tas.unit = WT_Unit.MPS;
-        resolution.unit = WT_Unit.METER;
 
-        let targetResolutionDistance = this.dynamicTargetResolution * resolution.number;
+        let targetResolutionDistance = this.dynamicTargetResolution * resolution.asUnit(WT_Unit.METER);
 
-        return targetResolutionDistance / tas.number;
+        return targetResolutionDistance / tas.asUnit(WT_Unit.MPS);
     }
 
     /**
@@ -105,14 +103,13 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         let timeStep = this._calculateDynamicTimeStep(state);
         let smoothingFactor = this._calculateSmoothingFactor(state);
 
-        let resolution = state.projection.viewResolution;
-        resolution.unit = WT_Unit.METER;
+        let resolution = state.projection.viewResolution.asUnit(WT_Unit.METER);
 
         let trackRad = (state.model.airplane.trackTrue + state.projection.rotation) * Avionics.Utils.DEG2RAD;
-        let tasPx = state.model.airplane.tas.asUnit(WT_Unit.MPS) / resolution.number;
+        let tasPx = state.model.airplane.tas.asUnit(WT_Unit.MPS) / resolution;
         let headingRad = (state.model.airplane.headingTrue + state.projection.rotation) * Avionics.Utils.DEG2RAD;
         let turnSpeedRad = state.model.airplane.turnSpeed * Avionics.Utils.DEG2RAD;
-        let windSpeedPx = state.model.weather.windSpeed.asUnit(WT_Unit.MPS) / resolution.number;
+        let windSpeedPx = state.model.weather.windSpeed.asUnit(WT_Unit.MPS) / resolution;
         let windDirectionRad = (state.model.weather.windDirection + state.projection.rotation + 180) * Avionics.Utils.DEG2RAD;
         let dynamicHeadingDeltaMaxRad = this.dynamicHeadingDeltaMax * Avionics.Utils.DEG2RAD;
 
