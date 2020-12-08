@@ -682,7 +682,7 @@
 			</Condition>
 		</Alert>
 		
-		<Alert>
+		<!-- <Alert>
 			<Type>Test</Type>
 			<ShortText>TAWS TEST</ShortText>
 			<Condition>
@@ -709,7 +709,7 @@
 				</And>
 			</Condition>
 			<Once>True</Once>
-		</Alert>
+		</Alert> -->
 	</VoicesAlerts>
   
 </PlaneHTMLConfig>
