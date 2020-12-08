@@ -10,6 +10,7 @@
 								<Value>100</Value>
 							</ValueList>
 						</Property>
+						<Property Name="OverrideOutput" Type="bool" Value="True"/>
 						<Property Name="OverridePositioning" Type="bool" Value="True"/>
 						<Property Name="Volume" Type="Real64">
 							<ValueList>
@@ -53,10 +54,21 @@
 						</Sound>
 						<Sound Name="Gear Drag" ID="{683DF1B0-9A95-409E-AFB1-5164CDE1E43F}" ShortID="555456515">
 							<PropertyList>
+								<Property Name="CenterPercentage" Type="int32">
+									<ValueList>
+										<Value>100</Value>
+									</ValueList>
+								</Property>
 								<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+								<Property Name="Lowpass" Type="int16">
+									<ValueList>
+										<Value>37</Value>
+									</ValueList>
+								</Property>
+								<Property Name="OverridePositioning" Type="bool" Value="True"/>
 								<Property Name="Volume" Type="Real64">
 									<ValueList>
-										<Value>-2</Value>
+										<Value>-3</Value>
 									</ValueList>
 									<RTPCList>
 										<RTPC Name="" ID="{A408DD15-34C4-48D3-9D60-172301770FE3}" ShortID="513967560">
@@ -115,8 +127,8 @@
 														<Flags>5</Flags>
 													</Point>
 													<Point>
-														<XPos>0.15844</XPos>
-														<YPos>-6.60562</YPos>
+														<XPos>0.18376</XPos>
+														<YPos>-13.6315</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
@@ -141,6 +153,9 @@
 								</Property>
 							</PropertyList>
 							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="aircraft_player_inside_3m" ID="{538CDAF5-4564-463A-A841-C73D21967E20}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+								</Reference>
 								<Reference Name="Conversion">
 									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 								</Reference>
