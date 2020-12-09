@@ -49,8 +49,8 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
     /**
      * @param {WT_MapViewState} state
      */
-    onViewSizeChanged(state) {
-        super.onViewSizeChanged(state);
+    onProjectionViewChanged(state) {
+        super.onProjectionViewChanged(state);
     }
 
     /**

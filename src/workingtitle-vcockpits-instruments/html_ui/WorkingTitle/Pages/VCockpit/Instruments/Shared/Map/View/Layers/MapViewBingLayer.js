@@ -3,6 +3,11 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         super(className, configName);
 
         this.projection = new WT_MapProjection("asdf", d3.geoEquirectangular());
+
+        this._tempVector1 = new WT_GVector2(0, 0);
+        this._tempVector2 = new WT_GVector2(0, 0);
+        this._tempVector3 = new WT_GVector2(0, 0);
+        this._radiusTemp = new WT_NumberUnit(0, WT_Unit.GA_RADIAN);
     }
 
     get bingMap() {
@@ -24,7 +29,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
     /**
      * @param {WT_MapViewState} state
      */
-    onViewSizeChanged(state) {
+    onProjectionViewChanged(state) {
         let long = Math.max(state.projection.viewWidth, state.projection.viewHeight);
         this._size = long * WT_MapViewBingLayer.OVERDRAW_FACTOR;
         let offsetX = (state.projection.viewWidth - this._size) / 2;
@@ -50,7 +55,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
      * @param {WT_MapViewState} state
      */
     onAttached(state) {
-        this.onViewSizeChanged(state);
+        this.onProjectionViewChanged(state);
         this._bingMap.setMode(EBingMode.PLANE);
         this._bingMap.setReference(EBingReference.SEA);
         this._bingMap.setVisible(true);
@@ -63,13 +68,13 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
     _calculateDesiredRadius(state) {
         let viewCenter = state.projection.viewCenter;
 
-        let delta = WT_GVector2.fromPolar(state.projection.viewHeight / 2, state.projection.rotation * Avionics.Utils.DEG2RAD);
-        let viewTop = viewCenter.minus(delta);
-        let viewBottom = viewCenter.plus(delta);
+        let delta = this._tempVector1.setFromPolar(state.projection.viewHeight / 2, state.projection.rotation * Avionics.Utils.DEG2RAD);
+        let viewTop = this._tempVector2.set(viewCenter).subtract(delta);
+        let viewBottom = this._tempVector3.set(viewCenter).add(delta);
 
         let top = state.projection.invertXY(viewTop);
         let bottom = state.projection.invertXY(viewBottom);
-        return state.projection.distance(top, bottom).scale(this.size / state.projection.viewHeight * 0.5);
+        return state.projection.distance(top, bottom, this._radiusTemp).scale(this.size / state.projection.viewHeight * 0.5, true);
     }
 
     /**

@@ -17,10 +17,15 @@ class WT_MapView extends HTMLElement {
 
         this._lastWidth = 0;
         this._lastHeight = 0;
-        this._lastPixelDensity = 1;
+        this._lastModel = undefined;
+        this._lastProjection = this._projection;
+        this._lastDPIScale = 1;
 
-        this.setTargetOffsetHandler({getTargetOffset(model) {return {x: 0, y: 0}}});
-        this.setRangeInterpreter({getTrueRange(model) {return model.range}});
+        this.setTargetOffsetHandler({getTargetOffset(model, offset) {offset.set(0, 0);}});
+        this.setRangeInterpreter({getTrueRange(model, range) {range.set(model.range);}});
+
+        this._targetOffsetTemp = new WT_GVector2(0, 0);
+        this._trueRangeTemp = new WT_NumberUnit(0, WT_Unit.NMILE);
     }
 
     static get observedAttributes() {
@@ -154,16 +159,24 @@ class WT_MapView extends HTMLElement {
 
         this._model = model;
         this._updateProjection();
-        for (let layerContainer of this._layers) {
-            layerContainer.layer.onModelChanged(this._optsManager.getOptionsFromList(WT_MapView.OPTIONS_TO_PASS));
+    }
+
+    /**
+     * Sets the projection for this view.
+     * @param {WT_MapProjection} projection
+     */
+    setProjection(projection) {
+        this._projection = projection;
+        if (this.model) {
+            this._updateProjection();
         }
     }
 
     /**
      * Sets this view's target offset handler. The target offset handler defines the target offset of this view's map projection
-     * by implementing the getTargetOffset() method. The getTargetOffset() method should return the offset of the projected location
-     * of the map's target from center of the viewing window (in pixel coordinates)
-     * @param {{getTargetOffset(model:WT_MapModel):{x:Number, y:Number}}} handler
+     * by implementing the getTargetOffset() method. The getTargetOffset() method should set the supplied offset argument to the
+     * desired target offset.
+     * @param {{getTargetOffset(model:WT_MapModel, offset:WT_GVector2)}} handler
      */
     setTargetOffsetHandler(handler) {
         this._targetOffsetHandler = handler;
@@ -171,9 +184,9 @@ class WT_MapView extends HTMLElement {
 
     /**
      * Sets this view's range interpreter. The target offset handler defines how this view should interpret the nominal range set
-     * by the model by implementing the getTrueRange() method. The getTrueRange() method should return the top-to-bottom range
-     * that this view's map projection should use.
-     * @param {{getTrueRange(model:WT_MapModel):WT_NumberUnit}} interpreter
+     * by the model by implementing the getTrueRange() method. The getTrueRange() method should set the supplied range argument
+     * to the desired range.
+     * @param {{getTrueRange(model:WT_MapModel, range:WT_NumberUnit)}} interpreter
      */
     setRangeInterpreter(interpreter) {
         this._rangeInterpreter = interpreter;
@@ -216,17 +229,26 @@ class WT_MapView extends HTMLElement {
         }
     }
 
-    _checkViewSizeChanged() {
+    _checkProjectionViewChanged() {
         let currentWidth = this.viewWidth;
         let currentHeight = this.viewHeight;
 
-        let changed = currentWidth != this._lastWidth || currentHeight != this._lastHeight || this.dpiScale != this._lastPixelDensity;
+        let changed = currentWidth !== this._lastWidth ||
+                      currentHeight !== this._lastHeight ||
+                      this.dpiScale !== this._lastDPIScale ||
+                      this.projection !== this._lastProjection;
 
         this._lastWidth = currentWidth;
         this._lastHeight = currentHeight;
-        this._lastPixelDensity = this.dpiScale;
+        this._lastDPIScale = this.dpiScale;
+        this._lastProjection = this.projection;
 
         return changed;
+    }
+
+    _checkModelChanged() {
+        this.model !== this._lastModel;
+        this._lastModel = this.model;
     }
 
     _updateProjection() {
@@ -234,13 +256,16 @@ class WT_MapView extends HTMLElement {
             return;
         }
 
+        this._targetOffsetHandler.getTargetOffset(this.model, this._targetOffsetTemp);
+        this._rangeInterpreter.getTrueRange(this.model, this._trueRangeTemp);
+
         this.projection.setOptions({
             _viewWidth: this.viewWidth,
             _viewHeight: this.viewHeight,
             _target: this.model.target,
-            _viewTargetOffset: this.projection.relXYToAbsXY(this._targetOffsetHandler.getTargetOffset(this.model)),
+            _viewTargetOffset: this.projection.relXYToAbsXY(this._targetOffsetTemp, this._targetOffsetTemp),
             _rotation: this.model.rotation,
-            _range: this._rangeInterpreter.getTrueRange(this.model)
+            _range: this._trueRangeTemp
         });
 
         if (this.model.airplane) {
@@ -265,15 +290,21 @@ class WT_MapView extends HTMLElement {
             return;
         }
 
-        let viewSizeChanged = this._checkViewSizeChanged();
+        let viewSizeChanged = this._checkProjectionViewChanged();
+        let modelChanged = this._checkModelChanged();
         this._currentTime = Date.now();
         this._updateProjection();
 
         for (let layerContainer of this._layers) {
             if (!layerContainer.isInitialized) {
                 layerContainer.init(this._state, this._config[layerContainer.layer.configName]);
-            } else if (viewSizeChanged) {
-                layerContainer.layer.onViewSizeChanged(this._state);
+            } else {
+                if (modelChanged) {
+                    layerContainer.layer.onModelChanged(this._state);
+                }
+                if (viewSizeChanged) {
+                    layerContainer.layer.onProjectionViewChanged(this._state);
+                }
             }
             if (layerContainer.layer.isVisible(this._state)) {
                 layerContainer.container.style.display = "block";
@@ -316,11 +347,11 @@ class WT_MapViewState {
 
     /**
      * @readonly
-     * @property {WT_MapProjection} projection
-     * @type {WT_MapProjection}
+     * @property {WT_MapProjectionReadOnly} projection
+     * @type {WT_MapProjectionReadOnly}
      */
     get projection() {
-        return this._view.projection;
+        return this._view.projection.readonly();
     }
 
     /**

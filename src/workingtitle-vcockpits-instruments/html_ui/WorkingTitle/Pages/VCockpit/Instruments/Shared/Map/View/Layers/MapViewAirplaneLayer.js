@@ -45,7 +45,7 @@ class WT_MapViewAirplaneLayer extends WT_MapViewMultiLayer {
     /**
      * @param {WT_MapViewState} state
      */
-    onViewSizeChanged(state) {
+    onProjectionViewChanged(state) {
         let newIconSizePx = this.iconSize * state.dpiScale;
         if (newIconSizePx !== this.iconSizePx) {
             this.iconSizePx = newIconSizePx;
