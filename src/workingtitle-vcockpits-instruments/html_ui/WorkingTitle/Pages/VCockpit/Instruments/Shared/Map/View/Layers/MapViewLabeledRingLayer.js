@@ -226,7 +226,7 @@ class WT_MapViewRing {
      * @type {WT_GVector2}
      */
     get center() {
-        return this._center.copy();
+        return this._center.readonly();
     }
 
     set center(newValue) {
@@ -392,7 +392,7 @@ class WT_MapViewRingLabel {
      * @type {WT_GVector2}
      */
     get center() {
-        return this._center.copy();
+        return this._center.readonly();
     }
 
     set center(newValue) {
@@ -438,7 +438,7 @@ class WT_MapViewRingLabel {
             return;
         }
 
-        let position = this.center.add(WT_GVector2.fromPolar(this.radius + this.radialOffset, this.radialAngle * Avionics.Utils.DEG2RAD), true);
+        let position = this.center.plus(WT_GVector2.fromPolar(this.radius + this.radialOffset, this.radialAngle * Avionics.Utils.DEG2RAD), true);
         this.htmlElement.style.left = `${position.x}px`;
         this.htmlElement.style.top = `${position.y}px`;
 
