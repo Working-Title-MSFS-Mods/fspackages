@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{56901329-1362-4C16-9FB5-DA8711422FA8}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
+	<Events>
+		<WorkUnit Name="Engines" ID="{56901329-1362-4C16-9FB5-DA8711422FA8}" OwnerID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Nested">
+			<ChildrenList>
+				<Event Name="Play_Asobo_CJ4_eng1_starter_wt" ID="{1B653F9F-6F61-41D7-8155-153320E5CFEA}">
+					<ChildrenList>
+						<Action Name="" ID="{34ED33FD-249F-40A0-9FA2-94E79C7C3706}" ShortID="170631649">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="starter_inside" ID="{40C3A2F6-16DC-46C6-A355-58E850032F3B}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{3ACA5EC0-069D-45CC-91DD-5391BF0657AB}" ShortID="469436662">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="starter_outside" ID="{30596C7F-F313-42D1-AD88-168AADB81880}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_eng1_shutdown_wt" ID="{1E10D9F3-1B15-42F5-A52E-945CE30386D6}">
+					<ChildrenList>
+						<Action Name="" ID="{14DAC51B-A276-4ED8-BFF4-6545A530CC77}" ShortID="519735255">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="shutdown_outside" ID="{D3C0F242-76AE-4804-AF9A-4170CC8A7614}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{86735565-7465-45B5-A07B-30F4FB2A7A85}" ShortID="763794885">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="shutdown_inside" ID="{69EC2F71-B690-4087-B1CE-E95A0C2786AF}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_eng1_combustion_wt" ID="{338E9205-E2F1-4B0B-8759-2FB459108785}">
+					<ChildrenList>
+						<Action Name="" ID="{E7B56FE9-4A31-4F4A-A109-4CA6852FC413}" ShortID="1025384001">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="combustion_inside" ID="{9157CC7D-CBB6-46EE-83DB-0FBB8393FF85}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{B8F39CAC-6424-4FF7-9DD9-563723D87A8D}" ShortID="425257193">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="combustion_outside" ID="{AA8FBF52-4643-4CB3-9C8A-4FA98CD07D8F}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_eng2_starter_wt" ID="{77008765-9220-4521-80CD-FDD7C30757F4}">
+					<ChildrenList>
+						<Action Name="" ID="{7A64622A-A008-464B-B72B-A9133D0749A2}" ShortID="722901049">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="starter_inside" ID="{40C3A2F6-16DC-46C6-A355-58E850032F3B}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{7220F910-66C5-4C31-8320-A063BD4D7511}" ShortID="709754943">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="starter_outside" ID="{30596C7F-F313-42D1-AD88-168AADB81880}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_eng2_combustion_wt" ID="{FDB8367E-71D3-4293-9997-EDE9CEFCA3B5}">
+					<ChildrenList>
+						<Action Name="" ID="{0B894A25-9251-4E11-B324-C02CFF6B4362}" ShortID="384051020">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="combustion_inside" ID="{9157CC7D-CBB6-46EE-83DB-0FBB8393FF85}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{C2F281DD-EEAB-449A-B16B-1250FFFB0960}" ShortID="593633351">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="combustion_outside" ID="{AA8FBF52-4643-4CB3-9C8A-4FA98CD07D8F}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_eng2_shutdown_wt" ID="{4352C42B-7AC5-4A79-8480-02360AD22530}">
+					<ChildrenList>
+						<Action Name="" ID="{138D407F-E8BC-4A6A-BA6C-3512BE2C47E9}" ShortID="487160696">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="shutdown_inside" ID="{69EC2F71-B690-4087-B1CE-E95A0C2786AF}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{30CD8027-FD9C-4911-92E0-5A94120BC6D0}" ShortID="523497997">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="shutdown_outside" ID="{D3C0F242-76AE-4804-AF9A-4170CC8A7614}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_eng2_combustion_start_wt" ID="{35026A50-AB4D-4291-BDDB-53F178148946}">
+					<ChildrenList>
+						<Action Name="" ID="{C3487FD7-2A35-4FDD-97BF-36AA966E38CB}" ShortID="114756554">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="combustion_start_inside" ID="{C1185FD1-C1AE-44A0-9687-516AE74AA5AA}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{186058FE-8E2D-4ACB-A184-366B56A4CB4E}" ShortID="114922498">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="combustion_start_outside" ID="{4F9C0BB7-0610-4705-9B9A-51755EDE3C6A}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_eng1_combustion_start_wt" ID="{780ECDF5-9DEB-4B8C-85B2-25841CC1CE63}">
+					<ChildrenList>
+						<Action Name="" ID="{395C7022-8770-4610-9089-F22716F916DD}" ShortID="910888034">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="combustion_start_inside" ID="{C1185FD1-C1AE-44A0-9687-516AE74AA5AA}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{C8915941-ECEC-4BD2-822C-B6832A6AB8FC}" ShortID="129821957">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="combustion_start_outside" ID="{4F9C0BB7-0610-4705-9B9A-51755EDE3C6A}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

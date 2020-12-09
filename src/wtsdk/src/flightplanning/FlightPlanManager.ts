@@ -260,7 +260,7 @@ export class FlightPlanManager {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (index >= 0 && index < currentFlightPlan.length) {
       currentFlightPlan.activeWaypointIndex = index;
-      Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", index+1);
+      Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", index + 1);
 
       if (currentFlightPlan.directTo.isActive && currentFlightPlan.directTo.waypointIsInFlightPlan
         && currentFlightPlan.activeWaypointIndex > currentFlightPlan.directTo.planWaypointIndex) {
@@ -1149,21 +1149,23 @@ export class FlightPlanManager {
 
   /**
    * Get the nav frequency for the selected approach in the current flight plan.
+   * @returns The approach nav frequency, if an ILS approach.
    */
-  public getApproachNavFrequency(): any {
-    if (this.getApproach()) {
-      let destination = this.getDestination();
-      let approachName = this.getApproach().runway.trim();
-      console.log("approachName: " + approachName);
+  public getApproachNavFrequency(): number {
+    const approach = this.getApproach();
+
+    if (approach && approach.name.includes('ILS')) {
+      const destination = this.getDestination();
+      let approachRunway = this.getApproach().runway.trim();
+
       let aptInfo = destination.infos as AirportInfo;
-      let frequency = aptInfo.namedFrequencies.find(f => {
-        return f.name.replace("RW0", "").replace("RW", "").indexOf(approachName) !== -1;
-      });
+      let frequency = aptInfo.namedFrequencies.find(f => f.name.replace("RW0", "").replace("RW", "").indexOf(approachRunway) !== -1);
+
       if (frequency) {
-        console.log("frequency value: " + frequency.value);
         return frequency.value;
       }
     }
+
     return NaN;
   }
 
@@ -1255,6 +1257,10 @@ export class FlightPlanManager {
    */
   public async activateDirectTo(icao: string, callback = EmptyCallback.Void): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+
+    while (currentFlightPlan.waypoints.findIndex(w => w.ident === "$DIR") > -1) {
+      currentFlightPlan.removeWaypoint(currentFlightPlan.waypoints.findIndex(w => w.ident === "$DIR"));
+    }
 
     const waypointIndex = currentFlightPlan.waypoints.findIndex(w => w.icao === icao);
     if (waypointIndex !== -1) {

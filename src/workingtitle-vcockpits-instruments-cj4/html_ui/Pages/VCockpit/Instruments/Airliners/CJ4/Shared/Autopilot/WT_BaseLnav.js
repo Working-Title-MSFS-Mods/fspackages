@@ -228,9 +228,8 @@ class WT_BaseLnav {
             //SET HEADING AND CHANGE TO HEADING MODE
             Coherent.call("HEADING_BUG_SET", 2, this._setHeading);
             Coherent.call("HEADING_BUG_SET", 1, this._setHeading);
-            SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
-            SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 1);
-            SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
+
+            this._navModeSelector.queueEvent(NavModeEvent.HDG_PRESSED);
             SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", 0);
             SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", this._setHeading);
             SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", 0);
@@ -243,9 +242,6 @@ class WT_BaseLnav {
      * Run when deactivated.
      */
     deactivate() {
-        SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
-        SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 1);
-        SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", this._setHeading);
         SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", 0);

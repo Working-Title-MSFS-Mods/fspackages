@@ -867,7 +867,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
 
             if (this.gs_cursorGroup && this.gsVisible) {
                 //if (isApproachLoaded && approachType == 10) {
-                if (WTDataStore.get('CJ4_VNAV_SNOWFLAKE',  'false') == 'true') {
+                if (SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') == 1) {
                     this.vertical_snowFlake.setAttribute("visibility", "visible");
                 } else {
                     this.vertical_snowFlake.setAttribute("visibility", "hidden");
@@ -875,15 +875,15 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 if (navCheck === 1) {
                     let gsiFeet = -SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
                     let gsi = gsiFeet / 3.28;
-                    let delta = 0.5 + ((gsi / 500.0) / 2);
+                    let delta = 0.5 + ((gsi / 250.0) / 2);
 
                     switch (navSensitivity) {
                         case 3:
-                            delta = 0.5 + ((gsi / 250.0) / 2);
+                            delta = 0.5 + ((gsi / 125.0) / 2);
                             break;
                         case 4: {
                             const sensitivityScalar = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number');
-                            delta = 0.5 + ((gsi / (250.0 * sensitivityScalar)) / 2);
+                            delta = 0.5 + ((gsi / (125.0 * sensitivityScalar)) / 2);
                             break;
                         }
                     }

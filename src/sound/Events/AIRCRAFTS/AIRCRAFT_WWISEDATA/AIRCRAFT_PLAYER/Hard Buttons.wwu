@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{9E86C14C-A7C8-4553-8074-7566484AB9E0}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
+	<Events>
+		<WorkUnit Name="Hard Buttons" ID="{9E86C14C-A7C8-4553-8074-7566484AB9E0}" OwnerID="{8BD56E05-FC92-4457-AC56-FD5FDEB696ED}" PersistMode="Nested">
+			<ChildrenList>
+				<Event Name="Play_Asobo_CJ4_WT_hard_button_on" ID="{F989202A-61AE-4C47-A249-00F8A02376D6}">
+					<ChildrenList>
+						<Action Name="" ID="{4AE89FED-01DA-49A1-93FF-4D870D8FA35A}" ShortID="39317403">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Hard Buttons" ID="{A378E50F-CA71-41F1-B68B-B6FB01422080}" WorkUnitID="{AEF1F557-84DC-4E0B-9236-B9F1ED502CA4}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

@@ -114,7 +114,7 @@ class SvgWaypointElement extends SvgMapElement {
         this._image.setAttribute("width", "100%");
         this._image.setAttribute("height", "100%");
         if (!isActiveWaypoint) {
-            console.log(this.imageFileName());
+            // console.log(this.imageFileName());
             this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg"));
         }
         else {

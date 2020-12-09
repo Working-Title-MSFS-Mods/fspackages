@@ -84,6 +84,14 @@ export class ManagedFlightPlan {
     return lastSeg.offset + lastSeg.waypoints.length + (this.hasDestination ? 1 : 0);
   }
 
+  public get checksum():number {
+    let checksum = 0;
+    const waypoints = this.waypoints;
+    for( let i = 0; i < waypoints.length; i++)
+        checksum += waypoints[i].infos.coordinates.lat;
+    return checksum;
+  }
+
   /** The non-approach waypoints of the flight plan. */
   public get nonApproachWaypoints(): WayPoint[] {
     const waypoints = [];
@@ -674,7 +682,7 @@ export class ManagedFlightPlan {
       legs.push(...transition);
     }
 
-    if (approachIndex !== -1 && approachTransitionIndex === -1) {
+    if (approachIndex !== -1) {
       legs.push(...destinationInfo.approaches[approachIndex].finalLegs);
     }
 
@@ -752,13 +760,12 @@ export class ManagedFlightPlan {
    * @returns The found runway, if any.
    */
   public getRunway(runways: OneWayRunway[], runwayName: string): OneWayRunway {
-    if (this.destinationAirfield) {
-      const runways = (this.destinationAirfield.infos as AirportInfo).oneWayRunways;
+    if (runways.length > 0) {
       let runwayIndex;
-
+      runwayName = runwayName.replace('RW', '');
       const runwayLetter = runwayName[runwayName.length - 1];
       if (runwayLetter === ' ' || runwayLetter === 'C') {
-        const runwayDirection = runwayName.substring(0, -1);
+        const runwayDirection = runwayName.trim();
         runwayIndex = runways.findIndex(r => r.designation === runwayDirection || r.designation === `${runwayDirection}C`);
       }
       else {

@@ -131,7 +131,8 @@ class WT_BaseVnav {
             if (this._flightPlanChanged || this._activeWaypointChanged || this._vnavTargetChanged) {
                 for (let i = 0; i < this.waypoints.length; i++) {
                     let wpt = this.waypoints[i];
-                    if (wpt.legAltitudeDescription > 0 && this._currentFlightSegment.type == SegmentType.Departure) {
+                    let wptSegment = this._fpm.getSegmentFromWaypoint(wpt);
+                    if (wpt.legAltitudeDescription > 0 && this._currentFlightSegment.type == SegmentType.Departure && wptSegment.type == SegmentType.Departure) {
                         if (wpt.legAltitudeDescription == 1 || wpt.legAltitudeDescription == 3 || wpt.legAltitudeDescription == 4) {
                             this._vnavConstraintAltitude = wpt.legAltitude1;
                             this._vnavConstraintWaypoint = wpt;
