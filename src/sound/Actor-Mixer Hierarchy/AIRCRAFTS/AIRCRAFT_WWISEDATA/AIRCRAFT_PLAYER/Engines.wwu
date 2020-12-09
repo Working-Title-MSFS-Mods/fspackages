@@ -6,9 +6,12 @@
 				<ActorMixer Name="engine" ID="{FBCF13E9-E849-4B6C-9DDE-CF2B79CD8648}" ShortID="750679148">
 					<PropertyList>
 						<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
+						<Property Name="MaxSoundPerInstance" Type="int16">
+							<ValueList>
+								<Value>1</Value>
+							</ValueList>
+						</Property>
 						<Property Name="OverrideConversion" Type="bool" Value="True"/>
-						<Property Name="OverridePositioning" Type="bool" Value="True"/>
-						<Property Name="OverrideVirtualVoice" Type="bool" Value="True"/>
 						<Property Name="Pitch" Type="int32">
 							<RTPCList>
 								<RTPC Name="" ID="{D6EB797B-C5F7-4F90-942C-2B5225C4526D}" ShortID="167446848">
@@ -49,12 +52,11 @@
 					<ChildrenList>
 						<BlendContainer Name="combustion_inside" ID="{9157CC7D-CBB6-46EE-83DB-0FBB8393FF85}" ShortID="494502596">
 							<PropertyList>
-								<Property Name="3DSpatialization" Type="int16" Value="1"/>
 								<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 								<Property Name="BlendBehavior" Type="int16" Value="1"/>
 								<Property Name="CenterPercentage" Type="int32">
 									<ValueList>
-										<Value>25</Value>
+										<Value>26</Value>
 									</ValueList>
 								</Property>
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
@@ -95,8 +97,8 @@
 														<Flags>0</Flags>
 													</Point>
 													<Point>
-														<XPos>250</XPos>
-														<YPos>-4.5</YPos>
+														<XPos>300</XPos>
+														<YPos>-3.3</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
@@ -112,7 +114,7 @@
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Attenuation">
-									<ObjectRef Name="aircraft_player_inside_3m_spread100" ID="{023C370B-520E-4E03-AC0C-96158D8C267D}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+									<ObjectRef Name="aircraft_player_inside_3m_spread50_focus70" ID="{BD98E1C4-52E7-4533-9E03-BF95457226AC}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
 								</Reference>
 								<Reference Name="Conversion">
 									<ObjectRef Name="NoDCOffset_Conversion_Settings" ID="{2463764E-1C92-49C9-B7B9-69C9CD89583D}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
@@ -190,13 +192,23 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
+																<XPos>39.60759</XPos>
+																<YPos>25</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
 																<XPos>67.60274</XPos>
 																<YPos>150</YPos>
 																<Flags>0</Flags>
 															</Point>
 															<Point>
+																<XPos>87.6330798479087</XPos>
+																<YPos>337</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
 																<XPos>105</XPos>
-																<YPos>623</YPos>
+																<YPos>575</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -229,6 +241,11 @@
 															<Point>
 																<XPos>108.36424</XPos>
 																<YPos>-7.62066</YPos>
+																<Flags>0</Flags>
+															</Point>
+															<Point>
+																<XPos>251.90114</XPos>
+																<YPos>-10</YPos>
 																<Flags>0</Flags>
 															</Point>
 															<Point>
@@ -359,7 +376,6 @@
 										</Property>
 										<Property Name="OverrideOutput" Type="bool" Value="True"/>
 										<Property Name="OverridePositioning" Type="bool" Value="True"/>
-										<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 										<Property Name="Pitch" Type="int32">
 											<ValueList>
 												<Value>-150</Value>
@@ -513,7 +529,6 @@
 											</RTPCList>
 										</Property>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
-										<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 										<Property Name="Pitch" Type="int32">
 											<ValueList>
 												<Value>-830</Value>
@@ -607,27 +622,6 @@
 											<AudioFile>Jet Noise Loop.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{50EA6F66-9611-4EBC-9493-B81DF498831F}" ShortID="582583158">
-													<PropertyList>
-														<Property Name="Lowpass" Type="int16" Value="6"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{31BB5528-AF1C-4854-8AB2-46EAA1C1D5B6}" ShortID="795311463"/>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Jet Noise Loop" ID="{272E5D5A-9DA8-4E86-9061-29B1B9D2CCC5}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -669,7 +663,7 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>26.43387</XPos>
+																<XPos>38.41</XPos>
 																<YPos>46</YPos>
 																<Flags>0</Flags>
 															</Point>
@@ -685,7 +679,6 @@
 										</Property>
 										<Property Name="OverrideOutput" Type="bool" Value="True"/>
 										<Property Name="OverridePositioning" Type="bool" Value="True"/>
-										<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 										<Property Name="Pitch" Type="int32">
 											<RTPCList>
 												<RTPC Name="" ID="{BBCA3C58-A134-488B-B0EF-8B237C30F6B6}" ShortID="342247417">
@@ -798,7 +791,7 @@
 															</Point>
 															<Point>
 																<XPos>330.03708</XPos>
-																<YPos>-7.58602</YPos>
+																<YPos>-3</YPos>
 																<Flags>0</Flags>
 															</Point>
 															<Point>
@@ -943,6 +936,11 @@
 												</Property>
 												<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
 												<Property Name="OverridePositioning" Type="bool" Value="True"/>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>12</Value>
+													</ValueList>
+												</Property>
 											</PropertyList>
 											<ReferenceList>
 												<Reference Name="Conversion">
@@ -969,27 +967,6 @@
 											</ActiveSourceList>
 										</Sound>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{FC462A20-5AFA-44B2-B4F7-0E1B472D7C85}" ShortID="428399112"/>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{4084A5CD-0CB9-4223-A834-A1B2ACCD8B2D}" ShortID="1015151070">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-108"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<BlendTrackList>
 										<BlendTrack Name="New Blend Track" ID="{1693EBC0-0CE4-4AE2-9EFA-7462C8F80D74}" ShortID="226920285">
 											<PropertyList>
@@ -1011,6 +988,16 @@
 																		<XPos>0</XPos>
 																		<YPos>-200</YPos>
 																		<Flags>5</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>16</XPos>
+																		<YPos>-14.02198</YPos>
+																		<Flags>0</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>20.02445</XPos>
+																		<YPos>-3.39776</YPos>
+																		<Flags>0</Flags>
 																	</Point>
 																	<Point>
 																		<XPos>105</XPos>
@@ -1080,7 +1067,6 @@
 											</ValueList>
 										</Property>
 										<Property Name="OverrideOutput" Type="bool" Value="True"/>
-										<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 										<Property Name="Priority" Type="int16">
 											<ValueList>
 												<Value>100</Value>
@@ -1148,23 +1134,6 @@
 											<AudioFile>Jet Thrust Very Low.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{12674D21-E395-4423-9A08-26863E75C92A}" ShortID="485102575"/>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{E998946F-0600-4531-A7EE-C43F802B11A6}" ShortID="944033046"/>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Jet Thrust Very Low" ID="{1E33814B-ECE4-4FB1-AEE7-53E9A0082835}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -1185,7 +1154,7 @@
 										<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
 										<CustomState Name="" ID="{79A4D958-935E-4406-B234-B2F15B6C7093}" ShortID="849241983">
 											<PropertyList>
-												<Property Name="Volume" Type="Real64" Value="-85"/>
+												<Property Name="Volume" Type="Real64" Value="-108"/>
 											</PropertyList>
 										</CustomState>
 									</CustomState>
@@ -1596,12 +1565,14 @@
 								<Property Name="BlendBehavior" Type="int16" Value="1"/>
 								<Property Name="CenterPercentage" Type="int32">
 									<ValueList>
-										<Value>39</Value>
+										<Value>100</Value>
 									</ValueList>
 								</Property>
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 								<Property Name="OverrideAnalysis" Type="bool" Value="True"/>
 								<Property Name="OverrideOutput" Type="bool" Value="True"/>
+								<Property Name="OverridePositioning" Type="bool" Value="True"/>
+								<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 								<Property Name="Priority" Type="int16">
 									<ValueList>
 										<Value>100</Value>
@@ -1616,7 +1587,7 @@
 									<ObjectRef Name="NoDCOffset_Conversion_Settings" ID="{2463764E-1C92-49C9-B7B9-69C9CD89583D}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 								</Reference>
 								<Reference Name="OutputBus">
-									<ObjectRef Name="combustion_outside_turbine" ID="{24D53CF2-7067-47DC-869A-A05F2F17C02A}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+									<ObjectRef Name="combustion_outside_generic" ID="{7FF9CAE6-1D75-4441-8E63-E1F32BD1EEC0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 								</Reference>
 								<Reference Name="UserAuxSend0">
 									<ObjectRef Name="rev_outdoor_aircraft" ID="{3070D14E-37F3-4DB4-8C7E-262318A02693}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
@@ -1629,8 +1600,12 @@
 								<Sound Name="CJ4_Engine_Combustion_Outside" ID="{388B99E6-D34A-495A-BEA3-09C3F0AB6A69}" ShortID="37099382">
 									<PropertyList>
 										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+										<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
 										<Property Name="Lowpass" Type="int16">
+											<ValueList>
+												<Value>15</Value>
+											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{20EC92A8-412C-415F-800D-66B445530A9C}" ShortID="126093910">
 													<ReferenceList>
@@ -1663,6 +1638,12 @@
 												</RTPC>
 											</RTPCList>
 										</Property>
+										<Property Name="MaxSoundPerInstance" Type="int16">
+											<ValueList>
+												<Value>1</Value>
+											</ValueList>
+										</Property>
+										<Property Name="OverrideOutput" Type="bool" Value="True"/>
 										<Property Name="OverridePositioning" Type="bool" Value="True"/>
 										<Property Name="Pitch" Type="int32">
 											<RTPCList>
@@ -1707,7 +1688,7 @@
 												</RTPC>
 											</RTPCList>
 										</Property>
-										<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="52"/>
+										<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="70"/>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
 												<Value>-4</Value>
@@ -1761,11 +1742,14 @@
 										</Property>
 									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="aircraft_player_outside_turbofan_airliner_10000m_combustion" ID="{BA363F22-61E2-479C-9307-89C68E72B24D}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 										</Reference>
 										<Reference Name="OutputBus">
-											<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+											<ObjectRef Name="combustion_outside_generic" ID="{7FF9CAE6-1D75-4441-8E63-E1F32BD1EEC0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
@@ -1781,27 +1765,6 @@
 											<AudioFile>Engines\Williams FJ44-4A Start and Idle Exterior_shortened.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{C4D447AF-C8EA-46E2-B4C5-8B1EA877040F}" ShortID="698317032">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-108"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{C05D42EB-0C0D-4920-B57F-39F055CFC090}" ShortID="750747163"/>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Williams FJ44-4A Start and Idle Exterior_shortened" ID="{8BC183F4-21E5-466E-8B44-4DF0F25EC443}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -1854,7 +1817,6 @@
 										</Property>
 										<Property Name="OverrideOutput" Type="bool" Value="True"/>
 										<Property Name="OverridePositioning" Type="bool" Value="True"/>
-										<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 										<Property Name="Pitch" Type="int32">
 											<RTPCList>
 												<RTPC Name="" ID="{E59DEDB3-60D4-48EA-8A45-FF821655C951}" ShortID="630957251">
@@ -1904,13 +1866,13 @@
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>19.6875</XPos>
-																<YPos>-379</YPos>
+																<XPos>20.75079</XPos>
+																<YPos>-24</YPos>
 																<Flags>0</Flags>
 															</Point>
 															<Point>
-																<XPos>29.846</XPos>
-																<YPos>119</YPos>
+																<XPos>29.04853</XPos>
+																<YPos>297</YPos>
 																<Flags>0</Flags>
 															</Point>
 															<Point>
@@ -2132,31 +2094,6 @@
 											</ActiveSourceList>
 										</Sound>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{D4280BF6-75BB-4A3C-80EA-B972C0E8E2D3}" ShortID="720339590">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-2"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{58F7DC9C-8E59-4997-A889-EF672B506685}" ShortID="230700781">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-3"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<BlendTrackList>
 										<BlendTrack Name="New Blend Track" ID="{1CE40E2B-BB82-4CC5-B852-A5F2CD4502EE}" ShortID="409881945">
 											<PropertyList>
@@ -2178,6 +2115,16 @@
 																		<XPos>0</XPos>
 																		<YPos>-200</YPos>
 																		<Flags>5</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>20.74328</XPos>
+																		<YPos>-9.08965</YPos>
+																		<Flags>0</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>24.13203</XPos>
+																		<YPos>-4.85134</YPos>
+																		<Flags>0</Flags>
 																	</Point>
 																	<Point>
 																		<XPos>105</XPos>
@@ -2369,27 +2316,6 @@
 											<AudioFile>Jet Noise Loop.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{51BEA36D-6A9A-430D-AADF-CD275CAC9FC4}" ShortID="501689810">
-													<PropertyList>
-														<Property Name="Lowpass" Type="int16" Value="27"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{15A5D135-2181-4070-B475-6A17A76A83AF}" ShortID="251751519"/>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Jet Noise Loop" ID="{CAFF3982-C376-4EE4-A512-6881A0867EB7}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -2660,27 +2586,6 @@
 											<AudioFile>Pink Noise.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{DD35DC89-897A-4FE1-A565-2A5527893AAB}" ShortID="934967097">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-3"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{78BA95A4-3E97-43B3-BDF0-AE60189F000E}" ShortID="367048800"/>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Pink Noise" ID="{05047D5D-015B-4583-B7F3-199D78D7F47D}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -2753,27 +2658,6 @@
 											<AudioFile>Jet Thrust Very Low.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{5EF11D35-A49B-4E6B-8E7A-087C735B838E}" ShortID="623978097">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-108"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{4B0352FA-4EBF-44A1-8D4C-A85ADDCC3A84}" ShortID="119959229"/>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="Jet Thrust Very Low" ID="{1D60379C-AC71-4206-B549-CE0D4C0B2C2D}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -2878,7 +2762,7 @@
 										</Property>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>-3</Value>
+												<Value>-20</Value>
 											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{3E414716-F5A8-4536-95AC-CAF7397AA454}" ShortID="214201735">
@@ -2975,31 +2859,6 @@
 											<AudioFile>dualtonesloop.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
-									<StateInfo>
-										<StateGroupList>
-											<StateGroupInfo>
-												<StateGroupRef Name="VIEWPOINT" ID="{13BEFA7F-C929-4FAA-8B48-86589D04F1D6}"/>
-											</StateGroupInfo>
-										</StateGroupList>
-										<CustomStateList>
-											<CustomState>
-												<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
-												<CustomState Name="" ID="{96946669-2704-4271-AFB8-09165F292A82}" ShortID="408848655">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-2"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-											<CustomState>
-												<StateRef Name="OUTSIDE" ID="{A2B684CD-A8E1-4B6B-A69B-84CC4AD39406}"/>
-												<CustomState Name="" ID="{A3CDD1EF-34AF-42F9-AB78-E59EAF97C335}" ShortID="781169400">
-													<PropertyList>
-														<Property Name="Volume" Type="Real64" Value="-9"/>
-													</PropertyList>
-												</CustomState>
-											</CustomState>
-										</CustomStateList>
-									</StateInfo>
 									<ActiveSourceList>
 										<ActiveSource Name="dualtonesloop" ID="{F8EFA7B9-C616-45A9-A165-BCF8F05FEB1A}" Platform="Linked"/>
 									</ActiveSourceList>
@@ -3016,8 +2875,7 @@
 										<StateRef Name="INSIDE" ID="{FFECDB48-6798-4725-AB04-DCC845B2904E}"/>
 										<CustomState Name="" ID="{51B1167F-08CB-4494-AF2B-3EFC4343ADC2}" ShortID="555632651">
 											<PropertyList>
-												<Property Name="Lowpass" Type="int16" Value="8"/>
-												<Property Name="Volume" Type="Real64" Value="-15"/>
+												<Property Name="Volume" Type="Real64" Value="-108"/>
 											</PropertyList>
 										</CustomState>
 									</CustomState>
@@ -3041,6 +2899,7 @@
 								<Property Name="OverrideAnalysis" Type="bool" Value="True"/>
 								<Property Name="OverrideOutput" Type="bool" Value="True"/>
 								<Property Name="OverridePositioning" Type="bool" Value="True"/>
+								<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 								<Property Name="Priority" Type="int16">
 									<ValueList>
 										<Value>100</Value>
