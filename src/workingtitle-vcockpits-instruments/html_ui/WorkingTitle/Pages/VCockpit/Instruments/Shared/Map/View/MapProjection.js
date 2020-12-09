@@ -15,6 +15,8 @@ class WT_MapProjection {
         this.__range = new WT_NumberUnit(1, WT_Unit.NMILE);
         this._viewResolution = new WT_NumberUnit(1, WT_Unit.NMILE);
         this.__viewTargetOffset = new WT_GVector2(0, 0);
+        this._viewTarget = new WT_GVector2(0, 0);
+        this._viewCenter = new WT_GVector2(0, 0);
 
         this._optsManager = new WT_OptionsManager(this, WT_MapProjection.OPTIONS_DEF);
 
@@ -73,7 +75,7 @@ class WT_MapProjection {
      * @type {WT_GVector2}
      */
     get viewTargetOffset() {
-        return this._viewTargetOffset.copy();
+        return this._viewTargetOffset.readonly();
     }
 
     set viewTargetOffset(offset) {
@@ -87,7 +89,7 @@ class WT_MapProjection {
      * @type {WT_GVector2}
      */
     get viewTarget() {
-        return this.viewCenter.add(this.viewTargetOffset, true);
+        return this._viewTarget.readonly();
     }
 
     /**
@@ -96,7 +98,7 @@ class WT_MapProjection {
      * @type {WT_GVector2}
      */
     get viewCenter() {
-        return new WT_GVector2(this.viewWidth / 2, this.viewHeight / 2);
+        return this._viewCenter.readonly();
     }
 
     /**
@@ -221,6 +223,8 @@ class WT_MapProjection {
     }
 
     _recalculateProjection() {
+        this._viewCenter.set(this.viewWidth / 2, this.viewHeight / 2);
+        this._viewTarget.set(this.viewCenter.x + this.viewTargetOffset.x, this.viewCenter.y + this.viewTargetOffset.y);
         this._viewResolution.set(this.range.number / this.viewHeight);
         this._d3Projection.translate([this.viewWidth / 2, this.viewHeight / 2]);
         this._d3Projection.clipExtent([[0, 0], [this.viewWidth, this.viewHeight]]);
@@ -577,7 +581,7 @@ class WT_MapProjectionRenderer {
     }
 
     set translate(vector) {
-        this.projection.translate(WT_MapProjection.xyViewToProjection(vector));
+        this.projection.translate(WT_MapProjection.xyViewToProjection(vector, this._tempArray1));
     }
 
     /**

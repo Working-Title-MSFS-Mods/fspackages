@@ -7,6 +7,10 @@ class WT_MapView extends HTMLElement {
         super();
 
         this._dpiScale = 1;
+        this._projection = WT_MapProjection.createProjection(WT_MapProjection.Projection.MERCATOR);
+        this._viewPlane = new WT_GVector2(0, 0);
+        this._state = new WT_MapViewState(this);
+
         this._layers = [];
 
         this._configLoaded = false;
@@ -17,8 +21,6 @@ class WT_MapView extends HTMLElement {
 
         this.setTargetOffsetHandler({getTargetOffset(model) {return {x: 0, y: 0}}});
         this.setRangeInterpreter({getTrueRange(model) {return model.range}});
-
-        this._optsManager = new WT_OptionsManager(this, WT_MapView.OPTIONS_DEF);
     }
 
     static get observedAttributes() {
@@ -111,11 +113,19 @@ class WT_MapView extends HTMLElement {
 
     /**
      * @readonly
-     * @property {WT_GVector2} viewPlane - the projected location of the player aircraft in the viewing window.
-     * @type {WT_GVector2}
+     * @property {WT_MapProjection} projection - the projection for this view.
+     */
+    get projection() {
+        return this._projection;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_GVector2ReadOnly} viewPlane - the projected location of the player aircraft in the viewing window.
+     * @type {WT_GVector2ReadOnly}
      */
     get viewPlane() {
-        return this._viewPlane;
+        return this._viewPlane.readonly();
     }
 
     /**
@@ -234,7 +244,7 @@ class WT_MapView extends HTMLElement {
         });
 
         if (this.model.airplane) {
-            this._viewPlane = this.projection.projectLatLong(this.model.airplane.position);
+            this.projection.projectLatLong(this.model.airplane.position, this._viewPlane);
         }
     }
 
@@ -259,40 +269,78 @@ class WT_MapView extends HTMLElement {
         this._currentTime = Date.now();
         this._updateProjection();
 
-        let optionsToPass = this._optsManager.getOptionsFromList(WT_MapView.OPTIONS_TO_PASS);
-
         for (let layerContainer of this._layers) {
             if (!layerContainer.isInitialized) {
-                layerContainer.init(optionsToPass, this._config[layerContainer.layer.configName]);
+                layerContainer.init(this._state, this._config[layerContainer.layer.configName]);
             } else if (viewSizeChanged) {
-                layerContainer.layer.onViewSizeChanged(optionsToPass);
+                layerContainer.layer.onViewSizeChanged(this._state);
             }
-            if (layerContainer.layer.isVisible(optionsToPass)) {
+            if (layerContainer.layer.isVisible(this._state)) {
                 layerContainer.container.style.display = "block";
-                layerContainer.layer.onUpdate(optionsToPass);
+                layerContainer.layer.onUpdate(this._state);
             } else {
                 layerContainer.container.style.display = "none";
             }
         }
     }
 }
-WT_MapView.OPTIONS_DEF = {
-    model: {default: undefined, readOnly: true},
-    dpiScale: {},
-    projection: {default: WT_MapProjection.createProjection(WT_MapProjection.Projection.MERCATOR), auto: true},
-    viewPlane: {readOnly: true},
-    currentTime: {readOnly: true}
-};
-WT_MapView.OPTIONS_TO_PASS = ["model", "dpiScale", "projection", "viewPlane", "currentTime"];
 
 /**
- * @typedef {Object} WT_MapViewState
- * @property {WT_MapModel} model - the current map model.
- * @property {Number} dpiScale - the current dpi scale.
- * @property {WT_MapProjection} projection - the current map projection.
- * @property {WT_GVector2} viewPlane - the current projected position of the player aircraft in the viewing window.
- * @property {Number} currentTime - the current time, in milliseconds since the Epoch.
+ * A read-only interface for the state of a map view.
  */
+class WT_MapViewState {
+    /**
+     * @param {WT_MapView} view
+     */
+    constructor(view) {
+        this._view = view;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_MapModel} model
+     * @type {WT_MapModel}
+     */
+    get model() {
+        return this._view.model;
+    }
+
+    /**
+     * @readonly
+     * @property {Number} dpiScale
+     * @type {Number}
+     */
+    get dpiScale() {
+        return this._view.dpiScale;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_MapProjection} projection
+     * @type {WT_MapProjection}
+     */
+    get projection() {
+        return this._view.projection;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_GVector2ReadOnly} viewPlane
+     * @type {WT_GVector2ReadOnly}
+     */
+    get viewPlane() {
+        return this._view.viewPlane;
+    }
+
+    /**
+     * @readonly
+     * @property {Number} currentTime
+     * @type {Number}
+     */
+    get currentTime() {
+        return this._view.currentTime;
+    }
+}
 
 class WT_MapViewLayerContainer {
     constructor(view, layer) {

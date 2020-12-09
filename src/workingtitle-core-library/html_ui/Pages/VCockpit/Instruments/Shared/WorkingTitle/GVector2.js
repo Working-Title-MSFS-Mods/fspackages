@@ -1,80 +1,176 @@
+/**
+ * A 2D vector.
+ */
 class WT_GVector2 {
+    /**
+     * @param {Number} x
+     * @param {Number} y
+     */
     constructor(x, y) {
         this.set(x, y);
+        this._readonly = new WT_GVector2ReadOnly(this);
     }
 
+    /**
+     * @readonly
+     * @property {Number} x - the x value of this vector.
+     * @type {Number}
+     */
     get x() {
         return this._x;
     }
 
+    /**
+     * @readonly
+     * @property {Number} y - the y value of this vector.
+     * @type {Number}
+     */
     get y() {
         return this._y;
     }
 
+    /**
+     * @readonly
+     * @property {Number} length - the length of this vector.
+     * @type {Number}
+     */
     get length() {
         return this._length;
     }
 
-    set x(val) {
-        this._x = val;
-        this._updateLength();
+    /**
+     * @readonly
+     * @property {Number} theta - the angle of this vector in radians.
+     * @type {Number}
+     */
+    get theta() {
+        return this._theta;
     }
 
-    set y(val) {
-        this._y = val;
-        this._updateLength();
-    }
-
-    set(...args) {
-        let x;
-        let y;
-        if (args.length === 1) {
-            x = args[0].x;
-            y = args[0].y;
-        } else if (args.length === 2) {
-            x = args[0];
-            y = args[1];
-        } else {
-            return undefined;
+    static _parseArgs(_1, _2) {
+        let returnValue = undefined;
+        if (_1 !== undefined && _1.x !== undefined && _1.y !== undefined) {
+            WT_GVector2._tempValue.x = _1.x;
+            WT_GVector2._tempValue.y = _1.y;
+            returnValue = WT_GVector2._tempValue;
+        } else if (typeof _1 === "number" && typeof _2 === "number") {
+            WT_GVector2._tempValue.x = _1;
+            WT_GVector2._tempValue.y = _2;
+            returnValue = WT_GVector2._tempValue;
         }
+        return returnValue;
+    }
 
-        this._x = x;
-        this._y = y;
-        this._updateLength();
+    _updatePolars() {
+        this._length = Math.sqrt(this.x * this.x + this.y * this.y);
+        this._theta = Math.atan2(this.x, -this.y);
+    }
+
+    /**
+     * Sets this vector's x and y values. This method takes either one or two arguments. The one-argument version takes a single object
+     * with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the new x and y values, or the new x value as a scalar number.
+     * @param {Number} arg2 - the new y value as a scalar number.
+     * @returns {WT_GVector2} this vector, after it has been changed.
+     */
+    set(arg1, arg2) {
+        let value = WT_GVector2._parseArgs(arg1, arg2);
+        if (value) {
+            this._x = value.x;
+            this._y = value.y;
+            this._updatePolars();
+        }
         return this;
     }
 
+    /**
+     * Sets this vector's x and y values using polar coordinates.
+     * @param {Number} r - the new length.
+     * @param {Number} theta - the new angle, in radians. An angle of 0 is defined as pointing in the negative y direction.
+     * @returns {WT_GVector2} this vector, after it has been changed.
+     */
     setFromPolar(r, theta) {
         return this.set(r * Math.sin(theta), r * -Math.cos(theta));
     }
 
-    _updateLength() {
-        this._length = Math.sqrt(this.x * this.x + this.y * this.y);
-    }
-
-    add(other, mutate = false) {
-        let x = this.x + other.x;
-        let y = this.y + other.y;
-        if (mutate) {
-            return this.set(x, y)
-        } else {
-            return new WT_GVector2(x, y);
+    /**
+     * Adds another vector to this one and returns the result as a new WT_GVector2 object. This method takes either one or two arguments.
+     * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to add, or the x value to add as a
+     * scalar number.
+     * @param {Number} arg2 - the y value to add as a scalar number.
+     * @returns {WT_GVector2} the summed vector.
+     */
+    plus(arg1, arg2) {
+        let value = WT_GVector2._parseArgs(arg1, arg2);
+        if (value) {
+            return new WT_GVector2(this.x + value.x, this.y + value.y);
         }
+        return undefined;
     }
 
-    subtract(other, mutate = false) {
-        let x = this.x - other.x;
-        let y = this.y - other.y;
-        if (mutate) {
-            return this.set(x, y)
-        } else {
-            return new WT_GVector2(x, y);
+    /**
+     * Adds another vector to this one in place and returns this vector. This method takes either one or two arguments.
+     * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to add, or the x value to add
+     * as a scalar number.
+     * @param {Number} arg2 - the y value to add as a scalar number.
+     * @returns {WT_GVector2} this vector, after it has been changed.
+     */
+    add(arg1, arg2) {
+        let value = WT_GVector2._parseArgs(arg1, arg2);
+        if (value) {
+            this._x += value.x;
+            this._y += value.y;
+            this._updatePolars();
         }
+        return this;
     }
 
-    scale(scale, mutate = false) {
-        let x = this.x * scale;
-        let y = this.y * scale;
+    /**
+     * Subtracts another vector from this one and returns the result as a new WT_GVector2 object. This method takes either one or two arguments.
+     * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to subtract, or the x value to subtract
+     * as a scalar number.
+     * @param {Number} arg2 - the y value to subtract as a scalar number.
+     * @returns {WT_GVector2} the difference vector.
+     */
+    minus(arg1, arg2) {
+        let value = WT_GVector2._parseArgs(arg1, arg2);
+        if (value) {
+            return new WT_GVector2(this.x - value.x, this.y - value.y);
+        }
+        return undefined;
+    }
+
+    /**
+     * Subtracts another vector to this one in place and returns this vector. This method takes either one or two arguments.
+     * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to subtract, or the x value to subtract
+     * as a scalar number.
+     * @param {Number} arg2 - the y value to subtract as a scalar number.
+     * @returns {WT_GVector2} this vector, after it has been changed.
+     */
+    subtract(arg1, arg2) {
+        let value = WT_GVector2._parseArgs(arg1, arg2);
+        if (value) {
+            this._x -= value.x;
+            this._y -= value.y;
+            this._updatePolars();
+        }
+        return this;
+    }
+
+    /**
+     * Scales this vector by a scalar factor. The operation can either be performed in-place or a new WT_GVector2 object can
+     * be returned.
+     * @param {Number} factor - the scalar factor by which to scale.
+     * @param {Boolean} mutate - whether to perform the operation in place.
+     * @return {WT_GVector2} the scaled vector, either as a new WT_GVector2 object or this vector after it has been changed.
+     */
+    scale(factor, mutate) {
+        let x = this.x * factor;
+        let y = this.y * factor;
         if (mutate) {
             return this.set(x, y);
         } else {
@@ -82,30 +178,247 @@ class WT_GVector2 {
         }
     }
 
-    dot(other) {
-        return this.x * other.x + this.y * other.y;
+    /**
+     * Calculates the dot (scalar) product of this vector and another vector. This method takes either one or two arguments.
+     * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of other vector, or the x value of the other vector
+     * as a scalar number.
+     * @param {Number} arg2 - the y value of the other vector as a scalar number.
+     * @returns {Number} the dot product.
+     */
+    dot(arg1, arg2) {
+        let value = WT_GVector2._parseArgs(arg1, arg2);
+        let returnValue = undefined;
+        if (value) {
+            returnValue = this.x * value.x + this.y * value.y;
+        }
+        return returnValue;
     }
 
+    /**
+     * Checks whether this vector is equal to another vector (i.e. has the same x and y values). This method takes either one or two arguments.
+     * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of other vector, or the x value of the other vector
+     * as a scalar number.
+     * @param {Number} arg2 - the y value of the other vector as a scalar number.
+     * @returns {Boolean} whether this vector is equal to the other vector.
+     */
+    equals(arg1, arg2) {
+        let value = WT_GVector2._parseArgs(arg1, arg2);
+        if (!value) {
+            return false;
+        }
+        return this.x === value.x && this.y === value.y;
+    }
+
+    /**
+     * Copies this vector.
+     * @returns {WT_GVector2} a copy of this vector.
+     */
     copy() {
         return new WT_GVector2(this.x, this.y);
     }
 
-    equals(other) {
-        if (!other) {
-            return false;
-        }
-        return this.x === other.x && this.y === other.y;
+    readonly() {
+        return this._readonly;
     }
 
+    /**
+     * @returns a string representation of this vector.
+     */
     toString() {
         return `[${this.x} ${this.y}]`;
     }
 
+    /**
+     * Creates a new vector using polar coordinates.
+     * @param {Number} r - the length of the new vector.
+     * @param {Number} theta - the angle of the new vector, in radians. An angle of 0 is defined as pointing in the negative y direction.
+     * @returns {WT_GVector2} a vector.
+     */
     static fromPolar(r, theta) {
         return new WT_GVector2(r * Math.sin(theta), r * -Math.cos(theta));
     }
 }
+WT_GVector2._tempValue = {x: 0, y: 0};
 
+/**
+ * A read-only interface for a WT_NumberUnit.
+ */
+class WT_GVector2ReadOnly {
+    /**
+     * @param {WT_GVector2} source
+     */
+    constructor(source) {
+        this._source = source;
+    }
+
+    /**
+     * @readonly
+     * @property {Number} x - the x value of this vector.
+     * @type {Number}
+     */
+    get x() {
+        return this._source.x;
+    }
+
+    /**
+     * @readonly
+     * @property {Number} y - the y value of this vector.
+     * @type {Number}
+     */
+    get y() {
+        return this._source.y;
+    }
+
+    /**
+     * @readonly
+     * @property {Number} length - the length of this vector.
+     * @type {Number}
+     */
+    get length() {
+        return this._source.length;
+    }
+
+    /**
+     * @readonly
+     * @property {Number} theta - the angle of this vector in radians.
+     * @type {Number}
+     */
+    get theta() {
+        return this._source.theta;
+    }
+
+    /**
+     * Sets this vector's x and y values. This method takes either one or two arguments. The one-argument version takes a single object
+     * with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the new x and y values, or the new x value as a scalar number.
+     * @param {Number} arg2 - the new y value as a scalar number.
+     * @returns {WT_GVector2} this vector, after it has been changed.
+     */
+    set(arg1, arg2) {
+        let value = WT_GVector2._parseArgs(arg1, arg2);
+        if (value) {
+            return new WT_GVector2(value.x, value.y);
+        } else {
+            return this._source.copy();
+        }
+    }
+
+    /**
+     * Sets this vector's x and y values using polar coordinates.
+     * @param {Number} r - the new length.
+     * @param {Number} theta - the new angle, in radians. An angle of 0 is defined as pointing in the negative y direction.
+     * @returns {WT_GVector2} this vector, after it has been changed.
+     */
+    setFromPolar(r, theta) {
+        return this.set(r * Math.sin(theta), r * -Math.cos(theta));
+    }
+
+    /**
+     * Adds another vector to this one and returns the result as a new WT_GVector2 object. This method takes either one or two arguments.
+     * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to add, or the x value to add as a
+     * scalar number.
+     * @param {Number} arg2 - the y value to add as a scalar number.
+     * @returns {WT_GVector2} the summed vector.
+     */
+    plus(arg1, arg2) {
+        return this._source.plus(arg1, arg2);
+    }
+
+    /**
+     * Adds another vector to this one and returns the result as a new WT_GVector2 object. This method takes either one or two arguments.
+     * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to add, or the x value to add as a
+     * scalar number.
+     * @param {Number} arg2 - the y value to add as a scalar number.
+     * @returns {WT_GVector2} the summed vector.
+     */
+    add(arg1, arg2) {
+        return this._source.plus(arg1, arg2);
+    }
+
+    /**
+     * Subtracts another vector from this one and returns the result as a new WT_GVector2 object. This method takes either one or two arguments.
+     * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to subtract, or the x value to subtract
+     * as a scalar number.
+     * @param {Number} arg2 - the y value to subtract as a scalar number.
+     * @returns {WT_GVector2} the difference vector.
+     */
+    minus(arg1, arg2) {
+        return this._source.minus(arg1, arg2);
+    }
+
+    /**
+     * Subtracts another vector from this one and returns the result as a new WT_GVector2 object. This method takes either one or two arguments.
+     * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to subtract, or the x value to subtract
+     * as a scalar number.
+     * @param {Number} arg2 - the y value to subtract as a scalar number.
+     * @returns {WT_GVector2} the difference vector.
+     */
+    subtract(arg1, arg2) {
+        return this._source.minus(arg1, arg2);
+    }
+
+    /**
+     * Scales this vector by a scalar factor and returns the result as a new WT_GVector2 object.
+     * @param {Number} factor - the scalar factor by which to scale.
+     * @param {Boolean} mutate - this argument is ignored.
+     * @return {WT_GVector2} the scaled vector.
+     */
+    scale(factor, mutate) {
+        return this._source.scale(factor, false);
+    }
+
+    /**
+     * Calculates the dot (scalar) product of this vector and another vector. This method takes either one or two arguments.
+     * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of other vector, or the x value of the other vector
+     * as a scalar number.
+     * @param {Number} arg2 - the y value of the other vector as a scalar number.
+     * @returns {Number} the dot product.
+     */
+    dot(arg1, arg2) {
+        return this._source.dot(arg1, arg2);
+    }
+
+    /**
+     * Checks whether this vector is equal to another vector (i.e. has the same x and y values). This method takes either one or two arguments.
+     * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of other vector, or the x value of the other vector
+     * as a scalar number.
+     * @param {Number} arg2 - the y value of the other vector as a scalar number.
+     * @returns {Boolean} whether this vector is equal to the other vector.
+     */
+    equals(arg1, arg2) {
+        return this._source.equals(arg1, arg2);
+    }
+
+    /**
+     * Copies this vector.
+     * @returns {WT_GVector2} a copy of this vector.
+     */
+    copy() {
+        return new WT_GVector2(this.x, this.y);
+    }
+
+    readonly() {
+        return this;
+    }
+
+    /**
+     * @returns a string representation of this vector.
+     */
+    toString() {
+        return `[${this.x} ${this.y}]`;
+    }
+}
+/**
+ * A 2D affine transformation.
+ */
 class WT_GTransform2 {
     constructor(matrix) {
         this._ = matrix;

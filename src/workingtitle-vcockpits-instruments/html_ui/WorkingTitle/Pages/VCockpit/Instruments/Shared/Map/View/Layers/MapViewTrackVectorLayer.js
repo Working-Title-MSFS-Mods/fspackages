@@ -34,7 +34,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
      * @type {WT_NumberUnit}
      */
     get dynamicLookaheadMax() {
-        return this._dynamicLookaheadMax.copy();
+        return this._dynamicLookaheadMax.readonly();
     }
 
     set dynamicLookaheadMax(value) {
@@ -131,7 +131,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
             windVelocityPx.setFromPolar(windSpeedPx, windDirectionRad);
 
             let currentPoint = points[i++];
-            let nextPoint = currentPoint.add(planeVelocityPx.add(windVelocityPx).scale(timeStep, true));
+            let nextPoint = planeVelocityPx.plus(windVelocityPx).scale(timeStep, true).add(currentPoint);
             points.push(nextPoint);
 
             if (!state.projection.isInView(nextPoint, 0.05)) {
