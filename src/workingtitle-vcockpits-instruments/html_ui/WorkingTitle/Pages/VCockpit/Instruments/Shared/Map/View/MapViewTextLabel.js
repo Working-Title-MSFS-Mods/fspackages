@@ -40,7 +40,7 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
     }
 
     get anchor() {
-        return this._anchor.copy();
+        return this._anchor.readonly();
     }
 
     set anchor(value) {
@@ -75,8 +75,8 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
         let width = context.measureText(this.text).width;
         let height = this.fontSize * state.dpiScale;
 
-        let centerX = this._position.x + (this._anchor.x - 0.5) * width;
-        let centerY = this._position.y + (this._anchor.x - 0.5) * height;
+        let centerX = this._position.x + (this.anchor.x - 0.5) * width;
+        let centerY = this._position.y + (this.anchor.x - 0.5) * height;
 
         if (this.showBackground) {
             let backgroundLeft = centerX - width / 2 - (this.backgroundPadding[3] + this.backgroundOutlineWidth) * state.dpiScale;
@@ -107,9 +107,9 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
         let width = 0.6 * this.fontSize * this.text.length * state.dpiScale;
         let height = this.fontSize * state.dpiScale;
 
-        let left = this._position.x - this._anchor.x * width;
+        let left = this._position.x - this.anchor.x * width;
         let right = left + width;
-        let top = this._position.y - this._anchor.y * height;
+        let top = this._position.y - this.anchor.y * height;
         let bottom = top + height;
         if (this.showBackground) {
             left -= (this.backgroundPadding[3] + this.backgroundOutlineWidth) * state.dpiScale;

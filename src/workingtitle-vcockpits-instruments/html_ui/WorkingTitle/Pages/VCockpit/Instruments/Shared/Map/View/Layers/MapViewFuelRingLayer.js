@@ -16,6 +16,8 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
         this.addRing(this._outerRing);
         this.addRing(this._innerRing);
 
+        this._timeToReserve = new WT_NumberUnit(0, WT_Unit.HOUR);
+
         this._optsManager = new WT_OptionsManager(this, WT_MapViewFuelRingLayer.OPTIONS_DEF);
 
         this._lastTime = 0;
@@ -127,7 +129,7 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
         this._outerRing.radius = gs * hoursRemainingTotal / resolution;
         this._innerRing.center = center;
         this._innerRing.radius = gs * hoursRemainingReserve / resolution;
-        this._innerRing.label.time = new WT_NumberUnit(hoursRemainingReserve, WT_Unit.HOUR);
+        this._innerRing.label.time = this._timeToReserve.set(hoursRemainingReserve);
 
         super.onUpdate(state);
     }
@@ -218,7 +220,7 @@ class WT_MapViewFuelRingLabel extends WT_MapViewRingLabel {
      * @type {WT_NumberUnit}
      */
     get time() {
-        return this._time.copy();
+        return this._time.readonly();
     }
 
     set time(time) {

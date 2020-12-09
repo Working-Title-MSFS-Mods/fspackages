@@ -404,10 +404,10 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
 
         let center = this.center;
         let arcAngularWidthRad = this.arcAngularWidth * Avionics.Utils.DEG2RAD;
-        let arcLeftTickStart = center.add(WT_GVector2.fromPolar(this.radius + this.arcEndTickLength, -arcAngularWidthRad / 2));
-        let arcLeftTickEnd = center.add(WT_GVector2.fromPolar(this.radius, -arcAngularWidthRad / 2));
-        let arcRightTickStart = center.add(WT_GVector2.fromPolar(this.radius, arcAngularWidthRad / 2));
-        let arcRightTickEnd = center.add(WT_GVector2.fromPolar(this.radius + this.arcEndTickLength, arcAngularWidthRad / 2));
+        let arcLeftTickStart = WT_GVector2.fromPolar(this.radius + this.arcEndTickLength, -arcAngularWidthRad / 2).add(center);
+        let arcLeftTickEnd = WT_GVector2.fromPolar(this.radius, -arcAngularWidthRad / 2).add(center);
+        let arcRightTickStart = WT_GVector2.fromPolar(this.radius, arcAngularWidthRad / 2).add(center);
+        let arcRightTickEnd = WT_GVector2.fromPolar(this.radius + this.arcEndTickLength, arcAngularWidthRad / 2).add(center);
         this._composeArcPath(center, this.radius, arcAngularWidthRad, arcLeftTickStart, arcLeftTickEnd, arcRightTickStart, arcRightTickEnd);
 
         if (this.arcOutlineWidth > 0) {
@@ -481,7 +481,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         let textBoundsOffset = new WT_GVector2(-textWidth / 2, textHeight / 2);
         let radius = this.radius - tickLengthPx - textBoundsOffset.length - offsetPx;
 
-        return this.center.add(WT_GVector2.fromPolar(radius, viewAngleRad), true).add(textBoundsOffset, true);
+        return WT_GVector2.fromPolar(radius, viewAngleRad).add(textBoundsOffset).add(this.center);
     }
 
     /**
@@ -560,14 +560,14 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         let center = this.center;
         let minorTicks = this.bearingTickMinorAngles.map((function(angle) {
             return {
-                start: center.add(WT_GVector2.fromPolar(this.radius - this.bearingTickMinorLength * state.dpiScale, angle * Avionics.Utils.DEG2RAD)),
-                end: center.add(WT_GVector2.fromPolar(this.radius, angle * Avionics.Utils.DEG2RAD))
+                start: WT_GVector2.fromPolar(this.radius - this.bearingTickMinorLength * state.dpiScale, angle * Avionics.Utils.DEG2RAD).add(center),
+                end: WT_GVector2.fromPolar(this.radius, angle * Avionics.Utils.DEG2RAD).add(center)
             };
         }).bind(this));
         let majorTicks = this.bearingTickMajorAngles.map((function(angle) {
             return {
-                start: center.add(WT_GVector2.fromPolar(this.radius - this.bearingTickMajorLength * state.dpiScale, angle * Avionics.Utils.DEG2RAD)),
-                end: center.add(WT_GVector2.fromPolar(this.radius, angle * Avionics.Utils.DEG2RAD))
+                start: WT_GVector2.fromPolar(this.radius - this.bearingTickMajorLength * state.dpiScale, angle * Avionics.Utils.DEG2RAD).add(center),
+                end: WT_GVector2.fromPolar(this.radius, angle * Avionics.Utils.DEG2RAD).add(center)
             };
         }).bind(this));
 
@@ -609,8 +609,8 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
     _drawForwardTick(state) {
         let angleRad = this.forwardTickAngle * Avionics.Utils.DEG2RAD;
         let lengthPx = this.forwardTickLength * state.dpiScale;
-        let begin = this.center.add(WT_GVector2.fromPolar(this.radius, angleRad), true);
-        let end = begin.add(WT_GVector2.fromPolar(lengthPx, angleRad));
+        let begin = WT_GVector2.fromPolar(this.radius, angleRad).add(this.center);
+        let end = WT_GVector2.fromPolar(lengthPx, angleRad).add(begin);
 
         this._forwardTickLayer.display.context.clearRect(this._forwardTickLastDrawnBounds.left, this._forwardTickLastDrawnBounds.top, this._forwardTickLastDrawnBounds.width, this._forwardTickLastDrawnBounds.height)
         this._composeForwardTickPath(begin, end);
@@ -668,11 +668,11 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
 
         // use origin as center to simplify calcs
         let center = this.center;
-        let leftInner1 = center.add(WT_GVector2.fromPolar(this.radius - thick / 2, leftAngleRad));
-        let leftInner2 = leftInner1.add(WT_GVector2.fromPolar(thick / 2, leftAngleRad - Math.PI / 2));
-        let leftOuter = leftInner2.add(WT_GVector2.fromPolar(innerToOuterLength, leftAngleRad));
+        let leftInner1 = WT_GVector2.fromPolar(this.radius - thick / 2, leftAngleRad).add(center);
+        let leftInner2 = WT_GVector2.fromPolar(thick / 2, leftAngleRad - Math.PI / 2).add(leftInner1);
+        let leftOuter = WT_GVector2.fromPolar(innerToOuterLength, leftAngleRad).add(leftInner2);
 
-        let reflect = WT_GTransform2.reflect(facingRad, this.center);
+        let reflect = WT_GTransform2.reflect(facingRad, center);
 
         let rightInner1 = reflect.apply(leftInner1);
         let rightInner2 = reflect.apply(leftInner2);
@@ -703,7 +703,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
             return;
         }
 
-        let position = this.center.add(WT_GVector2.fromPolar(this.radius + this.labelOffset * state.dpiScale, (this.labelAngle + this.facing) * Avionics.Utils.DEG2RAD), true);
+        let position = WT_GVector2.fromPolar(this.radius + this.labelOffset * state.dpiScale, (this.labelAngle + this.facing) * Avionics.Utils.DEG2RAD).add(this.center);
         this._rangeLabel.labelElement.style.left = `${position.x}px`;
         this._rangeLabel.labelElement.style.top = `${position.y}px`;
 

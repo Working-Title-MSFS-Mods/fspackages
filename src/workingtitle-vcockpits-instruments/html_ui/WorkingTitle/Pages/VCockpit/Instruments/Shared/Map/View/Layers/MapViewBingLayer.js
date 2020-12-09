@@ -64,8 +64,8 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         let viewCenter = state.projection.viewCenter;
 
         let delta = WT_GVector2.fromPolar(state.projection.viewHeight / 2, state.projection.rotation * Avionics.Utils.DEG2RAD);
-        let viewTop = viewCenter.subtract(delta);
-        let viewBottom = viewCenter.add(delta);
+        let viewTop = viewCenter.minus(delta);
+        let viewBottom = viewCenter.plus(delta);
 
         let top = state.projection.invertXY(viewTop);
         let bottom = state.projection.invertXY(viewBottom);

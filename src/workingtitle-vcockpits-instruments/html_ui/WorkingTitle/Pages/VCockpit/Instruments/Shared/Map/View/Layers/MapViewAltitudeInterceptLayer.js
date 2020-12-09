@@ -97,8 +97,8 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         }
         this._applyStrokeToCanvas(this.strokeWidth * state.dpiScale, this.strokeColor);
 
-        let start = center.add(WT_GVector2.fromPolar(radius, startAngle * Avionics.Utils.DEG2RAD));
-        let end = center.add(WT_GVector2.fromPolar(radius, endAngle * Avionics.Utils.DEG2RAD));
+        let start = WT_GVector2.fromPolar(radius, startAngle * Avionics.Utils.DEG2RAD).add(center);
+        let end = WT_GVector2.fromPolar(radius, endAngle * Avionics.Utils.DEG2RAD).add(center);
 
         let left = Math.min(start.x, end.x);
         let right = Math.max(start.x, end.x);
@@ -107,8 +107,9 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
 
         let nextExtremeAngle = Math.ceil(startAngle / 90) * 90;
         let delta = nextExtremeAngle - startAngle;
+        let extreme = new WT_GVector2(0, 0);
         while (delta < angularWidth) {
-            let extreme = center.add(WT_GVector2.fromPolar(radius, nextExtremeAngle * Avionics.Utils.DEG2RAD));
+            extreme.setFromPolar(radius, nextExtremeAngle * Avionics.Utils.DEG2RAD).add(center);
             left = Math.min(left, extreme.x);
             right = Math.max(right, extreme.x);
             top = Math.min(top, extreme.y);
@@ -144,7 +145,7 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         }
 
         let gs = state.model.airplane.groundSpeed;
-        let distance = new WT_NumberUnit(gs.asUnit(WT_Unit.KNOT) * time, WT_Unit.NMILE);
+        let distance = WT_Unit.NMILE.createNumber(gs.asUnit(WT_Unit.KNOT) * time);
         let angle = this.facingAngleGetter.getFacingAngle(state);
         let arcTarget = state.projection.offsetByViewAngle(state.model.airplane.position, distance, angle);
         let viewArcTarget = state.projection.projectLatLong(arcTarget);
