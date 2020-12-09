@@ -2486,26 +2486,16 @@ class CJ4_SystemFMS extends NavSystemElement {
 
                     if (FPWaypoints) {
 
-                        let approachWaypoints = flightPlanManager.getApproachWaypoints();
-
                         // Grab waypoints
                         let previousWaypointIndex = flightPlanManager.getActiveWaypointIndex() - 1;
                         let previousWaypoint = flightPlanManager.getWaypoint(previousWaypointIndex);
                         let activeIndex = flightPlanManager.getActiveWaypointIndex();
-                        let activeWaypoint = FPWaypoints[activeIndex];
+                        let activeWaypoint = flightPlanManager.getWaypoint[activeIndex];
                         let nextWaypoint = flightPlanManager.getWaypoint(activeIndex + 1);
                         let destination = flightPlanManager.getDestination();
 
                         if (destination && (!nextWaypoint || (nextWaypoint.ident === destination.ident)))
                             nextWaypoint = flightPlanManager.getWaypoint(activeIndex + 1, NaN, true);
-
-                        if (flightPlanManager.isActiveApproach()) {
-                            if (flightPlanManager.getApproachWaypoints()) {
-                                previousWaypoint = approachWaypoints[previousWaypointIndex];
-                                activeWaypoint = approachWaypoints[activeIndex];
-                                nextWaypoint = approachWaypoints[activeIndex + 1];
-                            }
-                        }
 
                         // Set ICAOs
                         this._previousWaypointContainer

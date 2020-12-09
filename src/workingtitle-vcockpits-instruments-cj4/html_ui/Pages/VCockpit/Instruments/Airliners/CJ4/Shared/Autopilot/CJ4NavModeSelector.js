@@ -534,6 +534,8 @@ class CJ4NavModeSelector {
         case WT_ApproachType.RNAV:
         case WT_ApproachType.VISUAL:
           this.isVNAVOn = true;
+          SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
+
 
           if (this.vPathState === VPathState.ACTIVE) {
             this.currentVerticalActiveState = VerticalNavModeState.GP;
@@ -545,7 +547,8 @@ class CJ4NavModeSelector {
           break;
         case WT_ApproachType.ILS:
           this.isVNAVOn = false;
-          SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
+          console.log("ILS APPR");
+          SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
           SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
 
           break;

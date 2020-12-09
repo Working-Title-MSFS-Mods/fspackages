@@ -100,7 +100,7 @@ class WT_BaseLnav {
             this._xtk = this._planePos.crossTrackDistanceTo(prevWptPos, nextWptPos) * (0.000539957); //meters to NM conversion
             this._dtk = Avionics.Utils.computeGreatCircleHeading(this._previousWaypoint.infos.coordinates, this._activeWaypoint.infos.coordinates);
             const correctedDtk = GeoMath.correctMagvar(this._dtk, SimVar.GetSimVarValue("MAGVAR", "degrees"));
-            
+
             SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", this._xtk);
             SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", correctedDtk);
             SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", this._activeWaypointDist);
@@ -111,19 +111,19 @@ class WT_BaseLnav {
             if (Math.abs(Avionics.Utils.angleDiff(this._dtk, planeHeading)) < 15) {
                 this._executeInhibited = false;
             }
-            
+
             if (isLnavActive) {
                 this._setHeading = this._dtk;
                 const interceptAngle = this.calculateDesiredInterceptAngle(this._xtk, navSensitivity);
-                      
+
                 let deltaAngle = Avionics.Utils.angleDiff(this._dtk, this._bearingToWaypoint);
                 this._setHeading = (((this._dtk + interceptAngle) % 360) + 360) % 360;
 
                 //CASE WHERE WE ARE PASSED THE WAYPOINT AND SHOULD SEQUENCE THE NEXT WPT
                 if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90) {
-                    this._setHeading = this._dtk;           
+                    this._setHeading = this._dtk;
                     this._fpm.setActiveWaypointIndex(this._fpm.getActiveWaypointIndex() + 1);
-                    
+
                     SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
 
                     this._executeInhibited = false;
@@ -139,37 +139,39 @@ class WT_BaseLnav {
 
                 //TURN ANTICIPATION & TURN WAYPOINT SWITCHING
                 const turnRadius = Math.pow(this._groundSpeed / 60, 2) / 9;
-                const maxAnticipationDistance = SimVar.GetSimVarValue('AIRSPEED TRUE', 'Knots') < 350 ? 7: 10;
+                const maxAnticipationDistance = SimVar.GetSimVarValue('AIRSPEED TRUE', 'Knots') < 350 ? 7 : 10;
 
                 if (this._activeWaypoint && !this._activeWaypoint.endsInDiscontinuity && nextActiveWaypoint && this._activeWaypointDist <= maxAnticipationDistance && this._groundSpeed < 700) {
 
                     let toCurrentFixHeading = Avionics.Utils.computeGreatCircleHeading(new LatLongAlt(this._planePos._lat, this._planePos._lon), this._activeWaypoint.infos.coordinates);
                     let toNextFixHeading = Avionics.Utils.computeGreatCircleHeading(this._activeWaypoint.infos.coordinates, nextActiveWaypoint.infos.coordinates);
-                    
+
                     let nextFixTurnAngle = Avionics.Utils.angleDiff(this._dtk, toNextFixHeading);
                     let currentFixTurnAngle = Avionics.Utils.angleDiff(planeHeading, toCurrentFixHeading);
 
                     let enterBankDistance = (this._groundSpeed / 3600) * 4;
 
-                    const getDistanceToActivate = turnAngle => Math.min((turnRadius * Math.tan((Math.abs(turnAngle * Avionics.Utils.DEG2RAD) / 2))) + enterBankDistance, maxAnticipationDistance);
+                    const getDistanceToActivate = turnAngle => Math.min((turnRadius * Math.tan((Math.abs(Math.min(110, turnAngle) * Avionics.Utils.DEG2RAD) / 2))) + enterBankDistance, maxAnticipationDistance);
 
-                    let activateDistance = Math.max(getDistanceToActivate(nextFixTurnAngle), getDistanceToActivate(currentFixTurnAngle));
+                    let activateDistance = Math.max(getDistanceToActivate(Math.abs(nextFixTurnAngle)), getDistanceToActivate(Math.abs(currentFixTurnAngle)));
                     let alertDistance = activateDistance + (this._groundSpeed / 3600) * 5; //Alert approximately 5 seconds prior to waypoint change
 
                     if (this._activeWaypointDist <= alertDistance) {
                         SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 1);
                     }
+                    console.log("d/a/ta: " + this._activeWaypointDist.toFixed(2) + "/" + activateDistance.toFixed(2) + "/" + Math.abs(currentFixTurnAngle).toFixed(2) + "/" + this._activeWaypoint.ident);
 
                     if (this._activeWaypointDist <= activateDistance) { //TIME TO START TURN
+                        console.log("ACTIVATE " + this._activeWaypoint.ident);
                         this._setHeading = toNextFixHeading;
                         this._fpm.setActiveWaypointIndex(this._fpm.getActiveWaypointIndex() + 1);
-                        
+
                         SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
 
-                        this._executeInhibited = false;                     
+                        this._executeInhibited = false;
                         this.execute();
                         this._executeInhibited = true; //Prevent heading changes until turn is near completion
-                        
+
                         return;
                     }
                 }
@@ -210,7 +212,7 @@ class WT_BaseLnav {
             const currCrosswind = Math.trunc(currWindSpeed * (Math.sin((this._setHeading * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
             const windCorrection = 180 * Math.asin(currCrosswind / this._groundSpeed) / Math.PI;
             this._setHeading = (((this._setHeading - windCorrection) % 360) + 360) % 360;
-            
+
             //SET HEADING
             SimVar.SetSimVarValue("L:WT_TEMP_SETHEADING", "number", this._setHeading);
             Coherent.call("HEADING_BUG_SET", 2, this._setHeading);
@@ -260,7 +262,7 @@ class WT_BaseLnav {
             const destinationDistance = Avionics.Utils.computeGreatCircleDistance(planeCoords, destination.infos.coordinates);
             return destinationDistance;
         }
-        
+
         return NaN;
     }
 
@@ -325,7 +327,7 @@ class WT_BaseLnav {
                 return Math.min(0.1 + ((distance / 7) * 0.9), 1);
             }
         }
-        
+
         return 1;
     }
 
@@ -374,7 +376,7 @@ class WT_BaseLnav {
         const approach = this._fpm.getApproachWaypoints();
         if (approach.length > 0) {
             const lastApproachWaypoint = approach[approach.length - 1];
-            
+
             if (lastApproachWaypoint.isRunway) {
                 return lastApproachWaypoint;
             }

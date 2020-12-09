@@ -16,6 +16,8 @@
 
 #include "WtUtils.h"
 #include <cassert>
+#include <exception>
+
 
 /// <summary>
 /// The handle to the SimConnect instance.
