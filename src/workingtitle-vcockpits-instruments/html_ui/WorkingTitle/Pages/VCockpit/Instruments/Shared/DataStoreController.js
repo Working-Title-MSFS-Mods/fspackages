@@ -126,7 +126,7 @@ class WT_DataStoreSetting {
 
     /**
      * @readonly
-     * @property {*} model - the view this setting controls.
+     * @property {*} view - the view this setting controls.
      * @type {*}
      */
     get view() {
