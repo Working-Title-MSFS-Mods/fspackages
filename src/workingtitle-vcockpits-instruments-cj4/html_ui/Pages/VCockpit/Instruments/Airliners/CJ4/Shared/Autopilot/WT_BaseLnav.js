@@ -159,7 +159,7 @@ class WT_BaseLnav {
                     if (this._activeWaypointDist <= alertDistance) {
                         SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 1);
                     }
-                    console.log("d/a/ta: " + this._activeWaypointDist.toFixed(2) + "/" + activateDistance.toFixed(2) + "/" + Math.abs(currentFixTurnAngle).toFixed(2) + "/" + this._activeWaypoint.ident);
+                    // console.log("d/a/ta: " + this._activeWaypointDist.toFixed(2) + "/" + activateDistance.toFixed(2) + "/" + Math.abs(currentFixTurnAngle).toFixed(2) + "/" + this._activeWaypoint.ident);
 
                     if (this._activeWaypointDist <= activateDistance) { //TIME TO START TURN
                         console.log("ACTIVATE " + this._activeWaypoint.ident);

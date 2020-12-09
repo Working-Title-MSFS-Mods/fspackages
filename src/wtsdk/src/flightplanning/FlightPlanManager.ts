@@ -34,23 +34,17 @@ export class FlightPlanManager {
    * @param parentInstrument The parent instrument attached to this FlightPlanManager.
    */
   constructor(public _parentInstrument: BaseInstrument) {
+    this._loadFlightPlans();
+
     if (_parentInstrument.instrumentIdentifier == "CJ4_FMC") {
       this._isMaster = true;
       RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
-
       _parentInstrument.addEventListener("FlightStart", async function () {
-        let plan = new ManagedFlightPlan();
-        plan.setParentInstrument(_parentInstrument);
-        this._flightPlans = [];
-        this._flightPlans.push(plan);
         this.pauseSync();
         await FlightPlanAsoboSync.LoadFromGame(this);
-        this._currentFlightPlanVersion++;
         this.resumeSync();
       }.bind(this));
     }
-
-    this._loadFlightPlans();
 
     FlightPlanManager.DEBUG_INSTANCE = this;
   }
@@ -1323,6 +1317,7 @@ export class FlightPlanManager {
     if (fpln === null || fpln === '') {
       this._flightPlans = [];
       let initFpln = new ManagedFlightPlan();
+      initFpln.setParentInstrument(this._parentInstrument);
       this._flightPlans.push(initFpln);
     } else {
       if (window.localStorage.getItem(FlightPlanManager.FlightPlanCompressedKey) == "1") {
