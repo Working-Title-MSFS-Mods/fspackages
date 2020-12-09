@@ -62,6 +62,7 @@ export class FlightPlanAsoboSync {
               await fpln.setApproachTransitionIndex(data.approachTransitionIndex);
 
               this.fpChecksum = fpln.getCurrentFlightPlan().checksum;
+              resolve();
             }
 
           });
