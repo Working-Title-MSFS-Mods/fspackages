@@ -928,4 +928,3 @@ class Jet_NDCompass extends HTMLElement {
         this._showILS = _val;
     }
 }
-//# sourceMappingURL=BaseNDCompass.js.map

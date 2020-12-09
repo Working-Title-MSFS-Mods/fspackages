@@ -580,4 +580,3 @@ class SvgMap {
 SvgMap.Index = 0;
 SvgMap.LOG_PERFS = false;
 checkAutoload();
-//# sourceMappingURL=SvgMap.js.map

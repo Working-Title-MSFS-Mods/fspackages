@@ -1412,4 +1412,3 @@ class FlightPlanManager {
         }
     }
 }
-//# sourceMappingURL=FlightPlanManager.js.map

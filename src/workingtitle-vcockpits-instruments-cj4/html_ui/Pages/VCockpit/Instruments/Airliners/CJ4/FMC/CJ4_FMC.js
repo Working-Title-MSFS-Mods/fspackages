@@ -718,4 +718,3 @@ CJ4_FMC.VSPEED_STATUS = {
 };
 
 registerInstrument("cj4-fmc", CJ4_FMC);
-//# sourceMappingURL=CJ4_FMC.js.map

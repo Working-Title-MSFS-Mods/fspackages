@@ -333,4 +333,3 @@ class SvgWaypointTextElement {
         context.fillText(text, map.config.waypointLabelBackgroundPaddingLeft, this._textHeight + map.config.waypointLabelBackgroundPaddingTop);
     }
 }
-//# sourceMappingURL=SvgWaypointElement.js.map

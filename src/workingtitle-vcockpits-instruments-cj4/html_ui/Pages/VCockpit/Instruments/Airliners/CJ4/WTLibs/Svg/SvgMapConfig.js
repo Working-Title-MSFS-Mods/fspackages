@@ -285,4 +285,3 @@ SvgMapConfig.BING_ALTITUDE_COLOR_ROOT = "netBingAltitudeColors";
 SvgMapConfig.BING_HEIGHT_COLOR_ROOT = "netBingHeightColor";
 SvgMapConfig.BING_WATER_COLOR_DEFAULT = "#0000ff";
 SvgMapConfig.BING_SKY_COLOR_DEFAULT = "#000000";
-//# sourceMappingURL=SvgMapConfig.js.map

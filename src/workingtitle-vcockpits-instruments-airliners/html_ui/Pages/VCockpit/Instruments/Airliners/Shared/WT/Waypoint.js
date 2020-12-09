@@ -934,4 +934,3 @@ class Frequency {
         this.bcd16Value = _bcd16Value;
     }
 }
-//# sourceMappingURL=Waypoint.js.map
