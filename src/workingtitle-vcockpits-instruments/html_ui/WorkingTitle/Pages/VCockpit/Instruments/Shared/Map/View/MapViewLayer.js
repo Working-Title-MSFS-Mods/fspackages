@@ -45,19 +45,12 @@ class WT_MapViewLayer {
     }
 
     /**
-     * Indicates whether this layer is visible.
+     * Indicates whether this layer should be visible.
      * @param {WT_MapViewState} state - the current state of this layer's parent map view.
+     * @returns {Boolean} whether this layer should be visible.
      */
     isVisible(state) {
         return true;
-    }
-
-    /**
-     * This method is called whenever the size of the viewing window of this layer's parent map view changes.
-     * @abstract
-     * @param {WT_MapViewState} state - the current state of this layer's parent map view.
-     */
-    onViewSizeChanged(state) {
     }
 
     /**
@@ -72,6 +65,14 @@ class WT_MapViewLayer {
      * @param {WT_MapViewState} state - the current state of this layer's parent map view.
      */
     onModelChanged(state) {
+    }
+
+    /**
+     * This method is called whenever the projected viewing window changes. This includes changes of the projection type,
+     * window size, and window DPI scale.
+     * @param {WT_MapViewState} state - the current state of this layer's parent map view.
+     */
+    onProjectionViewChanged(state) {
     }
 
     /**
@@ -159,7 +160,10 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
         }
     }
 
-    onViewSizeChanged(state) {
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onProjectionViewChanged(state) {
         this._lastWidth = state.projection.viewWidth;
         this._lastHeight = state.projection.viewHeight;
 
@@ -171,7 +175,7 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
     }
 
     onAttached(state) {
-        this.onViewSizeChanged(state);
+        this.onProjectionViewChanged(state);
     }
 }
 

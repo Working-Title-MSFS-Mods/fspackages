@@ -338,8 +338,8 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
     /**
      * @param {WT_MapViewState} state
      */
-    onViewSizeChanged(state) {
-        super.onViewSizeChanged(state);
+    onProjectionViewChanged(state) {
+        super.onProjectionViewChanged(state);
 
         this._needRedrawArc = true;
         this._needRedrawBearings = true;
