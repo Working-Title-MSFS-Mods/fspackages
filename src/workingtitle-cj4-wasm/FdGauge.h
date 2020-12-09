@@ -30,6 +30,7 @@ class FdGauge
 private:
 
     uint64_t prevTime_ms = 0;
+    bool isConnected = false;
 
     /// <summary>
     /// Registers all the throttle SimConnect client events.
@@ -240,6 +241,7 @@ public:
         }
 
         FdCtrlInstance.init();
+        isConnected = true;
 
         return true;
     }
@@ -251,25 +253,30 @@ public:
     /// <returns>True if successful, false otherwise.</returns>
     bool OnUpdate(double deltaTime)
     {
-        SimConnect_CallDispatch(hSimConnect, HandleAxisEvent, this);
-
         uint64_t currTime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         uint64_t timeDiff_ms = currTime_ms - this->prevTime_ms;
 
-        if (timeDiff_ms > 50) {
-            FdCtrlInstance.update(globalThrottleAxis, deltaTime);
-            this->prevTime_ms = currTime_ms;
+        if (isConnected == true) {
+            SimConnect_CallDispatch(hSimConnect, HandleAxisEvent, this);
+
+
+            if (timeDiff_ms > 50) {
+                FdCtrlInstance.update(globalThrottleAxis, deltaTime);
+                this->prevTime_ms = currTime_ms;
+            }
         }
 
         return true;
     }
 
     /// <summary>
-    /// Kills the ECU.
+    /// Kill.
     /// </summary>
     /// <returns>True if succesful, false otherwise.</returns>
     bool KillFD()
     {
+        isConnected = false;
+        unregister_all_named_vars();
         return SUCCEEDED(SimConnect_Close(hSimConnect));
     }
 };
