@@ -4,7 +4,7 @@ class WT_Annunciations_Model {
      * @param {WT_Sound} sound 
      * @param {WT_Plane_State} planeState
      */
-    constructor(config, sound, planeState) {
+    constructor(update$, config, sound, planeState) {
         this.sound = sound;
         this.planeState = planeState;
         this.isPlayingSound = {};
@@ -20,6 +20,54 @@ class WT_Annunciations_Model {
             this.acknowledgeAll();
             SimVar.SetSimVarValue("L:Generic_Master_Warning_Active", "Bool", 0);
             SimVar.SetSimVarValue("L:Generic_Master_Caution_Active", "Bool", 0);
+        });
+
+        update$.pipe(
+            rxjs.operators.throttleTime(1000),
+        ).subscribe(dt => {
+            let anyUpdated = false;
+            let alertLevel = 0;
+            let hasUnacknowledged = false;
+            let hasWarnings = false;
+            let hasCautions = false;
+            for (let annunciation of this.annunciations) {
+                const value = annunciation.Handler ? annunciation.Handler() : false;
+                if (value != annunciation.Visible) {
+                    anyUpdated = true;
+                    if (!value) {
+                        annunciation.Acknowledged = false;
+                    }
+                    annunciation.Visible = value;
+                }
+                if (annunciation.Visible && !annunciation.Acknowledged) {
+                    switch (annunciation.Type) {
+                        case Annunciation_MessageType.WARNING:
+                            alertLevel = Math.max(alertLevel, 3);
+                            hasWarnings = true;
+                            this.playSound("tone_warning", "tone");
+                            break;
+                        case Annunciation_MessageType.CAUTION:
+                            alertLevel = Math.max(alertLevel, 2);
+                            hasCautions = true;
+                            if (this.alertLevel.value < 2)
+                                this.playSound("tone_caution", "tone");
+                            break;
+                        case Annunciation_MessageType.ADVISORY:
+                            alertLevel = Math.max(alertLevel, 1);
+                            break;
+                    }
+                    hasUnacknowledged = true;
+                }
+            }
+
+            SimVar.SetSimVarValue("L:Generic_Master_Warning_Active", "Bool", hasWarnings);
+            SimVar.SetSimVarValue("L:Generic_Master_Caution_Active", "Bool", hasCautions);
+
+            this.hasUnacknowledgedAnnunciations.value = hasUnacknowledged;
+            this.alertLevel.value = alertLevel;
+            if (anyUpdated) {
+                this.messages.value = this.annunciations.filter(annunciation => annunciation.Visible);
+            }
         });
     }
     init(xmlNodes) {
@@ -61,51 +109,6 @@ class WT_Annunciations_Model {
             msg.conditions.push(condition);
         }
         this.annunciations.push(msg);
-    }
-    update(dt) {
-        let anyUpdated = false;
-        let alertLevel = 0;
-        let hasUnacknowledged = false;
-        let hasWarnings = false;
-        let hasCautions = false;
-        for (let annunciation of this.annunciations) {
-            const value = annunciation.Handler ? annunciation.Handler() : false;
-            if (value != annunciation.Visible) {
-                anyUpdated = true;
-                if (!value) {
-                    annunciation.Acknowledged = false;
-                }
-                annunciation.Visible = value;
-            }
-            if (annunciation.Visible && !annunciation.Acknowledged) {
-                switch (annunciation.Type) {
-                    case Annunciation_MessageType.WARNING:
-                        alertLevel = Math.max(alertLevel, 3);
-                        hasWarnings = true;
-                        this.playSound("tone_warning", "tone");
-                        break;
-                    case Annunciation_MessageType.CAUTION:
-                        alertLevel = Math.max(alertLevel, 2);
-                        hasCautions = true;
-                        if (this.alertLevel.value < 2)
-                            this.playSound("tone_caution", "tone");
-                        break;
-                    case Annunciation_MessageType.ADVISORY:
-                        alertLevel = Math.max(alertLevel, 1);
-                        break;
-                }
-                hasUnacknowledged = true;
-            }
-        }
-
-        SimVar.SetSimVarValue("L:Generic_Master_Warning_Active", "Bool", hasWarnings);
-        SimVar.SetSimVarValue("L:Generic_Master_Caution_Active", "Bool", hasCautions);
-
-        this.hasUnacknowledgedAnnunciations.value = hasUnacknowledged;
-        this.alertLevel.value = alertLevel;
-        if (anyUpdated) {
-            this.messages.value = this.annunciations.filter(annunciation => annunciation.Visible);
-        }
     }
     playSound(id, group = "") {
         if (!this.isPlayingSound[group]) {

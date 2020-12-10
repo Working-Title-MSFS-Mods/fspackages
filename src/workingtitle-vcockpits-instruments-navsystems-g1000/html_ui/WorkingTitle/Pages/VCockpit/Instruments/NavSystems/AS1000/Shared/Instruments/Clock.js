@@ -25,6 +25,12 @@ class WT_Clock {
             rxjs.operators.map(([day, month, year]) => new Date(year, month - 1, day)),
             rxjs.operators.shareReplay(1)
         );
+        this.realDate = throttledUpdate$.pipe(
+            rxjs.operators.map(dt => new Date()),
+            rxjs.operators.distinctUntilChanged((a, b) => {
+                return a.getDate() == b.getDate() && a.getMonth() == b.getMonth() && a.getFullYear() == b.getFullYear();
+            })
+        );
 
         const lowResCoordinates$ = planeState.getLowResCoordinates(WT_Clock.SUN_EVENT_RESOLUTION).pipe(rxjs.operators.shareReplay(1));
         this.sunrise = rxjs.combineLatest(

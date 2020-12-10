@@ -3,7 +3,7 @@ class AS1000_MFD extends BaseAS1000 {
         super();
 
         window.addEventListener('unhandledrejection', function (event) {
-            console.error(`Unhandled rejection: ${event.reason}`);
+            console.warn(`Unhandled rejection: ${event.reason}`);
         });
 
         this.altimeterIndex = 0;
@@ -166,7 +166,6 @@ class AS1000_MFD extends BaseAS1000 {
         this.mapSetupHandler = d.mapSetupHandler;
         this.electricityAvailable = d.electricityAvailable;
         this.planeState = d.planeState;
-        this.planeStatistics = d.planeStatistics;
         this.clock = d.clock;
 
         this.updatables.push(d.flightPlanController);

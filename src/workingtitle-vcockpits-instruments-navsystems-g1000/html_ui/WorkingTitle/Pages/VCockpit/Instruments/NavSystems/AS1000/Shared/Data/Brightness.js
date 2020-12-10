@@ -68,5 +68,5 @@ class WT_Brightness_Settings {
     update(dt) {
     }
 }
-WT_Brightness_Settings.AUTO_BRIGHTNESS_UPDATE_FREQUENCY = 600;
+WT_Brightness_Settings.AUTO_BRIGHTNESS_UPDATE_FREQUENCY = 60;
 WT_Brightness_Settings.AUTO_BRIGHTNESS_INTERPOLATION_DURATION = 1800;

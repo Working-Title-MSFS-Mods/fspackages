@@ -82,6 +82,7 @@ as1000-mfd-element #Mainframe #Electricity {
     #MapSVG,
     #road-network-canvas {
         @extend %render-layer;
+        position: absolute;
     }
     #WindData {
         position: absolute;
@@ -91,11 +92,16 @@ as1000-mfd-element #Mainframe #Electricity {
     }
     #Map bing-map {
         @extend %render-layer;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
     }
     #MapInstrument {
         //display: none !important;
-        overflow: hidden;
         @extend %render-layer;
+        overflow: hidden;
     }
 
     g1000-soft-key-menu {
@@ -114,6 +120,7 @@ as1000-mfd-element #Mainframe #Electricity {
     .page-selector,
     .page-menu-container {
         grid-area: main;
+        overflow: hidden;
     }
 
     #LeftInfos {
@@ -122,6 +129,7 @@ as1000-mfd-element #Mainframe #Electricity {
         grid-area: engine;
         border-right: $border_width_thick solid $border_color;
         position: relative;
+        overflow: hidden;
 
         #ED {
             width: 100%;

@@ -3,7 +3,7 @@ class Subject {
         this._value = value;
         this.inhibitDuplicates = inhibitDuplicates;
         this.subject = new rxjs.BehaviorSubject(value);
-        this.observable = inhibitDuplicates ? this.subject.pipe(rxjs.operators.distinctUntilChanged()) : this.subject;
+        this.observable = inhibitDuplicates ? this.subject.pipe(rxjs.operators.distinctUntilChanged(), rxjs.operators.shareReplay(1)) : this.subject;
     }
     get value() {
         return this.subject.getValue();

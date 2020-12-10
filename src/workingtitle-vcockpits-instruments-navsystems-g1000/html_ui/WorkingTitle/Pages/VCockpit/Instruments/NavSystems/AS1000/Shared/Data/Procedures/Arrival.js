@@ -137,8 +137,8 @@ class WT_Selected_Arrival_Procedure extends WT_Selected_Procedure {
             // Set procedure indexes
             await Promise.all([
                 new Promise(resolve => flightPlan.setArrivalProcIndex(this.procedure.procedureIndex, resolve)),
-                new Promise(resolve => flightPlan.setArrivalEnRouteTransitionIndex(this.enRouteTransitionIndex, resolve)),
-                new Promise(resolve => flightPlan.setArrivalRunwayIndex(this.runwayTransitionIndex, resolve)),
+                new Promise(resolve => flightPlan.setArrivalEnRouteTransitionIndex(this.enRouteTransitionIndex !== null ? this.enRouteTransitionIndex : 0, resolve)),
+                new Promise(resolve => flightPlan.setArrivalRunwayIndex(this.runwayTransitionIndex !== null ? this.runwayTransitionIndex : 0, resolve)),
             ]);
 
             resolve();

@@ -31,7 +31,7 @@ class AS1000_PFD extends BaseAS1000 {
         super();
 
         window.addEventListener('unhandledrejection', function (event) {
-            console.error(`Unhandled exception: ${event.reason}`);
+            console.warn(`Unhandled exception: ${event.reason}`);
         });
 
         this.handleReversionaryMode = false;
@@ -65,13 +65,13 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("attitudeModel", d => new Attitude_Indicator_Model(d.syntheticVision, d.nearestWaypoints, d.planeState, d.autoPilot, d.update$));
         d.register("hsiInput", d => new HSI_Input_Layer(d.hsiModel))
         d.register("hsiModel", d => new HSIIndicatorModel(d.update$, d.planeState));
-        d.register("altimeterModel", d => new WT_Altimeter_Model(d.update$, this, d.barometricPressure, d.minimums, d.radioAltimeter, d.sound));
+        d.register("altimeterModel", d => new WT_Altimeter_Model(d.update$, d.flightPlanManager, d.planeState, d.barometricPressure, d.minimums, d.radioAltimeter, d.sound));
         d.register("airspeedModel", d => new WT_Airspeed_Model(d.airspeedReferences, d.unitChooser));
         d.register("airspeedReferences", d => new WT_Airspeed_References());
 
-        d.register("navBoxModel", d => new AS1000_PFD_Nav_Box_Model(d.unitChooser, d.flightPlanManager, d.flightSimEvents, d.activeLegInformation));
+        d.register("navBoxModel", d => new AS1000_PFD_Nav_Box_Model(d.unitChooser, d.flightPlanManager, d.flightSimEvents, d.activeLegInformation, d.autoPilot));
 
-        d.register("annunciationsModel", d => new WT_Annunciations_Model(d.planeConfig, d.sound, d.planeState));
+        d.register("annunciationsModel", d => new WT_Annunciations_Model(d.update$, d.planeConfig, d.sound, d.planeState));
         d.register("alertsModel", d => new WT_PFD_Alerts_Model());
         d.register("localTimeModel", d => new WT_Local_Time_Model(d.settings, d.clock));
         d.register("oatModel", d => new WT_OAT_Model(d.unitChooser, d.thermometer));
@@ -84,7 +84,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("setMinimumsModel", d => new WT_Set_Minimums_Model(d.minimums));
         d.register("minimumsModel", d => new WT_Minimums_Model(d.minimums));
         d.register("radioAltimeterModel", d => new WT_Radio_Altimeter_Model(d.radioAltimeter));
-        d.register("warningsModel", d => new WT_Warnings_Model(this, d.planeConfig, d.sound, d.planeState));
+        d.register("warningsModel", d => new WT_Warnings_Model(d.update$, this, d.planeConfig, d.sound, d.planeState));
         d.register("markerBeaconModel", d => new WT_Marker_Beacon_Model(this, d.planeConfig, d.sound));
 
         d.register("softKeyMenuHandler", d => new WT_PFD_Menu_Handler(d.softKeyController, d.alertsKey));
@@ -159,7 +159,6 @@ class AS1000_PFD extends BaseAS1000 {
         this.dependencies.miniPageController.appendChild(this.proceduresMenuView);
 
         this.updatables.push(this.dependencies.procedures);
-        this.updatables.push(this.dependencies.altimeterModel);
 
         this.initViews(this.dependencies);
 
@@ -200,6 +199,25 @@ class AS1000_PFD extends BaseAS1000 {
 
             }
         });
+
+        this.dependencies.clock.realDate.subscribe(date => {
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            if (day == 25 && month == 12) {
+                this.sharedEvents.fire(WT_Shared_Instrument_Events.EVENT_ADD_PFD_ALERT, {
+                    title: "Merry Christmas",
+                    body: "From the WorkingTitle team!",
+                    id: "christmas"
+                });
+            }
+            if (day == 1 && month == 1) {
+                this.sharedEvents.fire(WT_Shared_Instrument_Events.EVENT_ADD_PFD_ALERT, {
+                    title: "Happy New Year",
+                    body: "From the WorkingTitle team!",
+                    id: "new-year"
+                });
+            }
+        })
     }
     onXMLConfigLoaded(_xml) {
         super.onXMLConfigLoaded(_xml);

@@ -114,21 +114,21 @@ class Altimeter extends HTMLElement {
         ).subscribe(text => this.baroText.textContent = text);
 
         // VSpeed
-        model.vspeed.observable.pipe(
-            rxjs.operators.map(vSpeed => Math.round(vSpeed / 50) * 50),
-            rxjs.operators.distinctUntilChanged(),
+        model.vspeed.pipe(
+            WT_RX.distinctMap(vSpeed => Math.round(vSpeed / 50) * 50),
         ).subscribe(vSpeed => this.indicatorText.textContent = Math.abs(vSpeed) >= 100 ? vSpeed : "");
 
-        model.vspeed.observable.pipe(
+        model.vspeed.pipe(
             rxjs.operators.map(vSpeed => Math.max(Math.min(vSpeed, 2500), -2500)),
             rxjs.operators.map(vSpeed => vSpeed / 10),
             WT_RX.distinctMap(Math.round)
         ).subscribe(translate => this.indicator.setAttribute("transform", `translate(0, ${-translate})`));
 
         // Trend Line
-        model.vspeed.observable.pipe(
+        model.vspeed.pipe(
             WT_RX.interpolateTo(5),
-            rxjs.operators.map(smoothed => Math.min(Math.max(Altimeter.ALTIMETER_HEIGHT / 2 + (smoothed / 10) * -1, 0), Altimeter.ALTIMETER_HEIGHT))
+            rxjs.operators.map(smoothed => Math.min(Math.max(Altimeter.ALTIMETER_HEIGHT / 2 + (smoothed / 10) * -1, 0), Altimeter.ALTIMETER_HEIGHT)),
+            WT_RX.distinctMap(Math.round),
         ).subscribe(trend => {
             this.trendElement.setAttribute("y", Math.min(trend, Altimeter.ALTIMETER_HEIGHT / 2));
             this.trendElement.setAttribute("height", Math.abs(trend - Altimeter.ALTIMETER_HEIGHT / 2));

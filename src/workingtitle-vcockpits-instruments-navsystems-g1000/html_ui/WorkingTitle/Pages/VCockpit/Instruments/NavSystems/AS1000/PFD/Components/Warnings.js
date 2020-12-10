@@ -5,7 +5,7 @@ class WT_Warnings_Model {
      * @param {WT_Sound} sound
      * @param {WT_Plane_State} planeState
      */
-    constructor(gps, planeConfig, sound, planeState) {
+    constructor(update$, gps, planeConfig, sound, planeState) {
         this.gps = gps;
         this.sound = sound;
 
@@ -89,38 +89,41 @@ class WT_Warnings_Model {
 
             SimVar.SetSimVarValue("L:AS1000_Warnings_Master_Set", "number", 0);
         });
-    }
-    update(dt) {
-        const masterSet = SimVar.GetSimVarValue("L:AS1000_Warnings_Master_Set", "number");
-        if (masterSet == 0) {
-            SimVar.SetSimVarValue("L:AS1000_Warnings_Master_Set", "number", this.UID);
-        } else if (masterSet == this.UID) {
-            let found = false;
-            let foundText = false;
-            let bestWarning = 0;
-            for (let i = 0; i < this.warnings.length; i++) {
-                const warning = this.warnings[i];
-                const hasntPlayed = !warning.hasPlayed;
-                const canRepeat = !warning.once;
-                if (canRepeat || hasntPlayed) {
-                    if (warning.callback()) {
-                        if (warning.soundEvent != "" && !this.playingSounds[i]) {
-                            this.playingSounds[i] = true;
-                            this.sound.play(warning.soundEvent).then(() => this.playingSounds[i] = false);
-                            warning.hasPlayed = true;
-                        }
 
-                        if (!foundText)
-                            bestWarning = i;
-                        if (warning.shortText || warning.longText)
-                            foundText = true;
-                        found = true;
+        update$.pipe(
+            rxjs.operators.throttleTime(1000),
+        ).subscribe(dt => {
+            const masterSet = SimVar.GetSimVarValue("L:AS1000_Warnings_Master_Set", "number");
+            if (masterSet == 0) {
+                SimVar.SetSimVarValue("L:AS1000_Warnings_Master_Set", "number", this.UID);
+            } else if (masterSet == this.UID) {
+                let found = false;
+                let foundText = false;
+                let bestWarning = 0;
+                for (let i = 0; i < this.warnings.length; i++) {
+                    const warning = this.warnings[i];
+                    const hasntPlayed = !warning.hasPlayed;
+                    const canRepeat = !warning.once;
+                    if (canRepeat || hasntPlayed) {
+                        if (warning.callback()) {
+                            if (warning.soundEvent != "" && !this.playingSounds[i]) {
+                                this.playingSounds[i] = true;
+                                this.sound.play(warning.soundEvent).then(() => this.playingSounds[i] = false);
+                                warning.hasPlayed = true;
+                            }
+
+                            if (!foundText)
+                                bestWarning = i;
+                            if (warning.shortText || warning.longText)
+                                foundText = true;
+                            found = true;
+                        }
                     }
                 }
+                SimVar.SetSimVarValue("L:AS1000_Warnings_WarningIndex", "number", found ? (bestWarning + 1) : 0);
+                this.activeWarning.value = found ? this.warnings[bestWarning] : null;
             }
-            SimVar.SetSimVarValue("L:AS1000_Warnings_WarningIndex", "number", found ? (bestWarning + 1) : 0);
-            this.activeWarning.value = found ? this.warnings[bestWarning] : null;
-        }
+        });
     }
     linearMultiPointsEvaluation(_points, _valueX, _valueY) {
         let lastLowerIndex = -1;

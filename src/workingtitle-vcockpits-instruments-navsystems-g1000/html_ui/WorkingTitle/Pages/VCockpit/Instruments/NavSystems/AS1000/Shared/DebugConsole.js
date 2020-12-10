@@ -165,6 +165,21 @@ class WT_Debug_Console {
         window.onerror = function (message, source, lineno, colno, error) {
             console.error(`${source}:${lineno}:${colno}\n${message}\n${error.stack}`);
         };
+
+        const getSimVarValue = SimVar.GetSimVarValue;
+        this.numSimVarCalls = 0;
+        SimVar.GetSimVarValue = (name, unit, dataSource = "") => {
+            this.numSimVarCalls++;
+            return getSimVarValue(name, unit, dataSource);
+        }
+
+        this.simVarCalls = endUpdate$.pipe(
+            rxjs.operators.map(() => {
+                const value = this.numSimVarCalls;
+                this.numSimVarCalls = 0;
+                return value;
+            })
+        )
     }
     dataStoreKey(variable) {
         return `DebugConsole.${this.prefix}.${variable}`;
@@ -222,6 +237,7 @@ class WT_Debug_Console_View extends WT_HTML_View {
                 <span data-element="avionicsUpdateFps"></span>
                 <span data-element="avionicsFps"></span>
                 <span data-element="gameFps"></span>
+                <span data-element="simVarCalls"></span>
             </div>
             <div class="buttons">                
                 <button data-click="clear">Clear</button>
@@ -382,6 +398,10 @@ class WT_Debug_Console_View extends WT_HTML_View {
             rxjs.operators.map(fps => fps.toFixed()),
             rxjs.operators.distinctUntilChanged()
         ).subscribe(fps => this.elements.gameFps.textContent = `GM: ${fps}`);
+
+        model.simVarCalls.pipe(
+            rxjs.operators.distinctUntilChanged()
+        ).subscribe(call => this.elements.simVarCalls.textContent = `SV: ${call}`);
     }
 }
 customElements.define("wt-debug-console", WT_Debug_Console_View);

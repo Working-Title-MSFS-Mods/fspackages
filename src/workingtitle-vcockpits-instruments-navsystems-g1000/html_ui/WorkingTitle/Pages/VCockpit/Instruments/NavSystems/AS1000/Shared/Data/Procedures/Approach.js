@@ -99,7 +99,7 @@ class WT_Selected_Approach_Procedure extends WT_Selected_Procedure {
             }
             // Load procedure
             console.log(`Loading approach ${this.procedure.procedureIndex} transition ${this.transitionIndex}...`);
-            await (new Promise(resolve => flightPlan.setApproachIndex(this.procedure.procedureIndex, resolve, this.transitionIndex)));
+            await (new Promise(resolve => flightPlan.setApproachIndex(this.procedure.procedureIndex, resolve, this.transitionIndex !== null ? this.transitionIndex : 0)));
             resolve();
         });
     }

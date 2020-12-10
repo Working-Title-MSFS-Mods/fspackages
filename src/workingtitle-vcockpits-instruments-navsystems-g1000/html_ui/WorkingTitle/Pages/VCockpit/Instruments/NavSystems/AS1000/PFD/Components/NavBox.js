@@ -4,8 +4,9 @@ class AS1000_PFD_Nav_Box_Model {
      * @param {FlightPlanManager} flightPlanManager 
      * @param {WT_Flight_Sim_Events} events 
      * @param {WT_Flight_Plan_Active_Leg_Information} activeLegInformation 
+     * @param {WT_Auto_Pilot} autoPilot 
      */
-    constructor(unitChooser, flightPlanManager, events, activeLegInformation) {
+    constructor(unitChooser, flightPlanManager, events, activeLegInformation, autoPilot) {
         this.unitChooser = unitChooser;
         this.flightPlanManager = flightPlanManager;
         this.events = events;
@@ -22,7 +23,7 @@ class AS1000_PFD_Nav_Box_Model {
                 armed: new Subject(""),
                 active: new Subject(""),
             },
-            status: new Subject(false),
+            status: autoPilot.enabled,
             vertical: {
                 active: new Subject(""),
                 reference: new Subject(""),
@@ -93,9 +94,6 @@ class AS1000_PFD_Nav_Box_Model {
         } else {
             this.autopilot.vertical.armed.value = "";
         }
-    }
-    updateStatus() {
-        this.autopilot.status.value = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool");
     }
     updateLateralActive() {
         if (SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Boolean")) {
@@ -195,14 +193,13 @@ class AS1000_PFD_Nav_Box_Model {
     }
     update(dt) {
         switch (this.updateCounter) {
-            case 0: this.updateStatus(); break;
             case 1: this.updateVerticalActive(); break;
             case 2: this.updateVerticalArmed(); break;
             case 3: this.updateLateralActive(); break;
             case 4: this.updateLateralArmed(); break;
             //case 5: this.updateLeg(); break;
         }
-        this.updateCounter = (this.updateCounter + 1) % 6;
+        this.updateCounter = (this.updateCounter + 1) % 30;
     }
 }
 

@@ -94,6 +94,8 @@ class WT_Airport_Information_View extends WT_HTML_View {
         this.softKeyMenu = new WT_Airport_Information_Soft_Key_Menu(this);
 
         this.subscriptions = new Subscriptions();
+
+        this.selectedRunway$ = new rxjs.BehaviorSubject(null);
     }
     connectedCallback() {
         if (this.hasInitialised)
@@ -108,14 +110,7 @@ class WT_Airport_Information_View extends WT_HTML_View {
 
         this.elements.frequencyList.setModel(this.frequencyListModel);
         this.elements.waypointInput.setModel(this.waypointInputModel);
-        this.elements.runwaySelector.selectedRunway.subscribe(runway => {
-            if (runway) {
-                let coordinates = [];
-                coordinates.push(Avionics.Utils.bearingDistanceToCoordinates(runway.direction, (runway.length / 2) * 0.000539957, runway.latitude, runway.longitude));
-                coordinates.push(Avionics.Utils.bearingDistanceToCoordinates((runway.direction + 180) % 360, (runway.length / 2) * 0.000539957, runway.latitude, runway.longitude));
-                this.map.centerOnCoordinates(coordinates);
-            }
-        })
+        this.elements.runwaySelector.selectedRunway.subscribe(runway => this.selectedRunway$.next(runway));
 
         this.viewMode.subscribe(mode => {
             this.setAttribute("mode", mode);
@@ -152,7 +147,7 @@ class WT_Airport_Information_View extends WT_HTML_View {
     }
     activate(inputStack, intent) {
         this.elements.map.appendChild(this.map);
-        this.map.setZoom(15);
+        this.map.setZoom(12);
 
         this.softKeyMenuHandler = this.menuHandler.show(this.softKeyMenu);
 
@@ -198,6 +193,17 @@ class WT_Airport_Information_View extends WT_HTML_View {
 
             // Runways
             this.model.waypoint.observable.subscribe(airport => this.elements.runwaySelector.setFromWaypoint(airport)),
+            rxjs.timer(100).pipe( // This short delay is because the map needs to resize first
+                rxjs.operators.switchMapTo(this.selectedRunway$)
+            ).subscribe(runway => {
+                if (!runway)
+                    return;
+
+                let coordinates = [];
+                coordinates.push(Avionics.Utils.bearingDistanceToCoordinates(runway.direction, (runway.length / 2) * 0.000539957, runway.latitude, runway.longitude));
+                coordinates.push(Avionics.Utils.bearingDistanceToCoordinates((runway.direction + 180) % 360, (runway.length / 2) * 0.000539957, runway.latitude, runway.longitude));
+                this.map.centerOnCoordinates(coordinates);
+            }),
 
             // Frequencies
             info$.subscribe(airport => this.frequencyListModel.setFrequencies(airport ? airport.frequencies : [])),

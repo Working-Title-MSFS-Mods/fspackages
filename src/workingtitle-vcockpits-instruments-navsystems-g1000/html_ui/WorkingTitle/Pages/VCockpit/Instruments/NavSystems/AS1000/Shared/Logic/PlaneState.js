@@ -8,22 +8,22 @@ class WT_Plane_State {
         this.powerState = new Subject(false);
         this.electricity = electricityAvailable;
 
+        this.indicatedAltitude = WT_RX.observeSimVar(update$, "INDICATED ALTITUDE:1", "feet", false);
+        this.latitude = WT_RX.observeSimVar(update$, "PLANE LATITUDE", "degree latitude", false);
+        this.longitude = WT_RX.observeSimVar(update$, "PLANE LONGITUDE", "degree longitude", false);
         this.coordinates = rxjs.zip(
-            WT_RX.observeSimVar(update$, "PLANE LATITUDE", "degree latitude", false),
-            WT_RX.observeSimVar(update$, "PLANE LONGITUDE", "degree longitude", false),
-            WT_RX.observeSimVar(update$, "INDICATED ALTITUDE:1", "feet", false),
+            this.latitude, this.longitude, this.indicatedAltitude,
+            (lat, long, alt) => new LatLongAlt(lat, long, alt)
         ).pipe(
-            rxjs.operators.map(([lat, long, alt]) => new LatLongAlt(lat, long, alt)),
             rxjs.operators.shareReplay(1),
         );
 
         this.groundSpeed = WT_RX.observeSimVar(update$, "GPS GROUND SPEED", "kilometers per hour");
-        
+
         this.heading = WT_RX.observeSimVar(update$, "PLANE HEADING DEGREES MAGNETIC", "degree");
         this.trueHeading = WT_RX.observeSimVar(update$, "PLANE HEADING DEGREES TRUE", "degree");
         this.track = WT_RX.observeSimVar(update$, "GPS GROUND MAGNETIC TRACK", "degrees");
 
-        this.indicatedAltitude = WT_RX.observeSimVar(update$, "INDICATED ALTITUDE", "feet");
         this.verticalSpeed = WT_RX.observeSimVar(update$, "VERTICAL SPEED", "feet per minute");
 
         this.orientation = WT_RX.observeGameVar(update$, "AIRCRAFT ORIENTATION AXIS", "XYZ");

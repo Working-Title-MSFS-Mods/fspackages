@@ -13,19 +13,19 @@ class WT_Synthetic_Vision {
     }
     toggle() {
         this.set(!this.enabled.getValue());
-        WTDataStore.set(WT_Synthetic_Vision.ENABLED_KEY, this.enabled.value);
+        WTDataStore.set(WT_Synthetic_Vision.ENABLED_KEY, this.enabled.getValue());
     }
     set(enabled) {
         this.enabled.next(enabled);
-        WTDataStore.set(WT_Synthetic_Vision.ENABLED_KEY, this.enabled.value);
+        WTDataStore.set(WT_Synthetic_Vision.ENABLED_KEY, this.enabled.getValue());
     }
     toggleAirportSigns() {
         this.airportSigns.next(!this.airportSigns.getValue());
-        WTDataStore.set(WT_Synthetic_Vision.AIRPORT_SIGNS_KEY, this.airportSigns.value);
+        WTDataStore.set(WT_Synthetic_Vision.AIRPORT_SIGNS_KEY, this.airportSigns.getValue());
     }
     toggleHorizonHeadings() {
         this.horizonHeadings.next(!this.horizonHeadings.getValue());
-        WTDataStore.set(WT_Synthetic_Vision.HORIZON_HEADINGS_KEY, this.horizonHeadings.value);
+        WTDataStore.set(WT_Synthetic_Vision.HORIZON_HEADINGS_KEY, this.horizonHeadings.getValue());
     }
 }
 WT_Synthetic_Vision.ENABLED_KEY = "PFD.SyntheticVision";
