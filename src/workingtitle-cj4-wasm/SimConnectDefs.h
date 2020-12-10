@@ -11,6 +11,9 @@
 enum ThrottleEventIDs
 {
     AxisThrottleSet,
+    AxisThrottle1Set,
+    AxisThrottle2Set,
+    AxisThrottleSetEx,
     AxisThrottle1SetEx,
     AxisThrottle2SetEx,
     ThrottleSet,

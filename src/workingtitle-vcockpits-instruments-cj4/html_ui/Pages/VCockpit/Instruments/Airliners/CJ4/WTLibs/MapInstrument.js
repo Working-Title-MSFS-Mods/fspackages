@@ -1656,4 +1656,3 @@ MapInstrument_DefaultRotationHandler.INSTANCE = new MapInstrument_DefaultRotatio
 
 customElements.define("map-instrument", MapInstrument);
 checkAutoload();
-//# sourceMappingURL=MapInstrument.js.map

@@ -130,7 +130,7 @@ class CJ4_FMC_RoutePage {
                     emptyRow.airwayIn = this._airwayInput;
                 }
             } else {
-                emptyRow.fpIdx = 1;
+                emptyRow.fpIdx = Infinity;
             }
             this._rows.push(emptyRow);
         }
@@ -451,7 +451,7 @@ class CJ4_FMC_RoutePage {
             const departure = flightPlanManager.getDeparture();
             if (departure) {
                 const departureWaypoints = flightPlanManager.getDepartureWaypointsMap();
-                const lastDepartureIdx = departureWaypoints.length - 1;
+                const lastDepartureIdx = Math.min(0,departureWaypoints.length - 1);
                 lastDepartureWaypoint = departureWaypoints[lastDepartureIdx];
                 if (lastDepartureWaypoint) {
                     foundActive = flightPlanManager.getActiveWaypointIndex() <= lastDepartureIdx;

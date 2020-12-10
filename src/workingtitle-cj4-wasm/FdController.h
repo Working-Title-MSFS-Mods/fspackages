@@ -17,15 +17,9 @@ private:
     PidController* throttleController[2];
 
     /// <summary>
-    /// An instance of the throttle PID controller.
-    /// </summary>
-    PidController* throttleRightController;
-
-    /// <summary>
     /// The current throttle control axis, from -16384 to 16384.
     /// </summary>  
     int throttleAxis[2] = { -16384, -16384 };
-
 
     enum ThrottleMode { UNDEF = 0, CRU = 1, CLB = 2, TO = 3 };
 

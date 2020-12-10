@@ -2490,7 +2490,7 @@ class CJ4_SystemFMS extends NavSystemElement {
                         let previousWaypointIndex = flightPlanManager.getActiveWaypointIndex() - 1;
                         let previousWaypoint = flightPlanManager.getWaypoint(previousWaypointIndex);
                         let activeIndex = flightPlanManager.getActiveWaypointIndex();
-                        let activeWaypoint = flightPlanManager.getWaypoint[activeIndex];
+                        let activeWaypoint = flightPlanManager.getWaypoint(activeIndex);
                         let nextWaypoint = flightPlanManager.getWaypoint(activeIndex + 1);
                         let destination = flightPlanManager.getDestination();
 
@@ -4326,7 +4326,3 @@ class CJ4_PassengerBrief extends WTMenu.PassengerBrief_Menu_Handler {
         this.root.appendChild(page);
     }
 }
-
-
-
-//# sourceMappingURL=CJ4_Shared.js.map

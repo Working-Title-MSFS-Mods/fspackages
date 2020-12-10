@@ -242,4 +242,3 @@ class SvgApproachFlightPlanDebugElement extends SvgMapElement {
         }
     }
 }
-//# sourceMappingURL=SvgFlightPlanElement.js.map

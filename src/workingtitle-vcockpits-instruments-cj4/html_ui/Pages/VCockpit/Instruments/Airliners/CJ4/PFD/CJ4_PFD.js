@@ -889,4 +889,3 @@ class CJ4_ILS extends NavSystemElement {
     }
 }
 registerInstrument("cj4-pfd-element", CJ4_PFD);
-//# sourceMappingURL=CJ4_PFD.js.map

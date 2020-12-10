@@ -39,7 +39,10 @@ private:
     {
         printf("Registering throttle events...\r\n");
 
-        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottleSet, "THROTTLE_AXIS_SET_EX1");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottleSet, "AXIS_THROTTLE_SET");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottle1Set, "AXIS_THROTTLE1_SET");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottle2Set, "AXIS_THROTTLE2_SET");
+        SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottleSetEx, "THROTTLE_AXIS_SET_EX1");
         SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottle1SetEx, "THROTTLE1_AXIS_SET_EX1");
         SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::AxisThrottle2SetEx, "THROTTLE2_AXIS_SET_EX1");
         SimConnect_MapClientEventToSimEvent(hSimConnect, ThrottleEventIDs::ThrottleSet, "THROTTLE_SET");
@@ -67,8 +70,10 @@ private:
     void RegisterThrottleEventGroup()
     {
         printf("Registering throttle event group...\r\n");
-
         SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottleSet, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottle1Set, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottle2Set, TRUE);
+        SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottleSetEx, TRUE);
         SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottle1SetEx, TRUE);
         SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::AxisThrottle2SetEx, TRUE);
         SimConnect_AddClientEventToNotificationGroup(hSimConnect, EventGroups::Throttle, ThrottleEventIDs::ThrottleSet, TRUE);
@@ -160,12 +165,15 @@ private:
         switch (evt->uEventID)
         {
         case ThrottleEventIDs::AxisThrottleSet:
+        case ThrottleEventIDs::AxisThrottleSetEx:
             globalThrottleAxis[0] = static_cast<int>(evt->dwData);
             globalThrottleAxis[1] = static_cast<int>(evt->dwData);
             break;
+        case ThrottleEventIDs::AxisThrottle1Set:
         case ThrottleEventIDs::AxisThrottle1SetEx:
             globalThrottleAxis[0] = static_cast<int>(evt->dwData);
             break;
+        case ThrottleEventIDs::AxisThrottle2Set:
         case ThrottleEventIDs::AxisThrottle2SetEx:
             globalThrottleAxis[1] = static_cast<int>(evt->dwData);
             break;
