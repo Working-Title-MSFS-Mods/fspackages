@@ -15,7 +15,7 @@ class WT_OAT_Model {
             )
         ).pipe(
             rxjs.operators.distinctUntilChanged(),
-            rxjs.operators.shareReplay(1),
+            WT_RX.shareReplay(),
         );
     }
 }

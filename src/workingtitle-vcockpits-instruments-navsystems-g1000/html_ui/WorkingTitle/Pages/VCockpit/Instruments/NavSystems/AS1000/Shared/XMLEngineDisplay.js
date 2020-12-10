@@ -722,7 +722,7 @@ class XMLCircularGauge extends XMLGauge {
             rxjs.operators.map(value => this.textIncrement != 1 ? Math.round(value / this.textIncrement) * this.textIncrement : value),
             rxjs.operators.map(value => value.toFixed(this.textPrecision)),
             rxjs.operators.distinctUntilChanged(),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
 
         this.subscriptions.add(
@@ -765,7 +765,7 @@ class XMLCircularGauge extends XMLGauge {
                         return null;
                     }),
                     rxjs.operators.map(color => color == null ? "white" : color),
-                    rxjs.operators.shareReplay(1),
+                    WT_RX.shareReplay(),
                 ).subscribe(color => this.valueElements.text.setAttribute("fill", color))
             );
         }
@@ -1339,7 +1339,7 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
                     return null;
                 }),
                 rxjs.operators.map(color => color == null ? "white" : color),
-                rxjs.operators.shareReplay(1),
+                WT_RX.shareReplay(),
             );
 
             this.subscriptions.add(

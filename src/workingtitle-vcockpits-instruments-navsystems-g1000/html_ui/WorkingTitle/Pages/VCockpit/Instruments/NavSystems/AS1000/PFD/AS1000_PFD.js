@@ -71,11 +71,11 @@ class AS1000_PFD extends BaseAS1000 {
 
         d.register("navBoxModel", d => new AS1000_PFD_Nav_Box_Model(d.unitChooser, d.flightPlanManager, d.flightSimEvents, d.activeLegInformation, d.autoPilot));
 
-        d.register("annunciationsModel", d => new WT_Annunciations_Model(d.update$, d.planeConfig, d.sound, d.planeState));
+        d.register("annunciationsModel", d => new WT_Annunciations_Model(d.frame$, d.planeConfig, d.sound, d.planeState));
         d.register("alertsModel", d => new WT_PFD_Alerts_Model());
         d.register("localTimeModel", d => new WT_Local_Time_Model(d.settings, d.clock));
         d.register("oatModel", d => new WT_OAT_Model(d.unitChooser, d.thermometer));
-        d.register("transponderModel", d => new WT_Transponder_Model(d.modSettings));
+        d.register("transponderModel", d => new WT_Transponder_Model(d.frame$, d.modSettings, d.planeState));
         d.register("referencesModel", d => new WT_Airspeed_References_Model(d.settings, d.airspeedReferences));
         d.register("timerModel", d => new WT_PFD_Timer_Model(d.clock));
         d.register("setupMenuModel", d => new WT_PFD_Setup_Menu_Model(d.brightnessSettings));
@@ -84,7 +84,7 @@ class AS1000_PFD extends BaseAS1000 {
         d.register("setMinimumsModel", d => new WT_Set_Minimums_Model(d.minimums));
         d.register("minimumsModel", d => new WT_Minimums_Model(d.minimums));
         d.register("radioAltimeterModel", d => new WT_Radio_Altimeter_Model(d.radioAltimeter));
-        d.register("warningsModel", d => new WT_Warnings_Model(d.update$, this, d.planeConfig, d.sound, d.planeState));
+        d.register("warningsModel", d => new WT_Warnings_Model(d.frame$, this, d.planeConfig, d.sound, d.planeState));
         d.register("markerBeaconModel", d => new WT_Marker_Beacon_Model(this, d.planeConfig, d.sound));
 
         d.register("softKeyMenuHandler", d => new WT_PFD_Menu_Handler(d.softKeyController, d.alertsKey));
@@ -139,7 +139,7 @@ class AS1000_PFD extends BaseAS1000 {
         this.updatables.push(this.miniPageController);
         this.miniPageController.handleInput(this.inputStack);
 
-        this.addIndependentElementContainer(new Engine("Engine", "EngineDisplay"));
+        //this.addIndependentElementContainer(new Engine("Engine", "EngineDisplay"));
         this.maxUpdateBudget = 12;
         this._pfdConfigDone = false;
 
@@ -277,7 +277,7 @@ class AS1000_PFD extends BaseAS1000 {
         let loader = new WTConfigLoader(this._xmlConfigPath);
         // We need to wait for this to finish before we can do the initial set of the light pot
         // in the line below because this can set a custom value for the avionics knob.
-        await loader.loadModelFile("interior").then((dom) => { this.processInteriorConfig(dom) });
+        await loader.loadModelFile("interior").then(dom => this.processInteriorConfig(dom));
         this.avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
         this.model.setLightKnob(this.avionicsKnobIndex);
         return Promise.resolve();

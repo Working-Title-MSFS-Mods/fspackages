@@ -27,7 +27,7 @@ class WT_Brightness_Settings {
                 return sunriseModifier * sunsetModifier * 100;
             }
         ).pipe(
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         )
 
         const mfdManualBrightness$ = this.mfd.observable;

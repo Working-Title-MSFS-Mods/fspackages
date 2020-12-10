@@ -3,7 +3,7 @@ class Subject {
         this._value = value;
         this.inhibitDuplicates = inhibitDuplicates;
         this.subject = new rxjs.BehaviorSubject(value);
-        this.observable = inhibitDuplicates ? this.subject.pipe(rxjs.operators.distinctUntilChanged(), rxjs.operators.shareReplay(1)) : this.subject;
+        this.observable = inhibitDuplicates ? this.subject.pipe(rxjs.operators.distinctUntilChanged(), WT_RX.shareReplay()) : this.subject;
     }
     get value() {
         return this.subject.getValue();
@@ -78,19 +78,24 @@ class Subscriptions {
 }
 
 class WT_RX {
-    static observeSimVar(update$, simvar, units, distinct = true) {
+    static shareReplay(buffer = 1, refCount = true) {
+        return rxjs.operators.shareReplay({
+            bufferSize: buffer,
+            refCount: refCount
+        });
+    }
+    static observeSimVar(update$, simvar, units, distinct = true, log = false) {
         let observable = update$;
 
-        observable = observable.pipe(
-            rxjs.operators.map(() => SimVar.GetSimVarValue(simvar, units))
-        );
+        const pipes = [rxjs.operators.map(() => SimVar.GetSimVarValue(simvar, units))];
+
+        if (log)
+            pipes.push(rxjs.operators.tap(v => console.log(`${simvar}: ${v}`)));
 
         if (distinct)
-            observable = observable.pipe(rxjs.operators.distinctUntilChanged())
+            pipes.push(rxjs.operators.distinctUntilChanged())
 
-        return observable.pipe(
-            rxjs.operators.shareReplay(1)
-        );
+        return observable.pipe(...pipes, WT_RX.shareReplay());
     }
     static observeGlobalVar(update$, globalvar, units, distinct = true) {
         let observable = update$;
@@ -102,9 +107,7 @@ class WT_RX {
         if (distinct)
             observable = observable.pipe(rxjs.operators.distinctUntilChanged())
 
-        return observable.pipe(
-            rxjs.operators.shareReplay(1)
-        );
+        return observable.pipe(WT_RX.shareReplay());
     }
     static observeGameVar(update$, gameVar, units, distinct = true) {
         let observable = update$;
@@ -116,9 +119,7 @@ class WT_RX {
         if (distinct)
             observable = observable.pipe(rxjs.operators.distinctUntilChanged())
 
-        return observable.pipe(
-            rxjs.operators.shareReplay(1)
-        );
+        return observable.pipe(WT_RX.shareReplay());
     }
     static distinctUntilSignificantChange(delta) {
         return rxjs.pipe(
@@ -176,5 +177,17 @@ class WT_RX {
     }
     static setValue(element) {
         return v => element.value = v;
+    }
+    /**
+     * Update at a specific frequency with an offset
+     * @param {rxjs.Observable} frame$ 
+     * @param {Number} offset Offset from start of each boundary (prevents many overlapping updates)
+     * @param {Number} frequency Seconds between updates
+     */
+    static frameUpdate(frame$, offset = 0, frequency = 1) {
+        return frame$.pipe(WT_RX.distinctMap(v => Math.floor(v / frequency + offset)))
+    }
+    static toggleSwitchMap(trueObservable, falseObservable) {
+        return rxjs.operators.switchMap(b => b ? trueObservable : falseObservable)
     }
 }

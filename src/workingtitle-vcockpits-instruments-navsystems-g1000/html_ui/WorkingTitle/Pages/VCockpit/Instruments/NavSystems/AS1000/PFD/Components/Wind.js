@@ -14,22 +14,22 @@ class WT_PFD_Wind_Model {
                 return mode;
             }),
             rxjs.operators.distinctUntilChanged(),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         )
 
         const directionSpeed$ = rxjs.combineLatest(anemometer.relativeDirection, anemometer.speed).pipe(
             rxjs.operators.sample(update$),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
 
         this.xSpeed = directionSpeed$.pipe(
             rxjs.operators.map(([relativeDirection, speed]) => speed * Math.sin(relativeDirection / 180 * Math.PI)),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         )
 
         this.ySpeed = directionSpeed$.pipe(
             rxjs.operators.map(([relativeDirection, speed]) => speed * Math.cos(relativeDirection / 180 * Math.PI)),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         )
 
         this.direction = anemometer.relativeDirection;

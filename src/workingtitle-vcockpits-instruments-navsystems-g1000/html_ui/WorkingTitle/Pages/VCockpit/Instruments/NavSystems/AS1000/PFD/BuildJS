@@ -1,6 +1,10 @@
+Components/AirspeedIndicator.js
 Components/AlertKey.js
 Components/Altimeter.js
 Components/Annunciations.js
+Components/AttitudeIndicator.js
+Components/HSIModel.js
+Components/HSIndicator.js
 Components/InsetMap.js
 Components/LocalTime.js
 Components/Minimums.js

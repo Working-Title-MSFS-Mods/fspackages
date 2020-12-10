@@ -33,7 +33,7 @@ class WT_Nearest_Waypoints_Repository {
         );
 
         const lowResCoordinates$ = planeState.getLowResCoordinates(0.5)
-            .pipe(rxjs.operators.shareReplay(1));
+            .pipe(WT_RX.shareReplay());
 
         const airportFilter$ = rxjs.combineLatest(
             settings.observe("nearest_runway_surface"),

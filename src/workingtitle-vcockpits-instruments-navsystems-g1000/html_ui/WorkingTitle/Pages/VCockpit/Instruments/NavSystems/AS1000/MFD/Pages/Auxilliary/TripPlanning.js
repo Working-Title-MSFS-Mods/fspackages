@@ -380,7 +380,7 @@ class WT_Trip_Planning_View extends WT_HTML_View {
         // Fuel stats / Other stats
         const throttledRender$ = this.render$.pipe(
             rxjs.operators.throttleTime(100),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
         const updateElement = (element, data, map) => {
             return throttledRender$.pipe(

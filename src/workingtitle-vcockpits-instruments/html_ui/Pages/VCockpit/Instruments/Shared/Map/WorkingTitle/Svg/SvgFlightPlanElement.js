@@ -121,8 +121,6 @@ class SvgFlightPlanElement extends SvgMapElement {
                     }
                     wpPoints.push(waypoint.infos.coordinates.toLatLong());
                     for (let j = 0; j < wpPoints.length; j++) {
-                        lastLat = NaN;
-                        lastLong = NaN;
                         this.latLong = wpPoints[j];
                         if (departureRunwayCase && i === 0) {
                             this.latLong.lat = departureRunwayCase.beginningCoordinates.lat;

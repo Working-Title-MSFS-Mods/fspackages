@@ -26,13 +26,13 @@ class WT_Minimums {
         this.value = throttledUpdate$.pipe(
             rxjs.operators.map(() => SimVar.GetSimVarValue("L:AS3000_MinimalsValue", "number")),
             rxjs.operators.distinctUntilChanged(),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
 
         this.mode = throttledUpdate$.pipe(
             rxjs.operators.map(() => SimVar.GetSimVarValue("L:AS3000_MinimalsMode", "number")),
             rxjs.operators.distinctUntilChanged(),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
         this.source = this.mode.pipe(
             rxjs.operators.map(mode => {
@@ -91,7 +91,7 @@ class WT_Minimums {
                 }
             }),
             rxjs.operators.distinctUntilChanged(),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         )
     }
     setModes(modes) {

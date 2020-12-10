@@ -157,7 +157,7 @@ class WT_Airport_Information_View extends WT_HTML_View {
 
         const info$ = this.model.waypoint.observable.pipe(
             rxjs.operators.map(airport => airport ? airport.infos : null),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
         const airportData$ = this.model.airportData;
 

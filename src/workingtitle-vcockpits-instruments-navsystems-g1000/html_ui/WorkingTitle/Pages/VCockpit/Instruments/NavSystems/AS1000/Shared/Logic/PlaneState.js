@@ -15,7 +15,7 @@ class WT_Plane_State {
             this.latitude, this.longitude, this.indicatedAltitude,
             (lat, long, alt) => new LatLongAlt(lat, long, alt)
         ).pipe(
-            rxjs.operators.shareReplay(1),
+            WT_RX.shareReplay(),
         );
 
         this.groundSpeed = WT_RX.observeSimVar(update$, "GPS GROUND SPEED", "kilometers per hour");
@@ -33,13 +33,13 @@ class WT_Plane_State {
         this.onGround = this.groundSpeed.pipe(
             rxjs.operators.map(speed => speed < 90),
             rxjs.operators.distinctUntilChanged(),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         )
 
         this.inAir = this.groundSpeed.pipe(
             rxjs.operators.map(speed => speed > 90),
             rxjs.operators.distinctUntilChanged(),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         )
     }
     getLowResCoordinates(resolution) {

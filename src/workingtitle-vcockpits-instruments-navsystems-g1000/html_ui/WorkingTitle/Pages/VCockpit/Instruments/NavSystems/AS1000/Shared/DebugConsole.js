@@ -45,7 +45,7 @@ class WT_Toggleable_Subject {
             }, initial),
             rxjs.operators.startWith(initial),
             rxjs.operators.distinctUntilChanged(),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         )
     }
     subscribe() {
@@ -103,7 +103,7 @@ class WT_Debug_Console {
         const messages$ = this.clearMessages.pipe(rxjs.operators.switchMapTo(messageStream$));
         const filter$ = rxjs.combineLatest(this.types.notices.observable, this.types.warnings.observable, this.types.errors.observable).pipe(
             rxjs.operators.map(([notices, warnings, errors]) => ({ notices: notices, warnings: warnings, errors: errors })),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
         this.filteredMessages = rxjs.combineLatest(messages$, filter$).pipe(
             rxjs.operators.map(([messages, filter]) => messages.filter(message => {
@@ -113,7 +113,7 @@ class WT_Debug_Console {
                     case "error": return filter.errors;
                 }
             })),
-            rxjs.operators.shareReplay(1),
+            WT_RX.shareReplay(),
         )
         this.bindConsole();
 

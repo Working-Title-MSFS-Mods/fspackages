@@ -9,7 +9,7 @@ class WT_Plane_Statistics {
         const resetOdometer$ = this.resetOdometer$.pipe(
             rxjs.operators.startWith(WTDataStore.get("odometer", 0)),
             rxjs.operators.tap(odometer => WTDataStore.set("odometer", odometer)),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
 
         const movement$ = planeState.getLowResCoordinates(0.02).pipe(
@@ -22,7 +22,7 @@ class WT_Plane_Statistics {
             rxjs.operators.map(speed => speed > WT_Plane_Statistics.GROUND_SPEED_MINIMUM),
             rxjs.operators.distinctUntilChanged(),
             rxjs.operators.debounceTime(1000),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         )
 
         const tripOdometer$ = movement$.pipe(
@@ -32,19 +32,19 @@ class WT_Plane_Statistics {
 
         this.tripOdometer = inAir$.pipe(
             rxjs.operators.switchMap(inAir => inAir ? tripOdometer$ : rxjs.empty()),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
 
         this.odometer = resetOdometer$.pipe(
             rxjs.operators.switchMap(startValue => movement$.pipe(
                 rxjs.operators.scan((previous, current) => previous + current, startValue),
             )),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
 
         this.maximumGroundSpeed = planeState.groundSpeed.pipe(
             rxjs.operators.scan((previous, current) => Math.max(previous, current), 0/*WTDataStore.get("max_ground_speed", 0)*/),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
 
         const totalTime$ = clock.getTimer();
@@ -57,7 +57,7 @@ class WT_Plane_Statistics {
         this.averageGroundSpeed = inAir$.pipe(
             rxjs.operators.switchMap(inAir => inAir ? distanceTime$ : rxjs.empty()),
             rxjs.operators.map(([distance, time]) => distance / time),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
 
         this.averageGroundSpeed.subscribe();
@@ -74,14 +74,14 @@ class WT_Plane_Statistics {
         this.inAirTimer = inAir$.pipe(
             rxjs.operators.switchMap(inAir => inAir ? totalTime$ : rxjs.empty()),
             rxjs.operators.startWith(null),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
         this.inAirTimer.subscribe();
 
         this.powerOnTimer = planeState.electricity.observable.pipe(
             rxjs.operators.switchMap(on => on ? totalTime$ : rxjs.empty()),
             rxjs.operators.startWith(null),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
         this.powerOnTimer.subscribe();
 
@@ -90,7 +90,7 @@ class WT_Plane_Statistics {
                 rxjs.operators.first()
             ) : rxjs.empty()),
             rxjs.operators.startWith(null),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
         this.inAirDepartureTime.subscribe();
 
@@ -99,7 +99,7 @@ class WT_Plane_Statistics {
                 rxjs.operators.first()
             ) : rxjs.empty()),
             rxjs.operators.startWith(null),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
         this.powerOnDepartureTime.subscribe();
     }

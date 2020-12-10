@@ -3,20 +3,19 @@ class WT_Barometer {
         this.altUnit = new rxjs.BehaviorSubject(WTDataStore.get(`BarometerUnit`, WT_Barometer.IN_MG));
         this.altimeterIndex = 1;
 
-        this.pressure = rxjs.combineLatest(
-            this.altUnit,
-            update$,
-            unit => {
+        this.inMg$ = WT_RX.observeSimVar(update$, `KOHLSMAN SETTING HG:${this.altimeterIndex}`, "inches of mercury");
+        this.hpa$ = WT_RX.observeSimVar(update$, `KOHLSMAN SETTING HG:${this.altimeterIndex}`, "Millibars");
+        this.pressure = this.altUnit.pipe(
+            rxjs.operators.switchMap(unit => {
                 switch (unit) {
                     case WT_Barometer.IN_MG:
-                        return parseFloat(SimVar.GetSimVarValue(`KOHLSMAN SETTING HG:${this.altimeterIndex}`, "inches of mercury"))
+                        return this.inMg$;
                     case WT_Barometer.HPA:
-                        return parseFloat(SimVar.GetSimVarValue(`KOHLSMAN SETTING MB:${this.altimeterIndex}`, "Millibars"))
+                        return this.hpa$;
                 }
-            }
-        ).pipe(
+            }),
             rxjs.operators.distinctUntilChanged(),
-            rxjs.operators.shareReplay(1),
+            WT_RX.shareReplay(),
         );
     }
     setInMG() {

@@ -41,7 +41,7 @@ class WT_Release_Repository {
             )
         }).pipe(
             rxjs.operators.tap(releases => console.log(`Loaded ${releases.length} releases for ${project}`)),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
     }
     getRelease(tag) {

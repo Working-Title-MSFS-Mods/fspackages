@@ -74,7 +74,7 @@ class WT_Nearest_Airports {
                     resolve(airports);
                 });
             }),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         )
     }
     setParams(count, distance) {

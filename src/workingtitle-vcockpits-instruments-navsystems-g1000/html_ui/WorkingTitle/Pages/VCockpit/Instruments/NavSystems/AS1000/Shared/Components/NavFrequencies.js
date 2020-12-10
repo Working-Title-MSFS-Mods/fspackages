@@ -8,7 +8,7 @@ class WT_Nav_Frequencies_Model extends WT_Radio_Frequencies_Model {
             forceUpdate$.pipe(rxjs.operators.delay(16)),
             update$.pipe(rxjs.operators.throttleTime(1000))
         ).pipe(
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
 
         const radios = [];

@@ -33,7 +33,7 @@ class WT_Radio_Altimeter {
                     return acceptable$.pipe(
                         rxjs.operators.switchMap(available => available ? height$ : rxjs.of(1000)),
                         rxjs.operators.distinctUntilChanged(),
-                        rxjs.operators.shareReplay(1)
+                        WT_RX.shareReplay()
                     )
                 } else {
                     return rxjs.of(null);

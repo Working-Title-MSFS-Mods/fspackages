@@ -76,6 +76,13 @@ class WT_Shared_Dependencies {
             });
             return update$;
         });
+        d.register("frame$", d => {
+            return d.update$.pipe(
+                rxjs.operators.scan((total, dt) => (total + dt) % 100000, 0),
+                rxjs.operators.map(v => v / 1000),
+                WT_RX.shareReplay()
+            );
+        });
 
         // Data / Events
         d.register("sharedData", d => new WT_Shared_Instrument_Data());
@@ -99,12 +106,12 @@ class WT_Shared_Dependencies {
         d.register("planeStatistics", d => new WT_Plane_Statistics(d.update$, d.planeState, d.clock));
 
         // Instrumentation
-        d.register("anemometer", d => new WT_Anemometer(d.update$, d.planeState));
+        d.register("anemometer", d => new WT_Anemometer(d.frame$, d.planeState));
         d.register("autoPilot", d => new WT_Auto_Pilot(d.update$));
         d.register("electricityAvailable", d => new Subject(navSystem.isElectricityAvailable()));
         d.register("fuelUsed", d => new WT_Fuel_Used(d.planeState, ["FUEL LEFT QUANTITY", "FUEL RIGHT QUANTITY"]));
         d.register("radioAltimeter", d => new WT_Radio_Altimeter(d.planeConfig, d.update$));
-        d.register("thermometer", d => new WT_Thermometer(d.update$));
+        d.register("thermometer", d => new WT_Thermometer(d.frame$));
         d.register("brightnessSettings", d => new WT_Brightness_Settings(d.clock));
         d.register("clock", d => new WT_Clock(d.update$, d.planeState));
         d.register("barometricPressure", d => new WT_Barometer(d.update$));

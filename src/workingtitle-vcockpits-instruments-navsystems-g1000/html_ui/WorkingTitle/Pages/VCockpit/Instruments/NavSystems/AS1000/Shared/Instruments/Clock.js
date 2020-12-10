@@ -23,7 +23,7 @@ class WT_Clock {
             WT_RX.observeSimVar(throttledUpdate$, "E:ZULU YEAR", "number"),
         ).pipe(
             rxjs.operators.map(([day, month, year]) => new Date(year, month - 1, day)),
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
         this.realDate = throttledUpdate$.pipe(
             rxjs.operators.map(dt => new Date()),
@@ -32,17 +32,17 @@ class WT_Clock {
             })
         );
 
-        const lowResCoordinates$ = planeState.getLowResCoordinates(WT_Clock.SUN_EVENT_RESOLUTION).pipe(rxjs.operators.shareReplay(1));
+        const lowResCoordinates$ = planeState.getLowResCoordinates(WT_Clock.SUN_EVENT_RESOLUTION).pipe(WT_RX.shareReplay());
         this.sunrise = rxjs.combineLatest(
             lowResCoordinates$,
             this.date,
             (coordinates, date) => SunriseSunsetJS.getSunrise(coordinates.lat, coordinates.long, date),
-        ).pipe(rxjs.operators.shareReplay(1));
+        ).pipe(WT_RX.shareReplay());
         this.sunset = rxjs.combineLatest(
             lowResCoordinates$,
             this.date,
             (coordinates, date) => SunriseSunsetJS.getSunset(coordinates.lat, coordinates.long, date)
-        ).pipe(rxjs.operators.shareReplay(1));
+        ).pipe(WT_RX.shareReplay());
     }
     getTimer(frequency = 1000) {
         return this.absoluteTime.pipe(

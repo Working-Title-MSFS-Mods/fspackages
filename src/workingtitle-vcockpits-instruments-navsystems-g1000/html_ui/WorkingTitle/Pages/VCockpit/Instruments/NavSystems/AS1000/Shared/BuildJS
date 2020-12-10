@@ -28,6 +28,7 @@ Data/Procedures/Waypoints.js
 Data/AirportDatabase.js
 Data/Brightness.js
 Data/Changelog.js
+Data/DataStore.js
 Data/FuelUsed.js
 Data/PlaneConfig.js
 Data/Minimums.js

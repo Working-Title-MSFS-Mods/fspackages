@@ -49,7 +49,7 @@ class WT_Metar_Repository {
         this.data$ = update$.pipe(
             rxjs.operators.throttleTime(WT_Metar_Repository.REFRESH_TIME),
             rxjs.operators.switchMapTo(metar$),
-            rxjs.operators.shareReplay(1),
+            WT_RX.shareReplay(),
         )
     }
     observe(ident) {

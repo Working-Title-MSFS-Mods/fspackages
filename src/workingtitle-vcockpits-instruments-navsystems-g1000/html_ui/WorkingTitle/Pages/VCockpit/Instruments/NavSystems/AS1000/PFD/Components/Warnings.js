@@ -5,7 +5,7 @@ class WT_Warnings_Model {
      * @param {WT_Sound} sound
      * @param {WT_Plane_State} planeState
      */
-    constructor(update$, gps, planeConfig, sound, planeState) {
+    constructor(frame$, gps, planeConfig, sound, planeState) {
         this.gps = gps;
         this.sound = sound;
 
@@ -90,9 +90,7 @@ class WT_Warnings_Model {
             SimVar.SetSimVarValue("L:AS1000_Warnings_Master_Set", "number", 0);
         });
 
-        update$.pipe(
-            rxjs.operators.throttleTime(1000),
-        ).subscribe(dt => {
+        WT_RX.frameUpdate(frame$, 0.1).subscribe(dt => {
             const masterSet = SimVar.GetSimVarValue("L:AS1000_Warnings_Master_Set", "number");
             if (masterSet == 0) {
                 SimVar.SetSimVarValue("L:AS1000_Warnings_Master_Set", "number", this.UID);

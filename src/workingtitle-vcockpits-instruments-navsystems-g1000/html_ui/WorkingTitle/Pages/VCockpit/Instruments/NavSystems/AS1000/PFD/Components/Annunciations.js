@@ -4,7 +4,7 @@ class WT_Annunciations_Model {
      * @param {WT_Sound} sound 
      * @param {WT_Plane_State} planeState
      */
-    constructor(update$, config, sound, planeState) {
+    constructor(frame$, config, sound, planeState) {
         this.sound = sound;
         this.planeState = planeState;
         this.isPlayingSound = {};
@@ -22,9 +22,7 @@ class WT_Annunciations_Model {
             SimVar.SetSimVarValue("L:Generic_Master_Caution_Active", "Bool", 0);
         });
 
-        update$.pipe(
-            rxjs.operators.throttleTime(1000),
-        ).subscribe(dt => {
+        WT_RX.frameUpdate(frame$, 0.2).subscribe(dt => {
             let anyUpdated = false;
             let alertLevel = 0;
             let hasUnacknowledged = false;

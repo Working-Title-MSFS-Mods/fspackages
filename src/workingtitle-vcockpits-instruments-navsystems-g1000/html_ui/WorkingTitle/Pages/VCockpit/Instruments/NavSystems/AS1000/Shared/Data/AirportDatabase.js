@@ -78,7 +78,7 @@ class WT_Airport_Database {
                 resolve(airports);
             }))
         }).pipe(
-            rxjs.operators.shareReplay(1)
+            WT_RX.shareReplay()
         );
     }
     get(ident) {
