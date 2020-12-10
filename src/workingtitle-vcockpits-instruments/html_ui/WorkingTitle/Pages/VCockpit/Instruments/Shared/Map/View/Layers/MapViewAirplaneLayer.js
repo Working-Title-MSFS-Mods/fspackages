@@ -1,31 +1,27 @@
-class WT_MapViewAirplaneLayer extends WT_MapViewMultiLayer {
+class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
     constructor(className = WT_MapViewAirplaneLayer.CLASS_DEFAULT, configName = WT_MapViewAirplaneLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
-        this._airplaneIcon = new WT_MapViewCanvas(false, false);
-        this.addSubLayer(this._airplaneIcon);
-
         this._optsManager = new WT_OptionsManager(this, WT_MapViewAirplaneLayer.OPTIONS_DEF);
-
-        this._iconImageLoaded = false;
     }
 
-    _resizeCanvas() {
-        this._airplaneIcon.display.canvas.width = this.iconSizePx;
-        this._airplaneIcon.display.canvas.height = this.iconSizePx;
-        this._airplaneIcon.display.canvas.style.left = `${-this.iconSizePx / 2}px`;
-        this._airplaneIcon.display.canvas.style.top = `${-this.iconSizePx / 2}px`;
-        this._airplaneIcon.display.canvas.style.width = `${this.iconSizePx}px`;
-        this._airplaneIcon.display.canvas.style.height = `${this.iconSizePx}px`;
+    _createHTMLElement() {
+        this._icon = document.createElementNS(Avionics.SVG.NS, "svg");
+        this._icon.setAttribute("viewBox", `0 0 64 64`);
+        this._icon.style.position = "absolute";
+        this._icon.style.overflow = "hidden";
+        this._image = document.createElementNS(Avionics.SVG.NS, "image");
+        this._image.setAttribute("width", "100%");
+        this._image.setAttribute("height", "100%");
+        this._icon.appendChild(this._image);
+        return this._icon;
     }
 
-    _redrawIcon() {
-        this._airplaneIcon.display.context.drawImage(this._iconImage, 0, 0, this.iconSizePx, this.iconSizePx);
-    }
-
-    _drawIconToCanvas() {
-        this._redrawIcon();
-        this._iconImageLoaded = true;
+    _resizeIcon(size) {
+        this._icon.style.width = `${size}px`;
+        this._icon.style.height = `${size}px`;
+        this._icon.style.left = `${-size / 2}px`;
+        this._icon.style.top = `${-size / 2}px`;
     }
 
     /**
@@ -34,26 +30,18 @@ class WT_MapViewAirplaneLayer extends WT_MapViewMultiLayer {
     onConfigLoaded(state) {
         this._setPropertyFromConfig("iconSize");
 
-        this.iconSizePx = this.iconSize * state.dpiScale;
-        this._resizeCanvas();
-
-        this._iconImage = document.createElement("img");
-        this._iconImage.onload = this._drawIconToCanvas.bind(this);
-        this._iconImage.src = this.config.iconPath;
+        this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", this.config.imagePath);
     }
 
     /**
      * @param {WT_MapViewState} state
      */
     onProjectionViewChanged(state) {
-        let newIconSizePx = this.iconSize * state.dpiScale;
-        if (newIconSizePx !== this.iconSizePx) {
-            this.iconSizePx = newIconSizePx;
-            this._resizeCanvas();
-            if (this._iconImageLoaded) {
-                this._redrawIcon();
-            }
-        }
+        this._resizeIcon(this.iconSize * state.dpiScale);
+    }
+
+    onAttached(state) {
+        this.onProjectionViewChanged(state);
     }
 
     /**
@@ -64,12 +52,11 @@ class WT_MapViewAirplaneLayer extends WT_MapViewMultiLayer {
             return;
         }
         let iconRotation = state.model.airplane.headingTrue + state.projection.rotation;
-        this._airplaneIcon.display.canvas.style.transform = `translate(${state.viewPlane.x}px, ${state.viewPlane.y}px) rotate(${iconRotation}deg)`;
+        this._icon.style.transform = `translate(${state.viewPlane.x}px, ${state.viewPlane.y}px) rotate(${iconRotation}deg)`;
     }
 }
 WT_MapViewAirplaneLayer.CLASS_DEFAULT = "airplaneLayer";
 WT_MapViewAirplaneLayer.CONFIG_NAME_DEFAULT = "airplane";
 WT_MapViewAirplaneLayer.OPTIONS_DEF = {
-    iconSize: {default: 60, auto: true},
-    iconSizePx: {default: 60, auto: true}
+    iconSize: {default: 200, auto: true}
 };
