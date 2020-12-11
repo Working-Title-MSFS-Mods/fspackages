@@ -622,8 +622,15 @@ class MapInstrument extends ISvgMapRootElement {
                 var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor * this.overdrawFactor; // MOD: Need to expand map range to compensate for overdraw
                 if (!this.isDisplayingWeather())
                     this.updateBingMapSize();
-                if (this.navMap.lastCenterCoordinates)
-                    this.bingMap.setParams({ lla: this.navMap.lastCenterCoordinates, radius: bingRadius });
+                if (this.navMap.lastCenterCoordinates) {
+                    const pixelSize = (this.navMap.topRightCoordinates.lat - this.navMap.bottomLeftCoordinates.lat) / 2048;
+                    const lla = new LatLongAlt(
+                        Math.round(this.navMap.lastCenterCoordinates.lat / pixelSize) * pixelSize,
+                        Math.round(this.navMap.lastCenterCoordinates.long / pixelSize) * pixelSize,
+                        0
+                    );
+                    this.bingMap.setParams({ lla: lla, radius: bingRadius });
+                }
             }
             if (this.navMap.centerCoordinates) {
                 let centerCoordinates = this.navMap.centerCoordinates;

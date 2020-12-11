@@ -498,6 +498,10 @@ class SvgMap {
         return xy;
     }
 
+    roundCoordinate(coordinate) {
+        return Math.round(coordinate * 2) / 2;
+    }
+
     latLongToXYToRef(lat, long, ref) {
         let xNorth = (long - this.centerCoordinates.long) / this._angularWidthNorth * 1000;
         let xSouth = (long - this.centerCoordinates.long) / this._angularWidthSouth * 1000;
@@ -505,8 +509,8 @@ class SvgMap {
         let y = -deltaLat * 1000;
         deltaLat += 0.5;
         let x = xNorth * deltaLat + xSouth * (1 - deltaLat);
-        ref.x = x * this.cosRotation - y * this.sinRotation + 500;
-        ref.y = x * this.sinRotation + y * this.cosRotation + 500;
+        ref.x = this.roundCoordinate(x * this.cosRotation - y * this.sinRotation + 500);
+        ref.y = this.roundCoordinate(x * this.sinRotation + y * this.cosRotation + 500);
     }
 
     coordinatesToXYToRef(coordinates, ref) {
@@ -516,8 +520,8 @@ class SvgMap {
         let y = -deltaLat * 1000;
         deltaLat += 0.5;
         let x = xNorth * deltaLat + xSouth * (1 - deltaLat);
-        ref.x = x * this.cosRotation - y * this.sinRotation + 500;
-        ref.y = x * this.sinRotation + y * this.cosRotation + 500;
+        ref.x = this.roundCoordinate(x * this.cosRotation - y * this.sinRotation + 500);
+        ref.y = this.roundCoordinate(x * this.sinRotation + y * this.cosRotation + 500);
     }
 
     latLongToXYToRefForceCenter(lat, long, ref, forcedCenterCoordinates) {
@@ -527,8 +531,8 @@ class SvgMap {
         let y = -deltaLat * 1000;
         deltaLat += 0.5;
         let x = xNorth * deltaLat + xSouth * (1 - deltaLat);
-        ref.x = x * this.cosRotation - y * this.sinRotation + 500;
-        ref.y = x * this.sinRotation + y * this.cosRotation + 500;
+        ref.x = this.roundCoordinate(x * this.cosRotation - y * this.sinRotation + 500);
+        ref.y = this.roundCoordinate(x * this.sinRotation + y * this.cosRotation + 500);
     }
 
     coordinatesToXYToRefForceCenter(coordinates, ref, center) {
@@ -544,8 +548,8 @@ class SvgMap {
         let x = xNorth * deltaLat + xSouth * (1 - deltaLat);
         let sinRotation = Math.sin(rotation * Avionics.Utils.DEG2RAD);
         let cosRotation = Math.cos(rotation * Avionics.Utils.DEG2RAD);
-        ref.x = x * cosRotation - y * sinRotation + 500;
-        ref.y = x * sinRotation + y * cosRotation + 500;
+        ref.x = this.roundCoordinate(x * cosRotation - y * sinRotation + 500);
+        ref.y = this.roundCoordinate(x * sinRotation + y * cosRotation + 500);
     }
 
     XYToCoordinates(xy) {
@@ -555,8 +559,8 @@ class SvgMap {
     }
 
     bearingDistanceToXY(bearing, distance) {
-        let x = 1000 * (this.planeXY.x + Math.sin(bearing * Avionics.Utils.DEG2RAD) * distance / this.NMWidth);
-        let y = 1000 * (this.planeXY.y - Math.cos(bearing * Avionics.Utils.DEG2RAD) * distance / this.NMWidth);
+        let x = this.roundCoordinate(1000 * (this.planeXY.x + Math.sin(bearing * Avionics.Utils.DEG2RAD) * distance / this.NMWidth));
+        let y = this.roundCoordinate(1000 * (this.planeXY.y - Math.cos(bearing * Avionics.Utils.DEG2RAD) * distance / this.NMWidth));
         return { x: x, y: y };
     }
 

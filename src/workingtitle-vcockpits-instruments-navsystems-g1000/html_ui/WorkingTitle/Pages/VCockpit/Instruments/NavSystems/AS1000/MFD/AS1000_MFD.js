@@ -26,11 +26,11 @@ class AS1000_MFD extends BaseAS1000 {
         //d.register("mainMap", d => document.querySelector("#MapInstrument"));
         d.register("mainMap", d => {
             const map = document.querySelector("#MapInstrument");
-            map.rangeRingElement = new SvgRangeRingElement();
-            map.rangeCompassElement = new SvgRangeCompassElement();
+            //map.rangeRingElement = new SvgRangeRingElement();
+            //map.rangeCompassElement = new SvgRangeCompassElement();
             map.trackVectorElement = new SvgTrackVectorElement();
             map.fuelRingElement = new SvgFuelRingElement();
-            map.altitudeInterceptElement = new SvgAltitudeInterceptElement();
+            //map.altitudeInterceptElement = new SvgAltitudeInterceptElement();
             const feet = 1 / 6076;
             map.zoomRanges = [500 * feet, 800 * feet, 1000 * feet, 1500 * feet, 2000 * feet, 3000 * feet, 5000 * feet, 1, 1.5, 2, 3, 5, 8, 10, 15, 20, 30, 50, 80, 100, 150, 200, 300, 500, 800, 1000];
             return map;

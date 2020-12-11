@@ -23,11 +23,17 @@ class WT_Radio_Altimeter {
             rxjs.operators.distinctUntilChanged()
         )
 
-        this.available = rxjs.combineLatest(update$, acceptable$).pipe(
-            rxjs.operators.map(([dt, acceptable]) => acceptable)
+        this.available = this.enabled.pipe(
+            rxjs.operators.switchMap(enabled => {
+                if (enabled) {
+                    return acceptable$;
+                } else {
+                    return rxjs.of(false);
+                }
+            })
         );
 
-        this.altitude = this.enabled.pipe(
+        this.altitude = this.available.pipe(
             rxjs.operators.switchMap(enabled => {
                 if (enabled) {
                     return acceptable$.pipe(
