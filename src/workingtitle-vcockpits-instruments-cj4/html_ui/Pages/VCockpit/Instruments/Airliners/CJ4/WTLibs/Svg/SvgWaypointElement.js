@@ -114,8 +114,14 @@ class SvgWaypointElement extends SvgMapElement {
         this._image.setAttribute("width", "100%");
         this._image.setAttribute("height", "100%");
         if (!isActiveWaypoint) {
-            // console.log(this.imageFileName());
-            this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg"));
+            const isInFpln = FlightPlanManager.DEBUG_INSTANCE.getWaypoints().indexOf(x => x.ident == this.source.ident) === -1;
+            this._image.setAttribute("isInFpln", isInFpln.toString());
+            if (!isInFpln) {
+                console.log(this.imageFileName());
+                this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg"));
+            } else {
+                this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_FLIGHTPLAN.svg");
+            }
         }
         else {
             this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_ACTIVE.svg");
@@ -152,7 +158,11 @@ class SvgWaypointElement extends SvgMapElement {
         if (isActiveWaypoint != this._lastIsActiveWaypoint) {
             if (this._image) {
                 if (!isActiveWaypoint) {
-                    this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg"));
+                    if ((this._image.getAttribute("isInFpln") !== "true")) {
+                        this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg"));
+                    } else {
+                        this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_FLIGHTPLAN.svg");
+                    }
                 }
                 else {
                     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_ACTIVE.svg");
