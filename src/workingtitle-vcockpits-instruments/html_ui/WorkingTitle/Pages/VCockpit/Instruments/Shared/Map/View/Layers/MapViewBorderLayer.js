@@ -369,7 +369,7 @@ class WT_MapViewBorderLabel extends WT_MapViewSimpleTextLabel {
     }
 
     update(state) {
-        state.projection.projectLatLong(this._geoPosition, this._position);
+        state.projection.project(this._geoPosition, this._position);
 
         super.update(state);
     }

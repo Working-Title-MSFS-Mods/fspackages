@@ -148,7 +148,7 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         let distance = WT_Unit.NMILE.createNumber(gs.asUnit(WT_Unit.KNOT) * time);
         let angle = this.facingAngleGetter.getFacingAngle(state);
         let arcTarget = state.projection.offsetByViewAngle(state.model.airplane.position, distance, angle);
-        let viewArcTarget = state.projection.projectLatLong(arcTarget);
+        let viewArcTarget = state.projection.project(arcTarget);
         let radius = viewArcTarget.subtract(state.viewPlane).length;
         if (state.projection.range.equals(this._lastRange)) {
             radius = this._smoothRadius(radius, this._calculateSmoothingFactor(state));
