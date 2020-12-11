@@ -11,6 +11,8 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
 
         this._clipExtent = [[0, 0], [0, 0]];
         this._translate = [0, 0];
+
+        this._tempVector = new WT_GVector2(0, 0);
     }
 
     _createBuffer() {
@@ -125,7 +127,7 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
 
     _syncDisplayFromBuffer() {
         this.display.reference.range.set(this.buffer.reference.range);
-        this.display.reference.center = this.buffer.reference.center;
+        this.display.reference._center.set(this.buffer.reference.center);
         this.display.reference.scale = this.buffer.reference.scale;
         this.display.reference.rotation = this.buffer.reference.rotation;
 
@@ -135,8 +137,8 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     }
 
     _updateReference(state, reference) {
-        reference.range.set(state.projection.range);
-        reference.center = state.projection.center;
+        reference._range.set(state.projection.range);
+        reference._center.set(state.projection.center);
         reference.scale = state.projection.scale;
         reference.rotation = state.projection.rotation;
     }
@@ -150,14 +152,14 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     _updateTransform(state, reference, transform) {
         transform.scale = state.projection.scale / reference.scale;
         transform.rotation = state.projection.rotation - reference.rotation;
-        transform.offset = state.projection.project(reference.center, transform.offset).subtract(state.projection.viewCenter);
+        state.projection.project(reference.center, transform._offset).subtract(state.projection.viewCenter);
         transform.margin = this.margin * transform.scale;
     }
 
     _transformDisplay() {
         let transform = this.display.transform;
-        transform.offset.scale(1 / transform.scale, true);
-        this.display.canvas.style.transform = `scale(${transform.scale}) translate(${transform.offset.x}px, ${transform.offset.y}px) rotate(${transform.rotation}deg)`;
+        let offset = this._tempVector.set(transform.offset).scale(1 / transform.scale);
+        this.display.canvas.style.transform = `scale(${transform.scale}) translate(${offset.x}px, ${offset.y}px) rotate(${transform.rotation}deg)`;
     }
 
     /**
@@ -219,15 +221,18 @@ class WT_MapViewPersistenCanvasDrawable extends WT_MapViewCanvasDrawable {
         super();
 
         this._reference = {
-            range: new WT_NumberUnit(-1, WT_Unit.NMILE),
-            center: new LatLong(0, 0),
+            _range: new WT_NumberUnit(-1, WT_Unit.NMILE),
+            get range() {return this._range.readonly()},
+            _center: new WT_GeoPoint(0, 0, 0),
+            get center() {return this._center.readonly()},
             scale: 150,
             rotation: 0,
         };
         this._transform = {
             scale: 1,
             rotation: 0,
-            offset: new WT_GVector2(0, 0),
+            _offset: new WT_GVector2(0, 0),
+            get offset() {return this._offset.readonly()},
             margin: 0
         };
         this._isInvalid = false;

@@ -86,7 +86,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         }
 
         let params = {
-            lla: target,
+            lla: new LatLong(target.lat, target.long),
             radius: range
         };
         this.bingMap.setParams(params);

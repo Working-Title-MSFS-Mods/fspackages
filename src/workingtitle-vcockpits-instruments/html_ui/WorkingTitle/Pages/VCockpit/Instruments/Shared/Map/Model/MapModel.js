@@ -9,12 +9,26 @@
  */
 class WT_MapModel {
     constructor() {
-        this._range = new WT_NumberUnit(0, WT_Unit.NMILE);
+        this._target = new WT_GeoPoint(0, 0, 0);
+        this._range = new WT_NumberUnit(5, WT_Unit.NMILE);
+
         this._optsManager = new WT_OptionsManager(this, WT_MapModel.OPTIONS_DEF);
 
         this.addModule(new WT_MapModelAirplaneModule());
         this.addModule(new WT_MapModelWeatherModule());
         this.addModule(new WT_MapModelAutopilotModule());
+    }
+
+    /**
+     * @property {WT_GeoPoint} target - the target point of the map.
+     * @type {WT_GeoPoint}
+     */
+    get target() {
+        return this._target.readonly();
+    }
+
+    set target(target) {
+        this._target.set(target);
     }
 
     /**
@@ -72,8 +86,8 @@ class WT_MapModel {
     }
 }
 WT_MapModel.OPTIONS_DEF = {
-    target: {default: new LatLong(0, 0), auto: true},
-    range: {default: new WT_NumberUnit(5, WT_Unit.NMILE), auto: false},
+    target: {},
+    range: {},
     rotation: {default: 0, auto: true}
 };
 
@@ -119,7 +133,9 @@ class WT_MapModelAirplaneModule extends WT_MapModelModule {
      * @type {LatLong}
      */
     get position() {
-        return new LatLong(SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude"), SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude"));
+        return new WT_GeoPoint(SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude"),
+                               SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude"),
+                               WT_Unit.FOOT.convert(SimVar.GetSimVarValue("PLANE ALTITUDE", "feet"), WT_Unit.GA_RADIAN));
     }
 
     /**
