@@ -16,6 +16,8 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
 
         this.addSubLayer(this._vectorLayer);
 
+        this._tempGeoPoint = new WT_GeoPoint(0, 0, 0);
+
         this._lastTime = 0;
         this._lastTurnSpeed = 0;
         this._lastDrawnBounds = {left: 0, top: 0, width: 0, height: 0};
@@ -212,7 +214,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         let lookahead = state.model.trackVector.lookahead.asUnit(WT_Unit.HOUR);
         let points = [
             planePos,
-            state.projection.offsetByBearing(planePos, new WT_NumberUnit(gs * lookahead, WT_Unit.NMILE), state.model.airplane.trackTrue)
+            state.projection.offsetByBearing(planePos, new WT_NumberUnit(gs * lookahead, WT_Unit.NMILE), state.model.airplane.trackTrue, this._tempGeoPoint)
         ];
         let geoJSON = this._buildGeoJSON(points);
 

@@ -12,6 +12,8 @@ class WT_MapProjection {
         this._d3Projection.center([0, 0]);
         this._d3Projection.translate([0, 0]);
 
+        this.__target = new WT_GeoPoint(0, 0, 0);
+        this._center = new WT_GeoPoint(0, 0, 0);
         this.__range = new WT_NumberUnit(1, WT_Unit.NMILE);
         this._viewResolution = new WT_NumberUnit(1, WT_Unit.NMILE);
         this.__viewTargetOffset = new WT_GVector2(0, 0);
@@ -24,6 +26,8 @@ class WT_MapProjection {
 
         this._currentRange = new WT_NumberUnit(0, WT_Unit.GA_RADIAN);
         this._tempVector = new WT_GVector2(0, 0);
+        this._tempGeoPoint1 = new WT_GeoPoint(0, 0, 0);
+        this._tempGeoPoint2 = new WT_GeoPoint(0, 0, 0);
         this._tempArray1 = [0, 0];
         this._tempArray2 = [0, 0];
 
@@ -115,24 +119,24 @@ class WT_MapProjection {
 
     /**
      * @readonly
-     * @property {LatLong} center - the location, in spherical coordinates (lat/long) that is projected onto the center of the viewing window.
-     * @type {LatLong}
+     * @property {WT_GeoPoint} center - the geographical point that is projected onto the center of the viewing window.
+     * @type {WT_GeoPoint}
      */
     get center() {
-        return this._center;
+        return this._center.readonly();
     }
 
     get _target() {
-        return this.__target;
+        return this.__target.readonly();
     }
 
     set _target(target) {
-        this.__target = target;
+        this.__target.set(target.lat, target.long, 0);
     }
 
     /**
-     * @property {LatLong} target - the target location, in spherical coordinates (lat/long), of this projection.
-     * @type {LatLong}
+     * @property {WT_GeoPoint} target - the target geographical point of this projection.
+     * @type {WT_GeoPoint}
      */
     get target() {
         return this._target;
@@ -269,7 +273,7 @@ class WT_MapProjection {
         }
         let center = this._d3Projection.invert(WT_MapProjection.xyViewToProjection(currentCenterXY, this._tempArray2));
         this._d3Projection.center(center);
-        this._center = WT_MapProjection.latLongProjectionToGame(center);
+        WT_MapProjection.latLongProjectionToGame(center, this._center);
     }
 
     /**
@@ -343,37 +347,38 @@ class WT_MapProjection {
      * @param {Number[]|{x:Number, y:Number}} point - the [x, y] pair or 2D vector, in pixel coordinates, to invert. The type of object
      *                                                passed to this argument determines the type of object returned by this method;
      *                                                [x, y] results in a [long, lat] pair and 2D vector object results in a LatLong object.
-     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. This argument is ignored if a 2D vector is passed
-     *                                 to the point argument. If this argument is not supplied, a new [long, lat] pair is created.
-     * @returns {Number[]|LatLong} a [long, lat] pair or lat/long object representing the location whose projection equals the inverted point.
+     * @param {Number[]|WT_GeoPoint} [reference] - a [long, lat] pair or WT_GeoPoint object in which to store the results. If this argument
+     *                                             is not supplied, a new object of the appropriate type is created.
+     * @returns {Number[]|WT_GeoPoint} a [long, lat] pair or geographic point representing the location whose projection equals the
+     *                                 inverted point.
      */
     invert(point, reference) {
         if (Array.isArray(point) && point.length >= 2) {
             return this._d3Projection.invert(point, reference);
         } else if (typeof point.x === "number" && typeof point.y === "number") {
             let inverse = this._d3Projection.invert(WT_MapProjection.xyViewToProjection(point, this._tempArray1), this._tempArray2);
-            return WT_MapProjection.latLongProjectionToGame(inverse);
+            return WT_MapProjection.latLongProjectionToGame(inverse, reference);
         } else {
             return undefined;
         }
     }
 
-    _pointToLatLongProjection(point, reference) {
+    _asGeoPoint(point, reference) {
         if (typeof point.lat === "number" && typeof point.long === "number") {
-            WT_MapProjection.latLongGameToProjection(point, reference);
+            reference.set(point.lat, point.long, 0);
         } else if (typeof point.x === "number" && typeof point.y === "number") {
-            this.invert(WT_MapProjection.xyViewToProjection(point, reference), reference);
+            this.invert(point, reference);
         } else {
             reference = undefined;
         }
         return reference;
     }
 
-    _pointToXYProjection(point, reference) {
+    _asVector2(point, reference) {
         if (typeof point.x === "number" && typeof point.y === "number") {
-            WT_MapProjection.xyViewToProjection(point, reference);
+            reference.set(point);
         } else if (typeof point.lat === "number" && typeof point.long === "number") {
-            this.project(WT_MapProjection.latLongGameToProjection(point, reference), reference);
+            this.project(point, reference);
         } else {
             reference = undefined;
         }
@@ -382,7 +387,7 @@ class WT_MapProjection {
 
     /**
      * Calculates the great-circle distance between two points on the Earth's surface. The points may be supplied as either lat/long
-     * coordinates or 2D vectors. If 2D vectors are supplied, they will be converted to lat/long coordinates by inverse projection.
+     * coordinates or 2D vectors. If 2D vectors are supplied, they will be converted to geographic points by inverse projection.
      * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point1 - the first point.
      * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point2 - the second point.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the results. If this argument is not supplied, a new
@@ -390,14 +395,14 @@ class WT_MapProjection {
      * @returns {WT_NumberUnit} the distance. Default unit is great-arc radians (1 great-arc radian = radius of the Earth).
      */
     distance(point1, point2, reference) {
-        point1 = this._pointToLatLongProjection(point1, this._tempArray1);
-        point2 = this._pointToLatLongProjection(point2, this._tempArray2);
+        point1 = this._asGeoPoint(point1, this._tempGeoPoint1);
+        point2 = this._asGeoPoint(point2, this._tempGeoPoint2);
 
         if (!point1 || !point2) {
             return undefined;
         }
 
-        let distance = d3.geoDistance(point1, point2);
+        let distance = point1.distance(point2);
         if (reference) {
             return reference.set(distance, WT_Unit.GA_RADIAN);
         } else {
@@ -407,28 +412,20 @@ class WT_MapProjection {
 
     /**
      * Calculates the initial bearing (forward azimuth) from an origin point to a destination point. The points may be supplied as either
-     * lat/long coordinates or 2D vectors. If 2D vectors are supplied, they will be converted to lat/long coordinates by inverse projection.
-     * @param {{lat:Number, long:Number}} origin - the origin point.
-     * @param {{lat:Number, long:Number}} destination - the destination point.
+     * lat/long coordinates or 2D vectors. If 2D vectors are supplied, they will be converted to geographic points by inverse projection.
+     * @param {{lat:Number, long:Number}|{x:Number, y:Number}} origin - the origin point.
+     * @param {{lat:Number, long:Number}|{x:Number, y:Number}} destination - the destination point.
      * @returns {Number} a value between 0 and 360, representing the initial bearing (forward azimuth) from origin to destination, in degrees.
      */
     bearing(origin, destination) {
-        origin = this._pointToLatLongProjection(origin, this._tempArray1);
-        destination = this._pointToLatLongProjection(destination, this._tempArray2);
+        origin = this._asGeoPoint(origin, this._tempGeoPoint1);
+        destination = this._asGeoPoint(destination, this._tempGeoPoint2);
 
         if (!origin || !destination) {
             return undefined;
         }
 
-        let lat1 = origin[1] * Avionics.Utils.DEG2RAD;
-        let lat2 = destination[1] * Avionics.Utils.DEG2RAD;
-        let long1 = origin[0] * Avionics.Utils.DEG2RAD;
-        let long2 = destination[0] * Avionics.Utils.DEG2RAD;
-        let cosLat2 = Math.cos(lat2);
-        let x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * cosLat2 * Math.cos(long2 - long1);
-        let y = Math.sin(long2 - long1) * cosLat2;
-        let bearing = Math.atan2(y, x) * Avionics.Utils.RAD2DEG;
-        return (bearing + 360) % 360;
+        return origin.bearingTo(destination);
     }
 
     /**
@@ -444,44 +441,36 @@ class WT_MapProjection {
         return this.renderer.isInView(point, margin);
     }
 
-    _xyOffsetByViewAngle(xy, distance, angle) {
-        return WT_GVector2.fromPolar(distance, angle * Avionics.Utils.DEG2RAD).add(this._tempVector.set(xy[0], xy[1]));
+    _xyOffsetByViewAngle(xy, distance, angle, reference) {
+        if (reference) {
+            reference.setFromPolar(distance, angle * Avionics.Utils.DEG2RAD).add(xy);
+        } else {
+            return WT_GVector2.fromPolar(distance, angle * Avionics.Utils.DEG2RAD).add(xy);
+        }
     }
 
-    _offsetInViewSpace(point, distance, angle) {
-        point = this._pointToXYProjection(point, this._tempArray1);
+    _offsetInViewSpace(point, distance, angle, reference) {
+        point = this._asVector2(point, this._tempVector);
         if (!point) {
             return undefined;
         }
-        return this._xyOffsetByViewAngle(point, distance, angle);
+        return this._xyOffsetByViewAngle(point, distance, angle, reference);
     }
 
-    _latLongOffsetByBearing(latLong, distance, bearing) {
-        let lat = latLong[1];
-        let long = latLong[0];
-        let sinLat = Math.sin(lat * Avionics.Utils.DEG2RAD);
-        let cosLat = Math.cos(lat * Avionics.Utils.DEG2RAD);
-        let sinBearing = Math.sin(bearing * Avionics.Utils.DEG2RAD);
-        let cosBearing = Math.cos(bearing * Avionics.Utils.DEG2RAD);
-        let angularDistance = distance.asUnit(WT_Unit.GA_RADIAN);
-        let sinAngularDistance = Math.sin(angularDistance);
-        let cosAngularDistance = Math.cos(angularDistance);
-
-        let offsetLatRad = Math.asin(sinLat * cosAngularDistance + cosLat * sinAngularDistance * cosBearing);
-        let offsetLongDeltaRad = Math.atan2(sinBearing * sinAngularDistance * cosLat, cosAngularDistance - sinLat * Math.sin(offsetLatRad));
-
-        let offsetLat = offsetLatRad * Avionics.Utils.RAD2DEG;
-        let offsetLong = long + offsetLongDeltaRad * Avionics.Utils.RAD2DEG;
-
-        return new LatLong(offsetLat, (offsetLong + 540) % 360 - 180);
+    _latLongOffsetByBearing(latLong, distance, bearing, reference) {
+        if (reference) {
+            return reference.set(latLong).offset(bearing, distance.asUnit(WT_Unit.GA_RADIAN), true);
+        } else {
+            return latLong.offset(bearing, distance.asUnit(WT_Unit.GA_RADIAN));
+        }
     }
 
-    _offsetInGeoSpace(point, distance, bearing) {
-        point = this._pointToLatLongProjection(point, this._tempArray1);
+    _offsetInGeoSpace(point, distance, bearing, reference) {
+        point = this._asGeoPoint(point, this._tempGeoPoint1);
         if (!point) {
             return undefined;
         }
-        return this._latLongOffsetByBearing(point, distance, bearing);
+        return this._latLongOffsetByBearing(point, distance, bearing, reference);
     }
 
     /**
@@ -493,14 +482,16 @@ class WT_MapProjection {
      * performed, the offset point will be expressed in the same coordinate space as the one in which the origin point was expressed.
      * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point - the origin point.
      * @param {Number|WT_NumberUnit} distance - the distance to offset.
-     * @param {Number} angle - the angle to offset.
+     * @param {Number} angle - the angle by which to offset.
+     * @param {WT_GeoPoint|WT_GVector2} [reference] - the WT_GeoPoint or WT_GVector2 object in which to store the result. If this argument
+     *                                                is not supplied, a new object of the appropriate type will be created.
      * @returns {LatLong|WT_GVector2} the offset point.
      */
-    offsetByViewAngle(point, distance, angle) {
+    offsetByViewAngle(point, distance, angle, reference) {
         if (distance instanceof WT_NumberUnit) {
-            return this._offsetInGeoSpace(point, distance, angle - this.rotation);
+            return this._offsetInGeoSpace(point, distance, angle - this.rotation, reference);
         } else {
-            return this._offsetInViewSpace(point, distance, angle);
+            return this._offsetInViewSpace(point, distance, angle, reference);
         }
     }
 
@@ -513,14 +504,16 @@ class WT_MapProjection {
      * performed, the offset point will be expressed in the same coordinate space as the one in which the origin point was expressed.
      * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point - the origin point.
      * @param {Number|WT_NumberUnit} distance - the distance to offset.
-     * @param {Number} angle - the angle to offset.
+     * @param {Number} bearing - the bearing by which to offset.
+     * @param {WT_GeoPoint|WT_GVector2} [reference] - the WT_GeoPoint or WT_GVector2 object in which to store the result. If this argument
+     *                                                is not supplied, a new object of the appropriate type will be created.
      * @returns {LatLong|WT_GVector2} the offset point.
      */
-    offsetByBearing(point, distance, bearing) {
+    offsetByBearing(point, distance, bearing, reference) {
         if (distance instanceof WT_NumberUnit) {
-            return this._offsetInGeoSpace(point, distance, bearing);
+            return this._offsetInGeoSpace(point, distance, bearing, reference);
         } else {
-            return this._offsetInViewSpace(point, distance, bearing + this.rotation);
+            return this._offsetInViewSpace(point, distance, bearing + this.rotation, reference);
         }
     }
 
@@ -579,9 +572,9 @@ class WT_MapProjection {
     }
 
     /**
-     * Converts a lat/long object to a [long, lat] pair.
-     * @param {{lat:Number, long:Number}} latLong - the lat/long object to convert.
-     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. If this argument is not supplied, a new
+     * Converts a geographical point to a [long, lat] pair.
+     * @param {{lat:Number, long:Number}} latLong - the geographical point to convert.
+     * @param {Number[]} [reference] - a [long, lat] pair in which to store the results. If this argument is not supplied, a new
      *                                 [long, lat] pair is created.
      * @returns {Number[]} - a [long, lat] pair.
      */
@@ -595,12 +588,17 @@ class WT_MapProjection {
     }
 
     /**
-     * Converts a [x, y] pair to a LatLong object.
-     * @param {Number[]} xy - the [x, y] pair to convert.
-     * @returns {LatLong} - a LatLong object.
+     * Converts a [long, lat] pair to a geographical point.
+     * @param {Number[]} xy - the [long, lat] pair to convert.
+     * @param {WT_GeoPoint} [reference] - a WT_GeoPoint object in which to store the results. If this argument is not supplied, a new
+     *                                    WT_GeoPoint object is created.
+     * @returns {WT_GeoPoint} - a geographical point.
      */
-    static latLongProjectionToGame(latLong) {
-        return new LatLong(latLong[1], latLong[0]);
+    static latLongProjectionToGame(latLong, reference) {
+        if (reference) {
+            return reference.set(latLong[1], latLong[0], 0);
+        }
+        return new WT_GeoPoint(latLong[1], latLong[0], 0);
     }
 
     /**
@@ -619,7 +617,7 @@ WT_MapProjection.Projection = {
 WT_MapProjection.OPTIONS_DEF = {
     _viewWidth: {default: 1000},
     _viewHeight: {default: 1000},
-    _target: {default: new LatLong(0, 0)},
+    _target: {},
     _viewTargetOffset: {},
     _range: {},
     _rotation: {default: 0}
@@ -807,9 +805,10 @@ class WT_MapProjectionReadOnly {
      * @param {Number[]|{x:Number, y:Number}} point - the [x, y] pair or 2D vector, in pixel coordinates, to invert. The type of object
      *                                                passed to this argument determines the type of object returned by this method;
      *                                                [x, y] results in a [long, lat] pair and 2D vector object results in a LatLong object.
-     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. This argument is ignored if a 2D vector is passed
-     *                                 to the point argument. If this argument is not supplied, a new [long, lat] pair is created.
-     * @returns {Number[]|LatLong} a [long, lat] pair or lat/long object representing the location whose projection equals the inverted point.
+     * @param {Number[]|WT_GeoPoint} [reference] - a [long, lat] pair or WT_GeoPoint object in which to store the results. If this argument
+     *                                             is not supplied, a new object of the appropriate type is created.
+     * @returns {Number[]|WT_GeoPoint} a [long, lat] pair or geographic point representing the location whose projection equals the
+     *                                 inverted point.
      */
     invert(point, reference) {
         return this._source.invert(point, reference);
@@ -830,9 +829,9 @@ class WT_MapProjectionReadOnly {
 
     /**
      * Calculates the initial bearing (forward azimuth) from an origin point to a destination point. The points may be supplied as either
-     * lat/long coordinates or 2D vectors. If 2D vectors are supplied, they will be converted to lat/long coordinates by inverse projection.
-     * @param {{lat:Number, long:Number}} origin - the origin point.
-     * @param {{lat:Number, long:Number}} destination - the destination point.
+     * lat/long coordinates or 2D vectors. If 2D vectors are supplied, they will be converted to geographic points by inverse projection.
+     * @param {{lat:Number, long:Number}|{x:Number, y:Number}} origin - the origin point.
+     * @param {{lat:Number, long:Number}|{x:Number, y:Number}} destination - the destination point.
      * @returns {Number} a value between 0 and 360, representing the initial bearing (forward azimuth) from origin to destination, in degrees.
      */
     bearing(origin, destination) {
@@ -861,11 +860,13 @@ class WT_MapProjectionReadOnly {
      * performed, the offset point will be expressed in the same coordinate space as the one in which the origin point was expressed.
      * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point - the origin point.
      * @param {Number|WT_NumberUnit} distance - the distance to offset.
-     * @param {Number} angle - the angle to offset.
+     * @param {Number} angle - the angle by which to offset.
+     * @param {WT_GeoPoint|WT_GVector2} [reference] - the WT_GeoPoint or WT_GVector2 object in which to store the result. If this argument
+     *                                                is not supplied, a new object of the appropriate type will be created.
      * @returns {LatLong|WT_GVector2} the offset point.
      */
-    offsetByViewAngle(point, distance, angle) {
-        return this._source.offsetByViewAngle(point, distance, angle);
+    offsetByViewAngle(point, distance, angle, reference) {
+        return this._source.offsetByViewAngle(point, distance, angle, reference);
     }
 
     /**
@@ -877,11 +878,13 @@ class WT_MapProjectionReadOnly {
      * performed, the offset point will be expressed in the same coordinate space as the one in which the origin point was expressed.
      * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point - the origin point.
      * @param {Number|WT_NumberUnit} distance - the distance to offset.
-     * @param {Number} angle - the angle to offset.
+     * @param {Number} bearing - the bearing by which to offset.
+     * @param {WT_GeoPoint|WT_GVector2} [reference] - the WT_GeoPoint or WT_GVector2 object in which to store the result. If this argument
+     *                                                is not supplied, a new object of the appropriate type will be created.
      * @returns {LatLong|WT_GVector2} the offset point.
      */
-    offsetByBearing(point, distance, bearing) {
-        return this._source.offsetByBearing(point, distance, bearing);
+    offsetByBearing(point, distance, bearing, reference) {
+        return this._source.offsetByBearing(point, distance, bearing, reference);
     }
 
     createCustomRenderer() {
