@@ -131,7 +131,7 @@ class WT_MapProjection {
     }
 
     set _target(target) {
-        this.__target.set(target.lat, target.long, 0);
+        this.__target.set(Math.max(-70, Math.min(70, target.lat)), target.long, 0);
     }
 
     /**
