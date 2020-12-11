@@ -243,7 +243,7 @@ class WT_GVector2 {
 WT_GVector2._tempValue = {x: 0, y: 0};
 
 /**
- * A read-only interface for a WT_NumberUnit.
+ * A read-only interface for a WT_GVector2.
  */
 class WT_GVector2ReadOnly {
     /**
@@ -416,6 +416,7 @@ class WT_GVector2ReadOnly {
         return `[${this.x} ${this.y}]`;
     }
 }
+
 /**
  * A 2D affine transformation.
  */
