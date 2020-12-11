@@ -150,7 +150,7 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     _updateTransform(state, reference, transform) {
         transform.scale = state.projection.scale / reference.scale;
         transform.rotation = state.projection.rotation - reference.rotation;
-        transform.offset = state.projection.projectLatLong(reference.center).subtract(state.projection.viewCenter, true);
+        transform.offset = state.projection.project(reference.center, transform.offset).subtract(state.projection.viewCenter);
         transform.margin = this.margin * transform.scale;
     }
 
