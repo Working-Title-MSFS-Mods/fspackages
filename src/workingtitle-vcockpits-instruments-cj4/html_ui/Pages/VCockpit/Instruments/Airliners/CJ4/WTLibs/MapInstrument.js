@@ -811,7 +811,7 @@ class MapInstrument extends ISvgMapRootElement {
                             }
                         }
                         this.navMap.mapElements.push(this.flightPlanElement);
-                        for (let i = this.flightPlanManager.getActiveWaypointIndex()-2; i < l; i++) {
+                        for (let i = Math.max(0,this.flightPlanManager.getActiveWaypointIndex()-2); i < l; i++) {
                             let waypoint = this.flightPlanManager.getWaypoint(i, 0);
                             if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
                                 if (waypoint.getSvgElement(this.navMap.index)) {
