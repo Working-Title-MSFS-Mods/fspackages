@@ -319,70 +319,116 @@ class WT_MapProjection {
 
     /**
      * Projects spherical coordinates (lat/long) onto the viewing window.
-     * @param {Number[]} point - the [long, lat] coordinate pair to project.
-     * @param {Number[]} [reference] - a [x, y] pair to which to store the results. If this argument is not supplied, a new
-     *                                 [x, y] pair is created.
-     * @returns {Number[]} a [x, y] pair representing the projected point, in pixel coordinates.
+     * @param {Number[]|{lat:Number, long:Number}} point - the [long, lat] pair or lat/long object defining the coordinates to project. The
+     *                                                     type of object passed to this argument determines the type of object returned
+     *                                                     by this method; [long, lat] results in a [x, y] pair and lat/long object results
+     *                                                     in a WT_GVector object.
+     * @param {Number[]|WT_GVector2} [reference] - a [x, y] pair or WT_GVector2 in which to store the results. If this argument is not
+     *                                             supplied, a new object of the appropriate type is created.
+     * @returns {Number[]|WT_GVector2} a [x, y] pair or 2D vector representing the projected point, in pixel coordinates.
      */
     project(point, reference) {
-        return this._d3Projection(point, reference);
+        if (Array.isArray(point) && point.length >= 2) {
+            return this._d3Projection(point, reference);
+        } else if (typeof point.lat === "number" && typeof point.long === "number") {
+            let projected = this._d3Projection(WT_MapProjection.latLongGameToProjection(point, this._tempArray1), this._tempArray2);
+            return WT_MapProjection.xyProjectionToView(projected, reference);
+        } else {
+            return undefined;
+        }
     }
 
     /**
      * Applies this projection's inverse to coordinates in the viewing window to get the corresponding point in spherical coordinates.
-     * @param {Number[]} point - the [x, y] pair, in pixel coordinates, to invert.
-     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. If this argument is not supplied, a new
-     *                                 [long, lat] pair is created.
-     * @returns {Number[]} a [long, lat] pair representing the location whose projection equals the inverted point.
+     * @param {Number[]|{x:Number, y:Number}} point - the [x, y] pair or 2D vector, in pixel coordinates, to invert. The type of object
+     *                                                passed to this argument determines the type of object returned by this method;
+     *                                                [x, y] results in a [long, lat] pair and 2D vector object results in a LatLong object.
+     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. This argument is ignored if a 2D vector is passed
+     *                                 to the point argument. If this argument is not supplied, a new [long, lat] pair is created.
+     * @returns {Number[]|LatLong} a [long, lat] pair or lat/long object representing the location whose projection equals the inverted point.
      */
     invert(point, reference) {
-        return this._d3Projection.invert(point, reference);
+        if (Array.isArray(point) && point.length >= 2) {
+            return this._d3Projection.invert(point, reference);
+        } else if (typeof point.x === "number" && typeof point.y === "number") {
+            let inverse = this._d3Projection.invert(WT_MapProjection.xyViewToProjection(point, this._tempArray1), this._tempArray2);
+            return WT_MapProjection.latLongProjectionToGame(inverse);
+        } else {
+            return undefined;
+        }
+    }
+
+    _pointToLatLongProjection(point, reference) {
+        if (typeof point.lat === "number" && typeof point.long === "number") {
+            WT_MapProjection.latLongGameToProjection(point, reference);
+        } else if (typeof point.x === "number" && typeof point.y === "number") {
+            this.invert(WT_MapProjection.xyViewToProjection(point, reference), reference);
+        } else {
+            reference = undefined;
+        }
+        return reference;
+    }
+
+    _pointToXYProjection(point, reference) {
+        if (typeof point.x === "number" && typeof point.y === "number") {
+            WT_MapProjection.xyViewToProjection(point, reference);
+        } else if (typeof point.lat === "number" && typeof point.long === "number") {
+            this.project(WT_MapProjection.latLongGameToProjection(point, reference), reference);
+        } else {
+            reference = undefined;
+        }
+        return reference;
     }
 
     /**
-     * Projects spherical coordinates (lat/long) onto the viewing window.
-     * @param {{lat:Number, long:Number}} latLong - the lat/long object representing the point to project.
-     * @param {WT_GVector2} [reference] - a WT_GVector2 object to which to store the results. If this argument is not supplied, a new
-     *                                    vector object is created.
-     * @returns {WT_GVector2} a 2D vector representing the projected point, in pixel coordinates.
-     */
-    projectLatLong(latLong, reference) {
-        let projected = this.project(WT_MapProjection.latLongGameToProjection(latLong, this._tempArray1), this._tempArray2);
-        return WT_MapProjection.xyProjectionToView(projected, reference);
-    }
-
-    /**
-     * Applies this projection's inverse to coordinates in the viewing window to get the corresponding point in spherical coordinates.
-     * @param {{x:Number, y:Number}} xy - the 2D vector represeinting the pixel coordinates to invert.
-     * @returns {LatLong} a LatLong object representing the location whose projection equals the inverted point.
-     */
-    invertXY(xy) {
-        let inverse = this.invert(WT_MapProjection.xyViewToProjection(xy, this._tempArray1), this._tempArray2);
-        return WT_MapProjection.latLongProjectionToGame(inverse);
-    }
-
-    /**
-     * Calculates the great-circle distance between two points on the Earth's surface. The arguments to this method may be supplied as
-     * either lat/long objects or [long, lat] pairs.
-     * @param {{lat:Number, long:Number}|Number[]} point1 - the first point.
-     * @param {{lat:Number, long:Number}|Number[]} point2 - the second point.
+     * Calculates the great-circle distance between two points on the Earth's surface. The points may be supplied as either lat/long
+     * coordinates or 2D vectors. If 2D vectors are supplied, they will be converted to lat/long coordinates by inverse projection.
+     * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point1 - the first point.
+     * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point2 - the second point.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the results. If this argument is not supplied, a new
      *                                      WT_NumberUnit object is created.
      * @returns {WT_NumberUnit} the distance. Default unit is great-arc radians (1 great-arc radian = radius of the Earth).
      */
     distance(point1, point2, reference) {
-        if (point1.lat !== undefined && point1.long !== undefined) {
-            point1 = WT_MapProjection.latLongGameToProjection(point1, this._tempArray1);
+        point1 = this._pointToLatLongProjection(point1, this._tempArray1);
+        point2 = this._pointToLatLongProjection(point2, this._tempArray2);
+
+        if (!point1 || !point2) {
+            return undefined;
         }
-        if (point2.lat !== undefined && point2.long !== undefined) {
-            point2 = WT_MapProjection.latLongGameToProjection(point2, this._tempArray2);
-        }
+
         let distance = d3.geoDistance(point1, point2);
         if (reference) {
             return reference.set(distance, WT_Unit.GA_RADIAN);
         } else {
             return WT_Unit.GA_RADIAN.createNumber(distance);
         }
+    }
+
+    /**
+     * Calculates the initial bearing (forward azimuth) from an origin point to a destination point. The points may be supplied as either
+     * lat/long coordinates or 2D vectors. If 2D vectors are supplied, they will be converted to lat/long coordinates by inverse projection.
+     * @param {{lat:Number, long:Number}} origin - the origin point.
+     * @param {{lat:Number, long:Number}} destination - the destination point.
+     * @returns {Number} a value between 0 and 360, representing the initial bearing (forward azimuth) from origin to destination, in degrees.
+     */
+    bearing(origin, destination) {
+        origin = this._pointToLatLongProjection(origin, this._tempArray1);
+        destination = this._pointToLatLongProjection(destination, this._tempArray2);
+
+        if (!origin || !destination) {
+            return undefined;
+        }
+
+        let lat1 = origin[1] * Avionics.Utils.DEG2RAD;
+        let lat2 = destination[1] * Avionics.Utils.DEG2RAD;
+        let long1 = origin[0] * Avionics.Utils.DEG2RAD;
+        let long2 = destination[0] * Avionics.Utils.DEG2RAD;
+        let cosLat2 = Math.cos(lat2);
+        let x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * cosLat2 * Math.cos(long2 - long1);
+        let y = Math.sin(long2 - long1) * cosLat2;
+        let bearing = Math.atan2(y, x) * Avionics.Utils.RAD2DEG;
+        return (bearing + 360) % 360;
     }
 
     /**
@@ -396,6 +442,46 @@ class WT_MapProjection {
      */
     isInView(point, margin = 0) {
         return this.renderer.isInView(point, margin);
+    }
+
+    _xyOffsetByViewAngle(xy, distance, angle) {
+        return WT_GVector2.fromPolar(distance, angle * Avionics.Utils.DEG2RAD).add(this._tempVector.set(xy[0], xy[1]));
+    }
+
+    _offsetInViewSpace(point, distance, angle) {
+        point = this._pointToXYProjection(point, this._tempArray1);
+        if (!point) {
+            return undefined;
+        }
+        return this._xyOffsetByViewAngle(point, distance, angle);
+    }
+
+    _latLongOffsetByBearing(latLong, distance, bearing) {
+        let lat = latLong[1];
+        let long = latLong[0];
+        let sinLat = Math.sin(lat * Avionics.Utils.DEG2RAD);
+        let cosLat = Math.cos(lat * Avionics.Utils.DEG2RAD);
+        let sinBearing = Math.sin(bearing * Avionics.Utils.DEG2RAD);
+        let cosBearing = Math.cos(bearing * Avionics.Utils.DEG2RAD);
+        let angularDistance = distance.asUnit(WT_Unit.GA_RADIAN);
+        let sinAngularDistance = Math.sin(angularDistance);
+        let cosAngularDistance = Math.cos(angularDistance);
+
+        let offsetLatRad = Math.asin(sinLat * cosAngularDistance + cosLat * sinAngularDistance * cosBearing);
+        let offsetLongDeltaRad = Math.atan2(sinBearing * sinAngularDistance * cosLat, cosAngularDistance - sinLat * Math.sin(offsetLatRad));
+
+        let offsetLat = offsetLatRad * Avionics.Utils.RAD2DEG;
+        let offsetLong = long + offsetLongDeltaRad * Avionics.Utils.RAD2DEG;
+
+        return new LatLong(offsetLat, (offsetLong + 540) % 360 - 180);
+    }
+
+    _offsetInGeoSpace(point, distance, bearing) {
+        point = this._pointToLatLongProjection(point, this._tempArray1);
+        if (!point) {
+            return undefined;
+        }
+        return this._latLongOffsetByBearing(point, distance, bearing);
     }
 
     /**
@@ -436,46 +522,6 @@ class WT_MapProjection {
         } else {
             return this._offsetInViewSpace(point, distance, bearing + this.rotation);
         }
-    }
-
-    _offsetInViewSpace(point, distance, angle) {
-        if (point instanceof WT_GVector2) {
-            return this._xyOffsetByViewAngle(point, distance, angle);
-        } else if (point.lat !== undefined && point.long !== undefined) {
-            return this._xyOffsetByViewAngle(this.projectLatLong(latLong, this._tempVector), distance, angle);
-        }
-        return undefined;
-    }
-
-    _offsetInGeoSpace(point, distance, bearing) {
-        if (point instanceof WT_GVector2) {
-            return this._latLongOffsetByBearing(this.invertXY(point), distance, bearing);
-        } else if (point.lat !== undefined && point.long !== undefined) {
-            return this._latLongOffsetByBearing(point, distance, bearing);
-        }
-        return undefined;
-    }
-
-    _latLongOffsetByBearing(latLong, distance, bearing) {
-        let sinLat = Math.sin(latLong.lat * Avionics.Utils.DEG2RAD);
-        let cosLat = Math.cos(latLong.lat * Avionics.Utils.DEG2RAD);
-        let sinBearing = Math.sin(bearing * Avionics.Utils.DEG2RAD);
-        let cosBearing = Math.cos(bearing * Avionics.Utils.DEG2RAD);
-        let angularDistance = distance.asUnit(WT_Unit.GA_RADIAN);
-        let sinAngularDistance = Math.sin(angularDistance);
-        let cosAngularDistance = Math.cos(angularDistance);
-
-        let offsetLatRad = Math.asin(sinLat * cosAngularDistance + cosLat * sinAngularDistance * cosBearing);
-        let offsetLongDeltaRad = Math.atan2(sinBearing * sinAngularDistance * cosLat, cosAngularDistance - sinLat * Math.sin(offsetLatRad));
-
-        let offsetLat = offsetLatRad * Avionics.Utils.RAD2DEG;
-        let offsetLong = latLong.long + offsetLongDeltaRad * Avionics.Utils.RAD2DEG;
-
-        return new LatLong(offsetLat, (offsetLong + 540) % 360 - 180);
-    }
-
-    _xyOffsetByViewAngle(xy, distance, angle) {
-        return xy.add(WT_GVector2.fromPolar(distance, angle * Avionics.Utils.DEG2RAD));
     }
 
     createCustomRenderer() {
@@ -744,10 +790,13 @@ class WT_MapProjectionReadOnly {
 
     /**
      * Projects spherical coordinates (lat/long) onto the viewing window.
-     * @param {Number[]} point - the [long, lat] coordinate pair to project.
-     * @param {Number[]} [reference] - a [x, y] pair to which to store the results. If this argument is not supplied, a new
-     *                                 [x, y] pair is created.
-     * @returns {Number[]} a [x, y] pair representing the projected point, in pixel coordinates.
+     * @param {Number[]|{lat:Number, long:Number}} point - the [long, lat] pair or lat/long object defining the coordinates to project. The
+     *                                                     type of object passed to this argument determines the type of object returned
+     *                                                     by this method; [long, lat] results in a [x, y] pair and lat/long object results
+     *                                                     in a WT_GVector object.
+     * @param {Number[]|WT_GVector2} [reference] - a [x, y] pair or WT_GVector2 in which to store the results. If this argument is not
+     *                                             supplied, a new object of the appropriate type is created.
+     * @returns {Number[]|WT_GVector2} a [x, y] pair or 2D vector representing the projected point, in pixel coordinates.
      */
     project(point, reference) {
         return this._source.project(point, reference);
@@ -755,46 +804,39 @@ class WT_MapProjectionReadOnly {
 
     /**
      * Applies this projection's inverse to coordinates in the viewing window to get the corresponding point in spherical coordinates.
-     * @param {Number[]} point - the [x, y] pair, in pixel coordinates, to invert.
-     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. If this argument is not supplied, a new
-     *                                 [long, lat] pair is created.
-     * @returns {Number[]} a [long, lat] pair representing the location whose projection equals the inverted point.
+     * @param {Number[]|{x:Number, y:Number}} point - the [x, y] pair or 2D vector, in pixel coordinates, to invert. The type of object
+     *                                                passed to this argument determines the type of object returned by this method;
+     *                                                [x, y] results in a [long, lat] pair and 2D vector object results in a LatLong object.
+     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. This argument is ignored if a 2D vector is passed
+     *                                 to the point argument. If this argument is not supplied, a new [long, lat] pair is created.
+     * @returns {Number[]|LatLong} a [long, lat] pair or lat/long object representing the location whose projection equals the inverted point.
      */
     invert(point, reference) {
         return this._source.invert(point, reference);
     }
 
     /**
-     * Projects spherical coordinates (lat/long) onto the viewing window.
-     * @param {{lat:Number, long:Number}} latLong - the lat/long object representing the point to project.
-     * @param {WT_GVector2} [reference] - a WT_GVector2 object to which to store the results. If this argument is not supplied, a new
-     *                                    vector object is created.
-     * @returns {WT_GVector2} a 2D vector representing the projected point, in pixel coordinates.
-     */
-    projectLatLong(latLong, reference) {
-        return this._source.projectLatLong(latLong, reference);
-    }
-
-    /**
-     * Applies this projection's inverse to coordinates in the viewing window to get the corresponding point in spherical coordinates.
-     * @param {{x:Number, y:Number}} xy - the 2D vector represeinting the pixel coordinates to invert.
-     * @returns {LatLong} a LatLong object representing the location whose projection equals the inverted point.
-     */
-    invertXY(xy) {
-        return this._source.invertXY(xy);
-    }
-
-    /**
-     * Calculates the great-circle distance between two points on the Earth's surface. The arguments to this method may be supplied as
-     * either lat/long objects or [long, lat] pairs.
-     * @param {{lat:Number, long:Number}|Number[]} point1 - the first point.
-     * @param {{lat:Number, long:Number}|Number[]} point2 - the second point.
+     * Calculates the great-circle distance between two points on the Earth's surface. The points may be supplied as either lat/long
+     * coordinates or 2D vectors. If 2D vectors are supplied, they will be converted to lat/long coordinates by inverse projection.
+     * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point1 - the first point.
+     * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point2 - the second point.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the results. If this argument is not supplied, a new
      *                                      WT_NumberUnit object is created.
      * @returns {WT_NumberUnit} the distance. Default unit is great-arc radians (1 great-arc radian = radius of the Earth).
      */
     distance(point1, point2, reference) {
         return this._source.distance(point1, point2, reference);
+    }
+
+    /**
+     * Calculates the initial bearing (forward azimuth) from an origin point to a destination point. The points may be supplied as either
+     * lat/long coordinates or 2D vectors. If 2D vectors are supplied, they will be converted to lat/long coordinates by inverse projection.
+     * @param {{lat:Number, long:Number}} origin - the origin point.
+     * @param {{lat:Number, long:Number}} destination - the destination point.
+     * @returns {Number} a value between 0 and 360, representing the initial bearing (forward azimuth) from origin to destination, in degrees.
+     */
+    bearing(origin, destination) {
+        return this._source.bearing(origin, destination);
     }
 
     /**
@@ -974,47 +1016,44 @@ class WT_MapProjectionRenderer {
     }
 
     /**
-     * Projects spherical coordinates (lat/long) onto the viewing plane.
-     * @param {Number[]} point - the [long, lat] coordinate pair to project.
-     * @param {Number[]} [reference] - a [x, y] pair to which to store the results. If this argument is not supplied, a new
-     *                                 [x, y] pair is created.
-     * @returns {Number[]} a [x, y] pair representing the projected point, in pixel coordinates.
+     * Projects spherical coordinates (lat/long) onto the viewing window.
+     * @param {Number[]|{lat:Number, long:Number}} point - the [long, lat] pair or lat/long object defining the coordinates to project. The
+     *                                                     type of object passed to this argument determines the type of object returned
+     *                                                     by this method; [long, lat] results in a [x, y] pair and lat/long object results
+     *                                                     in a WT_GVector object.
+     * @param {Number[]|WT_GVector2} [reference] - a [x, y] pair or WT_GVector2 in which to store the results. If this argument is not
+     *                                             supplied, a new object of the appropriate type is created.
+     * @returns {Number[]|WT_GVector2} a [x, y] pair or 2D vector representing the projected point, in pixel coordinates.
      */
     project(point, reference) {
-        return this.projection(point, reference);
+        if (Array.isArray(point) && point.length >= 2) {
+            return this.projection(point, reference);
+        } else if (typeof point.lat === "number" && typeof point.long === "number") {
+            let projected = this.projection(WT_MapProjection.latLongGameToProjection(point, this._tempArray1), this._tempArray2);
+            return WT_MapProjection.xyProjectionToView(projected, reference);
+        } else {
+            return undefined;
+        }
     }
 
     /**
-     * Applies this projection's inverse to coordinates in the viewing plane to get the corresponding point in spherical coordinates.
-     * @param {Number[]} point - the [x, y] pair, in pixel coordinates, to invert.
-     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. If this argument is not supplied, a new
-     *                                 [long, lat] pair is created.
-     * @returns {Number[]} a [long, lat] pair representing the location whose projection equals the inverted point.
+     * Applies this projection's inverse to coordinates in the viewing window to get the corresponding point in spherical coordinates.
+     * @param {Number[]|{x:Number, y:Number}} point - the [x, y] pair or 2D vector, in pixel coordinates, to invert. The type of object
+     *                                                passed to this argument determines the type of object returned by this method;
+     *                                                [x, y] results in a [long, lat] pair and 2D vector object results in a LatLong object.
+     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. This argument is ignored if a 2D vector is passed
+     *                                 to the point argument. If this argument is not supplied, a new [long, lat] pair is created.
+     * @returns {Number[]|LatLong} a [long, lat] pair or lat/long object representing the location whose projection equals the inverted point.
      */
     invert(point, reference) {
-        return this.projection.invert(point, reference);
-    }
-
-    /**
-     * Projects spherical coordinates (lat/long) onto the viewing plane.
-     * @param {{lat:Number, long:Number}} latLong - the lat/long object representing the point to project.
-     * @param {WT_GVector2} [reference] - a WT_GVector2 object to which to store the results. If this argument is not supplied, a new
-     *                                    vector object is created.
-     * @returns {WT_GVector2} a 2D vector representing the projected point, in pixel coordinates.
-     */
-    projectLatLong(latLong, reference) {
-        let projected = this.project(WT_MapProjection.latLongGameToProjection(latLong));
-        return WT_MapProjection.xyProjectionToView(projected, reference);
-    }
-
-    /**
-     * Applies this projection's inverse to coordinates in the viewing plane to get the corresponding point in spherical coordinates.
-     * @param {{x:Number, y:Number}} point - the 2D vector represeinting the pixel coordinates to invert.
-     * @returns {LatLong} a LatLong object representing the location whose projection equals the inverted point.
-     */
-    invertXY(xy) {
-        let inverse = this.invert(WT_MapProjection.xyViewToProjection(xy, this._tempArray1), this._tempArray2);
-        return WT_MapProjection.latLongProjectionToGame(inverse);
+        if (Array.isArray(point) && point.length >= 2) {
+            return this.projection.invert(point, reference);
+        } else if (typeof point.x === "number" && typeof point.y === "number") {
+            let inverse = this.projection.invert(WT_MapProjection.xyViewToProjection(point, this._tempArray1), this._tempArray2);
+            return WT_MapProjection.latLongProjectionToGame(inverse);
+        } else {
+            return undefined;
+        }
     }
 
     /**
@@ -1088,8 +1127,10 @@ class WT_MapProjectionRenderer {
         let width = clip[1].x - clip[0].x;
         let height = clip[0].y - clip[0].y;
 
-        if (point.lat !== undefined && point.long !== undefined) {
-            point = this.projectLatLong(point, this._tempVector);
+        if (typeof point.lat === "number" && typeof point.long === "number") {
+            point = this.project(point, this._tempVector);
+        } else if (typeof point.x !== "number" || typeof point.y !== "number") {
+            return undefined;
         }
         return (point.x >= clip[0].x - width * margin) &&
                (point.x <= clip[1].x + width * margin) &&
@@ -1212,44 +1253,29 @@ class WT_MapProjectionSyncedRenderer extends WT_MapProjectionRenderer {
     }
 
     /**
-     * Projects spherical coordinates (lat/long) onto the viewing plane.
-     * @param {Number[]} point - the [long, lat] coordinate pair to project.
-     * @param {Number[]} [reference] - a [x, y] pair to which to store the results. If this argument is not supplied, a new
-     *                                 [x, y] pair is created.
-     * @returns {Number[]} a [x, y] pair representing the projected point, in pixel coordinates.
+     * Projects spherical coordinates (lat/long) onto the viewing window.
+     * @param {Number[]|{lat:Number, long:Number}} point - the [long, lat] pair or lat/long object defining the coordinates to project. The
+     *                                                     type of object passed to this argument determines the type of object returned
+     *                                                     by this method; [long, lat] results in a [x, y] pair and lat/long object results
+     *                                                     in a WT_GVector object.
+     * @param {Number[]|WT_GVector2} [reference] - a [x, y] pair or WT_GVector2 in which to store the results. If this argument is not
+     *                                             supplied, a new object of the appropriate type is created.
+     * @returns {Number[]|WT_GVector2} a [x, y] pair or 2D vector representing the projected point, in pixel coordinates.
      */
     project(point, reference) {
         return this.mapProjection.project(point, reference);
     }
 
     /**
-     * Applies this projection's inverse to coordinates in the viewing plane to get the corresponding point in spherical coordinates.
-     * @param {Number[]} point - the [x, y] pair, in pixel coordinates, to invert.
-     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. If this argument is not supplied, a new
-     *                                 [long, lat] pair is created.
-     * @returns {Number[]} a [long, lat] pair representing the location whose projection equals the inverted point.
+     * Applies this projection's inverse to coordinates in the viewing window to get the corresponding point in spherical coordinates.
+     * @param {Number[]|{x:Number, y:Number}} point - the [x, y] pair or 2D vector, in pixel coordinates, to invert. The type of object
+     *                                                passed to this argument determines the type of object returned by this method;
+     *                                                [x, y] results in a [long, lat] pair and 2D vector object results in a LatLong object.
+     * @param {Number[]} [reference] - a [long, lat] pair to which to store the results. This argument is ignored if a 2D vector is passed
+     *                                 to the point argument. If this argument is not supplied, a new [long, lat] pair is created.
+     * @returns {Number[]|LatLong} a [long, lat] pair or lat/long object representing the location whose projection equals the inverted point.
      */
     invert(point, reference) {
         return this.mapProjection.invert(point, reference);
-    }
-
-    /**
-     * Projects spherical coordinates (lat/long) onto the viewing plane.
-     * @param {{lat:Number, long:Number}} latLong - the lat/long object representing the point to project.
-     * @param {WT_GVector2} [reference] - a WT_GVector2 object to which to store the results. If this argument is not supplied, a new
-     *                                    vector object is created.
-     * @returns {WT_GVector2} a 2D vector representing the projected point, in pixel coordinates.
-     */
-    projectLatLong(latLong, reference = undefined) {
-        return this.mapProjection.projectLatLong(latLong, reference);
-    }
-
-    /**
-     * Applies this projection's inverse to coordinates in the viewing plane to get the corresponding point in spherical coordinates.
-     * @param {{x:Number, y:Number}} point - the 2D vector represeinting the pixel coordinates to invert.
-     * @returns {LatLong} a LatLong object representing the location whose projection equals the inverted point.
-     */
-    invertXY(xy) {
-        return this.mapProjection.invertXY(xy);
     }
 }

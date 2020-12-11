@@ -72,9 +72,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         let viewTop = this._tempVector2.set(viewCenter).subtract(delta);
         let viewBottom = this._tempVector3.set(viewCenter).add(delta);
 
-        let top = state.projection.invertXY(viewTop);
-        let bottom = state.projection.invertXY(viewBottom);
-        return state.projection.distance(top, bottom, this._radiusTemp).scale(this.size / state.projection.viewHeight * 0.5, true);
+        return state.projection.distance(viewTop, viewBottom, this._radiusTemp).scale(this.size / state.projection.viewHeight * 0.5, true);
     }
 
     /**
