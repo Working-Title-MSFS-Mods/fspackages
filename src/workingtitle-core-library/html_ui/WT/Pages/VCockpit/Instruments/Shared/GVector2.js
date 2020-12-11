@@ -70,7 +70,7 @@ class WT_GVector2 {
      * Sets this vector's x and y values. This method takes either one or two arguments. The one-argument version takes a single object
      * with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the new x and y values, or the new x value as a scalar number.
-     * @param {Number} arg2 - the new y value as a scalar number.
+     * @param {Number} [arg2] - the new y value as a scalar number.
      * @returns {WT_GVector2} this vector, after it has been changed.
      */
     set(arg1, arg2) {
@@ -98,7 +98,7 @@ class WT_GVector2 {
      * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to add, or the x value to add as a
      * scalar number.
-     * @param {Number} arg2 - the y value to add as a scalar number.
+     * @param {Number} [arg2] - the y value to add as a scalar number.
      * @returns {WT_GVector2} the summed vector.
      */
     plus(arg1, arg2) {
@@ -114,7 +114,7 @@ class WT_GVector2 {
      * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to add, or the x value to add
      * as a scalar number.
-     * @param {Number} arg2 - the y value to add as a scalar number.
+     * @param {Number} [arg2] - the y value to add as a scalar number.
      * @returns {WT_GVector2} this vector, after it has been changed.
      */
     add(arg1, arg2) {
@@ -132,7 +132,7 @@ class WT_GVector2 {
      * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to subtract, or the x value to subtract
      * as a scalar number.
-     * @param {Number} arg2 - the y value to subtract as a scalar number.
+     * @param {Number} [arg2] - the y value to subtract as a scalar number.
      * @returns {WT_GVector2} the difference vector.
      */
     minus(arg1, arg2) {
@@ -148,7 +148,7 @@ class WT_GVector2 {
      * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to subtract, or the x value to subtract
      * as a scalar number.
-     * @param {Number} arg2 - the y value to subtract as a scalar number.
+     * @param {Number} [arg2] - the y value to subtract as a scalar number.
      * @returns {WT_GVector2} this vector, after it has been changed.
      */
     subtract(arg1, arg2) {
@@ -183,7 +183,7 @@ class WT_GVector2 {
      * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of other vector, or the x value of the other vector
      * as a scalar number.
-     * @param {Number} arg2 - the y value of the other vector as a scalar number.
+     * @param {Number} [arg2] - the y value of the other vector as a scalar number.
      * @returns {Number} the dot product.
      */
     dot(arg1, arg2) {
@@ -200,7 +200,7 @@ class WT_GVector2 {
      * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of other vector, or the x value of the other vector
      * as a scalar number.
-     * @param {Number} arg2 - the y value of the other vector as a scalar number.
+     * @param {Number} [arg2] - the y value of the other vector as a scalar number.
      * @returns {Boolean} whether this vector is equal to the other vector.
      */
     equals(arg1, arg2) {
@@ -219,6 +219,11 @@ class WT_GVector2 {
         return new WT_GVector2(this.x, this.y);
     }
 
+    /**
+     * Gets a read-only version of this vector. The read-only version is updated as this vector is changed. Attempting to call
+     * any mutating method on the read-only version will create and return a mutated copy of this vector instead.
+     * @returns {WT_GVector2ReadOnly} a read-only version of this vector.
+     */
     readonly() {
         return this._readonly;
     }
@@ -290,11 +295,11 @@ class WT_GVector2ReadOnly {
     }
 
     /**
-     * Sets this vector's x and y values. This method takes either one or two arguments. The one-argument version takes a single object
-     * with .x and .y properties. The two-argument version takes two scalar numbers.
+     * Copies this vector and sets the copy's x and y values. This method takes either one or two arguments. The one-argument version takes
+     * a single object with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the new x and y values, or the new x value as a scalar number.
-     * @param {Number} arg2 - the new y value as a scalar number.
-     * @returns {WT_GVector2} this vector, after it has been changed.
+     * @param {Number} [arg2] - the new y value as a scalar number.
+     * @returns {WT_GVector2} the new vector.
      */
     set(arg1, arg2) {
         let value = WT_GVector2._parseArgs(arg1, arg2);
@@ -306,10 +311,10 @@ class WT_GVector2ReadOnly {
     }
 
     /**
-     * Sets this vector's x and y values using polar coordinates.
+     * Copies this vector and sets the copy's x and y values using polar coordinates.
      * @param {Number} r - the new length.
      * @param {Number} theta - the new angle, in radians. An angle of 0 is defined as pointing in the negative y direction.
-     * @returns {WT_GVector2} this vector, after it has been changed.
+     * @returns {WT_GVector2} the new vector.
      */
     setFromPolar(r, theta) {
         return this.set(r * Math.sin(theta), r * -Math.cos(theta));
@@ -320,7 +325,7 @@ class WT_GVector2ReadOnly {
      * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to add, or the x value to add as a
      * scalar number.
-     * @param {Number} arg2 - the y value to add as a scalar number.
+     * @param {Number} [arg2] - the y value to add as a scalar number.
      * @returns {WT_GVector2} the summed vector.
      */
     plus(arg1, arg2) {
@@ -332,7 +337,7 @@ class WT_GVector2ReadOnly {
      * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to add, or the x value to add as a
      * scalar number.
-     * @param {Number} arg2 - the y value to add as a scalar number.
+     * @param {Number} [arg2] - the y value to add as a scalar number.
      * @returns {WT_GVector2} the summed vector.
      */
     add(arg1, arg2) {
@@ -344,7 +349,7 @@ class WT_GVector2ReadOnly {
      * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to subtract, or the x value to subtract
      * as a scalar number.
-     * @param {Number} arg2 - the y value to subtract as a scalar number.
+     * @param {Number} [arg2] - the y value to subtract as a scalar number.
      * @returns {WT_GVector2} the difference vector.
      */
     minus(arg1, arg2) {
@@ -356,7 +361,7 @@ class WT_GVector2ReadOnly {
      * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of the vector to subtract, or the x value to subtract
      * as a scalar number.
-     * @param {Number} arg2 - the y value to subtract as a scalar number.
+     * @param {Number} [arg2] - the y value to subtract as a scalar number.
      * @returns {WT_GVector2} the difference vector.
      */
     subtract(arg1, arg2) {
@@ -378,7 +383,7 @@ class WT_GVector2ReadOnly {
      * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of other vector, or the x value of the other vector
      * as a scalar number.
-     * @param {Number} arg2 - the y value of the other vector as a scalar number.
+     * @param {Number} [arg2] - the y value of the other vector as a scalar number.
      * @returns {Number} the dot product.
      */
     dot(arg1, arg2) {
@@ -390,7 +395,7 @@ class WT_GVector2ReadOnly {
      * The one-argument version takes a single object with .x and .y properties. The two-argument version takes two scalar numbers.
      * @param {{x:Number, y:Number}|Number} arg1 - an object defining the x and y values of other vector, or the x value of the other vector
      * as a scalar number.
-     * @param {Number} arg2 - the y value of the other vector as a scalar number.
+     * @param {Number} [arg2] - the y value of the other vector as a scalar number.
      * @returns {Boolean} whether this vector is equal to the other vector.
      */
     equals(arg1, arg2) {
