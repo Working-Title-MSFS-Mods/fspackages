@@ -573,7 +573,9 @@ WT_Unit.NMILE = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 1852, "nautical mile"
 WT_Unit.GA_RADIAN = new WT_SimpleUnit(WT_Unit.Family.DISTANCE, 6378100, "great arc radian", "great arc radians", "rad");
 
 WT_Unit.RADIAN = new WT_SimpleUnit(WT_Unit.Family.ANGLE, 1, "radian", "radians", "rad");
-WT_Unit.DEGREE = new WT_SimpleUnit(WT_Unit.Family.ANGLE, Math.PI/180, "degree", "degrees", "°");
+WT_Unit.DEGREE = new WT_SimpleUnit(WT_Unit.Family.ANGLE, Math.PI / 180, "degree", "degrees", "°");
+WT_Unit.ARC_MIN = new WT_SimpleUnit(WT_Unit.Family.ANGLE, Math.PI / 180 / 60, "minute", "minutes", "'");
+WT_Unit.ARC_SEC = new WT_SimpleUnit(WT_Unit.Family.ANGLE, Math.PI / 180 / 3600, "second", "seconds", "\"");
 
 WT_Unit.SECOND = new WT_SimpleUnit(WT_Unit.Family.TIME, 1, "second", "seconds", "s");
 WT_Unit.MINUTE = new WT_SimpleUnit(WT_Unit.Family.TIME, 60, "minute", "minutes", "m");
@@ -862,7 +864,7 @@ WT_TimeFormatter.Delim = {
     COLON: ":",
     COLON_OR_CROSS: ":+",
     SPACE: " "
-}
+};
 WT_TimeFormatter.OPTIONS_DEF = {
     timeFormat: {default: WT_TimeFormatter.Format.HH_MM_SS, auto: true},
     delim: {default: WT_TimeFormatter.Delim.COLON, auto: true}
@@ -873,6 +875,94 @@ WT_TimeFormatter.OPTIONS_DEFAULT = {
     pad: 2,
     unitShow: false,
     unitSpaceBefore: false
+};
+
+/**
+ * Generates formatted strings from WT_NumberUnit objects with angle unit types.
+ */
+class WT_CoordinateFormatter extends WT_NumberFormatter {
+    /**
+     * @param {Object} opts - options definition object containing properties to initialize to the new formatter.
+     */
+    constructor(opts = {}) {
+        super(opts);
+
+        this._optsManager.addOptions(WT_CoordinateFormatter.OPTIONS_DEF);
+        this._optsManager.setOptions(WT_CoordinateFormatter.OPTIONS_DEFAULT);
+        this._optsManager.setOptions(opts);
+    }
+
+    getFormattedNumber(numberUnit) {
+        let savedUnitShow = this.unitShow;
+        this.unitShow = false;
+        let formatted = this.getFormattedString(numberUnit);
+        this.unitShow = savedUnitShow;
+        return formatted;
+    }
+
+    getFormattedString(numberUnit) {
+        let degrees;
+        let min;
+        let sec;
+        let degreesText = "";
+        let minText = "";
+        let secText = "";
+        let degreesUnitText = "";
+        let minUnitText = "";
+        let secUnitText = "";
+        let unitSpace = (this.unitShow && this.unitSpaceBefore) ? " " : "";
+
+        degrees = Math.floor(numberUnit.asUnit(WT_Unit.DEGREE));
+        degreesText = degrees.toFixed(0);
+        degreesText = degreesText.padStart(this.pad, "0");
+        degreesUnitText = this._formatUnit(degrees, WT_Unit.DEGREE) + unitSpace + this.delim;
+
+        if (this.coordFormat == WT_CoordinateFormatter.Format.DEG_MM) {
+            min = numberUnit.asUnit(WT_Unit.ARC_MIN) % 60;
+            minText = this._formatNumber(min);
+            minUnitText = this._formatUnit(min, WT_Unit.ARC_MIN);
+        } else {
+            min = Math.floor(numberUnit.asUnit(WT_Unit.ARC_MIN) - degrees * 60);
+            minText = min.toFixed(0);
+            minText = minText.padStart(this._pad, "0");
+            minUnitText = this._formatUnit(min, WT_Unit.ARC_MIN) + unitSpace + this.delim;
+
+            sec = numberUnit.asUnit(WT_Unit.ARC_SEC) % 60;
+            secText = this._formatNumber(sec);
+            secUnitText = this._formatUnit(sec, WT_Unit.ARC_SEC);
+        }
+
+        if (secText.replace(/\b0+/, "").substring(0, 2) === "60") {
+            secText = this._formatNumber(parseFloat(secText) - 60);
+            minText = `${parseInt(minText) + 1}`;
+            minText = minText.padStart(this._pad, "0");
+        }
+        if (minText.replace(/\b0+/, "").substring(0, 2) === "60") {
+            if (secText) {
+                minText = "00";
+            } else {
+                minText = this._formatNumber(parseFloat(minText) - 60);
+            }
+            degreesText = `${(parseInt(degreesText) + 1)}`;
+            degreesText = degreesText.padStart(this._pad, "0");
+        }
+
+        return degreesText + degreesUnitText + minText + minUnitText + secText + secUnitText;
+    }
+}
+/**
+ * @enum {Number}
+ */
+WT_CoordinateFormatter.Format = {
+    DEG_MM: 0,
+    DEG_MM_SS: 1
+};
+WT_CoordinateFormatter.OPTIONS_DEF = {
+    coordFormat: {default: WT_CoordinateFormatter.Format.DEG_MM, auto: true},
+    delim: {default: "", auto: true}
+};
+WT_CoordinateFormatter.OPTIONS_DEFAULT = {
+    precision: 0.01
 };
 
 /**
