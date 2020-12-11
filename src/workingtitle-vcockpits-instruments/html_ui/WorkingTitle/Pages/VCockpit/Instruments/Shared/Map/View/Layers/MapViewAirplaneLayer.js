@@ -58,5 +58,5 @@ class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
 WT_MapViewAirplaneLayer.CLASS_DEFAULT = "airplaneLayer";
 WT_MapViewAirplaneLayer.CONFIG_NAME_DEFAULT = "airplane";
 WT_MapViewAirplaneLayer.OPTIONS_DEF = {
-    iconSize: {default: 200, auto: true}
+    iconSize: {default: 60, auto: true}
 };
