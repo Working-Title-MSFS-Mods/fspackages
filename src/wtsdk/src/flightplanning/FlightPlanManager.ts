@@ -40,6 +40,10 @@ export class FlightPlanManager {
       this._isMaster = true;
       RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
       _parentInstrument.addEventListener("FlightStart", async function () {
+        let plan = new ManagedFlightPlan();
+        plan.setParentInstrument(_parentInstrument);
+        this._flightPlans = [];
+        this._flightPlans.push(plan);
         this.pauseSync();
         await FlightPlanAsoboSync.LoadFromGame(this);
         this.resumeSync();
