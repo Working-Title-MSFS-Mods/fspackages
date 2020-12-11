@@ -13,8 +13,8 @@ class CJ4_FMC_RoutePage {
         this._fplnVersion = -1;
         this._activeWptIndex = -1;
 
-        this._lsk6Field = "<SEC FPLN";
-        this._activateCell = "PERF INIT>";
+        this._lsk6Field = "";
+        this._activateCell = "";
         this._modStr;
         this._originCell;
         this._destinationCell;
@@ -113,7 +113,7 @@ class CJ4_FMC_RoutePage {
         else if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 0) {
             this._fmc.fpHasChanged = false;
             this._activateCell = "PERF INIT>";
-            this._lsk6Field = "<SEC FPLN";
+            this._lsk6Field = "<SEC FPLN[disabled]";
         }
 
         const currFplnVer = SimVar.GetSimVarValue(FlightPlanManager.FlightPlanVersionKey, 'number');
@@ -212,11 +212,6 @@ class CJ4_FMC_RoutePage {
                     }
                 });
             };
-            this._fmc.onRightInput[5] = () => {
-                if (this._activateCell == "PERF INIT>") {
-                    CJ4_FMC_PerfInitPage.ShowPage2(this._fmc);
-                }
-            };
 
             if (this._fmc.flightPlanManager.getCurrentFlightPlan().findSegmentByWaypointIndex(this._rows[0].fpIdx) !== SegmentType.Departure) {
                 this.bindRowEvents(3);
@@ -247,6 +242,12 @@ class CJ4_FMC_RoutePage {
                     this._fmc.fpHasChanged = false;
                     this._fmc.eraseTemporaryFlightPlan(() => { this.update(true); });
                 }
+            }
+        };
+
+        this._fmc.onRightInput[5] = () => {
+            if (this._activateCell == "PERF INIT>") {
+                CJ4_FMC_PerfInitPage.ShowPage2(this._fmc);
             }
         };
 
