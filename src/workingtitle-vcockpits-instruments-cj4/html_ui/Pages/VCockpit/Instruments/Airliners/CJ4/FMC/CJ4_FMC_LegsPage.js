@@ -96,8 +96,13 @@ class CJ4_FMC_LegsPage {
                     }
                 }
                 else if (isActWpt) {
-                    this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM[magenta]"];
-                    this._rows[2 * i + 1] = [waypoint.fix.ident != "" ? waypoint.fix.ident + "[magenta]" : "USR[magenta]"];
+                    if (waypoint.fix.icao === '$DISCO') {
+                        this._rows[2 * i] = [" THEN[magenta]"];
+                        this._rows[2 * i + 1] = ["□□□□□ - DISCONTINUITY -[magenta]"];
+                    } else {
+                        this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM[magenta]"];
+                        this._rows[2 * i + 1] = [waypoint.fix.ident != "" ? waypoint.fix.ident + "[magenta]" : "USR[magenta]"];
+                    }
                 }
                 else {
                     if (waypoint.fix.icao === '$DISCO') {
