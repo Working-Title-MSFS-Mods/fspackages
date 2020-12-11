@@ -509,6 +509,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.bIsFlightPlanVisible = false;
         }
     }
+
     onBeforeMapRedraw() {
         if (this.eBingMode !== EBingMode.HORIZON) {
             this.rotation = this.rotationHandler.getRotation();
@@ -810,7 +811,7 @@ class MapInstrument extends ISvgMapRootElement {
                             }
                         }
                         this.navMap.mapElements.push(this.flightPlanElement);
-                        for (let i = 0; i < l; i++) {
+                        for (let i = this.flightPlanManager.getActiveWaypointIndex()-2; i < l; i++) {
                             let waypoint = this.flightPlanManager.getWaypoint(i, 0);
                             if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
                                 if (waypoint.getSvgElement(this.navMap.index)) {
