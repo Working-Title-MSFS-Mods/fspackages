@@ -233,7 +233,7 @@ export class ManagedFlightPlan {
         if (this.activeWaypointIndex === 0 && this.length > 1) {
           this.activeWaypointIndex = 1;
         }
-        else if (this.activeWaypointIndex === 1 && waypoint.isRunway) {
+        else if (this.activeWaypointIndex === 1 && waypoint.isRunway && segment.type === SegmentType.Departure) {
           this.activeWaypointIndex = 2;
         }
       }
