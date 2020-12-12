@@ -130,7 +130,13 @@ class CJ4_FMC_RoutePage {
                     emptyRow.airwayIn = this._airwayInput;
                 }
             } else {
-                emptyRow.fpIdx = this._fmc.flightPlanManager.getActiveWaypointIndex();
+                let emptyFixIndex = 1;
+                const firstFix = this._fmc.flightPlanManager.getWaypoint(emptyFixIndex);
+                if (firstFix && firstFix.isRunway) {
+                    emptyFixIndex++;
+                }
+
+                emptyRow.fpIdx = emptyFixIndex;
             }
             this._rows.push(emptyRow);
         }
