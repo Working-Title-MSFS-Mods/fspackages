@@ -1336,6 +1336,10 @@ export class FlightPlanManager {
     return this._flightPlans[this._currentFlightPlanIndex];
   }
 
+  public getFlightPlan(index): ManagedFlightPlan {
+    return this._flightPlans[index];
+  }
+
   /**
    * Updates the synchronized flight plan version and saves it to shared storage.
    */
