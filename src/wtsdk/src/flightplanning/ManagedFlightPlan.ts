@@ -737,8 +737,10 @@ export class ManagedFlightPlan {
 
     if (segment !== FlightPlanSegment.Empty) {
       const finalIndex = segment.offset + segment.waypoints.length;
-      for (var i = startIndex; i < finalIndex; i++) {
-        this.removeWaypoint(startIndex);
+      if(finalIndex < startIndex){
+        for (var i = startIndex; i < finalIndex; i++) {
+          this.removeWaypoint(startIndex);
+        } 
       }
     }
 
