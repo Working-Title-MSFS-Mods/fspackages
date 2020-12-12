@@ -311,7 +311,7 @@ WT_MapViewBorderLayer.LOD_RESOLUTION_THRESHOLDS = [
     WT_Unit.NMILE.createNumber(3)
 ];
 WT_MapViewBorderLayer.OVERDRAW_FACTOR = 1.66421356237;
-WT_MapViewBorderLayer.DRAW_TIME_BUDGET = 5; // ms
+WT_MapViewBorderLayer.DRAW_TIME_BUDGET = 2; // ms
 WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MAX = 0.75; // fraction of view area
 WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MIN = 0.0025; // fraction of view area
 WT_MapViewBorderLayer.OPTIONS_DEF = {
