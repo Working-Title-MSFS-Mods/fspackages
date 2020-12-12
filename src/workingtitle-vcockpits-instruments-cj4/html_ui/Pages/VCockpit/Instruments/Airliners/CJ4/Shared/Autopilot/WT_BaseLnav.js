@@ -1,5 +1,3 @@
-const { ManagedFlightPlan } = require("../../../../../../../../../wtsdk/src/wtsdk");
-
 class WT_BaseLnav {
 
     /**
@@ -50,7 +48,7 @@ class WT_BaseLnav {
     }
 
     get waypoints() {
-        return this.flightplan.slice(this._fpm.getActiveWaypointIndex());
+        return this.flightplan.waypoints.slice(this.flightplan.activeWaypointIndex);
     }
 
     /**
@@ -74,8 +72,8 @@ class WT_BaseLnav {
     update() {
 
         //CAN LNAV EVEN RUN?
-        this._activeWaypoint = this.waypoints(this.flightplan.activeWaypointIndex);
-        this._previousWaypoint = this.waypoints(this.flightplan.activeWaypointIndex - 1);
+        this._activeWaypoint = this.flightplan.waypoints[this.flightplan.activeWaypointIndex];
+        this._previousWaypoint = this.flightplan.waypoints[this.flightplan.activeWaypointIndex - 1];
         const isLnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
         const navModeActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
 
@@ -120,7 +118,7 @@ class WT_BaseLnav {
             SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", correctedDtk);
             SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", this._activeWaypointDist);
 
-            const nextActiveWaypoint = this.waypoints(this.flightplan.activeWaypointIndex + 1);
+            const nextActiveWaypoint = this.flightplan.waypoints[this.flightplan.activeWaypointIndex + 1];
 
             //Remove heading instruction inhibition when near desired track
             if (Math.abs(Avionics.Utils.angleDiff(this._dtk, planeHeading)) < 15) {
@@ -135,9 +133,9 @@ class WT_BaseLnav {
                 this._setHeading = (((this._dtk + interceptAngle) % 360) + 360) % 360;
 
                 //CASE WHERE WE ARE PASSED THE WAYPOINT AND SHOULD SEQUENCE THE NEXT WPT
-                if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90 && this._groundSpeed > 40) {
+                if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90 && this._groundSpeed > 10) {
                     this._setHeading = this._dtk;
-                    this.flightplan.activeWaypointIndex = this.flightplan.activeWaypointIndex + 1;
+                    this._fpm.setActiveWaypointIndex(this.flightplan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
 
                     SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
 
@@ -176,10 +174,10 @@ class WT_BaseLnav {
                     }
                     // console.log("d/a/ta: " + this._activeWaypointDist.toFixed(2) + "/" + activateDistance.toFixed(2) + "/" + Math.abs(currentFixTurnAngle).toFixed(2) + "/" + this._activeWaypoint.ident);
 
-                    if (this._activeWaypointDist <= activateDistance && this._groundSpeed > 40) { //TIME TO START TURN
+                    if (this._activeWaypointDist <= activateDistance && this._groundSpeed > 10) { //TIME TO START TURN
                         console.log("ACTIVATE " + this._activeWaypoint.ident);
                         this._setHeading = toNextFixHeading;
-                        this.flightplan.activeWaypointIndex = this.flightplan.activeWaypointIndex + 1;
+                        this._fpm.setActiveWaypointIndex(this.flightplan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
 
                         SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
 

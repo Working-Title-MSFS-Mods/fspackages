@@ -56,7 +56,7 @@ class WT_BaseVnav {
     }
 
     get waypoints() {
-        return this.flightplan.slice(this._fpm.getActiveWaypointIndex());
+        return this.flightplan.waypoints.slice(this.flightplan.activeWaypointIndex);
     }
 
     /**
@@ -90,7 +90,7 @@ class WT_BaseVnav {
 
         //CAN VNAV EVEN RUN?
         this._destination = this._fpm.getDestination();
-        this._activeWaypoint = this.waypoints(this.flightplan.activeWaypointIndex);
+        this._activeWaypoint = this.flightplan.waypoints[this.flightplan.activeWaypointIndex];
         this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
 
         const flightPlanVersion = SimVar.GetSimVarValue("L:WT.FlightPlan.Version", "number");
