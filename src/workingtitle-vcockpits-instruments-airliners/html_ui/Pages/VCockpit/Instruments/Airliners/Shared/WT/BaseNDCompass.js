@@ -667,6 +667,10 @@ class Jet_NDCompass extends HTMLElement {
             this._currentCourse = 0;
         }
 
+        if (!this._previousDisplayMode) {
+            this._previousDisplayMode = this.displayMode;
+        }
+
         if (this._currentCourse !== this._courseTarget) {
             const angleDiff = Avionics.Utils.angleDiff(this._currentCourse, this._courseTarget);
             const absAngleDiff = Math.abs(angleDiff);
@@ -681,6 +685,14 @@ class Jet_NDCompass extends HTMLElement {
                 this.course.setAttribute("transform", "rotate(" + (this._currentCourse) + " " + (50 * factor) + " " + (50 * factor) + ")");
             }
         }
+        else if (this._currentCourse === this._courseTarget && this._previousDisplayMode !== this.displayMode) {
+            let factor = (this.displayMode === Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.PPOS) ? 1 : 10;
+            if (this.course) {
+                this.course.setAttribute("transform", "rotate(" + (this._currentCourse) + " " + (50 * factor) + " " + (50 * factor) + ")");
+            }
+        }
+
+        this._previousDisplayMode = this.displayMode;
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
