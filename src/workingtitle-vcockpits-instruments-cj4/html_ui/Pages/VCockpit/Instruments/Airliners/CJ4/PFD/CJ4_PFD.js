@@ -834,7 +834,7 @@ class CJ4_APDisplay extends NavSystemElement {
                     Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
                 }
 
-                const verticalArmed = verticalArmed2 ? verticalArmed1 + " " + verticalArmed2 : verticalArmed1 ? verticalArmed1 : "";
+                const verticalArmed = verticalArmed2 ? verticalArmed2 : verticalArmed1 ? verticalArmed1 : "";
                 Avionics.Utils.diffAndSet(this.AP_Armed, verticalArmed);
                 //Avionics.Utils.diffAndSet(this.AP_Armed, verticalArmed1 ? verticalArmed1 : "");
 

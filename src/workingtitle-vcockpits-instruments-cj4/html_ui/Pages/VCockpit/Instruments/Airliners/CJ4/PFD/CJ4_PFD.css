@@ -228,7 +228,7 @@ cj4-pfd-element {
             top: 0%; }
             cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_VerticalActive {
               position: absolute;
-              width: 50%;
+              width: 80%;
               color: white;
               font-size: 1.5vh;
               top: 8%;
