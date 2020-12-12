@@ -548,7 +548,6 @@ class CJ4NavModeSelector {
           this.isVNAVOn = true;
           SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
 
-
           if (this.vPathState === VPathState.ACTIVE) {
             this.currentVerticalActiveState = VerticalNavModeState.GP;
           }
@@ -574,7 +573,20 @@ class CJ4NavModeSelector {
             SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0);
           }
 
-          SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
+          const headingLockActive = SimVar.GetSimVarValue('AUTOPILOT HEADING LOCK', 'number') === 1;
+          if (headingLockActive) {
+            SimVar.SetSimVarValue('K:AP_PANEL_HEADING_HOLD', 'number', 0);
+          }
+
+          if (this.currentLateralActiveState !== LateralNavModeState.NAV) {
+            SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 1);
+          }
+
+          setTimeout(() => {
+            if (this.currentLateralActiveState === LateralNavModeState.APPR) {
+              SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
+            }        
+          }, 1000);
 
           break;
         }
