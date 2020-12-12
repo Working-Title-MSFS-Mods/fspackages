@@ -1,0 +1,91 @@
+/**
+ * A text label for a waypoint.
+ */
+class WT_MapViewWaypointLabel extends WT_MapViewSimpleTextLabel {
+    /**
+     * @param {WT_Waypoint} waypoint - the waypoint for which to create the new label.
+     * @param {String} text - the text content of the new label.
+     * @param {Number} priority - the priority for the new label.
+     */
+    constructor(waypoint, text, priority) {
+        super(text, priority);
+        this._waypoint = waypoint;
+        this._offset = new WT_GVector2(0, 0);
+
+        this._anchor.set(0.5, 0.5);
+    }
+
+    /**
+     * @readonly
+     * @property {WT_Waypoint} waypoint - the waypoint to which this label belongs.
+     * @type {WT_Waypoint}
+     */
+    get waypoint() {
+        return this._waypoint;
+    }
+
+    /**
+     * @property {WT_GVector2} offset - the offset, in pixel coordinates, of this label from the projected location of its waypoint.
+     * @type {WT_GVector2}
+     */
+    get offset() {
+        return this._offset.readonly();
+    }
+
+    set offset(value) {
+        this._offset.set(value);
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    update(state) {
+        state.projection.project(this.waypoint.location, this._position);
+        this._position.add(this.offset);
+
+        super.update(state);
+    }
+
+    /**
+     * Creates a new label for a waypoint.
+     * @param {WT_Waypoint} waypoint - the waypoint for which to create a label.
+     * @param {Number} priority - the priority for the new label.
+     * @returns {WT_MapViewWaypointLayer} a waypoint label.
+     */
+    static createFromWaypoint(waypoint, priority) {
+        let text = waypoint.ident;
+        return new WT_MapViewWaypointLabel(waypoint, text, priority);
+    }
+}
+
+/**
+ * A cache for waypoint labels.
+ */
+class WT_MapViewWaypointLabelCache {
+    /**
+     * @param {Number} size - the size of the new cache.
+     */
+    constructor(size) {
+        this._cache = new Map();
+        this._size = size;
+    }
+
+    /**
+     * Retrieves a label from the cache for a waypoint. If one cannot be found in the cache, a new label is added to the cache and
+     * returned.
+     * @param {WT_Waypoint} waypoint - the waypoint for which to get a label.
+     * @param {Number} priority - the priority for the label, if a new one has to be created.
+     * @returns {WT_MapViewWaypointLabel} a label for the waypoint.
+     */
+    getLabel(waypoint, priority) {
+        let existing = this._cache.get(waypoint.uniqueID);
+        if (!existing) {
+            existing = WT_MapViewWaypointLabel.createFromWaypoint(waypoint, priority);
+            this._cache.set(waypoint.uniqueID, existing);
+            if (this._cache.size > this._size) {
+                this._cache.delete(this._cache.keys().next().value);
+            }
+        }
+        return existing;
+    }
+}
