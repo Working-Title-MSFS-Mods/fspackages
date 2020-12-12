@@ -135,7 +135,7 @@ class WT_BaseLnav {
                 this._setHeading = (((this._dtk + interceptAngle) % 360) + 360) % 360;
 
                 //CASE WHERE WE ARE PASSED THE WAYPOINT AND SHOULD SEQUENCE THE NEXT WPT
-                if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90) {
+                if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90 && this._groundSpeed > 40) {
                     this._setHeading = this._dtk;
                     this.flightplan.activeWaypointIndex = this.flightplan.activeWaypointIndex + 1;
 
@@ -176,7 +176,7 @@ class WT_BaseLnav {
                     }
                     // console.log("d/a/ta: " + this._activeWaypointDist.toFixed(2) + "/" + activateDistance.toFixed(2) + "/" + Math.abs(currentFixTurnAngle).toFixed(2) + "/" + this._activeWaypoint.ident);
 
-                    if (this._activeWaypointDist <= activateDistance) { //TIME TO START TURN
+                    if (this._activeWaypointDist <= activateDistance && this._groundSpeed > 40) { //TIME TO START TURN
                         console.log("ACTIVATE " + this._activeWaypoint.ident);
                         this._setHeading = toNextFixHeading;
                         this.flightplan.activeWaypointIndex = this.flightplan.activeWaypointIndex + 1;
