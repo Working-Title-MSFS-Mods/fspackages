@@ -20,7 +20,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._airwayWaypoints = [];
 
         /**
-         * @type {Map<String,WT_MapViewManagedWaypointEntry>}
+         * @type {Map<String,WT_MapViewRegisteredWaypointEntry>}
          */
         this._registeredWaypoints = new Map();
 
@@ -739,13 +739,13 @@ WT_MapViewWaypointLayer.CONFIG_PROPERTIES = [
  * @property {{x:Number, y:Number}} offset - the offset, in pixel coordinates, of the label from the projected location of its waypoint.
  */
 
- /**
-  * @typedef WT_MapViewManagedWaypointEntry
-  * @property {WT_Waypoint} waypoint
-  * @property {WT_MapViewWaypointIcon} icon
-  * @property {WT_MapViewWaypointLabel} label
-  * @property {Boolean} showIcon
-  * @property {Boolean} showLabel
-  * @property {Boolean} standalone
-  * @property {Boolean} airway
-  */
+/**
+ * @typedef WT_MapViewRegisteredWaypointEntry
+ * @property {WT_Waypoint} waypoint
+ * @property {WT_MapViewWaypointIcon} icon
+ * @property {WT_MapViewWaypointLabel} label
+ * @property {Boolean} showIcon
+ * @property {Boolean} showLabel
+ * @property {Boolean} standalone
+ * @property {Boolean} airway
+ */
