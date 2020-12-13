@@ -29,6 +29,8 @@ class CJ4_FMC_ModSettingsPageOne {
 
         this._yokeHide = SimVar.GetSimVarValue("L:XMLVAR_YOKEHidden1", "number");
 
+        this._fpSync = WTDataStore.get('WT_CJ4_FPSYNC', 0);
+
     }
 
     get lightMode() { return this._lightMode; }
@@ -90,21 +92,33 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
+    get fpSync() { return this._fpSync; }
+    set fpSync(value) {
+        if (value == 2) value = 0;
+        this._fpSync = value;
+
+        // set datastore
+        WTDataStore.set('WT_CJ4_FPSYNC', value);
+
+        this.invalidate();
+    }
+
     render() {
         let lightSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "DIM", "ON"], this.lightMode);
         let pilotIdDisplay = (this.pilotId !== this._pilotDefault) ? this.pilotId + "[green]" : this._pilotDefault;
         let unitsSwitch = this._fmc._templateRenderer.renderSwitch(["IMPERIAL", "METRIC"], this.cj4Units);
         let gpuSettingSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.gpuSetting);
         let yokeHideSwitch = this._fmc._templateRenderer.renderSwitch(["NO", "YES"], this.yokeHide);
+        let fpSyncSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.fpSync);
 
-        if(!this._gpuAvailable) {
+        if (!this._gpuAvailable) {
             gpuSettingSwitch = "NO EXT PWR[disabled]";
         }
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/1[blue] ", "WT MOD SETTINGS[yellow]"],
-            [" CABIN LIGHTS[blue]"],
-            [lightSwitch],
+            [" CABIN LIGHTS[blue]", "FP SYNC[blue]"],
+            [lightSwitch, fpSyncSwitch],
             [" SIMBRIEF PILOT ID[blue]"],
             [pilotIdDisplay, ""],
             [" FMS/MFD UNITS[blue]"],

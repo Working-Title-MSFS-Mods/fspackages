@@ -60,7 +60,7 @@ declare module "MSFS" {
     arrivals: any[];
     runways: any[];
     oneWayRunways: OneWayRunway[];
-    UpdateNamedFrequencies(icao? : string) : Promise<void>
+    UpdateNamedFrequencies(icao?: string): Promise<void>
   }
 
   export class IntersectionInfo extends WayPointInfo {
