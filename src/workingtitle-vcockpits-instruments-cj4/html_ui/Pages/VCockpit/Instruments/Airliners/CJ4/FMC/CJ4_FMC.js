@@ -58,7 +58,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._vnav = undefined;
         this._lnav = undefined;
         this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
-        this._altAlertCd = 2000;
+        this._altAlertCd = 500;
         this._altAlertPreselect = 0;
     }
     get templateID() { return "CJ4_FMC"; }
@@ -732,10 +732,10 @@ class CJ4_FMC extends FMCMainDisplay {
 
                 if(this._altAlertCd < 0){
                     this._altAlertState = CJ4_FMC.ALTALERT_STATE.ALERT;
-                    this._altAlertCd = 2000;
+                    this._altAlertCd = 500;
                 }else if(difference > 1000){
                     this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
-                    this._altAlertCd = 2000;
+                    this._altAlertCd = 500;
                 }
                 break;
             case CJ4_FMC.ALTALERT_STATE.ALERT:

@@ -18,7 +18,7 @@
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 						</Reference>
 						<Reference Name="OutputBus">
-							<ObjectRef Name="warning_inside_generic" ID="{6C22F7CB-D5EB-4419-8CF6-BA4C5E88B5F0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+							<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
@@ -52,7 +52,7 @@
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 						</Reference>
 						<Reference Name="OutputBus">
-							<ObjectRef Name="warning_inside_generic" ID="{6C22F7CB-D5EB-4419-8CF6-BA4C5E88B5F0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+							<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
@@ -86,7 +86,7 @@
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 						</Reference>
 						<Reference Name="OutputBus">
-							<ObjectRef Name="warning_inside_generic" ID="{6C22F7CB-D5EB-4419-8CF6-BA4C5E88B5F0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+							<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
@@ -121,7 +121,7 @@
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 						</Reference>
 						<Reference Name="OutputBus">
-							<ObjectRef Name="warning_inside_generic" ID="{6C22F7CB-D5EB-4419-8CF6-BA4C5E88B5F0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+							<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
@@ -176,7 +176,7 @@
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 						</Reference>
 						<Reference Name="OutputBus">
-							<ObjectRef Name="warning_inside_generic" ID="{6C22F7CB-D5EB-4419-8CF6-BA4C5E88B5F0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+							<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
@@ -210,7 +210,7 @@
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 						</Reference>
 						<Reference Name="OutputBus">
-							<ObjectRef Name="warning_inside_generic" ID="{6C22F7CB-D5EB-4419-8CF6-BA4C5E88B5F0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+							<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
@@ -244,7 +244,7 @@
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 						</Reference>
 						<Reference Name="OutputBus">
-							<ObjectRef Name="warning_inside_generic" ID="{6C22F7CB-D5EB-4419-8CF6-BA4C5E88B5F0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+							<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
