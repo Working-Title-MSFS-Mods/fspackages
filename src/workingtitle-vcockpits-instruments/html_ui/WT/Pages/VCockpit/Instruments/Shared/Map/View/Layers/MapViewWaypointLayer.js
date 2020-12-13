@@ -372,8 +372,8 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         let label = this._airwaySegmentLabelCache.getLabel(airway, segment, pathPosition, this.airwayLabelPriority);
         label.fontSize = this.airwayLabelFontSize;
         label.fontColor = this.airwayLabelFontColor;
-        label.outlineWidth = this.airwayLabelFontOutlineWidth;
-        label.outlineColor = this.airwayLabelFontOutlineColor;
+        label.fontOutlineWidth = this.airwayLabelFontOutlineWidth;
+        label.fontOutlineColor = this.airwayLabelFontOutlineColor;
         label.showBackground = this.airwayLabelShowBackground;
         if (this.airwayLabelShowBackground) {
             label.backgroundColor = this.airwayLabelBackgroundColor;

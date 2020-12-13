@@ -232,8 +232,8 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     _setLabelStyles(label, fontSize, fontColor, outlineWidth, outlineColor) {
         label.fontSize = fontSize;
         label.fontColor = fontColor;
-        label.outlineWidth = outlineWidth;
-        label.outlineColor = outlineColor;
+        label.fontOutlineWidth = outlineWidth;
+        label.fontOutlineColor = outlineColor;
     }
 
     _updateLabelsToShow(newLabelsToShow) {
@@ -321,8 +321,8 @@ WT_MapViewBorderLayer.OPTIONS_DEF = {
     outlineWidth: {default: 0, auto: true},
     outlineColor: {default: "black", auto: true},
 
-    countryLabelPriority: {default: 90, auto: true},
-    stateLabelPriority: {default: 70, auto: true},
+    countryLabelPriority: {default: 60, auto: true},
+    stateLabelPriority: {default: 40, auto: true},
 
     countryFontSize: {default: 25, auto: true},
     countryFontColor: {default: "white", auto: true},
