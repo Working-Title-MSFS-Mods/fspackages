@@ -2689,15 +2689,114 @@ class CJ4_SystemAnnunciations extends Cabin_Annunciations {
     constructor() {
         super();
         this.rootElementName = "";
+        this.warningToneNameZ = new Name_Z("WT_tone_warning");
+        this.cautionToneNameZ = new Name_Z("WT_tone_caution");
     }
     init(_root) {
         super.init(_root);
         this.annunciations = _root.querySelector(".SystemAnnunciations");
     }
-    onUpdate(_dTime) {
+
+    onUpdate(_deltaTime) {
         if (!this.annunciations)
-            return;
-        super.onUpdate(_dTime);
+        return;
+
+        for (var i = 0; i < this.allMessages.length; i++) {
+            var message = this.allMessages[i];
+            var value = false;
+            if (message.Handler)
+                value = message.Handler() != 0;
+            if (value != message.Visible) {
+                this.needReload = true;
+                message.Visible = value;
+                message.Acknowledged = (this.gps.getTimeSinceStart() < 10000 && !this.offStart);
+                if (value) {
+                    switch (message.Type) {
+                        case Annunciation_MessageType.WARNING:
+                            this.displayWarning.push(message);
+                            break;
+                        case Annunciation_MessageType.CAUTION:
+                            this.displayCaution.push(message);
+                            if (!message.Acknowledged && !this.isPlayingWarningTone && this.gps.isPrimary) {
+                                let res = this.gps.playInstrumentSound("WT_tone_caution");
+                                if (res)
+                                    this.isPlayingWarningTone = true;
+                            }
+                            break;
+                        case Annunciation_MessageType.ADVISORY:
+                            this.displayAdvisory.push(message);
+                            break;
+                    }
+                }
+                else {
+                    switch (message.Type) {
+                        case Annunciation_MessageType.WARNING:
+                            for (let i = 0; i < this.displayWarning.length; i++) {
+                                if (this.displayWarning[i].Text == message.Text) {
+                                    this.displayWarning.splice(i, 1);
+                                    break;
+                                }
+                            }
+                            break;
+                        case Annunciation_MessageType.CAUTION:
+                            for (let i = 0; i < this.displayCaution.length; i++) {
+                                if (this.displayCaution[i].Text == message.Text) {
+                                    this.displayCaution.splice(i, 1);
+                                    break;
+                                }
+                            }
+                            break;
+                        case Annunciation_MessageType.ADVISORY:
+                            for (let i = 0; i < this.displayAdvisory.length; i++) {
+                                if (this.displayAdvisory[i].Text == message.Text) {
+                                    this.displayAdvisory.splice(i, 1);
+                                    break;
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+        if (this.annunciations)
+            this.annunciations.setAttribute("state", this.gps.blinkGetState(800, 400) ? "Blink" : "None");
+        if (this.needReload) {
+            let warningOn = 0;
+            let cautionOn = 0;
+            let messages = "";
+            for (let i = this.displayWarning.length - 1; i >= 0; i--) {
+                messages += '<div class="Warning';
+                if (!this.displayWarning[i].Acknowledged) {
+                    messages += '_Blink';
+                    warningOn = 1;
+                }
+                messages += '">' + this.displayWarning[i].Text + "</div>";
+            }
+            for (let i = this.displayCaution.length - 1; i >= 0; i--) {
+                messages += '<div class="Caution';
+                if (!this.displayCaution[i].Acknowledged) {
+                    messages += '_Blink';
+                    cautionOn = 1;
+                }
+                messages += '">' + this.displayCaution[i].Text + "</div>";
+            }
+            for (let i = this.displayAdvisory.length - 1; i >= 0; i--) {
+                messages += '<div class="Advisory">' + this.displayAdvisory[i].Text + "</div>";
+            }
+            this.warningTone = warningOn > 0;
+            if (this.gps.isPrimary) {
+                SimVar.SetSimVarValue("L:Generic_Master_Warning_Active", "Bool", warningOn);
+                SimVar.SetSimVarValue("L:Generic_Master_Caution_Active", "Bool", cautionOn);
+            }
+            if (this.annunciations)
+                this.annunciations.innerHTML = messages;
+            this.needReload = false;
+        }
+        if (this.warningTone && !this.isPlayingWarningTone && this.gps.isPrimary) {
+            let res = this.gps.playInstrumentSound("WT_tone_warning");
+            if (res)
+                this.isPlayingWarningTone = true;
+        }
     }
 }
 class CJ4_SystemWarnings extends Cabin_Warnings {

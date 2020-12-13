@@ -3,7 +3,7 @@ class CJ4_FMC extends FMCMainDisplay {
         super(...arguments);
         this._registered = false;
         this._isRouteActivated = false;
-        this._lastUpdateAPTime = NaN;
+        this._lastUpdateTime = NaN;
         this.refreshFlightPlanCooldown = 0;
         this.updateAutopilotCooldown = 0;
         this._hasSwitchedToHoldOnTakeOff = false;
@@ -57,6 +57,9 @@ class CJ4_FMC extends FMCMainDisplay {
         this._currentAP = undefined;
         this._vnav = undefined;
         this._lnav = undefined;
+        this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
+        this._altAlertCd = 2000;
+        this._altAlertPreselect = 0;
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -199,12 +202,17 @@ class CJ4_FMC extends FMCMainDisplay {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
-        this.updateAutopilot();
+
+        let now = performance.now();
+        let dt = now - this._lastUpdateTime;
+        this._lastUpdateTime = now;
+
+        this.updateAutopilot(dt);
         this.adjustFuelConsumption();
         this.updateFlightLog();
         this.updateCabinLights();
         this.updatePersistentHeading();
-
+        this.updateAlerters(dt);
         this._frameUpdates++;
         if (this._frameUpdates > 64000) this._frameUpdates = 0;
     }
@@ -421,11 +429,7 @@ class CJ4_FMC extends FMCMainDisplay {
         });
     }
 
-    updateAutopilot() {
-        let now = performance.now();
-        let dt = now - this._lastUpdateAPTime;
-        this._lastUpdateAPTime = now;
-
+    updateAutopilot(dt) {
         if (isFinite(dt)) {
             this.updateAutopilotCooldown -= dt;
         }
@@ -708,6 +712,52 @@ class CJ4_FMC extends FMCMainDisplay {
             }
         }
     }
+
+    updateAlerters(dt) {
+        const preselector = Simplane.getAutoPilotSelectedAltitudeLockValue();
+        const indicated = Simplane.getAltitude();
+        const difference = Math.abs(indicated - preselector);
+
+        switch(this._altAlertState) {
+            case CJ4_FMC.ALTALERT_STATE.NONE:
+                SimVar.SetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number", 0);
+                if(difference < 1000){
+                    this._altAlertState = CJ4_FMC.ALTALERT_STATE.ARMED
+                }
+                break;
+            case CJ4_FMC.ALTALERT_STATE.ARMED:
+                if (isFinite(dt)) {
+                    this._altAlertCd -= dt;
+                }
+
+                if(this._altAlertCd < 0){
+                    this._altAlertState = CJ4_FMC.ALTALERT_STATE.ALERT;
+                    this._altAlertCd = 2000;
+                }else if(difference > 1000){
+                    this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
+                    this._altAlertCd = 2000;
+                }
+                break;
+            case CJ4_FMC.ALTALERT_STATE.ALERT:
+                // if lvar not alerted
+                if(SimVar.GetSimVarValue() == 0){
+                    this._altAlertPreselect = preselector;
+                    SimVar.SetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number", 1);
+                }
+
+                // go to NONE when preselector changed
+                if(Math.abs(preselector - this._altAlertPreselect) > 1000){
+                    this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
+                }
+                break;
+        }
+    }
+}
+
+CJ4_FMC.ALTALERT_STATE = {
+    NONE: 0,
+    ARMED: 1,
+    ALERT: 2
 }
 
 

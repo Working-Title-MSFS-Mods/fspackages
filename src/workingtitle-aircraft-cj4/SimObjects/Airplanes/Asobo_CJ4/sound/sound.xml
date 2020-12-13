@@ -355,6 +355,10 @@
 		</Sound>
 
 
+		<Sound WwiseData="true" WwiseEvent="WT_altitude_alert" LocalVar="WT_CJ4_Altitude_Alerter_Active" Continuous="false">
+			<Range UpperBound="0" />
+		</Sound>
+
 
 	</SimVarSounds>
 
@@ -371,18 +375,18 @@
 		<Sound WwiseData="true" WwiseEvent="aural_500ft" />
 		<Sound WwiseData="true" WwiseEvent="aural_1000ft" />
 		<Sound WwiseData="true" WwiseEvent="aural_stall" />
-		<Sound WwiseData="true" WwiseEvent="aural_pull_up" />
-		<Sound WwiseData="true" WwiseEvent="aural_overspeed" />
+		<Sound WwiseData="true" WwiseEvent="WT_aural_pull_up" />
+		<Sound WwiseData="true" WwiseEvent="WT_aural_overspeed" />
 		<Sound WwiseData="true" WwiseEvent="aural_sink_rate" />
 		<Sound WwiseData="true" WwiseEvent="aural_dont_sink" />
-		<Sound WwiseData="true" WwiseEvent="aural_minimums" />
-		<Sound WwiseData="true" WwiseEvent="aural_landing_gear" />
+		<Sound WwiseData="true" WwiseEvent="WT_aural_minimums" />
+		<Sound WwiseData="true" WwiseEvent="WT_aural_landing_gear" />
 		<Sound WwiseData="true" WwiseEvent="aural_taws_system_test_ok" ViewPoint="Inside"/>
 		<Sound WwiseData="true" WwiseEvent="aural_warning_ok" ViewPoint="Inside"/>
-		<Sound WwiseData="true" WwiseEvent="tone_caution" ViewPoint="Inside"/>
-		<Sound WwiseData="true" WwiseEvent="tone_warning" ViewPoint="Inside"/>
+		<Sound WwiseData="true" WwiseEvent="WT_tone_caution" ViewPoint="Inside"/>
+		<Sound WwiseData="true" WwiseEvent="WT_tone_warning" ViewPoint="Inside"/>
 		<Sound WwiseData="true" WwiseEvent="tone_touchscreen_touch" ViewPoint="Inside"/>
-		<Sound WwiseData="true" WwiseEvent="tone_altitude_alert_default" ViewPoint="Inside"/>
+		<!-- <Sound WwiseData="true" WwiseEvent="WT_altitude_alerter" ViewPoint="Inside"/> -->
 	</AvionicSounds>
 
 	<!-- AnimationSounds ################################################################################# -->
