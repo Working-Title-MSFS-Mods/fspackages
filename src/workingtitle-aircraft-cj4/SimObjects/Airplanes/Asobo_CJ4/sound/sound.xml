@@ -355,10 +355,13 @@
 		</Sound>
 
 
-		<Sound WwiseData="true" WwiseEvent="WT_altitude_alert" LocalVar="WT_CJ4_Altitude_Alerter_Active" Continuous="false">
+		<Sound WwiseData="true" WwiseEvent="WT_altitude_alerter" LocalVar="WT_CJ4_Altitude_Alerter_Active" Continuous="false">
 			<Range UpperBound="0" />
 		</Sound>
 
+		<Sound WwiseData="true" WwiseEvent="WT_aural_overspeed" SimVar="OVERSPEED WARNING" Units="BOOL" Index="0">
+			<Range LowerBound="1" />
+		</Sound>
 
 	</SimVarSounds>
 
@@ -376,7 +379,7 @@
 		<Sound WwiseData="true" WwiseEvent="aural_1000ft" />
 		<Sound WwiseData="true" WwiseEvent="aural_stall" />
 		<Sound WwiseData="true" WwiseEvent="WT_aural_pull_up" />
-		<Sound WwiseData="true" WwiseEvent="WT_aural_overspeed" />
+		<!-- <Sound WwiseData="true" WwiseEvent="WT_aural_overspeed" /> -->
 		<Sound WwiseData="true" WwiseEvent="aural_sink_rate" />
 		<Sound WwiseData="true" WwiseEvent="aural_dont_sink" />
 		<Sound WwiseData="true" WwiseEvent="WT_aural_minimums" />

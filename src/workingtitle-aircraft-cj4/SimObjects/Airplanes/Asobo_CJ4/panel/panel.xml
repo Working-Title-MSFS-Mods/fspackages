@@ -569,13 +569,13 @@
 			</Condition>
 		</Alert>
 		
-		<Alert>
+		<!-- <Alert>
 			<Type>SoundOnly</Type>
 			<SoundEvent>WT_aural_overspeed</SoundEvent>
 			<Condition>
 				<Simvar name="OVERSPEED WARNING" unit="bool"/>
 			</Condition>
-		</Alert>
+		</Alert> -->
 		
 		<Alert>
 			<Type>Caution</Type>
