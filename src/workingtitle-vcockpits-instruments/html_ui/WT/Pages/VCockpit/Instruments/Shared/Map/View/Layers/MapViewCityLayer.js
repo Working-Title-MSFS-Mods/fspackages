@@ -146,7 +146,6 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
 
     _renderCity(size, city, state) {
         this._drawIcon(state, city, this._cityLayers[size]);
-        let drawnCities = this._drawnCities[size];
         this._drawnCities[size].push(city);
         if (this._shouldDrawUnfinished[size]) {
             this._registerCity(city);
