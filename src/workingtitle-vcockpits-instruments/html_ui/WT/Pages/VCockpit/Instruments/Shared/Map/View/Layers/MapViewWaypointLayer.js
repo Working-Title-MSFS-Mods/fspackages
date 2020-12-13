@@ -544,8 +544,8 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         let viewBoundBottom = state.projection.viewHeight * 1.05;
 
         let deprecateBoundLeft = (state.projection.viewWidth - deprecateSize) / 2;
-        let deprecateBoundRight = (deprecateSize - state.projection.viewWidth) / 2;
-        let deprecateBoundTop = deprecateBoundLeft + deprecateSize;
+        let deprecateBoundRight = deprecateBoundLeft + deprecateSize;
+        let deprecateBoundTop = (state.projection.viewHeight - deprecateSize) / 2;
         let deprecateBoundBottom = deprecateBoundTop + deprecateSize;
 
         let showAirport = [
