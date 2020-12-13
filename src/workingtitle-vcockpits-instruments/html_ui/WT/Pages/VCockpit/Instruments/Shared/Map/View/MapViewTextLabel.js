@@ -94,9 +94,9 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
 
         context.textBaseline = "middle";
         context.textAlign = "center";
-        if (this.outlineWidth > 0) {
-            context.lineWidth = this.outlineWidth * 2 * state.dpiScale;
-            context.strokeStyle = this.outlineColor;
+        if (this.fontOutlineWidth > 0) {
+            context.lineWidth = this.fontOutlineWidth * 2 * state.dpiScale;
+            context.strokeStyle = this.fontOutlineColor;
             context.strokeText(this.text, centerX, centerY);
         }
         context.fillStyle = this.fontColor;
