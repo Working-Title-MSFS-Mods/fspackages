@@ -142,8 +142,8 @@ WT_Map_Setup.DEFAULT = {
 
 class WT_Map_Setup_Handler {
     /**
-     * @param {WT_Map_Setup} mapSetup 
-     * @param {MapInstrument} map 
+     * @param {WT_Map_Setup} mapSetup
+     * @param {MapInstrument} map
      */
     constructor(mapSetup, map) {
         this.mapSetup = mapSetup;
@@ -181,6 +181,7 @@ class WT_Map_Setup_Handler {
                     }
                 }
             },
+            topographyEnabled: value => { m.showIsolines(value) },
             terrainDataEnabled: value => {
                 if (value) {
                     m.mapConfigId = 2;
@@ -188,6 +189,13 @@ class WT_Map_Setup_Handler {
                 } else {
                     m.mapConfigId = 1;
                     m.bingMapRef = EBingReference.SEA;
+                }
+            },
+            nexradEnabled: value => {
+                if(value) {
+                    m.showWeather(EWeatherRadar.TOPVIEW)
+                } else {
+                    m.showWeather(EWeatherRadar.OFF)
                 }
             },
             fuelRingEnabled: value => m.showFuelRing = value,
@@ -216,7 +224,7 @@ class WT_Map_Setup_Handler {
 
 class WT_Map_Setup_Model {
     /**
-     * @param {WT_Map_Setup} setup 
+     * @param {WT_Map_Setup} setup
      */
     constructor(setup) {
         this.mapSetup = setup;
@@ -266,8 +274,8 @@ class WT_Map_Setup_Input_Layer extends Selectables_Input_Layer {
 
 class WT_Map_Setup_View extends WT_HTML_View {
     /**
-     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
-     * @param {MapInstrument} map 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler
+     * @param {MapInstrument} map
      */
     constructor(softKeyMenuHandler, map) {
         super();
@@ -329,7 +337,7 @@ class WT_Map_Setup_View extends WT_HTML_View {
         });
     }
     /**
-     * @param {WT_Map_Setup_Model} model 
+     * @param {WT_Map_Setup_Model} model
      */
     setModel(model) {
         this.model = model;
