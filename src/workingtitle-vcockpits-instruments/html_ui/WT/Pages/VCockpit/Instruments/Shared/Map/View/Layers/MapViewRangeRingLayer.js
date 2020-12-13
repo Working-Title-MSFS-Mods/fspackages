@@ -44,6 +44,7 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
         for (let property of WT_MapViewRangeRingLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
+        this._rangeRing.label.show = this.showLabel;
     }
 
     /**
@@ -80,6 +81,8 @@ WT_MapViewRangeRingLayer.OPTIONS_DEF = {
     outlineWidth: {default: 0, auto: true},
     outlineColor: {default: "#000000", auto: true},
     outlineDash: {default: [], auto: true},
+
+    showLabel: {default: true, auto: true},
     labelAngle: {default: -45, auto: true},
     labelOffset: {default: 0, auto: true}
 };
@@ -90,6 +93,7 @@ WT_MapViewRangeRingLayer.CONFIG_PROPERTIES = [
     "outlineWidth",
     "outlineColor",
     "outlineDash",
+    "showLabel",
     "labelAngle",
     "labelOffset"
 ];
