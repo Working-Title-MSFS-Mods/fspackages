@@ -6,6 +6,10 @@ class WT_BaseVnav {
      * @param {CJ4NavModeSelector} navModeSelector The nav mode selector to use with this instance.
      */
     constructor(fpm, navModeSelector) {
+        /**
+         * The flight plan manager
+         * @type {FlightPlanManager}
+         */
         this._fpm = fpm;
         this._navModeSelector = navModeSelector;
 
@@ -52,7 +56,15 @@ class WT_BaseVnav {
     }
 
     get waypoints() {
-        return this._fpm.getAllWaypoints().slice(this._fpm.getActiveWaypointIndex());
+        return this.flightplan.waypoints.slice(this.flightplan.activeWaypointIndex);
+    }
+
+    /**
+     * The active flight plan.
+     * @type {ManagedFlightPlan}
+     */
+    get flightplan() {
+        return this._fpm.getFlightPlan(0);
     }
 
     /**
@@ -78,7 +90,7 @@ class WT_BaseVnav {
 
         //CAN VNAV EVEN RUN?
         this._destination = this._fpm.getDestination();
-        this._activeWaypoint = this._fpm.getActiveWaypoint();
+        this._activeWaypoint = this.flightplan.waypoints[this.flightplan.activeWaypointIndex];
         this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
 
         const flightPlanVersion = SimVar.GetSimVarValue("L:WT.FlightPlan.Version", "number");
@@ -90,7 +102,7 @@ class WT_BaseVnav {
 
             const currentLateralMode = this._navModeSelector.currentLateralActiveState;
             if (currentLateralMode !== this._currentLateralMode) {
-                
+
                 if (this.currentLateralMode !== LateralNavModeState.APPR && currentLateralMode === LateralNavModeState.APPR) {
                     this.buildGlidepath();
                 }
@@ -112,7 +124,7 @@ class WT_BaseVnav {
             if (this._flightPlanVersion != flightPlanVersion) {
                 this._flightPlanChanged = true;
             }
-            
+
             //HAS THE VNAV TARGET WAYPOINT CHANGED?
             if (this._vnavTargetWaypoint) {
                 let targetWaypointIndex = this.waypoints.indexOf(this._vnavTargetWaypoint) >= 0;
@@ -151,6 +163,12 @@ class WT_BaseVnav {
                             this._vnavConstraintAltitude = wpt.legAltitude2;
                             this._vnavConstraintWaypoint = wpt;
                             this._vnavConstraintType = "above";
+                            break;
+                        }
+                        else if (wpt.legAltitudeDescription === 3) {
+                            this._vnavConstraintAltitude = wpt.legAltitude1;
+                            this._vnavConstraintWaypoint = wpt;
+                            this._vnavConstraintType = "below";
                             break;
                         }
                     }
@@ -220,7 +238,7 @@ class WT_BaseVnav {
         }
         this._vnavTargetAltitude = (this._destination.infos.oneWayRunways[0].elevation * 3.28) + 50;
         this._desiredFPA = WTDataStore.get('CJ4_vpa', 3);
-  
+
 
         //FIND FIRST WAYPOINT ON APPROACH WITH CONSTRAINT
         this._firstApproachWaypointConstraint = undefined;
@@ -359,7 +377,7 @@ class WT_BaseVnav {
         if (approach.length > 0) {
             const lastApproachWaypoint = approach[approach.length - 1];
 
-            if (lastApproachWaypoint.isRunway) {               
+            if (lastApproachWaypoint.isRunway) {
                 this._vnavTargetDistance = Avionics.Utils.computeGreatCircleDistance(lastApproachWaypoint.infos.coordinates, this._currPos);
                 this._vnavTargetAltitude = lastApproachWaypoint.legAltitude1;
 

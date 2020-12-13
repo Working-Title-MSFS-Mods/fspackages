@@ -2,7 +2,7 @@
 <!-- Copyright (c) Asobo Studio, All rights reserved. www.asobostudio.com -->
 
 <SoundInfo Version="0.1">
-  <WwisePackages>
+	<WwisePackages>
 		<MainPackage Name="Asobo_CJ4"/>
 		<AdditionalPackage Name="Asobo_CJ4_WT"/>
 	</WwisePackages>
@@ -178,7 +178,7 @@
 
 		<!-- INSTRUMENTS FOLEYS  =========================================================================  -->
 
-    <!-- <Sound WwiseData="true" WwiseEvent="lever_throttle_01" ViewPoint="Inside" NodeName="ENGINE_LEVER_THROTTLE_1" SimVar="GENERAL ENG THROTTLE LEVER POSITION" Units="PERCENT" Index="1" ContinuousStopDelay="1.0">
+		<!-- <Sound WwiseData="true" WwiseEvent="lever_throttle_01" ViewPoint="Inside" NodeName="ENGINE_LEVER_THROTTLE_1" SimVar="GENERAL ENG THROTTLE LEVER POSITION" Units="PERCENT" Index="1" ContinuousStopDelay="1.0">
       <WwiseRTPC SimVar="GENERAL ENG THROTTLE LEVER POSITION" Units="PERCENT" Index="1" Derived="true" RTPCName="SIMVAR_GENERAL_ENG_THROTTLE_LEVER_POSITION_DERIVED" />
       <WwiseRTPC SimVar="GENERAL ENG THROTTLE LEVER POSITION" Units="PERCENT" Index="1" RTPCName="SIMVAR_GENERAL_ENG_THROTTLE_LEVER_POSITION" />
     </Sound>
@@ -188,14 +188,14 @@
       <WwiseRTPC SimVar="GENERAL ENG THROTTLE LEVER POSITION" Units="PERCENT" Index="2" RTPCName="SIMVAR_GENERAL_ENG_THROTTLE_LEVER_POSITION" />
     </Sound> -->
 
-    <Sound WwiseData="true" WwiseEvent="flaps_lever" Continuous="false" ContinuousStopDelay="1.0" ViewPoint="Inside" NodeName="ENGINE_LEVER_THROTTLE_1" LocalVar="Throttle1_Pos">
-      <Range LowerBound="77.5" UpperBound="77.7" />
-      <Range  LowerBound="100" UpperBound="100" />    
-    </Sound>
-    <Sound WwiseData="true" WwiseEvent="flaps_lever" Continuous="false" ContinuousStopDelay="1.0" ViewPoint="Inside" NodeName="ENGINE_LEVER_THROTTLE_2" LocalVar="Throttle2_Pos">
-      <Range LowerBound="77.5" UpperBound="77.7" />
-      <Range  LowerBound="100" UpperBound="100" />    
-    </Sound>
+		<Sound WwiseData="true" WwiseEvent="flaps_lever" Continuous="false" ContinuousStopDelay="1.0" ViewPoint="Inside" NodeName="ENGINE_LEVER_THROTTLE_1" LocalVar="Throttle1_Pos">
+			<Range LowerBound="77.5" UpperBound="77.7" />
+			<Range LowerBound="100" UpperBound="100" />
+		</Sound>
+		<Sound WwiseData="true" WwiseEvent="flaps_lever" Continuous="false" ContinuousStopDelay="1.0" ViewPoint="Inside" NodeName="ENGINE_LEVER_THROTTLE_2" LocalVar="Throttle2_Pos">
+			<Range LowerBound="77.5" UpperBound="77.7" />
+			<Range LowerBound="100" UpperBound="100" />
+		</Sound>
 
 
 		<Sound WwiseData="true" WwiseEvent="trim_rudder_lever" ViewPoint="Inside" NodeName="HANDLING_KNOB_RUDDERTRIM" ContinuousStopDelay="1.0" SimVar="RUDDER TRIM PCT" Units="PERCENT" Index="0">
@@ -354,10 +354,15 @@
 			<WwiseRTPC SimVar="GEAR TOTAL PCT EXTENDED" Units="PERCENT" Index="0" RTPCName="SIMVAR_GEAR_TOTAL_PCT_EXTENDED" />
 		</Sound>
 
+		<Sound WwiseData="true" WwiseEvent="WT_altitude_alerter" LocalVar="WT_CJ4_Altitude_Alerter_Active" Units="NUMBER" Continuous="false">
+			<Range LowerBound="1.0" />
+		</Sound>
 
+		<Sound WwiseData="true" WwiseEvent="WT_aural_overspeed" SimVar="OVERSPEED WARNING" Units="BOOL" Index="0">
+			<Range LowerBound="1" />
+		</Sound>
 
 	</SimVarSounds>
-
 
 	<!-- AVIONIC SOUNDS ####################################################################################  -->
 
@@ -371,18 +376,18 @@
 		<Sound WwiseData="true" WwiseEvent="aural_500ft" />
 		<Sound WwiseData="true" WwiseEvent="aural_1000ft" />
 		<Sound WwiseData="true" WwiseEvent="aural_stall" />
-		<Sound WwiseData="true" WwiseEvent="aural_pull_up" />
-		<Sound WwiseData="true" WwiseEvent="aural_overspeed" />
+		<Sound WwiseData="true" WwiseEvent="WT_aural_pull_up" />
+		<!-- <Sound WwiseData="true" WwiseEvent="WT_aural_overspeed" /> -->
 		<Sound WwiseData="true" WwiseEvent="aural_sink_rate" />
 		<Sound WwiseData="true" WwiseEvent="aural_dont_sink" />
-		<Sound WwiseData="true" WwiseEvent="aural_minimums" />
-		<Sound WwiseData="true" WwiseEvent="aural_landing_gear" />
+		<Sound WwiseData="true" WwiseEvent="WT_aural_minimums" />
+		<Sound WwiseData="true" WwiseEvent="WT_aural_landing_gear" />
 		<Sound WwiseData="true" WwiseEvent="aural_taws_system_test_ok" ViewPoint="Inside"/>
 		<Sound WwiseData="true" WwiseEvent="aural_warning_ok" ViewPoint="Inside"/>
-		<Sound WwiseData="true" WwiseEvent="tone_caution" ViewPoint="Inside"/>
-		<Sound WwiseData="true" WwiseEvent="tone_warning" ViewPoint="Inside"/>
+		<Sound WwiseData="true" WwiseEvent="WT_tone_caution" ViewPoint="Inside"/>
+		<Sound WwiseData="true" WwiseEvent="WT_tone_warning" ViewPoint="Inside"/>
 		<Sound WwiseData="true" WwiseEvent="tone_touchscreen_touch" ViewPoint="Inside"/>
-		<Sound WwiseData="true" WwiseEvent="tone_altitude_alert_default" ViewPoint="Inside"/>
+		<!-- <Sound WwiseData="true" WwiseEvent="WT_altitude_alerter" ViewPoint="Inside"/> -->
 	</AvionicSounds>
 
 	<!-- AnimationSounds ################################################################################# -->

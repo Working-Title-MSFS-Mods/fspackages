@@ -401,9 +401,9 @@ class CJ4_FMC_DepArrPage {
             rows[0] = ["  NONE", Avionics.Utils.formatRunway(selectedApproach.name).trim() + "[d-text green]"];
             fmc.onRightInput[0] = () => {
                 fmc.setMsg("Working...");
-                fmc.flightPlanManager.resumeSync();
+                fmc.flightPlanManager.pauseSync();
                 fmc.setApproachIndex(-1, () => {
-                    fmc.flightPlanManager.pauseSync();
+                    fmc.flightPlanManager.resumeSync();
                     fmc.setMsg();
                     CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
                 });

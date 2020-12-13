@@ -233,7 +233,7 @@ export class ManagedFlightPlan {
         if (this.activeWaypointIndex === 0 && this.length > 1) {
           this.activeWaypointIndex = 1;
         }
-        else if (this.activeWaypointIndex === 1 && waypoint.isRunway) {
+        else if (this.activeWaypointIndex === 1 && waypoint.isRunway && segment.type === SegmentType.Departure) {
           this.activeWaypointIndex = 2;
         }
       }
@@ -399,6 +399,8 @@ export class ManagedFlightPlan {
       legAltitude2: waypoint.legAltitude2,
       isVectors: waypoint.isVectors,
       endsInDiscontinuity: waypoint.endsInDiscontinuity,
+      distanceInFP: waypoint.distanceInFP,
+      cumulativeDistanceInFP: waypoint.cumulativeDistanceInFP,
       isRunway: waypoint.isRunway,
       infos: {
         icao: waypoint.infos.icao,
@@ -737,8 +739,10 @@ export class ManagedFlightPlan {
 
     if (segment !== FlightPlanSegment.Empty) {
       const finalIndex = segment.offset + segment.waypoints.length;
-      for (var i = startIndex; i < finalIndex; i++) {
-        this.removeWaypoint(startIndex);
+      if(startIndex < finalIndex){
+        for (var i = startIndex; i < finalIndex; i++) {
+          this.removeWaypoint(startIndex);
+        } 
       }
     }
 

@@ -40,6 +40,10 @@ export class FlightPlanManager {
       this._isMaster = true;
       RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
       _parentInstrument.addEventListener("FlightStart", async function () {
+        let plan = new ManagedFlightPlan();
+        plan.setParentInstrument(_parentInstrument);
+        this._flightPlans = [];
+        this._flightPlans.push(plan);
         this.pauseSync();
         await FlightPlanAsoboSync.LoadFromGame(this);
         this.resumeSync();
@@ -249,9 +253,10 @@ export class FlightPlanManager {
    * Sets the index of the active waypoint in the flight plan.
    * @param index The index to make active in the flight plan.
    * @param callback A callback to call when the operation has completed.
+   * @param fplnIndex The index of the flight plan
    */
-  public setActiveWaypointIndex(index: number, callback = EmptyCallback.Void): void {
-    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+  public setActiveWaypointIndex(index: number, callback = EmptyCallback.Void, fplnIndex = this._currentFlightPlanIndex): void {
+    const currentFlightPlan = this._flightPlans[fplnIndex];
     if (index >= 0 && index < currentFlightPlan.length) {
       currentFlightPlan.activeWaypointIndex = index;
       Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", index + 1);
@@ -1330,6 +1335,10 @@ export class FlightPlanManager {
 
   public getCurrentFlightPlan(): ManagedFlightPlan {
     return this._flightPlans[this._currentFlightPlanIndex];
+  }
+
+  public getFlightPlan(index): ManagedFlightPlan {
+    return this._flightPlans[index];
   }
 
   /**
