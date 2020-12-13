@@ -12,16 +12,35 @@ class WT_MapController extends WT_DataStoreController {
             if (source === this.id) {
                 for (let setting of this._settings) {
                     if (setting.isSyncable) {
-                        setting.syncFrom(syncID);
+                        setting.syncTo(syncID);
                     }
                 }
             }
         }
-        WTDataStore.set(`${this.id}.${WT_MapController.SYNC_ACTIVE_KEY}`, syncID);
+        WTDataStore.set(`${this.id}.${WT_MapController.SYNC_ID_ACTIVE_KEY}`, syncID);
     }
 
     _onSyncRecordChanged(syncID, setting, key, newValue, oldValue) {
         setting.syncFrom(syncID);
+    }
+
+    _registerSyncListenerHelper(root, current) {
+        if (!current.isSyncable) {
+            return;
+        }
+
+        if (current.key) {
+            let syncID = WT_MapController.SyncID[WT_MapController.SyncMode.ALL];
+            WTDataStore.addListener(this._onSyncRecordChanged.bind(this, syncID, root), `${syncID}.${current.key}`);
+        } else {
+            for (let recurse of current.getSettings()) {
+                this._registerSyncListenerHelper(root, recurse);
+            }
+        }
+    }
+
+    _registerSyncListener(setting) {
+        this._registerSyncListenerHelper(setting, setting);
     }
 
     /**
@@ -30,9 +49,7 @@ class WT_MapController extends WT_DataStoreController {
      */
     addSetting(setting) {
         this._settings.push(setting);
-        if (setting.isSyncable) {
-            WTDataStore.addListener(this._onSyncRecordChanged.bind(this, WT_MapController.SyncID.ALL, setting), `${WT_MapController.SyncID.ALL}.${setting.settingKey}`);
-        }
+        this._registerSyncListener(setting);
     }
 
     static _getSyncSource(syncID) {
@@ -50,12 +67,16 @@ class WT_MapController extends WT_DataStoreController {
      * @param {*} value - the new value of the setting.
      */
     static setSettingValue(id, settingKey, value, isSyncable) {
-        super.setSettingValue(id, settingKey, value);
+        let synced = false;
         if (isSyncable) {
             let syncID = WT_MapController._getActiveSyncID(id);
             if (syncID) {
                 WTDataStore.set(`${syncID}.${settingKey}`, value);
+                synced = true;
             }
+        }
+        if (!synced) {
+            super.setSettingValue(id, settingKey, value);
         }
     }
 
@@ -124,7 +145,7 @@ class WT_MapSetting extends WT_DataStoreSetting {
      * @type {Boolean}
      */
     get isSyncable() {
-        return this._toSync;
+        return this._isSyncable;
     }
 
     /**
@@ -132,16 +153,32 @@ class WT_MapSetting extends WT_DataStoreSetting {
      * @param {*} value - the new value.
      */
     setValue(value) {
+        let oldValue = this.getValue();
         WT_MapController.setSettingValue(this._controller.id, this.key, value, this.isSyncable);
+        if (oldValue !== value) {
+            this._onValueChanged(value, oldValue);
+        }
     }
 
     /**
-     * Set the current value of this setting to one stored in a sync record.
-     * @param {String} syncID - the ID of the sync record to copy from.
+     * Copies the value of this setting from a sync record.
+     * @param {String} syncID - the ID of the sync record from which to copy.
      */
     syncFrom(syncID) {
-        let newValue = WT_DataStoreController.getSettingValue(syncID, this.key);
+        let oldValue = this.getValue();
+        let newValue = WT_DataStoreController.getSettingValue(syncID, this.key, this.defaultValue);
         WTDataStore.set(this._fullDataStoreKey, newValue);
+        if (oldValue !== newValue) {
+            this._onValueChanged(newValue, oldValue);
+        }
+    }
+
+    /**
+     * Copies the value of this setting to a sync record.
+     * @param {String} syncID - the ID of the sync record to which to copy.
+     */
+    syncTo(syncID) {
+        WT_DataStoreController.setSettingValue(syncID, this.key, this.getValue());
     }
 }
 
@@ -172,13 +209,25 @@ class WT_MapSettingGroup extends WT_DataStoreSettingGroup {
     }
 
     /**
-     * Sets the current values of all settings in this group to those stored in a sync record.
-     * @param {string} syncID - the identifier of the sync record to copy from.
+     * Copies the values of all settings in this group from a sync record.
+     * @param {string} syncID - the ID of the sync record from which to copy.
      */
     syncFrom(syncID) {
         for (let setting of this._settings) {
             if (setting.isSyncable) {
                 setting.syncFrom(syncID);
+            }
+        }
+    }
+
+    /**
+     * Copies the values of all settings in this group to a sync record.
+     * @param {String} syncID - the ID of the sync record to which to copy.
+     */
+    syncTo(syncID) {
+        for (let setting of this._settings) {
+            if (setting.isSyncable) {
+                setting.syncTo(syncID);
             }
         }
     }
