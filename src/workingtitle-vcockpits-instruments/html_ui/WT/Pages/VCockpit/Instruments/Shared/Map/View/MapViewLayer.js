@@ -21,7 +21,7 @@ class WT_MapViewLayer {
     }
 
     _setPropertyFromConfig(name) {
-        if (this.config[name]) {
+        if (this.config[name] !== undefined) {
             this[name] = this.config[name];
         }
     }
