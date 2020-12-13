@@ -165,6 +165,12 @@ class WT_BaseVnav {
                             this._vnavConstraintType = "above";
                             break;
                         }
+                        else if (wpt.legAltitudeDescription === 3) {
+                            this._vnavConstraintAltitude = wpt.legAltitude1;
+                            this._vnavConstraintWaypoint = wpt;
+                            this._vnavConstraintType = "below";
+                            break;
+                        }
                     }
                     else {
                         this._vnavConstraintAltitude = undefined;
