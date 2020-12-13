@@ -182,6 +182,8 @@ class WT_DataStoreSetting {
     init() {
         if (!this.isPersistent) {
             this.setValue(this.defaultValue);
+        } else {
+            this.setValue(this.getValue());
         }
     }
 
