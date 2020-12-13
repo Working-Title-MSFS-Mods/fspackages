@@ -247,15 +247,22 @@ WT_MapTargetSetting.Mode = {
 class WT_MapRangeSetting extends WT_MapSetting {
     constructor(controller, ranges, defaultRange, isSyncable = true, autoUpdate = true, isPersistent = false, key = WT_MapRangeSetting.KEY_DEFAULT) {
         super(controller, key, ranges.findIndex(range => range.equals(defaultRange)), isSyncable, autoUpdate, isPersistent);
-        this.ranges = ranges;
+        this._ranges = ranges;
     }
 
-    getCurrentRange() {
-        return this.ranges[this.getValue()];
+    getRange() {
+        return this._ranges[this.getValue()];
+    }
+
+    setRange(newRange) {
+        let index = this._ranges.findIndex(range => range.equals(newRange));
+        if (index >= 0) {
+            this.setValue(index);
+        }
     }
 
     update() {
-        this.model.range = this.getCurrentRange();
+        this.model.range = this.getRange();
     }
 }
 WT_MapRangeSetting.KEY_DEFAULT = "WT_Map_Zoom";
