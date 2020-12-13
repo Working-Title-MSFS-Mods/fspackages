@@ -106,13 +106,14 @@ class WT_DataStoreSetting {
         this._controller = controller;
         this._key = key;
         this._defaultValue = defaultValue;
+        this._autoUpdate = autoUpdate;
         this._isPersistent = isPersistent;
 
         this._fullDataStoreKey = `${controller.id}.${key}`;
 
-        if (autoUpdate) {
-            WTDataStore.addListener(this._onDataStoreChanged.bind(this), this._fullDataStoreKey);
-        }
+        this._listeners = [];
+
+        WTDataStore.addListener(this._onDataStoreChanged.bind(this), this._fullDataStoreKey);
     }
 
     /**
@@ -166,7 +167,11 @@ class WT_DataStoreSetting {
      * @param {*} value - the new value.
      */
     setValue(value) {
+        let oldValue = this.getValue();
         WTDataStore.set(this._fullDataStoreKey, value);
+        if (oldValue !== value) {
+            this._onValueChanged(value, oldValue);
+        }
     }
 
     /**
@@ -174,6 +179,25 @@ class WT_DataStoreSetting {
      */
     getValue() {
         return WTDataStore.get(this._fullDataStoreKey, this._defaultValue);
+    }
+
+    /**
+     * Adds a listener function to this setting that will be called every time this setting's value changes.
+     * @param {Function} listener - a listener function that takes three arguments: setting, newValue, and oldValue.
+     */
+    addListener(listener) {
+        this._listeners.push(listener);
+    }
+
+    /**
+     * Removes a listener from this setting.
+     * @param {Function} listener - the listener function to remove.
+     */
+    removeListener(listener) {
+        let index = this._listeners.indexOf(listener);
+        if (index >= 0) {
+            this._listeners.splice(index, 1);
+        }
     }
 
     /**
@@ -193,10 +217,19 @@ class WT_DataStoreSetting {
     update() {
     }
 
-    _onDataStoreChanged(key, newValue, oldValue) {
+    _onValueChanged(newValue, oldValue) {
         if (newValue !== oldValue) {
-            this.update();
+            if (this._autoUpdate) {
+                this.update();
+            }
+            for (let listener of this._listeners) {
+                listener(this, newValue, oldValue);
+            }
         }
+    }
+
+    _onDataStoreChanged(key, newValue, oldValue) {
+        this._onValueChanged(newValue, oldValue);
     }
 }
 
@@ -214,17 +247,11 @@ class WT_DataStoreSettingGroup {
         this._controller = controller;
         this._autoUpdate = autoUpdate;
 
-        this._settings = Array.from(settings);
-        if (autoUpdate) {
-            for (let setting of this._settings) {
-                this._addSettingListener(setting);
-            }
-        }
-    }
+        this._listeners = [];
 
-    _addSettingListener(setting) {
-        if (setting.key !== undefined) {
-            WTDataStore.addListener(this._onDataStoreChanged.bind(this), `${this._controller.id}.${setting.key}`);
+        this._settings = Array.from(settings);
+        for (let setting of this._settings) {
+            setting.addListener(this._onChildSettingChanged.bind(this));
         }
     }
 
@@ -247,6 +274,13 @@ class WT_DataStoreSettingGroup {
     }
 
     /**
+     * @returns {WT_DataStoreSettingLike[]}
+     */
+    getSettings() {
+        return Array.from(this._settings);
+    }
+
+    /**
      * @returns {Array} an array of values of the settings in this group. The order is the same as that in which the settings were
      *                  originally added to this group.
      */
@@ -260,8 +294,26 @@ class WT_DataStoreSettingGroup {
      */
     addSetting(setting) {
         this._settings.push(setting);
-        if (this._autoUpdate) {
-            this._addSettingListener(setting);
+        setting.addListener(this._onChildSettingChanged.bind(this));
+    }
+
+    /**
+     * Adds a listener function to this setting group that will be called every time the value of one of this group's settings
+     * changes.
+     * @param {Function} listener - a listener function that takes three arguments: setting, newValue, and oldValue.
+     */
+    addListener(listener) {
+        this._listeners.push(listener);
+    }
+
+    /**
+     * Removes a listener from this setting group.
+     * @param {Function} listener - the listener function to remove.
+     */
+    removeListener(listener) {
+        let index = this._listeners.indexOf(listener);
+        if (index >= 0) {
+            this._listeners.splice(index, 1);
         }
     }
 
@@ -283,9 +335,12 @@ class WT_DataStoreSettingGroup {
         }
     }
 
-    _onDataStoreChanged(key, newValue, oldValue) {
-        if (newValue !== oldValue) {
+    _onChildSettingChanged(setting, newValue, oldValue) {
+        if (this._autoUpdate) {
             this.update();
+        }
+        for (let listener of this._listeners) {
+            listener(setting, newValue, oldValue);
         }
     }
 }
