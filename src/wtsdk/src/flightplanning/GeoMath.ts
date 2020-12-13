@@ -28,21 +28,40 @@ export class GeoMath {
   }
 
   /**
-   * Gets a corrected heading given a heading and a magnetic variation.
+   * Gets a magnetic heading given a true course and a magnetic variation.
+   * @param trueCourse The true course to correct.
+   * @param magneticVariation The measured magnetic variation.
+   * @returns The magnetic heading, corrected for magnetic variation.
+   */
+  public static correctMagvar(trueCourse: number, magneticVariation: number): number {
+    return trueCourse - GeoMath.normalizeMagVar(magneticVariation);
+  }
+
+  /**
+   * Gets a true course given a magnetic heading and a magnetic variation.
    * @param headingMagnetic The magnetic heading to correct.
    * @param magneticVariation The measured magnetic variation.
-   * @returns The true heading, corrected for magnetic variation.
+   * @returns The true course, corrected for magnetic variation.
    */
-  public static correctMagvar(headingMagnetic: number, magneticVariation: number): number {
-    let magvarDiff: number;
+  public static removeMagvar(headingMagnetic: number, magneticVariation: number): number {
+    return headingMagnetic + GeoMath.normalizeMagVar(magneticVariation);
+  }
+
+  /**
+   * Gets a magnetic variation difference in 0-360 degrees.
+   * @param magneticVariation The magnetic variation to normalize.
+   * @returns A normalized magnetic variation.
+   */
+  private static normalizeMagVar(magneticVariation: number): number {
+    let normalizedMagVar: number;
     if (magneticVariation <= 180) {
-      magvarDiff = magneticVariation;
+      normalizedMagVar = magneticVariation;
     }
     else {
-      magvarDiff = magneticVariation - 360;
+      normalizedMagVar = magneticVariation - 360;
     }
 
-    return headingMagnetic - magvarDiff;
+    return normalizedMagVar;
   }
 
   /**
