@@ -59,7 +59,7 @@
 	<MiscellaneousSounds>
 		<Sound WwiseEvent="STALL_WARNING" WwiseData="true" ViewPoint="Inside"/>
 		<Sound WwiseEvent="AP_PREFLIGHT_CHECK_OVER" WwiseData="true" />
-		<Sound WwiseEvent="OVERSPEED_WARNING_SOUND" WwiseData="true" />
+		<!--<Sound WwiseEvent="OVERSPEED_WARNING_SOUND" WwiseData="true" /> -->
 	</MiscellaneousSounds>
 
 	<EngineSoundPresets>

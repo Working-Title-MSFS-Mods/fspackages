@@ -250,9 +250,10 @@
 					<ChildrenList>
 						<AudioFileSource Name="Altitude Alert" ID="{04D56903-A47D-4303-9C9A-58EDCF4F3C78}">
 							<PropertyList>
-								<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+								<Property Name="LoopBegin" Type="Real64" Value="0.162554228258696"/>
 								<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
-								<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
+								<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+								<Property Name="TrimBegin" Type="Real64" Value="0.173"/>
 								<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
 							</PropertyList>
 							<Language>SFX</Language>
