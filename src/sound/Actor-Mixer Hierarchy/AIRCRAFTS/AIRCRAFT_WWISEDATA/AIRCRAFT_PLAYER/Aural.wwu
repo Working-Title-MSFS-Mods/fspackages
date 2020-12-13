@@ -237,11 +237,6 @@
 							<ValueList>
 								<Value>5</Value>
 							</ValueList>
-							<RTPCList>
-								<RTPC Name="" ID="{A8336292-744E-4C18-B685-BE566CE3627E}" ShortID="216892564">
-									<ReferenceList/>
-								</RTPC>
-							</RTPCList>
 						</Property>
 					</PropertyList>
 					<ReferenceList>
