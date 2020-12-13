@@ -121,7 +121,8 @@ class WT_BaseLnav {
             const nextActiveWaypoint = this.flightplan.waypoints[this.flightplan.activeWaypointIndex + 1];
 
             //Remove heading instruction inhibition when near desired track
-            if (Math.abs(Avionics.Utils.angleDiff(this._dtk, planeHeading)) < 15) {
+            const windCorrectedDtk = this.normalizeCourse(this._dtk - this.calculateWindCorrection(this._dtk, this._groundSpeed));
+            if (Math.abs(Avionics.Utils.angleDiff(windCorrectedDtk, planeHeading)) < 15) {
                 this._executeInhibited = false;
             }
 
@@ -130,7 +131,7 @@ class WT_BaseLnav {
                 const interceptAngle = this.calculateDesiredInterceptAngle(this._xtk, navSensitivity);
 
                 let deltaAngle = Avionics.Utils.angleDiff(this._dtk, this._bearingToWaypoint);
-                this._setHeading = (((this._dtk + interceptAngle) % 360) + 360) % 360;
+                this._setHeading = this.normalizeCourse(this._dtk + interceptAngle);
 
                 //CASE WHERE WE ARE PASSED THE WAYPOINT AND SHOULD SEQUENCE THE NEXT WPT
                 if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90 && this._groundSpeed > 10) {
@@ -162,7 +163,7 @@ class WT_BaseLnav {
                     let nextFixTurnAngle = Avionics.Utils.angleDiff(this._dtk, toNextFixHeading);
                     let currentFixTurnAngle = Avionics.Utils.angleDiff(planeHeading, toCurrentFixHeading);
 
-                    let enterBankDistance = (this._groundSpeed / 3600) * 4;
+                    let enterBankDistance = (this._groundSpeed / 3600) * 5;
 
                     const getDistanceToActivate = turnAngle => Math.min((turnRadius * Math.tan((Math.abs(Math.min(110, turnAngle) * Avionics.Utils.DEG2RAD) / 2))) + enterBankDistance, maxAnticipationDistance);
 
@@ -197,7 +198,7 @@ class WT_BaseLnav {
                 }
 
                 //NEAR WAYPOINT TRACKING
-                if (navModeActive && this._activeWaypointDist < 0.5) { //WHEN NOT MUCH TURN, STOP CHASING DTK CLOSE TO WAYPOINT
+                if (navModeActive && this._activeWaypointDist < 1.0) { //WHEN NOT MUCH TURN, STOP CHASING DTK CLOSE TO WAYPOINT
                     this._setHeading = this._bearingToWaypoint;
                     this._executeInhibited = true;
                 }
@@ -220,11 +221,8 @@ class WT_BaseLnav {
             this._setHeading = GeoMath.correctMagvar(this._setHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"));
 
             //ADD WIND CORRECTION
-            const currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
-            const currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
-            const currCrosswind = Math.trunc(currWindSpeed * (Math.sin((this._setHeading * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
-            const windCorrection = 180 * Math.asin(currCrosswind / this._groundSpeed) / Math.PI;
-            this._setHeading = (((this._setHeading - windCorrection) % 360) + 360) % 360;
+            const windCorrection = this.calculateWindCorrection(this._setHeading, this._groundSpeed);
+            this._setHeading = this.normalizeCourse(this._setHeading - windCorrection);
 
             //SET HEADING
             SimVar.SetSimVarValue("L:WT_TEMP_SETHEADING", "number", this._setHeading);
@@ -261,6 +259,27 @@ class WT_BaseLnav {
         SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", this._setHeading);
         SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", 0);
         this._lnavDeactivated = true;
+    }
+
+    /**
+     * Normalizes a course to a 0-360 degree range only.
+     * @param {number} course The course to normalize.
+     */
+    normalizeCourse(course) {
+        return ((course % 360) + 360) % 360;
+    }
+
+    /**
+     * Calculates the wind correction.
+     */
+    calculateWindCorrection(course, groundSpeed) {
+        const currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
+        const currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
+
+        const currCrosswind = Math.trunc(currWindSpeed * (Math.sin((course * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
+        const windCorrection = 180 * Math.asin(currCrosswind / groundSpeed) / Math.PI;
+
+        return windCorrection;
     }
 
     /**
