@@ -13,7 +13,8 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
             canRender: this._canContinueRender.bind(this),
             render: this._resolveDrawCall.bind(this),
             onPaused: this._updateDrawBorders.bind(this),
-            onFinished: this._finishDrawBorders.bind(this)
+            onFinished: this._finishDrawBorders.bind(this),
+            onAborted: this._abortDrawBorders.bind(this)
         };
 
         this._labelCache = new WT_MapViewBorderLabelCache();
@@ -117,11 +118,6 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         }
     }
 
-    onAttached(state) {
-        super.onAttached(state);
-        this._borderLayer.initProjectionRenderers(state.projection);
-    }
-
     _shouldShowStateBorders(state) {
         return state.model.borders.stateBorderShow && state.model.range.compare(state.model.borders.stateBorderRange) <= 0;
     }
@@ -179,8 +175,8 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._renderQueue.start(this._renderer, state);
     }
 
-    _continueDrawBorders(data) {
-        this._renderQueue.resume(this._renderer, data);
+    _continueDrawBorders(state) {
+        this._renderQueue.resume(state);
     }
 
     _applyStrokeToBuffer(lineWidth, strokeColor) {
@@ -189,7 +185,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._borderLayer.buffer.context.stroke();
     }
 
-    _drawBordersToBuffer(state) {
+    _drawBordersToDisplay(state) {
         if (this.outlineWidth > 0) {
             this._applyStrokeToBuffer((this.strokeWidth + 2 * this.outlineWidth) * state.dpiScale, this.outlineColor);
         }
@@ -199,14 +195,17 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 
     _updateDrawBorders(state) {
         if (this._drawUnfinishedBorders) {
-            this._drawBordersToBuffer(state);
+            this._drawBordersToDisplay(state);
         }
     }
 
     _finishDrawBorders(state) {
-        this._drawBordersToBuffer(state);
+        this._drawBordersToDisplay(state);
         this._updateLabels(state);
         this._drawUnfinishedBorders = false;
+    }
+
+    _abortDrawBorders() {
     }
 
     _clearLabels() {
@@ -261,6 +260,8 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     }
 
     onUpdate(state) {
+        super.onUpdate(state);
+
         if (!this.isReady) {
             return;
         }
@@ -295,7 +296,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 }
 WT_MapViewBorderLayer.CLASS_DEFAULT = "borderLayer";
 WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT = "border";
-WT_MapViewBorderLayer.DATA_FILE_PATH = "/WT/Pages/VCockpit/Instruments/Shared/Map/View/Data/borders.json";
+WT_MapViewBorderLayer.DATA_FILE_PATH = "/WT/Pages/VCockpit/Instruments/Shared/Data/borders.json";
 WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS = [
     Number.MIN_VALUE,
     0.00000003,

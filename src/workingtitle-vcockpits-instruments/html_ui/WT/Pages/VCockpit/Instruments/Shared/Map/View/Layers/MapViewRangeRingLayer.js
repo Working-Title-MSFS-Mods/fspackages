@@ -65,10 +65,10 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
      * @param {WT_MapViewState} state
      */
     onUpdate(state) {
-        super.onUpdate(state);
-
         this._rangeRing.center = state.projection.viewTarget;
         this._rangeRing.radius = state.model.range.ratio(state.projection.range) * state.projection.viewHeight;
+
+        super.onUpdate(state);
     }
 }
 WT_MapViewRangeRingLayer.CLASS_DEFAULT = "rangeRingLayer";
