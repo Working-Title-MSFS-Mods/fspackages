@@ -241,6 +241,8 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     onUpdate(state) {
+        super.onUpdate(state);
+
         if (state.model.airplane.isOnGround) {
             return;
         }

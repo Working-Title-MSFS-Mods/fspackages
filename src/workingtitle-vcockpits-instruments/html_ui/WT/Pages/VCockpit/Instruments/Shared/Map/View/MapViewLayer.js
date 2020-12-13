@@ -103,6 +103,7 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
     constructor(className, configName) {
         super(className, configName);
         this._subLayers = [];
+        this._toAttach = [];
 
         this._lastWidth = 0;
         this._lastHeight = 0;
@@ -122,10 +123,6 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
         return this._subLayers;
     }
 
-    _updateSubLayerSize(subLayer) {
-        subLayer.updateSize(this._lastWidth, this._lastHeight);
-    }
-
     /**
      * Adds a sublayer to this layer.
      * @param {WT_MapViewSubLayer} subLayer - the sublayer to add.
@@ -142,9 +139,7 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
         subLayer.container.style.zIndex = this.subLayers.length;
         subLayer.parentHTMLElement = parentHTMLElement;
         parentHTMLElement.appendChild(subLayer.container);
-        if (subLayer.syncSizeToView) {
-            this._updateSubLayerSize(subLayer);
-        }
+        this._toAttach.push(subLayer);
     }
 
     /**
@@ -157,6 +152,8 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
             if (subLayer.container.parentNode === subLayer.parentHTMLElement) {
                 subLayer.parentHTMLElement.removeChild(subLayer.container);
             }
+            this.subLayers.splice(index, 1);
+            subLayer.onDetached();
         }
     }
 
@@ -164,18 +161,39 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
      * @param {WT_MapViewState} state
      */
     onProjectionViewChanged(state) {
-        this._lastWidth = state.projection.viewWidth;
-        this._lastHeight = state.projection.viewHeight;
-
         for (let subLayer of this.subLayers) {
-            if (subLayer.syncSizeToView) {
-                this._updateSubLayerSize(subLayer);
-            }
+            subLayer.onProjectionViewChanged(state);
         }
     }
 
+    /**
+     * @param {WT_MapViewState} state
+     */
     onAttached(state) {
-        this.onProjectionViewChanged(state);
+        for (let subLayer of this.subLayers) {
+            subLayer.onAttached(state);
+        }
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
+        if (this._toAttach.length > 0) {
+            for (let subLayer of this._toAttach) {
+                subLayer.onAttached(state);
+            }
+            this._toAttach = [];
+        }
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onDetached() {
+        for (let subLayer of this.subLayers) {
+            subLayer.onDetached();
+        }
     }
 }
 
@@ -223,13 +241,35 @@ class WT_MapViewSubLayer {
     }
 
     /**
-     * Updates the size of this sublayer.
+     * Sets the size of this sublayer.
      * @param {Number} width - the new width of this sublayer, in pixels.
      * @param {Number} height - the new height of this sublayer, in pixels.
      */
-    updateSize(width, height) {
+    setSize(width, height) {
         this.width = width;
         this.height = height;
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onAttached(state) {
+        if (this.syncSizeToView) {
+            this.setSize(state.projection.viewWidth, state.projection.viewHeight);
+        }
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onProjectionViewChanged(state) {
+        if (this.syncSizeToView) {
+            this.setSize(state.projection.viewWidth, state.projection.viewHeight);
+        }
+    }
+
+    onDetached() {
+
     }
 }
 

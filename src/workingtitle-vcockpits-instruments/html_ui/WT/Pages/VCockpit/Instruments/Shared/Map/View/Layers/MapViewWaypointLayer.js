@@ -81,14 +81,6 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._airwayRenderer.desiredLabelDistance = Math.min(state.projection.viewWidth, state.projection.viewHeight) * 0.75;
     }
 
-    /**
-     * @param {WT_MapViewState} state
-     */
-    onAttached(state) {
-        super.onAttached(state);
-        this._airwayLayer.initProjectionRenderers(state.projection);
-    }
-
     _isInBounds(position, left, top, right, bottom) {
         return position.x >= left &&
                position.x <= right &&
@@ -638,6 +630,8 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     onUpdate(state) {
+        super.onUpdate(state);
+
         this._retrieveWaypointsInRange(state);
         this._updateAirways(state);
         this._updateRegisteredWaypoints(state);
