@@ -24,6 +24,8 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
 
         this._backgroundPadding = [0, 0, 0, 0];
 
+        this._bounds = {left: 0, right: 0, top: 0, bottom: 0};
+
         this._optsManager = new WT_OptionsManager(this, WT_MapViewSimpleTextLabel.OPTIONS_DEF);
     }
 
@@ -117,7 +119,10 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
             top -= (this.backgroundPadding[0] + this.backgroundOutlineWidth) * state.dpiScale;
             bottom += (this.backgroundPadding[2] + this.backgroundOutlineWidth) * state.dpiScale;
         }
-        this._bounds = {left: left, right: right, top: top, bottom: bottom};
+        this._bounds.left = left;
+        this._bounds.right = right;
+        this._bounds.top = top;
+        this._bounds.bottom = bottom;
     }
 
     update(state) {
