@@ -5,7 +5,7 @@ class WT_GeoPoint {
     /**
      * @param {Number} lat - the latitude, in degrees.
      * @param {Number} long - the longitude, in degrees.
-     * @param {Number} elevation - the elevation, in great-arc radians.
+     * @param {Number} elevation - the elevation, in great-arc radians above mean sea level.
      */
     constructor(lat, long, elevation) {
         this.set(lat, long, elevation);
@@ -32,7 +32,7 @@ class WT_GeoPoint {
 
     /**
      * @readonly
-     * @property {Number} elevation - the elevation of this point, in great-arc radians.
+     * @property {Number} elevation - the elevation of this point, in great-arc radians above mean sea level.
      * @type {Number}
      */
     get elevation() {
@@ -190,6 +190,21 @@ class WT_GeoPoint {
     }
 
     /**
+     * Calculates the cartesian (x, y, z) representation of this point, in units of great-arc radians, and returns the result.
+     * In the cartesian coordinate system, the center of the Earth is at the origin.
+     * @param {WT_GVector3} [reference] - a WT_GVector3 object in which to store the results. If this argument is not supplied,
+     *                                    a new WT_GVector3 object will be created.
+     * @returns {WT_GVector3} the cartesian representation of this point.
+     */
+    cartesian(reference) {
+        if (reference) {
+            return reference.setFromSpherical(1 + this.elevation, (90 - this.lat) * Avionics.Utils.DEG2RAD, this.long * Avionics.Utils.DEG2RAD);
+        } else {
+            return WT_GVector3.createFromSpherical(1 + this.elevation, (90 - this.lat) * Avionics.Utils.DEG2RAD, this.long * Avionics.Utils.DEG2RAD);
+        }
+    }
+
+    /**
      * Checks whether this point is equal to another point. Two points are considered equal if and only if they occupy the same location.
      * @param {{lat:Number, long:Number, elevation:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
      *                                                                    latitude value of the other point.
@@ -260,7 +275,7 @@ class WT_GeoPointReadOnly {
 
     /**
      * @readonly
-     * @property {Number} elevation - the elevation of this point, in great-arc radians.
+     * @property {Number} elevation - the elevation of this point, in great-arc radians above mean sea level.
      * @type {Number}
      */
     get elevation() {
