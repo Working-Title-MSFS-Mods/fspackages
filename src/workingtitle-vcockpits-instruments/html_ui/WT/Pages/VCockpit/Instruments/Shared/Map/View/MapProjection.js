@@ -22,7 +22,8 @@ class WT_MapProjection {
 
         this._optsManager = new WT_OptionsManager(this, WT_MapProjection.OPTIONS_DEF);
 
-        this._syncedRenderer = new WT_MapProjectionSyncedRenderer(this, this._d3Projection);
+        this._readonly = new WT_MapProjectionReadOnly(this);
+        this._syncedRenderer = new WT_MapProjectionSyncedRenderer(this._readonly, this._d3Projection);
 
         this._currentRange = new WT_NumberUnit(0, WT_Unit.GA_RADIAN);
         this._tempVector = new WT_GVector2(0, 0);
@@ -30,8 +31,6 @@ class WT_MapProjection {
         this._tempGeoPoint2 = new WT_GeoPoint(0, 0, 0);
         this._tempArray1 = [0, 0];
         this._tempArray2 = [0, 0];
-
-        this._readonly = new WT_MapProjectionReadOnly(this);
     }
 
     /**
@@ -1158,8 +1157,8 @@ class WT_MapProjectionSyncedRenderer extends WT_MapProjectionRenderer {
 
     /**
      * @readonly
-     * @property {WT_MapProjection} mapProjection - the map projection that owns this renderer.
-     * @type {WT_MapProjection}
+     * @property {WT_MapProjectionReadOnly} mapProjection - the map projection that owns this renderer.
+     * @type {WT_MapProjectionReadOnly}
      */
     get mapProjection() {
         return this._mapProjection;
@@ -1280,5 +1279,31 @@ class WT_MapProjectionSyncedRenderer extends WT_MapProjectionRenderer {
      */
     invert(point, reference) {
         return this.mapProjection.invert(point, reference);
+    }
+
+    /**
+     * Checks whether a point lies within the bounds of this renderer's post-projection clipping bounds.
+     * The point to check can either be in spherical coordinates or pixel coordinates in the viewing window.
+     * If the former, the point will first be projected before the bounds check is made.
+     * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point - the point to check.
+     * @param {Number} margin - the margin to use, expressed as a fraction of the width/height of the viewing window.
+     *                          (a positive margin extends the bounds beyond the true bounds of the viewing window)
+     * @returns {Boolean} whether the projection of the specified point lies within the bounds of the viewing window.
+     */
+    isInView(point, margin = 0) {
+        let left = -margin * this.mapProjection.viewWidth;
+        let top = -margin * this.mapProjection.viewHeight;
+        let right = (1 + margin) * this.mapProjection.viewWidth;
+        let bottom = (1 + margin) * this.mapProjection.viewHeight;
+
+        if (typeof point.lat === "number" && typeof point.long === "number") {
+            point = this.project(point, this._tempVector);
+        } else if (typeof point.x !== "number" || typeof point.y !== "number") {
+            return undefined;
+        }
+        return (point.x >= left) &&
+               (point.x <= right) &&
+               (point.y >= top) &&
+               (point.y <= bottom);
     }
 }
