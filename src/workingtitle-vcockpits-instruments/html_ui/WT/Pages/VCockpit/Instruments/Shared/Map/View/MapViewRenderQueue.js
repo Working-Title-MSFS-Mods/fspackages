@@ -3,12 +3,23 @@ class WT_MapViewRenderQueue {
         this._queue = [];
         this._head = 0;
         this._isBusy = false;
+        this._renderer;
     }
 
+    /**
+     * @readonly
+     * @property {Number} size
+     * @type {Number}
+     */
     get size() {
         return this._queue.length - this._head;
     }
 
+    /**
+     * @readonly
+     * @property {Boolean} isBusy
+     * @type {Boolean}
+     */
     get isBusy() {
         return this._isBusy;
     }
@@ -17,13 +28,19 @@ class WT_MapViewRenderQueue {
         this._queue.push(element);
     }
 
-    _doRender(renderer, data) {
+    _finishRender(data) {
+        this.clear();
+        this._renderer.onFinished(data);
+        this._isBusy = false;
+    }
+
+    _doRender(data) {
         let renderCount = 0;
         let t0 = performance.now();
         while (this._head < this._queue.length) {
             let current = this._queue[this._head];
-            if (renderer.canRender(current, renderCount, performance.now() - t0)) {
-                renderer.render(current, data);
+            if (this._renderer.canRender(current, renderCount, performance.now() - t0)) {
+                this._renderer.render(current, data);
                 this._head++;
                 renderCount++;
             } else {
@@ -31,23 +48,26 @@ class WT_MapViewRenderQueue {
             }
         }
         if (this.size === 0 && renderCount > 0) {
-            this.clear();
-            renderer.onFinished(data);
+            this._finishRender(data);
         } else {
-            renderer.onPaused(data);
+            this._renderer.onPaused(data);
         }
         return renderCount;
     }
 
     start(renderer, data) {
+        if (this.isBusy) {
+            this._renderer.onAborted();
+        }
         this._isBusy = true;
         this._head = 0;
-        return this._doRender(renderer, data);
+        this._renderer = renderer;
+        return this._doRender(data);
     }
 
-    resume(renderer, data) {
-        if (this._isBusy) {
-            return this._doRender(renderer, data);
+    resume(data) {
+        if (this.isBusy) {
+            return this._doRender(data);
         }
         return 0;
     }
@@ -55,6 +75,13 @@ class WT_MapViewRenderQueue {
     clear() {
         this._queue = [];
         this._head = 0;
-        this._isBusy = false;
+    }
+
+    abort() {
+        if (this.isBusy) {
+            this.clear();
+            this._renderer.onAborted();
+            this._isBusy = false;
+        }
     }
 }

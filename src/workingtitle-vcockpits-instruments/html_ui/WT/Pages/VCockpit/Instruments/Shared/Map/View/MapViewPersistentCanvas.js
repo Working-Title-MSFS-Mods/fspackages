@@ -114,7 +114,13 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         }
     }
 
-    updateSize(width, height) {
+    _initProjectionRenderers(projection) {
+        this.display._projectionRenderer = projection.createCustomRenderer();
+        this.buffer._projectionRenderer = projection.createCustomRenderer();
+        this._updateProjectionRenderers();
+    }
+
+    setSize(width, height) {
         this._nominalWidth = width;
         this._nominalHeight = height;
         let long = Math.max(width, height);
@@ -123,6 +129,23 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         this.width = size;
         this.height = size;
         this._margin = long * (this.overdrawFactor - 1.41421356237) / 2;
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onProjectionViewChanged(state) {
+        super.onProjectionViewChanged(state);
+        this.display.invalidate();
+        this.buffer.invalidate();
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onAttached(state) {
+        super.onAttached(state);
+        this._initProjectionRenderers(state.projection);
     }
 
     _syncDisplayFromBuffer() {
@@ -141,12 +164,6 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         reference._center.set(state.projection.center);
         reference.scale = state.projection.scale;
         reference.rotation = state.projection.rotation;
-    }
-
-    initProjectionRenderers(projection) {
-        this.display._projectionRenderer = projection.createCustomRenderer();
-        this.buffer._projectionRenderer = projection.createCustomRenderer();
-        this._updateProjectionRenderers();
     }
 
     _updateTransform(state, reference, transform) {

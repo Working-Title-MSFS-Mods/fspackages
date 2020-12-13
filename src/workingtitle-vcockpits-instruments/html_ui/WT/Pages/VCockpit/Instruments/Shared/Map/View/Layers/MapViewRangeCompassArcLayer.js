@@ -714,6 +714,8 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     onUpdate(state) {
+        super.onUpdate(state);
+
         this.center = state.projection.viewTarget;
         this.radius = state.model.range.ratio(state.projection.range) * state.projection.viewHeight;
         this.facing = this.facingAngleGetter.getFacingAngle(state);
