@@ -69,7 +69,7 @@ class CJ4_FMC_RoutePage {
             return true;
         }, 1000, false);
     }
-    
+
     invalidate() {
         this._isDirty = true;
         this._fmc.clearDisplay();
@@ -517,18 +517,28 @@ class CJ4_FMC_RoutePage {
                 }
             }
 
+            /** @type {FlightPlanSegment} */
             const approachSeg = fpln.getSegment(SegmentType.Approach);
             if (approachSeg !== FlightPlanSegment.Empty) {
-                const appName = (flightPlanManager.getAirportApproach() !== undefined) ? flightPlanManager.getAirportApproach().name : "APP";
-                for (let i = 0; i < approachSeg.waypoints.length; i++) {
-                    const wp = approachSeg.waypoints[i];
-                    const fpIdx = approachSeg.offset + i;
-                    let tmpFoundActive = !foundActive && flightPlanManager.getActiveWaypointIndex() <= fpIdx;
-                    if (tmpFoundActive) {
-                        foundActive = true;
-                    }
-                    allRows.push(new FpRow(wp.ident, fpIdx, appName, undefined, tmpFoundActive));
+                // first app fix
+                const fWp = approachSeg.waypoints[0];
+                const fFpIdx = approachSeg.offset;
+                let tmpFoundActive = !foundActive && flightPlanManager.getActiveWaypointIndex() <= fpIdx;
+                if (tmpFoundActive) {
+                    foundActive = true;
                 }
+                allRows.push(new FpRow(fWp.ident, fFpIdx, undefined, undefined, tmpFoundActive));
+
+                // last app fix
+                let appName = (flightPlanManager.getAirportApproach() !== undefined) ? flightPlanManager.getAirportApproach().name : "APP";
+                appName = `${allRows[allRows.length-1].ident}.${appName}`;
+                const wp = approachSeg.waypoints[approachSeg.waypoints.length - 1];
+                const fpIdx = approachSeg.offset + (approachSeg.waypoints.length - 1);
+                tmpFoundActive = !foundActive && flightPlanManager.getActiveWaypointIndex() <= fpIdx;
+                if (tmpFoundActive) {
+                    foundActive = true;
+                }
+                allRows.push(new FpRow(wp.ident, fpIdx, appName, undefined, tmpFoundActive));
             }
 
         }
