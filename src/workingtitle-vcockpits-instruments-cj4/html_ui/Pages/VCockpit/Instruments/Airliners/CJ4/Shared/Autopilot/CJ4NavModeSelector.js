@@ -73,7 +73,8 @@ class CJ4NavModeSelector {
       navmode: new ValueStateTracker(() => SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number"), () => NavModeEvent.NAV_MODE_CHANGED),
       vpath: new ValueStateTracker(() => SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number"), () => NavModeEvent.VPATH_CHANGED),
       gs_arm: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ARM", "Boolean"), () => NavModeEvent.GS_ARM_CHANGED),
-      gs_active: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean"), () => NavModeEvent.GS_ACTIVE_CHANGED)
+      gs_active: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean"), () => NavModeEvent.GS_ACTIVE_CHANGED),
+      hdg_lock: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean"), () => NavModeEvent.HDG_LOCK_CHANGED)
     };
 
     /** The event handlers for each event type. */
@@ -95,7 +96,8 @@ class CJ4NavModeSelector {
       [`${NavModeEvent.GS_ARM_CHANGED}`]: this.handleGSArmChanged.bind(this),
       [`${NavModeEvent.GS_ACTIVE_CHANGED}`]: this.handleGSActiveChanged.bind(this),
       [`${NavModeEvent.VNAV_REQUEST_SLOT_1}`]: this.handleVnavRequestSlot1.bind(this),
-      [`${NavModeEvent.VNAV_REQUEST_SLOT_2}`]: this.handleVnavRequestSlot2.bind(this)
+      [`${NavModeEvent.VNAV_REQUEST_SLOT_2}`]: this.handleVnavRequestSlot2.bind(this),
+      [`${NavModeEvent.HDG_LOCK_CHANGED}`]: this.handleHeadingLockChanged.bind(this)
     };
 
     this.initialize();
@@ -433,9 +435,13 @@ class CJ4NavModeSelector {
         this.currentLateralActiveState = LateralNavModeState.ROLL;
         break;
       case LateralNavModeState.APPR:
-        this.cancelApproachMode(true);
+        this.cancelApproachMode(false);
         SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
         SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 1);
+
+        if (this.approachMode === WT_ApproachType.ILS || this.approachMode === WT_ApproachType.NONE) {
+          SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 1);
+        }
 
         this.currentLateralActiveState = LateralNavModeState.HDG;
         break;
@@ -689,6 +695,28 @@ class CJ4NavModeSelector {
   }
 
   /**
+   * Handles when autopilot heading lock changes.
+   */
+  handleHeadingLockChanged() {
+    const isLocked = this._inputDataStates.hdg_lock.state;
+    if (!isLocked) {
+      switch (this.currentLateralActiveState) {
+        case LateralNavModeState.APPR:
+          if (this.approachMode === WT_ApproachType.RNAV || this.approachMode === WT_ApproachType.VISUAL) {
+            SimVar.SetSimVarValue('K:AP_PANEL_HEADING_HOLD', 'number', 1);
+          }
+          break;
+        case LateralNavModeState.LNAV:
+          SimVar.SetSimVarValue('K:AP_PANEL_HEADING_HOLD', 'number', 1);
+          break;
+        case LateralNavModeState.HDG:
+          SimVar.SetSimVarValue('K:AP_PANEL_HEADING_HOLD', 'number', 1);
+          break;
+      }
+    }
+  }
+
+  /**
    * Handles when the VPath state changes.
    */
   handleVPathChanged() {
@@ -852,6 +880,7 @@ NavModeEvent.GS_ARM_CHANGED = 'gs_arm_changed';
 NavModeEvent.GS_ACTIVE_CHANGED = 'gs_active_changed';
 NavModeEvent.VNAV_REQUEST_SLOT_1 = 'vnav_request_slot_1';
 NavModeEvent.VNAV_REQUEST_SLOT_2 = 'vnav_request_slot_2';
+NavModeEvent.HDG_LOCK_CHANGED = 'hdg_lock_changed';
 
 class WT_ApproachType { }
 WT_ApproachType.NONE = 'none';
