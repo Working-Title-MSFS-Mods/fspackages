@@ -333,6 +333,10 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         for (let property of WT_MapViewRangeCompassArcLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
+
+        if (!this.showLabel) {
+            this._rangeLabel.labelElement.style.display = "none";
+        }
     }
 
     /**
@@ -697,6 +701,10 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state - current map view state.
      */
     _updateLabel(state) {
+        if (!this.showLabel) {
+            return;
+        }
+
         this._rangeLabel.onUpdate(state);
 
         if (!this._needRepositionLabel) {
@@ -767,6 +775,7 @@ WT_MapViewRangeCompassArcLayer.OPTIONS_DEF = {
 
     forwardTickLength: {default: 10, auto: true, observed: true},
 
+    showLabel: {default: true, auto: true},
     labelAngle: {default: -45, auto: true, observed: true},
     labelOffset: {default: 0, auto: true, observed: true}
 };
@@ -791,6 +800,7 @@ WT_MapViewRangeCompassArcLayer.CONFIG_PROPERTIES = [
     "bearingLabelFontOutlineWidth",
     "bearingLabelFontOutlineColor",
     "forwardTickLength",
+    "showLabel",
     "labelAngle",
-    "labelOffset",
+    "labelOffset"
 ];
