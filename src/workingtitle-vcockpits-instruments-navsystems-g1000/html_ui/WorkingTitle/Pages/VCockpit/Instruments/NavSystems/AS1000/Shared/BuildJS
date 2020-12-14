@@ -9,6 +9,17 @@ Framework/HtmlView.js
 Framework/Observables.js
 Framework/UnitChooser.js
 BaseAS1000.js
+Components/Engine/XMLEngineDisplay.js
+Components/Engine/Circular.js
+Components/Engine/Columns.js
+Components/Engine/DoubleHorizontal.js
+Components/Engine/DoubleVertical.js
+Components/Engine/Flaps.js
+Components/Engine/Header.js
+Components/Engine/Horizontal.js
+Components/Engine/Spacing.js
+Components/Engine/Text.js
+Components/Engine/Vertical.js
 Components/FlightPlan.js
 Components/Map.js
 Components/RadioFrequencies.js
@@ -85,4 +96,3 @@ BaseInputLayer.js
 Debug.js
 DebugConsole.js
 Engine.js
-XMLEngineDisplay.js
