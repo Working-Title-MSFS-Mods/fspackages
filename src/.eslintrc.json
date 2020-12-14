@@ -20,6 +20,7 @@
         "semi": [2, "always"]
     },
     "globals": {
+        "AutopilotMode": "writable",
         "Avionics": "writable",
         "EmptyCallback": "writable",
         "LatLong": "writable",
