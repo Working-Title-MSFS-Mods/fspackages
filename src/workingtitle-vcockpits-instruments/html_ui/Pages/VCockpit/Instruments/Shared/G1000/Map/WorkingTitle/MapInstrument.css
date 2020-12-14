@@ -32,7 +32,7 @@ map-instrument {
   font-size:1.0rem !important;
   /* Map position (left and top) is set in mapConfig.json file (see SvgMapConfig.ts) (makes it editable at runtime) */
   /* Map position (left and top) is set in mapConfig.json file (see SvgMapConfig.ts) (makes it editable at runtime) */ }
-  map-instrument #MapOrientation {
+  map-instrument .map-orientation {
     position: absolute;
     top: 0%;
     right: 0%;

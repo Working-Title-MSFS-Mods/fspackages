@@ -1443,8 +1443,8 @@ class MapInstrument extends ISvgMapRootElement {
         // to compensate for potential rotation, we need to overdraw the map
         max *= this.overdrawFactor;
 
-        if (w * h > 1 && w * h !== this.lastWH) {
-            this.lastWH = w * h;
+        if (w * h * this.overdrawFactor > 1 && w * h * this.overdrawFactor !== this.lastWH) {
+            this.lastWH = w * h * this.overdrawFactor;
             this.bingMap.style.width = fastToFixed(max, 0) + "px";
             this.bingMap.style.height = fastToFixed(max, 0) + "px";
             this.bingMap.style.top = fastToFixed((h - max) / 2, 0) + "px";

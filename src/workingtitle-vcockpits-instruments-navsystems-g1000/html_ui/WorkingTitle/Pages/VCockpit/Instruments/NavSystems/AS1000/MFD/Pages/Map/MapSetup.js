@@ -184,16 +184,19 @@ class WT_Map_Setup_Handler {
                     case "north": {
                         m.rotateWithPlane(false);
                         m.planeTrackedPosY = 0.5;
+                        m.querySelector(".map-orientation").textContent = "NORTH UP";
                         return;
                     }
                     case "track": {
                         m.rotateWithPlane(true);
                         m.planeTrackedPosY = 2 / 3;
+                        m.querySelector(".map-orientation").textContent = "TRACK UP";
                         return;
                     }
                     case "heading": {
                         m.rotateWithPlane(true);
                         m.planeTrackedPosY = 2 / 3;
+                        m.querySelector(".map-orientation").textContent = "HEADING UP";
                         return;
                     }
                 }
