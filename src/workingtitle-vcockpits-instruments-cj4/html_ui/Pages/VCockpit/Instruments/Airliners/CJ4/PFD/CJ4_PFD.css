@@ -297,12 +297,18 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #A
     position: absolute;
     width: 30%;
     left: 82%;
-    bottom: -15%;
+    bottom: -5%;
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow[state=Inactive] {
     display: none;
 }
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow polygon{
+  fill: white; }
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow[state=Engaged] polygon{
+  fill: #11d011; }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right {
     width: 52%;
@@ -738,9 +744,19 @@ cj4-pfd-element #Mainframe #NavBar #Coms #Com2,
 cj4-pfd-element #Mainframe #NavBar #Coms #Atc1,
 cj4-pfd-element #Mainframe #NavBar #Coms #Rat,
 cj4-pfd-element #Mainframe #NavBar #Coms #Utc {
-    display: flex;
-    justify-content: center;
-    font-size: calc(1.95 * 1vh * var(--bodyHeightScale));
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      font-size: calc( 1.95 * 1vh * var(--bodyHeightScale));
+}
+
+cj4-pfd-element #Mainframe #NavBar #Coms #Com1_Value,
+cj4-pfd-element #Mainframe #NavBar #Coms #Com2_Value,
+cj4-pfd-element #Mainframe #NavBar #Coms #Atc1_Value,
+cj4-pfd-element #Mainframe #NavBar #Coms #Rat_Value,
+cj4-pfd-element #Mainframe #NavBar #Coms #Utc_Value,
+cj4-pfd-element #Mainframe #NavBar #Coms #Rat_Unit {
+    font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
 }
 
 cj4-pfd-element #Mainframe #NavBar #Cabs {
@@ -776,6 +792,7 @@ cj4-pfd-element #Mainframe #NavBar #Cabs #Diff {
 cj4-pfd-element #Mainframe #NavBar .Modifiable {
     color: green;
     margin-left: 8px;
+    margin-right: 4px;
 }
 
 cj4-pfd-element #Mainframe #NavBar .Borders {
