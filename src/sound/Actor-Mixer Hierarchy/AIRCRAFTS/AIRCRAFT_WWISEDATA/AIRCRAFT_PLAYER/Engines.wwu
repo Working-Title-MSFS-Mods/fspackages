@@ -770,7 +770,7 @@
 										<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="63"/>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>-15</Value>
+												<Value>-20</Value>
 											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{6746E28A-0910-44AE-9B3B-1BA3644AFCEA}" ShortID="268791210">

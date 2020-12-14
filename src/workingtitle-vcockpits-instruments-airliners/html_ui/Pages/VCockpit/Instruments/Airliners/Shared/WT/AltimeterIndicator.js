@@ -19,7 +19,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this._aircraft = Aircraft.A320_NEO;
         this._isAltitudeAlerting = false;
         this._lastAltitudeAlertSet = false;
-        this.ALTALERTANIMTIME = 3000; 
+        this.ALTALERTANIMTIME = 4000; 
         this._altAlertAnimationTimer = this.ALTALERTANIMTIME;
     }
     static get observedAttributes() {
