@@ -43,6 +43,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ## FMS Changes
 * Reserve fuel can now be changed
 * Added approaches to FPLN page
+* Approach ref temp of zero can now be entered
 
 ## Engines
 * Light off occurs at 12% N2
