@@ -297,7 +297,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #A
     position: absolute;
     width: 30%;
     left: 82%;
-    bottom: -5%;
+    bottom: 0;
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow[state=Inactive] {
