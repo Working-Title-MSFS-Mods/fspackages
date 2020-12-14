@@ -443,7 +443,7 @@ class CJ4_FMC extends FMCMainDisplay {
                 this._apMasterStatus = currentApMasterStatus;
             }
             this._apHasDeactivated = !currentApMasterStatus && this._previousApMasterStatus;
-            this._previousApMasterStatus = currentApMasterStatus;      
+            this._previousApMasterStatus = currentApMasterStatus;
 
             if (!this._navModeSelector) {
                 this._navModeSelector = new CJ4NavModeSelector(this.flightPlanManager);
@@ -718,10 +718,10 @@ class CJ4_FMC extends FMCMainDisplay {
         const indicated = Simplane.getAltitude();
         const difference = Math.abs(indicated - preselector);
 
-        switch(this._altAlertState) {
+        switch (this._altAlertState) {
             case CJ4_FMC.ALTALERT_STATE.NONE:
                 SimVar.SetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number", 0);
-                if(difference < 1000){
+                if (difference < 1000) {
                     this._altAlertState = CJ4_FMC.ALTALERT_STATE.ARMED;
                 }
                 break;
@@ -730,23 +730,22 @@ class CJ4_FMC extends FMCMainDisplay {
                     this._altAlertCd -= dt;
                 }
 
-                if(this._altAlertCd < 0){
+                if (this._altAlertCd < 0) {
                     this._altAlertState = CJ4_FMC.ALTALERT_STATE.ALERT;
                     this._altAlertCd = 500;
-                }else if(difference > 1000){
+                } else if (difference > 1000) {
                     this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
                     this._altAlertCd = 500;
                 }
                 break;
             case CJ4_FMC.ALTALERT_STATE.ALERT:
-                // if lvar not alerted
-                if(!Simplane.getIsGrounded()){
+                if (!Simplane.getIsGrounded() && SimVar.GetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number") === 0) {
                     this._altAlertPreselect = preselector;
                     SimVar.SetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number", 1);
                 }
 
                 // go to NONE when preselector changed
-                if(Math.abs(preselector - this._altAlertPreselect) > 1000){
+                if (Math.abs(preselector - this._altAlertPreselect) > 1000) {
                     this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
                 }
                 break;
