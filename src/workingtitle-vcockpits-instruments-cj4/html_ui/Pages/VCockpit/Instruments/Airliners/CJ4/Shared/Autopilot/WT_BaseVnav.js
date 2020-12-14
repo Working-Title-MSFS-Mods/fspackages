@@ -361,15 +361,10 @@ class WT_BaseVnav {
     setTodWaypoint(calculate = true) {
         if (calculate === true) {
             let todDistanceFromDest = this._destination.cumulativeDistanceInFP - this._currentDistanceInFP - this._distanceToTod;
-            let todLLA = this._fpm.getCoordinatesAtNMFromDestinationAlongFlightPlan(todDistanceFromDest);
-            SimVar.SetSimVarValue("L:WT_CJ4_TOD_LAT", "number", todLLA.lat);
-            SimVar.SetSimVarValue("L:WT_CJ4_TOD_LONG", "number", todLLA.long);
-            SimVar.SetSimVarValue("L:WT_CJ4_TOD", "number", 1);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", todDistanceFromDest);
         }
         else {
-            SimVar.SetSimVarValue("L:WT_CJ4_TOD_LAT", "number", 0);
-            SimVar.SetSimVarValue("L:WT_CJ4_TOD_LONG", "number", 0);
-            SimVar.SetSimVarValue("L:WT_CJ4_TOD", "number", 0);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", 0);
         }
     }
 
