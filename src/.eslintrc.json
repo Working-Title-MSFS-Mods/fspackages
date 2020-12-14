@@ -20,6 +20,7 @@
         "semi": [2, "always"]
     },
     "globals": {
+        "SvgWaypointElement": "writable",
         "AutopilotMode": "writable",
         "Avionics": "writable",
         "EmptyCallback": "writable",

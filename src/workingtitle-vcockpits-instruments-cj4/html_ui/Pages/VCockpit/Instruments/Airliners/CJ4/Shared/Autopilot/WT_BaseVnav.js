@@ -361,10 +361,14 @@ class WT_BaseVnav {
     setTodWaypoint(calculate = true) {
         if (calculate === true) {
             let todDistanceFromDest = this._destination.cumulativeDistanceInFP - this._vnavTargetWaypoint.cumulativeDistanceInFP + this._topOfDescent;
+            let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+            let timeToTod = todDistanceFromDest / (groundSpeed / 3600);
             SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", todDistanceFromDest);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_SECONDS", "number", timeToTod);
         }
         else {
             SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", 0);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_SECONDS", "number", -1);
         }
     }
 
