@@ -17,6 +17,10 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.hudAPAltitude = 0;
         this.isHud = false;
         this._aircraft = Aircraft.A320_NEO;
+        this._isAltitudeAlerting = false;
+        this._lastAltitudeAlertSet = false;
+        this.ALTALERTANIMTIME = 3000; 
+        this._altAlertAnimationTimer = this.ALTALERTANIMTIME;
     }
     static get observedAttributes() {
         return ["hud"];
@@ -1362,6 +1366,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.updateBaroPressure(baroMode);
         this.updateBaroMinimums(baroMinsSet, indicatedAltitude);
         this.updateMtrs(indicatedAltitude, selectedAltitude);
+        this.updateAltitudeAlertFlash(_dTime);
     }
     updateMtrs(_altitude, _selected) {
         if (this.mtrsVisible) {
@@ -1661,6 +1666,29 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.baroMinsSVG.setAttribute("visibility", "visible");
             }
         }
+    }
+
+    updateAltitudeAlertFlash(deltaTime) {
+        const isAlertSet = SimVar.GetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number") === 1;
+
+        if(this._lastAltitudeAlertSet !== isAlertSet && isAlertSet){
+            this._isAltitudeAlerting = isAlertSet; 
+            this.targetAltitudeTextSVG1.classList.add("blinking");
+            this.targetAltitudeTextSVG2.classList.add("blinking");
+            this.targetAltitudeIndicatorSVGShape.classList.add("blinking");
+        }
+        this._lastAltitudeAlertSet = isAlertSet;
+
+        if (this._isAltitudeAlerting) {
+            this._altAlertAnimationTimer -= deltaTime;
+            if(this._altAlertAnimationTimer < 0){   
+                this.targetAltitudeTextSVG1.classList.remove("blinking");
+                this.targetAltitudeTextSVG2.classList.remove("blinking");
+                this.targetAltitudeIndicatorSVGShape.classList.remove("blinking");
+                this._isAltitudeAlerting = false;
+                this._altAlertAnimationTimer = this.ALTALERTANIMTIME;
+            }
+        }      
     }
 }
 customElements.define("jet-pfd-altimeter-indicator", Jet_PFD_AltimeterIndicator);

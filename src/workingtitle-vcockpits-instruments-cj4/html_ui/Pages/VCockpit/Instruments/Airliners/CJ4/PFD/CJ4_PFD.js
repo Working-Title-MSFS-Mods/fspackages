@@ -53,6 +53,7 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_LNAV_MODE", "number", this.mapNavigationSource);
+        document.documentElement.classList.add("animationsEnabled");
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);

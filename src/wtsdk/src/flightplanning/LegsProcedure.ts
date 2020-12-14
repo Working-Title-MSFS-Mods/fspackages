@@ -1,5 +1,6 @@
 import { WayPoint, ProcedureLeg, BaseInstrument, LatLongAlt, IntersectionInfo, Avionics } from 'MSFS';
 import { GPS } from '../wtsdk';
+import { FixNamingScheme } from './FixNamingScheme';
 import { GeoMath } from './GeoMath';
 import { RawDataMapper } from './RawDataMapper';
 
@@ -29,6 +30,15 @@ export class LegsProcedure {
   /** A normalization factor for calculating distances from triangular ratios. */
   public static distanceNormalFactorNM = (21639 / 2) * Math.PI;
 
+  /** A collection of filtering rules for filtering ICAO data to pre-load for the procedure. */
+  private legFilteringRules: ((icao: string) => boolean)[] = [
+    icao => icao.trim() !== '', //Icao is not empty
+    icao => icao[0] !== 'R', //Icao is not runway icao, which is not searchable
+    icao => icao[0] !== 'A', //Icao is not airport icao, which can be skipped
+    icao => icao.substr(1, 2) !== '  ', //Icao is not missing a region code
+    icao => !this._facilitiesToLoad.has(icao) //Icao is not already being loaded
+  ];
+
   /**
    * Creates an instance of a LegsProcedure.
    * @param legs The legs that are part of the procedure.
@@ -38,11 +48,11 @@ export class LegsProcedure {
   constructor(private _legs: ProcedureLeg[], private _previousFix: WayPoint, private _instrument: BaseInstrument) {
 
     for (var leg of this._legs) {
-      if (leg.fixIcao.trim() !== '' && leg.fixIcao[0] !== 'R' && leg.fixIcao[0] !== 'A' && !this._facilitiesToLoad.has(leg.fixIcao)) {
+      if (this.isIcaoValid(leg.fixIcao)) {
         this._facilitiesToLoad.set(leg.fixIcao, this._instrument.facilityLoader.getFacilityRaw(leg.fixIcao, 2000));
       }
 
-      if (leg.originIcao.trim() !== '' && leg.originIcao[0] !== 'R' && leg.originIcao[0] !== 'A' && !this._facilitiesToLoad.has(leg.originIcao)) {
+      if (this.isIcaoValid(leg.originIcao)) {
         this._facilitiesToLoad.set(leg.originIcao, this._instrument.facilityLoader.getFacilityRaw(leg.originIcao, 2000));
       }
     }
@@ -285,7 +295,7 @@ export class LegsProcedure {
       const course = leg.course + GeoMath.getMagvar(prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
       const coordinates = Avionics.Utils.bearingDistanceToCoordinates(course, legDistance, prevLeg.infos.coordinates.lat, prevLeg.infos.coordinates.long);
 
-      return this.buildWaypoint(`T${leg.course}${referenceFix.icao.substring(7, 12).trim()}`, coordinates);
+      return this.buildWaypoint(FixNamingScheme.courseToIntercept(course), coordinates);
     }
   }
 
@@ -373,7 +383,7 @@ export class LegsProcedure {
    * @param b The degrees of heading b.
    * @returns The difference between the two headings in zero north normalized radians.
    */
-  deltaAngleRadians(a: number, b: number): number {
+  private deltaAngleRadians(a: number, b: number): number {
     return Math.abs((Avionics.Utils.fmod((a - b) + 180, 360) - 180) * Avionics.Utils.DEG2RAD);
   }
 
@@ -382,8 +392,23 @@ export class LegsProcedure {
    * @param icao The icao to pull the ident from.
    * @returns The parsed ident. 
    */
-  getIdent(icao: string): string {
+  private getIdent(icao: string): string {
     return icao.substring(7, 12).trim();
+  }
+
+  /**
+   * Checks if an ICAO is valid to load.
+   * @param icao The icao to check.
+   * @returns Whether or not the ICAO is valid.
+   */
+  private isIcaoValid(icao): boolean {
+    for (var rule of this.legFilteringRules) {
+      if (!rule(icao)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**
@@ -393,7 +418,7 @@ export class LegsProcedure {
    * @param magneticVariation The magnetic variation of the waypoint, if any.
    * @returns The built waypoint.
    */
-  buildWaypoint(ident: string, coordinates: LatLongAlt, magneticVariation?: number): WayPoint {
+  public buildWaypoint(ident: string, coordinates: LatLongAlt, magneticVariation?: number): WayPoint {
     const waypoint = new WayPoint(this._instrument);
     waypoint.type = 'W';
 
