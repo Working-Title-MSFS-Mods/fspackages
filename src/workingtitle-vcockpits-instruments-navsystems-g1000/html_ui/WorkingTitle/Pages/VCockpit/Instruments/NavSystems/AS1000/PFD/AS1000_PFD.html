@@ -136,7 +136,7 @@
         </g1000-nav-box>
 
         <g1000-soft-key-menu id="SoftKeyMenu"></g1000-soft-key-menu>
-        
+
         <section class="center">
             <div id="EngineDisplay">
                 <engine-display id="ED"></engine-display>
@@ -267,7 +267,7 @@
                             <label>Mode</label>
                             <toggle-switch values="ADF" value="ADF" data-input="setAdfMode"></toggle-switch>
                             <label>Volume</label>
-                            <numeric-input class="volume" min="0" max="100" units="%" data-input="setVolume" value="100" increment="5"></numeric-input>                                
+                            <numeric-input class="volume" min="0" max="100" units="%" data-input="setVolume" value="100" increment="5"></numeric-input>
                         </div>
                     </section>
                     <section class="dme">
@@ -324,7 +324,7 @@
                             </div>
                             <div class="new-waypoint" data-element="newWaypointLine">
                                 <div></div>
-                                <div class="ident"><selectable-button data-click="createNewWaypoint" class="new-waypoint">__________</selectable-button></div>
+                                <div class="ident"><selectable-button data-click="showAddWaypoint" class="new-waypoint">__________</selectable-button></div>
                             </div>
                         </div>
                     </section>
@@ -395,7 +395,7 @@
     <template id="approach-page">
         <section>
             <label>Approach</label>
-            <drop-down-selector data-element="procedureSelector" updateOnSelection empty-value="None"></drop-down-selector>           
+            <drop-down-selector data-element="procedureSelector" updateOnSelection empty-value="None"></drop-down-selector>
         </section>
         <section>
             <label>Trans</label>
@@ -404,7 +404,7 @@
         <section class="minimums">
             <label>Minimums</label>
             <toggle-switch value="0" data-element="minimumsMode"></toggle-switch>
-            <numeric-input digits="5" min="0" max="35000" class="value" value="0" units="FT" style="text-align:right;"></numeric-input>                
+            <numeric-input digits="5" min="0" max="35000" class="value" value="0" units="FT" style="text-align:right;"></numeric-input>
         </section>
         <section class="frequency">
             <label>Prim Freq</label>
@@ -441,7 +441,7 @@
         <section>
             <label>Arrival</label>
             <drop-down-selector data-element="procedureSelector" updateOnSelection></drop-down-selector>
-        </section>        
+        </section>
         <section>
             <label>Trans</label>
             <drop-down-selector data-element="enRouteTransitionSelector" updateOnSelection empty-value="None"></drop-down-selector>
@@ -455,7 +455,7 @@
         </section>
     </template>
 
-    <template id="confirm-dialog"> 
+    <template id="confirm-dialog">
         <div class="dialog">
             <div class="dialog-inner">
                 <div class="dialog-inner-2">

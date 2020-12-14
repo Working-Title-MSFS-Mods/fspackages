@@ -1,6 +1,6 @@
 class WT_Map_Menu extends WT_Soft_Key_Menu {
     /**
-     * @param {WT_MFD_Soft_Key_Menu_Handler} menuHandler 
+     * @param {WT_MFD_Soft_Key_Menu_Handler} menuHandler
      * @param {WT_Map_Setup} mapSetup
      */
     constructor(menuHandler, mapSetup) {
@@ -14,7 +14,7 @@ class WT_Map_Menu extends WT_Soft_Key_Menu {
             terrain: new WT_Soft_Key("TERRAIN", () => mapSetup.toggleValue("terrainDataEnabled")),
             airways: new WT_Soft_Key("AIRWAYS"),
             stormScope: new WT_Soft_Key("STRMSCP"),
-            nexrad: new WT_Soft_Key("NEXRAD", () => mapSetup.toggleValue("nexarEnabled")),
+            nexrad: new WT_Soft_Key("NEXRAD", () => mapSetup.toggleValue("nexradEnabled")),
             xmLightning: new WT_Soft_Key("XM LTNG"),
             metar: new WT_Soft_Key("METAR"),
             legend: new WT_Soft_Key("LEGEND"),

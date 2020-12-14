@@ -1483,12 +1483,17 @@ class MapInstrument extends ISvgMapRootElement {
         return this.bingMapConfigId;
     }
     showIsolines(_show) {
-        this.bingMap.showIsolines(_show);
+        if (this.bingMap) {
+            this.bingMap.showIsolines(_show);
+        }
     }
     getIsolines() {
-        return this.bingMap.getIsolines();
+        if (this.bingMap) {
+            return this.bingMap.getIsolines();
+        }
     }
     showWeather(_mode) {
+        if (!this.bingMap) { return; }
         let cone = 0;
         if (_mode == EWeatherRadar.HORIZONTAL)
             cone = Math.PI / 2;

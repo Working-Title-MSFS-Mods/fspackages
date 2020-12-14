@@ -129,7 +129,7 @@ class WT_PFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         linesElement.setLineFactory(new WT_PFD_Flight_Plan_Line_Factory());
     }
     /**
-     * @param {WT_Flight_Plan_Page_Model} model 
+     * @param {WT_Flight_Plan_Page_Model} model
      */
     setModel(model) {
         this.model = model;
@@ -142,7 +142,7 @@ class WT_PFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         linesElement.onWaypointAltitudeChanged.subscribe((waypointIndex, altitude) => {
             this.model.setAltitude(waypointIndex, altitude);
         });
-        linesElement.onWaypointClicked.subscribe(waypointIndex => this.showCreateNewWaypoint(waypointIndex));
+        linesElement.onWaypointClicked.subscribe(waypointIndex => this.showAddWaypoint(waypointIndex));
         linesElement.onNewWaypointLineSelected.subscribe(() => {
             this.model.newWaypointLineSelected();
         })
@@ -174,7 +174,7 @@ class WT_PFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     showPageMenu() {
         this.pageMenuHandler.show(this.pageMenu);
     }
-    showCreateNewWaypoint(index = -1) {
+    showAddWaypoint(index = -1) {
         this.newWaypointHandler.show().then(waypoint => {
             this.model.addWaypoint(waypoint, index);
         }).catch(WT_Cancel_Dialog_Error.HANDLER);

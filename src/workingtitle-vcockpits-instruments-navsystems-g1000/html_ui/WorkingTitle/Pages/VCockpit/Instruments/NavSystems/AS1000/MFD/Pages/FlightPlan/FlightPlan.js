@@ -1,8 +1,8 @@
 class WT_Flight_Plan_View_Menu extends WT_Soft_Key_Menu {
     /**
-     * @param {WT_Flight_Plan_Page_Model} model 
-     * @param {WT_Flight_Plan_Page_View} view 
-     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
+     * @param {WT_Flight_Plan_Page_Model} model
+     * @param {WT_Flight_Plan_Page_View} view
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler
      */
     constructor(model, view, softKeyMenuHandler) {
         super(false);
@@ -33,15 +33,15 @@ class WT_Flight_Plan_View_Menu extends WT_Soft_Key_Menu {
 
 class WT_Flight_Plan_Main_Menu extends WT_Soft_Key_Menu {
     /**
-     * @param {WT_Flight_Plan_Page_Model} model 
-     * @param {WT_MFD_Flight_Plan_Page_View} view 
+     * @param {WT_Flight_Plan_Page_Model} model
+     * @param {WT_MFD_Flight_Plan_Page_View} view
      */
     constructor(model, view) {
         super(true);
         this.model = model;
 
         this.buttons = {
-            newWpt: this.addSoftKey(4, new WT_Soft_Key("NEW WPT", view.showCreateNewWaypoint.bind(view))),
+            newWpt: this.addSoftKey(4, new WT_Soft_Key("NEW WPT", view.showAddWaypoint.bind(view))),
             view: this.addSoftKey(5, new WT_Soft_Key("VIEW", view.showViewMenu.bind(view))),
             actLeg: this.addSoftKey(10, new WT_Soft_Key("ACT LEG", model.setActiveWaypoint.bind(model))),
             vnavProf: this.addSoftKey(6, new WT_Soft_Key("VNV PROF")),
@@ -216,8 +216,8 @@ class WT_MFD_Flight_Plan_Line_Factory {
 
 class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     /**
-     * @param {MapInstrument} map 
-     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler 
+     * @param {MapInstrument} map
+     * @param {WT_MFD_Soft_Key_Menu_Handler} softKeyMenuHandler
      * @param {WT_Show_Page_Menu_Handler} pageMenuHandler
      * @param {WT_Show_Confirm_Dialog_Handler} confirmDialogHandler
      * @param {WT_Show_New_Waypoint_Handler} newWaypointHandler
@@ -258,7 +258,7 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         linesElement.setLineFactory(new WT_MFD_Flight_Plan_Line_Factory());
     }
     /**
-     * @param {WT_Flight_Plan_Page_Model} model 
+     * @param {WT_Flight_Plan_Page_Model} model
      */
     setModel(model) {
         this.model = model;
@@ -275,7 +275,7 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
         linesElement.onWaypointSelected.subscribe(waypointIndex => this.model.setSelectedWaypointIndex(waypointIndex));
         linesElement.onWaypointSelected.subscribe(DOMUtilities.debounce(waypointIndex => this.selectedLeg.next(waypointIndex), 200, false));
         linesElement.onWaypointAltitudeChanged.subscribe(e => this.model.setAltitude(e.waypointIndex, e.altitude));
-        linesElement.onWaypointClicked.subscribe(waypointIndex => this.showCreateNewWaypoint(waypointIndex));
+        linesElement.onWaypointClicked.subscribe(waypointIndex => this.showAddWaypoint(waypointIndex));
         linesElement.onNewWaypointLineSelected.subscribe(() => this.model.newWaypointLineSelected());
 
         rxjs.combineLatest(this.isInputActive, this.selectedLeg.pipe(rxjs.operators.distinctUntilChanged())).subscribe(values => {
@@ -334,7 +334,7 @@ class WT_MFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     setName(name) {
         this.model.setName(name);
     }
-    showCreateNewWaypoint(index = null) {
+    showAddWaypoint(index = null) {
         this.newWaypointHandler.show().then(waypoint => {
             this.model.addWaypoint(waypoint, index);
         }).catch(WT_Cancel_Dialog_Error.HANDLER);
