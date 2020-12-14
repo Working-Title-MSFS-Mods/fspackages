@@ -360,7 +360,7 @@ class WT_BaseVnav {
 
     setTodWaypoint(calculate = true) {
         if (calculate === true) {
-            let todDistanceFromDest = this._destination.cumulativeDistanceInFP - this._currentDistanceInFP - this._distanceToTod;
+            let todDistanceFromDest = this._destination.cumulativeDistanceInFP - this._vnavTargetWaypoint.cumulativeDistanceInFP + this._topOfDescent;
             SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", todDistanceFromDest);
         }
         else {
