@@ -1772,13 +1772,13 @@ class CJ4_SystemEngines extends NavSystemElement {
                         break;
                 }
 
-                if(i==0){
+                if (i == 0) {
                     this.N1ModeLeft.textContent = thrustSetting;
                     this.N1ModeLeft.setAttribute("fill", modeClr);
-    
-                }else {
+
+                } else {
                     this.N1ModeRight.textContent = thrustSetting;
-                    this.N1ModeRight.setAttribute("fill", modeClr);    
+                    this.N1ModeRight.setAttribute("fill", modeClr);
                 }
             }
 
@@ -2699,7 +2699,7 @@ class CJ4_SystemAnnunciations extends Cabin_Annunciations {
 
     onUpdate(_deltaTime) {
         if (!this.annunciations)
-        return;
+            return;
 
         for (var i = 0; i < this.allMessages.length; i++) {
             var message = this.allMessages[i];
@@ -3465,37 +3465,61 @@ class CJ4_PopupMenuContainer extends NavSystemElementContainer {
     onEvent(_event) {
         super.onEvent(_event);
         if (this.handler && this.handler.reactsOnEvent(_event)) {
-            switch (_event) {
-                case "Upr_DATA_PUSH":
-                case "Lwr_DATA_PUSH":
-                    this.handler.onActivate();
-                    break;
-                case "Upr_DATA_DEC":
-                case "Lwr_DATA_DEC":
-                    this.handler.onDataDec();
-                    break;
-                case "Upr_DATA_INC":
-                case "Lwr_DATA_INC":
-                    this.handler.onDataInc();
-                    break;
-                case "Upr_MENU_ADV_DEC":
-                case "Lwr_MENU_ADV_DEC":
-                    this.handler.onMenuDec();
-                    break;
-                case "Upr_MENU_ADV_INC":
-                case "Lwr_MENU_ADV_INC":
-                    this.handler.onMenuInc();
-                    break;
-                case "Upr_Push_ESC":
-                case "Lwr_Push_ESC":
-                    if (this.handler.isOnMainPage) {
-                        this.mode = CJ4_PopupMenu.NONE;
-                        Utils.RemoveAllChildren(this.root);
-                        this.handler = null;
-                    }
-                    else
-                        this.handler.onEscape();
-                    break;
+            if (this.gps instanceof CJ4_PFD) {
+                switch (_event) {
+                    case "Upr_DATA_PUSH":
+                        this.handler.onActivate();
+                        break;
+                    case "Upr_DATA_DEC":
+                        this.handler.onDataDec();
+                        break;
+                    case "Upr_DATA_INC":
+                        this.handler.onDataInc();
+                        break;
+                    case "Upr_MENU_ADV_DEC":
+                        this.handler.onMenuDec();
+                        break;
+                    case "Upr_MENU_ADV_INC":
+                        this.handler.onMenuInc();
+                        break;
+                    case "Upr_Push_ESC":
+                        if (this.handler.isOnMainPage) {
+                            this.mode = CJ4_PopupMenu.NONE;
+                            Utils.RemoveAllChildren(this.root);
+                            this.handler = null;
+                        }
+                        else
+                            this.handler.onEscape();
+                        break;
+                }
+            }
+            else if (this.gps instanceof CJ4_MFD) {
+                switch (_event) {
+                    case "Lwr_DATA_PUSH":
+                        this.handler.onActivate();
+                        break;
+                    case "Lwr_DATA_DEC":
+                        this.handler.onDataDec();
+                        break;
+                    case "Lwr_DATA_INC":
+                        this.handler.onDataInc();
+                        break;
+                    case "Lwr_MENU_ADV_DEC":
+                        this.handler.onMenuDec();
+                        break;
+                    case "Lwr_MENU_ADV_INC":
+                        this.handler.onMenuInc();
+                        break;
+                    case "Lwr_Push_ESC":
+                        if (this.handler.isOnMainPage) {
+                            this.mode = CJ4_PopupMenu.NONE;
+                            Utils.RemoveAllChildren(this.root);
+                            this.handler = null;
+                        }
+                        else
+                            this.handler.onEscape();
+                        break;
+                }
             }
         }
     }
@@ -4336,35 +4360,29 @@ class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
         super.onEvent(_event);
         if (this.handler && this.handler.reactsOnEvent(_event)) {
             switch (_event) {
-                case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":
                     if (!this.otherMenusOpen) {
                         this.handler.onActivate();
                     }
                     break;
-                case "Upr_DATA_DEC":
                 case "Lwr_DATA_DEC":
                     if (!this.otherMenusOpen)
                         this.handler.onDataDec();
                     break;
-                case "Upr_DATA_INC":
                 case "Lwr_DATA_INC":
                     if (!this.otherMenusOpen)
                         this.handler.onDataInc();
                     break;
-                case "Upr_MENU_ADV_DEC":
                 case "Lwr_MENU_ADV_DEC":
                     if (!this.otherMenusOpen) {
                         this.handler.onMenuDec();
                     }
                     break;
-                case "Upr_MENU_ADV_INC":
                 case "Lwr_MENU_ADV_INC":
                     if (!this.otherMenusOpen) {
                         this.handler.onMenuInc();
                     }
                     break;
-                case "Upr_Push_ESC":
                 case "Lwr_Push_ESC":
                     if (!this.handler.isOnMainPage && !this.otherMenusOpen) {
                         this.handler.escapeCbk();
