@@ -45,8 +45,25 @@ class WT_Map_Setup {
     addListener(listener) {
         this.listeners.push(listener);
     }
+    removeListener(listener) {
+        const index = this.listeners.indexOf(listener);
+        if (index > -1)
+            this.listeners.splice(index);
+    }
     fireListeners(key) {
         this.listeners.forEach(listener => listener(key, this.getValue(key)));
+    }
+    observe(key) {
+        const observable = new rxjs.BehaviorSubject(this.getValue(key));
+        const listener = (listenKey, value) => {
+            if (key == listenKey) {
+                observable.next(value);
+            }
+        }
+        this.addListener(listener);
+        return observable.pipe(
+            rxjs.operators.finalize(() => this.removeListener(listener))
+        );
     }
     getValue(key) {
         if (key in this.values) {
@@ -192,7 +209,7 @@ class WT_Map_Setup_Handler {
                 }
             },
             nexradEnabled: value => {
-                if(value) {
+                if (value) {
                     m.showWeather(EWeatherRadar.TOPVIEW)
                 } else {
                     m.showWeather(EWeatherRadar.OFF)

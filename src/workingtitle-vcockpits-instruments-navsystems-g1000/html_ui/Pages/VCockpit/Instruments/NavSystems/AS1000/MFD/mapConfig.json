@@ -158,27 +158,27 @@
     "netBingHeightColor3": [
         {
             "alt": 0,
-            "color": "#ff0000"
+            "color": "#992222"
         },
         {
             "alt": 99,
-            "color": "#ff0000"
+            "color": "#992222"
         },
         {
             "alt": 100,
-            "color": "#ffff00"
+            "color": "#bbbb22"
         },
         {
             "alt": 999,
-            "color": "#ffff00"
+            "color": "#bbbb22"
         },
         {
             "alt": 1000,
-            "color": "#00ff00"
+            "color": "#229900"
         },
         {
             "alt": 1999,
-            "color": "#00ff00"
+            "color": "#229900"
         },
         {
             "alt": 2000,

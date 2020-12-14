@@ -32,18 +32,8 @@ class WT_Map_Menu extends WT_Soft_Key_Menu {
         this.addSoftKey(10, buttons.legend);
         this.addSoftKey(11, menuHandler.backKey);
 
-        mapSetup.addListener((key, value) => {
-            switch (key) {
-                case "topographyEnabled":
-                    buttons.topo.selected = value;
-                    break;
-                case "terrainDataEnabled":
-                    buttons.terrain.selected = value;
-                    break;
-                case "nexradEnabled":
-                    buttons.nexrad.selected = value;
-                    break;
-            }
-        })
+        mapSetup.observe("topographyEnabled").subscribe(value => buttons.topo.selected = value);
+        mapSetup.observe("terrainDataEnabled").subscribe(value => buttons.terrain.selected = value);
+        mapSetup.observe("nexradEnabled").subscribe(value => buttons.nexrad.selected = value);
     }
 }
