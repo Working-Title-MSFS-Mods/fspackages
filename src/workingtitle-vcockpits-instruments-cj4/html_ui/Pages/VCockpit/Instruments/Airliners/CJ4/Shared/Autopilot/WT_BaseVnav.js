@@ -203,10 +203,12 @@ class WT_BaseVnav {
                 this._distanceToTod = this._topOfDescent < 0 ? 0 : this._vnavTargetDistance > this._topOfDescent ? (this._vnavTargetDistance - this._topOfDescent) : 0;
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", this._altDeviation);
                 this._pathCalculating = true;
+                this.setTodWaypoint();
             }
             else {
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", 0);
                 this._pathCalculating = false;
+                this.setTodWaypoint(false);
             }
 
 
@@ -225,6 +227,7 @@ class WT_BaseVnav {
             this._vnavConstraintAltitude = undefined;
             this._vnavConstraintWaypoint = undefined;
             this._vnavConstraintType = undefined;
+            this.setTodWaypoint(false);
             if (SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number") > 0) {
                 SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
             }
@@ -352,6 +355,20 @@ class WT_BaseVnav {
         }
         if (constraint === false) {
             SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
+        }
+    }
+
+    setTodWaypoint(calculate = true) {
+        if (calculate === true) {
+            let todDistanceFromDest = this._destination.cumulativeDistanceInFP - this._vnavTargetWaypoint.cumulativeDistanceInFP + this._topOfDescent;
+            let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+            let timeToTod = todDistanceFromDest / (groundSpeed / 3600);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", todDistanceFromDest);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_SECONDS", "number", timeToTod);
+        }
+        else {
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", 0);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_SECONDS", "number", -1);
         }
     }
 

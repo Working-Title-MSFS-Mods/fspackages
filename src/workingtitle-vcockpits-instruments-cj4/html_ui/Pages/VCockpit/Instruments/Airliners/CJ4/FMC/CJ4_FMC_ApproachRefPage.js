@@ -104,12 +104,12 @@ class CJ4_FMC_ApproachRefPage {
         };
 
         fmc.onRightInput[1] = () => {
-            let tempIn = parseFloat(fmc.inOut);
-            if (tempIn && isNaN(tempIn)) {
+            let tempIn = fmc.inOut;
+            if (tempIn && isNaN(tempIn) || tempIn < -54 || tempIn > 54) {
                 fmc.showErrorMessage("INVALID");
             }
             else if (tempIn) {
-                fmc.landingOat = Math.trunc(tempIn);
+                fmc.landingOat = tempIn;
                 fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
             }
             else {

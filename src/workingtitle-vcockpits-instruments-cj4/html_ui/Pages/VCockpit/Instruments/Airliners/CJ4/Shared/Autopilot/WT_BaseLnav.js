@@ -39,6 +39,7 @@ class WT_BaseLnav {
         this._dtk = undefined;
         this._setHeading = undefined;
 
+        SimVar.SetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number", 0);
         this._onDiscontinuity = false;
 
         this._lnavDeactivated = true;
@@ -80,6 +81,7 @@ class WT_BaseLnav {
         //CHECK IF DISCO/VECTORS
         if (this._onDiscontinuity) {
             if (!this._activeWaypoint.endsInDiscontinuity) {
+                SimVar.SetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number", 0);
                 this._onDiscontinuity = false;
             }
             else if (navModeActive) {
@@ -250,6 +252,7 @@ class WT_BaseLnav {
             SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", this._setHeading);
             SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", 0);
 
+            SimVar.SetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number", 1);
             this._onDiscontinuity = true;
         }
     }
