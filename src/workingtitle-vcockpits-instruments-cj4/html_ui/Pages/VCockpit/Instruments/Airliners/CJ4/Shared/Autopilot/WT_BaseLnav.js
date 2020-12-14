@@ -101,6 +101,8 @@ class WT_BaseLnav {
 
             //LNAV CAN RUN, UPDATE DATA
             this._groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+            const airspeedTrue = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
+
             const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG;
 
             this._activeWaypointDist = Avionics.Utils.computeGreatCircleDistance(planePosLatLong, this._activeWaypoint.infos.coordinates);
@@ -121,7 +123,7 @@ class WT_BaseLnav {
             const nextActiveWaypoint = this.flightplan.waypoints[this.flightplan.activeWaypointIndex + 1];
 
             //Remove heading instruction inhibition when near desired track
-            const windCorrectedDtk = this.normalizeCourse(this._dtk - this.calculateWindCorrection(this._dtk, this._groundSpeed));
+            const windCorrectedDtk = this.normalizeCourse(this._dtk - this.calculateWindCorrection(this._dtk, airspeedTrue));
             if (Math.abs(Avionics.Utils.angleDiff(windCorrectedDtk, planeHeading)) < 15) {
                 this._executeInhibited = false;
             }
@@ -217,12 +219,13 @@ class WT_BaseLnav {
      */
     execute() {
         if (!this._executeInhibited) {
+            //ADD WIND CORRECTION
+            const airspeedTrue = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
+            const windCorrection = this.calculateWindCorrection(this._setHeading, airspeedTrue);
+            this._setHeading = this.normalizeCourse(this._setHeading - windCorrection);
+
             //ADD MAGVAR
             this._setHeading = GeoMath.correctMagvar(this._setHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"));
-
-            //ADD WIND CORRECTION
-            const windCorrection = this.calculateWindCorrection(this._setHeading, this._groundSpeed);
-            this._setHeading = this.normalizeCourse(this._setHeading - windCorrection);
 
             //SET HEADING
             SimVar.SetSimVarValue("L:WT_TEMP_SETHEADING", "number", this._setHeading);
@@ -273,10 +276,11 @@ class WT_BaseLnav {
      * Calculates the wind correction.
      */
     calculateWindCorrection(course, groundSpeed) {
-        const currWindDirection = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"));
-        const currWindSpeed = Math.trunc(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"));
+        const magVar = SimVar.GetSimVarValue("MAGVAR", "degrees");
+        const currWindDirection = GeoMath.removeMagvar(SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees"), magVar);
+        const currWindSpeed = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
 
-        const currCrosswind = Math.trunc(currWindSpeed * (Math.sin((course * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
+        const currCrosswind = currWindSpeed * (Math.sin((course * Math.PI / 180) - (currWindDirection * Math.PI / 180)));
         const windCorrection = 180 * Math.asin(currCrosswind / groundSpeed) / Math.PI;
 
         return windCorrection;

@@ -523,7 +523,7 @@ class CJ4_FMC_RoutePage {
                 // first app fix
                 const fWp = approachSeg.waypoints[0];
                 const fFpIdx = approachSeg.offset;
-                let tmpFoundActive = !foundActive && flightPlanManager.getActiveWaypointIndex() <= fpIdx;
+                let tmpFoundActive = !foundActive && flightPlanManager.getActiveWaypointIndex() <= fFpIdx;
                 if (tmpFoundActive) {
                     foundActive = true;
                 }
