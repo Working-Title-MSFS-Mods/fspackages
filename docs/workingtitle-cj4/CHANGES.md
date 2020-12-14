@@ -9,7 +9,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ## 🆕 Key Features
 * Custom Flight Plan Manager
-*  Vertical Navigation (VNAV)
+* Vertical Navigation (VNAV)
 * FADEC
 * custom Lateral Navigation
 * RNAV capability
@@ -60,6 +60,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ## PPOS/PLAN map
 * Added “NO FLIGHT PLAN” to ROSE/ARC modes when no flight plan detected
+* Added “DISCONTINUITY” to ROSE/ARC modes when discontinuity is reached
 * Icons updated for airports, waypoints, and intersections
 * Text enlarged for better readability
 * Procedures are drawn more accurately to how they are charted
@@ -74,6 +75,9 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * FMS, AP panel, DCP, CCP, and soft buttons
 * Aurals (Altitude, Minimums, Caution/Warning, Landing Gear, Pull up, Overspeed etc.)
 * Removed TAWS System Test (To be replaced with accurate sound)
+
+## Misc
+* New camera presets (pax, lavatory etc.)
 
 ---
 ## ℹ️ Things not available with the new Flight Plan Manager or VNAV as of now
