@@ -7,7 +7,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
-## Key Features
+## 🆕 Key Features
 * Custom Flight Plan Manager
 *  Vertical Navigation (VNAV)
 * FADEC
@@ -76,15 +76,15 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Removed annoying TAWS System Test (To be replaced with accurate sound)
 * Many other small changes ^^
 
-
-## Things not available with the new Flight Plan Manager or VNAV as of now
+---
+## ℹ️ Things not available with the new Flight Plan Manager or VNAV as of now
 * Holds
 * Intercepting a course (Eg. Telling FMS to intercept a fix at a specific radial)
 * VNAV Vertical Direct-To Fix
 * Point/Bearing or Point/Bearing/Distance fixes
 * Offsets
 
-## Known Issues
+## ⚠️ Known Issues
 * Sync to game flightplan (ATC/VFR Map) is very much work in progress and turned off by default (mod settings)
 * Load/Save flights can have bad results
 * Sound: Wind sound can stutter from time to time
@@ -93,4 +93,4 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * FMS direct-to turns beyond 60 degrees or so will overshoot, greatly over 90.
 
 
-### Have fun!
+### 🎅 Have fun! 🎅
