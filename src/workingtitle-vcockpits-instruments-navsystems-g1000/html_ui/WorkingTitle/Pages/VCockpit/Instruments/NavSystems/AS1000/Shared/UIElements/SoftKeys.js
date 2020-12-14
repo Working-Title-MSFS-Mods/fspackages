@@ -104,6 +104,7 @@ class WT_Soft_Key_Controller extends HTMLElement {
             map: new WT_Soft_Key("MAP"),
             checklist: new WT_Soft_Key("CHKLIST"),
         };
+        this.defaultButtons.checklist.disabled = true;
 
         this.inputLayer = new WT_Soft_Key_Menu_Input_Layer(this);
     }

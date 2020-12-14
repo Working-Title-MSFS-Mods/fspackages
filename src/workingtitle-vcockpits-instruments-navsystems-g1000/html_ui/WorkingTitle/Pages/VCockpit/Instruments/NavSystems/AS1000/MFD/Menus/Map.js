@@ -20,6 +20,14 @@ class WT_Map_Menu extends WT_Soft_Key_Menu {
             legend: new WT_Soft_Key("LEGEND"),
         };
 
+        buttons.traffic.disabled = true;
+        buttons.profile.disabled = true;
+        buttons.airways.disabled = true;
+        buttons.stormScope.disabled = true;
+        buttons.xmLightning.disabled = true;
+        buttons.metar.disabled = true;
+        buttons.legend.disabled = true;
+
         this.addSoftKey(1, buttons.traffic);
         this.addSoftKey(2, buttons.profile);
         this.addSoftKey(3, buttons.topo);

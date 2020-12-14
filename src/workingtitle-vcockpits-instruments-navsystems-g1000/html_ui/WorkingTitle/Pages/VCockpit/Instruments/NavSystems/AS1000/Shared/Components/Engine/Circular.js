@@ -75,30 +75,28 @@ class XMLCircularGauge extends XMLGauge {
         this.subscriptions.unsubscribe();
     }
     setStyle(styleElement) {
-        if (styleElement) {
-            this.processStyleElement(styleElement, "ForceTextColor", v => this.forceTextColor = v);
-            this.processStyleElement(styleElement, "TextIncrement", v => this.textIncrement = parseFloat(v));
-            this.processStyleElement(styleElement, "ValuePrecision", v => this.textPrecision = parseInt(v));
-            this.processStyleElement(styleElement, "BeginAngle", v => this.startAngle = parseFloat(v));
-            this.processStyleElement(styleElement, "EndAngle", v => this.endAngle = parseFloat(v));
-            this.processStyleElement(styleElement, "Graduations", v => this.graduations = v.split(','));
-            this.processStyleElement(styleElement, "CursorType", v => {
-                switch (v) {
-                    case "Triangle":
-                        this.cursorType = 1;
-                        break;
-                }
-            });
-            this.processStyleElement(styleElement, "ValuePos", v => {
-                switch (v) {
-                    case "End":
-                        this.valuePos = 1;
-                        break;
-                }
-            });
+        this.processStyleElement(styleElement, "ForceTextColor", v => this.forceTextColor = v);
+        this.processStyleElement(styleElement, "TextIncrement", v => this.textIncrement = parseFloat(v));
+        this.processStyleElement(styleElement, "ValuePrecision", v => this.textPrecision = parseInt(v));
+        this.processStyleElement(styleElement, "BeginAngle", v => this.startAngle = parseFloat(v));
+        this.processStyleElement(styleElement, "EndAngle", v => this.endAngle = parseFloat(v));
+        this.processStyleElement(styleElement, "Graduations", v => this.graduations = v.split(','));
+        this.processStyleElement(styleElement, "CursorType", v => {
+            switch (v) {
+                case "Triangle":
+                    this.cursorType = 1;
+                    break;
+            }
+        });
+        this.processStyleElement(styleElement, "ValuePos", v => {
+            switch (v) {
+                case "End":
+                    this.valuePos = 1;
+                    break;
+            }
+        });
 
-            this.height = Math.max(40 - 40 * Math.sin(this.startAngle * Math.PI / 180), 40 - 40 * Math.sin(this.endAngle * Math.PI / 180) + (this.valuePos == 1 ? 20 : 0), (this.valuePos == 1 ? 50 : 65)) + 3;
-        }
+        this.height = Math.max(40 - 40 * Math.sin(this.startAngle * Math.PI / 180), 40 - 40 * Math.sin(this.endAngle * Math.PI / 180) + (this.valuePos == 1 ? 20 : 0), (this.valuePos == 1 ? 50 : 65)) + 3;
     }
     drawBase() {
         this.rootSvg = DOMUtilities.createSvgElement("svg", {

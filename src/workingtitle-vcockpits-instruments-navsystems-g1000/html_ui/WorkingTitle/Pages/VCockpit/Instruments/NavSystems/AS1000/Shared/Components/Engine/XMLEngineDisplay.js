@@ -429,10 +429,14 @@ class XMLGauge extends HTMLElement {
             this.state$.next("");
         }
     }
-    processStyleElement(styleElement, tag, callback) {
+    processStyleElement(styleElement, tag, callback, def) {
+        if (!styleElement)
+            return;
         let element = styleElement.getElementsByTagName(tag);
         if (element.length > 0) {
             callback(element[0].textContent);
+        } else if (def) {
+            def();
         }
     }
 }

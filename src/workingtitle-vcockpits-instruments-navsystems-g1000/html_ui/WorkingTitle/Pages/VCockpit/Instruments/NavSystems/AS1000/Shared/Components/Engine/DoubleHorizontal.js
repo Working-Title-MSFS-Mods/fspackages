@@ -77,76 +77,77 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
     disconnectedCallback() {
         this.subscriptions.unsubscribe();
     }
-    setStyle(_styleElem) {
-        if (_styleElem) {
-            let textIncrementElem = _styleElem.getElementsByTagName("TextIncrement");
-            if (textIncrementElem.length > 0) {
-                this.textIncrement = parseInt(textIncrementElem[0].textContent);
+    setStyle(styleElement) {
+        this.processStyleElement(styleElement, "TextIncrement", v => this.textIncrement = parseInt(v));
+        this.processStyleElement(styleElement, "ValuePos", v => {
+            switch (v) {
+                case "Right":
+                    this.valuePos = 2;
+                    this.endX = 70;
             }
-            let valuePosElem = _styleElem.getElementsByTagName("ValuePos");
-            if (valuePosElem.length > 0) {
-                switch (valuePosElem[0].textContent) {
-                    case "Right":
-                        this.valuePos = 2;
-                        this.endX = 70;
-                }
-
-            }
-        }
+        });
     }
     drawBase() {
         this.setAttribute("mode", this.valuePos);
 
-        this.rootSvg = document.createElementNS(Avionics.SVG.NS, "svg");
-        this.rootSvg.setAttribute("width", this.sizePercent + "%");
+        this.rootSvg = DOMUtilities.createSvgElement("svg", {
+            width: `${this.sizePercent}%`
+        });
         this.appendChild(this.rootSvg);
-        let bottomBar = document.createElementNS(Avionics.SVG.NS, "rect");
-        bottomBar.setAttribute("x", this.beginX.toString());
-        bottomBar.setAttribute("y", "21");
-        bottomBar.setAttribute("height", "1");
-        bottomBar.setAttribute("width", (this.endX - this.beginX).toString());
-        bottomBar.setAttribute("fill", "white");
-        this.rootSvg.appendChild(bottomBar);
-        this.decorationGroup = document.createElementNS(Avionics.SVG.NS, "g");
+
+        this.rootSvg.appendChild(DOMUtilities.createSvgElement("rect", {
+            x: this.beginX,
+            y: 21,
+            height: 1,
+            width: this.endX - this.beginX,
+            fill: "white"
+        }));
+
+        this.decorationGroup = DOMUtilities.createSvgElement("g");
         this.rootSvg.appendChild(this.decorationGroup);
-        this.graduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
+
+        this.graduationGroup = DOMUtilities.createSvgElement("g");
         this.rootSvg.appendChild(this.graduationGroup);
-        let beginLimit = document.createElementNS(Avionics.SVG.NS, "rect");
-        beginLimit.setAttribute("x", (this.beginX - 1).toString());
-        beginLimit.setAttribute("y", "17");
-        beginLimit.setAttribute("height", "10");
-        beginLimit.setAttribute("width", "1");
-        beginLimit.setAttribute("fill", "white");
-        this.rootSvg.appendChild(beginLimit);
-        let endLimit = document.createElementNS(Avionics.SVG.NS, "rect");
-        endLimit.setAttribute("x", (this.endX - 1).toString());
-        endLimit.setAttribute("y", "17");
-        endLimit.setAttribute("height", "10");
-        endLimit.setAttribute("width", "1");
-        endLimit.setAttribute("fill", "white");
-        this.rootSvg.appendChild(endLimit);
+
+        // begin / end element
+        this.rootSvg.appendChild(DOMUtilities.createSvgElement("rect", {
+            x: this.beginX - 1, y: 17, height: 10, width: 1, fill: "white"
+        }));
+        this.rootSvg.appendChild(DOMUtilities.createSvgElement("rect", {
+            x: this.endX - 1, y: 17, height: 10, width: 1, fill: "white"
+        }));
+
+        // cursors
         const cursorWidth = 6;
-        this.cursor = document.createElementNS(Avionics.SVG.NS, "polygon");
-        this.cursor.setAttribute("points", this.beginX + ",21 " + (this.beginX - cursorWidth) + ",12 " + (this.beginX + cursorWidth) + ",12");
-        this.cursor.setAttribute("class", "cursor");
+        this.cursor = DOMUtilities.createSvgElement("polygon", {
+            points: `${this.beginX},21 ${this.beginX - cursorWidth},12 ${this.beginX + cursorWidth},12`,
+            class: "cursor",
+        });
         this.rootSvg.appendChild(this.cursor);
-        this.cursor2 = document.createElementNS(Avionics.SVG.NS, "polygon");
-        this.cursor2.setAttribute("points", this.beginX + ",23 " + (this.beginX - cursorWidth) + ",32 " + (this.beginX + cursorWidth) + ",32");
-        this.cursor2.setAttribute("class", "cursor");
+
+        this.cursor2 = DOMUtilities.createSvgElement("polygon", {
+            points: `${this.beginX},23 ${this.beginX - cursorWidth},32 ${this.beginX + cursorWidth},32`,
+            class: "cursor",
+        });
         this.rootSvg.appendChild(this.cursor2);
-        this.beginText = document.createElementNS(Avionics.SVG.NS, "text");
-        this.beginText.setAttribute("x", this.beginX.toString());
-        this.beginText.setAttribute("y", "40");
-        this.beginText.setAttribute("fill", "white");
-        this.beginText.setAttribute("font-size", "8");
-        this.beginText.setAttribute("text-anchor", "middle");
+
+        // begin / end text
+        this.beginText = DOMUtilities.createSvgElement("text", {
+            x: this.beginX,
+            y: 40,
+            "fill": "white",
+            "font-size": 8,
+            "text-anchor": "middle"
+        });
         this.rootSvg.appendChild(this.beginText);
-        this.endText = document.createElementNS(Avionics.SVG.NS, "text");
-        this.endText.setAttribute("x", this.endX.toString());
-        this.endText.setAttribute("y", "40");
-        this.endText.setAttribute("fill", "white");
-        this.endText.setAttribute("font-size", "8");
-        this.endText.setAttribute("text-anchor", "middle");
+
+        this.endText = DOMUtilities.createSvgElement("text", {
+            x: this.endX,
+            y: 40,
+            "fill": "white",
+            "font-size": 8,
+            "text-anchor": "middle"
+        });
         this.rootSvg.appendChild(this.endText);
 
         this.titleText = DOMUtilities.createElement("label", {
@@ -173,106 +174,108 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
         this.appendChild(this.valueText2);
     }
     addColorZone(_begin, _end, _color, _context) {
-        let colorZone = document.createElementNS(Avionics.SVG.NS, "rect");
-        colorZone.setAttribute("height", "4");
-        colorZone.setAttribute("y", "20");
-        colorZone.setAttribute("fill", _color);
+        let colorZone = DOMUtilities.createSvgElement("rect", {
+            height: 4,
+            y: 20,
+            fill: _color,
+        });
         this.decorationGroup.appendChild(colorZone);
         this.colorZones.push(new XMLGaugeColorZone(colorZone, _begin, _end));
         this.updateColorZone(colorZone, _begin.getValueAsNumber(_context), _end.getValueAsNumber(_context));
     }
-    updateColorZone(_element, _begin, _end) {
-        let begin = ((_begin - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX) + this.beginX;
-        let end = ((_end - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX) + this.beginX;
-        _element.setAttribute("x", begin.toString());
-        _element.setAttribute("width", (end - begin).toString());
+    lerp(value) {
+        return ((value - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX) + this.beginX
     }
-    addColorLine(_position, _color, _context) {
-        let colorLine = document.createElementNS(Avionics.SVG.NS, "rect");
-        colorLine.setAttribute("height", "12");
-        colorLine.setAttribute("width", "2");
-        colorLine.setAttribute("x", (this.beginX - 1).toString());
-        colorLine.setAttribute("y", "16");
-        colorLine.setAttribute("fill", _color);
+    updateColorZone(element, begin, end) {
+        const beginX = this.lerp(begin);
+        const endX = this.lerp(end);
+        element.setAttribute("x", beginX);
+        element.setAttribute("width", endX - beginX);
+    }
+    addColorLine(position, color, context) {
+        const colorLine = DOMUtilities.createSvgElement("rect", {
+            height: "12",
+            width: "2",
+            x: this.beginX - 1,
+            y: "16",
+            fill: color,
+        });
         this.decorationGroup.appendChild(colorLine);
-        this.colorLines.push(new XMLGaugeColorLine(colorLine, _position));
-        this.updateColorLine(colorLine, _position.getValueAsNumber(_context));
+        this.colorLines.push(new XMLGaugeColorLine(colorLine, position));
+        this.updateColorLine(colorLine, position.getValueAsNumber(context));
     }
-    updateColorLine(_element, _pos) {
-        if (_pos >= this.minValue && _pos <= this.maxValue) {
-            _element.setAttribute("transform", "translate(" + (((_pos - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX)) + " 0)");
-            _element.setAttribute("display", "");
-        }
-        else {
-            _element.setAttribute("display", "none");
-        }
+    updateColorLine(element, value) {
+        element.setAttribute("transform", `translate(${this.lerp(value) - this.beginX} 0)`);
+        element.setAttribute("display", (value >= this.minValue && value <= this.maxValue) ? "" : "none");
     }
-    setGraduations(_spaceBetween, _withText = false) {
-        for (let i = this.minValue + _spaceBetween; i < this.maxValue; i += _spaceBetween) {
-            let grad = document.createElementNS(Avionics.SVG.NS, "rect");
-            grad.setAttribute("x", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX) + this.beginX - 0.5).toString());
-            grad.setAttribute("y", "17");
-            grad.setAttribute("height", "10");
-            grad.setAttribute("width", "1");
-            grad.setAttribute("fill", "white");
+    setGraduations(spaceBetween, withText = false) {
+        for (let i = this.minValue + spaceBetween; i < this.maxValue; i += spaceBetween) {
+            const grad = DOMUtilities.createSvgElement("rect", {
+                x: this.lerp(i) - 0.5,
+                y: 17,
+                height: 10,
+                width: 1,
+                fill: "white",
+            });
             this.graduationGroup.appendChild(grad);
-            if (_withText) {
-                let gradText = document.createElementNS(Avionics.SVG.NS, "text");
-                gradText.setAttribute("x", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX) + this.beginX - 0.5).toString());
-                gradText.setAttribute("y", "40");
-                gradText.setAttribute("fill", "white");
-                gradText.setAttribute("font-size", "8");
-                gradText.setAttribute("font-family", "Roboto-Regular");
-                gradText.setAttribute("text-anchor", "middle");
+            if (withText) {
+                const gradText = DOMUtilities.createSvgElement("text", {
+                    x: this.lerp(i) - 0.5,
+                    y: 40,
+                    fill: "white",
+                    "font-size": "8",
+                    "font-family": "Roboto-Regular",
+                    "text-anchor": "middle"
+                });
                 gradText.textContent = i.toString();
                 this.graduationGroup.appendChild(gradText);
                 this.showFooter$.next();
             }
         }
     }
-    updateValue(_value, _value2) {
+    updateValue(value, value2) {
         this.setupObservers();
-        this.value1$.next(_value);
-        this.value2$.next(_value2);
+        this.value1$.next(value);
+        this.value2$.next(value2);
     }
-    setTitleAndUnit(_title, _unit) {
-        this.titleText.textContent = _title + " " + _unit;
+    setTitleAndUnit(title, unit) {
+        this.titleText.textContent = `${title} ${unit}`;
     }
     computeCautionBackgrounds() {
     }
     computeAlertBackgrounds() {
     }
-    setLimitValues(_begin, _end) {
-        super.setLimitValues(_begin, _end);
+    setLimitValues(begin, end) {
+        super.setLimitValues(begin, end);
         if (this.forcedBeginText == null) {
-            this.beginText.textContent = _begin.toString();
+            this.beginText.textContent = begin;
             this.showFooter$.next();
         }
         if (this.forcedEndText == null) {
-            this.endText.textContent = _end.toString();
+            this.endText.textContent = end;
             this.showFooter$.next();
         }
     }
-    forceBeginText(_text) {
-        this.beginText.textContent = _text;
-        this.forcedBeginText = _text;
+    forceBeginText(text) {
+        this.beginText.textContent = text;
+        this.forcedBeginText = text;
     }
-    forceEndText(_text) {
-        this.endText.textContent = _text;
-        this.forcedEndText = _text;
+    forceEndText(text) {
+        this.endText.textContent = text;
+        this.forcedEndText = text;
     }
-    setCursorLabel(_label1, _label2) {
+    setCursorLabel(label1, label2) {
         if (!this.cursorLabel) {
             this.cursorLabel = DOMUtilities.createSvgElement("text", { x: this.beginX, y: 18, class: "cursor-label" });
             this.rootSvg.appendChild(this.cursorLabel);
         }
-        this.cursorLabel.textContent = _label1;
-        if (_label2) {
+        this.cursorLabel.textContent = label1;
+        if (label2) {
             if (!this.cursor2Label) {
                 this.cursor2Label = DOMUtilities.createSvgElement("text", { x: this.beginX, y: 31, class: "cursor-label" });
                 this.rootSvg.appendChild(this.cursor2Label);
             }
-            this.cursor2Label.textContent = _label2;
+            this.cursor2Label.textContent = label2;
         }
     }
 }
