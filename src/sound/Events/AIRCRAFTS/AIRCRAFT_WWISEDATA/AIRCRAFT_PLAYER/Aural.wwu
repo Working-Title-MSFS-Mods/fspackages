@@ -101,6 +101,48 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_aural_500ft" ID="{58C19F51-5D26-4090-83D9-F4139E7EAF0F}">
+					<ChildrenList>
+						<Action Name="" ID="{9EEBCCF5-583B-4BE5-AF1A-BBC735DB3A61}" ShortID="1069460360">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="500" ID="{EE7A5224-ED63-4E5C-8411-09FE190C051C}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_aural_sink_rate" ID="{F6417036-7B1E-4B81-98E1-D13B65EB44D3}">
+					<ChildrenList>
+						<Action Name="" ID="{317C0269-2D26-46CE-AD0F-70D3756D2038}" ShortID="199054394">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Sink Rate" ID="{499F1C72-3F5E-4824-B4A5-64F6EE9B93DB}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_aural_dont_sink" ID="{E92F1B62-0B2D-4D63-9356-2528EAC61824}">
+					<ChildrenList>
+						<Action Name="" ID="{43CBD458-28CF-4A79-A8F7-35EB6C19B2BA}" ShortID="286883218">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Dont Sink" ID="{5974EBA0-240A-4BB7-AFA4-0698C1AF0D4B}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

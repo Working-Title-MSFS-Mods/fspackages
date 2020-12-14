@@ -67,9 +67,6 @@
 								</Property>
 								<Property Name="OverridePositioning" Type="bool" Value="True"/>
 								<Property Name="Volume" Type="Real64">
-									<ValueList>
-										<Value>-3</Value>
-									</ValueList>
 									<RTPCList>
 										<RTPC Name="" ID="{A408DD15-34C4-48D3-9D60-172301770FE3}" ShortID="513967560">
 											<ReferenceList>

@@ -432,7 +432,7 @@
 	
 		<Alert>
 			<Type>SoundOnly</Type>
-			<SoundEvent>aural_500ft</SoundEvent>
+			<SoundEvent>WT_aural_500ft</SoundEvent>
 			<Condition>
 				<StateMachine>
 					<State id="Under" value="0">
@@ -581,7 +581,7 @@
 			<Type>Caution</Type>
 			<ShortText>TERRAIN</ShortText>
 			<LongText>SINK RATE</LongText>
-			<SoundEvent>aural_sink_rate</SoundEvent>
+			<SoundEvent>WT_aural_sink_rate</SoundEvent>
 			<Condition>
 				<And>
 					<LinearMultiPoint>
@@ -611,7 +611,7 @@
 			<Type>Caution</Type>
 			<ShortText>TERRAIN</ShortText>
 			<LongText>DONT' SINK</LongText>
-			<SoundEvent>aural_dont_sink</SoundEvent>
+			<SoundEvent>WT_aural_dont_sink</SoundEvent>
 			<Condition>
 				<And>
 					<Lower>
