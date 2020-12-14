@@ -217,7 +217,14 @@ class AS1000_PFD extends BaseAS1000 {
                     id: "new-year"
                 });
             }
-        })
+        });
+
+        setTimeout(() => {
+            this.alertsModel.addAlert(new WT_PFD_Alert("DISCORD", "Click to go to our Discord channel", () => OpenBrowser("https://discord.gg/Fa6w2xK")));
+            this.alertsModel.addAlert(new WT_PFD_Alert("GITHUB", "Click to go to our Github page", () => OpenBrowser("https://github.com/Working-Title-MSFS-Mods/fspackages")));
+            this.alertsModel.addAlert(new WT_PFD_Alert("0.4 BETA RELEASE", "This is a beta release, please expect and report bugs"));
+            this.miniPageController.showAlerts();
+        }, 500)
     }
     onXMLConfigLoaded(_xml) {
         super.onXMLConfigLoaded(_xml);

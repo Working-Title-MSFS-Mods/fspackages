@@ -36,11 +36,13 @@ class WT_Time_Input extends HTMLElement {
             digits: []
         };
 
+        this.positive = true;
         this.hours = 0;
         this.minutes = 0;
         this.seconds = 0;
 
         this.showSeconds = true;
+        this.allowNegative = false;
 
         this.previousValue = 0;
         this._editingValue = 0;
@@ -49,7 +51,7 @@ class WT_Time_Input extends HTMLElement {
         this.addEventListener("selected", this.enter.bind(this));
     }
     get value() {
-        return this.hours * 3600 + this.minutes * 60 + this.seconds;
+        return (this.hours * 3600 + this.minutes * 60 + this.seconds) * (this.positive ? 1 : -1);
     }
     set value(value) {
         value = parseInt(value);
@@ -64,6 +66,9 @@ class WT_Time_Input extends HTMLElement {
         return s;
     }
     updateDisplay() {
+        if (this.elements.sign) {
+            this.elements.sign.textContent = this.positive ? "+" : "-";
+        }
         this.elements.hours.textContent = Math.floor(this.hours).toFixed(0);//.padStart("0", 2);
         this.elements.minutes.textContent = Math.floor(this.minutes).toFixed(0).padStart(2, "0");
         if (this.showSeconds) {
@@ -74,7 +79,16 @@ class WT_Time_Input extends HTMLElement {
         if (this.initialised)
             return;
         this.initialised = true;
-        
+
+        if (this.getAttribute("allow-negative")) {
+            this.allowNegative = true;
+            this.elements.sign = document.createElement("span");
+            this.elements.sign.className = "digit";
+            this.elements.sign.dataset.number = "sign";
+            this.elements.digits.push(this.elements.sign);
+            this.appendChild(this.elements.sign);
+        }
+
         this.elements.hours = document.createElement("span");
         this.elements.hours.className = "digit";
         this.elements.hours.dataset.number = "hours";
@@ -158,6 +172,8 @@ class WT_Time_Input extends HTMLElement {
     incrementDigit(amount) {
         let digit = this.elements.digits[this._editingDigitIndex];
         switch (digit.dataset.number) {
+            case "sign":
+                this.positive = !this.positive;
             case "hours":
                 this.hours = (this.hours + amount + 24) % 24;
                 break;

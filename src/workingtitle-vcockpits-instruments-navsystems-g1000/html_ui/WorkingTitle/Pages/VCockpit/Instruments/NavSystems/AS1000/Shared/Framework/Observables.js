@@ -190,4 +190,7 @@ class WT_RX {
     static toggleSwitchMap(trueObservable, falseObservable) {
         return rxjs.operators.switchMap(b => b ? trueObservable : falseObservable)
     }
+    static clamp(min = 0, max = 1) {
+        return rxjs.operators.map(v => Math.min(max, Math.max(min, v)));
+    }
 }

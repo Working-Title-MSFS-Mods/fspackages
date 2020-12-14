@@ -36,7 +36,7 @@ class WT_PFD_Alerts_Model {
         this.alerts = [];
         this.alerts$ = new rxjs.BehaviorSubject([]);
 
-        this.addAlert(new WT_PFD_Alert("Thanks", `Thanks for using WorkingTitle's G1000 mod`));
+        this.addAlert(new WT_PFD_Alert("Thanks", `Thanks for using WorkingTitle's G1000 mod (Version 0.4)`));
 
         const date = new Date();
         const day = date.getDate();

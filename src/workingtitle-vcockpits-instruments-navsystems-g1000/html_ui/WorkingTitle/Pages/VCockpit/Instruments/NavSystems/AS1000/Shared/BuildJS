@@ -47,6 +47,7 @@ Instruments/Thermometer.js
 Instruments/WeatherRadar.js
 Libs/CSV.js
 Libs/markdown.js
+Libs/SunCalc.js
 Logic/Navigation/Controller.js
 Logic/Navigation/DirectTo.js
 Logic/Navigation/FlightPlan.js

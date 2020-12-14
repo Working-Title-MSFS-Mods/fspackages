@@ -113,7 +113,7 @@ class WT_Shared_Dependencies {
         d.register("radioAltimeter", d => new WT_Radio_Altimeter(d.planeConfig, d.update$));
         d.register("thermometer", d => new WT_Thermometer(d.frame$));
         d.register("brightnessSettings", d => new WT_Brightness_Settings(d.clock));
-        d.register("clock", d => new WT_Clock(d.update$, d.planeState));
+        d.register("clock", d => new WT_Clock(d.update$, d.planeState, d.settings));
         d.register("barometricPressure", d => new WT_Barometer(d.update$));
         d.register("minimums", d => new WT_Minimums(d.update$, d.radioAltimeter, d.planeState));
 

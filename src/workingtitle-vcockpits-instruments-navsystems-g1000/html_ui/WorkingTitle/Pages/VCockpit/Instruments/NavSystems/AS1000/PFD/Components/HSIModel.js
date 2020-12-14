@@ -229,7 +229,6 @@ class HSIIndicatorModel {
             rxjs.operators.switchMap(sourceId => {
                 switch (sourceId) {
                     case 0:
-                        return rxjs.empty();
                     case 1:
                         return nav1HasDme$.pipe(WT_RX.toggleSwitchMap(nav1Ident$, rxjs.of("")));
                     case 2:

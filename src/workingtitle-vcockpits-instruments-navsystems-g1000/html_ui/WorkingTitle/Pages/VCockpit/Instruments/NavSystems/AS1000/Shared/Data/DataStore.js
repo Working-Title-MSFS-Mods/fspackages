@@ -46,19 +46,20 @@ class WTDataStore {
      * Returns all data stored
      */
     static getAll() {
+        console.log(`Getting all for ${SimVar.GetSimVarValue("ATC MODEL", "string")}`);
         const storeKey = WTDataStore.getStoreKey();
         const data = {};
-        try {
-            const storage = GetDataStorage();
-            if (storage) {
-                const values = storage.searchData(storeKey).sort((a, b) => a.key.localeCompare(b.key));
-                for (let i = 0; i < values.length; i++) {
+        const storage = GetDataStorage();
+        if (storage) {
+            const values = storage.searchData(storeKey).sort((a, b) => a.key.localeCompare(b.key));
+            for (let i = 0; i < values.length; i++) {
+                try {
                     data[values[i].key.substr(storeKey.length)] = JSON.parse(values[i].data);
+                } catch (e) {
+                    console.warn(`Failed to parse a key ${values[i].key.substr(storeKey.length)}, probably old format`);
                 }
-                return data;
             }
-        } catch (error) {
-            return null;
+            return data;
         }
         return null;
     }
@@ -90,9 +91,13 @@ class WTDataStore {
      * Removes all stored data
      */
     static removeAll() {
-        const keys = Object.keys(WTDataStore.getAll());
-        for (let key of keys) {
-            WTDataStore.remove(key);
+        const storeKey = WTDataStore.getStoreKey();
+        const storage = GetDataStorage();
+        if (storage) {
+            const values = storage.searchData(storeKey);
+            for (let i = 0; i < values.length; i++) {
+                WTDataStore.remove(values[i].key.substr(storeKey.length));
+            }
         }
     }
 

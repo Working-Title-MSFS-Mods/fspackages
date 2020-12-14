@@ -167,6 +167,7 @@ class AS1000_MFD extends BaseAS1000 {
         this.electricityAvailable = d.electricityAvailable;
         this.planeState = d.planeState;
         this.clock = d.clock;
+        this.planeStatistics = d.planeStatistics; // Needs to be here to make sure statistic start gathering immediately
 
         this.updatables.push(d.flightPlanController);
         this.updatables.push(d.procedures);

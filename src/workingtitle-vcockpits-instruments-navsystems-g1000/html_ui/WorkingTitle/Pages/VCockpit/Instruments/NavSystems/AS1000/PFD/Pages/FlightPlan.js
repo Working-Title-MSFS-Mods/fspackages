@@ -176,7 +176,7 @@ class WT_PFD_Flight_Plan_Page_View extends WT_Flight_Plan_Page_View {
     }
     showCreateNewWaypoint(index = -1) {
         this.newWaypointHandler.show().then(waypoint => {
-            this.model.createNewWaypoint(waypoint, index);
+            this.model.addWaypoint(waypoint, index);
         }).catch(WT_Cancel_Dialog_Error.HANDLER);
     }
     updateActiveLeg(leg) {

@@ -108,9 +108,15 @@ class WT_Settings {
             listener: listener
         });
     }
+    removeListener(listener, pattern){
+        // TODO:
+    }
     observe(setting) {
-        const observable = new rxjs.BehaviorSubject(this.settings[setting]);
-        this.addListener(value => observable.next(value), setting);
-        return observable;
+        const observable = new rxjs.BehaviorSubject(this.getValue(setting));
+        const listener = value => observable.next(value);
+        this.addListener(listener, setting);
+        return observable.pipe(
+            rxjs.operators.finalize(() => this.removeListener(listener, setting))
+        );
     }
 }

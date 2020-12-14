@@ -5,43 +5,100 @@ class WT_Clock {
     /**
      * @param {rxjs.Observable} update$ 
      * @param {WT_Plane_State} planeState 
+     * @param {WT_Settings} settings 
      */
-    constructor(update$, planeState) {
-        this.planeState = planeState;
-
+    constructor(update$, planeState, settings) {
         const throttledUpdate$ = update$.pipe(
             rxjs.operators.throttleTime(1000),
             rxjs.operators.share()
         );
-
-        this.absoluteTime = WT_RX.observeSimVar(update$, "E:ABSOLUTE TIME", "seconds");
-        this.localTime = WT_RX.observeGlobalVar(throttledUpdate$, "LOCAL TIME", "seconds");
-        this.zuluTime = WT_RX.observeGlobalVar(throttledUpdate$, "ZULU TIME", "seconds");
-        this.date = rxjs.combineLatest(
-            WT_RX.observeSimVar(throttledUpdate$, "E:ZULU DAY OF MONTH", "number"),
-            WT_RX.observeSimVar(throttledUpdate$, "E:ZULU MONTH OF YEAR", "number"),
-            WT_RX.observeSimVar(throttledUpdate$, "E:ZULU YEAR", "number"),
-        ).pipe(
-            rxjs.operators.map(([day, month, year]) => new Date(year, month - 1, day)),
-            WT_RX.shareReplay()
-        );
-        this.realDate = throttledUpdate$.pipe(
-            rxjs.operators.map(dt => new Date()),
-            rxjs.operators.distinctUntilChanged((a, b) => {
-                return a.getDate() == b.getDate() && a.getMonth() == b.getMonth() && a.getFullYear() == b.getFullYear();
-            })
-        );
-
         const lowResCoordinates$ = planeState.getLowResCoordinates(WT_Clock.SUN_EVENT_RESOLUTION).pipe(WT_RX.shareReplay());
+
+        // Time
+        const timeOffset$ = settings.observe("time_offset").pipe(WT_RX.shareReplay());
+        this.absoluteTime = WT_RX.observeSimVar(update$, "E:ABSOLUTE TIME", "seconds");
+        this.zuluTime = WT_RX.observeGlobalVar(throttledUpdate$, "ZULU TIME", "seconds");
+        this.localTime = this.initLocalTime(throttledUpdate$, timeOffset$);
+
+        // Date
+        this.zuluDate = this.initZuluDate(throttledUpdate$);
+        this.zuluDateTime = this.initZuluDateTime(this.zuluDate, this.zuluTime);
+        this.date = this.initLocalDate(this.zuluDate, timeOffset$);
+        this.realDate = this.initRealDate(throttledUpdate$);
+
+        // Sunrise / Sunset
+        this.solarTime = this.initSolarTime(lowResCoordinates$, this.zuluDateTime);
         this.sunrise = rxjs.combineLatest(
             lowResCoordinates$,
-            this.date,
+            this.zuluDate,
             (coordinates, date) => SunriseSunsetJS.getSunrise(coordinates.lat, coordinates.long, date),
         ).pipe(WT_RX.shareReplay());
         this.sunset = rxjs.combineLatest(
             lowResCoordinates$,
-            this.date,
+            this.zuluDate,
             (coordinates, date) => SunriseSunsetJS.getSunset(coordinates.lat, coordinates.long, date)
+        ).pipe(WT_RX.shareReplay());
+        this.sunPosition = rxjs.combineLatest(
+            this.zuluDateTime,
+            lowResCoordinates$,
+            (date, coordinates) => SunCalc.getPosition(date, coordinates.lat, coordinates.long)
+        );
+    }
+    initLocalTime(throttledUpdate$, timeOffset$) {
+        return rxjs.combineLatest(
+            WT_RX.observeGlobalVar(throttledUpdate$, "LOCAL TIME", "seconds"),
+            timeOffset$,
+            (zuluTime, offset) => (zuluTime + offset + 86400) % 86400
+        );
+    }
+    initSolarTime(lowResCoordinates$, zuluDateTime$) {
+        const getSecondsFromMidnight = date => date.getSeconds() + (60 * date.getMinutes()) + (60 * 60 * date.getHours());
+        return rxjs.combineLatest(
+            lowResCoordinates$,
+            zuluDateTime$,
+            (coordinates, zuluDateTime) => {
+                //https://www.pveducation.org/pvcdrom/properties-of-sunlight/solar-time
+                const start = new Date(zuluDateTime.getFullYear(), 0, 0);
+                const diff = zuluDateTime - start;
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+                const b = (360 / 365) * (d - 81) * Math.PI / 180;
+                const eot = 9.87 * Math.sin(2 * b) - 7.5 * Math.cos(b) - 1.5 * Math.sin(b);
+
+                return (getSecondsFromMidnight(zuluDateTime) + coordinates.long / 15 * 3600 + eot * 60 + 86400) % 86400;
+            }
+        ).pipe(
+            rxjs.operators.tap(t => console.log(`Solar time: ${((t / 3600)).toFixed(0)}:${((t % 3600) / 60).toFixed(0)}:${(t % 60).toFixed(0)}`))
+        );
+    }
+    initRealDate(throttledUpdate$) {
+        return throttledUpdate$.pipe(
+            rxjs.operators.map(dt => new Date()),
+            rxjs.operators.distinctUntilChanged((a, b) => {
+                return a.getDate() == b.getDate() && a.getMonth() == b.getMonth() && a.getFullYear() == b.getFullYear();
+            })
+        );;
+    }
+    initLocalDate(zuluDate$, timeOffset$) {
+        return rxjs.combineLatest(
+            zuluDate$,
+            timeOffset$,
+            (zuluDate, offset) => new Date(zuluDate.getTime() + offset)
+        ).pipe(WT_RX.shareReplay());
+    }
+    initZuluDate(throttledUpdate$) {
+        return rxjs.combineLatest(
+            WT_RX.observeSimVar(throttledUpdate$, "E:ZULU DAY OF MONTH", "number"),
+            WT_RX.observeSimVar(throttledUpdate$, "E:ZULU MONTH OF YEAR", "number"),
+            WT_RX.observeSimVar(throttledUpdate$, "E:ZULU YEAR", "number"),
+            (day, month, year) => new Date(Date.UTC(year, month - 1, day))
+        ).pipe(WT_RX.shareReplay());
+    }
+    initZuluDateTime(zuluDate$, zuluTime$) {
+        return rxjs.combineLatest(
+            zuluDate$,
+            zuluTime$,
+            (date, time) => new Date(date.getTime() + time * 1000)
         ).pipe(WT_RX.shareReplay());
     }
     getTimer(frequency = 1000) {
