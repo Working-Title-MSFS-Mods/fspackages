@@ -1311,7 +1311,34 @@ export class FlightPlanManager {
   public getCoordinatesHeadingAtDistanceAlongFlightPlan(distance) {
   }
 
-  public getCoordinatesAtNMFromDestinationAlongFlightPlan(distance) {
+  /**
+   * Gets the coordinates of a point that is a specific distance from the destination along the flight plan.
+   * @param distance The distance from destination we want the coordinates for.
+   */
+  public getCoordinatesAtNMFromDestinationAlongFlightPlan(distance: number): LatLongAlt {
+    let allWaypoints = this.getAllWaypoints();
+    let destination = this.getDestination();
+    if (destination) {
+        let fromStartDistance = destination.cumulativeDistanceInFP - distance;
+        let prevIndex;
+        let prev;
+        let next;
+        for (let i = 0; i < allWaypoints.length - 1; i++) {
+            prevIndex = i;
+            prev = allWaypoints[i];
+            next = allWaypoints[i + 1];
+            if (prev.cumulativeDistanceInFP < fromStartDistance && next.cumulativeDistanceInFP > fromStartDistance) {
+                break;
+            }
+        }
+        let prevCD = prev.cumulativeDistanceInFP;
+        let nextCD = next.cumulativeDistanceInFP;
+        let d = (fromStartDistance - prevCD) / (nextCD - prevCD);
+        let output = new LatLongAlt();
+        output.lat = Avionics.Utils.lerpAngle(prev.infos.coordinates.lat, next.infos.coordinates.lat, d);
+        output.long = Avionics.Utils.lerpAngle(prev.infos.coordinates.long, next.infos.coordinates.long, d);
+        return output;
+    }
   }
 
   /**

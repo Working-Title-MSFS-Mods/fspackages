@@ -105,6 +105,7 @@ declare module "MSFS" {
     fmod(value: number, moduloBy: number): number;
     computeDistance(coords1: LatLongAlt, coords2: LatLongAlt);
     angleDiff(degrees1: number, degrees2: number);
+    lerpAngle(from: number, to: number, d: number);
     DEG2RAD: number;
     RAD2DEG: number;
   }

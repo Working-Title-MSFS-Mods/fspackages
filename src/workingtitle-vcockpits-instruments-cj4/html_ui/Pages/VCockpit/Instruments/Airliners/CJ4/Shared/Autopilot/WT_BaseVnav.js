@@ -203,10 +203,12 @@ class WT_BaseVnav {
                 this._distanceToTod = this._topOfDescent < 0 ? 0 : this._vnavTargetDistance > this._topOfDescent ? (this._vnavTargetDistance - this._topOfDescent) : 0;
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", this._altDeviation);
                 this._pathCalculating = true;
+                this.setTodWaypoint();
             }
             else {
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", 0);
                 this._pathCalculating = false;
+                this.setTodWaypoint(false);
             }
 
 
@@ -225,6 +227,7 @@ class WT_BaseVnav {
             this._vnavConstraintAltitude = undefined;
             this._vnavConstraintWaypoint = undefined;
             this._vnavConstraintType = undefined;
+            this.setTodWaypoint(false);
             if (SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number") > 0) {
                 SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
             }
@@ -352,6 +355,21 @@ class WT_BaseVnav {
         }
         if (constraint === false) {
             SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
+        }
+    }
+
+    setTodWaypoint(calculate = true) {
+        if (calculate === true) {
+            let todDistanceFromDest = this._destination.cumulativeDistanceInFP - this._currentDistanceInFP - this._distanceToTod;
+            let todLLA = this._fpm.getCoordinatesAtNMFromDestinationAlongFlightPlan(todDistanceFromDest);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_LAT", "number", todLLA.lat);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_LONG", "number", todLLA.long);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD", "number", 1);
+        }
+        else {
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_LAT", "number", 0);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_LONG", "number", 0);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD", "number", 0);
         }
     }
 
