@@ -36,7 +36,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * TERM/LPV Approach flags on PFD shown when needle sensitivity increased
 
 ## FADEC
-* TO and CLB detents with indication on engine display
+* TO and CLB throttle detents with indication on engine display
 * FADEC will increase N1 in CLB detent with altitude to meet desired thrust
 * CRZ works like normal throttle control
 
@@ -46,6 +46,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ## Engines
 * Light off occurs at 12% N2
+* Performance adjustments to fit climb profile using FADEC
 
 ## PFD/MFD
 * Correct display of autopilot modes and alignment 
@@ -64,17 +65,14 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * TO waypoint will flash when approaching turn
 * Temporary flight plans (modifying a route) displays as a dashed white line
 
-
 ## New Sounds (work in progress)
 * Engine exterior and interior run, start, stop
 * Avionics fans
-* Spoiler drag
-* Gear drag, extend, retract
+* Spoiler drag, Gear drag, extend, retract
 * Cockpit wind and rain
 * FMS, AP panel, DCP, CCP, and soft buttons
 * Aurals (Altitude, Minimums, Caution/Warning, Landing Gear, Pull up, Overspeed etc.)
-* Removed annoying TAWS System Test (To be replaced with accurate sound)
-* Many other small changes ^^
+* Removed TAWS System Test (To be replaced with accurate sound)
 
 ---
 ## ℹ️ Things not available with the new Flight Plan Manager or VNAV as of now
@@ -86,7 +84,10 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ## ⚠️ Known Issues
 * Sync to game flightplan (ATC/VFR Map) is very much work in progress and turned off by default (mod settings)
+* Some external applications using GPS/Flight plan SimVars may not work atm
 * Load/Save flights can have bad results
+* Custom liveries can render FADEC inoperative. Delete them or remove panel.cfg from the livery folder
+* Autopilot modes cannot be triggered via keybindings or controllers. Use the mouse
 * Sound: Wind sound can stutter from time to time
 * Due to AP limitations/adjustments to be made, aircraft might fly off course on certain RNP approaches with tight turns (Suggest to handfly for better accuracy & fun factor)
 * Sometimes when turning more than 90 degrees onto an approach segment, VNAV might give a NOPATH condition because it sees that you are too high.  Engage FLC or VS and descend down and it should recapture the path.
