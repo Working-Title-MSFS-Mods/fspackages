@@ -722,7 +722,7 @@ class CJ4_FMC extends FMCMainDisplay {
             case CJ4_FMC.ALTALERT_STATE.NONE:
                 SimVar.SetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number", 0);
                 if(difference < 1000){
-                    this._altAlertState = CJ4_FMC.ALTALERT_STATE.ARMED
+                    this._altAlertState = CJ4_FMC.ALTALERT_STATE.ARMED;
                 }
                 break;
             case CJ4_FMC.ALTALERT_STATE.ARMED:
