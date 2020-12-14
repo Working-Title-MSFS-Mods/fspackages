@@ -1328,7 +1328,7 @@ export class FlightPlanManager {
         prev = allWaypoints[i];
         next = allWaypoints[i + 1];
         if (prev.cumulativeDistanceInFP < fromStartDistance && next.cumulativeDistanceInFP > fromStartDistance) {
-            break;
+          break;
         }
       }
       let prevCD = prev.cumulativeDistanceInFP;
