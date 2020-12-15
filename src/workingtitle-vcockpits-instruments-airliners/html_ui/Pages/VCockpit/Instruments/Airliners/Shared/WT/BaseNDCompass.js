@@ -558,7 +558,13 @@ class Jet_NDCompass extends HTMLElement {
                             deviation = -deviation;
                         this.setAttribute("ghost_needle_course", course.toString());
                         this.setAttribute("ghost_needle_deviation", deviation.toString());
-                        this.ghostNeedleGroup.setAttribute("visibility", "visible");
+                        
+                        const navSensitivity = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number');
+                        if (navSensitivity == 1) {
+                            this.ghostNeedleGroup.setAttribute("visibility", "visible");
+                        } else {
+                            this.ghostNeedleGroup.setAttribute("visibility", "hidden");
+                        }
                     }
                     else {
                         this.setAttribute("ghost_needle_course", compass.toString());
