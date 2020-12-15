@@ -44,7 +44,10 @@ class WT_BaseLnav {
 
         this._lnavDeactivated = true;
 
-        /** Whether or not executing the calculated linear instructions is inhibited. */
+        /** Whether or not the turn is still completing. */
+        this._isTurnCompleting = false;
+
+        /** Whether or not turn execution is inhibited. */
         this._executeInhibited = false;
     }
 
@@ -127,6 +130,7 @@ class WT_BaseLnav {
             //Remove heading instruction inhibition when near desired track
             const windCorrectedDtk = this.normalizeCourse(this._dtk - this.calculateWindCorrection(this._dtk, airspeedTrue));
             if (Math.abs(Avionics.Utils.angleDiff(windCorrectedDtk, planeHeading)) < 15) {
+                this._isTurnCompleting = false;
                 this._executeInhibited = false;
             }
 
@@ -143,10 +147,12 @@ class WT_BaseLnav {
                     this._fpm.setActiveWaypointIndex(this.flightplan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
 
                     SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
+                    this._isWaypointAlerting = false;
 
+                    this._isTurnCompleting = false;
                     this._executeInhibited = false;
                     this.execute();
-                    this._executeInhibited = true;
+                    this._isTurnCompleting = true;
 
                     return;
                 }
@@ -176,19 +182,22 @@ class WT_BaseLnav {
 
                     if (this._activeWaypointDist <= alertDistance) {
                         SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 1);
+                        this._isWaypointAlerting = true;
                     }
                     // console.log("d/a/ta: " + this._activeWaypointDist.toFixed(2) + "/" + activateDistance.toFixed(2) + "/" + Math.abs(currentFixTurnAngle).toFixed(2) + "/" + this._activeWaypoint.ident);
 
                     if (this._activeWaypointDist <= activateDistance && this._groundSpeed > 10) { //TIME TO START TURN
-                        console.log("ACTIVATE " + this._activeWaypoint.ident);
+                        // console.log("ACTIVATE " + this._activeWaypoint.ident);
                         this._setHeading = toNextFixHeading;
                         this._fpm.setActiveWaypointIndex(this.flightplan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
 
                         SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
+                        this._isWaypointAlerting = false;
 
+                        this._isTurnCompleting = false;
                         this._executeInhibited = false;
                         this.execute();
-                        this._executeInhibited = true; //Prevent heading changes until turn is near completion
+                        this._isTurnCompleting = true; //Prevent heading changes until turn is near completion
 
                         return;
                     }
@@ -202,7 +211,7 @@ class WT_BaseLnav {
                 }
 
                 //NEAR WAYPOINT TRACKING
-                if (navModeActive && this._activeWaypointDist < 1.0) { //WHEN NOT MUCH TURN, STOP CHASING DTK CLOSE TO WAYPOINT
+                if (navModeActive && this._activeWaypointDist < 1.0 && !this._isWaypointAlerting) { //WHEN NOT MUCH TURN, STOP CHASING DTK CLOSE TO WAYPOINT
                     this._setHeading = this._bearingToWaypoint;
                     this._executeInhibited = true;
                 }
@@ -220,19 +229,30 @@ class WT_BaseLnav {
      * Execute.
      */
     execute() {
-        if (!this._executeInhibited) {
-            //ADD WIND CORRECTION
-            const airspeedTrue = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
-            const windCorrection = this.calculateWindCorrection(this._setHeading, airspeedTrue);
-            this._setHeading = this.normalizeCourse(this._setHeading - windCorrection);
-
-            //ADD MAGVAR
-            this._setHeading = GeoMath.correctMagvar(this._setHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"));
-
-            //SET HEADING
-            SimVar.SetSimVarValue("L:WT_TEMP_SETHEADING", "number", this._setHeading);
-            Coherent.call("HEADING_BUG_SET", 2, this._setHeading);
-        }
+        if(!this._executeInhibited) {
+            if (!this._isTurnCompleting) {
+                //ADD WIND CORRECTION
+                const airspeedTrue = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
+                const windCorrection = this.calculateWindCorrection(this._setHeading, airspeedTrue);
+                this._setHeading = this.normalizeCourse(this._setHeading - windCorrection);
+    
+                //ADD MAGVAR
+                this._setHeading = GeoMath.correctMagvar(this._setHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"));
+    
+                //SET HEADING
+                SimVar.SetSimVarValue("L:WT_TEMP_SETHEADING", "number", this._setHeading);
+                Coherent.call("HEADING_BUG_SET", 2, this._setHeading);
+            }
+            else {
+                const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Radians') * Avionics.Utils.RAD2DEG;
+                const angleDiffToTarget = Avionics.Utils.angleDiff(planeHeading, this._setHeading);
+    
+                const turnDirection = Math.sign(angleDiffToTarget);
+                const targetHeading = planeHeading + (turnDirection * 90);
+                SimVar.SetSimVarValue("L:WT_TEMP_SETHEADING", "number", targetHeading);
+                Coherent.call("HEADING_BUG_SET", 2, targetHeading);
+            }
+        }  
     }
 
     /**

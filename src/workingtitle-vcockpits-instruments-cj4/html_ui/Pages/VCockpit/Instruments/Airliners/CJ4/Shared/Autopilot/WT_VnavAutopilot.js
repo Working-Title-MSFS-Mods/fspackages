@@ -435,14 +435,14 @@ class WT_VnavAutopilot {
 
     cancelConstraint() {
         //method to reset after adhereing to a constraint when no more constraints exist
-        console.log("set slot 1 after passing constraints");
+        // console.log("set slot 1 after passing constraints");
         this._vnavAltSlot = 1;
         this._navModeSelector.queueEvent(NavModeEvent.VNAV_REQUEST_SLOT_1);
         this._obeyingConstraint = false;
     }
 
     vnavAltSlotRequest() {
-        console.log("this._vnavAltSlot: " + this._vnavAltSlot);
+        // console.log("this._vnavAltSlot: " + this._vnavAltSlot);
         const altSlot = this._navModeSelector.currentAltSlotIndex;
         if (this._vnavAltSlot == 1 && altSlot == 2) {
             this._navModeSelector.queueEvent(NavModeEvent.VNAV_REQUEST_SLOT_1);

@@ -143,6 +143,20 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_AP_Disconnect" ID="{9C185DAB-38CF-4443-845E-B476AE72E628}">
+					<ChildrenList>
+						<Action Name="" ID="{17C088A4-1D57-4CB9-9B8B-BF9F639B104F}" ShortID="545263794">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Autopilot Disconnect" ID="{E0C0190F-6A0F-4C49-9FD1-7B3F7286104B}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

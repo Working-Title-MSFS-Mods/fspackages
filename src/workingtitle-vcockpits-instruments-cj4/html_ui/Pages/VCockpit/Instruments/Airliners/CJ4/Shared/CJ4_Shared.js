@@ -6,7 +6,7 @@ var CJ4_SystemPage;
     CJ4_SystemPage[CJ4_SystemPage["FMS"] = 3] = "FMS";
     CJ4_SystemPage[CJ4_SystemPage["ANNUNCIATIONS"] = 4] = "ANNUNCIATIONS";
 })(CJ4_SystemPage || (CJ4_SystemPage = {}));
-;
+
 class CJ4_SystemContainer extends NavSystemElementContainer {
     constructor(_name, _root) {
         super(_name, _root, null);
@@ -2442,7 +2442,7 @@ class CJ4_SystemElectrics extends NavSystemElement {
 }
 class CJ4_SystemFMS extends NavSystemElement {
     init(_root) {
-        this.root = _root.querySelector(".SystemFMS");
+        this.root = _root;
         this.previousWaypoint = undefined;
         this._flightPlanUpdateCounter = 0;
 
@@ -2466,7 +2466,7 @@ class CJ4_SystemFMS extends NavSystemElement {
             }
             return;
         }
-        if (this.root.offsetParent !== null) {
+        if (this.root.getAttribute("page") === "fms") {
             let flightPlanManager = this.gps.currFlightPlanManager;
             if (flightPlanManager) {
                 this._flightPlanUpdateCounter++;
@@ -2474,7 +2474,7 @@ class CJ4_SystemFMS extends NavSystemElement {
                     flightPlanManager.updateFlightPlan();
                     this._flightPlanUpdateCounter = 0;
                 }
-                if (this._flightPlanUpdateCounter % 10 == 0) {
+                if (this._flightPlanUpdateCounter % 20 == 0) {
 
                     // Grab plane information
                     let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
@@ -3465,7 +3465,7 @@ class CJ4_PopupMenuContainer extends NavSystemElementContainer {
     onEvent(_event) {
         super.onEvent(_event);
         if (this.handler && this.handler.reactsOnEvent(_event)) {
-            if (this.gps instanceof CJ4_PFD) {
+            if (typeof CJ4_PFD === 'function') {
                 switch (_event) {
                     case "Upr_DATA_PUSH":
                         this.handler.onActivate();
@@ -3493,7 +3493,7 @@ class CJ4_PopupMenuContainer extends NavSystemElementContainer {
                         break;
                 }
             }
-            else if (this.gps instanceof CJ4_MFD) {
+            else if (typeof CJ4_MFD === 'function') {
                 switch (_event) {
                     case "Lwr_DATA_PUSH":
                         this.handler.onActivate();

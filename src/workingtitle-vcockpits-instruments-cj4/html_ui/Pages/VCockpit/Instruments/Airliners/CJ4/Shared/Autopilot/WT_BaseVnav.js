@@ -104,7 +104,7 @@ class WT_BaseVnav {
             if (currentLateralMode !== this._currentLateralMode) {
 
                 if (this.currentLateralMode !== LateralNavModeState.APPR && currentLateralMode === LateralNavModeState.APPR) {
-                    this.buildGlidepath();
+                    this._vnavTargetChanged = true;
                 }
 
                 if (this.currentLateralMode === LateralNavModeState.APPR && currentLateralMode !== LateralNavModeState.APPR) {
@@ -186,9 +186,15 @@ class WT_BaseVnav {
 
             //BUILD VPATH DESCENT PROFILE -- This only needs to be updated when flight plan changed or when active VNAV waypoint changes
             if (this._currentFlightSegment.type != SegmentType.Departure && (this._flightPlanChanged || this._vnavTargetChanged)) {
-                console.log("build profile started");
-                this.buildDescentProfile();
-                console.log(`profile written: ${this._vnavTargetWaypoint && this._vnavTargetWaypoint.ident} ${this._vnavTargetAltitude}`);
+                //console.log("build profile started");
+                if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
+                    this.buildGlidepath();
+                }
+                else {
+                    this.buildDescentProfile();
+                }
+                
+                //console.log(`profile written: ${this._vnavTargetWaypoint && this._vnavTargetWaypoint.ident} ${this._vnavTargetAltitude}`);
             }
 
             //TRACK ALTITUDE DEVIATION
@@ -341,7 +347,7 @@ class WT_BaseVnav {
         }
         let constraint = false;
         if (this._vnavConstraintAltitude && this._vnavConstraintWaypoint) {
-            if (this._vnavConstraintWaypoint.cumulativeDistanceInFP - (this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist) < 20) {
+            if (this._currentFlightSegment == SegmentType.Approach || this._currentFlightSegment == SegmentType.Arrival || (this._vnavConstraintWaypoint.cumulativeDistanceInFP - (this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist) < 20)) {
                 let selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
                 if (this._vnavConstraintType == "above" && selectedAltitude < this._vnavConstraintAltitude) {
                     SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", Math.round(this._vnavConstraintAltitude));
@@ -361,14 +367,13 @@ class WT_BaseVnav {
     setTodWaypoint(calculate = true) {
         if (calculate === true) {
             let todDistanceFromDest = this._destination.cumulativeDistanceInFP - this._vnavTargetWaypoint.cumulativeDistanceInFP + this._topOfDescent;
-            let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-            let timeToTod = todDistanceFromDest / (groundSpeed / 3600);
+
             SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", todDistanceFromDest);
-            SimVar.SetSimVarValue("L:WT_CJ4_TOD_SECONDS", "number", timeToTod);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", this._distanceToTod);
         }
         else {
             SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", 0);
-            SimVar.SetSimVarValue("L:WT_CJ4_TOD_SECONDS", "number", -1);
+            SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", 0);
         }
     }
 

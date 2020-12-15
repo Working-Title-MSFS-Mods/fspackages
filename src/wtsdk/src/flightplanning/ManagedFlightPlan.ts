@@ -514,7 +514,7 @@ export class ManagedFlightPlan {
     let angleDiff = Math.abs(Avionics.Utils.angleDiff(planeHeading, headingToFix));
 
     const turnDurationSeconds = (angleDiff / 3) + 6;
-    const interceptDistance = (groundSpeed / 60 / 60) * turnDurationSeconds;
+    const interceptDistance = (groundSpeed / 60 / 60) * turnDurationSeconds * 1.25;
 
     const createInterceptPoint = (coords: LatLongAlt) => {
       const interceptWaypoint = new WayPoint(this._parentInstrument);

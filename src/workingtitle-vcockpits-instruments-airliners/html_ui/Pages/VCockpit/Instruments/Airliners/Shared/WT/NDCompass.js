@@ -103,20 +103,22 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     let stopR = false;
                     setInterval(function () {
                         // dot.setAttribute('transform', 'translate(40,0) rotate(' + y + ')');
-                        if (y >= 0.9751) {
-                            stopR = true;
-                        }
+                        if (dot.style.display === "") {
+                            if (y >= 0.9751) {
+                                stopR = true;
+                            }
 
-                        if (y >= 1.2) {
-                            y = 0;
-                            r = initR;
-                            stopR = false;
-                        }
+                            if (y >= 1.2) {
+                                y = 0;
+                                r = initR;
+                                stopR = false;
+                            }
 
-                        y += 0.013;
-                        if (!stopR) {
-                            r += 1.61;
-                            dot.setAttribute("transform", "translate(" + (path.getPointAtLength(y * cLength).x + 42) + "," + (path.getPointAtLength(y * cLength).y + 51) + ") rotate( " + r + ",8,3)");
+                            y += 0.013;
+                            if (!stopR) {
+                                r += 1.61;
+                                dot.setAttribute("transform", "translate(" + (path.getPointAtLength(y * cLength).x + 42) + "," + (path.getPointAtLength(y * cLength).y + 51) + ") rotate( " + r + ",8,3)");
+                            }
                         }
                     }, 30);
 

@@ -14,6 +14,10 @@ class CJ4_PFD extends BaseAirliners {
         this.radioSrc1 = "OFF";
         this.radioSrc2 = "OFF";
         this.initDuration = 7000;
+        this._machAirpeed = undefined;
+        this.isMachActive = undefined;
+        this.MACH_SYNC_TIME = 1000;
+        this._machSyncTimer = this.MACH_SYNC_TIME;
     }
     get templateID() { return "CJ4_PFD"; }
     get IsGlassCockpit() { return true; }
@@ -214,9 +218,10 @@ class CJ4_PFD extends BaseAirliners {
             }
         }
 
-        this.updateMachTransition();
+        this.updateMachTransition(_deltaTime);
     }
-    updateMachTransition() {
+    updateMachTransition(_deltaTime) {
+        this._machSyncTimer -= _deltaTime;
         let cruiseMach = 0.64; // TODO: change this when cruise mach becomes settable
         // let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
         let mach = Simplane.getMachSpeed();
@@ -250,10 +255,15 @@ class CJ4_PFD extends BaseAirliners {
             return true;
         } else {
             // DONT DELETE: mach mode fix
-            const machMode = Simplane.getAutoPilotMachModeActive();
-            if (machMode) {
-                const machAirspeed = Simplane.getAutoPilotMachHoldValue();
-                Coherent.call("AP_MACH_VAR_SET", 0, parseFloat(machAirspeed.toFixed(2)));
+            const machAirspeed = Simplane.getAutoPilotMachHoldValue();
+            if (this.isMachActive && this._machAirpeed == machAirspeed && this._machSyncTimer < 0) {
+                this._machAirpeed = machAirspeed;
+                //Coherent.call("AP_MACH_VAR_SET", 0, parseFloat(machAirspeed.toFixed(2)));
+                Coherent.call("AP_MACH_VAR_SET", 0, machAirspeed);
+                this._machSyncTimer = this.MACH_SYNC_TIME;
+            }
+            else {
+                this._machAirpeed = machAirspeed;
             }
         }
         return false;

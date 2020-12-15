@@ -120,7 +120,6 @@ class SvgWaypointElement extends SvgMapElement {
                 this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TOD.svg?cb=3434444444444544");
             }
             else if (!isInFpln) {
-                console.log(this.imageFileName());
                 this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg"));
             } else {
                 this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_FLIGHTPLAN.svg");
