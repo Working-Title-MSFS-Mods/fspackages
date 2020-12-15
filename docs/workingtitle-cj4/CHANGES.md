@@ -42,6 +42,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ## Lateral Navigation
 * New lateral navigation over the top of existing AP
+* Greatly improved bank response and turn performance
 * Supports correct discontinuity behavior
 * Compatibility with the new Flight Plan Manager
 * Much improved ILS APPR capture success rate
@@ -116,7 +117,8 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Autopilot modes cannot be triggered via keybindings or controllers and must currently be triggered in the cockpit with the mouse.
 * Due to sim autopilot bank rate limitations, the aircraft may overshoot on certain RNP approaches with tight turns. If you encounter this, we recommend handflying the approach with the given lateral and vertical guidance.
 * Sometimes when turning more than 90 degrees onto an approach segment, VNAV might give a NOPATH condition because it sees that you are too high.  Engage FLC or VS and descend down and it should recapture the path.
-* The FMS now builds turn anticipation into direct-to course projection. However, you will still encounter some overshoot beyond 60 or so degrees.
+* Very long legs may display some constant cross track deviation on the map and course needles. The plane will still track properly towards the fix. This will be addressed later in the beta.
+* The FMS now builds turn anticipation into direct-to course projection. However, you will still encounter some overshoot beyond 90 or so degrees.
 * If for whatever reason, you find that VNAV is not behaving as expected, try and turn it off and on again.
 
 ### 🎅 Have fun! 🎅
