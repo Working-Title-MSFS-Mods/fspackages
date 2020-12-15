@@ -32,6 +32,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Continuous vertical path calculation
 * Display of vertical path snowflake
 * Display of required vertical speed donut to meet next restriction
+* Display of TOD on the map
 * Overhauled altitude modes including ALTS and ALTV
 * Ability to add custom altitude restrictions in FMC LEGS page
 
@@ -71,6 +72,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Added altitude capture aural alert and flashing altitude selection indicator
 * Added FMC waypoint sequence alerting: waypoint ident and distance will flash 5 seconds before sequencing
 * Course needles now smoothly swing to position as per the real display
+* Fixed an issue where the upper panel knob also controlled menues in the MFD
 
 ## PPOS/PLAN map
 * Added “NO FLIGHT PLAN” to ROSE/ARC modes when no flight plan detected
