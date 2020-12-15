@@ -834,7 +834,7 @@ class MapInstrument extends ISvgMapRootElement {
                         if (todDist > 0) {
                             this.updateTodWaypoint();
                             if (this._todWaypoint) {
-                                this.navMap.mapElements.push(this._todWaypoint.getSvgElement(0));
+                                this.navMap.mapElements.push(this._todWaypoint.getSvgElement(this.navMap.index));
                             }  
                         }
 
@@ -891,7 +891,7 @@ class MapInstrument extends ISvgMapRootElement {
     
                 waypoint.ident = "TOD";
                 waypoint.infos.ident = "TOD";
-                waypoint.getSvgElement(0);
+                waypoint.getSvgElement(this.navMap.index);
                 this._todWaypoint = waypoint;
             }
     
