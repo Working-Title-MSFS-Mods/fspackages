@@ -2194,12 +2194,12 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     if (machMode) {
                         let machAirspeed = Simplane.getAutoPilotMachHoldValue();
                         if (machAirspeed < 1.0) {
-                            var fixedMach = machAirspeed.toFixed(3);
+                            var fixedMach = machAirspeed.toFixed(2);
                             var radixPos = fixedMach.indexOf('.');
                             this.targetSpeedSVG.textContent = fixedMach.slice(radixPos);
                         }
                         else {
-                            this.targetSpeedSVG.textContent = machAirspeed.toFixed(1);
+                            this.targetSpeedSVG.textContent = machAirspeed.toFixed(2);
                         }
                         selectedAirspeed = SimVar.GetGameVarValue("FROM MACH TO KIAS", "number", machAirspeed);
                     }

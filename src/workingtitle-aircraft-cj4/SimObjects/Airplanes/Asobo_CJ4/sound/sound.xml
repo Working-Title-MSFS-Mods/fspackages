@@ -253,7 +253,7 @@
 
 		<!-- MISC SOUNDS ========================================================================================== -->
 
-		<Sound WwiseData="true" WwiseEvent="ap_disengage_sound" NodeName="PUSH_CEILING_TESTLIGHT" Continuous="false" SimVar="AUTOPILOT DISENGAGED" Units="BOOL" Index="0">
+		<!--<Sound WwiseData="true" WwiseEvent="ap_disengage_sound" NodeName="PUSH_CEILING_TESTLIGHT" Continuous="false" SimVar="AUTOPILOT DISENGAGED" Units="BOOL" Index="0">
 			<Range LowerBound="1" />
 			<Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
 				<Range LowerBound="1" />
@@ -265,7 +265,7 @@
 			<Requires SimVar="ELECTRICAL MASTER BATTERY" Units="BOOL" Index="0">
 				<Range LowerBound="1" />
 			</Requires>
-		</Sound>
+		</Sound> -->
 
 		<!--      PASSENGER BRIEFINGS-->
 		<Sound WwiseData="true" WwiseEvent="WT_seatbelt_lights" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
@@ -303,6 +303,11 @@
 		<Sound WwiseData="true" WwiseEvent="WT_chime" LocalVar="SAFETY_LIGHT_ON" Continuous="false">
 			<Range UpperBound="0" />
 		</Sound>
+
+		<Sound WwiseData="true" WwiseEvent="WT_AP_Disconnect" SimVar="AUTOPILOT MASTER" Units="BOOL" Continuous="false">
+			<Range UpperBound="0" />
+		</Sound>
+	
 
 		<!--      PASSENGER AIR     -->
 
@@ -418,9 +423,9 @@
 		<Sound WwiseData="true" WwiseEvent="autopilot_altitude_knob" ViewPoint="Inside"/>
 		<Sound WwiseData="true" WwiseEvent="autopilot_verticalspeed_knob" ViewPoint="Inside"/>
 		<Sound WwiseData="true" WwiseEvent="autopilot_knob" ViewPoint="Inside"/>
-		<Sound WwiseData="true" WwiseEvent="autopilot_disconnect_button_on" ViewPoint="Inside"/>
-		<Sound WwiseData="true" WwiseEvent="autopilot_disconnect_button_off" ViewPoint="Inside"/>
-
+		<!--<Sound WwiseData="true" WwiseEvent="WT_autopilot_disconnect_button_on" ViewPoint="Inside"/>
+		<Sound WwiseData="true" WwiseEvent="WT_autopilot_disconnect_button_off" ViewPoint="Inside"/> -->
+ 
 		<!-- This event below will play the same sound for every soft button on the tilt panel-->
 		<Sound WwiseData="true" WwiseEvent="WT_hard_button_on" ViewPoint="Inside"/>
 

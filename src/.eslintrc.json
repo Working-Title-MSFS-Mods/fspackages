@@ -20,6 +20,8 @@
         "semi": [2, "always"]
     },
     "globals": {
+        "CJ4_MFD": "writable",
+        "CJ4_PFD": "writable",
         "SvgWaypointElement": "writable",
         "AutopilotMode": "writable",
         "Avionics": "writable",
